@@ -6,7 +6,7 @@ lib_LTLIBRARIES=libaqbanking.la
 
 DEFS=\
  -DAQBANKING_PLUGINS=\"@aqbanking_plugins@\" \
- -DDATADIR=\"$(datadir)\"
+ -DDATADIR=\"$(aqbanking_data)\"
 
 noinst_HEADERS=\
  account_l.h \

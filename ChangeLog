@@ -5,6 +5,7 @@
   have to sort imported transactions by days. This must now be done inside
   an application, because sometimes this needs user interaction which is out
   of the scope of AqBanking
+- fixed some bugs (e.g. was not using the data folder set bei ./configure)
 
 
 2004/08/23: Martin Preuss<martin@libchipcard.de>

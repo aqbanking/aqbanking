@@ -31,6 +31,7 @@ AC_MSG_RESULT($enable_aqbanking)
 
 have_aqbanking="no"
 aqbanking_dir=""
+aqbanking_data=""
 aqbanking_plugins=""
 aqbanking_libs=""
 aqbanking_libspp=""
