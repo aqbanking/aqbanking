@@ -267,7 +267,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 
 
-AB_TRANSACTION*
+const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -283,7 +283,7 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-AB_TRANSACTION*
+const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 

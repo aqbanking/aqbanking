@@ -8,6 +8,9 @@ MARK: released AqBanking - 1.0.0beta (2005/01/14)
 -------------------------------------------------
 - added functions AB_Banking_FindWizard() and AB_Banking_FindDebugger()
 - marked function AB_Banking_GetWizardPath() deprecated
+- SWIFT and DTAUS DBIO parser no longer work with splits, therefore I will 
+  have to prepare AB_TRANSACTIONs before exporting them with the DTAUS parser.
+- AB_ImExporterAccountInfo() now returns const objects
 
 
 2005/01/13: Martin Preuss<martin@libchipcard.de>

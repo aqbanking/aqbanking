@@ -628,6 +628,14 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
                           const char *frontends,
                           GWEN_BUFFER *pbuf);
 
+/** @deprecated
+ *
+ */
+AQBANKING_API
+int AB_Banking_GetWizardPath(AB_BANKING *ab,
+                             const char *backend,
+                             GWEN_BUFFER *pbuf);
+
 
 /**
  * This function simpifies debugger handling. It seaches for a debugger for

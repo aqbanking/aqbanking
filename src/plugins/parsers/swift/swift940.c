@@ -267,60 +267,61 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       AHB_SWIFT_Condense(s);
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Current field is %02d (%s)", id, s);
       /* now id is the field id, s points to the field content */
-  
-      switch(id) {
-      case 0: /* Buchungstext */
-        AHB_SWIFT__SetCharValue(data, flags, "text", s);
-        break;
-      case 10: /* Primanota */
-        AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
-        break;
-  
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-      case 24:
-      case 25:
-      case 26:
-      case 27:
-      case 28:
-      case 29:
-      case 60:
-      case 61:
-      case 62:
-      case 63: /* Verwendungszweck */
-        AHB_SWIFT__SetCharValue(data, flags, "splits/element/purpose", s);
-        break;
-  
-      case 30: /* BLZ Gegenseite */
-        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteBankCode", s);
-        break;
-  
-      case 31: /* Kontonummer Gegenseite */
-        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteAccountNumber", s);
-        break;
-  
-      case 32: 
-      case 33: /* Name Auftraggeber */
-        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteName", s);
-        break;
-  
-      case 34: /* Textschluesselergaenzung */
-        break;
-  
-      default: /* ignore all other fields (if any) */
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
-                 AHB_SWIFT_Tag_GetData(tg));
-        break;
-      } /* switch */
+      if (*s) {
+        switch(id) {
+        case 0: /* Buchungstext */
+          AHB_SWIFT__SetCharValue(data, flags, "text", s);
+          break;
+        case 10: /* Primanota */
+          AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+          break;
+    
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:
+        case 60:
+        case 61:
+        case 62:
+        case 63: /* Verwendungszweck */
+          AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+          break;
+    
+        case 30: /* BLZ Gegenseite */
+          AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+          break;
+    
+        case 31: /* Kontonummer Gegenseite */
+          AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+          break;
+    
+        case 32: 
+        case 33: /* Name Auftraggeber */
+          AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+          break;
+    
+        case 34: /* Textschluesselergaenzung */
+          break;
+    
+        default: /* ignore all other fields (if any) */
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+                   AHB_SWIFT_Tag_GetData(tg));
+          break;
+        } /* switch */
+      }
       p=p2;
       free(s);
     } /* while */
   } /* if structured */
   else {
     /* unstructured :86:, simply store as purpose line */
-    AHB_SWIFT__SetCharValue(data, flags, "splits/element/purpose", p);
+    AHB_SWIFT__SetCharValue(data, flags, "purpose", p);
   }
 
   return 0;
@@ -455,9 +456,9 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, flags, "splits/element/value/value", s);
+  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
   AHB_SWIFT__SetCharValue(data, flags,
-                          "splits/element/value/currency",
+                          "value/currency",
                           GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"));
   free(s);
   bleft-=p2-p;

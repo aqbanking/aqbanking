@@ -7,133 +7,64 @@
 /** @page P_AB_SPLIT_PUBLIC AB_Split (public)
 This page describes the properties of AB_SPLIT
 This type contains all important information about transaction splits. Please note that all text fields are in UTF-8.
-<h3>Local Account Info</h3>
-<p>
-This group contains information about the local account.
-</p>
-@anchor AB_SPLIT_LocalCountry
-<h4>LocalCountry</h4>
-<p>
-This is the two-character country code according to ISO 3166-1 (Alpha-2). This is also used in DNS toplevel domain names. For Germany use &quot;DE&quot;. (FIXME: is this case-sensitive?)
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalCountry, 
-get it with @ref AB_Split_GetLocalCountry
-</p>
-
-@anchor AB_SPLIT_LocalBankCode
-<h4>LocalBankCode</h4>
-<p>
-This is the code of the local bank (i.e.
-
-<b>
-your
-
-</b>
-
-bank).
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalBankCode, 
-get it with @ref AB_Split_GetLocalBankCode
-</p>
-
-@anchor AB_SPLIT_LocalBranchId
-<h4>LocalBranchId</h4>
-<p>
-This is the branch id of the local bank (OFX only)
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalBranchId, 
-get it with @ref AB_Split_GetLocalBranchId
-</p>
-
-@anchor AB_SPLIT_LocalAccountNumber
-<h4>LocalAccountNumber</h4>
-<p>
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalAccountNumber, 
-get it with @ref AB_Split_GetLocalAccountNumber
-</p>
-
-@anchor AB_SPLIT_LocalSuffix
-<h4>LocalSuffix</h4>
-<p>
-If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it&apos;s empty. (HBCI only)
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalSuffix, 
-get it with @ref AB_Split_GetLocalSuffix
-</p>
-
-@anchor AB_SPLIT_LocalName
-<h4>LocalName</h4>
-<p>
-</p>
-<p>
-Set this property with @ref AB_Split_SetLocalName, 
-get it with @ref AB_Split_GetLocalName
-</p>
-
-<h3>Remote Account Info</h3>
+<h3>Account Info</h3>
 <p>
 This group contains information about the remote account.
 </p>
-@anchor AB_SPLIT_RemoteCountry
-<h4>RemoteCountry</h4>
+@anchor AB_SPLIT_Country
+<h4>Country</h4>
 <p>
 This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.
 </p>
 <p>
-Set this property with @ref AB_Split_SetRemoteCountry, 
-get it with @ref AB_Split_GetRemoteCountry
+Set this property with @ref AB_Split_SetCountry, 
+get it with @ref AB_Split_GetCountry
 </p>
 
-@anchor AB_SPLIT_RemoteBankCode
-<h4>RemoteBankCode</h4>
+@anchor AB_SPLIT_BankCode
+<h4>BankCode</h4>
 <p>
 </p>
 <p>
-Set this property with @ref AB_Split_SetRemoteBankCode, 
-get it with @ref AB_Split_GetRemoteBankCode
+Set this property with @ref AB_Split_SetBankCode, 
+get it with @ref AB_Split_GetBankCode
 </p>
 
-@anchor AB_SPLIT_RemoteBranchId
-<h4>RemoteBranchId</h4>
+@anchor AB_SPLIT_BranchId
+<h4>BranchId</h4>
 <p>
 This is the branch id of the remote bank (OFX only)
 </p>
 <p>
-Set this property with @ref AB_Split_SetRemoteBranchId, 
-get it with @ref AB_Split_GetRemoteBranchId
+Set this property with @ref AB_Split_SetBranchId, 
+get it with @ref AB_Split_GetBranchId
 </p>
 
-@anchor AB_SPLIT_RemoteAccountNumber
-<h4>RemoteAccountNumber</h4>
+@anchor AB_SPLIT_AccountNumber
+<h4>AccountNumber</h4>
 <p>
 </p>
 <p>
-Set this property with @ref AB_Split_SetRemoteAccountNumber, 
-get it with @ref AB_Split_GetRemoteAccountNumber
-</p>
-
-@anchor AB_SPLIT_RemoteSuffix
-<h4>RemoteSuffix</h4>
-<p>
-</p>
-<p>
-Set this property with @ref AB_Split_SetRemoteSuffix, 
-get it with @ref AB_Split_GetRemoteSuffix
+Set this property with @ref AB_Split_SetAccountNumber, 
+get it with @ref AB_Split_GetAccountNumber
 </p>
 
-@anchor AB_SPLIT_RemoteName
-<h4>RemoteName</h4>
+@anchor AB_SPLIT_Suffix
+<h4>Suffix</h4>
 <p>
 </p>
 <p>
-Set this property with @ref AB_Split_SetRemoteName, 
-get it with @ref AB_Split_GetRemoteName
+Set this property with @ref AB_Split_SetSuffix, 
+get it with @ref AB_Split_GetSuffix
+</p>
+
+@anchor AB_SPLIT_Name
+<h4>Name</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Split_SetName, 
+get it with @ref AB_Split_GetName
 </p>
 
 <h3>Value</h3>
@@ -216,131 +147,69 @@ AQBANKING_API int AB_Split_IsModified(const AB_SPLIT *st);
 AQBANKING_API void AB_Split_SetModified(AB_SPLIT *st, int i);
 
 
-/** @name Local Account Info
- *
-This group contains information about the local account.
-*/
-/*@{*/
-
-/**
-* Returns the property @ref AB_SPLIT_LocalCountry
-*/
-AQBANKING_API const char *AB_Split_GetLocalCountry(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalCountry
-*/
-AQBANKING_API void AB_Split_SetLocalCountry(AB_SPLIT *el, const char *d);
-
-/**
-* Returns the property @ref AB_SPLIT_LocalBankCode
-*/
-AQBANKING_API const char *AB_Split_GetLocalBankCode(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalBankCode
-*/
-AQBANKING_API void AB_Split_SetLocalBankCode(AB_SPLIT *el, const char *d);
-
-/**
-* Returns the property @ref AB_SPLIT_LocalBranchId
-*/
-AQBANKING_API const char *AB_Split_GetLocalBranchId(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalBranchId
-*/
-AQBANKING_API void AB_Split_SetLocalBranchId(AB_SPLIT *el, const char *d);
-
-/**
-* Returns the property @ref AB_SPLIT_LocalAccountNumber
-*/
-AQBANKING_API const char *AB_Split_GetLocalAccountNumber(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalAccountNumber
-*/
-AQBANKING_API void AB_Split_SetLocalAccountNumber(AB_SPLIT *el, const char *d);
-
-/**
-* Returns the property @ref AB_SPLIT_LocalSuffix
-*/
-AQBANKING_API const char *AB_Split_GetLocalSuffix(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalSuffix
-*/
-AQBANKING_API void AB_Split_SetLocalSuffix(AB_SPLIT *el, const char *d);
-
-/**
-* Returns the property @ref AB_SPLIT_LocalName
-*/
-AQBANKING_API const char *AB_Split_GetLocalName(const AB_SPLIT *el);
-/**
-* Set the property @ref AB_SPLIT_LocalName
-*/
-AQBANKING_API void AB_Split_SetLocalName(AB_SPLIT *el, const char *d);
-
-/*@}*/
-
-/** @name Remote Account Info
+/** @name Account Info
  *
 This group contains information about the remote account.
 */
 /*@{*/
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteCountry
+* Returns the property @ref AB_SPLIT_Country
 */
-AQBANKING_API const char *AB_Split_GetRemoteCountry(const AB_SPLIT *el);
+AQBANKING_API const char *AB_Split_GetCountry(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteCountry
+* Set the property @ref AB_SPLIT_Country
 */
-AQBANKING_API void AB_Split_SetRemoteCountry(AB_SPLIT *el, const char *d);
+AQBANKING_API void AB_Split_SetCountry(AB_SPLIT *el, const char *d);
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteBankCode
+* Returns the property @ref AB_SPLIT_BankCode
 */
-AQBANKING_API const char *AB_Split_GetRemoteBankCode(const AB_SPLIT *el);
+AQBANKING_API const char *AB_Split_GetBankCode(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteBankCode
+* Set the property @ref AB_SPLIT_BankCode
 */
-AQBANKING_API void AB_Split_SetRemoteBankCode(AB_SPLIT *el, const char *d);
+AQBANKING_API void AB_Split_SetBankCode(AB_SPLIT *el, const char *d);
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteBranchId
+* Returns the property @ref AB_SPLIT_BranchId
 */
-AQBANKING_API const char *AB_Split_GetRemoteBranchId(const AB_SPLIT *el);
+AQBANKING_API const char *AB_Split_GetBranchId(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteBranchId
+* Set the property @ref AB_SPLIT_BranchId
 */
-AQBANKING_API void AB_Split_SetRemoteBranchId(AB_SPLIT *el, const char *d);
+AQBANKING_API void AB_Split_SetBranchId(AB_SPLIT *el, const char *d);
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteAccountNumber
+* Returns the property @ref AB_SPLIT_AccountNumber
 */
-AQBANKING_API const char *AB_Split_GetRemoteAccountNumber(const AB_SPLIT *el);
+AQBANKING_API const char *AB_Split_GetAccountNumber(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteAccountNumber
+* Set the property @ref AB_SPLIT_AccountNumber
 */
-AQBANKING_API void AB_Split_SetRemoteAccountNumber(AB_SPLIT *el, const char *d);
+AQBANKING_API void AB_Split_SetAccountNumber(AB_SPLIT *el, const char *d);
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteSuffix
+* Returns the property @ref AB_SPLIT_Suffix
 */
-AQBANKING_API const char *AB_Split_GetRemoteSuffix(const AB_SPLIT *el);
+AQBANKING_API const char *AB_Split_GetSuffix(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteSuffix
+* Set the property @ref AB_SPLIT_Suffix
 */
-AQBANKING_API void AB_Split_SetRemoteSuffix(AB_SPLIT *el, const char *d);
+AQBANKING_API void AB_Split_SetSuffix(AB_SPLIT *el, const char *d);
 
 /**
-* Returns the property @ref AB_SPLIT_RemoteName
+* Returns the property @ref AB_SPLIT_Name
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_Split_GetRemoteName(const AB_SPLIT *el);
+AQBANKING_API const GWEN_STRINGLIST *AB_Split_GetName(const AB_SPLIT *el);
 /**
-* Set the property @ref AB_SPLIT_RemoteName
+* Set the property @ref AB_SPLIT_Name
 */
-AQBANKING_API void AB_Split_SetRemoteName(AB_SPLIT *el, const GWEN_STRINGLIST *d);
-AQBANKING_API void AB_Split_AddRemoteName(AB_SPLIT *st, const char *d, int chk);
-AQBANKING_API void AB_Split_RemoveRemoteName(AB_SPLIT *st, const char *d);
-AQBANKING_API void AB_Split_ClearRemoteName(AB_SPLIT *st);
-AQBANKING_API int AB_Split_HasRemoteName(AB_SPLIT *st, const char *d);
+AQBANKING_API void AB_Split_SetName(AB_SPLIT *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_Split_AddName(AB_SPLIT *st, const char *d, int chk);
+AQBANKING_API void AB_Split_RemoveName(AB_SPLIT *st, const char *d);
+AQBANKING_API void AB_Split_ClearName(AB_SPLIT *st);
+AQBANKING_API int AB_Split_HasName(AB_SPLIT *st, const char *d);
 
 /*@}*/
 

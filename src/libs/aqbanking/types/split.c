@@ -25,7 +25,7 @@ AB_SPLIT *AB_Split_new() {
   st->_usage=1;
   GWEN_INHERIT_INIT(AB_SPLIT, st)
   GWEN_LIST_INIT(AB_SPLIT, st)
-  st->remoteName=GWEN_StringList_new();
+  st->name=GWEN_StringList_new();
   st->purpose=GWEN_StringList_new();
   return st;
 }
@@ -36,30 +36,18 @@ void AB_Split_free(AB_SPLIT *st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
   GWEN_INHERIT_FINI(AB_SPLIT, st)
-  if (st->localCountry)
-    free(st->localCountry);
-  if (st->localBankCode)
-    free(st->localBankCode);
-  if (st->localBranchId)
-    free(st->localBranchId);
-  if (st->localAccountNumber)
-    free(st->localAccountNumber);
-  if (st->localSuffix)
-    free(st->localSuffix);
-  if (st->localName)
-    free(st->localName);
-  if (st->remoteCountry)
-    free(st->remoteCountry);
-  if (st->remoteBankCode)
-    free(st->remoteBankCode);
-  if (st->remoteBranchId)
-    free(st->remoteBranchId);
-  if (st->remoteAccountNumber)
-    free(st->remoteAccountNumber);
-  if (st->remoteSuffix)
-    free(st->remoteSuffix);
-  if (st->remoteName)
-    GWEN_StringList_free(st->remoteName);
+  if (st->country)
+    free(st->country);
+  if (st->bankCode)
+    free(st->bankCode);
+  if (st->branchId)
+    free(st->branchId);
+  if (st->accountNumber)
+    free(st->accountNumber);
+  if (st->suffix)
+    free(st->suffix);
+  if (st->name)
+    GWEN_StringList_free(st->name);
   if (st->value)
     AB_Value_free(st->value);
   if (st->purpose)
@@ -77,30 +65,18 @@ AB_SPLIT *AB_Split_dup(const AB_SPLIT *d) {
 
   assert(d);
   st=AB_Split_new();
-  if (d->localCountry)
-    st->localCountry=strdup(d->localCountry);
-  if (d->localBankCode)
-    st->localBankCode=strdup(d->localBankCode);
-  if (d->localBranchId)
-    st->localBranchId=strdup(d->localBranchId);
-  if (d->localAccountNumber)
-    st->localAccountNumber=strdup(d->localAccountNumber);
-  if (d->localSuffix)
-    st->localSuffix=strdup(d->localSuffix);
-  if (d->localName)
-    st->localName=strdup(d->localName);
-  if (d->remoteCountry)
-    st->remoteCountry=strdup(d->remoteCountry);
-  if (d->remoteBankCode)
-    st->remoteBankCode=strdup(d->remoteBankCode);
-  if (d->remoteBranchId)
-    st->remoteBranchId=strdup(d->remoteBranchId);
-  if (d->remoteAccountNumber)
-    st->remoteAccountNumber=strdup(d->remoteAccountNumber);
-  if (d->remoteSuffix)
-    st->remoteSuffix=strdup(d->remoteSuffix);
-  if (d->remoteName)
-    st->remoteName=GWEN_StringList_dup(d->remoteName);
+  if (d->country)
+    st->country=strdup(d->country);
+  if (d->bankCode)
+    st->bankCode=strdup(d->bankCode);
+  if (d->branchId)
+    st->branchId=strdup(d->branchId);
+  if (d->accountNumber)
+    st->accountNumber=strdup(d->accountNumber);
+  if (d->suffix)
+    st->suffix=strdup(d->suffix);
+  if (d->name)
+    st->name=GWEN_StringList_dup(d->name);
   if (d->value)
     st->value=AB_Value_dup(d->value);
   if (d->purpose)
@@ -112,51 +88,33 @@ AB_SPLIT *AB_Split_dup(const AB_SPLIT *d) {
 int AB_Split_toDb(const AB_SPLIT *st, GWEN_DB_NODE *db) {
   assert(st);
   assert(db);
-  if (st->localCountry)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localCountry", st->localCountry))
+  if (st->country)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "country", st->country))
       return -1;
-  if (st->localBankCode)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBankCode", st->localBankCode))
+  if (st->bankCode)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankCode", st->bankCode))
       return -1;
-  if (st->localBranchId)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBranchId", st->localBranchId))
+  if (st->branchId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "branchId", st->branchId))
       return -1;
-  if (st->localAccountNumber)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localAccountNumber", st->localAccountNumber))
+  if (st->accountNumber)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "accountNumber", st->accountNumber))
       return -1;
-  if (st->localSuffix)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localSuffix", st->localSuffix))
+  if (st->suffix)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "suffix", st->suffix))
       return -1;
-  if (st->localName)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localName", st->localName))
-      return -1;
-  if (st->remoteCountry)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountry", st->remoteCountry))
-      return -1;
-  if (st->remoteBankCode)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBankCode", st->remoteBankCode))
-      return -1;
-  if (st->remoteBranchId)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBranchId", st->remoteBranchId))
-      return -1;
-  if (st->remoteAccountNumber)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAccountNumber", st->remoteAccountNumber))
-      return -1;
-  if (st->remoteSuffix)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteSuffix", st->remoteSuffix))
-      return -1;
-  if (st->remoteName)
+  if (st->name)
     {
       GWEN_STRINGLISTENTRY *se;
 
-      GWEN_DB_DeleteVar(db, "remoteName");
-      se=GWEN_StringList_FirstEntry(st->remoteName);
+      GWEN_DB_DeleteVar(db, "name");
+      se=GWEN_StringList_FirstEntry(st->name);
       while(se) {
         const char *s;
 
         s=GWEN_StringListEntry_Data(se);
         assert(s);
-        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "remoteName", s))
+        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "name", s))
           return -1;
         se=GWEN_StringListEntry_Next(se);
       } /* while */
@@ -189,27 +147,21 @@ AB_SPLIT *st;
 
   assert(db);
   st=AB_Split_new();
-  AB_Split_SetLocalCountry(st, GWEN_DB_GetCharValue(db, "localCountry", 0, 0));
-  AB_Split_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
-  AB_Split_SetLocalBranchId(st, GWEN_DB_GetCharValue(db, "localBranchId", 0, 0));
-  AB_Split_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
-  AB_Split_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
-  AB_Split_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
-  AB_Split_SetRemoteCountry(st, GWEN_DB_GetCharValue(db, "remoteCountry", 0, 0));
-  AB_Split_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
-  AB_Split_SetRemoteBranchId(st, GWEN_DB_GetCharValue(db, "remoteBranchId", 0, 0));
-  AB_Split_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
-  AB_Split_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
+  AB_Split_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, 0));
+  AB_Split_SetBankCode(st, GWEN_DB_GetCharValue(db, "bankCode", 0, 0));
+  AB_Split_SetBranchId(st, GWEN_DB_GetCharValue(db, "branchId", 0, 0));
+  AB_Split_SetAccountNumber(st, GWEN_DB_GetCharValue(db, "accountNumber", 0, 0));
+  AB_Split_SetSuffix(st, GWEN_DB_GetCharValue(db, "suffix", 0, 0));
   if (1) {
     int i;
 
     for (i=0; ; i++) {
       const char *s;
 
-      s=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
+      s=GWEN_DB_GetCharValue(db, "name", i, 0);
       if (!s)
         break;
-      AB_Split_AddRemoteName(st, s, 0);
+      AB_Split_AddName(st, s, 0);
     } /* for */
   }
   if (1) {
@@ -235,246 +187,138 @@ AB_SPLIT *st;
 }
 
 
-const char *AB_Split_GetLocalCountry(const AB_SPLIT *st) {
+const char *AB_Split_GetCountry(const AB_SPLIT *st) {
   assert(st);
-  return st->localCountry;
+  return st->country;
 }
 
 
-void AB_Split_SetLocalCountry(AB_SPLIT *st, const char *d) {
+void AB_Split_SetCountry(AB_SPLIT *st, const char *d) {
   assert(st);
-  if (st->localCountry)
-    free(st->localCountry);
+  if (st->country)
+    free(st->country);
   if (d)
-    st->localCountry=strdup(d);
+    st->country=strdup(d);
   else
-    st->localCountry=0;
+    st->country=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetLocalBankCode(const AB_SPLIT *st) {
+const char *AB_Split_GetBankCode(const AB_SPLIT *st) {
   assert(st);
-  return st->localBankCode;
+  return st->bankCode;
 }
 
 
-void AB_Split_SetLocalBankCode(AB_SPLIT *st, const char *d) {
+void AB_Split_SetBankCode(AB_SPLIT *st, const char *d) {
   assert(st);
-  if (st->localBankCode)
-    free(st->localBankCode);
+  if (st->bankCode)
+    free(st->bankCode);
   if (d)
-    st->localBankCode=strdup(d);
+    st->bankCode=strdup(d);
   else
-    st->localBankCode=0;
+    st->bankCode=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetLocalBranchId(const AB_SPLIT *st) {
+const char *AB_Split_GetBranchId(const AB_SPLIT *st) {
   assert(st);
-  return st->localBranchId;
+  return st->branchId;
 }
 
 
-void AB_Split_SetLocalBranchId(AB_SPLIT *st, const char *d) {
+void AB_Split_SetBranchId(AB_SPLIT *st, const char *d) {
   assert(st);
-  if (st->localBranchId)
-    free(st->localBranchId);
+  if (st->branchId)
+    free(st->branchId);
   if (d)
-    st->localBranchId=strdup(d);
+    st->branchId=strdup(d);
   else
-    st->localBranchId=0;
+    st->branchId=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetLocalAccountNumber(const AB_SPLIT *st) {
+const char *AB_Split_GetAccountNumber(const AB_SPLIT *st) {
   assert(st);
-  return st->localAccountNumber;
+  return st->accountNumber;
 }
 
 
-void AB_Split_SetLocalAccountNumber(AB_SPLIT *st, const char *d) {
+void AB_Split_SetAccountNumber(AB_SPLIT *st, const char *d) {
   assert(st);
-  if (st->localAccountNumber)
-    free(st->localAccountNumber);
+  if (st->accountNumber)
+    free(st->accountNumber);
   if (d)
-    st->localAccountNumber=strdup(d);
+    st->accountNumber=strdup(d);
   else
-    st->localAccountNumber=0;
+    st->accountNumber=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetLocalSuffix(const AB_SPLIT *st) {
+const char *AB_Split_GetSuffix(const AB_SPLIT *st) {
   assert(st);
-  return st->localSuffix;
+  return st->suffix;
 }
 
 
-void AB_Split_SetLocalSuffix(AB_SPLIT *st, const char *d) {
+void AB_Split_SetSuffix(AB_SPLIT *st, const char *d) {
   assert(st);
-  if (st->localSuffix)
-    free(st->localSuffix);
+  if (st->suffix)
+    free(st->suffix);
   if (d)
-    st->localSuffix=strdup(d);
+    st->suffix=strdup(d);
   else
-    st->localSuffix=0;
+    st->suffix=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetLocalName(const AB_SPLIT *st) {
+const GWEN_STRINGLIST *AB_Split_GetName(const AB_SPLIT *st) {
   assert(st);
-  return st->localName;
+  return st->name;
 }
 
 
-void AB_Split_SetLocalName(AB_SPLIT *st, const char *d) {
+void AB_Split_SetName(AB_SPLIT *st, const GWEN_STRINGLIST *d) {
   assert(st);
-  if (st->localName)
-    free(st->localName);
+  if (st->name)
+    GWEN_StringList_free(st->name);
   if (d)
-    st->localName=strdup(d);
+    st->name=GWEN_StringList_dup(d);
   else
-    st->localName=0;
+    st->name=0;
   st->_modified=1;
 }
 
 
-const char *AB_Split_GetRemoteCountry(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteCountry;
-}
-
-
-void AB_Split_SetRemoteCountry(AB_SPLIT *st, const char *d) {
-  assert(st);
-  if (st->remoteCountry)
-    free(st->remoteCountry);
-  if (d)
-    st->remoteCountry=strdup(d);
-  else
-    st->remoteCountry=0;
-  st->_modified=1;
-}
-
-
-const char *AB_Split_GetRemoteBankCode(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteBankCode;
-}
-
-
-void AB_Split_SetRemoteBankCode(AB_SPLIT *st, const char *d) {
-  assert(st);
-  if (st->remoteBankCode)
-    free(st->remoteBankCode);
-  if (d)
-    st->remoteBankCode=strdup(d);
-  else
-    st->remoteBankCode=0;
-  st->_modified=1;
-}
-
-
-const char *AB_Split_GetRemoteBranchId(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteBranchId;
-}
-
-
-void AB_Split_SetRemoteBranchId(AB_SPLIT *st, const char *d) {
-  assert(st);
-  if (st->remoteBranchId)
-    free(st->remoteBranchId);
-  if (d)
-    st->remoteBranchId=strdup(d);
-  else
-    st->remoteBranchId=0;
-  st->_modified=1;
-}
-
-
-const char *AB_Split_GetRemoteAccountNumber(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteAccountNumber;
-}
-
-
-void AB_Split_SetRemoteAccountNumber(AB_SPLIT *st, const char *d) {
-  assert(st);
-  if (st->remoteAccountNumber)
-    free(st->remoteAccountNumber);
-  if (d)
-    st->remoteAccountNumber=strdup(d);
-  else
-    st->remoteAccountNumber=0;
-  st->_modified=1;
-}
-
-
-const char *AB_Split_GetRemoteSuffix(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteSuffix;
-}
-
-
-void AB_Split_SetRemoteSuffix(AB_SPLIT *st, const char *d) {
-  assert(st);
-  if (st->remoteSuffix)
-    free(st->remoteSuffix);
-  if (d)
-    st->remoteSuffix=strdup(d);
-  else
-    st->remoteSuffix=0;
-  st->_modified=1;
-}
-
-
-const GWEN_STRINGLIST *AB_Split_GetRemoteName(const AB_SPLIT *st) {
-  assert(st);
-  return st->remoteName;
-}
-
-
-void AB_Split_SetRemoteName(AB_SPLIT *st, const GWEN_STRINGLIST *d) {
-  assert(st);
-  if (st->remoteName)
-    GWEN_StringList_free(st->remoteName);
-  if (d)
-    st->remoteName=GWEN_StringList_dup(d);
-  else
-    st->remoteName=0;
-  st->_modified=1;
-}
-
-
-void AB_Split_AddRemoteName(AB_SPLIT *st, const char *d, int chk){
+void AB_Split_AddName(AB_SPLIT *st, const char *d, int chk){
   assert(st);
   assert(d);
-  if (GWEN_StringList_AppendString(st->remoteName, d, 0, chk))
+  if (GWEN_StringList_AppendString(st->name, d, 0, chk))
     st->_modified=1;
 }
 
 
-void AB_Split_RemoveRemoteName(AB_SPLIT *st, const char *d) {
-  if (GWEN_StringList_RemoveString(st->remoteName, d))
+void AB_Split_RemoveName(AB_SPLIT *st, const char *d) {
+  if (GWEN_StringList_RemoveString(st->name, d))
     st->_modified=1;
 }
 
 
-void AB_Split_ClearRemoteName(AB_SPLIT *st) {
-  if (GWEN_StringList_Count(st->remoteName)) {
-    GWEN_StringList_Clear(st->remoteName);
+void AB_Split_ClearName(AB_SPLIT *st) {
+  if (GWEN_StringList_Count(st->name)) {
+    GWEN_StringList_Clear(st->name);
     st->_modified=1;
   }
 }
 
 
-int AB_Split_HasRemoteName(AB_SPLIT *st, const char *d) {
-  return GWEN_StringList_HasString(st->remoteName, d);
+int AB_Split_HasName(AB_SPLIT *st, const char *d) {
+  return GWEN_StringList_HasString(st->name, d);
 }
 
 

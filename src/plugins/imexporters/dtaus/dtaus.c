@@ -25,6 +25,8 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_DTAUS);
 
 
+/** @TODO: Need to prepare transactions befor exporting them... */
+
 AB_IMEXPORTER *dtaus_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_DTAUS *ieh;

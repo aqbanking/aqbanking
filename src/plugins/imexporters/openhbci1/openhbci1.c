@@ -301,7 +301,7 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
   dbData=GWEN_DB_Group_new("transactions");
   ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(ai) {
-    AB_TRANSACTION *t;
+    const AB_TRANSACTION *t;
 
     t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
     while(t) {

@@ -12,39 +12,19 @@ struct AB_SPLIT {
   int _usage;
   int _modified;
 
-  char *localCountry;
-  char *localBankCode;
-  char *localBranchId;
-  char *localAccountNumber;
-  char *localSuffix;
-  char *localName;
-  char *remoteCountry;
-  char *remoteBankCode;
-  char *remoteBranchId;
-  char *remoteAccountNumber;
-  char *remoteSuffix;
-  GWEN_STRINGLIST *remoteName;
+  char *country;
+  char *bankCode;
+  char *branchId;
+  char *accountNumber;
+  char *suffix;
+  GWEN_STRINGLIST *name;
   AB_VALUE *value;
   GWEN_STRINGLIST *purpose;
 };
 
 
 
-/** @name Local Account Info
- *
-This group contains information about the local account.
-*/
-/*@{*/
-
-
-
-
-
-
-
-/*@}*/
-
-/** @name Remote Account Info
+/** @name Account Info
  *
 This group contains information about the remote account.
 */

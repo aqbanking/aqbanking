@@ -60,59 +60,25 @@
       <header type="sys" >aqbanking/value.h</header>
     </headers>
     
-    <group name="Local Account Info">
-      <descr>
-        This group contains information about the local account.
-      </descr>
-      <elem name="localCountry" type="char" ptr="1">
-        <descr>
-          This is the two-character country code according to ISO
-          3166-1 (Alpha-2). This is also used in DNS toplevel domain
-          names. For Germany use "DE". (FIXME: is this
-          case-sensitive?)
-        </descr>
-      </elem>
-
-      <elem name="localBankCode" type="char" ptr="1">
-        <descr>
-         This is the code of the local bank (i.e. <b>your</b> bank).
-        </descr>
-      </elem>
-      <elem name="localBranchId" type="char" ptr="1">
-        <descr>
-         This is the branch id of the local bank (OFX only)
-        </descr>
-      </elem>
-      <elem name="localAccountNumber" type="char" ptr="1" />
-      <elem name="localSuffix" type="char" ptr="1" >
-        <descr>
-          If your account has subaccounts which are distinguished by
-          different suffixes, then this is that suffix. Otherwise it's
-          empty. (HBCI only)
-        </descr>
-      </elem>
-      <elem name="localName" type="char" ptr="1" />
-    </group>
-    
-    <group name="Remote Account Info">
+    <group name="Account Info">
       <descr>
         This group contains information about the remote account.
       </descr>
-      <elem name="remoteCountry" type="char" ptr="1">
+      <elem name="country" type="char" ptr="1">
         <descr>
           This is the two-character ISO country code (as used in toplevel
           domains). For Germany use "DE".
         </descr>
       </elem>
-      <elem name="remoteBankCode" type="char" ptr="1" />
-      <elem name="remoteBranchId" type="char" ptr="1">
+      <elem name="bankCode" type="char" ptr="1" />
+      <elem name="branchId" type="char" ptr="1">
         <descr>
          This is the branch id of the remote bank (OFX only)
         </descr>
       </elem>
-      <elem name="remoteAccountNumber" type="char" ptr="1" />
-      <elem name="remoteSuffix" type="char" ptr="1" />
-      <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
+      <elem name="accountNumber" type="char" ptr="1" />
+      <elem name="suffix" type="char" ptr="1" />
+      <elem name="name" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
     <group name="Value">

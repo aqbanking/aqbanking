@@ -7,11 +7,7 @@
 /** @page P_AB_SPLIT_LIB AB_Split (lib)
 This page describes the properties of AB_SPLIT
 This type contains all important information about transaction splits. Please note that all text fields are in UTF-8.
-<h3>Local Account Info</h3>
-<p>
-This group contains information about the local account.
-</p>
-<h3>Remote Account Info</h3>
+<h3>Account Info</h3>
 <p>
 This group contains information about the remote account.
 </p>
@@ -27,21 +23,7 @@ extern "C" {
 
 
 
-/** @name Local Account Info
- *
-This group contains information about the local account.
-*/
-/*@{*/
-
-
-
-
-
-
-
-/*@}*/
-
-/** @name Remote Account Info
+/** @name Account Info
  *
 This group contains information about the remote account.
 */

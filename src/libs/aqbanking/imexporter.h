@@ -216,7 +216,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
  * @ref AB_Transaction_free.
  */
 AQBANKING_API 
-AB_TRANSACTION*
+const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /**
  * Returns the next transaction stored within the context.
@@ -224,7 +224,7 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
  * @ref AB_Transaction_free.
  */
 AQBANKING_API 
-AB_TRANSACTION*
+const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 
