@@ -2887,7 +2887,7 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
       rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
+      DBG_WARN(AQBANKING_LOGDOMAIN,
 		"Job can only be removed by its creator application");
     }
   }
@@ -2913,7 +2913,7 @@ int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j){
       rv=AB_Banking__UnlinkJobAs(ab, j, "archived");
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
+      DBG_WARN(AQBANKING_LOGDOMAIN,
 		"Job can only be removed by its creator application");
     }
   }
@@ -2946,7 +2946,7 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
       rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
     }
   }
   return rv;
@@ -2977,7 +2977,7 @@ int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j){
       rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
+      DBG_WARN(AQBANKING_LOGDOMAIN,
 		"Job can only be removed by its creator application");
     }
   }
