@@ -14,11 +14,13 @@ struct AB_EUTRANSFER_INFO {
   char *countryCode;
   int maxLenOurName;
   int maxLenOtherName;
+  int maxOtherNameLines;
   int maxLenPurpose;
   int maxPurposeLines;
   AB_VALUE *limitLocalValue;
   AB_VALUE *limitForeignValue;
 };
+
 
 
 

@@ -38,6 +38,11 @@
         Maximum length of the recipients name.
       </descr>
     </elem>
+    <elem name="maxOtherNameLines" type="int" >
+      <descr>
+        Maximum number of other name lines.
+      </descr>
+    </elem>
     <elem name="maxLenPurpose" type="int" >
       <descr>
         Maximum length of the purpose line.
@@ -45,7 +50,7 @@
     </elem>
     <elem name="maxPurposeLines" type="int" >
       <descr>
-        Maximum length of the purpose line.
+        Maximum number of purpose lines.
       </descr>
     </elem>
     <elem name="limitLocalValue" type="AB_VALUE" ptr="1" >

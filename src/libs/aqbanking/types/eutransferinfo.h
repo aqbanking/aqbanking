@@ -36,6 +36,16 @@ Set this property with @ref AB_EuTransferInfo_SetMaxLenOtherName,
 get it with @ref AB_EuTransferInfo_GetMaxLenOtherName
 </p>
 
+@anchor AB_EUTRANSFER_INFO_MaxOtherNameLines
+<h3>MaxOtherNameLines</h3>
+<p>
+Maximum number of other name lines.
+</p>
+<p>
+Set this property with @ref AB_EuTransferInfo_SetMaxOtherNameLines, 
+get it with @ref AB_EuTransferInfo_GetMaxOtherNameLines
+</p>
+
 @anchor AB_EUTRANSFER_INFO_MaxLenPurpose
 <h3>MaxLenPurpose</h3>
 <p>
@@ -49,7 +59,7 @@ get it with @ref AB_EuTransferInfo_GetMaxLenPurpose
 @anchor AB_EUTRANSFER_INFO_MaxPurposeLines
 <h3>MaxPurposeLines</h3>
 <p>
-Maximum length of the purpose line.
+Maximum number of purpose lines.
 </p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetMaxPurposeLines, 
@@ -152,6 +162,15 @@ AQBANKING_API int AB_EuTransferInfo_GetMaxLenOtherName(const AB_EUTRANSFER_INFO 
 * Set the property @ref AB_EUTRANSFER_INFO_MaxLenOtherName
 */
 AQBANKING_API void AB_EuTransferInfo_SetMaxLenOtherName(AB_EUTRANSFER_INFO *el, int d);
+
+/**
+* Returns the property @ref AB_EUTRANSFER_INFO_MaxOtherNameLines
+*/
+AQBANKING_API int AB_EuTransferInfo_GetMaxOtherNameLines(const AB_EUTRANSFER_INFO *el);
+/**
+* Set the property @ref AB_EUTRANSFER_INFO_MaxOtherNameLines
+*/
+AQBANKING_API void AB_EuTransferInfo_SetMaxOtherNameLines(AB_EUTRANSFER_INFO *el, int d);
 
 /**
 * Returns the property @ref AB_EUTRANSFER_INFO_MaxLenPurpose

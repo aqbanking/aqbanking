@@ -23,7 +23,15 @@
 extern "C" {
 #endif
 
+typedef enum {
+  AB_JobEuTransfer_ChargeWhom_Unknown=0,
+  AB_JobEuTransfer_ChargeWhom_Local,
+  AB_JobEuTransfer_ChargeWhom_Remote,
+  AB_JobEuTransfer_ChargeWhom_Share
+} AB_JOBEUTRANSFER_CHARGE_WHOM;
 
+
+AQBANKING_API 
 AB_JOB *AB_JobEuTransfer_new(AB_ACCOUNT *a);
 
 
@@ -81,6 +89,13 @@ const AB_EUTRANSFER_INFO *AB_JobEuTransfer_FindCountryInfo(const AB_JOB *j,
  */
 AQBANKING_API 
 int AB_JobEuTransfer_GetIbanAllowed(const AB_JOB *j);
+
+AQBANKING_API 
+AB_JOBEUTRANSFER_CHARGE_WHOM AB_JobEuTransfer_GetChargeWhom(const AB_JOB *j);
+
+AQBANKING_API 
+void AB_JobEuTransfer_SetChargeWhom(AB_JOB *j,
+                                    AB_JOBEUTRANSFER_CHARGE_WHOM i);
 
 
 /*@}*/

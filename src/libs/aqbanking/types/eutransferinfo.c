@@ -54,6 +54,7 @@ AB_EUTRANSFER_INFO *AB_EuTransferInfo_dup(const AB_EUTRANSFER_INFO *d) {
     st->countryCode=strdup(d->countryCode);
   st->maxLenOurName=d->maxLenOurName;
   st->maxLenOtherName=d->maxLenOtherName;
+  st->maxOtherNameLines=d->maxOtherNameLines;
   st->maxLenPurpose=d->maxLenPurpose;
   st->maxPurposeLines=d->maxPurposeLines;
   if (d->limitLocalValue)
@@ -73,6 +74,8 @@ int AB_EuTransferInfo_toDb(const AB_EUTRANSFER_INFO *st, GWEN_DB_NODE *db) {
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenOurName", st->maxLenOurName))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenOtherName", st->maxLenOtherName))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxOtherNameLines", st->maxOtherNameLines))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenPurpose", st->maxLenPurpose))
     return -1;
@@ -96,6 +99,7 @@ AB_EUTRANSFER_INFO *st;
   AB_EuTransferInfo_SetCountryCode(st, GWEN_DB_GetCharValue(db, "countryCode", 0, 0));
   AB_EuTransferInfo_SetMaxLenOurName(st, GWEN_DB_GetIntValue(db, "maxLenOurName", 0, 0));
   AB_EuTransferInfo_SetMaxLenOtherName(st, GWEN_DB_GetIntValue(db, "maxLenOtherName", 0, 0));
+  AB_EuTransferInfo_SetMaxOtherNameLines(st, GWEN_DB_GetIntValue(db, "maxOtherNameLines", 0, 0));
   AB_EuTransferInfo_SetMaxLenPurpose(st, GWEN_DB_GetIntValue(db, "maxLenPurpose", 0, 0));
   AB_EuTransferInfo_SetMaxPurposeLines(st, GWEN_DB_GetIntValue(db, "maxPurposeLines", 0, 0));
   if (1) {
@@ -155,6 +159,19 @@ int AB_EuTransferInfo_GetMaxLenOtherName(const AB_EUTRANSFER_INFO *st) {
 void AB_EuTransferInfo_SetMaxLenOtherName(AB_EUTRANSFER_INFO *st, int d) {
   assert(st);
   st->maxLenOtherName=d;
+  st->_modified=1;
+}
+
+
+int AB_EuTransferInfo_GetMaxOtherNameLines(const AB_EUTRANSFER_INFO *st) {
+  assert(st);
+  return st->maxOtherNameLines;
+}
+
+
+void AB_EuTransferInfo_SetMaxOtherNameLines(AB_EUTRANSFER_INFO *st, int d) {
+  assert(st);
+  st->maxOtherNameLines=d;
   st->_modified=1;
 }
 

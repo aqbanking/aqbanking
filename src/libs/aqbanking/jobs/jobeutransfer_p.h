@@ -24,6 +24,7 @@ struct AB_JOBEUTRANSFER {
   AB_TRANSACTION *transaction;
   AB_EUTRANSFER_INFO_LIST *countryInfoList;
   int ibanAllowed;
+  AB_JOBEUTRANSFER_CHARGE_WHOM chargeWhom;
 };
 void AB_JobEuTransfer_FreeData(void *bp, void *p);
 

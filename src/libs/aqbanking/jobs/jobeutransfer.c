@@ -131,6 +131,31 @@ void AB_JobEuTransfer_SetIbanAllowed(AB_JOB *j, int b){
 
 
 
+AB_JOBEUTRANSFER_CHARGE_WHOM AB_JobEuTransfer_GetChargeWhom(const AB_JOB *j){
+  AB_JOBEUTRANSFER *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBEUTRANSFER, j);
+  assert(jd);
+
+  return jd->chargeWhom;
+}
+
+
+
+void AB_JobEuTransfer_SetChargeWhom(AB_JOB *j,
+                                    AB_JOBEUTRANSFER_CHARGE_WHOM i){
+  AB_JOBEUTRANSFER *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBEUTRANSFER, j);
+  assert(jd);
+
+  jd->chargeWhom=i;
+}
+
+
+
 int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
   AB_JOBEUTRANSFER *jd;
 
