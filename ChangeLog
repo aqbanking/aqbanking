@@ -1,4 +1,6 @@
+2004-10-30  Christian Stimming  <stimming@tuhh.de>
 
+	* aqbanking.spec.in: Added spec file for rpm creation.
 
 2004/10/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

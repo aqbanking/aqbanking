@@ -1,0 +1,99 @@
+%define name @PACKAGE@
+
+%define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
+%define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
+%define is_fedora %(test -e /etc/fedora-release && echo 1 || echo 0)
+
+%define dist redhat
+%define disttag rh
+
+%if %is_mandrake
+%define dist mandrake
+%define disttag mdk
+%endif
+%if %is_suse
+%define dist suse
+%define disttag suse
+%endif
+%if %is_fedora
+%define dist fedora
+%define disttag rhfc
+%endif
+#
+%define version @VERSION@
+
+%define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
+
+# Note: There is not yet a special symbol for the rpm release
+# version. We set it to one here.
+%define release 1.%{disttag}%{distver}
+
+Name: %{name}
+Summary: A library for online banking functions and financial data import/export.
+Version: %{version}
+Release: %{release}
+Source: http://download.sourceforge.net/aqbanking/%{name}-%{version}.tar.gz
+Group: System Environment/Libraries
+License: GPL
+Packager: Christian Stimming <stimming@tuhh.de>
+URL: http://sourceforge.net/projects/aqbanking
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Prereq: /sbin/ldconfig
+Prefix: %{_prefix}
+
+%description 
+The intention of AqBanking is to provide a middle layer between the
+program and the various Online Banking libraries (e.g. AqHBCI). The
+first backend which is already supported is AqHBCI, a library which
+implements a client for the German HBCI (Home Banking Computer
+Interface) protocol. Additionally, Aqbanking provides various plugins
+to simplify import and export of financial data. Currently there are
+import plugins for the following formats: DTAUS (German financial
+format), SWIFT (MT940 and MT942).
+
+%package devel
+Summary: Aqbanking development kit
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+%description devel
+This package contains aqbanking-config and header files for writing and
+compiling programs using Aqbanking.
+
+%prep
+%setup -q
+
+%build
+%{configure}
+make
+
+%install
+[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+
+make DESTDIR=$RPM_BUILD_ROOT install
+
+%clean
+[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%files
+%defattr(-,root,root)
+%doc AUTHORS README COPYING ChangeLog
+%{_libdir}/*.so.*
+%{_libdir}/*.so
+%{_libdir}/%{name}
+%{_libdir}/gwenhywfar
+%{_datadir}/%{name}
+
+%files devel
+%defattr(-,root,root)
+%{_bindir}/aqbanking-config
+%{_includedir}/aqbanking
+%{_includedir}/aqbanking++
+%{_libdir}/*.la
+%{_libdir}/*.a
+%{_datadir}/aclocal/aqbanking.m4
