@@ -47,6 +47,8 @@
 #define AB_ERROR_NOFN            (-12)
 #define AB_ERROR_UNKNOWN_ACCOUNT (-13)
 #define AB_ERROR_NOT_INIT        (-14)
+#define AB_ERROR_SECURITY        (-15)
+#define AB_ERROR_BAD_DATA        (-16)
 /*@}*/
 
 

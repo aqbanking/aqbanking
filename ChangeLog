@@ -1,4 +1,9 @@
 
+2004/08/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added some lines to README
+
+
 2004/08/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added two new queues: "deferred" and "archived".

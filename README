@@ -76,13 +76,64 @@ To use AqBanking you need backends and importers.
 The first backend (which also provides some important importers) is
 AqHBCI (http://aqhbci.sf.net/).
 
+There is also a setup wizard for AqHBCI available (a KDE application), you
+can download it from the project page of AqHBCI.
 
-4.3. Applications
+
+4.3. Bindings
+-------------------------
+
+AqBanking also has KDE bindings which allow you to add support for AqBanking
+in very short time (kbanking, see home page of AqBanking)
+
+
+4.4. Applications
 -----------------
 
 These application fully or partially support AqBanking:
  - QBanking (http://www.aquamaniac.de/qbanking/)
  - KMyMoney (http://kmymoney2.sf.net/)
+ - AqHBCI Setup wizard (http:/aqhbci.sf.net/)
+     This is a standalone tool used by KMyMoney and QBanking to let the user
+     setup or modify the HBCI settings.
+
+
+
+5. Building AqBanking
+=====================
+
+
+5.1. Building from the Tar File
+-------------------------------
+
+#>./configure
+#>make
+#>make install
+
+(the last step most probably requires you to be root)
+
+
+5.2. Building from CVS
+----------------------
+
+#>make -fMakefile.cvs
+#>./configure
+#>make
+#>make install
+
+
+5.3. Building the API Documentation
+-----------------------------------
+
+#>make srcdoc
+
+If you want to install a linked API documentation (which links against the
+API documentations of the projects AqBanking depends on) use this:
+
+#>make install-srcdoc
+
+This installs the linked doc to the path you gave to ./configure in 
+ "--with-docpath=PATH". It defaults to "$HOME/apidoc".
 
 
 
