@@ -199,33 +199,6 @@ void AB_Pin_List2_freeAll(AB_PIN_LIST2 *stl) {
 }
 
 
-AB_PIN_LIST2 *AB_Pin_List2_dup(const AB_PIN_LIST2 *stl) {
-  if (stl) {
-    AB_PIN_LIST2 *nl;
-    AB_PIN_LIST2_ITERATOR *it;
-
-    nl=AB_Pin_List2_new();
-    it=AB_Pin_List2_First(stl);
-    if (it) {
-      AB_PIN *e;
-
-      e=AB_Pin_List2Iterator_Data(it);
-      assert(e);
-      while(e) {
-        AB_PIN *ne;
-
-        ne=AB_Pin_dup(e);
-        assert(ne);
-        AB_Pin_List2_PushBack(nl, ne);
-        e=AB_Pin_List2Iterator_Next(it);
-      } /* while (e) */
-        AB_Pin_List2Iterator_free(it);
-    } /* if (it) */
-    return nl;
-  }
-  else
-    return 0;
-}
 
 
 AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl) {

@@ -297,33 +297,6 @@ void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl) {
 }
 
 
-AB_BANKINFO_LIST2 *AB_BankInfo_List2_dup(const AB_BANKINFO_LIST2 *stl) {
-  if (stl) {
-    AB_BANKINFO_LIST2 *nl;
-    AB_BANKINFO_LIST2_ITERATOR *it;
-
-    nl=AB_BankInfo_List2_new();
-    it=AB_BankInfo_List2_First(stl);
-    if (it) {
-      AB_BANKINFO *e;
-
-      e=AB_BankInfo_List2Iterator_Data(it);
-      assert(e);
-      while(e) {
-        AB_BANKINFO *ne;
-
-        ne=AB_BankInfo_dup(e);
-        assert(ne);
-        AB_BankInfo_List2_PushBack(nl, ne);
-        e=AB_BankInfo_List2Iterator_Next(it);
-      } /* while (e) */
-        AB_BankInfo_List2Iterator_free(it);
-    } /* if (it) */
-    return nl;
-  }
-  else
-    return 0;
-}
 
 
 AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl) {
