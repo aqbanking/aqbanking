@@ -161,6 +161,25 @@ AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 
 
 ###-------------------------------------------------------------------------
+# Python
+
+# By default, python support is switched off
+AZ_PYTHON_DEFAULT( )
+# Check for python executable
+AZ_PYTHON_WITH( )
+# If python is enabled
+if test -n "$PYTHON"; then
+  # Make sure at least version 2.3 is available (otherwise ctypes
+  # won't work)
+  AZ_PYTHON_VERSION_ENSURE( [2.3] )
+  # Save the python prefix
+  AZ_PYTHON_PREFIX( )
+  # Check for python ctypes module
+  AC_PYTHON_MODULE( [ctypes] )
+fi
+
+
+###-------------------------------------------------------------------------
 dnl OS dependant settings
 
 AQ_CHECK_OS
@@ -457,6 +476,8 @@ AC_CONFIG_FILES([
   src/plugins/parsers/swift/ressource.rc
   src/test/Makefile
   po/Makefile
+  bindings/python/Makefile
+  bindings/Makefile
   Doxyfile
   Makefile
   aqbanking-config.in

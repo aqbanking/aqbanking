@@ -1,3 +1,8 @@
+2005-03-21   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, m4/az_python.m4, bindings/Makefile.am: Put
+	infrastructure for python wrappers into place.
+	
 2005-03-17   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/imexporters/*/Makefile.am: Fix DLLLDFLAGS for
