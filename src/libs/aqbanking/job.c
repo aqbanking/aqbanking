@@ -23,6 +23,7 @@
 #include "jobs/jobgetbalance_l.h"
 #include "jobs/jobsingletransfer_l.h"
 #include "jobs/jobsingledebitnote_l.h"
+#include "jobs/jobeutransfer_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -175,6 +176,7 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeGetTransactions: s="gettransactions"; break;
   case AB_Job_TypeTransfer:        s="transfer"; break;
   case AB_Job_TypeDebitNote:       s="debitnote"; break;
+  case AB_Job_TypeEuTransfer:      s="eutransfer"; break;
   default:
   case AB_Job_TypeUnknown:         s="unknown"; break;
   }
@@ -191,6 +193,7 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
   else if (strcasecmp(s, "gettransactions")==0) i=AB_Job_TypeGetTransactions;
   else if (strcasecmp(s, "transfer")==0) i=AB_Job_TypeTransfer;
   else if (strcasecmp(s, "debitnote")==0) i=AB_Job_TypeDebitNote;
+  else if (strcasecmp(s, "eutransfer")==0) i=AB_Job_TypeEuTransfer;
   else i=AB_Job_TypeUnknown;
 
   return i;
@@ -262,6 +265,13 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
     }
     break;
 
+  case AB_Job_TypeEuTransfer:
+    if (AB_JobEuTransfer_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
   default:
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type %d", j->jobType);
     return -1;
@@ -321,6 +331,12 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
     j=AB_JobSingleDebitNote_fromDb(a, db);
     assert(j);
     break;
+
+  case AB_Job_TypeEuTransfer:
+    j=AB_JobEuTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
   default:
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type %d", j->jobType);
     return 0;

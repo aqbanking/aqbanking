@@ -2,7 +2,7 @@ INCLUDES=-I${top_srcdir} @all_includes@
 
 noinst_LTLIBRARIES=libtypes.la
 
-typefiles=transaction.xml pin.xml bankinfo.xml
+typefiles=transaction.xml pin.xml bankinfo.xml eutransferinfo.xml
 
 EXTRA_DIST=$(typefiles)
 
@@ -12,6 +12,8 @@ noinst_HEADERS=\
   balance_p.h \
   bankinfo_l.h \
   bankinfo_p.h \
+  eutransferinfo_l.h \
+  eutransferinfo_p.h \
   bankinfoservice_l.h \
   bankinfoservice_p.h \
   pin_l.h \
@@ -31,6 +33,7 @@ iheader_HEADERS=\
   bankinfoservice.h \
   split.h \
   transaction.h \
+  eutransferinfo.h \
   value.h
 
 libtypes_la_SOURCES=\
@@ -38,6 +41,7 @@ libtypes_la_SOURCES=\
   balance.c \
   bankinfo.c \
   bankinfoservice.c \
+  eutransferinfo.c \
   pin.c \
   split.c \
   transaction.c \

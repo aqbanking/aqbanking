@@ -6,6 +6,10 @@
 - added currency information to AB_COUNTRY. This will make it easier for me
   to implement EUR transfers (because I can now determine whether the target
   country is within the EUR zone)
+- AB_TRANSACTION: preparations for EU transfers:
+  - added remoteIban
+  - added remoteBankName
+- added job: AB_JobEuTransfer
 
 
 2005/03/21: Martin Preuss<martin@libchipcard.de>

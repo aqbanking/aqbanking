@@ -52,6 +52,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->localName);
   if (st->remoteCountry)
     free(st->remoteCountry);
+  if (st->remoteBankName)
+    free(st->remoteBankName);
   if (st->remoteBankCode)
     free(st->remoteBankCode);
   if (st->remoteBranchId)
@@ -60,6 +62,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->remoteAccountNumber);
   if (st->remoteSuffix)
     free(st->remoteSuffix);
+  if (st->remoteIban)
+    free(st->remoteIban);
   if (st->remoteName)
     GWEN_StringList_free(st->remoteName);
   if (st->valutaDate)
@@ -113,6 +117,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->localName=strdup(d->localName);
   if (d->remoteCountry)
     st->remoteCountry=strdup(d->remoteCountry);
+  if (d->remoteBankName)
+    st->remoteBankName=strdup(d->remoteBankName);
   if (d->remoteBankCode)
     st->remoteBankCode=strdup(d->remoteBankCode);
   if (d->remoteBranchId)
@@ -121,6 +127,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteAccountNumber=strdup(d->remoteAccountNumber);
   if (d->remoteSuffix)
     st->remoteSuffix=strdup(d->remoteSuffix);
+  if (d->remoteIban)
+    st->remoteIban=strdup(d->remoteIban);
   if (d->remoteName)
     st->remoteName=GWEN_StringList_dup(d->remoteName);
   st->uniqueId=d->uniqueId;
@@ -178,6 +186,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->remoteCountry)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountry", st->remoteCountry))
       return -1;
+  if (st->remoteBankName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBankName", st->remoteBankName))
+      return -1;
   if (st->remoteBankCode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBankCode", st->remoteBankCode))
       return -1;
@@ -189,6 +200,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->remoteSuffix)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteSuffix", st->remoteSuffix))
+      return -1;
+  if (st->remoteIban)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteIban", st->remoteIban))
       return -1;
   if (st->remoteName)
     {
@@ -301,10 +315,12 @@ AB_TRANSACTION *st;
   AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
   AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
   AB_Transaction_SetRemoteCountry(st, GWEN_DB_GetCharValue(db, "remoteCountry", 0, 0));
+  AB_Transaction_SetRemoteBankName(st, GWEN_DB_GetCharValue(db, "remoteBankName", 0, 0));
   AB_Transaction_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
   AB_Transaction_SetRemoteBranchId(st, GWEN_DB_GetCharValue(db, "remoteBranchId", 0, 0));
   AB_Transaction_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
   AB_Transaction_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
+  AB_Transaction_SetRemoteIban(st, GWEN_DB_GetCharValue(db, "remoteIban", 0, 0));
   if (1) {
     int i;
 
@@ -522,6 +538,24 @@ void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *st, const char *d) {
 }
 
 
+const char *AB_Transaction_GetRemoteBankName(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteBankName;
+}
+
+
+void AB_Transaction_SetRemoteBankName(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteBankName)
+    free(st->remoteBankName);
+  if (d)
+    st->remoteBankName=strdup(d);
+  else
+    st->remoteBankName=0;
+  st->_modified=1;
+}
+
+
 const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *st) {
   assert(st);
   return st->remoteBankCode;
@@ -590,6 +624,24 @@ void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *st, const char *d) {
     st->remoteSuffix=strdup(d);
   else
     st->remoteSuffix=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteIban(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteIban;
+}
+
+
+void AB_Transaction_SetRemoteIban(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteIban)
+    free(st->remoteIban);
+  if (d)
+    st->remoteIban=strdup(d);
+  else
+    st->remoteIban=0;
   st->_modified=1;
 }
 

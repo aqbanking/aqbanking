@@ -173,6 +173,7 @@
           domains). For Germany use "DE".
         </descr>
       </elem>
+      <elem name="remoteBankName" type="char" ptr="1" />
       <elem name="remoteBankCode" type="char" ptr="1" />
       <elem name="remoteBranchId" type="char" ptr="1">
         <descr>
@@ -181,6 +182,22 @@
       </elem>
       <elem name="remoteAccountNumber" type="char" ptr="1" />
       <elem name="remoteSuffix" type="char" ptr="1" />
+      <elem name="remoteIban" type="char" ptr="1">
+        <descr>
+          International Bank Account Number according to ECBS EBS 204.
+          <table>
+            <tr><th>Pos</th><th>Meaning</th></tr>
+            <tr><td>0-1</td><td>Country code according to ISO 3166</td></tr>
+            <tr><td>2-3</td><td>Checksum</td></tr>
+            <tr><td>4-33</td><td>Country specific account info</td></tr>
+          </table>
+          Examples:
+          <ul>
+            <li>BE62510007547061</li>
+            <li>FR1420041010050500013M02606</li>
+          </ul>
+        </descr>
+      </elem>
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
@@ -279,8 +296,8 @@
       <elem name="fiId" type="char" ptr="1" >
         <descr>
           <p>
-            This is an id optionally assigned by the <b>F</b>inancial 
-            <b>I</b>nstitute. It is mostly used by OFX.
+            This is an id optionally assigned by the Financial 
+            Institute. It is mostly used by OFX.
           </p>
         </descr>
       </elem>

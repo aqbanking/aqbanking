@@ -19,10 +19,12 @@ struct AB_TRANSACTION {
   char *localSuffix;
   char *localName;
   char *remoteCountry;
+  char *remoteBankName;
   char *remoteBankCode;
   char *remoteBranchId;
   char *remoteAccountNumber;
   char *remoteSuffix;
+  char *remoteIban;
   GWEN_STRINGLIST *remoteName;
   GWEN_TYPE_UINT32 uniqueId;
   GWEN_TIME *valutaDate;
@@ -62,6 +64,8 @@ This group contains information about the local account. Functions of this group
 This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
 */
 /*@{*/
+
+
 
 
 

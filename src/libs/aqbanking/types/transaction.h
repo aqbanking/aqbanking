@@ -104,6 +104,15 @@ Set this property with @ref AB_Transaction_SetRemoteCountry,
 get it with @ref AB_Transaction_GetRemoteCountry
 </p>
 
+@anchor AB_TRANSACTION_RemoteBankName
+<h4>RemoteBankName</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteBankName, 
+get it with @ref AB_Transaction_GetRemoteBankName
+</p>
+
 @anchor AB_TRANSACTION_RemoteBankCode
 <h4>RemoteBankCode</h4>
 <p>
@@ -139,6 +148,86 @@ get it with @ref AB_Transaction_GetRemoteAccountNumber
 <p>
 Set this property with @ref AB_Transaction_SetRemoteSuffix, 
 get it with @ref AB_Transaction_GetRemoteSuffix
+</p>
+
+@anchor AB_TRANSACTION_RemoteIban
+<h4>RemoteIban</h4>
+<p>
+International Bank Account Number according to ECBS EBS 204.
+
+<table>
+<tr>
+<th>
+Pos
+
+</th>
+
+<th>
+Meaning
+
+</th>
+
+</tr>
+
+<tr>
+<td>
+0-1
+
+</td>
+
+<td>
+Country code according to ISO 3166
+
+</td>
+
+</tr>
+
+<tr>
+<td>
+2-3
+
+</td>
+
+<td>
+Checksum
+
+</td>
+
+</tr>
+
+<tr>
+<td>
+4-33
+
+</td>
+
+<td>
+Country specific account info
+
+</td>
+
+</tr>
+
+</table>
+
+Examples:
+
+<ul>
+<li>
+BE62510007547061
+
+</li>
+
+<li>
+FR1420041010050500013M02606
+
+</li>
+
+</ul>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteIban, 
+get it with @ref AB_Transaction_GetRemoteIban
 </p>
 
 @anchor AB_TRANSACTION_RemoteName
@@ -305,21 +394,7 @@ get it with @ref AB_Transaction_GetPrimanota
 <h4>FiId</h4>
 <p>
 <p>
-This is an id optionally assigned by the
-
-<b>
-F
-
-</b>
-
-inancial
-
-<b>
-I
-
-</b>
-
-nstitute. It is mostly used by OFX.
+This is an id optionally assigned by the Financial Institute. It is mostly used by OFX.
 
 </p>
 </p>
@@ -484,6 +559,15 @@ AQBANKING_API const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *
 AQBANKING_API void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *el, const char *d);
 
 /**
+* Returns the property @ref AB_TRANSACTION_RemoteBankName
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteBankName(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteBankName
+*/
+AQBANKING_API void AB_Transaction_SetRemoteBankName(AB_TRANSACTION *el, const char *d);
+
+/**
 * Returns the property @ref AB_TRANSACTION_RemoteBankCode
 */
 AQBANKING_API const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *el);
@@ -518,6 +602,15 @@ AQBANKING_API const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *e
 * Set the property @ref AB_TRANSACTION_RemoteSuffix
 */
 AQBANKING_API void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteIban
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteIban(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteIban
+*/
+AQBANKING_API void AB_Transaction_SetRemoteIban(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteName

@@ -85,7 +85,9 @@ typedef enum {
   /** issue a transfer */
   AB_Job_TypeTransfer,
   /** issue a debit note (Lastschrift) */
-  AB_Job_TypeDebitNote
+  AB_Job_TypeDebitNote,
+  /** EU transfer (transfer within the EMU zone) */
+  AB_Job_TypeEuTransfer,
 } AB_JOB_TYPE;
 
 

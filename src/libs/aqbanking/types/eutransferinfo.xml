@@ -1,0 +1,66 @@
+<typedefs>
+  <type id="AB_VALUE" >
+    <functions>
+      <function type="todb" name="AB_Value_toDb" />
+      <function type="fromdb" name="AB_Value_fromDb" />
+      <function type="dup" name="AB_Value_dup" />
+      <function type="free" name="AB_Value_free" />
+    </functions>
+  </type>
+</typedefs>
+
+<types>
+  <type id="AB_EUTRANSFER_INFO" 
+        prefix="AB_EuTransferInfo" 
+        class="EuTransferInfo"
+        access="public"
+        filename="eutransferinfo"
+        list="public"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >aqbanking/value.h</header>
+    </headers>
+    
+    <elem name="countryCode" type="char" ptr="1" >
+      <descr>
+        This is the two-character ISO country code (as used in toplevel
+        domains). For Germany use "DE".
+      </descr>
+    </elem>
+    <elem name="maxLenOurName" type="int" >
+      <descr>
+        Maximum length of the issuer name.
+      </descr>
+    </elem>
+    <elem name="maxLenOtherName" type="int" >
+      <descr>
+        Maximum length of the recipients name.
+      </descr>
+    </elem>
+    <elem name="maxLenPurpose" type="int" >
+      <descr>
+        Maximum length of the purpose line.
+      </descr>
+    </elem>
+    <elem name="maxPurposeLines" type="int" >
+      <descr>
+        Maximum length of the purpose line.
+      </descr>
+    </elem>
+    <elem name="limitLocalValue" type="AB_VALUE" ptr="1" >
+      <descr>
+        Optional limit for a transfer in local currency.
+      </descr>
+    </elem>
+    <elem name="limitForeignValue" type="AB_VALUE" ptr="1" >
+      <descr>
+        Optional limit for a transfer in foreign currency.
+      </descr>
+    </elem>
+
+  </type>
+</types>
+
+
+
