@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/debug.h>
 
 
 namespace AB {
@@ -150,9 +151,9 @@ namespace AB {
   void Banking_Linker::freeData(void *bp, void *p) {
     Banking *kb;
 
+    DBG_NOTICE(0, "Banking_Linker: Freeing Banking");
     kb=(Banking*)p;
     if (kb->_banking) {
-      GWEN_INHERIT_UNLINK(AB_BANKING, Banking, kb->_banking)
       kb->_banking=0;
     }
     delete kb;
@@ -183,6 +184,7 @@ namespace AB {
   
   
   Banking::~Banking(){
+    DBG_NOTICE(0, "~Banking: Freeing Banking");
     if (_banking) {
       GWEN_INHERIT_UNLINK(AB_BANKING, Banking, _banking)
       AB_Banking_free(_banking);

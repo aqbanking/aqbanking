@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/debug.h>
 
 
 namespace AB {
@@ -42,10 +43,9 @@ namespace AB {
   void ProviderWizard_Linker::freeData(void *bp, void *p) {
     ProviderWizard *kw;
 
+    DBG_NOTICE(0, "ProviderWizard_Linker: Freeing ProviderWizard");
     kw=(ProviderWizard*)p;
     if (kw->_providerWizard) {
-      GWEN_INHERIT_UNLINK(AB_PROVIDER_WIZARD, ProviderWizard,
-			  kw->_providerWizard)
       kw->_providerWizard=0;
     }
     delete kw;
@@ -67,6 +67,7 @@ namespace AB {
 
 
   ProviderWizard::~ProviderWizard(){
+    DBG_NOTICE(0, "~ProviderWizard: Freeing ProviderWizard");
     if (_providerWizard) {
       GWEN_INHERIT_UNLINK(AB_PROVIDER_WIZARD, ProviderWizard,
 			  _providerWizard)

@@ -487,7 +487,8 @@ AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
                            "/"
                            AB_PROVIDER_WIZARD_FOLDER
                            "/");
-  GWEN_Buffer_AppendString(pbuf, AB_Provider_GetName(pro));
+  s=AB_Provider_GetName(pro);
+  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
 
   ll=GWEN_LibLoader_new();
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,

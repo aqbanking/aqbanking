@@ -72,6 +72,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
 void AB_Banking_free(AB_BANKING *ab){
   if (ab) {
+    DBG_NOTICE(0, "Freeing AB_BANKING");
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);

@@ -2,6 +2,10 @@
 2004/08/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - aqbanking++: added class for ProviderWizards
+- fixed some bugs
+- launching a wizard now works !!! ;-)
+  I will have to concentrate now on the kde_wizard for AqHBCI to allow people
+  to later move over to AqHBCI/AqBanking ;-)
 
 
 2004-08-02   Christian Stimming <stimming@tuhh.de>
