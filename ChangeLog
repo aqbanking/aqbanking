@@ -4,7 +4,7 @@
 - fixed some bugs concerning UTF8/DTAUS/SWIFT/HBCI character set conversions
 - bankinfo and provider plugins are now loaded using the GWEN_PLUGIN
   mechanism. Please note that all plugins will have to be adapted to this
-  changes (AqHBCI already is).
+  changes (AqHBCI already is). This needs the latest CVS version of GWEN.
 
 
 2004/12/03: Martin Preuss<martin@libchipcard.de>
