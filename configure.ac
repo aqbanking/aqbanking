@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.57)
+AC_PREREQ(2.56)
 AC_INIT
 AC_CANONICAL_TARGET([])
 
@@ -144,13 +144,14 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
-        aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking32"
+        aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking32_${AQBANKING_SO_EFFECTIVE}"
         aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_data="`eval echo $prefix/share`/aqbanking"
     	;;
 esac
+AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
 
 ###-------------------------------------------------------------------------
@@ -315,6 +316,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/libs/Makefile
   src/libs/aqbanking/Makefile
+  src/libs/aqbanking/ressource.rc
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile

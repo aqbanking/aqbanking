@@ -12,3 +12,10 @@ configure
 libtool
 stamp-h1
 version.h
+config.guess
+config.sub
+depcomp
+install-sh
+ltmain.sh
+missing
+mkinstalldirs

@@ -1,3 +1,8 @@
+2004-08-02   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/Makefile.am,
+	src/libs/aqbanking/ressource.rc.in, configure.ac: Add build rules
+	for windows DLL, copied from gwenhywfar.
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
