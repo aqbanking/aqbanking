@@ -11,6 +11,9 @@ for d in $*; do
 	--libraries)
 	    result="$result @aqbanking_libs@"
 	    ;;
+	--libraries++)
+	    result="$result @aqbanking_libspp@"
+	    ;;
 	--plugins)
 	    result="$result @aqbanking_plugins@"
 	    ;;

@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=1
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -136,6 +136,7 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking"
+        aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_data="`eval echo $prefix/share`/aqbanking"
@@ -143,6 +144,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking32"
+        aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_data="`eval echo $prefix/share`/aqbanking"
@@ -157,6 +159,7 @@ AC_SUBST(all_libraries)
 AS_SCRUB_INCLUDE(aqbanking_includes)
 AC_SUBST(aqbanking_includes)
 AC_SUBST(aqbanking_libs)
+AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugins)
 AC_SUBST(aqbanking_data)
 AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_data}", [data dir])
@@ -176,7 +179,7 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 #
 # create header directory, make symlinks
 #
-aqbanking_modules="aqbanking"
+aqbanking_modules=". jobs types"
 
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
@@ -190,7 +193,7 @@ hfiles=`( cd "${srcdir}/src/libs/" && ls *.h 2>/dev/null )`
 for f in ${hfiles}; do
   AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/${f}"
   case ${f} in
-    *_p.h)
+    *_p.h | *_l.h)
               ;;
     *)
               ln -s "${lprefix}/src/libs/${f}" "aqbanking/${f}"
@@ -200,50 +203,42 @@ done
 
 # symlink all headers from src/libs/*
 for sm in $aqbanking_modules; do
-  hfiles=`( cd "${srcdir}/src/libs/${sm}" && ls *.h 2>/dev/null )`
+  hfiles=`( cd "${srcdir}/src/libs/aqbanking/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/${sm}/${f}"
+    AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/${sm}/${f}"
     case ${f} in
-      *_p.h)
-            ;;
-      *_l.h)
+      *_p.h | *_l.h)
             ;;
       *)   
-            ln -s "${lprefix}/src/libs/${sm}/${f}" "aqbanking/${f}"
+            ln -s "${lprefix}/src/libs/aqbanking/${sm}/${f}" "aqbanking/${f}"
             ;;
     esac
   done
 done
 
-# symlink all headers from src/libs/aqbanking/types
-hfiles=`( cd "${srcdir}/src/libs/aqbanking/types/" && ls *.h 2>/dev/null )`
-for f in ${hfiles}; do
-  AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/types/${f}"
-  case ${f} in
-    *_p.h)
-              ;;
-    *)
-              ln -s "${lprefix}/src/libs/aqbanking/types/${f}" "aqbanking/${f}"
-              ;;
-  esac
-done
-
-
-# symlink all headers from src/libs/aqbanking/jobs
-hfiles=`( cd "${srcdir}/src/libs/aqbanking/jobs/" && ls *.h 2>/dev/null )`
-for f in ${hfiles}; do
-  AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/jobs/${f}"
-  case ${f} in
-    *_p.h)
-              ;;
-    *)
-              ln -s "${lprefix}/src/libs/aqbanking/jobs/${f}" "aqbanking/${f}"
-              ;;
-  esac
-done
-
-
 ln -s "${lprefix}/version.h" aqbanking/version.h
+
+
+
+# symlink all headers from src/libs/aqbanking++
+aqbankingpp_modules="."
+rm -Rf aqbanking++
+mkdir aqbanking++
+
+# symlink all headers from src/libs/*
+for sm in $aqbankingpp_modules; do
+  hfiles=`( cd "${srcdir}/src/libs/aqbanking++/${sm}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking++/${sm}/${f}"
+    case ${f} in
+      *_p.h | *_l.h)
+            ;;
+      *)   
+            ln -s "${lprefix}/src/libs/aqbanking++/${sm}/${f}" "aqbanking++/${f}"
+            ;;
+    esac
+  done
+done
 
 
 ###-------------------------------------------------------------------------
@@ -295,6 +290,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/Makefile
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
+  src/libs/aqbanking++/Makefile
   src/test/Makefile
   Doxyfile
   Makefile

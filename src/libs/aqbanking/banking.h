@@ -328,14 +328,14 @@ GWEN_TYPE_UINT32 AB_Banking_Progress_Start(AB_BANKING *ab,
  *  AB_BANKING_PROGRESS_NONE which means that the progress is unchanged.
  * This might be used as a keepalive call to a GUI.
  */
-int AB_Banking_Progress_Advance(AB_BANKING *ab,
-                                GWEN_TYPE_UINT32 id,
-                                GWEN_TYPE_UINT32 progress);
-int AB_Banking_Progress_Log(AB_BANKING *ab,
-                            GWEN_TYPE_UINT32 id,
-                            AB_BANKING_LOGLEVEL level,
-                            const char *text);
-int AB_Banking_Progress_End(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+int AB_Banking_ProgressAdvance(AB_BANKING *ab,
+                               GWEN_TYPE_UINT32 id,
+                               GWEN_TYPE_UINT32 progress);
+int AB_Banking_ProgressLog(AB_BANKING *ab,
+                           GWEN_TYPE_UINT32 id,
+                           AB_BANKING_LOGLEVEL level,
+                           const char *text);
+int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 /*@}*/
 

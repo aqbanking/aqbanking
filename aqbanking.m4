@@ -11,6 +11,7 @@ dnl   $3: patchlevel version minimum
 dnl   $4: build version minimum
 dnl Returns: aqbanking_dir
 dnl          aqbanking_libs
+dnl          aqbanking_libspp
 dnl          aqbanking_data
 dnl          aqbanking_plugins
 dnl          aqbanking_includes
@@ -32,6 +33,7 @@ have_aqbanking="no"
 aqbanking_dir=""
 aqbanking_plugins=""
 aqbanking_libs=""
+aqbanking_libspp=""
 aqbanking_includes=""
 if test "$enable_aqbanking" != "no"; then
   AC_MSG_CHECKING(for aqbanking)
@@ -62,6 +64,9 @@ if test "$enable_aqbanking" != "no"; then
       AC_MSG_CHECKING(for aqbanking libs)
       aqbanking_libs="`$aqbanking_dir/bin/aqbanking-config --libraries`"
       AC_MSG_RESULT($aqbanking_libs)
+      AC_MSG_CHECKING(for aqbanking C++ libs)
+      aqbanking_libspp="`$aqbanking_dir/bin/aqbanking-config --libraries++`"
+      AC_MSG_RESULT($aqbanking_libspp)
       AC_MSG_CHECKING(for aqbanking includes)
       aqbanking_includes="`$aqbanking_dir/bin/aqbanking-config --includes`"
       AC_MSG_RESULT($aqbanking_includes)
@@ -114,6 +119,7 @@ fi
 AC_SUBST(aqbanking_dir)
 AC_SUBST(aqbanking_plugins)
 AC_SUBST(aqbanking_libs)
+AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_data)
 AC_SUBST(aqbanking_includes)
 ])

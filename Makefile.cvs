@@ -52,4 +52,4 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode
+	CXXFLAGS="-ggdb -Wall" CFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static

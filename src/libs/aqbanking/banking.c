@@ -304,10 +304,10 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
 
 
 
-GWEN_TYPE_UINT32 AB_Banking_Progress_Start(AB_BANKING *ab,
-                                           const char *title,
-                                           const char *text,
-                                           GWEN_TYPE_UINT32 total){
+GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
+                                          const char *title,
+                                          const char *text,
+                                          GWEN_TYPE_UINT32 total){
   assert(ab);
   if (ab->progressStartFn) {
     return ab->progressStartFn(ab, title, text, total);
@@ -318,9 +318,9 @@ GWEN_TYPE_UINT32 AB_Banking_Progress_Start(AB_BANKING *ab,
 
 
 
-int AB_Banking_Progress_Advance(AB_BANKING *ab,
-                                GWEN_TYPE_UINT32 id,
-                                GWEN_TYPE_UINT32 progress){
+int AB_Banking_ProgressAdvance(AB_BANKING *ab,
+                               GWEN_TYPE_UINT32 id,
+                               GWEN_TYPE_UINT32 progress){
   assert(ab);
   if (ab->progressAdvanceFn) {
     return ab->progressAdvanceFn(ab, id, progress);
@@ -331,10 +331,10 @@ int AB_Banking_Progress_Advance(AB_BANKING *ab,
 
 
 
-int AB_Banking_Progress_Log(AB_BANKING *ab,
-                            GWEN_TYPE_UINT32 id,
-                            AB_BANKING_LOGLEVEL level,
-                            const char *text){
+int AB_Banking_ProgressLog(AB_BANKING *ab,
+                           GWEN_TYPE_UINT32 id,
+                           AB_BANKING_LOGLEVEL level,
+                           const char *text){
   assert(ab);
   if (ab->progressLogFn) {
     return ab->progressLogFn(ab, id, level, text);
@@ -345,7 +345,7 @@ int AB_Banking_Progress_Log(AB_BANKING *ab,
 
 
 
-int AB_Banking_Progress_End(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
+int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
   assert(ab);
   if (ab->progressEndFn) {
     return ab->progressEndFn(ab, id);

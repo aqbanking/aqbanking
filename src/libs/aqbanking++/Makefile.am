@@ -1,0 +1,19 @@
+INCLUDES=@all_includes@
+
+lib_LTLIBRARIES=libaqbankingpp.la
+
+AM_CFLAGS=-DAQBANKING_PLUGINS=\"@aqbanking_plugins@\"
+
+noinst_HEADERS=\
+ banking_p.h
+
+
+iheaderdir=${includedir}/aqbanking++
+iheader_HEADERS=\
+ banking.h
+
+libaqbankingpp_la_SOURCES=\
+ banking.cpp
+
+libaqbankingpp_la_LIBADD=@gwenhywfar_libs@ -L../aqbanking -laqbanking
+
