@@ -19,7 +19,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/db.h>
 
-GWEN_LIST_FUNCTION_DEFS(AB_JOB, AB_Job);
+GWEN_LIST_FUNCTION_DEFS(AB_JOB, AB_Job)
 
 
 

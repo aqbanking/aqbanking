@@ -19,7 +19,7 @@
 #include <gwenhywfar/inherit.h>
 #include <aqbanking/account.h>
 
-GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account);
+GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
 
 
 AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,

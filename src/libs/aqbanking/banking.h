@@ -65,7 +65,10 @@ extern "C" {
 /**
  * This object is prepared to be inherited (using @ref GWEN_INHERIT_SETDATA).
  */
-GWEN_INHERIT_FUNCTION_DEFS(AB_BANKING);
+GWEN_INHERIT_FUNCTION_DEFS(AB_BANKING)
+/* Do not terminate these lines with semicolon because they are
+   macros, not functions, and ISO C89 does not allow a semicolon
+   there. */
 
 /** @name Flags For AB_Banking_InputBox
  *

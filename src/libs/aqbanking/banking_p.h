@@ -21,7 +21,7 @@
 
 
 struct AB_BANKING {
-  GWEN_INHERIT_ELEMENT(AB_BANKING);
+  GWEN_INHERIT_ELEMENT(AB_BANKING)
   char *appName;
   AB_JOB_LIST *enqueuedJobs;
   AB_ACCOUNT_LIST *accounts;

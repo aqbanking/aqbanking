@@ -29,7 +29,12 @@ extern "C" {
 /*@{*/
 
 typedef struct AB_JOB AB_JOB;
-GWEN_LIST2_FUNCTION_DEFS(AB_JOB, AB_Job);
+
+GWEN_LIST2_FUNCTION_DEFS(AB_JOB, AB_Job)
+/* Do not terminate this line with semicolon because they are
+   macros, not functions, and ISO C89 does not allow a semicolon
+   there. */
+
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
 

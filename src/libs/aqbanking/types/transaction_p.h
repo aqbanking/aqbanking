@@ -21,7 +21,7 @@
 
 
 struct AB_TRANSACTION {
-  GWEN_LIST_ELEMENT(AB_TRANSACTION);
+  GWEN_LIST_ELEMENT(AB_TRANSACTION)
 
   int localCountryCode;
   char *localBankCode;

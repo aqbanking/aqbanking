@@ -25,8 +25,11 @@ extern "C" {
 #endif
 
 typedef struct AB_ACCOUNT AB_ACCOUNT;
-GWEN_INHERIT_FUNCTION_DEFS(AB_ACCOUNT);
-GWEN_LIST2_FUNCTION_DEFS(AB_ACCOUNT, AB_Account);
+GWEN_INHERIT_FUNCTION_DEFS(AB_ACCOUNT)
+GWEN_LIST2_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
+/* Do not terminate these lines with semicolon because they are
+   macros, not functions, and ISO C89 does not allow a semicolon
+   there. */
 
 #ifdef __cplusplus
 }

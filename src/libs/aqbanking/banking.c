@@ -29,7 +29,7 @@
 #include <errno.h>
 
 
-GWEN_INHERIT_FUNCTIONS(AB_BANKING);
+GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 #include <aqbanking/error.h>
 
@@ -302,7 +302,8 @@ GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
 void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
   assert(ab);
   if (ab->hideBoxFn) {
-    return ab->hideBoxFn(ab, id);
+    ab->hideBoxFn(ab, id);
+    return;
   }
   DBG_WARN(0, "No hideBox function set");
 }

@@ -1,4 +1,8 @@
+2004-08-02   Christian Stimming <stimming@tuhh.de>
 
+	* many headers: Remove trailing semicolon from macro calls as
+	required by ISO C89.
+	
 2004/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed some bugs, added some functions to AB_JOB

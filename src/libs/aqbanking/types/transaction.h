@@ -29,8 +29,11 @@ extern "C" {
 
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
-GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction);
-GWEN_LIST2_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction);
+GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
+GWEN_LIST2_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
+/* Do not terminate these lines with semicolon because they are
+   macros, not functions, and ISO C89 does not allow a semicolon
+   there. */
 
 #ifdef __cplusplus
 }
