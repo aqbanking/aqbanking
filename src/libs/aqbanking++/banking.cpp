@@ -147,6 +147,16 @@ namespace AB {
   }
   
   
+  void Banking_Linker::freeData(void *bp, void *p) {
+    Banking *kb;
+
+    kb=(Banking*)p;
+    if (kb->_banking) {
+      GWEN_INHERIT_UNLINK(AB_BANKING, Banking, kb->_banking)
+      kb->_banking=0;
+    }
+    delete kb;
+  }
   
   
   
@@ -158,7 +168,8 @@ namespace AB {
     assert(appname);
     _banking=AB_Banking_new(appname, fname);
     GWEN_INHERIT_SETDATA(AB_BANKING, Banking,
-                         _banking, this, 0);
+                         _banking, this,
+                         Banking_Linker::freeData);
     AB_Banking_SetMessageBoxFn(_banking, Banking_Linker::MessageBox);
     AB_Banking_SetInputBoxFn(_banking, Banking_Linker::InputBox);
     AB_Banking_SetShowBoxFn(_banking, Banking_Linker::ShowBox);
@@ -172,6 +183,10 @@ namespace AB {
   
   
   Banking::~Banking(){
+    if (_banking) {
+      GWEN_INHERIT_UNLINK(AB_BANKING, Banking, _banking)
+      AB_Banking_free(_banking);
+    }
   }
   
   

@@ -14,6 +14,7 @@
 #define AQ_PROVIDER_CPP_H
 
 
+#include <aqbanking/provider.h>
 
 
 namespace AB {

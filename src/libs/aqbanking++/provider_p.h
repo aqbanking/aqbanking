@@ -26,6 +26,7 @@ namespace AB {
     friend class ProviderWizard;
   private:
     static int setup(AB_PROVIDER_WIZARD *pw);
+    static void freeData(void *bp, void *p);
   };
 
 } /* namespace */

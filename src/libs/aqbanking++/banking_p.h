@@ -55,6 +55,7 @@ namespace AB {
 			   AB_BANKING_LOGLEVEL level,
 			   const char *text);
     static int ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+    static void freeData(void *bp, void *p);
   };
 
 

@@ -24,7 +24,7 @@
 
 namespace AB {
 
-  GWEN_INHERIT(AB_PROVIDER_WIZARD, ProviderWizard)
+  GWEN_INHERIT(AB_PROVIDER_WIZARD, ProviderWizard);
 
 
   int ProviderWizard_Linker::setup(AB_PROVIDER_WIZARD *pw){
@@ -39,18 +39,39 @@ namespace AB {
 
 
 
+  void ProviderWizard_Linker::freeData(void *bp, void *p) {
+    ProviderWizard *kw;
+
+    kw=(ProviderWizard*)p;
+    if (kw->_providerWizard) {
+      GWEN_INHERIT_UNLINK(AB_PROVIDER_WIZARD, ProviderWizard,
+			  kw->_providerWizard)
+      kw->_providerWizard=0;
+    }
+    delete kw;
+  }
+
+
 
   ProviderWizard::ProviderWizard(AB_PROVIDER *pro,
                                  const char *name){
     assert(pro);
     _providerWizard=AB_ProviderWizard_new(pro, name);
     GWEN_INHERIT_SETDATA(AB_PROVIDER_WIZARD, ProviderWizard,
-                         _providerWizard, this, 0);
+                         _providerWizard, this,
+                         ProviderWizard_Linker::freeData);
     AB_ProviderWizard_SetSetupFn(_providerWizard,
                                  ProviderWizard_Linker::setup);
   }
 
+
+
   ProviderWizard::~ProviderWizard(){
+    if (_providerWizard) {
+      GWEN_INHERIT_UNLINK(AB_PROVIDER_WIZARD, ProviderWizard,
+			  _providerWizard)
+      AB_ProviderWizard_free(_providerWizard);
+    }
   }
 
 
@@ -75,6 +96,12 @@ namespace AB {
 
   AB_PROVIDER_WIZARD *ProviderWizard::getProviderWizardPtr(){
     return _providerWizard;
+  }
+
+
+
+  int ProviderWizard::setup(){
+    return AB_ERROR_NOT_SUPPORTED;
   }
 
 
