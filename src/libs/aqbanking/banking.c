@@ -721,6 +721,8 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
                                                  const char *accountId){
   AB_ACCOUNT *a;
 
+  if ((bankCode == NULL) || (accountId == NULL))
+    return NULL;
   assert(ab);
   if (AB_Account_List_GetCount(ab->accounts)==0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");

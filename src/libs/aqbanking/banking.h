@@ -527,9 +527,10 @@ AQBANKING_API
 int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
 
 /**
- * Returns the folder where the wizards for the given backend are located.
- * You can then use this path and the name of the wizard you want to start
- * to run a wizard.
+ * Returns the folder where the wizards for the given backend are
+ * located.  You can then use this path and the name of the wizard you
+ * want to start to run a wizard. You can look up the available
+ * wizards by the function AB_Banking_GetWizardDescrs().
  */
 AQBANKING_API
 int AB_Banking_GetWizardPath(AB_BANKING *ab,
@@ -634,9 +635,11 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
  */
 /*@{*/
 /**
- * Returns a list of currently known accounts. The returned list is
- * owned by the caller, so he is responsible for freeing it (using
- * @ref AB_Account_List2_free).
+ * Returns a list of currently known accounts, or NULL if there are no
+ * accounts. The returned list is owned by the caller, so he is
+ * responsible for freeing it (using @ref AB_Account_List2_free).
+ *
+ * @return The list of accounts, or NULL if there are none.
  * @param ab pointer to the AB_BANKING object
  */
 AQBANKING_API 
@@ -645,6 +648,8 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
 /**
  * This function does an account lookup based on the given unique id.
  * This id is assigned by AqBanking when an account is created.
+ *
+ * @return The account, or NULL if it is not found.
  * @param ab pointer to the AB_BANKING object
  * @param uniqueId unique id of the account assigned by AqBanking
  */
@@ -656,6 +661,8 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 /**
  * This function does an account lookup based on the given bank code and
  * account number. No wildards or jokers allowed.
+ *
+ * @return The account, or NULL if it is not found.
  * @param ab pointer to the AB_BANKING object
  * @param bankCode bank code (use 0 if your country does not use bank codes)
  * @param accountId account number

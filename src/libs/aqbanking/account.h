@@ -98,6 +98,7 @@ const char *AB_Account_GetAccountName(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetAccountName(AB_ACCOUNT *acc, const char *s);
 
+  /** Returns the name of the bank, or NULL if none was set. */
 AQBANKING_API 
 const char *AB_Account_GetBankName(const AB_ACCOUNT *acc);
 AQBANKING_API 
