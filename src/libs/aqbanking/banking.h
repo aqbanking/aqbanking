@@ -185,6 +185,16 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_BANKING)
 /*@}*/
 
 
+/** @name Flags For AB_Banking_ShowBox
+ *
+ */
+/*@{*/
+
+#define AB_BANKING_SHOWBOX_FLAGS_BEEP 0x00000001
+
+
+/*@}*/
+
 /**
  * This is used with @ref AB_Banking_ProgressLog to tell the function
  * about the severity of the message. The implementation of this function
@@ -253,6 +263,7 @@ typedef int (*AB_BANKING_INPUTBOX_FN)(AB_BANKING *ab,
  * Please see @ref AB_Banking_ShowBox for details.
  */
 typedef GWEN_TYPE_UINT32 (*AB_BANKING_SHOWBOX_FN)(AB_BANKING *ab, 
+                                                  GWEN_TYPE_UINT32 flags,
                                                   const char *title,
                                                   const char *text);
 /**
@@ -779,10 +790,12 @@ int AB_Banking_InputBox(AB_BANKING *ab,
  * </p>
  * @return returns an id to be presented to @ref AB_Banking_HideBox.
  * @param ab banking interface
+ * @param flags flags, see @ref AB_BANKING_SHOWBOX_FLAGS_BEEP ff
  * @param title title of the box
  * @param text (see text restrictions note above)
  */
 GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
+                                    GWEN_TYPE_UINT32 flags,
                                     const char *title,
                                     const char *text);
 

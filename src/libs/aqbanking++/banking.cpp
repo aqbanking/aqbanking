@@ -68,6 +68,7 @@ namespace AB {
   
   
   GWEN_TYPE_UINT32 Banking_Linker::ShowBox(AB_BANKING *ab,
+                                           GWEN_TYPE_UINT32 flags,
                                            const char *title,
                                            const char *text){
     Banking *kb;
@@ -76,7 +77,7 @@ namespace AB {
     kb=GWEN_INHERIT_GETDATA(AB_BANKING, Banking, ab);
     assert(kb);
   
-    return kb->showBox(title, text);
+    return kb->showBox(flags, title, text);
   }
   
   
@@ -215,7 +216,8 @@ namespace AB {
   
   
   
-  GWEN_TYPE_UINT32 Banking::showBox(const char *title,
+  GWEN_TYPE_UINT32 Banking::showBox(GWEN_TYPE_UINT32 flags,
+                                    const char *title,
                                     const char *text){
     return 0;
   }

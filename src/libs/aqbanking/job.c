@@ -285,7 +285,7 @@ AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j){
 
 
 
-AB_JOB *AB_Job__freeAll_cb(AB_JOB *j) {
+AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData) {
   AB_Job_free(j);
   return 0;
 }
@@ -293,7 +293,7 @@ AB_JOB *AB_Job__freeAll_cb(AB_JOB *j) {
 
 
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl){
-  AB_Job_List2_ForEach(jl, AB_Job__freeAll_cb);
+  AB_Job_List2_ForEach(jl, AB_Job__freeAll_cb, 0);
   AB_Job_List2_free(jl);
 }
 

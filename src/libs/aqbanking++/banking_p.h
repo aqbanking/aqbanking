@@ -40,6 +40,7 @@ namespace AB {
 			int minLen,
 			int maxLen);
     static GWEN_TYPE_UINT32 ShowBox(AB_BANKING *ab,
+                                    GWEN_TYPE_UINT32 flags,
 				    const char *title,
 				    const char *text);
     static void HideBox(AB_BANKING *ab,GWEN_TYPE_UINT32 id);

@@ -288,11 +288,12 @@ int AB_Banking_InputBox(AB_BANKING *ab,
 
 
 GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
+                                    GWEN_TYPE_UINT32 flags,
                                     const char *title,
                                     const char *text){
   assert(ab);
   if (ab->showBoxFn) {
-    return ab->showBoxFn(ab, title, text);
+    return ab->showBoxFn(ab, flags, title, text);
   }
   DBG_WARN(0, "No showBox function set");
   return 0;

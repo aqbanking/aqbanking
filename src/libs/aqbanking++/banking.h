@@ -35,61 +35,6 @@ namespace AB {
   private:
     AB_BANKING *_banking;
 
-  protected:
-    /**
-     * See @ref AB_Banking_MessageBox
-     */
-    virtual int messageBox(GWEN_TYPE_UINT32 flags,
-                           const char *title,
-                           const char *text,
-                           const char *b1,
-                           const char *b2,
-                           const char *b3);
-
-    /**
-     * See @ref AB_Banking_InputBox
-     */
-    virtual int inputBox(GWEN_TYPE_UINT32 flags,
-                         const char *title,
-                         const char *text,
-                         char *buffer,
-                         int minLen,
-                         int maxLen);
-
-    /**
-     * See @ref AB_Banking_ShowBox
-     */
-    virtual GWEN_TYPE_UINT32 showBox(const char *title,
-                                     const char *text);
-    /**
-     * See @ref AB_Banking_HideBox
-     */
-    virtual void hideBox(GWEN_TYPE_UINT32 id);
-
-    /**
-     * See @ref AB_Banking_ProgressStart
-     */
-    virtual GWEN_TYPE_UINT32 progressStart(const char *title,
-                                           const char *text,
-                                           GWEN_TYPE_UINT32 total);
-
-    /**
-     * See @ref AB_Banking_ProgressAdvance
-     */
-    virtual int progressAdvance(GWEN_TYPE_UINT32 id,
-                                GWEN_TYPE_UINT32 progress);
-    /**
-     * See @ref AB_Banking_ProgressLog
-     */
-    virtual int progressLog(GWEN_TYPE_UINT32 id,
-                            AB_BANKING_LOGLEVEL level,
-                            const char *text);
-    /**
-     * See @ref AB_Banking_ProgressEnd
-     */
-    virtual int progressEnd(GWEN_TYPE_UINT32 id);
-
-
   public:
     Banking(const char *appname,
             const char *fname);
@@ -260,7 +205,63 @@ namespace AB {
     /*@}*/
 
 
+    /** @name User Interaction
+     *
+     */
+    /*@{*/
+    /**
+     * See @ref AB_Banking_MessageBox
+     */
+    virtual int messageBox(GWEN_TYPE_UINT32 flags,
+                           const char *title,
+                           const char *text,
+                           const char *b1,
+                           const char *b2,
+                           const char *b3);
 
+    /**
+     * See @ref AB_Banking_InputBox
+     */
+    virtual int inputBox(GWEN_TYPE_UINT32 flags,
+                         const char *title,
+                         const char *text,
+                         char *buffer,
+                         int minLen,
+                         int maxLen);
+
+    /**
+     * See @ref AB_Banking_ShowBox
+     */
+    virtual GWEN_TYPE_UINT32 showBox(GWEN_TYPE_UINT32 flags,
+                                     const char *title,
+                                     const char *text);
+    /**
+     * See @ref AB_Banking_HideBox
+     */
+    virtual void hideBox(GWEN_TYPE_UINT32 id);
+
+    /**
+     * See @ref AB_Banking_ProgressStart
+     */
+    virtual GWEN_TYPE_UINT32 progressStart(const char *title,
+                                           const char *text,
+                                           GWEN_TYPE_UINT32 total);
+
+    /**
+     * See @ref AB_Banking_ProgressAdvance
+     */
+    virtual int progressAdvance(GWEN_TYPE_UINT32 id,
+                                GWEN_TYPE_UINT32 progress);
+    /**
+     * See @ref AB_Banking_ProgressLog
+     */
+    virtual int progressLog(GWEN_TYPE_UINT32 id,
+                            AB_BANKING_LOGLEVEL level,
+                            const char *text);
+    /**
+     * See @ref AB_Banking_ProgressEnd
+     */
+    virtual int progressEnd(GWEN_TYPE_UINT32 id);
   };
 
 

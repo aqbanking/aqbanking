@@ -19,18 +19,18 @@
  */
 /*@{*/
 #define AB_ERROR_SUCCESS           0
-#define AB_ERROR_NOFN            (-1)
+#define AB_ERROR_GENERIC         (-1)
 #define AB_ERROR_NOT_SUPPORTED   (-2)
 #define AB_ERROR_NOT_AVAILABLE   (-3)
 #define AB_ERROR_BAD_CONFIG_FILE (-4)
 #define AB_ERROR_INVALID         (-5)
-#define AB_ERROR_GENERIC         (-6)
-#define AB_ERROR_NETWORK         (-7)
-#define AB_ERROR_NOT_FOUND       (-8)
-#define AB_ERROR_EMPTY           (-9)
-#define AB_ERROR_USER_ABORT      (-10)
-#define AB_ERROR_FOUND           (-11)
-#define AB_ERROR_NO_DATA         (-12)
+#define AB_ERROR_NETWORK         (-6)
+#define AB_ERROR_NOT_FOUND       (-7)
+#define AB_ERROR_EMPTY           (-8)
+#define AB_ERROR_USER_ABORT      (-9)
+#define AB_ERROR_FOUND           (-10)
+#define AB_ERROR_NO_DATA         (-11)
+#define AB_ERROR_NOFN            (-12)
 /*@}*/
 
 
