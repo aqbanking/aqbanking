@@ -1175,20 +1175,24 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_Provider_List_Clear(ab->providers);
 
   /* unregister and unload provider plugin manager */
-  if (GWEN_PluginManager_Unregister(ab->pluginManagerProvider)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not unregister provider plugin manager");
+  if (ab->pluginManagerProvider) {
+      if (GWEN_PluginManager_Unregister(ab->pluginManagerProvider)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not unregister provider plugin manager");
+      }
+      GWEN_PluginManager_free(ab->pluginManagerProvider);
+      ab->pluginManagerProvider=0;
   }
-  GWEN_PluginManager_free(ab->pluginManagerProvider);
-  ab->pluginManagerProvider=0;
 
   /* unregister and unload bankinfo plugin manager */
-  if (GWEN_PluginManager_Unregister(ab->pluginManagerBankInfo)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not unregister bankinfo plugin manager");
+  if (ab->pluginManagerBankInfo) {
+    if (GWEN_PluginManager_Unregister(ab->pluginManagerBankInfo)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not unregister bankinfo plugin manager");
+    }
+    GWEN_PluginManager_free(ab->pluginManagerBankInfo);
+    ab->pluginManagerBankInfo=0;
   }
-  GWEN_PluginManager_free(ab->pluginManagerBankInfo);
-  ab->pluginManagerBankInfo=0;
 
   GWEN_DB_ClearGroup(ab->data, 0);
   free(ab->dataDir);
@@ -2770,7 +2774,7 @@ int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
     return AB_ERROR_NOT_FOUND;
   }
 
@@ -2784,7 +2788,7 @@ int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
     return AB_ERROR_NOT_FOUND;
   }
 
@@ -2798,7 +2802,7 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
     return 0;
   }
 

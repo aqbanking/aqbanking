@@ -1,4 +1,10 @@
 
+2005/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a possible bug: Now PluginManagers are only unregistered if they
+  exist...
+
+
 2005/01/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function AB_Provider_ResetQueue() to make sure no job is left in any
