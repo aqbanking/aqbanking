@@ -1046,7 +1046,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         }
         else {
-          DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account");
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding account");
           AB_Account_List_Add(a, ab->accounts);
         }
       }
@@ -1483,11 +1483,8 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
       cbankCode=AB_Account_GetBankCode(ta);
       assert(cbankCode);
 
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Comparing \"%s\" against \"%s\"",
-                 caccountId, accountId);
       if ((strcasecmp(accountId, caccountId)==0) &&
           (strcasecmp(bankCode, cbankCode)==0)) {
-        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Match");
         break;
       }
     }
@@ -3251,7 +3248,7 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 		      GWEN_Buffer_GetStart(pbuf));
 	  }
 	  else {
-	    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));
+	    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));
 	    AB_Job_List2_PushBack(l, j);
 	  }
 	} /* if filename ends in ".job" */
@@ -4635,8 +4632,8 @@ AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
     statusOff="</font>";
   }
   else {
-    statusOn="";
-    statusOff="";
+    statusOn="<font color=green>";
+    statusOff="</font>";
   }
 
   snprintf(buffer, sizeof(buffer)-1,

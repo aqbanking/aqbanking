@@ -82,7 +82,7 @@ void AB_Job_free(AB_JOB *j){
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_JOB");
+      DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Destroying AB_JOB");
       GWEN_INHERIT_FINI(AB_JOB, j);
       GWEN_DB_Group_free(j->dbData);
       free(j->resultText);

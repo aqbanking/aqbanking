@@ -1,4 +1,21 @@
 
+2005/02/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- clarified API for AB_Banking_Print() to allow dry-runs and multi-page
+  documents.
+
+
+===========================================================================
+MARK: released AqBanking - 1.0.5beta (2005/02/19)
+===========================================================================
+
+
+2005/02/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now the certificate status is green when all is ok
+- decreased verbosity
+
+
 2005/02/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - changed order in AB_Banking_Fini() (now the providers are deinit first)
