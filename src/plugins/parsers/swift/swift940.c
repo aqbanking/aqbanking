@@ -17,7 +17,7 @@
 
 #include "swift940_p.h"
 
-#include <aqhbci/aqhbci.h>
+/* #include <aqhbci/aqhbci.h> */
 #include <aqbanking/error.h>
 
 #include <gwenhywfar/text.h>

@@ -17,5 +17,6 @@ swift_la_SOURCES=\
  swift940.c
 
 swift_la_LIBADD=@gwenhywfar_libs@
-swift_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+#swift_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+swift_la_LDFLAGS= -module -version-info 0:1:0
 

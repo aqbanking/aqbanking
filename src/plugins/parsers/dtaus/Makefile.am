@@ -18,5 +18,6 @@ dtaus_la_SOURCES=\
  dtaus-export.c
 
 dtaus_la_LIBADD=@gwenhywfar_libs@
-dtaus_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+#dtaus_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+dtaus_la_LDFLAGS= -module -version-info 0:1:0
 
