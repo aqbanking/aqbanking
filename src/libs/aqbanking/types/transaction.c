@@ -105,14 +105,14 @@ void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *t, const char *s){
 
 
 
-const char *AB_Transaction_GetLocalAccountId(const AB_TRANSACTION *t){
+const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *t){
   assert(t);
   return t->localAccountId;
 }
 
 
 
-void AB_Transaction_SetLocalAccountId(AB_TRANSACTION *t, const char *s){
+void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *t, const char *s){
   assert(t);
   free(t->localAccountId);
   if (s)
@@ -141,14 +141,14 @@ void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *t, const char *s){
 
 
 
-const char *AB_Transaction_GetLocalOwnerName(const AB_TRANSACTION *t){
+const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *t){
   assert(t);
   return t->localOwnerName;
 }
 
 
 
-void AB_Transaction_SetLocalOwnerName(AB_TRANSACTION *t, const char *s){
+void AB_Transaction_SetLocalName(AB_TRANSACTION *t, const char *s){
   assert(t);
   free(t->localOwnerName);
   if (s)
@@ -198,7 +198,7 @@ const char *AB_Transaction_GetRemoteAccountId(const AB_TRANSACTION *t){
 
 
 
-void AB_Transaction_SetRemoteAccountId(AB_TRANSACTION *t, const char *s){
+void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *t, const char *s){
   assert(t);
   free(t->remoteAccountId);
   if (s)
@@ -227,14 +227,14 @@ void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *t, const char *s){
 
 
 
-const GWEN_STRINGLIST *AB_Transaction_RemoteOwnerName(const AB_TRANSACTION *t){
+const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *t){
   assert(t);
   return t->remoteOwnerName;
 }
 
 
 
-void AB_Transaction_AddRemoteOwnerName(AB_TRANSACTION *t, const char *s){
+void AB_Transaction_AddRemoteName(AB_TRANSACTION *t, const char *s){
   assert(t);
   GWEN_StringList_AppendString(t->remoteOwnerName, s, 0, 0);
 }
@@ -428,7 +428,7 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
   p=t->localAccountId;
   if (p)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localAccountId", p);
+                         "localAccountNumber", p);
 
   p=t->localSuffix;
   if (p)
@@ -437,7 +437,7 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
   p=t->localOwnerName;
   if (p)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localOwnerName", p);
+                         "localName", p);
 
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -450,19 +450,19 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
   p=t->remoteAccountId;
   if (p)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteAccountId", p);
+                         "remoteAccountNumber", p);
   p=t->remoteSuffix;
   if (p)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "remoteSuffix", p);
 
   se=GWEN_StringList_FirstEntry(t->remoteOwnerName);
-  GWEN_DB_DeleteVar(db, "remoteOwnerName");
+  GWEN_DB_DeleteVar(db, "remoteName");
   while(se) {
     p=GWEN_StringListEntry_Data(se);
     if (p)
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
-                           "remoteOwnerName", p);
+                           "remoteName", p);
     se=GWEN_StringListEntry_Next(se);
   } /* while */
 
@@ -544,17 +544,17 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
                                   GWEN_DB_GetCharValue(db,
                                                        "localBankCode",
                                                        0, 0));
-  AB_Transaction_SetLocalAccountId(t,
-                                   GWEN_DB_GetCharValue(db,
-                                                        "localAccountId",
-                                                        0, 0));
+  AB_Transaction_SetLocalAccountNumber(t,
+                                       GWEN_DB_GetCharValue(db,
+                                                            "localAccountNumber",
+                                                            0, 0));
   AB_Transaction_SetLocalSuffix(t,
                                 GWEN_DB_GetCharValue(db,
                                                      "localSuffix", 0, 0));
-  AB_Transaction_SetLocalOwnerName(t,
-                                   GWEN_DB_GetCharValue(db,
-                                                        "localOwnerName",
-                                                        0, 0));
+  AB_Transaction_SetLocalName(t,
+                              GWEN_DB_GetCharValue(db,
+                                                   "localName",
+                                                   0, 0));
   AB_Transaction_SetRemoteCountryCode(t,
                                       GWEN_DB_GetIntValue(db,
                                                           "remoteCountryCode",
@@ -564,19 +564,19 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
                                    GWEN_DB_GetCharValue(db,
                                                         "remoteBankCode",
                                                         0, 0));
-  AB_Transaction_SetRemoteAccountId(t,
+  AB_Transaction_SetRemoteAccountNumber(t,
                                     GWEN_DB_GetCharValue(db,
-                                                         "remoteAccountId",
+                                                         "remoteAccountNumber",
                                                          0, 0));
   AB_Transaction_SetRemoteSuffix(t,
                                  GWEN_DB_GetCharValue(db,
                                                       "remoteSuffix", 0, 0));
 
   for (i=0; ; i++) {
-    p=GWEN_DB_GetCharValue(db, "remoteOwnerName", i, 0);
+    p=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
     if (!p)
       break;
-    AB_Transaction_AddRemoteOwnerName(t, p);
+    AB_Transaction_AddRemoteName(t, p);
   } /* for */
 
   u=(unsigned int)GWEN_DB_GetIntValue(db, "valutaDate", 0, 0);

@@ -56,12 +56,12 @@ int AB_Transaction_GetLocalCountryCode(const AB_TRANSACTION *t);
 void AB_Transaction_SetLocalCountryCode(AB_TRANSACTION *t, int i);
 const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *t);
 void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *t, const char *code);
-const char *AB_Transaction_GetLocalAccountId(const AB_TRANSACTION *t);
-void AB_Transaction_SetLocalAccountId(AB_TRANSACTION *t, const char *id);
+const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *t);
+void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *t, const char *id);
 const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *t);
 void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *t, const char *id);
-const char *AB_Transaction_GetLocalOwnerName(const AB_TRANSACTION *t);
-void AB_Transaction_SetLocalOwnerName(AB_TRANSACTION *t, const char *id);
+const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *t);
+void AB_Transaction_SetLocalName(AB_TRANSACTION *t, const char *id);
 /*@}*/
 
 /** @name Reference To Remote Account
@@ -72,12 +72,13 @@ int AB_Transaction_GetRemoteCountryCode(const AB_TRANSACTION *t);
 void AB_Transaction_SetRemoteCountryCode(AB_TRANSACTION *t, int i);
 const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *t);
 void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *t, const char *s);
-const char *AB_Transaction_GetRemoteAccountId(const AB_TRANSACTION *t);
-void AB_Transaction_SetRemoteAccountId(AB_TRANSACTION *t, const char *s);
+const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *t);
+void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *t, const char *s);
 const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *t);
 void AB_Transaction_SetGetRemoteSuffix(AB_TRANSACTION *t, const char *id);
-const GWEN_STRINGLIST *AB_Transaction_RemoteOwnerName(const AB_TRANSACTION *t);
-void AB_Transaction_AddRemoteOwnerName(AB_TRANSACTION *t, const char *s);
+const GWEN_STRINGLIST*
+  AB_Transaction_GetRemoteName(const AB_TRANSACTION *t);
+void AB_Transaction_AddRemoteName(AB_TRANSACTION *t, const char *s);
 /*@}*/
 
 
