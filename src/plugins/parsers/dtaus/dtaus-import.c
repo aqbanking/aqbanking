@@ -33,25 +33,18 @@
 #include <errno.h>
 
 
+int AHB_DTAUS__SetCharValue(GWEN_DB_NODE *db,
+                            GWEN_TYPE_UINT32 flags,
+                            const char *name,
+                            const char *s) {
+  GWEN_BUFFER *vbuf;
+  int rv;
 
-int AHB_DTAUS__FromDTA(int c) {
-  if (isdigit(c))
-    return c;
-  if (c>='A' && c<='Z')
-    return c;
-  if (c>='a' && c<='z')
-    return toupper(c);
-  if (strchr(" .,&-+*%/$", c))
-    return c;
-  switch(c) {
-  case 0x5b: return 'Ä';
-  case 0x5c: return 'Ö';
-  case 0x5d: return 'Ü';
-  case 0x7e: return '?';
-  default:
-    break;
-  } /* switch */
-  return 0;
+  vbuf=GWEN_Buffer_new(0, strlen(s)+32, 0, 1);
+  AB_ImExporter_DtaToUtf8(s, -1, vbuf);
+  rv=GWEN_DB_SetCharValue(db, flags, name, GWEN_Buffer_GetStart(vbuf));
+  GWEN_Buffer_free(vbuf);
+  return rv;
 }
 
 
@@ -82,18 +75,9 @@ int AHB_DTAUS__ReadWord(GWEN_BUFFER *src,
   } /* for */
 
   /* read data */
-  for (; i<size; i++) {
-    int c;
+  GWEN_Buffer_AppendBytes(dst, GWEN_Buffer_GetPosPointer(src), size-i);
 
-    c=GWEN_Buffer_ReadByte(src);
-    if (c==-1)
-      break;
-    c=AHB_DTAUS__FromDTA(c);
-    if (c==0)
-      c=' ';
-    GWEN_Buffer_AppendByte(dst, c);
-  }
-
+  /* remove trailing spaces */
   p=GWEN_Buffer_GetStart(dst);
   i=size;
   while(i) {
@@ -151,17 +135,17 @@ int AHB_DTAUS__ParseExtSet(GWEN_BUFFER *src,
   switch(typ) {
   case 1: /* Kundenname */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Customer name: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "remoteName",
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "remoteName",
                          GWEN_Buffer_GetStart(tmp));
     break;
   case 2: /* Verwendungszweck */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Purpose: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "purpose",
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "purpose",
 			 GWEN_Buffer_GetStart(tmp));
     break;
   case 3: /* Name des Auftraggebers */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Peer name: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "localName",
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "localName",
                          GWEN_Buffer_GetStart(tmp));
     break;
   default: /* unbekannt */
@@ -239,7 +223,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Customer reference: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa,
+    AHB_DTAUS__SetCharValue(xa,
                          GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "custref",
@@ -382,7 +366,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Text key: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "textkey",
                          GWEN_Buffer_GetStart(tmp));
@@ -561,7 +545,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Peer name: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "remoteName",
                          GWEN_Buffer_GetStart(tmp));
@@ -579,7 +563,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Name: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "localName",
                          GWEN_Buffer_GetStart(tmp));
@@ -597,7 +581,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Purpose: %s", GWEN_Buffer_GetStart(tmp));
-    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "purpose",
                          GWEN_Buffer_GetStart(tmp));

@@ -21,7 +21,7 @@ dtaus_la_SOURCES=\
  dtaus-import.c \
  dtaus-export.c
 
-dtaus_la_LIBADD=@gwenhywfar_libs@
+dtaus_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
 dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

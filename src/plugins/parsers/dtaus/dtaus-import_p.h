@@ -18,7 +18,11 @@
 #include <gwenhywfar/dbio.h>
 
 
-int AHB_DTAUS__FromDTA(int c);
+int AHB_DTAUS__SetCharValue(GWEN_DB_NODE *db,
+                            GWEN_TYPE_UINT32 flags,
+                            const char *name,
+                            const char *s);
+
 int AHB_DTAUS__ReadWord(GWEN_BUFFER *src,
                         GWEN_BUFFER *dst,
                         unsigned int pos,

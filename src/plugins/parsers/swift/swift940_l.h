@@ -23,6 +23,5 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
 			GWEN_DB_NODE *data,
 			GWEN_DB_NODE *cfg);
 
-
 #endif /* AQHBCIBANK_SWIFT940_P_H */
 

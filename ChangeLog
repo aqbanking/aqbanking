@@ -2,6 +2,7 @@
 2004/09/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a note about the encodings used (UTF-8)
+- consequent usage of UTF-8 in importer/exporter and parser plugins
 
 
 ===========================================================================

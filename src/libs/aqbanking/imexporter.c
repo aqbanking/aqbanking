@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <ctype.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_IMEXPORTER)
@@ -541,6 +542,89 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
 
 
 
+void AB_ImExporter_Utf8ToDta(const char *p,
+                             int size,
+                             GWEN_BUFFER *buf) {
+  while(*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    if (c==0xc3) {
+      if (size!=-1)
+        size--;
+      if (!size) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Incomplete UTF-8 sequence");
+        break;
+      }
+      c=(unsigned char)(*(p++));
+      switch(c) {
+      case 0x84:
+      case 0xa4: c=0x5b; break;
+      case 0x96:
+      case 0xb6: c=0x5c; break;
+      case 0x9c:
+      case 0xbc: c=0x5d; break;
+      case 0x9f: c=0x7e; break;
+      default:   c=' '; break;
+      } /* switch */
+    }
+    else {
+      c=toupper(c);
+      if (!(isdigit(c) ||
+	    (c>='A' && c<='Z') ||
+	    (c>='a' && c<='z') ||
+	    (strchr(" .,&-+*%/$", c))))
+        c=' ';
+    }
+    GWEN_Buffer_AppendByte(buf, c);
+    if (size!=-1)
+      size--;
+  } /* while */
+}
+
+
+
+void AB_ImExporter_DtaToUtf8(const char *p,
+                             int size,
+                             GWEN_BUFFER *buf) {
+  while(*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    switch(c) {
+    case 0x5b:
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x84);
+      break;
+
+    case 0x5c:
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x96);
+      break;
+
+    case 0x5d:
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x9c);
+      break;
+
+    case 0x5e:
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x9c);
+      break;
+
+    default:
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    if (size!=-1)
+      size--;
+  } /* while */
+}
 
 
 
