@@ -1,4 +1,13 @@
 
+2005/04/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- OpenHBCI1 plugin now returns "AB_ERROR_UNKNOWN" thus flagging that a
+  particular file *might* be supported (since there currently is no way to 
+  make that determination for sure)
+- fixed CSV-importer (now works even with non-AqMoney2-files)
+- added a CSV-profile for CSV files provided by comdirect bank
+
+
 2005/04/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - German translation completed by Jens Koerner (Thank you very much, I know

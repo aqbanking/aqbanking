@@ -712,13 +712,20 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
 
   if (strchr(tmpl, 'h')==0) {
     GWEN_BUFFER *dbuf;
+    GWEN_BUFFER *tbuf;
 
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, p);
     GWEN_Buffer_AppendString(dbuf, "-12:00");
 
-    ti=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD-hh:mm");
+    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, tmpl);
+    GWEN_Buffer_AppendString(tbuf, "-hh:mm");
+
+    ti=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+			       GWEN_Buffer_GetStart(tbuf));
     assert(ti);
+    GWEN_Buffer_free(tbuf);
     GWEN_Buffer_free(dbuf);
   }
   else {

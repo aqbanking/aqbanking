@@ -268,7 +268,7 @@ int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
   rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
   switch(rv) {
-  case GWEN_DBIO_CheckFileResultOk:      return 0;
+  case GWEN_DBIO_CheckFileResultOk:      return AB_ERROR_UNKNOWN;
   case GWEN_DBIO_CheckFileResultNotOk:   return AB_ERROR_BAD_DATA;
   case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_UNKNOWN;
   default:                               return AB_ERROR_GENERIC;

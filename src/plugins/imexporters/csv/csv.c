@@ -122,6 +122,9 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     const char *p;
     const char *gn;
 
+    DBG_ERROR(GWEN_LOGDOMAIN, "Have this transaction:");
+    GWEN_DB_Dump(dbT, stderr, 2);
+
     /* check whether the name of the current groups matches */
     matches=0;
     gn=GWEN_DB_GroupName(dbT);
@@ -138,54 +141,64 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     if (!matches && i==0) {
       /* no names given, check default */
       if ((strcasecmp(GWEN_DB_GroupName(dbT), "transaction")==0) ||
-          (strcasecmp(GWEN_DB_GroupName(dbT), "debitnote")==0))
+          (strcasecmp(GWEN_DB_GroupName(dbT), "debitnote")==0) ||
+          (strcasecmp(GWEN_DB_GroupName(dbT), "line")==0))
         matches=1;
     }
 
     if (matches) {
-      AB_TRANSACTION *t;
-      const char *p;
+      if (GWEN_DB_GetCharValue(dbT, "value/value", 0, 0)) {
+        AB_TRANSACTION *t;
+        const char *p;
 
-      t=AB_Transaction_fromDb(dbT);
-      if (!t) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                              "Error in config file");
-        return AB_ERROR_GENERIC;
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Found a possible transaction");
+        t=AB_Transaction_fromDb(dbT);
+        if (!t) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
+          GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                                "Error in config file");
+          return AB_ERROR_GENERIC;
+        }
+  
+        /* translate date */
+        p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
+        if (p) {
+          GWEN_TIME *ti;
+  
+          ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
+          if (ti)
+            AB_Transaction_SetDate(t, ti);
+          GWEN_Time_free(ti);
+        }
+  
+        /* translate valutaDate */
+        p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
+        if (p) {
+          GWEN_TIME *ti;
+  
+          ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
+          if (ti)
+            AB_Transaction_SetValutaDate(t, ti);
+          GWEN_Time_free(ti);
+        }
+  
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
+        AB_ImExporterContext_AddTransaction(ctx, t);
       }
-
-      /* translate date */
-      p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-      if (p) {
-	GWEN_TIME *ti;
-
-        ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-        if (ti)
-          AB_Transaction_SetDate(t, ti);
-        GWEN_Time_free(ti);
+      else {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group");
       }
-
-      /* translate valutaDate */
-      p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
-      if (p) {
-	GWEN_TIME *ti;
-
-        ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-        if (ti)
-          AB_Transaction_SetValutaDate(t, ti);
-        GWEN_Time_free(ti);
-      }
-
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
-      AB_ImExporterContext_AddTransaction(ctx, t);
     }
     else {
       int rv;
 
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a transaction, checking subgroups");
       /* not a transaction, check subgroups */
       rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams);
-      if (rv)
+      if (rv) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         return rv;
+      }
     }
     dbT=GWEN_DB_GetNextGroup(dbT);
   } // while

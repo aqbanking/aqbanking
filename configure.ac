@@ -465,6 +465,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
+  src/plugins/imexporters/csv/profiles/comdirect.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
