@@ -30,6 +30,7 @@ MARK: released AqBanking - 0.9.6 (2004/09/26)
 	aqbanking_internal_libs that has the linker command without the
 	lib directory.
 
+
 2004/09/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a GWEN_BufferedIO_Flush() to AB_Banking_GetUniqueId()
