@@ -1,3 +1,10 @@
+
+
+2004/10/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added some user error codes
+
+
 2004-10-03  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.h: Added
@@ -5,6 +12,7 @@
 	choose between per-session-caching (default) and
 	only-per-queue-execution caching. Note: Need to increment
 	SO_REVISION and SO_AGE because of that.
+
 
 2004/09/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
