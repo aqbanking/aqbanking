@@ -1,0 +1,82 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Wed Mar 27 2002
+    copyright   : (C) 2002 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU Lesser General Public            *
+ *   License as published by the Free Software Foundation; either          *
+ *   version 2.1 of the License, or (at your option) any later version.    *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,                 *
+ *   MA  02111-1307  USA                                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+/*
+  Changes
+ */
+
+
+#include <windows.h>
+
+// Language: 407=DE, 409=US, 809=UK
+
+// German resources
+
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// Version
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION @AQBANKING_VERSION_MAJOR@, @AQBANKING_VERSION_MINOR@, @AQBANKING_VERSION_PATCHLEVEL@, @AQBANKING_VERSION_BUILD@
+ PRODUCTVERSION @AQBANKING_VERSION_MAJOR@, @AQBANKING_VERSION_MINOR@, @AQBANKING_VERSION_PATCHLEVEL@, @AQBANKING_VERSION_BUILD@
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L      // Windows NT
+ FILETYPE 0x2L        // DLL
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            //VALUE "Comments", "\0"
+            VALUE "CompanyName", " Aquamaniac\0"
+            VALUE "FileDescription", "Home banking library\0"
+            VALUE "FileVersion", "v@AQBANKING_VERSION_RELEASE_STRING@\0"
+            VALUE "InternalName", "Aqbanking\0"
+            VALUE "LegalCopyright", "Copyright © 2004 by Martin Preuss\0"
+            VALUE "LegalTrademarks", "Aquamaniac\0"
+            VALUE "OriginalFilename", "dtaus.dll\0"
+            //VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Aqbanking\0"
+            VALUE "ProductVersion", "v@AQBANKING_VERSION_FULL_STRING@\0"
+            VALUE "Author", "Martin Preuss\0"
+            VALUE "Email", "martin@libchipcard.de\0"
+            VALUE "Homepage", "http://www.sf.net/projects/aqbanking\0"
+            VALUE "Description", "Online banking\0"
+	    VALUE "License", "GPL\0"
+            //VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+

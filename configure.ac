@@ -164,6 +164,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        ACX_WINDOWS_PATHS
         aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking32_${AQBANKING_SO_EFFECTIVE}"
         aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
@@ -213,7 +214,7 @@ lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
 rm -Rf aqbanking
-mkdir aqbanking
+mkdir -p aqbanking
 AQ_HEADER_FILES="${lprefix}/version.h"
 
 # symlink all headers from src/libs
@@ -353,6 +354,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dbio/Makefile
   src/plugins/imexporters/dbio/dbio.xml
+  src/plugins/imexporters/dbio/ressource.rc
   src/plugins/imexporters/dbio/profiles/Makefile
   src/plugins/imexporters/dbio/profiles/dtaus.conf
   src/plugins/imexporters/dbio/profiles/swiftmt940.conf
@@ -360,8 +362,10 @@ AC_CONFIG_FILES([
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml
+  src/plugins/parsers/dtaus/ressource.rc
   src/plugins/parsers/swift/Makefile
   src/plugins/parsers/swift/swift.xml
+  src/plugins/parsers/swift/ressource.rc
   src/test/Makefile
   Doxyfile
   Makefile

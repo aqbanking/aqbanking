@@ -1,1 +1,5 @@
 dtaus.xml
+*.def
+*.dll
+*.lib
+*.rc
