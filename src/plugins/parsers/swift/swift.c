@@ -378,6 +378,7 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
 
   tl=AHB_SWIFT_Tag_List_new();
   bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
   rv=AHB_SWIFT_ReadDocument(bio, tl, 1);
   cnt=AHB_SWIFT_Tag_List_GetCount(tl);
   AHB_SWIFT_Tag_List_free(tl);

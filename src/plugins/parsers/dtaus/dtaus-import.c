@@ -987,7 +987,6 @@ int AHB_DTAUS__Import(GWEN_DBIO *dbio,
 GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
                                                       unsigned int pos) {
   int sn;
-  GWEN_DB_NODE *dcfg;
   int rv;
 
   /* read A set */
@@ -1001,12 +1000,14 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
   }
 
   if (sn=='A') {
+    GWEN_DB_NODE *dcfg;
+
     /* create template */
     dcfg=GWEN_DB_Group_new("dcfg");
     rv=AHB_DTAUS__ParseSetA(src, pos, dcfg);
+    GWEN_DB_Group_free(dcfg);
     if (rv==-1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in A set");
-      GWEN_DB_Group_free(dcfg);
       return GWEN_DBIO_CheckFileResultNotOk;
     }
     pos+=rv;
@@ -1014,11 +1015,9 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "DTAUS record does not start with an A set");
-    GWEN_DB_Group_free(dcfg);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
 
-  GWEN_DB_Group_free(dcfg);
   return GWEN_DBIO_CheckFileResultOk;
 }
 
@@ -1042,6 +1041,9 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio,
               "open(%s): %s", fname, strerror(errno));
     return GWEN_DBIO_CheckFileResultNotOk;
   }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
 
   src=GWEN_Buffer_new(0, 1024, 0, 1);
   GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_BIO);

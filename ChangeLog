@@ -1,4 +1,9 @@
 
+2004/09/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug (was falsely reporting a backend as active when in fact
+  it wasn't)
+
 
 2004/09/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

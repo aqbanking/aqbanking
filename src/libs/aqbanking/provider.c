@@ -319,7 +319,7 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
 
 int AB_Provider_IsInit(const AB_PROVIDER *pro){
   assert(pro);
-  return pro->isInit;
+  return (pro->isInit!=0);
 }
 
 

@@ -2213,7 +2213,7 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend){
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
-    return AB_ERROR_NOT_FOUND;
+    return 0;
   }
 
   return AB_Provider_IsInit(pro);
