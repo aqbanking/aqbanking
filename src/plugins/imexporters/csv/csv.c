@@ -155,12 +155,9 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       if (p) {
 	GWEN_TIME *ti;
 
-	if (inUtc)
-	  ti=GWEN_Time_fromUtcString(p, dateFormat);
-        else
-	  ti=GWEN_Time_fromString(p, dateFormat);
-	if (ti)
-	  AB_Transaction_SetDate(t, ti);
+        ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
+        if (ti)
+          AB_Transaction_SetDate(t, ti);
         GWEN_Time_free(ti);
       }
 
@@ -169,13 +166,10 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       if (p) {
 	GWEN_TIME *ti;
 
-	if (inUtc)
-	  ti=GWEN_Time_fromUtcString(p, dateFormat);
-        else
-	  ti=GWEN_Time_fromString(p, dateFormat);
-	if (ti)
-	  AB_Transaction_SetValutaDate(t, ti);
-	GWEN_Time_free(ti);
+        ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
+        if (ti)
+          AB_Transaction_SetValutaDate(t, ti);
+        GWEN_Time_free(ti);
       }
 
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");

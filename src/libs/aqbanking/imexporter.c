@@ -706,6 +706,29 @@ void AB_ImExporter_DtaToUtf8(const char *p,
 
 
 
+GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
+					int inUtc) {
+  GWEN_TIME *ti;
+
+  if (strchr(tmpl, 'h')==0) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, p);
+    GWEN_Buffer_AppendString(dbuf, "-12:00");
+
+    ti=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD-hh:mm");
+    assert(ti);
+    GWEN_Buffer_free(dbuf);
+  }
+  else {
+    if (inUtc)
+      ti=GWEN_Time_fromUtcString(p, tmpl);
+    else
+      ti=GWEN_Time_fromString(p, tmpl);
+  }
+  return ti;
+}
 
 
 

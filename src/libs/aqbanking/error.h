@@ -14,6 +14,10 @@
 #ifndef AQBANKING_ERROR_H
 #define AQBANKING_ERROR_H
 
+/** @FIXME: disabled until next release of GnuCash */
+#define AQBANKING_NOWARN_DEPRECATED
+
+
 #ifdef __declspec
 # if BUILDING_AQBANKING_DLL
 #  define AQBANKING_API __declspec (dllexport)
@@ -24,11 +28,14 @@
 # define AQBANKING_API
 #endif
 
-
-#ifdef __GNUC__
-# define AQBANKING_DEPRECATED __attribute((__deprecated__))
-#else
-# define AQBANKING_DEPRECATED
+#ifndef AQBANKING_NOWARN_DEPRECATED
+# ifdef __GNUC__
+#  define AQBANKING_DEPRECATED __attribute((__deprecated__))
+# else
+#  define AQBANKING_DEPRECATED
+# endif
+# else
+#  define AQBANKING_DEPRECATED
 #endif
 
 #define AQBANKING_LOGDOMAIN "aqbanking"

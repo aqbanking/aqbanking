@@ -1,4 +1,14 @@
 
+2005/03/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in CSV importer
+- added helper function AB_ImExporter_DateFromString()
+- temporarily disabled deprecated warning until next GnuCash is released
+- added blocking macro AQBANKING_NOWARN_DEPRECATED to be used by
+  applications to disable these warnings in future versions (mainly to
+  be used by GnuCash as requested)
+
+
 ===========================================================================
 MARK: released AqBanking - 1.0.7beta (2005/03/28)
 ===========================================================================

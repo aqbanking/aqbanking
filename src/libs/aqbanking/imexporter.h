@@ -358,6 +358,10 @@ void AB_ImExporter_Utf8ToDta(const char *p, int size, GWEN_BUFFER *buf);
 AQBANKING_API 
 void AB_ImExporter_DtaToUtf8(const char *p, int size, GWEN_BUFFER *buf);
 
+AQBANKING_API 
+GWEN_TIME *AB_ImExporter_DateFromString(const char *p,
+                                        const char *tmpl,
+                                        int inUtc);
 
 /*@}*/
 
