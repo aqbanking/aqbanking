@@ -337,7 +337,8 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   char *s;
   char buffer[32];
   unsigned int bleft;
-  int d1, d2, d3;
+  int d1a, d2a, d3a;
+  int d1b, d2b, d3b;
   int neg;
   GWEN_TIME *ti;
 
@@ -351,11 +352,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     GWEN_WaitCallback_Log(0, "SWIFT: Missing valuta date");
     return -1;
   }
-  d1=((p[0]-'0')*10) + (p[1]-'0');
-  d1+=2000;
-  d2=((p[2]-'0')*10) + (p[3]-'0');
-  d3=((p[4]-'0')*10) + (p[5]-'0');
-  ti=GWEN_Time_new(d1, d2-1, d3, 0, 0, 0, 0);
+  d1a=((p[0]-'0')*10) + (p[1]-'0');
+  d1a+=2000;
+  d2a=((p[2]-'0')*10) + (p[3]-'0');
+  d3a=((p[4]-'0')*10) + (p[5]-'0');
+  ti=GWEN_Time_new(d1a, d2a-1, d3a, 0, 0, 0, 0);
   assert(ti);
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -372,9 +373,24 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       GWEN_WaitCallback_Log(0, "SWIFT: Bad booking date");
       return -1;
     }
-    d2=((p[0]-'0')*10) + (p[1]-'0');
-    d3=((p[2]-'0')*10) + (p[3]-'0');
-    ti=GWEN_Time_new(d1, d2-1, d3, 0, 0, 0, 0);
+    d2b=((p[0]-'0')*10) + (p[1]-'0');
+    d3b=((p[2]-'0')*10) + (p[3]-'0');
+    /* use year from valutaDate.
+     * However: if valuta date and booking date are in different years
+     * the booking year might be too high.
+     * We detect this case by comparing the months: If the booking month
+     * is lower than
+     */
+    if (
+	((d2b<<8)+d3b) /* booking date */
+	<              /* smaller than */
+	((d2a<<8)+d3a) /* valuta date ? */
+       )
+      d1b=d1a-1;       /* yes, use valuta year -1 */
+    else
+      d1b=d1a;         /* otherwise it is the same year, use that */
+
+    ti=GWEN_Time_new(d1b, d2b-1, d3b, 0, 0, 0, 0);
     assert(ti);
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
 					    GWEN_DB_FLAGS_OVERWRITE_GROUPS,

@@ -1,4 +1,9 @@
 
+2005/01/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug which could have occurred over year changes
+
+
 2004/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed some bugs concerning UTF8/DTAUS/SWIFT/HBCI character set conversions
