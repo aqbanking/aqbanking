@@ -111,7 +111,11 @@ AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j){
 
 void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st){
   assert(j);
-  j->status=st;
+  if (j->status!=st) {
+    GWEN_Time_free(j->lastStatusChange);
+    j->lastStatusChange=GWEN_CurrentTime();
+    j->status=st;
+  }
 }
 
 
@@ -211,6 +215,17 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "accountId", AB_Account_GetUniqueId(j->account));
 
+  if (j->lastStatusChange) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "lastStatusChange");
+    assert(dbT);
+    if (GWEN_Time_toDb(j->lastStatusChange, dbT)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Error writing time for job %d", j->jobType);
+      return -1;
+    }
+  }
+
   /* let every job store its data */
   switch(j->jobType) {
   case AB_Job_TypeGetBalance:
@@ -306,6 +321,11 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   j->status=AB_Job_Char2Status(GWEN_DB_GetCharValue(db,
                                                     "jobStatus", 0,
                                                     "unknown"));
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "lastStatusChange");
+  if (dbT)
+    j->lastStatusChange=GWEN_Time_fromDb(dbT);
+
   p=GWEN_DB_GetCharValue(db, "createdBy", 0, 0);
   assert(p);
   free(j->createdBy);
@@ -422,6 +442,10 @@ GWEN_DB_NODE *AB_Job_GetProviderData(AB_JOB *j, AB_PROVIDER *pro){
 
 
 
+const GWEN_TIME *AB_Job_GetLastStatusChange(const AB_JOB *j){
+  assert(j);
+  return j->lastStatusChange;
+}
 
 
 

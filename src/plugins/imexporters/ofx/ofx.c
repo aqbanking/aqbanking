@@ -281,7 +281,7 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
     }
 
     if (data.fi_id_valid)
-      AB_Transaction_SetUniqueId(t, data.fi_id);
+      AB_Transaction_SetFiId(t, data.fi_id);
 
     if (data.name_valid)
       AB_Transaction_AddRemoteName(t, data.name, 0);

@@ -24,8 +24,6 @@ AB_TRANSACTION *AB_Transaction_new() {
   st->_usage=1;
   GWEN_INHERIT_INIT(AB_TRANSACTION, st)
   GWEN_LIST_INIT(AB_TRANSACTION, st)
-  st->localCountryCode=280;
-  st->remoteCountryCode=280;
   st->remoteName=GWEN_StringList_new();
   st->purpose=GWEN_StringList_new();
   return st;
@@ -37,16 +35,24 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
   GWEN_INHERIT_FINI(AB_TRANSACTION, st)
+  if (st->localCountry)
+    free(st->localCountry);
   if (st->localBankCode)
     free(st->localBankCode);
+  if (st->localBranchId)
+    free(st->localBranchId);
   if (st->localAccountNumber)
     free(st->localAccountNumber);
   if (st->localSuffix)
     free(st->localSuffix);
   if (st->localName)
     free(st->localName);
+  if (st->remoteCountry)
+    free(st->remoteCountry);
   if (st->remoteBankCode)
     free(st->remoteBankCode);
+  if (st->remoteBranchId)
+    free(st->remoteBranchId);
   if (st->remoteAccountNumber)
     free(st->remoteAccountNumber);
   if (st->remoteSuffix)
@@ -69,6 +75,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->transactionText);
   if (st->primanota)
     free(st->primanota);
+  if (st->fiId)
+    free(st->fiId);
   if (st->purpose)
     GWEN_StringList_free(st->purpose);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
@@ -84,18 +92,24 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
 
   assert(d);
   st=AB_Transaction_new();
-  st->localCountryCode=d->localCountryCode;
+  if (d->localCountry)
+    st->localCountry=strdup(d->localCountry);
   if (d->localBankCode)
     st->localBankCode=strdup(d->localBankCode);
+  if (d->localBranchId)
+    st->localBranchId=strdup(d->localBranchId);
   if (d->localAccountNumber)
     st->localAccountNumber=strdup(d->localAccountNumber);
   if (d->localSuffix)
     st->localSuffix=strdup(d->localSuffix);
   if (d->localName)
     st->localName=strdup(d->localName);
-  st->remoteCountryCode=d->remoteCountryCode;
+  if (d->remoteCountry)
+    st->remoteCountry=strdup(d->remoteCountry);
   if (d->remoteBankCode)
     st->remoteBankCode=strdup(d->remoteBankCode);
+  if (d->remoteBranchId)
+    st->remoteBranchId=strdup(d->remoteBranchId);
   if (d->remoteAccountNumber)
     st->remoteAccountNumber=strdup(d->remoteAccountNumber);
   if (d->remoteSuffix)
@@ -121,6 +135,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->transactionText=strdup(d->transactionText);
   if (d->primanota)
     st->primanota=strdup(d->primanota);
+  if (d->fiId)
+    st->fiId=strdup(d->fiId);
   if (d->purpose)
     st->purpose=GWEN_StringList_dup(d->purpose);
   return st;
@@ -130,10 +146,14 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
 int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   assert(st);
   assert(db);
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localCountryCode", st->localCountryCode))
-    return -1;
+  if (st->localCountry)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localCountry", st->localCountry))
+      return -1;
   if (st->localBankCode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBankCode", st->localBankCode))
+      return -1;
+  if (st->localBranchId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBranchId", st->localBranchId))
       return -1;
   if (st->localAccountNumber)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localAccountNumber", st->localAccountNumber))
@@ -144,10 +164,14 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->localName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localName", st->localName))
       return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountryCode", st->remoteCountryCode))
-    return -1;
+  if (st->remoteCountry)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountry", st->remoteCountry))
+      return -1;
   if (st->remoteBankCode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBankCode", st->remoteBankCode))
+      return -1;
+  if (st->remoteBranchId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBranchId", st->remoteBranchId))
       return -1;
   if (st->remoteAccountNumber)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAccountNumber", st->remoteAccountNumber))
@@ -201,6 +225,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->primanota)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "primanota", st->primanota))
       return -1;
+  if (st->fiId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fiId", st->fiId))
+      return -1;
   if (st->purpose)
     {
       GWEN_STRINGLISTENTRY *se;
@@ -226,13 +253,15 @@ AB_TRANSACTION *st;
 
   assert(db);
   st=AB_Transaction_new();
-  AB_Transaction_SetLocalCountryCode(st, GWEN_DB_GetIntValue(db, "localCountryCode", 0, 280));
+  AB_Transaction_SetLocalCountry(st, GWEN_DB_GetCharValue(db, "localCountry", 0, 0));
   AB_Transaction_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
+  AB_Transaction_SetLocalBranchId(st, GWEN_DB_GetCharValue(db, "localBranchId", 0, 0));
   AB_Transaction_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
   AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
   AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
-  AB_Transaction_SetRemoteCountryCode(st, GWEN_DB_GetIntValue(db, "remoteCountryCode", 0, 280));
+  AB_Transaction_SetRemoteCountry(st, GWEN_DB_GetCharValue(db, "remoteCountry", 0, 0));
   AB_Transaction_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
+  AB_Transaction_SetRemoteBranchId(st, GWEN_DB_GetCharValue(db, "remoteBranchId", 0, 0));
   AB_Transaction_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
   AB_Transaction_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
   if (1) {
@@ -273,6 +302,7 @@ AB_TRANSACTION *st;
   AB_Transaction_SetTransactionCode(st, GWEN_DB_GetIntValue(db, "transactionCode", 0, 0));
   AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
   AB_Transaction_SetPrimanota(st, GWEN_DB_GetCharValue(db, "primanota", 0, 0));
+  AB_Transaction_SetFiId(st, GWEN_DB_GetCharValue(db, "fiId", 0, 0));
   if (1) {
     int i;
 
@@ -290,15 +320,20 @@ AB_TRANSACTION *st;
 }
 
 
-int AB_Transaction_GetLocalCountryCode(const AB_TRANSACTION *st) {
+const char *AB_Transaction_GetLocalCountry(const AB_TRANSACTION *st) {
   assert(st);
-  return st->localCountryCode;
+  return st->localCountry;
 }
 
 
-void AB_Transaction_SetLocalCountryCode(AB_TRANSACTION *st, int d) {
+void AB_Transaction_SetLocalCountry(AB_TRANSACTION *st, const char *d) {
   assert(st);
-  st->localCountryCode=d;
+  if (st->localCountry)
+    free(st->localCountry);
+  if (d)
+    st->localCountry=strdup(d);
+  else
+    st->localCountry=0;
   st->_modified=1;
 }
 
@@ -317,6 +352,24 @@ void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *st, const char *d) {
     st->localBankCode=strdup(d);
   else
     st->localBankCode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetLocalBranchId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localBranchId;
+}
+
+
+void AB_Transaction_SetLocalBranchId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localBranchId)
+    free(st->localBranchId);
+  if (d)
+    st->localBranchId=strdup(d);
+  else
+    st->localBranchId=0;
   st->_modified=1;
 }
 
@@ -375,15 +428,20 @@ void AB_Transaction_SetLocalName(AB_TRANSACTION *st, const char *d) {
 }
 
 
-int AB_Transaction_GetRemoteCountryCode(const AB_TRANSACTION *st) {
+const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *st) {
   assert(st);
-  return st->remoteCountryCode;
+  return st->remoteCountry;
 }
 
 
-void AB_Transaction_SetRemoteCountryCode(AB_TRANSACTION *st, int d) {
+void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *st, const char *d) {
   assert(st);
-  st->remoteCountryCode=d;
+  if (st->remoteCountry)
+    free(st->remoteCountry);
+  if (d)
+    st->remoteCountry=strdup(d);
+  else
+    st->remoteCountry=0;
   st->_modified=1;
 }
 
@@ -402,6 +460,24 @@ void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *st, const char *d) {
     st->remoteBankCode=strdup(d);
   else
     st->remoteBankCode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteBranchId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteBranchId;
+}
+
+
+void AB_Transaction_SetRemoteBranchId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteBranchId)
+    free(st->remoteBranchId);
+  if (d)
+    st->remoteBranchId=strdup(d);
+  else
+    st->remoteBranchId=0;
   st->_modified=1;
 }
 
@@ -666,6 +742,24 @@ void AB_Transaction_SetPrimanota(AB_TRANSACTION *st, const char *d) {
     st->primanota=strdup(d);
   else
     st->primanota=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetFiId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->fiId;
+}
+
+
+void AB_Transaction_SetFiId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->fiId)
+    free(st->fiId);
+  if (d)
+    st->fiId=strdup(d);
+  else
+    st->fiId=0;
   st->_modified=1;
 }
 

@@ -15,6 +15,7 @@
 #define AQBANKING_JOB_H
 
 #include <gwenhywfar/misc2.h>
+#include <gwenhywfar/gwentime.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
@@ -133,6 +134,12 @@ int AB_Job_CheckAvailability(AB_JOB *j);
  */
 AQBANKING_API
 AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j);
+
+/**
+ * Returns the time when the status of this job changed last.
+ */
+AQBANKING_API
+const GWEN_TIME *AB_Job_GetLastStatusChange(const AB_JOB *j);
 
 /**
  * Returns the job type.

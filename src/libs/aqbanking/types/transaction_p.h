@@ -12,13 +12,15 @@ struct AB_TRANSACTION {
   int _usage;
   int _modified;
 
-  int localCountryCode;
+  char *localCountry;
   char *localBankCode;
+  char *localBranchId;
   char *localAccountNumber;
   char *localSuffix;
   char *localName;
-  int remoteCountryCode;
+  char *remoteCountry;
   char *remoteBankCode;
+  char *remoteBranchId;
   char *remoteAccountNumber;
   char *remoteSuffix;
   GWEN_STRINGLIST *remoteName;
@@ -33,6 +35,7 @@ struct AB_TRANSACTION {
   int transactionCode;
   char *transactionText;
   char *primanota;
+  char *fiId;
   GWEN_STRINGLIST *purpose;
 };
 
@@ -48,6 +51,7 @@ This group contains information about the local account.
 
 
 
+
 /*@}*/
 
 /** @name Remote Account Info
@@ -55,6 +59,7 @@ This group contains information about the local account.
 This group contains information about the remote account.
 */
 /*@{*/
+
 
 
 
@@ -91,6 +96,7 @@ by every backends.
 </p>
 */
 /*@{*/
+
 
 
 

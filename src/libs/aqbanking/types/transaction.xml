@@ -53,14 +53,31 @@
       <descr>
         This group contains information about the local account.
       </descr>
-      <elem name="localCountryCode" type="int" default="280" preset="280" />
+      <elem name="localCountry" type="char" ptr="1">
+        <descr>
+          This is the two-character ISO country code (as used in toplevel
+          domains). For Germany use "DE".
+        </descr>
+      </elem>
+
       <elem name="localBankCode" type="char" ptr="1">
         <descr>
          This is the code of the local bank (i.e. <b>your</b> bank).
         </descr>
       </elem>
+      <elem name="localBranchId" type="char" ptr="1">
+        <descr>
+         This is the branch id of the local bank (OFX only)
+        </descr>
+      </elem>
       <elem name="localAccountNumber" type="char" ptr="1" />
-      <elem name="localSuffix" type="char" ptr="1" />
+      <elem name="localSuffix" type="char" ptr="1" >
+        <descr>
+          If your account has subaccounts which are distinguished by
+          different suffixes, then this is that suffix. Otherwise it's
+          empty. (HBCI only)
+        </descr>
+      </elem>
       <elem name="localName" type="char" ptr="1" />
     </group>
     
@@ -68,18 +85,45 @@
       <descr>
         This group contains information about the remote account.
       </descr>
-      <elem name="remoteCountryCode" type="int" default="280" preset="280" />
+      <elem name="remoteCountry" type="char" ptr="1">
+        <descr>
+          This is the two-character ISO country code (as used in toplevel
+          domains). For Germany use "DE".
+        </descr>
+      </elem>
       <elem name="remoteBankCode" type="char" ptr="1" />
+      <elem name="remoteBranchId" type="char" ptr="1">
+        <descr>
+         This is the branch id of the remote bank (OFX only)
+        </descr>
+      </elem>
       <elem name="remoteAccountNumber" type="char" ptr="1" />
       <elem name="remoteSuffix" type="char" ptr="1" />
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
-    <elem name="uniqueId" type="GWEN_TYPE_UINT32" />
+    <elem name="uniqueId" type="GWEN_TYPE_UINT32" >
+      <descr>
+        This is a unique id assigned by the application. However, when
+        adding a transaction to a job (like JobTransfer) this id is
+        assigned by AqBanking to make sure that this id is unique across
+        all applications.
+      </descr>
+    </elem>
 
     <group name="Dates">
-      <elem name="valutaDate" type="GWEN_TIME" ptr="1" />
-      <elem name="date" type="GWEN_TIME" ptr="1" />
+      <elem name="valutaDate" type="GWEN_TIME" ptr="1" >
+        <descr>
+          The date when the transaction was really executed
+          (Datum Valuta/Wertstellung)
+        </descr>
+      </elem>
+      <elem name="date" type="GWEN_TIME" ptr="1" >
+        <descr>
+          The date when the transaction was booked (but sometimes it is
+          unused). (Buchungsdatum)
+        </descr>
+      </elem>
     </group>
     
     <group name="Value">
@@ -92,16 +136,64 @@
          This group contains information which differ between backends.
         </p>
         <p>
-         Some of this information might not even be <b>supported</b> by every backends.
+         Some of this information might not even be <b>supported</b> by every
+         backends.
         </p>
       </descr>
-      <elem name="textKey" type="int" />
-      <elem name="transactionKey" type="char" ptr="1" />
-      <elem name="customerReference" type="char" ptr="1" />
-      <elem name="bankReference" type="char" ptr="1" />
-      <elem name="transactionCode" type="int" />
-      <elem name="transactionText" type="char" ptr="1" />
+      <elem name="textKey" type="int" >
+        <descr>
+          <p>
+            A 3 digit numerical transaction code, defined for all kinds of
+            different actions. (Textschluessel)
+          </p>
+          <p>
+            For a normal transfer you should set it to 51. For debit notes
+            the values 04 or 05 may be used. For other values please refer to
+            your credit institute. (HBCI only)
+          </p>
+        </descr>
+      </elem>
+      <elem name="transactionKey" type="char" ptr="1">
+        <descr>
+          this is the transaction id that tells you more about the type
+          of transaction (3 character code) (Buchungsschluessel)
+          (HBCI only)
+        </descr>
+      </elem>
+      <elem name="customerReference" type="char" ptr="1" >
+        <descr>
+          Reference string, if the customer (you) has specified
+          one. (E.g. the cheque number.) Otherwise "NONREF" or empty
+          (Kundenreferenz)
+        </descr>
+      </elem>
+      <elem name="bankReference" type="char" ptr="1" >
+        <descr>
+          Reference string for this transaction given by the bank, if it
+          has given one. Otherwise empty. (Bankreferenz)
+        </descr>
+      </elem>
+      <elem name="transactionCode" type="int" >
+        <descr>
+          A 3 digit numerical transaction code, defined for all kinds of
+          different actions. (Geschaeftsvorfallcode)
+        </descr>
+      </elem>
+      <elem name="transactionText" type="char" ptr="1" >
+        <descr>
+          Transaction text (e.g. STANDING ORDER) (Buchungstext)
+        </descr>
+      </elem>
+
       <elem name="primanota" type="char" ptr="1" />
+      <elem name="fiId" type="char" ptr="1" >
+        <descr>
+          <p>
+            This is an id optionally assigned by the <b>F</b>inancial 
+            <b>I</b>nstitute. It is mostly used by OFX.
+          </p>
+        </descr>
+      </elem>
       
       <elem name="purpose" type="GWEN_STRINGLIST" ptr="1" >
         <descr>

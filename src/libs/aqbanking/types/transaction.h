@@ -10,13 +10,15 @@ This page describes the properties of AB_TRANSACTION
 <p>
 This group contains information about the local account.
 </p>
-@anchor AB_TRANSACTION_LocalCountryCode
-<h4>LocalCountryCode</h4>
+@anchor AB_TRANSACTION_LocalCountry
+<h4>LocalCountry</h4>
 <p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use DE
+.
 </p>
 <p>
-Set this property with @ref AB_Transaction_SetLocalCountryCode, 
-get it with @ref AB_Transaction_GetLocalCountryCode
+Set this property with @ref AB_Transaction_SetLocalCountry, 
+get it with @ref AB_Transaction_GetLocalCountry
 </p>
 
 @anchor AB_TRANSACTION_LocalBankCode
@@ -33,6 +35,16 @@ Set this property with @ref AB_Transaction_SetLocalBankCode,
 get it with @ref AB_Transaction_GetLocalBankCode
 </p>
 
+@anchor AB_TRANSACTION_LocalBranchId
+<h4>LocalBranchId</h4>
+<p>
+This is the branch id of the local bank (OFX only)
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetLocalBranchId, 
+get it with @ref AB_Transaction_GetLocalBranchId
+</p>
+
 @anchor AB_TRANSACTION_LocalAccountNumber
 <h4>LocalAccountNumber</h4>
 <p>
@@ -45,6 +57,7 @@ get it with @ref AB_Transaction_GetLocalAccountNumber
 @anchor AB_TRANSACTION_LocalSuffix
 <h4>LocalSuffix</h4>
 <p>
+If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it's empty. (HBCI only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalSuffix, 
@@ -64,13 +77,15 @@ get it with @ref AB_Transaction_GetLocalName
 <p>
 This group contains information about the remote account.
 </p>
-@anchor AB_TRANSACTION_RemoteCountryCode
-<h4>RemoteCountryCode</h4>
+@anchor AB_TRANSACTION_RemoteCountry
+<h4>RemoteCountry</h4>
 <p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use DE
+.
 </p>
 <p>
-Set this property with @ref AB_Transaction_SetRemoteCountryCode, 
-get it with @ref AB_Transaction_GetRemoteCountryCode
+Set this property with @ref AB_Transaction_SetRemoteCountry, 
+get it with @ref AB_Transaction_GetRemoteCountry
 </p>
 
 @anchor AB_TRANSACTION_RemoteBankCode
@@ -80,6 +95,16 @@ get it with @ref AB_Transaction_GetRemoteCountryCode
 <p>
 Set this property with @ref AB_Transaction_SetRemoteBankCode, 
 get it with @ref AB_Transaction_GetRemoteBankCode
+</p>
+
+@anchor AB_TRANSACTION_RemoteBranchId
+<h4>RemoteBranchId</h4>
+<p>
+This is the branch id of the remote bank (OFX only)
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteBranchId, 
+get it with @ref AB_Transaction_GetRemoteBranchId
 </p>
 
 @anchor AB_TRANSACTION_RemoteAccountNumber
@@ -112,6 +137,7 @@ get it with @ref AB_Transaction_GetRemoteName
 @anchor AB_TRANSACTION_UniqueId
 <h3>UniqueId</h3>
 <p>
+This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetUniqueId, 
@@ -124,6 +150,7 @@ get it with @ref AB_Transaction_GetUniqueId
 @anchor AB_TRANSACTION_ValutaDate
 <h4>ValutaDate</h4>
 <p>
+The date when the transaction was really executed (Datum Valuta/Wertstellung)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetValutaDate, 
@@ -133,6 +160,7 @@ get it with @ref AB_Transaction_GetValutaDate
 @anchor AB_TRANSACTION_Date
 <h4>Date</h4>
 <p>
+The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetDate, 
@@ -167,6 +195,12 @@ by every backends.
 @anchor AB_TRANSACTION_TextKey
 <h4>TextKey</h4>
 <p>
+<p>
+A 3 digit numerical transaction code, defined for all kinds of different actions. (Textschluessel)
+</p>
+<p>
+For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
+</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKey, 
@@ -176,6 +210,7 @@ get it with @ref AB_Transaction_GetTextKey
 @anchor AB_TRANSACTION_TransactionKey
 <h4>TransactionKey</h4>
 <p>
+this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionKey, 
@@ -185,6 +220,8 @@ get it with @ref AB_Transaction_GetTransactionKey
 @anchor AB_TRANSACTION_CustomerReference
 <h4>CustomerReference</h4>
 <p>
+Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise NONREF
+or empty (Kundenreferenz)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetCustomerReference, 
@@ -194,6 +231,7 @@ get it with @ref AB_Transaction_GetCustomerReference
 @anchor AB_TRANSACTION_BankReference
 <h4>BankReference</h4>
 <p>
+Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetBankReference, 
@@ -203,6 +241,7 @@ get it with @ref AB_Transaction_GetBankReference
 @anchor AB_TRANSACTION_TransactionCode
 <h4>TransactionCode</h4>
 <p>
+A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionCode, 
@@ -212,6 +251,7 @@ get it with @ref AB_Transaction_GetTransactionCode
 @anchor AB_TRANSACTION_TransactionText
 <h4>TransactionText</h4>
 <p>
+Transaction text (e.g. STANDING ORDER) (Buchungstext)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionText, 
@@ -225,6 +265,26 @@ get it with @ref AB_Transaction_GetTransactionText
 <p>
 Set this property with @ref AB_Transaction_SetPrimanota, 
 get it with @ref AB_Transaction_GetPrimanota
+</p>
+
+@anchor AB_TRANSACTION_FiId
+<h4>FiId</h4>
+<p>
+<p>
+This is an id optionally assigned by the
+<b>
+F
+</b>
+inancial
+<b>
+I
+</b>
+nstitute. It is mostly used by OFX.
+</p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetFiId, 
+get it with @ref AB_Transaction_GetFiId
 </p>
 
 @anchor AB_TRANSACTION_Purpose
@@ -278,13 +338,13 @@ This group contains information about the local account.
 /*@{*/
 
 /**
-* Returns the property @ref AB_TRANSACTION_LocalCountryCode
+* Returns the property @ref AB_TRANSACTION_LocalCountry
 */
-int AB_Transaction_GetLocalCountryCode(const AB_TRANSACTION *el);
+const char *AB_Transaction_GetLocalCountry(const AB_TRANSACTION *el);
 /**
-* Set the property @ref AB_TRANSACTION_LocalCountryCode
+* Set the property @ref AB_TRANSACTION_LocalCountry
 */
-void AB_Transaction_SetLocalCountryCode(AB_TRANSACTION *el, int d);
+void AB_Transaction_SetLocalCountry(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalBankCode
@@ -294,6 +354,15 @@ const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_LocalBankCode
 */
 void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LocalBranchId
+*/
+const char *AB_Transaction_GetLocalBranchId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_LocalBranchId
+*/
+void AB_Transaction_SetLocalBranchId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalAccountNumber
@@ -331,13 +400,13 @@ This group contains information about the remote account.
 /*@{*/
 
 /**
-* Returns the property @ref AB_TRANSACTION_RemoteCountryCode
+* Returns the property @ref AB_TRANSACTION_RemoteCountry
 */
-int AB_Transaction_GetRemoteCountryCode(const AB_TRANSACTION *el);
+const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *el);
 /**
-* Set the property @ref AB_TRANSACTION_RemoteCountryCode
+* Set the property @ref AB_TRANSACTION_RemoteCountry
 */
-void AB_Transaction_SetRemoteCountryCode(AB_TRANSACTION *el, int d);
+void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteBankCode
@@ -347,6 +416,15 @@ const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_RemoteBankCode
 */
 void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteBranchId
+*/
+const char *AB_Transaction_GetRemoteBranchId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteBranchId
+*/
+void AB_Transaction_SetRemoteBranchId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteAccountNumber
@@ -504,6 +582,15 @@ const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_Primanota
 */
 void AB_Transaction_SetPrimanota(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_FiId
+*/
+const char *AB_Transaction_GetFiId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_FiId
+*/
+void AB_Transaction_SetFiId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Purpose

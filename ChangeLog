@@ -2,6 +2,9 @@
 2004/09/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - changed type of uniqueId in AB_Transaction
+- added element FiId to transaction
+- dropped country codes from transactions
+- added elements localBranchId and remoteBranchId (for OFX)
 - transactions handed over to JobGetTransaction get assigned a unique transfer
   id
 
