@@ -482,11 +482,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
       assert(p);
 
       pro=AB_Banking_GetProvider(ab, p);
-      if (pro) {
-        rv=AB_Provider_Init(pro);
-        if (rv) {
-          DBG_WARN(0, "Error initializing backend \"%s\"", p);
-        }
+      if (!pro) {
+        DBG_WARN(0, "Error loading/initializing backend \"%s\"", p);
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
