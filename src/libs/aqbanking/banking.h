@@ -494,7 +494,7 @@ int AB_Banking_Save(AB_BANKING *ab);
  *  </li>
  *  <li>
  *    optionally: allow the user to setup a selected backend
- *    (@ref AB_Banking_GetWizardPath to get the required setup wizard) and
+ *    (@ref AB_Banking_FindWizard to get the required setup wizard) and
  *    then run that wizard)
  *  </li>
  * </ul>
@@ -589,20 +589,6 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
  */
 AQBANKING_API 
 int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
-
-/**
- * @deprecated
- * Returns the folder where the wizards for the given backend are
- * located.  You can then use this path and the name of the wizard you
- * want to start to run a wizard. You can look up the available
- * wizards by the function AB_Banking_GetWizardDescrs().
- *
- * This function is deprecated.
- */
-AQBANKING_API
-int AB_Banking_GetWizardPath(AB_BANKING *ab,
-                             const char *backend,
-                             GWEN_BUFFER *pbuf);
 
 /**
  * This function simpifies wizard handling. It seaches for a wizard for

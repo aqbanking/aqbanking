@@ -475,13 +475,14 @@ namespace AB {
 
 
 
-  std::string Banking::getWizardPath(const char *backend){
+  std::string Banking::findWizard(const char *backend,
+                                  const char *frontends){
     GWEN_BUFFER *buf;
     int rv;
     std::string result;
 
     buf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AB_Banking_GetWizardPath(_banking, backend, buf);
+    rv=AB_Banking_FindWizard(_banking, backend, frontends, buf);
     if (!rv)
       result=GWEN_Buffer_GetStart(buf);
     GWEN_Buffer_free(buf);

@@ -138,7 +138,7 @@ namespace AB {
     int suspendProvider(const char *pname);
     int resumeProvider(const char *pname);
 
-    std::string getWizardPath(const char *backend);
+    std::string findWizard(const char *backend, const char *frontends);
 
     /*@}*/
 
