@@ -1,5 +1,10 @@
 2004-09-25  Christian Stimming  <stimming@tuhh.de>
 
+	* src/libs/aqbanking/types/value.c: When changing the locale,
+	immediately copy the previous locale to a new buffer. Otherwise
+	often enough the returned string which was static storage was no
+	longer valid.
+
 	* src/libs/aqbanking/banking.c: In any DelJob method, first check
 	whether the name strings are non-NULL. Fixes crash when aborting
 	the PIN dialog and still calling DelPendingJob afterwards.

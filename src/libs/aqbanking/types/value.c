@@ -118,7 +118,8 @@ AB_VALUE *AB_Value_fromString(const char *s){
     int rv;
     char numbuf[128];
 #ifdef HAVE_SETLOCALE
-    const char *currentLocale;
+    const char *orig_locale;
+    char *currentLocale;
 #endif
 
     /* get floating point */
@@ -144,13 +145,18 @@ AB_VALUE *AB_Value_fromString(const char *s){
       numbuf[i++]='0';
     }
     numbuf[i]=0;
+
 #ifdef HAVE_SETLOCALE
-    currentLocale=setlocale(LC_NUMERIC, 0);
+    orig_locale = setlocale(LC_NUMERIC, NULL);
+    currentLocale = strdup(orig_locale ? orig_locale : "C");
     setlocale(LC_NUMERIC, "C");
 #endif
+
     rv=sscanf(numbuf, "%lf", &d);
+
 #ifdef HAVE_SETLOCALE
     setlocale(LC_NUMERIC, currentLocale);
+    free(currentLocale);
 #endif
     if (rv!=1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read floating point value");
