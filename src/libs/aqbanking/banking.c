@@ -3036,6 +3036,13 @@ int AB_Banking_GetPin(AB_BANKING *ab,
     l=strlen(AB_Pin_GetValue(p));
     if (l>=minLen && l<=maxLen) {
       /* check whether PIN is bad */
+      if (flags & AB_BANKING_INPUT_FLAGS_CONFIRM) {
+        /* got a working pin */
+        memmove(buffer, AB_Pin_GetValue(p), l+1);
+        /* a confirmed pin is always ok */
+        AB_Pin_SetStatus(p, "ok");
+        break;
+      }
       AB_Banking__CheckBadPin(ab, p);
       st=AB_Pin_GetStatus(p);
       assert(st);
@@ -3200,6 +3207,10 @@ int AB_Banking__HashPin(AB_PIN *p) {
         GWEN_Buffer_free(buf);
         return AB_ERROR_GENERIC;
       }
+      bs=GWEN_Buffer_GetUsedBytes(buf);
+      if (*(GWEN_Buffer_GetStart(buf)+bs-1)=='/')
+        /* cut of trailing slash */
+        GWEN_Buffer_Crop(buf, 0, bs-1);
       AB_Pin_SetHash(p, GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
     }
@@ -3219,7 +3230,7 @@ int AB_Banking__SaveBadPins(AB_BANKING *ab) {
   GWEN_DB_NODE *dbPins;
 
   dbPins=GWEN_DB_GetGroup(ab->data,
-                          GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                          GWEN_DB_FLAGS_DEFAULT,
                           "static/pins");
   assert(dbPins);
   p=AB_Pin_List_First(ab->pinList);
