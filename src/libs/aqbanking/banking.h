@@ -73,10 +73,14 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 
 
 
-/** @defgroup G_AB_BANKING_ML AB_BANKING High Level API
+/** @defgroup G_AB_BANKING_JOB_API AB_BANKING Job-API
  *
- * @short This group contains the high level API ("main interface")
- * function group.
+ * @short This group contains the job API ("main interface") function group.
+ *
+ * <p>
+ * This is the preferred API for new programs. New features will first be
+ * implemented here.
+ * </p>
  */
 /*@{*/
 
@@ -121,6 +125,19 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  *    @endcode
  *  </li>
  * </ul>
+ * <p>
+ * A note about <i>confirmation buttons</i>: AqBanking has been designed with
+ * non-interactive applications in mind. For such an application is is
+ * important to know what button-press it has to simulate upon catching of a
+ * messagebox callback. This is what the confimation button flags are for.
+ * For informative messages the application may simply return the number of
+ * the confirmation button and be done.
+ * </p>
+ * <p>
+ * However, non-interactive applications should return an error (<1 && >3)
+ * for messages classified as <b>dangerous</b>
+ * (see @ref AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS) to avoid data loss.
+ * </p>
  */
 /*@{*/
 /**
@@ -1319,7 +1336,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
  * @param flags flags, see @ref AB_BANKING_INPUT_FLAGS_CONFIRM ff.
  * @param title title of the input box
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
- * @param buffer buffer to store the response in. Must have at least room
+ * @param buffer buffer to store the response in. Must have at least room for
  *  @b maxLen bytes
  * @param minLen minimal length of input (if 0 then there is no low limit)
  * @param maxLen size of the buffer including the trailing NULL character.
@@ -1393,7 +1410,7 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * On graphical user interfaces such a dialog should contain a widget
  * for the text presented here, a progress bar, a text widget to
  * collect the log messages received via @ref AB_Banking_ProgressLog and
- * button to allow the user to abort the current operation monitored by
+ * a button to allow the user to abort the current operation monitored by
  * this dialog window.
  * </p>
  * <p>
@@ -1538,7 +1555,7 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
  * @param title Title of the input box (in UTF-8)
  * @param text Text of the box: UTF-8, with both a normal text and a HTML
  *   variant of the text in the same string. See text restrictions note above.
- * @param buffer Buffer to store the response in. Must have at least room
+ * @param buffer Buffer to store the response in. Must have at least room for
  *  @b maxLen bytes
  * @param minLen Minimal length of input that is required before the returned
  *   answer is accepted (if 0 then there is no low limit)
@@ -1569,7 +1586,7 @@ int AB_Banking_GetPin(AB_BANKING *ab,
  *
  * Note: There has to be *some* Pin caching during the execution of
  * one job, because the medium is accessed several time. It would
- * therefore be very incovenient for the user when having to enter the
+ * therefore be very inconvenient for the user having to enter the
  * PIN several times during one job. Therefore we decided to implement
  * an internal PIN cache.
  *
@@ -1676,7 +1693,7 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
                                     const char *bankId);
 
 /**
- * This functions retrieves information about banks. It loads the
+ * This function retrieves information about banks. It loads the
  * appropriate bank checker module and asks it for a list of AB_BANKINFO
  * objects which match the given template. Empty fields in this template
  * always match. Service entries (AB_BANKINFO_SERVICE) are not compared.
@@ -1721,11 +1738,23 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 /*@}*/ /* defgroup Middle Level API */
 
 
-/** @defgroup G_AB_BANKING_HL Application Level API
+/** @defgroup G_AB_BANKING_IMEXPORT_API Im/Exporter API
  *
- * @short This group contains the Application Level API ("very high
- * level") function group.
+ * @short This group contains a very simple API.
  *
+ * <p>
+ * This API is intended to be used when adding support for AqBanking to
+ * already existing applications. Basically this API just defines some
+ * functions which enqueue requests (such as "Get balance") and a function
+ * which gathers answers to all requests into an importer/exporter context.
+ * </p>
+ * <p>
+ * This way your application only needs to provide the functionality to
+ * import such a context.
+ * </p>
+ * <p>
+ * Mixing the Job-API with this API is allowed.
+ * </p>
  * <p>
  * A program should first call @ref AB_Banking_Init to allow AqBanking
  * to load its configuration files and initialize itself.
@@ -1785,7 +1814,8 @@ int AB_Banking_RequestTransactions(AB_BANKING *ab,
  * <p>
  * This functions gathers all available information from the results of
  * all currently finished jobs. Jobs which have been evaluated by this
- * function are automatically removed from the queue of finished jobs.
+ * function and which had been created by the calling application are
+ * automatically removed from the queue of finished jobs.
  * </p>
  * <p>
  * Please note that this function even returns information extracted from
@@ -1832,7 +1862,7 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
                                 AB_ACCOUNT *a, const char *alias);
 
 /**
- * This functions returns the AqBanking account to which the given
+ * This function returns the AqBanking account to which the given
  * alias (=unique id of your application's own account data) has been
  * mapped.
  * @return corresponding AqBanking (or 0 if none)
