@@ -1,4 +1,15 @@
 
+===========================================================================
+MARK: released AqBanking -0.9.2 (2004/09/02)
+===========================================================================
+
+
+2004/09/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- prepared next release (revised API, additional high level API, bugfixes etc)
+- AqBanking now works with KMyMoney
+
+
 2004/08/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added conveniance functions to importer/exporter

@@ -258,7 +258,7 @@ int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
       while(t) {
         GWEN_DB_NODE *dbT3;
 
-        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_PATH_FLAGS_CREATE_GROUP,
                               "transaction");
         assert(dbT3);
         if (AB_Transaction_toDb(t, dbT3)) {

@@ -4,8 +4,11 @@ noinst_LTLIBRARIES=libtypes.la
 
 typefiles=transaction.xml
 
+EXTRA_DIST=$(typefiles)
+
 noinst_HEADERS=\
   accstatus_p.h \
+  accstatus_l.h \
   balance_p.h \
   transaction_l.h \
   transaction_p.h \
