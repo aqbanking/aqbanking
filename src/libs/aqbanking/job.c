@@ -213,6 +213,9 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   p=AB_Job_Status2Char(j->status);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "jobStatus", p);
+  if (j->resultText)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "resultText", j->resultText);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "accountId", AB_Account_GetUniqueId(j->account));
 
@@ -325,7 +328,10 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   j->idForProvider=GWEN_DB_GetIntValue(db, "idForProvider", 0, 0);
   j->status=AB_Job_Char2Status(GWEN_DB_GetCharValue(db,
                                                     "jobStatus", 0,
-                                                    "unknown"));
+						    "unknown"));
+  p=GWEN_DB_GetCharValue(db, "resultText", 0, 0);
+  if (p)
+    j->resultText=strdup(p);
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                        "lastStatusChange");
   if (dbT)

@@ -1,4 +1,11 @@
 
+2005/02/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed order in AB_Banking_Fini() (now the providers are deinit first)
+- now all job types for the current app are removed from the finished queue
+- fixed DTAUS import- and export parsers
+
+
 2005/02/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - now certificate handling is done inside AqBanking (no longer in the

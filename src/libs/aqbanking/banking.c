@@ -1115,6 +1115,21 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   assert(ab);
 
+  /* deinit all providers */
+  pro=AB_Provider_List_First(ab->providers);
+  while(pro) {
+    while (AB_Provider_IsInit(pro)) {
+      rv=AB_Banking_FiniProvider(ab, pro);
+      if (rv) {
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Error deinitializing backend \"%s\"",
+		 AB_Provider_GetName(pro));
+        break;
+      }
+    }
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
+
   GWEN_DB_SetIntValue(ab->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "static/alwaysAskForCert",
                       ab->alwaysAskForCert);
@@ -1177,21 +1192,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       se=GWEN_StringListEntry_Next(se);
     } /* while */
   }
-
-  /* deinit all providers */
-  pro=AB_Provider_List_First(ab->providers);
-  while(pro) {
-    while (AB_Provider_IsInit(pro)) {
-      rv=AB_Banking_FiniProvider(ab, pro);
-      if (rv) {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Error deinitializing backend \"%s\"",
-		 AB_Provider_GetName(pro));
-        break;
-      }
-    }
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
 
   /* store appplication specific data */
   rv=AB_Banking__SaveAppData(ab);
@@ -3947,7 +3947,7 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
       tryRemove=1;
     }
     else {
-      tryRemove=0;
+      tryRemove=1;
     }
 
     /* eventually remove the job from finished queue */

@@ -71,11 +71,19 @@ int AHB_DTAUS__ReadWord(GWEN_BUFFER *src,
       break;
     if (!isspace(c))
       break;
-    GWEN_Buffer_IncrementPos(src, 1);
+    GWEN_Buffer_ReadByte(src);
   } /* for */
 
   /* read data */
-  GWEN_Buffer_AppendBytes(dst, GWEN_Buffer_GetPosPointer(src), size-i);
+  size-=i;
+  for (i=0; i<size; i++) {
+    int c;
+
+    c=GWEN_Buffer_ReadByte(src);
+    if (c==-1)
+      break;
+    GWEN_Buffer_AppendByte(dst, (unsigned char)c);
+  }
 
   /* remove trailing spaces */
   p=GWEN_Buffer_GetStart(dst);
@@ -109,7 +117,6 @@ int AHB_DTAUS__ParseExtSet(GWEN_BUFFER *src,
     return -1;
   }
 
-  GWEN_Buffer_Dump(tmp, stderr, 5);
   if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%d", &typ)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "not an integer at %d", pos);
     GWEN_Buffer_free(tmp);
@@ -169,8 +176,11 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   tmp=GWEN_Buffer_new(0, 128, 0, 1);
 
   /* read transaction type */
+  DBG_ERROR(AQBANKING_LOGDOMAIN,
+            "Reading transaction type at %d", pos+5);
   if (AHB_DTAUS__ReadWord(src, tmp, pos+5, 2)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading transaction type at %d", pos+5);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error reading transaction type at %d", pos+5);
     GWEN_Buffer_free(tmp);
     return -1;
   }
@@ -203,6 +213,45 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
                        GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "localbankCode",
 		       GWEN_Buffer_GetStart(tmp));
+
+  /* date */
+  GWEN_Buffer_Reset(tmp);
+  if (AHB_DTAUS__ReadWord(src, tmp, pos+50, 6)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error reading date at %d", pos+50);
+    GWEN_Buffer_free(tmp);
+    return -1;
+  }
+  if (GWEN_Buffer_GetUsedBytes(tmp)) {
+    int day, month, year;
+    const char *p;
+    GWEN_TIME *ti;
+
+    if (GWEN_Buffer_GetUsedBytes(tmp)!=6) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid date at %d", pos+50);
+      GWEN_Buffer_free(tmp);
+      return -1;
+    }
+    p=GWEN_Buffer_GetStart(tmp);
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Date: %s", p);
+    day=((p[0]-'0')*10) + (p[1]-'0');
+    month=((p[2]-'0')*10) + (p[3]-'0');
+    year=((p[4]-'0')*10) +
+      (p[5]-'0');
+    if (year>92)
+      year+=1900;
+    else
+      year+=2000;
+    ti=GWEN_Time_new(year, month-1, day, 0, 0, 0, 0);
+    if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(xa,
+                                            GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                                            "date"))) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
+      GWEN_Buffer_free(tmp);
+      return -1;
+    }
+  }
+
 
   /* account id */
   GWEN_Buffer_Reset(tmp);
@@ -264,7 +313,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
     ti=GWEN_Time_new(year, month-1, day, 0, 0, 0, 0);
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(xa,
                                             GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                            "date"))) {
+                                            "execDate"))) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
       GWEN_Buffer_free(tmp);
       return -1;
@@ -601,7 +650,9 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     return -1;
   }
   if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%ud", &extSets)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad number of ext sets at %d", pos+185);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad number of ext sets at %d (%04x)",
+              pos+185,
+              pos+185);
     GWEN_Buffer_free(tmp);
     return -1;
   }
@@ -829,6 +880,7 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   /* read A set */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Reading A set (pos=%d)", pos);
   GWEN_Buffer_SetPos(src, pos+4);
+
   sn=GWEN_Buffer_PeekByte(src);
   if (sn==-1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few data");
@@ -864,6 +916,8 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       return -1;
     }
     if (sn=='C') {
+      GWEN_DB_NODE *dbDate;
+
       cSets++;
       DBG_INFO(AQBANKING_LOGDOMAIN, "Reading C set (pos=%d)", pos);
       if (isDebitNote)
@@ -873,21 +927,34 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                            "value/currency",
                            GWEN_DB_GetCharValue(dcfg, "currency", 0, "EUR"));
-      p=GWEN_DB_GetCharValue(dcfg, "bankCode", 0, 0);
+      p=GWEN_DB_GetCharValue(cfg, "bankCode", 0, 0);
+      if (!p)
+	p=GWEN_DB_GetCharValue(dcfg, "localBankCode", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                              "localBankCode", p);
-      p=GWEN_DB_GetCharValue(dcfg, "accountId", 0, 0);
+      p=GWEN_DB_GetCharValue(cfg, "acccountId", 0, 0);
+      if (!p)
+	p=GWEN_DB_GetCharValue(dcfg, "localAccountNumber", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                              "localAccountNumber", p);
-      p=GWEN_DB_GetCharValue(dcfg, "name", 0, 0);
+      p=GWEN_DB_GetCharValue(cfg, "name", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                              "localName", p);
-      p=GWEN_DB_GetCharValue(dcfg, "execDate", 0, 0);
-      if (p)
-        GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "date", p);
+
+      dbDate=GWEN_DB_GetGroup(dcfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST,"execDate");
+      if (!dbDate)
+        dbDate=GWEN_DB_GetGroup(dcfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+      if (dbDate) {
+        GWEN_DB_NODE *dbX;
+
+        dbX=GWEN_DB_GetGroup(xa, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                             "date");
+        assert(dbX);
+        GWEN_DB_AddGroupChildren(dbX, dbDate);
+      }
 
       rv=AHB_DTAUS__ParseSetC(src, pos, xa,
                               &sumEUR,
@@ -945,12 +1012,11 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   GWEN_DB_SetIntValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "isDebitNote", isDebitNote);
   sumbuf=GWEN_Buffer_new(0, 32, 0, 1);
-  if (GWEN_Text_DoubleToBuffer(sumEUR, sumbuf)==0)
+  if (GWEN_Text_DoubleToBuffer(sumEUR/100.0, sumbuf)==0)
     GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "sumEUR", GWEN_Buffer_GetStart(sumbuf));
-  sumbuf=GWEN_Buffer_new(0, 32, 0, 1);
   GWEN_Buffer_Reset(sumbuf);
-  if (GWEN_Text_DoubleToBuffer(sumDEM, sumbuf)==0)
+  if (GWEN_Text_DoubleToBuffer(sumDEM/100.0, sumbuf)==0)
     GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "sumDEM", GWEN_Buffer_GetStart(sumbuf));
   GWEN_Buffer_Reset(sumbuf);

@@ -267,49 +267,12 @@ double AHB_DTAUS__string2double(const char *s){
     return 0.0;
   }
   else {
-    unsigned int i;
     double d;
-    char c;
-    int rv;
-    char numbuf[128];
-#ifdef HAVE_SETLOCALE
-    const char *currentLocale;
-#endif
 
-    /* get floating point */
-    i=0;
-    c=0;
-    while(*s) {
-      c=*s;
-      if (c==',')
-        c='.';
-      else if (!isdigit(c)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Non-digit character in value");
-        return 0;
-      }
-      assert(i<sizeof(numbuf)-1);
-      numbuf[i++]=c;
-      s++;
+    if (GWEN_Text_StringToDouble(s, &d)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value \"%s\"", s);
+      return 0.0;
     }
-    if (c=='.') {
-      /* last was comma, make sure at least one digit follows */
-      assert(i<sizeof(numbuf)-1);
-      numbuf[i++]='0';
-    }
-    numbuf[i]=0;
-#ifdef HAVE_SETLOCALE
-    currentLocale=setlocale(LC_NUMERIC, 0);
-    setlocale(LC_NUMERIC, "C");
-#endif
-    rv=sscanf(numbuf, "%lf", &d);
-#ifdef HAVE_SETLOCALE
-    setlocale(LC_NUMERIC, currentLocale);
-#endif
-    if (rv!=1) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read floating point value");
-      return 0;
-    }
-
     return d;
   }
 }
@@ -406,7 +369,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 4: destination bank code */
   p=GWEN_DB_GetCharValue(xa,
-                         "remoteAccountNumber",
+                         "remoteBankCode",
                          0, 0);
   if (p) {
     if (1!=sscanf(p, "%lf", &dd)) {
@@ -444,7 +407,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     return -1;
   }
 
-  /* field 6: inernal customer number (0s for now) */
+  /* field 6: internal customer number (0s for now) */
   for (i=0; i<13; i++) GWEN_Buffer_AppendByte(dst, '0');
 
   /* field 7a: text key */
@@ -471,6 +434,10 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
                                                      "value/value",
                                                      0, "0,"));
+    if (dd==0.0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DEM value:");
+      return -1;
+    }
     *sumDEM+=dd;
     snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
@@ -485,20 +452,28 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     }
   }
 
-  /* field 10: first bank */
-  if (AHB_DTAUS__AddNum(dst, 8,
-                        GWEN_DB_GetCharValue(cfg,
-                                             "bankCode",
-                                             0, ""))) {
+  /* field 10: local bank code */
+  p=GWEN_DB_GetCharValue(xa, "localbankCode", 0, 0);
+  if (!p)
+    p=GWEN_DB_GetCharValue(cfg, "bankCode", 0, 0);
+  if (!p) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No local bank code");
+    return -1;
+  }
+  if (AHB_DTAUS__AddNum(dst, 8, p)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
-  /* field 11: destination account id */
-  if (AHB_DTAUS__AddNum(dst, 10,
-                          GWEN_DB_GetCharValue(xa,
-                                               "remoteAccountNumber",
-                                               0, ""))) {
+  /* field 11: local account id */
+  p=GWEN_DB_GetCharValue(xa, "localAccountNumber", 0, 0);
+  if (!p)
+    GWEN_DB_GetCharValue(cfg, "accountId", 0, 0);
+  if (!p) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No local account number");
+    return -1;
+  }
+  if (AHB_DTAUS__AddNum(dst, 10, p)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
@@ -508,6 +483,10 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
                                                      "value/value",
                                                      0, "0,"));
+    if (dd==0.0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad EUR value:");
+      return -1;
+    }
     *sumEUR+=dd;
     snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
