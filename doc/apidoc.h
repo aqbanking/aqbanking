@@ -19,14 +19,15 @@ G_AB_CPP_INTERFACE).
 If you are writing an application and want to use AqBanking's
 features, there are two possibilities:
 
- - Use the "Application Layer API", which requires the least coding
- effort on the application side. See @ref G_AB_BANKING_HL
+ - Use the "Application Layer API" (maybe this should better be called
+ "ImExporter Layer API"), which requires the least coding effort on
+ the application side. See @ref G_AB_BANKING_HL
 
  - Or you can use the "Main Interface API" (also called "High level
- API" sometimes), which offers the highest flexibility but requires
- slightly more coding effort. See @ref G_AB_BANKING, and there is also
- a full introduction into the program flow of that interface: @ref
- G_APP_INTRO
+ API" sometimes), which offers the highest flexibility by its access
+ to @ref AB_JOB objects but requires slightly more coding effort. See
+ @ref G_AB_BANKING, and there is also a full introduction into the
+ program flow of that interface: @ref G_APP_INTRO
 
 A general Note: All strings exchanged from and to AqBanking are
 expected in UTF-8 encoding unless stated otherwise. Please do not pass
@@ -75,8 +76,9 @@ library is organized in multiple layers:
     <ul>
       <li>Managing Backends/Providers</li>
       <li>Managing Accounts</li>
-      <li>Accepting online banking jobs and from the application and
-      sending it to the corresponding provider</li>
+      <li>Accepting @ref AB_JOB objects for online banking jobs from
+      the application and sending it to the corresponding
+      provider</li>
     </ul>
     The application only needs to ask AqBanking for a list of accounts
     and to map those accounts to its own accounts.
@@ -84,9 +86,11 @@ library is organized in multiple layers:
   </li>
   <li>
 
-  <b>Application Layer</b>: This layer offers an even simpler API to
-  applications, where the calls to all lower layers are combined. This
-  may be usefull when adding AqBanking support to applications which
+  <b>Application Layer</b> (maybe this should better be called
+  "ImExporter Layer"): This layer offers an even simpler API to
+  applications, where the calls to all lower layers are combined and
+  the application will <i>not</i> deal with @ref AB_JOB objects. This
+  may be useful when adding AqBanking support to applications which
   have not been designed to work with AqBanking in the first place
   (see @ref G_AB_BANKING_HL)
 
