@@ -39,32 +39,42 @@ AQBANKING_API
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
 
-
+/** The status of a job. */
 typedef enum {
-  /** job is new and not enqueued */
+  /** Job is new and not yet enqueued. */
   AB_Job_StatusNew=0,
-  /** job has been updated by the backend */
+  /** job has been updated by the backend and is still not yet enqueued. */
   AB_Job_StatusUpdated,
-  /** job has been enqueued */
+  /** Job has been enqueued, i.e. it has not yet been sent, but will
+      be sent at the next AB_BANKING_ExecuteQueue(). These jobs are
+      stored in the "todo" directory. */
   AB_Job_StatusEnqueued,
-  /** jobs has been sent */
+  /** Job has been sent, but there is not yet any response. */
   AB_Job_StatusSent,
-  /** job has been sent, and an answer has been received. However, the
-   * answer to this job said that the job is still pending at the backend.
-   * This status is most likely used with transfer orders which are accepted
-   * by the bank server but checked (and possibly rejected) later. */
+  /** Job has been sent, and an answer has been received, so the Job
+      has been successfully sent to the bank. However, the answer to
+      this job said that the job is still pending at the bank server.
+      This status is most likely used with transfer orders which are
+      accepted by the bank server but checked (and possibly rejected)
+      later. These jobs are stored in the "pending" directory.*/
   AB_Job_StatusPending,
-  /** job has been sucessfully executed */
+  /** Job has been sent, a response has been received, and everything
+      has been sucessfully executed. These jobs are stored in the
+      "finished" directory. */
   AB_Job_StatusFinished,
-  /** error in jobs' execution */
+  /** There was an error in jobs' execution. FIXME: Does this mean the
+      job is enqueued, sent, pending, or none of these? How can the
+      App be sure that the job isn't accidentally enqueued again? */
   AB_Job_StatusError,
-  /** jobs was enqueued but then deferred */
+  /** Jobs was enqueued but then deferred i.e. removed from the queue,
+      and nothing will happen anymore with this job. */
   AB_Job_StatusDeferred,
-  /** unknown status */
+  /** Unknown status */
   AB_Job_StatusUnknown=999
 } AB_JOB_STATUS;
 
 
+/** The type of the job, which also corresponds to its subclass of AB_JOB. */
 typedef enum {
   /** unknown job */
   AB_Job_TypeUnknown=0,
