@@ -229,49 +229,14 @@ AB_TRANSACTION *st;
   assert(db);
   st=AB_Transaction_new();
   AB_Transaction_SetLocalCountryCode(st, GWEN_DB_GetIntValue(db, "localCountryCode", 0, 280));
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localBankCode");
-    if (dbT)  AB_Transaction_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localAccountNumber");
-    if (dbT)  AB_Transaction_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localSuffix");
-    if (dbT)  AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localName");
-    if (dbT)  AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
-  }
+  AB_Transaction_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
+  AB_Transaction_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
+  AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
+  AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
   AB_Transaction_SetRemoteCountryCode(st, GWEN_DB_GetIntValue(db, "remoteCountryCode", 0, 280));
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteBankCode");
-    if (dbT)  AB_Transaction_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteAccountNumber");
-    if (dbT)  AB_Transaction_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteSuffix");
-    if (dbT)  AB_Transaction_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
-  }
+  AB_Transaction_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
+  AB_Transaction_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
+  AB_Transaction_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
   if (1) {
     int i;
 
@@ -284,12 +249,7 @@ AB_TRANSACTION *st;
       AB_Transaction_AddRemoteName(st, s, 0);
     } /* for */
   }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "uniqueId");
-    if (dbT)  AB_Transaction_SetUniqueId(st, GWEN_DB_GetCharValue(db, "uniqueId", 0, 0));
-  }
+  AB_Transaction_SetUniqueId(st, GWEN_DB_GetCharValue(db, "uniqueId", 0, 0));
   if (1) {
     GWEN_DB_NODE *dbT;
 
@@ -309,37 +269,12 @@ AB_TRANSACTION *st;
     if (dbT)  AB_Transaction_SetValue(st, AB_Value_fromDb(dbT));
   }
   AB_Transaction_SetTextKey(st, GWEN_DB_GetIntValue(db, "textKey", 0, 0));
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "transactionKey");
-    if (dbT)  AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "customerReference");
-    if (dbT)  AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankReference");
-    if (dbT)  AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
-  }
+  AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
+  AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
+  AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
   AB_Transaction_SetTransactionCode(st, GWEN_DB_GetIntValue(db, "transactionCode", 0, 0));
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "transactionText");
-    if (dbT)  AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
-  }
-  if (1) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "primanota");
-    if (dbT)  AB_Transaction_SetPrimanota(st, GWEN_DB_GetCharValue(db, "primanota", 0, 0));
-  }
+  AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
+  AB_Transaction_SetPrimanota(st, GWEN_DB_GetCharValue(db, "primanota", 0, 0));
   if (1) {
     int i;
 
