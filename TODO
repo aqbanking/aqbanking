@@ -1,0 +1,2 @@
+- load all plugins via GWEN_PLUGIN mechanism
+- load plugin descriptions via GWEN_PLUGIN mechanism
