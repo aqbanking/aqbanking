@@ -317,7 +317,7 @@ void AB_Split_ClearName(AB_SPLIT *st) {
 }
 
 
-int AB_Split_HasName(AB_SPLIT *st, const char *d) {
+int AB_Split_HasName(const AB_SPLIT *st, const char *d) {
   return GWEN_StringList_HasString(st->name, d);
 }
 
@@ -380,7 +380,7 @@ void AB_Split_ClearPurpose(AB_SPLIT *st) {
 }
 
 
-int AB_Split_HasPurpose(AB_SPLIT *st, const char *d) {
+int AB_Split_HasPurpose(const AB_SPLIT *st, const char *d) {
   return GWEN_StringList_HasString(st->purpose, d);
 }
 

@@ -33,6 +33,8 @@ void AB_EuTransferInfo_free(AB_EUTRANSFER_INFO *st) {
     if (--(st->_usage)==0) {
   if (st->countryCode)
     free(st->countryCode);
+  if (st->fieldLimits)
+    AB_TransactionLimits_free(st->fieldLimits);
   if (st->limitLocalValue)
     AB_Value_free(st->limitLocalValue);
   if (st->limitForeignValue)
@@ -52,11 +54,8 @@ AB_EUTRANSFER_INFO *AB_EuTransferInfo_dup(const AB_EUTRANSFER_INFO *d) {
   st=AB_EuTransferInfo_new();
   if (d->countryCode)
     st->countryCode=strdup(d->countryCode);
-  st->maxLenOurName=d->maxLenOurName;
-  st->maxLenOtherName=d->maxLenOtherName;
-  st->maxOtherNameLines=d->maxOtherNameLines;
-  st->maxLenPurpose=d->maxLenPurpose;
-  st->maxPurposeLines=d->maxPurposeLines;
+  if (d->fieldLimits)
+    st->fieldLimits=AB_TransactionLimits_dup(d->fieldLimits);
   if (d->limitLocalValue)
     st->limitLocalValue=AB_Value_dup(d->limitLocalValue);
   if (d->limitForeignValue)
@@ -71,16 +70,9 @@ int AB_EuTransferInfo_toDb(const AB_EUTRANSFER_INFO *st, GWEN_DB_NODE *db) {
   if (st->countryCode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "countryCode", st->countryCode))
       return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenOurName", st->maxLenOurName))
-    return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenOtherName", st->maxLenOtherName))
-    return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxOtherNameLines", st->maxOtherNameLines))
-    return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenPurpose", st->maxLenPurpose))
-    return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxPurposeLines", st->maxPurposeLines))
-    return -1;
+  if (st->fieldLimits)
+    if (AB_TransactionLimits_toDb(st->fieldLimits, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "fieldLimits")))
+      return -1;
   if (st->limitLocalValue)
     if (AB_Value_toDb(st->limitLocalValue, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "limitLocalValue")))
       return -1;
@@ -97,11 +89,12 @@ AB_EUTRANSFER_INFO *st;
   assert(db);
   st=AB_EuTransferInfo_new();
   AB_EuTransferInfo_SetCountryCode(st, GWEN_DB_GetCharValue(db, "countryCode", 0, 0));
-  AB_EuTransferInfo_SetMaxLenOurName(st, GWEN_DB_GetIntValue(db, "maxLenOurName", 0, 0));
-  AB_EuTransferInfo_SetMaxLenOtherName(st, GWEN_DB_GetIntValue(db, "maxLenOtherName", 0, 0));
-  AB_EuTransferInfo_SetMaxOtherNameLines(st, GWEN_DB_GetIntValue(db, "maxOtherNameLines", 0, 0));
-  AB_EuTransferInfo_SetMaxLenPurpose(st, GWEN_DB_GetIntValue(db, "maxLenPurpose", 0, 0));
-  AB_EuTransferInfo_SetMaxPurposeLines(st, GWEN_DB_GetIntValue(db, "maxPurposeLines", 0, 0));
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "fieldLimits");
+    if (dbT)  AB_EuTransferInfo_SetFieldLimits(st, AB_TransactionLimits_fromDb(dbT));
+  }
   if (1) {
     GWEN_DB_NODE *dbT;
 
@@ -137,67 +130,20 @@ void AB_EuTransferInfo_SetCountryCode(AB_EUTRANSFER_INFO *st, const char *d) {
 }
 
 
-int AB_EuTransferInfo_GetMaxLenOurName(const AB_EUTRANSFER_INFO *st) {
+const AB_TRANSACTION_LIMITS *AB_EuTransferInfo_GetFieldLimits(const AB_EUTRANSFER_INFO *st) {
   assert(st);
-  return st->maxLenOurName;
+  return st->fieldLimits;
 }
 
 
-void AB_EuTransferInfo_SetMaxLenOurName(AB_EUTRANSFER_INFO *st, int d) {
+void AB_EuTransferInfo_SetFieldLimits(AB_EUTRANSFER_INFO *st, const AB_TRANSACTION_LIMITS *d) {
   assert(st);
-  st->maxLenOurName=d;
-  st->_modified=1;
-}
-
-
-int AB_EuTransferInfo_GetMaxLenOtherName(const AB_EUTRANSFER_INFO *st) {
-  assert(st);
-  return st->maxLenOtherName;
-}
-
-
-void AB_EuTransferInfo_SetMaxLenOtherName(AB_EUTRANSFER_INFO *st, int d) {
-  assert(st);
-  st->maxLenOtherName=d;
-  st->_modified=1;
-}
-
-
-int AB_EuTransferInfo_GetMaxOtherNameLines(const AB_EUTRANSFER_INFO *st) {
-  assert(st);
-  return st->maxOtherNameLines;
-}
-
-
-void AB_EuTransferInfo_SetMaxOtherNameLines(AB_EUTRANSFER_INFO *st, int d) {
-  assert(st);
-  st->maxOtherNameLines=d;
-  st->_modified=1;
-}
-
-
-int AB_EuTransferInfo_GetMaxLenPurpose(const AB_EUTRANSFER_INFO *st) {
-  assert(st);
-  return st->maxLenPurpose;
-}
-
-
-void AB_EuTransferInfo_SetMaxLenPurpose(AB_EUTRANSFER_INFO *st, int d) {
-  assert(st);
-  st->maxLenPurpose=d;
-  st->_modified=1;
-}
-
-
-int AB_EuTransferInfo_GetMaxPurposeLines(const AB_EUTRANSFER_INFO *st) {
-  assert(st);
-  return st->maxPurposeLines;
-}
-
-
-void AB_EuTransferInfo_SetMaxPurposeLines(AB_EUTRANSFER_INFO *st, int d) {
-  assert(st);
-  st->maxPurposeLines=d;
+  if (st->fieldLimits)
+    AB_TransactionLimits_free(st->fieldLimits);
+  if (d)
+    st->fieldLimits=AB_TransactionLimits_dup(d);
+  else
+    st->fieldLimits=0;
   st->_modified=1;
 }
 

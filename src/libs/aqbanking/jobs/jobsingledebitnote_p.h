@@ -17,12 +17,13 @@
 
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/transactionlimits.h>
 #include "jobsingledebitnote_l.h"
 
 typedef struct AB_JOBSINGLEDEBITNOTE AB_JOBSINGLEDEBITNOTE;
 struct AB_JOBSINGLEDEBITNOTE {
   AB_TRANSACTION *transaction;
-  int maxPurposeLines;
+  AB_TRANSACTION_LIMITS *limits;
   int *textKeys;
 };
 void AB_JobSingleDebitNote_FreeData(void *bp, void *p);

@@ -641,7 +641,7 @@ AQBANKING_API void AB_Transaction_SetRemoteName(AB_TRANSACTION *el, const GWEN_S
 AQBANKING_API void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *d, int chk);
 AQBANKING_API void AB_Transaction_RemoveRemoteName(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st);
-AQBANKING_API int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d);
+AQBANKING_API int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d);
 
 /*@}*/
 
@@ -807,7 +807,7 @@ AQBANKING_API void AB_Transaction_SetPurpose(AB_TRANSACTION *el, const GWEN_STRI
 AQBANKING_API void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, int chk);
 AQBANKING_API void AB_Transaction_RemovePurpose(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearPurpose(AB_TRANSACTION *st);
-AQBANKING_API int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d);
+AQBANKING_API int AB_Transaction_HasPurpose(const AB_TRANSACTION *st, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Category
@@ -820,7 +820,7 @@ AQBANKING_API void AB_Transaction_SetCategory(AB_TRANSACTION *el, const GWEN_STR
 AQBANKING_API void AB_Transaction_AddCategory(AB_TRANSACTION *st, const char *d, int chk);
 AQBANKING_API void AB_Transaction_RemoveCategory(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearCategory(AB_TRANSACTION *st);
-AQBANKING_API int AB_Transaction_HasCategory(AB_TRANSACTION *st, const char *d);
+AQBANKING_API int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const char *d);
 
 /*@}*/
 

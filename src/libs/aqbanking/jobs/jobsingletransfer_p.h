@@ -22,7 +22,7 @@
 typedef struct AB_JOBSINGLETRANSFER AB_JOBSINGLETRANSFER;
 struct AB_JOBSINGLETRANSFER {
   AB_TRANSACTION *transaction;
-  int maxPurposeLines;
+  AB_TRANSACTION_LIMITS *limits;
   int *textKeys;
 };
 void AB_JobSingleTransfer_FreeData(void *bp, void *p);

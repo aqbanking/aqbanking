@@ -129,6 +129,15 @@ const char *AB_Account_GetCurrency(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetCurrency(AB_ACCOUNT *acc, const char *s);
 
+/**
+ * Returns the two-character ISO 3166 country code ("de" for Germany).
+ */
+AQBANKING_API 
+const char *AB_Account_GetCountry(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+void AB_Account_SetCountry(AB_ACCOUNT *acc, const char *s);
+
 /*@}*/
 
 

@@ -93,6 +93,14 @@ AC_SUBST(prefix)
 
 
 ###-------------------------------------------------------------------------
+#
+# static/shared handling
+#
+AC_ENABLE_STATIC(no)
+AC_ENABLE_SHARED(yes)
+
+
+###-------------------------------------------------------------------------
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL

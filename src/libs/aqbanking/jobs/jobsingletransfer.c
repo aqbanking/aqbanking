@@ -43,7 +43,6 @@ AB_JOB *AB_JobSingleTransfer_new(AB_ACCOUNT *a){
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j, jd,
                        AB_JobSingleTransfer_FreeData);
 
-  jd->maxPurposeLines=-1;
   return j;
 }
 
@@ -54,8 +53,39 @@ void AB_JobSingleTransfer_FreeData(void *bp, void *p) {
 
   jd=(AB_JOBSINGLETRANSFER*)p;
   AB_Transaction_free(jd->transaction);
+  AB_TransactionLimits_free(jd->limits);
   free(jd->textKeys);
   GWEN_FREE_OBJECT(jd);
+}
+
+
+
+void AB_JobSingleTransfer_SetFieldLimits(AB_JOB *j,
+                                         AB_TRANSACTION_LIMITS *limits){
+  AB_JOBSINGLETRANSFER *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
+  assert(jd);
+
+  AB_TransactionLimits_free(jd->limits);
+  if (limits) jd->limits=AB_TransactionLimits_dup(limits);
+  else jd->limits=0;
+
+  free(jd->textKeys);
+  jd->textKeys=0;
+}
+
+
+
+const AB_TRANSACTION_LIMITS *AB_JobSingleTransfer_GetFieldLimits(AB_JOB *j) {
+  AB_JOBSINGLETRANSFER *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
+  assert(jd);
+
+  return jd->limits;
 }
 
 
@@ -106,23 +136,29 @@ const AB_TRANSACTION *AB_JobSingleTransfer_GetTransaction(const AB_JOB *j){
 int AB_JobSingleTransfer_GetMaxPurposeLines(const AB_JOB *j){
   AB_JOBSINGLETRANSFER *jd;
 
+  DBG_ERROR(AQBANKING_LOGDOMAIN,
+            "AB_JobSingleTransfer_GetMaxPurposeLines is deprecated");
+
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
   assert(jd);
 
-  return jd->maxPurposeLines;
+  if (jd->limits) {
+    int i;
+
+    i=AB_TransactionLimits_GetMaxLinesPurpose(jd->limits);
+    if (i==0)
+      i=-1;
+    return i;
+  }
+  return -1;
 }
 
 
 
 void AB_JobSingleTransfer_SetMaxPurposeLines(AB_JOB *j, int i){
-  AB_JOBSINGLETRANSFER *jd;
-
-  assert(j);
-  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
-  assert(jd);
-
-  jd->maxPurposeLines=i;
+  DBG_ERROR(AQBANKING_LOGDOMAIN,
+            "AB_JobSingleTransfer_SetMaxPurposeLines is deprecated");
 }
 
 
@@ -134,33 +170,37 @@ const int *AB_JobSingleTransfer_GetTextKeys(const AB_JOB *j){
   jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
   assert(jd);
 
-  return jd->textKeys;
-}
+  if (jd->textKeys==0) {
+    const GWEN_STRINGLIST *sl;
+    GWEN_STRINGLISTENTRY *se;
+    int *p;
 
+    if (jd->limits==0)
+      return 0;
+    sl=AB_TransactionLimits_GetValuesTextKey(jd->limits);
+    if (sl==0)
+      return 0;
+    if (GWEN_StringList_Count(sl)==0)
+      return 0;
+    jd->textKeys=(int*)malloc(sizeof(int)*(GWEN_StringList_Count(sl)+1));
+    assert(jd->textKeys);
+    se=GWEN_StringList_FirstEntry(sl);
+    assert(se);
+    p=jd->textKeys;
+    while(se) {
+      const char *s;
+      int i;
 
-
-void AB_JobSingleTransfer_SetTextKeys(AB_JOB *j, const int *tk){
-  int i;
-  AB_JOBSINGLETRANSFER *jd;
-
-  assert(j);
-  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
-  assert(jd);
-
-  free(jd->textKeys);
-  jd->textKeys=0;
-
-  if (tk) {
-    for (i=0; ; i++) {
-      if (tk[i]==-1)
-	break;
-    }
-    if (i) {
-      jd->textKeys=(int*)malloc((i+1)*(sizeof(int)));
-      assert(jd->textKeys);
-      memmove(jd->textKeys, tk, (i+1)*(sizeof(int)));
-    }
+      s=GWEN_StringListEntry_Data(se);
+      assert(s);
+      if (1==sscanf(s, "%d", &i))
+        *p=i;
+      p++;
+    } /* while se */
+    *p=-1;
   }
+
+  return jd->textKeys;
 }
 
 
@@ -174,23 +214,19 @@ int AB_JobSingleTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
   jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j);
   assert(jd);
 
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "params/maxPurposeLines",
-                      jd->maxPurposeLines);
-
-  if (jd->textKeys) {
-    int i;
-
-    GWEN_DB_DeleteVar(db, "textkeys");
-    for (i=0; ; i++) {
-      if (jd->textKeys[i]==-1)
-        break;
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-                          "params/textKeys",
-                          jd->textKeys[i]);
+  /* write params */
+  if (jd->limits) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "params/limits");
+    assert(dbT);
+    rv=AB_TransactionLimits_toDb(jd->limits, dbT);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return rv;
     }
   }
 
+  /* write arguments */
   if (jd->transaction) {
     dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                          "args/transaction");
@@ -210,7 +246,6 @@ int AB_JobSingleTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
 AB_JOB *AB_JobSingleTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AB_JOB *j;
   AB_JOBSINGLETRANSFER *jd;
-  int i;
   GWEN_DB_NODE *dbT;
 
   j=AB_Job_new(AB_Job_TypeTransfer, a);
@@ -218,26 +253,11 @@ AB_JOB *AB_JobSingleTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBSINGLETRANSFER, j, jd,
                        AB_JobSingleTransfer_FreeData);
 
-  jd->maxPurposeLines=GWEN_DB_GetIntValue(db, "params/maxPurposeLines",0, -1);
-
-  /* count text keys */
-  for (i=0;;i++) {
-    int k;
-
-    k=GWEN_DB_GetIntValue(db, "params/textKeys",i, -1);
-    if (k==-1)
-      break;
-  }
-  /* read text keys */
-  if (i) {
-    int k;
-
-    jd->textKeys=(int*)malloc((i+1)*(sizeof(int)));
-    assert(jd->textKeys);
-    for (k=0; k<i; k++)
-      jd->textKeys[k]=GWEN_DB_GetIntValue(db, "params/textKeys",i, -1);
-    jd->textKeys[k]=-1;
-  }
+  /* read params */
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "params/limits");
+  if (dbT)
+    jd->limits=AB_TransactionLimits_fromDb(dbT);
 
   /* read arguments */
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,

@@ -19,14 +19,9 @@
 #include <aqbanking/jobsingledebitnote.h>
 
 
-
 AQBANKING_API 
-void AB_JobSingleDebitNote_SetMaxPurposeLines(AB_JOB *j, int i);
-
-AQBANKING_API 
-void AB_JobSingleDebitNote_SetTextKeys(AB_JOB *j, const int *tk);
-
-
+void AB_JobSingleDebitNote_SetFieldLimits(AB_JOB *j,
+                                          AB_TRANSACTION_LIMITS *limits);
 
 #endif
 

@@ -712,7 +712,7 @@ void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st) {
 }
 
 
-int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d) {
+int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->remoteName, d);
 }
 
@@ -988,7 +988,7 @@ void AB_Transaction_ClearPurpose(AB_TRANSACTION *st) {
 }
 
 
-int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d) {
+int AB_Transaction_HasPurpose(const AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->purpose, d);
 }
 
@@ -1033,7 +1033,7 @@ void AB_Transaction_ClearCategory(AB_TRANSACTION *st) {
 }
 
 
-int AB_Transaction_HasCategory(AB_TRANSACTION *st, const char *d) {
+int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->category, d);
 }
 

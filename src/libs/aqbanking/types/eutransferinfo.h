@@ -16,54 +16,14 @@ Set this property with @ref AB_EuTransferInfo_SetCountryCode,
 get it with @ref AB_EuTransferInfo_GetCountryCode
 </p>
 
-@anchor AB_EUTRANSFER_INFO_MaxLenOurName
-<h3>MaxLenOurName</h3>
+@anchor AB_EUTRANSFER_INFO_FieldLimits
+<h3>FieldLimits</h3>
 <p>
-Maximum length of the issuer name.
+This is the list of known field limits for an AB_TRANSACTION. This object remains the owner of lists returned via @ref AB_EuTransfer_GetFieldLimits..
 </p>
 <p>
-Set this property with @ref AB_EuTransferInfo_SetMaxLenOurName, 
-get it with @ref AB_EuTransferInfo_GetMaxLenOurName
-</p>
-
-@anchor AB_EUTRANSFER_INFO_MaxLenOtherName
-<h3>MaxLenOtherName</h3>
-<p>
-Maximum length of the recipients name.
-</p>
-<p>
-Set this property with @ref AB_EuTransferInfo_SetMaxLenOtherName, 
-get it with @ref AB_EuTransferInfo_GetMaxLenOtherName
-</p>
-
-@anchor AB_EUTRANSFER_INFO_MaxOtherNameLines
-<h3>MaxOtherNameLines</h3>
-<p>
-Maximum number of other name lines.
-</p>
-<p>
-Set this property with @ref AB_EuTransferInfo_SetMaxOtherNameLines, 
-get it with @ref AB_EuTransferInfo_GetMaxOtherNameLines
-</p>
-
-@anchor AB_EUTRANSFER_INFO_MaxLenPurpose
-<h3>MaxLenPurpose</h3>
-<p>
-Maximum length of the purpose line.
-</p>
-<p>
-Set this property with @ref AB_EuTransferInfo_SetMaxLenPurpose, 
-get it with @ref AB_EuTransferInfo_GetMaxLenPurpose
-</p>
-
-@anchor AB_EUTRANSFER_INFO_MaxPurposeLines
-<h3>MaxPurposeLines</h3>
-<p>
-Maximum number of purpose lines.
-</p>
-<p>
-Set this property with @ref AB_EuTransferInfo_SetMaxPurposeLines, 
-get it with @ref AB_EuTransferInfo_GetMaxPurposeLines
+Set this property with @ref AB_EuTransferInfo_SetFieldLimits, 
+get it with @ref AB_EuTransferInfo_GetFieldLimits
 </p>
 
 @anchor AB_EUTRANSFER_INFO_LimitLocalValue
@@ -92,6 +52,7 @@ get it with @ref AB_EuTransferInfo_GetLimitForeignValue
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/types.h>
 #include <aqbanking/value.h>
+#include <aqbanking/transactionlimits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -146,49 +107,13 @@ AQBANKING_API const char *AB_EuTransferInfo_GetCountryCode(const AB_EUTRANSFER_I
 AQBANKING_API void AB_EuTransferInfo_SetCountryCode(AB_EUTRANSFER_INFO *el, const char *d);
 
 /**
-* Returns the property @ref AB_EUTRANSFER_INFO_MaxLenOurName
+* Returns the property @ref AB_EUTRANSFER_INFO_FieldLimits
 */
-AQBANKING_API int AB_EuTransferInfo_GetMaxLenOurName(const AB_EUTRANSFER_INFO *el);
+AQBANKING_API const AB_TRANSACTION_LIMITS *AB_EuTransferInfo_GetFieldLimits(const AB_EUTRANSFER_INFO *el);
 /**
-* Set the property @ref AB_EUTRANSFER_INFO_MaxLenOurName
+* Set the property @ref AB_EUTRANSFER_INFO_FieldLimits
 */
-AQBANKING_API void AB_EuTransferInfo_SetMaxLenOurName(AB_EUTRANSFER_INFO *el, int d);
-
-/**
-* Returns the property @ref AB_EUTRANSFER_INFO_MaxLenOtherName
-*/
-AQBANKING_API int AB_EuTransferInfo_GetMaxLenOtherName(const AB_EUTRANSFER_INFO *el);
-/**
-* Set the property @ref AB_EUTRANSFER_INFO_MaxLenOtherName
-*/
-AQBANKING_API void AB_EuTransferInfo_SetMaxLenOtherName(AB_EUTRANSFER_INFO *el, int d);
-
-/**
-* Returns the property @ref AB_EUTRANSFER_INFO_MaxOtherNameLines
-*/
-AQBANKING_API int AB_EuTransferInfo_GetMaxOtherNameLines(const AB_EUTRANSFER_INFO *el);
-/**
-* Set the property @ref AB_EUTRANSFER_INFO_MaxOtherNameLines
-*/
-AQBANKING_API void AB_EuTransferInfo_SetMaxOtherNameLines(AB_EUTRANSFER_INFO *el, int d);
-
-/**
-* Returns the property @ref AB_EUTRANSFER_INFO_MaxLenPurpose
-*/
-AQBANKING_API int AB_EuTransferInfo_GetMaxLenPurpose(const AB_EUTRANSFER_INFO *el);
-/**
-* Set the property @ref AB_EUTRANSFER_INFO_MaxLenPurpose
-*/
-AQBANKING_API void AB_EuTransferInfo_SetMaxLenPurpose(AB_EUTRANSFER_INFO *el, int d);
-
-/**
-* Returns the property @ref AB_EUTRANSFER_INFO_MaxPurposeLines
-*/
-AQBANKING_API int AB_EuTransferInfo_GetMaxPurposeLines(const AB_EUTRANSFER_INFO *el);
-/**
-* Set the property @ref AB_EUTRANSFER_INFO_MaxPurposeLines
-*/
-AQBANKING_API void AB_EuTransferInfo_SetMaxPurposeLines(AB_EUTRANSFER_INFO *el, int d);
+AQBANKING_API void AB_EuTransferInfo_SetFieldLimits(AB_EUTRANSFER_INFO *el, const AB_TRANSACTION_LIMITS *d);
 
 /**
 * Returns the property @ref AB_EUTRANSFER_INFO_LimitLocalValue

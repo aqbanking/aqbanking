@@ -75,6 +75,10 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   assert(dbT);
   GWEN_DB_AddGroupChildren(dbT, db);
 
+  /* preset */
+  if (AB_Account_GetCountry(a)==0)
+    AB_Account_SetCountry(a, "de");
+
   /* mark DB not-dirty */
   GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
 
@@ -377,6 +381,25 @@ void AB_Account_SetCurrency(AB_ACCOUNT *a, const char *s){
   GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "static/currency", s);
 }
+
+
+
+const char *AB_Account_GetCountry(const AB_ACCOUNT *a){
+  assert(a);
+  assert(a->usage);
+  return GWEN_DB_GetCharValue(a->data, "static/country", 0, 0);
+}
+
+
+
+void AB_Account_SetCountry(AB_ACCOUNT *a, const char *s){
+  assert(a);
+  assert(a->usage);
+  assert(s);
+  GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "static/country", s);
+}
+
 
 
 

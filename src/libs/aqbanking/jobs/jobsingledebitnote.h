@@ -17,6 +17,7 @@
 
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/transactionlimits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,19 +63,31 @@ const AB_TRANSACTION *AB_JobSingleDebitNote_GetTransaction(const AB_JOB *j);
 /*@{*/
 
 /**
+ * Returns the transaction field limits for this job.
+ */
+AQBANKING_API 
+const AB_TRANSACTION_LIMITS *AB_JobSingleDebitNote_GetFieldLimits(AB_JOB *j);
+
+/**
+ * @deprecated
+ * Please use @ref AB_JobSingleDebitNote_GetFieldLimits instead and take
+ * the interesting limit from that object.
  * Returns the number of lines the purpose field of a transaction is allowed
  * to have. If -1 then this limit is unknown. It is best in that case to
  * assume a limit of 2 (or to leave it to the user).
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_JobSingleDebitNote_GetMaxPurposeLines(const AB_JOB *j);
 
 /**
+ * @deprecated
+ * Please use @ref AB_JobSingleDebitNote_GetFieldLimits instead and take
+ * the interesting limit from that object.
  * Returns a pointer to a list of INTs containing valid text keys.
  * The list returned is terminated by an entry of the value "-1".
  * If this parameter is unknown NULL is returned.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 const int *AB_JobSingleDebitNote_GetTextKeys(const AB_JOB *j);
 /*@}*/
 

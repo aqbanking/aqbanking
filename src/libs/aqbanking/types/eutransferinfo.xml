@@ -7,6 +7,17 @@
       <function type="free" name="AB_Value_free" />
     </functions>
   </type>
+
+  <type id="AB_TRANSACTION_LIMITS" prefix="AB_TransactionLimits" >
+    <functions>
+      <function type="new" name="AB_TransactionLimits_new" />
+      <function type="free" name="AB_TransactionLimits_free" />
+      <function type="dup" name="AB_TransactionLimits_dup" />
+      <function type="todb" name="AB_TransactionLimits_toDb" />
+      <function type="fromdb" name="AB_TransactionLimits_fromDb" />
+    </functions>
+  </type>
+  
 </typedefs>
 
 <types>
@@ -20,6 +31,7 @@
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >aqbanking/value.h</header>
+      <header type="sys" >aqbanking/transactionlimits.h</header>
     </headers>
     
     <elem name="countryCode" type="char" ptr="1" >
@@ -28,31 +40,16 @@
         domains). For Germany use "DE".
       </descr>
     </elem>
-    <elem name="maxLenOurName" type="int" >
+
+    <elem name="fieldLimits" type="AB_TRANSACTION_LIMITS" ptr="1" 
+          init="1" copy="1" const="1" >
       <descr>
-        Maximum length of the issuer name.
+        This is the list of known field limits for an AB_TRANSACTION.
+        This object remains the owner of lists returned via
+        @ref AB_EuTransfer_GetFieldLimits..
       </descr>
     </elem>
-    <elem name="maxLenOtherName" type="int" >
-      <descr>
-        Maximum length of the recipients name.
-      </descr>
-    </elem>
-    <elem name="maxOtherNameLines" type="int" >
-      <descr>
-        Maximum number of other name lines.
-      </descr>
-    </elem>
-    <elem name="maxLenPurpose" type="int" >
-      <descr>
-        Maximum length of the purpose line.
-      </descr>
-    </elem>
-    <elem name="maxPurposeLines" type="int" >
-      <descr>
-        Maximum number of purpose lines.
-      </descr>
-    </elem>
+    
     <elem name="limitLocalValue" type="AB_VALUE" ptr="1" >
       <descr>
         Optional limit for a transfer in local currency.

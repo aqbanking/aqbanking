@@ -209,7 +209,7 @@ AQBANKING_API void AB_Split_SetName(AB_SPLIT *el, const GWEN_STRINGLIST *d);
 AQBANKING_API void AB_Split_AddName(AB_SPLIT *st, const char *d, int chk);
 AQBANKING_API void AB_Split_RemoveName(AB_SPLIT *st, const char *d);
 AQBANKING_API void AB_Split_ClearName(AB_SPLIT *st);
-AQBANKING_API int AB_Split_HasName(AB_SPLIT *st, const char *d);
+AQBANKING_API int AB_Split_HasName(const AB_SPLIT *st, const char *d);
 
 /*@}*/
 
@@ -238,7 +238,7 @@ AQBANKING_API void AB_Split_SetPurpose(AB_SPLIT *el, const GWEN_STRINGLIST *d);
 AQBANKING_API void AB_Split_AddPurpose(AB_SPLIT *st, const char *d, int chk);
 AQBANKING_API void AB_Split_RemovePurpose(AB_SPLIT *st, const char *d);
 AQBANKING_API void AB_Split_ClearPurpose(AB_SPLIT *st);
-AQBANKING_API int AB_Split_HasPurpose(AB_SPLIT *st, const char *d);
+AQBANKING_API int AB_Split_HasPurpose(const AB_SPLIT *st, const char *d);
 
 
 #ifdef __cplusplus

@@ -662,7 +662,7 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 /** @deprecated
  *
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_GetWizardPath(AB_BANKING *ab,
                              const char *backend,
                              GWEN_BUFFER *pbuf);

@@ -4,6 +4,21 @@ MARK: released AqBanking - 1.0.7beta (2005/03/28)
 ===========================================================================
 
 
+2005/03/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added type AB_TRANSACTION_LIMITS. This one is supposed to contain field
+  limits for AB_TRANSACTIONs. This can be used to set some limits in a
+  GUI.
+- AB_JOBs which deal with transactions (like AB_Job_TypeTransfer and
+  AB_Job_TypeDebitNote) now use AB_TRANSACTION_LIMITS instead of their own
+  fields. Their own fields are still supported for compatibility reasons
+  but are soon to be removed (as soon as the next GnuCash version is
+  released)
+- define macro AQBANKING_DEPRECATED (used with gcc to mark deprecated
+  functions)
+- added country to AB_ACCOUNT
+
+
 2005/03/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - always use "UTC 12:00" for dates which do not contain a time. This avoids

@@ -25,6 +25,12 @@
 #endif
 
 
+#ifdef __GNUC__
+# define AQBANKING_DEPRECATED __attribute((__deprecated__))
+#else
+# define AQBANKING_DEPRECATED
+#endif
+
 #define AQBANKING_LOGDOMAIN "aqbanking"
 
 

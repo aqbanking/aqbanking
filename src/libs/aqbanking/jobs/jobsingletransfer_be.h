@@ -21,10 +21,8 @@
 
 
 AQBANKING_API 
-void AB_JobSingleTransfer_SetMaxPurposeLines(AB_JOB *j, int i);
-
-AQBANKING_API 
-void AB_JobSingleTransfer_SetTextKeys(AB_JOB *j, const int *tk);
+void AB_JobSingleTransfer_SetFieldLimits(AB_JOB *j,
+                                         AB_TRANSACTION_LIMITS *limits);
 
 
 
