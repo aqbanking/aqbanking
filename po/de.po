@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-02-22 00:46+0100\n"
-"PO-Revision-Date: 2005-02-17 08:47+0100\n"
+"POT-Creation-Date: 2005-02-23 10:49+0100\n"
+"PO-Revision-Date: 2005-02-23 10:55+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -13,73 +13,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:3602
+#: src/libs/aqbanking/banking.c:3621
 msgid "Account Not Mapped"
 msgstr "Konto nicht zugeordnet"
 
-#: src/libs/aqbanking/banking.c:3603
+#: src/libs/aqbanking/banking.c:3622
 msgid "The given account has not been mapped to online accounts."
 msgstr "Das angegebene Konto wurde noch nicht einem Online-Konto zugeordnet."
 
-#: src/libs/aqbanking/banking.c:3605 src/libs/aqbanking/banking.c:3618
-#: src/libs/aqbanking/banking.c:3684 src/libs/aqbanking/banking.c:3699
-#: src/libs/aqbanking/banking.c:3746 src/libs/aqbanking/banking.c:3761
+#: src/libs/aqbanking/banking.c:3624 src/libs/aqbanking/banking.c:3637
+#: src/libs/aqbanking/banking.c:3703 src/libs/aqbanking/banking.c:3718
+#: src/libs/aqbanking/banking.c:3765 src/libs/aqbanking/banking.c:3780
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:3615
+#: src/libs/aqbanking/banking.c:3634
 msgid "Bad Account Mapping"
 msgstr "Fehlerhafte Kontozuordnung"
 
-#: src/libs/aqbanking/banking.c:3616
+#: src/libs/aqbanking/banking.c:3635
 msgid ""
 "The mapping between the application account the banking account is invalid."
 msgstr ""
 "Die Zuordnung eines Anwendungskontos zu einem Online-Konto ist fehlerhaft."
 
-#: src/libs/aqbanking/banking.c:3681 src/libs/aqbanking/banking.c:3743
+#: src/libs/aqbanking/banking.c:3700 src/libs/aqbanking/banking.c:3762
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:3682 src/libs/aqbanking/banking.c:3744
+#: src/libs/aqbanking/banking.c:3701 src/libs/aqbanking/banking.c:3763
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:3697 src/libs/aqbanking/banking.c:3759
+#: src/libs/aqbanking/banking.c:3716 src/libs/aqbanking/banking.c:3778
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:3698 src/libs/aqbanking/banking.c:3760
+#: src/libs/aqbanking/banking.c:3717 src/libs/aqbanking/banking.c:3779
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:4156
+#: src/libs/aqbanking/banking.c:4175
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:4158
+#: src/libs/aqbanking/banking.c:4177
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
-"to use it anyway ?<html><p>You entered the same PIN twice.</p><p>The PIN is "
-"marked as <b>bad</b>, do you want to use it anyway ?</p></html>"
+"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is "
+"marked as <b>bad</b>, do you want to use it anyway?</p></html>"
 msgstr ""
 "Sie haben zweimal die gleiche PIN eingegeben.\n"
 "Diese PIN war in früheren Versuchen als falsch erkannt worden.\n"
-"Wollen Sie sie trotzdem verwenden ? <html> <p> Sie haben zweimal die gleiche "
-"PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
-"b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden ? </p> </html>"
+"Wollen Sie sie trotzdem verwenden? <html> <p> Sie haben zweimal die gleiche PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:4170
+#: src/libs/aqbanking/banking.c:4189
 msgid "Use this"
 msgstr "Dennoch verwenden"
 
-#: src/libs/aqbanking/banking.c:4171
+#: src/libs/aqbanking/banking.c:4190
 msgid "Re-enter"
 msgstr "Neu eingeben"
 
-#: src/libs/aqbanking/banking.c:4479
+#: src/libs/aqbanking/banking.c:4498
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -128,38 +126,38 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/libs/aqbanking/banking.c:4601 src/libs/aqbanking/banking.c:4617
+#: src/libs/aqbanking/banking.c:4620 src/libs/aqbanking/banking.c:4636
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
 #. the same again for HTML
-#: src/libs/aqbanking/banking.c:4641 src/libs/aqbanking/banking.c:4642
-#: src/libs/aqbanking/banking.c:4643 src/libs/aqbanking/banking.c:4644
-#: src/libs/aqbanking/banking.c:4645 src/libs/aqbanking/banking.c:4646
-#: src/libs/aqbanking/banking.c:4649 src/libs/aqbanking/banking.c:4651
-#: src/libs/aqbanking/banking.c:4652 src/libs/aqbanking/banking.c:4653
-#: src/libs/aqbanking/banking.c:4654 src/libs/aqbanking/banking.c:4655
-#: src/libs/aqbanking/banking.c:4656 src/libs/aqbanking/banking.c:4660
+#: src/libs/aqbanking/banking.c:4660 src/libs/aqbanking/banking.c:4661
+#: src/libs/aqbanking/banking.c:4662 src/libs/aqbanking/banking.c:4663
+#: src/libs/aqbanking/banking.c:4664 src/libs/aqbanking/banking.c:4665
+#: src/libs/aqbanking/banking.c:4668 src/libs/aqbanking/banking.c:4670
+#: src/libs/aqbanking/banking.c:4671 src/libs/aqbanking/banking.c:4672
+#: src/libs/aqbanking/banking.c:4673 src/libs/aqbanking/banking.c:4674
+#: src/libs/aqbanking/banking.c:4675 src/libs/aqbanking/banking.c:4679
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/libs/aqbanking/banking.c:4668
+#: src/libs/aqbanking/banking.c:4687
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:4670
+#: src/libs/aqbanking/banking.c:4689
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:4670
+#: src/libs/aqbanking/banking.c:4689
 msgid "No"
 msgstr "Nein"
 
-#: src/libs/aqbanking/banking.c:4676
+#: src/libs/aqbanking/banking.c:4695
 msgid "Certificate"
 msgstr "Zertifikat"
 
-#: src/libs/aqbanking/banking.c:4678
+#: src/libs/aqbanking/banking.c:4697
 msgid ""
 "Do you want to accept this certificate permanently?<html>Do you want to "
 "accept this certificate permanently?</html>"
@@ -167,15 +165,15 @@ msgstr ""
 "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie dieses "
 "Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
 
-#: src/libs/aqbanking/banking.c:4680
+#: src/libs/aqbanking/banking.c:4699
 msgid "Permanently"
 msgstr "Dauerhaft"
 
-#: src/libs/aqbanking/banking.c:4681
+#: src/libs/aqbanking/banking.c:4700
 msgid "This session only"
 msgstr "Nur für diese Sitzung"
 
-#: src/libs/aqbanking/banking.c:4682
+#: src/libs/aqbanking/banking.c:4701
 msgid "Abort"
 msgstr "Abbrechen"
 

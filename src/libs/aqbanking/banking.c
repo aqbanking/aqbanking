@@ -4176,14 +4176,14 @@ int AB_Banking_GetPin(AB_BANKING *ab,
 				  I18N(
 				  "You entered the same PIN twice.\n"
 				  "The PIN is marked as bad, do you want\n"
-				  "to use it anyway ?"
+				  "to use it anyway?"
 				  "<html>"
                                   "<p>"
 				  "You entered the same PIN twice."
 				  "</p>"
                                   "<p>"
 				  "The PIN is marked as <b>bad</b>, "
-				  "do you want to use it anyway ?"
+				  "do you want to use it anyway?"
 				  "</p>"
 				  "</html>"),
 				  I18N("Use this"),
