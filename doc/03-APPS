@@ -90,6 +90,8 @@ following steps (Example: Getting the balance of an account):
     This makes AqBanking actually read its configuration. Before this call
     AqBanking can not work.
 
+---------------------------------------------------------- X8
+
  4. Create the job to get the balance:
     AB_JobGetBalance_new()
 
@@ -104,46 +106,60 @@ following steps (Example: Getting the balance of an account):
     As described above this job has no parameters.
     
  7. Set arguments for the job (if any)
-    Besides the account which has been given to the contructor this job
+    Besides the account which has been given to the constructor this job
     has no further arguments.
 
  8. Enqueue this job with the execution queue
     AB_Banking_EnqueueJob()
 
- 9. Execute the queue
+ 9. Optionally add all "pending" jobs: 
+    Get them with 
+                AB_Banking_GetPendingJobs() 
+    and add any of them using
+                AB_Banking_EnqueueJob()
+    You might choose to only add those pending jobs which have been created
+    by your application.
+    Please note that you MUST NOT call 
+                AB_Banking_DelPendingJob()
+    for jobs you enqueued, because when a pending job is enqueued it will be
+    MOVED from the pending queue to the execution queue.
+
+10. Execute the queue
     AB_Banking_ExecuteQueue()
     This function sends all enqueued jobs to their backends which will then
     do the necessary communication with the bank server etc.
 
-10. Check for the status of each job.
+11. Check for the status of each job.
     AB_Job_GetStatus()
     This function returns the status of the job.
     Some jobs might have the status "pending". Those jobs have been processed
-    by the backend but did not yield a result quit yet. So you will have to
+    by the backend but did not yield a result quite yet. So you will have to
     re-enqueue such a job later to make the backend check whether meanwhile
-    some results are available.
+    some results are available (see step 9)
 
     If the job has been finished you may apply the information returned (in
     this case the balance of an account).
 
-11. Remove the job from the list of finished jobs.
+12. Remove the job from the list of finished jobs.
     AB_Banking_DelFinishedJob()
     This is only needed if the job has been finished. If you don't delete the
     job from the finished queue it will stay there forever (since only the
     application which created the job may delete it).
 
-12. Call AB_Banking_Fini
+---------------------------------------------------------- X8
+
+13. Call AB_Banking_Fini
     This allows AqBanking to write its configuration back.
     You should always call this function to avoid data inconsistencies.
 
-13. Release all AqBanking data (AB_Banking_free())
+14. Release all AqBanking data (AB_Banking_free())
     This function releases all data currently owned by AqBanking.
     You should always call this function to avoid memory leaks.
 
 
-Actually, steps 3 to 12 may be performed multiple times.
-Most likely an application will perform steps 1-3 and 12-13 only upon
-startup and then later loop between steps 4 and 11.
+Actually, steps 3 to 13 may be performed multiple times.
+Most likely an application will perform steps 1-3 and 13-14 only upon
+startup and then later loop between steps 4 and 12.
 
 
 
