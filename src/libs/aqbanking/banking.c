@@ -2990,6 +2990,7 @@ int AB_Banking_GetPin(AB_BANKING *ab,
                       int maxLen){
   AB_PIN *p;
   int rv;
+  int i;
 
   assert(ab);
   assert(token);
@@ -3029,9 +3030,25 @@ int AB_Banking_GetPin(AB_BANKING *ab,
     AB_Pin_List_Add(p, ab->pinList);
   }
 
-  for (;;) {
+  for (i=0 ; ; i++) {
     const char *st;
     int l;
+
+    if (i)
+      flags|=AB_BANKING_INPUT_FLAGS_RETRY;
+
+    if (i>AB_BANKING_MAX_PIN_TRY) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "No valid PIN within %d tries, giving up", i);
+      AB_Banking_MessageBox(ab,
+                            AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                            AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                            "Error",
+                            "No valid PIN (tried too often).\n"
+                            "Aborting.",
+                            "Dismiss", 0, 0);
+      return AB_ERROR_INVALID;
+    }
 
     l=strlen(AB_Pin_GetValue(p));
     if (l>=minLen && l<=maxLen) {

@@ -93,6 +93,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 #define AB_BANKING_INPUT_FLAGS_SHOW    0x00000002
 /** numeric input is requested (e.g. for PINs) */
 #define AB_BANKING_INPUT_FLAGS_NUMERIC 0x00000004
+/** if set then this is a retry (esp. when getting a PIN) */
+#define AB_BANKING_INPUT_FLAGS_RETRY   0x00000008
 /*@}*/
 
 

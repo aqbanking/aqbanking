@@ -14,6 +14,7 @@
 #ifndef AQBANKING_BANKING_P_H
 #define AQBANKING_BANKING_P_H
 
+#define AB_BANKING_MAX_PIN_TRY 10
 
 #include "banking_l.h"
 #include "account_l.h"
