@@ -62,7 +62,8 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 
     while(*p) {
       if (strlen(p)<3) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
+        GWEN_WaitCallback_Log(0, "SWIFT: Bad field in :86: tag");
         return -1;
       }
       p++; /* skip '?' */
@@ -70,7 +71,8 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       if (*p==10)
         p++;
       if (!*p) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
+        GWEN_WaitCallback_Log(0, "SWIFT: Partial field id");
         return -1;
       }
       id=((*p-'0')*10);
@@ -80,6 +82,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
         p++;
       if (!*p) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
+        GWEN_WaitCallback_Log(0, "SWIFT: Partial field id");
         return -1;
       }
       id+=(*p-'0');
@@ -175,6 +178,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* valuata date (M) */
   if (bleft<6) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing valuta date (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Missing valuta date");
     return -1;
   }
   d1=((p[0]-'0')*10) + (p[1]-'0');
@@ -195,6 +199,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (*p && isdigit(*p)) {
     if (bleft<4) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
+      GWEN_WaitCallback_Log(0, "SWIFT: Bad booking date");
       return -1;
     }
     d2=((p[0]-'0')*10) + (p[1]-'0');
@@ -213,6 +218,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* credit/debit mark (M) */
   if (bleft<2) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Bad value string");
     return -1;
   }
   neg=0;
@@ -232,6 +238,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* third character of currency (K) */
   if (bleft<1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Bad currency");
     return -1;
   }
   if (!isdigit(*p)) {
@@ -246,6 +253,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     p2++;
   if (p2==p || *p2!='N') {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Bad value");
     return -1;
   }
   s=(char*)malloc(p2-p+1+(neg?1:0));
@@ -273,6 +281,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* key (M) */
   if (bleft<3) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing booking key (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Missing booking key");
     return -1;
   }
   memmove(buffer, p, 3);
@@ -299,10 +308,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (*p=='/') {
     if (p[1]=='/') {
       /* found bank reference */
-      p2=p;
+      p2=p+2;
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
+	GWEN_WaitCallback_Log(0, "SWIFT: Missing bank reference");
         return -1;
       }
       s=(char*)malloc(p2-p+1);
@@ -315,6 +325,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
+      GWEN_WaitCallback_Log(0, "SWIFT: Bad bank reference");
       return -1;
     }
   }
@@ -347,6 +358,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad original value (%s)", p);
+	    GWEN_WaitCallback_Log(0, "SWIFT: Bad original value");
             return -1;
           }
           s=(char*)malloc(p2-p+1);
@@ -372,6 +384,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad charges value (%s)", p);
+	    GWEN_WaitCallback_Log(0, "SWIFT: Bad charges value");
             return -1;
           }
           s=(char*)malloc(p2-p+1);
@@ -419,6 +432,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* credit/debit mark (M) */
   if (bleft<2) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Bad value string");
     return -1;
   }
   neg=0;
@@ -430,6 +444,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* date (M) */
   if (bleft<6) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing date (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Missing date");
     return -1;
   }
   d1=((p[0]-'0')*10) + (p[1]-'0');
@@ -451,6 +466,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* currency (M) */
   if (bleft<3) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing currency (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Missing currency");
     return -1;
   }
   memmove(buffer, p, 3);
@@ -464,6 +480,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   while(*p2) p2++;
   if (p2==p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
+    GWEN_WaitCallback_Log(0, "SWIFT: Bad value");
     return -1;
   }
   s=(char*)malloc(p2-p+1+(neg?1:0));
