@@ -1,4 +1,10 @@
 
+2004/11/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added export-function to im/exporter
+- started working on CSV exporter
+
+
 2004/11/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - parsers/swift/swift.c: 
@@ -8,7 +14,8 @@
   - fixed loglevel (SWIFT log infos are no longer shown in red)
   - improved handling of umlauts in SWIFT documents (actually, SWIFT does not
     allow umlauts or any other special characters for that matter. However,
-    banks send those character anyway, so we have to deal with them...)
+    banks send those character anyway, so we have to deal with them...
+    This fix also handles English and French chars).
 
 
 2004/11/05: Martin Preuss<martin@libchipcard.de>

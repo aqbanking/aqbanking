@@ -1,0 +1,12 @@
+
+char name="CSV"
+char shortDescr="CSV Format"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="This profile supports the CSV format"
+
+char type="csv"
+char groupNames="transaction", "transfer", "debitnote"
+
+params {
+}
+

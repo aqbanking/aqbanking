@@ -84,6 +84,23 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 
 
 
+int AB_ImExporter_Export(AB_IMEXPORTER *ie,
+                         AB_IMEXPORTER_CONTEXT *ctx,
+                         GWEN_BUFFEREDIO *bio,
+                         GWEN_DB_NODE *params){
+  assert(ie);
+  assert(ctx);
+  assert(bio);
+  assert(params);
+
+  if (ie->exportFn)
+    return ie->exportFn(ie, ctx, bio, params);
+  else
+    return AB_ERROR_NOT_SUPPORTED;
+}
+
+
+
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
                             const char *fname){
   assert(ie);
@@ -131,6 +148,14 @@ void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
                                AB_IMEXPORTER_IMPORT_FN f){
   assert(ie);
   ie->importFn=f;
+}
+
+
+
+void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie,
+                               AB_IMEXPORTER_EXPORT_FN f){
+  assert(ie);
+  ie->exportFn=f;
 }
 
 

@@ -1,1 +1,1 @@
-SUBDIRS=dbio dtaus ofx swift
+SUBDIRS=dbio dtaus ofx swift csv

@@ -84,6 +84,22 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          GWEN_BUFFEREDIO *bio,
                          GWEN_DB_NODE *dbProfile);
+
+/**
+ * Writes all data to the given stream.
+ * @param ie pointer to the importer/exporter
+ * @param ctx export context
+ * @param bio stream to write to (usually a file, see
+ *   @ref GWEN_BufferedIO_File_new)
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ */
+AQBANKING_API 
+int AB_ImExporter_Export(AB_IMEXPORTER *ie,
+                         AB_IMEXPORTER_CONTEXT *ctx,
+                         GWEN_BUFFEREDIO *bio,
+                         GWEN_DB_NODE *dbProfile);
+
 /**
  * This is just a convenience function for @ref AB_ImExporter_Import.
  */
