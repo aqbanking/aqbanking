@@ -111,6 +111,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   ab->data=GWEN_DB_Group_new("BankingData");
   ab->configFile=strdup(fname);
   ab->pinList=AB_Pin_List_new();
+  ab->pinCacheEnabled = 1;
   GWEN_Buffer_free(buf);
   GWEN_Buffer_free(nbuf);
   return ab;
@@ -1699,6 +1700,11 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
     }
     j=nj;
   } /* while */
+
+  if (!AB_Banking_GetPinCacheEnabled(ab)) {
+    /* If pin caching was disabled, then delete all PINs */
+    AB_Pin_List_Clear(ab->pinList);
+  }
 
   return rv;
 }
@@ -3592,6 +3598,18 @@ int AB_Banking_SetPinStatus(AB_BANKING *ab,
   }
 }
 
+
+
+void AB_Banking_SetPinCacheEnabled(AB_BANKING *ab, int enabled)
+{
+  assert(ab);
+  ab->pinCacheEnabled = enabled;
+}
+int AB_Banking_GetPinCacheEnabled(const AB_BANKING *ab)
+{
+  assert(ab);
+  return ab->pinCacheEnabled;
+}
 
 
 int AB_Banking_GetTan(AB_BANKING *ab,

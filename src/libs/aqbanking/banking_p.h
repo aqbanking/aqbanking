@@ -58,6 +58,7 @@ struct AB_BANKING {
   AB_BANKING_SETPINSTATUS_FN setPinStatusFn;
   AB_BANKING_GETTAN_FN getTanFn;
   AB_BANKING_SETTANSTATUS_FN setTanStatusFn;
+  int pinCacheEnabled;
 
   AB_PIN_LIST *pinList;
 

@@ -1427,7 +1427,10 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
 /*@{*/
 
 /**
- * This function retrieves the PIN for the given token.
+ * This function retrieves the PIN for the given token. If the
+ * application hasn't set any other GetPin function, this function
+ * will call AB_Banking_InputBox for the user input.
+ *
  * @param flags flags as for @ref AB_Banking_InputBox
  */
 AQBANKING_API
@@ -1440,12 +1443,55 @@ int AB_Banking_GetPin(AB_BANKING *ab,
                       int minLen,
                       int maxLen);
 
+/** 
+ * Enable or disable the internal caching of PINs across jobs during
+ * one full session. If the parameter is nonzero (TRUE), then every
+ * entered PIN will be cached throughout the rest of this session and
+ * is not asked for again. (FIXME: This is the default, but maybe it
+ * should not be the default.) If the parameter is zero (FALSE), then
+ * PINs will only be cached during one queue execution, but not across
+ * several queue executions or several jobs. In other words, if this
+ * is FALSE, then after each AB_Banking_ExecuteQueue() the internal
+ * PIN cache will be cleared.
+ *
+ * Note: There has to be *some* Pin caching during the execution of
+ * one job, because the medium is accessed several time. It would
+ * therefore be very incovenient for the user when having to enter the
+ * PIN several times during one job. Therefore we decided to implement
+ * an internal PIN cache.
+ *
+ * @param ab The banking object
+ *
+ * @param enabled If nonzero (TRUE), then caching across jobs is
+ * enabled. If zero (FALSE), caching across jobs is disabled.
+ */
+AQBANKING_API
+void AB_Banking_SetPinCacheEnabled(AB_BANKING *ab, int enabled);
+
+/** 
+ * Returns nonzero (TRUE) if PIN caching across jobs until the end of
+ * this session is enabled. Returns zero (FALSE) if caching across
+ * jobs is disabled.
+ */
+AQBANKING_API
+int AB_Banking_GetPinCacheEnabled(const AB_BANKING *ab);
+
+/**
+ * Sets a status for the given token and its given pin. This way,
+ * aqbanking will keep track of whether an entered PIN might have been
+ * wrong so it isn't used again.
+ */
 AQBANKING_API 
 int AB_Banking_SetPinStatus(AB_BANKING *ab,
                             const char *token,
                             const char *pin,
                             AB_BANKING_PINSTATUS status);
 
+/**
+ * This function retrieves a TAN for the given token. If the
+ * application hasn't set any other GetTan function, this function
+ * will call AB_Banking_InputBox for the user input.
+ */
 AQBANKING_API 
 int AB_Banking_GetTan(AB_BANKING *ab,
                       const char *token,
@@ -1455,6 +1501,11 @@ int AB_Banking_GetTan(AB_BANKING *ab,
                       int minLen,
                       int maxLen);
 
+/**
+ * Sets a status for the given token and its given TAN. This way,
+ * aqbanking will keep track of whether an entered TAN might have been
+ * wrong so it isn't used again.
+ */
 AQBANKING_API 
 int AB_Banking_SetTanStatus(AB_BANKING *ab,
                             const char *token,

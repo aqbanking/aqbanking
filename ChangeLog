@@ -1,3 +1,10 @@
+2004-10-03  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.h: Added
+	AB_Banking_SetPinCacheEnabled function to allow the application to
+	choose between per-session-caching (default) and
+	only-per-queue-execution caching. Note: Need to increment
+	SO_REVISION and SO_AGE because of that.
 
 2004/09/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
