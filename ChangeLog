@@ -1,4 +1,13 @@
 
+
+2004/08/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed the way AqBanking saves application/backend data, better data
+  separation (as needed when temporarily shutting down a backend while
+  setting it up with a wizard)
+  -> previous configuration data gets lost with this change !!
+
+
 2004/08/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - simplified importer/exporter framework: now an importer does no longer

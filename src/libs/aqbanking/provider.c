@@ -106,7 +106,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
     int rv;
     GWEN_DB_NODE *dbData;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro);
+    dbData=AB_Banking_GetProviderData(pro->banking, pro->escName);
     assert(dbData);
 
     rv=pro->initFn(pro, dbData);
@@ -129,7 +129,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
   if (pro->finiFn) {
     GWEN_DB_NODE *dbData;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro);
+    dbData=AB_Banking_GetProviderData(pro->banking, pro->escName);
     assert(dbData);
 
     pro->isInit=0;
@@ -327,6 +327,28 @@ GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro){
 }
 
 
+
+int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf){
+  assert(pro);
+  assert(buf);
+  assert(pro->banking);
+  assert(pro->escName);
+
+  return AB_Banking_GetProviderUserDataDir(pro->banking,
+                                           pro->escName,
+                                           buf);
+}
+
+
+
+GWEN_DB_NODE *AB_Provider_GetData(AB_PROVIDER *pro) {
+  assert(pro);
+  assert(pro->banking);
+  assert(pro->escName);
+
+  return AB_Banking_GetProviderData(pro->banking,
+                                    pro->escName);
+}
 
 
 

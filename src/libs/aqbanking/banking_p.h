@@ -94,7 +94,7 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
 
 int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
 int AB_Banking__LoadAppData(AB_BANKING *ab);
-int AB_Banking__SaveAllAppData(AB_BANKING *ab);
+int AB_Banking__SaveAppData(AB_BANKING *ab);
 
 
 int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
@@ -102,6 +102,19 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                                        GWEN_DB_NODE *db);
 
 
+int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
+                                          const char *name,
+                                          GWEN_BUFFER *buf);
+int AB_Banking__LoadProviderData(AB_BANKING *ab,
+                                 const char *name);
+
+
+int AB_Banking__SaveProviderData(AB_BANKING *ab,
+                                 const char *name,
+                                 int del);
+
+int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
+int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 
 #endif /* AQBANKING_BANKING_P_H */
