@@ -357,7 +357,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   d1a+=2000;
   d2a=((p[2]-'0')*10) + (p[3]-'0');
   d3a=((p[4]-'0')*10) + (p[5]-'0');
-  ti=GWEN_Time_new(d1a, d2a-1, d3a, 0, 0, 0, 0);
+  ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
   assert(ti);
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -394,7 +394,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     else
       d1b=d1a;
 
-    ti=GWEN_Time_new(d1b, d2b-1, d3b, 0, 0, 0, 0);
+    ti=GWEN_Time_new(d1b, d2b-1, d3b, 12, 0, 0, 1);
     assert(ti);
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
 					    GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -642,7 +642,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   d2=((p[2]-'0')*10) + (p[3]-'0');
   d3=((p[4]-'0')*10) + (p[5]-'0');
 
-  ti=GWEN_Time_new(d1, d2-1, d3, 0, 0, 0, 0);
+  ti=GWEN_Time_new(d1, d2-1, d3, 12, 0, 0, 1);
   assert(ti);
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,

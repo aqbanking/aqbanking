@@ -1,4 +1,11 @@
 
+2005/03/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- always use "UTC 12:00" for dates which do not contain a time. This avoids
+  the problem with date shifting due to daylight saving time.
+  Note: This means there is no localization of the time in the plugins
+  anymore.
+
 
 2005/03/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -242,7 +242,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
       year+=1900;
     else
       year+=2000;
-    ti=GWEN_Time_new(year, month-1, day, 0, 0, 0, 0);
+    ti=GWEN_Time_new(year, month-1, day, 12, 0, 0, 1);
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(xa,
                                             GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                                             "date"))) {
@@ -310,7 +310,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
       ((p[5]-'0')*100)+
       ((p[6]-'0')*10) +
       (p[7]-'0');
-    ti=GWEN_Time_new(year, month-1, day, 0, 0, 0, 0);
+    ti=GWEN_Time_new(year, month-1, day, 12, 0, 0, 1);
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(xa,
                                             GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                                             "execDate"))) {
