@@ -395,8 +395,8 @@ int AB_Banking_Fini(AB_BANKING *ab);
  *  </li>
  *  <li>
  *    optionally: allow the user to setup a selected backend
- *    (@ref AB_Banking_GetWizard to get the required setup wizard) and
- *    then call @ref AB_ProviderWizard_Setup on that backend)
+ *    (@ref AB_Banking_GetWizardPath to get the required setup wizard) and
+ *    then run that wizard)
  *  </li>
  * </ul>
  * </p>
@@ -469,35 +469,43 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
 AQBANKING_API 
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
 
+
 /**
- * Tries to load the wizard for the given backend which is of the given
- * type t.
- * Setup wizards are sorted by backends, since the wizards do things
- * very much dependant on the backend. Ideally they are shipped with the
- * backend.
- * @param ab pointer to the AB_BANKING object
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- * @param t wizard type. To allow keeping the API as open as possible you
- * may give a type name here. However, the following names are expected:
- * <ul>
- *  <li><b>kde_wizard</b> for a wizard running under KDE</li>
- *  <li><b>gnome_wizard</b> for a wizard running under GNOME</li>
- *  <li><b>console_wizard</b> for a wizard running in a console</li>
- *  <li><b>curses_wizard</b> for a wizard using (n)curses</li>
- * </ul>
- * When actually loading a wizard then this function searches inside the
- * plugin for a function called WIZARDNAME_factory() (WIZARDNAME is the
- * name given for argument <i>t</i>). This function is expected to return
- * a pointer to a @ref AB_PROVIDER_WIZARD.
+ * <p>
+ * This function temporarily disables a backend. This status is not preserved
+ * across shutdown.
+ * </p>
+ * <p>
+ * You <b>should</b> call this function directly before running a wizard on
+ * that backend, otherwise changes in the settings made by the wizard
+ * will most likely be silently overwritten.
+ * </p>
  */
-AQBANKING_API 
-AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
-                                         const char *backend,
-                                         const char *t);
+int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend);
+
+
+/**
+ * <p>
+ * This function reverts @ref AB_Banking_SuspendProvider.
+ * </p>
+ * <p>
+ * You <b>should</b> call this function directly after running a wizard on
+ * that backend to reenable it.
+ * </p>
+ */
+int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
+
+/**
+ * Returns the folder where the wizards for the given backend are located.
+ * You can then use this path and the name of the wizard you want to start
+ * to run a wizard.
+ */
+AQBANKING_API
+int AB_Banking_GetWizardPath(AB_BANKING *ab,
+                             const char *backend,
+                             GWEN_BUFFER *pbuf);
+
+
 /*@}*/
 
 
@@ -628,16 +636,6 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
  *
  */
 /*@{*/
-/**
- * Store backend specific data with AqBanking. This data is not specific
- * to an application, it will rather be used with every application (since
- * it doesn't depend on the application but on the backend).
- * @param ab pointer to the AB_BANKING object
- * @param pro pointer to the backend for which the data is to be returned
- */
-AQBANKING_API 
-GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
-                                         const AB_PROVIDER *pro);
 
 /**
  * This copies the name of the folder for AqBanking's backend data into

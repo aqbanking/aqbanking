@@ -66,25 +66,6 @@ namespace AB {
      */
     const char *getAppName();
 
-
-    /**
-     * Tries to load the wizard for the given backend which is of the given
-     * type t.
-     * Setup wizards are sorted by backends, since the wizard do things
-     * very much dependant on the backend. Ideally they are shipped with the
-     * backend.
-     * @param pn name of the backend
-     * @param t wizard type. To allow keeping the API as open as possible you
-     * may give a type name here. However, the following names are expected:
-     * <ul>
-     *  <li><b>kde</b> for a wizard running under KDE</li>
-     *  <li><b>gnome</b> for a wizard running under GNOME</li>
-     *  <li><b>console</b> for a wizard running in a console</li>
-     *  <li><b>curses</b> for a wizard using (n)curses</li>
-     * </ul>
-     */
-    AB_PROVIDER_WIZARD *getWizard(const char *pn, const char *t);
-
     /**
      * Returns a list of pointers to currently known accounts.
      * Please note that the pointers in this list are still owned by
@@ -144,18 +125,11 @@ namespace AB {
     int deactivateProvider(const char *pname);
     std::list<std::string> getActiveProviders();
 
+    int suspendProvider(const char *pname);
+    int resumeProvider(const char *pname);
 
-    /*@}*/
+    std::string getWizardPath(const char *backend);
 
-
-    /** @name Functions Used by Backends
-     *
-     */
-    /*@{*/
-    /**
-     * This is used by backends to store their specific data with AqBanking.
-     */
-    GWEN_DB_NODE *getProviderData(const AB_PROVIDER *pro);
     /*@}*/
 
 

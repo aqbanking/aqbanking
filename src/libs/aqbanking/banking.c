@@ -19,6 +19,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/libloader.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -27,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <ctype.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_BANKING)
@@ -56,7 +58,6 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
-  ab->wizards=AB_ProviderWizard_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appName=strdup(appName);
@@ -76,7 +77,6 @@ void AB_Banking_free(AB_BANKING *ab){
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
-    AB_ProviderWizard_List_free(ab->wizards);
     AB_Provider_List_free(ab->providers);
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
@@ -155,32 +155,6 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
   assert(db);
   return db;
 }
-
-
-
-GWEN_DB_NODE *AB_Banking_GetWizardData(AB_BANKING *ab,
-                                        const AB_PROVIDER_WIZARD *pw){
-  AB_PROVIDER *pro;
-  GWEN_DB_NODE *db;
-  const char *name;
-
-  name=AB_ProviderWizard_GetName(pw);
-  assert(name);
-  pro=AB_ProviderWizard_GetProvider(pw);
-  assert(pro);
-  db=AB_Banking_GetProviderData(ab, pro);
-  assert(db);
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
-  assert(db);
-  return db;
-}
-
-
-
-
-
-
-
 
 
 
@@ -389,61 +363,12 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
   pro=AB_Banking_FindProvider(ab, name);
   if (pro)
     return pro;
-  pro=AB_Provider_LoadPlugin(ab, name);
+  pro=AB_Banking_LoadProviderPlugin(ab, name);
   if (pro) {
     AB_Provider_List_Add(pro, ab->providers);
   }
 
   return pro;
-}
-
-
-
-AB_PROVIDER_WIZARD *AB_Banking_FindWizard(AB_BANKING *ab,
-                                            AB_PROVIDER *pro,
-                                            const char *name){
-  AB_PROVIDER_WIZARD *pw;
-
-  assert(ab);
-  assert(pro);
-  assert(name);
-  pw=AB_ProviderWizard_List_First(ab->wizards);
-  while(pw) {
-    if ((AB_ProviderWizard_GetProvider(pw)==pro) &&
-        (strcasecmp(AB_ProviderWizard_GetName(pw), name)==0))
-      break;
-    pw=AB_ProviderWizard_List_Next(pw);
-  } /* while */
-
-  return pw;
-}
-
-
-
-AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
-                                           const char *pn,
-                                           const char *name) {
-  AB_PROVIDER_WIZARD *pw;
-  AB_PROVIDER *pro;
-
-  assert(ab);
-  assert(pn);
-  assert(name);
-
-  pro=AB_Banking_GetProvider(ab, pn);
-  if (!pro) {
-    DBG_ERROR(0, "Provider \"%s\" not available", pn);
-    return 0;
-  }
-  pw=AB_Banking_FindWizard(ab, pro, name);
-  if (pw)
-    return pw;
-  pw=AB_ProviderWizard_LoadPlugin(pro, name);
-  if (pw) {
-    AB_ProviderWizard_List_Add(pw, ab->wizards);
-  }
-
-  return pw;
 }
 
 
@@ -535,6 +460,31 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
     dbTdst=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, "static");
     GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
+  }
+
+  /* init active providers */
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+      int rv;
+      AB_PROVIDER *pro;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+
+      pro=AB_Banking_GetProvider(ab, p);
+      if (pro) {
+        rv=AB_Provider_Init(pro);
+        if (rv) {
+          DBG_WARN(0, "Error initializing backend \"%s\"", p);
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
   }
 
   /* read accounts */
@@ -677,6 +627,31 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     } /* while */
   }
 
+  /* deinit active providers */
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+      int rv;
+      AB_PROVIDER *pro;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+
+      pro=AB_Banking_GetProvider(ab, p);
+      if (pro) {
+        rv=AB_Provider_Fini(pro);
+        if (rv) {
+          DBG_WARN(0, "Error deinitializing backend \"%s\"", p);
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
   /* store static config data as "banking" */
   dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
   if (dbT) {
@@ -702,7 +677,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   AB_Job_List_Clear(ab->enqueuedJobs);
   AB_Account_List_Clear(ab->accounts);
-  AB_ProviderWizard_List_Clear(ab->wizards);
   AB_Provider_List_Clear(ab->providers);
   GWEN_DB_ClearGroup(ab->data, 0);
 
@@ -1013,10 +987,22 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
 
 int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
   int rv;
+  AB_PROVIDER *pro;
 
   if (GWEN_StringList_HasString(ab->activeProviders, pname)) {
     DBG_INFO(0, "Provider already active");
     return AB_ERROR_FOUND;
+  }
+
+  pro=AB_Banking_FindProvider(ab, pname);
+  if (pro) {
+    if (!AB_Provider_IsInit(pro)) {
+      rv=AB_Provider_Init(pro);
+      if (rv) {
+        DBG_ERROR(0, "Could not initialize backend \"%s\"", pname);
+        return rv;
+      }
+    }
   }
 
   rv=AB_Banking_ImportProviderAccounts(ab, pname);
@@ -1035,18 +1021,22 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
 
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
   AB_ACCOUNT *a;
+  AB_PROVIDER *pro;
 
   if (!GWEN_StringList_HasString(ab->activeProviders, pname)) {
     DBG_INFO(0, "Provider not active");
     return AB_ERROR_INVALID;
   }
 
+  pro=AB_Banking_FindProvider(ab, pname);
+  if (pro)
+    AB_Provider_Fini(pro);
+
   GWEN_StringList_RemoveString(ab->activeProviders, pname);
 
   /* delete accounts which use this backend */
   a=AB_Account_List_First(ab->accounts);
   while(a) {
-    AB_PROVIDER *pro;
     AB_ACCOUNT *na;
 
     na=AB_Account_List_Next(a);
@@ -1111,6 +1101,177 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
 
 
 
+
+AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
+                                               const char *modname,
+                                               const char *fname){
+  GWEN_LIBLOADER *ll;
+  AB_PROVIDER *pro;
+  AB_PROVIDER_FACTORY_FN fn;
+  void *p;
+  GWEN_BUFFER *nbuf;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
+    DBG_ERROR(0,
+              "Could not load provider plugin \"%s\" (%s)",
+              modname, fname);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
+  GWEN_Buffer_AppendString(nbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    GWEN_Buffer_free(nbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(nbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/providers");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  assert(db);
+
+  fn=(AB_PROVIDER_FACTORY_FN)p;
+  assert(fn);
+  pro=fn(ab, db);
+  if (!pro) {
+    DBG_ERROR(0, "Error in plugin: No provider created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_Provider_SetLibLoader(pro, ll);
+
+  return pro;
+}
+
+
+
+AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
+                                           const char *modname){
+  GWEN_LIBLOADER *ll;
+  AB_PROVIDER *pro;
+  AB_PROVIDER_FACTORY_FN fn;
+  void *p;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFER *mbuf;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
+  modname=GWEN_Buffer_GetStart(mbuf);
+  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
+                                         AQBANKING_PLUGINS
+                                         "/"
+                                         AB_PROVIDER_FOLDER,
+                                         modname)) {
+    DBG_ERROR(0, "Could not load provider plugin \"%s\"", modname);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  GWEN_Buffer_AppendString(mbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(mbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/providers");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  assert(db);
+
+  fn=(AB_PROVIDER_FACTORY_FN)p;
+  assert(fn);
+  pro=fn(ab, db);
+  if (!pro) {
+    DBG_ERROR(0, "Error in plugin: No provider created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_Provider_SetLibLoader(pro, ll);
+
+  return pro;
+}
+
+
+
+int AB_Banking_GetWizardPath(AB_BANKING *ab,
+                             const char *backend,
+                             GWEN_BUFFER *pbuf){
+  const char *s;
+
+  GWEN_Buffer_AppendString(pbuf,
+                           AQBANKING_PLUGINS
+                           "/"
+                           AB_PROVIDER_WIZARD_FOLDER
+                           "/");
+  s=backend;
+  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
+
+  return 0;
+}
+
+
+
+int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend){
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking_FindProvider(ab, backend);
+  if (!pro) {
+    DBG_ERROR(0, "Provider not found");
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  return AB_Provider_Fini(pro);
+}
+
+
+
+int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking_FindProvider(ab, backend);
+  if (!pro) {
+    DBG_ERROR(0, "Provider not found");
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  return AB_Provider_Init(pro);
+}
 
 
 

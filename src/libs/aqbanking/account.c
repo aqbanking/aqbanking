@@ -16,6 +16,7 @@
 
 #include "account_p.h"
 #include "banking_l.h"
+#include "provider_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 

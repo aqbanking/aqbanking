@@ -282,12 +282,6 @@ namespace AB {
   
   
   
-  AB_PROVIDER_WIZARD *Banking::getWizard(const char *pn, const char *t){
-    return AB_Banking_GetWizard(_banking, pn, t);
-  }
-  
-  
-  
   std::list<AB_ACCOUNT*> Banking::getAccounts(){
     AB_ACCOUNT_LIST2 *ll;
     std::list<AB_ACCOUNT*> rl;
@@ -396,12 +390,6 @@ namespace AB {
   
   
   
-  GWEN_DB_NODE *Banking::getProviderData(const AB_PROVIDER *pro){
-    return AB_Banking_GetProviderData(_banking, pro);
-  }
-  
-  
-  
   int Banking::enqueueJob(AB_JOB *j){
     return AB_Banking_EnqueueJob(_banking, j);
   }
@@ -456,6 +444,17 @@ namespace AB {
   }
 
 
+  int Banking::suspendProvider(const char *pname){
+    return AB_Banking_SuspendProvider(_banking, pname);
+  }
+
+
+
+  int Banking::resumeProvider(const char *pname){
+    return AB_Banking_ResumeProvider(_banking, pname);
+  }
+
+
 
   std::list<std::string> Banking::getActiveProviders(){
     const GWEN_STRINGLIST *sl;
@@ -480,6 +479,19 @@ namespace AB {
   }
 
 
+
+  std::string Banking::getWizardPath(const char *backend){
+    GWEN_BUFFER *buf;
+    int rv;
+    std::string result;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=AB_Banking_GetWizardPath(_banking, backend, buf);
+    if (!rv)
+      result=GWEN_Buffer_GetStart(buf);
+    GWEN_Buffer_free(buf);
+    return result;
+  }
 
 
 

@@ -64,6 +64,58 @@ void AB_Provider_free(AB_PROVIDER *pro){
 
 
 
+void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll) {
+  assert(pro);
+  pro->libLoader=ll;
+}
+
+
+
+int AB_Provider_Init(AB_PROVIDER *pro){
+  assert(pro);
+  if (pro->isInit) {
+    DBG_ERROR(0, "Provider already is initialized");
+    return AB_ERROR_INVALID;
+  }
+  if (pro->initFn) {
+    int rv;
+    GWEN_DB_NODE *dbData;
+
+    dbData=AB_Banking_GetProviderData(pro->banking, pro);
+    assert(dbData);
+
+    rv=pro->initFn(pro, dbData);
+    if (!rv)
+      pro->isInit=1;
+    return rv;
+  }
+  DBG_ERROR(0, "No init function set");
+  return AB_ERROR_NOFN;
+}
+
+
+
+int AB_Provider_Fini(AB_PROVIDER *pro){
+  assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
+  if (pro->finiFn) {
+    GWEN_DB_NODE *dbData;
+
+    dbData=AB_Banking_GetProviderData(pro->banking, pro);
+    assert(dbData);
+
+    pro->isInit=0;
+    return pro->finiFn(pro, dbData);
+  }
+  DBG_ERROR(0, "No fini function set");
+  return AB_ERROR_NOFN;
+}
+
+
+
 const char *AB_Provider_GetName(const AB_PROVIDER *pro){
   assert(pro);
   return pro->name;
@@ -78,6 +130,18 @@ AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro){
 
 
 
+
+void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f){
+  assert(pro);
+  pro->initFn=f;
+}
+
+
+
+void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f){
+  assert(pro);
+  pro->finiFn=f;
+}
 
 
 
@@ -139,6 +203,10 @@ void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
 
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->updateJobFn) {
     return pro->updateJobFn(pro, j);
   }
@@ -150,6 +218,10 @@ int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
 int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->addJobFn) {
     return pro->addJobFn(pro, j);
   }
@@ -161,6 +233,10 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
 int AB_Provider_Execute(AB_PROVIDER *pro){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->executeFn) {
     return pro->executeFn(pro);
   }
@@ -172,6 +248,10 @@ int AB_Provider_Execute(AB_PROVIDER *pro){
 
 AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return 0;
+  }
   if (pro->getAccountListFn) {
     return pro->getAccountListFn(pro);
   }
@@ -183,6 +263,10 @@ AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro){
 
 int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->updateAccountFn) {
     return pro->updateAccountFn(pro,a );
   }
@@ -194,6 +278,10 @@ int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
 
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->addAccountFn) {
     return pro->addAccountFn(pro, a);
   }
@@ -207,6 +295,10 @@ int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
                                    AB_TRANSACTION_LIST2 *tl,
                                    GWEN_BUFFEREDIO *bio){
   assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(0, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
   if (pro->importTransactionsFn) {
     return pro->importTransactionsFn(pro, tl, bio);
   }
@@ -216,350 +308,10 @@ int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
 
 
 
-
-
-
-AB_PROVIDER *AB_Provider_LoadPluginFile(AB_BANKING *ab,
-                                        const char *modname,
-                                        const char *fname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER *pro;
-  AB_PROVIDER_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(0,
-              "Could not load provider plugin \"%s\" (%s)",
-              modname, fname);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  fn=(AB_PROVIDER_FACTORY_FN)p;
-  assert(fn);
-  pro=fn(ab);
-  if (!pro) {
-    DBG_ERROR(0, "Error in plugin: No provider created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  pro->libLoader=ll;
-
-  return pro;
-}
-
-
-
-AB_PROVIDER *AB_Provider_LoadPlugin(AB_BANKING *ab,
-                                    const char *modname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER *pro;
-  AB_PROVIDER_FACTORY_FN fn;
-  void *p;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_BUFFER *mbuf;
-
-  ll=GWEN_LibLoader_new();
-  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-  modname=GWEN_Buffer_GetStart(mbuf);
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         AQBANKING_PLUGINS
-                                         "/"
-                                         AB_PROVIDER_FOLDER,
-                                         modname)) {
-    DBG_ERROR(0, "Could not load provider plugin \"%s\"", modname);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  GWEN_Buffer_AppendString(mbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(mbuf);
-
-  fn=(AB_PROVIDER_FACTORY_FN)p;
-  assert(fn);
-  pro=fn(ab);
-  if (!pro) {
-    DBG_ERROR(0, "Error in plugin: No provider created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  pro->libLoader=ll;
-
-  return pro;
-}
-
-
-
-
-
-
-
-GWEN_INHERIT_FUNCTIONS(AB_PROVIDER_WIZARD)
-GWEN_LIST_FUNCTIONS(AB_PROVIDER_WIZARD, AB_ProviderWizard)
-
-
-
-AB_PROVIDER_WIZARD *AB_ProviderWizard_new(AB_PROVIDER *pro,
-                                            const char *name){
-  AB_PROVIDER_WIZARD *pw;
-
+int AB_Provider_IsInit(const AB_PROVIDER *pro){
   assert(pro);
-  assert(name);
-  GWEN_NEW_OBJECT(AB_PROVIDER_WIZARD, pw);
-  GWEN_INHERIT_INIT(AB_PROVIDER_WIZARD, pw);
-  GWEN_LIST_INIT(AB_PROVIDER_WIZARD, pw);
-  pw->provider=pro;
-  pw->name=strdup(name);
-
-  return pw;
+  return pro->isInit;
 }
-
-
-
-void AB_ProviderWizard_free(AB_PROVIDER_WIZARD *pw){
-  if (pw) {
-    GWEN_INHERIT_FINI(AB_PROVIDER_WIZARD, pw);
-    if (pw->libLoader) {
-      GWEN_LibLoader_CloseLibrary(pw->libLoader);
-      GWEN_LibLoader_free(pw->libLoader);
-    }
-    free(pw->name);
-    GWEN_LIST_FINI(AB_PROVIDER_WIZARD, pw);
-    GWEN_FREE_OBJECT(pw);
-  }
-}
-
-
-
-const char *AB_ProviderWizard_GetName(const AB_PROVIDER_WIZARD *pw){
-  assert(pw);
-  return pw->name;
-}
-
-
-
-AB_PROVIDER *AB_ProviderWizard_GetProvider(const AB_PROVIDER_WIZARD *pw){
-  assert(pw);
-  return pw->provider;
-}
-
-
-
-GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw){
-  assert(pw);
-  return AB_Banking_GetWizardData(pw->provider->banking, pw);
-}
-
-
-
-int AB_ProviderWizard_Setup(AB_PROVIDER_WIZARD *pw){
-  assert(pw);
-
-  if (pw->setupFn) {
-    return pw->setupFn(pw);
-  }
-  DBG_ERROR(0, "No setup function set");
-  return AB_ERROR_NOFN;
-}
-
-
-
-void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
-                                   AB_PROVIDER_WIZARD_SETUP_FN f){
-  assert(pw);
-  pw->setupFn=f;
-}
-
-
-
-
-AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
-                                                     const char *modname,
-                                                     const char *fname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER_WIZARD *pw;
-  AB_PROVIDER_WIZARD_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(0,
-              "Could not load wizard plugin \"%s\" (%s)",
-              modname, fname);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  fn=(AB_PROVIDER_WIZARD_FACTORY_FN)p;
-  assert(fn);
-  pw=fn(pro);
-  if (!pw) {
-    DBG_ERROR(0, "Error in plugin: No wizard created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  pw->libLoader=ll;
-
-  return pw;
-}
-
-
-
-AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
-                                                 const char *modname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER_WIZARD *pw;
-  AB_PROVIDER_WIZARD_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_BUFFER *pbuf;
-
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(pbuf,
-                           AQBANKING_PLUGINS
-                           "/"
-                           AB_PROVIDER_WIZARD_FOLDER
-                           "/");
-  s=AB_Provider_GetName(pro);
-  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
-
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         GWEN_Buffer_GetStart(pbuf),
-                                         modname)) {
-    DBG_ERROR(0, "Could not load wizard plugin \"%s\"", modname);
-    GWEN_Buffer_free(pbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(pbuf);
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  fn=(AB_PROVIDER_WIZARD_FACTORY_FN)p;
-  assert(fn);
-  pw=fn(pro);
-  if (!pw) {
-    DBG_ERROR(0, "Error in plugin: No wizard created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  pw->libLoader=ll;
-
-  return pw;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -18,9 +18,6 @@
 #include <aqbanking/banking.h>
 
 
-GWEN_DB_NODE *AB_Banking_GetWizardData(AB_BANKING *ab,
-                                       const AB_PROVIDER_WIZARD *pw);
-
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 /**
@@ -29,6 +26,42 @@ GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
  * backends. Such a backend can then be asked to return an account list.
  */
 AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
+
+
+
+/** @name Functions For Loading Provider Plugins
+ *
+ */
+/*@{*/
+AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
+                                               const char *modname,
+                                               const char *fname);
+
+
+AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
+                                           const char *modname);
+/*@}*/
+
+
+
+/**
+ * Store backend specific data with AqBanking. This data is not specific
+ * to an application, it will rather be used with every application (since
+ * it doesn't depend on the application but on the backend).
+ * @param ab pointer to the AB_BANKING object
+ * @param pro pointer to the backend for which the data is to be returned
+ */
+AQBANKING_API 
+GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
+                                         const AB_PROVIDER *pro);
+/*@}*/
+
+
+
+
+
+
+
 
 
 #endif /* AQBANKING_BANKING_L_H */

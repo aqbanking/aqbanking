@@ -1,4 +1,19 @@
 
+2004/08/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- aqbanking:
+  - removed AB_ProviderWizard. A Wizard is now a stand-alone executable so 
+    there is no need for dynamically loading a module
+  - banking: 
+    - added functions which allow to temporarily suspend backends. This
+      is needed while a setup wizard is executed
+    - made some functions private to AqBanking
+    - added AB_Banking_GetWizardPath() which returns the folder where 
+      executable wizards for a given backend are located
+  - provider: added functions to init and deinit backends
+- aqbanking++: removed provider files, because the ProviderWizard no longer
+  exists
+
 
 
 ===========================================================================
