@@ -1037,7 +1037,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     while(dbA) {
       AB_ACCOUNT *a;
 
-      a=AB_Account_fromDb(ab, dbA);
+      a=AB_Account_fromDbWithProvider(ab, dbA);
       if (a) {
         int rv;
 
@@ -1550,6 +1550,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
   successful=0;
   assert(a);
   while(a) {
+    AB_Account_SetProvider(a, pro);
     if (AB_Banking__MergeInAccount(ab, a)) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Could not merge in account");
     }

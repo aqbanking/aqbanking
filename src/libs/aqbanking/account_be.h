@@ -31,10 +31,15 @@ AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
                            const char *idForProvider);
 
 AQBANKING_API 
+AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc);
+
+AQBANKING_API 
 AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
                               GWEN_DB_NODE *db);
-AQBANKING_API 
+
+AQBANKING_API
 int AB_Account_toDb(const AB_ACCOUNT *acc, GWEN_DB_NODE *db);
+
 
 #ifdef __cplusplus
 }

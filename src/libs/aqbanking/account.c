@@ -58,6 +58,34 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   AB_ACCOUNT *a;
   GWEN_DB_NODE *dbT;
   const char *pname;
+
+  assert(ab);
+  pname=GWEN_DB_GetCharValue(db, "provider", 0, 0);
+  assert(pname);
+
+  GWEN_NEW_OBJECT(AB_ACCOUNT, a);
+  GWEN_INHERIT_INIT(AB_ACCOUNT, a);
+  GWEN_LIST_INIT(AB_ACCOUNT, a);
+  a->banking=ab;
+  a->providerName=strdup(pname);
+  a->data=GWEN_DB_Group_new("Data");
+  dbT=GWEN_DB_GetGroup(a->data, GWEN_DB_FLAGS_DEFAULT, "static");
+  assert(dbT);
+  GWEN_DB_AddGroupChildren(dbT, db);
+
+  /* mark DB not-dirty */
+  GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
+
+  return a;
+}
+
+
+
+AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
+                                          GWEN_DB_NODE *db){
+  AB_ACCOUNT *a;
+  GWEN_DB_NODE *dbT;
+  const char *pname;
   AB_PROVIDER *pro;
 
   assert(ab);
@@ -109,9 +137,10 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
   dbT=GWEN_DB_GetGroup(a->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
   if (dbT)
     GWEN_DB_AddGroupChildren(db, dbT);
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "provider",
-                       AB_Provider_GetName(a->provider));
+  if (a->provider)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "provider",
+                         AB_Provider_GetName(a->provider));
   return 0;
 }
 
@@ -119,7 +148,8 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
 
 void AB_Account_free(AB_ACCOUNT *a){
   if (a) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_ACCOUNT");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Destroying AB_ACCOUNT");
+    free(a->providerName);
     GWEN_INHERIT_FINI(AB_ACCOUNT, a);
     GWEN_DB_Group_free(a->data);
     GWEN_LIST_INIT(AB_ACCOUNT, a);
@@ -293,6 +323,32 @@ void AB_Account_SetCurrency(AB_ACCOUNT *a, const char *s){
   assert(s);
   GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "static/currency", s);
+}
+
+
+
+void AB_Account_SetProvider(AB_ACCOUNT *a, AB_PROVIDER *pro){
+  assert(a);
+  assert(pro);
+  a->provider=pro;
+}
+
+
+
+AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc){
+  AB_ACCOUNT *a;
+
+  assert(acc);
+  GWEN_NEW_OBJECT(AB_ACCOUNT, a);
+  GWEN_INHERIT_INIT(AB_ACCOUNT, a);
+  GWEN_LIST_INIT(AB_ACCOUNT, a);
+  a->banking=acc->banking;
+  a->provider=acc->provider;
+  if (acc->providerName)
+    a->providerName=strdup(acc->providerName);
+  a->data=GWEN_DB_Group_dup(acc->data);
+  a->availability=acc->availability;
+  return a;
 }
 
 

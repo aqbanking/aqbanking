@@ -24,5 +24,10 @@ GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
 
 int AB_Account_Update(AB_ACCOUNT *a);
 
+AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
+                                          GWEN_DB_NODE *db);
+
+void AB_Account_SetProvider(AB_ACCOUNT *a, AB_PROVIDER *pro);
+
 
 #endif /* AQBANKING_ACCOUNT_L_H */

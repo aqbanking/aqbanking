@@ -29,6 +29,7 @@ struct AB_ACCOUNT {
 
   AB_BANKING *banking;
   AB_PROVIDER *provider;
+  char *providerName;
   GWEN_DB_NODE *data;
   int availability;
 };
