@@ -33,6 +33,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro);
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
 int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
 int AB_Provider_Execute(AB_PROVIDER *pro);
+int AB_Provider_ResetQueue(AB_PROVIDER *pro);
 AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro);
 int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);

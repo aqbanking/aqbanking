@@ -68,6 +68,14 @@ typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
  */
 typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro);
 
+
+/**
+ * Resets the queue of the backend.
+ * After calling this function @b all jobs are removed from the
+ * backend's queue in any case.
+ */
+typedef int (*AB_PROVIDER_RESETQUEUE_FN)(AB_PROVIDER *pro);
+
 /**
  * Returns a list of accounts managed by this backend. This is called by
  * AqBanking directly after activating a backend (upon every
@@ -113,6 +121,8 @@ AQBANKING_API
 void AB_Provider_SetAddJobFn(AB_PROVIDER *pro, AB_PROVIDER_ADDJOB_FN f);
 AQBANKING_API
 void AB_Provider_SetExecuteFn(AB_PROVIDER *pro, AB_PROVIDER_EXECUTE_FN f);
+AQBANKING_API
+void AB_Provider_SetResetQueueFn(AB_PROVIDER *pro, AB_PROVIDER_RESETQUEUE_FN f);
 AQBANKING_API
 void AB_Provider_SetGetAccountListFn(AB_PROVIDER *pro,
                                      AB_PROVIDER_GETACCOUNTLIST_FN f);

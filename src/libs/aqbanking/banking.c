@@ -1693,24 +1693,21 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
                  AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro);
       if (rv) {
+        int lrv;
 
 	DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
-	if (AB_Provider_List_Next(pro)) {
-	  int lrv;
-
-          lrv=AB_Banking_MessageBox(ab,
-                                    AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                                    AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                                    AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                                    "Error",
-                                    "Error executing backend's queue.\n"
-                                    "What shall we do ?",
-                                    "Continue", "Abort", 0);
-          if (lrv!=1) {
-            DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-            return AB_ERROR_USER_ABORT;
-          }
-        } /* if more backends to go */
+        lrv=AB_Banking_MessageBox(ab,
+                                  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                                  AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+                                  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                                  "Error",
+                                  "Error executing backend's queue.\n"
+                                  "What shall we do ?",
+                                  "Continue", "Abort", 0);
+        if (lrv!=1) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          return AB_ERROR_USER_ABORT;
+        }
       }
       else
         succ++;
@@ -1718,6 +1715,9 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
 
     pro=AB_Provider_List_Next(pro);
   } /* while */
+
+  pro=AB_Provider_List_First(ab->providers);
+  succ=0;
 
   if (!succ) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
@@ -1732,42 +1732,61 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
 int AB_Banking_ExecuteQueue(AB_BANKING *ab){
   int rv;
   AB_JOB *j;
+  AB_PROVIDER *pro;
 
   assert(ab);
 
   rv=AB_Banking__ExecuteQueue(ab);
 
-  /* clear queue from jobs with status !=enqueued */
+  /* clear queue */
   j=AB_Job_List_First(ab->enqueuedJobs);
   while(j) {
     AB_JOB *nj;
 
     nj=AB_Job_List_Next(j);
 
-    if (AB_Job_GetStatus(j)!=AB_Job_StatusEnqueued) {
-      AB_Job_Attach(j);
-      AB_Banking_DequeueJob(ab, j);
-
-      switch(AB_Job_GetStatus(j)) {
-      case AB_Job_StatusPending:
-	if (AB_Banking__SaveJobAs(ab, j, "pending")) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
-	}
-	break;
-
-      case AB_Job_StatusSent:
-      case AB_Job_StatusFinished:
-      case AB_Job_StatusError:
-      default:
-	if (AB_Banking__SaveJobAs(ab, j, "finished")) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
-	}
-	break;
-      }
-      AB_Job_free(j);
+    if (AB_Job_GetStatus(j)==AB_Job_StatusEnqueued) {
+      /* job still enqueued, so it has never been sent */
+      AB_Job_SetStatus(j, AB_Job_StatusError);
     }
+
+    AB_Job_Attach(j);
+    AB_Banking_DequeueJob(ab, j);
+
+    switch(AB_Job_GetStatus(j)) {
+    case AB_Job_StatusPending:
+      if (AB_Banking__SaveJobAs(ab, j, "pending")) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
+      }
+      break;
+
+    case AB_Job_StatusSent:
+    case AB_Job_StatusFinished:
+    case AB_Job_StatusError:
+    default:
+      if (AB_Banking__SaveJobAs(ab, j, "finished")) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
+      }
+      break;
+    }
+    AB_Job_free(j);
+
     j=nj;
   } /* while */
+
+  /* reset all provider queues, this makes sure no job remains in any queue */
+  pro=AB_Provider_List_First(ab->providers);
+  while(pro) {
+    int lrv;
+
+    lrv=AB_Provider_ResetQueue(pro);
+    if (lrv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error resetting providers queue (%d)",
+               lrv);
+    }
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
+
 
   if (!AB_Banking_GetPinCacheEnabled(ab)) {
     /* If pin caching was disabled, then delete all PINs */
@@ -3848,8 +3867,8 @@ int AB_Banking_GetPin(AB_BANKING *ab,
     AB_Pin_SetHash(p, 0);
     AB_Pin_SetStatus(p, "unknown");
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
-               "Adding pin for \"%s\" (%s)",
-               token, buffer);
+               "Adding pin for \"%s\"",
+               token);
     AB_Pin_List_Add(p, ab->pinList);
   }
 

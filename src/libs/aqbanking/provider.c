@@ -199,6 +199,13 @@ void AB_Provider_SetExecuteFn(AB_PROVIDER *pro, AB_PROVIDER_EXECUTE_FN f){
 
 
 
+void AB_Provider_SetResetQueueFn(AB_PROVIDER *pro, AB_PROVIDER_RESETQUEUE_FN f){
+  assert(pro);
+  pro->resetQueueFn=f;
+}
+
+
+
 void AB_Provider_SetGetAccountListFn(AB_PROVIDER *pro,
                                      AB_PROVIDER_GETACCOUNTLIST_FN f){
   assert(pro);
@@ -264,6 +271,21 @@ int AB_Provider_Execute(AB_PROVIDER *pro){
     return pro->executeFn(pro);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
+  return AB_ERROR_NOFN;
+}
+
+
+
+int AB_Provider_ResetQueue(AB_PROVIDER *pro){
+  assert(pro);
+  if (pro->isInit==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
+    return AB_ERROR_INVALID;
+  }
+  if (pro->resetQueueFn) {
+    return pro->resetQueueFn(pro);
+  }
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No resetQueue function set");
   return AB_ERROR_NOFN;
 }
 

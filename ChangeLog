@@ -1,4 +1,13 @@
 
+2005/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Provider_ResetQueue() to make sure no job is left in any
+  backends' queue.
+- now AqBanking guarantees that after AB_ExecuteQueue is called no job is
+  left in any queue
+- now even less verbous about entered PIN
+
+
 ===========================================================================
 MARK: released AqBanking - 1.0.1beta (2005/01/22)
 ===========================================================================
