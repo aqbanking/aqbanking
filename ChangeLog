@@ -1,3 +1,12 @@
+
+2004/08/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- banking/banking.{c,h}: AB_Banking_MessageBox: Just figured out that for 
+    non-interactive frontends there is more information to be supplied. 
+    I also reordered the arguments so that they look alike those of 
+    AB_Banking_InputBox.
+
+
 2004-08-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/Makefile.am,

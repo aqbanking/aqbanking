@@ -26,19 +26,19 @@ namespace AB {
     friend class Banking;
 
     static int MessageBox(AB_BANKING *ab,
-			  AB_BANKING_MSGTYPE mt,
-			  const char *title,
+                          GWEN_TYPE_UINT32 flags,
+                          const char *title,
 			  const char *text,
 			  const char *b1,
 			  const char *b2,
 			  const char *b3);
     static int InputBox(AB_BANKING *ab,
+                        GWEN_TYPE_UINT32 flags,
 			const char *title,
 			const char *text,
 			char *buffer,
 			int minLen,
-			int maxLen,
-			GWEN_TYPE_UINT32 flags);
+			int maxLen);
     static GWEN_TYPE_UINT32 ShowBox(AB_BANKING *ab,
 				    const char *title,
 				    const char *text);

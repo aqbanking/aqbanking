@@ -39,7 +39,7 @@ namespace AB {
     /**
      * See @ref AB_Banking_MessageBox
      */
-    virtual int messageBox(AB_BANKING_MSGTYPE mt,
+    virtual int messageBox(GWEN_TYPE_UINT32 flags,
                            const char *title,
                            const char *text,
                            const char *b1,
@@ -49,12 +49,12 @@ namespace AB {
     /**
      * See @ref AB_Banking_InputBox
      */
-    virtual int inputBox(const char *title,
+    virtual int inputBox(GWEN_TYPE_UINT32 flags,
+                         const char *title,
                          const char *text,
                          char *buffer,
                          int minLen,
-                         int maxLen,
-                         GWEN_TYPE_UINT32 flags);
+                         int maxLen);
 
     /**
      * See @ref AB_Banking_ShowBox

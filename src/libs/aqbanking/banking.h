@@ -48,6 +48,60 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_BANKING);
 /*@}*/
 
 
+/** @name Flags For AB_Banking_MessageBox
+ *
+ */
+/*@{*/
+/**
+ * Defines the mask to catch the message type. E.g. a check whether a
+ * message us a warning could be performed by:
+ * @code
+ * if ( ( flags & AB_BANKING_MSG_FLAGS_TYPE_MASK) ==
+ *      AB_BANKING_MSG_FLAGS_TYPE_WARN) {
+ *      fprintf(stderr, "This is a warning.\n");
+ * }
+ * @endcode
+ */
+#define AB_BANKING_MSG_FLAGS_TYPE_MASK           0x07
+/** The message is a simple information. */
+#  define AB_BANKING_MSG_FLAGS_TYPE_INFO           0
+/** The message is a warning */
+#  define AB_BANKING_MSG_FLAGS_TYPE_WARN           1
+/** The message is a error message */
+#  define AB_BANKING_MSG_FLAGS_TYPE_ERROR          2
+
+/** Determine which button is the confirmation button */
+#define AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(fl) ((flags & 0x3)>>3)
+
+/**
+ * <p>
+ * Check for the severity of the message. This allows non-interactive
+ * backends to react upon the message accordingly.
+ * The backend calling this function thus allows the frontend to detect
+ * when the message is important regarding data security.
+ * E.g. a message like "Shall I delete this file" should be considered
+ * dangerous (since this might result in a data loss). However, the messae
+ * "Just started" is not that dangerous ;-)
+ * </p>
+ * <p>
+ * The following example allows to determine whether a message is
+ * dangerous:
+ * @code
+ * if ( ( flags & AB_BANKING_MSG_FLAGS_SEVERITY_MASK) ==
+ *      AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS) {
+ *      fprintf(stderr, "This is a dangerous.\n");
+ * }
+ * @endcode
+ * </p>
+ */
+#define AB_BANKING_MSG_FLAGS_SEVERITY_MASK       (0x7<<5)
+/** Message does not affect security or induce any problem to the system */
+#  define AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL      (0x0<<5)
+/** Message is considered dangerous and thus should be attended to by a
+ * umanoid ;-) */
+#  define AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS   (0x1<<5)
+/*@}*/
+
 
 typedef enum {
   AB_Banking_MsgTypeInfo=0,
@@ -85,20 +139,20 @@ extern "C" {
  */
 /*@{*/
 typedef int (*AB_BANKING_MESSAGEBOX_FN)(AB_BANKING *ab,
-                                        AB_BANKING_MSGTYPE mt,
+                                        GWEN_TYPE_UINT32 flags,
                                         const char *title,
                                         const char *text,
                                         const char *b1,
                                         const char *b2,
                                         const char *b3);
 
-typedef int (*AB_BANKING_INPUTBOX_FN)(AB_BANKING *ab, 
+typedef int (*AB_BANKING_INPUTBOX_FN)(AB_BANKING *ab,
+                                      GWEN_TYPE_UINT32 flags,
                                       const char *title,
                                       const char *text,
                                       char *buffer,
                                       int minLen,
-                                      int maxLen,
-                                      GWEN_TYPE_UINT32 flags);
+                                      int maxLen);
 
 typedef GWEN_TYPE_UINT32 (*AB_BANKING_SHOWBOX_FN)(AB_BANKING *ab, 
                                                   const char *title,
@@ -341,10 +395,41 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
 
 /** @name Virtual User Interaction Functions
  *
+ *  All text passed to the frontend via one of the following functions
+ *  is expected to be an ISO-8859-15 string which may contain newlines but no
+ * other control characters (especially no HTML tags since not all frontends
+ * are supposed to be able to decode it).
  */
 /*@{*/
+/**
+ * Show a message box with optional buttons.
+ * The message box may either contain 1, 2 or three buttons.
+ * If only one button is wanted then b1 should hold a pointer to the buttun
+ * text (b2 and b3 must be NULL)
+ * In two-button mode b1 and b2 must be valid (b3 must be NULL)
+ * In three-button-mode b1, b2 and b3 must be valid pointers.
+ * The return value tells which button the user pressed:
+ * <ul>
+ *  <li>1: button 1</li>
+ *  <li>2: button 2</li>
+ *  <li>3: button 3</li>
+ * </ul>
+ * If the frontend can not determine which button has been pressed (e.g. if
+ * no button was pressed but the user rather aborted the dialog by simply
+ * closing the box) it should return @b 0.
+ * @return the number of the button pressed (1=b1, 2=b2, 3=b3), any other
+ *  value should be considered an error, including 0)
+ * @param ab banking interface
+ * @param flags
+ * @param title title of the message box
+ * @param text (see text restrictions note above)
+ * @param b1 text for the first button (required), should be something
+ *  like "Ok" (see text restrictions note above)
+ * @param b2 text for the optional second button
+ * @param b3 text for the optional third button
+ */
 int AB_Banking_MessageBox(AB_BANKING *ab,
-                          AB_BANKING_MSGTYPE mt,
+                          GWEN_TYPE_UINT32 flags,
                           const char *title,
                           const char *text,
                           const char *b1,
@@ -352,16 +437,18 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
                           const char *b3);
 
 /**
- * @param maxLen size of the buffer -1 (the -1 is to allow for the trailing
- * null character to be appended)
+ * @param maxLen size of the buffer including the trailing NULL character.
+ * This means that if you want to ask the user for a PIN of at most 4
+ * characters you need to supply a buffer of at least @b 5 bytes and provide
+ * a 5 as maxLen.
  */
 int AB_Banking_InputBox(AB_BANKING *ab,
+                        GWEN_TYPE_UINT32 flags,
                         const char *title,
                         const char *text,
                         char *buffer,
                         int minLen,
-                        int maxLen,
-                        GWEN_TYPE_UINT32 flags);
+                        int maxLen);
 
 GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
                                     const char *title,

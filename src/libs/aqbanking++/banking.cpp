@@ -31,7 +31,7 @@ namespace AB {
 
 
   int Banking_Linker::MessageBox(AB_BANKING *ab,
-                                 AB_BANKING_MSGTYPE mt,
+                                 GWEN_TYPE_UINT32 flags,
                                  const char *title,
                                  const char *text,
                                  const char *b1,
@@ -43,25 +43,25 @@ namespace AB {
     kb=GWEN_INHERIT_GETDATA(AB_BANKING, Banking, ab);
     assert(kb);
 
-    return kb->messageBox(mt, title, text, b1, b2, b3);
+    return kb->messageBox(flags, title, text, b1, b2, b3);
   }
 
 
   
   int Banking_Linker::InputBox(AB_BANKING *ab,
+                               GWEN_TYPE_UINT32 flags,
                                const char *title,
                                const char *text,
                                char *buffer,
                                int minLen,
-                               int maxLen,
-                               GWEN_TYPE_UINT32 flags){
+                               int maxLen){
     Banking *kb;
 
     assert(ab);
     kb=GWEN_INHERIT_GETDATA(AB_BANKING, Banking, ab);
     assert(kb);
   
-    return kb->inputBox(title, text, buffer, minLen, maxLen, flags);
+    return kb->inputBox(flags, title, text, buffer, minLen, maxLen);
   }
   
   
@@ -177,7 +177,7 @@ namespace AB {
   
   
   
-  int Banking::messageBox(AB_BANKING_MSGTYPE mt,
+  int Banking::messageBox(GWEN_TYPE_UINT32 flags,
                           const char *title,
                           const char *text,
                           const char *b1,
@@ -188,12 +188,12 @@ namespace AB {
   
   
   
-  int Banking::inputBox(const char *title,
+  int Banking::inputBox(GWEN_TYPE_UINT32 flags,
+                        const char *title,
                         const char *text,
                         char *buffer,
                         int minLen,
-                        int maxLen,
-                        GWEN_TYPE_UINT32 flags){
+                        int maxLen){
     return AB_ERROR_NOT_SUPPORTED;
   }
   

@@ -253,7 +253,7 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
 
 
 int AB_Banking_MessageBox(AB_BANKING *ab,
-                          AB_BANKING_MSGTYPE mt,
+                          GWEN_TYPE_UINT32 flags,
                           const char *title,
                           const char *text,
                           const char *b1,
@@ -261,7 +261,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
                           const char *b3){
   assert(ab);
   if (ab->messageBoxFn) {
-    return ab->messageBoxFn(ab, mt, title, text, b1, b2, b3);
+    return ab->messageBoxFn(ab, flags, title, text, b1, b2, b3);
   }
   DBG_WARN(0, "No messageBox function set");
   return 0;
@@ -270,15 +270,15 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
 
 
 int AB_Banking_InputBox(AB_BANKING *ab,
+                        GWEN_TYPE_UINT32 flags,
                         const char *title,
                         const char *text,
                         char *buffer,
                         int minLen,
-                        int maxLen,
-                        GWEN_TYPE_UINT32 flags){
+                        int maxLen){
   assert(ab);
   if (ab->inputBoxFn) {
-    return ab->inputBoxFn(ab, title, text, buffer, minLen, maxLen, flags);
+    return ab->inputBoxFn(ab, flags, title, text, buffer, minLen, maxLen);
   }
   DBG_ERROR(0, "No inputBox function set");
   return AB_ERROR_NOFN;
