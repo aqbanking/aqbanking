@@ -678,6 +678,12 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
  * shutdowns.
  * </p>
  * <p>
+ * This means that if you are handling the response for a just
+ * executed job directly after queue execution you should remove the
+ * finished job by calling @ref AB_Banking_DelFinishedJob on it after handling
+ * its results.
+ * </p>
+ * <p>
  * If a job is marked as <i>pending</i> after execution it will be moved to
  * the list of pending jobs.
  * Those jobs are also preserved across shutdowns.
@@ -737,17 +743,13 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
  * the returned list might contain another representation of jobs you once
  * created and enqueued into the execution queue.
  * </p>
- * <p>
- * So you should only use jobs returned by this function for other functions
- * in this particular function group.
- * </p>
  */
 AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
 
 /**
- * Removes a finished job from its folder. This function does not free the
- * job.
- * The job MUST be one of those returned via @ref AB_Banking_GetFinishedJobs.
+ * Removes a finished job from its folder. You can use either a job returned
+ * via @ref AB_Banking_GetFinishedJobs or a job you previously added to
+ * the execution queue after the queue has been executed.
  */
 int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
 
