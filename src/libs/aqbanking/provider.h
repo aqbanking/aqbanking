@@ -21,6 +21,9 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/bufferedio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct AB_PROVIDER AB_PROVIDER;
 GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER);
@@ -35,12 +38,21 @@ typedef struct AB_PROVIDER_WIZZARD AB_PROVIDER_WIZZARD;
 GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_WIZZARD);
 GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_WIZZARD, AB_ProviderWizzard);
 
+#ifdef __cplusplus
+}
+#endif
+
 
 #include <aqbanking/banking.h>
 #include <aqbanking/error.h>
 #include <aqbanking/job.h>
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab);
@@ -162,6 +174,9 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 

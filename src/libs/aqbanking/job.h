@@ -16,11 +16,14 @@
 
 #include <gwenhywfar/misc2.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct AB_JOB AB_JOB;
 GWEN_LIST2_FUNCTION_DEFS(AB_JOB, AB_Job);
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
-#include <aqbanking/account.h>
 
 
 typedef enum {
@@ -41,6 +44,18 @@ typedef enum {
   AB_Job_TypeDebitNote
 } AB_JOB_TYPE;
 
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#include <aqbanking/account.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 void AB_Job_free(AB_JOB *j);
@@ -74,5 +89,13 @@ const char *AB_Job_GetResultText(const AB_JOB *j);
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
 
 
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* AQBANKING_JOB_H */
+
+
+
+

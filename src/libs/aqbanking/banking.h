@@ -19,8 +19,13 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/plugindescr.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define AB_BANKING_CONFIGFILE ".aqbanking.conf"
+
+#define AB_BANKING_PROGRESS_NONE 0xffffffff
 
 
 typedef struct AB_BANKING AB_BANKING;
@@ -55,11 +60,18 @@ typedef enum {
   AB_Banking_LogLevelVerbous
 } AB_BANKING_LOGLEVEL;
 
+#ifdef __cplusplus
+}
+#endif
+
 
 #include <aqbanking/job.h>
 #include <aqbanking/provider.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @name Prototypes For Virtual User Interaction Functions
  *
@@ -309,6 +321,13 @@ GWEN_TYPE_UINT32 AB_Banking_Progress_Start(AB_BANKING *ab,
                                            const char *text,
                                            GWEN_TYPE_UINT32 total);
 
+/**
+ * Advances the progress bar an application might present to the user.
+ * @param id id assigned by @ref AB_Banking_Progress_Start
+ * @param progress new value for progress. A special value is
+ *  AB_BANKING_PROGRESS_NONE which means that the progress is unchanged.
+ * This might be used as a keepalive call to a GUI.
+ */
 int AB_Banking_Progress_Advance(AB_BANKING *ab,
                                 GWEN_TYPE_UINT32 id,
                                 GWEN_TYPE_UINT32 progress);
@@ -347,6 +366,9 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
 
 /*@}*/
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* AQBANKING_BANKING_H */

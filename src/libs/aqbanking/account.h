@@ -20,13 +20,27 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct AB_ACCOUNT AB_ACCOUNT;
 GWEN_INHERIT_FUNCTION_DEFS(AB_ACCOUNT);
 GWEN_LIST2_FUNCTION_DEFS(AB_ACCOUNT, AB_Account);
 
+#ifdef __cplusplus
+}
+#endif
+
+
 #include <aqbanking/banking.h>
 #include <aqbanking/provider.h>
 #include <aqbanking/job.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
@@ -58,6 +72,11 @@ void AB_Account_SetBankName(AB_ACCOUNT *acc, const char *s);
 
 const char *AB_Account_GetOwnerName(const AB_ACCOUNT *acc);
 void AB_Account_SetOwnerName(AB_ACCOUNT *acc, const char *s);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 

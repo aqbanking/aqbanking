@@ -18,12 +18,20 @@
 #include <aqbanking/job.h>
 #include <aqbanking/accstatus.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a);
 AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j);
 void AB_JobGetBalance_SetAccountStatus(AB_JOB *j,
                                        const AB_ACCOUNT_STATUS *as);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* AQBANKING_JOBGETBALANCE_H */

@@ -22,13 +22,27 @@
 #include <gwenhywfar/misc2.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
 GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction);
 GWEN_LIST2_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction);
 
+#ifdef __cplusplus
+}
+#endif
+
+
 #include <aqbanking/value.h>
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 AB_TRANSACTION * AB_Transaction_new();
@@ -117,6 +131,9 @@ void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s);
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 
