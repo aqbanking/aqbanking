@@ -44,7 +44,7 @@ struct AB_BANKING {
   AB_BANKING_PROGRESS_LOG_FN progressLogFn;
   AB_BANKING_PROGRESS_END_FN progressEndFn;
 
-
+  void *user_data;
 };
 
 

@@ -245,6 +245,9 @@ extern "C" {
 /*@{*/
 /**
  * Please see @ref AB_Banking_MessageBox for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
  typedef int (*AB_BANKING_MESSAGEBOX_FN)(AB_BANKING *ab,
                                         GWEN_TYPE_UINT32 flags,
@@ -256,6 +259,9 @@ extern "C" {
 
 /**
  * Please see @ref AB_Banking_InputBox for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef int (*AB_BANKING_INPUTBOX_FN)(AB_BANKING *ab,
                                       GWEN_TYPE_UINT32 flags,
@@ -267,6 +273,9 @@ typedef int (*AB_BANKING_INPUTBOX_FN)(AB_BANKING *ab,
 
 /**
  * Please see @ref AB_Banking_ShowBox for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef GWEN_TYPE_UINT32 (*AB_BANKING_SHOWBOX_FN)(AB_BANKING *ab, 
                                                   GWEN_TYPE_UINT32 flags,
@@ -274,11 +283,17 @@ typedef GWEN_TYPE_UINT32 (*AB_BANKING_SHOWBOX_FN)(AB_BANKING *ab,
                                                   const char *text);
 /**
  * Please see @ref AB_Banking_HideBox for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef void (*AB_BANKING_HIDEBOX_FN)(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 /**
  * Please see @ref AB_Banking_ProgressStart for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef GWEN_TYPE_UINT32
   (*AB_BANKING_PROGRESS_START_FN)(AB_BANKING *ab, 
@@ -288,12 +303,18 @@ typedef GWEN_TYPE_UINT32
 
 /**
  * Please see @ref AB_Banking_ProgressAdvance for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef int (*AB_BANKING_PROGRESS_ADVANCE_FN)(AB_BANKING *ab, 
                                               GWEN_TYPE_UINT32 id,
                                               GWEN_TYPE_UINT32 progress);
 /**
  * Please see @ref AB_Banking_ProgressLog for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef int (*AB_BANKING_PROGRESS_LOG_FN)(AB_BANKING *ab, 
                                           GWEN_TYPE_UINT32 id,
@@ -301,6 +322,9 @@ typedef int (*AB_BANKING_PROGRESS_LOG_FN)(AB_BANKING *ab,
                                           const char *text);
 /**
  * Please see @ref AB_Banking_ProgressEnd for details.
+ *
+ * One way of passing arbitrary additional data to this callback is by
+ * means of the @ref AB_Banking_GetUserData function.
  */
 typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab, 
                                           GWEN_TYPE_UINT32 id);
@@ -543,6 +567,30 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 AQBANKING_API 
 int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
+/** Returns the void pointer that was stored by
+ * AB_Banking_SetUserData(). This might be useful for passing data to
+ * the callback functions.
+ *
+ * On the other hand, we strongly encourage using the GWEN_INHERIT
+ * macros to store non-trivial data structures in this object. 
+ *
+ * @param ab Pointer to the AB_BANKING object
+ */
+AQBANKING_API
+void *AB_Banking_GetUserData(AB_BANKING *ab);
+
+/** Save the void pointer that can be retrieved by
+ * AB_Banking_GetUserData(). This might be useful for passing data to
+ * the callback functions.
+ *
+ * On the other hand, we strongly encourage using the GWEN_INHERIT
+ * macros to store non-trivial data structures in this object. 
+ *
+ * @param ab Pointer to the AB_BANKING object
+ * @param user_data Arbitrary pointer to be stored in the AB_BANKING
+ */
+AQBANKING_API
+void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /*@}*/
 

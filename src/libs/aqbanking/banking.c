@@ -1709,6 +1709,12 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
 }
 
 
+void *AB_Banking_GetUserData(AB_BANKING *ab) {
+  assert(ab);
+  return ab->user_data;
+}
 
-
-
+void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
+  assert(ab);
+  ab->user_data = user_data;
+}
