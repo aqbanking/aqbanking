@@ -7,4 +7,13 @@
   </descr>
 </plugin>
 
+<plugin name="dtaus" type="imexporter" import="1" export="1" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>DTAUS</short>
+  <descr>
+    Diese Erweiterung importiert/exportiert DTAUS-Dateien.
+  </descr>
+</plugin>
+
 

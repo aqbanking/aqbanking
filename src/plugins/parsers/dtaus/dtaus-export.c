@@ -58,12 +58,17 @@ int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
                        const char *s) {
   unsigned int i;
   unsigned int ssize;
+  GWEN_BUFFER *nbuf;
 
   assert(dst);
   assert(size);
   assert(s);
 
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding word: %s", s);
+
+  nbuf=GWEN_Buffer_new(0, size, 0, 1);
+  AB_ImExporter_Utf8ToDta(s, -1, nbuf);
+  s=GWEN_Buffer_GetStart(nbuf);
 
   ssize=strlen(s);
   if (ssize>size) {
@@ -77,13 +82,14 @@ int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
     if (i>=ssize)
       c=0;
     else
-      c=AHB_DTAUS__ToDTA(s[i]);
+      c=s[i];
 
     if (c)
       GWEN_Buffer_AppendByte(dst, c);
     else
       GWEN_Buffer_AppendByte(dst, ' ');
   } /* for */
+  GWEN_Buffer_free(nbuf);
   return 0;
 }
 

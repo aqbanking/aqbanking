@@ -638,9 +638,9 @@ void AB_ImExporter_DtaToUtf8(const char *p,
       GWEN_Buffer_AppendByte(buf, 0x9c);
       break;
 
-    case 0x5e: /* sharp s */
+    case 0x7e: /* sharp s */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xdf);
+      GWEN_Buffer_AppendByte(buf, 0x9f);
       break;
 
     default:

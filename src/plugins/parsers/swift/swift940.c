@@ -75,7 +75,7 @@ void AHB_SWIFT__HbciToUtf8(const char *p,
 
     case 0xdf: /* sz */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xdf);
+      GWEN_Buffer_AppendByte(buf, 0x9f);
       break;
 
     case 0xa7: /* section sign */

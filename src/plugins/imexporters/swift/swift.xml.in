@@ -8,3 +8,12 @@
 </plugin>
 
 
+<plugin name="swift" type="imexporter" import="1" export="0" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>SWIFT</short>
+  <descr>
+    Diese Erweiterung importiert SWIFT MT 940 und MT942 Dateien.
+  </descr>
+</plugin>
+

@@ -21,10 +21,15 @@ iheader_HEADERS= \
  jobsingletransfer.h \
  jobsingletransfer_be.h \
  jobsingletransfer_l.h \
- jobsingletransfer_p.h
+ jobsingletransfer_p.h \
+ jobsingledebitnote.h \
+ jobsingledebitnote_be.h \
+ jobsingledebitnote_l.h \
+ jobsingledebitnote_p.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \
  jobgettransactions.c \
- jobsingletransfer.c
+ jobsingletransfer.c \
+ jobsingledebitnote.c
 

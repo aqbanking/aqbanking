@@ -8,3 +8,13 @@
 </plugin>
 
 
+<plugin name="ofx" type="imexporter" import="1" export="0" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>OFX</short>
+  <descr>
+    Diese Erweiterung importiert OFX Dateien mittels LibOFX.
+  </descr>
+</plugin>
+
+

@@ -8,3 +8,13 @@
 </plugin>
 
 
+<plugin name="csv" type="imexporter" import="1" export="1" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>CSV</short>
+  <descr>
+    Diese Erweiterung importiert/exportiert CSV-Dateien.
+  </descr>
+</plugin>
+
+

@@ -8,3 +8,14 @@
 </plugin>
 
 
+<plugin name="openhbci1" type="imexporter" import="1" export="0" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Alte AqMoney1/OpenHBCI1 Dateien</short>
+  <descr>
+    Diese Erweiterung importiert/exportiert Dateien von AqMoney1 und 
+    OpenHBCI1.
+  </descr>
+</plugin>
+
+
