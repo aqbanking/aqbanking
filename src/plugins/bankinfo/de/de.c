@@ -117,7 +117,7 @@ AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,
   default: cr=AB_BankInfoCheckResult_UnknownResult; break;
   } /* switch */
 
-  return res;
+  return cr;
 }
 
 
