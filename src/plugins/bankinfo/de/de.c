@@ -44,7 +44,9 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   bde->banking=ab;
   bde->dbData=db;
-  bde->checker=AccountNumberCheck_new();
+#ifdef HAVE_KTOBLZCHECK
+  bde->checker = AccountNumberCheck_new();
+#endif
   if (!bde->checker) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "KtoBlzCheck returned an error");
@@ -63,8 +65,10 @@ void AB_BankInfoPluginDE_FreeData(void *bp, void *p){
 
   bde=(AB_BANKINFO_PLUGIN_DE*)p;
 
+#ifdef HAVE_KTOBLZCHECK
   if (bde->checker)
     AccountNumberCheck_delete(bde->checker);
+#endif
   GWEN_FREE_OBJECT(bde);
 }
 
@@ -74,12 +78,15 @@ AB_BANKINFO *AB_BankInfoPluginDE_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
                                              const char *branchId,
                                              const char *bankId){
   AB_BANKINFO_PLUGIN_DE *bde;
+#ifdef HAVE_KTOBLZCHECK
   const AccountNumberCheck_Record *r;
+#endif
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_DE, bip);
   assert(bde);
 
+#ifdef HAVE_KTOBLZCHECK
   assert(bde->checker);
   r=AccountNumberCheck_findBank(bde->checker, bankId);
   if (r) {
@@ -92,6 +99,7 @@ AB_BANKINFO *AB_BankInfoPluginDE_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
     AB_BankInfo_SetLocation(bi, AccountNumberCheck_Record_location(r));
     return bi;
   }
+#endif
   DBG_INFO(AQBANKING_LOGDOMAIN, "Bank \"%s\" not found", bankId);
   return 0;
 }
@@ -104,7 +112,9 @@ AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,
                                  const char *bankId,
                                  const char *accountId){
   AB_BANKINFO_PLUGIN_DE *bde;
+#ifdef HAVE_KTOBLZCHECK
   AccountNumberCheck_Result res;
+#endif
   AB_BANKINFO_CHECKRESULT cr;
 
   assert(bankId);
@@ -114,6 +124,7 @@ AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_DE, bip);
   assert(bde);
 
+#ifdef HAVE_KTOBLZCHECK
   assert(bde->checker);
   res=AccountNumberCheck_check(bde->checker,
                                bankId,
@@ -125,6 +136,9 @@ AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,
   case 3:  cr=AB_BankInfoCheckResult_UnknownBank; break;
   default: cr=AB_BankInfoCheckResult_UnknownResult; break;
   } /* switch */
+#else
+  cr=AB_BankInfoCheckResult_UnknownResult;
+#endif
 
   return cr;
 }
@@ -196,9 +210,10 @@ int AB_BankInfoPluginDE__ReadFromColumn4(AB_BANKINFO *bi,
 					 GWEN_STRINGLIST *sl) {
   const char *s;
   const char *t;
-  GWEN_STRINGLISTENTRY *se;
+  GWEN_STRINGLISTENTRY *se = GWEN_StringList_FirstEntry(sl);
   AB_BANKINFO_SERVICE *bis;
 
+  /* FIXME: obviously this needs more work. */
   /* 4th column: location */
   se=GWEN_StringListEntry_Next(se);
   if (!se)
@@ -315,7 +330,7 @@ int AB_BankInfoPluginDE__ReadFromColumn4(AB_BANKINFO *bi,
 int AB_BankInfoPluginDE__ReadFromColumn3(AB_BANKINFO *bi,
 					 GWEN_STRINGLIST *sl) {
   const char *s;
-  GWEN_STRINGLISTENTRY *se;
+  GWEN_STRINGLISTENTRY *se = GWEN_StringList_FirstEntry(sl);
 
   /* 3rd column: Bank name */
   se=GWEN_StringListEntry_Next(se);

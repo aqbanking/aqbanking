@@ -1,3 +1,7 @@
+2004-11-22   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/bankinfo/de/de_p.h, de.c: Ifdef out when ktoblzcheck
+	is not available.
 
 2004/11/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

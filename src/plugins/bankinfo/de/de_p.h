@@ -17,7 +17,7 @@
 #include <aqbanking/banking.h>
 
 #ifdef HAVE_KTOBLZCHECK
-#include <ktoblzcheck.h>
+# include <ktoblzcheck.h>
 #endif
 
 
@@ -25,7 +25,12 @@
 typedef struct AB_BANKINFO_PLUGIN_DE AB_BANKINFO_PLUGIN_DE;
 struct AB_BANKINFO_PLUGIN_DE {
   AB_BANKING *banking;
-  AccountNumberCheck *checker;
+#ifdef HAVE_KTOBLZCHECK
+  AccountNumberCheck
+#else
+  void
+#endif
+       *checker;
   GWEN_DB_NODE *dbData;
 };
 
