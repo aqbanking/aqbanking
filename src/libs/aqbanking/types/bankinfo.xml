@@ -58,7 +58,8 @@
     <elem name="bankName" type="char" ptr="1" />
     <elem name="location" type="char" ptr="1" />
     <elem name="services" type="AB_BANKINFO_SERVICE_LIST" ptr="1" 
-          mode="list" elemType="AB_BANKINFO_SERVICE" init="1" />
+          mode="list" elemType="AB_BANKINFO_SERVICE" 
+          init="1" copy="1" const="0" />
   </type>
   
   

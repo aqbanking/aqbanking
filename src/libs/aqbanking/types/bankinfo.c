@@ -94,8 +94,7 @@ int AB_BankInfo_toDb(const AB_BANKINFO *st, GWEN_DB_NODE *db) {
   if (st->services)
   if (1) {
     GWEN_DB_NODE *dbT;
-  
-AB_BANKINFO_SERVICE *e;
+    AB_BANKINFO_SERVICE *e;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "services");
     assert(dbT);
@@ -244,7 +243,7 @@ AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINFO *st) {
 }
 
 
-void AB_BankInfo_SetServices(AB_BANKINFO *st, const AB_BANKINFO_SERVICE_LIST *d) {
+void AB_BankInfo_SetServices(AB_BANKINFO *st, AB_BANKINFO_SERVICE_LIST *d) {
   assert(st);
   if (st->services)
     AB_BankInfoService_List_free(st->services);
