@@ -34,35 +34,13 @@ struct AB_IMEXPORTER {
 };
 
 
-GWEN_LIST_FUNCTION_DEFS(AB_IMEXPORTER_DAY, AB_ImExporterDay)
-
-struct AB_IMEXPORTER_DAY {
-  GWEN_LIST_ELEMENT(AB_IMEXPORTER_DAY);
-  GWEN_TIME *date;
-  AB_TRANSACTION_LIST *transactions;
-  AB_TRANSACTION *nextTransaction;
-};
-AB_IMEXPORTER_DAY *AB_ImExporterDay_new(const GWEN_TIME *ti);
-void AB_ImExporterDay_free(AB_IMEXPORTER_DAY *ied);
-/**
- * Takes over ownership of the given transaction.
- */
-void AB_ImExporterDay_AddTransaction(AB_IMEXPORTER_DAY *ied,
-                                     AB_TRANSACTION *t);
-
-
 struct AB_IMEXPORTER_CONTEXT {
-  AB_IMEXPORTER_DAY_LIST *days;
-  AB_IMEXPORTER_DAY *nextDay;
   AB_ACCOUNT_LIST *accounts;
   AB_ACCOUNT *nextAccount;
+  AB_TRANSACTION_LIST *transactions;
+  AB_TRANSACTION *nextTransaction;
+
 };
-/**
- * This function keeps the ownership of the object returned (if any).
- */
-AB_IMEXPORTER_DAY *AB_ImExporterContext_GetDay(AB_IMEXPORTER_CONTEXT *iec,
-                                               const GWEN_TIME *ti,
-                                               int crea);
 
 
 

@@ -30,13 +30,11 @@
  * <p>
  * When importing this group reads transactions and accounts from a
  * given stream (in most cases a file) and stores them in a given
- * importer context. Transactions are automatically sorted by date (or
- * valuta date if the date is not given in the transactions read).
+ * importer context.
  * </p>
  * <p>
- * The application can later browse through all days stored within the given
- * context and import the transactions stored for those days into its own
- * database as needed.
+ * The application can later browse through all transactions stored within the
+ * given context and import them into its own database as needed.
  * </p>
  */
 /*@{*/
@@ -81,6 +79,7 @@ extern "C" {
  * @param dbProfile configuration data for the importer. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
+AQBANKING_API 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          GWEN_BUFFEREDIO *bio,
@@ -89,7 +88,9 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 
 
 
+AQBANKING_API 
 AB_BANKING *AB_ImExporter_GetBanking(const AB_IMEXPORTER *ie);
+AQBANKING_API 
 const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
@@ -97,70 +98,67 @@ const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 /** @name Im-/export Context
  *
- * A context contains the list of imported accounts and a list of days
- * for which transactions have been imported.
+ * A context contains the list of imported accounts and a list of
+ * transactions.
  */
 /*@{*/
+AQBANKING_API 
 AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
+AQBANKING_API 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
 
 /**
- * Returns the first day for which transactions are available.
- * The importer keeps ownership of the object returned (if any), so you
- * <b>must not</b> free it.
- * Please note that the days are not necessarily sorted.
+ * Takes over ownership of the given account.
  */
-AB_IMEXPORTER_DAY*
-  AB_ImExporterContext_GetFirstDay(AB_IMEXPORTER_CONTEXT *iec);
-
-/**
- * Returns the next day for which transactions are available.
- * The importer keeps ownership of the object returned (if any), so you
- * <b>must not</b> free it.
- * Please note that the days are not necessarily sorted.
- */
-AB_IMEXPORTER_DAY*
-  AB_ImExporterContext_GetNextDay(AB_IMEXPORTER_CONTEXT *iec);
+AQBANKING_API 
+void AB_ImExporterContext_AddAccount(AB_IMEXPORTER_CONTEXT *iec,
+                                     AB_ACCOUNT *a);
 
 /**
  * Returns the first imported account (if any).
  * The caller becomes the new owner of the account returned (if any),
- * so he/she is responsible for calling AB_Account_free() when finished.
+ * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
+AQBANKING_API 
 AB_ACCOUNT*
   AB_ImExporterContext_GetFirstAccount(AB_IMEXPORTER_CONTEXT *iec);
 
 /**
  * Returns the next imported account (if any).
  * The caller becomes the new owner of the account returned (if any),
- * so he/she is responsible for calling AB_Account_free() when finished.
+ * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
+AQBANKING_API 
 AB_ACCOUNT*
   AB_ImExporterContext_GetNextAccount(AB_IMEXPORTER_CONTEXT *iec);
-/*@}*/
 
-
-
-
-/** @name Im-/export Day
- *
- */
-/*@{*/
-const GWEN_TIME *AB_ImExporterDay_GetDate(const AB_IMEXPORTER_DAY *ied);
 
 /**
- * Returns the first transaction of the given day.
- * The caller becomes the new owner of the transaction returned (if any),
- * so he/she is responsible for calling AB_Transaction_free() when finished.
+ * Takes over ownership of the given transaction.
  */
-AB_TRANSACTION *AB_ImExporterDay_GetFirstTransaction(AB_IMEXPORTER_DAY *ied);
+AQBANKING_API 
+void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
+                                         AB_TRANSACTION *t);
 
 /**
- * Returns the next transaction of the given day.
- * The caller becomes the new owner of the transaction returned (if any),
- * so he/she is responsible for calling AB_Transaction_free() when finished.
+ * Returns the first transaction stored within the context.
+ * The caller becomes the new owner of the transaction returned (if any)
+ * which makes him/her responsible for freeing it using
+ * @ref AB_Transaction_free.
  */
-AB_TRANSACTION *AB_ImExporterDay_GetNextTransaction(AB_IMEXPORTER_DAY *ied);
+AQBANKING_API 
+AB_TRANSACTION*
+AB_ImExporterContext_GetFirstTransaction(AB_IMEXPORTER_CONTEXT *iec);
+
+/**
+ * Returns the next transaction stored within the context.
+ * The caller becomes the new owner of the transaction returned (if any)
+ * which makes him/her responsible for freeing it using
+ * @ref AB_Transaction_free.
+ */
+AQBANKING_API 
+AB_TRANSACTION*
+AB_ImExporterContext_GetNextTransaction(AB_IMEXPORTER_CONTEXT *iec);
 /*@}*/
 
 

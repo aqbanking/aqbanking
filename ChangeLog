@@ -1,4 +1,12 @@
 
+2004/08/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- simplified importer/exporter framework: now an importer does no longer
+  have to sort imported transactions by days. This must now be done inside
+  an application, because sometimes this needs user interaction which is out
+  of the scope of AqBanking
+
+
 2004/08/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a generic import/export framework. This can be used to import

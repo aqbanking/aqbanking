@@ -30,8 +30,11 @@ typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab,
  *
  */
 /*@{*/
+AQBANKING_API 
 AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab,
                                  const char *name);
+AQBANKING_API 
+void AB_ImExporter_free(AB_IMEXPORTER *ie);
 /*@}*/
 
 
@@ -48,24 +51,12 @@ typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
 
 
 
-/**
- * Takes over ownership of the given transaction.
- */
-void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
-                                         AB_TRANSACTION *t);
-
-
-/**
- * Takes over ownership of the given account.
- */
-void AB_ImExporterContext_AddAccount(AB_IMEXPORTER_CONTEXT *iec,
-                                     AB_ACCOUNT *a);
-
 
 /** @name Setters for Virtual Backend Functions
  *
  */
 /*@{*/
+AQBANKING_API 
 void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
                                AB_IMEXPORTER_IMPORT_FN f);
 /*@}*/

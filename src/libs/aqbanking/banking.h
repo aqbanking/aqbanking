@@ -702,7 +702,12 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
  * The GWEN_DB returned contains one group for every loaded profile. Every
  * group has the name of the profile it contains. Every group contains at
  * least a variable called <i>name</i> which contains the name of the
- * profile, too.
+ * profile, too. The remaining content of each group is completely defined by
+ * the importer/exporter.
+ * </p>
+ * <p>
+ * You can use @ref GWEN_DB_GetFirstGroup and @ref GWEN_DB_GetNextGroup
+ * to browse the profiles.
  * </p>
  * <p>
  * The caller becomes the new owner of the object returned (if any).

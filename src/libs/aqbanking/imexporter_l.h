@@ -28,8 +28,6 @@ GWEN_LIST_FUNCTION_LIB_DEFS(AB_IMEXPORTER, AB_ImExporter, AQBANKING_API)
 
 void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll);
 
-void AB_ImExporter_free(AB_IMEXPORTER *ie);
-
 
 #endif /* AQBANKING_IMEXPORTER_L_H */
 
