@@ -15,6 +15,7 @@
 #endif
 
 #include "provider_p.h"
+#include "provider_be.h"
 #include "banking_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

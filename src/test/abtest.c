@@ -4,6 +4,7 @@
 
 #include <gwenhywfar/logger.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -109,13 +110,6 @@ int test3(int argc, char **argv) {
   }
 
 
-  fprintf(stderr, "Importing accounts...\n");
-  rv=AB_Banking_ImportProviderAccounts(ab, "aqhbci");
-  if (rv) {
-    fprintf(stderr, "Could not import accounts\n");
-    return 2;
-  }
-  fprintf(stderr, "Accounts imported\n");
 
   fprintf(stderr, "Deinitializing AB_Banking...\n");
   rv=AB_Banking_Fini(ab);

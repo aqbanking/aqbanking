@@ -1,4 +1,13 @@
 
+2004/08/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- created new header files for backend development (contain prototypes
+  for functions which are only to be used by the library itself and
+  backends. Might be published in special RPMs especially dedicated to
+  backend development).
+- added AB_Transaction_fromDb() and AB_Transaction_toDb()
+
+
 2004/08/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added AB_Transaction_dup()

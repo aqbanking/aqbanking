@@ -21,9 +21,12 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
  account.h \
  banking.h \
+ banking_be.h \
  error.h \
  job.h \
- provider.h
+ job_be.h \
+ provider.h \
+ provider_be.h
 
 libaqbanking_la_SOURCES=\
  account.c \

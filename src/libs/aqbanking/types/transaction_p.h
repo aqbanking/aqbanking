@@ -52,6 +52,7 @@ struct AB_TRANSACTION {
 
 };
 
+AB_TRANSACTION *AB_Transaction__freeAll_cb(AB_TRANSACTION *t, void *userData);
 
 
 

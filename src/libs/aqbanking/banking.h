@@ -419,22 +419,6 @@ AQBANKING_API
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
 /**
- * This function loads the given backend (if it not already has been) and
- * imports any account that backend might offer. You can use this function
- * to engage a backend which has not yet been used (but it doesn't hurt if you
- * use it on already active backends).
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab banking interface
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- */
-AQBANKING_API 
-int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend);
-
-/**
  * <p>
  * Activates a backend. It remains active (even across shutdowns of
  * AqBanking) until it is explicitly deactivated (using
@@ -628,36 +612,6 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                                                           const char *pn);
 
 /*@}*/
-
-
-
-
-/** @name Functions Used by Backends And Wizards
- *
- */
-/*@{*/
-
-/**
- * This copies the name of the folder for AqBanking's backend data into
- * the given GWEN_Buffer.
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab pointer to the AB_BANKING object
- * @param buf buffer to append the path name to
- */
-AQBANKING_API 
-int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
-
-
-/**
- * Loads a backend with the given name. You can use
- * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
- * backends. Such a backend can then be asked to return an account list.
- */
-AQBANKING_API 
-AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
-
-/*@}*/
-
 
 
 

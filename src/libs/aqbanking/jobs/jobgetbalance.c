@@ -17,6 +17,7 @@
 
 
 #include "jobgetbalance.h"
+#include "jobgetbalance_be.h"
 #include "job_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -30,6 +31,7 @@ AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a){
   AB_JOB *j;
 
   j=AB_Job_new(AB_Job_TypeGetBalance, a);
+  AB_Job_Update(j);
   return j;
 }
 

@@ -18,6 +18,7 @@
 #define AB_PROVIDER_WIZARD_FOLDER "wizards"
 
 #include <aqbanking/provider.h>
+#include <aqbanking/provider_be.h>
 #include <gwenhywfar/libloader.h>
 
 

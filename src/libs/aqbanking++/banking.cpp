@@ -17,6 +17,7 @@
 
 
 #include "banking_p.h"
+#include <aqbanking/banking_be.h>
 #include <assert.h>
 
 #include <gwenhywfar/inherit.h>
@@ -266,12 +267,6 @@ namespace AB {
   
   int Banking::fini(){
     return AB_Banking_Fini(_banking);
-  }
-  
-  
-  
-  int Banking::importProviderAccounts(const char *backend){
-    return AB_Banking_ImportProviderAccounts(_banking, backend);
   }
   
   

@@ -15,6 +15,7 @@
 #endif
 
 #include "job_p.h"
+#include "job_be.h"
 #include "account_l.h"
 #include "banking_l.h"
 #include "provider_l.h"
@@ -36,7 +37,6 @@ GWEN_INHERIT_FUNCTIONS(AB_JOB)
 
 AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   AB_JOB *j;
-  AB_PROVIDER *pro;
 
   assert(a);
   GWEN_NEW_OBJECT(AB_JOB, j);
@@ -51,12 +51,21 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
                        "static/createdBy",
                        AB_Banking_GetAppName(AB_Account_GetBanking(a)));
 
+  return j;
+}
+
+
+
+int AB_Job_Update(AB_JOB *j){
+  AB_PROVIDER *pro;
+
+  assert(j);
+
   /* check whether the job is available */
-  pro=AB_Account_GetProvider(a);
+  pro=AB_Account_GetProvider(j->account);
   assert(pro);
   j->availability=AB_Provider_UpdateJob(pro, j);
-
-  return j;
+  return j->availability;
 }
 
 

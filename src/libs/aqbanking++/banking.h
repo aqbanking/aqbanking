@@ -64,15 +64,6 @@ namespace AB {
 
 
     /**
-     * This function loads the given backend (if it not already has been) and
-     * imports any account that backend might offer. You can use this function
-     * to engage a backend which has not yet been used (but it doesn't hurt if you
-     * use it on already active backends).
-     */
-    int importProviderAccounts(const char *backend);
-
-
-    /**
      * Returns the application name as given to @ref AB_Banking_new.
      */
     const char *getAppName();

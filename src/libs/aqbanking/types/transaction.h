@@ -56,6 +56,16 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *t);
 AQBANKING_API
 void AB_Transaction_free(AB_TRANSACTION *t);
 
+AQBANKING_API
+void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *tl);
+
+AQBANKING_API
+AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
+
+AQBANKING_API
+int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db);
+
+
 /** @name Reference To Local Account
  *
  */

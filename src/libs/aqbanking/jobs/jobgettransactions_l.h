@@ -16,7 +16,6 @@
 
 
 #include <aqbanking/job.h>
-#include <aqbanking/accstatus.h>
 #include <aqbanking/jobgettransactions.h>
 
 #ifdef __cplusplus

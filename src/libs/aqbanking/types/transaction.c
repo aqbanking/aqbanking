@@ -480,7 +480,7 @@ void AB_Transaction_SetTextKey(AB_TRANSACTION *t, int i){
 
 
 
-int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
+int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
   GWEN_STRINGLISTENTRY *se;
   const char *p;
 
@@ -612,7 +612,7 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
 
 
 
-AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
+AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
   AB_TRANSACTION *t;
   const char *p;
   GWEN_DB_NODE *dbT;
@@ -718,6 +718,20 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
 
 
 
+
+AB_TRANSACTION *AB_Transaction__freeAll_cb(AB_TRANSACTION *t, void *userData){
+  AB_Transaction_free(t);
+  return 0;
+}
+
+
+
+void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *tl){
+  if (tl) {
+    AB_Transaction_List2_ForEach(tl, AB_Transaction__freeAll_cb, 0);
+    AB_Transaction_List2_free(tl);
+  }
+}
 
 
 

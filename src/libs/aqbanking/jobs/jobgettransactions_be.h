@@ -11,28 +11,35 @@
  ***************************************************************************/
 
 
-#ifndef AQBANKING_JOB_L_H
-#define AQBANKING_JOB_L_H
+#ifndef AQBANKING_JOBGETTRANSACTIONS_BE_H
+#define AQBANKING_JOBGETTRANSACTIONS_BE_H
 
 
 #include <aqbanking/job.h>
-#include <aqbanking/job_be.h>
-#include <gwenhywfar/inherit.h>
-#include <gwenhywfar/db.h>
-
-GWEN_LIST_FUNCTION_DEFS(AB_JOB, AB_Job)
-GWEN_INHERIT_FUNCTION_DEFS(AB_JOB)
+#include <aqbanking/jobgettransactions.h>
 
 
-AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
-
-GWEN_DB_NODE *AB_Job_GetData(const AB_JOB *j);
-
-
-int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
-AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
-
-int AB_Job_Update(AB_JOB *j);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-#endif /* AQBANKING_JOB_L_H */
+/**
+ * Takes over ownership of the given list
+ */
+AQBANKING_API 
+void AB_JobGetTransactions_SetTransactions(AB_JOB *j,
+                                           AB_TRANSACTION_LIST2 *tl);
+
+AQBANKING_API 
+void AB_JobGetTransactions_SetMaxStoreDays(AB_JOB *j, int i);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* AQBANKING_JOBGETTRANSACTIONS_BE_H */
+
