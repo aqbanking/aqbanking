@@ -20,14 +20,17 @@ protocol.
 The backend AqHBCI currently supports these security media: 
  - RDH keyfile (RSA-DES-Hybrid mode)
  - DDV chipcard (DES-DES-Verfahren)
- - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use with OpenHBCI in parallel) 
+ - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use 
+                     with OpenHBCI in parallel) 
  - PIN/TAN file (PIN/TAN mode using HTTP over SSL)
 
 
 1.2. Generic Financial Data Importer/Exporter Framework
------------------------------------------------------
+-------------------------------------------------------
 
-AqBanking uses various plugins to simplify import and export of financial data. It also provides the administration of profiles on a per import/export plugin basis. 
+AqBanking uses various plugins to simplify import and export of financial
+data. It also provides the administration of profiles on a per import/export
+plugin basis.
 
 Currently there are import plugins for the following formats: 
  - DTAUS (German financial format)
@@ -38,7 +41,9 @@ Currently there are import plugins for the following formats:
 2. Supported Platforms
 ======================
 
-AqBanking uses the library Gwenhywfar (project page) for abstraction of the underlying system. So it should work on any system for which Gwenhywfar is available. 
+AqBanking uses the library Gwenhywfar (project page) for abstraction of the 
+underlying system. So it should work on any system for which Gwenhywfar is 
+available. 
 
 This includes (but is not limited to): 
  - Linux (of course ;-)
