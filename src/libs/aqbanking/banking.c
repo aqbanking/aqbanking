@@ -127,6 +127,7 @@ void AB_Banking_free(AB_BANKING *ab){
     free(ab->appName);
     free(ab->appEscName);
     free(ab->configFile);
+    free(ab->dataDir);
     GWEN_FREE_OBJECT(ab);
   }
 }
@@ -157,8 +158,98 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab){
 
 
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab){
+  GWEN_BUFFER *nbuf;
+  GWEN_TYPE_UINT32 uniqueId;
+  int fd;
+
   assert(ab);
-  return ++(ab->lastUniqueId);
+  uniqueId=0;
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (AB_Banking_GetUserDataDir(ab, nbuf)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    GWEN_Buffer_free(nbuf);
+    return 0;
+  }
+  GWEN_Buffer_AppendString(nbuf, "/uniqueid");
+
+  fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(nbuf), 1);
+  if (fd!=-1) {
+    GWEN_BUFFEREDIO *bio;
+    char buffer[256];
+    GWEN_ERRORCODE err;
+    unsigned long int i;
+
+    bio=GWEN_BufferedIO_File_new(fd);
+    GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+    GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
+    if (!GWEN_BufferedIO_CheckEOF(bio)) {
+      err=GWEN_BufferedIO_ReadLine(bio, buffer, sizeof(buffer)-1);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+        GWEN_BufferedIO_free(bio);
+        AB_Banking__CloseFile(fd);
+        GWEN_Buffer_free(nbuf);
+        return 0;
+      }
+      if (strlen(buffer)) {
+        if (1!=sscanf(buffer, "%lu", &i)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Bad value in file (%s)",
+                    buffer);
+          GWEN_BufferedIO_free(bio);
+          AB_Banking__CloseFile(fd);
+          GWEN_Buffer_free(nbuf);
+          return 0;
+        }
+      }
+      else
+        i=0;
+      GWEN_BufferedIO_free(bio);
+      uniqueId=++i;
+      buffer[0]=0;
+      snprintf(buffer, sizeof(buffer)-1, "%lu", i);
+      DBG_ERROR(0, "Buffer contains this: %s", buffer);
+      if (ftruncate(fd, 0)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "ftruncate(%s, 0): %s",
+                  GWEN_Buffer_GetStart(nbuf), strerror(errno));
+        return 0;
+      }
+      if (lseek(fd, 0, SEEK_SET)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "lseek(%s, 0): %s",
+                  GWEN_Buffer_GetStart(nbuf), strerror(errno));
+        return 0;
+      }
+
+      bio=GWEN_BufferedIO_File_new(fd);
+      GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+      err=GWEN_BufferedIO_WriteLine(bio, buffer);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+        GWEN_BufferedIO_free(bio);
+        AB_Banking__CloseFile(fd);
+        GWEN_Buffer_free(nbuf);
+        return 0;
+      }
+    }
+    else
+      uniqueId=1;
+    GWEN_BufferedIO_free(bio);
+
+    if (AB_Banking__CloseFile(fd)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+               "Error closing file \"%s\"",
+               GWEN_Buffer_GetStart(nbuf));
+      uniqueId=0;
+    }
+  }
+  else
+    uniqueId=0;
+
+  GWEN_Buffer_free(nbuf);
+  return uniqueId;
 }
 
 
@@ -754,12 +845,12 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
 
 
 
-
 int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_DB_NODE *dbT;
   GWEN_DB_NODE *dbTsrc;
   AB_JOB_LIST2 *jl;
   int i;
+  const char *s;
 
   assert(ab);
 
@@ -786,8 +877,6 @@ int AB_Banking_Init(AB_BANKING *ab) {
     return AB_ERROR_BAD_CONFIG_FILE;
   }
 
-  ab->lastUniqueId=GWEN_DB_GetIntValue(dbT, "lastUniqueId", 0, 0);
-
   /* read active providers */
   for (i=0; ; i++) {
     const char *p;
@@ -797,6 +886,11 @@ int AB_Banking_Init(AB_BANKING *ab) {
       break;
     GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
   }
+
+  s=GWEN_DB_GetCharValue(dbT, "datadir", 0, 0);
+  free(ab->dataDir);
+  if (s) ab->dataDir=strdup(s);
+  else ab->dataDir=0;
 
   /* read data */
   dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banking");
@@ -910,6 +1004,10 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   db=GWEN_DB_Group_new("config");
   assert(db);
 
+  if (ab->dataDir)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "dataDir", ab->dataDir);
+
   /* save accounts */
   a=AB_Account_List_First(ab->accounts);
   while(a) {
@@ -999,9 +1097,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     GWEN_DB_AddGroupChildren(dbTdst, dbT);
   }
 
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastUniqueId", ab->lastUniqueId);
-
   /* write config file. TODO: make backups */
   if (GWEN_DB_WriteFile(db, ab->configFile,
                         GWEN_DB_FLAGS_DEFAULT)) {
@@ -1016,7 +1111,8 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_Account_List_Clear(ab->accounts);
   AB_Provider_List_Clear(ab->providers);
   GWEN_DB_ClearGroup(ab->data, 0);
-
+  free(ab->dataDir);
+  ab->dataDir=0;
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
   return 0;
 }
@@ -1122,9 +1218,6 @@ int AB_Banking_Save(AB_BANKING *ab) {
     assert(dbTdst);
     GWEN_DB_AddGroupChildren(dbTdst, dbT);
   }
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastUniqueId", ab->lastUniqueId);
 
   /* write config file. TODO: make backups */
   if (GWEN_DB_WriteFile(db, ab->configFile,
@@ -1368,9 +1461,10 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j){
   assert(ab);
   assert(j);
   jst=AB_Job_GetStatus(j);
-  if (jst==AB_Job_StatusEnqueued)
+  if (jst==AB_Job_StatusEnqueued) {
     AB_Job_SetStatus(j, AB_Job_StatusNew);
-  AB_Job_List_Del(j);
+    AB_Job_List_Del(j);
+  }
   rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
   AB_Job_free(j);
   return rv;
@@ -1622,14 +1716,30 @@ const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab) {
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
   char home[256];
 
-  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not determine home directory, aborting.");
-    return -1;
+  assert(ab);
+  if (ab->dataDir) {
+    GWEN_Buffer_AppendString(buf, ab->dataDir);
   }
-  GWEN_Buffer_AppendString(buf, home);
-  GWEN_Buffer_AppendString(buf, "/.banking");
+  else {
+    if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not determine home directory, aborting.");
+      return -1;
+    }
+    GWEN_Buffer_AppendString(buf, home);
+    GWEN_Buffer_AppendString(buf, "/.banking");
+  }
   return 0;
+}
+
+
+
+void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s){
+  assert(ab);
+
+  free(ab->dataDir);
+  if (s) ab->dataDir=strdup(s);
+  else ab->dataDir=0;
 }
 
 
@@ -2260,7 +2370,7 @@ int AB_Banking__OpenFile(const char *s, int wr) {
       return -1;
     }
     fd=open(s,
-	    O_RDWR | O_CREAT | O_TRUNC,
+	    O_RDWR | O_CREAT,
 	    S_IRUSR | S_IWUSR);
   }
   else {
@@ -2280,7 +2390,8 @@ int AB_Banking__OpenFile(const char *s, int wr) {
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLKW, &fl)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
     close(fd);
     return -1;
   }
@@ -2309,14 +2420,15 @@ int AB_Banking__CloseFile(int fd){
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLK, &fl)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(F_SETLK): %s", strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(%d, F_SETLK): %s",
+              fd, strerror(errno));
     close(fd);
     return -1;
   }
 #endif
 
   if (close(fd)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "close: %s", strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "close(%d): %s", fd, strerror(errno));
     return -1;
   }
 
@@ -2337,6 +2449,8 @@ int AB_Banking__OpenJobAs(AB_BANKING *ab,
   AB_Banking__AddJobPath(ab, as, jid, pbuf);
 
   fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), wr);
+  if (fd!=-1 && wr)
+    ftruncate(fd, 0);
   GWEN_Buffer_free(pbuf);
 
   return fd;
@@ -2372,7 +2486,6 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
 			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
-    GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
     AB_Banking__CloseJob(ab, fd);
     return 0;
@@ -2380,7 +2493,6 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
 
   j=AB_Job_fromDb(ab, dbJob);
   GWEN_DB_Group_free(dbJob);
-  GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseFile(fd)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
@@ -2414,7 +2526,6 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
 			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
-    GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
     AB_Banking__CloseJob(ab, fd);
     return 0;
@@ -2422,7 +2533,6 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
 
   j=AB_Job_fromDb(ab, dbJob);
   GWEN_DB_Group_free(dbJob);
-  GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseJob(ab, fd)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
@@ -2438,6 +2548,7 @@ int AB_Banking__SaveJobAs(AB_BANKING *ab,
   GWEN_DB_NODE *dbJob;
   int fd;
   GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
 
   dbJob=GWEN_DB_Group_new("job");
   if (AB_Job_toDb(j, dbJob)) {
@@ -2462,14 +2573,19 @@ int AB_Banking__SaveJobAs(AB_BANKING *ab,
 			    GWEN_DB_FLAGS_DEFAULT)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
-    GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
     AB_Banking__CloseJob(ab, fd);
     return -1;
   }
 
   GWEN_DB_Group_free(dbJob);
-  GWEN_BufferedIO_Close(bio);
+  err=GWEN_BufferedIO_Flush(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    GWEN_BufferedIO_free(bio);
+    AB_Banking__CloseJob(ab, fd);
+    return -1;
+  }
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseJob(ab, fd)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job");

@@ -65,7 +65,8 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   assert(pname);
   pro=AB_Banking_GetProvider(ab, pname);
   if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" is not available, ignoring account",
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Provider \"%s\" is not available, ignoring account",
               pname);
     return 0;
   }

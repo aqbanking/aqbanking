@@ -28,9 +28,11 @@ struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
   char *appName;
   char *appEscName;
+
+  char *dataDir;
+
   AB_JOB_LIST *enqueuedJobs;
   AB_ACCOUNT_LIST *accounts;
-  GWEN_TYPE_UINT32 lastUniqueId;
 
   GWEN_STRINGLIST *activeProviders;
 

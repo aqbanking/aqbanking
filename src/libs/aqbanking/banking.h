@@ -645,6 +645,15 @@ AQBANKING_API
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 /**
+ * Set the user data dir. You should only use this on very special
+ * occasions. Clearly: You should normally not use this function, the default
+ * which AqBanking uses for the user data folder is quite suitable.
+ */
+AQBANKING_API 
+void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s);
+
+
+/**
  * Returns the name of the user folder for application data.
  * Normally this is something like "/home/me/.banking/apps".
  * Your application may choose to create folders below this one to store
@@ -1077,10 +1086,33 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j);
 
 /** @name Virtual User Interaction Functions
  *
+ * <p>
  * All text passed to the frontend via one of the following functions
- * is expected to be an ISO-8859-15 string which may contain newlines but no
- * other control characters (especially no HTML tags since not all frontends
- * are supposed to be able to decode it).
+ * is expected to be an UTF-8 string which may contain newlines but no other
+ * control characters.
+ * Text delivered as argument called <i>text</i> throughout the documentation
+ * in this group may contain HTML tags.
+ * If it does a non-HTML version must be supplied, too.
+ * </p>
+ * <p>
+ * This is an example for HTML and non-HTML text:
+ * </p>
+ * @code
+ * const char *text;
+ *
+ * text="This is the non-HTML text"
+ *      "<html>"
+ *      "And this is the <b>HTML</b> version."
+ *      "</html>"
+ * @endcode
+ * <p>
+ * Frontends capable of parsing HTML (such as the KDE frontend) will
+ * extract the HTML information and show only that part of the string.
+ * </p>
+ * <p>
+ * Other frontends will just extract the non-HTML information and show only
+ * that.
+ * </p>
  */
 /*@{*/
 /**

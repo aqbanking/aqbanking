@@ -1,9 +1,21 @@
 
+2004/09/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- clarified documentation for the virtual user interaction functions regarding
+  the code set to be used (and how to use HTML in the text)
+
+
 2004/09/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was falsely reporting a backend as active when in fact
   it wasn't)
 - added OFX importer
+- improved safety of unique id (it is now read from a file and written back 
+  direclty after increment)
+- the user data dir (normally $HOME/.banking) can now be set in the
+  configuration file (but you should not that. Anyway, for very special 
+  occasions - and I currently can't think of any - this might be usefull).
+  This function has been added reluctantly on request.
 
 
 2004/09/13: Martin Preuss<martin@libchipcard.de>
