@@ -320,7 +320,8 @@ int AB_Banking__LoadAppData(AB_BANKING *ab) {
   db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
                       ab->appEscName);
   assert(db);
-  DBG_NOTICE(0, "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
 		       GWEN_DB_FLAGS_DEFAULT |
 		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
@@ -361,7 +362,8 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
     return AB_ERROR_GENERIC;
   }
 
-  DBG_NOTICE(0, "Writing file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Writing file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
 			     GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -400,7 +402,7 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
                       ab->appEscName);
   if (!dbT) {
     if (AB_Banking__LoadAppData(ab)) {
-      DBG_ERROR(0, "Could not load app data file");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load app data file");
       return 0;
     }
   }
@@ -446,7 +448,8 @@ int AB_Banking__LoadProviderData(AB_BANKING *ab,
   assert(db);
   db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
   assert(db);
-  DBG_NOTICE(0, "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
 		       GWEN_DB_FLAGS_DEFAULT |
 		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
@@ -488,7 +491,8 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
     return AB_ERROR_GENERIC;
   }
 
-  DBG_NOTICE(0, "Saving file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Saving file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
 			     GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -531,7 +535,7 @@ GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (!dbT) {
     if (AB_Banking__LoadProviderData(ab, name)) {
-      DBG_ERROR(0, "Could not load provider data file");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider data file");
       return 0;
     }
   }
@@ -1733,7 +1737,6 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
   } /* while */
 
   pro=AB_Provider_List_First(ab->providers);
-  succ=0;
 
   if (!succ) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
@@ -3676,6 +3679,100 @@ int AB_Banking_RequestTransactions(AB_BANKING *ab,
 
 
 
+int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2) {
+  if (t1 && t2) {
+    GWEN_BUFFER *d1, *d2;
+    int i;
+
+    d1=GWEN_Buffer_new(0, 16, 0, 1);
+    d2=GWEN_Buffer_new(0, 16, 0, 1);
+    GWEN_Time_toString(t1, "YYYYMMDD", d1);
+    GWEN_Time_toString(t2, "YYYYMMDD", d2);
+    i=strcasecmp(GWEN_Buffer_GetStart(d1),
+		 GWEN_Buffer_GetStart(d2));
+    GWEN_Buffer_free(d2);
+    GWEN_Buffer_free(d1);
+    return (i==0);
+  }
+  else {
+    return 0;
+  }
+}
+
+
+void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl) {
+  AB_JOB *j;
+  AB_JOB_LIST2_ITERATOR *jit;
+
+  for (;;) {
+    int removed=0;
+
+    jit=AB_Job_List2_First(jl);
+    if (!jit)
+      break;
+    j=AB_Job_List2Iterator_Data(jit);
+    assert(j);
+
+    while(j) {
+      AB_JOB *j2;
+      AB_JOB_LIST2_ITERATOR *jit2;
+      AB_JOB_TYPE jt;
+      const char *appName;
+
+      appName=AB_Job_GetCreatedBy(j);
+      jt=AB_Job_GetType(j);
+      jit2=AB_Job_List2_First(jl);
+      assert(jit2);
+      j2=AB_Job_List2Iterator_Data(jit2);
+      assert(j2);
+      while(j2) {
+	if (AB_Job_GetJobId(j2)!=AB_Job_GetJobId(j)) {
+	  /* not the same job */
+	  if ((AB_Job_GetType(j)==AB_Job_TypeGetTransactions) &&
+	      (AB_Job_GetType(j2)==AB_Job_TypeGetTransactions)) {
+	    /* ... but the same type */
+	    if ((AB_Job_GetAccount(j)==AB_Job_GetAccount(j2))
+		&&
+		AB_Banking__isSameDay(AB_Job_GetLastStatusChange(j),
+				      AB_Job_GetLastStatusChange(j2))
+                &&
+		AB_Banking__isSameDay(AB_JobGetTransactions_GetFromTime(j),
+				      AB_JobGetTransactions_GetFromTime(j2))
+		&&
+		AB_Banking__isSameDay(AB_JobGetTransactions_GetFromTime(j),
+				      AB_JobGetTransactions_GetFromTime(j2))){
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Erasing a job");
+	      if (appName) {
+		if (strcasecmp(appName, AB_Banking_GetAppName(ab))==0) {
+		  int rv;
+	
+		  /* hey job: I created you, I can destroy you ;-) */
+		  rv=AB_Banking_DelFinishedJob(ab, j);
+		  if (rv) {
+		    DBG_INFO(AQBANKING_LOGDOMAIN,
+			     "Could not delete finished job (%d)", rv)
+		  }
+		} /* if it is our own job */
+	      } /* if appName */
+	      /* same job */
+	      AB_Job_List2_Erase(jl, jit);
+	      removed=1;
+	      break;
+	    }
+	  }
+	}
+	j2=AB_Job_List2Iterator_Next(jit2);
+      }
+
+      j=AB_Job_List2Iterator_Next(jit);
+    } /* while */
+    if (!removed)
+      break;
+  } /* for */
+}
+
+
+
 int AB_Banking_GatherResponses(AB_BANKING *ab,
 			       AB_IMEXPORTER_CONTEXT *ctx) {
   AB_JOB *j;
@@ -3690,8 +3787,16 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
     return AB_ERROR_NOT_FOUND;
   }
 
+  AB_Banking__RemoveDuplicateJobs(ab, jl);
+
   jit=AB_Job_List2_First(jl);
-  assert(jit);
+  if (!jit) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "No finished jobs left");
+    AB_Job_List2_FreeAll(jl);
+    return AB_ERROR_NOT_FOUND;
+  }
+
   j=AB_Job_List2Iterator_Data(jit);
   assert(j);
   while(j) {
@@ -3770,6 +3875,8 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
 
     j=AB_Job_List2Iterator_Next(jit);
   } /* while */
+  AB_Job_List2Iterator_free(jit);
+  AB_Job_List2_FreeAll(jl);
 
   return 0;
 }

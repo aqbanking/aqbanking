@@ -22,7 +22,7 @@ The backend AqHBCI currently supports these security media:
  - DDV chipcard (DES-DES-Verfahren)
  - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use 
                      with OpenHBCI in parallel) 
- - PIN/TAN file (PIN/TAN mode using HTTP over SSL)
+ - PIN/TAN (PIN/TAN mode using HTTP over SSL)
 
 
 1.2. Generic Financial Data Importer/Exporter Framework
@@ -32,9 +32,18 @@ AqBanking uses various plugins to simplify import and export of financial
 data. It also provides the administration of profiles on a per import/export
 plugin basis.
 
-Currently there are import plugins for the following formats: 
- - DTAUS (German financial format)
- - SWIFT (MT940 and MT942)
+Currently there are plugins for the following formats:
+
+- Importers:
+  - DTAUS (German financial format)
+  - SWIFT (MT940 and MT942)
+  - OFX
+  - CSV
+  - OpenHBCI1 transactions
+  
+- Exporters
+  - DTAUS (German financial format)
+  - CSV
 
 
 
@@ -96,11 +105,12 @@ in very short time (kbanking, see home page of AqBanking)
 -----------------
 
 These application fully or partially support AqBanking:
- - QBanking (http://www.aquamaniac.de/qbanking/)
+ - QBankManager (http://www.aquamaniac.de/qbanking/)
+ - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://kmymoney2.sf.net/)
- - AqHBCI Setup wizard (http:/aqhbci.sf.net/)
-     This is a standalone tool used by KMyMoney and QBanking to let the user
-     setup or modify the HBCI settings.
+ - AqHBCI QT Tools (http:/aqhbci.sf.net/)
+     This includes standalone tools used by Gnucash, KMyMoney and QBanking to 
+     let the user setup, modify and debug HBCI settings.
 
 
 

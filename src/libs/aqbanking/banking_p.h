@@ -159,5 +159,8 @@ int AB_Banking__GetWizardPath(AB_BANKING *ab,
                               const char *backend,
                               GWEN_BUFFER *pbuf);
 
+int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
+void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
+
 
 #endif /* AQBANKING_BANKING_P_H */
