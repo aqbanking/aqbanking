@@ -1,5 +1,5 @@
 INCLUDES = $(all_includes)
-EXTRA_DIST=README de.c de_p.h
+EXTRA_DIST=de.c de_p.h
 
 bankinfoplugindir=@aqbanking_plugins@/bankinfo
 
