@@ -1,3 +1,8 @@
+2004-08-13   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking++/aqbankingpp.vcproj: Add project file for
+	compiling aqbanking++ with Microsoft Visual Studio C++ (MSVC)
+	compiler.
 
 2004/08/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
