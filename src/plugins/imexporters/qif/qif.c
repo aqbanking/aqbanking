@@ -161,8 +161,8 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
                                const char *paramContent,
 			       AB_VALUE **pv) {
   const char *s;
-  char komma;
-  char fixpoint;
+  char komma = 0;
+  char fixpoint = 0;
   AH_IMEXPORTER_QIF *ieqif;
   char numbuf[64];
   int i;
@@ -187,7 +187,7 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
     fixpoint=*s;
 
   if (!fixpoint) {
-    const char *lastKommaPos;
+    const char *lastKommaPos = NULL;
     char lastKommaChar=0;
     int komma1Count=0;
     int komma2Count=0;
@@ -211,7 +211,7 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
       }
       s++;
     } /* while */
-    if ((komma1Count+komma2Count)==1) {
+    if ( ( (komma1Count+komma2Count)==1 ) && lastKommaPos) {
       int i=0;
 
       /* only one komma, check for digits behind it */
@@ -491,7 +491,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     }
   }/* if date */
 
-
+  return 0;
 
 }
 
@@ -568,6 +568,7 @@ int AH_ImExporterQIF_Export(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params){
+  return 0;
 }
 
 
