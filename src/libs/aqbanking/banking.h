@@ -81,7 +81,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 #define AB_BANKING_INPUT_FLAGS_CONFIRM 0x00000001
 /** input may be shown (otherwise it should be hidden, e.g. for passwords) */
 #define AB_BANKING_INPUT_FLAGS_SHOW    0x00000002
-/** numneric input is requested (e.g. for PINs) */
+/** numeric input is requested (e.g. for PINs) */
 #define AB_BANKING_INPUT_FLAGS_NUMERIC 0x00000004
 /*@}*/
 
@@ -166,7 +166,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * @code
  * if ( ( flags & AB_BANKING_MSG_FLAGS_SEVERITY_MASK) ==
  *      AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS) {
- *      fprintf(stderr, "This is a dangerous.\n");
+ *      fprintf(stderr, "This is dangerous.\n");
  * }
  * @endcode
  * </p>
@@ -191,6 +191,11 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  */
 /*@{*/
 
+/**
+ * Make the frontend beep. This should rarely be used, and only in situations
+ * where it is very important to get the users attention (e.g. when asking
+ * for a PIN on a card reader).
+ */
 #define AB_BANKING_SHOWBOX_FLAGS_BEEP 0x00000001
 
 
@@ -314,7 +319,7 @@ typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab,
  * <p>
  * Creates an instance of AqBanking. Though AqBanking is quite object
  * oriented (and thus allows multiple instances of AB_BANKING to co-exist)
- * you should avoid having multiple AB_BANKING object in parallel.
+ * you should avoid having multiple AB_BANKING objects in parallel.
  * </p>
  * <p>
  * This is just because the backends are loaded dynamically and might not like
@@ -357,7 +362,7 @@ AQBANKING_API
 int AB_Banking_Init(AB_BANKING *ab);
 
 /**
- * Deinitializes AqBanking that allowing it to save its data and to unload
+ * Deinitializes AqBanking thus allowing it to save its data and to unload
  * backends.
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab banking interface
@@ -675,8 +680,8 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  * job. However, this function makes sure that the job will not be deleted
  * as long as it is in the queue (by calling @ref AB_Job_Attach).
  * So it is safe for you to call @ref AB_Job_free on an enqueued job directly
- * after enqueuing it (but it doesn't make much sense since you would not be able to
- * check for a result).
+ * after enqueuing it (but it doesn't make much sense since you would not be
+ * able to check for a result).
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  * @param j job to be enqueued
@@ -698,8 +703,8 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
  * This function sends all jobs in the queue to their corresponding backends
- * and allows that backend to process it.
- * If the user did not abort or there was no fatal error the queue is
+ * and allows those backends to process it.
+ * If the user did not abort and there was no fatal error the queue is
  * empty upon return. You can verify this by calling
  * @ref AB_Banking_GetEnqueuedJobs.
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
@@ -808,7 +813,7 @@ int AB_Banking_InputBox(AB_BANKING *ab,
  * close the box.
  * </p>
  * <p>
- * It is required that for every call to this function to be followed later
+ * It is required for every call to this function to be followed later
  * by a corresponding call to @ref AB_Banking_HideBox.
  * </p>
  * <p>
@@ -844,6 +849,8 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * This function is called when a long term operation is started.
  * Theoretically nesting is allowed, however, you should refrain from
  * opening multiple progress dialogs to avoid confusion of the user.
+ * </p>
+ * <p>
  * This function must return immediately (i.e. it MUST NOT wait for
  * user interaction).
  * </p>
