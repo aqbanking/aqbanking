@@ -1611,7 +1611,7 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 
   l=AB_Job_List2_new();
 
-  pbuf=GWEN_Buffer_new(AQBANKING_LOGDOMAIN, 256, 0, 1);
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_Banking__AddJobDir(ab, as, pbuf);
   pos=GWEN_Buffer_GetPos(pbuf);
 
