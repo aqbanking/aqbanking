@@ -65,10 +65,11 @@ setup: aqbanking.iss
 sources:
 	rm -f i18nsources
 	make -C src sources
+i18nsources: sources
 
 if USE_I18N
 
-all-local: sources catalog
+all-local: sources
 
 I18NFILES=$(shell cat i18nsources)
 I18NLINGUAS=$(shell ls po/*.po)
@@ -106,7 +107,7 @@ catalog: merge $(I18NLINGUAS)
 	  msgfmt -o $$file2 $$i || touch $$i; \
 	 done ;
 
-install-data-local:
+install-data-local: catalog
 	LIST=`(cd po && ls *.mo)`; \
 	for i in $$LIST; do \
 	file2=`echo $$i | sed "s/\.mo//"`; \

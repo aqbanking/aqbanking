@@ -1,3 +1,8 @@
+2005-03-13  Christian Stimming  <stimming@tuhh.de>
+
+	* Makefile.am: Modify rules for i18n so that the catalogs are
+	rebuilt only at install-time or explicitly, not during normal
+	make.
 
 2005/03/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
