@@ -154,12 +154,19 @@ const char *AB_Banking_GetAppName(const AB_BANKING *ab){
 
 
 
+const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab){
+  assert(ab);
+  return ab->appEscName;
+}
+
+
+
 GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
                                          const AB_PROVIDER *pro){
   const char *name;
   GWEN_DB_NODE *db;
 
-  name=AB_Provider_GetName(pro);
+  name=AB_Provider_GetEscapedName(pro);
   assert(name);
 
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,

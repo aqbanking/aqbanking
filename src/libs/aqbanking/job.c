@@ -394,7 +394,7 @@ GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j){
   const char *s;
 
   assert(j);
-  s=AB_Banking_GetAppName(AB_Account_GetBanking(AB_Job_GetAccount(j)));
+  s=AB_Banking_GetEscapedAppName(AB_Account_GetBanking(AB_Job_GetAccount(j)));
   return GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, s);
 }
 
@@ -405,7 +405,8 @@ GWEN_DB_NODE *AB_Job_GetProviderData(AB_JOB *j, AB_PROVIDER *pro){
 
   assert(j);
   assert(pro);
-  s=AB_Provider_GetName(pro);
+  s=AB_Provider_GetEscapedName(pro);
+
   return GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, s);
 }
 

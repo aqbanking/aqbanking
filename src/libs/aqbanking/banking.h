@@ -534,6 +534,15 @@ AQBANKING_API
 const char *AB_Banking_GetAppName(const AB_BANKING *ab);
 
 /**
+ * Returns the escaped version of the application name. This name can
+ * safely be used to create file paths since all special characters (like
+ * '/', '.' etc) are escaped.
+ * @param ab pointer to the AB_BANKING object
+ */
+AQBANKING_API 
+const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab);
+
+/**
  * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
  * the currently running application. The group returned MUST NOT be
  * freed !

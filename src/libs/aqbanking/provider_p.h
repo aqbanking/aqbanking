@@ -29,6 +29,7 @@ struct AB_PROVIDER {
 
   AB_BANKING *banking;
   char *name;
+  char *escName;
 
   AB_PROVIDER_INIT_FN initFn;
   AB_PROVIDER_FINI_FN finiFn;

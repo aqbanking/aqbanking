@@ -65,6 +65,8 @@ extern "C" {
 AQBANKING_API
 const char *AB_Provider_GetName(const AB_PROVIDER *pro);
 AQBANKING_API
+const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
+AQBANKING_API
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 
 

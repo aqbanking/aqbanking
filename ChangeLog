@@ -11,6 +11,7 @@
   this should keep the startup time short)
 - boosted version to 0.9, since about 90 percent of the planned features
   are implemented
+- provider names are now also escaped
 
 
 2004/08/21: Martin Preuss<martin@libchipcard.de>

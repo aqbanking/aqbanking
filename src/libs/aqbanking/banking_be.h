@@ -40,7 +40,7 @@ GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
 
 /**
  * This copies the name of the folder for AqBanking's backend data into
- * the given GWEN_Buffer.
+ * the given GWEN_Buffer (not including the provider's name).
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  * @param buf buffer to append the path name to

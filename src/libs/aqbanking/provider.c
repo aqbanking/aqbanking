@@ -19,6 +19,7 @@
 #include "banking_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -32,15 +33,37 @@ GWEN_LIST_FUNCTIONS(AB_PROVIDER, AB_Provider)
 
 AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
   AB_PROVIDER *pro;
+  GWEN_BUFFER *nbuf;
 
   assert(ab);
   assert(name);
+
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Text_EscapeToBufferTolerant(name, nbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Bad backend name, aborting.");
+    GWEN_Buffer_free(nbuf);
+    abort();
+  }
+  else {
+    char *s;
+
+    s=GWEN_Buffer_GetStart(nbuf);
+    while(*s) {
+      *s=tolower(*s);
+      s++;
+    }
+  }
+
   GWEN_NEW_OBJECT(AB_PROVIDER, pro);
   pro->usage=1;
   GWEN_INHERIT_INIT(AB_PROVIDER, pro);
   GWEN_LIST_INIT(AB_PROVIDER, pro);
+
   pro->banking=ab;
   pro->name=strdup(name);
+  pro->escName=strdup(GWEN_Buffer_GetStart(nbuf));
+  GWEN_Buffer_free(nbuf);
 
   return pro;
 }
@@ -57,6 +80,7 @@ void AB_Provider_free(AB_PROVIDER *pro){
         GWEN_LibLoader_free(pro->libLoader);
       }
       free(pro->name);
+      free(pro->escName);
       GWEN_LIST_FINI(AB_PROVIDER, pro);
       GWEN_FREE_OBJECT(pro);
     }
@@ -120,6 +144,13 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
 const char *AB_Provider_GetName(const AB_PROVIDER *pro){
   assert(pro);
   return pro->name;
+}
+
+
+
+const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro){
+  assert(pro);
+  return pro->escName;
 }
 
 
