@@ -126,7 +126,7 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(1,3,0,2)
+AC_GWENHYWFAR(1,3,0,5)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -395,6 +395,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
+  src/plugins/imexporters/openhbci1/Makefile
+  src/plugins/imexporters/openhbci1/openhbci1.xml
+  src/plugins/imexporters/openhbci1/ressource.rc
+  src/plugins/imexporters/openhbci1/profiles/Makefile
+  src/plugins/imexporters/openhbci1/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml

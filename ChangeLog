@@ -1,5 +1,13 @@
 
 
+2004/11/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added plugin for OpenHBCI1 config file (extracts transactions)
+  Now importing transactions from an existing OpenHBCI1 config file
+  works ;-)
+  This change needs the latest Gwen CVS version (1.3.0.7)
+
+
 2004/11/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added new CSV profile for AqMoney2 CSV files

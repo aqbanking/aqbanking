@@ -1,0 +1,10 @@
+<plugin name="openhbci1" type="imexporter" import="1" export="0" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Old AqMoney1/OpenHBCI1 data</short>
+  <descr>
+    This plugin imports/exports old data from AqMoney1 and OpenHBCI1.
+  </descr>
+</plugin>
+
+

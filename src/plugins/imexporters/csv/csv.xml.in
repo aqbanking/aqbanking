@@ -1,7 +1,7 @@
 <plugin name="csv" type="imexporter" import="1" export="1" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>SWIFT</short>
+  <short>CSV</short>
   <descr>
     This plugin imports/exports CSV data.
   </descr>
