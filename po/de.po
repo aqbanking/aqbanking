@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-02-25 10:14+0100\n"
+"POT-Creation-Date: 2005-03-02 02:54+0100\n"
 "PO-Revision-Date: 2005-02-25 10:24+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -1164,15 +1164,15 @@ msgstr "Sambia"
 msgid "ZIMBABWE"
 msgstr "Simbabwe"
 
-#: src/plugins/imexporters/qif/qif.c:78
+#: src/plugins/imexporters/qif/qif.c:80
 msgid "Please enter the date format for the following item:\n"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:80
+#: src/plugins/imexporters/qif/qif.c:82
 msgid "<html>Please enter the date format for the following item:<br>"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:84
+#: src/plugins/imexporters/qif/qif.c:86
 msgid ""
 "The following characters can be used:\n"
 "- 'Y': digit of the year\n"
@@ -1185,7 +1185,7 @@ msgid ""
 " \"MM/DD/YY\"   (-> 02/25/05)\n"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:94
+#: src/plugins/imexporters/qif/qif.c:96
 msgid ""
 "The following characters can be used:<table> <tr><td><i>Y</i></td><td>digit "
 "of the year</td></tr>\n"
@@ -1199,19 +1199,19 @@ msgid ""
 "</html>"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:126
+#: src/plugins/imexporters/qif/qif.c:128
 msgid "Enter Date Format"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:127
+#: src/plugins/imexporters/qif/qif.c:129
 msgid "Enter Correct Date Format"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:244
+#: src/plugins/imexporters/qif/qif.c:246
 msgid "The following value could not be parsed: \n"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:246
+#: src/plugins/imexporters/qif/qif.c:248
 msgid ""
 "There are now two possibilities of what character\n"
 "represents the decimal fixpoint:\n"
@@ -1220,11 +1220,11 @@ msgid ""
 "What is the fixpoint in the value above ?"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:252
+#: src/plugins/imexporters/qif/qif.c:254
 msgid "<htlm>The following value could not be parsed: <br>"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:254
+#: src/plugins/imexporters/qif/qif.c:256
 msgid ""
 "<br>There are now two possibilities of what character represents the decimal "
 "fixpoint: <ol> <li>'.' (as in \"123.45\")</li>\n"
@@ -1232,27 +1232,36 @@ msgid ""
 "</ol>What is the fixpoint in the value above ?</html>"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:276
+#: src/plugins/imexporters/qif/qif.c:278
 msgid "Value Parsing"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:278
+#: src/plugins/imexporters/qif/qif.c:280
 msgid "Possibility 1"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:279
+#: src/plugins/imexporters/qif/qif.c:281
 msgid "Possibility 2"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:452
+#: src/plugins/imexporters/qif/qif.c:464 src/plugins/imexporters/qif/qif.c:656
 #, fuzzy
 msgid "Account statement date"
 msgstr "Konto nicht zugeordnet"
 
-#: src/plugins/imexporters/qif/qif.c:467
+#: src/plugins/imexporters/qif/qif.c:479
 msgid "Account statement credit line value"
 msgstr ""
 
-#: src/plugins/imexporters/qif/qif.c:483
+#: src/plugins/imexporters/qif/qif.c:495
 msgid "Account statement balance value"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:671
+#, fuzzy
+msgid "Transaction statement amount value"
+msgstr "Konto nicht zugeordnet"
+
+#: src/plugins/imexporters/qif/qif.c:712
+msgid "Transaction split amount value"
 msgstr ""

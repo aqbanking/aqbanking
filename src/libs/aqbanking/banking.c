@@ -3665,26 +3665,15 @@ AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
     uniqueId=GWEN_DB_GetIntValue(dbData, accountId, 0, 0);
   if (!uniqueId) {
     /* should not happen anyway */
-    AB_Banking_MessageBox(ab,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-			  I18N("Account Not Mapped"),
-			  I18N("The given account has not been mapped "
-			       "to online accounts."),
-			  I18N("Dismiss"), 0, 0);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Account has no unique id. Should not happen");
     return 0;
   }
 
   a=AB_Banking_GetAccount(ab, uniqueId);
   if (!a) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account not found");
-    AB_Banking_MessageBox(ab,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-			  I18N("Bad Account Mapping"),
-			  I18N("The mapping between the application account "
-			       "the banking account is invalid."),
-			  I18N("Dismiss"), 0, 0);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account with alias \"%s\" not found",
+	      accountId);
     return 0;
   }
 

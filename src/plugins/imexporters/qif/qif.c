@@ -19,6 +19,8 @@
 #include "i18n_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
+#include <aqbanking/transaction.h>
+#include <aqbanking/split.h>
 #include <ctype.h>
 
 
@@ -341,6 +343,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
                                     GWEN_BUFFEREDIO *bio,
                                     GWEN_BUFFER *buf,
                                     GWEN_DB_NODE *params){
+  AH_IMEXPORTER_QIF *ieqif;
   GWEN_DB_NODE *dbData;
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   int done=0;
@@ -348,6 +351,10 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
   GWEN_TIME *ti=0;
   AB_VALUE *vCreditLine=0;
   AB_VALUE *vBalance=0;
+
+  assert(ie);
+  ieqif=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_QIF, ie);
+  assert(ieqif);
 
   dbData=GWEN_DB_Group_new("data");
   while (!done) {
@@ -376,27 +383,27 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     switch(toupper(*p)) {
     case 'N': /* account name */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "name", p);
+                           "name", p+1);
       break;
     case 'T': /* account type */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "type", p);
+                           "type", p+1);
       break;
     case 'D': /* description */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "descr", p);
+                           "descr", p+1);
       break;
     case 'L': /* credit line (credit card accounts only */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "creditLine", p);
+                           "creditLine", p+1);
       break;
     case '/': /* date of statement balance */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "date", p);
+                           "date", p+1);
       break;
     case '$': /* statement balance */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "balance", p);
+                           "balance", p+1);
       break;
     case '^': /* end of record */
       done=1;
@@ -410,6 +417,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     GWEN_Buffer_Reset(buf);
   } /* while not end of block reached */
 
+  /* find account info by account name */
   s=GWEN_DB_GetCharValue(dbData, "name", 0, 0);
   if (s) {
     iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
@@ -420,28 +428,32 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     } /* while */
   }
 
-  /* not found, add it */
-  iea=AB_ImExporterAccountInfo_new();
-  AB_ImExporterContext_AddAccountInfo(iec, iea);
-  /* set account info */
-  if (s)
-    AB_ImExporterAccountInfo_SetAccountName(iea, s);
-  s=GWEN_DB_GetCharValue(dbData, "descr", 0, 0);
-  if (s)
-    AB_ImExporterAccountInfo_SetDescription(iea, s);
-  s=GWEN_DB_GetCharValue(dbData, "type", 0, 0);
-  if (s) {
-    if (strcasecmp(s, "bank")==0)
-      AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Bank);
-    else if (strcasecmp(s, "Invst")==0)
-      AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Investment);
-    else if (strcasecmp(s, "CCard")==0)
-      AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_CreditCard);
-    else if (strcasecmp(s, "Cash")==0)
-      AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Cash);
-    else
-      AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Unknown);
+  if (!iea) {
+    /* not found, add it */
+    iea=AB_ImExporterAccountInfo_new();
+    AB_ImExporterContext_AddAccountInfo(iec, iea);
+    /* set account info */
+    if (s)
+      AB_ImExporterAccountInfo_SetAccountName(iea, s);
+    s=GWEN_DB_GetCharValue(dbData, "descr", 0, 0);
+    if (s)
+      AB_ImExporterAccountInfo_SetDescription(iea, s);
+    s=GWEN_DB_GetCharValue(dbData, "type", 0, 0);
+    if (s) {
+      if (strcasecmp(s, "bank")==0)
+        AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Bank);
+      else if (strcasecmp(s, "Invst")==0)
+        AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Investment);
+      else if (strcasecmp(s, "CCard")==0)
+        AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_CreditCard);
+      else if (strcasecmp(s, "Cash")==0)
+        AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Cash);
+      else
+        AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Unknown);
+    }
   }
+  assert(iea);
+  ieqif->currentAccount=iea;
 
   s=GWEN_DB_GetCharValue(dbData, "date", 0, 0);
   if (s) {
@@ -491,8 +503,245 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     }
   }/* if date */
 
-  return 0;
+  if (ti && (vBalance || vCreditLine)) {
+    AB_BALANCE *balance=0;
+    AB_ACCOUNT_STATUS *ast=0;
 
+    if (vBalance && ti)
+      balance=AB_Balance_new(vBalance, ti);
+
+    ast=AB_AccountStatus_new();
+    if (ti)
+      AB_AccountStatus_SetTime(ast, ti);
+    if (vCreditLine)
+      AB_AccountStatus_SetBankLine(ast, vCreditLine);
+    if (balance)
+      AB_AccountStatus_SetBookedBalance(ast, balance);
+    /* add account status */
+    AB_ImExporterAccountInfo_AddAccountStatus(iea, ast);
+
+    AB_AccountStatus_free(ast);
+    AB_Balance_free(balance);
+  }
+  AB_Value_free(vBalance);
+  AB_Value_free(vCreditLine);
+  GWEN_Time_free(ti);
+  GWEN_DB_Group_free(dbData);
+
+  return 0;
+}
+
+
+
+int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
+                                 AB_IMEXPORTER_CONTEXT *iec,
+                                 GWEN_BUFFEREDIO *bio,
+                                 GWEN_BUFFER *buf,
+                                 GWEN_DB_NODE *params){
+  AH_IMEXPORTER_QIF *ieqif;
+  GWEN_DB_NODE *dbData;
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  int done=0;
+  const char *s;
+  GWEN_TIME *ti=0;
+  AB_VALUE *vAmount=0;
+  GWEN_DB_NODE *dbCurrentSplit=0;
+  AB_TRANSACTION *t=0;
+  GWEN_DB_NODE *dbSplit=0;
+
+  assert(ie);
+  ieqif=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_QIF, ie);
+  assert(ieqif);
+
+  dbData=GWEN_DB_Group_new("data");
+  while (!done) {
+    const char *p;
+
+    if (!GWEN_Buffer_GetUsedBytes(buf)) {
+      GWEN_ERRORCODE err;
+
+      if (GWEN_BufferedIO_CheckEOF(bio)) {
+        done=1;
+        continue;
+      }
+
+      err=GWEN_BufferedIO_ReadLine2Buffer(bio, buf);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+        GWEN_DB_Group_free(dbData);
+        return AB_ERROR_GENERIC;
+      }
+    }
+
+    p=GWEN_Buffer_GetStart(buf);
+    while(isspace(*p))
+      p++;
+
+    switch(toupper(*p)) {
+    case 'S':
+      dbCurrentSplit=GWEN_DB_GetGroup(dbData,
+                                      GWEN_PATH_FLAGS_CREATE_GROUP,
+                                      "split");
+      assert(dbCurrentSplit);
+      GWEN_DB_SetCharValue(dbCurrentSplit,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "category", p+1);
+      break;
+    case '$': /* split amount */
+      assert(dbCurrentSplit);
+      GWEN_DB_SetCharValue(dbCurrentSplit, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "amount", p+1);
+      break;
+    case 'E': /* split memo */
+      assert(dbCurrentSplit);
+      GWEN_DB_SetCharValue(dbCurrentSplit, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "memo", p+1);
+      break;
+
+    case 'D': /* date */
+      GWEN_DB_SetCharValue(dbData,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "date", p+1);
+      break;
+    case 'N': /* reference */
+      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "reference", p+1);
+      break;
+    case 'T': /* amount */
+      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "amount", p+1);
+      break;
+    case 'P': /* payee */
+      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT,
+                           "payee", p+1);
+      break;
+    case 'M': /* memo */
+      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "memo", p+1);
+      break;
+    case 'A': /* address */
+      GWEN_DB_SetCharValue(dbData,
+                           GWEN_DB_FLAGS_DEFAULT,
+                           "address", p+1);
+      break;
+    case 'L': /* category */
+      GWEN_DB_SetCharValue(dbData,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "category", p+1);
+      break;
+    case 'C': /* cleared status */
+      GWEN_DB_SetCharValue(dbData,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "cleared", p+1);
+      break;
+    case '^': /* end of record */
+      done=1;
+      break;
+    default: /* unknown line, ignore */
+      DBG_WARN(AQBANKING_LOGDOMAIN,
+               "Unknown item \"%s\", ignoring",
+               GWEN_Buffer_GetStart(buf));
+    } /* switch */
+
+    GWEN_Buffer_Reset(buf);
+  } /* while not end of block reached */
+
+  iea=ieqif->currentAccount;
+  assert(iea);
+
+  s=GWEN_DB_GetCharValue(dbData, "date", 0, 0);
+  if (s) {
+    int rv;
+
+    rv=AH_ImExporterQIF__GetDate(ie, params,
+				 "account/statement/dateFormat",
+                                 I18N("Account statement date"),
+                                 s, &ti);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+  }/* if date */
+
+  s=GWEN_DB_GetCharValue(dbData, "amount", 0, 0);
+  if (s) {
+    int rv;
+
+    rv=AH_ImExporterQIF__GetValue(ie, params,
+                                  "bank/statement/amountFormat",
+                                  I18N("Transaction statement amount value"),
+                                  s, &vAmount);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      GWEN_Time_free(ti);
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+  }/* if date */
+
+  t=AB_Transaction_new();
+  if (ti) {
+    AB_Transaction_SetValutaDate(t, ti);
+    AB_Transaction_SetDate(t, ti);
+  }
+  if (vAmount)
+    AB_Transaction_SetValue(t, vAmount);
+
+  s=GWEN_DB_GetCharValue(dbData, "payee", 0, 0);
+  if (s)
+    AB_Transaction_AddRemoteName(t, s, 0);
+  s=GWEN_DB_GetCharValue(dbData, "memo", 0, 0);
+  if (s)
+    AB_Transaction_AddPurpose(t, s, 0);
+
+  dbSplit=GWEN_DB_FindFirstGroup(dbData, "split");
+  while(dbSplit) {
+    AB_SPLIT *sp;
+    AB_VALUE *vSplit=0;
+
+    sp=AB_Split_new();
+    s=GWEN_DB_GetCharValue(dbSplit, "amount", 0, 0);
+    if (s) {
+      int rv;
+
+      rv=AH_ImExporterQIF__GetValue(ie, params,
+                                    "bank/statement/split/amountFormat",
+                                    I18N("Transaction split amount value"),
+                                    s, &vSplit);
+      if (rv) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+        AB_Value_free(vSplit);
+        AB_Split_free(sp);
+        AB_Transaction_free(t);
+        AB_Value_free(vAmount);
+        GWEN_Time_free(ti);
+        GWEN_DB_Group_free(dbData);
+        return rv;
+      }
+    }
+
+    if (vSplit)
+      AB_Split_SetValue(sp, vSplit);
+    AB_Value_free(vSplit);
+    s=GWEN_DB_GetCharValue(dbSplit, "memo", 0, 0);
+    if (s)
+      AB_Split_AddPurpose(sp, s, 0);
+
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding split");
+    AB_Split_List_Add(sp, AB_Transaction_GetSplits(t));
+
+    dbSplit=GWEN_DB_FindNextGroup(dbSplit, "split");
+  } /* while */
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
+  AB_ImExporterAccountInfo_AddTransaction(iea, t);
+
+  AB_Value_free(vAmount);
+  GWEN_Time_free(ti);
+  GWEN_DB_Group_free(dbData);
+
+  return 0;
 }
 
 
@@ -567,8 +816,8 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
 int AH_ImExporterQIF_Export(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
-			    GWEN_DB_NODE *params){
-  return 0;
+                            GWEN_DB_NODE *params){
+  return AB_ERROR_NOT_SUPPORTED;
 }
 
 
