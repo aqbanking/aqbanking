@@ -18,7 +18,7 @@ noinst_HEADERS=\
 swift_la_SOURCES=\
  swift.c
 
-swift_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
+swift_la_LIBADD=-L../../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
 swift_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

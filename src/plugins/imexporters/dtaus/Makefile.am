@@ -18,7 +18,7 @@ noinst_HEADERS=\
 dtaus_la_SOURCES=\
  dtaus.c
 
-dtaus_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
+dtaus_la_LIBADD=-L../../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
 dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

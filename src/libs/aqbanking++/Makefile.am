@@ -15,7 +15,7 @@ iheader_HEADERS=\
 libaqbankingpp_la_SOURCES=\
  banking.cpp
 
-libaqbankingpp_la_LIBADD=@gwenhywfar_libs@ -L../aqbanking -laqbanking
+libaqbankingpp_la_LIBADD=-L../aqbanking -laqbanking @gwenhywfar_libs@
 
 sources:
 	for f in $(libaqbankingpp_la_SOURCES); do \

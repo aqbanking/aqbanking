@@ -1826,26 +1826,22 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
     return AB_ERROR_FOUND;
   }
 
-  pro=AB_Banking_FindProvider(ab, pname);
-  if (pro) {
-    if (!AB_Provider_IsInit(pro)) {
-      rv=AB_Banking_InitProvider(ab, pro);
-      if (rv) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not initialize backend \"%s\"", pname);
-        return rv;
-      }
-    }
+  pro=AB_Banking_GetProvider(ab, pname);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load backend \"%s\"", pname);
+    return AB_ERROR_NOT_FOUND;
   }
 
   rv=AB_Banking_ImportProviderAccounts(ab, pname);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Could not import accounts from backend \"%s\"",
              pname);
+    AB_Banking_FiniProvider(ab, pro);
     return rv;
   }
 
   GWEN_StringList_AppendString(ab->activeProviders, pname, 0, 1);
-
   return 0;
 }
 

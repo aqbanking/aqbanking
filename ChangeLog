@@ -6,6 +6,8 @@
 - fixed missing usage of logdomain where encountered
 - fixed AB_Banking_GatherResponses: If multiple GetTransaction jobs exist for
   one day and they all have the same date range they will be removed but one.
+- changed *_LIBADD order in Makefiles to always link against the libraries
+  currently under contruction
 
 
 ===========================================================================
