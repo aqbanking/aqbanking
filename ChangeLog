@@ -1,4 +1,11 @@
 
+2004/08/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed the constructors for the getTransactions job
+- added JOBSingleTransfer (performs a single transfer as you might have 
+  guessed ;-)
+
+
 2004/08/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - banking.c: 

@@ -17,9 +17,14 @@ iheader_HEADERS= \
  jobgettransactions.h \
  jobgettransactions_be.h \
  jobgettransactions_l.h \
- jobgettransactions_p.h
+ jobgettransactions_p.h \
+ jobsingletransfer.h \
+ jobsingletransfer_be.h \
+ jobsingletransfer_l.h \
+ jobsingletransfer_p.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \
- jobgettransactions.c
+ jobgettransactions.c \
+ jobsingletransfer.c
 

@@ -27,19 +27,9 @@ extern "C" {
  * Creates a job which retrieves transaction reports for the given timespan
  * (if any).
  * @param a account for which you want the reports
- * @param fromTime if !=0 then this is the first date for which you want
- *  the reports (the time doesn't matter, only the date component of the
- *  given GWEN_TIME is used). If NULL then the first day for which the bank
- *  has reports is assumed.
- * @param toTime if !=0 then this is the last date for which you want
- *  the reports (the time doesn't matter, only the date component of the
- *  given GWEN_TIME is used). If NULL then the last day for which the bank
- *  has reports is assumed.
  */
 AQBANKING_API
-AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a,
-                                  const GWEN_TIME *fromTime,
-                                  const GWEN_TIME *toTime);
+AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a);
 
 AQBANKING_API 
 AB_TRANSACTION_LIST2*
@@ -53,6 +43,25 @@ AB_TRANSACTION_LIST2*
  */
 AQBANKING_API 
 int AB_JobGetTransactions_GetMaxStoreDays(const AB_JOB *j);
+
+
+/**
+ * Sets the first date for which you want the reports (the time doesn't
+ * matter, only the date component of the given GWEN_TIME is used).
+ * If NULL then the first day for which the bank has reports is assumed.
+ * @param t "from" date
+ */
+AQBANKING_API 
+  void AB_JobGetTransactions_SetFromTime(AB_JOB *j, GWEN_TIME *t);
+
+/**
+ * Sets the last date for which you want the reports (the time doesn't
+ * matter, only the date component of the given GWEN_TIME is used).
+ * If NULL then the last day for which the bank has reports is assumed.
+ * @param t "to" date
+ */
+AQBANKING_API 
+void AB_JobGetTransactions_SetToTime(AB_JOB *j, GWEN_TIME *t);
 
 AQBANKING_API 
 const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j);

@@ -32,9 +32,7 @@ GWEN_INHERIT(AB_JOB, AB_JOB_GETTRANSACTIONS)
 
 
 
-AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a,
-                                  const GWEN_TIME *fromTime,
-                                  const GWEN_TIME *toTime){
+AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a) {
   AB_JOB *j;
   AB_JOB_GETTRANSACTIONS *aj;
 
@@ -42,10 +40,6 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a,
   GWEN_NEW_OBJECT(AB_JOB_GETTRANSACTIONS, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j, aj,
                        AB_JobGetTransactions_FreeData);
-  if (fromTime)
-    aj->fromTime=GWEN_Time_dup(fromTime);
-  if (toTime)
-    aj->toTime=GWEN_Time_dup(toTime);
   return j;
 }
 
@@ -109,6 +103,19 @@ const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j){
 
 
 
+void AB_JobGetTransactions_SetFromTime(AB_JOB *j, GWEN_TIME *t){
+  AB_JOB_GETTRANSACTIONS *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
+  assert(aj);
+
+  GWEN_Time_free(aj->fromTime);
+  if (t) aj->fromTime=GWEN_Time_dup(t);
+  else aj->fromTime=0;
+}
+
+
 const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j){
   AB_JOB_GETTRANSACTIONS *aj;
 
@@ -117,6 +124,20 @@ const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j){
   assert(aj);
 
   return aj->toTime;
+}
+
+
+
+void AB_JobGetTransactions_SetToTime(AB_JOB *j, GWEN_TIME *t){
+  AB_JOB_GETTRANSACTIONS *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
+  assert(aj);
+
+  GWEN_Time_free(aj->toTime);
+  if (t) aj->toTime=GWEN_Time_dup(t);
+  else aj->toTime=0;
 }
 
 

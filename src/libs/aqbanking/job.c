@@ -21,6 +21,7 @@
 #include "provider_l.h"
 #include "jobs/jobgettransactions_l.h"
 #include "jobs/jobgetbalance_l.h"
+#include "jobs/jobsingletransfer_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -221,6 +222,12 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
     break;
 
   case AB_Job_TypeTransfer:
+    if (AB_JobSingleTransfer_toDb(j, db)) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    break;
+
   case AB_Job_TypeDebitNote:
     DBG_ERROR(0, "Job type not yet supported");
     return -1;
@@ -271,6 +278,10 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
     break;
 
   case AB_Job_TypeTransfer:
+    j=AB_JobSingleTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
   case AB_Job_TypeDebitNote:
     DBG_ERROR(0, "Unsupported job type %d", j->jobType);
     return 0;
