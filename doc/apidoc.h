@@ -47,8 +47,9 @@ AqBanking consists of multiple layers:
     across the providers.
   </li>
   <li>
-    Highlevel: These are the functions used by the application. this layer
-    offers:
+    Highlevel: These are the functions used by the application 
+    (AB_BANKING, see @ref AB_BANKING)
+    This layer offers:
     <ul>
       <li>returning a list of providers</li>
       <li>returning a list of accounts</li>

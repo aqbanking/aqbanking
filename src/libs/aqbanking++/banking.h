@@ -128,7 +128,6 @@ namespace AB {
      * Setup wizards are sorted by backends, since the wizard do things
      * very much dependant on the backend. Ideally they are shipped with the
      * backend.
-     * @param ab pointer to the AB_BANKING object
      * @param pn name of the backend
      * @param t wizard type. To allow keeping the API as open as possible you
      * may give a type name here. However, the following names are expected:

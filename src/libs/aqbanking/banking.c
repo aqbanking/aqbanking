@@ -950,8 +950,10 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
 	if (AB_Provider_List_Next(pro)) {
 	  int lrv;
 
-	  lrv=AB_Banking_MessageBox(ab,
-                                    AB_Banking_MsgTypeError,
+          lrv=AB_Banking_MessageBox(ab,
+                                    AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                                    AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+                                    AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
                                     "Error",
                                     "Error executing backend's queue.\n"
                                     "What shall we do ?",

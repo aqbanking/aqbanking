@@ -1,4 +1,9 @@
 
+2004/08/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- completed API documentation for AB_BANKING
+
+
 2004/08/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - banking/banking.{c,h}: AB_Banking_MessageBox: Just figured out that for 
