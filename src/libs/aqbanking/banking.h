@@ -24,6 +24,12 @@
 extern "C" {
 #endif
 
+/** @defgroup AB_BANKING AB_BANKING (Main Interface)
+ * @ingroup AB_C_INTERFACE
+ *
+ */
+/*@{*/
+
 #define AB_BANKING_CONFIGFILE ".aqbanking.conf"
 
 #define AB_BANKING_PROGRESS_NONE 0xffffffff
@@ -121,16 +127,23 @@ typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab,
 
 
 
-
-
+/** @name Constructor, Destructor, Init, Fini
+ *
+ */
+/*@{*/
 AB_BANKING *AB_Banking_new(const char *appName,
                            const char *fname);
 void AB_Banking_free(AB_BANKING *ab);
 
 int AB_Banking_Init(AB_BANKING *ab);
 int AB_Banking_Fini(AB_BANKING *ab);
+/*@}*/
 
 
+/** @name Working With Backends
+ *
+ */
+/*@{*/
 /**
  * This function loads the given backend (if it not already has been) and
  * imports any account that backend might offer. You can use this function
@@ -139,19 +152,9 @@ int AB_Banking_Fini(AB_BANKING *ab);
  */
 int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend);
 
-
 int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname);
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname);
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
-
-
-
-
-/**
- * Returns the application name as given to @ref AB_Banking_new.
- */
-const char *AB_Banking_GetAppName(const AB_BANKING *ab);
-
 
 /**
  * Tries to load the wizzard for the given backend which is of the given
@@ -173,7 +176,35 @@ const char *AB_Banking_GetAppName(const AB_BANKING *ab);
 AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
                                            const char *pn,
                                            const char *t);
+/*@}*/
 
+
+
+
+/** @name Application Data
+ *
+ */
+/*@{*/
+/**
+ * Returns the application name as given to @ref AB_Banking_new.
+ */
+const char *AB_Banking_GetAppName(const AB_BANKING *ab);
+
+/**
+ * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
+ * the currently running application. The group returned MUST NOT be
+ * freed !
+ * AqBanking is able to separate and store the data for every application.
+ */
+GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
+/*@}*/
+
+
+
+/** @name Working With Accounts
+ *
+ */
+/*@{*/
 /**
  * Returns a list of currently known accounts. The returned list is
  * owned by the caller, so he is responsible for freeing it (using
@@ -187,14 +218,7 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
  */
 AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
                                   GWEN_TYPE_UINT32 uniqueId);
-
-/**
- * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
- * the currently running application. The group returned MUST NOT be
- * freed !
- * AqBanking is able to separate and store the data for every application.
- */
-GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
+/*@}*/
 
 
 
@@ -315,14 +339,14 @@ GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
                                     const char *text);
 void AB_Banking_HideBox(AB_BANKING *ab,GWEN_TYPE_UINT32 id);
 
-GWEN_TYPE_UINT32 AB_Banking_Progress_Start(AB_BANKING *ab,
-                                           const char *title,
-                                           const char *text,
-                                           GWEN_TYPE_UINT32 total);
+GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
+                                          const char *title,
+                                          const char *text,
+                                          GWEN_TYPE_UINT32 total);
 
 /**
  * Advances the progress bar an application might present to the user.
- * @param id id assigned by @ref AB_Banking_Progress_Start
+ * @param id id assigned by @ref AB_Banking_ProgressStart
  * @param progress new value for progress. A special value is
  *  AB_BANKING_PROGRESS_NONE which means that the progress is unchanged.
  * This might be used as a keepalive call to a GUI.
@@ -364,6 +388,9 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
                                  AB_BANKING_PROGRESS_END_FN f);
 
 /*@}*/
+
+/*@}*/ /* defgroup */
+
 
 #ifdef __cplusplus
 }

@@ -20,6 +20,14 @@
 extern "C" {
 #endif
 
+/** @defgroup AB_JOB AB_JOB (Online Banking Tasks)
+ * @ingroup AB_C_INTERFACE
+ *
+ * This group represents online banking tasks such as retrieving the balance,
+ * downloading transaction statements, issue transfers etc.
+ */
+/*@{*/
+
 typedef struct AB_JOB AB_JOB;
 GWEN_LIST2_FUNCTION_DEFS(AB_JOB, AB_Job);
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
@@ -87,6 +95,9 @@ AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
 
 const char *AB_Job_GetResultText(const AB_JOB *j);
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
+
+
+/*@}*/
 
 
 #ifdef __cplusplus

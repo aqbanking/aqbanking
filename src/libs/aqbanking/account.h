@@ -42,7 +42,20 @@ GWEN_LIST2_FUNCTION_DEFS(AB_ACCOUNT, AB_Account);
 extern "C" {
 #endif
 
+/** @defgroup AB_ACCOUNT AB_ACCOUNT (Managing accounts)
+ * @ingroup AB_C_INTERFACE
+ *
+ * @brief This group represents accounts.
+ *
+ * Accounts are only created by AB_PROVIDERs, not by the application.
+ */
+/*@{*/
 
+
+/**
+ *  This constructor MUST NOT be used by applications. Only backends
+ * (see @ref AB_PROVIDER) and AB_BANKING need to create accounts.
+ */
 AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
                            AB_PROVIDER *pro,
                            const char *idForProvider);
@@ -72,6 +85,9 @@ void AB_Account_SetBankName(AB_ACCOUNT *acc, const char *s);
 
 const char *AB_Account_GetOwnerName(const AB_ACCOUNT *acc);
 void AB_Account_SetOwnerName(AB_ACCOUNT *acc, const char *s);
+
+
+/*@}*/
 
 
 #ifdef __cplusplus

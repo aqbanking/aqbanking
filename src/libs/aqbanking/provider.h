@@ -54,6 +54,13 @@ GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_WIZZARD, AB_ProviderWizzard);
 extern "C" {
 #endif
 
+/** @defgroup AB_PROVIDER AB_PROVIDER (Online Banking Backends)
+ * @ingroup AB_C_INTERFACE
+ *
+ * @brief This group represents backends.
+ */
+/*@{*/
+
 
 typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab);
 
@@ -172,7 +179,7 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
                                                    const char *modname);
 
 
-
+/*@}*/ /* defgroup */
 
 #ifdef __cplusplus
 }

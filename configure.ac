@@ -273,7 +273,7 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="aqbanking"
+	DOXYGEN_INPUT="aqbanking aqbanking++"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
