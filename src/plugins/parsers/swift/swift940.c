@@ -379,16 +379,19 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
      * However: if valuta date and booking date are in different years
      * the booking year might be too high.
      * We detect this case by comparing the months: If the booking month
-     * is lower than
+     * is and the valuta month differ by more than 10 months then the year
+     * of the booking date will be adjusted.
      */
-    if (
-	((d2b<<8)+d3b) /* booking date */
-	<              /* smaller than */
-	((d2a<<8)+d3a) /* valuta date ? */
-       )
-      d1b=d1a-1;       /* yes, use valuta year -1 */
+    if (d2b-d2a>10) {
+      /* booked before actually withdrawn */
+      d1b=d1a-1;
+    }
+    else if (d2a-d2b>10) {
+      /* withdrawn and booked later */
+      d1b=d1a+1;
+    }
     else
-      d1b=d1a;         /* otherwise it is the same year, use that */
+      d1b=d1a;
 
     ti=GWEN_Time_new(d1b, d2b-1, d3b, 0, 0, 0, 0);
     assert(ti);
