@@ -10,7 +10,7 @@ EXTRA_DIST=README ofx.c ofx_p.h ofx.xml.in
 if WITH_OFX_PLUGIN
 
 INCLUDES = $(all_includes)
-EXTRA_DIST=README
+#EXTRA_DIST=README
 
 imexporterplugindir=@aqbanking_plugins@/imexporters
 
