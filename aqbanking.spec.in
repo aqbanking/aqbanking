@@ -91,6 +91,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/%{name}
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}
+%{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 
 %files devel
 %defattr(-,root,root)
