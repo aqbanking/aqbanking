@@ -1,2 +1,6 @@
 *.rc
 *.xml
+dlldir
+*.def
+*.dll
+*.lib
