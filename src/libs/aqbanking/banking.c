@@ -42,6 +42,9 @@
 #include "jobgetbalance.h"
 #include "jobgettransactions.h"
 
+#ifdef OS_WIN32
+# define ftruncate chsize
+#endif
 
 #define I18N(txt) txt
 
