@@ -181,7 +181,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	GWEN_Time_free(ti);
       }
 
-      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
       AB_ImExporterContext_AddTransaction(ctx, t);
     }
     else {

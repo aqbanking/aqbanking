@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=8
-AQBANKING_VERSION_BUILD=8
+AQBANKING_VERSION_BUILD=9
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -394,6 +394,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/ressource.rc
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
+  src/plugins/imexporters/csv/profiles/aqmoney2.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml

@@ -1,5 +1,11 @@
 
 
+2004/11/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added new CSV profile for AqMoney2 CSV files
+- importing of AqMoney2 data now works !! ;-)
+
+
 2004/11/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added properties to imexporter plugin descriptions ("import" and "export")
