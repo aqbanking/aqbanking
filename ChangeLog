@@ -1,7 +1,7 @@
 
 2005/02/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- fixed a bug in SWIFT parser (thanks to Christian to provide me with a
+- fixed a bug in SWIFT parser (thanks to Christian for providing me with a
   usable log)
 
 
