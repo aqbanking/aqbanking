@@ -1422,7 +1422,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   db=GWEN_DB_Group_new("profiles");
 
   /* read global profiles */
-  GWEN_Buffer_AppendString(buf, DATADIR "/imexporters/");
+  GWEN_Buffer_AppendString(buf, DATADIR "/banking/imexporters/");
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad name for importer/exporter");
