@@ -1,4 +1,10 @@
 
+
+2004/09/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- OFX importer: now stores check number and some other additional OFX fields
+
+
 2004/09/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - changed type of uniqueId in AB_Transaction

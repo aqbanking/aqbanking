@@ -304,50 +304,65 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
     if (data.transactiontype_valid){
       switch(data.transactiontype){
       case OFX_CHECK:
+        AB_Transaction_SetTransactionKey(t, "CHK");
         AB_Transaction_SetTransactionText(t, "Check");
         break;
       case OFX_INT:
+        AB_Transaction_SetTransactionKey(t, "INT");
         AB_Transaction_SetTransactionText(t, "Interest");
         break;
       case OFX_DIV:
+        AB_Transaction_SetTransactionKey(t, "DIV");
         AB_Transaction_SetTransactionText(t, "Dividend");
         break;
       case OFX_SRVCHG:
+        AB_Transaction_SetTransactionKey(t, "CHG");
         AB_Transaction_SetTransactionText(t, "Service charge");
         break;
       case OFX_FEE:
+        AB_Transaction_SetTransactionKey(t, "BRF");
         AB_Transaction_SetTransactionText(t, "Fee");
         break;
       case OFX_DEP:
+        AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
         AB_Transaction_SetTransactionText(t, "Deposit");
         break;
       case OFX_ATM:
+        AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
         AB_Transaction_SetTransactionText(t, "Cash dispenser");
         break;
       case OFX_POS:
+        AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
         AB_Transaction_SetTransactionText(t, "Point of sale");
         break;
       case OFX_XFER:
+        AB_Transaction_SetTransactionKey(t, "TRF");
         AB_Transaction_SetTransactionText(t, "Transfer");
         break;
       case OFX_PAYMENT:
+        AB_Transaction_SetTransactionKey(t, "TRF"); /* FIXME: not sure */
         AB_Transaction_SetTransactionText(t, "Electronic payment");
         break;
       case OFX_CASH:
+        AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
         AB_Transaction_SetTransactionText(t, "Cash");
         break;
       case OFX_DIRECTDEP:
+        AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
         AB_Transaction_SetTransactionText(t, "Direct deposit");
         break;
       case OFX_DIRECTDEBIT:
+        AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
         AB_Transaction_SetTransactionText(t, "Merchant initiated debit");
         break;
       case OFX_REPEATPMT:
+        AB_Transaction_SetTransactionKey(t, "STO");
         AB_Transaction_SetTransactionText(t, "Standing order");
         break;
       case OFX_DEBIT:
       case OFX_CREDIT:
       case OFX_OTHER:
+        AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
         break;
       }
 
@@ -355,6 +370,15 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
     else {
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "No transaction type");
     }
+
+    if (data.server_transaction_id_valid)
+      AB_Transaction_SetBankReference(t, data.server_transaction_id);
+
+    if (data.check_number_valid)
+      AB_Transaction_SetCustomerReference(t, data.check_number);
+    else if (data.reference_number_valid)
+      AB_Transaction_SetCustomerReference(t, data.reference_number);
+
     DBG_INFO(0, "Adding transaction");
     AB_ImExporterAccountInfo_AddTransaction(ieh->lastAccountInfo, t);
   }
