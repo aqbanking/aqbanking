@@ -18,6 +18,8 @@
 #include "account_l.h"
 #include "banking_l.h"
 #include "provider_l.h"
+#include "jobs/jobgettransactions_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
@@ -28,6 +30,7 @@
 
 GWEN_LIST_FUNCTIONS(AB_JOB, AB_Job)
 GWEN_LIST2_FUNCTIONS(AB_JOB, AB_Job)
+GWEN_INHERIT_FUNCTIONS(AB_JOB)
 
 
 
@@ -38,6 +41,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   assert(a);
   GWEN_NEW_OBJECT(AB_JOB, j);
   j->usage=1;
+  GWEN_INHERIT_INIT(AB_JOB, j);
   GWEN_LIST_INIT(AB_JOB, j);
   j->jobType=jt;
   j->data=GWEN_DB_Group_new("JobData");
@@ -69,6 +73,7 @@ void AB_Job_free(AB_JOB *j){
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
+      GWEN_INHERIT_FINI(AB_JOB, j);
       GWEN_DB_Group_free(j->data);
       free(j->resultText);
       GWEN_LIST_FINI(AB_JOB, j);
@@ -202,6 +207,28 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
     dbTdst=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data");
     assert(dbTdst);
     GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
+
+    /* let every job store its data */
+    switch(j->jobType) {
+    case AB_Job_TypeGetBalance:
+      break;
+
+    case AB_Job_TypeGetTransactions:
+      if (AB_Job_GetTransactions_WriteDb(j, dbTdst)) {
+        DBG_INFO(0, "here");
+        return -1;
+      }
+      break;
+
+    case AB_Job_TypeTransfer:
+    case AB_Job_TypeDebitNote:
+      DBG_ERROR(0, "Job type not yet supported");
+      return -1;
+
+    default:
+      DBG_ERROR(0, "Unknown job type %d", j->jobType);
+      return -1;
+    }
   }
 
   return 0;
@@ -251,6 +278,31 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
     dbTdst=GWEN_DB_GetGroup(j->data, GWEN_DB_FLAGS_DEFAULT, "static");
     assert(dbTdst);
     GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
+
+    /* let jobs extend the data */
+    switch(j->jobType) {
+    case AB_Job_TypeGetBalance:
+      /* nothing to read for now */
+      break;
+
+    case AB_Job_TypeGetTransactions:
+      if (AB_Job_GetTransactions_ReadDb(j, dbTsrc)) {
+        DBG_INFO(0, "Could not read job data");
+        AB_Job_free(j);
+        return 0;
+      }
+      break;
+
+    case AB_Job_TypeTransfer:
+    case AB_Job_TypeDebitNote:
+      DBG_ERROR(0, "Unsupported job type %d", j->jobType);
+      AB_Job_free(j);
+      return 0;
+    default:
+      DBG_ERROR(0, "Unknown job type %d", j->jobType);
+      AB_Job_free(j);
+      return 0;
+    } /* switch */
   }
 
   /* check whether job is available */

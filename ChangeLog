@@ -1,4 +1,12 @@
 
+2004/08/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AB_Transaction_dup()
+- added functions which allow the library to completely load jobs from
+  a db (improves the previous job loading features)
+- started implementing JOBGetTransactions
+
+
 ===========================================================================
 MARK: released aqbanking-0.1.2alpha (2004/08/13)
 ===========================================================================

@@ -51,7 +51,9 @@ extern "C" {
 
 AQBANKING_API 
 AB_TRANSACTION * AB_Transaction_new();
-AQBANKING_API 
+AQBANKING_API
+AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *t);
+AQBANKING_API
 void AB_Transaction_free(AB_TRANSACTION *t);
 
 /** @name Reference To Local Account

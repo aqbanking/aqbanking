@@ -46,6 +46,61 @@ AB_TRANSACTION *AB_Transaction_new(){
 
 
 
+AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *t){
+  AB_TRANSACTION *nt;
+
+  assert(t);
+  nt=AB_Transaction_new();
+  assert(nt);
+
+  nt->localCountryCode=t->localCountryCode;
+  if (t->localBankCode)
+    nt->localBankCode=strdup(t->localBankCode);
+  if (t->localAccountId)
+    nt->localAccountId=strdup(t->localAccountId);
+  if (t->localSuffix)
+    nt->localSuffix=strdup(t->localSuffix);
+  if (t->localOwnerName)
+    nt->localOwnerName=strdup(t->localOwnerName);
+
+  nt->remoteCountryCode=t->remoteCountryCode;
+  if (t->remoteBankCode)
+    nt->remoteBankCode=strdup(t->remoteBankCode);
+  if (t->remoteAccountId)
+    nt->remoteAccountId=strdup(t->remoteAccountId);
+  if (t->remoteSuffix)
+    nt->remoteSuffix=strdup(t->remoteSuffix);
+  nt->remoteOwnerName=GWEN_StringList_dup(t->remoteOwnerName);
+
+  if (t->valutaDate)
+    nt->valutaDate=GWEN_Time_dup(t->valutaDate);
+  if (t->date)
+    nt->date=GWEN_Time_dup(t->date);
+
+  if (t->value)
+    nt->value=AB_Value_dup(t->value);
+
+  nt->textKey=t->textKey;
+  if (t->transactionKey)
+    nt->transactionKey=strdup(t->transactionKey);
+  if (t->customerReference)
+    nt->customerReference=strdup(t->customerReference);
+  if (t->bankReference)
+    nt->bankReference=strdup(t->bankReference);
+  nt->transactionCode=t->transactionCode;
+  if (t->transactionText)
+    nt->transactionText=strdup(t->transactionText);
+  if (t->primanota)
+    nt->primanota=strdup(t->primanota);
+
+  nt->purpose=GWEN_StringList_dup(t->purpose);
+
+  return nt;
+}
+
+
+
+
 void AB_Transaction_free(AB_TRANSACTION *t){
   if (t) {
     GWEN_LIST_FINI(AB_TRANSACTION, t);
@@ -479,12 +534,28 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
     se=GWEN_StringListEntry_Next(se);
   } /* while */
 
-  if (t->valutaDate)
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "valutaDate", GWEN_Time_Seconds(t->valutaDate));
-  if (t->date)
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "date", GWEN_Time_Seconds(t->date));
+  if (t->valutaDate) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "valutaDate");
+    assert(dbT);
+    if (GWEN_Time_toDb(t->valutaDate, dbT)) {
+      DBG_INFO(0, "Could not store valuata date");
+      return -1;
+    }
+  }
+  if (t->date) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "date");
+    assert(dbT);
+    if (GWEN_Time_toDb(t->valutaDate, dbT)) {
+      DBG_INFO(0, "Could not store date");
+      return -1;
+    }
+  }
 
   if (t->value) {
     GWEN_DB_NODE *dbT;
@@ -546,7 +617,6 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
   const char *p;
   GWEN_DB_NODE *dbT;
   int i;
-  GWEN_TYPE_UINT32 u;
 
   t=AB_Transaction_new();
   assert(t);
@@ -595,13 +665,13 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
     AB_Transaction_AddRemoteName(t, p);
   } /* for */
 
-  u=(unsigned int)GWEN_DB_GetIntValue(db, "valutaDate", 0, 0);
-  if (u)
-    AB_Transaction_SetValutaDate(t,
-                                 GWEN_Time_fromSeconds(u));
-  u=(unsigned int)GWEN_DB_GetIntValue(db, "date", 0, 0);
-  if (u)
-    AB_Transaction_SetDate(t, GWEN_Time_fromSeconds(u));
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
+  if (dbT)
+    AB_Transaction_SetValutaDate(t, GWEN_Time_fromDb(db));
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+  if (dbT)
+    AB_Transaction_SetDate(t, GWEN_Time_fromDb(db));
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
   if (dbT)

@@ -11,26 +11,27 @@
  ***************************************************************************/
 
 
-#ifndef AQBANKING_JOB_L_H
-#define AQBANKING_JOB_L_H
+#ifndef AQBANKING_JOBGETTRANSACTIONS_L_H
+#define AQBANKING_JOBGETTRANSACTIONS_L_H
 
 
 #include <aqbanking/job.h>
-#include <gwenhywfar/inherit.h>
-#include <gwenhywfar/db.h>
+#include <aqbanking/accstatus.h>
+#include <aqbanking/jobgettransactions.h>
 
-GWEN_LIST_FUNCTION_DEFS(AB_JOB, AB_Job)
-GWEN_INHERIT_FUNCTION_DEFS(AB_JOB)
-
-
-AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
-
-GWEN_DB_NODE *AB_Job_GetData(const AB_JOB *j);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
-AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
+int AB_Job_GetTransactions_ReadDb(AB_JOB *j, GWEN_DB_NODE *db);
+int AB_Job_GetTransactions_WriteDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
 
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* AQBANKING_JOB_L_H */
+
+#endif /* AQBANKING_JOBGETTRANSACTIONS_L_H */
+
