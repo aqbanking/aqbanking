@@ -39,7 +39,7 @@ AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   AB_ImExporter_SetImportFn(ie, AH_ImExporterQIF_Import);
   AB_ImExporter_SetExportFn(ie, AH_ImExporterQIF_Export);
-  AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterQIF_CheckFile);
+  /* AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterQIF_CheckFile); -- not yet implemented?! */
   return ie;
 }
 

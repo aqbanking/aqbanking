@@ -1,2 +1,5 @@
 qif.xml
 ressource.rc
+*.def
+*.dll
+*.lib

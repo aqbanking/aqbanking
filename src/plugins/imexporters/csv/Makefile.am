@@ -32,7 +32,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = csv
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../../../libs/aqbanking -laqbanking32_0
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
 

@@ -1,3 +1,8 @@
+2005-03-17   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/imexporters/*/Makefile.am: Fix DLLLDFLAGS for
+	win32/mingw DLL building.
+
 2005-03-13  Christian Stimming  <stimming@tuhh.de>
 
 	* Makefile.am: Modify rules for i18n so that the catalogs are
