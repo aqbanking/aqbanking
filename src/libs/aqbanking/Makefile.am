@@ -1,6 +1,6 @@
 SUBDIRS=jobs types
 
-INCLUDES=-I${top_srcdir} -Itypes -Ijobs @all_includes@
+INCLUDES = -I$(top_srcdir) -I$(srcdir)/types -I$(srcdir)/jobs $(all_includes)
 
 lib_LTLIBRARIES=libaqbanking.la
 

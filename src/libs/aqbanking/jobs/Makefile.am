@@ -1,4 +1,7 @@
-INCLUDES=-I${top_srcdir} @all_includes@ -I../ -I../types
+INCLUDES = -I$(top_srcdir) \
+  $(all_includes) \
+  -I$(srcdir)/.. \
+  -I$(srcdir)/../types
 
 noinst_LTLIBRARIES=libjobs.la
 
