@@ -1,3 +1,4 @@
+INCLUDES=@all_includes@
 
 
 noinst_PROGRAMS=abtest
