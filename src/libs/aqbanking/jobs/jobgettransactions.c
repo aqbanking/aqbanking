@@ -179,15 +179,8 @@ AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
   aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
   assert(aj);
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "args/fromdate");
-  if (dbT)
-    aj->fromTime=GWEN_Time_fromDb(dbT);
-
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "args/todate");
-  if (dbT)
-    aj->toTime=GWEN_Time_fromDb(dbT);
+  aj->fromTime=AB_Job_DateOnlyFromDb(db, "args/fromdate");
+  aj->toTime=AB_Job_DateOnlyFromDb(db, "args/todate");
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                        "result/transactions");
@@ -223,21 +216,11 @@ int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   assert(aj);
 
   errors=0;
-  if (aj->fromTime) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "args/fromdate");
-    assert(dbT);
-    if (GWEN_Time_toDb(aj->fromTime, dbT))
-      return -1;
-  }
+  if (aj->fromTime)
+    AB_Job_DateOnlyToDb(aj->fromTime, db, "args/fromdate");
 
-  if (aj->toTime) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "args/todate");
-    assert(dbT);
-    if (GWEN_Time_toDb(aj->toTime, dbT))
-      return -1;
-  }
+  if (aj->toTime)
+    AB_Job_DateOnlyToDb(aj->fromTime, db, "args/todate");
 
   dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "result");
   assert(dbT);

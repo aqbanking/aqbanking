@@ -34,4 +34,5 @@ int AB_Job_Update(AB_JOB *j);
 void AB_Job_SetUniqueId(AB_JOB *j, GWEN_TYPE_UINT32 jid);
 
 
+
 #endif /* AQBANKING_JOB_L_H */

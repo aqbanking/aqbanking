@@ -53,6 +53,20 @@ AQBANKING_API
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
 AQBANKING_API
 void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
+
+AQBANKING_API
+GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name);
+AQBANKING_API
+void AB_Job_DateToDb(const GWEN_TIME *ti, GWEN_DB_NODE *db, const char *name);
+
+AQBANKING_API
+void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
+                         GWEN_DB_NODE *db,
+                         const char *name);
+AQBANKING_API
+GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name);
+
+
 /*@}*/
 
 

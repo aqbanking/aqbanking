@@ -1,10 +1,16 @@
 
+===========================================================================
+MARK: released AqBanking - 1.0.7beta (2005/03/28)
+===========================================================================
+
+
 2005/03/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - always use "UTC 12:00" for dates which do not contain a time. This avoids
   the problem with date shifting due to daylight saving time.
   Note: This means there is no localization of the time in the plugins
   anymore.
+- switched to short dates in AB_Job_to/fromDb (makes job files smaller)
 
 
 2005/03/27: Martin Preuss<martin@libchipcard.de>
