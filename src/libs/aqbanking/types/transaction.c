@@ -191,7 +191,7 @@ void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *t, const char *s){
 
 
 
-const char *AB_Transaction_GetRemoteAccountId(const AB_TRANSACTION *t){
+const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *t){
   assert(t);
   return t->remoteAccountId;
 }
