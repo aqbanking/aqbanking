@@ -1,9 +1,9 @@
 
-char name="CSV"
-char shortDescr="CSV Format"
+char name="default"
+char shortDescr="default profile"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the CSV format"
-int import="0"
+int import="1"
 int export="1"
 
 char type="csv"

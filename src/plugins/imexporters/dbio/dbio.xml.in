@@ -1,4 +1,4 @@
-<plugin name="dbio" type="none" >
+<plugin name="dbio" type="none" import="1" export="1" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <descr>

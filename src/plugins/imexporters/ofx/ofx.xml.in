@@ -1,4 +1,4 @@
-<plugin name="ofx" type="imexporter" >
+<plugin name="ofx" type="imexporter" import="1" export="0" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>OFX</short>
