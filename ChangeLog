@@ -1,4 +1,9 @@
 
+2005/02/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- this lib now uses $libdir instead of $prefix/lib)
+
+
 2005/02/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a typo (rendered the macro AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON

@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -168,20 +168,20 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         aqbanking_internal_libs="-laqbanking"
-        aqbanking_libs="-L`eval echo $prefix/lib` ${aqbanking_internal_libs}"
-        aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp"
+        aqbanking_libs="-L\${libdir} ${aqbanking_internal_libs}"
+        aqbanking_libspp="-L\${libdir} -laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
-        aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_plugins="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_data="`eval echo $prefix/share`/aqbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
         aqbanking_internal_libs="-laqbanking32_${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_libs="-L`eval echo $prefix/lib` ${aqbanking_internal_libs}"
-        aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp32"
+        aqbanking_libs="-L\${libdir} ${aqbanking_internal_libs}"
+        aqbanking_libspp="-L\${libdir} -laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
-        aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_plugins="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_data="`eval echo $prefix/share`/aqbanking"
     	;;
 esac
