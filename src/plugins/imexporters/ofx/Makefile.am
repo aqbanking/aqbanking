@@ -2,7 +2,7 @@ SUBDIRS=profiles
 
 # Include the source code files here as well. It doesnt hurt to
 # include them twice in the dist target.
-EXTRA_DIST=README ofx.c ofx_p.h ofx.xml.in
+EXTRA_DIST=ofx.c ofx_p.h ofx.xml.in
 
 #####
 # The complete rest of the file is used only if HAVE_OFX is enabled.
