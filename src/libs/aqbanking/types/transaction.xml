@@ -59,8 +59,10 @@
       </descr>
       <elem name="localCountry" type="char" ptr="1">
         <descr>
-          This is the two-character ISO country code (as used in toplevel
-          domains). For Germany use "DE".
+          This is the two-character country code according to ISO
+          3166-1 (Alpha-2). This is also used in DNS toplevel domain
+          names. For Germany use "DE". (FIXME: is this
+          case-sensitive?)
         </descr>
       </elem>
 
