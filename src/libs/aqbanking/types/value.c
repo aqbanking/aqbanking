@@ -99,7 +99,9 @@ int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
 
 AB_VALUE *AB_Value_fromString(const char *s){
   AB_VALUE *v;
+  const char *origS;
 
+  origS=s;
   assert(s);
   while(*s && isspace(*s)) s++;
   if (!*s) {

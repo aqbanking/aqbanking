@@ -16,9 +16,9 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
@@ -110,7 +110,7 @@ AC_CHECK_PROG(SED,sed,sed)
 ###-------------------------------------------------------------------------
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h locale.h])
 
 ###-------------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
@@ -122,6 +122,8 @@ AC_STRUCT_TM
 AC_FUNC_MALLOC
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([memmove memset strcasecmp strdup strerror snprintf])
+AC_CHECK_FUNCS([setlocale])
+
 
 ###-------------------------------------------------------------------------
 AC_GWENHYWFAR(0,9,15,5)

@@ -1,3 +1,9 @@
+
+2004/09/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added missing checks to configure.ac (setlocale, locale.h)
+
+
 2004-09-03   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/types/transaction.c: include config.h was
