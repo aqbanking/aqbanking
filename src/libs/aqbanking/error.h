@@ -50,6 +50,7 @@
 #define AB_ERROR_SECURITY        (-15)
 #define AB_ERROR_BAD_DATA        (-16)
 #define AB_ERROR_UNKNOWN         (-17)
+#define AB_ERROR_ABORTED         (-18)
 /*@}*/
 
 

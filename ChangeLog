@@ -4,6 +4,7 @@
 - added a note about the encodings used (UTF-8)
 - consequent usage of UTF-8 in importer/exporter and parser plugins
 - fixed a bug in SWIFT importer
+- added error code AB_ERROR_ABORTED
 
 
 ===========================================================================
