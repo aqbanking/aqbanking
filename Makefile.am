@@ -31,10 +31,14 @@ install-srcdoc: $(PACKAGE).tag
 	cp apidoc/* "$(DESTDIR)@docpath@/$(PACKAGE)"
 	cp "$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
 	if test -x "$(DESTDIR)@docpath@/$(PACKAGE)/installdox"; then \
-	  ( cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
-	    for ff in ${DOXYGEN_TAGFILES}; do \
-	     ./installdox -q -l "`basename $$ff`@../`basename $$ff | $(SED) -e s/.tag//`";\
-	    done ) \
+	  cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
+	   ID_OPT="-q" ; \
+	   for ff in ${DOXYGEN_TAGFILES}; do \
+	    ID_OPT="$$ID_OPT -l `basename $$ff`@../`basename $$ff | $(SED) -e s/.tag//`";\
+	   done ;\
+	   ( cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
+	      ./installdox -q $$ID_OPT \
+	   ); \
 	fi
 
 
