@@ -1,0 +1,171 @@
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Input configuration for the Inno Setup Compiler
+; Copyright (c) 2005 Christian Stimming <stimming@tuhh.de>
+;
+; Inno Setup Compiler: See http://www.jrsoftware.org/isdl.php
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[Setup]
+; Using the name here directly because we want it capitalized
+AppName=AqBanking
+AppVerName=AqBanking @VERSION@
+AppPublisher=AqBanking Development Team
+AppPublisherURL=http://sourceforge.net/projects/aqbanking
+AppSupportURL=http://sourceforge.net/support/getsupport.php?group_id=115695
+AppUpdatesURL=http://sourceforge.net/project/showfiles.php?group_id=115695
+DefaultDirName={pf}\@PACKAGE@
+LicenseFile=COPYING
+Compression=lzma
+SolidCompression=yes
+OutputDir=.
+OutputBaseFilename=@PACKAGE@-@VERSION@-setup
+UninstallFilesDir={app}\uninstall\@PACKAGE@
+InfoAfterFile=README
+
+[Types]
+Name: "full"; Description: "{cm:FullInstall}"
+Name: "binary"; Description: "{cm:BinaryInstall}"
+Name: "custom"; Description: "{cm:CustomInstall}"; Flags: iscustom
+
+[Components]
+Name: "main"; Description: "{cm:MainFiles}"; Types: full binary custom; Flags: fixed
+Name: "devel"; Description: "{cm:DevelFiles}"; Types: full
+Name: "doc"; Description: "{cm:DocFiles}"; Types: full
+
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Here we configure the included files and the place of their
+; installation
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[Files]
+; The main DLL
+Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
+
+; The lib file for linking against it
+Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+
+; The config-script. It is post-processed by the Pascal script below.
+Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig({app}\bin\@PACKAGE@-config)
+
+; The headers, and the aclocal macro. 
+Source: "win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
+Source: "win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
+
+; The plugins
+Source: "win32-tmp\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
+
+
+; And all the documentation
+Source: "README"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
+Source: "COPYING"; DestDir: "{app}\doc\@PACKAGE@"; Flags: ignoreversion; Components: doc
+Source: "README.W32"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
+Source: "AUTHORS"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
+Source: "ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
+
+
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Define the registry keys Setup should create (HKCU = HKEY_CURRENT_USER)
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[Registry]
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
+
+
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; This large section is a Pascal scripting program that will modify
+; the aqbanking-config shell script so that it then includes the
+; correct values according to our local installation. See
+; http://www.remobjects.com/?ps for a syntax reference.
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[Code]
+function MingwBacksl(const S: String): String;
+begin
+  { Modify the path name S so that it can be used by MinGW }
+  if Length(ExtractFileDrive(S)) = 0 then
+    Result := S
+  else begin
+    Result := '/'+S;
+    StringChange(Result, ':\', '\');
+  end;
+  StringChange(Result, '\', '/');
+end;
+
+procedure MyAfterInstallConfig(FileName: String);
+var
+  FileString, appdir, windir, includedir, plugindir, pkgdatadir: String;
+  Res: Boolean;
+begin
+
+  { Load the unchanged original file }
+  Res := LoadStringFromFile(Format1('%s.in.in',FileName), FileString);
+  if Res = False then
+    MsgBox('Error on loading '+FileName+'.in.in for final adaptation', mbInformation, MB_OK);
+
+  { Insert the custom file header; #10 is the linefeed character }
+  Insert('#!/bin/sh '#10'dir="@prefix'+'@"'#10, FileString, 0);
+
+  { Get the installation-specific paths }
+  windir := MingwBacksl(ExpandConstant('{win}'));
+  appdir := MingwBacksl(ExpandConstant('{app}'));
+  includedir := appdir + '/include';
+  plugindir := appdir + '/lib/@PACKAGE@/plugins/@AQBANKING_SO_EFFECTIVE@';
+  pkgdatadir := appdir + '/share/@PACKAGE@';
+
+  { Now make all the replacements }
+  { Explanation: StringChange(S,FromStr,ToStr): Change all occurances in S of FromStr to ToStr. }
+  StringChange(FileString, '@'+'prefix@', appdir);
+  StringChange(FileString, '@'+'libdir@', windir);
+  StringChange(FileString, '@'+'all_includes@', '@all_includes@');
+  StringChange(FileString, '@'+'aqbanking_includes@', '-I'+includedir);
+  StringChange(FileString, '@'+'aqbanking_ldflags@', '-L'+windir);
+  StringChange(FileString, '@'+'aqbanking_libs@', '@aqbanking_libs@');
+  StringChange(FileString, '@'+'aqbanking_libspp@', '@aqbanking_libspp@');
+  StringChange(FileString, '@'+'aqbanking_plugindir@', plugindir);
+  StringChange(FileString, '@'+'aqbanking_pkgdatadir@', pkgdatadir);
+  StringChange(FileString, '@'+'AQBANKING_VERSION_MAJOR@', '@AQBANKING_VERSION_MAJOR@');
+  StringChange(FileString, '@'+'AQBANKING_VERSION_MINOR@', '@AQBANKING_VERSION_MINOR@');
+  StringChange(FileString, '@'+'AQBANKING_VERSION_PATCHLEVEL@', '@AQBANKING_VERSION_PATCHLEVEL@');
+  StringChange(FileString, '@'+'AQBANKING_VERSION_BUILD@', '@AQBANKING_VERSION_BUILD@');
+  StringChange(FileString, '@'+'AQBANKING_VERSION_TAG@', '@AQBANKING_VERSION_TAG@');
+
+  { Save the final file }
+  Res := SaveStringToFile(FileName, FileString, False);
+  if Res = False then
+    MsgBox('Error on saving '+FileName+' for final adaptation', mbInformation, MB_OK);
+
+end;
+
+
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl"
+
+
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; These are only for improved text messages
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[Messages]
+; *** "Select Destination" wizard page
+SelectDirLabel3=Setup will install [name] into the following folder. If you have MinGW installed on your system, you can safely choose MinGW's root folder here as well (e.g. c:\msys\1.0).
+
+de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, können Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
+
+
+[CustomMessages]
+; *** "Select Components" wizard page
+FullInstall=Full installation
+BinaryInstall=Install only libraries
+CustomInstall=Custom installation
+
+MainFiles=Aqbanking DLL Library
+DevelFiles=Development files
+DocFiles=Documentation files
+
+de.FullInstall=Komplett-Installation
+de.BinaryInstall=Nur Bibliotheken installieren
+de.CustomInstall=Benutzerdefiniert
+
+de.MainFiles=Aqbanking DLL Bibliothek
+de.DevelFiles=Entwickler-Dateien
+de.DocFiles=Dokumentations-Dateien

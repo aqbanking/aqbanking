@@ -13,16 +13,16 @@ for d in $*; do
 	    result="$result @all_includes@ @aqbanking_includes@"
 	    ;;
 	--libraries)
-	    result="$result @aqbanking_libs@"
+	    result="$result @aqbanking_ldflags@ @aqbanking_libs@"
 	    ;;
 	--libraries++)
-	    result="$result @aqbanking_libspp@"
+	    result="$result @aqbanking_ldflags@ @aqbanking_libspp@"
 	    ;;
 	--plugins)
-	    result="$result @aqbanking_plugins@"
+	    result="$result @aqbanking_plugindir@"
 	    ;;
 	--data)
-	    result="$result @aqbanking_data@"
+	    result="$result @aqbanking_pkgdatadir@"
 	    ;;
 	--vmajor)
 	    result="$result @AQBANKING_VERSION_MAJOR@"

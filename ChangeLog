@@ -1,3 +1,10 @@
+2005-02-21   Christian Stimming <stimming@tuhh.de>
+
+	* aqbanking.iss.in: Add Inno Setup Compiler input file for
+	automated creation of self-extracting Windows exe files. 
+
+	* aqbanking-config.in.in, configure.ac: Clean up some variables so
+	that the iss file can adapt this script at installation time.
 
 2005/02/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

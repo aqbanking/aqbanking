@@ -51,7 +51,15 @@ rpm:    $(PACKAGE).spec dist
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
-
+# Rule for using the Inno Setup compiler. The path to iscc.exe is set
+# manually here for now.
+ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
+wintmpdir = win32-tmp
+setup: aqbanking.iss
+	mkdir -p $(wintmpdir)
+	make prefix="`pwd`/$(wintmpdir)" install \
+	 && $(ISCC) aqbanking.iss \
+	 && rm -rf $(wintmpdir)
 
 sources:
 	rm -f i18nsources

@@ -3,7 +3,7 @@ SUBDIRS=profiles
 INCLUDES = $(all_includes)
 EXTRA_DIST=README
 
-imexporterplugindir=@aqbanking_plugins@/imexporters
+imexporterplugindir=@aqbanking_plugindir@/imexporters
 
 imexporterplugin_LTLIBRARIES=swift.la
 if IS_WINDOWS

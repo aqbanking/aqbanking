@@ -9,8 +9,8 @@ lib_LTLIBRARIES=libaqbanking.la
 localedir=$(datadir)/locale
 DEFS= @DEFS@ \
  -DLOCALEDIR=\"$(localedir)\" \
- -DAQBANKING_PLUGINS=\"@aqbanking_plugins@\" \
- -DDATADIR=\"$(aqbanking_data)\"
+ -DAQBANKING_PLUGINS=\"@aqbanking_plugindir@\" \
+ -DDATADIR=\"$(aqbanking_pkgdatadir)\"
 
 noinst_HEADERS=\
  account_l.h \

@@ -1,6 +1,6 @@
 
 EXTRA_DIST=default.conf.in
 
-profilesdir=@aqbanking_data@/imexporters/ofx/profiles
+profilesdir=@aqbanking_pkgdatadir@/imexporters/ofx/profiles
 profiles_DATA=default.conf
 

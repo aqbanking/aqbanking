@@ -168,21 +168,23 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         aqbanking_internal_libs="-laqbanking"
-        aqbanking_libs="-L\${libdir} ${aqbanking_internal_libs}"
-        aqbanking_libspp="-L\${libdir} -laqbankingpp"
+	aqbanking_ldflags="-L\${libdir}"
+        aqbanking_libs="${aqbanking_internal_libs}"
+        aqbanking_libspp="-laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
-        aqbanking_plugins="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_data="`eval echo $prefix/share`/aqbanking"
+        aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
         aqbanking_internal_libs="-laqbanking32_${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_libs="-L\${libdir} ${aqbanking_internal_libs}"
-        aqbanking_libspp="-L\${libdir} -laqbankingpp32"
+	aqbanking_ldflags="-L\${libdir}"
+        aqbanking_libs="${aqbanking_internal_libs}"
+        aqbanking_libspp="-laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
-        aqbanking_plugins="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_data="`eval echo $prefix/share`/aqbanking"
+        aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
@@ -246,11 +248,12 @@ AC_SUBST(all_libraries)
 AS_SCRUB_INCLUDE(aqbanking_includes)
 AC_SUBST(aqbanking_includes)
 AC_SUBST(aqbanking_internal_libs)
+AC_SUBST(aqbanking_ldflags)
 AC_SUBST(aqbanking_libs)
 AC_SUBST(aqbanking_libspp)
-AC_SUBST(aqbanking_plugins)
-AC_SUBST(aqbanking_data)
-AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_data}", [data dir])
+AC_SUBST(aqbanking_plugindir)
+AC_SUBST(aqbanking_pkgdatadir)
+AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
 
 
 # Check for additional aclocal flags
@@ -453,6 +456,7 @@ AC_CONFIG_FILES([
   Makefile
   aqbanking-config.in
   aqbanking.spec
+  aqbanking.iss
   version.h
 ])
 AC_OUTPUT

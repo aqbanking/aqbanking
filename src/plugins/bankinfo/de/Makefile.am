@@ -1,10 +1,10 @@
 INCLUDES = $(all_includes)
 EXTRA_DIST=de.c de_p.h
 
-bankinfoplugindir=@aqbanking_plugins@/bankinfo
-bankinfoplugin_dedatadir=@aqbanking_data@/plugins/bankinfo/de
+bankinfoplugindir=@aqbanking_plugindir@/bankinfo
+bankinfoplugin_dedatadir=@aqbanking_pkgdatadir@/plugins/bankinfo/de
 
-DEFS=@DEFS@ -DAB_BANKINFO_DE_DATAFILE=\"@aqbanking_data@/plugins/bankinfo/de/bankinfo.csv\"
+DEFS=@DEFS@ -DAB_BANKINFO_DE_DATAFILE=\"@aqbanking_pkgdatadir@/plugins/bankinfo/de/bankinfo.csv\"
 
 bankinfoplugin_LTLIBRARIES=de.la
 bankinfoplugin_DATA=de.xml
