@@ -4,7 +4,9 @@ INCLUDES=-I${top_srcdir} -Itypes -Ijobs @all_includes@
 
 lib_LTLIBRARIES=libaqbanking.la
 
-DEFS=\
+# FIXME: Why don't all these go into config.h? It is necessary to
+# include @DEFS@ here because -DHAVE_CONFIG_H is missing otherwise.
+DEFS= @DEFS@ \
  -DAQBANKING_PLUGINS=\"@aqbanking_plugins@\" \
  -DDATADIR=\"$(aqbanking_data)\"
 
