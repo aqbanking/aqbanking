@@ -1272,6 +1272,7 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
 /** @defgroup G_AB_BANKING_HL Application Level API
  *
  * @short This group contains the High Level API function group.
+ *
  * <p>
  * A program should first call @ref AB_Banking_Init to allow AqBanking
  * to load its configuration files and initialize itself.
@@ -1331,17 +1332,22 @@ int AB_Banking_RequestTransactions(AB_BANKING *ab,
  * <p>
  * This functions gathers all available information from the results of
  * all currently finished jobs. Jobs which have been evaluated by this
- * function are automaticall removed from the queue of finished jobs.
+ * function are automatically removed from the queue of finished jobs.
  * </p>
  * <p>
  * Please note that this function even returns information extracted from
  * requests which have been issued by other applications (those finished
- * are @b not removed from the finished queue to allow the requesting
+ * jobs are @b not removed from the finished queue to allow the requesting
  * application to later gather its own responses).
  * </p>
+ * <p>
  * All information is added to the given import context. Thus you only need
  * a single function in your application to import data read from a file
  * (via the Import/Export API) and from online requests.
+ * </p>
+ * @return 0 if ok, !=0 on error (see @ref AB_ERROR)
+ * @param ab AqBanking main object
+ * @param ctx import/export context to which all information is to be added
  */
 int AB_Banking_GatherResponses(AB_BANKING *ab,
                                AB_IMEXPORTER_CONTEXT *ctx);
@@ -1351,7 +1357,7 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
 
 /** @name Mapping Application Accounts to Online Accounts
  *
- * Functions in this group provide an optional service to map accounts.
+ * Functions in this group provide an optional service for account mapping.
  * Most applications assign unique ids to their own accounts. This unique
  * id can be mapped to an account of AqBanking.
  */

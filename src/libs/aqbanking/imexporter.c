@@ -22,6 +22,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_IMEXPORTER)
@@ -63,10 +67,44 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          GWEN_BUFFEREDIO *bio,
                          GWEN_DB_NODE *params){
   assert(ie);
+  assert(ctx);
+  assert(bio);
+  assert(params);
+
   if (ie->importFn)
     return ie->importFn(ie, ctx, bio, params);
   else
     return AB_ERROR_NOT_SUPPORTED;
+}
+
+
+
+int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             const char *fname,
+                             GWEN_DB_NODE *dbProfile){
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+  int rv;
+
+  assert(ie);
+  assert(ctx);
+  assert(fname);
+  assert(dbProfile);
+
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    /* error */
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s", fname, strerror(errno));
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=AB_ImExporter_Import(ie, ctx, bio, dbProfile);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+
+  return rv;
 }
 
 
@@ -100,6 +138,36 @@ void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll) {
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetFirstAccountInfo(AB_IMEXPORTER_CONTEXT *iec){
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+  assert(iec);
+  ai=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  if (ai) {
+    iec->nextAccountInfo=AB_ImExporterAccountInfo_List_Next(ai);
+    return ai;
+  }
+  iec->nextAccountInfo=0;
+  return 0;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetNextAccountInfo(AB_IMEXPORTER_CONTEXT *iec){
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+  assert(iec);
+  ai=iec->nextAccountInfo;
+  if (ai) {
+    iec->nextAccountInfo=AB_ImExporterAccountInfo_List_Next(ai);
+    return ai;
+  }
+  iec->nextAccountInfo=0;
+  return 0;
+}
+
 
 
 
@@ -111,7 +179,8 @@ AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new() {
 
   GWEN_NEW_OBJECT(AB_IMEXPORTER_ACCOUNTINFO, iea);
   GWEN_LIST_INIT(AB_IMEXPORTER_ACCOUNTINFO, iea);
-
+  iea->transactions=AB_Transaction_List_new();
+  iea->accStatusList=AB_AccountStatus_List_new();
   return iea;
 }
 
@@ -125,6 +194,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->accountName);
     free(iea->owner);
     AB_Transaction_List_free(iea->transactions);
+    AB_AccountStatus_List_free(iea->accStatusList);
     GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
     GWEN_FREE_OBJECT(iea);
   }
@@ -153,7 +223,6 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   t=AB_Transaction_List_First(iea->transactions);
   if (t) {
     iea->nextTransaction=AB_Transaction_List_Next(t);
-    AB_Transaction_List_Del(t);
     return t;
   }
   iea->nextTransaction=0;
@@ -302,7 +371,6 @@ AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
   t=AB_AccountStatus_List_First(iea->accStatusList);
   if (t) {
     iea->nextAccountStatus=AB_AccountStatus_List_Next(t);
-    AB_AccountStatus_List_Del(t);
     return t;
   }
   iea->nextAccountStatus=0;
@@ -365,7 +433,6 @@ AB_ImExporterContext_GetFirstAccount(AB_IMEXPORTER_CONTEXT *iec){
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   if (iea) {
     iec->nextAccountInfo=AB_ImExporterAccountInfo_List_Next(iea);
-    AB_ImExporterAccountInfo_List_Del(iea);
     return iea;
   }
   iec->nextAccountInfo=0;
@@ -408,8 +475,8 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 
   if (!bankCode)
     bankCode="";
-  if (!accountNumber);
-  accountNumber="";
+  if (!accountNumber)
+    accountNumber="";
 
   assert(iec);
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);

@@ -69,7 +69,7 @@ AB_JOB *AB_JobGetBalance_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                        "result/accountstatus");
   if (dbT) {
-    aj->accountStatus=AB_AccountStatus_fromDb(db);
+    aj->accountStatus=AB_AccountStatus_fromDb(dbT);
   }
   return j;
 }

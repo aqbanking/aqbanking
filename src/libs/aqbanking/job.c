@@ -311,7 +311,6 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   free(j->createdBy);
   j->createdBy=strdup(p);
 
-  j->dbData=GWEN_DB_Group_new("data");
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
   if (dbT)
     GWEN_DB_AddGroupChildren(j->dbData, dbT);

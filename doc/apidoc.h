@@ -17,7 +17,7 @@ import/export financial data (such as SWIFT, DTAUS).
 </p>
 
 <p>
-Though it is written in C but a C++ interface to the main functions is also
+It is written in C but a C++ interface to the main functions is also
 provided (see @ref G_AB_C_INTERFACE and @ref G_AB_CPP_INTERFACE).
 </p>
 

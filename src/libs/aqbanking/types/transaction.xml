@@ -1,0 +1,112 @@
+
+<typedefs>
+  <type id="AB_VALUE" >
+    <functions>
+      <function type="todb" name="AB_Value_toDb" />
+      <function type="fromdb" name="AB_Value_fromDb" />
+      <function type="dup" name="AB_Value_dup" />
+      <function type="free" name="AB_Value_free" />
+    </functions>
+  </type>
+
+  <type id="GWEN_STRINGLIST" >
+    <functions>
+      <function type="dup" name="GWEN_StringList_dup" />
+      <function type="free" name="GWEN_StringList_free" />
+    </functions>
+  </type>
+
+  <type id="GWEN_TIME" >
+    <functions>
+      <function type="todb" name="GWEN_Time_toDb" />
+      <function type="fromdb" name="GWEN_Time_fromDb" />
+      <function type="dup" name="GWEN_Time_dup" />
+      <function type="free" name="GWEN_Time_free" />
+    </functions>
+  </type>
+  
+  <type id="GWEN_TYPE_UINT32" dbtype="int" />
+  
+</typedefs>
+
+
+
+
+<types>
+
+  <type id="AB_TRANSACTION" 
+        prefix="AB_Transaction" 
+        class="Transaction"
+        access="public"
+        filename="transaction"
+        inherit="public" 
+        list="lib"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >gwenhywfar/gwentime.h</header>
+      <header type="sys" >gwenhywfar/stringlist.h</header>
+      <header type="sys" >aqbanking/value.h</header>
+    </headers>
+    
+    <group name="Local Account Info">
+      <descr>
+        This group contains information about the local account.
+      </descr>
+      <elem name="localCountryCode" type="int" default="280" />
+      <elem name="localBankCode" type="char" ptr="1">
+        <descr>
+         This is the code of the local bank (i.e. <b>your</b> bank).
+        </descr>
+      </elem>
+      <elem name="localAccountNumber" type="char" ptr="1" />
+      <elem name="localSuffix" type="char" ptr="1" />
+      <elem name="localName" type="char" ptr="1" />
+    </group>
+    
+    <group name="Remote Account Info">
+      <descr>
+        This group contains information about the remote account.
+      </descr>
+      <elem name="remoteCountryCode" type="int" default="280" />
+      <elem name="remoteBankCode" type="char" ptr="1" />
+      <elem name="remoteAccountNumber" type="char" ptr="1" />
+      <elem name="remoteSuffix" type="char" ptr="1" />
+      <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
+    </group>
+    
+    <elem name="uniqueId" type="char" ptr="1" />
+
+    <group name="Dates">
+      <elem name="valutaDate" type="GWEN_TIME" ptr="1" />
+      <elem name="date" type="GWEN_TIME" ptr="1" />
+    </group>
+    
+    <group name="Value">
+      <elem name="value" type="AB_VALUE" ptr="1" />
+    </group>
+    
+    <group name="Info Which Is Not Supported by All Backends">
+      <descr>
+        <p>
+         This group contains information which differ between backends.
+        </p>
+        <p>
+         Some of this information might not even be <b>supported</b> by every backends.
+        </p>
+      </descr>
+      <elem name="textKey" type="int" />
+      <elem name="transactionKey" type="char" ptr="1" />
+      <elem name="customerReference" type="char" ptr="1" />
+      <elem name="bankReference" type="char" ptr="1" />
+      <elem name="transactionCode" type="int" />
+      <elem name="transactionText" type="char" ptr="1" />
+      <elem name="primanota" type="char" ptr="1" />
+      
+      <elem name="purpose" type="GWEN_STRINGLIST" ptr="1" />
+    </group>
+  </type>
+  
+  
+  
+</types>

@@ -2,6 +2,8 @@ INCLUDES=-I${top_srcdir} @all_includes@
 
 noinst_LTLIBRARIES=libtypes.la
 
+typefiles=transaction.xml
+
 noinst_HEADERS=\
   accstatus_p.h \
   balance_p.h \
@@ -22,4 +24,8 @@ libtypes_la_SOURCES=\
   balance.c \
   transaction.c \
   value.c
+
+
+types: $(typefiles)
+	typemaker -d AQBANKING_API $(typefiles)
 

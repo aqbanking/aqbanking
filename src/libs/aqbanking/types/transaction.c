@@ -1,760 +1,813 @@
-/***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Mon Apr 05 2004
-    copyright   : (C) 2004 by Martin Preuss
-    email       : martin@libchipcard.de
-
- ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
- ***************************************************************************/
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-
 #include "transaction_p.h"
-#include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/buffer.h>
-#include <gwenhywfar/text.h>
-
-#include <stdlib.h>
+#include <gwenhywfar/db.h>
 #include <assert.h>
-#include <string.h>
+#include <stdlib.h>
 
 
+GWEN_INHERIT_FUNCTIONS(AB_TRANSACTION)
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
 GWEN_LIST2_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
 
 
-AB_TRANSACTION *AB_Transaction_new(){
-  AB_TRANSACTION *t;
+AB_TRANSACTION *AB_Transaction_new() {
+  AB_TRANSACTION *st;
 
-  GWEN_NEW_OBJECT(AB_TRANSACTION, t);
-  GWEN_LIST_INIT(AB_TRANSACTION, t);
-  t->localCountryCode=280;
-  t->remoteCountryCode=280;
-
-  t->remoteOwnerName=GWEN_StringList_new();
-  t->purpose=GWEN_StringList_new();
-
-  return t;
+  GWEN_NEW_OBJECT(AB_TRANSACTION, st)
+  st->_usage=1;
+  GWEN_INHERIT_INIT(AB_TRANSACTION, st)
+  GWEN_LIST_INIT(AB_TRANSACTION, st)
+  st->remoteName=GWEN_StringList_new();
+  st->purpose=GWEN_StringList_new();
+  return st;
 }
 
 
-
-AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *t){
-  AB_TRANSACTION *nt;
-
-  assert(t);
-  nt=AB_Transaction_new();
-  assert(nt);
-
-  nt->localCountryCode=t->localCountryCode;
-  if (t->localBankCode)
-    nt->localBankCode=strdup(t->localBankCode);
-  if (t->localAccountId)
-    nt->localAccountId=strdup(t->localAccountId);
-  if (t->localSuffix)
-    nt->localSuffix=strdup(t->localSuffix);
-  if (t->localOwnerName)
-    nt->localOwnerName=strdup(t->localOwnerName);
-
-  nt->remoteCountryCode=t->remoteCountryCode;
-  if (t->remoteBankCode)
-    nt->remoteBankCode=strdup(t->remoteBankCode);
-  if (t->remoteAccountId)
-    nt->remoteAccountId=strdup(t->remoteAccountId);
-  if (t->remoteSuffix)
-    nt->remoteSuffix=strdup(t->remoteSuffix);
-  nt->remoteOwnerName=GWEN_StringList_dup(t->remoteOwnerName);
-
-  if (t->valutaDate)
-    nt->valutaDate=GWEN_Time_dup(t->valutaDate);
-  if (t->date)
-    nt->date=GWEN_Time_dup(t->date);
-
-  if (t->value)
-    nt->value=AB_Value_dup(t->value);
-
-  nt->textKey=t->textKey;
-  if (t->transactionKey)
-    nt->transactionKey=strdup(t->transactionKey);
-  if (t->customerReference)
-    nt->customerReference=strdup(t->customerReference);
-  if (t->bankReference)
-    nt->bankReference=strdup(t->bankReference);
-  nt->transactionCode=t->transactionCode;
-  if (t->transactionText)
-    nt->transactionText=strdup(t->transactionText);
-  if (t->primanota)
-    nt->primanota=strdup(t->primanota);
-
-  nt->purpose=GWEN_StringList_dup(t->purpose);
-
-  return nt;
-}
-
-
-
-
-void AB_Transaction_free(AB_TRANSACTION *t){
-  if (t) {
-    GWEN_LIST_FINI(AB_TRANSACTION, t);
-    free(t->localBankCode);
-    free(t->localAccountId);
-    free(t->localSuffix);
-    free(t->localOwnerName);
-    free(t->remoteBankCode);
-    free(t->remoteAccountId);
-    free(t->remoteSuffix);
-    GWEN_StringList_free(t->remoteOwnerName);
-    GWEN_Time_free(t->valutaDate);
-    GWEN_Time_free(t->date);
-    AB_Value_free(t->value);
-    free(t->transactionKey);
-    free(t->customerReference);
-    free(t->bankReference);
-    free(t->transactionText);
-    free(t->primanota);
-    GWEN_StringList_free(t->purpose);
-
-    GWEN_FREE_OBJECT(t);
-  }
-}
-
-
-
-int AB_Transaction_GetLocalCountryCode(const AB_TRANSACTION *t){
-  assert(t);
-  return t->localCountryCode;
-}
-
-
-
-void AB_Transaction_SetLocalCountryCode(AB_TRANSACTION *t, int i){
-  assert(t);
-  t->localCountryCode=i;
-}
-
-
-
-const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *t){
-  assert(t);
-  return t->localBankCode;
-}
-
-
-
-void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->localBankCode);
-  if (s)
-    t->localBankCode=strdup(s);
-  else
-    t->localBankCode=0;
-}
-
-
-
-const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *t){
-  assert(t);
-  return t->localAccountId;
-}
-
-
-
-void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->localAccountId);
-  if (s)
-    t->localAccountId=strdup(s);
-  else
-    t->localAccountId=0;
-}
-
-
-
-const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *t){
-  assert(t);
-  return t->localSuffix;
-}
-
-
-
-void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->localSuffix);
-  if (s)
-    t->localSuffix=strdup(s);
-  else
-    t->localSuffix=0;
-}
-
-
-
-const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *t){
-  assert(t);
-  return t->localOwnerName;
-}
-
-
-
-void AB_Transaction_SetLocalName(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->localOwnerName);
-  if (s)
-    t->localOwnerName=strdup(s);
-  else
-    t->localOwnerName=0;
-}
-
-
-
-int AB_Transaction_GetRemoteCountryCode(const AB_TRANSACTION *t){
-  assert(t);
-  return t->remoteCountryCode;
-}
-
-
-
-void AB_Transaction_SetRemoteCountryCode(AB_TRANSACTION *t, int i){
-  assert(t);
-  t->remoteCountryCode=i;
-}
-
-
-
-const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *t){
-  assert(t);
-  return t->remoteBankCode;
-}
-
-
-
-void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->remoteBankCode);
-  if (s)
-    t->remoteBankCode=strdup(s);
-  else
-    t->remoteBankCode=0;
-}
-
-
-
-const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *t){
-  assert(t);
-  return t->remoteAccountId;
-}
-
-
-
-void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->remoteAccountId);
-  if (s)
-    t->remoteAccountId=strdup(s);
-  else
-    t->remoteAccountId=0;
-}
-
-
-
-const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *t){
-  assert(t);
-  return t->remoteSuffix;
-}
-
-
-
-void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->remoteSuffix);
-  if (s)
-    t->remoteSuffix=strdup(s);
-  else
-    t->remoteSuffix=0;
-}
-
-
-
-const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *t){
-  assert(t);
-  return t->remoteOwnerName;
-}
-
-
-
-void AB_Transaction_AddRemoteName(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  GWEN_StringList_AppendString(t->remoteOwnerName, s, 0, 0);
-}
-
-
-
-void AB_Transaction_ClearRemoteName(AB_TRANSACTION *t){
-  assert(t);
-  GWEN_StringList_Clear(t->remoteOwnerName);
-}
-
-
-
-const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *t){
-  assert(t);
-  return t->valutaDate;
-}
-
-
-
-void AB_Transaction_SetValutaDate(AB_TRANSACTION *t, const GWEN_TIME *d){
-  assert(t);
-  GWEN_Time_free(t->valutaDate);
-  if (d)
-    t->valutaDate=GWEN_Time_dup(d);
-  else
-    t->valutaDate=0;
-}
-
-
-
-const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *t){
-  assert(t);
-  return t->date;
-}
-
-
-
-void AB_Transaction_SetDate(AB_TRANSACTION *t, const GWEN_TIME *d){
-  assert(t);
-  GWEN_Time_free(t->date);
-  if (d)
-    t->date=GWEN_Time_dup(d);
-  else
-    t->date=0;
-}
-
-
-
-const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *t){
-  assert(t);
-  return t->value;
-}
-
-
-
-void AB_Transaction_SetValue(AB_TRANSACTION *t, const AB_VALUE *v){
-  assert(t);
-  AB_Value_free(t->value);
-  if (v)
-    t->value=AB_Value_dup(v);
-  else
-    t->value=0;
-}
-
-
-
-const char *AB_Transaction_GetTransactionKey(const AB_TRANSACTION *t){
-  assert(t);
-  return t->transactionKey;
-}
-
-
-
-void AB_Transaction_SetTransactionKey(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->transactionKey);
-  if (s)
-    t->transactionKey=strdup(s);
-  else
-    t->transactionKey=0;
-}
-
-
-
-const char *AB_Transaction_GetCustomerReference(const AB_TRANSACTION *t){
-  assert(t);
-  return t->customerReference;
-}
-
-
-
-void AB_Transaction_SetCustomerReference(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->customerReference);
-  if (s)
-    t->customerReference=strdup(s);
-  else
-    t->customerReference=0;
-}
-
-
-
-const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *t){
-  assert(t);
-  return t->bankReference;
-}
-
-
-
-void AB_Transaction_SetBankReference(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->bankReference);
-  if (s)
-    t->bankReference=strdup(s);
-  else
-    t->bankReference=0;
-}
-
-
-
-int AB_Transaction_GetTransactionCode(const AB_TRANSACTION *t){
-  assert(t);
-  return t->transactionCode;
-}
-
-
-
-void AB_Transaction_SetTransactionCode(AB_TRANSACTION *t, int c){
-}
-
-
-
-const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *t){
-  assert(t);
-  return t->transactionText;
-}
-
-
-
-void AB_Transaction_SetTransactionText(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->transactionText);
-  if (s)
-    t->transactionText=strdup(s);
-  else
-    t->transactionText=0;
-}
-
-
-
-const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *t){
-  assert(t);
-  return t->primanota;
-}
-
-
-
-void AB_Transaction_SetPrimanota(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  free(t->primanota);
-  if (s)
-    t->primanota=strdup(s);
-  else
-    t->primanota=0;
-}
-
-
-
-const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *t){
-  assert(t);
-  return t->purpose;
-}
-
-
-
-void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s){
-  assert(t);
-  assert(s);
-  GWEN_StringList_AppendString(t->purpose, s, 0, 0);
-}
-
-
-
-void AB_Transaction_ClearPurpose(AB_TRANSACTION *t){
-  assert(t);
-  GWEN_StringList_Clear(t->purpose);
-}
-
-
-
-int AB_Transaction_GetTextKey(const AB_TRANSACTION *t){
-  assert(t);
-  return t->textKey;
-}
-
-
-
-void AB_Transaction_SetTextKey(AB_TRANSACTION *t, int i){
-  assert(t);
-  t->textKey=i;
-}
-
-
-
-int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
-  GWEN_STRINGLISTENTRY *se;
-  const char *p;
-
-  assert(t);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "localCountryCode",
-                      t->localCountryCode);
-  p=t->localBankCode;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localBankCode", p);
-  p=t->localAccountId;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localAccountNumber", p);
-
-  p=t->localSuffix;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localSuffix", p);
-  p=t->localOwnerName;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localName", p);
-
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "remoteCountryCode",
-                      t->remoteCountryCode);
-  p=t->remoteBankCode;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteBankCode", p);
-  p=t->remoteAccountId;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteAccountNumber", p);
-  p=t->remoteSuffix;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteSuffix", p);
-
-  se=GWEN_StringList_FirstEntry(t->remoteOwnerName);
-  GWEN_DB_DeleteVar(db, "remoteName");
-  while(se) {
-    p=GWEN_StringListEntry_Data(se);
-    if (p)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
-                           "remoteName", p);
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
-
-  if (t->valutaDate) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "valutaDate");
-    assert(dbT);
-    if (GWEN_Time_toDb(t->valutaDate, dbT)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not store valuata date");
-      return -1;
-    }
-  }
-  if (t->date) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "date");
-    assert(dbT);
-    if (GWEN_Time_toDb(t->valutaDate, dbT)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not store date");
-      return -1;
+void AB_Transaction_free(AB_TRANSACTION *st) {
+  if (st) {
+    assert(st->_usage);
+    if (--(st->_usage)==0) {
+  GWEN_INHERIT_FINI(AB_TRANSACTION, st)
+  if (st->localBankCode)
+    free(st->localBankCode);
+  if (st->localAccountNumber)
+    free(st->localAccountNumber);
+  if (st->localSuffix)
+    free(st->localSuffix);
+  if (st->localName)
+    free(st->localName);
+  if (st->remoteBankCode)
+    free(st->remoteBankCode);
+  if (st->remoteAccountNumber)
+    free(st->remoteAccountNumber);
+  if (st->remoteSuffix)
+    free(st->remoteSuffix);
+  if (st->remoteName)
+    GWEN_StringList_free(st->remoteName);
+  if (st->uniqueId)
+    free(st->uniqueId);
+  if (st->valutaDate)
+    GWEN_Time_free(st->valutaDate);
+  if (st->date)
+    GWEN_Time_free(st->date);
+  if (st->value)
+    AB_Value_free(st->value);
+  if (st->transactionKey)
+    free(st->transactionKey);
+  if (st->customerReference)
+    free(st->customerReference);
+  if (st->bankReference)
+    free(st->bankReference);
+  if (st->transactionText)
+    free(st->transactionText);
+  if (st->primanota)
+    free(st->primanota);
+  if (st->purpose)
+    GWEN_StringList_free(st->purpose);
+  GWEN_LIST_FINI(AB_TRANSACTION, st)
+  GWEN_FREE_OBJECT(st);
     }
   }
 
-  if (t->value) {
-    GWEN_DB_NODE *dbT;
+}
 
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
-    assert(dbT);
-    if (AB_Value_toDb(t->value, dbT)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error storing value");
+
+AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
+  AB_TRANSACTION *st;
+
+  assert(d);
+  st=AB_Transaction_new();
+  st->localCountryCode=d->localCountryCode;
+  if (d->localBankCode)
+    st->localBankCode=strdup(d->localBankCode);
+  if (d->localAccountNumber)
+    st->localAccountNumber=strdup(d->localAccountNumber);
+  if (d->localSuffix)
+    st->localSuffix=strdup(d->localSuffix);
+  if (d->localName)
+    st->localName=strdup(d->localName);
+  st->remoteCountryCode=d->remoteCountryCode;
+  if (d->remoteBankCode)
+    st->remoteBankCode=strdup(d->remoteBankCode);
+  if (d->remoteAccountNumber)
+    st->remoteAccountNumber=strdup(d->remoteAccountNumber);
+  if (d->remoteSuffix)
+    st->remoteSuffix=strdup(d->remoteSuffix);
+  if (d->remoteName)
+    st->remoteName=GWEN_StringList_dup(d->remoteName);
+  if (d->uniqueId)
+    st->uniqueId=strdup(d->uniqueId);
+  if (d->valutaDate)
+    st->valutaDate=GWEN_Time_dup(d->valutaDate);
+  if (d->date)
+    st->date=GWEN_Time_dup(d->date);
+  if (d->value)
+    st->value=AB_Value_dup(d->value);
+  st->textKey=d->textKey;
+  if (d->transactionKey)
+    st->transactionKey=strdup(d->transactionKey);
+  if (d->customerReference)
+    st->customerReference=strdup(d->customerReference);
+  if (d->bankReference)
+    st->bankReference=strdup(d->bankReference);
+  st->transactionCode=d->transactionCode;
+  if (d->transactionText)
+    st->transactionText=strdup(d->transactionText);
+  if (d->primanota)
+    st->primanota=strdup(d->primanota);
+  if (d->purpose)
+    st->purpose=GWEN_StringList_dup(d->purpose);
+  return st;
+}
+
+
+int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
+  assert(st);
+  assert(db);
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localCountryCode", st->localCountryCode))
+    return -1;
+  if (st->localBankCode)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBankCode", st->localBankCode))
       return -1;
+  if (st->localAccountNumber)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localAccountNumber", st->localAccountNumber))
+      return -1;
+  if (st->localSuffix)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localSuffix", st->localSuffix))
+      return -1;
+  if (st->localName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localName", st->localName))
+      return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountryCode", st->remoteCountryCode))
+    return -1;
+  if (st->remoteBankCode)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBankCode", st->remoteBankCode))
+      return -1;
+  if (st->remoteAccountNumber)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAccountNumber", st->remoteAccountNumber))
+      return -1;
+  if (st->remoteSuffix)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteSuffix", st->remoteSuffix))
+      return -1;
+  if (st->remoteName)
+    {
+      GWEN_STRINGLISTENTRY *se;
+
+      GWEN_DB_DeleteVar(db, "remoteName");
+      se=GWEN_StringList_FirstEntry(st->remoteName);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "remoteName", s))
+          return -1;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
     }
-  }
+  if (st->uniqueId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
+      return -1;
+  if (st->valutaDate)
+    if (GWEN_Time_toDb(st->valutaDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "valutaDate")))
+      return -1;
+  if (st->date)
+    if (GWEN_Time_toDb(st->date, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "date")))
+      return -1;
+  if (st->value)
+    if (AB_Value_toDb(st->value, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "value")))
+      return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "textKey", st->textKey))
+    return -1;
+  if (st->transactionKey)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "transactionKey", st->transactionKey))
+      return -1;
+  if (st->customerReference)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "customerReference", st->customerReference))
+      return -1;
+  if (st->bankReference)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankReference", st->bankReference))
+      return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "transactionCode", st->transactionCode))
+    return -1;
+  if (st->transactionText)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "transactionText", st->transactionText))
+      return -1;
+  if (st->primanota)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "primanota", st->primanota))
+      return -1;
+  if (st->purpose)
+    {
+      GWEN_STRINGLISTENTRY *se;
 
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "textkey", t->textKey);
+      GWEN_DB_DeleteVar(db, "purpose");
+      se=GWEN_StringList_FirstEntry(st->purpose);
+      while(se) {
+        const char *s;
 
-  p=t->transactionKey;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "transactionKey", p);
-  p=t->customerReference;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "customerReference", p);
-  p=t->bankReference;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "bankReference", p);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "transactionCode",
-                      t->transactionCode);
-
-  p=t->transactionText;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "transactionText", p);
-  p=t->primanota;
-  if (p)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "primanota", p);
-
-  se=GWEN_StringList_FirstEntry(t->purpose);
-  GWEN_DB_DeleteVar(db, "purpose");
-  while(se) {
-    p=GWEN_StringListEntry_Data(se);
-    if (p)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
-                           "purpose", p);
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
-
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "purpose", s))
+          return -1;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
   return 0;
 }
-
 
 
 AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
-  AB_TRANSACTION *t;
-  const char *p;
-  GWEN_DB_NODE *dbT;
-  int i;
+AB_TRANSACTION *st;
 
-  t=AB_Transaction_new();
-  assert(t);
+  assert(db);
+  st=AB_Transaction_new();
+  AB_Transaction_SetLocalCountryCode(st, GWEN_DB_GetIntValue(db, "localCountryCode", 0, 280));
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  AB_Transaction_SetLocalCountryCode(t,
-                                     GWEN_DB_GetIntValue(db,
-                                                         "localCountryCode",
-                                                         0, 0));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localBankCode");
+    if (dbT)  AB_Transaction_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  AB_Transaction_SetLocalBankCode(t,
-                                  GWEN_DB_GetCharValue(db,
-                                                       "localBankCode",
-                                                       0, 0));
-  AB_Transaction_SetLocalAccountNumber(t,
-                                       GWEN_DB_GetCharValue(db,
-                                                            "localAccountNumber",
-                                                            0, 0));
-  AB_Transaction_SetLocalSuffix(t,
-                                GWEN_DB_GetCharValue(db,
-                                                     "localSuffix", 0, 0));
-  AB_Transaction_SetLocalName(t,
-                              GWEN_DB_GetCharValue(db,
-                                                   "localName",
-                                                   0, 0));
-  AB_Transaction_SetRemoteCountryCode(t,
-                                      GWEN_DB_GetIntValue(db,
-                                                          "remoteCountryCode",
-                                                          0, 0));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localAccountNumber");
+    if (dbT)  AB_Transaction_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  AB_Transaction_SetRemoteBankCode(t,
-                                   GWEN_DB_GetCharValue(db,
-                                                        "remoteBankCode",
-                                                        0, 0));
-  AB_Transaction_SetRemoteAccountNumber(t,
-                                    GWEN_DB_GetCharValue(db,
-                                                         "remoteAccountNumber",
-                                                         0, 0));
-  AB_Transaction_SetRemoteSuffix(t,
-                                 GWEN_DB_GetCharValue(db,
-                                                      "remoteSuffix", 0, 0));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localSuffix");
+    if (dbT)  AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  for (i=0; ; i++) {
-    p=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
-    if (!p)
-      break;
-    AB_Transaction_AddRemoteName(t, p);
-  } /* for */
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localName");
+    if (dbT)  AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
+  }
+  AB_Transaction_SetRemoteCountryCode(st, GWEN_DB_GetIntValue(db, "remoteCountryCode", 0, 280));
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
-  if (dbT)
-    AB_Transaction_SetValutaDate(t, GWEN_Time_fromDb(dbT));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteBankCode");
+    if (dbT)  AB_Transaction_SetRemoteBankCode(st, GWEN_DB_GetCharValue(db, "remoteBankCode", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-  if (dbT)
-    AB_Transaction_SetDate(t, GWEN_Time_fromDb(dbT));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteAccountNumber");
+    if (dbT)  AB_Transaction_SetRemoteAccountNumber(st, GWEN_DB_GetCharValue(db, "remoteAccountNumber", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-  if (dbT)
-    AB_Transaction_SetValue(t,
-                            AB_Value_fromDb(dbT));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteSuffix");
+    if (dbT)  AB_Transaction_SetRemoteSuffix(st, GWEN_DB_GetCharValue(db, "remoteSuffix", 0, 0));
+  }
+  if (1) {
+    int i;
 
-  AB_Transaction_SetTransactionKey(t,
-                                   GWEN_DB_GetCharValue(db,
-                                                        "transactionKey",
-                                                        0, 0));
-  AB_Transaction_SetCustomerReference(t,
-                                      GWEN_DB_GetCharValue(db,
-                                                           "customerReference",
-                                                           0, 0));
-  AB_Transaction_SetBankReference(t,
-                                  GWEN_DB_GetCharValue(db,
-                                                       "bankReference",
-                                                       0, 0));
+    for (i=0; ; i++) {
+      const char *s;
 
-  AB_Transaction_SetTransactionCode(t,
-                                    GWEN_DB_GetIntValue(db,
-                                                        "transactionCode",
-                                                        0, 0));
+      s=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
+      if (!s)
+        break;
+      AB_Transaction_AddRemoteName(st, s, 0);
+    } /* for */
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "uniqueId");
+    if (dbT)  AB_Transaction_SetUniqueId(st, GWEN_DB_GetCharValue(db, "uniqueId", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  AB_Transaction_SetTransactionText(t,
-                                    GWEN_DB_GetCharValue(db,
-                                                         "transactionText",
-                                                         0, 0));
-  AB_Transaction_SetPrimanota(t,
-                              GWEN_DB_GetCharValue(db, "primanota", 0, 0));
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
+    if (dbT)  AB_Transaction_SetValutaDate(st, GWEN_Time_fromDb(dbT));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  for (i=0; ; i++) {
-    p=GWEN_DB_GetCharValue(db, "purpose", i, 0);
-    if (!p)
-      break;
-    AB_Transaction_AddPurpose(t, p);
-  } /* for */
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+    if (dbT)  AB_Transaction_SetDate(st, GWEN_Time_fromDb(dbT));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  t->textKey=GWEN_DB_GetIntValue(db, "textKey", 0, 0);
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+    if (dbT)  AB_Transaction_SetValue(st, AB_Value_fromDb(dbT));
+  }
+  AB_Transaction_SetTextKey(st, GWEN_DB_GetIntValue(db, "textKey", 0, 0));
+  if (1) {
+    GWEN_DB_NODE *dbT;
 
-  return t;
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "transactionKey");
+    if (dbT)  AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "customerReference");
+    if (dbT)  AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankReference");
+    if (dbT)  AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
+  }
+  AB_Transaction_SetTransactionCode(st, GWEN_DB_GetIntValue(db, "transactionCode", 0, 0));
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "transactionText");
+    if (dbT)  AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "primanota");
+    if (dbT)  AB_Transaction_SetPrimanota(st, GWEN_DB_GetCharValue(db, "primanota", 0, 0));
+  }
+  if (1) {
+    int i;
+
+    for (i=0; ; i++) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(db, "purpose", i, 0);
+      if (!s)
+        break;
+      AB_Transaction_AddPurpose(st, s, 0);
+    } /* for */
+  }
+  st->_modified=0;
+  return st;
 }
 
 
-
-
-AB_TRANSACTION *AB_Transaction__freeAll_cb(AB_TRANSACTION *t, void *userData){
-  AB_Transaction_free(t);
-  return 0;
+int AB_Transaction_GetLocalCountryCode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localCountryCode;
 }
 
 
+void AB_Transaction_SetLocalCountryCode(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->localCountryCode=d;
+  st->_modified=1;
+}
 
-void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *tl){
-  if (tl) {
-    AB_Transaction_List2_ForEach(tl, AB_Transaction__freeAll_cb, 0);
-    AB_Transaction_List2_free(tl);
+
+const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localBankCode;
+}
+
+
+void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localBankCode)
+    free(st->localBankCode);
+  if (d)
+    st->localBankCode=strdup(d);
+  else
+    st->localBankCode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localAccountNumber;
+}
+
+
+void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localAccountNumber)
+    free(st->localAccountNumber);
+  if (d)
+    st->localAccountNumber=strdup(d);
+  else
+    st->localAccountNumber=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localSuffix;
+}
+
+
+void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localSuffix)
+    free(st->localSuffix);
+  if (d)
+    st->localSuffix=strdup(d);
+  else
+    st->localSuffix=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localName;
+}
+
+
+void AB_Transaction_SetLocalName(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localName)
+    free(st->localName);
+  if (d)
+    st->localName=strdup(d);
+  else
+    st->localName=0;
+  st->_modified=1;
+}
+
+
+int AB_Transaction_GetRemoteCountryCode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteCountryCode;
+}
+
+
+void AB_Transaction_SetRemoteCountryCode(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->remoteCountryCode=d;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteBankCode;
+}
+
+
+void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteBankCode)
+    free(st->remoteBankCode);
+  if (d)
+    st->remoteBankCode=strdup(d);
+  else
+    st->remoteBankCode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteAccountNumber;
+}
+
+
+void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteAccountNumber)
+    free(st->remoteAccountNumber);
+  if (d)
+    st->remoteAccountNumber=strdup(d);
+  else
+    st->remoteAccountNumber=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteSuffix;
+}
+
+
+void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteSuffix)
+    free(st->remoteSuffix);
+  if (d)
+    st->remoteSuffix=strdup(d);
+  else
+    st->remoteSuffix=0;
+  st->_modified=1;
+}
+
+
+const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteName;
+}
+
+
+void AB_Transaction_SetRemoteName(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) {
+  assert(st);
+  if (st->remoteName)
+    GWEN_StringList_free(st->remoteName);
+  if (d)
+    st->remoteName=GWEN_StringList_dup(d);
+  else
+    st->remoteName=0;
+  st->_modified=1;
+}
+
+
+void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *d, int chk){
+  assert(st);
+  assert(d);
+  if (GWEN_StringList_AppendString(st->remoteName, d, 0, chk))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_RemoveRemoteName(AB_TRANSACTION *st, const char *d) {
+  if (GWEN_StringList_RemoveString(st->remoteName, d))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st) {
+  if (GWEN_StringList_Count(st->remoteName)) {
+    GWEN_StringList_Clear(st->remoteName);
+    st->_modified=1;
   }
 }
 
 
+int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d) {
+  return GWEN_StringList_HasString(st->remoteName, d);
+}
 
 
+const char *AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->uniqueId;
+}
 
 
+void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->uniqueId)
+    free(st->uniqueId);
+  if (d)
+    st->uniqueId=strdup(d);
+  else
+    st->uniqueId=0;
+  st->_modified=1;
+}
 
 
+const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->valutaDate;
+}
+
+
+void AB_Transaction_SetValutaDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
+  assert(st);
+  if (st->valutaDate)
+    GWEN_Time_free(st->valutaDate);
+  if (d)
+    st->valutaDate=GWEN_Time_dup(d);
+  else
+    st->valutaDate=0;
+  st->_modified=1;
+}
+
+
+const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->date;
+}
+
+
+void AB_Transaction_SetDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
+  assert(st);
+  if (st->date)
+    GWEN_Time_free(st->date);
+  if (d)
+    st->date=GWEN_Time_dup(d);
+  else
+    st->date=0;
+  st->_modified=1;
+}
+
+
+const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->value;
+}
+
+
+void AB_Transaction_SetValue(AB_TRANSACTION *st, const AB_VALUE *d) {
+  assert(st);
+  if (st->value)
+    AB_Value_free(st->value);
+  if (d)
+    st->value=AB_Value_dup(d);
+  else
+    st->value=0;
+  st->_modified=1;
+}
+
+
+int AB_Transaction_GetTextKey(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->textKey;
+}
+
+
+void AB_Transaction_SetTextKey(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->textKey=d;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetTransactionKey(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->transactionKey;
+}
+
+
+void AB_Transaction_SetTransactionKey(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->transactionKey)
+    free(st->transactionKey);
+  if (d)
+    st->transactionKey=strdup(d);
+  else
+    st->transactionKey=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetCustomerReference(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->customerReference;
+}
+
+
+void AB_Transaction_SetCustomerReference(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->customerReference)
+    free(st->customerReference);
+  if (d)
+    st->customerReference=strdup(d);
+  else
+    st->customerReference=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->bankReference;
+}
+
+
+void AB_Transaction_SetBankReference(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->bankReference)
+    free(st->bankReference);
+  if (d)
+    st->bankReference=strdup(d);
+  else
+    st->bankReference=0;
+  st->_modified=1;
+}
+
+
+int AB_Transaction_GetTransactionCode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->transactionCode;
+}
+
+
+void AB_Transaction_SetTransactionCode(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->transactionCode=d;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->transactionText;
+}
+
+
+void AB_Transaction_SetTransactionText(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->transactionText)
+    free(st->transactionText);
+  if (d)
+    st->transactionText=strdup(d);
+  else
+    st->transactionText=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->primanota;
+}
+
+
+void AB_Transaction_SetPrimanota(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->primanota)
+    free(st->primanota);
+  if (d)
+    st->primanota=strdup(d);
+  else
+    st->primanota=0;
+  st->_modified=1;
+}
+
+
+const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->purpose;
+}
+
+
+void AB_Transaction_SetPurpose(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) {
+  assert(st);
+  if (st->purpose)
+    GWEN_StringList_free(st->purpose);
+  if (d)
+    st->purpose=GWEN_StringList_dup(d);
+  else
+    st->purpose=0;
+  st->_modified=1;
+}
+
+
+void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, int chk){
+  assert(st);
+  assert(d);
+  if (GWEN_StringList_AppendString(st->purpose, d, 0, chk))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_RemovePurpose(AB_TRANSACTION *st, const char *d) {
+  if (GWEN_StringList_RemoveString(st->purpose, d))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_ClearPurpose(AB_TRANSACTION *st) {
+  if (GWEN_StringList_Count(st->purpose)) {
+    GWEN_StringList_Clear(st->purpose);
+    st->_modified=1;
+  }
+}
+
+
+int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d) {
+  return GWEN_StringList_HasString(st->purpose, d);
+}
+
+
+int AB_Transaction_IsModified(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->_modified;
+}
+
+
+void AB_Transaction_SetModified(AB_TRANSACTION *st, int i) {
+  assert(st);
+  st->_modified=i;
+}
+
+
+void AB_Transaction_Attach(AB_TRANSACTION *st) {
+  assert(st);
+  st->_usage++;
+}
+AB_TRANSACTION *AB_Transaction_List2__freeAll_cb(AB_TRANSACTION *st, void *user_data) {
+  AB_Transaction_free(st);
+return 0;
+}
+
+
+void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl) {
+  if (stl) {
+    AB_Transaction_List2_ForEach(stl, AB_Transaction_List2__freeAll_cb, 0);
+    AB_Transaction_List2_free(stl); 
+  }
+}
 
 
 

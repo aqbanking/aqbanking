@@ -49,7 +49,6 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_IMEXPORTER, AQBANKING_API)
 
 typedef struct AB_IMEXPORTER_CONTEXT AB_IMEXPORTER_CONTEXT;
 typedef struct AB_IMEXPORTER_ACCOUNTINFO AB_IMEXPORTER_ACCOUNTINFO;
-
 #ifdef __cplusplus
 }
 #endif
@@ -85,6 +84,15 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          GWEN_BUFFEREDIO *bio,
                          GWEN_DB_NODE *dbProfile);
+/**
+ * This is just a conveniance function for @ref AB_ImExporter_Import.
+ */
+AQBANKING_API
+int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             const char *fname,
+                             GWEN_DB_NODE *dbProfile);
+
 /*@}*/
 
 
@@ -119,16 +127,16 @@ void AB_ImExporterContext_AddAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 
 /**
  * Returns the first imported account (if any).
- * The caller becomes the new owner of the account info returned (if any),
+ * The context remains the owner of the object returned.
  * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
 AQBANKING_API 
 AB_IMEXPORTER_ACCOUNTINFO*
-AB_ImExporterConect_GetFirstAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
+AB_ImExporterContext_GetFirstAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
 
 /**
  * Returns the next account data has been imported for.
- * The caller becomes the new owner of the account info returned (if any),
+ * The context remains the owner of the object returned.
  * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
 AQBANKING_API 
@@ -184,8 +192,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                              AB_TRANSACTION *t);
 /**
  * Returns the first transaction stored within the context.
- * The caller becomes the new owner of the transaction returned (if any)
- * which makes him/her responsible for freeing it using
+ * The context remains the owner of the object returned.
  * @ref AB_Transaction_free.
  */
 AQBANKING_API 
@@ -193,8 +200,7 @@ AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /**
  * Returns the next transaction stored within the context.
- * The caller becomes the new owner of the transaction returned (if any)
- * which makes him/her responsible for freeing it using
+ * The context remains the owner of the object returned.
  * @ref AB_Transaction_free.
  */
 AQBANKING_API 

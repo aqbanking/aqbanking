@@ -1783,7 +1783,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   mbuf=GWEN_Buffer_new(0, 256, 0, 1);
   s=modname;
   while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-  modname=GWEN_Buffer_GetStart(mbuf);
+
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
                                          AQBANKING_PLUGINS
                                          "/"
@@ -1812,7 +1812,8 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
                       "static/providers");
   assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      modname);
   assert(db);
 
   fn=(AB_PROVIDER_FACTORY_FN)p;
@@ -1932,8 +1933,8 @@ int AB_Banking__OpenFile(const char *s, int wr) {
       return -1;
     }
     fd=open(s,
-	    O_RDWR|O_CREAT /* |O_TRUNC */ ,
-	    S_IRUSR|S_IWUSR);
+	    O_RDWR | O_CREAT | O_TRUNC,
+	    S_IRUSR | S_IWUSR);
   }
   else {
     fd=open(s, O_RDONLY);
@@ -2546,6 +2547,13 @@ AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
 
 
 
+AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
+                                         const char *accountId){
+  return AB_Banking__GetAccount(ab, accountId);
+}
+
+
+
 void AB_Banking_SetAccountAlias(AB_BANKING *ab,
 				AB_ACCOUNT *a, const char *alias){
   GWEN_DB_NODE *dbData;
@@ -2740,9 +2748,17 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
         t=AB_Transaction_List2Iterator_Data(it);
         assert(t);
         while(t) {
-          AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
-          t=AB_Transaction_List2Iterator_Next(it);
-        }
+	  AB_TRANSACTION *nt;
+
+          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a transaction");"
+	  nt=AB_Transaction_dup(t);
+	  AB_Transaction_SetLocalAccountNumber(nt,
+					       AB_Account_GetAccountNumber(a));
+	  AB_Transaction_SetLocalBankCode(nt, AB_Account_GetBankCode(a));
+
+	  AB_ImExporterAccountInfo_AddTransaction(ai, nt);
+	  t=AB_Transaction_List2Iterator_Next(it);
+	} /* while */
         AB_Transaction_List2Iterator_free(it);
       }
 

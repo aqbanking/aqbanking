@@ -1,4 +1,9 @@
 
+2004/08/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added conveniance functions to importer/exporter
+
+
 2004/08/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - Valgrind-Session: fixed some memory leaks
