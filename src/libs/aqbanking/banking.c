@@ -2775,23 +2775,25 @@ AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab) {
 
 
 int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
-  int rv;
+  int rv=AB_ERROR_INVALID;
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
-    rv=AB_Banking__SaveJobAs(ab, j, "archived");
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not store job in archive (%d)", rv);
-      return rv;
+  /* First check whether this job actually has sane data */
+  if (ab->appName && AB_Job_GetCreatedBy(j)) {
+    if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+      rv=AB_Banking__SaveJobAs(ab, j, "archived");
+      if (rv) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Could not store job in archive (%d)", rv);
+	return rv;
+      }
+      rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
     }
-    rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Job can only be removed by its creator application");
-    rv=AB_ERROR_INVALID;
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Job can only be removed by its creator application");
+    }
   }
   return rv;
 }
@@ -2805,17 +2807,19 @@ AB_JOB_LIST2 *AB_Banking_GetArchivedJobs(AB_BANKING *ab){
 
 
 int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j){
-  int rv;
+  int rv=AB_ERROR_INVALID;
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
-    rv=AB_Banking__UnlinkJobAs(ab, j, "archived");
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Job can only be removed by its creator application");
-    rv=AB_ERROR_INVALID;
+  /* First check whether this job actually has sane data */
+  if (ab->appName && AB_Job_GetCreatedBy(j)) {
+    if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+      rv=AB_Banking__UnlinkJobAs(ab, j, "archived");
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Job can only be removed by its creator application");
+    }
   }
   return rv;
 }
@@ -2830,22 +2834,24 @@ AB_JOB_LIST2 *AB_Banking_GetPendingJobs(AB_BANKING *ab) {
 
 
 int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
-  int rv;
+  int rv=AB_ERROR_INVALID;
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
-    rv=AB_Banking__SaveJobAs(ab, j, "archived");
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Could not store job in archive (%d)", rv);
-      return rv;
+  /* First check whether this job actually has sane data */
+  if (ab->appName && AB_Job_GetCreatedBy(j)) {
+    if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+      rv=AB_Banking__SaveJobAs(ab, j, "archived");
+      if (rv) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Could not store job in archive (%d)", rv);
+	return rv;
+      }
+      rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
     }
-    rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
-    rv=AB_ERROR_INVALID;
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
+    }
   }
   return rv;
 }
@@ -2859,23 +2865,25 @@ AB_JOB_LIST2 *AB_Banking_GetDeferredJobs(AB_BANKING *ab) {
 
 
 int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j){
-  int rv;
+  int rv=AB_ERROR_INVALID;
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
-    rv=AB_Banking__SaveJobAs(ab, j, "archived");
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not store job in archive (%d)", rv);
-      return rv;
+  /* First check whether this job actually has sane data */
+  if (ab->appName && AB_Job_GetCreatedBy(j)) {
+    if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+      rv=AB_Banking__SaveJobAs(ab, j, "archived");
+      if (rv) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Could not store job in archive (%d)", rv);
+	return rv;
+      }
+      rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
     }
-    rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Job can only be removed by its creator application");
-    rv=AB_ERROR_INVALID;
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Job can only be removed by its creator application");
+    }
   }
   return rv;
 }
