@@ -830,6 +830,10 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
  * accounts. The returned list is owned by the caller, so he is
  * responsible for freeing it (using @ref AB_Account_List2_free).
  *
+ * Please note that even while the list is owned by the caller the accounts
+ * in that list are not! Sou you may not free any of those accounts in the
+ * list (e.g. by calling @ref AB_Account_List2_freeAll).
+ *
  * @return The list of accounts, or NULL if there are none.
  * @param ab pointer to the AB_BANKING object
  */
@@ -839,6 +843,13 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
 /**
  * This function does an account lookup based on the given unique id.
  * This id is assigned by AqBanking when an account is created.
+ *
+ * AqBanking remains the owner of the object returned (if any), so you must
+ * not free it.
+ *
+ * Please also note that the object returned is only valid until
+ * @ref AB_Banking_Fini() has been called (or until the corresponding backend
+ * for this particular account has been deactivated).
  *
  * @return The account, or NULL if it is not found.
  * @param ab pointer to the AB_BANKING object
@@ -852,6 +863,13 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 /**
  * This function does an account lookup based on the given bank code and
  * account number. No wildards or jokers allowed.
+ *
+ * AqBanking remains the owner of the object returned (if any), so you must
+ * not free it.
+ *
+ * Please also note that the object returned is only valid until
+ * @ref AB_Banking_Fini() has been called (or until the corresponding backend
+ * for this particular account has been deactivated).
  *
  * @return The account, or NULL if it is not found.
  * @param ab pointer to the AB_BANKING object
@@ -2013,6 +2031,14 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
  * This function returns the AqBanking account to which the given
  * alias (=unique id of your application's own account data) has been
  * mapped.
+ *
+ * AqBanking remains the owner of the object returned (if any), so you must
+ * not free it.
+ *
+ * Please also note that the object returned is only valid until
+ * AB_Banking_Fini() has been called (or until the corresponding backend for
+ * this particular account has been deactivated).
+ *
  * @return corresponding AqBanking (or 0 if none)
  * @param ab AqBanking main object
  * @param alias unique id of your application's own account structure

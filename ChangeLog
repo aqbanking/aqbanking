@@ -2,6 +2,7 @@
 2005/03/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AB_Banking_GetAccountByAlias() now no longer calls AB_Banking_MsgBox()
+- clarified APIDOC concerning accounts returned by various functions
 
 
 2005/03/01: Martin Preuss<martin@libchipcard.de>
