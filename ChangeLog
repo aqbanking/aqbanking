@@ -11,7 +11,7 @@
 - added functions to transaction which allows to clear purpose and remote
   name lists
 - removed API-inconsistencies: since all *_fromSomething" functions basically
-  are constructors they start with a lowercase latter after the prefixes
+  are constructors they start with a lowercase letter after the prefixes
   (like in AB_Value_fromString() as in AB_Value_new()).
 
 
