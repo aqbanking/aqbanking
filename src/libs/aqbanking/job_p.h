@@ -33,7 +33,7 @@ struct AB_JOB {
   GWEN_TYPE_UINT32 usage;
   char *createdBy;
   GWEN_TYPE_UINT32 idForProvider;
-
+  GWEN_DB_NODE *dbData;
 };
 AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData);
 

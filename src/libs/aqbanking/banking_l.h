@@ -38,20 +38,6 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
 
 
 /**
- * Store backend specific data with AqBanking. This data is not specific
- * to an application, it will rather be used with every application (since
- * it doesn't depend on the application but on the backend).
- * @param ab pointer to the AB_BANKING object
- * @param pro pointer to the backend for which the data is to be returned
- */
-AQBANKING_API 
-GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
-                                         const AB_PROVIDER *pro);
-/*@}*/
-
-
-
-/**
  * This function loads the given backend (if it not already has been) and
  * imports any account that backend might offer. You can use this function
  * to engage a backend which has not yet been used (but it doesn't hurt if you

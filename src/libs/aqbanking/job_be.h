@@ -34,6 +34,16 @@ GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j);
 AQBANKING_API
 void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i);
 
+/**
+ * Store backend specific data with a job. This data is not specific
+ * to an application, it will rather be used with every application (since
+ * it doesn't depend on the application but on the backend).
+ * @param j pointer to the AB_JOB object
+ * @param pro pointer to the backend for which the data is to be returned
+ */
+AQBANKING_API
+GWEN_DB_NODE *AB_Job_GetProviderData(AB_JOB *j, AB_PROVIDER *pro);
+
 AQBANKING_API
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
 AQBANKING_API

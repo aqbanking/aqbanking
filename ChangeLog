@@ -1,4 +1,10 @@
 
+2004/08/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_JOB: added functions which allow applications and backends to store
+  specific data to a GWEN_DB within a job
+
+
 2004/08/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added currency to AB_ACCOUNT

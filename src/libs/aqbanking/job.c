@@ -48,6 +48,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   j->jobType=jt;
   j->account=a;
   j->createdBy=strdup(AB_Banking_GetAppName(AB_Account_GetBanking(a)));
+  j->dbData=GWEN_DB_Group_new("data");
 
   return j;
 }
@@ -81,6 +82,7 @@ void AB_Job_free(AB_JOB *j){
     assert(j->usage);
     if (--(j->usage)==0) {
       GWEN_INHERIT_FINI(AB_JOB, j);
+      GWEN_DB_Group_free(j->dbData);
       free(j->resultText);
       free(j->createdBy);
       GWEN_LIST_FINI(AB_JOB, j);
@@ -188,6 +190,7 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
 
 int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   const char *p;
+  GWEN_DB_NODE *dbT;
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "jobId", j->jobId);
@@ -237,6 +240,10 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
     return -1;
   }
 
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "data");
+  assert(dbT);
+  GWEN_DB_AddGroupChildren(dbT, j->dbData);
+
   return 0;
 }
 
@@ -247,6 +254,7 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_JOB_TYPE jt;
   AB_ACCOUNT *a;
   GWEN_TYPE_UINT32 accountId;
+  GWEN_DB_NODE *dbT;
   const char *p;
 
   accountId=GWEN_DB_GetIntValue(db, "accountId", 0, 0);
@@ -298,6 +306,11 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   p=GWEN_DB_GetCharValue(db, "createdBy", 0, 0);
   assert(p);
   j->createdBy=strdup(p);
+
+  j->dbData=GWEN_DB_Group_new("data");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
+  if (dbT)
+    GWEN_DB_AddGroupChildren(j->dbData, dbT);
 
   return j;
 }
@@ -374,6 +387,30 @@ void AB_Job_SetUniqueId(AB_JOB *j, GWEN_TYPE_UINT32 jid){
   assert(j);
   j->jobId=jid;
 }
+
+
+
+GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j){
+  const char *s;
+
+  assert(j);
+  s=AB_Banking_GetAppName(AB_Account_GetBanking(AB_Job_GetAccount(j)));
+  return GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, s);
+}
+
+
+
+GWEN_DB_NODE *AB_Job_GetProviderData(AB_JOB *j, AB_PROVIDER *pro){
+  const char *s;
+
+  assert(j);
+  assert(pro);
+  s=AB_Provider_GetName(pro);
+  return GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, s);
+}
+
+
+
 
 
 

@@ -51,7 +51,8 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
     char home[256];
 
     if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not determine home directory, aborting.");
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Could not determine home directory, aborting.");
       return 0;
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);

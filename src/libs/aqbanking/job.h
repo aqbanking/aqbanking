@@ -107,6 +107,17 @@ GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j);
 AQBANKING_API
 const char *AB_Job_GetCreatedBy(const AB_JOB *j);
 
+
+/**
+ * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
+ * the currently running application. The group returned MUST NOT be
+ * freed !
+ * AqBanking is able to separate and store the data for every application.
+ */
+AQBANKING_API 
+GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j);
+
+
 /**
  * Not all jobs have to be supported by every backend. The application needs
  * to know whether a job actually @b is supported, and this is done by calling
