@@ -139,6 +139,14 @@ begin
 end;
 
 
+function InitializeSetup(): Boolean;
+begin
+  Result := Length(ExpandConstant('{reg:HKCU\Software\Gwenhywfar\Paths,prefix|a}')) > 1;
+  if Result = False then 
+    MsgBox(ExpandConstant('{cm:PrereqNotFound}'), mbInformation, MB_OK);
+end;
+
+
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
@@ -154,7 +162,13 @@ SelectDirLabel3=Setup will install [name] into the following folder. If you have
 de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, können Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
 
 
+; The customized messages with their translations here.
 [CustomMessages]
+; *** Prerequisite message
+PrereqNotFound=The setup program did not find the DLL of the Gwenhywfar package. You need to install Gwenhywfar, and then start this setup again.
+
+de.PrereqNotFound=Das Setup-Programm hat die DLL des Gwenhywfar-Pakets nicht gefunden. Sie müssen zuerst Gwenhywfar installieren und dann dieses Setup-Programm erneut starten.
+
 ; *** "Select Components" wizard page
 FullInstall=Full installation
 BinaryInstall=Install only libraries
