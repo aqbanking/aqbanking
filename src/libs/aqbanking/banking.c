@@ -1841,10 +1841,12 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
             AB_Job_SetResultText(j, "Refused by backend");
           }
           else {
-            jobs++;
-            AB_Job_SetStatus(j, AB_Job_StatusSent);
-            AB_Banking__SaveJobAs(ab, j, "sent");
-            AB_Banking__UnlinkJobAs(ab, j, "todo");
+	    jobs++;
+	    if (AB_Job_GetStatus(j)!=AB_Job_StatusPending) {
+	      AB_Job_SetStatus(j, AB_Job_StatusSent);
+	      AB_Banking__SaveJobAs(ab, j, "sent");
+	      AB_Banking__UnlinkJobAs(ab, j, "todo");
+	    }
           }
         }
       } /* if job enqueued */
@@ -1938,7 +1940,6 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       if (AB_Banking__SaveJobAs(ab, j, "pending")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
       }
-      AB_Banking__UnlinkJobAs(ab, j, "sent");
       break;
 
     case AB_Job_StatusSent:

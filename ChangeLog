@@ -1,4 +1,9 @@
 
+2005/03/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug: Status of pending jobs are no longer set to "sent".
+
+
 2005/03/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - safer handling of enqueued jobs upon ExecuteQueue:
