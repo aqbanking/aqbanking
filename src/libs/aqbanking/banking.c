@@ -1188,18 +1188,40 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   rv=AB_Job_CheckAvailability(j);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Job is not available, refusing to enqueue.");
     return rv;
   }
+  jst=AB_Job_GetStatus(j);
+  if (jst==AB_Job_StatusFinished ||
+      jst==AB_Job_StatusError ||
+      jst==AB_Job_StatusEnqueued) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job has already been enqueued or even finished, "
+	      "not enqueueing it");
+    return AB_ERROR_INVALID;
+  }
+
+  /* really enqueue the job */
+  AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   AB_Job_Attach(j);
   AB_Job_List_Add(j, ab->enqueuedJobs);
-  jst=AB_Job_GetStatus(j);
+  AB_Banking__SaveJobAs(ab, j, "todo");
+
   if (jst!=AB_Job_StatusEnqueued &&
       jst!=AB_Job_StatusPending)
     AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
+  switch(jst) {
+  case AB_Job_StatusPending:
+    AB_Banking__UnlinkJobAs(ab, j, "pending"); break;
+  case AB_Job_StatusDeferred:
+    AB_Banking__UnlinkJobAs(ab, j, "deferred"); break;
+  default:
+    break;
+  }
+
+
   return 0;
 }
 
@@ -1214,6 +1236,36 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j){
   jst=AB_Job_GetStatus(j);
   if (jst==AB_Job_StatusEnqueued)
     AB_Job_SetStatus(j, AB_Job_StatusNew);
+  AB_Job_List_Del(j);
+  rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
+  AB_Job_free(j);
+  return rv;
+}
+
+
+
+int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+  AB_JOB_STATUS jst;
+
+  assert(ab);
+  assert(j);
+  jst=AB_Job_GetStatus(j);
+  if (jst!=AB_Job_StatusEnqueued) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "I can only defer jobs which haven't been executed.");
+    return AB_ERROR_INVALID;
+  }
+
+  AB_Job_SetStatus(j, AB_Job_StatusDeferred);
+  rv=AB_Banking__SaveJobAs(ab, j, "deferred");
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not save job as \"deferred\", not dequeueing it");
+    AB_Job_SetStatus(j, jst);
+    return rv;
+  }
+
   AB_Job_List_Del(j);
   rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
   AB_Job_free(j);
@@ -2194,8 +2246,15 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+    rv=AB_Banking__SaveJobAs(ab, j, "archived");
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not store job in archive (%d)", rv);
+      return rv;
+    }
     rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
+  }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
@@ -2221,6 +2280,29 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
     rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
+    rv=AB_ERROR_INVALID;
+  }
+  return rv;
+}
+
+
+
+AB_JOB_LIST2 *AB_Banking_GetDeferredJobs(AB_BANKING *ab) {
+  return AB_Banking__LoadJobsAs(ab, "deferred");
+}
+
+
+
+int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+
+  assert(ab);
+  assert(j);
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+    rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
   }
   return rv;

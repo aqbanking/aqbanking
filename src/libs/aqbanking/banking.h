@@ -801,6 +801,19 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j);
 AQBANKING_API 
 int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
 
+
+/**
+ * Removes a job from the queue but keeps it for later re-enqueuing.
+ * This function does not free the given job, the caller still is the owner.
+ * Deferred jobs are preserved across shutdowns. You can later re-enqueue
+ * such a job using @ref AB_Banking_EnqueueJob.
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab pointer to the AB_BANKING object
+ * @param j job to be dequeued
+ */
+AQBANKING_API 
+int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j);
+
 /**
  * <p>
  * This function sends all jobs in the queue to their corresponding backends
@@ -893,6 +906,44 @@ AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
  */
 AQBANKING_API 
 int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
+
+/*@}*/
+
+
+
+/** @name Handling Deferred Jobs
+ *
+ * <p>
+ * Deferred jobs are those which have been enqueued at some point and later
+ * deferred so that @ref AB_Banking_ExecuteQueue won't include them.
+ * </p>
+ * <p>
+ * You can re-enqueue this job at any time using @ref AB_Banking_EnqueueJob.
+ * </p>
+ */
+/*@{*/
+
+/**
+ * <p>
+ * Loads all deferred jobs from their folder. The caller is responsible for
+ * freeing the jobs returned (as opposed to @ref AB_Banking_GetEnqueuedJobs).
+ * </p>
+ * <p>
+ * Please note that since this function loads all jobs from their folder
+ * the returned list might contain another representation of jobs you once
+ * created and enqueued into the execution queue.
+ * </p>
+ */
+AQBANKING_API 
+AB_JOB_LIST2 *AB_Banking_GetDeferredJobs(AB_BANKING *ab);
+
+/**
+ * Removes a deferred job from its folder. You can use either a job returned
+ * via @ref AB_Banking_GetFinishedJobs or a job you previously added to
+ * the execution queue after the queue has been executed.
+ */
+AQBANKING_API 
+int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j);
 
 /*@}*/
 

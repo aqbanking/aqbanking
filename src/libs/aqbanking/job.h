@@ -49,6 +49,7 @@ typedef enum {
   AB_Job_StatusPending,
   AB_Job_StatusFinished,
   AB_Job_StatusError,
+  AB_Job_StatusDeferred,
   AB_Job_StatusUnknown=999
 } AB_JOB_STATUS;
 

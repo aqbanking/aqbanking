@@ -1,4 +1,13 @@
 
+2004/08/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added two new queues: "deferred" and "archived".
+  Jobs deleted from the "finished" queue are now stored in the "archived"
+  directory.
+  Jobs which have already been enqueued but not executed can now be
+  deferred thus allowing to hold back some jobs without needing to remove
+  them completely. You can later re-enqueue those jobs.
+
 
 2004/08/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
