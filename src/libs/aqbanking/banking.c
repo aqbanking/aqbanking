@@ -1077,7 +1077,6 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
     DBG_ERROR(0, "Could not determine home directory, aborting.");
     return -1;
   }
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(buf, home);
   GWEN_Buffer_AppendString(buf, "/.banking");
   return 0;

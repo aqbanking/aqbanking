@@ -15,6 +15,8 @@
 #endif
 
 #include "job_p.h"
+#include "account_l.h"
+#include "banking_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
@@ -39,8 +41,12 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   j->jobType=jt;
   j->data=GWEN_DB_Group_new("JobData");
   j->account=a;
+  j->jobId=AB_Banking_GetUniqueId(AB_Account_GetBanking(a));
+  GWEN_DB_SetCharValue(j->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "static/createdBy",
+                       AB_Banking_GetAppName(AB_Account_GetBanking(a)));
 
-  /* check whether job is available */
+  /* check whether the job is available */
   pro=AB_Account_GetProvider(a);
   assert(pro);
   j->availability=AB_Provider_UpdateJob(pro, j);
@@ -177,6 +183,8 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   GWEN_DB_NODE *dbTsrc;
   const char *p;
 
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "jobId", j->jobId);
   p=AB_Job_Type2Char(j->jobType);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "jobType", p);
@@ -225,6 +233,8 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   }
 
   GWEN_NEW_OBJECT(AB_JOB, j);
+  j->usage=1;
+  j->jobId=GWEN_DB_GetIntValue(db, "jobId", 0, 0);
   j->jobType=jt;
   j->status=AB_Job_Char2Status(GWEN_DB_GetCharValue(db,
                                                     "jobStatus", 0,
@@ -305,10 +315,17 @@ void AB_Job_SetResultText(AB_JOB *j, const char *s){
 
 
 
+GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j) {
+  assert(j);
+  return j->jobId;
+}
 
 
 
-
+const char *AB_Job_GetCreatedBy(const AB_JOB *j) {
+  assert(j);
+  return GWEN_DB_GetCharValue(j->data, "static/createdBy", 0, 0);
+}
 
 
 

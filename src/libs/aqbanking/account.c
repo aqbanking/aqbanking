@@ -262,6 +262,10 @@ void AB_Account_SetOwnerName(AB_ACCOUNT *a, const char *s){
 
 
 
+AB_BANKING *AB_Account_GetBanking(const AB_ACCOUNT *acc){
+  assert(acc);
+  return acc->banking;
+}
 
 
 

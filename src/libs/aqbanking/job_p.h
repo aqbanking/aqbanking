@@ -30,6 +30,7 @@ struct AB_JOB {
   AB_JOB_TYPE jobType;
   GWEN_DB_NODE *data;
   int availability;
+  GWEN_TYPE_UINT32 jobId;
   GWEN_TYPE_UINT32 usage;
 };
 AB_JOB *AB_Job__freeAll_cb(AB_JOB *j);

@@ -26,5 +26,7 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
                               GWEN_DB_NODE *db);
 int AB_Account_toDb(const AB_ACCOUNT *acc, GWEN_DB_NODE *db);
 
+AB_BANKING *AB_Account_GetBanking(const AB_ACCOUNT *acc);
+
 
 #endif /* AQBANKING_ACCOUNT_L_H */

@@ -81,6 +81,18 @@ void AB_Job_Attach(AB_JOB *j);
  *
  */
 /*@{*/
+
+/**
+ * Every created job gets an unique id. This allows any application to
+ * identify a specific job.
+ */
+GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j);
+
+/**
+ * Returns the name of the application which created this job.
+ */
+const char *AB_Job_GetCreatedBy(const AB_JOB *j);
+
 /**
  * Not all jobs have to be supported by every backend. The application needs
  * to know whether a job actually @b is supported, and this is done by calling

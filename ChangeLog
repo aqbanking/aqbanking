@@ -1,4 +1,9 @@
 
+2004/08/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs, added some functions to AB_JOB
+
+
 2004/08/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - completed API documentation for AB_BANKING
