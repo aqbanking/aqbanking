@@ -99,5 +99,4 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_includedir}/aqbanking
 %{_includedir}/aqbanking++
 %{_libdir}/*.la
-%{_libdir}/*.a
 %{_datadir}/aclocal/aqbanking.m4
