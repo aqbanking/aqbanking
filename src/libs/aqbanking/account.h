@@ -93,6 +93,10 @@ const char *AB_Account_GetBankCode(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetBankCode(AB_ACCOUNT *acc, const char *s);
 
+  /** Returns the name of the account product (really:
+      "Kontoproduktbezeichnung" according to HBCI spec). This may or
+      may not be useful for your application. The bank may freely
+      choose what to say in here. */
 AQBANKING_API 
 const char *AB_Account_GetAccountName(const AB_ACCOUNT *acc);
 AQBANKING_API 
