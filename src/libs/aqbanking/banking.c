@@ -56,7 +56,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
-  ab->wizzards=AB_ProviderWizzard_List_new();
+  ab->wizards=AB_ProviderWizard_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appName=strdup(appName);
@@ -75,7 +75,7 @@ void AB_Banking_free(AB_BANKING *ab){
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
-    AB_ProviderWizzard_List_free(ab->wizzards);
+    AB_ProviderWizard_List_free(ab->wizards);
     AB_Provider_List_free(ab->providers);
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
@@ -157,15 +157,15 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
 
 
 
-GWEN_DB_NODE *AB_Banking_GetWizzardData(AB_BANKING *ab,
-                                        const AB_PROVIDER_WIZZARD *pw){
+GWEN_DB_NODE *AB_Banking_GetWizardData(AB_BANKING *ab,
+                                        const AB_PROVIDER_WIZARD *pw){
   AB_PROVIDER *pro;
   GWEN_DB_NODE *db;
   const char *name;
 
-  name=AB_ProviderWizzard_GetName(pw);
+  name=AB_ProviderWizard_GetName(pw);
   assert(name);
-  pro=AB_ProviderWizzard_GetProvider(pw);
+  pro=AB_ProviderWizard_GetProvider(pw);
   assert(pro);
   db=AB_Banking_GetProviderData(ab, pro);
   assert(db);
@@ -396,20 +396,20 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
 
 
 
-AB_PROVIDER_WIZZARD *AB_Banking_FindWizzard(AB_BANKING *ab,
+AB_PROVIDER_WIZARD *AB_Banking_FindWizard(AB_BANKING *ab,
                                             AB_PROVIDER *pro,
                                             const char *name){
-  AB_PROVIDER_WIZZARD *pw;
+  AB_PROVIDER_WIZARD *pw;
 
   assert(ab);
   assert(pro);
   assert(name);
-  pw=AB_ProviderWizzard_List_First(ab->wizzards);
+  pw=AB_ProviderWizard_List_First(ab->wizards);
   while(pw) {
-    if ((AB_ProviderWizzard_GetProvider(pw)==pro) &&
-        (strcasecmp(AB_ProviderWizzard_GetName(pw), name)==0))
+    if ((AB_ProviderWizard_GetProvider(pw)==pro) &&
+        (strcasecmp(AB_ProviderWizard_GetName(pw), name)==0))
       break;
-    pw=AB_ProviderWizzard_List_Next(pw);
+    pw=AB_ProviderWizard_List_Next(pw);
   } /* while */
 
   return pw;
@@ -417,10 +417,10 @@ AB_PROVIDER_WIZZARD *AB_Banking_FindWizzard(AB_BANKING *ab,
 
 
 
-AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
+AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
                                            const char *pn,
                                            const char *name) {
-  AB_PROVIDER_WIZZARD *pw;
+  AB_PROVIDER_WIZARD *pw;
   AB_PROVIDER *pro;
 
   assert(ab);
@@ -432,12 +432,12 @@ AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
     DBG_ERROR(0, "Provider \"%s\" not available", pn);
     return 0;
   }
-  pw=AB_Banking_FindWizzard(ab, pro, name);
+  pw=AB_Banking_FindWizard(ab, pro, name);
   if (pw)
     return pw;
-  pw=AB_ProviderWizzard_LoadPlugin(pro, name);
+  pw=AB_ProviderWizard_LoadPlugin(pro, name);
   if (pw) {
-    AB_ProviderWizzard_List_Add(pw, ab->wizzards);
+    AB_ProviderWizard_List_Add(pw, ab->wizards);
   }
 
   return pw;
@@ -699,7 +699,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   AB_Job_List_Clear(ab->enqueuedJobs);
   AB_Account_List_Clear(ab->accounts);
-  AB_ProviderWizzard_List_Clear(ab->wizzards);
+  AB_ProviderWizard_List_Clear(ab->wizards);
   AB_Provider_List_Clear(ab->providers);
   GWEN_DB_ClearGroup(ab->data, 0);
 
@@ -737,7 +737,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
 
 
 
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizzardDescrs(AB_BANKING *ab,
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                                                            const char *pn){
   GWEN_BUFFER *pbuf;
   GWEN_PLUGIN_DESCRIPTION_LIST2 *wdl;
@@ -746,7 +746,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizzardDescrs(AB_BANKING *ab,
   GWEN_Buffer_AppendString(pbuf,
                            AQBANKING_PLUGINS
                            "/"
-                           AB_PROVIDER_WIZZARD_FOLDER
+                           AB_PROVIDER_WIZARD_FOLDER
                            "/");
   GWEN_Buffer_AppendString(pbuf, pn);
 
@@ -882,6 +882,7 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   }
   AB_Job_Attach(j);
   AB_Job_List_Add(j, ab->enqueuedJobs);
+  AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
   return 0;
 }
 
@@ -890,6 +891,7 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
 int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j){
   assert(ab);
   assert(j);
+  AB_Job_SetStatus(j, AB_Job_StatusNew);
   AB_Job_List_Del(j);
   AB_Job_free(j);
   return 0;
@@ -913,16 +915,18 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
     j=AB_Job_List_First(ab->enqueuedJobs);
     jobs=0;
     while(j) {
+      DBG_NOTICE(0, "Checking job...");
       if (AB_Job_GetStatus(j)==AB_Job_StatusEnqueued) {
         AB_ACCOUNT *a;
 
         a=AB_Job_GetAccount(j);
         assert(a);
-        if (AB_Account_GetProvider(a)==pro) {
+	if (AB_Account_GetProvider(a)==pro) {
+	  DBG_NOTICE(0, "Same provider, adding job");
           /* same provider, add job */
           rv=AB_Provider_AddJob(pro, j);
           if (rv) {
-            DBG_INFO(0, "Could not add job (%d)", rv);
+            DBG_ERROR(0, "Could not add job (%d)", rv);
             AB_Job_SetStatus(j, AB_Job_StatusError);
             AB_Job_SetResultText(j, "Refused by backend");
           }
@@ -930,19 +934,23 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
             jobs++;
         }
       } /* if job enqueued */
+      else {
+	DBG_WARN(0, "Job in queue with status \"%s\"",
+		 AB_Job_Status2Char(AB_Job_GetStatus(j)));
+      }
       j=AB_Job_List_Next(j);
     } /* while */
     if (jobs) {
-      DBG_INFO(0, "Letting backend \"%s\" work",
-               AB_Provider_GetName(pro));
+      DBG_NOTICE(0, "Letting backend \"%s\" work",
+                 AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro);
       if (rv) {
 
-        DBG_INFO(0, "Error executing backend's queue");
-        if (AB_Provider_List_Next(pro)) {
-          int lrv;
+	DBG_NOTICE(0, "Error executing backend's queue");
+	if (AB_Provider_List_Next(pro)) {
+	  int lrv;
 
-          lrv=AB_Banking_MessageBox(ab,
+	  lrv=AB_Banking_MessageBox(ab,
                                     AB_Banking_MsgTypeError,
                                     "Error",
                                     "Error executing backend's queue.\n"

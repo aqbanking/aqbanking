@@ -34,7 +34,7 @@ struct AB_BANKING {
   GWEN_DB_NODE *data;
 
   AB_PROVIDER_LIST *providers;
-  AB_PROVIDER_WIZZARD_LIST *wizzards;
+  AB_PROVIDER_WIZARD_LIST *wizards;
 
   AB_BANKING_MESSAGEBOX_FN messageBoxFn;
   AB_BANKING_INPUTBOX_FN inputBoxFn;
@@ -51,9 +51,9 @@ struct AB_BANKING {
 
 
 AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
-AB_PROVIDER_WIZZARD *AB_Banking_FindWizzard(AB_BANKING *ab,
-                                            AB_PROVIDER *pro,
-                                            const char *name);
+AB_PROVIDER_WIZARD *AB_Banking_FindWizard(AB_BANKING *ab,
+                                          AB_PROVIDER *pro,
+                                          const char *name);
 
 int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 

@@ -1,4 +1,10 @@
 
+2004/08/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in AqHBCI and Gwen.
+- fixed some bugs
+
+
 2004/07/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - improved configure.ac

@@ -123,23 +123,23 @@ namespace AB {
 
 
     /**
-     * Tries to load the wizzard for the given backend which is of the given
+     * Tries to load the wizard for the given backend which is of the given
      * type t.
-     * Setup wizzards are sorted by backends, since the wizzard do things
+     * Setup wizards are sorted by backends, since the wizard do things
      * very much dependant on the backend. Ideally they are shipped with the
      * backend.
      * @param ab pointer to the AB_BANKING object
      * @param pn name of the backend
-     * @param t wizzard type. To allow keeping the API as open as possible you
+     * @param t wizard type. To allow keeping the API as open as possible you
      * may give a type name here. However, the following names are expected:
      * <ul>
-     *  <li><b>kde</b> for a wizzard running under KDE</li>
-     *  <li><b>gnome</b> for a wizzard running under GNOME</li>
-     *  <li><b>console</b> for a wizzard running in a console</li>
-     *  <li><b>curses</b> for a wizzard using (n)curses</li>
+     *  <li><b>kde</b> for a wizard running under KDE</li>
+     *  <li><b>gnome</b> for a wizard running under GNOME</li>
+     *  <li><b>console</b> for a wizard running in a console</li>
+     *  <li><b>curses</b> for a wizard using (n)curses</li>
      * </ul>
      */
-    AB_PROVIDER_WIZZARD *getWizzard(const char *pn, const char *t);
+    AB_PROVIDER_WIZARD *getWizard(const char *pn, const char *t);
 
     /**
      * Returns a list of pointers to currently known accounts.
@@ -180,11 +180,11 @@ namespace AB {
     std::list<GWEN_PLUGIN_DESCRIPTION*> getProviderDescrs();
 
     /**
-     * Returns a list of wizzard descriptions for the given backend.
+     * Returns a list of wizard descriptions for the given backend.
      * You must free the contents of the list after using it via
      * @ref clearPluginDescrs() before deleting the list itself.
      */
-    std::list<GWEN_PLUGIN_DESCRIPTION*> getWizzardDescrs(const char *pn);
+    std::list<GWEN_PLUGIN_DESCRIPTION*> getWizardDescrs(const char *pn);
 
     /**
      * Frees all plugin descriptions whose pointers are stored inside

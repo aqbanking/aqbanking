@@ -35,6 +35,7 @@ AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
   assert(ab);
   assert(name);
   GWEN_NEW_OBJECT(AB_PROVIDER, pro);
+  pro->usage=1;
   GWEN_INHERIT_INIT(AB_PROVIDER, pro);
   GWEN_LIST_INIT(AB_PROVIDER, pro);
   pro->banking=ab;
@@ -47,14 +48,17 @@ AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
 
 void AB_Provider_free(AB_PROVIDER *pro){
   if (pro) {
-    GWEN_INHERIT_FINI(AB_PROVIDER, pro);
-    if (pro->libLoader) {
-      GWEN_LibLoader_CloseLibrary(pro->libLoader);
-      GWEN_LibLoader_free(pro->libLoader);
+    assert(pro->usage);
+    if (--(pro->usage)==0) {
+      GWEN_INHERIT_FINI(AB_PROVIDER, pro);
+      if (pro->libLoader) {
+        GWEN_LibLoader_CloseLibrary(pro->libLoader);
+        GWEN_LibLoader_free(pro->libLoader);
+      }
+      free(pro->name);
+      GWEN_LIST_FINI(AB_PROVIDER, pro);
+      GWEN_FREE_OBJECT(pro);
     }
-    free(pro->name);
-    GWEN_LIST_FINI(AB_PROVIDER, pro);
-    GWEN_FREE_OBJECT(pro);
   }
 }
 
@@ -332,20 +336,20 @@ AB_PROVIDER *AB_Provider_LoadPlugin(AB_BANKING *ab,
 
 
 
-GWEN_INHERIT_FUNCTIONS(AB_PROVIDER_WIZZARD);
-GWEN_LIST_FUNCTIONS(AB_PROVIDER_WIZZARD, AB_ProviderWizzard);
+GWEN_INHERIT_FUNCTIONS(AB_PROVIDER_WIZARD);
+GWEN_LIST_FUNCTIONS(AB_PROVIDER_WIZARD, AB_ProviderWizard);
 
 
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_new(AB_PROVIDER *pro,
+AB_PROVIDER_WIZARD *AB_ProviderWizard_new(AB_PROVIDER *pro,
                                             const char *name){
-  AB_PROVIDER_WIZZARD *pw;
+  AB_PROVIDER_WIZARD *pw;
 
   assert(pro);
   assert(name);
-  GWEN_NEW_OBJECT(AB_PROVIDER_WIZZARD, pw);
-  GWEN_INHERIT_INIT(AB_PROVIDER_WIZZARD, pw);
-  GWEN_LIST_INIT(AB_PROVIDER_WIZZARD, pw);
+  GWEN_NEW_OBJECT(AB_PROVIDER_WIZARD, pw);
+  GWEN_INHERIT_INIT(AB_PROVIDER_WIZARD, pw);
+  GWEN_LIST_INIT(AB_PROVIDER_WIZARD, pw);
   pw->provider=pro;
   pw->name=strdup(name);
 
@@ -354,43 +358,43 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_new(AB_PROVIDER *pro,
 
 
 
-void AB_ProviderWizzard_free(AB_PROVIDER_WIZZARD *pw){
+void AB_ProviderWizard_free(AB_PROVIDER_WIZARD *pw){
   if (pw) {
-    GWEN_INHERIT_FINI(AB_PROVIDER_WIZZARD, pw);
+    GWEN_INHERIT_FINI(AB_PROVIDER_WIZARD, pw);
     if (pw->libLoader) {
       GWEN_LibLoader_CloseLibrary(pw->libLoader);
       GWEN_LibLoader_free(pw->libLoader);
     }
     free(pw->name);
-    GWEN_LIST_FINI(AB_PROVIDER_WIZZARD, pw);
+    GWEN_LIST_FINI(AB_PROVIDER_WIZARD, pw);
     GWEN_FREE_OBJECT(pw);
   }
 }
 
 
 
-const char *AB_ProviderWizzard_GetName(const AB_PROVIDER_WIZZARD *pw){
+const char *AB_ProviderWizard_GetName(const AB_PROVIDER_WIZARD *pw){
   assert(pw);
   return pw->name;
 }
 
 
 
-AB_PROVIDER *AB_ProviderWizzard_GetProvider(const AB_PROVIDER_WIZZARD *pw){
+AB_PROVIDER *AB_ProviderWizard_GetProvider(const AB_PROVIDER_WIZARD *pw){
   assert(pw);
   return pw->provider;
 }
 
 
 
-GWEN_DB_NODE *AB_ProviderWizzard_GetData(AB_PROVIDER_WIZZARD *pw){
+GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw){
   assert(pw);
-  return AB_Banking_GetWizzardData(pw->provider->banking, pw);
+  return AB_Banking_GetWizardData(pw->provider->banking, pw);
 }
 
 
 
-int AB_ProviderWizzard_Setup(AB_PROVIDER_WIZZARD *pw){
+int AB_ProviderWizard_Setup(AB_PROVIDER_WIZARD *pw){
   assert(pw);
 
   if (pw->setupFn) {
@@ -402,8 +406,8 @@ int AB_ProviderWizzard_Setup(AB_PROVIDER_WIZZARD *pw){
 
 
 
-void AB_ProviderWizzard_SetSetupFn(AB_PROVIDER_WIZZARD *pw,
-                                   AB_PROVIDER_WIZZARD_SETUP_FN f){
+void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
+                                   AB_PROVIDER_WIZARD_SETUP_FN f){
   assert(pw);
   pw->setupFn=f;
 }
@@ -411,12 +415,12 @@ void AB_ProviderWizzard_SetSetupFn(AB_PROVIDER_WIZZARD *pw,
 
 
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPluginFile(AB_PROVIDER *pro,
+AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
                                                        const char *modname,
                                                        const char *fname){
   GWEN_LIBLOADER *ll;
-  AB_PROVIDER_WIZZARD *pw;
-  AB_PROVIDER_WIZZARD_FACTORY_FN fn;
+  AB_PROVIDER_WIZARD *pw;
+  AB_PROVIDER_WIZARD_FACTORY_FN fn;
   void *p;
   GWEN_BUFFER *nbuf;
   const char *s;
@@ -425,7 +429,7 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPluginFile(AB_PROVIDER *pro,
   ll=GWEN_LibLoader_new();
   if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
     DBG_ERROR(0,
-              "Could not load wizzard plugin \"%s\" (%s)",
+              "Could not load wizard plugin \"%s\" (%s)",
               modname, fname);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -448,11 +452,11 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPluginFile(AB_PROVIDER *pro,
   }
   GWEN_Buffer_free(nbuf);
 
-  fn=(AB_PROVIDER_WIZZARD_FACTORY_FN)p;
+  fn=(AB_PROVIDER_WIZARD_FACTORY_FN)p;
   assert(fn);
   pw=fn(pro);
   if (!pw) {
-    DBG_ERROR(0, "Error in plugin: No wizzard created");
+    DBG_ERROR(0, "Error in plugin: No wizard created");
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -466,11 +470,11 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPluginFile(AB_PROVIDER *pro,
 
 
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
+AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
                                                    const char *modname){
   GWEN_LIBLOADER *ll;
-  AB_PROVIDER_WIZZARD *pw;
-  AB_PROVIDER_WIZZARD_FACTORY_FN fn;
+  AB_PROVIDER_WIZARD *pw;
+  AB_PROVIDER_WIZARD_FACTORY_FN fn;
   void *p;
   GWEN_BUFFER *nbuf;
   const char *s;
@@ -481,7 +485,7 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(pbuf,
                            AQBANKING_PLUGINS
                            "/"
-                           AB_PROVIDER_WIZZARD_FOLDER
+                           AB_PROVIDER_WIZARD_FOLDER
                            "/");
   GWEN_Buffer_AppendString(pbuf, AB_Provider_GetName(pro));
 
@@ -489,7 +493,7 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
                                          GWEN_Buffer_GetStart(pbuf),
                                          modname)) {
-    DBG_ERROR(0, "Could not load wizzard plugin \"%s\"", modname);
+    DBG_ERROR(0, "Could not load wizard plugin \"%s\"", modname);
     GWEN_Buffer_free(pbuf);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -513,11 +517,11 @@ AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
   }
   GWEN_Buffer_free(nbuf);
 
-  fn=(AB_PROVIDER_WIZZARD_FACTORY_FN)p;
+  fn=(AB_PROVIDER_WIZARD_FACTORY_FN)p;
   assert(fn);
   pw=fn(pro);
   if (!pw) {
-    DBG_ERROR(0, "Error in plugin: No wizzard created");
+    DBG_ERROR(0, "Error in plugin: No wizard created");
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;

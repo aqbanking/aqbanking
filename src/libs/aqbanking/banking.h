@@ -157,23 +157,23 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname);
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
 /**
- * Tries to load the wizzard for the given backend which is of the given
+ * Tries to load the wizard for the given backend which is of the given
  * type t.
- * Setup wizzards are sorted by backends, since the wizzard do things
+ * Setup wizards are sorted by backends, since the wizard do things
  * very much dependant on the backend. Ideally they are shipped with the
  * backend.
  * @param ab pointer to the AB_BANKING object
  * @param pn name of the backend
- * @param t wizzard type. To allow keeping the API as open as possible you
+ * @param t wizard type. To allow keeping the API as open as possible you
  * may give a type name here. However, the following names are expected:
  * <ul>
- *  <li><b>kde</b> for a wizzard running under KDE</li>
- *  <li><b>gnome</b> for a wizzard running under GNOME</li>
- *  <li><b>console</b> for a wizzard running in a console</li>
- *  <li><b>curses</b> for a wizzard using (n)curses</li>
+ *  <li><b>kde</b> for a wizard running under KDE</li>
+ *  <li><b>gnome</b> for a wizard running under GNOME</li>
+ *  <li><b>console</b> for a wizard running in a console</li>
+ *  <li><b>curses</b> for a wizard using (n)curses</li>
  * </ul>
  */
-AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
+AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
                                            const char *pn,
                                            const char *t);
 /*@}*/
@@ -237,15 +237,15 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
 /**
- * Returns a list2 of wizzard descriptions for the given backend.
+ * Returns a list2 of wizard descriptions for the given backend.
  * You must free this list after using it via
  * @ref GWEN_PluginDescription_List2_freeAll.
  * Please note that a simple @ref GWEN_PluginDescription_List2_free would
  * not suffice, since that would only free the list but not the objects
  * stored within the list !
  */
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizzardDescrs(AB_BANKING *ab,
-                                                           const char *pn);
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
+                                                          const char *pn);
 
 /*@}*/
 
@@ -326,6 +326,10 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
                           const char *b2,
                           const char *b3);
 
+/**
+ * @param maxLen size of the buffer -1 (the -1 is to allow for the trailing
+ * null character to be appended)
+ */
 int AB_Banking_InputBox(AB_BANKING *ab,
                         const char *title,
                         const char *text,

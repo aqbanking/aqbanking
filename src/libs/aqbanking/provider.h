@@ -34,9 +34,9 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION);
 GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription);
 GWEN_LIST2_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription);
 
-typedef struct AB_PROVIDER_WIZZARD AB_PROVIDER_WIZZARD;
-GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_WIZZARD);
-GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_WIZZARD, AB_ProviderWizzard);
+typedef struct AB_PROVIDER_WIZARD AB_PROVIDER_WIZARD;
+GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_WIZARD);
+GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_WIZARD, AB_ProviderWizard);
 
 #ifdef __cplusplus
 }
@@ -149,33 +149,33 @@ AB_PROVIDER *AB_Provider_LoadPlugin(AB_BANKING *ab,
 
 
 
-typedef AB_PROVIDER_WIZZARD*
-  (*AB_PROVIDER_WIZZARD_FACTORY_FN)(AB_PROVIDER *pro);
+typedef AB_PROVIDER_WIZARD*
+  (*AB_PROVIDER_WIZARD_FACTORY_FN)(AB_PROVIDER *pro);
 
-typedef int (*AB_PROVIDER_WIZZARD_SETUP_FN)(AB_PROVIDER_WIZZARD *pw);
+typedef int (*AB_PROVIDER_WIZARD_SETUP_FN)(AB_PROVIDER_WIZARD *pw);
 
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_new(AB_PROVIDER *pro,
+AB_PROVIDER_WIZARD *AB_ProviderWizard_new(AB_PROVIDER *pro,
                                             const char *name);
-void AB_ProviderWizzard_free(AB_PROVIDER_WIZZARD *pw);
+void AB_ProviderWizard_free(AB_PROVIDER_WIZARD *pw);
 
-const char *AB_ProviderWizzard_GetName(const AB_PROVIDER_WIZZARD *pw);
-AB_PROVIDER *AB_ProviderWizzard_GetProvider(const AB_PROVIDER_WIZZARD *pw);
+const char *AB_ProviderWizard_GetName(const AB_PROVIDER_WIZARD *pw);
+AB_PROVIDER *AB_ProviderWizard_GetProvider(const AB_PROVIDER_WIZARD *pw);
 
-int AB_ProviderWizzard_Setup(AB_PROVIDER_WIZZARD *pw);
-
-
-void AB_ProviderWizzard_SetSetupFn(AB_PROVIDER_WIZZARD *pw,
-                                   AB_PROVIDER_WIZZARD_SETUP_FN f);
-
-GWEN_DB_NODE *AB_ProviderWizzard_GetData(AB_PROVIDER_WIZZARD *pw);
+int AB_ProviderWizard_Setup(AB_PROVIDER_WIZARD *pw);
 
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPluginFile(AB_PROVIDER *pro,
+void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
+                                   AB_PROVIDER_WIZARD_SETUP_FN f);
+
+GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw);
+
+
+AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
                                                        const char *modname,
                                                        const char *fname);
 
-AB_PROVIDER_WIZZARD *AB_ProviderWizzard_LoadPlugin(AB_PROVIDER *pro,
+AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
                                                    const char *modname);
 
 

@@ -27,6 +27,7 @@
 #define AB_ERROR_EMPTY           (-9)
 #define AB_ERROR_USER_ABORT      (-10)
 #define AB_ERROR_FOUND           (-11)
+#define AB_ERROR_NO_DATA         (-12)
 
 
 

@@ -252,7 +252,7 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-GWEN_TYPE_UINT32 AB_Job_IdForProvider(const AB_JOB *j) {
+GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j) {
   assert(j);
   return GWEN_DB_GetIntValue(j->data, "static/idForProvider", 0, 0);
 }

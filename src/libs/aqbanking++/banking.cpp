@@ -264,8 +264,8 @@ namespace AB {
   
   
   
-  AB_PROVIDER_WIZZARD *Banking::getWizzard(const char *pn, const char *t){
-    return AB_Banking_GetWizzard(_banking, pn, t);
+  AB_PROVIDER_WIZARD *Banking::getWizard(const char *pn, const char *t){
+    return AB_Banking_GetWizard(_banking, pn, t);
   }
   
   
@@ -342,11 +342,11 @@ namespace AB {
   
   
   std::list<GWEN_PLUGIN_DESCRIPTION*>
-  Banking::getWizzardDescrs(const char *pn){
+  Banking::getWizardDescrs(const char *pn){
     GWEN_PLUGIN_DESCRIPTION_LIST2 *ll;
     std::list<GWEN_PLUGIN_DESCRIPTION*> rl;
   
-    ll=AB_Banking_GetWizzardDescrs(_banking, pn);
+    ll=AB_Banking_GetWizardDescrs(_banking, pn);
     if (ll) {
       GWEN_PLUGIN_DESCRIPTION *d;
       GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
