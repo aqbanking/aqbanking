@@ -7,8 +7,8 @@ This document explains what an application needs to perform to setup and use
 AqBanking. 
 
 
-2. Setup AqBanking
-==================
+2. Application Setup Overview
+=============================
 
 1. Create an instance of AB_BANKING (AB_Banking_new())
 
@@ -63,11 +63,87 @@ loaded from AqBanking's configuration file.
 
 If the backend does not have an account list (e.g. because is has not been
 setup yet) you can invoke the backend setup wizard 
-(AB_Banking_GetWizard()). You can get a list of available wizards for a
+(AB_Banking_GetWizardPath()). You can get a list of available wizards for a
 given backend via AB_Banking_GetWizardDescrs().
 
 
 
+
+4. Performing Jobs
+==================
+
+To perform a job - such as getting the balance of an account, retrieving
+transaction statements, transferring money etc - you need to take the
+following steps (Example: Getting the balance of an account):
+
+
+ 1. Create an instance of AB_BANKING (AB_Banking_new())
+ 
+ 2. Set callbacks for virtual functions
+    The class AB_BANKING (file "banking.h") uses some callbacks which should
+    be set by the application which uses AqBanking.
+    These are callbacks which allow AqBanking or any of its plugins to 
+    interact with the user. See the section "Virtual Functions" in the Doxygen
+    documentation of AB_BANKING.
+
+ 3. Call AB_Banking_Init
+    This makes AqBanking actually read its configuration. Before this call
+    AqBanking can not work.
+
+ 4. Create the job to get the balance:
+    AB_JobGetBalance_new()
+
+ 5. Check whether this job is available with the account chosen:
+    AB_Job_CheckAvailability()
+    This function also does setup the parameters for the job (well, this
+    particular job has no parameters, but one parameter for JobGetTransactions
+    is the maximum number of days the bank server stores transaction 
+    statements for).
+
+ 6. Check the parameters (if any)
+    As described above this job has no parameters.
+    
+ 7. Set arguments for the job (if any)
+    Besides the account which has been given to the contructor this job
+    has no further arguments.
+
+ 8. Enqueue this job with the execution queue
+    AB_Banking_EnqueueJob()
+
+ 9. Execute the queue
+    AB_Banking_ExecuteQueue()
+    This function sends all enqueued jobs to their backends which will then
+    do the necessary communication with the bank server etc.
+
+10. Check for the status of each job.
+    AB_Job_GetStatus()
+    This function returns the status of the job.
+    Some jobs might have the status "pending". Those jobs have been processed
+    by the backend but did not yield a result quit yet. So you will have to
+    re-enqueue such a job later to make the backend check whether meanwhile
+    some results are available.
+
+    If the job has been finished you may apply the information returned (in
+    this case the balance of an account).
+
+11. Remove the job from the list of finished jobs.
+    AB_Banking_DelFinishedJob()
+    This is only needed if the job has been finished. If you don't delete the
+    job from the finished queue it will stay there forever (since only the
+    application which created the job may delete it).
+
+12. Call AB_Banking_Fini
+    This allows AqBanking to write its configuration back.
+    You should always call this function to avoid data inconsistencies.
+
+13. Release all AqBanking data (AB_Banking_free())
+    This function releases all data currently owned by AqBanking.
+    You should always call this function to avoid memory leaks.
+
+
+Actually, steps 3 to 12 may be performed multiple times.
+Most likely an application will perform steps 1-3 and 12-13 only upon
+startup and then later loop between steps 4 and 11.
 
 
 
