@@ -43,7 +43,7 @@ all:
 	automake --add-missing
 	@echo "autoconf"; \
 	 autoconf || (echo -e '***\n*** If the line above shows the error message "possibly undefined macro: \n*** AC_GWENHYWFAR", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
-	@echo "Now you can run ./configure --enable-maintainer-mode"
+	@echo "Now you can run ./configure"
 
 
 mp:

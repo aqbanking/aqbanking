@@ -153,6 +153,10 @@ case "$OS_TYPE" in
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
+###-------------------------------------------------------------------------
+
+# Debug arguments for compilation
+ACX_COMPILE_WARN()
 
 ###-------------------------------------------------------------------------
 AS_SCRUB_INCLUDE(all_includes)
