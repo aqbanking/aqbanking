@@ -5,6 +5,14 @@ If you want to use AqBanking in non-GPL software you can get an individual
 license from the author (martin@libchipcard.de).
 
 
+As the copyright holder of AqBanking, Martin Preuss grants the following
+license exception:
+
+Martin Preuss explicitly allows the compilation and distribution of
+AqBanking with the OpenSSL Toolkit.
+No developer is required to provide this exception in a derived work.
+
+
 
 
 		    GNU GENERAL PUBLIC LICENSE
