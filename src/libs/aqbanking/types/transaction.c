@@ -24,6 +24,8 @@ AB_TRANSACTION *AB_Transaction_new() {
   st->_usage=1;
   GWEN_INHERIT_INIT(AB_TRANSACTION, st)
   GWEN_LIST_INIT(AB_TRANSACTION, st)
+  st->localCountryCode=280;
+  st->remoteCountryCode=280;
   st->remoteName=GWEN_StringList_new();
   st->purpose=GWEN_StringList_new();
   return st;

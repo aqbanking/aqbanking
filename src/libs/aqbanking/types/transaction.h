@@ -230,6 +230,12 @@ get it with @ref AB_Transaction_GetPrimanota
 @anchor AB_TRANSACTION_Purpose
 <h4>Purpose</h4>
 <p>
+<p>
+This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.
+</p>
+<p>
+Please note the character set is defined by the backend. However, the backend takes care of the conversion between different character sets. Therefore it assumes that the strings in this list are in the local character set.
+</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetPurpose, 

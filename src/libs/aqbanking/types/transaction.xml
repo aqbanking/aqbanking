@@ -53,7 +53,7 @@
       <descr>
         This group contains information about the local account.
       </descr>
-      <elem name="localCountryCode" type="int" default="280" />
+      <elem name="localCountryCode" type="int" default="280" preset="280" />
       <elem name="localBankCode" type="char" ptr="1">
         <descr>
          This is the code of the local bank (i.e. <b>your</b> bank).
@@ -68,7 +68,7 @@
       <descr>
         This group contains information about the remote account.
       </descr>
-      <elem name="remoteCountryCode" type="int" default="280" />
+      <elem name="remoteCountryCode" type="int" default="280" preset="280" />
       <elem name="remoteBankCode" type="char" ptr="1" />
       <elem name="remoteAccountNumber" type="char" ptr="1" />
       <elem name="remoteSuffix" type="char" ptr="1" />
