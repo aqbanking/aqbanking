@@ -1002,6 +1002,38 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 /** @name Enqueueing, Dequeueing and Executing Jobs
  *
  * <p>
+ * AqBanking has several job lists:
+ * </p>
+ * <ul>
+ *  <li><b>enqueued jobs</b></li>
+ *  <li>finished jobs</li>
+ *  <li>pending jobs</li>
+ *  <li>archived jobs</li>
+ * </ul>
+ * <p>
+ * Enqued jobs are a different from all the other jobs, because AqBanking
+ * holds a unique list of those enqueued jobs.
+ * </p>
+ * <p>
+ * For example if you ask AqBanking for a list of finished jobs it reads the
+ * folder which contains those jobs and loads them one by one. This means
+ * if you call @ref AB_Banking_GetFinishedJobs multiple times you get
+ * multiple representations of the finished jobs. You should have this in mind
+ * when manipulating those jobs/job lists returned.
+ * </p>
+ * <p>
+ * <b>Enqueued</b> jobs however have only <b>one</b> representation, i.e. if
+ * you call @ref AB_Banking_GetEnqueuedJobs multiple times you will always get
+ * a list which contains pointers to the very same enqueued jobs.
+ * </p>
+ * <p>
+ * However, if you enqueue a job, execute the queue and later call
+ * @ref AB_Banking_GetFinishedJobs you will again have multiple
+ * representations of the jobs you once had in the enqueued list, because
+ * <b>after</b> @ref AB_Banking_GetFinishedJobs always creates a new
+ * representation of a job.
+ * </p>
+ * <p>
  * Enqueued jobs are preserved across shutdowns. As soon as a job has been
  * sent to the appropriate backend it will be removed from the queue.
  * Only those jobs are saved/reloaded which have been enqueued but never
@@ -1102,8 +1134,13 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
  * </p>
  * <p>
  * If a job is marked as <i>pending</i> after execution it will be moved to
- * the list of pending jobs.
+ * the list of pending jobs, so @ref AB_Banking_DelFinishedJob will not work
+ * on this job.
  * Those jobs are also preserved across shutdowns.
+ * </p>
+ * <p>
+ * You should call @ref AB_Banking_Save() before calling this function here
+ * to make sure that a crash in a backend will not destroy too much data.
  * </p>
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
@@ -1113,15 +1150,25 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 
 /**
  * <p>
- * Returns the list of currently enqueued jobs. If the queue is empty
- * NULL is returned.
+ * Returns a new list which contains the currently enqueued jobs.
+ * If the queue is empty NULL is returned.
  * </p>
  * <p>
  * Please note that AqBanking still remains the owner of those jobs in the
  * list returned (if any). So you MUST NOT call @ref AB_Job_List2_FreeAll on
  * this list. However, you MUST call @ref AB_Job_List2_free when you no
- * longer need the list to avoid memory leaks.
+ * longer need the @b list to avoid memory leaks.
  * </p>
+ * <p>
+ * This list is only valid until one of the following functions is called:
+ * </p>
+ * <ul>
+ *  <li>@ref AB_Banking_ExecuteQueue</li>
+ *  <li>@ref AB_Banking_Fini</li>
+ * </ul>
+ * After one of these functions has been called you are only allowed to call
+ * @ref AB_Job_List2_free on that list, the elements of this list are no
+ * longer valid.
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */

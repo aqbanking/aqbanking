@@ -1,4 +1,15 @@
 
+2005/03/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- safer handling of enqueued jobs upon ExecuteQueue:
+  - when a job has been added to the queue of a backend it is moved from the
+    "todo" list to the "sent" folder. This way even if the backend crashes a
+    job will in no case be executed twice.
+- AB_Banking_Save() now writes to temporary config file and renames the 
+  resulting file later to the real name.
+- clarified APIDOC of GetEnquedJobs and the function group it is in
+
+
 2005/03/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in dtaus-import.c (reported by Andreas Degert)

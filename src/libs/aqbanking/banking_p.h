@@ -138,6 +138,7 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
 int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
+int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl);
 
 
 AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,

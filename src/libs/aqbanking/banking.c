@@ -352,8 +352,9 @@ int AB_Banking__LoadAppData(AB_BANKING *ab) {
   DBG_NOTICE(AQBANKING_LOGDOMAIN,
              "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
-		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_CREATE_GROUP |
+                       GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not load config file \"%s\", creating it later",
 	     GWEN_Buffer_GetStart(pbuf));
@@ -406,7 +407,8 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
   GWEN_Buffer_AppendBuffer(rpbuf, pbuf);
   GWEN_Buffer_AppendString(pbuf, ".tmp");
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
-			GWEN_DB_FLAGS_DEFAULT)) {
+                        GWEN_DB_FLAGS_DEFAULT |
+                        GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not save app config file \"%s\"",
 	     GWEN_Buffer_GetStart(pbuf));
@@ -496,8 +498,9 @@ int AB_Banking__LoadProviderData(AB_BANKING *ab,
   DBG_NOTICE(AQBANKING_LOGDOMAIN,
              "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
-		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_CREATE_GROUP |
+                       GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not load config file \"%s\", creating it later",
 	     GWEN_Buffer_GetStart(pbuf));
@@ -552,7 +555,7 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
   GWEN_Buffer_AppendBuffer(rpbuf, pbuf);
   GWEN_Buffer_AppendString(pbuf, ".tmp");
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
-			GWEN_DB_FLAGS_DEFAULT)) {
+                        GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not save backend config file \"%s\"",
 	     GWEN_Buffer_GetStart(pbuf));
@@ -1023,7 +1026,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
   assert(dbT);
   if (GWEN_DB_ReadFile(dbT, ab->configFile,
                        GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+                       GWEN_PATH_FLAGS_CREATE_GROUP |
+                       GWEN_DB_FLAGS_LOCKFILE)) {
     GWEN_DB_Group_free(dbT);
     return AB_ERROR_BAD_CONFIG_FILE;
   }
@@ -1276,7 +1280,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   GWEN_Buffer_AppendString(rpbuf, ab->configFile);
   GWEN_Buffer_AppendString(rpbuf, ".tmp");
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf),
-                        GWEN_DB_FLAGS_DEFAULT)) {
+                        GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not save app config file \"%s\"",
              GWEN_Buffer_GetStart(rpbuf));
@@ -1337,6 +1341,7 @@ int AB_Banking_Save(AB_BANKING *ab) {
   AB_JOB *j;
   int rv;
   AB_PROVIDER *pro;
+  GWEN_BUFFER *rpbuf;
 
   assert(ab);
 
@@ -1431,14 +1436,30 @@ int AB_Banking_Save(AB_BANKING *ab) {
   }
 
   /* write config file. TODO: make backups */
-  if (GWEN_DB_WriteFile(db, ab->configFile,
-                        GWEN_DB_FLAGS_DEFAULT)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
+  rpbuf=GWEN_Buffer_new(0, strlen(ab->configFile)+4, 0, 1);
+  GWEN_Buffer_AppendString(rpbuf, ab->configFile);
+  GWEN_Buffer_AppendString(rpbuf, ".tmp");
+  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf),
+                        GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "Could not save app config file \"%s\"",
+             ab->configFile);
+    GWEN_Buffer_free(rpbuf);
     GWEN_DB_Group_free(db);
-    return AB_ERROR_BAD_CONFIG_FILE;
+    return AB_ERROR_GENERIC;
   }
-
+  if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not rename file to \"%s\": %s",
+              ab->configFile,
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_DB_Group_free(db);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_free(rpbuf);
   GWEN_DB_Group_free(db);
+
   return 0;
 }
 
@@ -1782,7 +1803,7 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly){
 
 
 
-int AB_Banking__ExecuteQueue(AB_BANKING *ab){
+int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
   AB_PROVIDER *pro;
   int succ;
 
@@ -1795,7 +1816,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
     int jobs;
     int rv;
 
-    j=AB_Job_List_First(ab->enqueuedJobs);
+    j=AB_Job_List_First(jl);
     jobs=0;
     while(j) {
       AB_JOB *jnext;
@@ -1819,8 +1840,12 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
             AB_Job_SetStatus(j, AB_Job_StatusError);
             AB_Job_SetResultText(j, "Refused by backend");
           }
-          else
+          else {
             jobs++;
+            AB_Job_SetStatus(j, AB_Job_StatusSent);
+            AB_Banking__SaveJobAs(ab, j, "sent");
+            AB_Banking__UnlinkJobAs(ab, j, "todo");
+          }
         }
       } /* if job enqueued */
       else {
@@ -1836,7 +1861,11 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
       if (rv) {
         int lrv;
 
-	DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
+        if (rv==AB_ERROR_USER_ABORT) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          return rv;
+        }
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
         lrv=AB_Banking_MessageBox(ab,
                                   AB_BANKING_MSG_FLAGS_TYPE_ERROR |
                                   AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
@@ -1879,7 +1908,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
   /* clear temporarily accepted certificates */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
 
-  rv=AB_Banking__ExecuteQueue(ab);
+  rv=AB_Banking__ExecuteQueue(ab, ab->enqueuedJobs);
 
   /* clear temporarily accepted certificates again */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
@@ -1891,19 +1920,25 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
 
     nj=AB_Job_List_Next(j);
 
-    if (AB_Job_GetStatus(j)==AB_Job_StatusEnqueued) {
-      /* job still enqueued, so it has never been sent */
-      AB_Job_SetStatus(j, AB_Job_StatusError);
-    }
-
     AB_Job_Attach(j);
-    AB_Banking_DequeueJob(ab, j);
+    AB_Job_List_Del(j);
 
     switch(AB_Job_GetStatus(j)) {
+    case AB_Job_StatusEnqueued:
+      /* job still enqueued, so it has never been sent */
+      AB_Job_SetStatus(j, AB_Job_StatusError);
+      AB_Job_SetResultText(j, "Job has never been sent");
+      if (AB_Banking__SaveJobAs(ab, j, "finished")) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
+      }
+      AB_Banking__UnlinkJobAs(ab, j, "todo");
+      break;
+
     case AB_Job_StatusPending:
       if (AB_Banking__SaveJobAs(ab, j, "pending")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
       }
+      AB_Banking__UnlinkJobAs(ab, j, "sent");
       break;
 
     case AB_Job_StatusSent:
@@ -1913,6 +1948,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       if (AB_Banking__SaveJobAs(ab, j, "finished")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
       }
+      AB_Banking__UnlinkJobAs(ab, j, "sent");
       break;
     }
     AB_Job_free(j);
@@ -2176,7 +2212,8 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
               if (GWEN_DB_ReadFile(dbT,
                                    GWEN_Buffer_GetStart(nbuf),
                                    GWEN_DB_FLAGS_DEFAULT |
-                                   GWEN_PATH_FLAGS_CREATE_GROUP)) {
+                                   GWEN_PATH_FLAGS_CREATE_GROUP |
+                                   GWEN_DB_FLAGS_LOCKFILE)) {
                 DBG_ERROR(AQBANKING_LOGDOMAIN,
                           "Could not read file \"%s\"",
                           GWEN_Buffer_GetStart(nbuf));
@@ -3264,9 +3301,9 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
   fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), 0);
   if (fd!=-1) {
     if (unlink(GWEN_Buffer_GetStart(pbuf))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "unlink(%s): %s",
-		GWEN_Buffer_GetStart(pbuf),
-		strerror(errno));
+      DBG_DEBUG(AQBANKING_LOGDOMAIN, "unlink(%s): %s",
+                GWEN_Buffer_GetStart(pbuf),
+                strerror(errno));
       GWEN_Buffer_free(pbuf);
       AB_Banking__CloseFile(fd);
       return AB_ERROR_GENERIC;
