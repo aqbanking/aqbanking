@@ -1,3 +1,10 @@
+2005-02-22   Christian Stimming <stimming@tuhh.de>
+
+	* aqbanking.iss.in: Finally finish the iss setup file: The DLL is
+	installed in the windows directory, the gwen plugins are installed
+	in gwen's dbio-plugindir, everything else in the application's
+	dir, and registry keys for querying its plugindir are set.
+
 2005-02-21   Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking.iss.in: Add Inno Setup Compiler input file for

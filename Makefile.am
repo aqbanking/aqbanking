@@ -57,7 +57,8 @@ ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
 wintmpdir = win32-tmp
 setup: aqbanking.iss
 	mkdir -p $(wintmpdir)
-	make prefix="`pwd`/$(wintmpdir)" install \
+	make prefix="`pwd`/$(wintmpdir)" \
+	     gwenhywfar_plugins="`pwd`/$(wintmpdir)/gwen" install \
 	 && $(ISCC) aqbanking.iss \
 	 && rm -rf $(wintmpdir)
 

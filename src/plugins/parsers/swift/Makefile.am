@@ -1,7 +1,7 @@
 INCLUDES = $(gwenhywfar_includes)
 EXTRA_DIST=README
 
-dbioplugindir=@gwenhywfar_plugins@/dbio
+dbioplugindir = $(gwenhywfar_plugins)/dbio
 if IS_WINDOWS
 dbioplugin_DATA=swift.xml swift.dll
 else
@@ -20,8 +20,9 @@ swift_la_SOURCES=\
  swift.c \
  swift940.c
 
-swift_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
-swift_la_LDFLAGS=@STRIPALL@ -module -omit-version
+swift_la_LIBADD = $(gwenhywfar_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+swift_la_LDFLAGS = $(STRIPALL) -module -omit-version
 
 
 sources:

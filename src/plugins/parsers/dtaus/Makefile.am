@@ -1,7 +1,7 @@
 INCLUDES = $(gwenhywfar_includes)
 EXTRA_DIST=README
 
-dbioplugindir=@gwenhywfar_plugins@/dbio
+dbioplugindir = $(gwenhywfar_plugins)/dbio
 
 dbioplugin_LTLIBRARIES=dtaus.la
 if IS_WINDOWS
@@ -21,8 +21,9 @@ dtaus_la_SOURCES=\
  dtaus-import.c \
  dtaus-export.c
 
-dtaus_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
-dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
+dtaus_la_LIBADD = $(gwenhywfar_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+dtaus_la_LDFLAGS = $(STRIPALL) -module -omit-version
 
 
 sources:
