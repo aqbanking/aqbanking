@@ -1666,7 +1666,12 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+    rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
+  else {
+    DBG_ERROR(0, "Job can only be removed by its creator application");
+    rv=AB_ERROR_INVALID;
+  }
   return rv;
 }
 
@@ -1684,7 +1689,12 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+    rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
+  else {
+    DBG_ERROR(0, "Job can only be removed by its creator application");
+    rv=AB_ERROR_INVALID;
+  }
   return rv;
 }
 
