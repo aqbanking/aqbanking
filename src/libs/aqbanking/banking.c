@@ -1006,6 +1006,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
                              AQBANKING_PLUGINS
                              DIRSEP
                              AB_BANKINFO_PLUGIN_FOLDER);
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "bankinfodir");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not register bankinfo plugin manager");
@@ -1020,6 +1023,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
 			     AQBANKING_PLUGINS
 			     DIRSEP
 			     AB_PROVIDER_FOLDER);
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "providerdir");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register provider plugin manager");

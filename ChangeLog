@@ -1,3 +1,8 @@
+2005-03-30   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Use new
+	PluginManager_AddPathFromWinReg for path lookup from windows
+	registry.
 
 2005/03/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
