@@ -365,6 +365,11 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
     return pro;
   pro=AB_Banking_LoadProviderPlugin(ab, name);
   if (pro) {
+    if (AB_Provider_Init(pro)) {
+      DBG_ERROR(0, "Could not init provider \"%s\"", name);
+      AB_Provider_free(pro);
+      return 0;
+    }
     AB_Provider_List_Add(pro, ab->providers);
   }
 

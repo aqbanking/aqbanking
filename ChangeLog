@@ -6,6 +6,7 @@
   backends. Might be published in special RPMs especially dedicated to
   backend development).
 - added AB_Transaction_fromDb() and AB_Transaction_toDb()
+- AB_Banking_GetProvider: initialize the provider after loading it
 
 
 2004/08/14: Martin Preuss<martin@libchipcard.de>

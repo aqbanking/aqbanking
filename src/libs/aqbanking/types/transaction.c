@@ -667,11 +667,11 @@ AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
   if (dbT)
-    AB_Transaction_SetValutaDate(t, GWEN_Time_fromDb(db));
+    AB_Transaction_SetValutaDate(t, GWEN_Time_fromDb(dbT));
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
   if (dbT)
-    AB_Transaction_SetDate(t, GWEN_Time_fromDb(db));
+    AB_Transaction_SetDate(t, GWEN_Time_fromDb(dbT));
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
   if (dbT)

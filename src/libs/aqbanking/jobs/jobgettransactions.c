@@ -66,7 +66,7 @@ void AB_JobGetTransactions_FreeData(void *bp, void *p){
 
 
 
-const AB_TRANSACTION_LIST2*
+AB_TRANSACTION_LIST2*
 AB_JobGetTransactions_GetTransactions(const AB_JOB *j){
   AB_JOB_GETTRANSACTIONS *aj;
 

@@ -42,7 +42,7 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a,
                                   const GWEN_TIME *toTime);
 
 AQBANKING_API 
-const AB_TRANSACTION_LIST2*
+AB_TRANSACTION_LIST2*
   AB_JobGetTransactions_GetTransactions(const AB_JOB *j);
 
 /**
