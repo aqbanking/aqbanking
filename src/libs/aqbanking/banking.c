@@ -2451,10 +2451,21 @@ int AB_Banking__OpenFile(const char *s, int wr) {
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLKW, &fl)) {
+# ifdef ENOLCK
+    if (errno!=ENOLCK) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"fcntl(%s, F_SETLKW): %s", s, strerror(errno));
+      close(fd);
+      return -1;
+    }
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Advisory locking is not supported at this file location.");
+# else
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
+	      "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
     close(fd);
     return -1;
+# endif
   }
 #endif
 
@@ -2481,10 +2492,8 @@ int AB_Banking__CloseFile(int fd){
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLK, &fl)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(%d, F_SETLK): %s",
-              fd, strerror(errno));
-    close(fd);
-    return -1;
+    DBG_WARN(AQBANKING_LOGDOMAIN, "fcntl(%d, F_SETLK): %s",
+	     fd, strerror(errno));
   }
 #endif
 

@@ -1,7 +1,10 @@
 
+
 2004/09/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a GWEN_BufferedIO_Flush() to AB_Banking_GetUniqueId()
+- AB_Banking__OpenFile: if error upon fcntl is ENOLCK it will be ignored.
+  This is because locking is not supported on NFS files systems.
 
 
 ===========================================================================
