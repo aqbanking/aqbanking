@@ -19,3 +19,5 @@ install-sh
 ltmain.sh
 missing
 mkinstalldirs
+apidoc
+aqbanking.tag
