@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=1
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=3
+AQBANKING_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -103,6 +103,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
+AC_CHECK_PROG(SED,sed,sed)
 
 # Checks for libraries.
 
@@ -208,10 +209,11 @@ for sm in $aqbanking_modules; do
     AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/${sm}/${f}"
     case ${f} in
       *_p.h | *_l.h)
-            ;;
+         ;;
       *)   
-            ln -s "${lprefix}/src/libs/aqbanking/${sm}/${f}" "aqbanking/${f}"
-            ;;
+         AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/${sm}/${f}"
+         ln -s "${lprefix}/src/libs/aqbanking/${sm}/${f}" "aqbanking/${f}"
+         ;;
     esac
   done
 done
@@ -229,13 +231,13 @@ mkdir aqbanking++
 for sm in $aqbankingpp_modules; do
   hfiles=`( cd "${srcdir}/src/libs/aqbanking++/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking++/${sm}/${f}"
     case ${f} in
       *_p.h | *_l.h)
-            ;;
+         ;;
       *)   
-            ln -s "${lprefix}/src/libs/aqbanking++/${sm}/${f}" "aqbanking++/${f}"
-            ;;
+         AQ_HEADER_FILES="${AQ_HEADER_FILES} src/libs/aqbanking++/${sm}/${f}"
+         ln -s "${lprefix}/src/libs/aqbanking++/${sm}/${f}" "aqbanking++/${f}"
+         ;;
     esac
   done
 done
@@ -248,7 +250,7 @@ done
 AC_MSG_CHECKING(docpath)
 AC_ARG_WITH(docpath, [  --with-docpath=DIR where to store the apidoc],
   [docpath="$withval"],
-  [docpath="apidoc"])
+  [docpath="${HOME}/apidoc"])
 AC_SUBST(docpath)
 AC_MSG_RESULT($docpath)
 
@@ -273,11 +275,36 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="aqbanking aqbanking++"
+	DOXYGEN_INPUT="${AQ_HEADER_FILES}"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
+
+
+###-------------------------------------------------------------------------
+#
+# search for tag files
+#
+AC_MSG_CHECKING(doxygen tag files)
+DOXYGEN_TAGFILES=""
+if test -d "${docpath}"; then
+  DOXYGEN_TAGFILES="`cd ${docpath} && ls *.tag`"
+  if test -n "${DOXYGEN_TAGFILES}"; then
+   DOXYGEN_TAGFILES="`echo ${DOXYGEN_TAGFILES} | ${SED} -e s/${PACKAGE}.tag//`"
+  fi
+  realfiles=""
+  for ff in ${DOXYGEN_TAGFILES}; do
+    realfiles="${realfiles} ${docpath}/${ff}"
+  done
+  DOXYGEN_TAGFILES="${realfiles}"
+fi
+if test -z "${DOXYGEN_TAGFILES}"; then
+  AC_MSG_RESULT(none)
+else
+  AC_MSG_RESULT(found)
+fi
+AC_SUBST(DOXYGEN_TAGFILES)
 
 
 

@@ -197,6 +197,24 @@ const char *AB_Banking_GetAppName(const AB_BANKING *ab);
  * AqBanking is able to separate and store the data for every application.
  */
 GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
+
+/**
+ * Returns the name of the user folder for AqBanking's data.
+ * Normally this is something like "/home/me/.banking".
+ */
+int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
+
+/**
+ * Returns the name of the user folder for application data.
+ * Normally this is something like "/home/me/.banking/apps".
+ * Your application may choose to create folders below this one to store
+ * user data. If you only add AqBanking to an existing program to add
+ * home banking support you will most likely use your own folders and thus
+ * won't need this function.
+ */
+int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
+
+
 /*@}*/
 
 
@@ -261,6 +279,13 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
  */
 GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
                                          const AB_PROVIDER *pro);
+
+/**
+ * This copies the name of the folder for AqBanking's backend data into
+ * the given GWEN_Buffer.
+ */
+int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
+
 /*@}*/
 
 

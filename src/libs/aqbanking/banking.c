@@ -1068,6 +1068,51 @@ const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab) {
 
 
 
+int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
+  char home[256];
+
+  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+    DBG_ERROR(0, "Could not determine home directory, aborting.");
+    return -1;
+  }
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buf, home);
+  GWEN_Buffer_AppendString(buf, "/.banking");
+  return 0;
+}
+
+
+
+int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
+  int rv;
+
+  rv=AB_Banking_GetUserDataDir(ab, buf);
+  if (rv)
+    return rv;
+  GWEN_Buffer_AppendString(buf, "/apps");
+  return 0;
+}
+
+
+
+int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
+  int rv;
+
+  rv=AB_Banking_GetUserDataDir(ab, buf);
+  if (rv)
+    return rv;
+  GWEN_Buffer_AppendString(buf, "/backends");
+  return 0;
+}
+
+
+
+
+
+
+
+
+
 
 
 

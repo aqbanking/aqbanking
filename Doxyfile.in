@@ -402,7 +402,7 @@ GENERATE_HTML          = YES
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `html' will be used as the default path.
 
-HTML_OUTPUT            = @docpath@
+HTML_OUTPUT            = apidoc
 
 # The HTML_HEADER tag can be used to specify a personal HTML header for 
 # each generated HTML page. If it is left blank doxygen will generate a 
@@ -681,12 +681,12 @@ EXPAND_AS_DEFINED      =
 
 # The TAGFILES tag can be used to specify one or more tagfiles.
 
-#TAGFILES               = @docpath@/libchipcard.tag
+TAGFILES               = @DOXYGEN_TAGFILES@
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create 
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = @docpath@/gwenipc.tag
+GENERATE_TAGFILE       = aqbanking.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed 
 # in the class index. If set to NO only the inherited external classes 

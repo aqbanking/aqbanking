@@ -1,4 +1,12 @@
 
+2004/08/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- very much improved generation of API doc. In combination with the
+  changes in my other projects the new target "install-srcdoc" now
+  creates combined API docs (e.g. API doc for AqBanking now links to
+  that of Gwenhywfar etc)
+
+
 2004/08/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - adapted to latest changes in AqHBCI and Gwen.
