@@ -16,6 +16,7 @@
 
 #define AB_PROVIDER_FOLDER "providers"
 #define AB_PROVIDER_WIZARD_FOLDER "wizards"
+#define AB_PROVIDER_DEBUGGER_FOLDER "debugger"
 
 #include <aqbanking/provider.h>
 #include <aqbanking/provider_be.h>

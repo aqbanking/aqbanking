@@ -152,5 +152,12 @@ int AB_Banking__GetPin(AB_BANKING *ab,
                        int minLen,
                        int maxLen);
 
+int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
+                                const char *backend,
+                                GWEN_BUFFER *pbuf);
+int AB_Banking__GetWizardPath(AB_BANKING *ab,
+                              const char *backend,
+                              GWEN_BUFFER *pbuf);
+
 
 #endif /* AQBANKING_BANKING_P_H */

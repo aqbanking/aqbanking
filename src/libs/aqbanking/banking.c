@@ -1352,6 +1352,27 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
 
 
 
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
+                                                            const char *pn){
+  GWEN_BUFFER *pbuf;
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *wdl;
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf,
+                           AQBANKING_PLUGINS
+                           DIRSEP
+			   AB_PROVIDER_DEBUGGER_FOLDER
+                           DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, pn);
+
+  wdl=GWEN_LoadPluginDescrs(GWEN_Buffer_GetStart(pbuf));
+
+  GWEN_Buffer_free(pbuf);
+  return wdl;
+}
+
+
+
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
@@ -2437,9 +2458,9 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
 
 
-int AB_Banking_GetWizardPath(AB_BANKING *ab,
-                             const char *backend,
-                             GWEN_BUFFER *pbuf){
+int AB_Banking__GetWizardPath(AB_BANKING *ab,
+                              const char *backend,
+                              GWEN_BUFFER *pbuf){
   const char *s;
 
   GWEN_Buffer_AppendString(pbuf,
@@ -2451,6 +2472,264 @@ int AB_Banking_GetWizardPath(AB_BANKING *ab,
   while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
 
   return 0;
+}
+
+
+
+int AB_Banking_GetWizardPath(AB_BANKING *ab,
+                             const char *backend,
+                             GWEN_BUFFER *pbuf){
+  DBG_ERROR(AQBANKING_LOGDOMAIN,
+            "AB_Banking_GetWizardPath() is deprecated!");
+  return AB_Banking__GetWizardPath(ab, backend, pbuf);
+}
+
+
+
+int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
+                                const char *backend,
+                                GWEN_BUFFER *pbuf){
+  const char *s;
+
+  GWEN_Buffer_AppendString(pbuf,
+                           AQBANKING_PLUGINS
+			   DIRSEP
+			   AB_PROVIDER_DEBUGGER_FOLDER
+                           DIRSEP);
+  s=backend;
+  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
+
+  return 0;
+}
+
+
+
+int AB_Banking_FindDebugger(AB_BANKING *ab,
+			    const char *backend,
+			    const char *frontends,
+			    GWEN_BUFFER *pbuf){
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
+  char *s;
+  char *p;
+
+  pl=AB_Banking_GetDebuggerDescrs(ab, backend);
+  if (!pl) {
+    DBG_WARN(AQBANKING_LOGDOMAIN,
+	     "No debuggers available for backend \"%s\"", backend);
+    return -1;
+  }
+
+  if (frontends==0) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+    const char *name;
+
+    pit=GWEN_PluginDescription_List2_First(pl);
+    assert(pit);
+    pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+    while(pd) {
+      name=GWEN_PluginDescription_GetName(pd);
+      if (!name) {
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Found a plugin description with no name");
+      }
+      else {
+	int rv;
+
+	rv=AB_Banking__GetDebuggerPath(ab, backend, pbuf);
+	if (rv) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	  return rv;
+	}
+	GWEN_Buffer_AppendByte(pbuf, '/');
+	GWEN_Buffer_AppendString(pbuf, name);
+	GWEN_PluginDescription_List2Iterator_free(pit);
+	GWEN_PluginDescription_List2_freeAll(pl);
+	return 0;
+      }
+      pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+    }
+    GWEN_PluginDescription_List2Iterator_free(pit);
+  } /* if no frontend list */
+
+  /* check for every given frontend */
+  s=strdup(frontends);
+
+  p=s;
+  while(*p) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+    char *t;
+
+    t=strchr(p, ';');
+    if (t)
+      *(t++)=0;
+
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Trying frontend \"%s\"", p);
+
+    pit=GWEN_PluginDescription_List2_First(pl);
+    assert(pit);
+    pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+    assert(pd);
+    while(pd) {
+      GWEN_XMLNODE *n;
+      const char *fr;
+
+      n=GWEN_PluginDescription_GetXmlNode(pd);
+      assert(n);
+      fr=GWEN_XMLNode_GetProperty(n, "frontend", "");
+      if (-1!=GWEN_Text_ComparePattern(fr, p, 0)) {
+	const char *name;
+
+	name=GWEN_PluginDescription_GetName(pd);
+	if (!name) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Found a plugin description with no name");
+	}
+	else {
+	  int rv;
+
+	  rv=AB_Banking__GetDebuggerPath(ab, backend, pbuf);
+	  if (rv) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	    return rv;
+	  }
+	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, name);
+          free(s);
+	  GWEN_PluginDescription_List2Iterator_free(pit);
+	  GWEN_PluginDescription_List2_freeAll(pl);
+	  return 0;
+	}
+      }
+      pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+    } /* while pd */
+    GWEN_PluginDescription_List2Iterator_free(pit);
+
+    if (!t)
+      break;
+    p=t;
+  } /* while */
+
+  free(s);
+  GWEN_PluginDescription_List2_freeAll(pl);
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No matching debugger found");
+  return -1;
+}
+
+
+
+int AB_Banking_FindWizard(AB_BANKING *ab,
+			  const char *backend,
+			  const char *frontends,
+			  GWEN_BUFFER *pbuf){
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
+  char *s;
+  char *p;
+
+  pl=AB_Banking_GetWizardDescrs(ab, backend);
+  if (!pl) {
+    DBG_WARN(AQBANKING_LOGDOMAIN,
+	     "No debuggers available for backend \"%s\"", backend);
+    return -1;
+  }
+
+  if (frontends==0) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+    const char *name;
+
+    pit=GWEN_PluginDescription_List2_First(pl);
+    assert(pit);
+    pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+    while(pd) {
+      name=GWEN_PluginDescription_GetName(pd);
+      if (!name) {
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Found a plugin description with no name");
+      }
+      else {
+	int rv;
+
+	rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
+	if (rv) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	  return rv;
+	}
+	GWEN_Buffer_AppendByte(pbuf, '/');
+	GWEN_Buffer_AppendString(pbuf, name);
+	GWEN_PluginDescription_List2Iterator_free(pit);
+	GWEN_PluginDescription_List2_freeAll(pl);
+	return 0;
+      }
+      pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+    }
+    GWEN_PluginDescription_List2Iterator_free(pit);
+  } /* if no frontend list */
+
+  /* check for every given frontend */
+  s=strdup(frontends);
+
+  p=s;
+  while(*p) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+    char *t;
+
+    t=strchr(p, ';');
+    if (t)
+      *(t++)=0;
+
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Trying frontend \"%s\"", p);
+
+    pit=GWEN_PluginDescription_List2_First(pl);
+    assert(pit);
+    pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+    assert(pd);
+    while(pd) {
+      GWEN_XMLNODE *n;
+      const char *fr;
+
+      n=GWEN_PluginDescription_GetXmlNode(pd);
+      assert(n);
+      fr=GWEN_XMLNode_GetProperty(n, "frontend", "");
+      if (-1!=GWEN_Text_ComparePattern(fr, p, 0)) {
+	const char *name;
+
+	name=GWEN_PluginDescription_GetName(pd);
+	if (!name) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Found a plugin description with no name");
+	}
+	else {
+	  int rv;
+
+	  rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
+	  if (rv) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	    return rv;
+	  }
+	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, name);
+          free(s);
+	  GWEN_PluginDescription_List2Iterator_free(pit);
+	  GWEN_PluginDescription_List2_freeAll(pl);
+	  return 0;
+	}
+      }
+      pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+    } /* while pd */
+    GWEN_PluginDescription_List2Iterator_free(pit);
+
+    if (!t)
+      break;
+    p=t;
+  } /* while */
+
+  free(s);
+  GWEN_PluginDescription_List2_freeAll(pl);
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No matching debugger found");
+  return -1;
 }
 
 

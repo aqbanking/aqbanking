@@ -591,15 +591,95 @@ AQBANKING_API
 int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
 
 /**
+ * @deprecated
  * Returns the folder where the wizards for the given backend are
  * located.  You can then use this path and the name of the wizard you
  * want to start to run a wizard. You can look up the available
  * wizards by the function AB_Banking_GetWizardDescrs().
+ *
+ * This function is deprecated.
  */
 AQBANKING_API
 int AB_Banking_GetWizardPath(AB_BANKING *ab,
                              const char *backend,
                              GWEN_BUFFER *pbuf);
+
+/**
+ * This function simpifies wizard handling. It seaches for a wizard for
+ * the given backend and the given frontends.
+ * @param ab pointer to the AB_BANKING object
+ * @param backend name of the backend (such as "aqhbci". You can retrieve
+ * such a name either from the list of active backends
+ * (@ref AB_Banking_GetActiveProviders) or from an plugin description
+ * retrieved via @ref AB_Banking_GetProviderDescrs (call
+ * @ref GWEN_PluginDescription_GetName on that plugin description).
+ * @param frontends This is a semicolon separated list of acceptable frontends
+ * The following lists merely are suggestions:
+ * <table>
+ *  <tr>
+ *    <td>KDE Applications</td>
+ *    <td>kde;qt;gtk;gnome</td>
+ *  </tr>
+ *  <tr>
+ *    <td>QT Applications</td>
+ *    <td>qt;kde;gtk;gnome</td>
+ *  </tr>
+ *  <tr>
+ *    <td>GNOME Applications</td>
+ *    <td>gnome;gtk;qt;kde</td>
+ *  </tr>
+ *  <tr>
+ *    <td>GTK Applications</td>
+ *    <td>gtk;gnome;qt;kde</td>
+ *  </tr>
+ * </table>
+ * You can always add an asterisk ("*") to the list to accept any other
+ * frontend (or pass a NULL pointer to accept the first valid frontend).
+ */
+AQBANKING_API
+int AB_Banking_FindWizard(AB_BANKING *ab,
+                          const char *backend,
+                          const char *frontends,
+                          GWEN_BUFFER *pbuf);
+
+
+/**
+ * This function simpifies debugger handling. It seaches for a debugger for
+ * the given backend and the given frontends.
+ * @param ab pointer to the AB_BANKING object
+ * @param backend name of the backend (such as "aqhbci". You can retrieve
+ * such a name either from the list of active backends
+ * (@ref AB_Banking_GetActiveProviders) or from an plugin description
+ * retrieved via @ref AB_Banking_GetProviderDescrs (call
+ * @ref GWEN_PluginDescription_GetName on that plugin description).
+ * @param frontends This is a semicolon separated list of acceptable frontends
+ * The following lists merely are suggestions:
+ * <table>
+ *  <tr>
+ *    <td>KDE Applications</td>
+ *    <td>kde;qt;gtk;gnome</td>
+ *  </tr>
+ *  <tr>
+ *    <td>QT Applications</td>
+ *    <td>qt;kde;gtk;gnome</td>
+ *  </tr>
+ *  <tr>
+ *    <td>GNOME Applications</td>
+ *    <td>gnome;gtk;qt;kde</td>
+ *  </tr>
+ *  <tr>
+ *    <td>GTK Applications</td>
+ *    <td>gtk;gnome;qt;kde</td>
+ *  </tr>
+ * </table>
+ * You can always add an asterisk ("*") to the list to accept any other
+ * frontend (or pass a NULL pointer to accept the first valid frontend).
+ */
+AQBANKING_API
+int AB_Banking_FindDebugger(AB_BANKING *ab,
+			    const char *backend,
+			    const char *frontends,
+                            GWEN_BUFFER *pbuf);
 
 
 /*@}*/
@@ -782,6 +862,25 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 AQBANKING_API 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                                                           const char *pn);
+
+
+/**
+ * Returns a list2 of debugger descriptions for the given backend.
+ * You must free this list after using it via
+ * @ref GWEN_PluginDescription_List2_freeAll.
+ * Please note that a simple @ref GWEN_PluginDescription_List2_free would
+ * not suffice, since that would only free the list but not the objects
+ * stored within the list !
+ * @param ab pointer to the AB_BANKING object
+ * @param pn name of the backend (such as "aqhbci". You can retrieve
+ * such a name either from the list of active backends
+ * (@ref AB_Banking_GetActiveProviders) or from an plugin description
+ * retrieved via @ref AB_Banking_GetProviderDescrs (call
+ * @ref GWEN_PluginDescription_GetName on that plugin description).
+ */
+AQBANKING_API 
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
+                                                            const char *pn);
 
 /**
  * Returns a list2 of available importers and exporters.

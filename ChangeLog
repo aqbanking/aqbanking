@@ -1,4 +1,11 @@
 
+
+2005/01/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions AB_Banking_FindWizard() and AB_Banking_FindDebugger()
+- marked function AB_Banking_GetWizardPath() deprecated
+
+
 2005/01/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added splits to AB_TRANSACTION. This way we can fully import file formats
