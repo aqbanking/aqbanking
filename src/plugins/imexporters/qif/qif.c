@@ -345,7 +345,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
                                     GWEN_DB_NODE *params){
   AH_IMEXPORTER_QIF *ieqif;
   GWEN_DB_NODE *dbData;
-  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
   int done=0;
   const char *s;
   GWEN_TIME *ti=0;
