@@ -1,0 +1,14 @@
+Doxyfile
+aclocal.m4
+aqbanking
+aqbanking++
+aqbanking-config
+aqbanking-config.in
+aqbanking.spec
+autom4te.cache
+config.h
+config.h.in
+configure
+libtool
+stamp-h1
+version.h
