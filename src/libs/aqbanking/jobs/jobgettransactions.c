@@ -262,7 +262,7 @@ int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
                               "transaction");
         assert(dbT3);
         if (AB_Transaction_toDb(t, dbT3)) {
-          DBG_ERROR(0, "Error saving transaction");
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving transaction");
           errors++;
         }
         t=AB_Transaction_List2Iterator_Next(it);

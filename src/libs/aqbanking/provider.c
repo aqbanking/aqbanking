@@ -75,7 +75,7 @@ void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll) {
 int AB_Provider_Init(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit) {
-    DBG_ERROR(0, "Provider already is initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider already is initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->initFn) {
@@ -90,7 +90,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
       pro->isInit=1;
     return rv;
   }
-  DBG_ERROR(0, "No init function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
   return AB_ERROR_NOFN;
 }
 
@@ -99,7 +99,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
 int AB_Provider_Fini(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->finiFn) {
@@ -111,7 +111,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
     pro->isInit=0;
     return pro->finiFn(pro, dbData);
   }
-  DBG_ERROR(0, "No fini function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
   return AB_ERROR_NOFN;
 }
 
@@ -205,13 +205,13 @@ void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->updateJobFn) {
     return pro->updateJobFn(pro, j);
   }
-  DBG_ERROR(0, "No updateJob function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateJob function set");
   return AB_ERROR_NOFN;
 }
 
@@ -220,13 +220,13 @@ int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->addJobFn) {
     return pro->addJobFn(pro, j);
   }
-  DBG_ERROR(0, "No addJob function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No addJob function set");
   return AB_ERROR_NOFN;
 }
 
@@ -235,13 +235,13 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 int AB_Provider_Execute(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->executeFn) {
     return pro->executeFn(pro);
   }
-  DBG_ERROR(0, "No execute function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
   return AB_ERROR_NOFN;
 }
 
@@ -250,13 +250,13 @@ int AB_Provider_Execute(AB_PROVIDER *pro){
 AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return 0;
   }
   if (pro->getAccountListFn) {
     return pro->getAccountListFn(pro);
   }
-  DBG_ERROR(0, "No getAccountList function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No getAccountList function set");
   return 0;
 }
 
@@ -265,13 +265,13 @@ AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro){
 int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->updateAccountFn) {
     return pro->updateAccountFn(pro,a );
   }
-  DBG_ERROR(0, "No updateAccount function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateAccount function set");
   return AB_ERROR_NOFN;
 }
 
@@ -280,13 +280,13 @@ int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->addAccountFn) {
     return pro->addAccountFn(pro, a);
   }
-  DBG_ERROR(0, "No addAccount function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No addAccount function set");
   return AB_ERROR_NOFN;
 }
 
@@ -297,13 +297,13 @@ int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
                                    GWEN_BUFFEREDIO *bio){
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(0, "Provider is not initialized");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->importTransactionsFn) {
     return pro->importTransactionsFn(pro, tl, bio);
   }
-  DBG_ERROR(0, "No importTransactions function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No importTransactions function set");
   return AB_ERROR_NOFN;
 }
 

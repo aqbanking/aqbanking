@@ -45,12 +45,21 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_BUFFER *buf;
 
   assert(appName);
+
+  if (!GWEN_Logger_Exists(AQBANKING_LOGDOMAIN)) {
+    GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
+		     "aqbanking", 0,
+		     GWEN_LoggerTypeConsole,
+		     GWEN_LoggerFacilityUser);
+    GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelWarning);
+  }
+
   buf=0;
   if (!fname) {
     char home[256];
 
     if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-      DBG_ERROR(0, "Could not determine home directory, aborting.");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not determine home directory, aborting.");
       return 0;
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -77,7 +86,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
 void AB_Banking_free(AB_BANKING *ab){
   if (ab) {
-    DBG_NOTICE(0, "Freeing AB_BANKING");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Freeing AB_BANKING");
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
@@ -98,7 +107,7 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab){
 
   assert(ab);
   if (AB_Job_List_GetCount(ab->enqueuedJobs)==0) {
-    DBG_INFO(0, "No jobs");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No jobs");
     return 0;
   }
 
@@ -242,7 +251,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
   if (ab->messageBoxFn) {
     return ab->messageBoxFn(ab, flags, title, text, b1, b2, b3);
   }
-  DBG_WARN(0, "No messageBox function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No messageBox function set");
   return 0;
 }
 
@@ -259,7 +268,7 @@ int AB_Banking_InputBox(AB_BANKING *ab,
   if (ab->inputBoxFn) {
     return ab->inputBoxFn(ab, flags, title, text, buffer, minLen, maxLen);
   }
-  DBG_ERROR(0, "No inputBox function set");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No inputBox function set");
   return AB_ERROR_NOFN;
 }
 
@@ -273,7 +282,7 @@ GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
   if (ab->showBoxFn) {
     return ab->showBoxFn(ab, flags, title, text);
   }
-  DBG_WARN(0, "No showBox function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No showBox function set");
   return 0;
 }
 
@@ -285,7 +294,7 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
     ab->hideBoxFn(ab, id);
     return;
   }
-  DBG_WARN(0, "No hideBox function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No hideBox function set");
 }
 
 
@@ -298,7 +307,7 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
   if (ab->progressStartFn) {
     return ab->progressStartFn(ab, title, text, total);
   }
-  DBG_WARN(0, "No progressStart function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressStart function set");
   return 0;
 }
 
@@ -311,7 +320,7 @@ int AB_Banking_ProgressAdvance(AB_BANKING *ab,
   if (ab->progressAdvanceFn) {
     return ab->progressAdvanceFn(ab, id, progress);
   }
-  DBG_WARN(0, "No progressAdvance function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressAdvance function set");
   return 0;
 }
 
@@ -325,7 +334,7 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
   if (ab->progressLogFn) {
     return ab->progressLogFn(ab, id, level, text);
   }
-  DBG_WARN(0, "No progressLog function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressLog function set");
   return 0;
 }
 
@@ -336,7 +345,7 @@ int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
   if (ab->progressEndFn) {
     return ab->progressEndFn(ab, id);
   }
-  DBG_WARN(0, "No progressEnd function set");
+  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressEnd function set");
   return 0;
 }
 
@@ -370,7 +379,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
   pro=AB_Banking_LoadProviderPlugin(ab, name);
   if (pro) {
     if (AB_Provider_Init(pro)) {
-      DBG_ERROR(0, "Could not init provider \"%s\"", name);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not init provider \"%s\"", name);
       AB_Provider_free(pro);
       return 0;
     }
@@ -388,7 +397,7 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab){
 
   assert(ab);
   if (AB_Account_List_GetCount(ab->accounts)==0) {
-    DBG_INFO(0, "No accounts");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
     return 0;
   }
   al=AB_Account_List2_new();
@@ -410,7 +419,7 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 
   assert(ab);
   if (AB_Account_List_GetCount(ab->accounts)==0) {
-    DBG_INFO(0, "No accounts");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
     return 0;
   }
   a=AB_Account_List_First(ab->accounts);
@@ -436,7 +445,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   assert(ab);
 
   if (access(ab->configFile, F_OK)) {
-    DBG_NOTICE(0,
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
                "Configuration file \"%s\" does not exist, "
                "will create it later.", ab->configFile);
     return 0;
@@ -487,7 +496,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
       pro=AB_Banking_GetProvider(ab, p);
       if (!pro) {
-        DBG_WARN(0, "Error loading/initializing backend \"%s\"", p);
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error loading/initializing backend \"%s\"", p);
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
@@ -504,7 +513,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
       a=AB_Account_fromDb(ab, dbA);
       if (a) {
-        DBG_INFO(0, "Adding account");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account");
         AB_Account_List_Add(a, ab->accounts);
       }
       dbA=GWEN_DB_FindNextGroup(dbA, "account");
@@ -525,7 +534,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
       assert(p);
       rv=AB_Banking_ImportProviderAccounts(ab, p);
       if (rv) {
-        DBG_WARN(0, "Error importing accounts from backend \"%s\"", p);
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error importing accounts from backend \"%s\"", p);
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
@@ -546,7 +555,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     assert(j);
     while(j) {
       if (AB_Job_CheckAvailability(j)) {
-	DBG_INFO(0, "Job not available, ignoring");
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Job not available, ignoring");
       }
       else
 	AB_Job_List_Add(j, ab->enqueuedJobs);
@@ -586,7 +595,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     assert(dbTdst);
     rv=AB_Account_toDb(a, dbTdst);
     if (rv) {
-      DBG_ERROR(0, "Error saving account \"%08x\"",
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
                 AB_Account_GetUniqueId(a));
       GWEN_DB_Group_free(db);
       return rv;
@@ -598,7 +607,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   j=AB_Job_List_First(ab->enqueuedJobs);
   while(j) {
     if (AB_Banking__SaveJobAs(ab, j, "todo")) {
-      DBG_INFO(0, "Error saving job, ignoring");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving job, ignoring");
     }
     j=AB_Job_List_Next(j);
   } /* while */
@@ -639,7 +648,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       if (pro) {
         rv=AB_Provider_Fini(pro);
         if (rv) {
-          DBG_WARN(0, "Error deinitializing backend \"%s\"", p);
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Error deinitializing backend \"%s\"", p);
         }
       }
       se=GWEN_StringListEntry_Next(se);
@@ -662,7 +671,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   /* write config file. TODO: make backups */
   if (GWEN_DB_WriteFile(db, ab->configFile,
                         GWEN_DB_FLAGS_DEFAULT)) {
-    DBG_ERROR(0, "Could not save configuration");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
     GWEN_DB_Group_free(db);
     return AB_ERROR_BAD_CONFIG_FILE;
   }
@@ -744,7 +753,7 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   ta=AB_Account_List_First(ab->accounts);
   if (!ta) {
-    DBG_NOTICE(0, "No accounts.");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "No accounts.");
   }
   while(ta) {
     if (AB_Account_GetProvider(a)==AB_Account_GetProvider(ta)) {
@@ -756,11 +765,11 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
       cbankCode=AB_Account_GetBankCode(ta);
       assert(cbankCode);
 
-      DBG_NOTICE(0, "Comparing \"%s\" against \"%s\"",
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Comparing \"%s\" against \"%s\"",
                  caccountId, accountId);
       if ((strcasecmp(accountId, caccountId)==0) &&
           (strcasecmp(bankCode, cbankCode)==0)) {
-        DBG_NOTICE(0, "Match");
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Match");
         break;
       }
     }
@@ -769,14 +778,14 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   if (!ta) {
     /* account is new, simply add it */
-    DBG_NOTICE(0, "Adding account");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding account");
     AB_Account_SetUniqueId(a, AB_Banking_GetUniqueId(ab));
     AB_Account_List_Add(a, ab->accounts);
     return 0;
   }
 
   /* copy new provider data over old data */
-  DBG_NOTICE(0, "Updating account");
+  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Updating account");
   dbNew=AB_Account_GetProviderData(ta);
   assert(dbNew);
   dbOld=AB_Account_GetProviderData(a);
@@ -807,13 +816,13 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_GetProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(0, "Backend \"%s\" not found", backend);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backend);
     return AB_ERROR_NOT_FOUND;
   }
 
   al=AB_Provider_GetAccountList(pro);
   if (!al) {
-    DBG_ERROR(0, "Backend \"%s\" has no accounts", backend);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" has no accounts", backend);
     return AB_ERROR_EMPTY;
   }
 
@@ -824,7 +833,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
   assert(a);
   while(a) {
     if (AB_Banking__MergeInAccount(ab, a)) {
-      DBG_WARN(0, "Could not merge in account");
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Could not merge in account");
     }
     else
       successful++;
@@ -833,7 +842,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
   AB_Account_List2Iterator_free(ait);
 
   if (!successful) {
-    DBG_INFO(0, "No account imported");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No account imported");
     return AB_ERROR_EMPTY;
   }
   return 0;
@@ -850,7 +859,7 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   rv=AB_Job_CheckAvailability(j);
   if (rv) {
-    DBG_ERROR(0, "Job is not available, refusing to enqueue.");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job is not available, refusing to enqueue.");
     return rv;
   }
   AB_Job_Attach(j);
@@ -902,7 +911,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
 
       jnext=AB_Job_List_Next(j);
       jst=AB_Job_GetStatus(j);
-      DBG_NOTICE(0, "Checking job...");
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Checking job...");
       if (jst==AB_Job_StatusEnqueued ||
 	  jst==AB_Job_StatusPending) {
         AB_ACCOUNT *a;
@@ -910,11 +919,11 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
         a=AB_Job_GetAccount(j);
         assert(a);
 	if (AB_Account_GetProvider(a)==pro) {
-	  DBG_NOTICE(0, "Same provider, adding job");
+	  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Same provider, adding job");
           /* same provider, add job */
           rv=AB_Provider_AddJob(pro, j);
           if (rv) {
-            DBG_ERROR(0, "Could not add job (%d)", rv);
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
             AB_Job_SetStatus(j, AB_Job_StatusError);
             AB_Job_SetResultText(j, "Refused by backend");
           }
@@ -923,18 +932,18 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
         }
       } /* if job enqueued */
       else {
-	DBG_WARN(0, "Job in queue with status \"%s\"",
+	DBG_WARN(AQBANKING_LOGDOMAIN, "Job in queue with status \"%s\"",
 		 AB_Job_Status2Char(AB_Job_GetStatus(j)));
       }
       j=jnext;
     } /* while */
     if (jobs) {
-      DBG_NOTICE(0, "Letting backend \"%s\" work",
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro);
       if (rv) {
 
-	DBG_NOTICE(0, "Error executing backend's queue");
+	DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
 	if (AB_Provider_List_Next(pro)) {
 	  int lrv;
 
@@ -947,7 +956,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
                                     "What shall we do ?",
                                     "Continue", "Abort", 0);
           if (lrv!=1) {
-            DBG_INFO(0, "Aborted by user");
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
             return AB_ERROR_USER_ABORT;
           }
         } /* if more backends to go */
@@ -960,7 +969,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
   } /* while */
 
   if (!succ) {
-    DBG_ERROR(0, "Not a single job successfully executed");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
     return AB_ERROR_GENERIC;
   }
 
@@ -991,7 +1000,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       switch(AB_Job_GetStatus(j)) {
       case AB_Job_StatusPending:
 	if (AB_Banking__SaveJobAs(ab, j, "pending")) {
-	  DBG_ERROR(0, "Could not save job as \"pending\"");
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
 	}
 	break;
 
@@ -1000,7 +1009,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       case AB_Job_StatusError:
       default:
 	if (AB_Banking__SaveJobAs(ab, j, "finished")) {
-	  DBG_ERROR(0, "Could not save job as \"finished\"");
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
 	}
 	break;
       }
@@ -1019,7 +1028,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
   AB_PROVIDER *pro;
 
   if (GWEN_StringList_HasString(ab->activeProviders, pname)) {
-    DBG_INFO(0, "Provider already active");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Provider already active");
     return AB_ERROR_FOUND;
   }
 
@@ -1028,7 +1037,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
     if (!AB_Provider_IsInit(pro)) {
       rv=AB_Provider_Init(pro);
       if (rv) {
-        DBG_ERROR(0, "Could not initialize backend \"%s\"", pname);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not initialize backend \"%s\"", pname);
         return rv;
       }
     }
@@ -1036,7 +1045,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
 
   rv=AB_Banking_ImportProviderAccounts(ab, pname);
   if (rv) {
-    DBG_INFO(0, "Could not import accounts from backend \"%s\"",
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not import accounts from backend \"%s\"",
              pname);
     return rv;
   }
@@ -1053,7 +1062,7 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
   AB_PROVIDER *pro;
 
   if (!GWEN_StringList_HasString(ab->activeProviders, pname)) {
-    DBG_INFO(0, "Provider not active");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Provider not active");
     return AB_ERROR_INVALID;
   }
 
@@ -1096,7 +1105,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
   char home[256];
 
   if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-    DBG_ERROR(0, "Could not determine home directory, aborting.");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not determine home directory, aborting.");
     return -1;
   }
   GWEN_Buffer_AppendString(buf, home);
@@ -1145,7 +1154,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
 
   ll=GWEN_LibLoader_new();
   if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(0,
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not load provider plugin \"%s\" (%s)",
               modname, fname);
     GWEN_LibLoader_free(ll);
@@ -1161,7 +1170,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
   /* resolve name of factory function */
   err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(nbuf);
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
@@ -1179,7 +1188,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
   assert(fn);
   pro=fn(ab, db);
   if (!pro) {
-    DBG_ERROR(0, "Error in plugin: No provider created");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -1214,7 +1223,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
                                          "/"
                                          AB_PROVIDER_FOLDER,
                                          modname)) {
-    DBG_ERROR(0, "Could not load provider plugin \"%s\"", modname);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
     GWEN_Buffer_free(mbuf);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -1226,7 +1235,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   /* resolve name of factory function */
   err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(mbuf);
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
@@ -1244,7 +1253,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   assert(fn);
   pro=fn(ab, db);
   if (!pro) {
-    DBG_ERROR(0, "Error in plugin: No provider created");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -1281,7 +1290,7 @@ int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(0, "Provider not found");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
     return AB_ERROR_NOT_FOUND;
   }
 
@@ -1295,7 +1304,7 @@ int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
 
   pro=AB_Banking_FindProvider(ab, backend);
   if (!pro) {
-    DBG_ERROR(0, "Provider not found");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
     return AB_ERROR_NOT_FOUND;
   }
 
@@ -1340,7 +1349,7 @@ int AB_Banking__OpenFile(const char *s, int wr) {
     if (GWEN_Directory_GetPath(s,
 			       GWEN_DB_FLAGS_DEFAULT |
 			       GWEN_PATH_FLAGS_VARIABLE)) {
-      DBG_ERROR(0, "Could not create path \"%s\"", s);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create path \"%s\"", s);
       return -1;
     }
     fd=open(s,
@@ -1352,7 +1361,7 @@ int AB_Banking__OpenFile(const char *s, int wr) {
   }
 
   if (fd==-1) {
-    DBG_ERROR(0, "open(%s): %s", s, strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s", s, strerror(errno));
     return -1;
   }
 
@@ -1364,7 +1373,7 @@ int AB_Banking__OpenFile(const char *s, int wr) {
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLKW, &fl)) {
-    DBG_ERROR(0, "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
     close(fd);
     return -1;
   }
@@ -1381,7 +1390,7 @@ int AB_Banking__CloseFile(int fd){
 #endif
 
   if (fd==-1) {
-    DBG_ERROR(0, "File is not open");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "File is not open");
     return -1;
   }
 
@@ -1393,14 +1402,14 @@ int AB_Banking__CloseFile(int fd){
   fl.l_start=0;
   fl.l_len=0;
   if (fcntl(fd, F_SETLK, &fl)) {
-    DBG_ERROR(0, "fcntl(F_SETLK): %s", strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "fcntl(F_SETLK): %s", strerror(errno));
     close(fd);
     return -1;
   }
 #endif
 
   if (close(fd)) {
-    DBG_ERROR(0, "close: %s", strerror(errno));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "close: %s", strerror(errno));
     return -1;
   }
 
@@ -1454,7 +1463,7 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
   if (GWEN_DB_ReadFromStream(dbJob, bio,
 			     GWEN_DB_FLAGS_DEFAULT |
 			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
-    DBG_INFO(0, "Error reading job data");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
@@ -1467,7 +1476,7 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseFile(fd)) {
-    DBG_INFO(0, "Error closing job, ignoring");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
   }
   return j;
 }
@@ -1496,7 +1505,7 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
   if (GWEN_DB_ReadFromStream(dbJob, bio,
 			     GWEN_DB_FLAGS_DEFAULT |
 			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
-    DBG_INFO(0, "Error reading job data");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
@@ -1509,7 +1518,7 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseJob(ab, fd)) {
-    DBG_INFO(0, "Error closing job, ignoring");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
   }
   return j;
 }
@@ -1525,7 +1534,7 @@ int AB_Banking__SaveJobAs(AB_BANKING *ab,
 
   dbJob=GWEN_DB_Group_new("job");
   if (AB_Job_toDb(j, dbJob)) {
-    DBG_ERROR(0, "Could not store job");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not store job");
     GWEN_DB_Group_free(dbJob);
     return -1;
   }
@@ -1544,7 +1553,7 @@ int AB_Banking__SaveJobAs(AB_BANKING *ab,
 
   if (GWEN_DB_WriteToStream(dbJob, bio,
 			    GWEN_DB_FLAGS_DEFAULT)) {
-    DBG_INFO(0, "Error reading job data");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading job data");
     GWEN_DB_Group_free(dbJob);
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
@@ -1556,7 +1565,7 @@ int AB_Banking__SaveJobAs(AB_BANKING *ab,
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseJob(ab, fd)) {
-    DBG_INFO(0, "Error closing job");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job");
     return -1;
   }
   return 0;
@@ -1576,7 +1585,7 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
   fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), 0);
   if (fd!=-1) {
     if (unlink(GWEN_Buffer_GetStart(pbuf))) {
-      DBG_ERROR(0, "unlink(%s): %s",
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "unlink(%s): %s",
 		GWEN_Buffer_GetStart(pbuf),
 		strerror(errno));
       GWEN_Buffer_free(pbuf);
@@ -1602,7 +1611,7 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 
   l=AB_Job_List2_new();
 
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  pbuf=GWEN_Buffer_new(AQBANKING_LOGDOMAIN, 256, 0, 1);
   AB_Banking__AddJobDir(ab, as, pbuf);
   pos=GWEN_Buffer_GetPos(pbuf);
 
@@ -1625,18 +1634,18 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 	  /* job found */
 	  j=AB_Banking__LoadJobFile(ab, GWEN_Buffer_GetStart(pbuf));
 	  if (!j) {
-	    DBG_ERROR(0, "Error in job file \"%s\"",
+	    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in job file \"%s\"",
 		      GWEN_Buffer_GetStart(pbuf));
 	  }
 	  else {
-	    DBG_INFO(0, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));
 	    AB_Job_List2_PushBack(l, j);
 	  }
 	} /* if filename ends in ".job" */
       } /* if filename is long enough */
     } /* while still jobs */
     if (GWEN_Directory_Close(d)) {
-      DBG_ERROR(0, "Error closing dir");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error closing dir");
       AB_Job_List2_free(l);
       GWEN_Buffer_free(pbuf);
       return 0;
@@ -1669,7 +1678,7 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
   if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
     rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
   else {
-    DBG_ERROR(0, "Job can only be removed by its creator application");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
   }
   return rv;
@@ -1692,7 +1701,7 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
   if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
     rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
   else {
-    DBG_ERROR(0, "Job can only be removed by its creator application");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
   }
   return rv;

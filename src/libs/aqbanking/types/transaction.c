@@ -542,7 +542,7 @@ int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
                          "valutaDate");
     assert(dbT);
     if (GWEN_Time_toDb(t->valutaDate, dbT)) {
-      DBG_INFO(0, "Could not store valuata date");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not store valuata date");
       return -1;
     }
   }
@@ -553,7 +553,7 @@ int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
                          "date");
     assert(dbT);
     if (GWEN_Time_toDb(t->valutaDate, dbT)) {
-      DBG_INFO(0, "Could not store date");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not store date");
       return -1;
     }
   }
@@ -564,7 +564,7 @@ int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
     dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
     assert(dbT);
     if (AB_Value_ToDb(t->value, dbT)) {
-      DBG_INFO(0, "Error storing value");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error storing value");
       return -1;
     }
   }

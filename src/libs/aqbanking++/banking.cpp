@@ -153,7 +153,7 @@ namespace AB {
   void Banking_Linker::freeData(void *bp, void *p) {
     Banking *kb;
 
-    DBG_NOTICE(0, "Banking_Linker: Freeing Banking");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Banking_Linker: Freeing Banking");
     kb=(Banking*)p;
     if (kb->_banking) {
       kb->_banking=0;
@@ -186,7 +186,7 @@ namespace AB {
   
   
   Banking::~Banking(){
-    DBG_NOTICE(0, "~Banking: Freeing Banking");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "~Banking: Freeing Banking");
     if (_banking) {
       GWEN_INHERIT_UNLINK(AB_BANKING, Banking, _banking)
       AB_Banking_free(_banking);

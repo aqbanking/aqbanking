@@ -90,7 +90,7 @@ int AB_JobGetBalance_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
                          "result/accountstatus");
     assert(dbT);
     if (AB_AccountStatus_toDb(aj->accountStatus, dbT)) {
-      DBG_ERROR(0, "Error saving account status");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account status");
       return -1;
     }
   }

@@ -209,31 +209,31 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   switch(j->jobType) {
   case AB_Job_TypeGetBalance:
     if (AB_JobGetBalance_toDb(j, db)) {
-      DBG_INFO(0, "here");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
     break;
 
   case AB_Job_TypeGetTransactions:
     if (AB_JobGetTransactions_toDb(j, db)) {
-      DBG_INFO(0, "here");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
     break;
 
   case AB_Job_TypeTransfer:
     if (AB_JobSingleTransfer_toDb(j, db)) {
-      DBG_INFO(0, "here");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
     break;
 
   case AB_Job_TypeDebitNote:
-    DBG_ERROR(0, "Job type not yet supported");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job type not yet supported");
     return -1;
 
   default:
-    DBG_ERROR(0, "Unknown job type %d", j->jobType);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type %d", j->jobType);
     return -1;
   }
 
@@ -253,14 +253,14 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   assert(accountId);
   a=AB_Banking_GetAccount(ab, accountId);
   if (!a) {
-    DBG_ERROR(0, "Account \"%08x\" not found, ignoring job", accountId);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account \"%08x\" not found, ignoring job", accountId);
     return 0;
   }
 
   p=GWEN_DB_GetCharValue(db, "jobType", 0, "unknown");
   jt=AB_Job_Char2Type(p);
   if (jt==AB_Job_TypeUnknown) {
-    DBG_ERROR(0, "Unknown job type \"%s\", ignoring job", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type \"%s\", ignoring job", p);
     return 0;
   }
 
@@ -283,10 +283,10 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
     break;
 
   case AB_Job_TypeDebitNote:
-    DBG_ERROR(0, "Unsupported job type %d", j->jobType);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unsupported job type %d", j->jobType);
     return 0;
   default:
-    DBG_ERROR(0, "Unknown job type %d", j->jobType);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type %d", j->jobType);
     return 0;
   } /* switch */
 

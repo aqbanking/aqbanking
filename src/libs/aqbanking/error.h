@@ -24,6 +24,10 @@
 # define AQBANKING_API
 #endif
 
+
+#define AQBANKING_LOGDOMAIN "aqbanking"
+
+
 /** @defgroup AB_ERROR (Error Codes)
  * @ingroup AB_C_INTERFACE
  */

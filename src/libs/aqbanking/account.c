@@ -65,7 +65,7 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   assert(pname);
   pro=AB_Banking_GetProvider(ab, pname);
   if (!pro) {
-    DBG_ERROR(0, "Provider \"%s\" is not available, ignoring account",
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" is not available, ignoring account",
               pname);
     return 0;
   }
@@ -86,7 +86,7 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   /* let provider update account data */
   a->availability=AB_Provider_UpdateAccount(pro, a);
   if (a->availability) {
-    DBG_WARN(0, "Error updating account by backend");
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Error updating account by backend");
   }
   return a;
 }

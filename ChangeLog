@@ -1,4 +1,9 @@
 
+2004/08/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- created new LogDomain "aqbanking" (needs current Gwen CVS, though)
+
+
 2004/08/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - changed the constructors for the getTransactions job

@@ -103,7 +103,7 @@ AB_VALUE *AB_Value_FromString(const char *s){
   assert(s);
   while(*s && isspace(*s)) s++;
   if (!*s) {
-    DBG_INFO(0, "Empty value");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Empty value");
     v=AB_Value_new(0.0, 0);
     v->isValid=0;
     return v;
@@ -129,7 +129,7 @@ AB_VALUE *AB_Value_FromString(const char *s){
       else if (c==':')
         break;
       else if (c!='.' && c!='-' && c!='+' && !isdigit(c)) {
-        DBG_ERROR(0, "Non-digit character in value at %d (%02x)", i, c);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Non-digit character in value at %d (%02x)", i, c);
         return 0;
       }
       assert(i<sizeof(numbuf)-1);
@@ -151,13 +151,13 @@ AB_VALUE *AB_Value_FromString(const char *s){
     setlocale(LC_NUMERIC, currentLocale);
 #endif
     if (rv!=1) {
-      DBG_ERROR(0, "Could not read floating point value");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read floating point value");
       return 0;
     }
 
     if (*s) {
       if (*s!=':') {
-        DBG_ERROR(0, "\":\" or end of string expected");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "\":\" or end of string expected");
         return 0;
       }
       s++;

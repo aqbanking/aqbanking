@@ -181,7 +181,7 @@ int AB_JobSingleTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
     assert(dbT);
     rv=AB_Transaction_toDb(jd->transaction, dbT);
     if (rv) {
-      DBG_INFO(0, "here");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return rv;
     }
   }

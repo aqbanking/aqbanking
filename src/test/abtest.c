@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 
   cmd=argv[1];
 
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelInfo);
 
   if (strcasecmp(cmd, "test1")==0)
     rv=test1(argc, argv);
