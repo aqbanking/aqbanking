@@ -1841,10 +1841,10 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
                                   AB_BANKING_MSG_FLAGS_TYPE_ERROR |
                                   AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
                                   AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                                  "Error",
-                                  "Error executing backend's queue.\n"
-                                  "What shall we do ?",
-                                  "Continue", "Abort", 0);
+                                  I18N("Error"),
+                                  I18N("Error executing backend's queue.\n"
+				       "What shall we do?"),
+                                  I18N("Continue"), I18N("Abort"), 0);
         if (lrv!=1) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
           return AB_ERROR_USER_ABORT;
@@ -4172,10 +4172,10 @@ int AB_Banking_GetPin(AB_BANKING *ab,
       AB_Banking_MessageBox(ab,
                             AB_BANKING_MSG_FLAGS_TYPE_ERROR |
                             AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                            "Error",
-                            "No valid PIN (tried too often).\n"
-                            "Aborting.",
-                            "Dismiss", 0, 0);
+                            I18N("Error"),
+                            I18N("No valid PIN (tried too often).\n"
+				 "Aborting."),
+                            I18N("Dismiss"), 0, 0);
       return AB_ERROR_INVALID;
     }
 
