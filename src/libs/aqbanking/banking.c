@@ -613,8 +613,13 @@ int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
   rv2=AB_Banking__SaveProviderData(ab,
 				   AB_Provider_GetEscapedName(pro),
 				   (rv1==0));
-  if (rv2)
+  if (rv2) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving backend data (%d)", rv2);
     return rv2;
+  }
+  if (rv1) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv1);
+  }
   return rv1;
 }
 
@@ -696,6 +701,36 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
   while(a) {
     if (AB_Account_GetUniqueId(a)==uniqueId)
       break;
+    a=AB_Account_List_Next(a);
+  } /* while */
+
+  return a;
+}
+
+
+
+AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
+                                                 const char *bankCode,
+                                                 const char *accountId){
+  AB_ACCOUNT *a;
+
+  assert(ab);
+  if (AB_Account_List_GetCount(ab->accounts)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+    return 0;
+  }
+  a=AB_Account_List_First(ab->accounts);
+  assert(a);
+  while(a) {
+    if (bankCode) {
+      if (strcasecmp(AB_Account_GetBankCode(a), bankCode)==0 &&
+          strcasecmp(AB_Account_GetAccountNumber(a), accountId)==0)
+        break;
+    }
+    else {
+      if (strcasecmp(AB_Account_GetAccountNumber(a), accountId)==0)
+        break;
+    }
     a=AB_Account_List_Next(a);
   } /* while */
 
@@ -1782,6 +1817,19 @@ int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
   return AB_Banking_InitProvider(ab, pro);
 }
 
+
+
+int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend){
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking_FindProvider(ab, backend);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider not found");
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  return AB_Provider_IsInit(pro);
+}
 
 
 

@@ -45,6 +45,8 @@
 #define AB_ERROR_FOUND           (-10)
 #define AB_ERROR_NO_DATA         (-11)
 #define AB_ERROR_NOFN            (-12)
+#define AB_ERROR_UNKNOWN_ACCOUNT (-13)
+#define AB_ERROR_NOT_INIT        (-14)
 /*@}*/
 
 

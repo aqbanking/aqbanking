@@ -99,7 +99,7 @@ int AB_JobGetBalance_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
 
 
-AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j){
+const AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j){
   AB_JOBGETBALANCE *aj;
 
   assert(j);

@@ -490,7 +490,18 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
  * will most likely be silently overwritten.
  * </p>
  */
+AQBANKING_API 
 int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend);
+
+
+/**
+ * <p>
+ * This function checks whether the given backend is currently active.
+ * It returns 0 if the backend is either suspended or inactive.
+ *
+ */
+AQBANKING_API 
+int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
 
 
 /**
@@ -502,6 +513,7 @@ int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend);
  * that backend to reenable it.
  * </p>
  */
+AQBANKING_API 
 int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
 
 /**
@@ -629,6 +641,20 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
 AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
                                   GWEN_TYPE_UINT32 uniqueId);
+
+
+/**
+ * This function does an account lookup based on the given bank code and
+ * account number. No wildards or jokers allowed.
+ * @param ab pointer to the AB_BANKING object
+ * @param bankCode bank code (use 0 if your country does not use bank codes)
+ * @param accountId account number
+ */
+AQBANKING_API 
+AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
+                                                 const char *bankCode,
+                                                 const char *accountId);
+
 /*@}*/
 
 

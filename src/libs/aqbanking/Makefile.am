@@ -45,6 +45,8 @@ libaqbanking_la_LIBADD=@gwenhywfar_libs@ \
  jobs/libjobs.la \
  types/libtypes.la
 
+libaqbanking_la_LDFLAGS=\
+  -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 # dll stuff
 if IS_WINDOWS
