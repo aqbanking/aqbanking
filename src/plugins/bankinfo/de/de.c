@@ -42,6 +42,8 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
     AB_BankInfoPlugin_free(bip);
     return 0;
   }
+  AB_BankInfoPlugin_SetGetBankInfoFn(bip, AB_BankInfoPluginDE_GetBankInfo);
+  AB_BankInfoPlugin_SetCheckAccountFn(bip, AB_BankInfoPluginDE_CheckAccount);
   return bip;
 }
 
