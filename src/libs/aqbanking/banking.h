@@ -901,6 +901,20 @@ AQBANKING_API
 int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
+ * This function enqueues alle pending jobs so that they will be send the
+ * next time @ref AB_Banking_ExecuteQueue is called.
+ * You should call this function directly before calling
+ * @ref AB_Banking_ExecuteQueue to let the backend update the status of
+ * the pending jobs.
+ * @param ab pointer to the AB_BANKING object
+ * @param mineOnly if 0 then all pending jobs for all applications are
+ * enqueued, otherwise only the pending jobs for the currently running
+ * application are enqueued
+ */
+AQBANKING_API 
+int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
+
+/**
  * <p>
  * This function sends all jobs in the queue to their corresponding backends
  * and allows those backends to process it.

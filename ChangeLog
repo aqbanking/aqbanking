@@ -1,4 +1,9 @@
 
+2004/09/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Banking_EnqueuePendingJobs()
+
+
 2004/09/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a note about the encodings used (UTF-8)

@@ -1433,7 +1433,8 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
     AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
 
   /* really enqueue the job */
-  AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
+  if (AB_Job_GetJobId(j)==0)
+    AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   AB_Job_Attach(j);
   AB_Job_List_Add(j, ab->enqueuedJobs);
   AB_Banking__SaveJobAs(ab, j, "todo");
@@ -1498,6 +1499,55 @@ int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j){
   rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
   AB_Job_free(j);
   return rv;
+}
+
+
+
+int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly){
+  AB_JOB_LIST2 *jl;
+  int errorCount;
+  int successCount;
+
+  errorCount=successCount=0;
+  jl=AB_Banking_GetPendingJobs(ab);
+  if (jl) {
+    AB_JOB *j;
+    AB_JOB_LIST2_ITERATOR *it;
+
+    it=AB_Job_List2_First(jl);
+    assert(it);
+
+    j=AB_Job_List2Iterator_Data(it);
+    assert(j);
+    while(j) {
+      int doit;
+
+      if (!mineOnly)
+        doit=1;
+      else
+        doit=(strcasecmp(AB_Job_GetCreatedBy(j), ab->appName)==0);
+      if (doit) {
+        if (AB_Banking_EnqueueJob(ab, j)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Error enqueueing job %d",
+                    AB_Job_GetJobId(j));
+          errorCount++;
+        }
+        else
+          successCount++;
+      }
+      j=AB_Job_List2Iterator_Next(it);
+    } /* while */
+    AB_Job_List2Iterator_free(it);
+    AB_Job_List2_FreeAll(jl);
+  } /* if pending jobs */
+
+  if (!errorCount)
+    return 0;
+  if (errorCount)
+    /* all attempts resulted in errors */
+    return AB_ERROR_GENERIC;
+  return 0;
 }
 
 
@@ -3405,9 +3455,6 @@ int AB_Banking_GetPin(AB_BANKING *ab,
     AB_Pin_SetStatus(p, "unknown");
   } /* for */
 
-  // DEBUG !!!!
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "Returning PIN: \"%s\"",
-            buffer);
   return 0;
 }
 
