@@ -641,7 +641,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       p=GWEN_StringListEntry_Data(se);
       assert(p);
 
-      pro=AB_Banking_GetProvider(ab, p);
+      pro=AB_Banking_FindProvider(ab, p);
       if (pro) {
         rv=AB_Provider_Fini(pro);
         if (rv) {

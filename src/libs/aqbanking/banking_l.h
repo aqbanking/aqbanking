@@ -20,14 +20,6 @@
 
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
 
-/**
- * Loads a backend with the given name. You can use
- * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
- * backends. Such a backend can then be asked to return an account list.
- */
-AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
-
-
 
 /** @name Functions For Loading Provider Plugins
  *

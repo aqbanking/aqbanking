@@ -495,6 +495,14 @@ namespace AB {
 
 
 
+  AB_BANKING *Banking::getCInterface(){
+    return _banking;
+  }
+
+
+  AB_PROVIDER *Banking::getProvider(const char *name){
+    return AB_Banking_GetProvider(_banking, name);
+  }
 
 
 } /* namespace */

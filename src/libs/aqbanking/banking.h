@@ -632,7 +632,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
 
 
 
-/** @name Functions Used by Backends
+/** @name Functions Used by Backends And Wizards
  *
  */
 /*@{*/
@@ -646,6 +646,15 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
  */
 AQBANKING_API 
 int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
+
+
+/**
+ * Loads a backend with the given name. You can use
+ * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
+ * backends. Such a backend can then be asked to return an account list.
+ */
+AQBANKING_API 
+AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
 
 /*@}*/
 

@@ -41,6 +41,9 @@ namespace AB {
     virtual ~Banking();
 
 
+    AB_BANKING *getCInterface();
+
+
     /**
      * See @ref AB_Banking_Init
      */
@@ -50,6 +53,14 @@ namespace AB {
      * See @ref AB_Banking_Fini
      */
     int fini();
+
+
+    /**
+     * Loads a backend with the given name. You can use
+     * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
+     * backends. Such a backend can then be asked to return an account list.
+     */
+    AB_PROVIDER *getProvider(const char *name);
 
 
     /**
