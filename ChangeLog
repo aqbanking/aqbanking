@@ -1,7 +1,20 @@
+
+
+2005/03/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_JobEuTransfer_GetCountryInfoList()
+
+
+2005/03/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added field to AB_TRANSACTION: remoteBankLocation
+
+
 2005-03-23   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/jobs/jobeutransfer.c: Fix error in creating
 	JobEuTransfer: was not setting the correct enum JobType.
+
 
 2005/03/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

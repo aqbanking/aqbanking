@@ -107,6 +107,23 @@ const AB_EUTRANSFER_INFO *AB_JobEuTransfer_FindCountryInfo(const AB_JOB *j,
 
 
 
+const AB_EUTRANSFER_INFO_LIST*
+AB_JobEuTransfer_GetCountryInfoList(const AB_JOB *j){
+  AB_JOBEUTRANSFER *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBEUTRANSFER, j);
+  assert(jd);
+
+  if (jd->countryInfoList==0)
+    return 0;
+  if (AB_EuTransferInfo_List_GetCount(jd->countryInfoList)==0)
+    return 0;
+  return jd->countryInfoList;
+}
+
+
+
 int AB_JobEuTransfer_GetIbanAllowed(const AB_JOB *j){
   AB_JOBEUTRANSFER *jd;
 

@@ -82,6 +82,10 @@ AQBANKING_API
 const AB_EUTRANSFER_INFO *AB_JobEuTransfer_FindCountryInfo(const AB_JOB *j,
                                                            const char *cnt);
 
+AQBANKING_API 
+  const AB_EUTRANSFER_INFO_LIST*
+  AB_JobEuTransfer_GetCountryInfoList(const AB_JOB *j);
+
 /**
  * Returns !=0 if the IBAN field of a transaction can be used to specify
  * the destination account. If 0 then the remote account info must set the

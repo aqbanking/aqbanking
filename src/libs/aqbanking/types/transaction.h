@@ -113,6 +113,15 @@ Set this property with @ref AB_Transaction_SetRemoteBankName,
 get it with @ref AB_Transaction_GetRemoteBankName
 </p>
 
+@anchor AB_TRANSACTION_RemoteBankLocation
+<h4>RemoteBankLocation</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteBankLocation, 
+get it with @ref AB_Transaction_GetRemoteBankLocation
+</p>
+
 @anchor AB_TRANSACTION_RemoteBankCode
 <h4>RemoteBankCode</h4>
 <p>
@@ -566,6 +575,15 @@ AQBANKING_API const char *AB_Transaction_GetRemoteBankName(const AB_TRANSACTION 
 * Set the property @ref AB_TRANSACTION_RemoteBankName
 */
 AQBANKING_API void AB_Transaction_SetRemoteBankName(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteBankLocation
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteBankLocation(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteBankLocation
+*/
+AQBANKING_API void AB_Transaction_SetRemoteBankLocation(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteBankCode

@@ -20,6 +20,7 @@ struct AB_TRANSACTION {
   char *localName;
   char *remoteCountry;
   char *remoteBankName;
+  char *remoteBankLocation;
   char *remoteBankCode;
   char *remoteBranchId;
   char *remoteAccountNumber;
@@ -64,6 +65,7 @@ This group contains information about the local account. Functions of this group
 This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
 */
 /*@{*/
+
 
 
 
