@@ -159,7 +159,7 @@ AQBANKING_API AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINF
 /**
 * Set the property @ref AB_BANKINFO_Services
 */
-AQBANKING_API void AB_BankInfo_SetServices(AB_BANKINFO *el, AB_BANKINFO_SERVICE_LIST *d);
+AQBANKING_API void AB_BankInfo_SetServices(AB_BANKINFO *el, const AB_BANKINFO_SERVICE_LIST *d);
 
 
 #ifdef __cplusplus

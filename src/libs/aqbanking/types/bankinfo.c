@@ -244,7 +244,7 @@ AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINFO *st) {
 }
 
 
-void AB_BankInfo_SetServices(AB_BANKINFO *st, AB_BANKINFO_SERVICE_LIST *d) {
+void AB_BankInfo_SetServices(AB_BANKINFO *st, const AB_BANKINFO_SERVICE_LIST *d) {
   assert(st);
   if (st->services)
     AB_BankInfoService_List_free(st->services);
