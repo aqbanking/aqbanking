@@ -63,7 +63,9 @@ extern "C" {
 /** @defgroup G_AB_PROVIDER AB_PROVIDER (Online Banking Backends)
  * @ingroup G_AB_C_INTERFACE
  *
- * @brief This group represents backends.
+ * @brief This group represents backends. 
+ *
+ * ("Provider" is simply another word for "backend".)
  */
 /*@{*/
 
@@ -79,6 +81,9 @@ const char *AB_Provider_GetName(const AB_PROVIDER *pro);
  */
 AQBANKING_API
 const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
+/** 
+ * Returns the Banking object that this Provider belongs to. 
+ */
 AQBANKING_API
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 

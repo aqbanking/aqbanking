@@ -51,7 +51,8 @@ library is organized in multiple layers:
   AB_PROVIDER (see @ref G_AB_PROVIDER). These functions should
   <i>not</i> be accessed by an application; instead, they are accessed
   by <i>plugins</i>. The plugins (e.g. AqHBCI) implement the Provider
-  functions which actually implement the online banking functionality.
+  functions which actually implement the online banking
+  functionality. ("Provider" is simply another word for "backend".)
   Currently only AqHBCI for HBCI is available. However the API has
   been designed to be as wide open as possible. This layer also
   includes the simple API (consisting of a single function for now)

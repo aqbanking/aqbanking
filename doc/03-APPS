@@ -76,7 +76,8 @@ When you start using AqBanking there probably is no account setup so
 you will have to do it now:
 
 1. Ask AqBanking for a list of available backends 
-   (AB_Banking_GetProviderDescrs())
+   (AB_Banking_GetProviderDescrs()); "provider" is simply another word
+   for "backend".
 
 2. Present this list to the user to pick one of them (or pick a fixed
    one, e.g. "aqhbci").
