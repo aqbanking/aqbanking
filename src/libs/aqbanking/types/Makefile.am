@@ -16,6 +16,8 @@ noinst_HEADERS=\
   bankinfoservice_p.h \
   pin_l.h \
   pin_p.h \
+  split_l.h \
+  split_p.h \
   transaction_l.h \
   transaction_p.h \
   value_p.h
@@ -27,6 +29,7 @@ iheader_HEADERS=\
   balance.h \
   bankinfo.h \
   bankinfoservice.h \
+  split.h \
   transaction.h \
   value.h
 
@@ -36,6 +39,7 @@ libtypes_la_SOURCES=\
   bankinfo.c \
   bankinfoservice.c \
   pin.c \
+  split.c \
   transaction.c \
   value.c
 

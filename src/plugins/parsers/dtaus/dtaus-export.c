@@ -331,8 +331,15 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   unsigned int extSets;
   unsigned int startPos;
   double dd;
+  GWEN_DB_NODE *sp;
 
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating C set");
+
+  sp=GWEN_DB_GetGroup(xa, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "splits/element");
+  if (GWEN_DB_FindNextGroup(sp, "element")) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many splits (maxmimum is 1)");
+    return -1;
+  }
 
   /* ______________________________________________________________________
    * preparations
@@ -349,7 +356,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   extSets=0;
   /* add purpose */
   for (i=1; ; i++) {
-    if (GWEN_DB_GetCharValue(xa, "purpose", i, 0)==0)
+    if (GWEN_DB_GetCharValue(sp?sp:xa, "purpose", i, 0)==0)
       break;
     if (i>14) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many purpose lines (maxmimum is 14)");
@@ -360,7 +367,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* add name */
   for (i=1; ; i++) {
-    if (GWEN_DB_GetCharValue(xa, "localName", i, 0)==0)
+    if (GWEN_DB_GetCharValue(sp?sp:xa, "localName", i, 0)==0)
       break;
     if (i>1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many name lines (maxmimum is 2)");
@@ -371,7 +378,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* add other name */
   for (i=1; ; i++) {
-    if (GWEN_DB_GetCharValue(xa, "remoteName", i, 0)==0)
+    if (GWEN_DB_GetCharValue(sp?sp:xa, "remoteName", i, 0)==0)
       break;
     if (i>1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many peer name lines (maxmimum is 2)");
@@ -405,7 +412,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   }
 
   /* field 4: destination bank code */
-  p=GWEN_DB_GetCharValue(xa,
+  p=GWEN_DB_GetCharValue(sp?sp:xa,
                          "remoteAccountNumber",
                          0, 0);
   if (p) {
@@ -425,7 +432,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   }
 
   /* field 5: destination account id */
-  p=GWEN_DB_GetCharValue(xa,
+  p=GWEN_DB_GetCharValue(sp?sp:xa,
                          "remoteAccountNumber",
                          0, 0);
   if (p) {
@@ -468,7 +475,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 9: value in DEM */
   if (!isEuro) {
-    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
+    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(sp?sp:xa,
                                                      "value/value",
                                                      0, "0,"));
     *sumDEM+=dd;
@@ -496,7 +503,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 11: destination account id */
   if (AHB_DTAUS__AddNum(dst, 10,
-                          GWEN_DB_GetCharValue(xa,
+                          GWEN_DB_GetCharValue(sp?sp:xa,
                                                "remoteAccountNumber",
                                                0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -505,7 +512,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 12: value in EUR */
   if (isEuro) {
-    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
+    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(sp?sp:xa,
                                                      "value/value",
                                                      0, "0,"));
     *sumEUR+=dd;
@@ -527,7 +534,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 14a: peer name */
   if (AHB_DTAUS__AddWord(dst, 27,
-                           GWEN_DB_GetCharValue(xa,
+                           GWEN_DB_GetCharValue(sp?sp:xa,
                                                 "remoteName",
                                                 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -539,7 +546,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 15: name */
   if (AHB_DTAUS__AddWord(dst, 27,
-                         GWEN_DB_GetCharValue(xa,
+                         GWEN_DB_GetCharValue(sp?sp:xa,
                                               "localname",
                                               0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -548,7 +555,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 16: purpose */
   if (AHB_DTAUS__AddWord(dst, 27,
-                         GWEN_DB_GetCharValue(xa,
+                         GWEN_DB_GetCharValue(sp?sp:xa,
                                               "purpose",
                                               0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -578,7 +585,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=1; ; i++) {
     unsigned int j;
 
-    p=GWEN_DB_GetCharValue(xa, "remoteName", i, 0);
+    p=GWEN_DB_GetCharValue(sp?sp:xa, "remoteName", i, 0);
     if (!p)
       break;
 
@@ -604,7 +611,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=1; ; i++) {
     unsigned int j;
 
-    p=GWEN_DB_GetCharValue(xa, "purpose", i, 0);
+    p=GWEN_DB_GetCharValue(sp?sp:xa, "purpose", i, 0);
     if (!p)
       break;
 
@@ -630,7 +637,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=1; ; i++) {
     unsigned int j;
 
-    p=GWEN_DB_GetCharValue(xa, "localname", i, 0);
+    p=GWEN_DB_GetCharValue(sp?sp:xa, "localname", i, 0);
     if (!p)
       break;
 

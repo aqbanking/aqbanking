@@ -8,7 +8,7 @@
       <function type="free" name="AB_Value_free" />
     </functions>
   </type>
-
+  
   <type id="GWEN_STRINGLIST" >
     <functions>
       <function type="dup" name="GWEN_StringList_dup" />
@@ -24,6 +24,14 @@
       <function type="free" name="GWEN_Time_free" />
     </functions>
   </type>
+
+  <type id="AB_SPLIT_LIST" prefix="AB_Split_List" >
+    <functions>
+      <function type="new" name="AB_Split_List_new" />
+      <function type="dup" name="AB_Split_List_dup" />
+      <function type="free" name="AB_Split_List_free" />
+    </functions>
+  </type>
   
   <type id="GWEN_TYPE_UINT32" dbtype="int" />
   
@@ -31,19 +39,18 @@
 
 
 
-
 <types>
 
-  <type id="AB_TRANSACTION" 
-        prefix="AB_Transaction" 
-        class="Transaction"
+  <type id="AB_SPLIT" 
+        prefix="AB_Split" 
+        class="Split"
         access="public"
-        filename="transaction"
+        filename="split"
         inherit="public" 
-        list="lib"
+        list="public"
         list2="public" >
     <descr>
-      This type contains all important information about transactions.
+      This type contains all important information about transaction splits.
       Please note that all text fields are in UTF-8.
     </descr>
     <headers>
@@ -108,6 +115,109 @@
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
+    <group name="Value">
+      <elem name="value" type="AB_VALUE" ptr="1" />
+    </group>
+
+    <elem name="purpose" type="GWEN_STRINGLIST" ptr="1" >
+      <descr>
+        <p>
+          This string list contains the purpose of the split.
+          Every entry of this list represents a single purpose line.
+        </p>
+      </descr>
+    </elem>
+
+  </type>
+
+
+  <type id="AB_TRANSACTION" 
+        prefix="AB_Transaction" 
+        class="Transaction"
+        access="public"
+        filename="transaction"
+        inherit="public" 
+        list="lib"
+        list2="public" >
+    <descr>
+      This type contains all important information about transactions.
+      All text fields are in UTF-8.
+      Please note: Since version 0.9.9.1 of AqBanking a transaction may 
+      contain splits. 
+      If an AB_TRANSACTION actually does contain splits then some variables
+      (like <i>localCountry</i>) are stored within the AB_SPLITs rather than 
+      in AB_TRANSACTION.
+      So your application should first check for splits and read the 
+      information (marked as <i>in AB_SPLIT</i> below) from them.
+    </descr>
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >gwenhywfar/gwentime.h</header>
+      <header type="sys" >gwenhywfar/stringlist.h</header>
+      <header type="sys" >aqbanking/value.h</header>
+      <header type="sys" >aqbanking/split.h</header>
+    </headers>
+
+    <group name="Local Account Info">
+      <descr>
+        This group contains information about the local account.
+        Functions of this group are also available in AB_SPLIT, please 
+        make your application check for splits first and use the values here
+        as a fallback.
+      </descr>
+      <elem name="localCountry" type="char" ptr="1">
+        <descr>
+          This is the two-character country code according to ISO
+          3166-1 (Alpha-2). This is also used in DNS toplevel domain
+          names. For Germany use "DE" (not case-sensitive).
+        </descr>
+      </elem>
+
+      <elem name="localBankCode" type="char" ptr="1">
+        <descr>
+         This is the code of the local bank (i.e. <b>your</b> bank).
+        </descr>
+      </elem>
+      <elem name="localBranchId" type="char" ptr="1">
+        <descr>
+         This is the branch id of the local bank (OFX only)
+        </descr>
+      </elem>
+      <elem name="localAccountNumber" type="char" ptr="1" />
+      <elem name="localSuffix" type="char" ptr="1" >
+        <descr>
+          If your account has subaccounts which are distinguished by
+          different suffixes, then this is that suffix. Otherwise it's
+          empty. (HBCI only)
+        </descr>
+      </elem>
+      <elem name="localName" type="char" ptr="1" />
+    </group>
+
+    <group name="Remote Account Info">
+      <descr>
+        This group contains information about the remote account.
+        Functions of this group are also available in AB_SPLIT, please 
+        make your application check for splits first and use the values here
+        as a fallback.
+      </descr>
+      <elem name="remoteCountry" type="char" ptr="1">
+        <descr>
+          This is the two-character ISO country code (as used in toplevel
+          domains). For Germany use "DE".
+        </descr>
+      </elem>
+      <elem name="remoteBankCode" type="char" ptr="1" />
+      <elem name="remoteBranchId" type="char" ptr="1">
+        <descr>
+         This is the branch id of the remote bank (OFX only)
+        </descr>
+      </elem>
+      <elem name="remoteAccountNumber" type="char" ptr="1" />
+      <elem name="remoteSuffix" type="char" ptr="1" />
+      <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
+    </group>
+    
     <elem name="uniqueId" type="GWEN_TYPE_UINT32" >
       <descr>
         This is a unique id assigned by the application. However, when
@@ -131,11 +241,19 @@
         </descr>
       </elem>
     </group>
-    
+
     <group name="Value">
+      <descr>
+        Functions of this group are also available in AB_SPLIT, please 
+        make your application check for splits first and use the values here
+        as a fallback.
+      </descr>
       <elem name="value" type="AB_VALUE" ptr="1" />
     </group>
-    
+
+    <elem name="splits" type="AB_SPLIT_LIST" ptr="1" mode="list"
+          elemType="AB_SPLIT" const="0" init="1" copy="1" />
+
     <group name="Info Which Is Not Supported by All Backends">
       <descr>
         <p>

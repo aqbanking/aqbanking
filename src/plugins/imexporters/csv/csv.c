@@ -253,6 +253,7 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_TIME *ti;
+      AB_SPLIT *sp;
 
       dbTransaction=GWEN_DB_Group_new("transaction");
       rv=AB_Transaction_toDb(t, dbTransaction);
@@ -263,6 +264,24 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
         GWEN_DB_Group_free(dbData);
         GWEN_DB_Group_free(dbTransaction);
         return AB_ERROR_GENERIC;
+      }
+
+      /* if transaction contains splits:
+       * Take the first split and store it within the transaction thus
+       * overwriting possibly existing data in the transaction itself.
+       * However, if there actually ARE splits then the corresponding data
+       * within the transaction is NULL anyway so this step doesn't hurt. */
+      sp=AB_Split_List_First(AB_Transaction_GetSplits(t));
+      if (sp) {
+        rv=AB_Split_toDb(sp, dbTransaction);
+        if (rv) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not transform split to db");
+          GWEN_WaitCallback_Log(0, "Error transforming data to db");
+          GWEN_DB_Group_free(dbData);
+          GWEN_DB_Group_free(dbTransaction);
+          return AB_ERROR_GENERIC;
+        }
       }
 
       /* transform dates */

@@ -1,4 +1,9 @@
 
+2005/01/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added splits to AB_TRANSACTION. This way we can fully import file formats
+  which contain splits
+
 
 2005/01/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -290,20 +290,20 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       case 61:
       case 62:
       case 63: /* Verwendungszweck */
-        AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+        AHB_SWIFT__SetCharValue(data, flags, "splits/element/purpose", s);
         break;
   
       case 30: /* BLZ Gegenseite */
-        AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteBankCode", s);
         break;
   
       case 31: /* Kontonummer Gegenseite */
-        AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteAccountNumber", s);
         break;
   
       case 32: 
       case 33: /* Name Auftraggeber */
-        AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+        AHB_SWIFT__SetCharValue(data, flags, "splits/element/remoteName", s);
         break;
   
       case 34: /* Textschluesselergaenzung */
@@ -320,7 +320,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   } /* if structured */
   else {
     /* unstructured :86:, simply store as purpose line */
-    AHB_SWIFT__SetCharValue(data, flags, "purpose", p);
+    AHB_SWIFT__SetCharValue(data, flags, "splits/element/purpose", p);
   }
 
   return 0;
@@ -455,10 +455,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
+  AHB_SWIFT__SetCharValue(data, flags, "splits/element/value/value", s);
   AHB_SWIFT__SetCharValue(data, flags,
-                       "value/currency",
-                       GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"));
+                          "splits/element/value/currency",
+                          GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"));
   free(s);
   bleft-=p2-p;
   p=p2;

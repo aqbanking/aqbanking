@@ -135,18 +135,21 @@ int AHB_DTAUS__ParseExtSet(GWEN_BUFFER *src,
   switch(typ) {
   case 1: /* Kundenname */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Customer name: %s", GWEN_Buffer_GetStart(tmp));
-    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "remoteName",
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
+                            "splits/element/remoteName",
                          GWEN_Buffer_GetStart(tmp));
     break;
   case 2: /* Verwendungszweck */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Purpose: %s", GWEN_Buffer_GetStart(tmp));
-    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "purpose",
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
+                            "splits/element/purpose",
 			 GWEN_Buffer_GetStart(tmp));
     break;
   case 3: /* Name des Auftraggebers */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Peer name: %s", GWEN_Buffer_GetStart(tmp));
-    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "localName",
-                         GWEN_Buffer_GetStart(tmp));
+    AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
+                            "splits/element/localName",
+                            GWEN_Buffer_GetStart(tmp));
     break;
   default: /* unbekannt */
     break;
@@ -198,7 +201,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Our bank code: %s", GWEN_Buffer_GetStart(tmp));
   GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "localbankCode",
+                       "splits/element/localbankCode",
 		       GWEN_Buffer_GetStart(tmp));
 
   /* account id */
@@ -211,7 +214,7 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Our account id: %s", GWEN_Buffer_GetStart(tmp));
   GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "localAccountNumber",
+                       "splits/element/localAccountNumber",
 		       GWEN_Buffer_GetStart(tmp));
 
   /* customer reference */
@@ -278,13 +281,13 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   if (*(GWEN_Buffer_GetStart(tmp))=='1') {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Currency: EUR");
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
-			 "value/currency",
+			 "splits/element/value/currency",
 			 "EUR");
   }
   else {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Currency: DEM");
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
-			 "value/currency",
+			 "splits/element/value/currency",
 			 "DEM");
   }
 
@@ -326,7 +329,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     *sumBankCodes+=dd;
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteBankCode",
+                         "splits/element/remoteBankCode",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -350,7 +353,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     *sumAccountIds+=dd;
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteAccountNumber",
+                         "splits/element/remoteAccountNumber",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -386,7 +389,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bank code: %s", GWEN_Buffer_GetStart(tmp));
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localBankCode",
+                         "splits/element/localBankCode",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -404,7 +407,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Account id: %s", GWEN_Buffer_GetStart(tmp));
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localAccountNumber",
+                         "splits/element/localAccountNumber",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -458,11 +461,11 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
         GWEN_DB_SetCharValue(xa,
                              GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/value",
+                             "splits/element/value/value",
                              p);
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/currency", "EUR");
+                             "splits/element/value/currency", "EUR");
         *sumEUR+=dd;
       }
       else {
@@ -516,11 +519,11 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
         GWEN_DB_SetCharValue(xa,
                              GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/value",
+                             "splits/element/value/value",
                              v);
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/currency", "DEM");
+                             "splits/element/value/currency", "DEM");
         *sumDEM+=dd;
       }
       else {
@@ -547,7 +550,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Peer name: %s", GWEN_Buffer_GetStart(tmp));
     AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "remoteName",
+                         "splits/element/remoteName",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -565,7 +568,7 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Name: %s", GWEN_Buffer_GetStart(tmp));
     AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "localName",
+                         "splits/element/localName",
                          GWEN_Buffer_GetStart(tmp));
   }
   else {
@@ -582,9 +585,9 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Purpose: %s", GWEN_Buffer_GetStart(tmp));
     AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "purpose",
-                         GWEN_Buffer_GetStart(tmp));
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "splits/element/purpose",
+                            GWEN_Buffer_GetStart(tmp));
   }
   else {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "No purpose");
@@ -866,19 +869,21 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
         xa=GWEN_DB_Group_new("debitnote");
       else
         xa=GWEN_DB_Group_new("transfer");
-      GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "value/currency",
+      GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
+                           "splits/element/value/currency",
                            GWEN_DB_GetCharValue(dcfg, "currency", 0, "EUR"));
       p=GWEN_DB_GetCharValue(dcfg, "bankCode", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
-                             "localBankCode", p);
+                             "splits/element/localBankCode", p);
       p=GWEN_DB_GetCharValue(dcfg, "accountId", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
-                             "localAccountNumber", p);
+                             "splits/element/localAccountNumber", p);
       p=GWEN_DB_GetCharValue(dcfg, "name", 0, 0);
       if (p)
-        GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "localName", p);
+        GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
+                             "splits/element/localName", p);
       p=GWEN_DB_GetCharValue(dcfg, "execDate", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT, "date", p);
