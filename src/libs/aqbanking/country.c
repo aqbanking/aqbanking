@@ -105,6 +105,7 @@ static AB_COUNTRY ab_country_list[]= {
 { I18N_NOOP("GABON"), "GA", 266 },
 { I18N_NOOP("GAMBIA"), "GM", 270 },
 { I18N_NOOP("GEORGIA"), "GE", 268 },
+{ I18N_NOOP("GERMANY"), "DE", 280 },
 { I18N_NOOP("GERMANY"), "DE", 276 },
 { I18N_NOOP("GHANA"), "GH", 288 },
 { I18N_NOOP("GIBRALTAR"), "GI", 292 },

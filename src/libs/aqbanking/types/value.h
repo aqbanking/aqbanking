@@ -50,6 +50,21 @@ void AB_Value_SetCurrency(AB_VALUE *v, const char *s);
 AQBANKING_API 
 int AB_Value_IsValid(const AB_VALUE *v);
 
+
+AQBANKING_API
+int AB_Value_AddValue(AB_VALUE  *v, const AB_VALUE *vToAdd);
+
+AQBANKING_API 
+int AB_Value_SubValue(AB_VALUE  *v, const AB_VALUE *vToSub);
+
+AQBANKING_API 
+int AB_Value_IsNegative(const AB_VALUE *v);
+
+AQBANKING_API 
+int AB_Value_Compare(const AB_VALUE  *v, const AB_VALUE *vc);
+
+
+
 #ifdef __cplusplus
 }
 #endif

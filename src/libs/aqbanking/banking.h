@@ -1539,8 +1539,6 @@ int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * This function makes the application print something.
  * @param ab banking interface
  * @param docTitle title of the document. This might be presented to the user
- *      If the caller provides NULL here then this function is not to actually
- *      print but to verify whether the given text fits on one page.
  * @param docType an unique identifier of the document to be printed. This can
  *   be used by the application to separate printer settings for different
  *   document types. The name itself has no meaning and can be choosen freely
@@ -1549,11 +1547,6 @@ int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * @param descr an optional description about what the document contains. This
  *   might be shown to the user (see text restriction notes above).
  * @param text text to be printed (see text restriction notes above).
- *   Additionally the text may contain ASCII form feed characters to mark the
- *   end of a page in the ASCII part of the text. If a HTML version of the
- *   text is provided then this function should check for PAGE elements. Such
- *   elements mark single pages. This allows the caller to specify a multi-
- *   page document.
  */
 AQBANKING_API 
 int AB_Banking_Print(AB_BANKING *ab,

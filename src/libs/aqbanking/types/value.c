@@ -227,6 +227,49 @@ int AB_Value_IsValid(const AB_VALUE *v){
 
 
 
+int AB_Value_AddValue(AB_VALUE  *v, const AB_VALUE *vToAdd){
+  assert(v);
+  assert(vToAdd);
+  if (!v->isValid || !vToAdd->isValid)
+    return -1;
+  v->value+=vToAdd->value;
+  return 0;
+}
+
+
+
+int AB_Value_SubValue(AB_VALUE  *v, const AB_VALUE *vToSub){
+  assert(v);
+  assert(vToSub);
+  if (!v->isValid || !vToSub->isValid)
+    return -1;
+  v->value-=vToSub->value;
+  return 0;
+}
+
+
+
+int AB_Value_IsNegative(const AB_VALUE *v){
+  assert(v);
+  return (v->isValid && v->value<0.0)?1:0;
+}
+
+
+
+int AB_Value_Compare(const AB_VALUE  *v, const AB_VALUE *vc){
+  assert(v);
+  if (v->value<vc->value)
+    return -1;
+  else if (v->value>vc->value)
+    return 1;
+  return 0;
+}
+
+
+
+
+
+
 
 
 

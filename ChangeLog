@@ -1,4 +1,13 @@
 
+2005/02/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions to AB_VALUE which will me allow later to use something
+  other than double internally (add, sub, compare, isNegative)
+- inserted country value 280 for Germany (since our official number is not
+  really used. However, 276 is still around. But when asking for the number
+  Germany the 280 will be returned because it preceeds 276 in my list)
+
+
 2005/02/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - clarified API for AB_Banking_Print() to allow dry-runs and multi-page
