@@ -1,6 +1,12 @@
 SUBDIRS=profiles
 
+# Include the source code files here as well. It doesnt hurt to
+# include them twice in the dist target.
+EXTRA_DIST=README ofx.c ofx_p.h ofx.xml.in
 
+#####
+# The complete rest of the file is used only if HAVE_OFX is enabled.
+#####
 if WITH_OFX_PLUGIN
 
 INCLUDES = $(all_includes)
@@ -20,10 +26,6 @@ ofx_la_SOURCES=\
 ofx_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking -lofx
 ofx_la_LDFLAGS=@STRIPALL@ \
   -module -omit-version
-
-else
-
-EXTRA_DIST=README ofx.c ofx_p.h ofx.xml.in
 
 # dll stuff
 if IS_WINDOWS
@@ -84,6 +86,7 @@ endif
 
 
 
-
-
-endif # WITH_OFX_PLUGIN
+endif
+#####
+# WITH_OFX_PLUGIN
+#####
