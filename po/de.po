@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-02-19 15:20+0100\n"
+"POT-Creation-Date: 2005-02-21 11:32+0100\n"
 "PO-Revision-Date: 2005-02-17 08:47+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -499,642 +499,642 @@ msgstr "Gambia"
 msgid "GEORGIA"
 msgstr "Georgien"
 
-#: src/libs/aqbanking/country.c:108
+#: src/libs/aqbanking/country.c:108 src/libs/aqbanking/country.c:109
 msgid "GERMANY"
 msgstr "Deutschland"
 
-#: src/libs/aqbanking/country.c:109
+#: src/libs/aqbanking/country.c:110
 msgid "GHANA"
 msgstr "Ghana"
 
-#: src/libs/aqbanking/country.c:110
+#: src/libs/aqbanking/country.c:111
 msgid "GIBRALTAR"
 msgstr "Gibraltar"
 
-#: src/libs/aqbanking/country.c:111
+#: src/libs/aqbanking/country.c:112
 msgid "GREECE"
 msgstr "Griechenland"
 
-#: src/libs/aqbanking/country.c:112
+#: src/libs/aqbanking/country.c:113
 msgid "GREENLAND"
 msgstr "Grönland"
 
-#: src/libs/aqbanking/country.c:113
+#: src/libs/aqbanking/country.c:114
 msgid "GRENADA"
 msgstr "Grenada"
 
-#: src/libs/aqbanking/country.c:114
+#: src/libs/aqbanking/country.c:115
 msgid "GUADELOUPE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:115
+#: src/libs/aqbanking/country.c:116
 msgid "GUAM"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:116
+#: src/libs/aqbanking/country.c:117
 msgid "GUATEMALA"
 msgstr "Guatemala"
 
-#: src/libs/aqbanking/country.c:117
+#: src/libs/aqbanking/country.c:118
 msgid "GUINEA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:118
+#: src/libs/aqbanking/country.c:119
 msgid "GUINEA-BISSAU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:119
+#: src/libs/aqbanking/country.c:120
 msgid "GUYANA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:120
+#: src/libs/aqbanking/country.c:121
 msgid "HAITI"
 msgstr "Haiti"
 
-#: src/libs/aqbanking/country.c:121
+#: src/libs/aqbanking/country.c:122
 msgid "HEARD ISLAND AND MCDONALD ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:122
+#: src/libs/aqbanking/country.c:123
 msgid "HOLY SEE (VATICAN CITY STATE)"
 msgstr "Vatikan"
 
-#: src/libs/aqbanking/country.c:123
+#: src/libs/aqbanking/country.c:124
 msgid "HONDURAS"
 msgstr "Honduras"
 
-#: src/libs/aqbanking/country.c:124
+#: src/libs/aqbanking/country.c:125
 msgid "HONG KONG"
 msgstr "Hong Kong"
 
-#: src/libs/aqbanking/country.c:125
+#: src/libs/aqbanking/country.c:126
 msgid "HUNGARY"
 msgstr "Ungarn"
 
-#: src/libs/aqbanking/country.c:126
+#: src/libs/aqbanking/country.c:127
 msgid "ICELAND"
 msgstr "Island"
 
-#: src/libs/aqbanking/country.c:127
+#: src/libs/aqbanking/country.c:128
 msgid "INDIA"
 msgstr "Indien"
 
-#: src/libs/aqbanking/country.c:128
+#: src/libs/aqbanking/country.c:129
 msgid "INDONESIA"
 msgstr "Indonesien"
 
-#: src/libs/aqbanking/country.c:129
+#: src/libs/aqbanking/country.c:130
 msgid "IRAN, ISLAMIC REPUBLIC OF"
 msgstr "Iran"
 
-#: src/libs/aqbanking/country.c:130
+#: src/libs/aqbanking/country.c:131
 msgid "IRAQ"
 msgstr "Irak"
 
-#: src/libs/aqbanking/country.c:131
+#: src/libs/aqbanking/country.c:132
 msgid "IRELAND"
 msgstr "Irland"
 
-#: src/libs/aqbanking/country.c:132
+#: src/libs/aqbanking/country.c:133
 msgid "ISRAEL"
 msgstr "Israel"
 
-#: src/libs/aqbanking/country.c:133
+#: src/libs/aqbanking/country.c:134
 msgid "ITALY"
 msgstr "Italien"
 
-#: src/libs/aqbanking/country.c:134
+#: src/libs/aqbanking/country.c:135
 msgid "JAMAICA"
 msgstr "Jamaika"
 
-#: src/libs/aqbanking/country.c:135
+#: src/libs/aqbanking/country.c:136
 msgid "JAPAN"
 msgstr "Japan"
 
-#: src/libs/aqbanking/country.c:136
+#: src/libs/aqbanking/country.c:137
 msgid "JORDAN"
 msgstr "Jordanien"
 
-#: src/libs/aqbanking/country.c:137
+#: src/libs/aqbanking/country.c:138
 msgid "KAZAKHSTAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:138
+#: src/libs/aqbanking/country.c:139
 msgid "KENYA"
 msgstr "Kenia"
 
-#: src/libs/aqbanking/country.c:139
+#: src/libs/aqbanking/country.c:140
 msgid "KIRIBATI"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:140
+#: src/libs/aqbanking/country.c:141
 msgid "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF"
 msgstr "Korea, Volksrepublik"
 
-#: src/libs/aqbanking/country.c:141
+#: src/libs/aqbanking/country.c:142
 msgid "KOREA, REPUBLIC OF"
 msgstr "Korea, Republik"
 
-#: src/libs/aqbanking/country.c:142
+#: src/libs/aqbanking/country.c:143
 msgid "KUWAIT"
 msgstr "Kuwait"
 
-#: src/libs/aqbanking/country.c:143
+#: src/libs/aqbanking/country.c:144
 msgid "KYRGYZSTAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:144
+#: src/libs/aqbanking/country.c:145
 msgid "LAO PEOPLE'S DEMOCRATIC REPUBLIC"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:145
+#: src/libs/aqbanking/country.c:146
 msgid "LATVIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:146
+#: src/libs/aqbanking/country.c:147
 msgid "LEBANON"
 msgstr "Libanon"
 
-#: src/libs/aqbanking/country.c:147
+#: src/libs/aqbanking/country.c:148
 msgid "LESOTHO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:148
+#: src/libs/aqbanking/country.c:149
 msgid "LIBERIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:149
+#: src/libs/aqbanking/country.c:150
 msgid "LIBYAN ARAB JAMAHIRIYA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:150
+#: src/libs/aqbanking/country.c:151
 msgid "LIECHTENSTEIN"
 msgstr "Liechtenstein"
 
-#: src/libs/aqbanking/country.c:151
+#: src/libs/aqbanking/country.c:152
 msgid "LITHUANIA"
 msgstr "Lettland"
 
-#: src/libs/aqbanking/country.c:152
+#: src/libs/aqbanking/country.c:153
 msgid "LUXEMBOURG"
 msgstr "Luxemburg"
 
-#: src/libs/aqbanking/country.c:153
+#: src/libs/aqbanking/country.c:154
 msgid "MACAO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:154
+#: src/libs/aqbanking/country.c:155
 msgid "MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF"
 msgstr "Mazedonien, frühere Jugoslawische Republik"
 
-#: src/libs/aqbanking/country.c:155
+#: src/libs/aqbanking/country.c:156
 msgid "MADAGASCAR"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:156
+#: src/libs/aqbanking/country.c:157
 msgid "MALAWI"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:157
+#: src/libs/aqbanking/country.c:158
 msgid "MALAYSIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:158
+#: src/libs/aqbanking/country.c:159
 msgid "MALDIVES"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:159
+#: src/libs/aqbanking/country.c:160
 msgid "MALI"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:160
+#: src/libs/aqbanking/country.c:161
 msgid "MALTA"
 msgstr "Malta"
 
-#: src/libs/aqbanking/country.c:161
+#: src/libs/aqbanking/country.c:162
 msgid "MARSHALL ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:162
+#: src/libs/aqbanking/country.c:163
 msgid "MARTINIQUE"
 msgstr "Martinique"
 
-#: src/libs/aqbanking/country.c:163
+#: src/libs/aqbanking/country.c:164
 msgid "MAURITANIA"
 msgstr "Mauretanien"
 
-#: src/libs/aqbanking/country.c:164
+#: src/libs/aqbanking/country.c:165
 msgid "MAURITIUS"
 msgstr "Mauritius"
 
-#: src/libs/aqbanking/country.c:165
+#: src/libs/aqbanking/country.c:166
 msgid "MAYOTTE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:166
+#: src/libs/aqbanking/country.c:167
 msgid "MEXICO"
 msgstr "Mexiko"
 
-#: src/libs/aqbanking/country.c:167
+#: src/libs/aqbanking/country.c:168
 msgid "MICRONESIA, FEDERATED STATES OF"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:168
+#: src/libs/aqbanking/country.c:169
 msgid "MOLDOVA, REPUBLIC OF"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:169
+#: src/libs/aqbanking/country.c:170
 msgid "MONACO"
 msgstr "Monako"
 
-#: src/libs/aqbanking/country.c:170
+#: src/libs/aqbanking/country.c:171
 msgid "MONGOLIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:171
+#: src/libs/aqbanking/country.c:172
 msgid "MONTSERRAT"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:172
+#: src/libs/aqbanking/country.c:173
 msgid "MOROCCO"
 msgstr "Marokko"
 
-#: src/libs/aqbanking/country.c:173
+#: src/libs/aqbanking/country.c:174
 msgid "MOZAMBIQUE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:174
+#: src/libs/aqbanking/country.c:175
 msgid "MYANMAR"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:175
+#: src/libs/aqbanking/country.c:176
 msgid "NAMIBIA"
 msgstr "Namibia"
 
-#: src/libs/aqbanking/country.c:176
+#: src/libs/aqbanking/country.c:177
 msgid "NAURU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:177
+#: src/libs/aqbanking/country.c:178
 msgid "NEPAL"
 msgstr "Nepal"
 
-#: src/libs/aqbanking/country.c:178
+#: src/libs/aqbanking/country.c:179
 msgid "NETHERLANDS"
 msgstr "Niederlande"
 
-#: src/libs/aqbanking/country.c:179
+#: src/libs/aqbanking/country.c:180
 msgid "NETHERLANDS ANTILLES"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:180
+#: src/libs/aqbanking/country.c:181
 msgid "NEW CALEDONIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:181
+#: src/libs/aqbanking/country.c:182
 msgid "NEW ZEALAND"
 msgstr "Neuseeland"
 
-#: src/libs/aqbanking/country.c:182
+#: src/libs/aqbanking/country.c:183
 msgid "NICARAGUA"
 msgstr "Nikaragua"
 
-#: src/libs/aqbanking/country.c:183
+#: src/libs/aqbanking/country.c:184
 msgid "NIGER"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:184
+#: src/libs/aqbanking/country.c:185
 msgid "NIGERIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:185
+#: src/libs/aqbanking/country.c:186
 msgid "NIUE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:186
+#: src/libs/aqbanking/country.c:187
 msgid "NORFOLK ISLAND"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:187
+#: src/libs/aqbanking/country.c:188
 msgid "NORTHERN MARIANA ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:188
+#: src/libs/aqbanking/country.c:189
 msgid "NORWAY"
 msgstr "Norwegen"
 
-#: src/libs/aqbanking/country.c:189
+#: src/libs/aqbanking/country.c:190
 msgid "OMAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:190
+#: src/libs/aqbanking/country.c:191
 msgid "PAKISTAN"
 msgstr "Pakistan"
 
-#: src/libs/aqbanking/country.c:191
+#: src/libs/aqbanking/country.c:192
 msgid "PALAU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:192
+#: src/libs/aqbanking/country.c:193
 msgid "PALESTINIAN TERRITORY, OCCUPIED"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:193
+#: src/libs/aqbanking/country.c:194
 msgid "PANAMA"
 msgstr "Panama"
 
-#: src/libs/aqbanking/country.c:194
+#: src/libs/aqbanking/country.c:195
 msgid "PAPUA NEW GUINEA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:195
+#: src/libs/aqbanking/country.c:196
 msgid "PARAGUAY"
 msgstr "Paraguay"
 
-#: src/libs/aqbanking/country.c:196
+#: src/libs/aqbanking/country.c:197
 msgid "PERU"
 msgstr "Peru"
 
-#: src/libs/aqbanking/country.c:197
+#: src/libs/aqbanking/country.c:198
 msgid "PHILIPPINES"
 msgstr "Philipinen"
 
-#: src/libs/aqbanking/country.c:198
+#: src/libs/aqbanking/country.c:199
 msgid "PITCAIRN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:199
+#: src/libs/aqbanking/country.c:200
 msgid "POLAND"
 msgstr "Polen"
 
-#: src/libs/aqbanking/country.c:200
+#: src/libs/aqbanking/country.c:201
 msgid "PORTUGAL"
 msgstr "Portugal"
 
-#: src/libs/aqbanking/country.c:201
+#: src/libs/aqbanking/country.c:202
 msgid "PUERTO RICO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:202
+#: src/libs/aqbanking/country.c:203
 msgid "QATAR"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:203
+#: src/libs/aqbanking/country.c:204
 msgid "REUNION"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:204
+#: src/libs/aqbanking/country.c:205
 msgid "ROMANIA"
 msgstr "Rumänien"
 
-#: src/libs/aqbanking/country.c:205
+#: src/libs/aqbanking/country.c:206
 msgid "RUSSIAN FEDERATION"
 msgstr "Russland"
 
-#: src/libs/aqbanking/country.c:206
+#: src/libs/aqbanking/country.c:207
 msgid "RWANDA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:207
+#: src/libs/aqbanking/country.c:208
 msgid "SAINT HELENA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:208
+#: src/libs/aqbanking/country.c:209
 msgid "SAINT KITTS AND NEVIS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:209
+#: src/libs/aqbanking/country.c:210
 msgid "SAINT LUCIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:210
+#: src/libs/aqbanking/country.c:211
 msgid "SAINT PIERRE AND MIQUELON"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:211
+#: src/libs/aqbanking/country.c:212
 msgid "SAINT VINCENT AND THE GRENADINES"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:212
+#: src/libs/aqbanking/country.c:213
 msgid "SAMOA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:213
+#: src/libs/aqbanking/country.c:214
 msgid "SAN MARINO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:214
+#: src/libs/aqbanking/country.c:215
 msgid "SAO TOME AND PRINCIPE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:215
+#: src/libs/aqbanking/country.c:216
 msgid "SAUDI ARABIA"
 msgstr "Saudi-Arabien"
 
-#: src/libs/aqbanking/country.c:216
+#: src/libs/aqbanking/country.c:217
 msgid "SENEGAL"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:217
+#: src/libs/aqbanking/country.c:218
 msgid "SERBIA AND MONTENEGRO"
 msgstr "Serbien und Montenegro"
 
-#: src/libs/aqbanking/country.c:218
+#: src/libs/aqbanking/country.c:219
 msgid "SEYCHELLES"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:219
+#: src/libs/aqbanking/country.c:220
 msgid "SIERRA LEONE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:220
+#: src/libs/aqbanking/country.c:221
 msgid "SINGAPORE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:221
+#: src/libs/aqbanking/country.c:222
 msgid "SLOVAKIA"
 msgstr "Slowakei"
 
-#: src/libs/aqbanking/country.c:222
+#: src/libs/aqbanking/country.c:223
 msgid "SLOVENIA"
 msgstr "Slowenien"
 
-#: src/libs/aqbanking/country.c:223
+#: src/libs/aqbanking/country.c:224
 msgid "SOLOMON ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:224
+#: src/libs/aqbanking/country.c:225
 msgid "SOMALIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:225
+#: src/libs/aqbanking/country.c:226
 msgid "SOUTH AFRICA"
 msgstr "Südafrika"
 
-#: src/libs/aqbanking/country.c:226
+#: src/libs/aqbanking/country.c:227
 msgid "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:227
+#: src/libs/aqbanking/country.c:228
 msgid "SPAIN"
 msgstr "Spanien"
 
-#: src/libs/aqbanking/country.c:228
+#: src/libs/aqbanking/country.c:229
 msgid "SRI LANKA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:229
+#: src/libs/aqbanking/country.c:230
 msgid "SUDAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:230
+#: src/libs/aqbanking/country.c:231
 msgid "SURINAME"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:231
+#: src/libs/aqbanking/country.c:232
 msgid "SVALBARD AND JAN MAYEN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:232
+#: src/libs/aqbanking/country.c:233
 msgid "SWAZILAND"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:233
+#: src/libs/aqbanking/country.c:234
 msgid "SWEDEN"
 msgstr "Schweden"
 
-#: src/libs/aqbanking/country.c:234
+#: src/libs/aqbanking/country.c:235
 msgid "SWITZERLAND"
 msgstr "Schweiz"
 
-#: src/libs/aqbanking/country.c:235
+#: src/libs/aqbanking/country.c:236
 msgid "SYRIAN ARAB REPUBLIC"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:236
+#: src/libs/aqbanking/country.c:237
 msgid "TAIWAN, PROVINCE OF CHINA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:237
+#: src/libs/aqbanking/country.c:238
 msgid "TAJIKISTAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:238
+#: src/libs/aqbanking/country.c:239
 msgid "TANZANIA, UNITED REPUBLIC OF"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:239
+#: src/libs/aqbanking/country.c:240
 msgid "THAILAND"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:240
+#: src/libs/aqbanking/country.c:241
 msgid "TIMOR-LESTE"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:241
+#: src/libs/aqbanking/country.c:242
 msgid "TOGO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:242
+#: src/libs/aqbanking/country.c:243
 msgid "TOKELAU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:243
+#: src/libs/aqbanking/country.c:244
 msgid "TONGA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:244
+#: src/libs/aqbanking/country.c:245
 msgid "TRINIDAD AND TOBAGO"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:245
+#: src/libs/aqbanking/country.c:246
 msgid "TUNISIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:246
+#: src/libs/aqbanking/country.c:247
 msgid "TURKEY"
 msgstr "Türkei"
 
-#: src/libs/aqbanking/country.c:247
+#: src/libs/aqbanking/country.c:248
 msgid "TURKMENISTAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:248
+#: src/libs/aqbanking/country.c:249
 msgid "TURKS AND CAICOS ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:249
+#: src/libs/aqbanking/country.c:250
 msgid "TUVALU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:250
+#: src/libs/aqbanking/country.c:251
 msgid "UGANDA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:251
+#: src/libs/aqbanking/country.c:252
 msgid "UKRAINE"
 msgstr "Ukraine"
 
-#: src/libs/aqbanking/country.c:252
+#: src/libs/aqbanking/country.c:253
 msgid "UNITED ARAB EMIRATES"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:253
+#: src/libs/aqbanking/country.c:254
 msgid "UNITED KINGDOM"
 msgstr "Vereinigtes Königreich"
 
-#: src/libs/aqbanking/country.c:254
+#: src/libs/aqbanking/country.c:255
 msgid "UNITED STATES"
 msgstr "Vereinigte Staaten von Amerika"
 
-#: src/libs/aqbanking/country.c:255
+#: src/libs/aqbanking/country.c:256
 msgid "UNITED STATES MINOR OUTLYING ISLANDS"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:256
+#: src/libs/aqbanking/country.c:257
 msgid "URUGUAY"
 msgstr "Uruguay"
 
-#: src/libs/aqbanking/country.c:257
+#: src/libs/aqbanking/country.c:258
 msgid "UZBEKISTAN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:258
+#: src/libs/aqbanking/country.c:259
 msgid "VANUATU"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:259
+#: src/libs/aqbanking/country.c:260
 msgid "VENEZUELA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:260
+#: src/libs/aqbanking/country.c:261
 msgid "VIET NAM"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:261
+#: src/libs/aqbanking/country.c:262
 msgid "VIRGIN ISLANDS, BRITISH"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:262
+#: src/libs/aqbanking/country.c:263
 msgid "VIRGIN ISLANDS, U.S."
 msgstr ""
 
-#: src/libs/aqbanking/country.c:263
+#: src/libs/aqbanking/country.c:264
 msgid "WALLIS AND FUTUNA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:264
+#: src/libs/aqbanking/country.c:265
 msgid "WESTERN SAHARA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:265
+#: src/libs/aqbanking/country.c:266
 msgid "YEMEN"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:266
+#: src/libs/aqbanking/country.c:267
 msgid "ZAMBIA"
 msgstr ""
 
-#: src/libs/aqbanking/country.c:267
+#: src/libs/aqbanking/country.c:268
 msgid "ZIMBABWE"
 msgstr ""

@@ -61,6 +61,9 @@ AQBANKING_API
 int AB_Value_IsNegative(const AB_VALUE *v);
 
 AQBANKING_API 
+int AB_Value_Negate(AB_VALUE *v);
+
+AQBANKING_API 
 int AB_Value_Compare(const AB_VALUE  *v, const AB_VALUE *vc);
 
 

@@ -267,6 +267,16 @@ int AB_Value_Compare(const AB_VALUE  *v, const AB_VALUE *vc){
 
 
 
+int AB_Value_Negate(AB_VALUE *v){
+  assert(v);
+  if (!v->isValid)
+    return -1;
+  v->value=-v->value;
+  return 0;
+}
+
+
+
 
 
 
