@@ -14,7 +14,10 @@
 #ifndef AQBANKING_ERROR_H
 #define AQBANKING_ERROR_H
 
-
+/** @defgroup AB_ERROR (Error Codes)
+ * @ingroup AB_C_INTERFACE
+ */
+/*@{*/
 #define AB_ERROR_SUCCESS           0
 #define AB_ERROR_NOFN            (-1)
 #define AB_ERROR_NOT_SUPPORTED   (-2)
@@ -28,6 +31,7 @@
 #define AB_ERROR_USER_ABORT      (-10)
 #define AB_ERROR_FOUND           (-11)
 #define AB_ERROR_NO_DATA         (-12)
+/*@}*/
 
 
 

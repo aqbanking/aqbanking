@@ -22,7 +22,10 @@ aqbanking-config: aqbanking-config.in
 	cat aqbanking-config.in >>aqbanking-config && \
 	chmod a+x aqbanking-config
 
-srcdoc: Doxyfile
+listdoc.h: @AQ_HEADER_FILES@
+	mklistdoc -v @AQ_HEADER_FILES@ >listdoc.h
+
+srcdoc: Doxyfile listdoc.h
 	doxygen
 
 install-srcdoc: $(PACKAGE).tag

@@ -65,13 +65,83 @@ typedef enum {
 extern "C" {
 #endif
 
-
+/** @name Constructing, Destroying, Attaching
+ *
+ * Actually this group does not contain a constructor since you never
+ * create an AB_JOB directly. You rather create a derived job (e.g. by using
+ * @ref AB_JobGetBalance_new).
+ */
+/*@{*/
 void AB_Job_free(AB_JOB *j);
 void AB_Job_Attach(AB_JOB *j);
+/*@}*/
 
 
+/** @name Informational Functions
+ *
+ */
+/*@{*/
+/**
+ * Not all jobs have to be supported by every backend. The application needs
+ * to know whether a job actually @b is supported, and this is done by calling
+ * this function. It returns the error code (see @ref AB_ERROR) returned
+ * by the backend when asked to check for this job.
+ */
 int AB_Job_CheckAvailability(AB_JOB *j);
 
+/**
+ * Returns the status of this job.
+ */
+AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j);
+
+/**
+ * Returns the job type.
+ */
+AB_JOB_TYPE AB_Job_GetType(const AB_JOB *j);
+
+/**
+ * Every job is linked to a single account to operate on.
+ */
+AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
+
+/**
+ * Returns a text result provided by the backend upon execution of this
+ * job. This should only be presented to the user when there is no other
+ * way to determine the result (e.g. no log etc).
+ */
+const char *AB_Job_GetResultText(const AB_JOB *j);
+/*@}*/
+
+
+/** @name Helper Functions
+ *
+ */
+/*@{*/
+/**
+ * Transforms the given status code into a string.
+ */
+const char *AB_Job_Status2Char(AB_JOB_STATUS i);
+/**
+ * Transforms the given string into a job status code.
+ */
+AB_JOB_STATUS AB_Job_Char2Status(const char *s);
+
+/**
+ * Transforms the given job type into a string.
+ */
+const char *AB_Job_Type2Char(AB_JOB_TYPE i);
+/**
+ * Transforms the given string into a job type.
+ */
+AB_JOB_TYPE AB_Job_Char2Type(const char *s);
+/*@}*/
+
+
+
+/** @name Functions To Be Used by Backends
+ *
+ */
+/*@{*/
 /**
  * This id can be used by a AB_PROVIDER to map AB_Jobs to whatever the
  * provider uses. This id is not used by AB_Banking itself.
@@ -79,25 +149,12 @@ int AB_Job_CheckAvailability(AB_JOB *j);
 GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j);
 void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i);
 
-AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j);
-void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
-AB_JOB_TYPE AB_Job_GetType(const AB_JOB *j);
-
-
-const char *AB_Job_Status2Char(AB_JOB_STATUS i);
-AB_JOB_STATUS AB_Job_Char2Status(const char *s);
-
-const char *AB_Job_Type2Char(AB_JOB_TYPE i);
-AB_JOB_TYPE AB_Job_Char2Type(const char *s);
-
-
-AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
-
-const char *AB_Job_GetResultText(const AB_JOB *j);
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
-
-
+void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 /*@}*/
+
+
+/*@}*/ /* defgroup */
 
 
 #ifdef __cplusplus

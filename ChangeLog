@@ -5,6 +5,8 @@
   changes in my other projects the new target "install-srcdoc" now
   creates combined API docs (e.g. API doc for AqBanking now links to
   that of Gwenhywfar etc)
+- now uses gwen new tool mklistdoc to generate list documentation suitable
+  for doxygen. Needs the latest CVS version of Gwen.
 
 
 2004/08/01: Martin Preuss<martin@libchipcard.de>

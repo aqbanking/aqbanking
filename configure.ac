@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=1
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=4
+AQBANKING_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -124,7 +124,7 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([memmove memset strcasecmp strdup strerror snprintf])
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(0,9,13,0)
+AC_GWENHYWFAR(0,9,13,18)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -192,13 +192,13 @@ AQ_HEADER_FILES="${lprefix}/version.h"
 # symlink all headers from src/libs
 hfiles=`( cd "${srcdir}/src/libs/" && ls *.h 2>/dev/null )`
 for f in ${hfiles}; do
-  AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/${f}"
   case ${f} in
     *_p.h | *_l.h)
-              ;;
+      ;;
     *)
-              ln -s "${lprefix}/src/libs/${f}" "aqbanking/${f}"
-              ;;
+      AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/${f}"
+      ln -s "${lprefix}/src/libs/${f}" "aqbanking/${f}"
+      ;;
   esac
 done
 
@@ -206,7 +206,6 @@ done
 for sm in $aqbanking_modules; do
   hfiles=`( cd "${srcdir}/src/libs/aqbanking/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/${sm}/${f}"
     case ${f} in
       *_p.h | *_l.h)
          ;;
@@ -241,6 +240,7 @@ for sm in $aqbankingpp_modules; do
     esac
   done
 done
+AC_SUBST(AQ_HEADER_FILES)
 
 
 ###-------------------------------------------------------------------------
@@ -271,11 +271,11 @@ AC_ARG_ENABLE(full-doc,
   enable_fulldoc="no")
 
 if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="src"
+	DOXYGEN_INPUT="listdoc.h src"
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="${AQ_HEADER_FILES}"
+	DOXYGEN_INPUT="listdoc.h ${AQ_HEADER_FILES}"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
