@@ -5,6 +5,8 @@
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/text.h>
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
 #include <stdio.h>
@@ -365,6 +367,439 @@ int test6(int argc, char **argv) {
 
 
 
+int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
+  int rv;
+  GWEN_DB_NODE *dbParams;
+
+  dbParams=GWEN_DB_Group_new("params");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "quote", "1");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "title", "0");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "delimiter", "SPACE");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "group", "country");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/1", "v[0]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/2", "v[1]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/3", "v[2]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/4", "v[3]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/5", "v[4]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/6", "v[5]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/7", "v[6]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/8", "v[7]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/9", "v[8]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/10", "v[9]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/11", "v[10]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/12", "v[11]");
+
+  rv=GWEN_DB_ReadFileAs(db, fname, "csv", dbParams,
+			GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv) {
+    DBG_ERROR(0, "Error reading file");
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+
+int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries) {
+  GWEN_XMLNODE *nRoot;
+  GWEN_XMLNODE *nRow;
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
+  nRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  if (GWEN_XML_ReadFile(nRoot, fname,
+			GWEN_XML_FLAGS_DEFAULT |
+			GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+    DBG_ERROR(0, "Could not read XML file.\n");
+    return 2;
+  }
+
+  nRow=GWEN_XMLNode_FindFirstTag(nRoot, "tr", 0, 0);
+  while(nRow) {
+    GWEN_XMLNODE *nCol;
+    GWEN_DB_NODE *dbCountry=0;
+
+    dbCountry=GWEN_DB_Group_new("country");
+    nCol=GWEN_XMLNode_FindFirstTag(nRow, "td", 0, 0);
+    if (nCol) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nCol);
+      if (nData) {
+	GWEN_BUFFER *dbuf;
+        const char *s;
+	char *p;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	s=GWEN_XMLNode_GetData(nData);
+	assert(s);
+	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+	  fprintf(stderr, "Error unescaping country \"%s\"", s);
+	  return 2;
+	}
+	p=GWEN_Buffer_GetStart(dbuf);
+	if (strlen(p)>1) {
+	  p=strchr(p, '(');
+	  if (p) {
+	    *p=0;
+	    GWEN_Text_CondenseBuffer(dbuf);
+	  }
+	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
+	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+				 "countryName", GWEN_Buffer_GetStart(dbuf));
+	}
+        GWEN_Buffer_free(dbuf);
+      }
+    }
+
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nCol);
+      if (nData) {
+	GWEN_BUFFER *dbuf;
+        const char *s;
+	char *p;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	s=GWEN_XMLNode_GetData(nData);
+	assert(s);
+	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+	  fprintf(stderr, "Error unescaping country code \"%s\"", s);
+	  return 2;
+	}
+	p=GWEN_Buffer_GetStart(dbuf);
+	if (strlen(p)>1) {
+	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
+	    p[2]=0;
+	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+				 "countryCode", GWEN_Buffer_GetStart(dbuf));
+	  }
+	}
+	GWEN_Buffer_free(dbuf);
+      }
+    }
+
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nCol);
+      if (nData) {
+	GWEN_BUFFER *dbuf;
+        const char *s;
+	char *p;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	s=GWEN_XMLNode_GetData(nData);
+	assert(s);
+	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+	  fprintf(stderr, "Error unescaping currency name \"%s\"", s);
+	  return 2;
+	}
+	p=GWEN_Buffer_GetStart(dbuf);
+	if (strlen(p)>1) {
+	  p=strchr(p, '(');
+	  if (p) {
+	    *p=0;
+	    GWEN_Text_CondenseBuffer(dbuf);
+	  }
+	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
+	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+				 "currencyName", GWEN_Buffer_GetStart(dbuf));
+	}
+        GWEN_Buffer_free(dbuf);
+      }
+    }
+
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nCol);
+      if (nData) {
+	GWEN_BUFFER *dbuf;
+        const char *s;
+	char *p;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	s=GWEN_XMLNode_GetData(nData);
+	assert(s);
+	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+	  fprintf(stderr, "Error unescaping currency code \"%s\"", s);
+	  return 2;
+	}
+	p=GWEN_Buffer_GetStart(dbuf);
+	if (strlen(p)>2) {
+	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
+	    p[3]=0;
+	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+				 "currencyCode", GWEN_Buffer_GetStart(dbuf));
+	  }
+	}
+        GWEN_Buffer_free(dbuf);
+      }
+    }
+
+    if (GWEN_DB_VariableExists(dbCountry, "countryName") &&
+	GWEN_DB_VariableExists(dbCountry, "countryCode") &&
+	GWEN_DB_VariableExists(dbCountry, "currencyName") &&
+	GWEN_DB_VariableExists(dbCountry, "currencyCode")) {
+      GWEN_DB_AddGroup(dbCountries, dbCountry);
+    }
+    else {
+      GWEN_DB_Group_free(dbCountry);
+    }
+
+    nRow=GWEN_XMLNode_FindNextTag(nRow, "tr", 0, 0);
+  }
+
+  return 0;
+}
+
+
+
+int test7(int argc, char **argv) {
+  const char *fname;
+  GWEN_DB_NODE *dbCountries;
+  int rv;
+
+  if (argc<3) {
+    fprintf(stderr, "Filename for input needed\n");
+    return 1;
+  }
+  fname=argv[2];
+
+  dbCountries=GWEN_DB_Group_new("countries");
+  rv=readXMLCountries(fname, dbCountries);
+  if (rv)
+    return rv;
+
+  GWEN_DB_Dump(dbCountries, stderr, 2);
+  return 0;
+}
+
+
+
+int packCsvCountries(GWEN_DB_NODE *dbCSV) {
+  GWEN_DB_NODE *dbT;
+
+  dbT=GWEN_DB_FindFirstGroup(dbCSV, "country");
+  while(dbT) {
+    int cnt;
+    int i;
+    int j;
+    GWEN_BUFFER *buf;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    for (i=0; ; i++) {
+      if (GWEN_DB_GetCharValue(dbT, "v", i, 0)==0)
+        break;
+    }
+
+    cnt=i;
+    for (i=0; i<(cnt-3); i++) {
+      if (GWEN_Buffer_GetUsedBytes(buf))
+        GWEN_Buffer_AppendByte(buf, ' ');
+      GWEN_Buffer_AppendString(buf, GWEN_DB_GetCharValue(dbT, "v", i, 0));
+    }
+    GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "countryName",
+			 GWEN_Buffer_GetStart(buf));
+    GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "countryCode",
+			 GWEN_DB_GetCharValue(dbT, "v", i++, 0));
+    if (sscanf(GWEN_DB_GetCharValue(dbT, "v", ++i, 0), "%d", &j)!=1) {
+      fprintf(stderr, "ERROR in country %s\n",
+	      GWEN_Buffer_GetStart(buf));
+      return 2;
+    }
+    else {
+      GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "countryNum", j);
+    }
+    GWEN_DB_DeleteVar(dbT, "v");
+
+    dbT=GWEN_DB_FindNextGroup(dbT, "country");
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+int test8(int argc, char **argv) {
+  const char *fnameXML, *fnameCSV;
+  GWEN_DB_NODE *dbXML;
+  GWEN_DB_NODE *dbCSV;
+  GWEN_DB_NODE *dbC;
+  GWEN_DB_NODE *dbT;
+  FILE *f;
+  int first;
+  int rv;
+
+  if (argc<4) {
+    fprintf(stderr, "Filenames for input needed (XML, CSV)\n");
+    return 1;
+  }
+  fnameXML=argv[2];
+  fnameCSV=argv[3];
+
+  dbXML=GWEN_DB_Group_new("countries");
+  dbCSV=GWEN_DB_Group_new("countries");
+
+  rv=readCSVCountries(fnameCSV, dbCSV);
+  if (rv) {
+    fprintf(stderr, "Error reading CSV countries\n");
+    return rv;
+  }
+  rv=packCsvCountries(dbCSV);
+  if (rv) {
+    fprintf(stderr, "Error packing CSV countries\n");
+    return rv;
+  }
+  //GWEN_DB_Dump(dbCSV, stderr, 4);
+
+  rv=readXMLCountries(fnameXML, dbXML);
+  if (rv)
+    return rv;
+
+  dbC=GWEN_DB_GetFirstGroup(dbXML);
+  while(dbC) {
+    const char *code;
+
+    code=GWEN_DB_GetCharValue(dbC, "countryCode", 0, 0);
+    if (code) {
+      dbT=GWEN_DB_GetFirstGroup(dbCSV);
+      while(dbT) {
+	const char *s;
+
+	s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
+	if (s) {
+	  if (strcasecmp(s, code)==0)
+	    break;
+	}
+	dbT=GWEN_DB_GetNextGroup(dbT);
+      }
+
+      if (!dbT) {
+        DBG_ERROR(0, "Country \"%s\" not found", code);
+      }
+      else {
+	int nc;
+
+	nc=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
+	if (nc) {
+	  DBG_ERROR(0, "Setting country code %s=%d", code, nc);
+	  GWEN_DB_SetIntValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			      "countryNum", nc);
+	}
+	else {
+	  DBG_ERROR(0, "Country \"%s\" has no number", code);
+	  GWEN_DB_Dump(dbT, stderr, 2);
+	}
+      }
+    }
+    else {
+      DBG_ERROR(0, "No country code");
+    }
+
+    dbC=GWEN_DB_GetNextGroup(dbC);
+  }
+
+  f=fopen("countries2.c", "w+");
+  assert(f);
+
+  dbT=GWEN_DB_FindFirstGroup(dbXML, "country");
+  first=1;
+  fprintf(f, "ab_country_list= {\n");
+  while(dbT) {
+    const char *s;
+    int i;
+
+    if (first) {
+      first=0;
+    }
+    else {
+      fprintf(f, ",\n");
+    }
+
+    i=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
+    if (i!=280) {
+      if (i==276) {
+	s=GWEN_DB_GetCharValue(dbT, "countryName", 0, 0);
+	assert(s);
+	fprintf(f, "{ I18N_NOOP(\"%s\"), ",
+		s);
+	s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
+	assert(s);
+	fprintf(f, "\"%s\",", s);
+	i=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
+	fprintf(f, " %d,", 280);
+	s=GWEN_DB_GetCharValue(dbT, "currencyName", 0, 0);
+	assert(s);
+	fprintf(f, " I18N_NOOP(\"%s\"), ", s);
+	s=GWEN_DB_GetCharValue(dbT, "currencyCode", 0, 0);
+	assert(s);
+	fprintf(f, " \"%s\" }", s);
+	fprintf(f, ",\n");
+      }
+
+      s=GWEN_DB_GetCharValue(dbT, "countryName", 0, 0);
+      assert(s);
+      fprintf(f, "{ I18N_NOOP(\"%s\"), ",
+	      s);
+      s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
+      assert(s);
+      fprintf(f, "\"%s\",", s);
+      fprintf(f, " %d,", i);
+      s=GWEN_DB_GetCharValue(dbT, "currencyName", 0, 0);
+      assert(s);
+      fprintf(f, " I18N_NOOP(\"%s\"), ", s);
+      s=GWEN_DB_GetCharValue(dbT, "currencyCode", 0, 0);
+      assert(s);
+      fprintf(f, " \"%s\" }", s);
+    }
+
+    dbT=GWEN_DB_FindNextGroup(dbT, "country");
+  } /* while */
+
+  fprintf(f, "\n}\n");
+
+  if (fclose(f)) {
+    fprintf(stderr, "Could not close.\n");
+    return 3;
+  }
+
+
+  GWEN_DB_Dump(dbXML, stderr, 2);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -390,6 +825,10 @@ int main(int argc, char **argv) {
     rv=test5(argc, argv);
   else if (strcasecmp(cmd, "test6")==0)
     rv=test6(argc, argv);
+  else if (strcasecmp(cmd, "test7")==0)
+    rv=test7(argc, argv);
+  else if (strcasecmp(cmd, "test8")==0)
+    rv=test8(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;

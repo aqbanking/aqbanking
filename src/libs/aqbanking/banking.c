@@ -2218,8 +2218,7 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
               if (GWEN_DB_ReadFile(dbT,
                                    GWEN_Buffer_GetStart(nbuf),
                                    GWEN_DB_FLAGS_DEFAULT |
-                                   GWEN_PATH_FLAGS_CREATE_GROUP |
-                                   GWEN_DB_FLAGS_LOCKFILE)) {
+                                   GWEN_PATH_FLAGS_CREATE_GROUP)) {
                 DBG_ERROR(AQBANKING_LOGDOMAIN,
                           "Could not read file \"%s\"",
                           GWEN_Buffer_GetStart(nbuf));

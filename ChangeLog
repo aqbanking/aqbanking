@@ -1,4 +1,13 @@
 
+2005/03/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AB_Banking__ReadImExporterProfiles() (was trying to lock
+  the profile file)
+- added currency information to AB_COUNTRY. This will make it easier for me
+  to implement EUR transfers (because I can now determine whether the target
+  country is within the EUR zone)
+
+
 2005/03/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug concerning pending jobs

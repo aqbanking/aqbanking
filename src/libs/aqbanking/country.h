@@ -43,6 +43,17 @@ const char *AB_Country_GetLocalName(const AB_COUNTRY *cntry);
 
 
 
+AQBANKING_API 
+const char *AB_Country_GetCurrencyName(const AB_COUNTRY *cntry);
+
+AQBANKING_API 
+const char *AB_Country_GetCurrencyCode(const AB_COUNTRY *cntry);
+
+AQBANKING_API 
+const char *AB_Country_GetLocalCurrencyName(const AB_COUNTRY *cntry);
+
+
+
 #ifdef __cplusplus
 }
 #endif

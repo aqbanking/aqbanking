@@ -21,6 +21,8 @@ struct AB_COUNTRY {
   char *name;
   char *code;
   int numericCode;
+  char *currencyName;
+  char *currencyCode;
 };
 
 
