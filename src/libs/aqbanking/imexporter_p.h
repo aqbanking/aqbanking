@@ -18,8 +18,14 @@
 #include "imexporter_l.h"
 #include "account_l.h"
 #include "transaction_l.h"
+#include "accstatus_l.h"
 
 #include <gwenhywfar/misc.h>
+
+
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_IMEXPORTER_ACCOUNTINFO,
+                            AB_ImExporterAccountInfo,
+                            AQBANKING_API)
 
 
 struct AB_IMEXPORTER {
@@ -35,15 +41,30 @@ struct AB_IMEXPORTER {
 
 
 struct AB_IMEXPORTER_CONTEXT {
-  AB_ACCOUNT_LIST *accounts;
-  AB_ACCOUNT *nextAccount;
+  AB_IMEXPORTER_ACCOUNTINFO_LIST *accountInfoList;
+  AB_IMEXPORTER_ACCOUNTINFO *nextAccountInfo;
+
+};
+
+
+struct AB_IMEXPORTER_ACCOUNTINFO {
+  GWEN_LIST_ELEMENT(AB_IMEXPORTER_ACCOUNTINFO);
+  AB_ACCOUNT *account;
+  char *bankCode;
+  char *bankName;
+  char *accountNumber;
+  char *accountName;
+  char *owner;
   AB_TRANSACTION_LIST *transactions;
   AB_TRANSACTION *nextTransaction;
-
+  AB_ACCOUNT_STATUS_LIST *accStatusList;
+  AB_ACCOUNT_STATUS *nextAccountStatus;
 };
 
 
 
 #endif /* AQBANKING_IMEXPORTER_P_H */
+
+
 
 

@@ -110,7 +110,8 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
 
 void AB_Account_free(AB_ACCOUNT *a){
   if (a) {
-    GWEN_INHERIT_INIT(AB_ACCOUNT, a);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_ACCOUNT");
+    GWEN_INHERIT_FINI(AB_ACCOUNT, a);
     GWEN_DB_Group_free(a->data);
     GWEN_LIST_INIT(AB_ACCOUNT, a);
     GWEN_FREE_OBJECT(a);

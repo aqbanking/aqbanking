@@ -81,6 +81,7 @@ void AB_Job_free(AB_JOB *j){
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_JOB");
       GWEN_INHERIT_FINI(AB_JOB, j);
       GWEN_DB_Group_free(j->dbData);
       free(j->resultText);
@@ -307,6 +308,7 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
                                                     "unknown"));
   p=GWEN_DB_GetCharValue(db, "createdBy", 0, 0);
   assert(p);
+  free(j->createdBy);
   j->createdBy=strdup(p);
 
   j->dbData=GWEN_DB_Group_new("data");

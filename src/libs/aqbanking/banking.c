@@ -17,6 +17,7 @@
 #include "banking_p.h"
 #include "provider_l.h"
 #include "imexporter_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
@@ -35,6 +36,12 @@
 #include <errno.h>
 #include <ctype.h>
 
+/* includes for high level API */
+#include "jobgetbalance.h"
+#include "jobgettransactions.h"
+
+
+#define I18N(txt) txt
 
 
 GWEN_INHERIT_FUNCTIONS(AB_BANKING)
@@ -103,7 +110,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
 void AB_Banking_free(AB_BANKING *ab){
   if (ab) {
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Freeing AB_BANKING");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_BANKING");
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
@@ -1172,6 +1179,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
     a=AB_Account_List2Iterator_Next(ait);
   }
   AB_Account_List2Iterator_free(ait);
+  AB_Account_List2_free(al);
 
   if (!successful) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "No account imported");
@@ -2483,6 +2491,306 @@ AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
 
   return ie;
 }
+
+
+
+
+
+
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             High Level API
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
+  GWEN_DB_NODE *dbData;
+  GWEN_TYPE_UINT32 uniqueId;
+  AB_ACCOUNT *a;
+
+  uniqueId=0;
+  dbData=AB_Banking_GetAppData(ab);
+  dbData=GWEN_DB_GetGroup(dbData, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			  "banking/aliases");
+  if (dbData)
+    uniqueId=GWEN_DB_GetIntValue(dbData, accountId, 0, 0);
+  if (!uniqueId) {
+    /* should not happen anyway */
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Account Not Mapped"),
+			  I18N("The given account has not been mapped "
+			       "to online accounts."),
+			  I18N("Dismiss"), 0, 0);
+    return 0;
+  }
+
+  a=AB_Banking_GetAccount(ab, uniqueId);
+  if (!a) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account not found");
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Bad Account Mapping"),
+			  I18N("The mapping between the application account "
+			       "the banking account is invalid."),
+			  I18N("Dismiss"), 0, 0);
+    return 0;
+  }
+
+  return a;
+}
+
+
+
+void AB_Banking_SetAccountAlias(AB_BANKING *ab,
+				AB_ACCOUNT *a, const char *alias){
+  GWEN_DB_NODE *dbData;
+
+  assert(a);
+  assert(alias);
+
+  dbData=AB_Banking_GetAppData(ab);
+  dbData=GWEN_DB_GetGroup(dbData, GWEN_DB_FLAGS_DEFAULT,
+			  "banking/aliases");
+  assert(dbData);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      alias,
+		      AB_Account_GetUniqueId(a));
+}
+
+
+
+int AB_Banking_RequestBalance(AB_BANKING *ab,
+                              const char *bankCode,
+                              const char *accountNumber) {
+  AB_ACCOUNT *a;
+  AB_JOB *j;
+  int rv;
+
+  if (!accountNumber) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Account number is required");
+    return AB_ERROR_INVALID;
+  }
+
+  a=AB_Banking_GetAccountByCodeAndNumber(ab, bankCode, accountNumber);
+  if (!a)
+    return AB_ERROR_INVALID;
+
+  /* TODO: check if there already is such a job in the queue */
+
+  j=AB_JobGetBalance_new(a);
+  assert(j);
+  rv=AB_Job_CheckAvailability(j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job not available with the backend for this account (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Unsupported Request"),
+			  I18N("The backend for this banking account "
+			       "does not support your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  rv=AB_Banking_EnqueueJob(ab, j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not enqueue the job (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                          I18N("Queue Error"),
+			  I18N("Unable to enqueue your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+	   "Job successfully enqueued");
+  AB_Job_free(j);
+  return 0;
+}
+
+
+
+int AB_Banking_RequestTransactions(AB_BANKING *ab,
+                                   const char *bankCode,
+                                   const char *accountNumber,
+				   GWEN_TIME *firstDate,
+				   GWEN_TIME *lastDate){
+  AB_ACCOUNT *a;
+  AB_JOB *j;
+  int rv;
+
+  if (!accountNumber) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Account number is required");
+    return AB_ERROR_INVALID;
+  }
+
+  a=AB_Banking_GetAccountByCodeAndNumber(ab, bankCode, accountNumber);
+  if (!a)
+    return AB_ERROR_INVALID;
+
+  /* TODO: check if there already is such a job in the queue */
+
+  j=AB_JobGetTransactions_new(a);
+  assert(j);
+  rv=AB_Job_CheckAvailability(j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job not available with the backend for this account (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Unsupported Request"),
+			  I18N("The backend for this banking account "
+			       "does not support your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  rv=AB_Banking_EnqueueJob(ab, j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not enqueue the job (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                          I18N("Queue Error"),
+			  I18N("Unable to enqueue your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+	   "Job successfully enqueued");
+  AB_Job_free(j);
+  return 0;
+
+}
+
+
+
+int AB_Banking_GatherResponses(AB_BANKING *ab,
+			       AB_IMEXPORTER_CONTEXT *ctx) {
+  AB_JOB *j;
+  AB_JOB_LIST2 *jl;
+  AB_JOB_LIST2_ITERATOR *jit;
+
+
+  jl=AB_Banking_GetFinishedJobs(ab);
+  if (!jl) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "No finished jobs");
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  jit=AB_Job_List2_First(jl);
+  assert(jit);
+  j=AB_Job_List2Iterator_Data(jit);
+  assert(j);
+  while(j) {
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
+    AB_ACCOUNT *a;
+    int tryRemove;
+
+    tryRemove=0;
+    a=AB_Job_GetAccount(j);
+    assert(a);
+    ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                           AB_Account_GetBankCode(a),
+                                           AB_Account_GetAccountNumber(a));
+    assert(ai);
+    if (AB_Job_GetType(j)==AB_Job_TypeGetBalance) {
+      const AB_ACCOUNT_STATUS *ast;
+
+      ast=AB_JobGetBalance_GetAccountStatus(j);
+      if (ast) {
+        AB_ImExporterAccountInfo_AddAccountStatus(ai,
+                                                  AB_AccountStatus_dup(ast));
+      }
+      tryRemove=1;
+    }
+    else if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
+      AB_TRANSACTION_LIST2 *tl;
+
+      tl=AB_JobGetTransactions_GetTransactions(j);
+      if (tl) {
+        AB_TRANSACTION_LIST2_ITERATOR *it;
+        AB_TRANSACTION *t;
+
+        it=AB_Transaction_List2_First(tl);
+        assert(it);
+        t=AB_Transaction_List2Iterator_Data(it);
+        assert(t);
+        while(t) {
+          AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
+          t=AB_Transaction_List2Iterator_Next(it);
+        }
+        AB_Transaction_List2Iterator_free(it);
+      }
+
+      tryRemove=1;
+    }
+    else {
+      tryRemove=0;
+    }
+
+    /* eventually remove the job from finished queue */
+    if (tryRemove) {
+      const char *appName;
+
+      appName=AB_Job_GetCreatedBy(j);
+      if (appName) {
+        if (strcasecmp(appName, AB_Banking_GetAppName(ab))==0) {
+          int rv;
+
+          /* hey job: I created you, I can destroy you ;-) */
+          rv=AB_Banking_DelFinishedJob(ab, j);
+          if (rv) {
+            DBG_INFO(AQBANKING_LOGDOMAIN,
+                     "Could not delete finished job (%d)", rv)
+          }
+        } /* if it is our own job */
+      } /* if appName */
+    } /* if tryRemove */
+
+    j=AB_Job_List2Iterator_Next(jit);
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

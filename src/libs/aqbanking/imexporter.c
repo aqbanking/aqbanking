@@ -26,6 +26,7 @@
 
 GWEN_INHERIT_FUNCTIONS(AB_IMEXPORTER)
 GWEN_LIST_FUNCTIONS(AB_IMEXPORTER, AB_ImExporter)
+GWEN_LIST_FUNCTIONS(AB_IMEXPORTER_ACCOUNTINFO, AB_ImExporterAccountInfo)
 
 
 
@@ -47,6 +48,7 @@ AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name){
 
 void AB_ImExporter_free(AB_IMEXPORTER *ie){
   if (ie) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_IMEXPORTER");
     GWEN_INHERIT_FINI(AB_IMEXPORTER, ie);
     free(ie->name);
     GWEN_LIST_FINI(AB_IMEXPORTER, ie);
@@ -104,13 +106,242 @@ void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll) {
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new() {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  GWEN_NEW_OBJECT(AB_IMEXPORTER_ACCOUNTINFO, iea);
+  GWEN_LIST_INIT(AB_IMEXPORTER_ACCOUNTINFO, iea);
+
+  return iea;
+}
+
+
+
+void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  if (iea) {
+    free(iea->bankCode);
+    free(iea->bankName);
+    free(iea->accountNumber);
+    free(iea->accountName);
+    free(iea->owner);
+    AB_Transaction_List_free(iea->transactions);
+    GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
+    GWEN_FREE_OBJECT(iea);
+  }
+}
+
+
+
+
+
+
+
+void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             AB_TRANSACTION *t){
+  assert(iea);
+  assert(t);
+  AB_Transaction_List_Add(t, iea->transactions);
+}
+
+
+
+AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
+  assert(iea);
+  t=AB_Transaction_List_First(iea->transactions);
+  if (t) {
+    iea->nextTransaction=AB_Transaction_List_Next(t);
+    AB_Transaction_List_Del(t);
+    return t;
+  }
+  iea->nextTransaction=0;
+  return 0;
+}
+
+
+
+AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
+  assert(iea);
+  t=iea->nextTransaction;
+  if (t) {
+    iea->nextTransaction=AB_Transaction_List_Next(t);
+    AB_Transaction_List_Del(t);
+    return t;
+  }
+  iea->nextTransaction=0;
+  return 0;
+}
+
+
+
+AB_ACCOUNT*
+AB_ImExporterAccountInfo_GetAccount(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->account;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                         AB_ACCOUNT *a){
+  assert(iea);
+  iea->account=a;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetBankCode(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->bankCode;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetBankCode(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                          const char *s){
+  assert(iea);
+  free(iea->bankCode);
+  if (s) iea->bankCode=strdup(s);
+  else iea->bankCode=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetBankName(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->bankName;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetBankName(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                          const char *s){
+  assert(iea);
+  free(iea->bankName);
+  if (s) iea->bankName=strdup(s);
+  else iea->bankName=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetAccountNumber(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->accountNumber;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetAccountNumber(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               const char *s){
+  assert(iea);
+  free(iea->accountNumber);
+  if (s) iea->accountNumber=strdup(s);
+  else iea->accountNumber=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetAccountName(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->accountName;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetAccountName(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             const char *s){
+  assert(iea);
+  free(iea->accountName);
+  if (s) iea->accountName=strdup(s);
+  else iea->accountName=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetOwner(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->owner;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetOwner(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                       const char *s){
+  assert(iea);
+  free(iea->owner);
+  if (s) iea->owner=strdup(s);
+  else iea->owner=0;
+}
+
+
+
+void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             AB_ACCOUNT_STATUS *t){
+  assert(iea);
+  assert(t);
+  AB_AccountStatus_List_Add(t, iea->accStatusList);
+}
+
+
+
+AB_ACCOUNT_STATUS*
+AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_ACCOUNT_STATUS *t;
+
+  assert(iea);
+  t=AB_AccountStatus_List_First(iea->accStatusList);
+  if (t) {
+    iea->nextAccountStatus=AB_AccountStatus_List_Next(t);
+    AB_AccountStatus_List_Del(t);
+    return t;
+  }
+  iea->nextAccountStatus=0;
+  return 0;
+}
+
+
+
+AB_ACCOUNT_STATUS*
+AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_ACCOUNT_STATUS *t;
+
+  assert(iea);
+  t=iea->nextAccountStatus;
+  if (t) {
+    iea->nextAccountStatus=AB_AccountStatus_List_Next(t);
+    AB_AccountStatus_List_Del(t);
+    return t;
+  }
+  iea->nextAccountStatus=0;
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
   AB_IMEXPORTER_CONTEXT *iec;
 
   GWEN_NEW_OBJECT(AB_IMEXPORTER_CONTEXT, iec);
-  iec->transactions=AB_Transaction_List_new();
-  iec->accounts=AB_Account_List_new();
+  iec->accountInfoList=AB_ImExporterAccountInfo_List_new();
 
   return iec;
 }
@@ -119,98 +350,100 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
   if (iec) {
-    AB_Transaction_List_free(iec->transactions);
-    AB_Account_List_free(iec->accounts);
+    AB_ImExporterAccountInfo_List_free(iec->accountInfoList);
     GWEN_FREE_OBJECT(iec);
   }
 }
 
 
 
-AB_ACCOUNT *AB_ImExporterContext_GetFirstAccount(AB_IMEXPORTER_CONTEXT *iec){
-  AB_ACCOUNT *a;
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetFirstAccount(AB_IMEXPORTER_CONTEXT *iec){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
 
   assert(iec);
-  a=AB_Account_List_First(iec->accounts);
-  if (a) {
-    iec->nextAccount=AB_Account_List_Next(a);
-    AB_Account_List_Del(a);
-    return a;
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  if (iea) {
+    iec->nextAccountInfo=AB_ImExporterAccountInfo_List_Next(iea);
+    AB_ImExporterAccountInfo_List_Del(iea);
+    return iea;
   }
-  iec->nextAccount=0;
+  iec->nextAccountInfo=0;
   return 0;
 }
 
 
 
-AB_ACCOUNT *AB_ImExporterContext_GetNextAccount(AB_IMEXPORTER_CONTEXT *iec){
-  AB_ACCOUNT *a;
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetNextAccount(AB_IMEXPORTER_CONTEXT *iec){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
 
   assert(iec);
-  a=iec->nextAccount;
-  if (a) {
-    iec->nextAccount=AB_Account_List_Next(a);
-    AB_Account_List_Del(a);
-    return a;
+  iea=iec->nextAccountInfo;
+  if (iea) {
+    iec->nextAccountInfo=AB_ImExporterAccountInfo_List_Next(iea);
+    AB_ImExporterAccountInfo_List_Del(iea);
+    return iea;
   }
-  iec->nextAccount=0;
+  iec->nextAccountInfo=0;
   return 0;
 }
 
 
 
-void AB_ImExporterContext_AddAccount(AB_IMEXPORTER_CONTEXT *iec,
-                                     AB_ACCOUNT *a){
+void AB_ImExporterContext_AddAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
+                                         AB_IMEXPORTER_ACCOUNTINFO *iea){
   assert(iec);
-  assert(a);
-  AB_Account_List_Add(a, iec->accounts);
+  assert(iea);
+  AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
+                                    const char *bankCode,
+                                    const char *accountNumber){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  if (!bankCode)
+    bankCode="";
+  if (!accountNumber);
+  accountNumber="";
+
+  assert(iec);
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  while(iea) {
+    if (strcasecmp(AB_ImExporterAccountInfo_GetBankCode(iea),
+                   bankCode)==0 &&
+        strcasecmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
+                   accountNumber)==0)
+      return iea;
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
+  }
+
+  /* not found, append it */
+  iea=AB_ImExporterAccountInfo_new();
+  AB_ImExporterAccountInfo_SetBankCode(iea, bankCode);
+  AB_ImExporterAccountInfo_SetAccountNumber(iea, accountNumber);
+  AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+  return iea;
 }
 
 
 
 void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
                                          AB_TRANSACTION *t){
-  assert(iec);
-  assert(t);
-  AB_Transaction_List_Add(t, iec->transactions);
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterContext_GetAccountInfo
+    (iec,
+     AB_Transaction_GetLocalBankCode(t),
+     AB_Transaction_GetLocalAccountNumber(t)
+    );
+  assert(iea);
+  AB_ImExporterAccountInfo_AddTransaction(iea, t);
 }
-
-
-
-AB_TRANSACTION*
-AB_ImExporterContext_GetFirstTransaction(AB_IMEXPORTER_CONTEXT *iec){
-  AB_TRANSACTION *t;
-
-  assert(iec);
-  t=AB_Transaction_List_First(iec->transactions);
-  if (t) {
-    iec->nextTransaction=AB_Transaction_List_Next(t);
-    AB_Transaction_List_Del(t);
-    return t;
-  }
-  iec->nextTransaction=0;
-  return 0;
-}
-
-
-
-AB_TRANSACTION*
-AB_ImExporterContext_GetNextTransaction(AB_IMEXPORTER_CONTEXT *iec){
-  AB_TRANSACTION *t;
-
-  assert(iec);
-  t=iec->nextTransaction;
-  if (t) {
-    iec->nextTransaction=AB_Transaction_List_Next(t);
-    AB_Transaction_List_Del(t);
-    return t;
-  }
-  iec->nextTransaction=0;
-  return 0;
-}
-
-
-
 
 
 

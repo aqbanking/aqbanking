@@ -31,6 +31,10 @@ extern "C" {
 AQBANKING_API
 AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a);
 
+/**
+ * Returns the list of transactions received.
+ * The job remains the owner of the list and all elements in it.
+ */
 AQBANKING_API 
 AB_TRANSACTION_LIST2*
   AB_JobGetTransactions_GetTransactions(const AB_JOB *j);
@@ -49,6 +53,7 @@ int AB_JobGetTransactions_GetMaxStoreDays(const AB_JOB *j);
  * Sets the first date for which you want the reports (the time doesn't
  * matter, only the date component of the given GWEN_TIME is used).
  * If NULL then the first day for which the bank has reports is assumed.
+ * @param j job
  * @param t "from" date
  */
 AQBANKING_API 
@@ -58,6 +63,7 @@ AQBANKING_API
  * Sets the last date for which you want the reports (the time doesn't
  * matter, only the date component of the given GWEN_TIME is used).
  * If NULL then the last day for which the bank has reports is assumed.
+ * @param j job
  * @param t "to" date
  */
 AQBANKING_API 

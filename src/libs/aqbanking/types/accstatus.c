@@ -28,11 +28,14 @@
 #endif
 
 
+GWEN_LIST_FUNCTIONS(AB_ACCOUNT_STATUS,AB_AccountStatus)
+
 
 AB_ACCOUNT_STATUS *AB_AccountStatus_new(){
   AB_ACCOUNT_STATUS *as;
 
   GWEN_NEW_OBJECT(AB_ACCOUNT_STATUS, as);
+  GWEN_LIST_INIT(AB_ACCOUNT_STATUS, as);
   return as;
 }
 
@@ -42,6 +45,7 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_dup(const AB_ACCOUNT_STATUS *as){
   AB_ACCOUNT_STATUS *newAs;
 
   GWEN_NEW_OBJECT(AB_ACCOUNT_STATUS, newAs);
+  GWEN_LIST_INIT(AB_ACCOUNT_STATUS, newAs);
   if (as->time)
     newAs->time=GWEN_Time_dup(as->time);
   if (as->bankLine)
@@ -66,6 +70,7 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_fromDb(GWEN_DB_NODE *db){
   GWEN_DB_NODE *tdb;
 
   GWEN_NEW_OBJECT(AB_ACCOUNT_STATUS, as);
+  GWEN_LIST_INIT(AB_ACCOUNT_STATUS, as);
   i=GWEN_DB_GetIntValue(db, "time", 0, 0);
   if (i)
     as->time=GWEN_Time_fromSeconds(i);
@@ -147,6 +152,7 @@ void AB_AccountStatus_free(AB_ACCOUNT_STATUS *as){
     AB_Value_free(as->bankLine);
     AB_Balance_free(as->bookedBalance);
     AB_Balance_free(as->notedBalance);
+    GWEN_LIST_FINI(AB_ACCOUNT_STATUS, as);
     GWEN_FREE_OBJECT(as);
   }
 }

@@ -25,8 +25,8 @@
 extern "C" {
 #endif
 
-/** @defgroup AB_BANKING AB_BANKING (Main Interface)
- * @ingroup AB_C_INTERFACE
+/** @defgroup G_AB_BANKING AB_BANKING (Main Interface)
+ * @ingroup G_AB_C_INTERFACE
  *
  * @short This group contains the main API function group.
  * <p>
@@ -70,6 +70,16 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
+
+
+
+
+/** @defgroup G_AB_BANKING_ML AB_BANKING High Level API
+ *
+ * @short This group contains the mhigh level API function group.
+ */
+/*@{*/
+
 
 /** @name Flags For AB_Banking_InputBox
  *
@@ -853,7 +863,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab);
  * </p>
  * <p>
  * Please note that AqBanking still remains the owner of those jobs in the
- * list returned (if any). So you MUST NOT call @ref AB_Job_List2_freeAll on
+ * list returned (if any). So you MUST NOT call @ref AB_Job_List2_FreeAll on
  * this list. However, you MUST call @ref AB_Job_List2_free when you no
  * longer need the list to avoid memory leaks.
  * </p>
@@ -1256,7 +1266,131 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
 
 /*@}*/
 
-/*@}*/ /* defgroup */
+/*@}*/ /* defgroup Middle Level API */
+
+
+/** @defgroup G_AB_BANKING_HL Application Level API
+ *
+ * @short This group contains the High Level API function group.
+ * <p>
+ * A program should first call @ref AB_Banking_Init to allow AqBanking
+ * to load its configuration files and initialize itself.
+ * </p>
+ * <p>
+ * You need to setup AqBanking before using functions of this group (i.e.
+ * accounts must be setup).
+ * </p>
+ * After that you may call any other function of this group (most likely
+ * the program will request a list of managed account via
+ * @ref AB_Banking_GetAccounts).
+ * </p>
+ * <p>
+ * When the program has finished its work it should call @ref AB_Banking_Fini
+ * as the last function of AqBanking (just before calling
+ * @ref AB_Banking_free).
+ * </p>
+ * <p>
+ * The following is a small example of how the High Level API might be used.
+ * It requests the status (e.g. balance etc) of an account.
+ * </p>
+ * @code
+ * TODO: Add example
+ * @endcode
+ */
+/*@{*/
+
+
+
+/** @name Request Functions
+ *
+ */
+/*@{*/
+/**
+ * This function enqueues a request for the balance of an account.
+ * You ned to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * job.
+ */
+int AB_Banking_RequestBalance(AB_BANKING *ab,
+                              const char *bankCode,
+                              const char *accountNumber);
+
+/**
+ * This function enqueues a request for the transactions of an account.
+ * You ned to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * job.
+ * Please note that not all backends and all banks allow a time span to be
+ * given to this function. In such cases the dates are simply ignored.
+ */
+int AB_Banking_RequestTransactions(AB_BANKING *ab,
+                                   const char *bankCode,
+                                   const char *accountNumber,
+                                   GWEN_TIME *firstDate,
+                                   GWEN_TIME *lastDate);
+
+/**
+ * <p>
+ * This functions gathers all available information from the results of
+ * all currently finished jobs. Jobs which have been evaluated by this
+ * function are automaticall removed from the queue of finished jobs.
+ * </p>
+ * <p>
+ * Please note that this function even returns information extracted from
+ * requests which have been issued by other applications (those finished
+ * are @b not removed from the finished queue to allow the requesting
+ * application to later gather its own responses).
+ * </p>
+ * All information is added to the given import context. Thus you only need
+ * a single function in your application to import data read from a file
+ * (via the Import/Export API) and from online requests.
+ */
+int AB_Banking_GatherResponses(AB_BANKING *ab,
+                               AB_IMEXPORTER_CONTEXT *ctx);
+/*@}*/
+
+
+
+/** @name Mapping Application Accounts to Online Accounts
+ *
+ * Functions in this group provide an optional service to map accounts.
+ * Most applications assign unique ids to their own accounts. This unique
+ * id can be mapped to an account of AqBanking.
+ */
+/*@{*/
+/**
+ * <p>
+ * Sets an alias for the given AqBanking account. You can later use
+ * @ref AB_Banking_GetAccountByAlias to refer to an online account by using
+ * the unique id of your application's account.
+ * </p>
+ * <p>
+ * AqBanking separates the aliases for each application.
+ * </p>
+ * @param ab AqBanking main object
+ * @param a online account of AqBanking you wish to map your account to
+ * @param alias unique id of your application's own account structure
+ */
+void AB_Banking_SetAccountAlias(AB_BANKING *ab,
+                                AB_ACCOUNT *a, const char *alias);
+
+/**
+ * This functions returns the AqBanking account to which the given
+ * alias (=unique id of your application's own account data) has been
+ * mapped.
+ * @return corresponding AqBanking (or 0 if none)
+ * @param ab AqBanking main object
+ * @param alias unique id of your application's own account structure
+ */
+AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
+                                         const char *alias);
+/*@}*/
+
+
+
+/*@}*/ /* defgroup High Level API */
+
+
+
+/*@}*/ /* defgroup AB_BANKING */
 
 
 #ifdef __cplusplus

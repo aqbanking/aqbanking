@@ -14,10 +14,11 @@
 #ifndef AQBANKING_ACCSTATUS_P_H
 #define AQBANKING_ACCSTATUS_P_H
 
-#include <aqbanking/accstatus.h>
+#include "accstatus_l.h"
 
 
 struct AB_ACCOUNT_STATUS {
+  GWEN_LIST_ELEMENT(AB_ACCOUNT_STATUS)
   GWEN_TIME *time;
   AB_VALUE *bankLine;
   AB_VALUE *disposable;

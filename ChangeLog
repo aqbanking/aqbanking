@@ -1,4 +1,11 @@
 
+2004/08/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- Valgrind-Session: fixed some memory leaks
+- added application level API which should make it easier to add support for
+  AqBanking to existing applications
+
+
 2004/08/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added some lines to README

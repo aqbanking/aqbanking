@@ -117,4 +117,9 @@ int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 
+
+AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
+                                   const char *accountId);
+
+
 #endif /* AQBANKING_BANKING_P_H */

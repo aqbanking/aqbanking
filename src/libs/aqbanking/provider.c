@@ -74,6 +74,8 @@ void AB_Provider_free(AB_PROVIDER *pro){
   if (pro) {
     assert(pro->usage);
     if (--(pro->usage)==0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_PROVIDER (%s)",
+               pro->name);
       GWEN_INHERIT_FINI(AB_PROVIDER, pro);
       if (pro->libLoader) {
         GWEN_LibLoader_CloseLibrary(pro->libLoader);

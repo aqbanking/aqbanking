@@ -60,8 +60,8 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
 extern "C" {
 #endif
 
-/** @defgroup AB_PROVIDER AB_PROVIDER (Online Banking Backends)
- * @ingroup AB_C_INTERFACE
+/** @defgroup G_AB_PROVIDER AB_PROVIDER (Online Banking Backends)
+ * @ingroup G_AB_C_INTERFACE
  *
  * @brief This group represents backends.
  */
@@ -83,7 +83,7 @@ GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro);
  * This copies the name of the folder for AqBanking's backend data into
  * the given GWEN_Buffer. This folder is reserved for this backend.
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab pointer to the AB_BANKING object
+ * @param pro pointer to the provider object
  * @param buf buffer to append the path name to
  */
 AQBANKING_API
@@ -93,7 +93,6 @@ int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf);
  * Store backend specific data with AqBanking. This data is not specific
  * to an application, it will rather be used with every application (since
  * it doesn't depend on the application but on the backend).
- * @param ab pointer to the AB_BANKING object
  * @param pro pointer to the backend for which the data is to be returned
  */
 AQBANKING_API
