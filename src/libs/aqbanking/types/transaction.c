@@ -53,8 +53,6 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->remoteSuffix);
   if (st->remoteName)
     GWEN_StringList_free(st->remoteName);
-  if (st->uniqueId)
-    free(st->uniqueId);
   if (st->valutaDate)
     GWEN_Time_free(st->valutaDate);
   if (st->date)
@@ -104,8 +102,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteSuffix=strdup(d->remoteSuffix);
   if (d->remoteName)
     st->remoteName=GWEN_StringList_dup(d->remoteName);
-  if (d->uniqueId)
-    st->uniqueId=strdup(d->uniqueId);
+  st->uniqueId=d->uniqueId;
   if (d->valutaDate)
     st->valutaDate=GWEN_Time_dup(d->valutaDate);
   if (d->date)
@@ -174,9 +171,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
-  if (st->uniqueId)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
-      return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
+    return -1;
   if (st->valutaDate)
     if (GWEN_Time_toDb(st->valutaDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "valutaDate")))
       return -1;
@@ -251,7 +247,7 @@ AB_TRANSACTION *st;
       AB_Transaction_AddRemoteName(st, s, 0);
     } /* for */
   }
-  AB_Transaction_SetUniqueId(st, GWEN_DB_GetCharValue(db, "uniqueId", 0, 0));
+  AB_Transaction_SetUniqueId(st, GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
   if (1) {
     GWEN_DB_NODE *dbT;
 
@@ -491,20 +487,15 @@ int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d) {
 }
 
 
-const char *AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
+GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
   assert(st);
   return st->uniqueId;
 }
 
 
-void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, const char *d) {
+void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, GWEN_TYPE_UINT32 d) {
   assert(st);
-  if (st->uniqueId)
-    free(st->uniqueId);
-  if (d)
-    st->uniqueId=strdup(d);
-  else
-    st->uniqueId=0;
+  st->uniqueId=d;
   st->_modified=1;
 }
 

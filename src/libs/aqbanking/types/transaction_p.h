@@ -22,7 +22,7 @@ struct AB_TRANSACTION {
   char *remoteAccountNumber;
   char *remoteSuffix;
   GWEN_STRINGLIST *remoteName;
-  char *uniqueId;
+  GWEN_TYPE_UINT32 uniqueId;
   GWEN_TIME *valutaDate;
   GWEN_TIME *date;
   AB_VALUE *value;

@@ -1,4 +1,11 @@
 
+2004/09/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed type of uniqueId in AB_Transaction
+- transactions handed over to JobGetTransaction get assigned a unique transfer
+  id
+
+
 2004/09/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function AB_Banking_EnqueuePendingJobs()

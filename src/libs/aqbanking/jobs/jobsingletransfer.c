@@ -15,11 +15,12 @@
 #endif
 
 
-
 #include "jobsingletransfer.h"
 #include "jobsingletransfer_be.h"
 #include "jobsingletransfer_p.h"
 #include "job_l.h"
+#include "account_l.h"
+#include "banking_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
@@ -69,8 +70,21 @@ int AB_JobSingleTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
   /* TODO: check transaction */
 
   AB_Transaction_free(jd->transaction);
-  if (t) jd->transaction=AB_Transaction_dup(t);
-  else jd->transaction=0;
+  if (t) {
+    AB_ACCOUNT *a;
+    AB_BANKING *ba;
+
+    a=AB_Job_GetAccount(j);
+    assert(a);
+    ba=AB_Account_GetBanking(a);
+    assert(ba);
+
+    jd->transaction=AB_Transaction_dup(t);
+    /* assign unique id */
+    AB_Transaction_SetUniqueId(jd->transaction, AB_Banking_GetUniqueId(ba));
+  }
+  else
+    jd->transaction=0;
 
   return 0;
 }

@@ -384,11 +384,11 @@ int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d);
 /**
 * Returns the property @ref AB_TRANSACTION_UniqueId
 */
-const char *AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
+GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_UniqueId
 */
-void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, const char *d);
+void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, GWEN_TYPE_UINT32 d);
 
 /** @name Dates
 */

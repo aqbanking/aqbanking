@@ -75,7 +75,7 @@
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
-    <elem name="uniqueId" type="char" ptr="1" />
+    <elem name="uniqueId" type="GWEN_TYPE_UINT32" />
 
     <group name="Dates">
       <elem name="valutaDate" type="GWEN_TIME" ptr="1" />
