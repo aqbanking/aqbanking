@@ -22,6 +22,11 @@ provided (see @ref G_AB_C_INTERFACE and @ref G_AB_CPP_INTERFACE).
 </p>
 
 <p>
+All strings exchanged with AqBanking  are expected in UTF-8 encoding unless
+stated otherwise.
+</p>
+
+<p>
 If you want to add support for AqBanking to existing applications you
 may want to have a look at the API designed for this purpose 
 (@ref G_AB_BANKING_HL).
