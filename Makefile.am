@@ -3,7 +3,7 @@ SUBDIRS=doc m4 src po
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.m4 \
  aqbanking.spec.in aqbanking.spec Doxyfile.in version.h.in \
- i18nsources
+ i18nsources aqbanking.iss.in aqbanking.iss
 
 
 bin_SCRIPTS=aqbanking-config

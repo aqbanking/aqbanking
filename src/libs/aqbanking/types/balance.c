@@ -29,7 +29,7 @@
 
 
 
-AB_BALANCE *AB_Balance_new(AB_VALUE *v, GWEN_TIME *t){
+AB_BALANCE *AB_Balance_new(AB_VALUE *v, const GWEN_TIME *t){
   AB_BALANCE *b;
 
   GWEN_NEW_OBJECT(AB_BALANCE, b);

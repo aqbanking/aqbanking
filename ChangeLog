@@ -1,7 +1,18 @@
+===========================================================================
+MARK: released AqBanking - 1.0.6beta (2005/02/24)
+===========================================================================
+
+
+2005/02/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- safer treatment of application and backend data files: write to temporary 
+  file and rename to target later
+
 
 2005/02/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - country.h: added missing statements for C++
+- balance.c/h: argument t is now const
 
 
 2005-02-22   Christian Stimming <stimming@tuhh.de>

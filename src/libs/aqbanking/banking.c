@@ -370,6 +370,7 @@ int AB_Banking__LoadAppData(AB_BANKING *ab) {
 
 int AB_Banking__SaveAppData(AB_BANKING *ab) {
   GWEN_BUFFER *pbuf;
+  GWEN_BUFFER *rpbuf;
   GWEN_DB_NODE *db;
 
   assert(ab);
@@ -401,14 +402,29 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+  rpbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(pbuf)+4, 0, 1);
+  GWEN_Buffer_AppendBuffer(rpbuf, pbuf);
+  GWEN_Buffer_AppendString(pbuf, ".tmp");
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
 			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not save config file \"%s\"",
+	     "Could not save app config file \"%s\"",
 	     GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_free(rpbuf);
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+  if (rename(GWEN_Buffer_GetStart(pbuf),
+             GWEN_Buffer_GetStart(rpbuf))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not rename file to \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf),
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_free(rpbuf);
   GWEN_Buffer_free(pbuf);
 
   /* sucessfully written */
@@ -500,6 +516,7 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
                                  const char *name,
 				 int del){
   GWEN_BUFFER *pbuf;
+  GWEN_BUFFER *rpbuf;
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbBackends;
 
@@ -531,14 +548,29 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
     return AB_ERROR_GENERIC;
   }
 
+  rpbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(pbuf)+4, 0, 1);
+  GWEN_Buffer_AppendBuffer(rpbuf, pbuf);
+  GWEN_Buffer_AppendString(pbuf, ".tmp");
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
 			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not save config file \"%s\", creating it later",
+	     "Could not save backend config file \"%s\"",
 	     GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_free(rpbuf);
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+  if (rename(GWEN_Buffer_GetStart(pbuf),
+             GWEN_Buffer_GetStart(rpbuf))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not rename file to \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf),
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_free(rpbuf);
   GWEN_Buffer_free(pbuf);
 
   if (del)
@@ -1131,6 +1163,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_JOB *j;
   int rv;
   AB_PROVIDER *pro;
+  GWEN_BUFFER *rpbuf;
 
   assert(ab);
 
@@ -1238,12 +1271,29 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
 
   /* write config file. TODO: make backups */
-  if (GWEN_DB_WriteFile(db, ab->configFile,
+
+  rpbuf=GWEN_Buffer_new(0, strlen(ab->configFile)+4, 0, 1);
+  GWEN_Buffer_AppendString(rpbuf, ab->configFile);
+  GWEN_Buffer_AppendString(rpbuf, ".tmp");
+  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf),
                         GWEN_DB_FLAGS_DEFAULT)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Could not save app config file \"%s\"",
+             GWEN_Buffer_GetStart(rpbuf));
+    GWEN_Buffer_free(rpbuf);
     GWEN_DB_Group_free(db);
     return AB_ERROR_BAD_CONFIG_FILE;
   }
+  if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not rename file to \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf),
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_DB_Group_free(db);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_free(rpbuf);
 
   GWEN_DB_Group_free(db);
 
