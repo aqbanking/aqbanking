@@ -1,4 +1,16 @@
 
+2004/11/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- parsers/swift/swift.c: 
+  - fixed two bugs (spotted by Herbert.hbci@gmx.de, modified his patches):
+    - removes artificial CR/LFs in :86: fields
+    - now parses the last line of a SWIFT document
+  - fixed loglevel (SWIFT log infos are no longer shown in red)
+  - improved handling of umlauts in SWIFT documents (actually, SWIFT does not
+    allow umlauts or any other special characters for that matter. However,
+    banks send those character anyway, so we have to deal with them...)
+
+
 2004/11/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug spotted by Herbert Ellebruch

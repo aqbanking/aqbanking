@@ -598,24 +598,24 @@ void AB_ImExporter_DtaToUtf8(const char *p,
 
     c=(unsigned char)(*(p++));
     switch(c) {
-    case 0x5b:
+    case 0x5b: /* AE */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x84);
       break;
 
-    case 0x5c:
+    case 0x5c: /* OE */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x96);
       break;
 
-    case 0x5d:
+    case 0x5d: /* UE */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x9c);
       break;
 
-    case 0x5e:
+    case 0x5e: /* sharp s */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0x9c);
+      GWEN_Buffer_AppendByte(buf, 0xdf);
       break;
 
     default:

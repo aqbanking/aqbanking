@@ -32,6 +32,159 @@
 
 
 
+void AHB_SWIFT__HbciToUtf8(const char *p,
+                           int size,
+                           GWEN_BUFFER *buf) {
+  while(*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    switch(c) {
+    case 0xc4: /* AE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x84);
+      break;
+
+    case 0xe4: /* ae */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe4);
+      break;
+
+    case 0xd6: /* OE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x96);
+      break;
+
+    case 0xf6: /* oe */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xf6);
+      break;
+
+    case 0xdc: /* UE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x9c);
+      break;
+
+    case 0xfc: /* ue */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xfc);
+      break;
+
+    case 0xdf: /* sz */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xdf);
+      break;
+
+    case 0xa7: /* section sign */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa7);
+      break;
+
+      /* english chars */
+    case 0xa3: /* pound swign */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa3);
+      break;
+
+      /* french chars */
+    case 0xc7: /* C cedille */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xc7);
+      break;
+
+    case 0xe0: /* a accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe0);
+      break;
+
+    case 0xe1: /* a accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe1);
+      break;
+
+    case 0xe2: /* a accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe2);
+      break;
+
+    case 0xe7: /* c cedille */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe7);
+      break;
+
+    case 0xe8: /* e accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe8);
+      break;
+
+    case 0xe9: /* e accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xe9);
+      break;
+
+    case 0xea: /* e accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xea);
+      break;
+
+    case 0xec: /* i accent grave (never heard of this) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xec);
+      break;
+
+    case 0xed: /* i accent aigu (never heard of this, either) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xed);
+      break;
+
+    case 0xee: /* i accent circumflex (never heard of this, either) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xee);
+      break;
+
+    case 0xf2: /* o accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xf2);
+      break;
+
+    case 0xf3: /* o accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xf3);
+      break;
+
+    case 0xf4: /* o accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xf4);
+      break;
+
+    case 0xf9: /* u accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xf9);
+      break;
+
+    case 0xfa: /* u accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xfa);
+      break;
+
+    case 0xfb: /* u accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xfb);
+      break;
+
+    default:
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    if (size!=-1)
+      size--;
+  } /* while */
+}
+
+
+
 int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
                             GWEN_TYPE_UINT32 flags,
                             const char *name,
@@ -40,7 +193,7 @@ int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
   int rv;
 
   vbuf=GWEN_Buffer_new(0, strlen(s)+32, 0, 1);
-  AB_ImExporter_DtaToUtf8(s, -1, vbuf);
+  AHB_SWIFT__HbciToUtf8(s, -1, vbuf);
   rv=GWEN_DB_SetCharValue(db, flags, name, GWEN_Buffer_GetStart(vbuf));
   GWEN_Buffer_free(vbuf);
   return rv;

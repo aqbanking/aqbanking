@@ -16,6 +16,12 @@
 
 
 #include "swift_l.h"
+#include <gwenhywfar/buffer.h>
+
+
+void AHB_SWIFT__HbciToUtf8(const char *p,
+                           int size,
+                           GWEN_BUFFER *buf);
 
 
 int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,

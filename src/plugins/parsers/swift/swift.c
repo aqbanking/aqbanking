@@ -46,7 +46,7 @@ int AHB_SWIFT_Condense(char *buffer) {
   dst=buffer;
   lastWasBlank=0;
   while(*src) {
-    if (isspace(*src)) {
+    if (isspace(*src) && (*src!=10)) {
       if (!lastWasBlank) {
         *dst=' ';
         dst++;
@@ -55,8 +55,10 @@ int AHB_SWIFT_Condense(char *buffer) {
     }
     else {
       lastWasBlank=0;
-      *dst=*src;
-      dst++;
+      if (*src!=10) {
+	*dst=*src;
+	dst++;
+      }
     }
     src++;
   } /* while */
@@ -225,18 +227,24 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
           /* eof met and buffer empty, finished */
           DBG_INFO(AQBANKING_LOGDOMAIN,
                    "SWIFT document not terminated by \'-\'");
-        }
-        GWEN_Buffer_free(lbuf);
-        return 0;
-        break;
+	  GWEN_Buffer_free(lbuf);
+	  return 0;
+	}
+	else {
+	  buffer[0]='-';
+          buffer[1]=0;
+	  break;
+	}
       }
-      /* read next line */
-      err=AHB_SWIFT_ReadLine(bio, buffer, sizeof(buffer)-1);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Error reading from stream");
-        GWEN_Buffer_free(lbuf);
-        return -1;
+      else {
+	/* read next line */
+	err=AHB_SWIFT_ReadLine(bio, buffer, sizeof(buffer)-1);
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Error reading from stream");
+	  GWEN_Buffer_free(lbuf);
+	  return -1;
+	}
       }
 
       /* check whether the line starts with a ":" or "-" */
@@ -246,7 +254,7 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
         break;
 
       /* it doesn't, so there is a CR/LF inside the tag */
-      GWEN_Buffer_AppendByte(lbuf, 10); /* LF */
+      GWEN_Buffer_AppendByte(lbuf, 10);
       GWEN_Buffer_AppendString(lbuf, buffer);
     } /* for */
 
@@ -317,7 +325,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   tl=AHB_SWIFT_Tag_List_new();
 
   /* fill tag list */
-  GWEN_WaitCallback_Log(0, "SWIFT: Reading complete stream");
+  GWEN_WaitCallback_Log(2, "SWIFT: Reading complete stream");
   for(;;) {
     rv=AHB_SWIFT_ReadDocument(bio, tl, 0);
     if (rv==-1) {
@@ -333,7 +341,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   } /* for */
 
   /* now all tags have been read, transform them */
-  GWEN_WaitCallback_Log(0, "SWIFT: Parsing data");
+  GWEN_WaitCallback_Log(2, "SWIFT: Parsing data");
   if (AHB_SWIFT940_Import(bio, tl, flags, data, cfg)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
     AHB_SWIFT_Tag_List_free(tl);
