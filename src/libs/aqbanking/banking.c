@@ -20,6 +20,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/libloader.h>
+#include <gwenhywfar/bio_file.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -27,8 +28,11 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
+
 
 
 GWEN_INHERIT_FUNCTIONS(AB_BANKING)
@@ -426,6 +430,7 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_DB_NODE *dbT;
   GWEN_DB_NODE *dbTsrc;
+  AB_JOB_LIST2 *jl;
   int i;
 
   assert(ab);
@@ -527,25 +532,30 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
 
   /* read jobs */
-  dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "jobs");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbJ;
+  jl=AB_Banking__LoadJobsAs(ab, "todo");
+  if (jl) {
+    AB_JOB_LIST2_ITERATOR *it;
+    AB_JOB *j;
 
-    dbJ=GWEN_DB_FindFirstGroup(dbTsrc, "job");
-    while(dbJ) {
-      AB_JOB *j;
+    AB_Job_List_free(ab->enqueuedJobs);
+    ab->enqueuedJobs=AB_Job_List_new();
 
-      j=AB_Job_fromDb(ab, dbJ);
-      if (j) {
-        DBG_INFO(0, "Adding job");
-        AB_Job_List_Add(j, ab->enqueuedJobs);
+    it=AB_Job_List2_First(jl);
+    assert(it);
+    j=AB_Job_List2Iterator_Data(it);
+    assert(j);
+    while(j) {
+      if (AB_Job_CheckAvailability(j)) {
+	DBG_INFO(0, "Job not available, ignoring");
       }
-      dbJ=GWEN_DB_FindNextGroup(dbJ, "job");
+      else
+	AB_Job_List_Add(j, ab->enqueuedJobs);
+      j=AB_Job_List2Iterator_Next(it);
     } /* while */
+    AB_Job_List2Iterator_free(it);
+    AB_Job_List2_free(jl);
   }
-
   GWEN_DB_Group_free(dbT);
-
   return 0;
 }
 
@@ -587,25 +597,8 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   /* save enqueued jobs */
   j=AB_Job_List_First(ab->enqueuedJobs);
   while(j) {
-    GWEN_DB_NODE *dbTdst;
-    int rv;
-    AB_JOB_STATUS jst;
-
-    jst=AB_Job_GetStatus(j);
-    if (jst==AB_Job_StatusEnqueued ||
-        jst==AB_Job_StatusSent) {
-      /* only save pending jobs. Jobs already executed are NOT saved */
-      dbTdst=GWEN_DB_GetGroup(db,
-                              GWEN_DB_FLAGS_DEFAULT |
-                              GWEN_PATH_FLAGS_CREATE_GROUP,
-                              "jobs/job");
-      assert(dbTdst);
-      rv=AB_Job_toDb(j, dbTdst);
-      if (rv) {
-        DBG_ERROR(0, "Error saving job");
-        GWEN_DB_Group_free(db);
-        return rv;
-      }
+    if (AB_Banking__SaveJobAs(ab, j, "todo")) {
+      DBG_INFO(0, "Error saving job, ignoring");
     }
     j=AB_Job_List_Next(j);
   } /* while */
@@ -850,9 +843,11 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
 
 int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   int rv;
+  AB_JOB_STATUS jst;
 
   assert(ab);
   assert(j);
+  AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   rv=AB_Job_CheckAvailability(j);
   if (rv) {
     DBG_ERROR(0, "Job is not available, refusing to enqueue.");
@@ -860,19 +855,28 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   }
   AB_Job_Attach(j);
   AB_Job_List_Add(j, ab->enqueuedJobs);
-  AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
+  jst=AB_Job_GetStatus(j);
+  if (jst!=AB_Job_StatusEnqueued &&
+      jst!=AB_Job_StatusPending)
+    AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
   return 0;
 }
 
 
 
 int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+  AB_JOB_STATUS jst;
+
   assert(ab);
   assert(j);
-  AB_Job_SetStatus(j, AB_Job_StatusNew);
+  jst=AB_Job_GetStatus(j);
+  if (jst==AB_Job_StatusEnqueued)
+    AB_Job_SetStatus(j, AB_Job_StatusNew);
   AB_Job_List_Del(j);
+  rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
   AB_Job_free(j);
-  return 0;
+  return rv;
 }
 
 
@@ -893,8 +897,14 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
     j=AB_Job_List_First(ab->enqueuedJobs);
     jobs=0;
     while(j) {
+      AB_JOB *jnext;
+      AB_JOB_STATUS jst;
+
+      jnext=AB_Job_List_Next(j);
+      jst=AB_Job_GetStatus(j);
       DBG_NOTICE(0, "Checking job...");
-      if (AB_Job_GetStatus(j)==AB_Job_StatusEnqueued) {
+      if (jst==AB_Job_StatusEnqueued ||
+	  jst==AB_Job_StatusPending) {
         AB_ACCOUNT *a;
 
         a=AB_Job_GetAccount(j);
@@ -916,7 +926,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab){
 	DBG_WARN(0, "Job in queue with status \"%s\"",
 		 AB_Job_Status2Char(AB_Job_GetStatus(j)));
       }
-      j=AB_Job_List_Next(j);
+      j=jnext;
     } /* while */
     if (jobs) {
       DBG_NOTICE(0, "Letting backend \"%s\" work",
@@ -973,9 +983,27 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
     AB_JOB *nj;
 
     nj=AB_Job_List_Next(j);
+
     if (AB_Job_GetStatus(j)!=AB_Job_StatusEnqueued) {
-      DBG_INFO(0, "Removing job");
-      AB_Job_List_Del(j);
+      AB_Job_Attach(j);
+      AB_Banking_DequeueJob(ab, j);
+
+      switch(AB_Job_GetStatus(j)) {
+      case AB_Job_StatusPending:
+	if (AB_Banking__SaveJobAs(ab, j, "pending")) {
+	  DBG_ERROR(0, "Could not save job as \"pending\"");
+	}
+	break;
+
+      case AB_Job_StatusSent:
+      case AB_Job_StatusFinished:
+      case AB_Job_StatusError:
+      default:
+	if (AB_Banking__SaveJobAs(ab, j, "finished")) {
+	  DBG_ERROR(0, "Could not save job as \"finished\"");
+	}
+	break;
+      }
       AB_Job_free(j);
     }
     j=nj;
@@ -1277,11 +1305,388 @@ int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
 
 
 
+void AB_Banking__AddJobDir(const AB_BANKING *ab,
+			   const char *as,
+			   GWEN_BUFFER *buf) {
+  AB_Banking_GetUserDataDir(ab, buf);
+  GWEN_Buffer_AppendString(buf, "/jobs/");
+  GWEN_Buffer_AppendString(buf, as);
+}
+
+
+
+void AB_Banking__AddJobPath(const AB_BANKING *ab,
+			    const char *as,
+			    GWEN_TYPE_UINT32 jid,
+			    GWEN_BUFFER *buf) {
+  char buffer[16];
+
+  AB_Banking__AddJobDir(ab, as, buf);
+  GWEN_Buffer_AppendByte(buf, '/');
+  snprintf(buffer, sizeof(buffer), "%08lx", (unsigned long)jid);
+  GWEN_Buffer_AppendString(buf, buffer);
+  GWEN_Buffer_AppendString(buf, ".job");
+}
+
+
+
+int AB_Banking__OpenFile(const char *s, int wr) {
+#ifndef OS_WIN32
+  struct flock fl;
+#endif
+  int fd;
+
+  if (wr) {
+    if (GWEN_Directory_GetPath(s,
+			       GWEN_DB_FLAGS_DEFAULT |
+			       GWEN_PATH_FLAGS_VARIABLE)) {
+      DBG_ERROR(0, "Could not create path \"%s\"", s);
+      return -1;
+    }
+    fd=open(s,
+	    O_RDWR|O_CREAT /* |O_TRUNC */ ,
+	    S_IRUSR|S_IWUSR);
+  }
+  else {
+    fd=open(s, O_RDONLY);
+  }
+
+  if (fd==-1) {
+    DBG_ERROR(0, "open(%s): %s", s, strerror(errno));
+    return -1;
+  }
+
+#ifndef OS_WIN32
+  /* lock file for reading or writing */
+  memset(&fl, 0, sizeof(fl));
+  fl.l_type=wr?F_WRLCK:F_RDLCK;
+  fl.l_whence=SEEK_SET;
+  fl.l_start=0;
+  fl.l_len=0;
+  if (fcntl(fd, F_SETLKW, &fl)) {
+    DBG_ERROR(0, "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
+    close(fd);
+    return -1;
+  }
+#endif
+
+  return fd;
+}
+
+
+
+int AB_Banking__CloseFile(int fd){
+#ifndef OS_WIN32
+  struct flock fl;
+#endif
+
+  if (fd==-1) {
+    DBG_ERROR(0, "File is not open");
+    return -1;
+  }
+
+#ifndef OS_WIN32
+  /* unlock file */
+  memset(&fl, 0, sizeof(fl));
+  fl.l_type=F_UNLCK;
+  fl.l_whence=SEEK_SET;
+  fl.l_start=0;
+  fl.l_len=0;
+  if (fcntl(fd, F_SETLK, &fl)) {
+    DBG_ERROR(0, "fcntl(F_SETLK): %s", strerror(errno));
+    close(fd);
+    return -1;
+  }
+#endif
+
+  if (close(fd)) {
+    DBG_ERROR(0, "close: %s", strerror(errno));
+    return -1;
+  }
+
+  return 0;
+}
 
 
 
 
+int AB_Banking__OpenJobAs(AB_BANKING *ab,
+			  GWEN_TYPE_UINT32 jid,
+			  const char *as,
+			  int wr){
+  int fd;
+  GWEN_BUFFER *pbuf;
 
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  AB_Banking__AddJobPath(ab, as, jid, pbuf);
+
+  fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), wr);
+  GWEN_Buffer_free(pbuf);
+
+  return fd;
+}
+
+
+
+int AB_Banking__CloseJob(const AB_BANKING *ab, int fd){
+  return AB_Banking__CloseFile(fd);
+}
+
+
+
+AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
+  GWEN_DB_NODE *dbJob;
+  AB_JOB *j;
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+
+
+  fd=AB_Banking__OpenFile(s, 0);
+  if (fd==-1) {
+    return 0;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+
+  dbJob=GWEN_DB_Group_new("job");
+  if (GWEN_DB_ReadFromStream(dbJob, bio,
+			     GWEN_DB_FLAGS_DEFAULT |
+			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_INFO(0, "Error reading job data");
+    GWEN_DB_Group_free(dbJob);
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    AB_Banking__CloseJob(ab, fd);
+    return 0;
+  }
+
+  j=AB_Job_fromDb(ab, dbJob);
+  GWEN_DB_Group_free(dbJob);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (AB_Banking__CloseFile(fd)) {
+    DBG_INFO(0, "Error closing job, ignoring");
+  }
+  return j;
+}
+
+
+
+AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
+			      GWEN_TYPE_UINT32 jid,
+                              const char *as){
+  GWEN_DB_NODE *dbJob;
+  AB_JOB *j;
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+
+
+  fd=AB_Banking__OpenJobAs(ab, jid, as, 0);
+  if (fd==-1) {
+    return 0;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+
+  dbJob=GWEN_DB_Group_new("job");
+  if (GWEN_DB_ReadFromStream(dbJob, bio,
+			     GWEN_DB_FLAGS_DEFAULT |
+			     GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_INFO(0, "Error reading job data");
+    GWEN_DB_Group_free(dbJob);
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    AB_Banking__CloseJob(ab, fd);
+    return 0;
+  }
+
+  j=AB_Job_fromDb(ab, dbJob);
+  GWEN_DB_Group_free(dbJob);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (AB_Banking__CloseJob(ab, fd)) {
+    DBG_INFO(0, "Error closing job, ignoring");
+  }
+  return j;
+}
+
+
+
+int AB_Banking__SaveJobAs(AB_BANKING *ab,
+			  AB_JOB *j,
+			  const char *as){
+  GWEN_DB_NODE *dbJob;
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+
+  dbJob=GWEN_DB_Group_new("job");
+  if (AB_Job_toDb(j, dbJob)) {
+    DBG_ERROR(0, "Could not store job");
+    GWEN_DB_Group_free(dbJob);
+    return -1;
+  }
+
+  fd=AB_Banking__OpenJobAs(ab,
+			   AB_Job_GetJobId(j),
+			   as, 1);
+  if (fd==-1) {
+    GWEN_DB_Group_free(dbJob);
+    return -1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+  GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+
+  if (GWEN_DB_WriteToStream(dbJob, bio,
+			    GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_INFO(0, "Error reading job data");
+    GWEN_DB_Group_free(dbJob);
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    AB_Banking__CloseJob(ab, fd);
+    return -1;
+  }
+
+  GWEN_DB_Group_free(dbJob);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (AB_Banking__CloseJob(ab, fd)) {
+    DBG_INFO(0, "Error closing job");
+    return -1;
+  }
+  return 0;
+}
+
+
+
+int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
+			    AB_JOB *j,
+			    const char *as){
+  int fd;
+  GWEN_BUFFER *pbuf;
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  AB_Banking__AddJobPath(ab, as, AB_Job_GetJobId(j), pbuf);
+
+  fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), 0);
+  if (fd!=-1) {
+    if (unlink(GWEN_Buffer_GetStart(pbuf))) {
+      DBG_ERROR(0, "unlink(%s): %s",
+		GWEN_Buffer_GetStart(pbuf),
+		strerror(errno));
+      GWEN_Buffer_free(pbuf);
+      AB_Banking__CloseFile(fd);
+      return AB_ERROR_GENERIC;
+    }
+    AB_Banking__CloseFile(fd);
+  }
+
+  GWEN_Buffer_free(pbuf);
+
+  return 0;
+}
+
+
+
+
+AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
+  GWEN_BUFFER *pbuf;
+  AB_JOB_LIST2 *l;
+  GWEN_DIRECTORYDATA *d;
+  GWEN_TYPE_UINT32 pos;
+
+  l=AB_Job_List2_new();
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  AB_Banking__AddJobDir(ab, as, pbuf);
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  d=GWEN_Directory_new();
+  if (!GWEN_Directory_Open(d, GWEN_Buffer_GetStart(pbuf))) {
+    char nbuffer[256];
+
+    while(!GWEN_Directory_Read(d, nbuffer, sizeof(nbuffer))) {
+      int i;
+
+      i=strlen(nbuffer);
+      if (i>4) {
+	if (strcmp(nbuffer+i-4, ".job")==0) {
+	  AB_JOB *j;
+
+	  GWEN_Buffer_Crop(pbuf, 0, pos);
+	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, nbuffer);
+
+	  /* job found */
+	  j=AB_Banking__LoadJobFile(ab, GWEN_Buffer_GetStart(pbuf));
+	  if (!j) {
+	    DBG_ERROR(0, "Error in job file \"%s\"",
+		      GWEN_Buffer_GetStart(pbuf));
+	  }
+	  else {
+	    DBG_INFO(0, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));
+	    AB_Job_List2_PushBack(l, j);
+	  }
+	} /* if filename ends in ".job" */
+      } /* if filename is long enough */
+    } /* while still jobs */
+    if (GWEN_Directory_Close(d)) {
+      DBG_ERROR(0, "Error closing dir");
+      AB_Job_List2_free(l);
+      GWEN_Buffer_free(pbuf);
+      return 0;
+    }
+  } /* if open */
+  GWEN_Directory_free(d);
+  GWEN_Buffer_free(pbuf);
+
+  if (AB_Job_List2_GetSize(l)==0) {
+    AB_Job_List2_free(l);
+    return 0;
+  }
+
+  return l;
+}
+
+
+
+AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab) {
+  return AB_Banking__LoadJobsAs(ab, "finished");
+}
+
+
+
+int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+
+  assert(ab);
+  assert(j);
+  rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
+  return rv;
+}
+
+
+
+
+AB_JOB_LIST2 *AB_Banking_GetPendingJobs(AB_BANKING *ab) {
+  return AB_Banking__LoadJobsAs(ab, "pending");
+}
+
+
+
+int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+
+  assert(ab);
+  assert(j);
+  rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
+  return rv;
+}
 
 
 

@@ -42,8 +42,6 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a,
   GWEN_NEW_OBJECT(AB_JOB_GETTRANSACTIONS, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j, aj,
                        AB_JobGetTransactions_FreeData);
-  AB_Job_Update(j);
-
   if (fromTime)
     aj->fromTime=GWEN_Time_dup(fromTime);
   if (toTime)
@@ -74,6 +72,10 @@ AB_JobGetTransactions_GetTransactions(const AB_JOB *j){
   aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
   assert(aj);
 
+  if (aj->transactions) {
+    if (AB_Transaction_List2_GetSize(aj->transactions)==0)
+      return 0;
+  }
   return aj->transactions;
 }
 
@@ -144,55 +146,116 @@ void AB_JobGetTransactions_SetMaxStoreDays(AB_JOB *j, int i){
 
 
 
-int AB_Job_GetTransactions_ReadDb(AB_JOB *j, GWEN_DB_NODE *db) {
+AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
+  AB_JOB *j;
   AB_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbT;
 
-  assert(j);
+  j=AB_Job_new(AB_Job_TypeGetTransactions, a);
+  GWEN_NEW_OBJECT(AB_JOB_GETTRANSACTIONS, aj);
+  GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j, aj,
+                       AB_JobGetTransactions_FreeData);
   aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
   assert(aj);
 
-  GWEN_Time_free(aj->fromTime);
-  aj->fromTime=0;
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "fromdate");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "args/fromdate");
   if (dbT)
     aj->fromTime=GWEN_Time_fromDb(dbT);
 
-  GWEN_Time_free(aj->toTime);
-  aj->toTime=0;
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "todate");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "args/todate");
   if (dbT)
     aj->toTime=GWEN_Time_fromDb(dbT);
 
-  return 0;
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "result/transactions");
+  if (dbT) {
+    GWEN_DB_NODE *dbT2;
+
+    aj->transactions=AB_Transaction_List2_new();
+
+    /* read transactions */
+    dbT2=GWEN_DB_FindFirstGroup(dbT, "transaction");
+    while(dbT2) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_fromDb(dbT2);
+      if (t)
+        AB_Transaction_List2_PushBack(aj->transactions, t);
+      dbT2=GWEN_DB_FindNextGroup(dbT2, "transaction");
+    } /* while */
+  } /* if transactions */
+
+  return j;
 }
 
 
 
-int AB_Job_GetTransactions_WriteDb(const AB_JOB *j, GWEN_DB_NODE *db){
+int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   AB_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbT;
+  int errors;
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
   assert(aj);
 
+  errors=0;
   if (aj->fromTime) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "fromdate");
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "args/fromdate");
     assert(dbT);
     if (GWEN_Time_toDb(aj->fromTime, dbT))
       return -1;
   }
 
   if (aj->toTime) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "todate");
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                         "args/todate");
     assert(dbT);
     if (GWEN_Time_toDb(aj->toTime, dbT))
       return -1;
   }
 
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "result");
+  assert(dbT);
+
+  if (aj->transactions) {
+    AB_TRANSACTION_LIST2_ITERATOR *it;
+    GWEN_DB_NODE *dbT2;
+
+    dbT2=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                          "transactions");
+    assert(dbT2);
+    it=AB_Transaction_List2_First(aj->transactions);
+    if (it) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_List2Iterator_Data(it);
+      assert(t);
+      while(t) {
+        GWEN_DB_NODE *dbT3;
+
+        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                              "transaction");
+        assert(dbT3);
+        if (AB_Transaction_toDb(t, dbT3)) {
+          DBG_ERROR(0, "Error saving transaction");
+          errors++;
+        }
+        t=AB_Transaction_List2Iterator_Next(it);
+      } /* while */
+      AB_Transaction_List2Iterator_free(it);
+    } /* if it */
+  } /* if transactions */
+
+
   return 0;
 }
+
+
+
 
 
 

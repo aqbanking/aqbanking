@@ -60,7 +60,7 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_dup(const AB_ACCOUNT_STATUS *as){
 
 
 
-AB_ACCOUNT_STATUS *AB_AccountStatus_FromDb(GWEN_DB_NODE *db){
+AB_ACCOUNT_STATUS *AB_AccountStatus_fromDb(GWEN_DB_NODE *db){
   AB_ACCOUNT_STATUS *as;
   GWEN_TYPE_UINT32 i;
   GWEN_DB_NODE *tdb;
@@ -90,7 +90,7 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_FromDb(GWEN_DB_NODE *db){
 
 
 
-int AB_AccountStatus_ToDb(const AB_ACCOUNT_STATUS *as, GWEN_DB_NODE *db){
+int AB_AccountStatus_toDb(const AB_ACCOUNT_STATUS *as, GWEN_DB_NODE *db){
   GWEN_DB_NODE *tdb;
 
   assert(as);

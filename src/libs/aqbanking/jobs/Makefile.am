@@ -12,8 +12,12 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS= \
  jobgetbalance.h \
  jobgetbalance_be.h \
+ jobgetbalance_l.h \
+ jobgetbalance_p.h \
  jobgettransactions.h \
- jobgettransactions_be.h
+ jobgettransactions_be.h \
+ jobgettransactions_l.h \
+ jobgettransactions_p.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \

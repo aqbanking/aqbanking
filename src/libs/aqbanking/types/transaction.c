@@ -461,6 +461,7 @@ const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *t){
 
 void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s){
   assert(t);
+  assert(s);
   GWEN_StringList_AppendString(t->purpose, s, 0, 0);
 }
 

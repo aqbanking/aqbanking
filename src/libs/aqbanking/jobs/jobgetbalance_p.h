@@ -11,30 +11,27 @@
  ***************************************************************************/
 
 
-#ifndef AQBANKING_JOBGETBALANCE_H
-#define AQBANKING_JOBGETBALANCE_H
+#ifndef AQBANKING_JOBGETBALANCE_P_H
+#define AQBANKING_JOBGETBALANCE_P_H
 
 
-#include <aqbanking/job.h>
-#include <aqbanking/accstatus.h>
+#include "jobgetbalance_l.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef struct AB_JOBGETBALANCE AB_JOBGETBALANCE;
+struct AB_JOBGETBALANCE {
+  AB_ACCOUNT_STATUS *accountStatus;
+};
+void AB_JobGetBalance_FreeData(void *bp, void *p);
 
-AQBANKING_API
-AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a);
-AQBANKING_API
-AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j);
-AQBANKING_API
-void AB_JobGetBalance_SetAccountStatus(AB_JOB *j,
-                                       const AB_ACCOUNT_STATUS *as);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif /* AQBANKING_JOBGETBALANCE_H */
+#endif /* AQBANKING_JOBGETBALANCE_P_H */
 

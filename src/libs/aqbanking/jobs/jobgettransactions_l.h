@@ -22,10 +22,8 @@
 extern "C" {
 #endif
 
-
-int AB_Job_GetTransactions_ReadDb(AB_JOB *j, GWEN_DB_NODE *db);
-int AB_Job_GetTransactions_WriteDb(const AB_JOB *j, GWEN_DB_NODE *db);
-
+AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
 #ifdef __cplusplus
 }

@@ -26,13 +26,12 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_JOB)
 
 AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
 
-GWEN_DB_NODE *AB_Job_GetData(const AB_JOB *j);
-
-
 int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 int AB_Job_Update(AB_JOB *j);
+
+void AB_Job_SetUniqueId(AB_JOB *j, GWEN_TYPE_UINT32 jid);
 
 
 #endif /* AQBANKING_JOB_L_H */

@@ -20,6 +20,7 @@
 #include "banking_l.h"
 #include "provider_l.h"
 #include "jobs/jobgettransactions_l.h"
+#include "jobs/jobgetbalance_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -44,12 +45,8 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   GWEN_INHERIT_INIT(AB_JOB, j);
   GWEN_LIST_INIT(AB_JOB, j);
   j->jobType=jt;
-  j->data=GWEN_DB_Group_new("JobData");
   j->account=a;
-  j->jobId=AB_Banking_GetUniqueId(AB_Account_GetBanking(a));
-  GWEN_DB_SetCharValue(j->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "static/createdBy",
-                       AB_Banking_GetAppName(AB_Account_GetBanking(a)));
+  j->createdBy=strdup(AB_Banking_GetAppName(AB_Account_GetBanking(a)));
 
   return j;
 }
@@ -83,8 +80,8 @@ void AB_Job_free(AB_JOB *j){
     assert(j->usage);
     if (--(j->usage)==0) {
       GWEN_INHERIT_FINI(AB_JOB, j);
-      GWEN_DB_Group_free(j->data);
       free(j->resultText);
+      free(j->createdBy);
       GWEN_LIST_FINI(AB_JOB, j);
       GWEN_FREE_OBJECT(j);
     }
@@ -93,19 +90,9 @@ void AB_Job_free(AB_JOB *j){
 
 
 
-GWEN_DB_NODE *AB_Job_GetData(const AB_JOB *j){
-  GWEN_DB_NODE *dbT;
-
-  assert(j);
-  dbT=GWEN_DB_GetGroup(j->data, GWEN_DB_FLAGS_DEFAULT, "static/ext");
-  assert(dbT);
-  return dbT;
-}
-
-
-
 int AB_Job_CheckAvailability(AB_JOB *j){
   assert(j);
+  AB_Job_Update(j);
   return j->availability;
 }
 
@@ -137,9 +124,11 @@ const char *AB_Job_Status2Char(AB_JOB_STATUS i) {
 
   switch(i) {
   case AB_Job_StatusNew:      s="new"; break;
+  case AB_Job_StatusUpdated:  s="updated"; break;
   case AB_Job_StatusEnqueued: s="enqueued"; break;
   case AB_Job_StatusSent:     s="sent"; break;
-  case AB_Job_StatusAnswered: s="answered"; break;
+  case AB_Job_StatusPending:  s="pending"; break;
+  case AB_Job_StatusFinished: s="finished"; break;
   case AB_Job_StatusError:    s="error"; break;
   default:                    s="unknown"; break;
   }
@@ -152,9 +141,11 @@ AB_JOB_STATUS AB_Job_Char2Status(const char *s) {
   AB_JOB_STATUS i;
 
   if (strcasecmp(s, "new")==0) i=AB_Job_StatusNew;
+  else if (strcasecmp(s, "updated")==0) i=AB_Job_StatusUpdated;
   else if (strcasecmp(s, "enqueued")==0) i=AB_Job_StatusEnqueued;
   else if (strcasecmp(s, "sent")==0) i=AB_Job_StatusSent;
-  else if (strcasecmp(s, "answered")==0) i=AB_Job_StatusAnswered;
+  else if (strcasecmp(s, "pending")==0) i=AB_Job_StatusPending;
+  else if (strcasecmp(s, "finished")==0) i=AB_Job_StatusFinished;
   else if (strcasecmp(s, "error")==0) i=AB_Job_StatusError;
   else i=AB_Job_StatusUnknown;
 
@@ -195,49 +186,48 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
 
 
 int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
-  GWEN_DB_NODE *dbTsrc;
   const char *p;
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "jobId", j->jobId);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "idForProvider", j->idForProvider);
   p=AB_Job_Type2Char(j->jobType);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "jobType", p);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "createdBy", j->createdBy);
 
-  p=AB_Job_Status2Char(j->jobType);
+  p=AB_Job_Status2Char(j->status);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "jobStatus", p);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "accountId", AB_Account_GetUniqueId(j->account));
-  dbTsrc=GWEN_DB_GetGroup(j->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbTdst;
 
-    dbTdst=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data");
-    assert(dbTdst);
-    GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
-
-    /* let every job store its data */
-    switch(j->jobType) {
-    case AB_Job_TypeGetBalance:
-      break;
-
-    case AB_Job_TypeGetTransactions:
-      if (AB_Job_GetTransactions_WriteDb(j, dbTdst)) {
-        DBG_INFO(0, "here");
-        return -1;
-      }
-      break;
-
-    case AB_Job_TypeTransfer:
-    case AB_Job_TypeDebitNote:
-      DBG_ERROR(0, "Job type not yet supported");
-      return -1;
-
-    default:
-      DBG_ERROR(0, "Unknown job type %d", j->jobType);
+  /* let every job store its data */
+  switch(j->jobType) {
+  case AB_Job_TypeGetBalance:
+    if (AB_JobGetBalance_toDb(j, db)) {
+      DBG_INFO(0, "here");
       return -1;
     }
+    break;
+
+  case AB_Job_TypeGetTransactions:
+    if (AB_JobGetTransactions_toDb(j, db)) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeTransfer:
+  case AB_Job_TypeDebitNote:
+    DBG_ERROR(0, "Job type not yet supported");
+    return -1;
+
+  default:
+    DBG_ERROR(0, "Unknown job type %d", j->jobType);
+    return -1;
   }
 
   return 0;
@@ -247,12 +237,10 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
 AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_JOB *j;
-  AB_PROVIDER *pro;
   AB_JOB_TYPE jt;
   AB_ACCOUNT *a;
   GWEN_TYPE_UINT32 accountId;
   const char *p;
-  GWEN_DB_NODE *dbTsrc;
 
   accountId=GWEN_DB_GetIntValue(db, "accountId", 0, 0);
   assert(accountId);
@@ -269,55 +257,36 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
     return 0;
   }
 
-  GWEN_NEW_OBJECT(AB_JOB, j);
-  j->usage=1;
+  /* read job */
+  j=0;
+  switch(jt) {
+  case AB_Job_TypeGetBalance:
+    j=AB_JobGetBalance_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeGetTransactions:
+    j=AB_JobGetTransactions_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeTransfer:
+  case AB_Job_TypeDebitNote:
+    DBG_ERROR(0, "Unsupported job type %d", j->jobType);
+    return 0;
+  default:
+    DBG_ERROR(0, "Unknown job type %d", j->jobType);
+    return 0;
+  } /* switch */
+
   j->jobId=GWEN_DB_GetIntValue(db, "jobId", 0, 0);
-  j->jobType=jt;
+  j->idForProvider=GWEN_DB_GetIntValue(db, "idForProvider", 0, 0);
   j->status=AB_Job_Char2Status(GWEN_DB_GetCharValue(db,
                                                     "jobStatus", 0,
                                                     "unknown"));
-  j->account=a;
-
-  /* read job data */
-  j->data=GWEN_DB_Group_new("JobData");
-  dbTsrc=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbTdst;
-
-    dbTdst=GWEN_DB_GetGroup(j->data, GWEN_DB_FLAGS_DEFAULT, "static");
-    assert(dbTdst);
-    GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
-
-    /* let jobs extend the data */
-    switch(j->jobType) {
-    case AB_Job_TypeGetBalance:
-      /* nothing to read for now */
-      break;
-
-    case AB_Job_TypeGetTransactions:
-      if (AB_Job_GetTransactions_ReadDb(j, dbTsrc)) {
-        DBG_INFO(0, "Could not read job data");
-        AB_Job_free(j);
-        return 0;
-      }
-      break;
-
-    case AB_Job_TypeTransfer:
-    case AB_Job_TypeDebitNote:
-      DBG_ERROR(0, "Unsupported job type %d", j->jobType);
-      AB_Job_free(j);
-      return 0;
-    default:
-      DBG_ERROR(0, "Unknown job type %d", j->jobType);
-      AB_Job_free(j);
-      return 0;
-    } /* switch */
-  }
-
-  /* check whether job is available */
-  pro=AB_Account_GetProvider(a);
-  assert(pro);
-  j->availability=AB_Provider_UpdateJob(pro, j);
+  p=GWEN_DB_GetCharValue(db, "createdBy", 0, 0);
+  assert(p);
+  j->createdBy=strdup(p);
 
   return j;
 }
@@ -326,15 +295,14 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j) {
   assert(j);
-  return GWEN_DB_GetIntValue(j->data, "static/idForProvider", 0, 0);
+  return j->idForProvider;
 }
 
 
 
 void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i) {
   assert(j);
-  GWEN_DB_SetIntValue(j->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "static/idForProvider", i);
+  j->idForProvider=i;
 }
 
 
@@ -386,7 +354,14 @@ GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j) {
 
 const char *AB_Job_GetCreatedBy(const AB_JOB *j) {
   assert(j);
-  return GWEN_DB_GetCharValue(j->data, "static/createdBy", 0, 0);
+  return j->createdBy;
+}
+
+
+
+void AB_Job_SetUniqueId(AB_JOB *j, GWEN_TYPE_UINT32 jid){
+  assert(j);
+  j->jobId=jid;
 }
 
 

@@ -52,6 +52,42 @@ struct AB_BANKING {
 AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
 int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 
+void AB_Banking__AddJobDir(const AB_BANKING *ab,
+                           const char *as,
+                           GWEN_BUFFER *buf);
+void AB_Banking__AddJobPath(const AB_BANKING *ab,
+			    const char *as,
+                            GWEN_TYPE_UINT32 jid,
+                            GWEN_BUFFER *buf);
+
+int AB_Banking__OpenFile(const char *s, int wr);
+int AB_Banking__CloseFile(int fd);
+
+
+int AB_Banking__OpenJobAs(AB_BANKING *ab,
+                          GWEN_TYPE_UINT32 jid,
+                          const char *as,
+                          int wr);
+int AB_Banking__CloseJob(const AB_BANKING *ab, int fd);
+
+AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s);
+
+AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
+                              GWEN_TYPE_UINT32 jid,
+                              const char *as);
+int AB_Banking__SaveJobAs(AB_BANKING *ab,
+                          AB_JOB *j,
+			  const char *as);
+
+AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as);
+
+int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
+                            AB_JOB *j,
+                            const char *as);
+
+
+
+
 
 
 #endif /* AQBANKING_BANKING_P_H */

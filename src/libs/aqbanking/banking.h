@@ -663,11 +663,25 @@ AQBANKING_API
 int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
+ * <p>
  * This function sends all jobs in the queue to their corresponding backends
  * and allows those backends to process it.
+ * </p>
+ * <p>
  * If the user did not abort and there was no fatal error the queue is
  * empty upon return. You can verify this by calling
  * @ref AB_Banking_GetEnqueuedJobs.
+ * </p>
+ * <p>
+ * Jobs which have been finished (even errornous jobs) are move from the
+ * queue to the list of finished jobs. Those jobs are preserved across
+ * shutdowns.
+ * </p>
+ * <p>
+ * If a job is marked as <i>pending</i> after execution it will be moved to
+ * the list of pending jobs.
+ * Those jobs are also preserved across shutdowns.
+ * </p>
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
@@ -675,8 +689,16 @@ AQBANKING_API
 int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 
 /**
+ * <p>
  * Returns the list of currently enqueued jobs. If the queue is empty
  * NULL is returned.
+ * </p>
+ * <p>
+ * Please note that AqBanking still remains the owner of those jobs in the
+ * list returned (if any). So you MUST NOT call @ref AB_Job_List2_freeAll on
+ * this list. However, you MUST call @ref AB_Job_List2_free when you no
+ * longer need the list to avoid memory leaks.
+ * </p>
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
@@ -684,6 +706,99 @@ AQBANKING_API
 AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
 /*@}*/
 
+
+
+/** @name Handling Finished Jobs
+ *
+ * <p>
+ * Finished jobs are those which have been handled by
+ * @ref AB_Banking_ExecuteQueue.
+ * </p>
+ * <p>
+ * Those jobs are saved into their particular folder directly after the queue
+ * has been executed. There is only one function you can call for those
+ * jobs: @ref AB_Banking_DelFinishedJob.
+ * </p>
+ * <p>
+ * Applications might use this group to check for the results of jobs formerly
+ * marked as <i>pending</i> and to apply these results to the corresponding
+ * accounts.
+ * </p>
+ */
+/*@{*/
+
+/**
+ * <p>
+ * Loads all finished jobs from their folder. The caller is responsible for
+ * freeing the jobs returned (as opposed to @ref AB_Banking_GetEnqueuedJobs).
+ * </p>
+ * <p>
+ * Please note that since this function loads all jobs from their folder
+ * the returned list might contain another representation of jobs you once
+ * created and enqueued into the execution queue.
+ * </p>
+ * <p>
+ * So you should only use jobs returned by this function for other functions
+ * in this particular function group.
+ * </p>
+ */
+AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
+
+/**
+ * Removes a finished job from its folder. This function does not free the
+ * job.
+ * The job MUST be one of those returned via @ref AB_Banking_GetFinishedJobs.
+ */
+int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
+
+/*@}*/
+
+
+
+/** @name Handling Pending Jobs
+ *
+ * <p>
+ * Pending jobs are those which have been handled by
+ * @ref AB_Banking_ExecuteQueue but which did not yet return a result (like
+ * transfer jobs with some backends, which might be accepted by the bank but
+ * which are not immediately executed).
+ * </p>
+ * <p>
+ * Those jobs are saved into their particular folder directly after the queue
+ * has been executed. You may requeue those jobs later (using
+ * @ref AB_Banking_EnqueueJob)
+ * to allow the corresponding backend to check whether there is a result
+ * available for a pending job. If that's the case the job will be moved
+ * from the <i>pending</i> folder to the <i>finished</i> folder (accessible
+ * via @ref AB_Banking_GetFinishedJobs).
+ * </p>
+ */
+/*@{*/
+
+/**
+ * <p>
+ * Loads all pending jobs from their folder. The caller is responsible for
+ * freeing the jobs returned (as opposed to @ref AB_Banking_GetEnqueuedJobs).
+ * </p>
+ * <p>
+ * Please note that since this function loads all jobs from their folder
+ * the returned list might contain another representation of jobs you once
+ * created and enqueued into the execution queue.
+ * </p>
+ * <p>
+ * So you should only use jobs returned by this function for other functions
+ * in this particular function group.
+ * </p>
+ */
+AB_JOB_LIST2 *AB_Banking_GetPendingJobs(AB_BANKING *ab);
+
+/**
+ * Removes a pending job from its folder. This function does not free the job.
+ * The job MUST be one of those returned via @ref AB_Banking_GetPendingJobs.
+ */
+int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j);
+
+/*@}*/
 
 
 

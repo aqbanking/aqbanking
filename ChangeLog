@@ -1,4 +1,14 @@
 
+2004/08/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- banking.c: 
+  - changed loading of job queues. They are now stored one file per job in 
+    special folders:
+    - "todo"    : enqueued jobs
+    - "finished": finished jobs (moved to there from "todo")
+    - "pending" : pending jobs (moved to there from "todo")
+
+
 2004/08/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - created new header files for backend development (contain prototypes

@@ -43,9 +43,11 @@ void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
 typedef enum {
   AB_Job_StatusNew=0,
+  AB_Job_StatusUpdated,
   AB_Job_StatusEnqueued,
   AB_Job_StatusSent,
-  AB_Job_StatusAnswered,
+  AB_Job_StatusPending,
+  AB_Job_StatusFinished,
   AB_Job_StatusError,
   AB_Job_StatusUnknown=999
 } AB_JOB_STATUS;
