@@ -1,0 +1,55 @@
+default: all
+
+dist:
+	@echo "This file is to make it easier for you to create all you need"
+	aclocal -I ./m4
+	autoheader
+# use --include-deps, if you want to release the stuff. Don't use it for
+# yourself
+	automake --include-deps
+	autoconf
+	touch stamp-h.in
+	rm -f `find . -name \*~`
+	rm -Rf `find . -type d -name CVS`
+	rm -f `find . -type f -name .cvsignore`
+	rm -Rf apidoc
+	rm -Rf gwenipc
+	rm -f Makefile.cvs
+	rm -Rf autom4te.cache
+
+cvsclean::
+	automake --include-deps
+	autoconf
+	touch stamp-h.in
+	rm -Rf gwenipc
+	rm -f `find . -name \*~`
+	rm -Rf apidoc
+	rm -Rf autom4te.cache
+
+all:
+	libtoolize -f --automake
+	@if test -r config.status; then \
+	   prefix=`grep '@prefix@' config.status |cut -d , -f 3`; \
+	   gwen_prefix=`grep '@GWEN_PREFIX@' config.status |cut -d , -f 3`; \
+	 fi; \
+	 for A in "$${gwen_prefix}/share/aclocal" "$${prefix}/share/aclocal" m4; do \
+	   if test -d "$${A}"; then \
+	     ACLOCAL_FLAGS="$${ACLOCAL_FLAGS} -I $${A}"; \
+	   fi; \
+	 done; \
+	 echo "aclocal $${ACLOCAL_FLAGS}"; \
+	 aclocal $${ACLOCAL_FLAGS} || (echo -e '***\n*** If the line above shows the error message "macro AC_GWENHYWFAR not \n*** found", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
+	autoheader
+	automake --add-missing
+	@echo "autoconf"; \
+	 autoconf || (echo -e '***\n*** If the line above shows the error message "possibly undefined macro: \n*** AC_GWENHYWFAR", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
+	@echo "Now you can run ./configure --enable-maintainer-mode"
+
+
+mp:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	CXXFLAGS="-ggdb -Wall" CFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode
