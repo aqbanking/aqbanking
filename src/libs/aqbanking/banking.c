@@ -3853,9 +3853,9 @@ int AB_Banking_GetPin(AB_BANKING *ab,
 
   if (!p) {
     /* no pin yet, ask program for it */
-    DBG_NOTICE(AQBANKING_LOGDOMAIN,
-               "Have no pin for \"%s\", getting it",
-               token);
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Have no pin for \"%s\", getting it",
+	     token);
 
     rv=AB_Banking__GetPin(ab, flags, token, title, text, buffer,
                           minLen, maxLen);
@@ -3866,15 +3866,17 @@ int AB_Banking_GetPin(AB_BANKING *ab,
     AB_Pin_SetValue(p, buffer);
     AB_Pin_SetHash(p, 0);
     AB_Pin_SetStatus(p, "unknown");
-    DBG_NOTICE(AQBANKING_LOGDOMAIN,
-               "Adding pin for \"%s\"",
-               token);
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	      "Adding pin for \"%s\"",
+	      token);
     AB_Pin_List_Add(p, ab->pinList);
   }
 
   for (i=0 ; ; i++) {
     const char *st;
+    const char *t;
     int l;
+    int doSet;
 
     if (i)
       flags|=AB_BANKING_INPUT_FLAGS_RETRY;
@@ -3922,9 +3924,50 @@ int AB_Banking_GetPin(AB_BANKING *ab,
                           minLen, maxLen);
     if (rv)
       return rv;
-    AB_Pin_SetValue(p, buffer);
-    AB_Pin_SetHash(p, 0);
-    AB_Pin_SetStatus(p, "unknown");
+
+    doSet=0;
+    t=AB_Pin_GetValue(p);
+    if (t) {
+      if (strcmp(buffer, t)!=0)
+	doSet=1;
+      else {
+	int lrv;
+
+	lrv=AB_Banking_MessageBox(ab,
+				  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+				  AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+				  AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
+				  I18N("Enforce PIN"),
+				  I18N(
+				  "You entered the same PIN twice.\n"
+				  "The PIN is marked as bad, do you want\n"
+				  "to use it anyway ?"
+				  "<html>"
+                                  "<p>"
+				  "You entered the same PIN twice."
+				  "</p>"
+                                  "<p>"
+				  "The PIN is marked as <b>bad</b>, "
+				  "do you want to use it anyway ?"
+				  "</p>"
+				  "</html>"),
+				  I18N("Use this"),
+				  I18N("Re-enter"),
+				  0);
+	if (lrv==1) {
+          /* accept this input */
+          break;
+	}
+      }
+    }
+    else
+      doSet=1;
+
+    if (doSet) {
+      AB_Pin_SetValue(p, buffer);
+      AB_Pin_SetHash(p, 0);
+      AB_Pin_SetStatus(p, "unknown");
+    }
   } /* for */
 
   return 0;
@@ -3943,9 +3986,9 @@ int AB_Banking_SetPinStatus(AB_BANKING *ab,
   assert(token);
   assert(pin);
 
-  DBG_NOTICE(AQBANKING_LOGDOMAIN,
-	     "Setting PIN status for \"%s\" to %d",
-             token, status);
+  DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	    "Setting PIN status for \"%s\" to %d",
+	    token, status);
 
   p=AB_Pin_List_First(ab->pinList);
   while(p) {
@@ -3962,6 +4005,7 @@ int AB_Banking_SetPinStatus(AB_BANKING *ab,
 
   if (!p) {
     /* no pin yet, create it */
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Pin \"%s\" is new", token);
     p=AB_Pin_new();
     AB_Pin_SetToken(p, token);
     AB_Pin_SetValue(p, pin);
