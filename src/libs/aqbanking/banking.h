@@ -1142,6 +1142,8 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
  * This means that if you want to ask the user for a PIN of at most 4
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
+ *
+ * @return Zero on success, nonzero when the user requested abort or there was any error.
  */
 AQBANKING_API 
 int AB_Banking_InputBox(AB_BANKING *ab,
