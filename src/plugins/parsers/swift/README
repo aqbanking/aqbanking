@@ -1,0 +1,6 @@
+This folder contains a parser for the international finance transaction format
+SWIFT.
+
+It currently contains code for SWIFT MT940 and MT942 records used in 
+transaction statements.
+

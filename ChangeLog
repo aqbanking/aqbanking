@@ -2,6 +2,7 @@
 2004/09/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - improved saving of backend data upon AB_Banking_Fini()
+- added plugins for DTAUS and SWIFT (taken from AqHBCI)
 
 
 2004/09/03: Martin Preuss<martin@libchipcard.de>

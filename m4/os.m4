@@ -2,7 +2,7 @@
 # (c) 2002 Martin Preuss<martin@libchipcard.de>
 # These functions guess your operation system
 
-AC_DEFUN(AQ_CHECK_OS,[
+AC_DEFUN([AQ_CHECK_OS],[
 dnl IN: 
 dnl   - AC_CANONICAL_SYSTEM muste be called before
 dnl OUT:

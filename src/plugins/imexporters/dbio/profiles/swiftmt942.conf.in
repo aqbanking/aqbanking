@@ -1,0 +1,14 @@
+
+char name="SWIFT-MT942"
+char shortDescr="SWIFT MT942 Format"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="This profile supports SWIFT MT942 documents"
+
+char type="swift"
+
+char groupNames="transaction", "transfer", "debitnote"
+
+params {
+  char type="mt942"
+}
+

@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -326,6 +326,19 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile
+  src/plugins/Makefile
+  src/plugins/imexporters/Makefile
+  src/plugins/imexporters/dbio/Makefile
+  src/plugins/imexporters/dbio/dbio.xml
+  src/plugins/imexporters/dbio/profiles/Makefile
+  src/plugins/imexporters/dbio/profiles/dtaus.conf
+  src/plugins/imexporters/dbio/profiles/swiftmt940.conf
+  src/plugins/imexporters/dbio/profiles/swiftmt942.conf
+  src/plugins/parsers/Makefile
+  src/plugins/parsers/dtaus/Makefile
+  src/plugins/parsers/dtaus/dtaus.xml
+  src/plugins/parsers/swift/Makefile
+  src/plugins/parsers/swift/swift.xml
   src/test/Makefile
   Doxyfile
   Makefile

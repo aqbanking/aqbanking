@@ -1,0 +1,10 @@
+<plugin name="dtaus" type="dbio" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Importer and Exporter for DTAUS</short>
+  <descr>
+    This plugin imports and exports German DTAUS data.
+  </descr>
+</plugin>
+
+

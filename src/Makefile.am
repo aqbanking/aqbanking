@@ -1,1 +1,1 @@
-SUBDIRS=libs test
+SUBDIRS=libs plugins test
