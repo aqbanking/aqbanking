@@ -1,0 +1,10 @@
+<plugin name="dtaus" type="imexporter" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>DTAUS</short>
+  <descr>
+    This plugin imports and exports DTAUS data.
+  </descr>
+</plugin>
+
+
