@@ -247,6 +247,23 @@ int AB_JobEuTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
     }
   }
 
+  switch(jd->chargeWhom) {
+  case AB_JobEuTransfer_ChargeWhom_Local:
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "args/chargeWhom", "local");
+    break;
+  case AB_JobEuTransfer_ChargeWhom_Remote:
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "args/chargeWhom", "remote");
+    break;
+  case AB_JobEuTransfer_ChargeWhom_Share:
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "args/chargeWhom", "share");
+    break;
+  default:
+    break;
+  } /* switch */
+
   return 0;
 }
 
@@ -256,6 +273,7 @@ AB_JOB *AB_JobEuTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AB_JOB *j;
   AB_JOBEUTRANSFER *jd;
   GWEN_DB_NODE *dbT;
+  const char *s;
 
   j=AB_Job_new(AB_Job_TypeTransfer, a);
   GWEN_NEW_OBJECT(AB_JOBEUTRANSFER, jd);
@@ -295,6 +313,20 @@ AB_JOB *AB_JobEuTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
                        "args/transaction");
   if (dbT)
     jd->transaction=AB_Transaction_fromDb(dbT);
+
+  s=GWEN_DB_GetCharValue(db, "args/chargeWhom", 0, 0);
+  if (s) {
+    if (strcasecmp(s, "local")==0)
+      jd->chargeWhom=AB_JobEuTransfer_ChargeWhom_Local;
+    else if (strcasecmp(s, "remote")==0)
+      jd->chargeWhom=AB_JobEuTransfer_ChargeWhom_Remote;
+    if (strcasecmp(s, "share")==0)
+      jd->chargeWhom=AB_JobEuTransfer_ChargeWhom_Share;
+    else
+      jd->chargeWhom=AB_JobEuTransfer_ChargeWhom_Unknown;
+  }
+  else
+    jd->chargeWhom=AB_JobEuTransfer_ChargeWhom_Unknown;
 
   return j;
 }
