@@ -2,12 +2,14 @@
 <typedefs>
   <type id="AB_BANKINFO_SERVICE_LIST" >
     <functions>
+      <function type="new" name="AB_BankInfoService_List_new" />
       <function type="free" name="AB_BankInfoService_List_free" />
       <function type="dup" name="AB_BankInfoService_List_dup" />
     </functions>
   </type>
   <type id="AB_BANKINFO_SERVICE_LIST2" >
     <functions>
+      <function type="new" name="AB_BankInfoService_List2_new" />
       <function type="free" name="AB_BankInfoService_List2_free" />
       <function type="dup" name="AB_BankInfoService_List2_dup" />
     </functions>
@@ -56,7 +58,7 @@
     <elem name="bankName" type="char" ptr="1" />
     <elem name="location" type="char" ptr="1" />
     <elem name="services" type="AB_BANKINFO_SERVICE_LIST" ptr="1" 
-          mode="list" elemType="AB_BANKINFO_SERVICE"/>
+          mode="list" elemType="AB_BANKINFO_SERVICE" init="1" />
   </type>
   
   

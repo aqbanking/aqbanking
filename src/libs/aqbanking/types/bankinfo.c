@@ -23,6 +23,7 @@ AB_BANKINFO *AB_BankInfo_new() {
   GWEN_NEW_OBJECT(AB_BANKINFO, st)
   st->_usage=1;
   GWEN_LIST_INIT(AB_BANKINFO, st)
+  st->services=AB_BankInfoService_List_new();
   return st;
 }
 
