@@ -72,6 +72,8 @@ Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "p
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -155,11 +157,11 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; These are only for improved text messages
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-[Messages]
-; *** "Select Destination" wizard page
-SelectDirLabel3=Setup will install [name] into the following folder. If you have MinGW installed on your system, you can safely choose MinGW's root folder here as well (e.g. c:\msys\1.0).
-
-de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, können Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
+;[Messages]
+;; *** "Select Destination" wizard page
+;SelectDirLabel3=Setup will install [name] into the following folder. If you have MinGW installed on your system, you can safely choose MinGW's root folder here as well (e.g. c:\msys\1.0).
+;
+;de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, können Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
 
 
 ; The customized messages with their translations here.
