@@ -21,6 +21,7 @@
 #include "job_l.h"
 #include "imexporter_l.h"
 #include "pin_l.h"
+#include "bankinfoplugin_l.h"
 
 
 struct AB_BANKING {
@@ -40,6 +41,7 @@ struct AB_BANKING {
 
   AB_PROVIDER_LIST *providers;
   AB_IMEXPORTER_LIST *imexporters;
+  AB_BANKINFO_PLUGIN_LIST *bankInfoPlugins;
 
   AB_BANKING_MESSAGEBOX_FN messageBoxFn;
   AB_BANKING_INPUTBOX_FN inputBoxFn;

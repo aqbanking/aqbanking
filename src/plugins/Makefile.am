@@ -1,1 +1,1 @@
-SUBDIRS=parsers imexporters
+SUBDIRS=parsers imexporters bankinfo

@@ -15,6 +15,8 @@ noinst_HEADERS=\
  account_p.h \
  banking_l.h \
  banking_p.h \
+ bankinfoplugin_l.h \
+ bankinfoplugin_p.h \
  imexporter_l.h \
  imexporter_p.h \
  job_l.h \
@@ -28,6 +30,8 @@ iheader_HEADERS=\
  account.h \
  banking.h \
  banking_be.h \
+ bankinfoplugin.h \
+ bankinfoplugin_be.h \
  error.h \
  imexporter.h \
  imexporter_be.h \
@@ -38,6 +42,7 @@ iheader_HEADERS=\
 
 libaqbanking_la_SOURCES=\
  account.c \
+ bankinfoplugin.c \
  banking.c \
  imexporter.c \
  job.c \

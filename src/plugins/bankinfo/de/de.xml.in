@@ -1,0 +1,10 @@
+<plugin name="bankinfo" type="imexporter" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Bank info checker for Germany</short>
+  <descr>
+    This plugin handles German banks and accounts.
+  </descr>
+</plugin>
+
+

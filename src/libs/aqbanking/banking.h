@@ -247,6 +247,8 @@ typedef enum {
 #include <aqbanking/job.h>
 #include <aqbanking/provider.h>
 #include <aqbanking/imexporter.h>
+#include <aqbanking/bankinfoplugin.h>
+#include <aqbanking/bankinfo.h>
 
 
 #ifdef __cplusplus
@@ -1394,8 +1396,54 @@ AQBANKING_API
 void AB_Banking_SetSetTanStatusFn(AB_BANKING *ab,
                                   AB_BANKING_SETTANSTATUS_FN f);
 
-
 /*@}*/
+
+
+
+/** @name Getting Bank/Account Information
+ *
+ * Functions in this group retrieve information about credit institutes and
+ * allow checking of bank code/account id combinations.
+ * These functions load the appropriate checker plugins for selected
+ * countries.
+ */
+/*@{*/
+/**
+ * This functions retrieves information about a given bank. It loads the
+ * appropriate bank checker module and asks it for information about the given
+ * bank. The caller is responsible for freeing the object returned (if any)
+ * by calling @ref AB_BankingInfo_free.
+ * @param ab AqBanking main object
+ * @param country ISO country code ("de" for Germany, "at" for Austria etc)
+ * @param branchId optional branch id (not needed for "de")
+ * @param bankId bank id ("Bankleitzahl" for "de")
+ */
+AQBANKING_API 
+AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
+                                    const char *country,
+                                    const char *branchId,
+                                    const char *bankId);
+
+/**
+ * This function checks whether the given combination represents a valid
+ * account. It loads the appropriate bank checker module and lets it check
+ * the information.
+ * @param ab AqBanking main object
+ * @param country ISO country code ("de" for Germany, "at" for Austria etc)
+ * @param branchId optional branch id (not needed for "de")
+ * @param bankId bank id ("Bankleitzahl" for "de")
+ * @param account Id account id
+ */
+AQBANKING_API 
+AB_BANKINFO_CHECKRESULT
+AB_Banking_CheckAccount(AB_BANKING *ab,
+                        const char *country,
+                        const char *branchId,
+                        const char *bankId,
+                        const char *accountId);
+/*@}*/
+
+
 
 
 /*@}*/ /* defgroup Middle Level API */

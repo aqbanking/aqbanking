@@ -18,6 +18,8 @@
   be useless).
 - changed the path for application and backend data in jobs (so that both
   types cannot interfere with each other)
+- added support for account/bank checkers: the first country for which such
+  a checker is available is "de" (Germany) using KtoBlzCheck.
 
 
 2004/09/07: Martin Preuss<martin@libchipcard.de>

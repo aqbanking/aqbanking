@@ -15,5 +15,5 @@ dbio_la_SOURCES=\
  dbio.c
 
 dbio_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
-dbio_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+dbio_la_LDFLAGS=@STRIPALL@ -module -omit-version
 

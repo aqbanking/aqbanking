@@ -54,6 +54,10 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie){
   if (ie) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_IMEXPORTER");
     GWEN_INHERIT_FINI(AB_IMEXPORTER, ie);
+    if (ie->libLoader) {
+      GWEN_LibLoader_CloseLibrary(ie->libLoader);
+      GWEN_LibLoader_free(ie->libLoader);
+    }
     free(ie->name);
     GWEN_LIST_FINI(AB_IMEXPORTER, ie);
     GWEN_FREE_OBJECT(ie);

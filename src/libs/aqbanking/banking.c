@@ -17,6 +17,7 @@
 #include "banking_p.h"
 #include "provider_l.h"
 #include "imexporter_l.h"
+#include "bankinfoplugin_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -94,6 +95,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
   ab->imexporters=AB_ImExporter_List_new();
+  ab->bankInfoPlugins=AB_BankInfoPlugin_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
@@ -117,6 +119,7 @@ void AB_Banking_free(AB_BANKING *ab){
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
     AB_Provider_List_free(ab->providers);
+    AB_BankInfoPlugin_List_free(ab->bankInfoPlugins);
     AB_ImExporter_List_free(ab->imexporters);
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
@@ -1957,6 +1960,207 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
 
 
 
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
+                                                      const char *modname,
+                                                      const char *fname){
+  GWEN_LIBLOADER *ll;
+  AB_BANKINFO_PLUGIN *bip;
+  AB_BANKINFO_PLUGIN_FACTORY_FN fn;
+  void *p;
+  GWEN_BUFFER *nbuf;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load bankinfo plugin \"%s\" (%s)",
+              modname, fname);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
+  GWEN_Buffer_AppendString(nbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    GWEN_Buffer_free(nbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(nbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/bankinfoplugins");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  assert(db);
+
+  fn=(AB_BANKINFO_PLUGIN_FACTORY_FN)p;
+  assert(fn);
+  bip=fn(ab, db);
+  if (!bip) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error in plugin: No bankinfoplugin created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_BankInfoPlugin_SetLibLoader(bip, ll);
+
+  return bip;
+}
+
+
+
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
+                                                  const char *modname){
+  GWEN_LIBLOADER *ll;
+  AB_BANKINFO_PLUGIN *bip;
+  AB_BANKINFO_PLUGIN_FACTORY_FN fn;
+  void *p;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFER *mbuf;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
+
+  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
+                                         AQBANKING_PLUGINS
+                                         "/"
+                                         AB_BANKINFO_PLUGIN_FOLDER,
+                                         modname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load bankinfoplugin plugin \"%s\"", modname);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  GWEN_Buffer_AppendString(mbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(mbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/bankinfoplugins");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      modname);
+  assert(db);
+
+  fn=(AB_BANKINFO_PLUGIN_FACTORY_FN)p;
+  assert(fn);
+  bip=fn(ab, db);
+  if (!bip) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error in plugin: No bankinfoplugin created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_BankInfoPlugin_SetLibLoader(bip, ll);
+
+  return bip;
+}
+
+
+
+AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab,
+                                                 const char *country) {
+  AB_BANKINFO_PLUGIN *bip;
+
+  assert(ab);
+  assert(country);
+
+  bip=AB_BankInfoPlugin_List_First(ab->bankInfoPlugins);
+  while(bip) {
+    if (strcasecmp(AB_BankInfoPlugin_GetCountry(bip), country)==0)
+      return bip;
+    bip=AB_BankInfoPlugin_List_Next(bip);
+  }
+
+  bip=AB_Banking_LoadBankInfoPlugin(ab, country);
+  if (!bip) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "BankInfo plugin for country \"%s\" not found",
+              country);
+    return 0;
+  }
+  AB_BankInfoPlugin_List_Add(bip, ab->bankInfoPlugins);
+  return bip;
+}
+
+
+
+AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
+                                    const char *country,
+                                    const char *branchId,
+                                    const char *bankId){
+  AB_BANKINFO_PLUGIN *bip;
+
+  assert(ab);
+  assert(country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  if (!bip) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "BankInfo plugin for country \"%s\" not found",
+             country);
+    return 0;
+  }
+
+  return AB_BankInfoPlugin_GetBankInfo(bip, branchId, bankId);
+}
+
+
+
+AB_BANKINFO_CHECKRESULT
+AB_Banking_CheckAccount(AB_BANKING *ab,
+                        const char *country,
+                        const char *branchId,
+                        const char *bankId,
+                        const char *accountId) {
+  AB_BANKINFO_PLUGIN *bip;
+
+  assert(ab);
+  assert(country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  if (!bip) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "BankInfo plugin for country \"%s\" not found",
+             country);
+    return AB_BankInfoCheckResult_UnknownResult;
+  }
+
+  return AB_BankInfoPlugin_CheckAccount(bip, branchId, bankId, accountId);
+}
+
+
+
 int AB_Banking_GetWizardPath(AB_BANKING *ab,
                              const char *backend,
                              GWEN_BUFFER *pbuf){
@@ -3057,12 +3261,14 @@ int AB_Banking_GetPin(AB_BANKING *ab,
         /* got a working pin */
         memmove(buffer, AB_Pin_GetValue(p), l+1);
         /* a confirmed pin is always ok */
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Confirmed PIN");
         AB_Pin_SetStatus(p, "ok");
         break;
       }
       AB_Banking__CheckBadPin(ab, p);
       st=AB_Pin_GetStatus(p);
       assert(st);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Pin status: %s", st);
       if (strcasecmp(st, "bad")!=0) {
         /* got a working pin */
         memmove(buffer, AB_Pin_GetValue(p), l+1);
@@ -3175,7 +3381,10 @@ int AB_Banking_GetTan(AB_BANKING *ab,
 int AB_Banking_SetTanStatus(AB_BANKING *ab,
                             const char *token,
                             const char *tan,
-			    AB_BANKING_TANSTATUS status){
+                            AB_BANKING_TANSTATUS status){
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Setting status of TAN \"%s\" to %d",
+             tan, status);
   assert(ab);
   if (ab->setTanStatusFn) {
     return ab->setTanStatusFn(ab, token, tan, status);
@@ -3297,9 +3506,12 @@ int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p) {
 
   st=AB_Pin_GetStatus(p);
   if (st) {
-    if (strcasecmp(st, "ok")==0)
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Pin status: %s", st);
+    if (strcasecmp(st, "ok")==0) {
       /* pin is explicitly marked as "ok", assume it is */
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Pin is marked \"ok\"");
       return 0;
+    }
   }
   dbPins=GWEN_DB_GetGroup(ab->data,
                           GWEN_DB_FLAGS_DEFAULT,
@@ -3317,9 +3529,12 @@ int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p) {
     hash=AB_Pin_GetHash(p);
     assert(hash);
   } /* if no hash */
-  if (!st)
+  if (!st) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No status, assuming unknown");
     st="unknown";
+  }
   st=GWEN_DB_GetCharValue(dbPins, hash, 0, st);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Saved pin status: %s", st);
   if (strcasecmp(st, "bad")==0) {
     AB_Pin_SetStatus(p, "bad");
     return AB_ERROR_BAD_DATA;

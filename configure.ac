@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=8
+AQBANKING_VERSION_BUILD=9
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -132,6 +132,24 @@ all_includes="$all_includes $gwenhywfar_includes"
 
 
 ###-------------------------------------------------------------------------
+# KtoBlzCheck
+
+have_ktoblzcheck="yes"
+AC_CHECK_LIB(ktoblzcheck, AccountNumberCheck_new,
+             [], [have_ktoblzcheck="no"])
+AC_CHECK_HEADERS(ktoblzcheck.h, [], [have_ktoblzcheck="no"])
+if test "$have_ktoblzcheck" != "yes"; then
+  ktoblzcheck_libs=""
+else
+  ktoblzcheck_libs="-lktoblzcheck"
+  AC_DEFINE_UNQUOTED(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
+fi
+AC_SUBST(ktoblzcheck_libs)
+
+AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
+
+
+###-------------------------------------------------------------------------
 dnl OS dependant settings
 
 AQ_CHECK_OS
@@ -155,9 +173,11 @@ case "$OS_TYPE" in
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
-###-------------------------------------------------------------------------
 
+
+###-------------------------------------------------------------------------
 # Debug arguments for compilation
+
 ACX_COMPILE_WARN()
 
 ###-------------------------------------------------------------------------
@@ -327,6 +347,9 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile
   src/plugins/Makefile
+  src/plugins/bankinfo/Makefile
+  src/plugins/bankinfo/de/Makefile
+  src/plugins/bankinfo/de/de.xml
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dbio/Makefile
   src/plugins/imexporters/dbio/dbio.xml

@@ -2,7 +2,7 @@ INCLUDES=-I${top_srcdir} @all_includes@
 
 noinst_LTLIBRARIES=libtypes.la
 
-typefiles=transaction.xml pin.xml
+typefiles=transaction.xml pin.xml bankinfo.xml
 
 EXTRA_DIST=$(typefiles)
 
@@ -10,6 +10,8 @@ noinst_HEADERS=\
   accstatus_p.h \
   accstatus_l.h \
   balance_p.h \
+  bankinfo_l.h \
+  bankinfo_p.h \
   pin_l.h \
   pin_p.h \
   transaction_l.h \
@@ -21,12 +23,14 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
   accstatus.h \
   balance.h \
+  bankinfo.h \
   transaction.h \
   value.h
 
 libtypes_la_SOURCES=\
   accstatus.c \
   balance.c \
+  bankinfo.c \
   pin.c \
   transaction.c \
   value.c

@@ -17,6 +17,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/bankinfoplugin_be.h>
 
 
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
@@ -47,6 +48,23 @@ AB_IMEXPORTER *AB_Banking_LoadImExporterPluginFile(AB_BANKING *ab,
                                                    const char *fname);
 AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
                                                const char *modname);
+/*@}*/
+
+
+
+/** @name Functions For Loading BankInfo Plugins
+ *
+ */
+/*@{*/
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
+                                                      const char *modname,
+                                                      const char *fname);
+
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
+                                                  const char *modname);
+
+AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab,
+                                                 const char *country);
 /*@}*/
 
 

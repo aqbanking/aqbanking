@@ -1,0 +1,23 @@
+<types>
+  <type id="AB_BANKINFO" 
+        prefix="AB_BankInfo" 
+        class="BankInfo"
+        access="public"
+        filename="bankinfo"
+        list="lib"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >aqbanking/error.h</header>
+    </headers>
+    
+    <elem name="country" type="char" ptr="1" />
+    <elem name="branchId" type="char" ptr="1" />
+    <elem name="bankId" type="char" ptr="1" />
+    <elem name="bankName" type="char" ptr="1" />
+    <elem name="location" type="char" ptr="1" />
+  </type>
+  
+  
+  
+</types>
