@@ -3,3 +3,4 @@
 *.lib
 dlldir
 ressource.rc
+*.exp
