@@ -71,19 +71,19 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_fromDb(GWEN_DB_NODE *db){
     as->time=GWEN_Time_fromSeconds(i);
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankLine");
   if (tdb)
-    as->bankLine=AB_Value_FromDb(tdb);
+    as->bankLine=AB_Value_fromDb(tdb);
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "disposable");
   if (tdb)
-    as->disposable=AB_Value_FromDb(tdb);
+    as->disposable=AB_Value_fromDb(tdb);
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "disposed");
   if (tdb)
-    as->disposed=AB_Value_FromDb(tdb);
+    as->disposed=AB_Value_fromDb(tdb);
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bookedBalance");
   if (tdb)
-    as->bookedBalance=AB_Balance_FromDb(tdb);
+    as->bookedBalance=AB_Balance_fromDb(tdb);
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "notedBalance");
   if (tdb)
-    as->notedBalance=AB_Balance_FromDb(tdb);
+    as->notedBalance=AB_Balance_fromDb(tdb);
 
   return as;
 }
@@ -104,33 +104,33 @@ int AB_AccountStatus_toDb(const AB_ACCOUNT_STATUS *as, GWEN_DB_NODE *db){
   if (as->bankLine) {
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankLine");
     assert(tdb);
-    if (AB_Value_ToDb(as->bankLine, tdb))
+    if (AB_Value_toDb(as->bankLine, tdb))
       return -1;
   }
 
   if (as->disposable) {
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "disposable");
     assert(tdb);
-    if (AB_Value_ToDb(as->disposable, tdb))
+    if (AB_Value_toDb(as->disposable, tdb))
       return -1;
   }
   if (as->disposed) {
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "disposed");
     assert(tdb);
-    if (AB_Value_ToDb(as->disposed, tdb))
+    if (AB_Value_toDb(as->disposed, tdb))
       return -1;
   }
 
   if (as->bookedBalance) {
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bookedBalance");
     assert(tdb);
-    if (AB_Balance_ToDb(as->bookedBalance, tdb))
+    if (AB_Balance_toDb(as->bookedBalance, tdb))
       return -1;
   }
   if (as->notedBalance) {
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "notedBalance");
     assert(tdb);
-    if (AB_Balance_ToDb(as->notedBalance, tdb))
+    if (AB_Balance_toDb(as->notedBalance, tdb))
       return -1;
   }
 

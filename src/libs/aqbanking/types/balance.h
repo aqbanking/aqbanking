@@ -26,9 +26,9 @@ typedef struct AB_BALANCE AB_BALANCE;
 AQBANKING_API 
 AB_BALANCE *AB_Balance_new(AB_VALUE *v, GWEN_TIME *t);
 AQBANKING_API 
-AB_BALANCE *AB_Balance_FromDb(GWEN_DB_NODE *db);
+AB_BALANCE *AB_Balance_fromDb(GWEN_DB_NODE *db);
 AQBANKING_API 
-int AB_Balance_ToDb(const AB_BALANCE *b, GWEN_DB_NODE *db);
+int AB_Balance_toDb(const AB_BALANCE *b, GWEN_DB_NODE *db);
 
 AQBANKING_API 
 AB_BALANCE *AB_Balance_dup(const AB_BALANCE *b);

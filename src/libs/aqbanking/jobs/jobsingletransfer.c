@@ -137,13 +137,15 @@ void AB_JobSingleTransfer_SetTextKeys(AB_JOB *j, const int *tk){
   jd->textKeys=0;
 
   if (tk) {
-    for (i=0; ; i++)
-      if (*tk==-1)
-        break;
-
-    jd->textKeys=(int*)malloc(i*(sizeof(int)));
-    assert(jd->textKeys);
-    memmove(jd->textKeys, tk, i*(sizeof(int)));
+    for (i=0; ; i++) {
+      if (tk[i]==-1)
+	break;
+    }
+    if (i) {
+      jd->textKeys=(int*)malloc((i+1)*(sizeof(int)));
+      assert(jd->textKeys);
+      memmove(jd->textKeys, tk, (i+1)*(sizeof(int)));
+    }
   }
 }
 

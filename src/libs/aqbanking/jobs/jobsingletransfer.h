@@ -18,6 +18,9 @@
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 AB_JOB *AB_JobSingleTransfer_new(AB_ACCOUNT *a);
@@ -63,6 +66,11 @@ int AB_JobSingleTransfer_GetMaxPurposeLines(const AB_JOB *j);
 AQBANKING_API 
 const int *AB_JobSingleTransfer_GetTextKeys(const AB_JOB *j);
 /*@}*/
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

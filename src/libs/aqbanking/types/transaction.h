@@ -117,6 +117,8 @@ const GWEN_STRINGLIST*
   AB_Transaction_GetRemoteName(const AB_TRANSACTION *t);
 AQBANKING_API 
 void AB_Transaction_AddRemoteName(AB_TRANSACTION *t, const char *s);
+AQBANKING_API 
+void AB_Transaction_ClearRemoteName(AB_TRANSACTION *t);
 /*@}*/
 
 
@@ -191,6 +193,8 @@ AQBANKING_API
 const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *t);
 AQBANKING_API 
 void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s);
+AQBANKING_API 
+void AB_Transaction_ClearPurpose(AB_TRANSACTION *t);
 /*@}*/
 
 

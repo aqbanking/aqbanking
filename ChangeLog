@@ -2,6 +2,11 @@
 2004/08/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added currency to AB_ACCOUNT
+- added functions to transaction which allows to clear purpose and remote
+  name lists
+- removed API-inconsistencies: since all *_fromSomething" functions basically
+  are constructors they start with a lowercase latter after the prefixes
+  (like in AB_Value_fromString() as in AB_Value_new()).
 
 
 2004-08-21  Christian Stimming  <stimming@tuhh.de>

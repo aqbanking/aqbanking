@@ -51,7 +51,7 @@ AB_BALANCE *AB_Balance_dup(const AB_BALANCE *b){
 
 
 
-AB_BALANCE *AB_Balance_FromDb(GWEN_DB_NODE *db){
+AB_BALANCE *AB_Balance_fromDb(GWEN_DB_NODE *db){
   AB_BALANCE *b;
   GWEN_TIME *t;
   AB_VALUE *v;
@@ -60,7 +60,7 @@ AB_BALANCE *AB_Balance_FromDb(GWEN_DB_NODE *db){
 
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
   if (tdb)
-    v=AB_Value_FromDb(tdb);
+    v=AB_Value_fromDb(tdb);
   else
     v=0;
   i=GWEN_DB_GetIntValue(db, "time", 0, 0);
@@ -75,13 +75,13 @@ AB_BALANCE *AB_Balance_FromDb(GWEN_DB_NODE *db){
 
 
 
-int AB_Balance_ToDb(const AB_BALANCE *b, GWEN_DB_NODE *db){
+int AB_Balance_toDb(const AB_BALANCE *b, GWEN_DB_NODE *db){
   if (b->value) {
     GWEN_DB_NODE *tdb;
 
     tdb=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
     assert(tdb);
-    if (AB_Value_ToDb(b->value, tdb))
+    if (AB_Value_toDb(b->value, tdb))
       return -1;
   }
   else {

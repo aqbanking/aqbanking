@@ -58,7 +58,7 @@ AB_VALUE *AB_Value_dup(const AB_VALUE *v){
 
 
 
-AB_VALUE *AB_Value_FromDb(GWEN_DB_NODE *db){
+AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db){
   AB_VALUE *vc;
   const char *p;
   GWEN_BUFFER *buf;
@@ -71,14 +71,14 @@ AB_VALUE *AB_Value_FromDb(GWEN_DB_NODE *db){
   GWEN_Buffer_AppendByte(buf, ':');
   p=GWEN_DB_GetCharValue(db, "currency", 0, "EUR");
   GWEN_Buffer_AppendString(buf, p);
-  vc=AB_Value_FromString(GWEN_Buffer_GetStart(buf));
+  vc=AB_Value_fromString(GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_free(buf);
   return vc;
 }
 
 
 
-int AB_Value_ToDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
+int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
   GWEN_BUFFER *buf;
 
   buf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -97,7 +97,7 @@ int AB_Value_ToDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
 
 
 
-AB_VALUE *AB_Value_FromString(const char *s){
+AB_VALUE *AB_Value_fromString(const char *s){
   AB_VALUE *v;
 
   assert(s);

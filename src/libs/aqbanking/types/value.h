@@ -28,11 +28,11 @@ AB_VALUE *AB_Value_new(double value, const char *currency);
 AQBANKING_API 
 AB_VALUE *AB_Value_dup(const AB_VALUE *v);
 AQBANKING_API 
-AB_VALUE *AB_Value_FromString(const char *s);
+AB_VALUE *AB_Value_fromString(const char *s);
 AQBANKING_API 
-AB_VALUE *AB_Value_FromDb(GWEN_DB_NODE *db);
+AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db);
 AQBANKING_API 
-int AB_Value_ToDb(const AB_VALUE *v, GWEN_DB_NODE *db);
+int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db);
 
 AQBANKING_API 
 void AB_Value_free(AB_VALUE *v);

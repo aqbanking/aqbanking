@@ -296,6 +296,13 @@ void AB_Transaction_AddRemoteName(AB_TRANSACTION *t, const char *s){
 
 
 
+void AB_Transaction_ClearRemoteName(AB_TRANSACTION *t){
+  assert(t);
+  GWEN_StringList_Clear(t->remoteOwnerName);
+}
+
+
+
 const GWEN_TIME *AB_GetTransaction_GetValutaDate(const AB_TRANSACTION *t){
   assert(t);
   return t->valutaDate;
@@ -467,6 +474,13 @@ void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s){
 
 
 
+void AB_Transaction_ClearPurpose(AB_TRANSACTION *t){
+  assert(t);
+  GWEN_StringList_Clear(t->purpose);
+}
+
+
+
 int AB_Transaction_GetTextKey(const AB_TRANSACTION *t){
   assert(t);
   return t->textKey;
@@ -563,7 +577,7 @@ int AB_Transaction_toDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
 
     dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
     assert(dbT);
-    if (AB_Value_ToDb(t->value, dbT)) {
+    if (AB_Value_toDb(t->value, dbT)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error storing value");
       return -1;
     }
@@ -677,7 +691,7 @@ AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
   if (dbT)
     AB_Transaction_SetValue(t,
-                            AB_Value_FromDb(dbT));
+                            AB_Value_fromDb(dbT));
 
   AB_Transaction_SetTransactionKey(t,
                                    GWEN_DB_GetCharValue(db,
