@@ -85,13 +85,17 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          GWEN_BUFFEREDIO *bio,
                          GWEN_DB_NODE *dbProfile);
 /**
- * This is just a conveniance function for @ref AB_ImExporter_Import.
+ * This is just a convenience function for @ref AB_ImExporter_Import.
  */
 AQBANKING_API
 int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              const char *fname,
                              GWEN_DB_NODE *dbProfile);
+
+AQBANKING_API
+int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
+			    const char *fname);
 
 /*@}*/
 

@@ -83,6 +83,19 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 
 
 
+int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
+                            const char *fname){
+  assert(ie);
+  assert(fname);
+
+  if (ie->checkFileFn)
+    return ie->checkFileFn(ie, fname);
+  else
+    return AB_ERROR_NOT_SUPPORTED;
+}
+
+
+
 int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              const char *fname,
@@ -117,6 +130,14 @@ void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
                                AB_IMEXPORTER_IMPORT_FN f){
   assert(ie);
   ie->importFn=f;
+}
+
+
+
+void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
+                                  AB_IMEXPORTER_CHECKFILE_FN f){
+  assert(ie);
+  ie->checkFileFn=f;
 }
 
 

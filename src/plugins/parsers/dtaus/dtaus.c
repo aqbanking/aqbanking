@@ -33,6 +33,7 @@ GWEN_DBIO *dtaus_factory() {
   dbio=GWEN_DBIO_new("dtaus", "Imports and exports DTAUS data");
   GWEN_DBIO_SetImportFn(dbio, AHB_DTAUS__Import);
   GWEN_DBIO_SetExportFn(dbio, AHB_DTAUS__Export);
+  GWEN_DBIO_SetCheckFileFn(dbio, AHB_DTAUS__CheckFile);
   return dbio;
 }
 

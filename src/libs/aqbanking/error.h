@@ -49,6 +49,7 @@
 #define AB_ERROR_NOT_INIT        (-14)
 #define AB_ERROR_SECURITY        (-15)
 #define AB_ERROR_BAD_DATA        (-16)
+#define AB_ERROR_UNKNOWN         (-17)
 /*@}*/
 
 

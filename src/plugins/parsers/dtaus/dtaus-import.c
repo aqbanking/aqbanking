@@ -18,13 +18,19 @@
 #include "dtaus_p.h"
 #include "dtaus-import_p.h"
 #include <aqbanking/banking.h>
+
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 
@@ -973,6 +979,90 @@ int AHB_DTAUS__Import(GWEN_DBIO *dbio,
 
   GWEN_Buffer_free(src);
   return rv==-1;
+}
+
+
+
+
+GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
+                                                      unsigned int pos) {
+  int sn;
+  GWEN_DB_NODE *dcfg;
+  int rv;
+
+  /* read A set */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Checking for A set (pos=%d)",
+           pos);
+  GWEN_Buffer_SetPos(src, pos+4);
+  sn=GWEN_Buffer_PeekByte(src);
+  if (sn==-1) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few data");
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  if (sn=='A') {
+    /* create template */
+    dcfg=GWEN_DB_Group_new("dcfg");
+    rv=AHB_DTAUS__ParseSetA(src, pos, dcfg);
+    if (rv==-1) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in A set");
+      GWEN_DB_Group_free(dcfg);
+      return GWEN_DBIO_CheckFileResultNotOk;
+    }
+    pos+=rv;
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "DTAUS record does not start with an A set");
+    GWEN_DB_Group_free(dcfg);
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  GWEN_DB_Group_free(dcfg);
+  return GWEN_DBIO_CheckFileResultOk;
+}
+
+
+
+GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio,
+                                                const char *fname) {
+  GWEN_BUFFER *src;
+  GWEN_DBIO_CHECKFILE_RESULT rv;
+  unsigned int pos;
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+
+  assert(dbio);
+  assert(fname);
+
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    /* error */
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "open(%s): %s", fname, strerror(errno));
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  src=GWEN_Buffer_new(0, 1024, 0, 1);
+  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_BIO);
+  GWEN_Buffer_SetSourceBIO(src, bio, 0);
+
+  pos=0;
+  if (GWEN_BufferedIO_CheckEOF(bio)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "End of stream reached");
+    GWEN_BufferedIO_Close(bio);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(src);
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  rv=AHB_DTAUS__ReallyCheckFile(src, pos);
+
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  GWEN_Buffer_free(src);
+
+  return rv;
 }
 
 

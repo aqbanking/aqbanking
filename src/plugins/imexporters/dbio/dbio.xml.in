@@ -1,9 +1,8 @@
-<plugin name="dbio" type="imexporter" >
+<plugin name="dbio" type="none" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>DTAUS, SWIFT etc</short>
   <descr>
-    This plugin imports and exports DTAUS, SWIFT MT940 and MT942 data.
+    This plugin has been removed (it is now split into DTAUS and SWIFT)
   </descr>
 </plugin>
 

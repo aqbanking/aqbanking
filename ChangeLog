@@ -1,7 +1,22 @@
+
+
+2004/09/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- ImExporter API: added function to make an importer plugin check whether
+  it supports a given file as data source
+- replaced im/exporter DBIO by DTAUS and SWIFT
+
+
 2004-09-10   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Add ACX_WINDOWS_PATHS. Add dll rules all over the
 	place.
+
+
+===========================================================================
+MARK: released AqBanking - 0.9.3 (2004/09/10)
+===========================================================================
+
 
 2004/09/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

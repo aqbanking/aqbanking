@@ -138,6 +138,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
     return pro->finiFn(pro, dbData);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
+  pro->isInit=0;
   return AB_ERROR_NOFN;
 }
 

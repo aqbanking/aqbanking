@@ -32,11 +32,21 @@ AB_JOB *AB_JobSingleTransfer_new(AB_ACCOUNT *a);
  */
 /*@{*/
 /**
- *
+ * This function sets the transfer to be performed.
+ * Please note that the backend might later replace the transaction given
+ * here with a validated version (upon execution of the job).
+ * So if you want to be sure that you have the recent version of the
+ * transaction you should call @ref AB_JobSingleTransfer_GetTransaction.
  */
 AQBANKING_API 
 int AB_JobSingleTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
 
+/**
+ * Returns the currently stored transaction for this job. After the job has
+ * been executed by the backend the transaction returned will very likely
+ * be a pointer to the validated replacement for the initially given
+ * transaction.
+ */
 AQBANKING_API 
 const AB_TRANSACTION *AB_JobSingleTransfer_GetTransaction(const AB_JOB *j);
 /*@}*/

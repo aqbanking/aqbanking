@@ -15,8 +15,8 @@ AC_CONFIG_HEADER([config.h])
 #
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
-AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=9
+AQBANKING_VERSION_PATCHLEVEL=3
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -126,7 +126,7 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(0,9,15,5)
+AC_GWENHYWFAR(1,0,1,1)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -354,11 +354,17 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dbio/Makefile
   src/plugins/imexporters/dbio/dbio.xml
-  src/plugins/imexporters/dbio/ressource.rc
-  src/plugins/imexporters/dbio/profiles/Makefile
-  src/plugins/imexporters/dbio/profiles/dtaus.conf
-  src/plugins/imexporters/dbio/profiles/swiftmt940.conf
-  src/plugins/imexporters/dbio/profiles/swiftmt942.conf
+  src/plugins/imexporters/dtaus/Makefile
+  src/plugins/imexporters/dtaus/dtaus.xml
+  src/plugins/imexporters/dtaus/ressource.rc
+  src/plugins/imexporters/dtaus/profiles/Makefile
+  src/plugins/imexporters/dtaus/profiles/default.conf
+  src/plugins/imexporters/swift/Makefile
+  src/plugins/imexporters/swift/swift.xml
+  src/plugins/imexporters/swift/ressource.rc
+  src/plugins/imexporters/swift/profiles/Makefile
+  src/plugins/imexporters/swift/profiles/swiftmt940.conf
+  src/plugins/imexporters/swift/profiles/swiftmt942.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml

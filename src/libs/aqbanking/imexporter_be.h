@@ -47,6 +47,14 @@ typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
                                        GWEN_BUFFEREDIO *bio,
                                        GWEN_DB_NODE *params);
+
+/**
+ * Checks whether the given file is possibly supported by the plugin.
+ */
+typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
+                                          const char *fname);
+
+
 /*@}*/
 
 
@@ -59,6 +67,11 @@ typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
 AQBANKING_API 
 void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
                                AB_IMEXPORTER_IMPORT_FN f);
+
+AQBANKING_API
+void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
+                                  AB_IMEXPORTER_CHECKFILE_FN f);
+
 /*@}*/
 
 

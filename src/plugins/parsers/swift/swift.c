@@ -21,11 +21,15 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 GWEN_LIST_FUNCTIONS(AHB_SWIFT_TAG, AHB_SWIFT_Tag);
@@ -159,15 +163,18 @@ int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
 
 
 int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
-                           AHB_SWIFT_TAG_LIST *tl) {
+                           AHB_SWIFT_TAG_LIST *tl,
+                           unsigned int maxTags) {
   GWEN_ERRORCODE err;
   GWEN_BUFFER *lbuf;
   char buffer[AHB_SWIFT_MAXLINELEN];
   char *p;
   char *p2;
   AHB_SWIFT_TAG *tag;
+  int tagCount;
 
   lbuf=GWEN_Buffer_new(0, AHB_SWIFT_MAXLINELEN, 0, 1);
+  tagCount=0;
 
   /* read first line, should be empty */
   for (;;) {
@@ -216,7 +223,8 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
         /* eof met */
         if (GWEN_Buffer_GetUsedBytes(lbuf)==0) {
           /* eof met and buffer empty, finished */
-          DBG_INFO(AQBANKING_LOGDOMAIN, "SWIFT document not terminated by \'-\'");
+          DBG_INFO(AQBANKING_LOGDOMAIN,
+                   "SWIFT document not terminated by \'-\'");
         }
         GWEN_Buffer_free(lbuf);
         return 0;
@@ -225,7 +233,8 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
       /* read next line */
       err=AHB_SWIFT_ReadLine(bio, buffer, sizeof(buffer)-1);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading from stream");
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Error reading from stream");
         GWEN_Buffer_free(lbuf);
         return -1;
       }
@@ -245,7 +254,8 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     p=GWEN_Buffer_GetStart(lbuf);
 
     if (*p!=':') {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in SWIFT data: no tag name (data follows)");
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Error in SWIFT data: no tag name (data follows)");
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
                            GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
       GWEN_Buffer_free(lbuf);
@@ -255,7 +265,8 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     p2=p;
     while(*p2 && *p2!=':') p2++;
     if (*p2!=':') {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in SWIFT data: incomplete tag name (data follows)");
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Error in SWIFT data: incomplete tag name (data follows)");
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
                            GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
       GWEN_Buffer_free(lbuf);
@@ -265,9 +276,17 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     p2++;
 
     /* create tag */
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating tag \"%s\" (%s)", p, p2);
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+              "Creating tag \"%s\" (%s)", p, p2);
     tag=AHB_SWIFT_Tag_new(p, p2);
     AHB_SWIFT_Tag_List_Add(tag, tl);
+    tagCount++;
+    if (maxTags && tagCount>=maxTags) {
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+               "Read maximum number of tags (%d)", tagCount);
+      GWEN_Buffer_free(lbuf);
+      return 0;
+    }
 
   } /* for */
 
@@ -289,7 +308,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   p=GWEN_DB_GetCharValue(cfg, "type", 0, "mt940");
   if (strcasecmp(p, "mt940")!=0 &&
       strcasecmp(p, "mt942")!=0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Type \"%s\" not supported by plugin \"%s\"",
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Type \"%s\" not supported by plugin \"%s\"",
               p,
               GWEN_DBIO_GetName(dbio));
     return -1;
@@ -299,7 +319,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   /* fill tag list */
   GWEN_WaitCallback_Log(0, "SWIFT: Reading complete stream");
   for(;;) {
-    rv=AHB_SWIFT_ReadDocument(bio, tl);
+    rv=AHB_SWIFT_ReadDocument(bio, tl, 0);
     if (rv==-1) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
       AHB_SWIFT_Tag_List_free(tl);
@@ -337,12 +357,61 @@ int AHB_SWIFT_Export(GWEN_DBIO *dbio,
 
 
 
+GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
+                                               const char *fname) {
+  int fd;
+  GWEN_BUFFEREDIO *bio;
+  AHB_SWIFT_TAG_LIST *tl;
+  int rv;
+  int cnt;
+
+  assert(dbio);
+  assert(fname);
+
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    /* error */
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "open(%s): %s", fname, strerror(errno));
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  tl=AHB_SWIFT_Tag_List_new();
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=AHB_SWIFT_ReadDocument(bio, tl, 1);
+  cnt=AHB_SWIFT_Tag_List_GetCount(tl);
+  AHB_SWIFT_Tag_List_free(tl);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (rv==0) {
+    if (cnt==0) {
+      /* unknown but rather unlikely that this file is supported */
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+               "Unknown whether file \"%s\" is supported by this plugin",
+               fname);
+      return GWEN_DBIO_CheckFileResultUnknown;
+    }
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "File \"%s\" is supported by this plugin",
+             fname);
+    return GWEN_DBIO_CheckFileResultOk;
+  }
+  /* definately not supported if an error occurred */
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "File \"%s\" is not supported by this plugin",
+           fname);
+  return GWEN_DBIO_CheckFileResultNotOk;
+}
+
+
+
 GWEN_DBIO *swift_factory() {
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("swift", "Imports and exports SWIFT data");
   GWEN_DBIO_SetImportFn(dbio, AHB_SWIFT_Import);
   GWEN_DBIO_SetExportFn(dbio, AHB_SWIFT_Export);
+  GWEN_DBIO_SetCheckFileFn(dbio, AHB_SWIFT_CheckFile);
   return dbio;
 }
 

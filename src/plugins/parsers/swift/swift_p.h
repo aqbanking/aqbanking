@@ -44,7 +44,9 @@ int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
                        char *buffer,
                        unsigned int s);
 
-int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio, AHB_SWIFT_TAG_LIST *tl);
+int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
+                           AHB_SWIFT_TAG_LIST *tl,
+                           unsigned int maxTags);
 
 
 
@@ -59,6 +61,9 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 		     GWEN_TYPE_UINT32 flags,
 		     GWEN_DB_NODE *data,
 		     GWEN_DB_NODE *cfg);
+
+GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
+                                               const char *fname);
 
 
 

@@ -37,6 +37,7 @@ struct AB_IMEXPORTER {
 
   GWEN_LIBLOADER *libLoader;
   AB_IMEXPORTER_IMPORT_FN importFn;
+  AB_IMEXPORTER_CHECKFILE_FN checkFileFn;
 };
 
 
