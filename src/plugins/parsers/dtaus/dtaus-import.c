@@ -495,10 +495,11 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
         v[9]=',';
         memmove(v+10, GWEN_Buffer_GetStart(tmp)+9, 2);
         v[12]=0;
-        if (v[11]=='0')
-          v[11]=0;
-        if (v[10]=='0')
-          v[10]=0;
+        if (v[11]=='0') {
+	  v[11]=0;
+	  if (v[10]=='0')
+	    v[10]=0;
+	}
 
         p=v;
         for (i=0; i<8; i++) {

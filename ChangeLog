@@ -1,4 +1,9 @@
 
+2005/03/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in dtaus-import.c (reported by Andreas Degert)
+
+
 2005/03/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AB_Banking_GetAccountByAlias() now no longer calls AB_Banking_MsgBox()
