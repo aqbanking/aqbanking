@@ -4,9 +4,11 @@ INCLUDES=-I${top_srcdir} -Itypes -Ijobs @all_includes@
 
 lib_LTLIBRARIES=libaqbanking.la
 
-# FIXME: Why don't all these go into config.h? It is necessary to
-# include @DEFS@ here because -DHAVE_CONFIG_H is missing otherwise.
+# We define those here because within the configure script the variables 
+# $(datadir) et al are not available.
+localedir=$(datadir)/locale
 DEFS= @DEFS@ \
+ -DLOCALEDIR=\"$(localedir)\" \
  -DAQBANKING_PLUGINS=\"@aqbanking_plugins@\" \
  -DDATADIR=\"$(aqbanking_data)\"
 
@@ -17,6 +19,7 @@ noinst_HEADERS=\
  banking_p.h \
  bankinfoplugin_l.h \
  bankinfoplugin_p.h \
+ i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
  job_l.h \
@@ -54,6 +57,16 @@ libaqbanking_la_LIBADD=@gwenhywfar_libs@ \
 
 libaqbanking_la_LDFLAGS=\
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
+
+
+sources:
+	for f in $(libaqbanking_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
 
 # dll stuff
 if IS_WINDOWS

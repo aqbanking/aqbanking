@@ -18,6 +18,7 @@
 #include "provider_l.h"
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
+#include "i18n_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -49,7 +50,6 @@
 # define DIRSEP "/"
 #endif
 
-#define I18N(txt) txt
 
 
 GWEN_INHERIT_FUNCTIONS(AB_BANKING)
@@ -882,6 +882,18 @@ int AB_Banking_Init(AB_BANKING *ab) {
                      GWEN_LoggerTypeConsole,
                      GWEN_LoggerFacilityUser);
   }
+
+#ifdef HAVE_I18N
+  setlocale(LC_ALL,"");
+  s=bindtextdomain(PACKAGE,  LOCALEDIR);
+  if (s) {
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Locale bound.");
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error binding locale");
+  }
+#endif
 
   /* create bankinfo plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");

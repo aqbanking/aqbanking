@@ -27,6 +27,12 @@ ofx_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking -lofx
 ofx_la_LDFLAGS=@STRIPALL@ \
   -module -omit-version
 
+sources:
+	for f in $(ofx_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+
+
 # dll stuff
 if IS_WINDOWS
 

@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -186,6 +186,26 @@ case "$OS_TYPE" in
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+
+
+###-------------------------------------------------------------------------
+#
+# check for I18N
+#
+HAVE_I18N="yes"
+AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
+if test "$XGETTEXT" != "missing"; then
+  AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+  AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
+else
+  HAVE_I18N="no"
+  AC_MSG_WARN([xgettext is missing. Locale suport is disabled.])
+fi
+AC_SUBST(HAVE_I18N)
+if test "$HAVE_I18N" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
+fi
+AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
 
 
 
@@ -403,6 +423,7 @@ AC_CONFIG_FILES([
   src/plugins/parsers/swift/swift.xml
   src/plugins/parsers/swift/ressource.rc
   src/test/Makefile
+  po/Makefile
   Doxyfile
   Makefile
   aqbanking-config.in

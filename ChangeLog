@@ -8,6 +8,7 @@
 - now even less verbous about entered PIN
 - fixed a bug in pin management (was allowing a bad pin to be entered in a
   second try)
+- added I18N stuff, added German translation
 
 
 ===========================================================================

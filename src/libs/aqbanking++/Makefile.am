@@ -17,3 +17,7 @@ libaqbankingpp_la_SOURCES=\
 
 libaqbankingpp_la_LIBADD=@gwenhywfar_libs@ -L../aqbanking -laqbanking
 
+sources:
+	for f in $(libaqbankingpp_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done

@@ -33,3 +33,10 @@ libjobs_la_SOURCES=\
  jobsingletransfer.c \
  jobsingledebitnote.c
 
+
+sources:
+	for f in $(libjobs_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+
+

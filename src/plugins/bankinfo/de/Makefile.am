@@ -18,3 +18,8 @@ de_la_SOURCES=\
 de_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking @ktoblzcheck_libs@
 de_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
+
+sources:
+	for f in $(de_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done

@@ -22,6 +22,12 @@ openhbci1_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
 openhbci1_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 
+sources:
+	for f in $(openhbci1_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+
+
 # dll stuff
 if IS_WINDOWS
 

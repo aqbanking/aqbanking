@@ -53,3 +53,4 @@ mp:
 	automake --add-missing
 	autoconf
 	CXXFLAGS="-ggdb -Wall" CFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static
+	make sources

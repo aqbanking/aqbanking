@@ -47,3 +47,9 @@ libtypes_la_SOURCES=\
 types: $(typefiles)
 	typemaker -d AQBANKING_API $(typefiles)
 
+
+sources:
+	for f in $(libtypes_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+
