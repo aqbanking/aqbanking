@@ -159,7 +159,7 @@ typedef int (*AB_PROVIDER_WIZARD_SETUP_FN)(AB_PROVIDER_WIZARD *pw);
 
 
 AB_PROVIDER_WIZARD *AB_ProviderWizard_new(AB_PROVIDER *pro,
-                                            const char *name);
+					  const char *name);
 void AB_ProviderWizard_free(AB_PROVIDER_WIZARD *pw);
 
 const char *AB_ProviderWizard_GetName(const AB_PROVIDER_WIZARD *pw);
@@ -169,17 +169,25 @@ int AB_ProviderWizard_Setup(AB_PROVIDER_WIZARD *pw);
 
 
 void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
-                                   AB_PROVIDER_WIZARD_SETUP_FN f);
+				  AB_PROVIDER_WIZARD_SETUP_FN f);
 
 GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw);
 
 
+/**
+ * Loads a backend wizard.
+ * When actually loading a wizard then this function searches inside the
+ * plugin for a function called WIZARDNAME_factory() (WIZARDNAME is the
+ * name given for argument <i>modname</i>).
+ * That function is expected to return  a pointer to a
+ * @ref AB_PROVIDER_WIZARD.
+ */
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
-                                                       const char *modname,
-                                                       const char *fname);
+                                                     const char *modname,
+                                                     const char *fname);
 
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
-                                                   const char *modname);
+                                                 const char *modname);
 
 
 /*@}*/ /* defgroup */

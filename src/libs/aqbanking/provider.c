@@ -416,8 +416,8 @@ void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
 
 
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
-                                                       const char *modname,
-                                                       const char *fname){
+                                                     const char *modname,
+                                                     const char *fname){
   GWEN_LIBLOADER *ll;
   AB_PROVIDER_WIZARD *pw;
   AB_PROVIDER_WIZARD_FACTORY_FN fn;
@@ -471,7 +471,7 @@ AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
 
 
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
-                                                   const char *modname){
+                                                 const char *modname){
   GWEN_LIBLOADER *ll;
   AB_PROVIDER_WIZARD *pw;
   AB_PROVIDER_WIZARD_FACTORY_FN fn;

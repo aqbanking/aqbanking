@@ -447,7 +447,7 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
 /**
  * Tries to load the wizard for the given backend which is of the given
  * type t.
- * Setup wizards are sorted by backends, since the wizard do things
+ * Setup wizards are sorted by backends, since the wizards do things
  * very much dependant on the backend. Ideally they are shipped with the
  * backend.
  * @param ab pointer to the AB_BANKING object
@@ -459,11 +459,15 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
  * @param t wizard type. To allow keeping the API as open as possible you
  * may give a type name here. However, the following names are expected:
  * <ul>
- *  <li><b>kde</b> for a wizard running under KDE</li>
- *  <li><b>gnome</b> for a wizard running under GNOME</li>
- *  <li><b>console</b> for a wizard running in a console</li>
- *  <li><b>curses</b> for a wizard using (n)curses</li>
+ *  <li><b>kde_wizard</b> for a wizard running under KDE</li>
+ *  <li><b>gnome_wizard</b> for a wizard running under GNOME</li>
+ *  <li><b>console_wizard</b> for a wizard running in a console</li>
+ *  <li><b>curses_wizard</b> for a wizard using (n)curses</li>
  * </ul>
+ * When actually loading a wizard then this function searches inside the
+ * plugin for a function called WIZARDNAME_factory() (WIZARDNAME is the
+ * name given for argument <i>t</i>). This function is expected to return
+ * a pointer to a @ref AB_PROVIDER_WIZARD.
  */
 AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
                                          const char *backend,
