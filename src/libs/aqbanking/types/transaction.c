@@ -8,6 +8,7 @@
 #include "transaction_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/debug.h>
 #include <assert.h>
 #include <stdlib.h>
 
@@ -836,6 +837,57 @@ void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl) {
     AB_Transaction_List2_ForEach(stl, AB_Transaction_List2__freeAll_cb, 0);
     AB_Transaction_List2_free(stl); 
   }
+}
+
+
+AB_TRANSACTION_LIST2 *AB_Transaction_List2_dup(const AB_TRANSACTION_LIST2 *stl) {
+  if (stl) {
+    AB_TRANSACTION_LIST2 *nl;
+    AB_TRANSACTION_LIST2_ITERATOR *it;
+
+    nl=AB_Transaction_List2_new();
+    it=AB_Transaction_List2_First(stl);
+    if (it) {
+      AB_TRANSACTION *e;
+
+      e=AB_Transaction_List2Iterator_Data(it);
+      assert(e);
+      while(e) {
+        AB_TRANSACTION *ne;
+
+        ne=AB_Transaction_dup(e);
+        assert(ne);
+        AB_Transaction_List2_PushBack(nl, ne);
+        e=AB_Transaction_List2Iterator_Next(it);
+      } /* while (e) */
+        AB_Transaction_List2Iterator_free(it);
+    } /* if (it) */
+    return nl;
+  }
+  else
+    return 0;
+}
+
+
+AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl) {
+  if (stl) {
+    AB_TRANSACTION_LIST *nl;
+    AB_TRANSACTION *e;
+
+    nl=AB_Transaction_List_new();
+    e=AB_Transaction_List_First(stl);
+    while(e) {
+      AB_TRANSACTION *ne;
+
+      ne=AB_Transaction_dup(e);
+      assert(ne);
+      AB_Transaction_List_Add(ne, nl);
+      e=AB_Transaction_List_Next(e);
+    } /* while (e) */
+    return nl;
+  }
+  else
+    return 0;
 }
 
 

@@ -6,14 +6,11 @@
 
 /** @page P_AB_TRANSACTION_LIB AB_Transaction (lib)
 This page describes the properties of AB_TRANSACTION
-This type contains all important information about transactions. Please note that all text fields are in UTF-8.
 <h3>Local Account Info</h3>
 <p>
-This group contains information about the local account.
 </p>
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account.
 </p>
 <h3>Dates</h3>
 <p>
@@ -23,16 +20,6 @@ This group contains information about the remote account.
 </p>
 <h3>Info Which Is Not Supported by All Backends</h3>
 <p>
-<p>
-This group contains information which differ between backends.
-</p>
-<p>
-Some of this information might not even be
-<b>
-supported
-</b>
-by every backends.
-</p>
 </p>
 */
 #include <gwenhywfar/misc.h>
@@ -44,14 +31,11 @@ extern "C" {
 #endif
 
 GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
-
+AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
 
 /** @name Local Account Info
- *
-This group contains information about the local account.
 */
 /*@{*/
-
 
 
 
@@ -61,11 +45,8 @@ This group contains information about the local account.
 /*@}*/
 
 /** @name Remote Account Info
- *
-This group contains information about the remote account.
 */
 /*@{*/
-
 
 
 
@@ -89,20 +70,8 @@ This group contains information about the remote account.
 /*@}*/
 
 /** @name Info Which Is Not Supported by All Backends
- *
-<p>
-This group contains information which differ between backends.
-</p>
-<p>
-Some of this information might not even be
-<b>
-supported
-</b>
-by every backends.
-</p>
 */
 /*@{*/
-
 
 
 

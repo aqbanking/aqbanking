@@ -16,7 +16,9 @@ struct AB_BANKINFO {
   char *bankId;
   char *bankName;
   char *location;
+  AB_BANKINFO_SERVICE_LIST *services;
 };
+
 
 
 

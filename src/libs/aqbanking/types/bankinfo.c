@@ -8,6 +8,7 @@
 #include "bankinfo_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/debug.h>
 #include <assert.h>
 #include <stdlib.h>
 
@@ -40,6 +41,8 @@ void AB_BankInfo_free(AB_BANKINFO *st) {
     free(st->bankName);
   if (st->location)
     free(st->location);
+  if (st->services)
+    AB_BankInfoService_List_free(st->services);
   GWEN_LIST_FINI(AB_BANKINFO, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -63,6 +66,8 @@ AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO *d) {
     st->bankName=strdup(d->bankName);
   if (d->location)
     st->location=strdup(d->location);
+  if (d->services)
+    st->services=AB_BankInfoService_List_dup(d->services);
   return st;
 }
 
@@ -85,6 +90,21 @@ int AB_BankInfo_toDb(const AB_BANKINFO *st, GWEN_DB_NODE *db) {
   if (st->location)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "location", st->location))
       return -1;
+  if (st->services)
+  if (1) {
+    GWEN_DB_NODE *dbT;
+  
+AB_BANKINFO_SERVICE *e;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "services");
+    assert(dbT);
+    e=AB_BankInfoService_List_First(st->services);
+    while(e) {
+      if (AB_BankInfoService_toDb(e, GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_CREATE_GROUP, "element")))
+        return -1;
+      e=AB_BankInfoService_List_Next(e);
+    } /* while */
+  } /* if (1) */
   return 0;
 }
 
@@ -99,6 +119,29 @@ AB_BANKINFO *st;
   AB_BankInfo_SetBankId(st, GWEN_DB_GetCharValue(db, "bankId", 0, 0));
   AB_BankInfo_SetBankName(st, GWEN_DB_GetCharValue(db, "bankName", 0, 0));
   AB_BankInfo_SetLocation(st, GWEN_DB_GetCharValue(db, "location", 0, 0));
+  st->services=AB_BankInfoService_List_new();
+  if (1) {
+    GWEN_DB_NODE *dbT;
+    AB_BANKINFO_SERVICE *e;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "services");
+    if (dbT) {
+      GWEN_DB_NODE *dbT2;
+
+      dbT2=GWEN_DB_FindFirstGroup(dbT, "element");
+      while(dbT2) {
+        e=AB_BankInfoService_fromDb(dbT2);
+        if (!e) {
+          DBG_ERROR(0, "Bad element for type \"AB_BANKINFO_SERVICE\"");
+          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+            GWEN_DB_Dump(dbT2, stderr, 2);
+          AB_BankInfo_free(st);
+          return 0;
+        }
+        AB_BankInfoService_List_Add(e, st->services);    dbT2=GWEN_DB_FindNextGroup(dbT2, "element");
+      } /* while */
+    } /* if (dbT) */
+  } /* if (1) */
   st->_modified=0;
   return st;
 }
@@ -194,6 +237,36 @@ void AB_BankInfo_SetLocation(AB_BANKINFO *st, const char *d) {
 }
 
 
+AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINFO *st) {
+  assert(st);
+  return st->services;
+}
+
+
+void AB_BankInfo_SetServices(AB_BANKINFO *st, AB_BANKINFO_SERVICE_LIST *d) {
+  assert(st);
+  if (st->services)
+    AB_BankInfoService_List_free(st->services);
+  st->services=AB_BankInfoService_List_new();
+  if (d) {
+    AB_BANKINFO_SERVICE *e;
+
+    e=AB_BankInfoService_List_First(d);
+    while(e) {
+      AB_BANKINFO_SERVICE *ne;
+
+      ne=AB_BankInfoService_dup(e);
+      assert(ne);
+      AB_BankInfoService_List_Add(ne, st->services);
+      e=AB_BankInfoService_List_Next(e);
+    } /* while (e) */
+  } /* if LIST */
+  else
+    st->services=0;
+  st->_modified=1;
+}
+
+
 int AB_BankInfo_IsModified(const AB_BANKINFO *st) {
   assert(st);
   return st->_modified;
@@ -221,6 +294,57 @@ void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl) {
     AB_BankInfo_List2_ForEach(stl, AB_BankInfo_List2__freeAll_cb, 0);
     AB_BankInfo_List2_free(stl); 
   }
+}
+
+
+AB_BANKINFO_LIST2 *AB_BankInfo_List2_dup(const AB_BANKINFO_LIST2 *stl) {
+  if (stl) {
+    AB_BANKINFO_LIST2 *nl;
+    AB_BANKINFO_LIST2_ITERATOR *it;
+
+    nl=AB_BankInfo_List2_new();
+    it=AB_BankInfo_List2_First(stl);
+    if (it) {
+      AB_BANKINFO *e;
+
+      e=AB_BankInfo_List2Iterator_Data(it);
+      assert(e);
+      while(e) {
+        AB_BANKINFO *ne;
+
+        ne=AB_BankInfo_dup(e);
+        assert(ne);
+        AB_BankInfo_List2_PushBack(nl, ne);
+        e=AB_BankInfo_List2Iterator_Next(it);
+      } /* while (e) */
+        AB_BankInfo_List2Iterator_free(it);
+    } /* if (it) */
+    return nl;
+  }
+  else
+    return 0;
+}
+
+
+AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl) {
+  if (stl) {
+    AB_BANKINFO_LIST *nl;
+    AB_BANKINFO *e;
+
+    nl=AB_BankInfo_List_new();
+    e=AB_BankInfo_List_First(stl);
+    while(e) {
+      AB_BANKINFO *ne;
+
+      ne=AB_BankInfo_dup(e);
+      assert(ne);
+      AB_BankInfo_List_Add(ne, nl);
+      e=AB_BankInfo_List_Next(e);
+    } /* while (e) */
+    return nl;
+  }
+  else
+    return 0;
 }
 
 

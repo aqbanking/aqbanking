@@ -21,9 +21,12 @@ extern "C" {
 typedef struct AB_PIN AB_PIN;
 
 GWEN_LIST_FUNCTION_DEFS(AB_PIN, AB_Pin)
+AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl);
 GWEN_LIST2_FUNCTION_DEFS(AB_PIN, AB_Pin)
 
 void AB_Pin_List2_freeAll(AB_PIN_LIST2 *stl);
+AB_PIN_LIST2 *AB_Pin_List2_dup(const AB_PIN_LIST2 *stl);
+
 AB_PIN *AB_Pin_new();
 void AB_Pin_free(AB_PIN *st);
 void AB_Pin_Attach(AB_PIN *st);
@@ -33,38 +36,38 @@ void AB_Pin_SetModified(AB_PIN *st, int i);
 /**
 * Returns the property @ref AB_PIN_Token
 */
-const char *AB_Pin_GetToken(const AB_PIN *el);
+AQBANKING_API const char *AB_Pin_GetToken(const AB_PIN *el);
 /**
 * Set the property @ref AB_PIN_Token
 */
-void AB_Pin_SetToken(AB_PIN *el, const char *d);
+AQBANKING_API void AB_Pin_SetToken(AB_PIN *el, const char *d);
 
 /**
 * Returns the property @ref AB_PIN_Value
 */
-const char *AB_Pin_GetValue(const AB_PIN *el);
+AQBANKING_API const char *AB_Pin_GetValue(const AB_PIN *el);
 /**
 * Set the property @ref AB_PIN_Value
 */
-void AB_Pin_SetValue(AB_PIN *el, const char *d);
+AQBANKING_API void AB_Pin_SetValue(AB_PIN *el, const char *d);
 
 /**
 * Returns the property @ref AB_PIN_Hash
 */
-const char *AB_Pin_GetHash(const AB_PIN *el);
+AQBANKING_API const char *AB_Pin_GetHash(const AB_PIN *el);
 /**
 * Set the property @ref AB_PIN_Hash
 */
-void AB_Pin_SetHash(AB_PIN *el, const char *d);
+AQBANKING_API void AB_Pin_SetHash(AB_PIN *el, const char *d);
 
 /**
 * Returns the property @ref AB_PIN_Status
 */
-const char *AB_Pin_GetStatus(const AB_PIN *el);
+AQBANKING_API const char *AB_Pin_GetStatus(const AB_PIN *el);
 /**
 * Set the property @ref AB_PIN_Status
 */
-void AB_Pin_SetStatus(AB_PIN *el, const char *d);
+AQBANKING_API void AB_Pin_SetStatus(AB_PIN *el, const char *d);
 
 
 #ifdef __cplusplus

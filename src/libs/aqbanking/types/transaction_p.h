@@ -40,13 +40,9 @@ struct AB_TRANSACTION {
 };
 
 
-
 /** @name Local Account Info
- *
-This group contains information about the local account.
 */
 /*@{*/
-
 
 
 
@@ -56,11 +52,8 @@ This group contains information about the local account.
 /*@}*/
 
 /** @name Remote Account Info
- *
-This group contains information about the remote account.
 */
 /*@{*/
-
 
 
 
@@ -84,20 +77,8 @@ This group contains information about the remote account.
 /*@}*/
 
 /** @name Info Which Is Not Supported by All Backends
- *
-<p>
-This group contains information which differ between backends.
-</p>
-<p>
-Some of this information might not even be
-<b>
-supported
-</b>
-by every backends.
-</p>
 */
 /*@{*/
-
 
 
 

@@ -6,16 +6,12 @@
 
 /** @page P_AB_TRANSACTION_PUBLIC AB_Transaction (public)
 This page describes the properties of AB_TRANSACTION
-This type contains all important information about transactions. Please note that all text fields are in UTF-8.
 <h3>Local Account Info</h3>
 <p>
-This group contains information about the local account.
 </p>
 @anchor AB_TRANSACTION_LocalCountry
 <h4>LocalCountry</h4>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use DE
-.
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalCountry, 
@@ -25,11 +21,6 @@ get it with @ref AB_Transaction_GetLocalCountry
 @anchor AB_TRANSACTION_LocalBankCode
 <h4>LocalBankCode</h4>
 <p>
-This is the code of the local bank (i.e.
-<b>
-your
-</b>
-bank).
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBankCode, 
@@ -39,7 +30,6 @@ get it with @ref AB_Transaction_GetLocalBankCode
 @anchor AB_TRANSACTION_LocalBranchId
 <h4>LocalBranchId</h4>
 <p>
-This is the branch id of the local bank (OFX only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBranchId, 
@@ -58,7 +48,6 @@ get it with @ref AB_Transaction_GetLocalAccountNumber
 @anchor AB_TRANSACTION_LocalSuffix
 <h4>LocalSuffix</h4>
 <p>
-If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it's empty. (HBCI only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalSuffix, 
@@ -76,13 +65,10 @@ get it with @ref AB_Transaction_GetLocalName
 
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account.
 </p>
 @anchor AB_TRANSACTION_RemoteCountry
 <h4>RemoteCountry</h4>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use DE
-.
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteCountry, 
@@ -101,7 +87,6 @@ get it with @ref AB_Transaction_GetRemoteBankCode
 @anchor AB_TRANSACTION_RemoteBranchId
 <h4>RemoteBranchId</h4>
 <p>
-This is the branch id of the remote bank (OFX only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteBranchId, 
@@ -138,7 +123,6 @@ get it with @ref AB_Transaction_GetRemoteName
 @anchor AB_TRANSACTION_UniqueId
 <h3>UniqueId</h3>
 <p>
-This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetUniqueId, 
@@ -151,7 +135,6 @@ get it with @ref AB_Transaction_GetUniqueId
 @anchor AB_TRANSACTION_ValutaDate
 <h4>ValutaDate</h4>
 <p>
-The date when the transaction was really executed (Datum Valuta/Wertstellung)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetValutaDate, 
@@ -161,7 +144,6 @@ get it with @ref AB_Transaction_GetValutaDate
 @anchor AB_TRANSACTION_Date
 <h4>Date</h4>
 <p>
-The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetDate, 
@@ -182,26 +164,10 @@ get it with @ref AB_Transaction_GetValue
 
 <h3>Info Which Is Not Supported by All Backends</h3>
 <p>
-<p>
-This group contains information which differ between backends.
-</p>
-<p>
-Some of this information might not even be
-<b>
-supported
-</b>
-by every backends.
-</p>
 </p>
 @anchor AB_TRANSACTION_TextKey
 <h4>TextKey</h4>
 <p>
-<p>
-A 3 digit numerical transaction code, defined for all kinds of different actions. (Textschluessel)
-</p>
-<p>
-For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
-</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKey, 
@@ -211,7 +177,6 @@ get it with @ref AB_Transaction_GetTextKey
 @anchor AB_TRANSACTION_TransactionKey
 <h4>TransactionKey</h4>
 <p>
-this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionKey, 
@@ -221,8 +186,6 @@ get it with @ref AB_Transaction_GetTransactionKey
 @anchor AB_TRANSACTION_CustomerReference
 <h4>CustomerReference</h4>
 <p>
-Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise NONREF
-or empty (Kundenreferenz)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetCustomerReference, 
@@ -232,7 +195,6 @@ get it with @ref AB_Transaction_GetCustomerReference
 @anchor AB_TRANSACTION_BankReference
 <h4>BankReference</h4>
 <p>
-Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetBankReference, 
@@ -242,7 +204,6 @@ get it with @ref AB_Transaction_GetBankReference
 @anchor AB_TRANSACTION_TransactionCode
 <h4>TransactionCode</h4>
 <p>
-A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionCode, 
@@ -252,7 +213,6 @@ get it with @ref AB_Transaction_GetTransactionCode
 @anchor AB_TRANSACTION_TransactionText
 <h4>TransactionText</h4>
 <p>
-Transaction text (e.g. STANDING ORDER) (Buchungstext)
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionText, 
@@ -271,17 +231,6 @@ get it with @ref AB_Transaction_GetPrimanota
 @anchor AB_TRANSACTION_FiId
 <h4>FiId</h4>
 <p>
-<p>
-This is an id optionally assigned by the
-<b>
-F
-</b>
-inancial
-<b>
-I
-</b>
-nstitute. It is mostly used by OFX.
-</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetFiId, 
@@ -291,9 +240,6 @@ get it with @ref AB_Transaction_GetFiId
 @anchor AB_TRANSACTION_Purpose
 <h4>Purpose</h4>
 <p>
-<p>
-This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.
-</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetPurpose, 
@@ -318,154 +264,168 @@ typedef struct AB_TRANSACTION AB_TRANSACTION;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_TRANSACTION, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
 
-void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl);
+/** Destroys all objects stored in the given LIST2 and the list itself
+*/
+AQBANKING_API void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl);
+/** Creates a deep copy of the given LIST2.
+*/
+AQBANKING_API AB_TRANSACTION_LIST2 *AB_Transaction_List2_dup(const AB_TRANSACTION_LIST2 *stl);
 
-AB_TRANSACTION *AB_Transaction_new();
-void AB_Transaction_free(AB_TRANSACTION *st);
-void AB_Transaction_Attach(AB_TRANSACTION *st);
-AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);
-AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
-int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);
-int AB_Transaction_IsModified(const AB_TRANSACTION *st);
-void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
-
+/** Creates a new object.
+*/
+AQBANKING_API AB_TRANSACTION *AB_Transaction_new();
+/** Destroys the given object.
+*/
+AQBANKING_API void AB_Transaction_free(AB_TRANSACTION *st);
+/** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
+*/
+AQBANKING_API void AB_Transaction_Attach(AB_TRANSACTION *st);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
+/** Stores an object in the given GWEN_DB_NODE
+*/
+AQBANKING_API int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);
+/** Returns 0 if this object has not been modified, !=0 otherwise
+*/
+AQBANKING_API int AB_Transaction_IsModified(const AB_TRANSACTION *st);
+/** Sets the modified state of the given object
+*/
+AQBANKING_API void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
 
 /** @name Local Account Info
- *
-This group contains information about the local account.
 */
 /*@{*/
-
 /**
 * Returns the property @ref AB_TRANSACTION_LocalCountry
 */
-const char *AB_Transaction_GetLocalCountry(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalCountry(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalCountry
 */
-void AB_Transaction_SetLocalCountry(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalCountry(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalBankCode
 */
-const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalBankCode
 */
-void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalBranchId
 */
-const char *AB_Transaction_GetLocalBranchId(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalBranchId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalBranchId
 */
-void AB_Transaction_SetLocalBranchId(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalBranchId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalAccountNumber
 */
-const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalAccountNumber
 */
-void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalSuffix
 */
-const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalSuffix
 */
-void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalName
 */
-const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_LocalName
 */
-void AB_Transaction_SetLocalName(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetLocalName(AB_TRANSACTION *el, const char *d);
 
 /*@}*/
 
 /** @name Remote Account Info
- *
-This group contains information about the remote account.
 */
 /*@{*/
-
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteCountry
 */
-const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteCountry
 */
-void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteBankCode
 */
-const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteBankCode
 */
-void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteBranchId
 */
-const char *AB_Transaction_GetRemoteBranchId(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetRemoteBranchId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteBranchId
 */
-void AB_Transaction_SetRemoteBranchId(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteBranchId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteAccountNumber
 */
-const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteAccountNumber
 */
-void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteSuffix
 */
-const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteSuffix
 */
-void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_RemoteName
 */
-const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *el);
+AQBANKING_API const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_RemoteName
 */
-void AB_Transaction_SetRemoteName(AB_TRANSACTION *el, const GWEN_STRINGLIST *d);
-void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *d, int chk);
-void AB_Transaction_RemoveRemoteName(AB_TRANSACTION *st, const char *d);
-void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st);
-int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d);
+AQBANKING_API void AB_Transaction_SetRemoteName(AB_TRANSACTION *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *d, int chk);
+AQBANKING_API void AB_Transaction_RemoveRemoteName(AB_TRANSACTION *st, const char *d);
+AQBANKING_API void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st);
+AQBANKING_API int AB_Transaction_HasRemoteName(AB_TRANSACTION *st, const char *d);
 
 /*@}*/
 
 /**
 * Returns the property @ref AB_TRANSACTION_UniqueId
 */
-GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
+AQBANKING_API GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_UniqueId
 */
-void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, GWEN_TYPE_UINT32 d);
+AQBANKING_API void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, GWEN_TYPE_UINT32 d);
 
 /** @name Dates
 */
@@ -473,20 +433,20 @@ void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, GWEN_TYPE_UINT32 d);
 /**
 * Returns the property @ref AB_TRANSACTION_ValutaDate
 */
-const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *el);
+AQBANKING_API const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_ValutaDate
 */
-void AB_Transaction_SetValutaDate(AB_TRANSACTION *el, const GWEN_TIME *d);
+AQBANKING_API void AB_Transaction_SetValutaDate(AB_TRANSACTION *el, const GWEN_TIME *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Date
 */
-const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *el);
+AQBANKING_API const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_Date
 */
-void AB_Transaction_SetDate(AB_TRANSACTION *el, const GWEN_TIME *d);
+AQBANKING_API void AB_Transaction_SetDate(AB_TRANSACTION *el, const GWEN_TIME *d);
 
 /*@}*/
 
@@ -496,113 +456,101 @@ void AB_Transaction_SetDate(AB_TRANSACTION *el, const GWEN_TIME *d);
 /**
 * Returns the property @ref AB_TRANSACTION_Value
 */
-const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *el);
+AQBANKING_API const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_Value
 */
-void AB_Transaction_SetValue(AB_TRANSACTION *el, const AB_VALUE *d);
+AQBANKING_API void AB_Transaction_SetValue(AB_TRANSACTION *el, const AB_VALUE *d);
 
 /*@}*/
 
 /** @name Info Which Is Not Supported by All Backends
- *
-<p>
-This group contains information which differ between backends.
-</p>
-<p>
-Some of this information might not even be
-<b>
-supported
-</b>
-by every backends.
-</p>
 */
 /*@{*/
-
 /**
 * Returns the property @ref AB_TRANSACTION_TextKey
 */
-int AB_Transaction_GetTextKey(const AB_TRANSACTION *el);
+AQBANKING_API int AB_Transaction_GetTextKey(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_TextKey
 */
-void AB_Transaction_SetTextKey(AB_TRANSACTION *el, int d);
+AQBANKING_API void AB_Transaction_SetTextKey(AB_TRANSACTION *el, int d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_TransactionKey
 */
-const char *AB_Transaction_GetTransactionKey(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetTransactionKey(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_TransactionKey
 */
-void AB_Transaction_SetTransactionKey(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetTransactionKey(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_CustomerReference
 */
-const char *AB_Transaction_GetCustomerReference(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetCustomerReference(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_CustomerReference
 */
-void AB_Transaction_SetCustomerReference(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetCustomerReference(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_BankReference
 */
-const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_BankReference
 */
-void AB_Transaction_SetBankReference(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetBankReference(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_TransactionCode
 */
-int AB_Transaction_GetTransactionCode(const AB_TRANSACTION *el);
+AQBANKING_API int AB_Transaction_GetTransactionCode(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_TransactionCode
 */
-void AB_Transaction_SetTransactionCode(AB_TRANSACTION *el, int d);
+AQBANKING_API void AB_Transaction_SetTransactionCode(AB_TRANSACTION *el, int d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_TransactionText
 */
-const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_TransactionText
 */
-void AB_Transaction_SetTransactionText(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetTransactionText(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Primanota
 */
-const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_Primanota
 */
-void AB_Transaction_SetPrimanota(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetPrimanota(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_FiId
 */
-const char *AB_Transaction_GetFiId(const AB_TRANSACTION *el);
+AQBANKING_API const char *AB_Transaction_GetFiId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_FiId
 */
-void AB_Transaction_SetFiId(AB_TRANSACTION *el, const char *d);
+AQBANKING_API void AB_Transaction_SetFiId(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Purpose
 */
-const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *el);
+AQBANKING_API const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_Purpose
 */
-void AB_Transaction_SetPurpose(AB_TRANSACTION *el, const GWEN_STRINGLIST *d);
-void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, int chk);
-void AB_Transaction_RemovePurpose(AB_TRANSACTION *st, const char *d);
-void AB_Transaction_ClearPurpose(AB_TRANSACTION *st);
-int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d);
+AQBANKING_API void AB_Transaction_SetPurpose(AB_TRANSACTION *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, int chk);
+AQBANKING_API void AB_Transaction_RemovePurpose(AB_TRANSACTION *st, const char *d);
+AQBANKING_API void AB_Transaction_ClearPurpose(AB_TRANSACTION *st);
+AQBANKING_API int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d);
 
 /*@}*/
 

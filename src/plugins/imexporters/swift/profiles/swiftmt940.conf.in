@@ -3,6 +3,8 @@ char name="SWIFT-MT940"
 char shortDescr="SWIFT MT940 Format"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports SWIFT MT940 documents"
+int import="1"
+int export="0"
 
 char type="swift"
 char groupNames="transaction", "transfer", "debitnote"

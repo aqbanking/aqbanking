@@ -1,4 +1,42 @@
+
+<typedefs>
+  <type id="AB_BANKINFO_SERVICE_LIST" >
+    <functions>
+      <function type="free" name="AB_BankInfoService_List_free" />
+      <function type="dup" name="AB_BankInfoService_List_dup" />
+    </functions>
+  </type>
+  <type id="AB_BANKINFO_SERVICE_LIST2" >
+    <functions>
+      <function type="free" name="AB_BankInfoService_List2_free" />
+      <function type="dup" name="AB_BankInfoService_List2_dup" />
+    </functions>
+  </type>
+</typedefs>
+
+
 <types>
+
+  <type id="AB_BANKINFO_SERVICE" 
+        prefix="AB_BankInfoService" 
+        class="BankInfoService"
+        access="public"
+        filename="bankinfoservice"
+        list="public"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >aqbanking/error.h</header>
+    </headers>
+    
+    <elem name="type" type="char" ptr="1" />
+    <elem name="address" type="char" ptr="1" />
+    <elem name="suffix" type="char" ptr="1" />
+    <elem name="pversion" type="char" ptr="1" />
+    <elem name="mode" type="char" ptr="1" />
+  </type>
+
+
   <type id="AB_BANKINFO" 
         prefix="AB_BankInfo" 
         class="BankInfo"
@@ -9,6 +47,7 @@
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >aqbanking/error.h</header>
+      <header type="sys" >aqbanking/bankinfoservice.h</header>
     </headers>
     
     <elem name="country" type="char" ptr="1" />
@@ -16,6 +55,8 @@
     <elem name="bankId" type="char" ptr="1" />
     <elem name="bankName" type="char" ptr="1" />
     <elem name="location" type="char" ptr="1" />
+    <elem name="services" type="AB_BANKINFO_SERVICE_LIST" ptr="1" 
+          mode="list" elemType="AB_BANKINFO_SERVICE"/>
   </type>
   
   

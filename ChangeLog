@@ -1,8 +1,18 @@
 
+2004/11/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AB_BankInfoService (will extend the bank info code to include server
+  settings for HBCI,  OFX, WebConnect etc)
+  This needs the latest GWEN CVS version.
+
+
 2004/11/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added export-function to im/exporter
-- started working on CSV exporter
+- started working on CSV exporter (needs latest Gwenhywfar CVS!)
+- added new vars to im/exporter profiles: "import" and "export". These vars
+  tell the application whether the profile can be used for import and/or
+  export.
 
 
 2004/11/18: Martin Preuss<martin@libchipcard.de>

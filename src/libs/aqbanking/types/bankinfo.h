@@ -51,11 +51,21 @@ Set this property with @ref AB_BankInfo_SetLocation,
 get it with @ref AB_BankInfo_GetLocation
 </p>
 
+@anchor AB_BANKINFO_Services
+<h3>Services</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetServices, 
+get it with @ref AB_BankInfo_GetServices
+</p>
+
 */
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/types.h>
 #include <aqbanking/error.h>
+#include <aqbanking/bankinfoservice.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,61 +75,91 @@ typedef struct AB_BANKINFO AB_BANKINFO;
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_BANKINFO, AB_BankInfo, AQBANKING_API)
 
-void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl);
+/** Destroys all objects stored in the given LIST2 and the list itself
+*/
+AQBANKING_API void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl);
+/** Creates a deep copy of the given LIST2.
+*/
+AQBANKING_API AB_BANKINFO_LIST2 *AB_BankInfo_List2_dup(const AB_BANKINFO_LIST2 *stl);
 
-AB_BANKINFO *AB_BankInfo_new();
-void AB_BankInfo_free(AB_BANKINFO *st);
-void AB_BankInfo_Attach(AB_BANKINFO *st);
-AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO*st);
-AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db);
-int AB_BankInfo_toDb(const AB_BANKINFO*st, GWEN_DB_NODE *db);
-int AB_BankInfo_IsModified(const AB_BANKINFO *st);
-void AB_BankInfo_SetModified(AB_BANKINFO *st, int i);
+/** Creates a new object.
+*/
+AQBANKING_API AB_BANKINFO *AB_BankInfo_new();
+/** Destroys the given object.
+*/
+AQBANKING_API void AB_BankInfo_free(AB_BANKINFO *st);
+/** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
+*/
+AQBANKING_API void AB_BankInfo_Attach(AB_BANKINFO *st);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO*st);
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db);
+/** Stores an object in the given GWEN_DB_NODE
+*/
+AQBANKING_API int AB_BankInfo_toDb(const AB_BANKINFO*st, GWEN_DB_NODE *db);
+/** Returns 0 if this object has not been modified, !=0 otherwise
+*/
+AQBANKING_API int AB_BankInfo_IsModified(const AB_BANKINFO *st);
+/** Sets the modified state of the given object
+*/
+AQBANKING_API void AB_BankInfo_SetModified(AB_BANKINFO *st, int i);
 
 /**
 * Returns the property @ref AB_BANKINFO_Country
 */
-const char *AB_BankInfo_GetCountry(const AB_BANKINFO *el);
+AQBANKING_API const char *AB_BankInfo_GetCountry(const AB_BANKINFO *el);
 /**
 * Set the property @ref AB_BANKINFO_Country
 */
-void AB_BankInfo_SetCountry(AB_BANKINFO *el, const char *d);
+AQBANKING_API void AB_BankInfo_SetCountry(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_BranchId
 */
-const char *AB_BankInfo_GetBranchId(const AB_BANKINFO *el);
+AQBANKING_API const char *AB_BankInfo_GetBranchId(const AB_BANKINFO *el);
 /**
 * Set the property @ref AB_BANKINFO_BranchId
 */
-void AB_BankInfo_SetBranchId(AB_BANKINFO *el, const char *d);
+AQBANKING_API void AB_BankInfo_SetBranchId(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_BankId
 */
-const char *AB_BankInfo_GetBankId(const AB_BANKINFO *el);
+AQBANKING_API const char *AB_BankInfo_GetBankId(const AB_BANKINFO *el);
 /**
 * Set the property @ref AB_BANKINFO_BankId
 */
-void AB_BankInfo_SetBankId(AB_BANKINFO *el, const char *d);
+AQBANKING_API void AB_BankInfo_SetBankId(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_BankName
 */
-const char *AB_BankInfo_GetBankName(const AB_BANKINFO *el);
+AQBANKING_API const char *AB_BankInfo_GetBankName(const AB_BANKINFO *el);
 /**
 * Set the property @ref AB_BANKINFO_BankName
 */
-void AB_BankInfo_SetBankName(AB_BANKINFO *el, const char *d);
+AQBANKING_API void AB_BankInfo_SetBankName(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_Location
 */
-const char *AB_BankInfo_GetLocation(const AB_BANKINFO *el);
+AQBANKING_API const char *AB_BankInfo_GetLocation(const AB_BANKINFO *el);
 /**
 * Set the property @ref AB_BANKINFO_Location
 */
-void AB_BankInfo_SetLocation(AB_BANKINFO *el, const char *d);
+AQBANKING_API void AB_BankInfo_SetLocation(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Services
+*/
+AQBANKING_API AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Services
+*/
+AQBANKING_API void AB_BankInfo_SetServices(AB_BANKINFO *el, AB_BANKINFO_SERVICE_LIST *d);
 
 
 #ifdef __cplusplus
