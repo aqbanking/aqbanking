@@ -1,5 +1,8 @@
 2004-09-24   Christian Stimming <stimming@tuhh.de>
 
+	* src/libs/aqbanking/banking.c: Make the directory separator a
+	macro so that correct paths are used on windows.
+
 	* configure.ac: Introduce new AC_SUBST variable
 	aqbanking_internal_libs that has the linker command without the
 	lib directory.

@@ -44,6 +44,9 @@
 
 #ifdef OS_WIN32
 # define ftruncate chsize
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
 #endif
 
 #define I18N(txt) txt
@@ -90,7 +93,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf, "/" AB_BANKING_CONFIGFILE);
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_CONFIGFILE);
     fname=GWEN_Buffer_GetStart(buf);
   }
 
@@ -173,7 +176,7 @@ GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab){
     GWEN_Buffer_free(nbuf);
     return 0;
   }
-  GWEN_Buffer_AppendString(nbuf, "/uniqueid");
+  GWEN_Buffer_AppendString(nbuf, DIRSEP "uniqueid");
 
   fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(nbuf), 1);
   if (fd!=-1) {
@@ -283,9 +286,9 @@ int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
     return AB_ERROR_GENERIC;
   }
-  GWEN_Buffer_AppendString(buf, "/apps/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "apps" DIRSEP);
   GWEN_Buffer_AppendString(buf, ab->appEscName);
-  GWEN_Buffer_AppendString(buf, "/settings.conf");
+  GWEN_Buffer_AppendString(buf, DIRSEP "settings.conf");
   return 0;
 }
 
@@ -410,9 +413,9 @@ int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
     return AB_ERROR_GENERIC;
   }
-  GWEN_Buffer_AppendString(buf, "/backends/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "backends" DIRSEP);
   GWEN_Buffer_AppendString(buf, name);
-  GWEN_Buffer_AppendString(buf, "/settings.conf");
+  GWEN_Buffer_AppendString(buf, DIRSEP "settings.conf");
   return 0;
 }
 
@@ -1249,7 +1252,7 @@ int AB_Banking_Save(AB_BANKING *ab) {
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS "/providers");
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP "providers");
   if (l) {
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
     GWEN_PLUGIN_DESCRIPTION *pd;
@@ -1282,9 +1285,9 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(pbuf,
                            AQBANKING_PLUGINS
-                           "/"
+                           DIRSEP
                            AB_PROVIDER_WIZARD_FOLDER
-                           "/");
+                           DIRSEP);
   GWEN_Buffer_AppendString(pbuf, pn);
 
   wdl=GWEN_LoadPluginDescrs(GWEN_Buffer_GetStart(pbuf));
@@ -1298,7 +1301,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS "/imexporters");
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP "imexporters");
   return l;
 }
 
@@ -1788,7 +1791,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
       return -1;
     }
     GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf, "/.banking");
+    GWEN_Buffer_AppendString(buf, DIRSEP ".banking");
   }
   return 0;
 }
@@ -1812,9 +1815,9 @@ int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
   rv=AB_Banking_GetUserDataDir(ab, buf);
   if (rv)
     return rv;
-  GWEN_Buffer_AppendString(buf, "/apps/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "apps" DIRSEP);
   GWEN_Buffer_AppendString(buf, ab->appEscName);
-  GWEN_Buffer_AppendString(buf, "/data");
+  GWEN_Buffer_AppendString(buf, DIRSEP "data");
 
   return 0;
 }
@@ -1829,9 +1832,9 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
   rv=AB_Banking_GetUserDataDir(ab, buf);
   if (rv)
     return rv;
-  GWEN_Buffer_AppendString(buf, "/backends/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "backends" DIRSEP);
   GWEN_Buffer_AppendString(buf, name);
-  GWEN_Buffer_AppendString(buf, "/data");
+  GWEN_Buffer_AppendString(buf, DIRSEP "data");
   return 0;
 }
 
@@ -1877,7 +1880,7 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
 
 	  GWEN_Buffer_Crop(nbuf, 0, pathLen);
 	  GWEN_Buffer_SetPos(nbuf, pathLen);
-	  GWEN_Buffer_AppendByte(nbuf, '/');
+	  GWEN_Buffer_AppendString(nbuf, DIRSEP);
 	  GWEN_Buffer_AppendString(nbuf, nbuffer);
 
 	  if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
@@ -1946,7 +1949,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   db=GWEN_DB_Group_new("profiles");
 
   /* read global profiles */
-  GWEN_Buffer_AppendString(buf, DATADIR "/imexporters/");
+  GWEN_Buffer_AppendString(buf, DATADIR DIRSEP "imexporters" DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad name for importer/exporter");
@@ -1954,7 +1957,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     GWEN_Buffer_free(buf);
     return 0;
   }
-  GWEN_Buffer_AppendString(buf, "/profiles");
+  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
   rv=AB_Banking__ReadImExporterProfiles(ab,
                                         GWEN_Buffer_GetStart(buf),
                                         db);
@@ -1975,7 +1978,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     GWEN_Buffer_free(buf);
     return 0;
   }
-  GWEN_Buffer_AppendString(buf, "/imexporters/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad name for importer/exporter");
@@ -1983,7 +1986,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     GWEN_Buffer_free(buf);
     return 0;
   }
-  GWEN_Buffer_AppendString(buf, "/profiles");
+  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
 
   rv=AB_Banking__ReadImExporterProfiles(ab,
                                         GWEN_Buffer_GetStart(buf),
@@ -2083,7 +2086,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
 
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
                                          AQBANKING_PLUGINS
-                                         "/"
+                                         DIRSEP
                                          AB_PROVIDER_FOLDER,
                                          modname)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
@@ -2212,7 +2215,7 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
 
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
                                          AQBANKING_PLUGINS
-                                         "/"
+                                         DIRSEP
                                          AB_BANKINFO_PLUGIN_FOLDER,
                                          modname)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load bankinfoplugin plugin \"%s\"", modname);
@@ -2339,9 +2342,9 @@ int AB_Banking_GetWizardPath(AB_BANKING *ab,
 
   GWEN_Buffer_AppendString(pbuf,
                            AQBANKING_PLUGINS
-                           "/"
+                           DIRSEP
                            AB_PROVIDER_WIZARD_FOLDER
-                           "/");
+                           DIRSEP);
   s=backend;
   while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
 
@@ -2396,7 +2399,7 @@ void AB_Banking__AddJobDir(const AB_BANKING *ab,
 			   const char *as,
 			   GWEN_BUFFER *buf) {
   AB_Banking_GetUserDataDir(ab, buf);
-  GWEN_Buffer_AppendString(buf, "/jobs/");
+  GWEN_Buffer_AppendString(buf, DIRSEP "jobs" DIRSEP);
   GWEN_Buffer_AppendString(buf, as);
 }
 
@@ -2409,7 +2412,7 @@ void AB_Banking__AddJobPath(const AB_BANKING *ab,
   char buffer[16];
 
   AB_Banking__AddJobDir(ab, as, buf);
-  GWEN_Buffer_AppendByte(buf, '/');
+  GWEN_Buffer_AppendString(buf, DIRSEP);
   snprintf(buffer, sizeof(buffer), "%08lx", (unsigned long)jid);
   GWEN_Buffer_AppendString(buf, buffer);
   GWEN_Buffer_AppendString(buf, ".job");
@@ -2721,7 +2724,7 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 	  AB_JOB *j;
 
 	  GWEN_Buffer_Crop(pbuf, 0, pos);
-	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
 	  GWEN_Buffer_AppendString(pbuf, nbuffer);
 
 	  /* job found */
@@ -3000,7 +3003,7 @@ AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
   modname=GWEN_Buffer_GetStart(mbuf);
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
                                          AQBANKING_PLUGINS
-                                         "/"
+                                         DIRSEP
                                          AB_IMEXPORTER_FOLDER,
                                          modname)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
