@@ -744,6 +744,7 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
  * created and enqueued into the execution queue.
  * </p>
  */
+AQBANKING_API 
 AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
 
 /**
@@ -751,6 +752,7 @@ AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
  * via @ref AB_Banking_GetFinishedJobs or a job you previously added to
  * the execution queue after the queue has been executed.
  */
+AQBANKING_API 
 int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
 
 /*@}*/
@@ -792,12 +794,14 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
  * in this particular function group.
  * </p>
  */
+AQBANKING_API 
 AB_JOB_LIST2 *AB_Banking_GetPendingJobs(AB_BANKING *ab);
 
 /**
  * Removes a pending job from its folder. This function does not free the job.
  * The job MUST be one of those returned via @ref AB_Banking_GetPendingJobs.
  */
+AQBANKING_API 
 int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j);
 
 /*@}*/
