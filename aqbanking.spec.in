@@ -38,6 +38,9 @@ License: GPL
 Packager: Christian Stimming <stimming@tuhh.de>
 URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
+# Note: We might add ktoblzcheck here as well
+BuildRequires: gwenhywfar-devel
+BuildRequires: libofx >= 0.7.0
 Prereq: /sbin/ldconfig
 Prefix: %{_prefix}
 
