@@ -2479,7 +2479,7 @@ int AB_Banking__GetWizardPath(AB_BANKING *ab,
 int AB_Banking_GetWizardPath(AB_BANKING *ab,
                              const char *backend,
                              GWEN_BUFFER *pbuf){
-  DBG_ERROR(AQBANKING_LOGDOMAIN,
+  DBG_WARN(AQBANKING_LOGDOMAIN,
             "AB_Banking_GetWizardPath() is deprecated!");
   return AB_Banking__GetWizardPath(ab, backend, pbuf);
 }
