@@ -207,7 +207,7 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     GWEN_Buffer_Reset(lbuf);
 
     if (buffer[0]) {
-      if (buffer[0]=='-') {
+      if (buffer[0]=='-' && buffer[1]==0) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "End of SWIFT document reached");
         GWEN_Buffer_free(lbuf);
         return 0;
@@ -244,14 +244,15 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
 		    "Error reading from stream");
 	  GWEN_Buffer_free(lbuf);
 	  return -1;
-	}
+        }
       }
 
       /* check whether the line starts with a ":" or "-" */
-      if (buffer[0]==':' || buffer[0]=='-')
+      if (buffer[0]==':' || (buffer[0]=='-' && buffer[1]==0)) {
         /* it does, so the buffer contains the next line, go handle the
          * previous line */
         break;
+      }
 
       /* it doesn't, so there is a CR/LF inside the tag */
       GWEN_Buffer_AppendByte(lbuf, 10);

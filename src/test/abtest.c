@@ -3,6 +3,8 @@
 
 
 #include <gwenhywfar/logger.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/debug.h>
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
 #include <stdio.h>
@@ -176,6 +178,28 @@ int test4(int argc, char **argv) {
 
 
 
+int test5(int argc, char **argv) {
+  int rv;
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+
+  db=GWEN_DB_Group_new("test");
+  dbParams=GWEN_DB_Group_new("params");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "params/type", "mt940");
+  rv=GWEN_DB_ReadFileAs(db, "test.swift", "swift", dbParams,
+			GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv) {
+    DBG_ERROR(0, "Error reading file");
+    return 2;
+  }
+  GWEN_DB_Dump(db, stderr, 2);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -197,6 +221,8 @@ int main(int argc, char **argv) {
     rv=test3(argc, argv);
   else if (strcasecmp(cmd, "test4")==0)
     rv=test4(argc, argv);
+  else if (strcasecmp(cmd, "test5")==0)
+    rv=test5(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;
