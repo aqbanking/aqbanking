@@ -270,6 +270,20 @@ AB_BANKING *AB_Account_GetBanking(const AB_ACCOUNT *acc){
 
 
 
+const char *AB_Account_GetCurrency(const AB_ACCOUNT *a){
+  assert(a);
+  return GWEN_DB_GetCharValue(a->data, "static/currency", 0, 0);
+}
+
+
+
+
+void AB_Account_SetCurrency(AB_ACCOUNT *a, const char *s){
+  assert(a);
+  assert(s);
+  GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "static/currency", s);
+}
 
 
 

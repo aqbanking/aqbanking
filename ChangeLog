@@ -1,3 +1,9 @@
+
+2004/08/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added currency to AB_ACCOUNT
+
+
 2004-08-21  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.h: Add AB_Banking_GetUserData and
