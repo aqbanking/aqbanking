@@ -154,6 +154,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
         break;
   
       case 34: /* Textschluesselergaenzung */
+        break;
   
       default: /* ignore all other fields (if any) */
         DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
