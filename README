@@ -1,0 +1,93 @@
+
+
+1. What Is AqBanking ?
+======================
+
+AqBanking has two major goals which are described in the following paragraphs. 
+
+
+1.1. Generic Online Banking Interface
+-----------------------------------
+
+The intention of AqBanking is to provide a middle layer between the program
+and the various Online Banking libraries (e.g. AqHBCI, OpenHBCI etc). 
+
+The real work is done in banking backends. 
+The first backend which is already supported is AqHBCI, a library which 
+implements a client for the German HBCI (Home Banking Computer Interface) 
+protocol. 
+
+The backend AqHBCI currently supports these security media: 
+ - RDH keyfile (RSA-DES-Hybrid mode)
+ - DDV chipcard (DES-DES-Verfahren)
+ - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use with OpenHBCI in parallel) 
+ - PIN/TAN file (PIN/TAN mode using HTTP over SSL)
+
+
+1.2. Generic Financial Data Importer/Exporter Framework
+-----------------------------------------------------
+
+AqBanking uses various plugins to simplify import and export of financial data. It also provides the administration of profiles on a per import/export plugin basis. 
+
+Currently there are import plugins for the following formats: 
+ - DTAUS (German financial format)
+ - SWIFT (MT940 and MT942)
+
+
+
+2. Supported Platforms
+======================
+
+AqBanking uses the library Gwenhywfar (project page) for abstraction of the underlying system. So it should work on any system for which Gwenhywfar is available. 
+
+This includes (but is not limited to): 
+ - Linux (of course ;-)
+ - Windows (WIN32 platforms, such as Windows95 up to Windows XP)
+ - most POSIX systems (such as the BSDs) should also be supported, 
+   however, this is untested)
+
+
+
+3. Supported Frontends
+======================
+
+Basically all possible frontends (such as KDE, GNOME, console etc) are 
+supported. This is accomplished by only a few callback functions for user 
+interaction which can be overloaded by applications. 
+
+
+
+4. What Do I Need ?
+===================
+
+
+4.1. Required Packages
+----------------------
+
+The only direct dependency of AqBanking is Gwenhywfar (available from
+http://gwenhywfar.sf.net/).
+
+
+
+4.2. Strongly Recommended Packages
+----------------------------------
+
+To use AqBanking you need backends and importers.
+The first backend (which also provides some important importers) is
+AqHBCI (http://aqhbci.sf.net/).
+
+
+4.3. Applications
+-----------------
+
+These application fully or partially support AqBanking:
+ - QBanking (http://www.aquamaniac.de/qbanking/)
+ - KMyMoney (http://kmymoney2.sf.net/)
+
+
+
+
+
+
+
+
