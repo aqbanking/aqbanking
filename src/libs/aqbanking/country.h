@@ -17,6 +17,12 @@
 #include <gwenhywfar/list2.h>
 #include <aqbanking/error.h>
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct AB_COUNTRY AB_COUNTRY;
 GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(AB_COUNTRY, AB_Country, AQBANKING_API)
 
@@ -34,6 +40,12 @@ int AB_Country_GetNumericCode(const AB_COUNTRY *cntry);
 
 AQBANKING_API 
 const char *AB_Country_GetLocalName(const AB_COUNTRY *cntry);
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* AQBANKING_COUNTRY_H */

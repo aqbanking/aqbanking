@@ -19,6 +19,7 @@
 #include "i18n_l.h"
 
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/debug.h>
 
 
 GWEN_CONSTLIST2_FUNCTIONS(AB_COUNTRY, AB_Country)
