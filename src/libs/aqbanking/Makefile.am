@@ -4,7 +4,9 @@ INCLUDES=-I${top_srcdir} -Itypes -Ijobs @all_includes@
 
 lib_LTLIBRARIES=libaqbanking.la
 
-AM_CFLAGS=-DAQBANKING_PLUGINS=\"@aqbanking_plugins@\"
+DEFS=\
+ -DAQBANKING_PLUGINS=\"@aqbanking_plugins@\" \
+ -DDATADIR=\"$(datadir)\"
 
 noinst_HEADERS=\
  account_l.h \

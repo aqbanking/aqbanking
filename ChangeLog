@@ -4,6 +4,8 @@
 - added a generic import/export framework. This can be used to import
   any kind of financial file formats into AqBanking suitable data (like
   AB_TRANSACTION, AB_ACCOUNT etc).
+- added AB_Banking_GetImExporterProfiles(). This function loads all profiles
+  for an importer/exporter.
 
 
 2004/08/22: Martin Preuss<martin@libchipcard.de>

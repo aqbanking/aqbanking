@@ -26,6 +26,27 @@ typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab,
                                                    GWEN_DB_NODE *db);
 
 
+/** @name Construction and Destruction
+ *
+ */
+/*@{*/
+AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab,
+                                 const char *name);
+/*@}*/
+
+
+
+/** @name Prototypes for Virtual Backend Functions
+ *
+ */
+/*@{*/
+typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
+                                       AB_IMEXPORTER_CONTEXT *ctx,
+                                       GWEN_BUFFEREDIO *bio,
+                                       GWEN_DB_NODE *params);
+/*@}*/
+
+
 
 /**
  * Takes over ownership of the given transaction.
@@ -39,6 +60,16 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
  */
 void AB_ImExporterContext_AddAccount(AB_IMEXPORTER_CONTEXT *iec,
                                      AB_ACCOUNT *a);
+
+
+/** @name Setters for Virtual Backend Functions
+ *
+ */
+/*@{*/
+void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
+                               AB_IMEXPORTER_IMPORT_FN f);
+/*@}*/
+
 
 #ifdef __cplusplus
 }

@@ -34,6 +34,7 @@ struct AB_BANKING {
   char *configFile;
 
   GWEN_DB_NODE *data;
+  GWEN_DB_NODE *dbProfiles;
 
   AB_PROVIDER_LIST *providers;
   AB_IMEXPORTER_LIST *imexporters;
@@ -94,6 +95,11 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
 int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
 int AB_Banking__LoadAppData(AB_BANKING *ab);
 int AB_Banking__SaveAllAppData(AB_BANKING *ab);
+
+
+int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
+                                       const char *path,
+                                       GWEN_DB_NODE *db);
 
 
 

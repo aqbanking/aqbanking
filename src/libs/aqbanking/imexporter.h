@@ -66,31 +66,6 @@ extern "C" {
 #endif
 
 
-/** @name Prototypes for Virtual Backend Functions
- *
- */
-/*@{*/
-typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
-                                       AB_IMEXPORTER_CONTEXT *ctx,
-                                       GWEN_BUFFEREDIO *bio,
-                                       GWEN_DB_NODE *params);
-/*@}*/
-
-
-
-
-/** @name Construction and Destruction
- *
- */
-/*@{*/
-AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab,
-                                 const char *name);
-
-void AB_ImExporter_free(AB_IMEXPORTER *ie);
-/*@}*/
-
-
-
 /** @name Virtual Functions for Backends
  *
  */
@@ -99,21 +74,17 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie);
 /**
  * Reads the given stream and imports all data from it. This imported
  * data is stored within the given context.
+ * @param ie pointer to the importer/exporter
+ * @param ctx import context
+ * @param bio stream to read from (usually a file, see
+ *   @ref GWEN_BufferedIO_File_new)
+ * @param dbProfile configuration data for the importer. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
  */
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          GWEN_BUFFEREDIO *bio,
-                         GWEN_DB_NODE *params);
-/*@}*/
-
-
-
-/** @name Setters for Virtual Backend Functions
- *
- */
-/*@{*/
-void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
-                               AB_IMEXPORTER_IMPORT_FN f);
+                         GWEN_DB_NODE *dbProfile);
 /*@}*/
 
 
