@@ -257,11 +257,14 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /**
  * This is used when exporting an account. Not used for imports.
  */
+
+/*
 AQBANKING_API 
 AB_ACCOUNT*
 AB_ImExporterAccountInfo_GetAccount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
 void AB_ImExporterAccountInfo_SetAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                          AB_ACCOUNT *a);
+                                         */
 
 /**
  * Bank code of the institute the account is at .

@@ -3,6 +3,9 @@
 2004/11/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added properties to imexporter plugin descriptions ("import" and "export")
+- added categories to AB_TRANSACTION
+- removed account from AB_IMEXPORTER_ACCOUNTINFO (not needed)
+- completed default profile for csv (export now works !! ;)
 
 
 2004-11-22   Christian Stimming <stimming@tuhh.de>

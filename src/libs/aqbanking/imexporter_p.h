@@ -51,7 +51,7 @@ struct AB_IMEXPORTER_CONTEXT {
 
 struct AB_IMEXPORTER_ACCOUNTINFO {
   GWEN_LIST_ELEMENT(AB_IMEXPORTER_ACCOUNTINFO);
-  AB_ACCOUNT *account;
+  /*AB_ACCOUNT *account;*/
   char *bankCode;
   char *bankName;
   char *accountNumber;

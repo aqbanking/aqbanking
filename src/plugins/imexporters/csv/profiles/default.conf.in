@@ -32,7 +32,7 @@ params {
   # the value of each of these variables is the name of a variable to be looked
   # up in the data given to GWEN_CSV_Write
   columns {
-    1="jobid"
+    1="transactionId"
     2="localBankCode"
     3="localAccountNumber"
     4="remoteBankCode"
@@ -52,6 +52,18 @@ params {
     18="purpose[5]"
     19="purpose[6]"
     20="purpose[7]"
+    21="purpose[8]"
+    22="purpose[9]"
+    23="purpose[10]"
+    24="purpose[11]"
+    25="category[0]"
+    25="category[1]"
+    26="category[2]"
+    26="category[3]"
+    27="category[4]"
+    28="category[5]"
+    29="category[6]"
+    30="category[7]"
   } # columns
 
 } # params

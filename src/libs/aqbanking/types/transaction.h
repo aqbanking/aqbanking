@@ -246,6 +246,15 @@ Set this property with @ref AB_Transaction_SetPurpose,
 get it with @ref AB_Transaction_GetPurpose
 </p>
 
+@anchor AB_TRANSACTION_Category
+<h4>Category</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetCategory, 
+get it with @ref AB_Transaction_GetCategory
+</p>
+
 */
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
@@ -551,6 +560,19 @@ AQBANKING_API void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, 
 AQBANKING_API void AB_Transaction_RemovePurpose(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearPurpose(AB_TRANSACTION *st);
 AQBANKING_API int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_Category
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_Transaction_GetCategory(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Category
+*/
+AQBANKING_API void AB_Transaction_SetCategory(AB_TRANSACTION *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_Transaction_AddCategory(AB_TRANSACTION *st, const char *d, int chk);
+AQBANKING_API void AB_Transaction_RemoveCategory(AB_TRANSACTION *st, const char *d);
+AQBANKING_API void AB_Transaction_ClearCategory(AB_TRANSACTION *st);
+AQBANKING_API int AB_Transaction_HasCategory(AB_TRANSACTION *st, const char *d);
 
 /*@}*/
 

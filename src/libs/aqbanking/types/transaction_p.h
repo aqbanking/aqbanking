@@ -37,6 +37,7 @@ struct AB_TRANSACTION {
   char *primanota;
   char *fiId;
   GWEN_STRINGLIST *purpose;
+  GWEN_STRINGLIST *category;
 };
 
 
@@ -79,6 +80,7 @@ struct AB_TRANSACTION {
 /** @name Info Which Is Not Supported by All Backends
 */
 /*@{*/
+
 
 
 

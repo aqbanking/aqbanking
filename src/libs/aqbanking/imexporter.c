@@ -299,7 +299,7 @@ AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
 }
 
 
-
+/*
 AB_ACCOUNT*
 AB_ImExporterAccountInfo_GetAccount(const AB_IMEXPORTER_ACCOUNTINFO *iea){
   assert(iea);
@@ -313,7 +313,7 @@ void AB_ImExporterAccountInfo_SetAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
   assert(iea);
   iea->account=a;
 }
-
+*/
 
 
 const char*

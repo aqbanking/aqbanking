@@ -209,6 +209,17 @@
           </p>
         </descr>
       </elem>
+      
+      <elem name="category" type="GWEN_STRINGLIST" ptr="1" >
+        <descr>
+          <p>
+            This string list contains the categories this transaction
+            belongs to. This element is not used by AqBanking itself but
+            some im/exporter plugins may choose to use these.
+          </p>
+        </descr>
+      </elem>
+      
     </group>
   </type>
   

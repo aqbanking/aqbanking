@@ -27,6 +27,7 @@ AB_TRANSACTION *AB_Transaction_new() {
   GWEN_LIST_INIT(AB_TRANSACTION, st)
   st->remoteName=GWEN_StringList_new();
   st->purpose=GWEN_StringList_new();
+  st->category=GWEN_StringList_new();
   return st;
 }
 
@@ -80,6 +81,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->fiId);
   if (st->purpose)
     GWEN_StringList_free(st->purpose);
+  if (st->category)
+    GWEN_StringList_free(st->category);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -140,6 +143,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->fiId=strdup(d->fiId);
   if (d->purpose)
     st->purpose=GWEN_StringList_dup(d->purpose);
+  if (d->category)
+    st->category=GWEN_StringList_dup(d->category);
   return st;
 }
 
@@ -245,6 +250,22 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (st->category)
+    {
+      GWEN_STRINGLISTENTRY *se;
+
+      GWEN_DB_DeleteVar(db, "category");
+      se=GWEN_StringList_FirstEntry(st->category);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "category", s))
+          return -1;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
   return 0;
 }
 
@@ -314,6 +335,18 @@ AB_TRANSACTION *st;
       if (!s)
         break;
       AB_Transaction_AddPurpose(st, s, 0);
+    } /* for */
+  }
+  if (1) {
+    int i;
+
+    for (i=0; ; i++) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(db, "category", i, 0);
+      if (!s)
+        break;
+      AB_Transaction_AddCategory(st, s, 0);
     } /* for */
   }
   st->_modified=0;
@@ -807,6 +840,51 @@ void AB_Transaction_ClearPurpose(AB_TRANSACTION *st) {
 
 int AB_Transaction_HasPurpose(AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->purpose, d);
+}
+
+
+const GWEN_STRINGLIST *AB_Transaction_GetCategory(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->category;
+}
+
+
+void AB_Transaction_SetCategory(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) {
+  assert(st);
+  if (st->category)
+    GWEN_StringList_free(st->category);
+  if (d)
+    st->category=GWEN_StringList_dup(d);
+  else
+    st->category=0;
+  st->_modified=1;
+}
+
+
+void AB_Transaction_AddCategory(AB_TRANSACTION *st, const char *d, int chk){
+  assert(st);
+  assert(d);
+  if (GWEN_StringList_AppendString(st->category, d, 0, chk))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_RemoveCategory(AB_TRANSACTION *st, const char *d) {
+  if (GWEN_StringList_RemoveString(st->category, d))
+    st->_modified=1;
+}
+
+
+void AB_Transaction_ClearCategory(AB_TRANSACTION *st) {
+  if (GWEN_StringList_Count(st->category)) {
+    GWEN_StringList_Clear(st->category);
+    st->_modified=1;
+  }
+}
+
+
+int AB_Transaction_HasCategory(AB_TRANSACTION *st, const char *d) {
+  return GWEN_StringList_HasString(st->category, d);
 }
 
 
