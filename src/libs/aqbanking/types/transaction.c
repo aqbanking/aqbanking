@@ -794,10 +794,10 @@ void AB_Transaction_SetSplits(AB_TRANSACTION *st, AB_SPLIT_LIST *d) {
   assert(st);
   if (st->splits)
     AB_Split_List_free(st->splits);
-  st->splits=AB_Split_List_new();
   if (d) {
     AB_SPLIT *e;
 
+  st->splits=AB_Split_List_new();
     e=AB_Split_List_First(d);
     while(e) {
       AB_SPLIT *ne;

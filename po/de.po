@@ -1,11 +1,17 @@
 # translation of de.po to deutsch
+# Markus Frisch, 2005.
+# Markus Frisch, 2005.
+# Markus Frisch, 2005.
+# Markus Frisch, 2005.
+# Markus Frisch, 2005.
+# Markus Frisch, 2005.
 # Martin Preuss <martin@libchipcard.de>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-03-29 17:20+0200\n"
-"PO-Revision-Date: 2005-02-25 10:24+0100\n"
+"POT-Creation-Date: 2005-04-04 10:58+0200\n"
+"PO-Revision-Date: 2005-04-04 10:42+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -13,11 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:1896 src/libs/aqbanking/banking.c:4223
+#: src/libs/aqbanking/banking.c:1902 src/libs/aqbanking/banking.c:4229
 msgid "Error"
 msgstr "Fehler"
 
-#: src/libs/aqbanking/banking.c:1897
+#: src/libs/aqbanking/banking.c:1903
 msgid ""
 "Error executing backend's queue.\n"
 "What shall we do?"
@@ -25,38 +31,38 @@ msgstr ""
 "Es gab einen Fehler bei der Verarbeitung des Ausgangskorbs im\n"
 "zuständigen Modul.  Was möchten Sie tun?"
 
-#: src/libs/aqbanking/banking.c:1899
+#: src/libs/aqbanking/banking.c:1905
 msgid "Continue"
 msgstr "Fortsetzen"
 
-#: src/libs/aqbanking/banking.c:1899 src/libs/aqbanking/banking.c:4799
+#: src/libs/aqbanking/banking.c:1905 src/libs/aqbanking/banking.c:4805
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/libs/aqbanking/banking.c:3798 src/libs/aqbanking/banking.c:3860
+#: src/libs/aqbanking/banking.c:3804 src/libs/aqbanking/banking.c:3866
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:3799 src/libs/aqbanking/banking.c:3861
+#: src/libs/aqbanking/banking.c:3805 src/libs/aqbanking/banking.c:3867
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:3801 src/libs/aqbanking/banking.c:3816
-#: src/libs/aqbanking/banking.c:3863 src/libs/aqbanking/banking.c:3878
-#: src/libs/aqbanking/banking.c:4226
+#: src/libs/aqbanking/banking.c:3807 src/libs/aqbanking/banking.c:3822
+#: src/libs/aqbanking/banking.c:3869 src/libs/aqbanking/banking.c:3884
+#: src/libs/aqbanking/banking.c:4232
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:3814 src/libs/aqbanking/banking.c:3876
+#: src/libs/aqbanking/banking.c:3820 src/libs/aqbanking/banking.c:3882
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:3815 src/libs/aqbanking/banking.c:3877
+#: src/libs/aqbanking/banking.c:3821 src/libs/aqbanking/banking.c:3883
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:4224
+#: src/libs/aqbanking/banking.c:4230
 msgid ""
 "No valid PIN (tried too often).\n"
 "Aborting."
@@ -64,11 +70,11 @@ msgstr ""
 "Keine gültige PIN (zu oft versucht).\n"
 "Aktion wird abgebrochen."
 
-#: src/libs/aqbanking/banking.c:4273
+#: src/libs/aqbanking/banking.c:4279
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:4275
+#: src/libs/aqbanking/banking.c:4281
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
@@ -81,15 +87,15 @@ msgstr ""
 "PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
 "b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:4287
+#: src/libs/aqbanking/banking.c:4293
 msgid "Use this"
 msgstr "Trotzdem verwenden"
 
-#: src/libs/aqbanking/banking.c:4288
+#: src/libs/aqbanking/banking.c:4294
 msgid "Re-enter"
 msgstr "Neu eingeben"
 
-#: src/libs/aqbanking/banking.c:4596
+#: src/libs/aqbanking/banking.c:4602
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -138,38 +144,38 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/libs/aqbanking/banking.c:4718 src/libs/aqbanking/banking.c:4734
+#: src/libs/aqbanking/banking.c:4724 src/libs/aqbanking/banking.c:4740
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
 #. the same again for HTML
-#: src/libs/aqbanking/banking.c:4758 src/libs/aqbanking/banking.c:4759
-#: src/libs/aqbanking/banking.c:4760 src/libs/aqbanking/banking.c:4761
-#: src/libs/aqbanking/banking.c:4762 src/libs/aqbanking/banking.c:4763
-#: src/libs/aqbanking/banking.c:4766 src/libs/aqbanking/banking.c:4768
-#: src/libs/aqbanking/banking.c:4769 src/libs/aqbanking/banking.c:4770
-#: src/libs/aqbanking/banking.c:4771 src/libs/aqbanking/banking.c:4772
-#: src/libs/aqbanking/banking.c:4773 src/libs/aqbanking/banking.c:4777
+#: src/libs/aqbanking/banking.c:4764 src/libs/aqbanking/banking.c:4765
+#: src/libs/aqbanking/banking.c:4766 src/libs/aqbanking/banking.c:4767
+#: src/libs/aqbanking/banking.c:4768 src/libs/aqbanking/banking.c:4769
+#: src/libs/aqbanking/banking.c:4772 src/libs/aqbanking/banking.c:4774
+#: src/libs/aqbanking/banking.c:4775 src/libs/aqbanking/banking.c:4776
+#: src/libs/aqbanking/banking.c:4777 src/libs/aqbanking/banking.c:4778
+#: src/libs/aqbanking/banking.c:4779 src/libs/aqbanking/banking.c:4783
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/libs/aqbanking/banking.c:4785
+#: src/libs/aqbanking/banking.c:4791
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:4787
+#: src/libs/aqbanking/banking.c:4793
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:4787
+#: src/libs/aqbanking/banking.c:4793
 msgid "No"
 msgstr "Nein"
 
-#: src/libs/aqbanking/banking.c:4793
+#: src/libs/aqbanking/banking.c:4799
 msgid "Certificate"
 msgstr "Zertifikat"
 
-#: src/libs/aqbanking/banking.c:4795
+#: src/libs/aqbanking/banking.c:4801
 msgid ""
 "Do you want to accept this certificate permanently?<html>Do you want to "
 "accept this certificate permanently?</html>"
@@ -177,33 +183,33 @@ msgstr ""
 "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie dieses "
 "Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
 
-#: src/libs/aqbanking/banking.c:4797
+#: src/libs/aqbanking/banking.c:4803
 msgid "Permanently"
 msgstr "Dauerhaft"
 
-#: src/libs/aqbanking/banking.c:4798
+#: src/libs/aqbanking/banking.c:4804
 msgid "This session only"
 msgstr "Nur für diese Sitzung"
 
 #: src/libs/aqbanking/country.c:28
 msgid "Albania"
-msgstr ""
+msgstr "Albanien"
 
 #: src/libs/aqbanking/country.c:28
 msgid "Lek"
-msgstr ""
+msgstr "Lek"
 
 #: src/libs/aqbanking/country.c:29
 msgid "Algeria"
-msgstr ""
+msgstr "Algerien"
 
 #: src/libs/aqbanking/country.c:29
 msgid "Algerian Dinar"
-msgstr ""
+msgstr "Algerischer Dinar"
 
 #: src/libs/aqbanking/country.c:30
 msgid "American Samoa"
-msgstr ""
+msgstr "Amerikanisch Samoa"
 
 #: src/libs/aqbanking/country.c:30 src/libs/aqbanking/country.c:107
 #: src/libs/aqbanking/country.c:146 src/libs/aqbanking/country.c:152
@@ -212,11 +218,11 @@ msgstr ""
 #: src/libs/aqbanking/country.c:228 src/libs/aqbanking/country.c:229
 #: src/libs/aqbanking/country.c:235
 msgid "US Dollar"
-msgstr ""
+msgstr "US-Dollar"
 
 #: src/libs/aqbanking/country.c:31
 msgid "Andorra"
-msgstr ""
+msgstr "Andorra"
 
 #: src/libs/aqbanking/country.c:31 src/libs/aqbanking/country.c:40
 #: src/libs/aqbanking/country.c:45 src/libs/aqbanking/country.c:91
@@ -230,543 +236,540 @@ msgstr ""
 #: src/libs/aqbanking/country.c:161 src/libs/aqbanking/country.c:180
 #: src/libs/aqbanking/country.c:189 src/libs/aqbanking/country.c:201
 #: src/libs/aqbanking/country.c:204
-#, fuzzy
 msgid "Euro"
-msgstr "Fehler"
+msgstr "Euro"
 
 #: src/libs/aqbanking/country.c:32
 msgid "Angola"
-msgstr ""
+msgstr "Angola"
 
 #: src/libs/aqbanking/country.c:32
 msgid "New Kwanza "
-msgstr ""
+msgstr "Neuer Kwanza"
 
 #: src/libs/aqbanking/country.c:33
 msgid "Anguilla"
-msgstr ""
+msgstr "Anguilla"
 
 #: src/libs/aqbanking/country.c:33 src/libs/aqbanking/country.c:35
 #: src/libs/aqbanking/country.c:78 src/libs/aqbanking/country.c:105
 #: src/libs/aqbanking/country.c:156 src/libs/aqbanking/country.c:185
 #: src/libs/aqbanking/country.c:186 src/libs/aqbanking/country.c:187
 msgid "East Caribbean Dollar"
-msgstr ""
+msgstr "Ostkaribischer Dollar"
 
 #: src/libs/aqbanking/country.c:34
 msgid "Antarctica"
-msgstr ""
+msgstr "Antarktis"
 
 #: src/libs/aqbanking/country.c:34 src/libs/aqbanking/country.c:53
 #: src/libs/aqbanking/country.c:171 src/libs/aqbanking/country.c:207
 msgid "Norwegian Krone"
-msgstr ""
+msgstr "Norwegische Krone"
 
 #: src/libs/aqbanking/country.c:35
 msgid "Antigua and Barbuda"
-msgstr ""
+msgstr "Antigua und Barbuda"
 
 #: src/libs/aqbanking/country.c:36
 msgid "Argentina"
-msgstr ""
+msgstr "Argentinien"
 
 #: src/libs/aqbanking/country.c:36
 msgid "Austral and Argenintinian Neuvo Peso "
-msgstr ""
+msgstr "Südlicher und Argentinischer Neuer Peso"
 
 #: src/libs/aqbanking/country.c:37
 msgid "Armenia"
-msgstr ""
+msgstr "Armenien"
 
 #: src/libs/aqbanking/country.c:37
 msgid "Dram "
-msgstr ""
+msgstr "Dram·"
 
 #: src/libs/aqbanking/country.c:38
 msgid "Aruba"
-msgstr ""
+msgstr "Aruba"
 
 #: src/libs/aqbanking/country.c:38
 msgid "Aruban Guilder "
-msgstr ""
+msgstr "Aruba Florin"
 
 #: src/libs/aqbanking/country.c:39
 msgid "Australia"
-msgstr ""
+msgstr "Australien"
 
 #: src/libs/aqbanking/country.c:39 src/libs/aqbanking/country.c:68
 #: src/libs/aqbanking/country.c:69 src/libs/aqbanking/country.c:112
 #: src/libs/aqbanking/country.c:126 src/libs/aqbanking/country.c:159
 #: src/libs/aqbanking/country.c:169 src/libs/aqbanking/country.c:223
 msgid "Australian Dollar"
-msgstr ""
+msgstr "Australischer Dollar"
 
 #: src/libs/aqbanking/country.c:40
 msgid "Austria"
-msgstr ""
+msgstr "Österreich"
 
 #: src/libs/aqbanking/country.c:41
 msgid "Azerbaijan"
-msgstr ""
+msgstr "Aserbaidschan"
 
 #: src/libs/aqbanking/country.c:41
 msgid "Azerbaijani Manat "
-msgstr ""
+msgstr "Aserbaidschan-Manat"
 
 #: src/libs/aqbanking/country.c:42
 msgid "Bahrain"
-msgstr ""
+msgstr "Bahrain"
 
 #: src/libs/aqbanking/country.c:42
 msgid "Bahraini Dinar"
-msgstr ""
+msgstr "Bahrain Dinar"
 
 #: src/libs/aqbanking/country.c:43
 msgid "Bangladesh"
-msgstr ""
+msgstr "Bangladesch"
 
 #: src/libs/aqbanking/country.c:43
 msgid "Taka"
-msgstr ""
+msgstr "Taka"
 
 #: src/libs/aqbanking/country.c:44
 msgid "Barbados"
-msgstr ""
+msgstr "Barbados"
 
 #: src/libs/aqbanking/country.c:44
 msgid "Barbados Dollar"
-msgstr ""
+msgstr "Barbados Dollar"
 
 #: src/libs/aqbanking/country.c:45
 msgid "Belgium"
-msgstr ""
+msgstr "Belgien"
 
 #: src/libs/aqbanking/country.c:46
 msgid "Belize"
-msgstr ""
+msgstr "Belize"
 
 #: src/libs/aqbanking/country.c:46
 msgid "Belize Dollar"
-msgstr ""
+msgstr "Belize Dollar"
 
 #: src/libs/aqbanking/country.c:47
 msgid "Benin"
-msgstr ""
+msgstr "Benin"
 
 #: src/libs/aqbanking/country.c:47 src/libs/aqbanking/country.c:58
 #: src/libs/aqbanking/country.c:60 src/libs/aqbanking/country.c:64
 #: src/libs/aqbanking/country.c:65 src/libs/aqbanking/country.c:72
 #: src/libs/aqbanking/country.c:215
 msgid "Franc de la Communaut&eacute; financi&egrave;re africaine"
-msgstr ""
+msgstr "Franc des afrikanischen Finanzverbundes"
 
 #: src/libs/aqbanking/country.c:48
 msgid "Bermuda"
-msgstr ""
+msgstr "Bermuda"
 
 #: src/libs/aqbanking/country.c:48
 msgid "Bermudian Dollar"
-msgstr ""
+msgstr "Bermuda Dollar"
 
 #: src/libs/aqbanking/country.c:49
 msgid "Bhutan"
-msgstr ""
+msgstr "Bhutan"
 
 #: src/libs/aqbanking/country.c:49
 msgid "Ngultrum "
-msgstr ""
+msgstr "Ngultrum"
 
 #: src/libs/aqbanking/country.c:50
 msgid "Bolivia"
-msgstr ""
+msgstr "Bolivien"
 
 #: src/libs/aqbanking/country.c:50
 msgid "Boliviano and Bolivian Peso"
-msgstr ""
+msgstr "Boliviano und Bolivien Peso"
 
 #: src/libs/aqbanking/country.c:51
 msgid "Bosnia & Herzegowina"
-msgstr ""
+msgstr "Bosnien-Herzogowina"
 
 #: src/libs/aqbanking/country.c:51
 msgid "Convertible Mark"
-msgstr ""
+msgstr "Tausch-Mark"
 
 #: src/libs/aqbanking/country.c:52
 msgid "Botswana"
-msgstr ""
+msgstr "Botswana"
 
 #: src/libs/aqbanking/country.c:52
 msgid "Pula"
-msgstr ""
+msgstr "Pula"
 
 #: src/libs/aqbanking/country.c:53
 msgid "Bouvet Island"
-msgstr ""
+msgstr "Bouvet-Insel"
 
 #: src/libs/aqbanking/country.c:54
 msgid "Brazil"
-msgstr ""
+msgstr "Brasilien"
 
 #: src/libs/aqbanking/country.c:54
 msgid "Cruzeiro Real"
-msgstr ""
+msgstr "Cruzeiro·Real"
 
 #: src/libs/aqbanking/country.c:55
 msgid "British Indian Ocean Territory"
-msgstr ""
+msgstr "Britisches Territorium im Indischen Ozean"
 
 #: src/libs/aqbanking/country.c:55
 msgid "Pound Sterling "
-msgstr ""
+msgstr "Pfund Sterling"
 
 #: src/libs/aqbanking/country.c:56
 msgid "Brunei Darussalam"
-msgstr ""
+msgstr "Brunei-Darussalam"
 
 #: src/libs/aqbanking/country.c:56
 msgid "Brunei Dollar"
-msgstr ""
+msgstr "Brunei·Dollar"
 
 #: src/libs/aqbanking/country.c:57
 msgid "Bulgaria"
-msgstr ""
+msgstr "Bulgarien"
 
 #: src/libs/aqbanking/country.c:57
 msgid "Lev"
-msgstr ""
+msgstr "Lev"
 
 #: src/libs/aqbanking/country.c:58
 msgid "Burkina Faso"
-msgstr ""
+msgstr "Burkina·Faso"
 
 #: src/libs/aqbanking/country.c:59
 msgid "Burundi"
-msgstr ""
+msgstr "Burundi"
 
 #: src/libs/aqbanking/country.c:59
 msgid "Burundi Franc"
-msgstr ""
+msgstr "Burundi-Franc"
 
 #: src/libs/aqbanking/country.c:60
 msgid "Cameroon"
-msgstr ""
+msgstr "Kamerun"
 
 #: src/libs/aqbanking/country.c:61
 msgid "Canada"
-msgstr ""
+msgstr "Kanada"
 
 #: src/libs/aqbanking/country.c:61
 msgid "Canadian Dollar"
-msgstr ""
+msgstr "Kanadischer Dollar"
 
 #: src/libs/aqbanking/country.c:62
 msgid "Cape Verde"
-msgstr ""
+msgstr "Kap Verde"
 
 #: src/libs/aqbanking/country.c:62
 msgid "Escudo Caboverdiano"
-msgstr ""
+msgstr "Capverdischer Escudo"
 
 #: src/libs/aqbanking/country.c:63
 msgid "Cayman Islands"
-msgstr ""
+msgstr "Cayman Inseln"
 
 #: src/libs/aqbanking/country.c:63
 msgid "Cayman Islands Dollar"
-msgstr ""
+msgstr "Cayman Inseln Dollar"
 
 #: src/libs/aqbanking/country.c:64
 msgid "Central African Republic"
-msgstr ""
+msgstr "Zentralafrikanische Republik"
 
 #: src/libs/aqbanking/country.c:65
 msgid "Chad"
-msgstr ""
+msgstr "Tschad"
 
 #: src/libs/aqbanking/country.c:66
 msgid "Chili"
-msgstr ""
+msgstr "Chile"
 
 #: src/libs/aqbanking/country.c:66
 msgid "Unidades de Fomento and Chilean Peso"
-msgstr ""
+msgstr "Peso"
 
 #: src/libs/aqbanking/country.c:67
 msgid "China"
-msgstr ""
+msgstr "China"
 
 #: src/libs/aqbanking/country.c:67
 msgid "Yuan Renminbi"
-msgstr ""
+msgstr "Renminbi"
 
 #: src/libs/aqbanking/country.c:68
 msgid "Christmas Island"
-msgstr ""
+msgstr "Weihnachtsinseln"
 
 #: src/libs/aqbanking/country.c:69
 msgid "Cocos "
-msgstr ""
+msgstr "Cocos "
 
 #: src/libs/aqbanking/country.c:70
 msgid "Colombia"
-msgstr ""
+msgstr "Kolumbien"
 
 #: src/libs/aqbanking/country.c:70
 msgid "Colombian Peso"
-msgstr ""
+msgstr "Kolumbianischer Peso"
 
 #: src/libs/aqbanking/country.c:71
 msgid "Comoros"
-msgstr ""
+msgstr "Komoren"
 
 #: src/libs/aqbanking/country.c:71
 msgid "Comorian Franc"
-msgstr ""
+msgstr "Komoreanischer Franc"
 
 #: src/libs/aqbanking/country.c:72
 msgid "Congo"
-msgstr ""
+msgstr "Kongo"
 
 #: src/libs/aqbanking/country.c:73
 msgid "Cook Islands"
-msgstr ""
+msgstr "Cook Inseln"
 
 #: src/libs/aqbanking/country.c:73 src/libs/aqbanking/country.c:164
 #: src/libs/aqbanking/country.c:168 src/libs/aqbanking/country.c:178
 #: src/libs/aqbanking/country.c:216
 msgid "New Zealand Dollar"
-msgstr ""
+msgstr "Neuseeländischer Dollar"
 
 #: src/libs/aqbanking/country.c:74
 msgid "Costa Rica"
-msgstr ""
+msgstr "Costa Rica"
 
 #: src/libs/aqbanking/country.c:74
 msgid "Costa Rican Col&oacute;n"
-msgstr ""
+msgstr "Col&oacute;n"
 
 #: src/libs/aqbanking/country.c:75
 msgid "Cuba"
-msgstr ""
+msgstr "Kuba"
 
 #: src/libs/aqbanking/country.c:75
 msgid "Cuban Peso"
-msgstr ""
+msgstr "Kubanischer Peso"
 
 #: src/libs/aqbanking/country.c:76
 msgid "Cyprus"
-msgstr ""
+msgstr "Zypern"
 
 #: src/libs/aqbanking/country.c:76
 msgid "Cypriot Pound"
-msgstr ""
+msgstr "Zyprisches Pfund"
 
 #: src/libs/aqbanking/country.c:77
 msgid "Djibouti"
-msgstr ""
+msgstr "Dschibuti"
 
 #: src/libs/aqbanking/country.c:77
 msgid "Djibouti Franc"
-msgstr ""
+msgstr "Dschibutischer Franc"
 
 #: src/libs/aqbanking/country.c:78
 msgid "Dominica"
-msgstr ""
+msgstr "Dominica"
 
 #: src/libs/aqbanking/country.c:79
 msgid "Dominican Republic"
-msgstr ""
+msgstr "Dominikanische Republik"
 
 #: src/libs/aqbanking/country.c:79
 msgid "Dominican Republic Peso"
-msgstr ""
+msgstr "Peso der Dominikanischen Rebublik"
 
 #: src/libs/aqbanking/country.c:80
 msgid "Ecuador"
-msgstr ""
+msgstr "Equador"
 
 #: src/libs/aqbanking/country.c:80
 msgid "US&nbsp;Dollar "
-msgstr ""
+msgstr "US Dollar"
 
 #: src/libs/aqbanking/country.c:81
 msgid "Egypt"
-msgstr ""
+msgstr "Ägypten"
 
 #: src/libs/aqbanking/country.c:81
 msgid "Egytian Pound"
-msgstr ""
+msgstr "Ägyptisches Pfund"
 
 #: src/libs/aqbanking/country.c:82
 msgid "El Salvador"
-msgstr ""
+msgstr "El·Salvador"
 
 #: src/libs/aqbanking/country.c:82
 msgid "El Salvadorian Col&oacute;n"
-msgstr ""
+msgstr "Col&oacute;n Dollar"
 
 #: src/libs/aqbanking/country.c:83
 msgid "Equatorial Guinea"
-msgstr ""
+msgstr "Äquatorialguinea"
 
 #: src/libs/aqbanking/country.c:83
 msgid "Franc de la Communaut&eacute; financi&egrave;re africaine and Ekwele"
-msgstr ""
+msgstr "CFA Franc"
 
 #: src/libs/aqbanking/country.c:84
 msgid "Eritrea"
-msgstr ""
+msgstr "Eritrea"
 
 #: src/libs/aqbanking/country.c:84
 msgid "Eritreian Nakfa, Ethiopian Birr"
-msgstr ""
+msgstr "Eritreischer Nakfa, Äthiopischer Birr"
 
 #: src/libs/aqbanking/country.c:85
 msgid "Estonia"
-msgstr ""
+msgstr "Estland"
 
 #: src/libs/aqbanking/country.c:85
 msgid "Kroon"
-msgstr ""
+msgstr "Estnische Krone"
 
 #: src/libs/aqbanking/country.c:86
 msgid "Ethiopia"
-msgstr ""
+msgstr "Äthiopien"
 
 #: src/libs/aqbanking/country.c:86
 msgid "Birr"
-msgstr ""
+msgstr "Birr"
 
 #: src/libs/aqbanking/country.c:87
 msgid "European Community"
-msgstr ""
+msgstr "Europäische Gemeinschaft"
 
 #: src/libs/aqbanking/country.c:87
-#, fuzzy
 msgid "Euro "
-msgstr "Fehler"
+msgstr "Euro"
 
 #: src/libs/aqbanking/country.c:88
 msgid "Falkland Islands"
-msgstr ""
+msgstr "Falklandinseln"
 
 #: src/libs/aqbanking/country.c:88
 msgid "Falkland Pound"
-msgstr ""
+msgstr "Pfund der Falklandinseln"
 
 #: src/libs/aqbanking/country.c:89
 msgid "Faroe Islands"
-msgstr ""
+msgstr "Faröer"
 
 #: src/libs/aqbanking/country.c:89 src/libs/aqbanking/country.c:104
 msgid "Danish Krone"
-msgstr ""
+msgstr "Dänische Krone"
 
 #: src/libs/aqbanking/country.c:90
 msgid "Fiji Islands"
-msgstr ""
+msgstr "Fidschi Inseln"
 
 #: src/libs/aqbanking/country.c:90
 msgid "Fiji Dollar"
-msgstr ""
+msgstr "Fidschi-Dollar"
 
 #: src/libs/aqbanking/country.c:91
 msgid "Finland"
-msgstr ""
+msgstr "Finnland"
 
 #: src/libs/aqbanking/country.c:92
 msgid "France"
-msgstr ""
+msgstr "Frankreich"
 
 #: src/libs/aqbanking/country.c:93
 msgid "France, Metropolitan"
-msgstr ""
+msgstr "Frankreich"
 
 #: src/libs/aqbanking/country.c:94
 msgid "French Guiana"
-msgstr ""
+msgstr "Französich-Guiana"
 
 #: src/libs/aqbanking/country.c:95
 msgid "French Polynesia"
-msgstr ""
+msgstr "Französisch-Polynesien"
 
 #: src/libs/aqbanking/country.c:95 src/libs/aqbanking/country.c:163
 msgid "Franc des Comptoirs fran&ccedil;ais du Pacifique"
-msgstr ""
+msgstr "CFP-Franc"
 
 #: src/libs/aqbanking/country.c:96
 msgid "French Southern and Antarctic Territories"
-msgstr ""
+msgstr "Französiche Süd- und Antarktikgebiete"
 
 #: src/libs/aqbanking/country.c:97
 msgid "Gambia"
-msgstr ""
+msgstr "Gambia"
 
 #: src/libs/aqbanking/country.c:97
 msgid "Dalasi"
-msgstr ""
+msgstr "Dalasi"
 
 #: src/libs/aqbanking/country.c:98
 msgid "Georgia"
-msgstr ""
+msgstr "Georgien"
 
 #: src/libs/aqbanking/country.c:98
 msgid "Lari "
-msgstr ""
+msgstr "Lari"
 
 #: src/libs/aqbanking/country.c:99 src/libs/aqbanking/country.c:100
-#, fuzzy
 msgid "Germany "
-msgstr "Dauerhaft"
+msgstr "Deutschland"
 
 #: src/libs/aqbanking/country.c:101
 msgid "Ghana"
-msgstr ""
+msgstr "Ghana"
 
 #: src/libs/aqbanking/country.c:101
 msgid "Cedi"
-msgstr ""
+msgstr "Cedi"
 
 #: src/libs/aqbanking/country.c:102
 msgid "Gibraltar"
-msgstr ""
+msgstr "Gibraltar"
 
 #: src/libs/aqbanking/country.c:102
 msgid "Gibraltar Pound"
-msgstr ""
+msgstr "Gibraltisches Pfund"
 
 #: src/libs/aqbanking/country.c:103
 msgid "Greece"
-msgstr ""
+msgstr "Griechenland"
 
 #: src/libs/aqbanking/country.c:104
 msgid "Greenland"
-msgstr ""
+msgstr "Grönland"
 
 #: src/libs/aqbanking/country.c:105
 msgid "Grenada"
-msgstr ""
+msgstr "Grenada"
 
 #: src/libs/aqbanking/country.c:106
 msgid "Guadeloupe"
-msgstr ""
+msgstr "Guadeloupe"
 
 #: src/libs/aqbanking/country.c:107
 msgid "Guam"
-msgstr ""
+msgstr "Guam"
 
 #: src/libs/aqbanking/country.c:108
 msgid "Guatemala"
-msgstr ""
+msgstr "Guatemala"
 
 #: src/libs/aqbanking/country.c:108
 msgid "Quetzal"
-msgstr ""
+msgstr "Quetzal"
 
 #: src/libs/aqbanking/country.c:109
 msgid "Guinea"
-msgstr ""
+msgstr "Guinea"
 
 #: src/libs/aqbanking/country.c:109
 msgid "Guinea Syli "
@@ -774,901 +777,900 @@ msgstr ""
 
 #: src/libs/aqbanking/country.c:110
 msgid "Guinea-Bissau"
-msgstr ""
+msgstr "Guinea-Bissau"
 
 #: src/libs/aqbanking/country.c:110
 msgid ""
 "Guinea-Bissau Peso and Franc de la Communaut&eacute; financi&egrave;re "
 "africaine"
-msgstr ""
+msgstr "Franc Guin&eacute;en"
 
 #: src/libs/aqbanking/country.c:111
 msgid "Guyana"
-msgstr ""
+msgstr "Guyana"
 
 #: src/libs/aqbanking/country.c:111
 msgid "Guyana Dollar"
-msgstr ""
+msgstr "Guyana-Dollar"
 
 #: src/libs/aqbanking/country.c:112
 msgid "Heard and McDonald Islands"
-msgstr ""
+msgstr "Heard und Mc Donald-Inseln"
 
 #: src/libs/aqbanking/country.c:113
 msgid "Honduras"
-msgstr ""
+msgstr "Honduras"
 
 #: src/libs/aqbanking/country.c:113
 msgid "Lempira"
-msgstr ""
+msgstr "Lempira"
 
 #: src/libs/aqbanking/country.c:114
 msgid "Hong Kong"
-msgstr ""
+msgstr "Hong·Kong"
 
 #: src/libs/aqbanking/country.c:114
 msgid "Hong Kong Dollar"
-msgstr ""
+msgstr "Hong·Kong·Dollar"
 
 #: src/libs/aqbanking/country.c:115
 msgid "Hungary"
-msgstr ""
+msgstr "Ungarn"
 
 #: src/libs/aqbanking/country.c:115
 msgid "Forint"
-msgstr ""
+msgstr "Forint"
 
 #: src/libs/aqbanking/country.c:116
 msgid "India"
-msgstr ""
+msgstr "Indien"
 
 #: src/libs/aqbanking/country.c:116
 msgid "Indian Rupee"
-msgstr ""
+msgstr "Indische Rupie"
 
 #: src/libs/aqbanking/country.c:117
 msgid "Iran, Islamic Republic of"
-msgstr ""
+msgstr "Iran, Islamische Republik"
 
 #: src/libs/aqbanking/country.c:117
 msgid "Iranian Rial"
-msgstr ""
+msgstr "Iranischer Rial"
 
 #: src/libs/aqbanking/country.c:118
 msgid "Iraq"
-msgstr ""
+msgstr "Irak"
 
 #: src/libs/aqbanking/country.c:118
 msgid "Iraqi Dinar"
-msgstr ""
+msgstr "Irakischer Dinar"
 
 #: src/libs/aqbanking/country.c:119
 msgid "Ireland"
-msgstr ""
+msgstr "Irland"
 
 #: src/libs/aqbanking/country.c:120
 msgid "Israel"
-msgstr ""
+msgstr "Israel"
 
 #: src/libs/aqbanking/country.c:120
 msgid "Shekel"
-msgstr ""
+msgstr "Schekel"
 
 #: src/libs/aqbanking/country.c:121
 msgid "Italy"
-msgstr ""
+msgstr "Italien"
 
 #: src/libs/aqbanking/country.c:122
 msgid "Japan"
-msgstr ""
+msgstr "Japan"
 
 #: src/libs/aqbanking/country.c:122
-#, fuzzy
 msgid "Yen"
-msgstr "Ja"
+msgstr "Yen"
 
 #: src/libs/aqbanking/country.c:123
 msgid "Jordan"
-msgstr ""
+msgstr "Jordanien"
 
 #: src/libs/aqbanking/country.c:123
 msgid "Jordanian Dinar"
-msgstr ""
+msgstr "Jordanischer Dinar"
 
 #: src/libs/aqbanking/country.c:124
 msgid "Kazakhstan"
-msgstr ""
+msgstr "Kasachstan"
 
 #: src/libs/aqbanking/country.c:124
 msgid "Tenge "
-msgstr ""
+msgstr "Tenge "
 
 #: src/libs/aqbanking/country.c:125
 msgid "Kenya"
-msgstr ""
+msgstr "Kenia"
 
 #: src/libs/aqbanking/country.c:125
 msgid "Kenyan Shilling"
-msgstr ""
+msgstr "Kenianischer Schilling"
 
 #: src/libs/aqbanking/country.c:126
 msgid "Kiribati"
-msgstr ""
+msgstr "Kiribati"
 
 #: src/libs/aqbanking/country.c:127
 msgid "Korea, Democratic People's Republic of "
-msgstr ""
+msgstr "Korea, Volksrepublik"
 
 #: src/libs/aqbanking/country.c:127
 msgid "North Korean Won"
-msgstr ""
+msgstr "Nordkoreanischer Won"
 
 #: src/libs/aqbanking/country.c:128
 msgid "Korea, Republic of "
-msgstr ""
+msgstr "Korea, Republik"
 
 #: src/libs/aqbanking/country.c:128
 msgid "South Korean Won"
-msgstr ""
+msgstr "Südkoreanischer Won"
 
 #: src/libs/aqbanking/country.c:129
 msgid "Kuwait"
-msgstr ""
+msgstr "Kuwait"
 
 #: src/libs/aqbanking/country.c:129
 msgid "Kuwaiti Dinar"
-msgstr ""
+msgstr "Kuwaitischer·Dinar"
 
 #: src/libs/aqbanking/country.c:130
 msgid "Kyrgyzstan"
-msgstr ""
+msgstr "Kirgisien"
 
 #: src/libs/aqbanking/country.c:130
 msgid "Kyrgyzstani Som"
-msgstr ""
+msgstr "Kirgisischer Som"
 
 #: src/libs/aqbanking/country.c:131
 msgid "Latvia"
-msgstr ""
+msgstr "Lettland"
 
 #: src/libs/aqbanking/country.c:131
 msgid "Lats"
-msgstr ""
+msgstr "Lats"
 
 #: src/libs/aqbanking/country.c:132
 msgid "Lebanon"
-msgstr ""
+msgstr "Libanon"
 
 #: src/libs/aqbanking/country.c:132
 msgid "Lebanese Pound"
-msgstr ""
+msgstr "Libanesisches Pfund"
 
 #: src/libs/aqbanking/country.c:133
 msgid "Lesotho"
-msgstr ""
+msgstr "Lesotho"
 
 #: src/libs/aqbanking/country.c:133
 msgid "Loti, Maloti and South African Rand"
-msgstr ""
+msgstr "Loti,·Maloti·und Südafrikanischer·Rand"
 
 #: src/libs/aqbanking/country.c:134
 msgid "Liberia"
-msgstr ""
+msgstr "Liberia"
 
 #: src/libs/aqbanking/country.c:134
 msgid "Liberian Dollar"
-msgstr ""
+msgstr "Liberischer Dollar"
 
 #: src/libs/aqbanking/country.c:135
 msgid "Libyan Arab Jamahiriya"
-msgstr ""
+msgstr "Libyen"
 
 #: src/libs/aqbanking/country.c:135
 msgid "Libyan Dinar"
-msgstr ""
+msgstr "Libyscher Dinar"
 
 #: src/libs/aqbanking/country.c:136
 msgid "Liechtenstein"
-msgstr ""
+msgstr "Liechtenstein"
 
 #: src/libs/aqbanking/country.c:136 src/libs/aqbanking/country.c:210
 msgid "Swiss Franc"
-msgstr ""
+msgstr "Schweizer Franken"
 
 #: src/libs/aqbanking/country.c:137
 msgid "Lithuania"
-msgstr ""
+msgstr "Litauen"
 
 #: src/libs/aqbanking/country.c:137
 msgid "Litas"
-msgstr ""
+msgstr "Litas"
 
 #: src/libs/aqbanking/country.c:138
 msgid "Luxembourg"
-msgstr ""
+msgstr "Luxemburg"
 
 #: src/libs/aqbanking/country.c:139
 msgid "Macedonia, the Former Yugoslav Republic of"
-msgstr ""
+msgstr "Mazedonien, ehm. Jogoslawische Republik"
 
 #: src/libs/aqbanking/country.c:139
 msgid "Macedonian Dinar"
-msgstr ""
+msgstr "Mazedonischer Dinar"
 
 #: src/libs/aqbanking/country.c:140
 msgid "Madagascar"
-msgstr ""
+msgstr "Madagaskar"
 
 #: src/libs/aqbanking/country.c:140
 msgid "Malagasy Franc"
-msgstr ""
+msgstr "Madagaskar-Franc"
 
 #: src/libs/aqbanking/country.c:141
 msgid "Malawi"
-msgstr ""
+msgstr "Malawi"
 
 #: src/libs/aqbanking/country.c:141
 msgid "Malawian Kwacha"
-msgstr ""
+msgstr "Malawischer Kwacha"
 
 #: src/libs/aqbanking/country.c:142
 msgid "Malaysia"
-msgstr ""
+msgstr "Malaysia"
 
 #: src/libs/aqbanking/country.c:142
 msgid "Ringgit "
-msgstr ""
+msgstr "Ringgit "
 
 #: src/libs/aqbanking/country.c:143
 msgid "Maldives"
-msgstr ""
+msgstr "Malediven"
 
 #: src/libs/aqbanking/country.c:143
 msgid "Rufiyaa"
-msgstr ""
+msgstr "Malediven Rupie"
 
 #: src/libs/aqbanking/country.c:144
 msgid "Mali"
-msgstr ""
+msgstr "Mali"
 
 #: src/libs/aqbanking/country.c:144
 msgid ""
 "Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
-msgstr ""
+msgstr "CFA Franc"
 
 #: src/libs/aqbanking/country.c:145
 msgid "Malta"
-msgstr ""
+msgstr "Malta"
 
 #: src/libs/aqbanking/country.c:145
 msgid "Maltese Lira "
-msgstr ""
+msgstr "Malteser Lira"
 
 #: src/libs/aqbanking/country.c:146
 msgid "Marshall Islands"
-msgstr ""
+msgstr "Marshallinseln"
 
 #: src/libs/aqbanking/country.c:147
 msgid "Martinique"
-msgstr ""
+msgstr "Martinique"
 
 #: src/libs/aqbanking/country.c:148
 msgid "Mauritania"
-msgstr ""
+msgstr "Mauritanien"
 
 #: src/libs/aqbanking/country.c:148
 msgid "Ouguiya"
-msgstr ""
+msgstr "Ouguiya"
 
 #: src/libs/aqbanking/country.c:149
 msgid "Mauritius"
-msgstr ""
+msgstr "Mauritius"
 
 #: src/libs/aqbanking/country.c:149
 msgid "Mauritius Rupee"
-msgstr ""
+msgstr "Mauretanische Rupie"
 
 #: src/libs/aqbanking/country.c:150
 msgid "Mayotte"
-msgstr ""
+msgstr "Mayotte"
 
 #: src/libs/aqbanking/country.c:151
 msgid "Mexico"
-msgstr ""
+msgstr "Mexico"
 
 #: src/libs/aqbanking/country.c:151
 msgid "Mexican New Peso "
-msgstr ""
+msgstr "Mexikanischer Neuer Peso"
 
 #: src/libs/aqbanking/country.c:152
 msgid "Micronesia, Federated States of"
-msgstr ""
+msgstr "Mikronesien"
 
 #: src/libs/aqbanking/country.c:153
 msgid "Moldova, Republic of"
-msgstr ""
+msgstr "Moldavien, Republik"
 
 #: src/libs/aqbanking/country.c:153
 msgid "Moldovian Leu"
-msgstr ""
+msgstr "Moldavischer Leu"
 
 #: src/libs/aqbanking/country.c:154
 msgid "Monaco"
-msgstr ""
+msgstr "Monaco"
 
 #: src/libs/aqbanking/country.c:155
 msgid "Mongolia"
-msgstr ""
+msgstr "Mongolei"
 
 #: src/libs/aqbanking/country.c:155
 msgid "Tugrik"
-msgstr ""
+msgstr "Tugrik"
 
 #: src/libs/aqbanking/country.c:156
 msgid "Montserrat"
-msgstr ""
+msgstr "Montserrat"
 
 #: src/libs/aqbanking/country.c:157
 msgid "Morocco"
-msgstr ""
+msgstr "Marokko"
 
 #: src/libs/aqbanking/country.c:157
 msgid "Moroccan Dirham"
-msgstr ""
+msgstr "Marokkanischer Dirham"
 
 #: src/libs/aqbanking/country.c:158
 msgid "Mozambique"
-msgstr ""
+msgstr "Mosambik"
 
 #: src/libs/aqbanking/country.c:158
 msgid "Metical"
-msgstr ""
+msgstr "Metical"
 
 #: src/libs/aqbanking/country.c:159
 msgid "Nauru"
-msgstr ""
+msgstr "Nauru"
 
 #: src/libs/aqbanking/country.c:160
 msgid "Nepal"
-msgstr ""
+msgstr "Nepal"
 
 #: src/libs/aqbanking/country.c:160
 msgid "Nepalese Rupee"
-msgstr ""
+msgstr "Nepalesische Rupie"
 
 #: src/libs/aqbanking/country.c:161
 msgid "Netherlands"
-msgstr ""
+msgstr "Niederlande"
 
 #: src/libs/aqbanking/country.c:162
 msgid "Netherlands Antilles"
-msgstr ""
+msgstr "Niederländische Antillen"
 
 #: src/libs/aqbanking/country.c:162
 msgid "Netherlands Antilles Guilder "
-msgstr ""
+msgstr "Gulden der Nierderländischen Antillen"
 
 #: src/libs/aqbanking/country.c:163
 msgid "New Caledonia"
-msgstr ""
+msgstr "Neukaledonien"
 
 #: src/libs/aqbanking/country.c:164
 msgid "New Zealand"
-msgstr ""
+msgstr "Neuseeland"
 
 #: src/libs/aqbanking/country.c:165
 msgid "Nicaragua"
-msgstr ""
+msgstr "Nikaragua"
 
 #: src/libs/aqbanking/country.c:165
 msgid "C&oacute;rdoba"
-msgstr ""
+msgstr "C&oacute;rdoba"
 
 #: src/libs/aqbanking/country.c:166
 msgid "Niger"
-msgstr ""
+msgstr "Niger"
 
 #: src/libs/aqbanking/country.c:166 src/libs/aqbanking/country.c:192
 msgid ""
 "West African Franc and Franc de la Communaut&eacute; financi&egrave;re "
 "africaine"
-msgstr ""
+msgstr "Westafrikanischer Franc"
 
 #: src/libs/aqbanking/country.c:167
 msgid "Nigeria"
-msgstr ""
+msgstr "Nigeria"
 
 #: src/libs/aqbanking/country.c:167
 msgid "Naira"
-msgstr ""
+msgstr "Naira"
 
 #: src/libs/aqbanking/country.c:168
 msgid "Niue"
-msgstr ""
+msgstr "Niue"
 
 #: src/libs/aqbanking/country.c:169
 msgid "Norfolk Island"
-msgstr ""
+msgstr "Norfolkinsel"
 
 #: src/libs/aqbanking/country.c:170
 msgid "Northern Mariana Islands"
-msgstr ""
+msgstr "Nördliche Marianen-Inseln"
 
 #: src/libs/aqbanking/country.c:171
 msgid "Norway"
-msgstr ""
+msgstr "Norwegen"
 
 #: src/libs/aqbanking/country.c:172
 msgid "Palau"
-msgstr ""
+msgstr "Palau"
 
 #: src/libs/aqbanking/country.c:173
 msgid "Panama"
-msgstr ""
+msgstr "Panama"
 
 #: src/libs/aqbanking/country.c:173
 msgid "Balboa and US&nbsp;Dollar"
-msgstr ""
+msgstr "Balboa·und US&nbsp;Dollar"
 
 #: src/libs/aqbanking/country.c:174
 msgid "Papua New Guinea"
-msgstr ""
+msgstr "Papua-Neuguinea"
 
 #: src/libs/aqbanking/country.c:174
 msgid "Kina"
-msgstr ""
+msgstr "Kina"
 
 #: src/libs/aqbanking/country.c:175
 msgid "Paraguay"
-msgstr ""
+msgstr "Paraguay"
 
 #: src/libs/aqbanking/country.c:175
 msgid "Guarani"
-msgstr ""
+msgstr "Guarani"
 
 #: src/libs/aqbanking/country.c:176
 msgid "Peru"
-msgstr ""
+msgstr "Peru"
 
 #: src/libs/aqbanking/country.c:176
 msgid "Inti and New Sol "
-msgstr ""
+msgstr "Inti und Neuer Sol "
 
 #: src/libs/aqbanking/country.c:177
 msgid "Philippines"
-msgstr ""
+msgstr "Philippinen"
 
 #: src/libs/aqbanking/country.c:177
 msgid "Philippines Peso"
-msgstr ""
+msgstr "Philippinischer Peso"
 
 #: src/libs/aqbanking/country.c:178
 msgid "Pitcairn Island"
-msgstr ""
+msgstr "Pitcairninseln"
 
 #: src/libs/aqbanking/country.c:179
 msgid "Poland"
-msgstr ""
+msgstr "Polen"
 
 #: src/libs/aqbanking/country.c:179
 msgid "New Zloty "
-msgstr ""
+msgstr "Neuer Sloty"
 
 #: src/libs/aqbanking/country.c:180
 msgid "Portugal"
-msgstr ""
+msgstr "Portugal"
 
 #: src/libs/aqbanking/country.c:181
 msgid "Puerto Rico"
-msgstr ""
+msgstr "Puerto·Rico"
 
 #: src/libs/aqbanking/country.c:182
 msgid "Romania"
-msgstr ""
+msgstr "Rumänien"
 
 #: src/libs/aqbanking/country.c:182
 msgid "Romanian Leu"
-msgstr ""
+msgstr "Rumänischer Leu"
 
 #: src/libs/aqbanking/country.c:183
 msgid "Russian Federation"
-msgstr ""
+msgstr "Russische Förderation"
 
 #: src/libs/aqbanking/country.c:183
 msgid "Russian Federation Rouble"
-msgstr ""
+msgstr "Rubel der Russischen Förderation"
 
 #: src/libs/aqbanking/country.c:184
 msgid "Rwanda"
-msgstr ""
+msgstr "Ruanda"
 
 #: src/libs/aqbanking/country.c:184
 msgid "Rwanda Franc"
-msgstr ""
+msgstr "Ruanda-Franc"
 
 #: src/libs/aqbanking/country.c:185
 msgid "Saint Kitts "
-msgstr ""
+msgstr "St. Kitts und Nevis"
 
 #: src/libs/aqbanking/country.c:186
 msgid "Saint Lucia"
-msgstr ""
+msgstr "St. Lucia"
 
 #: src/libs/aqbanking/country.c:187
 msgid "Saint Vincent and the Grenadines"
-msgstr ""
+msgstr "St. Vincent/Grenadinen"
 
 #: src/libs/aqbanking/country.c:188
 msgid "Samoa"
-msgstr ""
+msgstr "Samoa"
 
 #: src/libs/aqbanking/country.c:188
 msgid "Tala"
-msgstr ""
+msgstr "Tala"
 
 #: src/libs/aqbanking/country.c:189
 msgid "San Marino"
-msgstr ""
+msgstr "San·Marino"
 
 #: src/libs/aqbanking/country.c:190
 msgid "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"
-msgstr ""
+msgstr "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"
 
 #: src/libs/aqbanking/country.c:190
 msgid "Dobra"
-msgstr ""
+msgstr "Dobra"
 
 #: src/libs/aqbanking/country.c:191
 msgid "Saudi Arabia"
-msgstr ""
+msgstr "Saudi-Arabien"
 
 #: src/libs/aqbanking/country.c:191
 msgid "Saudi Riyal"
-msgstr ""
+msgstr "Saudischer Rial"
 
 #: src/libs/aqbanking/country.c:192
 msgid "Senegal"
-msgstr ""
+msgstr "Senegal"
 
 #: src/libs/aqbanking/country.c:193
 msgid "Seychelles"
-msgstr ""
+msgstr "Seychellen"
 
 #: src/libs/aqbanking/country.c:193
 msgid "Seychelles Rupee"
-msgstr ""
+msgstr "Seychellen-Rupie"
 
 #: src/libs/aqbanking/country.c:194
 msgid "Sierra Leone"
-msgstr ""
+msgstr "Sierra·Leone"
 
 #: src/libs/aqbanking/country.c:194
 msgid "Leone"
-msgstr ""
+msgstr "Leone"
 
 #: src/libs/aqbanking/country.c:195
 msgid "Singapore"
-msgstr ""
+msgstr "Singapur"
 
 #: src/libs/aqbanking/country.c:195
 msgid "Singapore Dollar"
-msgstr ""
+msgstr "Singapur-Dollar"
 
 #: src/libs/aqbanking/country.c:196
 msgid "Slovenia"
-msgstr ""
+msgstr "Slowenien"
 
 #: src/libs/aqbanking/country.c:196
 msgid "Tolar"
-msgstr ""
+msgstr "Tolar"
 
 #: src/libs/aqbanking/country.c:197
 msgid "Solomon Islands"
-msgstr ""
+msgstr "Salomonen"
 
 #: src/libs/aqbanking/country.c:197
 msgid "Solomon Islands Dollar"
-msgstr ""
+msgstr "Salomonen-Dollar"
 
 #: src/libs/aqbanking/country.c:198
 msgid "Somalia"
-msgstr ""
+msgstr "Somalia"
 
 #: src/libs/aqbanking/country.c:198
 msgid "Somali Shilling"
-msgstr ""
+msgstr "Somalischer Schilling"
 
 #: src/libs/aqbanking/country.c:199
 msgid "South Africa"
-msgstr ""
+msgstr "Südafrika"
 
 #: src/libs/aqbanking/country.c:199
 msgid "Rand"
-msgstr ""
+msgstr "Rand"
 
 #: src/libs/aqbanking/country.c:200
 msgid "South Georgia and the South Sandwich Islands"
-msgstr ""
+msgstr "Süd-Georgien und südliche Sandwichinseln"
 
 #: src/libs/aqbanking/country.c:200 src/libs/aqbanking/country.c:227
 msgid "Pound Sterling"
-msgstr ""
+msgstr "Pfund Sterling"
 
 #: src/libs/aqbanking/country.c:201
 msgid "Spain"
-msgstr ""
+msgstr "Spanien"
 
 #: src/libs/aqbanking/country.c:202
 msgid "Sri Lanka"
-msgstr ""
+msgstr "Sri·Lanka"
 
 #: src/libs/aqbanking/country.c:202
 msgid "Sri Lankan Rupee"
-msgstr ""
+msgstr "Sri·Lanka-Rupie"
 
 #: src/libs/aqbanking/country.c:203
 msgid "St Helena"
-msgstr ""
+msgstr "St.·Helena"
 
 #: src/libs/aqbanking/country.c:203
 msgid "St Helena Pound"
-msgstr ""
+msgstr "St.-Helena-Pfund"
 
 #: src/libs/aqbanking/country.c:204
 msgid "St Pierre and Miquelon"
-msgstr ""
+msgstr "St. Pierre und Miquelon"
 
 #: src/libs/aqbanking/country.c:205
 msgid "Sudan"
-msgstr ""
+msgstr "Sudan"
 
 #: src/libs/aqbanking/country.c:205
 msgid "Sudanese Pound and Sudanese Dinar"
-msgstr ""
+msgstr "Sudanesisches Pfund und -Dinar"
 
 #: src/libs/aqbanking/country.c:206
 msgid "Suriname"
-msgstr ""
+msgstr "Surinam"
 
 #: src/libs/aqbanking/country.c:206
 msgid "Surinam Guilder "
-msgstr ""
+msgstr "Surinam-Gulden"
 
 #: src/libs/aqbanking/country.c:207
 msgid "Svalbard and Jan Mayen Islands"
-msgstr ""
+msgstr "Svalbard und Jan Mayen Insel"
 
 #: src/libs/aqbanking/country.c:208
 msgid "Swaziland"
-msgstr ""
+msgstr "Swasiland"
 
 #: src/libs/aqbanking/country.c:208
 msgid "Lilangeni"
-msgstr ""
+msgstr "Lilangeni"
 
 #: src/libs/aqbanking/country.c:209
 msgid "Sweden"
-msgstr ""
+msgstr "Schweden"
 
 #: src/libs/aqbanking/country.c:209
 msgid "Swedish Krona"
-msgstr ""
+msgstr "Schwedische Krone"
 
 #: src/libs/aqbanking/country.c:210
 msgid "Switzerland"
-msgstr ""
+msgstr "Schweiz"
 
 #: src/libs/aqbanking/country.c:211
 msgid "Syrian Arab Republic"
-msgstr ""
+msgstr "Syrische Arabische Republik"
 
 #: src/libs/aqbanking/country.c:211
 msgid "Syrian Pound"
-msgstr ""
+msgstr "Syrisches Pfund"
 
 #: src/libs/aqbanking/country.c:212
 msgid "Tajikistan"
-msgstr ""
+msgstr "Tadshikistan"
 
 #: src/libs/aqbanking/country.c:212
 msgid "Tajik Rouble "
-msgstr ""
+msgstr "Tadshikischer Rubel"
 
 #: src/libs/aqbanking/country.c:213
 msgid "Tanzania, United Republic of"
-msgstr ""
+msgstr "Tansania, Vereinigte Rebublik·"
 
 #: src/libs/aqbanking/country.c:213
 msgid "Tanzanian Shilling"
-msgstr ""
+msgstr "Tansania-Schilling"
 
 #: src/libs/aqbanking/country.c:214
 msgid "Thailand"
-msgstr ""
+msgstr "Thailand"
 
 #: src/libs/aqbanking/country.c:214
 msgid "Baht"
-msgstr ""
+msgstr "Baht"
 
 #: src/libs/aqbanking/country.c:215
 msgid "Togo"
-msgstr ""
+msgstr "Togo"
 
 #: src/libs/aqbanking/country.c:216
 msgid "Tokelau"
-msgstr ""
+msgstr "Tokelau"
 
 #: src/libs/aqbanking/country.c:217
 msgid "Tonga"
-msgstr ""
+msgstr "Tonga"
 
 #: src/libs/aqbanking/country.c:217
 msgid "Pa'anga"
-msgstr ""
+msgstr "Pa'anga"
 
 #: src/libs/aqbanking/country.c:218
 msgid "Trinidad and Tobago"
-msgstr ""
+msgstr "Trinidad und Tobago"
 
 #: src/libs/aqbanking/country.c:218
 msgid "Trinidad and Tobago Dollar"
-msgstr ""
+msgstr "Trinidad- und Tobago-Dollar"
 
 #: src/libs/aqbanking/country.c:219
 msgid "Tunisia"
-msgstr ""
+msgstr "Tunesien"
 
 #: src/libs/aqbanking/country.c:219
 msgid "Tunisian Dinar"
-msgstr ""
+msgstr "Tunesischer Dinar"
 
 #: src/libs/aqbanking/country.c:220
 msgid "Turkey"
-msgstr ""
+msgstr "Türkei"
 
 #: src/libs/aqbanking/country.c:220
 msgid "Turkish Lira"
-msgstr ""
+msgstr "Türkische Lira"
 
 #: src/libs/aqbanking/country.c:221
 msgid "Turkmenistan"
-msgstr ""
+msgstr "Turkmenistan"
 
 #: src/libs/aqbanking/country.c:221
 msgid "Turkmenistani Manat"
-msgstr ""
+msgstr "Turkmenischer Manat"
 
 #: src/libs/aqbanking/country.c:222
 msgid "Turks and Caicos Islands"
-msgstr ""
+msgstr "Turks- und Caicosinseln"
 
 #: src/libs/aqbanking/country.c:223
 msgid "Tuvalu"
-msgstr ""
+msgstr "Tuvalu"
 
 #: src/libs/aqbanking/country.c:224
 msgid "Ukraine"
-msgstr ""
+msgstr "Ukraine"
 
 #: src/libs/aqbanking/country.c:224
 msgid "Hryvna and Karbovanet"
-msgstr ""
+msgstr "Hryvna und Karbovanet"
 
 #: src/libs/aqbanking/country.c:225
 msgid "Union of Soviet Socialist Republics"
-msgstr ""
+msgstr "UDSSR"
 
 #: src/libs/aqbanking/country.c:225
 msgid "USSR Rouble"
-msgstr ""
+msgstr "UDSSR Rubel"
 
 #: src/libs/aqbanking/country.c:226
 msgid "United Arab Emirates"
-msgstr ""
+msgstr "Vereinigte Arabische Emirate"
 
 #: src/libs/aqbanking/country.c:226
 msgid "UAE Dirham"
-msgstr ""
+msgstr "Dirham der VAE"
 
 #: src/libs/aqbanking/country.c:227
 msgid "United Kingdom"
-msgstr ""
+msgstr "Vereinigtes Königreich"
 
 #: src/libs/aqbanking/country.c:228
 msgid "United States of America"
-msgstr ""
+msgstr "Vereinigte Staaten von Amerika"
 
 #: src/libs/aqbanking/country.c:229
 msgid "United States Minor Outlying Islands"
-msgstr ""
+msgstr "Minor·Outlying·Islands, den USA zugehörig"
 
 #: src/libs/aqbanking/country.c:230
 msgid "Uruguay"
-msgstr ""
+msgstr "Uruguay"
 
 #: src/libs/aqbanking/country.c:230
 msgid "Uruguayan New Peso "
-msgstr ""
+msgstr "Uruguayischer Neuer Peso"
 
 #: src/libs/aqbanking/country.c:231
 msgid "Uzbekistan"
-msgstr ""
+msgstr "Usbekistan"
 
 #: src/libs/aqbanking/country.c:231
 msgid "Uzbekistani Som "
-msgstr ""
+msgstr "Usbekischer Som"
 
 #: src/libs/aqbanking/country.c:232
 msgid "Venezuela"
-msgstr ""
+msgstr "Venezuela"
 
 #: src/libs/aqbanking/country.c:232
 msgid "Bolivar"
-msgstr ""
+msgstr "Bolivar"
 
 #: src/libs/aqbanking/country.c:233
 msgid "Viet Nam"
-msgstr ""
+msgstr "Vietnam"
 
 #: src/libs/aqbanking/country.c:233
 msgid "D&ocirc;ng"
-msgstr ""
+msgstr "Dong"
 
 #: src/libs/aqbanking/country.c:234 src/libs/aqbanking/country.c:235
 msgid "Virgin Islands "
-msgstr ""
+msgstr "Jungferninseln"
 
 #: src/libs/aqbanking/country.c:234
 msgid "US Dollar "
-msgstr ""
+msgstr "US Dollar"
 
 #: src/libs/aqbanking/country.c:236
 msgid "West Africa"
-msgstr ""
+msgstr "Westafrika"
 
 #: src/libs/aqbanking/country.c:236
 msgid "West African Franc"
-msgstr ""
+msgstr "Westafrika Franc"
 
 #: src/libs/aqbanking/country.c:237
 msgid "Western Sahara"
-msgstr ""
+msgstr "West-Sahara"
 
 #: src/libs/aqbanking/country.c:237
 msgid "Moroccan Dirham and Mauritanian Ouguiya"
-msgstr ""
+msgstr "Marokkanischer Dirham und Mauretanischer Ouguiya"
 
 #: src/libs/aqbanking/country.c:238
 msgid "Yugoslavia"
-msgstr ""
+msgstr "Jogoslawien"
 
 #: src/libs/aqbanking/country.c:238
 msgid "New Dinar"
-msgstr ""
+msgstr "Neuer Dinar"
 
 #: src/libs/aqbanking/country.c:239
 msgid "Zambia"
-msgstr ""
+msgstr "Sambia"
 
 #: src/libs/aqbanking/country.c:239
 msgid "Zambian Kwacha"
-msgstr ""
+msgstr "Sambischer Kwacha"
 
 #: src/libs/aqbanking/country.c:240
 msgid "Zimbabwe"
-msgstr ""
+msgstr "Simbabwe"
 
 #: src/libs/aqbanking/country.c:240
 msgid "Zimbabwe Dollar"
-msgstr ""
+msgstr "Simbabwe Dollar"
 
 #: src/plugins/imexporters/qif/qif.c:80
 msgid "Please enter the date format for the following item:\n"
-msgstr ""
+msgstr "Bitte legen Sie das Datumsformat fest:\n"
 
 #: src/plugins/imexporters/qif/qif.c:82
 msgid "<html>Please enter the date format for the following item:<br>"
-msgstr ""
+msgstr "<html>Bitte legen Sie das Datumsformat fest:<br>"
 
 #: src/plugins/imexporters/qif/qif.c:86
 msgid ""
@@ -1682,6 +1684,15 @@ msgid ""
 " \"DD.MM.YYYY\" (-> 25.02.2005)\n"
 " \"MM/DD/YY\"   (-> 02/25/05)\n"
 msgstr ""
+"Die folgenden Zeichen können benutzt werden:\n"
+"- 'Y': Ziffer für das Jahr\n"
+"- 'M': Ziffer für den Monat\n"
+"-'D': Ziffer für den Tag\n"
+"\n"
+"Beispiele:\n"
+" \"YYYY/MM/DD\" (-> 2005/02/25)\n"
+" \"DD.MM.YYYY\"·(->·25.02.2005)\n"
+" \"MM/DD/YY\"···(->·02/25/05)\n"
 
 #: src/plugins/imexporters/qif/qif.c:96
 msgid ""
@@ -1696,18 +1707,28 @@ msgid ""
 " <tr><td><i>MM/DD/YY</i></td><td>(-> 02/25/05)</td></tr>\n"
 "</html>"
 msgstr ""
+"Folgende Zeichen können benutzt werden:<table>·<tr><td><i>Y</i></"
+"td><td>Ziffer·für das Jahr</td></tr>\n"
+"·<tr><td><i>M</i></td><td>Ziffer für den Monat</td></tr>\n"
+"·<tr><td><i>D</i></td><td>Ziffer für den Tag</td></tr>\n"
+"</table>\n"
+"<br>Beispiele:<table>·<tr><td><i>YYYY/MM/DD</i></td><td>(->·2005/02/25)</"
+"td></tr>\n"
+"·<tr><td><i>DD.MM.YYYY</i></td><td>(->·25.02.2005)</td></tr>\n"
+"·<tr><td><i>MM/DD/YY</i></td><td>(->·02/25/05)</td></tr>\n"
+"</html>"
 
 #: src/plugins/imexporters/qif/qif.c:128
 msgid "Enter Date Format"
-msgstr ""
+msgstr "Datumsformat eingeben"
 
 #: src/plugins/imexporters/qif/qif.c:129
 msgid "Enter Correct Date Format"
-msgstr ""
+msgstr "Korrektes Datumsformat verwenden"
 
 #: src/plugins/imexporters/qif/qif.c:246
 msgid "The following value could not be parsed: \n"
-msgstr ""
+msgstr "Nachfolgender Wert konnte nicht ermittelt werden: \n"
 
 #: src/plugins/imexporters/qif/qif.c:248
 msgid ""
@@ -1717,10 +1738,15 @@ msgid ""
 " 2) ',' (as in \"123,45\")\n"
 "What is the fixpoint in the value above ?"
 msgstr ""
+"Es stehen zwei Möglichkeiten für die Abtrennung\n"
+"der Nachkommastellen zur Auswahl:\n"
+" 1) '.' (wie bei \"123.45\")\n"
+" 2) ',' (wie·bei·\"123,45\")\n"
+"Wie ist Ihre Entscheidung ?"
 
 #: src/plugins/imexporters/qif/qif.c:254
 msgid "<htlm>The following value could not be parsed: <br>"
-msgstr ""
+msgstr "<html>Nachfolgender Wert konnte nicht ermittelt werden: <br>"
 
 #: src/plugins/imexporters/qif/qif.c:256
 msgid ""
@@ -1729,40 +1755,42 @@ msgid ""
 " <li>',' (as in \"123,45\")</li>\n"
 "</ol>What is the fixpoint in the value above ?</html>"
 msgstr ""
+"<br>Es stehen zwei Möglichkeiten für die Abtrennung der Nachkommastellenzur "
+"Auswahl:·<ol>·<li>'.'·(wie·bei·\"123.45\")</li>\n"
+" <li>','·(wie·bei·\"123,45\")</li>\n"
+"</ol>Wie ist Ihre Entscheidung·?</html>"
 
 #: src/plugins/imexporters/qif/qif.c:278
 msgid "Value Parsing"
-msgstr ""
+msgstr "Wertanalyse"
 
 #: src/plugins/imexporters/qif/qif.c:280
 msgid "Possibility 1"
-msgstr ""
+msgstr "Möglichkeit 1"
 
 #: src/plugins/imexporters/qif/qif.c:281
 msgid "Possibility 2"
-msgstr ""
+msgstr "Möglichkeit 2"
 
 #: src/plugins/imexporters/qif/qif.c:464 src/plugins/imexporters/qif/qif.c:658
-#, fuzzy
 msgid "Account statement date"
-msgstr "Konto nicht zugeordnet"
+msgstr "Kontoauszugsdatum"
 
 #: src/plugins/imexporters/qif/qif.c:479
 msgid "Account statement credit line value"
-msgstr ""
+msgstr "Wert für Kreditlimit in Kontobeschreibung"
 
 #: src/plugins/imexporters/qif/qif.c:495
 msgid "Account statement balance value"
-msgstr ""
+msgstr "Wert für Saldo in Kontobeschreibung"
 
 #: src/plugins/imexporters/qif/qif.c:673
-#, fuzzy
 msgid "Transaction statement amount value"
-msgstr "Konto nicht zugeordnet"
+msgstr "Wert für Betrag in Umsatzbuchung"
 
 #: src/plugins/imexporters/qif/qif.c:710
 msgid "Transaction split amount value"
-msgstr ""
+msgstr "Wert für Betrag in Umsatz-Teilbuchung"
 
 #~ msgid "AFGHANISTAN"
 #~ msgstr "Afghanistan"

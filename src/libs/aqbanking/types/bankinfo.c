@@ -455,10 +455,10 @@ void AB_BankInfo_SetServices(AB_BANKINFO *st, AB_BANKINFO_SERVICE_LIST *d) {
   assert(st);
   if (st->services)
     AB_BankInfoService_List_free(st->services);
-  st->services=AB_BankInfoService_List_new();
   if (d) {
     AB_BANKINFO_SERVICE *e;
 
+  st->services=AB_BankInfoService_List_new();
     e=AB_BankInfoService_List_First(d);
     while(e) {
       AB_BANKINFO_SERVICE *ne;
