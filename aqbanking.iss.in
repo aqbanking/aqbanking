@@ -50,8 +50,12 @@ Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; C
 Source: "win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
 Source: "win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
 
-; The plugins
+; The aqbanking plugins
 Source: "win32-tmp\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
+
+; The plugins that belong to gwenhywfar. 
+; FIXME: Not yet sure how to fetch all related files.
+Source: "win32-tmp\lib\gwenhywfar\plugins\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
 
 
 ; And all the documentation
