@@ -5,6 +5,7 @@ noinst_LTLIBRARIES=libtypes.la
 noinst_HEADERS=\
   accstatus_p.h \
   balance_p.h \
+  transaction_l.h \
   transaction_p.h \
   value_p.h
 

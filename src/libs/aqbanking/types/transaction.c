@@ -303,7 +303,7 @@ void AB_Transaction_ClearRemoteName(AB_TRANSACTION *t){
 
 
 
-const GWEN_TIME *AB_GetTransaction_GetValutaDate(const AB_TRANSACTION *t){
+const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *t){
   assert(t);
   return t->valutaDate;
 }
@@ -321,7 +321,7 @@ void AB_Transaction_SetValutaDate(AB_TRANSACTION *t, const GWEN_TIME *d){
 
 
 
-const GWEN_TIME *AB_GetTransaction_GetDate(const AB_TRANSACTION *t){
+const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *t){
   assert(t);
   return t->date;
 }

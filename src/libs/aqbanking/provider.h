@@ -22,6 +22,10 @@
 #include <gwenhywfar/bufferedio.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
+
+#define AB_PROVIDER_FLAGS_COMPLETE_DAY_REPORTS 0x00000001
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -71,6 +75,9 @@ const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
 AQBANKING_API
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 
+
+AQBANKING_API
+GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro);
 
 
 /*@}*/ /* defgroup */

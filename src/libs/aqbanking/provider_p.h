@@ -41,6 +41,7 @@ struct AB_PROVIDER {
   AB_PROVIDER_ADDACCOUNT_FN addAccountFn;
   GWEN_LIBLOADER *libLoader;
   GWEN_TYPE_UINT32 usage;
+  GWEN_TYPE_UINT32 flags;
   int isInit;
 };
 

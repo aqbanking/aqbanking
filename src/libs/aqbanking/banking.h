@@ -233,6 +233,7 @@ typedef enum {
 
 #include <aqbanking/job.h>
 #include <aqbanking/provider.h>
+#include <aqbanking/imexporter.h>
 
 
 #ifdef __cplusplus
@@ -517,8 +518,6 @@ int AB_Banking_GetWizardPath(AB_BANKING *ab,
 /*@}*/
 
 
-
-
 /** @name Application Data
  *
  * Applications may let AqBanking store global application specific data.
@@ -668,6 +667,27 @@ AQBANKING_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                                                           const char *pn);
 
+/**
+ * Returns a list2 of available importers and exporters.
+ * You must free this list after using it via
+ * @ref GWEN_PluginDescription_List2_freeAll.
+ * Please note that a simple @ref GWEN_PluginDescription_List2_free would
+ * not suffice, since that would only free the list but not the objects
+ * stored within the list !
+ * @param ab pointer to the AB_BANKING object
+ */
+AQBANKING_API
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab);
+
+/**
+ * Loads an importer/exporter backend with the given name. You can use
+ * @ref AB_Banking_GetImExporterDescrs to retrieve a list of available
+ * backends.
+ * AqBanking remains the owner of the object returned (if any), so you
+ * <b>must not</b> free it.
+ */
+AQBANKING_API 
+AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
 /*@}*/
 
 

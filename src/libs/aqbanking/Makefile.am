@@ -1,6 +1,6 @@
 SUBDIRS=jobs types
 
-INCLUDES=-I${top_srcdir} @all_includes@
+INCLUDES=-I${top_srcdir} -Itypes -Ijobs @all_includes@
 
 lib_LTLIBRARIES=libaqbanking.la
 
@@ -11,6 +11,8 @@ noinst_HEADERS=\
  account_p.h \
  banking_l.h \
  banking_p.h \
+ imexporter_l.h \
+ imexporter_p.h \
  job_l.h \
  job_p.h \
  provider_l.h \
@@ -23,6 +25,8 @@ iheader_HEADERS=\
  banking.h \
  banking_be.h \
  error.h \
+ imexporter.h \
+ imexporter_be.h \
  job.h \
  job_be.h \
  provider.h \
@@ -31,6 +35,7 @@ iheader_HEADERS=\
 libaqbanking_la_SOURCES=\
  account.c \
  banking.c \
+ imexporter.c \
  job.c \
  provider.c
 

@@ -16,6 +16,7 @@
 
 #include "banking_p.h"
 #include "provider_l.h"
+#include "imexporter_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
@@ -84,6 +85,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
+  ab->imexporters=AB_ImExporter_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
@@ -106,6 +108,7 @@ void AB_Banking_free(AB_BANKING *ab){
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
     AB_Provider_List_free(ab->providers);
+    AB_ImExporter_List_free(ab->imexporters);
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
     free(ab->appName);
@@ -895,6 +898,15 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
 
   GWEN_Buffer_free(pbuf);
   return wdl;
+}
+
+
+
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
+
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS "/imexporters");
+  return l;
 }
 
 
@@ -1869,12 +1881,187 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
 }
 
 
+
 void *AB_Banking_GetUserData(AB_BANKING *ab) {
   assert(ab);
   return ab->user_data;
 }
 
+
 void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
   assert(ab);
   ab->user_data = user_data;
 }
+
+
+
+AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name) {
+  AB_IMEXPORTER *ie;
+
+  assert(ab);
+  assert(name);
+  ie=AB_ImExporter_List_First(ab->imexporters);
+  while(ie) {
+    if (strcasecmp(AB_ImExporter_GetName(ie), name)==0)
+      break;
+    ie=AB_ImExporter_List_Next(ie);
+  } /* while */
+
+  return ie;
+}
+
+
+
+AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
+  AB_IMEXPORTER *ie;
+
+  assert(ab);
+  assert(name);
+
+  ie=AB_Banking_FindImExporter(ab, name);
+  if (ie)
+    return ie;
+  ie=AB_Banking_LoadImExporterPlugin(ab, name);
+  if (ie) {
+    AB_ImExporter_List_Add(ie, ab->imexporters);
+  }
+
+  return ie;
+}
+
+
+
+AB_IMEXPORTER *AB_Banking_LoadImExporterPluginFile(AB_BANKING *ab,
+                                                   const char *modname,
+                                                   const char *fname){
+  GWEN_LIBLOADER *ll;
+  AB_IMEXPORTER *ie;
+  AB_IMEXPORTER_FACTORY_FN fn;
+  void *p;
+  GWEN_BUFFER *nbuf;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load provider plugin \"%s\" (%s)",
+              modname, fname);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
+  GWEN_Buffer_AppendString(nbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    GWEN_Buffer_free(nbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(nbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/imexporters");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  assert(db);
+
+  fn=(AB_IMEXPORTER_FACTORY_FN)p;
+  assert(fn);
+  ie=fn(ab, db);
+  if (!ie) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No im/exporter created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_ImExporter_SetLibLoader(ie, ll);
+
+  return ie;
+}
+
+
+
+AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
+                                               const char *modname){
+  GWEN_LIBLOADER *ll;
+  AB_IMEXPORTER *ie;
+  AB_IMEXPORTER_FACTORY_FN fn;
+  void *p;
+  const char *s;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFER *mbuf;
+  GWEN_DB_NODE *db;
+
+  ll=GWEN_LibLoader_new();
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=modname;
+  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
+  modname=GWEN_Buffer_GetStart(mbuf);
+  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
+                                         AQBANKING_PLUGINS
+                                         "/"
+                                         AB_IMEXPORTER_FOLDER,
+                                         modname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* create name of init function */
+  GWEN_Buffer_AppendString(mbuf, "_factory");
+
+  /* resolve name of factory function */
+  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    GWEN_Buffer_free(mbuf);
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+  GWEN_Buffer_free(mbuf);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/imexporters");
+  assert(db);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+  assert(db);
+
+  fn=(AB_IMEXPORTER_FACTORY_FN)p;
+  assert(fn);
+  ie=fn(ab, db);
+  if (!ie) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No im/exporter created");
+    GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_LibLoader_free(ll);
+    return 0;
+  }
+
+  /* store libloader */
+  AB_ImExporter_SetLibLoader(ie, ll);
+
+  return ie;
+}
+
+
+
+
+
+
+
+
+
+

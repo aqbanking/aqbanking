@@ -37,6 +37,20 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
 
 
 
+
+/** @name Functions For Loading Im/Exporters
+ *
+ */
+/*@{*/
+AB_IMEXPORTER *AB_Banking_LoadImExporterPluginFile(AB_BANKING *ab,
+                                                   const char *modname,
+                                                   const char *fname);
+AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
+                                               const char *modname);
+/*@}*/
+
+
+
 /**
  * This function loads the given backend (if it not already has been) and
  * imports any account that backend might offer. You can use this function

@@ -18,6 +18,7 @@
 #include "banking_l.h"
 #include "account_l.h"
 #include "job_l.h"
+#include "imexporter_l.h"
 
 
 struct AB_BANKING {
@@ -35,6 +36,7 @@ struct AB_BANKING {
   GWEN_DB_NODE *data;
 
   AB_PROVIDER_LIST *providers;
+  AB_IMEXPORTER_LIST *imexporters;
 
   AB_BANKING_MESSAGEBOX_FN messageBoxFn;
   AB_BANKING_INPUTBOX_FN inputBoxFn;
@@ -52,6 +54,8 @@ struct AB_BANKING {
 
 AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
 int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
+
+AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name);
 
 void AB_Banking__AddJobDir(const AB_BANKING *ab,
                            const char *as,

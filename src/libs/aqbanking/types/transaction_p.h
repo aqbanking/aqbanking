@@ -14,7 +14,7 @@
 #ifndef AQBANKING_TRANSACTION_P_H
 #define AQBANKING_TRANSACTION_P_H
 
-#include <aqbanking/transaction.h>
+#include "transaction_l.h"
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 

@@ -30,7 +30,6 @@ extern "C" {
 
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
@@ -127,12 +126,12 @@ void AB_Transaction_ClearRemoteName(AB_TRANSACTION *t);
  */
 /*@{*/
 AQBANKING_API 
-const GWEN_TIME *AB_GetTransaction_GetValutaDate(const AB_TRANSACTION *t);
+const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *t);
 AQBANKING_API 
 void AB_Transaction_SetValutaDate(AB_TRANSACTION *t, const GWEN_TIME *d);
 
 AQBANKING_API 
-const GWEN_TIME *AB_GetTransaction_GetDate(const AB_TRANSACTION *t);
+const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *t);
 AQBANKING_API 
 void AB_Transaction_SetDate(AB_TRANSACTION *t, const GWEN_TIME *d);
 /*@}*/

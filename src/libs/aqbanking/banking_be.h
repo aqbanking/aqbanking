@@ -60,6 +60,9 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
 /*@}*/
 
 
+
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -321,6 +321,18 @@ int AB_Provider_IsInit(const AB_PROVIDER *pro){
 
 
 
+GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro){
+  assert(pro);
+  return pro->flags;
+}
+
+
+
+
+
+
+
+
 
 
 
