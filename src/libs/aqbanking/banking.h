@@ -19,6 +19,7 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/plugindescr.h>
+#include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,7 +66,7 @@ extern "C" {
 /**
  * This object is prepared to be inherited (using @ref GWEN_INHERIT_SETDATA).
  */
-GWEN_INHERIT_FUNCTION_DEFS(AB_BANKING)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
@@ -334,6 +335,7 @@ typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab,
  * in most cases present a NULL for this parameter (which let's AqBanking
  * load the users default configuration file, see @ref AB_BANKING_CONFIGFILE).
  */
+AQBANKING_API 
 AB_BANKING *AB_Banking_new(const char *appName,
                            const char *fname);
 
@@ -342,6 +344,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
  * @ref AB_Banking_Init has been called on this object then
  * @ref  AB_Banking_Fini should be called before this function.
  */
+AQBANKING_API 
 void AB_Banking_free(AB_BANKING *ab);
 
 /**
@@ -350,6 +353,7 @@ void AB_Banking_free(AB_BANKING *ab);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab banking interface
  */
+AQBANKING_API 
 int AB_Banking_Init(AB_BANKING *ab);
 
 /**
@@ -358,6 +362,7 @@ int AB_Banking_Init(AB_BANKING *ab);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab banking interface
  */
+AQBANKING_API 
 int AB_Banking_Fini(AB_BANKING *ab);
 /*@}*/
 
@@ -405,6 +410,7 @@ int AB_Banking_Fini(AB_BANKING *ab);
 /**
  * Returns a list of the names of currently active providers.
  */
+AQBANKING_API 
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
 /**
@@ -420,6 +426,7 @@ const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
+AQBANKING_API 
 int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend);
 
 /**
@@ -440,6 +447,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
+AQBANKING_API 
 int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
 
 /**
@@ -453,6 +461,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
+AQBANKING_API 
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
 
 /**
@@ -480,6 +489,7 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
  * name given for argument <i>t</i>). This function is expected to return
  * a pointer to a @ref AB_PROVIDER_WIZARD.
  */
+AQBANKING_API 
 AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
                                          const char *backend,
                                          const char *t);
@@ -499,6 +509,7 @@ AB_PROVIDER_WIZARD *AB_Banking_GetWizard(AB_BANKING *ab,
  * Returns the application name as given to @ref AB_Banking_new.
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 const char *AB_Banking_GetAppName(const AB_BANKING *ab);
 
 /**
@@ -508,6 +519,7 @@ const char *AB_Banking_GetAppName(const AB_BANKING *ab);
  * AqBanking is able to separate and store the data for every application.
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
 
 /**
@@ -517,6 +529,7 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
  * @param ab pointer to the AB_BANKING object
  * @param buf GWEN_BUFFER to append the path name to
  */
+AQBANKING_API 
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 /**
@@ -530,6 +543,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  * @param ab pointer to the AB_BANKING object
  * @param buf GWEN_BUFFER to append the path name to
  */
+AQBANKING_API 
 int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 
@@ -550,6 +564,7 @@ int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  * @ref AB_Account_List2_free).
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
 
 /**
@@ -558,6 +573,7 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
  * @param ab pointer to the AB_BANKING object
  * @param uniqueId unique id of the account assigned by AqBanking
  */
+AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
                                   GWEN_TYPE_UINT32 uniqueId);
 /*@}*/
@@ -576,6 +592,7 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
  * stored within the list !
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
@@ -593,6 +610,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
+AQBANKING_API 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                                                           const char *pn);
 
@@ -612,6 +630,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
  * @param ab pointer to the AB_BANKING object
  * @param pro pointer to the backend for which the data is to be returned
  */
+AQBANKING_API 
 GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
                                          const AB_PROVIDER *pro);
 
@@ -622,6 +641,7 @@ GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
  * @param ab pointer to the AB_BANKING object
  * @param buf buffer to append the path name to
  */
+AQBANKING_API 
 int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 /*@}*/
@@ -662,6 +682,7 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  * @param j job to be enqueued
  *
  */
+AQBANKING_API 
 int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
@@ -672,6 +693,7 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j);
  * @param ab pointer to the AB_BANKING object
  * @param j job to be dequeued
  */
+AQBANKING_API 
 int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
@@ -683,6 +705,7 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 
 /**
@@ -691,6 +714,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
+AQBANKING_API 
 AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
 /*@}*/
 
@@ -737,6 +761,7 @@ AB_JOB_LIST2 *AB_Banking_GetEnqueuedJobs(const AB_BANKING *ab);
  * @param b2 text for the optional second button
  * @param b3 text for the optional third button
  */
+AQBANKING_API 
 int AB_Banking_MessageBox(AB_BANKING *ab,
                           GWEN_TYPE_UINT32 flags,
                           const char *title,
@@ -764,6 +789,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
  */
+AQBANKING_API 
 int AB_Banking_InputBox(AB_BANKING *ab,
                         GWEN_TYPE_UINT32 flags,
                         const char *title,
@@ -794,6 +820,7 @@ int AB_Banking_InputBox(AB_BANKING *ab,
  * @param title title of the box
  * @param text (see text restrictions note above)
  */
+AQBANKING_API 
 GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
                                     GWEN_TYPE_UINT32 flags,
                                     const char *title,
@@ -808,6 +835,7 @@ GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
  * @param id id returned by @ref AB_Banking_ShowBox. If @b 0 then the last
  * message shown is referred to.
  */
+AQBANKING_API 
 void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 
@@ -840,6 +868,7 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * @param total total number of steps of the operation started (i.e. value
  *  which represents 100%)
  */
+AQBANKING_API 
 GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
                                           const char *title,
                                           const char *text,
@@ -866,6 +895,7 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
  *  AB_BANKING_PROGRESS_NONE which means that the progress is unchanged.
  * This might be used as a keepalive call to a GUI.
  */
+AQBANKING_API 
 int AB_Banking_ProgressAdvance(AB_BANKING *ab,
                                GWEN_TYPE_UINT32 id,
                                GWEN_TYPE_UINT32 progress);
@@ -881,6 +911,7 @@ int AB_Banking_ProgressAdvance(AB_BANKING *ab,
  * @param level log level (see @ref AB_Banking_LogLevelPanic ff.)
  * @param text log text (see text restrictions note above)
  */
+AQBANKING_API 
 int AB_Banking_ProgressLog(AB_BANKING *ab,
                            GWEN_TYPE_UINT32 id,
                            AB_BANKING_LOGLEVEL level,
@@ -904,6 +935,7 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
  * @param id id assigned by @ref AB_Banking_ProgressStart (if 0 then the
  * last started progress dialog is referred to)
  */
+AQBANKING_API 
 int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 /*@}*/
@@ -917,21 +949,29 @@ int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  */
 /*@{*/
 
+AQBANKING_API 
 void AB_Banking_SetMessageBoxFn(AB_BANKING *ab,
                                 AB_BANKING_MESSAGEBOX_FN f);
+AQBANKING_API 
 void AB_Banking_SetInputBoxFn(AB_BANKING *ab,
                               AB_BANKING_INPUTBOX_FN f);
+AQBANKING_API 
 void AB_Banking_SetShowBoxFn(AB_BANKING *ab,
                              AB_BANKING_SHOWBOX_FN f);
+AQBANKING_API 
 void AB_Banking_SetHideBoxFn(AB_BANKING *ab,
                              AB_BANKING_HIDEBOX_FN f);
 
+AQBANKING_API 
 void AB_Banking_SetProgressStartFn(AB_BANKING *ab,
                                    AB_BANKING_PROGRESS_START_FN f);
+AQBANKING_API 
 void AB_Banking_SetProgressAdvanceFn(AB_BANKING *ab,
                                      AB_BANKING_PROGRESS_ADVANCE_FN f);
+AQBANKING_API 
 void AB_Banking_SetProgressLogFn(AB_BANKING *ab,
                                  AB_BANKING_PROGRESS_LOG_FN f);
+AQBANKING_API 
 void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
                                  AB_BANKING_PROGRESS_END_FN f);
 

@@ -14,6 +14,16 @@
 #ifndef AQBANKING_ERROR_H
 #define AQBANKING_ERROR_H
 
+#ifdef __declspec
+# if BUILDING_AQBANKING_DLL
+#  define AQBANKING_API __declspec (dllexport)
+# else /* Not BUILDING_AQBANKING_DLL */
+#  define AQBANKING_API __declspec (dllimport)
+# endif /* Not BUILDING_AQBANKING_DLL */
+#else
+# define AQBANKING_API
+#endif
+
 /** @defgroup AB_ERROR (Error Codes)
  * @ingroup AB_C_INTERFACE
  */

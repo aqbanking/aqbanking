@@ -23,14 +23,21 @@ extern "C" {
 
 typedef struct AB_BALANCE AB_BALANCE;
 
+AQBANKING_API 
 AB_BALANCE *AB_Balance_new(AB_VALUE *v, GWEN_TIME *t);
+AQBANKING_API 
 AB_BALANCE *AB_Balance_FromDb(GWEN_DB_NODE *db);
+AQBANKING_API 
 int AB_Balance_ToDb(const AB_BALANCE *b, GWEN_DB_NODE *db);
 
+AQBANKING_API 
 AB_BALANCE *AB_Balance_dup(const AB_BALANCE *b);
+AQBANKING_API 
 void AB_Balance_free(AB_BALANCE *b);
 
+AQBANKING_API 
 const AB_VALUE *AB_Balance_GetValue(const AB_BALANCE *b);
+AQBANKING_API 
 const GWEN_TIME *AB_Balance_GetTime(const AB_BALANCE *b);
 
 #ifdef __cplusplus

@@ -20,26 +20,27 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/bufferedio.h>
+#include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct AB_PROVIDER AB_PROVIDER;
-GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER)
-GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER, AB_Provider)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_PROVIDER, AB_Provider, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
 
 typedef struct AB_PROVIDER_DESCRIPTION AB_PROVIDER_DESCRIPTION;
-GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION)
-GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription)
-GWEN_LIST2_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription, AQBANKING_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription, AQBANKING_API)
 
 typedef struct AB_PROVIDER_WIZARD AB_PROVIDER_WIZARD;
-GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_WIZARD)
-GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_WIZARD, AB_ProviderWizard)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER_WIZARD, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_PROVIDER_WIZARD, AB_ProviderWizard, AQBANKING_API)
 
 #ifdef __cplusplus
 }
@@ -86,11 +87,15 @@ typedef int (*AB_PROVIDER_IMPORTTRANSACTIONS_FN)(AB_PROVIDER *pro,
 
 
 
+AQBANKING_API
 AB_PROVIDER *AB_Provider_new(AB_BANKING *ab,
                              const char *name);
+AQBANKING_API
 void AB_Provider_free(AB_PROVIDER *pro);
 
+AQBANKING_API
 const char *AB_Provider_GetName(const AB_PROVIDER *pro);
+AQBANKING_API
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 
 
@@ -100,13 +105,20 @@ AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
  */
 /*@{*/
 
+AQBANKING_API
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
+AQBANKING_API
 int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
+AQBANKING_API
 int AB_Provider_Execute(AB_PROVIDER *pro);
+AQBANKING_API
 AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro);
+AQBANKING_API
 int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+AQBANKING_API
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
+AQBANKING_API
 int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
                                    AB_TRANSACTION_LIST2 *tl,
                                    GWEN_BUFFEREDIO *bio);
@@ -119,15 +131,22 @@ int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
  *
  */
 /*@{*/
+AQBANKING_API
 void AB_Provider_SetUpdateJobFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEJOB_FN f);
+AQBANKING_API
 void AB_Provider_SetAddJobFn(AB_PROVIDER *pro, AB_PROVIDER_ADDJOB_FN f);
+AQBANKING_API
 void AB_Provider_SetExecuteFn(AB_PROVIDER *pro, AB_PROVIDER_EXECUTE_FN f);
+AQBANKING_API
 void AB_Provider_SetGetAccountListFn(AB_PROVIDER *pro,
                                      AB_PROVIDER_GETACCOUNTLIST_FN f);
+AQBANKING_API
 void AB_Provider_SetUpdateAccountFn(AB_PROVIDER *pro,
                                     AB_PROVIDER_UPDATEACCOUNT_FN f);
+AQBANKING_API
 void AB_Provider_SetAddAccountFn(AB_PROVIDER *pro,
                                  AB_PROVIDER_ADDACCOUNT_FN f);
+AQBANKING_API
 void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
                                          AB_PROVIDER_IMPORTTRANSACTIONS_FN f);
 /*@}*/
@@ -139,9 +158,11 @@ void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
  *
  */
 /*@{*/
+AQBANKING_API
 AB_PROVIDER *AB_Provider_LoadPluginFile(AB_BANKING *ab,
                                         const char *modname,
                                         const char *fname);
+AQBANKING_API
 AB_PROVIDER *AB_Provider_LoadPlugin(AB_BANKING *ab,
                                     const char *modname);
 
@@ -158,19 +179,26 @@ typedef AB_PROVIDER_WIZARD*
 typedef int (*AB_PROVIDER_WIZARD_SETUP_FN)(AB_PROVIDER_WIZARD *pw);
 
 
+AQBANKING_API
 AB_PROVIDER_WIZARD *AB_ProviderWizard_new(AB_PROVIDER *pro,
 					  const char *name);
+AQBANKING_API
 void AB_ProviderWizard_free(AB_PROVIDER_WIZARD *pw);
 
+AQBANKING_API
 const char *AB_ProviderWizard_GetName(const AB_PROVIDER_WIZARD *pw);
+AQBANKING_API
 AB_PROVIDER *AB_ProviderWizard_GetProvider(const AB_PROVIDER_WIZARD *pw);
 
+AQBANKING_API
 int AB_ProviderWizard_Setup(AB_PROVIDER_WIZARD *pw);
 
 
+AQBANKING_API
 void AB_ProviderWizard_SetSetupFn(AB_PROVIDER_WIZARD *pw,
 				  AB_PROVIDER_WIZARD_SETUP_FN f);
 
+AQBANKING_API
 GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw);
 
 
@@ -182,10 +210,12 @@ GWEN_DB_NODE *AB_ProviderWizard_GetData(AB_PROVIDER_WIZARD *pw);
  * That function is expected to return  a pointer to a
  * @ref AB_PROVIDER_WIZARD.
  */
+AQBANKING_API
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPluginFile(AB_PROVIDER *pro,
                                                      const char *modname,
                                                      const char *fname);
 
+AQBANKING_API
 AB_PROVIDER_WIZARD *AB_ProviderWizard_LoadPlugin(AB_PROVIDER *pro,
                                                  const char *modname);
 

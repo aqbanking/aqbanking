@@ -15,6 +15,7 @@
 #define AQBANKING_JOB_H
 
 #include <gwenhywfar/misc2.h>
+#include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,11 +31,12 @@ extern "C" {
 
 typedef struct AB_JOB AB_JOB;
 
-GWEN_LIST2_FUNCTION_DEFS(AB_JOB, AB_Job)
+GWEN_LIST2_FUNCTION_LIB_DEFS(AB_JOB, AB_Job, AQBANKING_API)
 /* Do not terminate this line with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
 
+AQBANKING_API
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
 
@@ -77,7 +79,9 @@ extern "C" {
  * @ref AB_JobGetBalance_new).
  */
 /*@{*/
+AQBANKING_API
 void AB_Job_free(AB_JOB *j);
+AQBANKING_API
 void AB_Job_Attach(AB_JOB *j);
 /*@}*/
 
@@ -91,11 +95,13 @@ void AB_Job_Attach(AB_JOB *j);
  * Every created job gets an unique id. This allows any application to
  * identify a specific job.
  */
+AQBANKING_API
 GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j);
 
 /**
  * Returns the name of the application which created this job.
  */
+AQBANKING_API
 const char *AB_Job_GetCreatedBy(const AB_JOB *j);
 
 /**
@@ -104,21 +110,25 @@ const char *AB_Job_GetCreatedBy(const AB_JOB *j);
  * this function. It returns the error code (see @ref AB_ERROR) returned
  * by the backend when asked to check for this job.
  */
+AQBANKING_API
 int AB_Job_CheckAvailability(AB_JOB *j);
 
 /**
  * Returns the status of this job.
  */
+AQBANKING_API
 AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j);
 
 /**
  * Returns the job type.
  */
+AQBANKING_API
 AB_JOB_TYPE AB_Job_GetType(const AB_JOB *j);
 
 /**
  * Every job is linked to a single account to operate on.
  */
+AQBANKING_API
 AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
 
 /**
@@ -126,6 +136,7 @@ AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
  * job. This should only be presented to the user when there is no other
  * way to determine the result (e.g. no log etc).
  */
+AQBANKING_API
 const char *AB_Job_GetResultText(const AB_JOB *j);
 /*@}*/
 
@@ -137,19 +148,23 @@ const char *AB_Job_GetResultText(const AB_JOB *j);
 /**
  * Transforms the given status code into a string.
  */
+AQBANKING_API
 const char *AB_Job_Status2Char(AB_JOB_STATUS i);
 /**
  * Transforms the given string into a job status code.
  */
+AQBANKING_API
 AB_JOB_STATUS AB_Job_Char2Status(const char *s);
 
 /**
  * Transforms the given job type into a string.
  */
+AQBANKING_API
 const char *AB_Job_Type2Char(AB_JOB_TYPE i);
 /**
  * Transforms the given string into a job type.
  */
+AQBANKING_API
 AB_JOB_TYPE AB_Job_Char2Type(const char *s);
 /*@}*/
 
@@ -163,10 +178,14 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s);
  * This id can be used by a AB_PROVIDER to map AB_Jobs to whatever the
  * provider uses. This id is not used by AB_Banking itself.
  */
+AQBANKING_API
 GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j);
+AQBANKING_API
 void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i);
 
+AQBANKING_API
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
+AQBANKING_API
 void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 /*@}*/
 
