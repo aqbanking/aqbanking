@@ -21,6 +21,7 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/libloader.h>
 #include <gwenhywfar/bio_file.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -43,17 +44,36 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   AB_BANKING *ab;
   GWEN_BUFFER *buf;
+  GWEN_BUFFER *nbuf;
 
   assert(appName);
+
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Text_EscapeToBufferTolerant(appName, nbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Bad application name, aborting.");
+    GWEN_Buffer_free(nbuf);
+    abort();
+  }
+  else {
+    char *s;
+
+    s=GWEN_Buffer_GetStart(nbuf);
+    while(*s) {
+      *s=tolower(*s);
+      s++;
+    }
+  }
 
   buf=0;
   if (!fname) {
     char home[256];
 
     if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Could not determine home directory, aborting.");
-      return 0;
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not determine home directory, aborting.");
+      GWEN_Buffer_free(nbuf);
+      abort();
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(buf, home);
@@ -66,12 +86,14 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   ab->providers=AB_Provider_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
+  ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
   ab->appName=strdup(appName);
   ab->activeProviders=GWEN_StringList_new();
   GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
   ab->data=GWEN_DB_Group_new("BankingData");
   ab->configFile=strdup(fname);
   GWEN_Buffer_free(buf);
+  GWEN_Buffer_free(nbuf);
   return ab;
 }
 
@@ -87,6 +109,7 @@ void AB_Banking_free(AB_BANKING *ab){
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
     free(ab->appName);
+    free(ab->appEscName);
     free(ab->configFile);
     GWEN_FREE_OBJECT(ab);
   }
@@ -149,17 +172,136 @@ GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
 
 
 
-GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
+int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf) {
+  if (AB_Banking_GetUserDataDir(ab, buf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_AppendString(buf, "/appcfg/");
+  GWEN_Buffer_AppendString(buf, ab->appEscName);
+  GWEN_Buffer_AppendString(buf, ".conf");
+  return 0;
+}
+
+
+
+int AB_Banking__LoadAppData(AB_BANKING *ab) {
+  GWEN_BUFFER *pbuf;
   GWEN_DB_NODE *db;
 
-  assert(ab->appName);
+  assert(ab);
+  assert(ab->appEscName);
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (AB_Banking__GetAppConfigFileName(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get config file name");
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
                       "static/apps");
   assert(db);
   db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      ab->appName);
+                      ab->appEscName);
   assert(db);
-  return db;
+  DBG_NOTICE(0, "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Could not load config file \"%s\", creating it later",
+	     GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_free(pbuf);
+    return 0;
+  }
+
+  /* sucessfully read */
+  return 0;
+}
+
+
+
+int AB_Banking__SaveAllAppData(AB_BANKING *ab) {
+  GWEN_BUFFER *pbuf;
+  GWEN_DB_NODE *db;
+  GWEN_TYPE_UINT32 pos;
+  int errors;
+
+  assert(ab);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		      "static/apps");
+  if (!db) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No application data to save");
+    return 0;
+  }
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (AB_Banking_GetUserDataDir(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_AppendString(pbuf, "/appcfg/");
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  errors=0;
+  db=GWEN_DB_GetFirstGroup(db);
+  while(db) {
+    GWEN_Buffer_Crop(pbuf, 0, pos);
+    GWEN_Buffer_AppendString(pbuf, GWEN_DB_GroupName(db));
+    GWEN_Buffer_AppendString(pbuf, ".conf");
+    if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
+			       GWEN_PATH_FLAGS_VARIABLE)) {
+      DBG_ERROR(0, "Could not create file \"%s\"",
+		GWEN_Buffer_GetStart(pbuf));
+      errors++;
+    }
+    else {
+      if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
+			    GWEN_DB_FLAGS_DEFAULT)) {
+	DBG_ERROR(0, "Could not save file \"%s\"",
+		  GWEN_Buffer_GetStart(pbuf));
+	errors++;
+      }
+    }
+    db=GWEN_DB_GetNextGroup(db);
+  }
+
+  /* sucessfully written */
+  if (errors) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Some errors occurred");
+    return AB_ERROR_GENERIC;
+  }
+  return 0;
+}
+
+
+
+GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbT;
+
+  assert(ab);
+  assert(ab->appEscName);
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "static/apps");
+  assert(db);
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      ab->appEscName);
+  if (!dbT) {
+    if (AB_Banking__LoadAppData(ab)) {
+      DBG_ERROR(0, "Could not load app data file");
+      return 0;
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+		       ab->appEscName);
+  assert(dbT);
+  return dbT;
 }
 
 
@@ -576,6 +718,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   GWEN_DB_NODE *dbT;
   AB_ACCOUNT *a;
   AB_JOB *j;
+  int rv;
 
   assert(ab);
 
@@ -655,6 +798,15 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       se=GWEN_StringListEntry_Next(se);
     } /* while */
   }
+
+  /* store appplication specific data */
+  rv=AB_Banking__SaveAllAppData(ab);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  GWEN_DB_DeleteGroup(ab->data, "static/apps");
 
   /* store static config data as "banking" */
   dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");

@@ -3,6 +3,14 @@
 -------------------------------------------------
 - AB_JOB: added functions which allow applications and backends to store
   specific data to a GWEN_DB within a job
+- application names are now internally escaped to avoid security risks (since
+  the application name is used to create file paths)
+- application specific banking data is now stored in one file per application.
+  This removes the need of loading the data for all applications on startup.
+  Now only the data of the running application is loaded (in the long run
+  this should keep the startup time short)
+- boosted version to 0.9, since about 90 percent of the planned features
+  are implemented
 
 
 2004/08/21: Martin Preuss<martin@libchipcard.de>

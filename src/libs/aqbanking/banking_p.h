@@ -23,6 +23,7 @@
 struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
   char *appName;
+  char *appEscName;
   AB_JOB_LIST *enqueuedJobs;
   AB_ACCOUNT_LIST *accounts;
   GWEN_TYPE_UINT32 lastUniqueId;
@@ -86,6 +87,9 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
                             const char *as);
 
 
+int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
+int AB_Banking__LoadAppData(AB_BANKING *ab);
+int AB_Banking__SaveAllAppData(AB_BANKING *ab);
 
 
 
