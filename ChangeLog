@@ -7,6 +7,9 @@
 - added blocking macro AQBANKING_NOWARN_DEPRECATED to be used by
   applications to disable these warnings in future versions (mainly to
   be used by GnuCash as requested)
+- added default WaitCallback. This was formerly declared in each backend,
+  but since its job - to direct WaitCallback logs to AB_Banking functions - 
+  is better suited in AqBanking this class has moved here.
 
 
 ===========================================================================

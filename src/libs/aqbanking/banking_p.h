@@ -16,6 +16,8 @@
 
 #define AB_BANKING_MAX_PIN_TRY 10
 
+#define AB_BANKING_WCB_GENERIC "AB_BANKING_WCB_GENERIC"
+
 #include "banking_l.h"
 #include "account_l.h"
 #include "job_l.h"
@@ -25,6 +27,7 @@
 
 #include <gwenhywfar/plugin.h>
 #include <gwenhywfar/nettransportssl.h>
+#include <gwenhywfar/waitcallback.h>
 
 
 struct AB_BANKING {
@@ -71,6 +74,9 @@ struct AB_BANKING {
   GWEN_PLUGIN_MANAGER *pluginManagerBankInfo;
   GWEN_PLUGIN_MANAGER *pluginManagerProvider;
   void *user_data;
+
+  GWEN_WAITCALLBACK *waitCallback;
+
 };
 
 

@@ -83,16 +83,19 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 		      dbSubParams);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data");
-    GWEN_WaitCallback_Log(0, "Error importing data");
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
 
   /* transform DB to transactions */
-  GWEN_WaitCallback_Log(0, "Data imported, transforming to transactions");
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                        "Data imported, transforming to transactions");
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
   if (rv) {
-    GWEN_WaitCallback_Log(0, "Error importing data");
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
@@ -142,7 +145,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-        GWEN_WaitCallback_Log(0, "Error in config file");
+        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                              "Error in config file");
         return AB_ERROR_GENERIC;
       }
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");

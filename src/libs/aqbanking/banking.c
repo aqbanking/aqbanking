@@ -20,6 +20,7 @@
 #include "bankinfoplugin_l.h"
 #include "i18n_l.h"
 #include "country_l.h"
+#include "wcb_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -123,6 +124,14 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
   GWEN_NetTransportSSL_SetAskAddCertFn2(AB_Banking_AskAddCert, ab);
 
+  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Registering callbacks");
+  ab->waitCallback=AB_WaitCallback_new(ab, AB_BANKING_WCB_GENERIC);
+  if (GWEN_WaitCallback_Register(ab->waitCallback)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Internal error: Could not register callback.");
+    abort();
+  }
+
   return ab;
 }
 
@@ -151,6 +160,10 @@ void AB_Banking_free(AB_BANKING *ab){
 #endif
 
     GWEN_INHERIT_FINI(AB_BANKING, ab);
+
+    GWEN_WaitCallback_Unregister(ab->waitCallback);
+    GWEN_WaitCallback_free(ab->waitCallback);
+
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
     AB_Provider_List_free(ab->providers);
@@ -1154,6 +1167,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
     AB_Job_List2_free(jl);
   }
   GWEN_DB_Group_free(dbT);
+
+  GWEN_WaitCallback_Enter(AB_BANKING_WCB_GENERIC);
+
   return 0;
 }
 
@@ -1329,6 +1345,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   free(ab->dataDir);
   ab->dataDir=0;
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
+  GWEN_WaitCallback_Leave();
   return 0;
 }
 

@@ -326,7 +326,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   tl=AHB_SWIFT_Tag_List_new();
 
   /* fill tag list */
-  GWEN_WaitCallback_Log(2, "SWIFT: Reading complete stream");
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+                        "SWIFT: Reading complete stream");
   for(;;) {
     rv=AHB_SWIFT_ReadDocument(bio, tl, 0);
     if (rv==-1) {
@@ -342,7 +343,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   } /* for */
 
   /* now all tags have been read, transform them */
-  GWEN_WaitCallback_Log(2, "SWIFT: Parsing data");
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, "SWIFT: Parsing data");
   if (AHB_SWIFT940_Import(bio, tl, flags, data, cfg)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
     AHB_SWIFT_Tag_List_free(tl);

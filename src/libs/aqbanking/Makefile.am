@@ -27,7 +27,9 @@ noinst_HEADERS=\
  job_l.h \
  job_p.h \
  provider_l.h \
- provider_p.h
+ provider_p.h \
+ wcb_l.h \
+ wcb_p.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -54,7 +56,8 @@ libaqbanking_la_SOURCES=\
  country.c \
  imexporter.c \
  job.c \
- provider.c
+ provider.c \
+ wcb.c
 
 libaqbanking_la_LIBADD=@gwenhywfar_libs@ \
  jobs/libjobs.la \
