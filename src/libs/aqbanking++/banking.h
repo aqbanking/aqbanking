@@ -10,6 +10,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+/** @file 
+ * @short A C++ wrapper of the main aqbanking interface
+ */
+
 #ifndef AQ_BANKING_CPP_H
 #define AQ_BANKING_CPP_H
 
@@ -22,10 +26,14 @@
 namespace AB {
 
   /**
+   * @brief A C++ binding for the C module @ref AB_BANKING
+   *
    * This class simply is a C++ binding for the C module @ref AB_BANKING.
    * It redirects C callbacks used by AB_BANKING to virtual functions in
    * this class. It als transforms some return values inconveniant for
    * C++ into STL objects (such as "list<T>").
+   *
+   * @ingroup G_AB_CPP_INTERFACE
    *
    * @author Martin Preuss<martin@aquamaniac.de>
    */

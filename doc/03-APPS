@@ -7,8 +7,8 @@ This document explains what an application needs to perform to setup and use
 AqBanking. 
 
 
-2. Application Setup Overview
-=============================
+2. Application Coding Overview
+==============================
 
 1. Create an instance of AB_BANKING (AB_Banking_new())
 
@@ -29,7 +29,7 @@ AqBanking.
    This allows AqBanking to write its configuration back.
    You should always call this function to avoid data inconsistencies.
 
-6. Release all AqBanking data (AB_Banking_free())
+6. Free the AqBanking object (AB_Banking_free())
    This function releases all data currently owned by AqBanking.
    You should always call this function to avoid memory leaks.
 
@@ -48,17 +48,20 @@ have to do it now:
 1. Ask AqBanking for a list of available backends 
    (AB_Banking_GetProviderDescrs())
 
-2. Present this list to the user to pick one of them
+2. Present this list to the user to pick one of them (or pick a fixed
+   one, e.g. "aqhbci").
 
-3. Activate the backends the user has chosen
+3. Activate the chosen backend(s).
    This also imports a possibly available account list from the backends.
 
 4. Ask AqBanking about the account list (if the backend already was setup
    it might have returned an account list which in that case has been
    imported to AqBanking)
 
-5. Map the AqBanking-accounts to your application accounts.
-
+5. Map the AqBanking-accounts to your application accounts. Either you
+   retrieve an account by AB_Banking_GetAccountByCodeAndNumber(), or
+   you set an alias for an account by AB_Banking_SetAccountAlias() and
+   can retrieve it later by AB_Banking_GetAccountByAlias().
 
 Some backends - e.g. AqHBCI - allow transparent updates of account
 information. This is automatically used by AqBanking whenever an account is
@@ -96,8 +99,8 @@ following steps (Example: Getting the balance of an account):
 
 ---------------------------------------------------------- X8
 
- 4. Create the job to get the balance:
-    AB_JobGetBalance_new()
+ 4. Create the job to get the balance by AB_JobGetBalance_new(), which
+    also means you have to find the correct AB_ACCOUNT beforehand.
 
  5. Check whether this job is available with the account chosen:
     AB_Job_CheckAvailability()

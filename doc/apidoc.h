@@ -6,104 +6,103 @@
 
 /** @mainpage AqBanking Documentation Main Page
 
-<p>
-This is AqBanking, a modular Banking API.
-</p>
+This is AqBanking, a modular library for Online Banking and related
+tasks.
 
-<p>
-This library was designed by Martin Preuss<martin@aquamaniac.de> to provide a
-generic way for applications to use Online Banking (e.g. HBCI) and to 
-import/export financial data (such as SWIFT, DTAUS).
-</p>
+This library was designed by Martin Preuss<martin@aquamaniac.de> to
+provide a generic way for applications to use Online Banking
+(e.g. HBCI), and to import/export financial data (such as OFX, SWIFT,
+DTAUS). It is written in C but a C++ interface to the main functions
+is also provided (see @ref G_AB_C_INTERFACE and @ref
+G_AB_CPP_INTERFACE).
 
-<p>
-It is written in C but a C++ interface to the main functions is also
-provided (see @ref G_AB_C_INTERFACE and @ref G_AB_CPP_INTERFACE).
-</p>
+If you are writing an application and want to use AqBanking's
+features, there are two possibilities:
 
-<p>
-All strings exchanged with AqBanking  are expected in UTF-8 encoding unless
-stated otherwise.
-</p>
+ - Use the "Application Layer API", which requires the least coding
+ effort on the application side. See @ref G_AB_BANKING_HL
 
-<p>
-If you want to add support for AqBanking to existing applications you
-may want to have a look at the API designed for this purpose 
-(@ref G_AB_BANKING_HL).
-</p>
+ - Or you can use the "Main Interface API" (also called "High level
+ API" sometimes), which offers the highest flexibility but requires
+ slightly more coding effort. See @ref G_AB_BANKING, and there is also
+ a full introduction into the program flow of that interface: @ref
+ G_APP_INTRO
 
-<p>
-If you are writing an application based on AqBanking you may additionally
-want to look into the main API (see @ref G_AB_BANKING).
-</p>
+A general Note: All strings exchanged from and to AqBanking are
+expected in UTF-8 encoding unless stated otherwise. Please do not pass
+Latin-1 strings (i.e. with latin1-Umlauts) into AqBanking or expect
+the returned strings (which might be translated into German in UTF-8)
+in that way. For converting UTF-8 into or from other encodings, see
+iconv(3).
+
 
 @section AB_features Features
 
-<p>
-AqBanking is very modular. It simply provides the means to manage online
-accounts and to import/export financial data.
-</p>
+AqBanking is very modular. It simply provides the means to manage
+online accounts and to import/export financial data. AqBanking itself
+does not implement the actual online banking protocols -- this is done
+in extra plugins which serve as <i>backends</i>/<i>providers</i>. This
+library is organized in multiple layers:
 
-AqBanking consists of multiple layers:
 <ul>
   <li>
-    @b Lowlevel: This level is represented by the function group
-    AB_PROVIDER (see @ref G_AB_PROVIDER). Providers are plugins which actually
-    implement the online banking functionality (as OpenHBCI previously did 
-    and AqHBCI now does).
-    <br>
-    Currently only HBCI is provided. However the API has been designed to be
-    as wide open as possible. This layer also includes the simple API
-    (consisting of a single function for now) for importing transactions from
-    a file.
+
+  <b>Lowlevel</b>: This level is represented by the function group
+  AB_PROVIDER (see @ref G_AB_PROVIDER). These functions should
+  <i>not</i> be accessed by an application; instead, they are accessed
+  by <i>plugins</i>. The plugins (e.g. AqHBCI) implement the Provider
+  functions which actually implement the online banking functionality.
+  Currently only AqHBCI for HBCI is available. However the API has
+  been designed to be as wide open as possible. This layer also
+  includes the simple API (consisting of a single function for now)
+  for plugins that are importing transactions from a file.
     
   </li>
   <li>
-    @b Midlevel: This is the glue between lowlevel and highlevel. This is the
-    layer which holds the list of manageable accounts and distributes jobs
-    across the providers.
+
+  <b>Midlevel</b>: This is the glue between lowlevel and
+  highlevel. This is the layer which holds the list of manageable
+  accounts and distributes jobs across the providers. This is also not
+  used by the application.
+
   </li>
   <li>
-    @b Highlevel: These are the functions used by the application 
-    (AB_BANKING, see @ref G_AB_BANKING)
-    This layer offers:
+
+  <b>Highlevel</b> (or "Main Interface"): These are the functions used
+  by the application (see @ref G_AB_BANKING and @ref G_APP_INTRO) This
+  layer offers:
+
     <ul>
-      <li>returning a list of providers</li>
-      <li>returning a list of accounts</li>
-      <li>receiving jobs from the application and sending it to the
-        corresponding provider</li>
+      <li>Managing Backends/Providers</li>
+      <li>Managing Accounts</li>
+      <li>Accepting online banking jobs and from the application and
+      sending it to the corresponding provider</li>
     </ul>
     The application only needs to ask AqBanking for a list of accounts
     and to map those accounts to its own accounts.
+
   </li>
   <li>
-    @b Application Layer: This layer combines calls to functions of the other
-    layers to provide a simpler API to applications. This is especially
-    usefull when adding AqBanking support to applications which have not been
-    designed to work with AqBanking in the first place 
-    (see @ref G_AB_BANKING_HL)
+
+  <b>Application Layer</b>: This layer offers an even simpler API to
+  applications, where the calls to all lower layers are combined. This
+  may be usefull when adding AqBanking support to applications which
+  have not been designed to work with AqBanking in the first place
+  (see @ref G_AB_BANKING_HL)
+
   </li>
 </ul>
 
 
-<p>
-For providers (backends) AqBanking provides an easy interface to any
-application thus supporting graphical (KDE, GNOME) as well as console
-applications to be used with AqBanking (see @ref G_AB_PROVIDER)
-</p>
+For the backends/providers, AqBanking provides callbacks for some
+simple user interaction functions, independently of the actual
+graphical or text frontend. (see @ref G_AB_PROVIDER) This has the
+additional advantage that any new backend/provider will then
+immediately be supported by all applications.
+  */
 
-<p>
-If a new provider is added to AqBanking then it immediately is supported by
-<b>all</b> applications.
-</p>
-
-
+/**
+@page G_APP_INTRO Introduction into application programming with AqBanking
+@verbinclude 03-APPS
 
  */
-
-
-
-
-
-
-

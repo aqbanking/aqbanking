@@ -10,6 +10,9 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+/** @file 
+ * @short The main interface of the aqbanking library
+ */
 
 #ifndef AQBANKING_BANKING_H
 #define AQBANKING_BANKING_H
@@ -76,7 +79,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 
 /** @defgroup G_AB_BANKING_ML AB_BANKING High Level API
  *
- * @short This group contains the mhigh level API function group.
+ * @short This group contains the high level API ("main interface")
+ * function group.
  */
 /*@{*/
 
@@ -1163,7 +1167,7 @@ int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j);
  * extract the HTML information and show only that part of the string.
  * </p>
  * <p>
- * Other frontends will just extract the non-HTML information and show only
+ * Other frontends have to extract the non-HTML information and show only
  * that.
  * </p>
  */
@@ -1194,7 +1198,7 @@ int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j);
  * @param ab banking interface
  * @param flags flags, see @ref AB_BANKING_MSG_FLAGS_TYPE_MASK ff.
  * @param title title of the message box
- * @param text (see text restrictions note above)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param b1 text for the first button (required), should be something
  *  like "Ok" (see text restrictions note above)
  * @param b2 text for the optional second button
@@ -1219,7 +1223,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
  * @param ab banking interface
  * @param flags flags, see @ref AB_BANKING_INPUT_FLAGS_CONFIRM ff.
  * @param title title of the input box
- * @param text (see text restrictions note above)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param buffer buffer to store the response in. Must have at least room
  *  @b maxLen bytes
  * @param minLen minimal length of input (if 0 then there is no low limit)
@@ -1259,7 +1263,7 @@ int AB_Banking_InputBox(AB_BANKING *ab,
  * @param ab banking interface
  * @param flags flags, see @ref AB_BANKING_SHOWBOX_FLAGS_BEEP ff
  * @param title title of the box
- * @param text (see text restrictions note above)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  */
 AQBANKING_API 
 GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
@@ -1307,7 +1311,7 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
  * @return id to be used with the other AB_Banking_Progress functions.
  * @param ab banking interface
  * @param title title of the dialog
- * @param text (see text restrictions note above)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param total total number of steps of the operation started (i.e. value
  *  which represents 100%)
  */
@@ -1352,7 +1356,7 @@ int AB_Banking_ProgressAdvance(AB_BANKING *ab,
  * @param id id assigned by @ref AB_Banking_ProgressStart (if 0 then the
  * last started progress dialog is referred to)
  * @param level log level (see @ref AB_Banking_LogLevelPanic ff.)
- * @param text log text (see text restrictions note above)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  */
 AQBANKING_API 
 int AB_Banking_ProgressLog(AB_BANKING *ab,
@@ -1431,7 +1435,18 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
  * application hasn't set any other GetPin function, this function
  * will call AB_Banking_InputBox for the user input.
  *
- * @param flags flags as for @ref AB_Banking_InputBox
+ * @param ab Banking interface
+ * @param flags Flags, see @ref AB_Banking_InputBox and @ref AB_BANKING_INPUT_FLAGS_CONFIRM 
+ * @param token A unique identification of what PIN is required. To be used for automated PIN lookup.
+ * @param title Title of the input box (in UTF-8)
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
+ * @param buffer Buffer to store the response in. Must have at least room
+ *  @b maxLen bytes
+ * @param minLen Minimal length of input that is required before the returned answer is accepted (if 0 then there is no low limit)
+ * @param maxLen Size of the buffer including the trailing NULL character.
+ * This means that if you want to ask the user for a PIN of at most 4
+ * characters you need to supply a buffer of at least @b 5 bytes and provide
+ * a 5 as maxLen.
  */
 AQBANKING_API
 int AB_Banking_GetPin(AB_BANKING *ab,
@@ -1591,7 +1606,7 @@ int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
  * @param country ISO country code ("de" for Germany, "at" for Austria etc)
  * @param branchId optional branch id (not needed for "de")
  * @param bankId bank id ("Bankleitzahl" for "de")
- * @param account Id account id
+ * @param accountId account id
  */
 AQBANKING_API 
 AB_BANKINFO_CHECKRESULT
@@ -1610,7 +1625,8 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
 /** @defgroup G_AB_BANKING_HL Application Level API
  *
- * @short This group contains the High Level API function group.
+ * @short This group contains the Application Level API ("very high
+ * level") function group.
  *
  * <p>
  * A program should first call @ref AB_Banking_Init to allow AqBanking
@@ -1731,7 +1747,7 @@ AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
 
 
 
-/*@}*/ /* defgroup High Level API */
+/*@}*/ /* defgroup Application Level API */
 
 
 
