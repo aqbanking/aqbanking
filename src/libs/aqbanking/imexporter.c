@@ -210,6 +210,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                              AB_TRANSACTION *t){
   assert(iea);
   assert(t);
+
   AB_Transaction_List_Add(t, iea->transactions);
 }
 

@@ -895,6 +895,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_ACCOUNT *a;
   AB_JOB *j;
   int rv;
+  AB_PROVIDER *pro;
 
   assert(ab);
 
@@ -950,30 +951,20 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     } /* while */
   }
 
-  /* deinit active providers */
-  if (GWEN_StringList_Count(ab->activeProviders)) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(ab->activeProviders);
-    assert(se);
-    while(se) {
-      const char *p;
-      int rv;
-      AB_PROVIDER *pro;
-
-      p=GWEN_StringListEntry_Data(se);
-      assert(p);
-
-      pro=AB_Banking_FindProvider(ab, p);
-      if (pro) {
-	rv=AB_Banking_FiniProvider(ab, pro);
-        if (rv) {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Error deinitializing backend \"%s\"", p);
-        }
+  /* deinit all providers */
+  pro=AB_Provider_List_First(ab->providers);
+  while(pro) {
+    while (AB_Provider_IsInit(pro)) {
+      rv=AB_Banking_FiniProvider(ab, pro);
+      if (rv) {
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Error deinitializing backend \"%s\"",
+		 AB_Provider_GetName(pro));
+        break;
       }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-  }
+    }
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
 
   /* store appplication specific data */
   rv=AB_Banking__SaveAppData(ab);

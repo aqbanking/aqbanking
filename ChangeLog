@@ -1,4 +1,9 @@
 
+2004/09/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved saving of backend data upon AB_Banking_Fini()
+
+
 2004/09/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added missing checks to configure.ac (setlocale, locale.h)
