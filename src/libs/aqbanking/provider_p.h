@@ -45,7 +45,5 @@ struct AB_PROVIDER {
 };
 
 
-void AB_Provider_free(AB_PROVIDER *pro);
-
 
 #endif /* AQBANKING_PROVIDER_P_H */

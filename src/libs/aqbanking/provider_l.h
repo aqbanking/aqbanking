@@ -41,6 +41,7 @@ int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
 /*@}*/
 
 void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll);
+void AB_Provider_free(AB_PROVIDER *pro);
 
 
 #endif /* AQBANKING_PROVIDER_L_H */

@@ -475,7 +475,6 @@ int AB_Banking_Init(AB_BANKING *ab) {
     assert(se);
     while(se) {
       const char *p;
-      int rv;
       AB_PROVIDER *pro;
 
       p=GWEN_StringListEntry_Data(se);
