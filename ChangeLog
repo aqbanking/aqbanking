@@ -1,4 +1,16 @@
 
+===========================================================================
+MARK: released AqBanking - 1.0.4beta (2005/01/30)
+===========================================================================
+
+
+2005/01/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Banking_GetSharedDataDir() which will be used by
+  QBankManager and AqMoney3 to share their transaction storage. 
+  However, other applications might want to share some of their data, too.
+
+
 2005/01/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in AB_Banking__ExecuteQueue() (was always returning an

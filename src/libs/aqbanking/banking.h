@@ -758,6 +758,19 @@ void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s);
 AQBANKING_API 
 int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
+/**
+ * Returns the path to a folder to which shared data can be stored.
+ * This might be used by multiple applications if they wish to share some
+ * of their data, e.g. QBankManager and AqMoney3 share their transaction
+ * storage so that both may work with it.
+ * Please note that this folder does not necessarily exist, but you are free
+ * to create it.
+ */
+AQBANKING_API 
+int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
+                                const char *name,
+                                GWEN_BUFFER *buf);
+
 /** Returns the void pointer that was stored by
  * AB_Banking_SetUserData(). This might be useful for passing data to
  * the callback functions.
@@ -1016,6 +1029,12 @@ int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j);
  * You should call this function directly before calling
  * @ref AB_Banking_ExecuteQueue to let the backend update the status of
  * the pending jobs.
+ * There is special treatment for "pending" marked jobs in backends: The
+ * backends check for the final result of them instead of executing them
+ * again when added to the queue. This is used by jobs which do not return
+ * an immediate result (such as transfer jobs which are first accepted by the
+ * bank and actually checked later. In such a case the bank sends a temporary
+ * result code which might be replaced by a final result later).
  * @param ab pointer to the AB_BANKING object
  * @param mineOnly if 0 then all pending jobs for all applications are
  * enqueued, otherwise only the pending jobs for the currently running

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-01-30 12:28+0100\n"
+"POT-Creation-Date: 2005-01-30 16:48+0100\n"
 "PO-Revision-Date: 2005-01-22 21:35+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -13,52 +13,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:3505
+#: src/libs/aqbanking/banking.c:3544
 msgid "Account Not Mapped"
 msgstr "Konto nicht zugeordnet"
 
-#: src/libs/aqbanking/banking.c:3506
+#: src/libs/aqbanking/banking.c:3545
 msgid "The given account has not been mapped to online accounts."
 msgstr "Das angegebene Konto wurde noch nicht einem Online-Konto zugeordnet."
 
-#: src/libs/aqbanking/banking.c:3508 src/libs/aqbanking/banking.c:3521
-#: src/libs/aqbanking/banking.c:3587 src/libs/aqbanking/banking.c:3602
-#: src/libs/aqbanking/banking.c:3649 src/libs/aqbanking/banking.c:3664
+#: src/libs/aqbanking/banking.c:3547 src/libs/aqbanking/banking.c:3560
+#: src/libs/aqbanking/banking.c:3626 src/libs/aqbanking/banking.c:3641
+#: src/libs/aqbanking/banking.c:3688 src/libs/aqbanking/banking.c:3703
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:3518
+#: src/libs/aqbanking/banking.c:3557
 msgid "Bad Account Mapping"
 msgstr "Fehlerhafte Kontozuordnung"
 
-#: src/libs/aqbanking/banking.c:3519
+#: src/libs/aqbanking/banking.c:3558
 msgid ""
 "The mapping between the application account the banking account is invalid."
 msgstr ""
 "Die Zuordnung eines Anwendungskontos zu einem Online-Konto ist fehlerhaft."
 
-#: src/libs/aqbanking/banking.c:3584 src/libs/aqbanking/banking.c:3646
+#: src/libs/aqbanking/banking.c:3623 src/libs/aqbanking/banking.c:3685
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:3585 src/libs/aqbanking/banking.c:3647
+#: src/libs/aqbanking/banking.c:3624 src/libs/aqbanking/banking.c:3686
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:3600 src/libs/aqbanking/banking.c:3662
+#: src/libs/aqbanking/banking.c:3639 src/libs/aqbanking/banking.c:3701
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:3601 src/libs/aqbanking/banking.c:3663
+#: src/libs/aqbanking/banking.c:3640 src/libs/aqbanking/banking.c:3702
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:4059
+#: src/libs/aqbanking/banking.c:4098
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:4061
+#: src/libs/aqbanking/banking.c:4100
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
@@ -71,10 +71,10 @@ msgstr ""
 "PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
 "b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden ? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:4073
+#: src/libs/aqbanking/banking.c:4112
 msgid "Use this"
 msgstr "Dennoch verwenden"
 
-#: src/libs/aqbanking/banking.c:4074
+#: src/libs/aqbanking/banking.c:4113
 msgid "Re-enter"
 msgstr "Neu eingeben"

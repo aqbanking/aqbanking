@@ -1912,6 +1912,45 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
 
 
 
+int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
+                                const char *name,
+                                GWEN_BUFFER *buf){
+  char home[256];
+
+  assert(ab);
+  if (ab->dataDir) {
+    GWEN_Buffer_AppendString(buf, ab->dataDir);
+  }
+  else {
+    if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not determine home directory, aborting.");
+      return -1;
+    }
+    GWEN_Buffer_AppendString(buf, home);
+    GWEN_Buffer_AppendString(buf, DIRSEP ".banking");
+  }
+
+  if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Bad share name, aborting.");
+    abort();
+  }
+  else {
+    char *s;
+
+    s=GWEN_Buffer_GetStart(buf);
+    while(*s) {
+      *s=tolower(*s);
+      s++;
+    }
+  }
+
+  return 0;
+}
+
+
+
 void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s){
   assert(ab);
 
