@@ -101,7 +101,7 @@ To use AqBanking you need backends.
 The first backend (which also provides some important importers) is
 AqHBCI (http://aqhbci.sf.net/).
 
-There is also a setup wizard for AqHBCI available (a KDE application), you
+There is also a setup wizard for AqHBCI available (a QT application), you
 can download it from the project page of AqHBCI.
 
 
