@@ -84,6 +84,9 @@ int AB_Balance_ToDb(const AB_BALANCE *b, GWEN_DB_NODE *db){
     if (AB_Value_ToDb(b->value, tdb))
       return -1;
   }
+  else {
+    DBG_WARN(0, "No value");
+  }
   if (b->time)
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "time", GWEN_Time_Seconds(b->time));

@@ -128,8 +128,8 @@ AB_VALUE *AB_Value_FromString(const char *s){
         c='.';
       else if (c==':')
         break;
-      else if (!isdigit(c)) {
-        DBG_ERROR(0, "Non-digit character in value");
+      else if (c!='.' && c!='-' && c!='+' && !isdigit(c)) {
+        DBG_ERROR(0, "Non-digit character in value at %d (%02x)", i, c);
         return 0;
       }
       assert(i<sizeof(numbuf)-1);
