@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=0
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=3
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -147,6 +147,22 @@ fi
 AC_SUBST(ktoblzcheck_libs)
 
 AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
+
+
+###-------------------------------------------------------------------------
+# LibOFX
+
+HAVE_OFX="yes"
+AC_CHECK_LIB(ofx, libofx_proc_buffer, [], [HAVE_OFX="no"])
+AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
+if test "$HAVE_OFX" != "yes"; then
+  AC_MSG_WARN([
+*** LibOFX >=0.7 not found, the OFX plugin will not be compiled.
+*** Please get LibOFX from http://libofx.sf.net/.
+*** Make sure that the libofx-devel packages are also installed.])
+fi
+
+AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 
 
 ###-------------------------------------------------------------------------
@@ -359,6 +375,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/dtaus/ressource.rc
   src/plugins/imexporters/dtaus/profiles/Makefile
   src/plugins/imexporters/dtaus/profiles/default.conf
+  src/plugins/imexporters/ofx/Makefile
+  src/plugins/imexporters/ofx/ofx.xml
+  src/plugins/imexporters/ofx/ressource.rc
+  src/plugins/imexporters/ofx/profiles/Makefile
+  src/plugins/imexporters/ofx/profiles/default.conf
   src/plugins/imexporters/swift/Makefile
   src/plugins/imexporters/swift/swift.xml
   src/plugins/imexporters/swift/ressource.rc

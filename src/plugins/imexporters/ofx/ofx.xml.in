@@ -1,0 +1,10 @@
+<plugin name="ofx" type="imexporter" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>OFX</short>
+  <descr>
+    This plugin imports OFX data using LibOFX.
+  </descr>
+</plugin>
+
+

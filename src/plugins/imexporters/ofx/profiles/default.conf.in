@@ -1,0 +1,9 @@
+
+char name="default"
+char shortDescr="default profile"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="Default profile"
+
+params {
+}
+

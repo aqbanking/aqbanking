@@ -3,6 +3,7 @@
 -------------------------------------------------
 - fixed a bug (was falsely reporting a backend as active when in fact
   it wasn't)
+- added OFX importer
 
 
 2004/09/13: Martin Preuss<martin@libchipcard.de>
