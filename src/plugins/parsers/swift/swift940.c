@@ -31,6 +31,21 @@
 
 
 
+int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
+                            GWEN_TYPE_UINT32 flags,
+                            const char *name,
+                            const char *s) {
+  GWEN_BUFFER *vbuf;
+  int rv;
+
+  vbuf=GWEN_Buffer_new(0, strlen(s)+32, 0, 1);
+  AB_ImExporter_DtaToUtf8(s, -1, vbuf);
+  rv=GWEN_DB_SetCharValue(db, flags, name, GWEN_Buffer_GetStart(vbuf));
+  GWEN_Buffer_free(vbuf);
+  return rv;
+}
+
+
 int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
                           GWEN_TYPE_UINT32 flags,
                           GWEN_DB_NODE *data,
@@ -101,10 +116,10 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   
       switch(id) {
       case 0: /* Buchungstext */
-        GWEN_DB_SetCharValue(data, flags, "text", s);
+        AHB_SWIFT__SetCharValue(data, flags, "text", s);
         break;
       case 10: /* Primanota */
-        GWEN_DB_SetCharValue(data, flags, "primanota", s);
+        AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
         break;
   
       case 20:
@@ -121,20 +136,20 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       case 61:
       case 62:
       case 63: /* Verwendungszweck */
-        GWEN_DB_SetCharValue(data, flags, "purpose", s);
+        AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
         break;
   
       case 30: /* BLZ Gegenseite */
-        GWEN_DB_SetCharValue(data, flags, "remoteBankCode", s);
+        AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
         break;
   
       case 31: /* Kontonummer Gegenseite */
-        GWEN_DB_SetCharValue(data, flags, "remoteAccountNumber", s);
+        AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
         break;
   
       case 32: 
       case 33: /* Name Auftraggeber */
-        GWEN_DB_SetCharValue(data, flags, "remoteName", s);
+        AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
         break;
   
       case 34: /* Textschluesselergaenzung */
@@ -150,7 +165,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   } /* if structured */
   else {
     /* unstructured :86:, simply store as purpose line */
-    GWEN_DB_SetCharValue(data, flags, "purpose", p);
+    AHB_SWIFT__SetCharValue(data, flags, "purpose", p);
   }
 
   return 0;
@@ -266,8 +281,8 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  GWEN_DB_SetCharValue(data, flags, "value/value", s);
-  GWEN_DB_SetCharValue(data, flags,
+  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
+  AHB_SWIFT__SetCharValue(data, flags,
                        "value/currency",
                        GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"));
   free(s);
@@ -286,7 +301,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   }
   memmove(buffer, p, 3);
   buffer[3]=0;
-  GWEN_DB_SetCharValue(data, flags, "key", buffer);
+  AHB_SWIFT__SetCharValue(data, flags, "key", buffer);
   p+=3;
   bleft-=3;
 
@@ -298,7 +313,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     s=(char*)malloc(p2-p+1);
     memmove(s, p, p2-p);
     s[p2-p]=0;
-    GWEN_DB_SetCharValue(data, flags, "custref", s);
+    AHB_SWIFT__SetCharValue(data, flags, "custref", s);
     free(s);
   }
   bleft-=p2-p;
@@ -318,7 +333,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       s=(char*)malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
-      GWEN_DB_SetCharValue(data, flags, "bankref", s);
+      AHB_SWIFT__SetCharValue(data, flags, "bankref", s);
       free(s);
       bleft-=p2-p;
       p=p2;
@@ -350,7 +365,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           /* get currency */
           memmove(buffer, p, 3);
           buffer[3]=0;
-          GWEN_DB_SetCharValue(data, flags, "origvalue/currency", buffer);
+          AHB_SWIFT__SetCharValue(data, flags, "origvalue/currency", buffer);
           p+=3;
           bleft-=3;
           /* get value */
@@ -364,7 +379,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           s=(char*)malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
-          GWEN_DB_SetCharValue(data, flags, "origvalue/value", s);
+          AHB_SWIFT__SetCharValue(data, flags, "origvalue/value", s);
           free(s);
           bleft-=p2-p;
           p=p2;
@@ -376,7 +391,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           /* get currency */
           memmove(buffer, p, 3);
           buffer[3]=0;
-          GWEN_DB_SetCharValue(data, flags, "charges/currency", buffer);
+          AHB_SWIFT__SetCharValue(data, flags, "charges/currency", buffer);
           p+=3;
           bleft-=3;
           /* get value */
@@ -390,7 +405,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           s=(char*)malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
-          GWEN_DB_SetCharValue(data, flags, "charges/value", s);
+          AHB_SWIFT__SetCharValue(data, flags, "charges/value", s);
           free(s);
           bleft-=p2-p;
           p=p2;
@@ -471,7 +486,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   }
   memmove(buffer, p, 3);
   buffer[3]=0;
-  GWEN_DB_SetCharValue(data, flags, "value/currency", buffer);
+  AHB_SWIFT__SetCharValue(data, flags, "value/currency", buffer);
   p+=3;
   bleft-=3;
 
@@ -493,7 +508,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  GWEN_DB_SetCharValue(data, flags, "value/value", s);
+  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
   free(s);
   bleft-=p2-p;
   p=p2;

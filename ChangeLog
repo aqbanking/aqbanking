@@ -3,6 +3,8 @@
 2004/09/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - OFX importer: now stores check number and some other additional OFX fields
+- parsers: now all parsers create UTF-8 data (surprisingly banks send SWIFT
+  data which contains German umlauts)
 
 
 2004/09/18: Martin Preuss<martin@libchipcard.de>
