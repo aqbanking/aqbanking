@@ -19,6 +19,7 @@
 
 /* #include <aqhbci/aqhbci.h> */
 #include <aqbanking/error.h>
+#include <aqbanking/imexporter_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
