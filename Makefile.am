@@ -28,7 +28,7 @@ listdoc.h: @AQ_HEADER_FILES@
 srcdoc: Doxyfile listdoc.h
 	doxygen
 
-install-srcdoc: $(PACKAGE).tag
+install-srcdoc: srcdoc
 	test -d "$(DESTDIR)@docpath@/$(PACKAGE)" || \
 	  mkdir -p "$(DESTDIR)@docpath@/$(PACKAGE)"
 	cp apidoc/* "$(DESTDIR)@docpath@/$(PACKAGE)"
