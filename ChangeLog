@@ -1,3 +1,9 @@
+
+2004/09/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a stupid bug in the code that reads a unique id
+
+
 2004-09-24   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Make the directory separator a

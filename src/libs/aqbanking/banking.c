@@ -185,6 +185,7 @@ GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab){
     GWEN_ERRORCODE err;
     unsigned long int i;
 
+    buffer[0]=0;
     bio=GWEN_BufferedIO_File_new(fd);
     GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
     GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
@@ -210,57 +211,62 @@ GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab){
       }
       else
         i=0;
-      GWEN_BufferedIO_free(bio);
-      uniqueId=++i;
-      buffer[0]=0;
-      snprintf(buffer, sizeof(buffer)-1, "%lu", i);
-      DBG_ERROR(0, "Buffer contains this: %s", buffer);
-      if (ftruncate(fd, 0)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "ftruncate(%s, 0): %s",
-                  GWEN_Buffer_GetStart(nbuf), strerror(errno));
-        return 0;
-      }
-      if (lseek(fd, 0, SEEK_SET)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "lseek(%s, 0): %s",
-                  GWEN_Buffer_GetStart(nbuf), strerror(errno));
-        return 0;
-      }
-
-      bio=GWEN_BufferedIO_File_new(fd);
-      GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
-      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-      err=GWEN_BufferedIO_WriteLine(bio, buffer);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_BufferedIO_free(bio);
-        AB_Banking__CloseFile(fd);
-        GWEN_Buffer_free(nbuf);
-        return 0;
-      }
-      err=GWEN_BufferedIO_Flush(bio);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_BufferedIO_free(bio);
-        AB_Banking__CloseFile(fd);
-        GWEN_Buffer_free(nbuf);
-        return 0;
-      }
     }
-    else
-      uniqueId=1;
+    else {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "File is empty");
+      i=0;
+    }
     GWEN_BufferedIO_free(bio);
 
-    if (AB_Banking__CloseFile(fd)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "Error closing file \"%s\"",
-               GWEN_Buffer_GetStart(nbuf));
-      uniqueId=0;
+    uniqueId=++i;
+    buffer[0]=0;
+    snprintf(buffer, sizeof(buffer)-1, "%lu", i);
+    if (ftruncate(fd, 0)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"ftruncate(%s, 0): %s",
+		GWEN_Buffer_GetStart(nbuf), strerror(errno));
+      GWEN_BufferedIO_free(bio);
+      return 0;
+    }
+    if (lseek(fd, 0, SEEK_SET)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"lseek(%s, 0): %s",
+		GWEN_Buffer_GetStart(nbuf), strerror(errno));
+      GWEN_BufferedIO_free(bio);
+      return 0;
+    }
+
+    bio=GWEN_BufferedIO_File_new(fd);
+    GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+    GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+    err=GWEN_BufferedIO_WriteLine(bio, buffer);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+      GWEN_BufferedIO_free(bio);
+      AB_Banking__CloseFile(fd);
+      GWEN_Buffer_free(nbuf);
+      return 0;
+    }
+    err=GWEN_BufferedIO_Flush(bio);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+      GWEN_BufferedIO_free(bio);
+      AB_Banking__CloseFile(fd);
+      GWEN_Buffer_free(nbuf);
+      return 0;
     }
   }
-  else
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not open file.");
+    uniqueId=1;
+  }
+
+  if (AB_Banking__CloseFile(fd)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Error closing file \"%s\"",
+	     GWEN_Buffer_GetStart(nbuf));
     uniqueId=0;
+  }
 
   GWEN_Buffer_free(nbuf);
   return uniqueId;
@@ -2566,6 +2572,7 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
 
   j=AB_Job_fromDb(ab, dbJob);
   GWEN_DB_Group_free(dbJob);
+  GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseFile(fd)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
@@ -2606,6 +2613,7 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
 
   j=AB_Job_fromDb(ab, dbJob);
   GWEN_DB_Group_free(dbJob);
+  GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (AB_Banking__CloseJob(ab, fd)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error closing job, ignoring");
