@@ -1097,6 +1097,45 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j);
 /*@}*/
 
 
+/** @name Handling Archived Jobs
+ *
+ * <p>
+ * Finished jobs are those which have been handled by
+ * @ref AB_Banking_ExecuteQueue.
+ * </p>
+ */
+/*@{*/
+
+/**
+ * <p>
+ * Loads all archived jobs from their folder. The caller is responsible for
+ * freeing the jobs returned (as opposed to @ref AB_Banking_GetEnqueuedJobs).
+ * </p>
+ * <p>
+ * Archived jobs are jobs which have been deleted via
+ * any AB_Banking_Del(-XYZ-)Job function except
+ * @ref AB_Banking_DelArchivedJob
+ * </p>
+ * <p>
+ * Please note that since this function loads all jobs from their folder
+ * the returned list might contain another representation of jobs you once
+ * created and enqueued into the execution queue.
+ * </p>
+ */
+AQBANKING_API 
+AB_JOB_LIST2 *AB_Banking_GetArchivedJobs(AB_BANKING *ab);
+
+/**
+ * Removes a finished job from its folder. You can use either a job returned
+ * via @ref AB_Banking_GetFinishedJobs or a job you previously added to
+ * the execution queue after the queue has been executed.
+ */
+AQBANKING_API 
+int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j);
+
+/*@}*/
+
+
 
 /** @name Virtual User Interaction Functions
  *

@@ -2761,7 +2761,32 @@ int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j){
     rv=AB_Banking__UnlinkJobAs(ab, j, "finished");
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job can only be removed by its creator application");
+    rv=AB_ERROR_INVALID;
+  }
+  return rv;
+}
+
+
+
+AB_JOB_LIST2 *AB_Banking_GetArchivedJobs(AB_BANKING *ab){
+  return AB_Banking__LoadJobsAs(ab, "archived");
+}
+
+
+
+int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j){
+  int rv;
+
+  assert(ab);
+  assert(j);
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+    rv=AB_Banking__UnlinkJobAs(ab, j, "archived");
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
   }
   return rv;
@@ -2781,8 +2806,15 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+    rv=AB_Banking__SaveJobAs(ab, j, "archived");
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not store job in archive (%d)", rv);
+      return rv;
+    }
     rv=AB_Banking__UnlinkJobAs(ab, j, "pending");
+  }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
@@ -2803,11 +2835,18 @@ int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j){
 
   assert(ab);
   assert(j);
-  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0)
+  if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
+    rv=AB_Banking__SaveJobAs(ab, j, "archived");
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not store job in archive (%d)", rv);
+      return rv;
+    }
     rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
+  }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Job can only be removed by its creator application");
+              "Job can only be removed by its creator application");
     rv=AB_ERROR_INVALID;
   }
   return rv;
