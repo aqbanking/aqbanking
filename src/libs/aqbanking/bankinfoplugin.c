@@ -95,6 +95,20 @@ AB_BANKINFO *AB_BankInfoPlugin_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
 
 
 
+int AB_BankInfoPlugin_GetBankInfoByTemplate(AB_BANKINFO_PLUGIN *bip,
+                                            AB_BANKINFO *tbi,
+                                            AB_BANKINFO_LIST2 *bl){
+  assert(bip);
+  assert(bip->usage);
+  if (bip->getBankInfoByTemplateFn)
+    return bip->getBankInfoByTemplateFn(bip, tbi, bl);
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "GetBankInfoByTemplate function not set");
+  return AB_ERROR_NOT_SUPPORTED;
+}
+
+
+
 AB_BANKINFO_CHECKRESULT
 AB_BankInfoPlugin_CheckAccount(AB_BANKINFO_PLUGIN *bip,
                                const char *branchId,
@@ -116,6 +130,15 @@ void AB_BankInfoPlugin_SetGetBankInfoFn(AB_BANKINFO_PLUGIN *bip,
   assert(bip);
   assert(bip->usage);
   bip->getBankInfoFn=f;
+}
+
+
+
+void AB_BankInfoPlugin_SetGetBankInfoByTemplateFn(AB_BANKINFO_PLUGIN *bip,
+                                                  AB_BANKINFOPLUGIN_GETBANKINFOBYTMPLATE_FN f){
+  assert(bip);
+  assert(bip->usage);
+  bip->getBankInfoByTemplateFn=f;
 }
 
 

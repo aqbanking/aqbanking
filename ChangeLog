@@ -4,6 +4,12 @@
 - added AB_BankInfoService (will extend the bank info code to include server
   settings for HBCI,  OFX, WebConnect etc)
   This needs the latest GWEN CVS version.
+- extended API: Now AB_BANKINFO objects can be queried using templates.
+  This allows to use any of the fields of a AB_BANKINFO object (except the
+  service lists) for matching.
+- bankinfo/de: now not only uses KtoBlzCheck, additionally uses the FinTS
+  banklist file. This file also contains information about the HBCI version
+  and servers.
 
 
 2004/11/19: Martin Preuss<martin@libchipcard.de>

@@ -1563,6 +1563,27 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
                                     const char *bankId);
 
 /**
+ * This functions retrieves information about banks. It loads the
+ * appropriate bank checker module and asks it for a list of AB_BANKINFO
+ * objects which match the given template. Empty fields in this template
+ * always match. Service entries (AB_BANKINFO_SERVICE) are not compared.
+ * Matching entries are added to the given list.
+ * The caller is responsible for freeing the objects returned (if any)
+ * by calling @ref AB_BankingInfo_free (or by calling
+ *  @ref AB_BankingInfo_List_freeAll).
+ * @param ab AqBanking main object
+ * @param country ISO country code ("de" for Germany, "at" for Austria etc)
+ * @param tbi template to compare against
+ * @param bl list to which matching banks are added
+ */
+AQBANKING_API 
+int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
+                                     const char *country,
+                                     AB_BANKINFO *tbi,
+                                     AB_BANKINFO_LIST2 *bl);
+
+
+/**
  * This function checks whether the given combination represents a valid
  * account. It loads the appropriate bank checker module and lets it check
  * the information.

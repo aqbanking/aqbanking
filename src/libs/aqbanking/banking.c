@@ -2324,6 +2324,27 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
 
 
 
+int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
+                                     const char *country,
+                                     AB_BANKINFO *tbi,
+                                     AB_BANKINFO_LIST2 *bl){
+  AB_BANKINFO_PLUGIN *bip;
+
+  assert(ab);
+  assert(country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  if (!bip) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "BankInfo plugin for country \"%s\" not found",
+             country);
+    return 0;
+  }
+
+  return AB_BankInfoPlugin_GetBankInfoByTemplate(bip, tbi, bl);
+}
+
+
+
 AB_BANKINFO_CHECKRESULT
 AB_Banking_CheckAccount(AB_BANKING *ab,
                         const char *country,

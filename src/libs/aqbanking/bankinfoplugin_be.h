@@ -46,6 +46,13 @@ typedef AB_BANKINFO*
   (*AB_BANKINFOPLUGIN_GETBANKINFO_FN)(AB_BANKINFO_PLUGIN *bip,
                                       const char *branchId,
                                       const char *bankId);
+
+typedef int
+  (*AB_BANKINFOPLUGIN_GETBANKINFOBYTMPLATE_FN)(AB_BANKINFO_PLUGIN *bip,
+                                               AB_BANKINFO *tbi,
+                                               AB_BANKINFO_LIST2 *bl);
+
+
 typedef AB_BANKINFO_CHECKRESULT
   (*AB_BANKINFOPLUGIN_CHECKACCOUNT_FN)(AB_BANKINFO_PLUGIN *bip,
                                        const char *branchId,
@@ -83,6 +90,10 @@ AB_BANKINFO *AB_BankInfoPlugin_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
                                            const char *branchId,
                                            const char *bankId);
 
+int AB_BankInfoPlugin_GetBankInfoByTemplate(AB_BANKINFO_PLUGIN *bip,
+                                            AB_BANKINFO *tbi,
+                                            AB_BANKINFO_LIST2 *bl);
+
 AB_BANKINFO_CHECKRESULT
   AB_BankInfoPlugin_CheckAccount(AB_BANKINFO_PLUGIN *bip,
                                  const char *branchId,
@@ -97,6 +108,8 @@ AB_BANKINFO_CHECKRESULT
 /*@{*/
 void AB_BankInfoPlugin_SetGetBankInfoFn(AB_BANKINFO_PLUGIN *bip,
                                         AB_BANKINFOPLUGIN_GETBANKINFO_FN f);
+void AB_BankInfoPlugin_SetGetBankInfoByTemplateFn(AB_BANKINFO_PLUGIN *bip,
+                                                  AB_BANKINFOPLUGIN_GETBANKINFOBYTMPLATE_FN f);
 void AB_BankInfoPlugin_SetCheckAccountFn(AB_BANKINFO_PLUGIN *bip,
                                          AB_BANKINFOPLUGIN_CHECKACCOUNT_FN f);
 /*@}*/
