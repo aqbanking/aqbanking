@@ -57,7 +57,7 @@ int AB_JobGetTransactions_GetMaxStoreDays(const AB_JOB *j);
  * @param t "from" date
  */
 AQBANKING_API 
-  void AB_JobGetTransactions_SetFromTime(AB_JOB *j, GWEN_TIME *t);
+  void AB_JobGetTransactions_SetFromTime(AB_JOB *j, const GWEN_TIME *t);
 
 /**
  * Sets the last date for which you want the reports (the time doesn't
@@ -67,7 +67,7 @@ AQBANKING_API
  * @param t "to" date
  */
 AQBANKING_API 
-void AB_JobGetTransactions_SetToTime(AB_JOB *j, GWEN_TIME *t);
+void AB_JobGetTransactions_SetToTime(AB_JOB *j, const GWEN_TIME *t);
 
 AQBANKING_API 
 const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j);

@@ -103,7 +103,7 @@ const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j){
 
 
 
-void AB_JobGetTransactions_SetFromTime(AB_JOB *j, GWEN_TIME *t){
+void AB_JobGetTransactions_SetFromTime(AB_JOB *j, const GWEN_TIME *t){
   AB_JOB_GETTRANSACTIONS *aj;
 
   assert(j);
@@ -128,7 +128,7 @@ const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j){
 
 
 
-void AB_JobGetTransactions_SetToTime(AB_JOB *j, GWEN_TIME *t){
+void AB_JobGetTransactions_SetToTime(AB_JOB *j, const GWEN_TIME *t){
   AB_JOB_GETTRANSACTIONS *aj;
 
   assert(j);
