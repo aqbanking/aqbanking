@@ -57,6 +57,8 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   char *accountNumber;
   char *accountName;
   char *owner;
+  char *description;
+  AB_ACCOUNT_TYPE accountType;
   AB_TRANSACTION_LIST *transactions;
   AB_TRANSACTION *nextTransaction;
   AB_ACCOUNT_STATUS_LIST *accStatusList;

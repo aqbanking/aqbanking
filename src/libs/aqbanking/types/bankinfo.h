@@ -51,9 +51,82 @@ Set this property with @ref AB_BankInfo_SetLocation,
 get it with @ref AB_BankInfo_GetLocation
 </p>
 
+@anchor AB_BANKINFO_Street
+<h3>Street</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetStreet, 
+get it with @ref AB_BankInfo_GetStreet
+</p>
+
+@anchor AB_BANKINFO_Zipcode
+<h3>Zipcode</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetZipcode, 
+get it with @ref AB_BankInfo_GetZipcode
+</p>
+
+@anchor AB_BANKINFO_City
+<h3>City</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetCity, 
+get it with @ref AB_BankInfo_GetCity
+</p>
+
+@anchor AB_BANKINFO_Region
+<h3>Region</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetRegion, 
+get it with @ref AB_BankInfo_GetRegion
+</p>
+
+@anchor AB_BANKINFO_Phone
+<h3>Phone</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetPhone, 
+get it with @ref AB_BankInfo_GetPhone
+</p>
+
+@anchor AB_BANKINFO_Fax
+<h3>Fax</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetFax, 
+get it with @ref AB_BankInfo_GetFax
+</p>
+
+@anchor AB_BANKINFO_Email
+<h3>Email</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetEmail, 
+get it with @ref AB_BankInfo_GetEmail
+</p>
+
+@anchor AB_BANKINFO_Website
+<h3>Website</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetWebsite, 
+get it with @ref AB_BankInfo_GetWebsite
+</p>
+
 @anchor AB_BANKINFO_Services
 <h3>Services</h3>
 <p>
+This is the list of known servises of this bank. This object remains the owner of lists returned via @ref AB_BankInfo_GetServices.
 </p>
 <p>
 Set this property with @ref AB_BankInfo_SetServices, 
@@ -151,6 +224,78 @@ AQBANKING_API const char *AB_BankInfo_GetLocation(const AB_BANKINFO *el);
 * Set the property @ref AB_BANKINFO_Location
 */
 AQBANKING_API void AB_BankInfo_SetLocation(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Street
+*/
+AQBANKING_API const char *AB_BankInfo_GetStreet(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Street
+*/
+AQBANKING_API void AB_BankInfo_SetStreet(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Zipcode
+*/
+AQBANKING_API const char *AB_BankInfo_GetZipcode(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Zipcode
+*/
+AQBANKING_API void AB_BankInfo_SetZipcode(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_City
+*/
+AQBANKING_API const char *AB_BankInfo_GetCity(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_City
+*/
+AQBANKING_API void AB_BankInfo_SetCity(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Region
+*/
+AQBANKING_API const char *AB_BankInfo_GetRegion(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Region
+*/
+AQBANKING_API void AB_BankInfo_SetRegion(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Phone
+*/
+AQBANKING_API const char *AB_BankInfo_GetPhone(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Phone
+*/
+AQBANKING_API void AB_BankInfo_SetPhone(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Fax
+*/
+AQBANKING_API const char *AB_BankInfo_GetFax(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Fax
+*/
+AQBANKING_API void AB_BankInfo_SetFax(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Email
+*/
+AQBANKING_API const char *AB_BankInfo_GetEmail(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Email
+*/
+AQBANKING_API void AB_BankInfo_SetEmail(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Website
+*/
+AQBANKING_API const char *AB_BankInfo_GetWebsite(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Website
+*/
+AQBANKING_API void AB_BankInfo_SetWebsite(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_Services

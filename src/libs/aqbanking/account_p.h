@@ -27,6 +27,7 @@ struct AB_ACCOUNT {
   GWEN_LIST_ELEMENT(AB_ACCOUNT)
   GWEN_TYPE_UINT32 usage;
   GWEN_TYPE_UINT32 uniqueId;
+  AB_ACCOUNT_TYPE accountType;
 
   AB_BANKING *banking;
   AB_PROVIDER *provider;

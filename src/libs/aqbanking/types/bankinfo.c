@@ -42,6 +42,22 @@ void AB_BankInfo_free(AB_BANKINFO *st) {
     free(st->bankName);
   if (st->location)
     free(st->location);
+  if (st->street)
+    free(st->street);
+  if (st->zipcode)
+    free(st->zipcode);
+  if (st->city)
+    free(st->city);
+  if (st->region)
+    free(st->region);
+  if (st->phone)
+    free(st->phone);
+  if (st->fax)
+    free(st->fax);
+  if (st->email)
+    free(st->email);
+  if (st->website)
+    free(st->website);
   if (st->services)
     AB_BankInfoService_List_free(st->services);
   GWEN_LIST_FINI(AB_BANKINFO, st)
@@ -67,6 +83,22 @@ AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO *d) {
     st->bankName=strdup(d->bankName);
   if (d->location)
     st->location=strdup(d->location);
+  if (d->street)
+    st->street=strdup(d->street);
+  if (d->zipcode)
+    st->zipcode=strdup(d->zipcode);
+  if (d->city)
+    st->city=strdup(d->city);
+  if (d->region)
+    st->region=strdup(d->region);
+  if (d->phone)
+    st->phone=strdup(d->phone);
+  if (d->fax)
+    st->fax=strdup(d->fax);
+  if (d->email)
+    st->email=strdup(d->email);
+  if (d->website)
+    st->website=strdup(d->website);
   if (d->services)
     st->services=AB_BankInfoService_List_dup(d->services);
   return st;
@@ -90,6 +122,30 @@ int AB_BankInfo_toDb(const AB_BANKINFO *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->location)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "location", st->location))
+      return -1;
+  if (st->street)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "street", st->street))
+      return -1;
+  if (st->zipcode)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "zipcode", st->zipcode))
+      return -1;
+  if (st->city)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "city", st->city))
+      return -1;
+  if (st->region)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "region", st->region))
+      return -1;
+  if (st->phone)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "phone", st->phone))
+      return -1;
+  if (st->fax)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fax", st->fax))
+      return -1;
+  if (st->email)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "email", st->email))
+      return -1;
+  if (st->website)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "website", st->website))
       return -1;
   if (st->services)
   if (1) {
@@ -119,6 +175,14 @@ AB_BANKINFO *st;
   AB_BankInfo_SetBankId(st, GWEN_DB_GetCharValue(db, "bankId", 0, 0));
   AB_BankInfo_SetBankName(st, GWEN_DB_GetCharValue(db, "bankName", 0, 0));
   AB_BankInfo_SetLocation(st, GWEN_DB_GetCharValue(db, "location", 0, 0));
+  AB_BankInfo_SetStreet(st, GWEN_DB_GetCharValue(db, "street", 0, 0));
+  AB_BankInfo_SetZipcode(st, GWEN_DB_GetCharValue(db, "zipcode", 0, 0));
+  AB_BankInfo_SetCity(st, GWEN_DB_GetCharValue(db, "city", 0, 0));
+  AB_BankInfo_SetRegion(st, GWEN_DB_GetCharValue(db, "region", 0, 0));
+  AB_BankInfo_SetPhone(st, GWEN_DB_GetCharValue(db, "phone", 0, 0));
+  AB_BankInfo_SetFax(st, GWEN_DB_GetCharValue(db, "fax", 0, 0));
+  AB_BankInfo_SetEmail(st, GWEN_DB_GetCharValue(db, "email", 0, 0));
+  AB_BankInfo_SetWebsite(st, GWEN_DB_GetCharValue(db, "website", 0, 0));
   st->services=AB_BankInfoService_List_new();
   if (1) {
     GWEN_DB_NODE *dbT;
@@ -233,6 +297,150 @@ void AB_BankInfo_SetLocation(AB_BANKINFO *st, const char *d) {
     st->location=strdup(d);
   else
     st->location=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetStreet(const AB_BANKINFO *st) {
+  assert(st);
+  return st->street;
+}
+
+
+void AB_BankInfo_SetStreet(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->street)
+    free(st->street);
+  if (d)
+    st->street=strdup(d);
+  else
+    st->street=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetZipcode(const AB_BANKINFO *st) {
+  assert(st);
+  return st->zipcode;
+}
+
+
+void AB_BankInfo_SetZipcode(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->zipcode)
+    free(st->zipcode);
+  if (d)
+    st->zipcode=strdup(d);
+  else
+    st->zipcode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetCity(const AB_BANKINFO *st) {
+  assert(st);
+  return st->city;
+}
+
+
+void AB_BankInfo_SetCity(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->city)
+    free(st->city);
+  if (d)
+    st->city=strdup(d);
+  else
+    st->city=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetRegion(const AB_BANKINFO *st) {
+  assert(st);
+  return st->region;
+}
+
+
+void AB_BankInfo_SetRegion(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->region)
+    free(st->region);
+  if (d)
+    st->region=strdup(d);
+  else
+    st->region=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetPhone(const AB_BANKINFO *st) {
+  assert(st);
+  return st->phone;
+}
+
+
+void AB_BankInfo_SetPhone(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->phone)
+    free(st->phone);
+  if (d)
+    st->phone=strdup(d);
+  else
+    st->phone=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetFax(const AB_BANKINFO *st) {
+  assert(st);
+  return st->fax;
+}
+
+
+void AB_BankInfo_SetFax(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->fax)
+    free(st->fax);
+  if (d)
+    st->fax=strdup(d);
+  else
+    st->fax=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetEmail(const AB_BANKINFO *st) {
+  assert(st);
+  return st->email;
+}
+
+
+void AB_BankInfo_SetEmail(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->email)
+    free(st->email);
+  if (d)
+    st->email=strdup(d);
+  else
+    st->email=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetWebsite(const AB_BANKINFO *st) {
+  assert(st);
+  return st->website;
+}
+
+
+void AB_BankInfo_SetWebsite(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->website)
+    free(st->website);
+  if (d)
+    st->website=strdup(d);
+  else
+    st->website=0;
   st->_modified=1;
 }
 

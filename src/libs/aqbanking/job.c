@@ -48,6 +48,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   GWEN_LIST_INIT(AB_JOB, j);
   j->jobType=jt;
   j->account=a;
+  AB_Account_Attach(j->account);
   j->createdBy=strdup(AB_Banking_GetAppName(AB_Account_GetBanking(a)));
   j->dbData=GWEN_DB_Group_new("data");
 
@@ -84,10 +85,11 @@ void AB_Job_free(AB_JOB *j){
     if (--(j->usage)==0) {
       DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Destroying AB_JOB");
       GWEN_INHERIT_FINI(AB_JOB, j);
+      GWEN_LIST_FINI(AB_JOB, j);
+      AB_Account_free(j->account);
       GWEN_DB_Group_free(j->dbData);
       free(j->resultText);
       free(j->createdBy);
-      GWEN_LIST_FINI(AB_JOB, j);
       GWEN_FREE_OBJECT(j);
     }
   }

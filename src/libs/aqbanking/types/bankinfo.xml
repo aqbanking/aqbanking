@@ -57,9 +57,23 @@
     <elem name="bankId" type="char" ptr="1" />
     <elem name="bankName" type="char" ptr="1" />
     <elem name="location" type="char" ptr="1" />
+    <elem name="street" type="char" ptr="1" />
+    <elem name="zipcode" type="char" ptr="1" />
+    <elem name="city" type="char" ptr="1" />
+    <elem name="region" type="char" ptr="1" />
+    <elem name="phone" type="char" ptr="1" />
+    <elem name="fax" type="char" ptr="1" />
+    <elem name="email" type="char" ptr="1" />
+    <elem name="website" type="char" ptr="1" />
     <elem name="services" type="AB_BANKINFO_SERVICE_LIST" ptr="1" 
           mode="list" elemType="AB_BANKINFO_SERVICE" 
-          init="1" copy="1" const="0" />
+          init="1" copy="1" const="0" >
+      <descr>
+        This is the list of known servises of this bank.
+        This object remains the owner of lists returned via
+        @ref AB_BankInfo_GetServices.
+      </descr>
+    </elem>
   </type>
   
   

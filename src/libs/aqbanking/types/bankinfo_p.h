@@ -16,8 +16,24 @@ struct AB_BANKINFO {
   char *bankId;
   char *bankName;
   char *location;
+  char *street;
+  char *zipcode;
+  char *city;
+  char *region;
+  char *phone;
+  char *fax;
+  char *email;
+  char *website;
   AB_BANKINFO_SERVICE_LIST *services;
 };
+
+
+
+
+
+
+
+
 
 
 

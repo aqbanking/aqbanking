@@ -171,6 +171,16 @@ AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_GetNextAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
 
 /**
+ * Looks for account info for the given account. If it is not found 0 is
+ * returned.
+ * The context remains the owner of the returned object.
+ */
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
+				     const char *bankCode,
+				     const char *accountNumber);
+
+/**
  * Looks for account info for the given account. If there is none it will
  * be created and added to the context.
  * The context remains the owner of the returned object.
@@ -309,9 +319,23 @@ void AB_ImExporterAccountInfo_SetAccountName(AB_IMEXPORTER_ACCOUNTINFO *iea,
 AQBANKING_API 
 const char*
 AB_ImExporterAccountInfo_GetOwner(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+AQBANKING_API 
 void AB_ImExporterAccountInfo_SetOwner(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                        const char *s);
 
+AQBANKING_API 
+AB_ACCOUNT_TYPE
+  AB_ImExporterAccountInfo_GetType(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+AQBANKING_API 
+void AB_ImExporterAccountInfo_SetType(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                      AB_ACCOUNT_TYPE t);
+
+AQBANKING_API 
+const char*
+AB_ImExporterAccountInfo_GetDescription(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+AQBANKING_API 
+void AB_ImExporterAccountInfo_SetDescription(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                       const char *s);
 
 /*@}*/
 

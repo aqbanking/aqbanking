@@ -32,6 +32,16 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
 
+typedef enum {
+  AB_AccountType_Unknown=0,
+  AB_AccountType_Bank,
+  AB_AccountType_CreditCard,
+  AB_AccountType_Checking,
+  AB_AccountType_Savings,
+  AB_AccountType_Investment,
+  AB_AccountType_Cash
+} AB_ACCOUNT_TYPE;
+
 #ifdef __cplusplus
 }
 #endif
@@ -66,6 +76,11 @@ AQBANKING_API
 int AB_Account_CheckAvailability(AB_ACCOUNT *a);
 
 AQBANKING_API 
+AB_ACCOUNT_TYPE AB_Account_GetAccountType(const AB_ACCOUNT *acc);
+AQBANKING_API 
+void AB_Account_SetAccountType(AB_ACCOUNT *acc, AB_ACCOUNT_TYPE t);
+
+AQBANKING_API 
 GWEN_TYPE_UINT32 AB_Account_GetUniqueId(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetUniqueId(AB_ACCOUNT *acc, GWEN_TYPE_UINT32 id);
@@ -88,16 +103,16 @@ const char *AB_Account_GetBankCode(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetBankCode(AB_ACCOUNT *acc, const char *s);
 
-  /** Returns the name of the account product (really:
-      "Kontoproduktbezeichnung" according to HBCI spec). This may or
-      may not be useful for your application. The bank may freely
-      choose what to say in here. */
+/** Returns the name of the account product (really:
+ "Kontoproduktbezeichnung" according to HBCI spec). This may or
+ may not be useful for your application. The bank may freely
+ choose what to say in here. */
 AQBANKING_API 
 const char *AB_Account_GetAccountName(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetAccountName(AB_ACCOUNT *acc, const char *s);
 
-  /** Returns the name of the bank, or NULL if none was set. */
+/** Returns the name of the bank, or NULL if none was set. */
 AQBANKING_API 
 const char *AB_Account_GetBankName(const AB_ACCOUNT *acc);
 AQBANKING_API 

@@ -244,6 +244,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->accountNumber);
     free(iea->accountName);
     free(iea->owner);
+    free(iea->description);
     AB_Transaction_List_free(iea->transactions);
     AB_AccountStatus_List_free(iea->accStatusList);
     GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
@@ -405,6 +406,39 @@ void AB_ImExporterAccountInfo_SetOwner(AB_IMEXPORTER_ACCOUNTINFO *iea,
 }
 
 
+AB_ACCOUNT_TYPE
+AB_ImExporterAccountInfo_GetType(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->accountType;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetType(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                      AB_ACCOUNT_TYPE t){
+  assert(iea);
+  iea->accountType=t;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetDescription(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+  assert(iea);
+  return iea->description;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetDescription(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             const char *s){
+  assert(iea);
+  free(iea->description);
+  if (s) iea->description=strdup(s);
+  else iea->description=0;
+}
+
+
 
 void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                              AB_ACCOUNT_STATUS *t){
@@ -520,9 +554,9 @@ void AB_ImExporterContext_AddAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 
 
 AB_IMEXPORTER_ACCOUNTINFO*
-AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
-                                    const char *bankCode,
-                                    const char *accountNumber){
+AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
+				     const char *bankCode,
+                                     const char *accountNumber){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
   if (!bankCode)
@@ -540,12 +574,31 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
       return iea;
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   }
+  return 0;
+}
 
-  /* not found, append it */
-  iea=AB_ImExporterAccountInfo_new();
-  AB_ImExporterAccountInfo_SetBankCode(iea, bankCode);
-  AB_ImExporterAccountInfo_SetAccountNumber(iea, accountNumber);
-  AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
+                                    const char *bankCode,
+                                    const char *accountNumber){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  if (!bankCode)
+    bankCode="";
+  if (!accountNumber)
+    accountNumber="";
+
+  assert(iec);
+  iea=AB_ImExporterContext_FindAccountInfo(iec, bankCode, accountNumber);
+  if (!iea) {
+    /* not found, append it */
+    iea=AB_ImExporterAccountInfo_new();
+    AB_ImExporterAccountInfo_SetBankCode(iea, bankCode);
+    AB_ImExporterAccountInfo_SetAccountNumber(iea, accountNumber);
+    AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+  }
   return iea;
 }
 

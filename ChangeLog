@@ -1,3 +1,14 @@
+
+2005/03/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_Job now attaches to its account
+
+
+2005/02/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added account type field to AB_ACCOUNT
+
+
 ===========================================================================
 MARK: released AqBanking - 1.0.6beta (2005/02/24)
 ===========================================================================

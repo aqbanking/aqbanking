@@ -169,6 +169,13 @@ void AB_Account_free(AB_ACCOUNT *a){
 
 
 
+void AB_Account_Attach(AB_ACCOUNT *a){
+  assert(a);
+  a->usage++;
+}
+
+
+
 int AB_Account_CheckAvailability(AB_ACCOUNT *a){
   assert(a);
   assert(a->usage);
@@ -190,6 +197,23 @@ void AB_Account_SetUniqueId(AB_ACCOUNT *a, GWEN_TYPE_UINT32 id){
   assert(a->usage);
   GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "static/uniqueId", id);
+}
+
+
+
+AB_ACCOUNT_TYPE AB_Account_GetAccountType(const AB_ACCOUNT *a){
+  assert(a);
+  assert(a->usage);
+  return GWEN_DB_GetIntValue(a->data, "static/accountType", 0, 0);
+}
+
+
+
+void AB_Account_SetAccountType(AB_ACCOUNT *a, AB_ACCOUNT_TYPE t){
+  assert(a);
+  assert(a->usage);
+  GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "static/accountType", t);
 }
 
 
