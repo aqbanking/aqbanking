@@ -46,14 +46,6 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
   assert(appName);
 
-  if (!GWEN_Logger_Exists(AQBANKING_LOGDOMAIN)) {
-    GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
-		     "aqbanking", 0,
-		     GWEN_LoggerTypeConsole,
-		     GWEN_LoggerFacilityUser);
-    GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelWarning);
-  }
-
   buf=0;
   if (!fname) {
     char home[256];
@@ -444,6 +436,13 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
   assert(ab);
 
+  if (!GWEN_Logger_IsOpen(AQBANKING_LOGDOMAIN)) {
+    GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
+                     "aqbanking", 0,
+                     GWEN_LoggerTypeConsole,
+                     GWEN_LoggerFacilityUser);
+  }
+
   if (access(ab->configFile, F_OK)) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
                "Configuration file \"%s\" does not exist, "
@@ -598,6 +597,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
                 AB_Account_GetUniqueId(a));
       GWEN_DB_Group_free(db);
+      GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
       return rv;
     }
     a=AB_Account_List_Next(a);
@@ -683,6 +683,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_Provider_List_Clear(ab->providers);
   GWEN_DB_ClearGroup(ab->data, 0);
 
+  GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
   return 0;
 }
 
