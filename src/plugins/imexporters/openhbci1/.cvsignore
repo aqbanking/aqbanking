@@ -1,2 +1,6 @@
-*.xml
+dbio.xml
+*.def
+*.dll
+*.lib
 *.rc
+openhbci1.xml
