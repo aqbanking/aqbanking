@@ -100,7 +100,7 @@ loaded from AqBanking's configuration file.
 
 If the backend does not have an account list (e.g. because is has not been
 setup yet) you can invoke the backend setup wizard 
-(AB_Banking_GetWizardPath()). You can get a list of available wizards for a
+(AB_Banking_FindWizard()). You can get a list of available wizards for a
 given backend via AB_Banking_GetWizardDescrs().
 
 

@@ -127,14 +127,14 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * </ul>
  * <p>
  * A note about <i>confirmation buttons</i>: AqBanking has been designed with
- * non-interactive applications in mind. For such an application is is
+ * non-interactive applications in mind. For such an application it is
  * important to know what button-press it has to simulate upon catching of a
  * messagebox callback. This is what the confimation button flags are for.
  * For informative messages the application may simply return the number of
  * the confirmation button and be done.
  * </p>
  * <p>
- * However, non-interactive applications should return an error (<1 && >3)
+ * However, non-interactive applications should return an error (value 0)
  * for messages classified as <b>dangerous</b>
  * (see @ref AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS) to avoid data loss.
  * </p>
@@ -176,13 +176,13 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 /** button 3 is the confirmation button */
 #define AB_BANKING_MSG_FLAGS_CONFIRM_B3         (3<<3)
 /** Determine which button is the confirmation button */
-#define AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(fl) ((flags & 0x3)>>3)
+#define AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(fl) ((fl & 0x3)>>3)
 
 
 /**
  * <p>
  * Check for the severity of the message. This allows non-interactive
- * backends to react upon the message accordingly.
+ * backends to react on the message accordingly.
  * The backend calling this function thus allows the frontend to detect
  * when the message is important regarding data security.
  * E.g. a message like "Shall I delete this file" should be considered
@@ -281,6 +281,8 @@ extern "C" {
  *
  * One way of passing arbitrary additional data to this callback is by
  * means of the @ref AB_Banking_GetUserData function.
+ * However, the recommended way is to use Gwenhywfars' heritage functions
+ * (see @ref GWEN_INHERIT_SETDATA).
  */
  typedef int (*AB_BANKING_MESSAGEBOX_FN)(AB_BANKING *ab,
                                         GWEN_TYPE_UINT32 flags,
@@ -604,7 +606,7 @@ AQBANKING_API
 int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
 
 /**
- * This function simpifies wizard handling. It seaches for a wizard for
+ * This function simpifies wizard handling. It searches for a wizard for
  * the given backend and the given frontends.
  * @param ab pointer to the AB_BANKING object
  * @param backend name of the backend (such as "aqhbci". You can retrieve
@@ -651,7 +653,7 @@ int AB_Banking_GetWizardPath(AB_BANKING *ab,
 
 
 /**
- * This function simpifies debugger handling. It seaches for a debugger for
+ * This function simpifies debugger handling. It searches for a debugger for
  * the given backend and the given frontends.
  * @param ab pointer to the AB_BANKING object
  * @param backend name of the backend (such as "aqhbci". You can retrieve
@@ -1503,7 +1505,7 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
  * <p>
  * On graphical user interfaces a call to this function should disable the
  * <i>abort</i> button. It would be best not to close the dialog on
- * receiption of this call but to simple enable a dialog closing (otherwise
+ * receiption of this call but to simply enable a dialog closing (otherwise
  * the user will not be able to see the log messages).
  * </p>
  * <p>

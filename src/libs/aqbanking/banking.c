@@ -2116,7 +2116,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
                                         db);
   if (rv && rv!=AB_ERROR_NOT_FOUND) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error reading users profiles");
+              "Error reading global profiles");
     GWEN_DB_Group_free(db);
     GWEN_Buffer_free(buf);
     return 0;

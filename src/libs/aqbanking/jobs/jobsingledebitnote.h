@@ -37,6 +37,7 @@ AB_JOB *AB_JobSingleDebitNote_new(AB_ACCOUNT *a);
  * here with a validated version (upon execution of the job).
  * So if you want to be sure that you have the recent version of the
  * transaction you should call @ref AB_JobSingleDebitNote_GetTransaction.
+ * This transaction MUST NOT contain splits.
  */
 AQBANKING_API 
 int AB_JobSingleDebitNote_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);

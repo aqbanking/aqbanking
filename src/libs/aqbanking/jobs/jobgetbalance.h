@@ -27,9 +27,6 @@ AQBANKING_API
 AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a);
 AQBANKING_API
 const AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j);
-AQBANKING_API
-void AB_JobGetBalance_SetAccountStatus(AB_JOB *j,
-                                       const AB_ACCOUNT_STATUS *as);
 
 #ifdef __cplusplus
 }
