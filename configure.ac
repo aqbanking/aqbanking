@@ -172,7 +172,8 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
-        aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking"
+        aqbanking_internal_libs="-laqbanking"
+        aqbanking_libs="-L`eval echo $prefix/lib` ${aqbanking_internal_libs}"
         aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
@@ -181,7 +182,8 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
-        aqbanking_libs="-L`eval echo $prefix/lib` -laqbanking32_${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_internal_libs="-laqbanking32_${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_libs="-L`eval echo $prefix/lib` ${aqbanking_internal_libs}"
         aqbanking_libspp="-L`eval echo $prefix/lib` -laqbankingpp32"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugins="`eval echo $prefix/lib`/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
@@ -203,6 +205,7 @@ AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 AS_SCRUB_INCLUDE(aqbanking_includes)
 AC_SUBST(aqbanking_includes)
+AC_SUBST(aqbanking_internal_libs)
 AC_SUBST(aqbanking_libs)
 AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugins)

@@ -1,4 +1,8 @@
+2004-09-24   Christian Stimming <stimming@tuhh.de>
 
+	* configure.ac: Introduce new AC_SUBST variable
+	aqbanking_internal_libs that has the linker command without the
+	lib directory.
 
 2004/09/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
