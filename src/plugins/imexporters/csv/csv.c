@@ -15,11 +15,8 @@
 #endif
 
 #include "csv_p.h"
-#include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/misc.h>
 #include <gwenhywfar/waitcallback.h>
-#include <gwenhywfar/inherit.h>
 
 
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_CSV);

@@ -7,6 +7,7 @@
 2005/02/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added account type field to AB_ACCOUNT
+- started working on QIF importer
 
 
 ===========================================================================

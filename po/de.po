@@ -1163,3 +1163,96 @@ msgstr "Sambia"
 #: src/libs/aqbanking/country.c:269
 msgid "ZIMBABWE"
 msgstr "Simbabwe"
+
+#: src/plugins/imexporters/qif/qif.c:78
+msgid "Please enter the date format for the following item:\n"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:80
+msgid "<html>Please enter the date format for the following item:<br>"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:84
+msgid ""
+"The following characters can be used:\n"
+"- 'Y': digit of the year\n"
+"- 'M': digit of the month\n"
+"- 'D': digit of the day\n"
+"\n"
+"Examples:\n"
+" \"YYYY/MM/DD\" (-> 2005/02/25)\n"
+" \"DD.MM.YYYY\" (-> 25.02.2005)\n"
+" \"MM/DD/YY\"   (-> 02/25/05)\n"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:94
+msgid ""
+"The following characters can be used:<table> <tr><td><i>Y</i></td><td>digit "
+"of the year</td></tr>\n"
+" <tr><td><i>M</i></td><td>digit of the month</td></tr>\n"
+" <tr><td><i>D</i></td><td>digit of the day</td></tr>\n"
+"</table>\n"
+"<br>Examples:<table> <tr><td><i>YYYY/MM/DD</i></td><td>(-> 2005/02/25)</td></"
+"tr>\n"
+" <tr><td><i>DD.MM.YYYY</i></td><td>(-> 25.02.2005)</td></tr>\n"
+" <tr><td><i>MM/DD/YY</i></td><td>(-> 02/25/05)</td></tr>\n"
+"</html>"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:126
+msgid "Enter Date Format"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:127
+msgid "Enter Correct Date Format"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:244
+msgid "The following value could not be parsed: \n"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:246
+msgid ""
+"There are now two possibilities of what character\n"
+"represents the decimal fixpoint:\n"
+" 1) '.' (as in \"123.45\")\n"
+" 2) ',' (as in \"123,45\")\n"
+"What is the fixpoint in the value above ?"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:252
+msgid "<htlm>The following value could not be parsed: <br>"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:254
+msgid ""
+"<br>There are now two possibilities of what character represents the decimal "
+"fixpoint: <ol> <li>'.' (as in \"123.45\")</li>\n"
+" <li>',' (as in \"123,45\")</li>\n"
+"</ol>What is the fixpoint in the value above ?</html>"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:276
+msgid "Value Parsing"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:278
+msgid "Possibility 1"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:279
+msgid "Possibility 2"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:452
+#, fuzzy
+msgid "Account statement date"
+msgstr "Konto nicht zugeordnet"
+
+#: src/plugins/imexporters/qif/qif.c:467
+msgid "Account statement credit line value"
+msgstr ""
+
+#: src/plugins/imexporters/qif/qif.c:483
+msgid "Account statement balance value"
+msgstr ""

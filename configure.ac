@@ -15,9 +15,9 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=6
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
@@ -443,6 +443,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/openhbci1/ressource.rc
   src/plugins/imexporters/openhbci1/profiles/Makefile
   src/plugins/imexporters/openhbci1/profiles/default.conf
+  src/plugins/imexporters/qif/Makefile
+  src/plugins/imexporters/qif/qif.xml
+  src/plugins/imexporters/qif/ressource.rc
+  src/plugins/imexporters/qif/profiles/Makefile
+  src/plugins/imexporters/qif/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml
