@@ -223,15 +223,6 @@ void AB_Provider_SetAddAccountFn(AB_PROVIDER *pro,
 
 
 
-void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
-                                         AB_PROVIDER_IMPORTTRANSACTIONS_FN f){
-  assert(pro);
-  pro->importTransactionsFn=f;
-}
-
-
-
-
 
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
@@ -318,23 +309,6 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
     return pro->addAccountFn(pro, a);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No addAccount function set");
-  return AB_ERROR_NOFN;
-}
-
-
-
-int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
-                                   AB_TRANSACTION_LIST2 *tl,
-                                   GWEN_BUFFEREDIO *bio){
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
-  }
-  if (pro->importTransactionsFn) {
-    return pro->importTransactionsFn(pro, tl, bio);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No importTransactions function set");
   return AB_ERROR_NOFN;
 }
 

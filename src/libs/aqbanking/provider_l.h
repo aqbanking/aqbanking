@@ -35,9 +35,6 @@ int AB_Provider_Execute(AB_PROVIDER *pro);
 AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro);
 int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
-int AB_Provider_ImportTransactions(AB_PROVIDER *pro,
-                                   AB_TRANSACTION_LIST2 *tl,
-                                   GWEN_BUFFEREDIO *bio);
 /*@}*/
 
 void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll);

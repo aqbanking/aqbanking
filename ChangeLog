@@ -12,6 +12,9 @@
 - boosted version to 0.9, since about 90 percent of the planned features
   are implemented
 - provider names are now also escaped
+- removed the import-transactions function from provider, this will be later
+  added to a new function class which handled importing and exporting of
+  AqBanking data
 
 
 2004/08/21: Martin Preuss<martin@libchipcard.de>

@@ -33,6 +33,10 @@ AqBanking.
    This function releases all data currently owned by AqBanking.
    You should always call this function to avoid memory leaks.
 
+   Please note that you still have to call the corresponding *_free() 
+   functions of any AqBanking object you own. This MUST be done before 
+   AB_Banking_free() is called.
+
 
 
 3. First Time
@@ -46,8 +50,8 @@ have to do it now:
 
 2. Present this list to the user to pick one of them
 
-3. Let AqBanking import a possibly available account list
-   (AB_Banking_ImportProviderAccounts())
+3. Activate the backends the user has chosen
+   This also imports a possibly available account list from the backends.
 
 4. Ask AqBanking about the account list (if the backend already was setup
    it might have returned an account list which in that case has been
@@ -145,12 +149,18 @@ following steps (Example: Getting the balance of an account):
     This is only needed if the job has been finished. If you don't delete the
     job from the finished queue it will stay there forever (since only the
     application which created the job may delete it).
+    
+    Please note that this function does not free the job, so before going to
+    the next step you have to free the job now using AB_Job_free().
 
 ---------------------------------------------------------- X8
 
 13. Call AB_Banking_Fini
     This allows AqBanking to write its configuration back.
     You should always call this function to avoid data inconsistencies.
+
+    Please note that before calling this function you MUST free all AqBanking
+    objects you own.
 
 14. Release all AqBanking data (AB_Banking_free())
     This function releases all data currently owned by AqBanking.

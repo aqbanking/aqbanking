@@ -38,9 +38,6 @@ typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro);
 typedef AB_ACCOUNT_LIST2* (*AB_PROVIDER_GETACCOUNTLIST_FN)(AB_PROVIDER *pro);
 typedef int (*AB_PROVIDER_UPDATEACCOUNT_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
 typedef int (*AB_PROVIDER_ADDACCOUNT_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
-typedef int (*AB_PROVIDER_IMPORTTRANSACTIONS_FN)(AB_PROVIDER *pro,
-                                                 AB_TRANSACTION_LIST2 *tl,
-                                                 GWEN_BUFFEREDIO *bio);
 /*@}*/
 
 
@@ -77,9 +74,6 @@ void AB_Provider_SetUpdateAccountFn(AB_PROVIDER *pro,
 AQBANKING_API
 void AB_Provider_SetAddAccountFn(AB_PROVIDER *pro,
                                  AB_PROVIDER_ADDACCOUNT_FN f);
-AQBANKING_API
-void AB_Provider_SetImportTransactionsFn(AB_PROVIDER *pro,
-                                         AB_PROVIDER_IMPORTTRANSACTIONS_FN f);
 /*@}*/
 
 

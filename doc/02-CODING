@@ -28,7 +28,14 @@ These headers are also not installed and MUST NOT be included by any source
 file outside AqBanking (even not by plugins!).
 
 
-2.3. Public Header Files
+2.3. Backend Header Files
+-------------------------
+Header files ending in *_be.h can be included by backends but should NOT be
+included by applications. These header files might be shipped with special
+development packages dedicated to backend development.
+
+
+2.4. Public Header Files
 ------------------------
 All other header files are public ones which all get installed and which are
 free to be included by applications and plugins.
