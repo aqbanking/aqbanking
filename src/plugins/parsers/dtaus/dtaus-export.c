@@ -17,7 +17,7 @@
 
 #include "dtaus_p.h"
 #include "dtaus-export_p.h"
-#include <aqhbci/aqhbci.h>
+#include <aqbanking/banking.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
@@ -63,11 +63,11 @@ int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
   assert(size);
   assert(s);
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding word: %s", s);
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding word: %s", s);
 
   ssize=strlen(s);
   if (ssize>size) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Word too long, chopping it \"%s\" (%d>%d)",
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Word too long, chopping it \"%s\" (%d>%d)",
              s, ssize, size);
   }
 
@@ -97,11 +97,11 @@ int AHB_DTAUS__AddNum(GWEN_BUFFER *dst,
   assert(dst);
   assert(s);
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding num : %s", s);
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding num : %s", s);
 
   i=strlen(s);
   if (i>size) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Word too long, chopping it");
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Word too long, chopping it");
     i=size;
   }
   j=size-i;
@@ -126,7 +126,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
   const char *p;
   GWEN_DB_NODE *dbT;
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Creating A set");
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating A set");
   /* field 1, 2: record header */
   GWEN_Buffer_AppendString(dst, "0128A");
 
@@ -138,7 +138,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
   else if (strcasecmp(p, "debitnote")==0)
     GWEN_Buffer_AppendString(dst, "LK");
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown group \"%s\"", GWEN_DB_GroupName(cfg));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown group \"%s\"", GWEN_DB_GroupName(cfg));
     return -1;
   }
 
@@ -147,7 +147,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                           GWEN_DB_GetCharValue(cfg,
                                                "bankCode",
                                                0, "0"))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -159,21 +159,21 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                          GWEN_DB_GetCharValue(cfg,
                                               "name",
                                               0, "0"))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 7: date */
   gt=GWEN_CurrentTime();
   if (GWEN_Time_GetBrokenDownDate(gt, &day, &month, &year)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to break down date");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to break down date");
     GWEN_Time_free(gt);
     return -1;
   }
   GWEN_Time_free(gt);
   snprintf(buffer, sizeof(buffer), "%02d%02d%02d", day, month+1, year%100);
   if (AHB_DTAUS__AddWord(dst, 6, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -185,7 +185,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "accountid",
                                              0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -194,7 +194,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "custref",
                                              0, "0"))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -208,19 +208,19 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
 
     ti=GWEN_Time_fromDb(dbT);
     if (!ti) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad execution date");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad execution date");
       return -1;
     }
 
     if (GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad execution date");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad execution date");
       GWEN_Time_free(ti);
       return -1;
     }
     snprintf(buffer, sizeof(buffer), "%02d%02d%04d", day, month+1, year);
 
     if (AHB_DTAUS__AddWord(dst, 8, buffer)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       GWEN_Time_free(ti);
       return -1;
     }
@@ -228,7 +228,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
   }
   else {
     if (AHB_DTAUS__AddWord(dst, 8, "")) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
@@ -243,7 +243,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
   else if (strcasecmp(p, "DEM")==0)
     GWEN_Buffer_AppendByte(dst, ' ');
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown currency \"%s\"", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown currency \"%s\"", p);
     return -1;
   }
 
@@ -257,7 +257,7 @@ double AHB_DTAUS__string2double(const char *s){
 
   while(*s && isspace(*s)) s++;
   if (!*s) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Empty value");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Empty value");
     return 0.0;
   }
   else {
@@ -278,7 +278,7 @@ double AHB_DTAUS__string2double(const char *s){
       if (c==',')
         c='.';
       else if (!isdigit(c)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Non-digit character in value");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Non-digit character in value");
         return 0;
       }
       assert(i<sizeof(numbuf)-1);
@@ -300,7 +300,7 @@ double AHB_DTAUS__string2double(const char *s){
     setlocale(LC_NUMERIC, currentLocale);
 #endif
     if (rv!=1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read floating point value");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read floating point value");
       return 0;
     }
 
@@ -326,7 +326,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   unsigned int startPos;
   double dd;
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Creating C set");
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating C set");
 
   /* ______________________________________________________________________
    * preparations
@@ -346,7 +346,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     if (GWEN_DB_GetCharValue(xa, "purpose", i, 0)==0)
       break;
     if (i>14) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Too many purpose lines (maxmimum is 14)");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many purpose lines (maxmimum is 14)");
       return -1;
     }
     extSets++;
@@ -357,7 +357,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     if (GWEN_DB_GetCharValue(xa, "localName", i, 0)==0)
       break;
     if (i>1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Too many name lines (maxmimum is 2)");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many name lines (maxmimum is 2)");
       return -1;
     }
     extSets++;
@@ -368,7 +368,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     if (GWEN_DB_GetCharValue(xa, "remoteName", i, 0)==0)
       break;
     if (i>1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Too many peer name lines (maxmimum is 2)");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many peer name lines (maxmimum is 2)");
       return -1;
     }
     extSets++;
@@ -376,7 +376,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* check number of extension sets */
   if (extSets>15) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Too many extension sets (%d)", extSets);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many extension sets (%d)", extSets);
     return -1;
   }
 
@@ -394,7 +394,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "bankCode",
                                              0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -404,17 +404,17 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          0, 0);
   if (p) {
     if (1!=sscanf(p, "%lf", &dd)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad bank code");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code");
       return -1;
     }
     *sumBankCodes+=dd;
     if (AHB_DTAUS__AddNum(dst, 8, p)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Peer bank code missing");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Peer bank code missing");
     return -1;
   }
 
@@ -424,17 +424,17 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          0, 0);
   if (p) {
     if (1!=sscanf(p, "%lf", &dd)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad account id");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account id");
       return -1;
     }
     *sumAccountIds+=dd;
     if (AHB_DTAUS__AddNum(dst, 10, p)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Peer account id missing");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Peer account id missing");
     return -1;
   }
 
@@ -445,7 +445,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   snprintf(buffer, sizeof(buffer), "%02d",
            GWEN_DB_GetIntValue(xa, "textkey", 0, isDebitNote?5:51));
   if (AHB_DTAUS__AddNum(dst, 2, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -453,7 +453,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   snprintf(buffer, sizeof(buffer), "%03d",
            GWEN_DB_GetIntValue(xa, "textkeyext", 0, 0));
   if (AHB_DTAUS__AddNum(dst, 3, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -468,13 +468,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     *sumDEM+=dd;
     snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
   else {
     if (AHB_DTAUS__AddNum(dst, 11, "0")) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
@@ -484,7 +484,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "bankCode",
                                              0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -493,7 +493,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                           GWEN_DB_GetCharValue(xa,
                                                "remoteAccountNumber",
                                                0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -505,13 +505,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     *sumEUR+=dd;
     snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
   else {
     if (AHB_DTAUS__AddNum(dst, 11, "0")) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
   }
@@ -524,7 +524,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                            GWEN_DB_GetCharValue(xa,
                                                 "remoteName",
                                                 0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -536,7 +536,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          GWEN_DB_GetCharValue(xa,
                                               "localname",
                                               0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -545,7 +545,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          GWEN_DB_GetCharValue(xa,
                                               "purpose",
                                               0, ""))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -561,7 +561,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* field 18: number of extension sets */
   snprintf(buffer, sizeof(buffer), "%02d", extSets);
   if (AHB_DTAUS__AddNum(dst, 2, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -579,7 +579,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     /* append extension set */
     GWEN_Buffer_AppendString(dst, "01");
     if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
 
@@ -605,7 +605,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     /* append extension set */
     GWEN_Buffer_AppendString(dst, "02");
     if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
 
@@ -631,7 +631,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     /* append extension set */
     GWEN_Buffer_AppendString(dst, "03");
     if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
     }
 
@@ -683,7 +683,7 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
   unsigned int i;
   char buffer[32];
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Creating E set");
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating E set");
 
   /* field 1, 2: record header */
   GWEN_Buffer_AppendString(dst, "0128E");
@@ -694,35 +694,35 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
   /* field 4: number of C sets */
   snprintf(buffer, sizeof(buffer), "%07d", csets);
   if (AHB_DTAUS__AddNum(dst, 7, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 5: sum of DEM values */
   snprintf(buffer, sizeof(buffer), "%013.0lf", sumDEM*100.0);
   if (AHB_DTAUS__AddNum(dst, 13, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 6: sum of peer account ids */
   snprintf(buffer, sizeof(buffer), "%017.0lf", sumAccountIds);
   if (AHB_DTAUS__AddNum(dst, 17, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 7: sum of peer bank codes */
   snprintf(buffer, sizeof(buffer), "%017.0lf", sumBankCodes);
   if (AHB_DTAUS__AddNum(dst, 17, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 8: sum of EUR values */
   snprintf(buffer, sizeof(buffer), "%013.0lf", sumEUR*100.0);
   if (AHB_DTAUS__AddNum(dst, 13, buffer)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
@@ -767,7 +767,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
 
   /* create A set */
   if (AHB_DTAUS__CreateSetA(dst, cfg)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error creating A set");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error creating A set");
     GWEN_Buffer_free(dst);
     return -1;
   }
@@ -780,7 +780,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
       if (AHB_DTAUS__CreateSetC(dst, cfg, gr,
                                 &sumEUR, &sumDEM,
                                 &sumBankCodes, &sumAccountIds)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating C set from this data:");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating C set from this data:");
         GWEN_DB_Dump(gr, stderr, 2);
         GWEN_Buffer_free(dst);
         return -1;
@@ -794,7 +794,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   if (AHB_DTAUS__CreateSetE(dst, cfg, cSets,
                             sumEUR, sumDEM,
                             sumBankCodes, sumAccountIds)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error creating E set");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error creating E set");
     GWEN_Buffer_free(dst);
     return -1;
   }
@@ -810,12 +810,12 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
     bsize=size-bytesWritten;
     err=GWEN_BufferedIO_WriteRaw(bio, p, &bsize);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
       GWEN_Buffer_free(dst);
       return -1;
     }
     if (bsize==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Broken pipe");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Broken pipe");
       GWEN_Buffer_free(dst);
       return -1;
     }

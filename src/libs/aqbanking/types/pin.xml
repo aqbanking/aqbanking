@@ -1,0 +1,22 @@
+<types>
+  <type id="AB_PIN" 
+        prefix="AB_Pin" 
+        class="Pin"
+        access="lib"
+        filename="pin"
+        list="lib"
+        list2="lib" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >aqbanking/banking.h</header>
+    </headers>
+    
+    <elem name="token" type="char" ptr="1" />
+    <elem name="value" type="char" ptr="1" />
+    <elem name="hash" type="char" ptr="1" />
+    <elem name="status" type="char" ptr="1" />
+  </type>
+  
+  
+  
+</types>

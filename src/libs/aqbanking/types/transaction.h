@@ -259,7 +259,10 @@ void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl);
 AB_TRANSACTION *AB_Transaction_new();
 void AB_Transaction_free(AB_TRANSACTION *st);
 void AB_Transaction_Attach(AB_TRANSACTION *st);
-AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);int AB_Transaction_IsModified(const AB_TRANSACTION *st);
+AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);
+AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
+int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);
+int AB_Transaction_IsModified(const AB_TRANSACTION *st);
 void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
 
 /** @name Local Account Info

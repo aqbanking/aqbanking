@@ -24,6 +24,7 @@
 #include <gwenhywfar/libloader.h>
 #include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/md.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -101,6 +102,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
   ab->data=GWEN_DB_Group_new("BankingData");
   ab->configFile=strdup(fname);
+  ab->pinList=AB_Pin_List_new();
   GWEN_Buffer_free(buf);
   GWEN_Buffer_free(nbuf);
   return ab;
@@ -118,6 +120,7 @@ void AB_Banking_free(AB_BANKING *ab){
     AB_ImExporter_List_free(ab->imexporters);
     GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
+    AB_Pin_List_free(ab->pinList);
     free(ab->appName);
     free(ab->appEscName);
     free(ab->configFile);
@@ -977,6 +980,12 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
   GWEN_DB_DeleteGroup(ab->data, "static/apps");
 
+  /* save bad pins */
+  rv=AB_Banking__SaveBadPins(ab);
+  if (rv) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not save bad pins");
+  }
+
   /* store static config data as "banking" */
   dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
   if (dbT) {
@@ -1008,6 +1017,124 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
   return 0;
 }
+
+
+
+int AB_Banking_Save(AB_BANKING *ab) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbT;
+  AB_ACCOUNT *a;
+  AB_JOB *j;
+  int rv;
+  AB_PROVIDER *pro;
+
+  assert(ab);
+
+  db=GWEN_DB_Group_new("config");
+  assert(db);
+
+  /* save accounts */
+  a=AB_Account_List_First(ab->accounts);
+  while(a) {
+    GWEN_DB_NODE *dbTdst;
+    int rv;
+
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_PATH_FLAGS_CREATE_GROUP,
+                            "accounts/account");
+    assert(dbTdst);
+    rv=AB_Account_toDb(a, dbTdst);
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
+                AB_Account_GetUniqueId(a));
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+    a=AB_Account_List_Next(a);
+  } /* while */
+
+  /* save enqueued jobs */
+  j=AB_Job_List_First(ab->enqueuedJobs);
+  while(j) {
+    if (AB_Banking__SaveJobAs(ab, j, "todo")) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving job, ignoring");
+    }
+    j=AB_Job_List_Next(j);
+  } /* while */
+
+  /* save list of active backends */
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                           "activeProviders", p);
+
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
+  /* save all providers */
+  pro=AB_Provider_List_First(ab->providers);
+  while(pro) {
+    rv=AB_Banking__SaveProviderData(ab,
+				    AB_Provider_GetEscapedName(pro),
+				    0);
+    if (rv) {
+      DBG_WARN(AQBANKING_LOGDOMAIN,
+	       "Error saving backend \"%s\"",
+	       AB_Provider_GetName(pro));
+      break;
+    }
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
+
+  /* store appplication specific data */
+  rv=AB_Banking__SaveAppData(ab);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+
+  /* save bad pins */
+  rv=AB_Banking__SaveBadPins(ab);
+  if (rv) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not save bad pins");
+  }
+
+  /* store static config data as "banking" */
+  dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
+  if (dbT) {
+    GWEN_DB_NODE *dbTdst;
+
+    dbTdst=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "banking");
+    assert(dbTdst);
+    GWEN_DB_AddGroupChildren(dbTdst, dbT);
+  }
+
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "lastUniqueId", ab->lastUniqueId);
+
+  /* write config file. TODO: make backups */
+  if (GWEN_DB_WriteFile(db, ab->configFile,
+                        GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
+    GWEN_DB_Group_free(db);
+    return AB_ERROR_BAD_CONFIG_FILE;
+  }
+
+  GWEN_DB_Group_free(db);
+  return 0;
+}
+
 
 
 
@@ -1204,15 +1331,18 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
     return AB_ERROR_INVALID;
   }
 
+  /* adapt status if necessary */
+  if (jst!=AB_Job_StatusEnqueued &&
+      jst!=AB_Job_StatusPending)
+    AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
+
   /* really enqueue the job */
   AB_Job_SetUniqueId(j, AB_Banking_GetUniqueId(ab));
   AB_Job_Attach(j);
   AB_Job_List_Add(j, ab->enqueuedJobs);
   AB_Banking__SaveJobAs(ab, j, "todo");
 
-  if (jst!=AB_Job_StatusEnqueued &&
-      jst!=AB_Job_StatusPending)
-    AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
+  /* unlink it from whatever previous list it belonged to */
   switch(jst) {
   case AB_Job_StatusPending:
     AB_Banking__UnlinkJobAs(ab, j, "pending"); break;
@@ -1222,7 +1352,7 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
     break;
   }
 
-
+  /* done */
   return 0;
 }
 
@@ -2788,7 +2918,387 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
 
 
 
+void AB_Banking_SetGetPinFn(AB_BANKING *ab,
+			    AB_BANKING_GETPIN_FN f){
+  assert(ab);
+  ab->getPinFn=f;
+}
 
+
+
+void AB_Banking_SetSetPinStatusFn(AB_BANKING *ab,
+				  AB_BANKING_SETPINSTATUS_FN f){
+  assert(ab);
+  ab->setPinStatusFn=f;
+}
+
+
+
+void AB_Banking_SetGetTanFn(AB_BANKING *ab,
+			    AB_BANKING_GETTAN_FN f){
+  assert(ab);
+  ab->getTanFn=f;
+}
+
+
+
+void AB_Banking_SetSetTanStatusFn(AB_BANKING *ab,
+				  AB_BANKING_SETTANSTATUS_FN f){
+  assert(ab);
+  ab->setTanStatusFn=f;
+}
+
+
+
+
+
+int AB_Banking__GetPin(AB_BANKING *ab,
+                       GWEN_TYPE_UINT32 flags,
+                       const char *token,
+                       const char *title,
+                       const char *text,
+                       char *buffer,
+                       int minLen,
+                       int maxLen){
+
+  assert(ab);
+
+  if (ab->getPinFn) {
+    return ab->getPinFn(ab, flags, token, title, text, buffer,
+                        minLen, maxLen);
+  }
+  else {
+    return AB_Banking_InputBox(ab,
+                               flags,
+                               title,
+                               text,
+                               buffer,
+                               minLen,
+                               maxLen);
+  }
+}
+
+
+
+int AB_Banking_GetPin(AB_BANKING *ab,
+                      GWEN_TYPE_UINT32 flags,
+                      const char *token,
+		      const char *title,
+		      const char *text,
+		      char *buffer,
+		      int minLen,
+                      int maxLen){
+  AB_PIN *p;
+  int rv;
+
+  assert(ab);
+  assert(token);
+
+  /* check whether we already know the pin */
+  p=AB_Pin_List_First(ab->pinList);
+  while(p) {
+    const char *s;
+
+    s=AB_Pin_GetToken(p);
+    if (s) {
+      if (strcasecmp(s, token)==0) {
+        break;
+      }
+    }
+    p=AB_Pin_List_Next(p);
+  }
+
+  if (!p) {
+    /* no pin yet, ask program for it */
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+               "Have no pin for \"%s\", getting it",
+               token);
+
+    rv=AB_Banking__GetPin(ab, flags, token, title, text, buffer,
+                          minLen, maxLen);
+    if (rv)
+      return rv;
+    p=AB_Pin_new();
+    AB_Pin_SetToken(p, token);
+    AB_Pin_SetValue(p, buffer);
+    AB_Pin_SetHash(p, 0);
+    AB_Pin_SetStatus(p, "unknown");
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+               "Adding pin for \"%s\" (%s)",
+               token, buffer);
+    AB_Pin_List_Add(p, ab->pinList);
+  }
+
+  for (;;) {
+    const char *st;
+    int l;
+
+    l=strlen(AB_Pin_GetValue(p));
+    if (l>=minLen && l<=maxLen) {
+      /* check whether PIN is bad */
+      AB_Banking__CheckBadPin(ab, p);
+      st=AB_Pin_GetStatus(p);
+      assert(st);
+      if (strcasecmp(st, "bad")!=0) {
+        /* got a working pin */
+        memmove(buffer, AB_Pin_GetValue(p), l+1);
+        break;
+      }
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Pin is registered as \"bad\"");
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Pin is too short/long");
+      AB_Pin_SetStatus(p, "bad");
+    }
+    rv=AB_Banking__GetPin(ab, flags, token, title, text, buffer,
+                          minLen, maxLen);
+    if (rv)
+      return rv;
+    AB_Pin_SetValue(p, buffer);
+    AB_Pin_SetHash(p, 0);
+    AB_Pin_SetStatus(p, "unknown");
+  } /* for */
+
+  // DEBUG !!!!
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "Returning PIN: \"%s\"",
+            buffer);
+  return 0;
+}
+
+
+
+int AB_Banking_SetPinStatus(AB_BANKING *ab,
+			    const char *token,
+                            const char *pin,
+			    AB_BANKING_PINSTATUS status){
+  AB_PIN *p;
+  const char *s;
+
+  assert(ab);
+  assert(token);
+  assert(pin);
+
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "Setting PIN status for \"%s\"=\"%s\" to %d",
+             token, pin, status);
+
+  p=AB_Pin_List_First(ab->pinList);
+  while(p) {
+    const char *s;
+
+    s=AB_Pin_GetToken(p);
+    if (s) {
+      if (strcasecmp(s, token)==0) {
+        break;
+      }
+    }
+    p=AB_Pin_List_Next(p);
+  }
+
+  if (!p) {
+    /* no pin yet, create it */
+    p=AB_Pin_new();
+    AB_Pin_SetToken(p, token);
+    AB_Pin_SetValue(p, pin);
+    AB_Pin_SetHash(p, 0);
+    AB_Pin_SetStatus(p, "unknown");
+    AB_Pin_List_Add(p, ab->pinList);
+  }
+
+  /* we already know the pin, save the status */
+  switch(status) {
+  case AB_Banking_PinStatusBad: s="bad"; break;
+  case AB_Banking_PinStatusOk:  s="ok"; break;
+  default:                      s="unknown"; break;
+  }
+  AB_Pin_SetStatus(p, s);
+
+  if (ab->setPinStatusFn) {
+    return ab->setPinStatusFn(ab, token, pin, status);
+  }
+  else {
+    return 0;
+  }
+}
+
+
+
+int AB_Banking_GetTan(AB_BANKING *ab,
+                      const char *token,
+                      const char *title,
+                      const char *text,
+                      char *buffer,
+                      int minLen,
+		      int maxLen){
+  assert(ab);
+  if (ab->getTanFn) {
+    return ab->getTanFn(ab, token, title, text, buffer,
+                        minLen, maxLen);
+  }
+  else {
+    return AB_Banking_InputBox(ab,
+                               AB_BANKING_INPUT_FLAGS_SHOW,
+                               title,
+                               text,
+                               buffer,
+                               minLen,
+                               maxLen);
+  }
+}
+
+
+
+int AB_Banking_SetTanStatus(AB_BANKING *ab,
+                            const char *token,
+                            const char *tan,
+			    AB_BANKING_TANSTATUS status){
+  assert(ab);
+  if (ab->setTanStatusFn) {
+    return ab->setTanStatusFn(ab, token, tan, status);
+  }
+  else {
+    return 0;
+  }
+}
+
+
+
+int AB_Banking__HashPin(AB_PIN *p) {
+  const char *st;
+
+  st=AB_Pin_GetStatus(p);
+  if (st) {
+    const char *token;
+    const char *value;
+
+    /* found a bad pin */
+    token=AB_Pin_GetToken(p);
+    value=AB_Pin_GetValue(p);
+    if (token && value) {
+      GWEN_BUFFER *buf;
+      char hash[21];
+      unsigned int bs;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, token);
+      GWEN_Buffer_AppendByte(buf, '-');
+      GWEN_Buffer_AppendString(buf, value);
+      bs=sizeof(hash);
+      if (GWEN_MD_Hash("RMD160",
+                       GWEN_Buffer_GetStart(buf),
+                       GWEN_Buffer_GetUsedBytes(buf),
+                       hash, &bs)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Error on hash");
+        GWEN_Buffer_free(buf);
+        return AB_ERROR_GENERIC;
+      }
+      GWEN_Buffer_Reset(buf);
+      if (GWEN_Text_ToHexBuffer(hash, bs, buf, 0, 0, 0)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Error encoding hash");
+        GWEN_Buffer_free(buf);
+        return AB_ERROR_GENERIC;
+      }
+      AB_Pin_SetHash(p, GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+    }
+    else
+      return AB_ERROR_GENERIC;
+  }
+  else
+    return AB_ERROR_GENERIC;
+
+  return 0;
+}
+
+
+
+int AB_Banking__SaveBadPins(AB_BANKING *ab) {
+  AB_PIN *p;
+  GWEN_DB_NODE *dbPins;
+
+  dbPins=GWEN_DB_GetGroup(ab->data,
+                          GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                          "static/pins");
+  assert(dbPins);
+  p=AB_Pin_List_First(ab->pinList);
+  while(p) {
+    const char *st;
+
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+               "Checking pin \"%s\"",
+               AB_Pin_GetToken(p));
+    st=AB_Pin_GetStatus(p);
+    if (st) {
+      if (strcasecmp(st, "bad")!=0) {
+        const char *hash;
+
+        /* only save bad pins */
+        hash=AB_Pin_GetHash(p);
+        if (!hash) {
+          int rv;
+
+          rv=AB_Banking__HashPin(p);
+          if (rv) {
+            return rv;
+          }
+          hash=AB_Pin_GetHash(p);
+          assert(hash);
+        } /* if no hash */
+        GWEN_DB_SetCharValue(dbPins, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             hash, st);
+      } /* if pin is bad */
+    } /* if status known */
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No status for pin \"%s\"",
+                AB_Pin_GetToken(p));
+    }
+    p=AB_Pin_List_Next(p);
+  } /* while */
+
+  return 0;
+}
+
+
+
+int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p) {
+  GWEN_DB_NODE *dbPins;
+  const char *hash;
+  const char *st;
+
+  st=AB_Pin_GetStatus(p);
+  if (st) {
+    if (strcasecmp(st, "ok")==0)
+      /* pin is explicitly marked as "ok", assume it is */
+      return 0;
+  }
+  dbPins=GWEN_DB_GetGroup(ab->data,
+                          GWEN_DB_FLAGS_DEFAULT,
+                          "static/pins");
+  assert(dbPins);
+
+  hash=AB_Pin_GetHash(p);
+  if (!hash) {
+    int rv;
+
+    rv=AB_Banking__HashPin(p);
+    if (rv) {
+      return rv;
+    }
+    hash=AB_Pin_GetHash(p);
+    assert(hash);
+  } /* if no hash */
+  if (!st)
+    st="unknown";
+  st=GWEN_DB_GetCharValue(dbPins, hash, 0, st);
+  if (strcasecmp(st, "bad")==0) {
+    AB_Pin_SetStatus(p, "bad");
+    return AB_ERROR_BAD_DATA;
+  }
+
+  return 0;
+}
 
 
 

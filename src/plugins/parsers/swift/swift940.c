@@ -62,7 +62,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 
     while(*p) {
       if (strlen(p)<3) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
         return -1;
       }
       p++; /* skip '?' */
@@ -70,7 +70,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       if (*p==10)
         p++;
       if (!*p) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Partial field id");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
         return -1;
       }
       id=((*p-'0')*10);
@@ -79,7 +79,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       if (*p==10)
         p++;
       if (!*p) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Partial field id");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
         return -1;
       }
       id+=(*p-'0');
@@ -93,7 +93,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT_Condense(s);
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Current field is %02d (%s)", id, s);
+      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Current field is %02d (%s)", id, s);
       /* now id is the field id, s points to the field content */
   
       switch(id) {
@@ -137,7 +137,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       case 34: /* Textschluesselergaenzung */
   
       default: /* ignore all other fields (if any) */
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
                  AHB_SWIFT_Tag_GetData(tg));
         break;
       } /* switch */
@@ -174,7 +174,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
   /* valuata date (M) */
   if (bleft<6) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing valuta date (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing valuta date (%s)", p);
     return -1;
   }
   d1=((p[0]-'0')*10) + (p[1]-'0');
@@ -186,7 +186,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                                           "valutadate"))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving valuta date");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving valuta date");
   }
   p+=6;
   bleft-=6;
@@ -194,7 +194,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* booking data (K) */
   if (*p && isdigit(*p)) {
     if (bleft<4) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad booking date (%s)", p);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
       return -1;
     }
     d2=((p[0]-'0')*10) + (p[1]-'0');
@@ -204,7 +204,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
 					    GWEN_DB_FLAGS_OVERWRITE_GROUPS,
 					    "date"))) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving date");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
     }
     p+=4;
     bleft-=4;
@@ -212,7 +212,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
   /* credit/debit mark (M) */
   if (bleft<2) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad value string (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
     return -1;
   }
   neg=0;
@@ -231,7 +231,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
   /* third character of currency (K) */
   if (bleft<1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad data (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
     return -1;
   }
   if (!isdigit(*p)) {
@@ -245,7 +245,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   while(*p2 && *p2!='N')
     p2++;
   if (p2==p || *p2!='N') {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad value (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
     return -1;
   }
   s=(char*)malloc(p2-p+1+(neg?1:0));
@@ -272,7 +272,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
   /* key (M) */
   if (bleft<3) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing booking key (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing booking key (%s)", p);
     return -1;
   }
   memmove(buffer, p, 3);
@@ -302,7 +302,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       p2=p;
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing bank reference (%s)", p);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
         return -1;
       }
       s=(char*)malloc(p2-p+1);
@@ -314,7 +314,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       p=p2;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad data (%s)", p);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
       return -1;
     }
   }
@@ -329,7 +329,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       /* read extra information */
       if (*p=='/') {
         if (bleft<6) {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
           return 0;
         }
         if (strncasecmp(p, "/OCMT/", 6)==0) {
@@ -346,7 +346,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           p2=p;
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad original value (%s)", p);
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad original value (%s)", p);
             return -1;
           }
           s=(char*)malloc(p2-p+1);
@@ -371,7 +371,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           p2=p;
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad charges value (%s)", p);
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad charges value (%s)", p);
             return -1;
           }
           s=(char*)malloc(p2-p+1);
@@ -383,12 +383,12 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           p=p2;
         }
         else {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
           return 0;
         }
       }
       else {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Bad extra data, ignoring (%s)", p);
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Bad extra data, ignoring (%s)", p);
         return 0;
       }
     } /* while */
@@ -418,7 +418,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 
   /* credit/debit mark (M) */
   if (bleft<2) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad value string (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
     return -1;
   }
   neg=0;
@@ -429,7 +429,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 
   /* date (M) */
   if (bleft<6) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing date (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing date (%s)", p);
     return -1;
   }
   d1=((p[0]-'0')*10) + (p[1]-'0');
@@ -442,7 +442,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
 					  "date"))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving date");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
   }
 
   p+=6;
@@ -450,7 +450,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 
   /* currency (M) */
   if (bleft<3) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing currency (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing currency (%s)", p);
     return -1;
   }
   memmove(buffer, p, 3);
@@ -463,7 +463,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   p2=p;
   while(*p2) p2++;
   if (p2==p) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad value (%s)", p);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
     return -1;
   }
   s=(char*)malloc(p2-p+1+(neg?1:0));
@@ -515,11 +515,11 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       /* start a new day */
       dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
       dbTransaction=0;
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Starting new day");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Starting new day");
       dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                "StartSaldo");
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error in tag");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         return -1;
       }
     }
@@ -529,38 +529,38 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       /* end current day */
       dbTransaction=0;
       if (!dbDay) {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Your bank does not send an opening saldo");
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
         dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
       }
       dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                "EndSaldo");
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error in tag");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         return -1;
       }
       dbDay=0;
     }
     else if (strcasecmp(id, "61")==0) {
       if (!dbDay) {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Your bank does not send an opening saldo");
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
         dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
       }
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Creating new transaction");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Creating new transaction");
       dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                      "transaction");
       if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error in tag");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         return -1;
       }
     }
     else if (strcasecmp(id, "86")==0) {
       if (!dbTransaction) {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Bad sequence of tags (86 before 61), ignoring");
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Bad sequence of tags (86 before 61), ignoring");
       }
       else {
         if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Error in tag");
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
           return -1;
         }
       }
@@ -568,7 +568,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
 
     tagCount++;
     if (GWEN_WaitCallbackProgress(tagCount)==GWEN_WaitCallbackResult_Abort){
-      DBG_INFO(AQHBCI_LOGDOMAIN, "User aborted");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
       GWEN_WaitCallback_Log(0, "SWIFT: User aborted");
       return AB_ERROR_USER_ABORT;
     }

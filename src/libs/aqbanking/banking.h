@@ -211,6 +211,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 
 /*@}*/
 
+
 /**
  * This is used with @ref AB_Banking_ProgressLog to tell the function
  * about the severity of the message. The implementation of this function
@@ -343,6 +344,52 @@ typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab,
 
 
 
+/** @name Prototypes For Virtual Security Functions
+ *
+ */
+/*@{*/
+typedef enum {
+  AB_Banking_PinStatusBad=-1,
+  AB_Banking_PinStatusUnknown,
+  AB_Banking_PinStatusOk
+} AB_BANKING_PINSTATUS;
+
+
+typedef enum {
+  AB_Banking_TanStatusBad=-1,
+  AB_Banking_TanStatusUnknown,
+  AB_Banking_TanStatusUsed,
+  AB_Banking_TanStatusUnused,
+} AB_BANKING_TANSTATUS;
+
+
+typedef int (*AB_BANKING_GETPIN_FN)(AB_BANKING *ab,
+                                    GWEN_TYPE_UINT32 flags,
+                                    const char *token,
+                                    const char *title,
+                                    const char *text,
+                                    char *buffer,
+                                    int minLen,
+                                    int maxLen);
+typedef int (*AB_BANKING_SETPINSTATUS_FN)(AB_BANKING *ab,
+                                          const char *token,
+                                          const char *pin,
+                                          AB_BANKING_PINSTATUS status);
+
+typedef int (*AB_BANKING_GETTAN_FN)(AB_BANKING *ab,
+                                    const char *token,
+                                    const char *title,
+                                    const char *text,
+                                    char *buffer,
+                                    int minLen,
+                                    int maxLen);
+typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
+                                          const char *token,
+                                          const char *tan,
+                                          AB_BANKING_TANSTATUS status);
+
+
+/*@}*/
 
 
 
@@ -404,6 +451,15 @@ int AB_Banking_Init(AB_BANKING *ab);
  */
 AQBANKING_API 
 int AB_Banking_Fini(AB_BANKING *ab);
+
+/**
+ * Saves all data. You may call this function periodically (especially
+ * after doing setup stuff).
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab banking interface
+ */
+int AB_Banking_Save(AB_BANKING *ab);
+
 /*@}*/
 
 
@@ -1272,6 +1328,73 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
                                  AB_BANKING_PROGRESS_END_FN f);
 
 /*@}*/
+
+
+/** @name Virtual Security Functions
+ *
+ */
+/*@{*/
+
+/**
+ * This function retrieves the PIN for the given token.
+ * @param flags flags as for @ref AB_Banking_InputBox
+ */
+AQBANKING_API
+int AB_Banking_GetPin(AB_BANKING *ab,
+                      GWEN_TYPE_UINT32 flags,
+                      const char *token,
+                      const char *title,
+                      const char *text,
+                      char *buffer,
+                      int minLen,
+                      int maxLen);
+
+AQBANKING_API 
+int AB_Banking_SetPinStatus(AB_BANKING *ab,
+                            const char *token,
+                            const char *pin,
+                            AB_BANKING_PINSTATUS status);
+
+AQBANKING_API 
+int AB_Banking_GetTan(AB_BANKING *ab,
+                      const char *token,
+                      const char *title,
+                      const char *text,
+                      char *buffer,
+                      int minLen,
+                      int maxLen);
+
+AQBANKING_API 
+int AB_Banking_SetTanStatus(AB_BANKING *ab,
+                            const char *token,
+                            const char *tan,
+                            AB_BANKING_TANSTATUS status);
+
+/*@}*/
+
+
+
+/** @name Setters For Virtual Security Functions
+ *
+ */
+/*@{*/
+AQBANKING_API 
+void AB_Banking_SetGetPinFn(AB_BANKING *ab,
+                            AB_BANKING_GETPIN_FN f);
+AQBANKING_API 
+void AB_Banking_SetSetPinStatusFn(AB_BANKING *ab,
+                                  AB_BANKING_SETPINSTATUS_FN f);
+
+AQBANKING_API 
+void AB_Banking_SetGetTanFn(AB_BANKING *ab,
+                            AB_BANKING_GETTAN_FN f);
+AQBANKING_API 
+void AB_Banking_SetSetTanStatusFn(AB_BANKING *ab,
+                                  AB_BANKING_SETTANSTATUS_FN f);
+
+
+/*@}*/
+
 
 /*@}*/ /* defgroup Middle Level API */
 

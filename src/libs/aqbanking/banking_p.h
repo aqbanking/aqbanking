@@ -19,6 +19,7 @@
 #include "account_l.h"
 #include "job_l.h"
 #include "imexporter_l.h"
+#include "pin_l.h"
 
 
 struct AB_BANKING {
@@ -47,6 +48,13 @@ struct AB_BANKING {
   AB_BANKING_PROGRESS_ADVANCE_FN progressAdvanceFn;
   AB_BANKING_PROGRESS_LOG_FN progressLogFn;
   AB_BANKING_PROGRESS_END_FN progressEndFn;
+
+  AB_BANKING_GETPIN_FN getPinFn;
+  AB_BANKING_SETPINSTATUS_FN setPinStatusFn;
+  AB_BANKING_GETTAN_FN getTanFn;
+  AB_BANKING_SETTANSTATUS_FN setTanStatusFn;
+
+  AB_PIN_LIST *pinList;
 
   void *user_data;
 };
@@ -120,6 +128,19 @@ int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
                                    const char *accountId);
+
+int AB_Banking__HashPin(AB_PIN *p);
+int AB_Banking__SaveBadPins(AB_BANKING *ab);
+int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p);
+
+int AB_Banking__GetPin(AB_BANKING *ab,
+                       GWEN_TYPE_UINT32 flags,
+                       const char *token,
+                       const char *title,
+                       const char *text,
+                       char *buffer,
+                       int minLen,
+                       int maxLen);
 
 
 #endif /* AQBANKING_BANKING_P_H */
