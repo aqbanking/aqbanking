@@ -2750,7 +2750,7 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
         while(t) {
 	  AB_TRANSACTION *nt;
 
-          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a transaction");"
+          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a transaction");
 	  nt=AB_Transaction_dup(t);
 	  AB_Transaction_SetLocalAccountNumber(nt,
 					       AB_Account_GetAccountNumber(a));
