@@ -16,6 +16,8 @@
   from the token and the value of the pin (concatenated and RMD160-hashed)
   and the status (only "bad" pins are saved since even if decoded they would
   be useless).
+- changed the path for application and backend data in jobs (so that both
+  types cannot interfere with each other)
 
 
 2004/09/07: Martin Preuss<martin@libchipcard.de>
