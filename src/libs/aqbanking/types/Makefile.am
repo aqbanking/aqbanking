@@ -1,0 +1,24 @@
+INCLUDES = $(gwenhywfar_includes)
+
+noinst_LTLIBRARIES=libtypes.la
+
+noinst_HEADERS=\
+  accstatus_p.h \
+  balance_p.h \
+  transaction_p.h \
+  value_p.h
+
+
+iheaderdir=${includedir}/aqbanking
+iheader_HEADERS=\
+  accstatus.h \
+  balance.h \
+  transaction.h \
+  value.h
+
+libtypes_la_SOURCES=\
+  accstatus.c \
+  balance.c \
+  transaction.c \
+  value.c
+

@@ -1,0 +1,76 @@
+
+
+1. Introduction
+===============
+
+This document explains what an application needs to perform to setup and use
+AqBanking. 
+
+
+2. Setup AqBanking
+==================
+
+1. Create an instance of AB_BANKING (AB_Banking_new())
+
+2. Set callbacks for virtual functions
+   The class AB_BANKING (file "banking.h") uses some callbacks which should be
+   set by the application which uses AqBanking.
+   These are callbacks which allow AqBanking or any of its plugins to interact
+   with the user. See the section "Virtual Functions" in the Doxygen 
+   documentation of AB_BANKING.
+
+3. Call AB_Banking_Init
+   This makes AqBanking actually read its configuration. Before this call
+   AqBanking can not work.
+
+4. Do whatever you want
+
+5. Call AB_Banking_Fini
+   This allows AqBanking to write its configuration back.
+   You should always call this function to avoid data inconsistencies.
+
+6. Release all AqBanking data (AB_Banking_free())
+   This function releases all data currently owned by AqBanking.
+   You should always call this function to avoid memory leaks.
+
+
+
+3. First Time
+=============
+
+When you start using AqBanking there probably is no account setup so you will
+have to do it now:
+
+1. Ask AqBanking for a list of available backends 
+   (AB_Banking_GetProviderDescrs())
+
+2. Present this list to the user to pick one of them
+
+3. Let AqBanking import a possibly available account list
+   (AB_Banking_ImportProviderAccounts())
+
+4. Ask AqBanking about the account list (if the backend already was setup
+   it might have returned an account list which in that case has been
+   imported to AqBanking)
+
+5. Map the AqBanking-accounts to your application accounts.
+
+
+Some backends - e.g. AqHBCI - allow transparent updates of account
+information. This is automatically used by AqBanking whenever an account is
+loaded from AqBanking's configuration file.
+
+
+If the backend does not have an account list (e.g. because is has not been
+setup yet) you can invoke the backend setup wizzard 
+(AB_Banking_GetWizzard()). You can get a list of available wizzards for a
+given backend via AB_Banking_GetWizzardDescrs().
+
+
+
+
+
+
+
+
+

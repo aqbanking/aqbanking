@@ -1,0 +1,48 @@
+
+
+1. Object Orientation
+=====================
+In all documents concerning AqBanking the term "class" refers to modules, 
+because AqBanking follows the object-orientated pragma.
+
+Example: Functions concerning AB_TRANSACTION are inside the files
+transaction.c, transaction_p.h and transaction.h and start with
+AB_Transaction_Something. So AB_TRANSACTION is called a "class" inside
+this document.
+
+
+2. Header Files
+===============
+
+2.1 Private Header Files
+------------------------
+Header files ending in *_p.h are considered private header files, only to be
+included by the matching *.c file. These are not installed and MUST NOT be
+included by any other source file.
+
+
+2.2. Library-private Header Files
+---------------------------------
+Header files ending in *_l.h are considered private to AqBanking.
+These headers are also not installed and MUST NOT be included by any source
+file outside AqBanking (even not by plugins!).
+
+
+2.3. Public Header Files
+------------------------
+All other header files are public ones which all get installed and which are
+free to be included by applications and plugins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AQBANKING_VERSION_H
+#define AQBANKING_VERSION_H
+
+#define AQBANKING_VERSION_MAJOR @AQBANKING_VERSION_MAJOR@
+#define AQBANKING_VERSION_MINOR @AQBANKING_VERSION_MINOR@
+#define AQBANKING_VERSION_PATCHLEVEL @AQBANKING_VERSION_PATCHLEVEL@
+#define AQBANKING_VERSION_BUILD @AQBANKING_VERSION_BUILD@
+#define AQBANKING_VERSION_TAG "@AQBANKING_VERSION_TAG@"
+#define AQBANKING_VERSION_FULL_STRING "@AQBANKING_VERSION_FULL_STRING@"
+#define AQBANKING_VERSION_STRING "@AQBANKING_VERSION_STRING@"
+
+
+
+#endif /* AQBANKING_VERSION_H */
+
+
