@@ -2,6 +2,7 @@
 2004/08/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - completed API documentation for AB_BANKING
+- fixed AB_Transaction (was missing textkey)
 
 
 2004/08/03: Martin Preuss<martin@libchipcard.de>

@@ -165,6 +165,8 @@ namespace AB {
      */
     GWEN_DB_NODE *getAppData();
 
+    int getUserDataDir(GWEN_BUFFER *buf) const ;
+    int getAppUserDataDir(GWEN_BUFFER *buf) const ;
 
 
     /** @name Plugin Handling

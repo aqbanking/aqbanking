@@ -411,6 +411,19 @@ void AB_Transaction_AddPurpose(AB_TRANSACTION *t, const char *s){
 
 
 
+int AB_Transaction_GetTextKey(const AB_TRANSACTION *t){
+  assert(t);
+  return t->textKey;
+}
+
+
+
+void AB_Transaction_SetTextKey(AB_TRANSACTION *t, int i){
+  assert(t);
+  t->textKey=i;
+}
+
+
 
 int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
   GWEN_STRINGLISTENTRY *se;
@@ -483,6 +496,9 @@ int AB_Transaction_ToDb(const AB_TRANSACTION *t, GWEN_DB_NODE *db) {
       return -1;
     }
   }
+
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "textkey", t->textKey);
 
   p=t->transactionKey;
   if (p)
@@ -624,6 +640,8 @@ AB_TRANSACTION *AB_Transaction_FromDb(GWEN_DB_NODE *db) {
       break;
     AB_Transaction_AddPurpose(t, p);
   } /* for */
+
+  t->textKey=GWEN_DB_GetIntValue(db, "textKey", 0, 0);
 
   return t;
 }

@@ -156,7 +156,6 @@ namespace AB {
   Banking::Banking(const char *appname,
                    const char *fname) {
     assert(appname);
-    assert(fname);
     _banking=AB_Banking_new(appname, fname);
     GWEN_INHERIT_SETDATA(AB_BANKING, Banking,
                          _banking, this, 0);
@@ -304,7 +303,18 @@ namespace AB {
   GWEN_DB_NODE *Banking::getAppData(){
     return AB_Banking_GetAppData(_banking);
   }
-  
+
+
+  int Banking::getUserDataDir(GWEN_BUFFER *buf) const{
+    return AB_Banking_GetUserDataDir(_banking, buf);
+  }
+
+
+
+  int Banking::getAppUserDataDir(GWEN_BUFFER *buf) const{
+    return AB_Banking_GetAppUserDataDir(_banking, buf);
+  }
+
   
   
   std::list<GWEN_PLUGIN_DESCRIPTION*> Banking::getProviderDescrs(){

@@ -40,6 +40,7 @@ struct AB_TRANSACTION {
 
   AB_VALUE *value;
 
+  int textKey;
   char *transactionKey;
   char *customerReference;
   char *bankReference;

@@ -118,6 +118,10 @@ const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *t);
 void AB_Transaction_SetTransactionText(AB_TRANSACTION *t, const char *s);
 const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *t);
 void AB_Transaction_SetPrimanota(AB_TRANSACTION *t, const char *s);
+
+int AB_Transaction_GetTextKey(const AB_TRANSACTION *t);
+void AB_Transaction_SetTextKey(AB_TRANSACTION *t, int i);
+
 /*@}*/
 
 
