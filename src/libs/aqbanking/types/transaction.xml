@@ -42,6 +42,10 @@
         inherit="public" 
         list="lib"
         list2="public" >
+    <descr>
+      This type contains all important information about transactions.
+      Please note that all text fields are in UTF-8.
+    </descr>
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >gwenhywfar/gwentime.h</header>
@@ -200,12 +204,6 @@
           <p>
             This string list contains the purpose of the transaction.
             Every entry of this list represents a single purpose line.
-          </p>
-          <p>
-            Please note the character set is defined by the backend. 
-            However, the backend takes care of the conversion between 
-            different character sets. Therefore it assumes that the strings
-            in this list are in the local character set.
           </p>
         </descr>
       </elem>

@@ -40,6 +40,7 @@ struct AB_TRANSACTION {
 };
 
 
+
 /** @name Local Account Info
  *
 This group contains information about the local account.

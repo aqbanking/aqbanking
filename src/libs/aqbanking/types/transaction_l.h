@@ -6,6 +6,7 @@
 
 /** @page P_AB_TRANSACTION_LIB AB_Transaction (lib)
 This page describes the properties of AB_TRANSACTION
+This type contains all important information about transactions. Please note that all text fields are in UTF-8.
 <h3>Local Account Info</h3>
 <p>
 This group contains information about the local account.
@@ -43,6 +44,7 @@ extern "C" {
 #endif
 
 GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
+
 
 /** @name Local Account Info
  *

@@ -6,6 +6,7 @@
 
 /** @page P_AB_TRANSACTION_PUBLIC AB_Transaction (public)
 This page describes the properties of AB_TRANSACTION
+This type contains all important information about transactions. Please note that all text fields are in UTF-8.
 <h3>Local Account Info</h3>
 <p>
 This group contains information about the local account.
@@ -293,9 +294,6 @@ get it with @ref AB_Transaction_GetFiId
 <p>
 This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.
 </p>
-<p>
-Please note the character set is defined by the backend. However, the backend takes care of the conversion between different character sets. Therefore it assumes that the strings in this list are in the local character set.
-</p>
 </p>
 <p>
 Set this property with @ref AB_Transaction_SetPurpose, 
@@ -330,6 +328,7 @@ AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
 int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);
 int AB_Transaction_IsModified(const AB_TRANSACTION *st);
 void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
+
 
 /** @name Local Account Info
  *
