@@ -16,7 +16,7 @@
 
 #include <aqbanking/value.h>
 
-
+/** Internal structure of AB_VALUE -- do not access this directly! */
 struct AB_VALUE {
   double value;
   char *currency;

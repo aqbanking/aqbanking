@@ -1,5 +1,8 @@
 2005-02-22   Christian Stimming <stimming@tuhh.de>
 
+	* src/libs/aqbanking/types/value.h, value.c: Improve
+	documentation. Add some additional predicate functions.
+
 	* aqbanking.iss.in: Finally finish the iss setup file: The DLL is
 	installed in the windows directory, the gwen plugins are installed
 	in gwen's dbio-plugindir, everything else in the application's

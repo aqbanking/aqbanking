@@ -214,8 +214,10 @@ const char *AB_Value_GetCurrency(const AB_VALUE *v){
 void AB_Value_SetCurrency(AB_VALUE *v, const char *s){
   assert(v);
   free(v->currency);
-  if (s) v->currency=strdup(s);
-  else v->currency=0;
+  if (s) 
+    v->currency=strdup(s);
+  else
+    v->currency=0;
 }
 
 
@@ -253,14 +255,24 @@ int AB_Value_IsNegative(const AB_VALUE *v){
   assert(v);
   return (v->isValid && v->value<0.0)?1:0;
 }
-
-
-
-int AB_Value_Compare(const AB_VALUE  *v, const AB_VALUE *vc){
+int AB_Value_IsPositive(const AB_VALUE *v){
+  return !AB_Value_IsNegative(v);
+}
+int AB_Value_IsZero(const AB_VALUE *v){
   assert(v);
-  if (v->value<vc->value)
+  return (v->isValid && v->value == 0.0) ? 1 : 0;
+}
+int AB_Value_IsEqual(const AB_VALUE  *v1, const AB_VALUE *v2){
+  assert(v1);
+  assert(v2);
+  return (v1->value == v2->value) ? 1 : 0;
+}
+int AB_Value_Compare(const AB_VALUE  *v1, const AB_VALUE *v2){
+  assert(v1);
+  assert(v2);
+  if (v1->value < v2->value)
     return -1;
-  else if (v->value>vc->value)
+  else if (v1->value > v2->value)
     return 1;
   return 0;
 }
@@ -274,14 +286,4 @@ int AB_Value_Negate(AB_VALUE *v){
   v->value=-v->value;
   return 0;
 }
-
-
-
-
-
-
-
-
-
-
 
