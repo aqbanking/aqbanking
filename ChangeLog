@@ -1,7 +1,10 @@
+
+
 2004-08-02   Christian Stimming <stimming@tuhh.de>
 
 	* many headers: Remove trailing semicolon from macro calls as
 	required by ISO C89.
+
 	
 2004/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -18,7 +21,7 @@
 -------------------------------------------------
 - banking/banking.{c,h}: AB_Banking_MessageBox: Just figured out that for 
     non-interactive frontends there is more information to be supplied. 
-    I also reordered the arguments so that they look alike those of 
+    I also reordered the arguments so that they look like those of 
     AB_Banking_InputBox.
 
 
@@ -28,13 +31,14 @@
 	src/libs/aqbanking/ressource.rc.in, configure.ac: Add build rules
 	for windows DLL, copied from gwenhywfar.
 
+
 2004/08/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - very much improved generation of API doc. In combination with the
   changes in my other projects the new target "install-srcdoc" now
   creates combined API docs (e.g. API doc for AqBanking now links to
   that of Gwenhywfar etc)
-- now uses gwen new tool mklistdoc to generate list documentation suitable
+- now uses gwen's new tool mklistdoc to generate list documentation suitable
   for doxygen. Needs the latest CVS version of Gwen.
 
 
