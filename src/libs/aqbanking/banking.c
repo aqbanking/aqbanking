@@ -236,6 +236,14 @@ GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab){
         GWEN_Buffer_free(nbuf);
         return 0;
       }
+      err=GWEN_BufferedIO_Flush(bio);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+        GWEN_BufferedIO_free(bio);
+        AB_Banking__CloseFile(fd);
+        GWEN_Buffer_free(nbuf);
+        return 0;
+      }
     }
     else
       uniqueId=1;
