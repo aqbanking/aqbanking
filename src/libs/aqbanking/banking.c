@@ -131,6 +131,25 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 void AB_Banking_free(AB_BANKING *ab){
   if (ab) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_BANKING");
+
+#if 0
+    /* This might be enabled to help application programmers to keep
+       track of the callbacks that they might have forgotten. */
+    if (!ab->messageBoxFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_MESSAGEBOX_FN messageBoxFn was not set during this usage of AB_BANKING.");
+    if (!ab->inputBoxFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_INPUTBOX_FN inputBoxFn was not set during this usage of AB_BANKING.");
+    if (!ab->showBoxFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_SHOWBOX_FN showBoxFn was not set during this usage of AB_BANKING.");
+    if (!ab->hideBoxFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_HIDEBOX_FN hideBoxFn was not set during this usage of AB_BANKING.");
+    if (!ab->progressStartFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_PROGRESS_START_FN progressStartFn was not set during this usage of AB_BANKING.");
+    if (!ab->progressAdvanceFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_PROGRESS_ADVANCE_FN progressAdvanceFn was not set during this usage of AB_BANKING.");
+    if (!ab->progressLogFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_PROGRESS_LOG_FN progressLogFn was not set during this usage of AB_BANKING.");
+    if (!ab->progressEndFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_PROGRESS_END_FN progressEndFn was not set during this usage of AB_BANKING.");
+    if (!ab->printFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_PRINT_FN printFn was not set during this usage of AB_BANKING.");
+    if (!ab->getPinFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_GETPIN_FN getPinFn was not set during this usage of AB_BANKING.");
+    if (!ab->setPinStatusFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_SETPINSTATUS_FN setPinStatusFn was not set during this usage of AB_BANKING.");
+    if (!ab->getTanFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_GETTAN_FN getTanFn was not set during this usage of AB_BANKING.");
+    if (!ab->setTanStatusFn) DBG_WARN(AQBANKING_LOGDOMAIN, "AB_BANKING_SETTANSTATUS_FN setTanStatusFn was not set during this usage of AB_BANKING.");
+#endif
+
     GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);

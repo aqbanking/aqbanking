@@ -19,9 +19,8 @@ G_AB_CPP_INTERFACE).
 If you are writing an application and want to use AqBanking's
 features, there are two possibilities:
 
- - Use the "Application Layer API" (maybe this should better be called
- "ImExporter Layer API"), which requires the least coding effort on
- the application side. See @ref G_AB_BANKING_HL
+ - Use the "Im/Exporter Layer API", which requires the least coding
+ effort on the application side. See @ref G_AB_BANKING_IMEXPORT_API
 
  - Or you can use the "Main Interface API" (also called "High level
  API" sometimes), which offers the highest flexibility by its access
@@ -34,7 +33,7 @@ expected in UTF-8 encoding unless stated otherwise. Please do not pass
 Latin-1 strings (i.e. with latin1-Umlauts) into AqBanking or expect
 the returned strings (which might be translated into German in UTF-8)
 in that way. For converting UTF-8 into or from other encodings, see
-iconv(3).
+the system function iconv(3) in iconv.h.
 
 
 @section AB_features Features
@@ -86,13 +85,13 @@ library is organized in multiple layers:
   </li>
   <li>
 
-  <b>Application Layer</b> (maybe this should better be called
-  "ImExporter Layer"): This layer offers an even simpler API to
-  applications, where the calls to all lower layers are combined and
+  <b>ImExporter Layer</b> (previously this was occasionally called
+  "Application Layer"): This layer offers an even simpler API to
+  applications, where the calls to all lower layers are combined, and
   the application will <i>not</i> deal with @ref AB_JOB objects. This
   may be useful when adding AqBanking support to applications which
   have not been designed to work with AqBanking in the first place
-  (see @ref G_AB_BANKING_HL)
+  (see @ref G_AB_BANKING_IMEXPORT_API)
 
   </li>
 </ul>
