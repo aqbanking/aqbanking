@@ -19,7 +19,7 @@
 
 #include <aqbanking/provider.h>
 #include <aqbanking/provider_be.h>
-#include <gwenhywfar/libloader.h>
+#include <gwenhywfar/plugin.h>
 
 
 /** @name Virtual Functions
@@ -37,7 +37,7 @@ int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 /*@}*/
 
-void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll);
+void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl);
 void AB_Provider_free(AB_PROVIDER *pro);
 
 

@@ -51,11 +51,7 @@ void AB_BankInfoPlugin_free(AB_BANKINFO_PLUGIN *bip){
     if (--(bip->usage)==0) {
       GWEN_INHERIT_FINI(AB_BANKINFO_PLUGIN, bip);
 
-      if (bip->libLoader) {
-        GWEN_LibLoader_CloseLibrary(bip->libLoader);
-        GWEN_LibLoader_free(bip->libLoader);
-      }
-
+      GWEN_Plugin_free(bip->plugin);
       free(bip->country);
 
       GWEN_LIST_FINI(AB_BANKINFO_PLUGIN, bip);
@@ -152,12 +148,12 @@ void AB_BankInfoPlugin_SetCheckAccountFn(AB_BANKINFO_PLUGIN *bip,
 
 
 
-void AB_BankInfoPlugin_SetLibLoader(AB_BANKINFO_PLUGIN *bip,
-                                    GWEN_LIBLOADER *ll) {
+void AB_BankInfoPlugin_SetPlugin(AB_BANKINFO_PLUGIN *bip,
+                                 GWEN_PLUGIN *pl) {
   assert(bip);
   assert(bip->usage);
 
-  bip->libLoader=ll;
+  bip->plugin=pl;
 }
 
 

@@ -17,7 +17,7 @@
 #define AB_BANKINFO_PLUGIN_FOLDER "bankinfo"
 
 #include "bankinfoplugin_be.h"
-#include <gwenhywfar/libloader.h>
+#include <gwenhywfar/plugin.h>
 
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_BANKINFO_PLUGIN,
@@ -25,9 +25,8 @@ GWEN_LIST_FUNCTION_LIB_DEFS(AB_BANKINFO_PLUGIN,
                             AQBANKING_API)
 
 
-void AB_BankInfoPlugin_SetLibLoader(AB_BANKINFO_PLUGIN *bip,
-                                    GWEN_LIBLOADER *ll);
-
+void AB_BankInfoPlugin_SetPlugin(AB_BANKINFO_PLUGIN *bip,
+                                 GWEN_PLUGIN *pl);
 
 
 #endif /* AQBANKING_BANKINFOPLUGIN_L_H */

@@ -19,7 +19,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc2.h>
-#include <gwenhywfar/libloader.h>
+#include <gwenhywfar/plugin.h>
 
 
 
@@ -39,7 +39,8 @@ struct AB_PROVIDER {
   AB_PROVIDER_GETACCOUNTLIST_FN getAccountListFn;
   AB_PROVIDER_UPDATEACCOUNT_FN updateAccountFn;
   AB_PROVIDER_ADDACCOUNT_FN addAccountFn;
-  GWEN_LIBLOADER *libLoader;
+  GWEN_PLUGIN *plugin;
+
   GWEN_TYPE_UINT32 usage;
   GWEN_TYPE_UINT32 flags;
   int isInit;

@@ -23,6 +23,8 @@
 #include "pin_l.h"
 #include "bankinfoplugin_l.h"
 
+#include <gwenhywfar/plugin.h>
+
 
 struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
@@ -62,6 +64,8 @@ struct AB_BANKING {
 
   AB_PIN_LIST *pinList;
 
+  GWEN_PLUGIN_MANAGER *pluginManagerBankInfo;
+  GWEN_PLUGIN_MANAGER *pluginManagerProvider;
   void *user_data;
 };
 

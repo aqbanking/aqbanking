@@ -23,6 +23,7 @@ typedef struct AB_BANKINFO_PLUGIN AB_BANKINFO_PLUGIN;
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+#include <gwenhywfar/plugin.h>
 
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKINFO_PLUGIN,

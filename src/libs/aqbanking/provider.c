@@ -77,10 +77,7 @@ void AB_Provider_free(AB_PROVIDER *pro){
       DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_PROVIDER (%s)",
                pro->name);
       GWEN_INHERIT_FINI(AB_PROVIDER, pro);
-      if (pro->libLoader) {
-        GWEN_LibLoader_CloseLibrary(pro->libLoader);
-        GWEN_LibLoader_free(pro->libLoader);
-      }
+      GWEN_Plugin_free(pro->plugin);
       free(pro->name);
       free(pro->escName);
       GWEN_LIST_FINI(AB_PROVIDER, pro);
@@ -91,9 +88,9 @@ void AB_Provider_free(AB_PROVIDER *pro){
 
 
 
-void AB_Provider_SetLibLoader(AB_PROVIDER *pro, GWEN_LIBLOADER *ll) {
+void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
   assert(pro);
-  pro->libLoader=ll;
+  pro->plugin=pl;
 }
 
 

@@ -872,6 +872,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   AB_JOB_LIST2 *jl;
   int i;
   const char *s;
+  GWEN_PLUGIN_MANAGER *pm;
 
   assert(ab);
 
@@ -882,6 +883,35 @@ int AB_Banking_Init(AB_BANKING *ab) {
                      GWEN_LoggerFacilityUser);
   }
 
+  /* create bankinfo plugin manager */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");
+  pm=GWEN_PluginManager_new("bankinfo");
+  GWEN_PluginManager_AddPath(pm,
+                             AQBANKING_PLUGINS
+                             DIRSEP
+                             AB_BANKINFO_PLUGIN_FOLDER);
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not register bankinfo plugin manager");
+    return AB_ERROR_GENERIC;
+  }
+  ab->pluginManagerBankInfo=pm;
+
+  /* create provider plugin manager */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering provider plugin manager");
+  pm=GWEN_PluginManager_new("provider");
+  GWEN_PluginManager_AddPath(pm,
+			     AQBANKING_PLUGINS
+			     DIRSEP
+			     AB_PROVIDER_FOLDER);
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not register provider plugin manager");
+    return AB_ERROR_GENERIC;
+  }
+  ab->pluginManagerProvider=pm;
+
+  /* read config file */
   if (access(ab->configFile, F_OK)) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
                "Configuration file \"%s\" does not exist, "
@@ -1131,6 +1161,23 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_Job_List_Clear(ab->enqueuedJobs);
   AB_Account_List_Clear(ab->accounts);
   AB_Provider_List_Clear(ab->providers);
+
+  /* unregister and unload provider plugin manager */
+  if (GWEN_PluginManager_Unregister(ab->pluginManagerProvider)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not unregister provider plugin manager");
+  }
+  GWEN_PluginManager_free(ab->pluginManagerProvider);
+  ab->pluginManagerProvider=0;
+
+  /* unregister and unload bankinfo plugin manager */
+  if (GWEN_PluginManager_Unregister(ab->pluginManagerBankInfo)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not unregister bankinfo plugin manager");
+  }
+  GWEN_PluginManager_free(ab->pluginManagerBankInfo);
+  ab->pluginManagerBankInfo=0;
+
   GWEN_DB_ClearGroup(ab->data, 0);
   free(ab->dataDir);
   ab->dataDir=0;
@@ -2029,15 +2076,24 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
   const char *s;
   GWEN_ERRORCODE err;
   GWEN_DB_NODE *db;
+  GWEN_PLUGIN *pl;
+  GWEN_PLUGIN_MANAGER *pm;
 
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
+  pm=GWEN_PluginManager_FindPluginManager("provider");
+  if (!pm) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load provider plugin \"%s\" (%s)",
-              modname, fname);
-    GWEN_LibLoader_free(ll);
+              "Could not find plugin manager for \"%s\"",
+              "provider");
     return 0;
   }
+  pl=GWEN_PluginManager_LoadPluginFile(pm, modname, fname);
+  if (!pl) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load %s plugin for \"%s\" (file %s)",
+              "provider", modname, fname);
+    return 0;
+  }
+  ll=GWEN_Plugin_GetLibLoader(pl);
 
   /* create name of init function */
   nbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -2050,8 +2106,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
   GWEN_Buffer_free(nbuf);
@@ -2067,13 +2122,12 @@ AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
   pro=fn(ab, db);
   if (!pro) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
 
   /* store libloader */
-  AB_Provider_SetLibLoader(pro, ll);
+  AB_Provider_SetPlugin(pro, pl);
 
   return pro;
 }
@@ -2090,22 +2144,28 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   GWEN_ERRORCODE err;
   GWEN_BUFFER *mbuf;
   GWEN_DB_NODE *db;
+  GWEN_PLUGIN *pl;
+  GWEN_PLUGIN_MANAGER *pm;
 
-  ll=GWEN_LibLoader_new();
+  pm=GWEN_PluginManager_FindPluginManager("provider");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "provider");
+    return 0;
+  }
+  pl=GWEN_PluginManager_LoadPlugin(pm, modname);
+  if (!pl) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not load %s plugin for \"%s\"",
+	      "provider", modname);
+    return 0;
+  }
+  ll=GWEN_Plugin_GetLibLoader(pl);
+
   mbuf=GWEN_Buffer_new(0, 256, 0, 1);
   s=modname;
   while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         AQBANKING_PLUGINS
-                                         DIRSEP
-                                         AB_PROVIDER_FOLDER,
-                                         modname)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
 
   /* create name of init function */
   GWEN_Buffer_AppendString(mbuf, "_factory");
@@ -2115,8 +2175,7 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
   GWEN_Buffer_free(mbuf);
@@ -2133,13 +2192,12 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   pro=fn(ab, db);
   if (!pro) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
 
   /* store libloader */
-  AB_Provider_SetLibLoader(pro, ll);
+  AB_Provider_SetPlugin(pro, pl);
 
   return pro;
 }
@@ -2157,15 +2215,24 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
   const char *s;
   GWEN_ERRORCODE err;
   GWEN_DB_NODE *db;
+  GWEN_PLUGIN *pl;
+  GWEN_PLUGIN_MANAGER *pm;
 
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
+  pm=GWEN_PluginManager_FindPluginManager("bankinfo");
+  if (!pm) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load bankinfo plugin \"%s\" (%s)",
-              modname, fname);
-    GWEN_LibLoader_free(ll);
+              "Could not find plugin manager for \"%s\"",
+              "bankinfo");
     return 0;
   }
+  pl=GWEN_PluginManager_LoadPluginFile(pm, modname, fname);
+  if (!pl) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load %s plugin for \"%s\" (file %s)",
+              "bankinfo", modname, fname);
+    return 0;
+  }
+  ll=GWEN_Plugin_GetLibLoader(pl);
 
   /* create name of init function */
   nbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -2178,8 +2245,7 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
   GWEN_Buffer_free(nbuf);
@@ -2196,13 +2262,12 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
   if (!bip) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Error in plugin: No bankinfoplugin created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
 
   /* store libloader */
-  AB_BankInfoPlugin_SetLibLoader(bip, ll);
+  AB_BankInfoPlugin_SetPlugin(bip, pl);
 
   return bip;
 }
@@ -2219,22 +2284,28 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
   GWEN_ERRORCODE err;
   GWEN_BUFFER *mbuf;
   GWEN_DB_NODE *db;
+  GWEN_PLUGIN *pl;
+  GWEN_PLUGIN_MANAGER *pm;
 
-  ll=GWEN_LibLoader_new();
+  pm=GWEN_PluginManager_FindPluginManager("bankinfo");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "bankinfo");
+    return 0;
+  }
+  pl=GWEN_PluginManager_LoadPlugin(pm, modname);
+  if (!pl) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load %s plugin for \"%s\"",
+              "bankinfo", modname);
+    return 0;
+  }
+  ll=GWEN_Plugin_GetLibLoader(pl);
+
   mbuf=GWEN_Buffer_new(0, 256, 0, 1);
   s=modname;
   while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         AQBANKING_PLUGINS
-                                         DIRSEP
-                                         AB_BANKINFO_PLUGIN_FOLDER,
-                                         modname)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load bankinfoplugin plugin \"%s\"", modname);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
 
   /* create name of init function */
   GWEN_Buffer_AppendString(mbuf, "_factory");
@@ -2244,8 +2315,7 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
   GWEN_Buffer_free(mbuf);
@@ -2263,13 +2333,12 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
   if (!bip) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Error in plugin: No bankinfoplugin created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
+    GWEN_Plugin_free(pl);
     return 0;
   }
 
   /* store libloader */
-  AB_BankInfoPlugin_SetLibLoader(bip, ll);
+  AB_BankInfoPlugin_SetPlugin(bip, pl);
 
   return bip;
 }

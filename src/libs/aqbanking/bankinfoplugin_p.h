@@ -16,6 +16,7 @@
 
 #include "bankinfoplugin_l.h"
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/plugin.h>
 
 
 struct AB_BANKINFO_PLUGIN {
@@ -25,7 +26,7 @@ struct AB_BANKINFO_PLUGIN {
 
   char *country;
 
-  GWEN_LIBLOADER *libLoader;
+  GWEN_PLUGIN *plugin;
 
   AB_BANKINFOPLUGIN_GETBANKINFO_FN getBankInfoFn;
   AB_BANKINFOPLUGIN_CHECKACCOUNT_FN checkAccountFn;
