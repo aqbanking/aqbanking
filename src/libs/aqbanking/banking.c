@@ -1846,7 +1846,11 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
 	      AB_Job_SetStatus(j, AB_Job_StatusSent);
 	      AB_Banking__SaveJobAs(ab, j, "sent");
 	      AB_Banking__UnlinkJobAs(ab, j, "todo");
-	    }
+            }
+	    else {
+	      AB_Banking__SaveJobAs(ab, j, "sent");
+	      AB_Banking__UnlinkJobAs(ab, j, "todo");
+            }
           }
         }
       } /* if job enqueued */
@@ -1933,13 +1937,14 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       if (AB_Banking__SaveJobAs(ab, j, "finished")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
       }
-      AB_Banking__UnlinkJobAs(ab, j, "todo");
+      AB_Banking__UnlinkJobAs(ab, j, "sent");
       break;
 
     case AB_Job_StatusPending:
       if (AB_Banking__SaveJobAs(ab, j, "pending")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
       }
+      AB_Banking__UnlinkJobAs(ab, j, "sent");
       break;
 
     case AB_Job_StatusSent:

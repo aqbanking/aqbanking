@@ -1,18 +1,27 @@
+
+2005/03/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug concerning pending jobs
+
+
 2005-03-21   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, m4/az_python.m4, bindings/Makefile.am: Put
 	infrastructure for python wrappers into place.
+
 	
 2005-03-17   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/imexporters/*/Makefile.am: Fix DLLLDFLAGS for
 	win32/mingw DLL building.
 
+
 2005-03-13  Christian Stimming  <stimming@tuhh.de>
 
 	* Makefile.am: Modify rules for i18n so that the catalogs are
 	rebuilt only at install-time or explicitly, not during normal
 	make.
+
 
 2005/03/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
