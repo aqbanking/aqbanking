@@ -56,16 +56,11 @@ extern "C" {
 /*@{*/
 
 
-/**
- *  This constructor MUST NOT be used by applications. Only backends
- * (see @ref AB_PROVIDER) and AB_BANKING need to create accounts.
- */
-AQBANKING_API 
-AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
-                           AB_PROVIDER *pro,
-                           const char *idForProvider);
 AQBANKING_API 
 void AB_Account_free(AB_ACCOUNT *acc);
+
+AQBANKING_API 
+AB_BANKING *AB_Account_GetBanking(const AB_ACCOUNT *acc);
 
 AQBANKING_API 
 int AB_Account_CheckAvailability(AB_ACCOUNT *a);

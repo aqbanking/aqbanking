@@ -815,6 +815,7 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   int sn;
   int isDebitNote;
   const char *p;
+  GWEN_BUFFER *sumbuf;
 
   /* preset */
   hasESet=0;
@@ -933,7 +934,34 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   if (!hasESet) {
     DBG_WARN(AQBANKING_LOGDOMAIN, "DTAUS record does not have an E set");
   }
+
   GWEN_DB_Group_free(dcfg);
+
+  dcfg=GWEN_DB_GetGroup(cfg, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "summary");
+  assert(dcfg);
+
+  GWEN_DB_SetIntValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "cSets", cSets);
+  GWEN_DB_SetIntValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "isDebitNote", isDebitNote);
+  sumbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  if (GWEN_Text_DoubleToBuffer(sumEUR, sumbuf)==0)
+    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "sumEUR", GWEN_Buffer_GetStart(sumbuf));
+  sumbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  GWEN_Buffer_Reset(sumbuf);
+  if (GWEN_Text_DoubleToBuffer(sumDEM, sumbuf)==0)
+    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "sumDEM", GWEN_Buffer_GetStart(sumbuf));
+  GWEN_Buffer_Reset(sumbuf);
+  if (GWEN_Text_DoubleToBuffer(sumBankCodes, sumbuf)==0)
+    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "sumBankCodes", GWEN_Buffer_GetStart(sumbuf));
+  GWEN_Buffer_Reset(sumbuf);
+  if (GWEN_Text_DoubleToBuffer(sumAccountIds, sumbuf)==0)
+    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "sumAccountIds", GWEN_Buffer_GetStart(sumbuf));
+
   return pos;
 }
 

@@ -84,12 +84,20 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
   /* mark DB not-dirty */
   GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
 
+  return a;
+}
+
+
+
+int AB_Account_Update(AB_ACCOUNT *a){
   /* let provider update account data */
-  a->availability=AB_Provider_UpdateAccount(pro, a);
+  a->availability=AB_Provider_UpdateAccount(a->provider, a);
   if (a->availability) {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Error updating account by backend");
+    return a->availability;
   }
-  return a;
+
+  return 0;
 }
 
 

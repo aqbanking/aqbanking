@@ -24,6 +24,7 @@
 #include "bankinfoplugin_l.h"
 
 #include <gwenhywfar/plugin.h>
+#include <gwenhywfar/nettransportssl.h>
 
 
 struct AB_BANKING {
@@ -41,6 +42,7 @@ struct AB_BANKING {
   char *configFile;
 
   GWEN_DB_NODE *data;
+  GWEN_DB_NODE *dbTempConfig;
   GWEN_DB_NODE *dbProfiles;
 
   AB_PROVIDER_LIST *providers;
@@ -55,12 +57,14 @@ struct AB_BANKING {
   AB_BANKING_PROGRESS_ADVANCE_FN progressAdvanceFn;
   AB_BANKING_PROGRESS_LOG_FN progressLogFn;
   AB_BANKING_PROGRESS_END_FN progressEndFn;
+  AB_BANKING_PRINT_FN printFn;
 
   AB_BANKING_GETPIN_FN getPinFn;
   AB_BANKING_SETPINSTATUS_FN setPinStatusFn;
   AB_BANKING_GETTAN_FN getTanFn;
   AB_BANKING_SETTANSTATUS_FN setTanStatusFn;
   int pinCacheEnabled;
+  int alwaysAskForCert;
 
   AB_PIN_LIST *pinList;
 
@@ -161,6 +165,11 @@ int AB_Banking__GetWizardPath(AB_BANKING *ab,
 
 int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
 void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
+
+GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+  AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
+                        GWEN_DB_NODE *cert,
+                        void *user_data);
 
 
 #endif /* AQBANKING_BANKING_P_H */

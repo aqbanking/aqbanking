@@ -1,4 +1,24 @@
 
+2005/02/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now certificate handling is done inside AqBanking (no longer in the
+  backends)
+- added functions AB_Banking_GetAlwaysAskForCert() and 
+  AB_Banking_SetAlwaysAskForCert()
+- added country information lookup functions (AB_COUNTRY)
+
+
+2005/02/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- made some functions in account class public
+- AB_Account_fromDb() can now be used by backends (it internally no longer
+  calls AB_Provider_UpdateAccount(), this is now done by AB_Banking_Init())
+- added function AB_Banking_Print()
+- DTAUS GWEN_DBIO parser now adds information from E sets to the GWEN_DB when
+  reading a DTAUS object
+- configure.ac: Added "--enable-release"
+
+
 2005/02/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - this lib now uses $libdir instead of $prefix/lib)

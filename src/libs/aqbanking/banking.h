@@ -49,11 +49,6 @@ extern "C" {
 /*@{*/
 
 /**
- * Name of the default configuration file within the users home folder.
- */
-#define AB_BANKING_CONFIGFILE ".aqbanking.conf"
-
-/**
  * This value is used with @ref AB_Banking_ProgressAdvance to flag that
  * there really was no progress since the last call to that function but
  * that that function should simply check for user interaction (without
@@ -266,6 +261,7 @@ typedef enum {
 #include <aqbanking/imexporter.h>
 #include <aqbanking/bankinfoplugin.h>
 #include <aqbanking/bankinfo.h>
+#include <aqbanking/country.h>
 
 
 #ifdef __cplusplus
@@ -363,6 +359,19 @@ typedef int (*AB_BANKING_PROGRESS_LOG_FN)(AB_BANKING *ab,
  */
 typedef int (*AB_BANKING_PROGRESS_END_FN)(AB_BANKING *ab, 
                                           GWEN_TYPE_UINT32 id);
+
+/**
+ * This function is used to make the application print something.
+ * The same restrictions noted above apply to the text parameter (utf-8,
+ * maybe containing HTML).
+ * Please see @ref AB_Banking_Print for details.
+ */
+typedef int (*AB_BANKING_PRINT_FN)(AB_BANKING *ab,
+                                   const char *docTitle,
+                                   const char *docType,
+                                   const char *descr,
+                                   const char *text);
+
 /*@}*/
 
 
@@ -406,6 +415,7 @@ typedef int (*AB_BANKING_GETTAN_FN)(AB_BANKING *ab,
                                     char *buffer,
                                     int minLen,
                                     int maxLen);
+
 typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
                                           const char *token,
                                           const char *tan,
@@ -435,7 +445,13 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  * </p>
  * <p>
  * This function does not actually load the configuration file or setup
- * AqBanking, that ist performed by @ref AB_Banking_Init.
+ * AqBanking, that is performed by @ref AB_Banking_Init.
+ * </p>
+ * <p>
+ * Please note that this function sets a new handler for incoming SSL
+ * certificates using GWEN_NetTransportSSL_SetAskAddCertFn2(), so if you
+ * want to handle this in your application yourself you must overwrite this
+ * handler @b after calling this function here.
  * </p>
  * @return new instance of AB_BANKING
  * @param appName name of the application which wants to use AqBanking.
@@ -1518,6 +1534,27 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
 AQBANKING_API 
 int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
+
+/**
+ * This function makes the application print something.
+ * @param ab banking interface
+ * @param docTitle title of the document. This might be presented to the user
+ * @param docType an unique identifier of the document to be printed. This can
+ *   be used by the application to separate printer settings for different
+ *   document types. The name itself has no meaning and can be choosen freely
+ *   by the caller. However, backends should append their name and a colon
+ *   to keep this argument unique. This argument should not be translated.
+ * @param descr an optional description about what the document contains. This
+ *   might be shown to the user (see text restriction notes above).
+ * @param text text to be printed (see text restriction notes above)
+ */
+AQBANKING_API 
+int AB_Banking_Print(AB_BANKING *ab,
+                     const char *docTitle,
+                     const char *docType,
+                     const char *descr,
+                     const char *text);
+
 /*@}*/
 
 
@@ -1554,11 +1591,14 @@ void AB_Banking_SetProgressLogFn(AB_BANKING *ab,
 AQBANKING_API 
 void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
                                  AB_BANKING_PROGRESS_END_FN f);
+AQBANKING_API 
+void AB_Banking_SetPrintFn(AB_BANKING *ab,
+                           AB_BANKING_PRINT_FN f);
 
 /*@}*/
 
 
-/** @name Virtual Security Functions
+/** @name Virtual Security Functions And Associated Functions
  *
  */
 /*@{*/
@@ -1663,6 +1703,22 @@ int AB_Banking_SetTanStatus(AB_BANKING *ab,
                             const char *tan,
                             AB_BANKING_TANSTATUS status);
 
+/**
+ * This influences the behaviour of AqBanking when new certificates are
+ * received. If the returned value is !=0 then the user will be asked for
+ * every single certificate received.
+ */
+AQBANKING_API
+int AB_Banking_GetAlwaysAskForCert(const AB_BANKING *ab);
+
+/**
+ * This influences the behaviour of AqBanking when new certificates are
+ * received. If the given value is !=0 then the user will be asked for
+ * every single certificate received.
+ */
+AQBANKING_API 
+void AB_Banking_SetAlwaysAskForCert(AB_BANKING *ab, int i);
+
 /*@}*/
 
 
@@ -1751,6 +1807,77 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
                         const char *branchId,
                         const char *bankId,
                         const char *accountId);
+/*@}*/
+
+
+/** @name Getting Country Information
+ *
+ * Functions in this group retrieve information about countries (name,
+ * code, numeric code).
+ */
+/*@{*/
+
+/**
+ * Searches for information about a country by its international name
+ * (in English).
+ * The name may contain jokers ("?") and wildcards ("*") and is case
+ * insensitive.
+ */
+AQBANKING_API 
+const AB_COUNTRY *AB_Banking_FindCountryByName(AB_BANKING *ab,
+                                               const char *name);
+/**
+ * Searches for information about a country by its local name
+ * (in the currently selected language).
+ * The name may contain jokers ("?") and wildcards ("*") and is case
+ * insensitive.
+ */
+AQBANKING_API 
+const AB_COUNTRY *AB_Banking_FindCountryByLocalName(AB_BANKING *ab,
+                                                    const char *name);
+/**
+ * Searches for information about a country by its ISO country code
+ * (e.g. "DE"=Germany, "AT"=Austria etc).
+ * The code may contain jokers ("?") and wildcards ("*") and is case
+ * insensitive.
+ */
+AQBANKING_API 
+const AB_COUNTRY *AB_Banking_FindCountryByCode(AB_BANKING *ab,
+                                               const char *code);
+
+/**
+ * Searches for information about a country by its ISO numeric code
+ * (e.g. 280=Germany etc).
+ */
+AQBANKING_API 
+const AB_COUNTRY *AB_Banking_FindCountryByNumeric(AB_BANKING *ab,
+                                                  int numid);
+
+/**
+ * Returns a list of informations about countries whose international name
+ * (in English) matches the given argument.
+ * The list returned must be freed using @ref AB_Country_ConstList2_free()
+ * by the caller. The elements of that list are all const.
+ * The name may contain jokers ("?") and wildcards ("*") and is case
+ * insensitive.
+ */
+AQBANKING_API 
+AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByName(AB_BANKING *ab,
+                                                      const char *name);
+/**
+ * Returns a list of informations about countries whose local name
+ * (in the currently selected language) matches the given argument.
+ * The list returned must be freed using @ref AB_Country_ConstList2_free()
+ * by the caller. The elements of that list are all const.
+ * The name may contain jokers ("?") and wildcards ("*") and is case
+ * insensitive.
+ */
+AQBANKING_API 
+AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByLocalName(AB_BANKING *ab,
+                                                           const char *name);
+
+
+
 /*@}*/
 
 

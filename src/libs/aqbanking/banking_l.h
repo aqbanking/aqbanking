@@ -20,6 +20,12 @@
 #include <aqbanking/bankinfoplugin_be.h>
 
 
+/**
+ * Name of the default configuration file within the users home folder.
+ */
+#define AB_BANKING_CONFIGFILE ".aqbanking.conf"
+
+
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 

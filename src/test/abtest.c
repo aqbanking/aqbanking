@@ -200,6 +200,171 @@ int test5(int argc, char **argv) {
 
 
 
+int test6(int argc, char **argv) {
+  int rv;
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+  GWEN_DB_NODE *dbT;
+  GWEN_DB_NODE *dbOut;
+  FILE *f;
+  int first=1;
+
+  db=GWEN_DB_Group_new("test");
+  dbParams=GWEN_DB_Group_new("params");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "quote", "1");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "title", "0");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "delimiter", "SPACE");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "group", "country");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/1", "v[0]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/2", "v[1]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/3", "v[2]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/4", "v[3]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/5", "v[4]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/6", "v[5]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/7", "v[6]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/8", "v[7]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/9", "v[8]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/10", "v[9]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/11", "v[10]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/12", "v[11]");
+
+  rv=GWEN_DB_ReadFileAs(db, "test.txt", "csv", dbParams,
+			GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv) {
+    DBG_ERROR(0, "Error reading file");
+    return 2;
+  }
+  GWEN_DB_Dump(db, stderr, 2);
+
+  dbOut=GWEN_DB_Group_new("out");
+  GWEN_DB_ClearGroup(dbParams, 0);
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "quote", "1");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "title", "0");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "delimiter", ";");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "group", "country");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/1", "v[0]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/2", "v[1]");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "columns/3", "v[2]");
+  dbT=GWEN_DB_FindFirstGroup(db, "country");
+  while(dbT) {
+    int cnt;
+    int i;
+    GWEN_BUFFER *buf;
+    GWEN_DB_NODE *dbX;
+
+    dbX=GWEN_DB_GetGroup(dbOut, GWEN_PATH_FLAGS_CREATE_GROUP, "country");
+    assert(dbX);
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    for (i=0; ; i++) {
+      if (GWEN_DB_GetCharValue(dbT, "v", i, 0)==0)
+        break;
+    }
+
+    cnt=i;
+    for (i=0; i<(cnt-3); i++) {
+      if (GWEN_Buffer_GetUsedBytes(buf))
+        GWEN_Buffer_AppendByte(buf, ' ');
+      GWEN_Buffer_AppendString(buf, GWEN_DB_GetCharValue(dbT, "v", i, 0));
+    }
+    GWEN_DB_SetCharValue(dbX, GWEN_DB_FLAGS_DEFAULT, "v",
+                         GWEN_Buffer_GetStart(buf));
+    /* second column */
+    GWEN_DB_SetCharValue(dbX, GWEN_DB_FLAGS_DEFAULT, "v",
+                         GWEN_DB_GetCharValue(dbT, "v", i++, 0));
+    /* fourth column */
+    GWEN_DB_SetCharValue(dbX, GWEN_DB_FLAGS_DEFAULT, "v",
+                         GWEN_DB_GetCharValue(dbT, "v", ++i, 0));
+    dbT=GWEN_DB_FindNextGroup(dbT, "country");
+  }
+
+  rv=GWEN_DB_WriteFileAs(dbOut, "countries.csv", "csv", dbParams,
+                         GWEN_DB_FLAGS_DEFAULT);
+  if (rv) {
+    DBG_ERROR(0, "Error writing file");
+    return 2;
+  }
+
+  f=fopen("countries.c", "w+");
+  assert(f);
+
+  dbT=GWEN_DB_FindFirstGroup(db, "country");
+  first=1;
+  fprintf(f, "ab_country_list= {\n");
+  while(dbT) {
+    int cnt;
+    int i;
+    int j;
+    GWEN_BUFFER *buf;
+    GWEN_DB_NODE *dbX;
+
+    if (first) {
+      first=0;
+    }
+    else {
+      fprintf(f, ",\n");
+    }
+    dbX=GWEN_DB_GetGroup(dbOut, GWEN_PATH_FLAGS_CREATE_GROUP, "country");
+    assert(dbX);
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    for (i=0; ; i++) {
+      if (GWEN_DB_GetCharValue(dbT, "v", i, 0)==0)
+        break;
+    }
+
+    cnt=i;
+    for (i=0; i<(cnt-3); i++) {
+      if (GWEN_Buffer_GetUsedBytes(buf))
+        GWEN_Buffer_AppendByte(buf, ' ');
+      GWEN_Buffer_AppendString(buf, GWEN_DB_GetCharValue(dbT, "v", i, 0));
+    }
+    fprintf(f, "{ I18N_NOOP(\"%s\"), ",
+            GWEN_Buffer_GetStart(buf));
+    fprintf(f, "\"%s\", ", GWEN_DB_GetCharValue(dbT, "v", i++, 0));
+
+    if (sscanf(GWEN_DB_GetCharValue(dbT, "v", ++i, 0), "%d", &j)!=1) {
+      fprintf(stderr, "ERROR in country %s\n",
+              GWEN_Buffer_GetStart(buf));
+      return 2;
+    }
+    fprintf(f, "%d }", j);
+    dbT=GWEN_DB_FindNextGroup(dbT, "country");
+  } /* while */
+
+  fprintf(f, "\n}\n");
+
+  if (fclose(f)) {
+    fprintf(stderr, "Could not close.\n");
+    return 3;
+  }
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -223,6 +388,8 @@ int main(int argc, char **argv) {
     rv=test4(argc, argv);
   else if (strcasecmp(cmd, "test5")==0)
     rv=test5(argc, argv);
+  else if (strcasecmp(cmd, "test6")==0)
+    rv=test6(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;

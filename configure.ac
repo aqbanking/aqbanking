@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=3
+AQBANKING_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -206,6 +206,31 @@ if test "$HAVE_I18N" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
 fi
 AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for release
+#
+AC_MSG_CHECKING(whether this is an official release)
+AC_ARG_ENABLE(release,
+  [  --enable-release         make this an official release (default=no)],
+  [ case "${enableval}" in
+    yes) enable_release="yes";;
+    no)  enable_release="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-release);;
+    esac
+  ],
+  enable_release="no")
+
+if test "$enable_release" = "yes"; then
+  STRIPALL="-s"
+else
+  STRIPALL=""
+fi
+AC_SUBST(STRIPALL)
+AC_MSG_RESULT($enable_release)
 
 
 

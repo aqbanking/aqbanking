@@ -19,6 +19,8 @@ noinst_HEADERS=\
  banking_p.h \
  bankinfoplugin_l.h \
  bankinfoplugin_p.h \
+ country_l.h \
+ country_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
@@ -31,10 +33,12 @@ noinst_HEADERS=\
 iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
  account.h \
+ account_be.h \
  banking.h \
  banking_be.h \
  bankinfoplugin.h \
  bankinfoplugin_be.h \
+ country.h \
  error.h \
  imexporter.h \
  imexporter_be.h \
@@ -47,6 +51,7 @@ libaqbanking_la_SOURCES=\
  account.c \
  bankinfoplugin.c \
  banking.c \
+ country.c \
  imexporter.c \
  job.c \
  provider.c

@@ -80,6 +80,7 @@ typedef int (*AB_PROVIDER_RESETQUEUE_FN)(AB_PROVIDER *pro);
  * Returns a list of accounts managed by this backend. This is called by
  * AqBanking directly after activating a backend (upon every
  * @ref AB_Banking_Init).
+ * AqBanking becomes the new owner of the list returned.
  */
 typedef AB_ACCOUNT_LIST2* (*AB_PROVIDER_GETACCOUNTLIST_FN)(AB_PROVIDER *pro);
 

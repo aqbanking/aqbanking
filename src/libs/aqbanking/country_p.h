@@ -11,18 +11,18 @@
  ***************************************************************************/
 
 
-#ifndef AQBANKING_ACCOUNT_L_H
-#define AQBANKING_ACCOUNT_L_H
+#ifndef AQBANKING_COUNTRY_P_H
+#define AQBANKING_COUNTRY_P_H
 
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/misc2.h>
-#include <gwenhywfar/inherit.h>
-#include <aqbanking/account_be.h>
-
-GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
+#include "country_l.h"
 
 
-int AB_Account_Update(AB_ACCOUNT *a);
+struct AB_COUNTRY {
+  char *name;
+  char *code;
+  int numericCode;
+};
 
 
-#endif /* AQBANKING_ACCOUNT_L_H */
+
+#endif /* AQBANKING_COUNTRY_P_H */
