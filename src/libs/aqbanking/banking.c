@@ -54,11 +54,14 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
   }
 
   GWEN_NEW_OBJECT(AB_BANKING, ab);
+  GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
   ab->wizzards=AB_ProviderWizzard_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appName=strdup(appName);
+  ab->activeProviders=GWEN_StringList_new();
+  GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
   ab->data=GWEN_DB_Group_new("BankingData");
   ab->configFile=strdup(fname);
   GWEN_Buffer_free(buf);
@@ -69,10 +72,12 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
 
 void AB_Banking_free(AB_BANKING *ab){
   if (ab) {
+    GWEN_INHERIT_FINI(AB_BANKING, ab);
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
     AB_ProviderWizzard_List_free(ab->wizzards);
     AB_Provider_List_free(ab->providers);
+    GWEN_StringList_free(ab->activeProviders);
     GWEN_DB_Group_free(ab->data);
     free(ab->appName);
     free(ab->configFile);
@@ -144,7 +149,7 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
                       "static/apps");
   assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
                       ab->appName);
   assert(db);
   return db;
@@ -413,13 +418,20 @@ AB_PROVIDER_WIZZARD *AB_Banking_FindWizzard(AB_BANKING *ab,
 
 
 AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
-                                           AB_PROVIDER *pro,
+                                           const char *pn,
                                            const char *name) {
   AB_PROVIDER_WIZZARD *pw;
+  AB_PROVIDER *pro;
 
   assert(ab);
-  assert(pro);
+  assert(pn);
   assert(name);
+
+  pro=AB_Banking_GetProvider(ab, pn);
+  if (!pro) {
+    DBG_ERROR(0, "Provider \"%s\" not available", pn);
+    return 0;
+  }
   pw=AB_Banking_FindWizzard(ab, pro, name);
   if (pw)
     return pw;
@@ -481,6 +493,7 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_DB_NODE *dbT;
   GWEN_DB_NODE *dbTsrc;
+  int i;
 
   assert(ab);
 
@@ -501,6 +514,16 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
 
   ab->lastUniqueId=GWEN_DB_GetIntValue(dbT, "lastUniqueId", 0, 0);
+
+  /* read active providers */
+  for (i=0; ; i++) {
+    const char *p;
+
+    p=GWEN_DB_GetCharValue(dbT, "activeProviders", i, 0);
+    if (!p)
+      break;
+    GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
+  }
 
   /* read data */
   dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banking");
@@ -526,6 +549,26 @@ int AB_Banking_Init(AB_BANKING *ab) {
         AB_Account_List_Add(a, ab->accounts);
       }
       dbA=GWEN_DB_FindNextGroup(dbA, "account");
+    } /* while */
+  }
+
+  /* ask active providers for account lists */
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+      int rv;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+      rv=AB_Banking_ImportProviderAccounts(ab, p);
+      if (rv) {
+        DBG_WARN(0, "Error importing accounts from backend \"%s\"", p);
+      }
+      se=GWEN_StringListEntry_Next(se);
     } /* while */
   }
 
@@ -613,6 +656,24 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     j=AB_Job_List_Next(j);
   } /* while */
 
+  /* save list of active backends */
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                           "activeProviders", p);
+
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
   /* store static config data as "banking" */
   dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
   if (dbT) {
@@ -625,7 +686,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "lastUniqueId", ab->lastUniqueId);
-
 
   /* write config file. TODO: make backups */
   if (GWEN_DB_WriteFile(db, ab->configFile,
@@ -650,7 +710,29 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
-  return GWEN_LoadPluginDescrs(AQBANKING_PLUGINS "/providers");
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
+
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS "/providers");
+  if (l) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+
+    it=GWEN_PluginDescription_List2_First(l);
+    assert(it);
+    pd=GWEN_PluginDescription_List2Iterator_Data(it);
+    assert(pd);
+    while(pd) {
+      if (GWEN_StringList_HasString(ab->activeProviders,
+                                    GWEN_PluginDescription_GetName(pd)))
+        GWEN_PluginDescription_SetIsActive(pd, 1);
+      else
+        GWEN_PluginDescription_SetIsActive(pd, 0);
+      pd=GWEN_PluginDescription_List2Iterator_Next(it);
+    }
+    GWEN_PluginDescription_List2Iterator_free(it);
+  }
+
+  return l;
 }
 
 
@@ -916,10 +998,65 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
 
 
 
+int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
+  int rv;
+
+  if (GWEN_StringList_HasString(ab->activeProviders, pname)) {
+    DBG_INFO(0, "Provider already active");
+    return AB_ERROR_FOUND;
+  }
+
+  rv=AB_Banking_ImportProviderAccounts(ab, pname);
+  if (rv) {
+    DBG_INFO(0, "Could not import accounts from backend \"%s\"",
+             pname);
+    return rv;
+  }
+
+  GWEN_StringList_AppendString(ab->activeProviders, pname, 0, 1);
+
+  return 0;
+}
 
 
 
+int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
+  AB_ACCOUNT *a;
 
+  if (!GWEN_StringList_HasString(ab->activeProviders, pname)) {
+    DBG_INFO(0, "Provider not active");
+    return AB_ERROR_INVALID;
+  }
+
+  GWEN_StringList_RemoveString(ab->activeProviders, pname);
+
+  /* delete accounts which use this backend */
+  a=AB_Account_List_First(ab->accounts);
+  while(a) {
+    AB_PROVIDER *pro;
+    AB_ACCOUNT *na;
+
+    na=AB_Account_List_Next(a);
+    pro=AB_Account_GetProvider(a);
+    assert(pro);
+    if (strcasecmp(AB_Provider_GetName(pro), pname)==0) {
+      AB_Account_List_Del(a);
+      AB_Account_free(a);
+    }
+    a=na;
+  }
+
+  return 0;
+}
+
+
+
+const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab) {
+  assert(ab);
+  if (GWEN_StringList_Count(ab->activeProviders)==0)
+    return 0;
+  return ab->activeProviders;
+}
 
 
 

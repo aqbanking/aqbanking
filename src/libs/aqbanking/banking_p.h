@@ -27,6 +27,8 @@ struct AB_BANKING {
   AB_ACCOUNT_LIST *accounts;
   GWEN_TYPE_UINT32 lastUniqueId;
 
+  GWEN_STRINGLIST *activeProviders;
+
   char *configFile;
 
   GWEN_DB_NODE *data;

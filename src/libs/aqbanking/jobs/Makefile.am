@@ -1,4 +1,4 @@
-INCLUDES = $(gwenhywfar_includes) -I../ -I../types
+INCLUDES=-I${top_srcdir} @all_includes@ -I../ -I../types
 
 noinst_LTLIBRARIES=libjobs.la
 

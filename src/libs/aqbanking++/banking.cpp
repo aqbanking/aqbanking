@@ -264,14 +264,8 @@ namespace AB {
   
   
   
-  AB_PROVIDER *Banking::getProvider(const char *name){
-    return AB_Banking_GetProvider(_banking, name);
-  }
-  
-  
-  
-  AB_PROVIDER_WIZZARD *Banking::getWizzard(AB_PROVIDER *pro, const char *t){
-    return AB_Banking_GetWizzard(_banking, pro, t);
+  AB_PROVIDER_WIZZARD *Banking::getWizzard(const char *pn, const char *t){
+    return AB_Banking_GetWizzard(_banking, pn, t);
   }
   
   
@@ -419,7 +413,43 @@ namespace AB {
     }
     return rl;
   }
-  
+
+
+
+  int Banking::activateProvider(const char *pname){
+    return AB_Banking_ActivateProvider(_banking, pname);
+  }
+
+
+
+  int Banking::deactivateProvider(const char *pname){
+    return AB_Banking_DeactivateProvider(_banking, pname);
+  }
+
+
+
+  std::list<std::string> Banking::getActiveProviders(){
+    const GWEN_STRINGLIST *sl;
+    std::list<std::string> l;
+
+    sl=AB_Banking_GetActiveProviders(_banking);
+    if (sl) {
+      GWEN_STRINGLISTENTRY *se;
+
+      se=GWEN_StringList_FirstEntry(sl);
+      assert(se);
+      while(se) {
+        const char *p;
+
+        p=GWEN_StringListEntry_Data(se);
+        assert(p);
+        l.push_back(p);
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
+    return l;
+  }
+
 
 
 

@@ -17,6 +17,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/plugindescr.h>
 
 #ifdef __cplusplus
@@ -139,20 +140,18 @@ int AB_Banking_Fini(AB_BANKING *ab);
 int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend);
 
 
+int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname);
+int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname);
+const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
+
+
+
+
 /**
  * Returns the application name as given to @ref AB_Banking_new.
  */
 const char *AB_Banking_GetAppName(const AB_BANKING *ab);
 
-
-
-
-/**
- * Loads a backend with the given name. You can use
- * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
- * backends. Such a backend can then be asked to return an account list.
- */
-AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
 
 /**
  * Tries to load the wizzard for the given backend which is of the given
@@ -161,7 +160,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
  * very much dependant on the backend. Ideally they are shipped with the
  * backend.
  * @param ab pointer to the AB_BANKING object
- * @param pro pointer to the backend
+ * @param pn name of the backend
  * @param t wizzard type. To allow keeping the API as open as possible you
  * may give a type name here. However, the following names are expected:
  * <ul>
@@ -172,7 +171,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
  * </ul>
  */
 AB_PROVIDER_WIZZARD *AB_Banking_GetWizzard(AB_BANKING *ab,
-                                           AB_PROVIDER *pro,
+                                           const char *pn,
                                            const char *t);
 
 /**

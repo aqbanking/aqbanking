@@ -16,6 +16,7 @@
 
 #include <aqbanking/banking.h>
 #include <list>
+#include <string>
 
 
 namespace AB {
@@ -122,20 +123,13 @@ namespace AB {
 
 
     /**
-     * Loads a backend with the given name. You can use
-     * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
-     * backends. Such a backend can then be asked to return an account list.
-     */
-    AB_PROVIDER *getProvider(const char *name);
-
-    /**
      * Tries to load the wizzard for the given backend which is of the given
      * type t.
      * Setup wizzards are sorted by backends, since the wizzard do things
      * very much dependant on the backend. Ideally they are shipped with the
      * backend.
      * @param ab pointer to the AB_BANKING object
-     * @param pro pointer to the backend
+     * @param pn name of the backend
      * @param t wizzard type. To allow keeping the API as open as possible you
      * may give a type name here. However, the following names are expected:
      * <ul>
@@ -145,7 +139,7 @@ namespace AB {
      *  <li><b>curses</b> for a wizzard using (n)curses</li>
      * </ul>
      */
-    AB_PROVIDER_WIZZARD *getWizzard(AB_PROVIDER *pro, const char *t);
+    AB_PROVIDER_WIZZARD *getWizzard(const char *pn, const char *t);
 
     /**
      * Returns a list of pointers to currently known accounts.
@@ -199,6 +193,11 @@ namespace AB {
      * be the last method called on that list before destroying it.
      */
     void clearPluginDescrs(std::list<GWEN_PLUGIN_DESCRIPTION*> &l);
+
+    int activateProvider(const char *pname);
+    int deactivateProvider(const char *pname);
+    std::list<std::string> getActiveProviders();
+
 
     /*@}*/
 

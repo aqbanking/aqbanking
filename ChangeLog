@@ -3,5 +3,5 @@
 -------------------------------------------------
 - improved configure.ac
 - added c++ binding
-
+- cleaned up the code, moved some functions to private headers
 
