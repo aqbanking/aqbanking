@@ -1991,10 +1991,10 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                             GWEN_Buffer_GetStart(nbuf));
                 }
                 else {
+                  GWEN_DB_NODE *dbTarget;
                   DBG_INFO(AQBANKING_LOGDOMAIN,
                            "File \"%s\" contains profile \"%s\"",
                            GWEN_Buffer_GetStart(nbuf), s);
-                  GWEN_DB_NODE *dbTarget;
 
                   dbTarget=GWEN_DB_GetGroup(db,
                                             GWEN_DB_FLAGS_OVERWRITE_GROUPS,
