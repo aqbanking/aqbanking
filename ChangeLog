@@ -1,5 +1,17 @@
 
 ===========================================================================
+MARK: released AqBanking - 1.0.1beta (2005/01/22)
+===========================================================================
+
+
+2005/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- made AB_Banking_SetPinStatus and _SetTanStatus less verbous about the
+  pin/tan
+- fixed a bug in banking.c: Was saving status of all BUT bad pins
+
+
+===========================================================================
 MARK: released AqBanking - 1.0.0beta (2005/01/14)
 ===========================================================================
 

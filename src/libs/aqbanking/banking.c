@@ -3925,8 +3925,8 @@ int AB_Banking_SetPinStatus(AB_BANKING *ab,
   assert(pin);
 
   DBG_NOTICE(AQBANKING_LOGDOMAIN,
-             "Setting PIN status for \"%s\"=\"%s\" to %d",
-             token, pin, status);
+	     "Setting PIN status for \"%s\" to %d",
+             token, status);
 
   p=AB_Pin_List_First(ab->pinList);
   while(p) {
@@ -3969,16 +3969,18 @@ int AB_Banking_SetPinStatus(AB_BANKING *ab,
 
 
 
-void AB_Banking_SetPinCacheEnabled(AB_BANKING *ab, int enabled)
-{
+void AB_Banking_SetPinCacheEnabled(AB_BANKING *ab, int enabled){
   assert(ab);
   ab->pinCacheEnabled = enabled;
 }
-int AB_Banking_GetPinCacheEnabled(const AB_BANKING *ab)
-{
+
+
+
+int AB_Banking_GetPinCacheEnabled(const AB_BANKING *ab){
   assert(ab);
   return ab->pinCacheEnabled;
 }
+
 
 
 int AB_Banking_GetTan(AB_BANKING *ab,
@@ -4011,8 +4013,8 @@ int AB_Banking_SetTanStatus(AB_BANKING *ab,
                             const char *tan,
                             AB_BANKING_TANSTATUS status){
   DBG_NOTICE(AQBANKING_LOGDOMAIN,
-             "Setting status of TAN \"%s\" to %d",
-             tan, status);
+             "Setting status of TAN to %d",
+             status);
   assert(ab);
   if (ab->setTanStatusFn) {
     return ab->setTanStatusFn(ab, token, tan, status);
@@ -4096,7 +4098,7 @@ int AB_Banking__SaveBadPins(AB_BANKING *ab) {
                AB_Pin_GetToken(p));
     st=AB_Pin_GetStatus(p);
     if (st) {
-      if (strcasecmp(st, "bad")!=0) {
+      if (strcasecmp(st, "bad")==0) {
         const char *hash;
 
         /* only save bad pins */

@@ -67,9 +67,16 @@ extern "C" {
  */
 /*@{*/
 
-
+/**
+ * Returns the name of the backend (e.g. "aqhbci").
+ */
 AQBANKING_API
 const char *AB_Provider_GetName(const AB_PROVIDER *pro);
+
+/**
+ * Returns the escaped name of the backend. This is needed when using the
+ * name of the backend to form a file path.
+ */
 AQBANKING_API
 const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
 AQBANKING_API

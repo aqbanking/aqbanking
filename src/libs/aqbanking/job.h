@@ -33,33 +33,48 @@ extern "C" {
 typedef struct AB_JOB AB_JOB;
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_JOB, AB_Job, AQBANKING_API)
-/* Do not terminate this line with semicolon because they are
-   macros, not functions, and ISO C89 does not allow a semicolon
-   there. */
 
+/** This function frees all jobs contained in the given list. */
 AQBANKING_API
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
 
 
 typedef enum {
+  /** job is new and not enqueued */
   AB_Job_StatusNew=0,
+  /** job has been updated by the backend */
   AB_Job_StatusUpdated,
+  /** job has been enqueued */
   AB_Job_StatusEnqueued,
+  /** jobs has been sent */
   AB_Job_StatusSent,
+  /** job has been sent, and an answer has been received. However, the
+   * answer to this job said that the job is still pending at the backend.
+   * This status is most likely used with transfer orders which are accepted
+   * by the bank server but checked (and possibly rejected) later. */
   AB_Job_StatusPending,
+  /** job has been sucessfully executed */
   AB_Job_StatusFinished,
+  /** error in jobs' execution */
   AB_Job_StatusError,
+  /** jobs was enqueued but then deferred */
   AB_Job_StatusDeferred,
+  /** unknown status */
   AB_Job_StatusUnknown=999
 } AB_JOB_STATUS;
 
 
 typedef enum {
+  /** unknown job */
   AB_Job_TypeUnknown=0,
+  /** retrieve the balance of an online account */
   AB_Job_TypeGetBalance,
+  /** retrieve transaction statements for an online account */
   AB_Job_TypeGetTransactions,
+  /** issue a transfer */
   AB_Job_TypeTransfer,
+  /** issue a debit note (Lastschrift) */
   AB_Job_TypeDebitNote
 } AB_JOB_TYPE;
 
@@ -98,7 +113,8 @@ void AB_Job_Attach(AB_JOB *j);
 
 /**
  * Every created job gets an unique id. This allows any application to
- * identify a specific job.
+ * identify a specific job. However, unique ids are assigned when they get
+ * enqueued (i.e. by calling @ref AB_Banking_EnqueueJob).
  */
 AQBANKING_API
 GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j);
@@ -167,11 +183,13 @@ const char *AB_Job_GetResultText(const AB_JOB *j);
  *
  */
 /*@{*/
+
 /**
  * Transforms the given status code into a string.
  */
 AQBANKING_API
 const char *AB_Job_Status2Char(AB_JOB_STATUS i);
+
 /**
  * Transforms the given string into a job status code.
  */
@@ -183,6 +201,7 @@ AB_JOB_STATUS AB_Job_Char2Status(const char *s);
  */
 AQBANKING_API
 const char *AB_Job_Type2Char(AB_JOB_TYPE i);
+
 /**
  * Transforms the given string into a job type.
  */

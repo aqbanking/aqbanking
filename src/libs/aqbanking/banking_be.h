@@ -10,6 +10,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+/** @file banking_be.h
+ * @short This file is used by provider backends.
+ */
+
 
 #ifndef AQBANKING_BANKING_BE_H
 #define AQBANKING_BANKING_BE_H

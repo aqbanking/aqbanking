@@ -109,6 +109,9 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              const char *fname,
                              GWEN_DB_NODE *dbProfile);
 
+/**
+ * This function checks whether the given importer supports the given file.
+ */
 AQBANKING_API
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 			    const char *fname);
@@ -116,10 +119,16 @@ int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 /*@}*/
 
 
-
+/**
+ * Returns the AB_BANKING object to which the im/exporter belongs.
+ */
 AQBANKING_API 
 AB_BANKING *AB_ImExporter_GetBanking(const AB_IMEXPORTER *ie);
-AQBANKING_API 
+
+/**
+ * Returns the name of the im/exporter.
+ */
+AQBANKING_API
 const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
@@ -148,7 +157,6 @@ void AB_ImExporterContext_AddAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 /**
  * Returns the first imported account (if any).
  * The context remains the owner of the object returned.
- * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
 AQBANKING_API 
 AB_IMEXPORTER_ACCOUNTINFO*
@@ -157,7 +165,6 @@ AB_ImExporterContext_GetFirstAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
 /**
  * Returns the next account data has been imported for.
  * The context remains the owner of the object returned.
- * so he/she is responsible for calling @ref AB_Account_free() when finished.
  */
 AQBANKING_API 
 AB_IMEXPORTER_ACCOUNTINFO*
@@ -175,7 +182,7 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
                                     const char *accountNumber);
 
 /**
- * This is just a conveniance function. It takes the bank code and
+ * This is just a convenience function. It takes the bank code and
  * account number from the account, and then calls
  * @ref AB_ImExporterContext_GetAccountInfo and
  * @ref AB_ImExporterAccountInfo_AddTransaction.
@@ -218,6 +225,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
 AQBANKING_API 
 const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /**
  * Returns the next transaction stored within the context.
  * The context remains the owner of the object returned.
@@ -234,6 +242,7 @@ AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                                AB_ACCOUNT_STATUS *st);
+
 /**
  * Returns the first account status stored within the context.
  * The caller becomes the new owner of the account status returned (if any)
@@ -243,6 +252,7 @@ void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
 AQBANKING_API 
 AB_ACCOUNT_STATUS*
 AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /**
  * Returns the next account status stored within the context.
  * The caller becomes the new owner of the account status returned (if any)
@@ -255,20 +265,7 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 
 /**
- * This is used when exporting an account. Not used for imports.
- */
-
-/*
-AQBANKING_API 
-AB_ACCOUNT*
-AB_ImExporterAccountInfo_GetAccount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
-void AB_ImExporterAccountInfo_SetAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                         AB_ACCOUNT *a);
-                                         */
-
-/**
- * Bank code of the institute the account is at .
- * Used when importing data, not used when exporting.
+ * Bank code of the institute the account is at.
  */
 AQBANKING_API 
 const char*
@@ -277,8 +274,7 @@ void AB_ImExporterAccountInfo_SetBankCode(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                           const char *s);
 
 /**
- * Bank name of the institute the account is at .
- * Used when importing data, not used when exporting.
+ * Bank name of the institute the account is at.
  */
 AQBANKING_API 
 const char*
@@ -322,11 +318,19 @@ void AB_ImExporterAccountInfo_SetOwner(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 /** @name Helper Functions
  *
+ * These functions are most likely used by implementations of im/exporters.
  */
 /*@{*/
-AQBANKING_API 
+/**
+ * Transforms an UTF-8 string to a DTA string. Untranslateable characters
+ * are replaced by a space (chr 32).
+ */
+AQBANKING_API
 void AB_ImExporter_Utf8ToDta(const char *p, int size, GWEN_BUFFER *buf);
 
+/**
+ * Transforms a DTA string to an UTF-8 string.
+ */
 AQBANKING_API 
 void AB_ImExporter_DtaToUtf8(const char *p, int size, GWEN_BUFFER *buf);
 

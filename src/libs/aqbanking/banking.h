@@ -62,7 +62,7 @@ extern "C" {
 #define AB_BANKING_PROGRESS_NONE 0xffffffff
 
 /**
- * Object to be operated on by function in this group (@ref AB_BANKING).
+ * Object to be operated on by functions in this group (@ref AB_BANKING).
  */
  typedef struct AB_BANKING AB_BANKING;
 
@@ -70,10 +70,6 @@ extern "C" {
  * This object is prepared to be inherited (using @ref GWEN_INHERIT_SETDATA).
  */
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
-/* Do not terminate these lines with semicolon because they are
-   macros, not functions, and ISO C89 does not allow a semicolon
-   there. */
-
 
 
 
@@ -1197,8 +1193,10 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j);
 /** @name Handling Archived Jobs
  *
  * <p>
- * Finished jobs are those which have been handled by
- * @ref AB_Banking_ExecuteQueue.
+ * Archived jobs are those which have been handled by
+ * @ref AB_Banking_ExecuteQueue and then later deleted from the list of
+ * finished jobs via any AB_Banking_Del(-XYZ-)Job function except
+ * @ref AB_Banking_DelArchivedJob
  * </p>
  */
 /*@{*/
@@ -1243,6 +1241,10 @@ int AB_Banking_DelArchivedJob(AB_BANKING *ab, AB_JOB *j);
  * Text delivered as argument called <i>text</i> throughout the documentation
  * in this group may contain HTML tags.
  * If it does a non-HTML version must be supplied, too.
+ * The text MUST begin with the non-HTML version, so that a frontend not
+ * capable of parsing HTML can simply exclude the HTML part by cutting
+ * before "<html".
+ *
  * </p>
  * <p>
  * This is an example for HTML and non-HTML text:
@@ -1529,13 +1531,17 @@ void AB_Banking_SetProgressEndFn(AB_BANKING *ab,
  * will call AB_Banking_InputBox for the user input.
  *
  * @param ab Banking interface
- * @param flags Flags, see @ref AB_Banking_InputBox and @ref AB_BANKING_INPUT_FLAGS_CONFIRM 
- * @param token A unique identification of what PIN is required. To be used for automated PIN lookup.
+ * @param flags Flags, see @ref AB_Banking_InputBox
+ *   and @ref AB_BANKING_INPUT_FLAGS_CONFIRM
+ * @param token A unique identification of what PIN is required.
+ *   To be used for automated PIN lookup.
  * @param title Title of the input box (in UTF-8)
- * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML
+ *   variant of the text in the same string. See text restrictions note above.
  * @param buffer Buffer to store the response in. Must have at least room
  *  @b maxLen bytes
- * @param minLen Minimal length of input that is required before the returned answer is accepted (if 0 then there is no low limit)
+ * @param minLen Minimal length of input that is required before the returned
+ *   answer is accepted (if 0 then there is no low limit)
  * @param maxLen Size of the buffer including the trailing NULL character.
  * This means that if you want to ask the user for a PIN of at most 4
  * characters you need to supply a buffer of at least @b 5 bytes and provide
@@ -1555,8 +1561,7 @@ int AB_Banking_GetPin(AB_BANKING *ab,
  * Enable or disable the internal caching of PINs across jobs during
  * one full session. If the parameter is nonzero (TRUE), then every
  * entered PIN will be cached throughout the rest of this session and
- * is not asked for again. (FIXME: This is the default, but maybe it
- * should not be the default.) If the parameter is zero (FALSE), then
+ * is not asked for again. If the parameter is zero (FALSE), then
  * PINs will only be cached during one queue execution, but not across
  * several queue executions or several jobs. In other words, if this
  * is FALSE, then after each AB_Banking_ExecuteQueue() the internal
@@ -1611,8 +1616,8 @@ int AB_Banking_GetTan(AB_BANKING *ab,
 
 /**
  * Sets a status for the given token and its given TAN. This way,
- * aqbanking will keep track of whether an entered TAN might have been
- * wrong so it isn't used again.
+ * applications can keep track of whether an entered TAN might have been
+ * used.
  */
 AQBANKING_API 
 int AB_Banking_SetTanStatus(AB_BANKING *ab,
@@ -1756,7 +1761,7 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 /*@{*/
 /**
  * This function enqueues a request for the balance of an account.
- * You ned to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * You need to call @ref AB_Banking_ExecuteQueue to actually perform the
  * job.
  */
 int AB_Banking_RequestBalance(AB_BANKING *ab,
@@ -1765,7 +1770,7 @@ int AB_Banking_RequestBalance(AB_BANKING *ab,
 
 /**
  * This function enqueues a request for the transactions of an account.
- * You ned to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * You need to call @ref AB_Banking_ExecuteQueue to actually perform the
  * job.
  * Please note that not all backends and all banks allow a time span to be
  * given to this function. In such cases the dates are simply ignored.

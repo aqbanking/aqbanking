@@ -10,6 +10,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+/** @file imexporter_be.h
+ * @short This file is used by provider/importer/exporter plugins.
+ */
+
 
 #ifndef AQBANKING_IMEXPORTER_BE_H
 #define AQBANKING_IMEXPORTER_BE_H

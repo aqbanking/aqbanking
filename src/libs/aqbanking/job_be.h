@@ -11,6 +11,11 @@
  ***************************************************************************/
 
 
+/** @file job_be.h
+ * @short This file is used by provider backends.
+ */
+
+
 #ifndef AQBANKING_JOB_BE_H
 #define AQBANKING_JOB_BE_H
 
