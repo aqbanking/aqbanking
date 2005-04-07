@@ -1,14 +1,14 @@
 SUBDIRS=doc m4 src bindings po
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
- aqbanking.m4 \
- aqbanking.spec.in aqbanking.spec Doxyfile.in version.h.in \
- i18nsources aqbanking.iss.in aqbanking.iss
-
+ aqbanking.spec.in aqbanking.spec \
+ aqbanking.iss.in aqbanking.iss \
+ Doxyfile.in version.h.in \
+ i18nsources
 
 bin_SCRIPTS=aqbanking-config
-M4dir=${prefix}/share/aclocal
-M4_DATA=aqbanking.m4
+aclocaldir = $(datadir)/aclocal
+dist_aclocal_DATA = aqbanking.m4
 
 ACLOCAL_AMFLAGS = $(ADD_ACLOCAL_FLAGS) -I m4
 
@@ -16,6 +16,7 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
   version.h
 
+CLEANFILES = aqbanking-config
 
 aqbanking-config: aqbanking-config.in
 	echo "#! /bin/sh" >aqbanking-config && \
@@ -64,35 +65,70 @@ setup: aqbanking.iss
 	 && $(ISCC) aqbanking.iss \
 	 && rm -rf $(wintmpdir)
 
-sources:
-	rm -f i18nsources
-	make -C src sources
-i18nsources: sources
-
 if USE_I18N
 
-all-local: sources
+# We directly read that file list. For old make programs, you would
+# set this to an empty variable, because they are only needed by the
+# developers and release technicians.
+I18NFILES=$(shell cat $(srcdir)/i18nsources)
+# Current build rule:
+sources:
+	rm -f $(srcdir)/i18nsources
+	make -C $(top_srcdir)/src sources
+$(srcdir)/i18nsources:
+	make sources
 
-I18NFILES=$(shell cat i18nsources)
-I18NLINGUAS=$(shell ls po/*.po)
+# Could also be solved this way: Read the I18NFILES variable from file
+#include $(srcdir)/i18nsources
+# (Needs the following build rule:)
+#sources:
+#	rm -f $(srcdir)/i18nsources
+#	make -C $(top_srcdir)/src sources
+#	mv $(srcdir)/i18nsources $(srcdir)/i18nsources.tmp
+#	echo "I18NFILES = \\" > $(srcdir)/i18nsources
+#	$(SED) 's!\(^.*$$\)!$$(top_srcdir)/\1 \\!' \
+#	  $(srcdir)/i18nsources.tmp >> $(srcdir)/i18nsources
+#	echo '$$(top_srcdir)/config.h' >> $(srcdir)/i18nsources
+#	rm -f $(srcdir)/i18nsources.tmp
+#	make Makefile
 
-messages: $(I18NFILES);
-	$(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N \
-	  -kI18N_NOOP -ktranslate -kaliasLocale \
-          -ktr -ktrUtf8 \
-	  '--msgid-bugs-address=openhbci-general@lists.sourceforge.net' \
-	  -o po/$(PACKAGE).pot \
-          $(I18NFILES);
+# The list of available languages (makes file name transformations much easier)
+ALL_LINGUAS = $(basename $(notdir $(shell ls $(srcdir)/po/*.po)))
+# For old make programs, the locales would directly be written here:
+#ALL_LINGUAS = de
 
-merge: messages
-	@catalogs=`find ./po -name "*.po"`; \
+# List of po files. Only necessary in the dependency of the catalogs
+# rule. For old make programs, you would simpy set this to an empty
+# variable.
+I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
+
+# List of mo files. Only necessary for cleanup. For old make programs,
+# you would simply set this to an empty variable.
+I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
+
+po/$(PACKAGE).pot: $(I18NFILES)
+	if test -n "$(I18NFILES)"; then \
+	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N \
+	    -kI18N_NOOP -ktranslate -kaliasLocale \
+            -ktr -ktrUtf8 \
+	    '--msgid-bugs-address=openhbci-general@lists.sourceforge.net' \
+	    -o po/$(PACKAGE).pot \
+	    $(I18NFILES); \
+	fi
+
+# This rule is called automatically at install time. However, it is
+# necessary only for the translators, so maybe it shouldn't be called
+# at install time.
+merge: po/$(PACKAGE).pot
+	@catalogs=$(I18NLINGUAS); \
 	for cat in $$catalogs; do \
-	echo $$cat $$name; \
+	echo msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
 	msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
 	if test -s $$cat.new; then \
 	  grep -v "\"POT-Creation" $$cat.new > $$cat.new.2 ; \
 	  grep -v "\"POT-Creation" $$cat >> $$cat.new.1; \
 	  if diff $$cat.new.1 $$cat.new.2; then \
+		echo "  $$cat unchanged; leaving existing po file untouched."; \
 		rm $$cat.new;  \
 	  else  \
 		mv $$cat.new $$cat ; \
@@ -101,28 +137,27 @@ merge: messages
 	fi ;\
 	done
 
-catalog: merge $(I18NLINGUAS)
-	 LIST=`find ./po -name "*.po"`; \
-	 for i in $$LIST; do \
-	  file2=`echo $$i | sed -e "s#\.po#\.mo#"`; \
-	  echo $$file2; \
-	  msgfmt -o $$file2 $$i || touch $$i; \
-	 done ;
+MSGFMT = msgfmt
+catalogs: merge $(I18NLINGUAS)
+	@for i in $(ALL_LINGUAS); do \
+	  filelingua=$(srcdir)/po/$$i.po; \
+	  filecat=$(top_builddir)/po/$$i.mo; \
+	  echo "Creating translation catalog $${filecat}"; \
+	  echo "  $(MSGFMT) -o $${filecat} $${filelingua}"; \
+	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
+	done
 
-install-data-local: catalog
-	LIST=`(cd po && ls *.mo)`; \
-	for i in $$LIST; do \
-	file2=`echo $$i | sed "s/\.mo//"`; \
-        echo installing $$i; \
-        mkdir -p "${DESTDIR}$(prefix)/share/locale/$$file2/LC_MESSAGES"; \
-        cp ./po/$$i ${DESTDIR}$(prefix)/share/locale/$$file2/LC_MESSAGES/$(PACKAGE).mo; \
+localedir = $(datadir)/locale
+install-data-local: catalogs
+	@for i in $(ALL_LINGUAS); do \
+	  filecat=$(top_builddir)/po/$$i.mo; \
+          echo "Installing translation catalog $$i"; \
+          echo "  $(mkinstalldirs) \"$(DESTDIR)$(localedir)/$$i/LC_MESSAGES\""; \
+          echo "  $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
+          $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
+          $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
 
-
-CLEANFILES=i18nsources
-
+CLEANFILES += $(I18NCATALOGS)
 
 endif
-
-
-

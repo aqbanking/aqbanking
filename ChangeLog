@@ -1,3 +1,7 @@
+2005-04-07   Christian Stimming <stimming@tuhh.de>
+
+	* Makefile.am: Some cleanup for the translation-related rules in
+	Makefile.
 
 2005/04/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

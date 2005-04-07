@@ -138,6 +138,20 @@ These application fully or partially support AqBanking:
 
 (the last step most probably requires you to be root)
 
+Compilation hints for specific platforms:
+
+- For FreeBSD and potentially other non-Linux platform, it might be
+  necessary to use "gmake" instead of the "make" program.
+
+- Also, if your "make" program happens to complain about the variable
+  definition "I18NFILES = $(shell cat ..." (in Makefile.in around line
+  230) and related definitions, then you need to look for comments in
+  the Makefile about "old make programs". Follow the instructions in
+  these comments, i.e. set some variable definitions to an empty
+  variable manually. This should remove all potentially incompatible
+  directives from the Makefile.
+
+
 
 5.2. Building from CVS
 ----------------------
