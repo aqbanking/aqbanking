@@ -23,6 +23,7 @@
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/plugindescr.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
+#include <aqbanking/version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,6 +49,14 @@ extern "C" {
  */
 /*@{*/
 
+/** @name Extensions supported by the application
+ *
+ */
+/*@{*/
+#define AB_BANKING_EXTENSION_NONE 0x00000000
+/*@}*/
+
+
 /**
  * This value is used with @ref AB_Banking_ProgressAdvance to flag that
  * there really was no progress since the last call to that function but
@@ -55,6 +64,7 @@ extern "C" {
  * the need of updating the progress bar).
  */
 #define AB_BANKING_PROGRESS_NONE 0xffffffff
+
 
 /**
  * Object to be operated on by functions in this group (@ref AB_BANKING).
@@ -430,6 +440,7 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  *
  */
 /*@{*/
+
 /**
  * <p>
  * Creates an instance of AqBanking. Though AqBanking is quite object
@@ -453,6 +464,12 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  * want to handle this in your application yourself you must overwrite this
  * handler @b after calling this function here.
  * </p>
+ * <p>
+ * Please note: This function internally calls @ref AB_Banking_newExtended
+ * with the value 0 for <i>extensions</i>. So if your program supports any
+ * extension you should call @ref AB_Banking_newExtended instead of this
+ * function.
+ * </p>
  * @return new instance of AB_BANKING
  * @param appName name of the application which wants to use AqBanking.
  * This allows AqBanking to separate settings and data for multiple
@@ -461,9 +478,23 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  * in most cases present a NULL for this parameter (which let's AqBanking
  * load the users default configuration file, see @ref AB_BANKING_CONFIGFILE).
  */
-AQBANKING_API 
-AB_BANKING *AB_Banking_new(const char *appName,
-                           const char *fname);
+AQBANKING_API
+AB_BANKING *AB_Banking_new(const char *appName, const char *fname);
+
+/**
+ * This does the same as @ref AB_Banking_new. In addition, the application
+ * may state here the extensions it supports.
+ * See @ref AB_BANKING_EXTENSION_NONE and following.
+ * This is used to keep the number of callbacks to the application small
+ * (otherswise whenever we add a flag which changes the expected behaviour
+ * of a GUI callback we would have to introduce a new callback in order to
+ * maintain binary compatibility).
+ */
+AQBANKING_API
+AB_BANKING *AB_Banking_newExtended(const char *appName,
+                                   const char *fname,
+                                   GWEN_TYPE_UINT32 extensions);
+
 
 /**
  * Destroys the given instance of AqBanking. Please note that if

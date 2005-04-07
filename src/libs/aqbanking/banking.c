@@ -54,20 +54,31 @@
 #endif
 
 
+#undef AB_Banking_new
+
 
 GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 #include <aqbanking/error.h>
 
 
-
-
 AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
+  return AB_Banking_newExtended(appName, fname, 0);
+}
+
+
+
+AB_BANKING *AB_Banking_newExtended(const char *appName, const char *fname,
+                                   GWEN_TYPE_UINT32 extensions){
   AB_BANKING *ab;
   GWEN_BUFFER *buf;
   GWEN_BUFFER *nbuf;
 
   assert(appName);
+
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "Application \"%s\" compiled with extensions %08x",
+           appName, extensions);
 
   nbuf=GWEN_Buffer_new(0, 256, 0, 1);
   if (GWEN_Text_EscapeToBufferTolerant(appName, nbuf)) {
@@ -131,6 +142,8 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
               "Internal error: Could not register callback.");
     abort();
   }
+
+  ab->appExtensions=extensions;
 
   return ab;
 }

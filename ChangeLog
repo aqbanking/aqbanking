@@ -1,7 +1,29 @@
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/04/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AB_Banking_newExtended which takes the extensions supported by the
+  application as third argument.
+  This will be used to check for extensions to GUI functions supported by
+  the application.
+  It will allow me to keep the number of callbacks small while maintaining
+  binary compatibility even when introducing new flags for the existing
+  GUI callbacks.
+  AB_Banking_new() now calls this new function with extensions=0, so
+  existing programs don't need to be recompiled.
+- AQBANKING_VERSION stuff is no longer defined in config.h, this now allows
+  to include "version.h" within AqBanking's source files
+
+
 2005-04-07   Christian Stimming <stimming@tuhh.de>
 
 	* Makefile.am: Some cleanup for the translation-related rules in
 	Makefile.
+
 
 2005/04/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -903,4 +925,15 @@ MARK: released aqbanking-0.1.1alpha (2004/08/11)
 - added c++ binding
 - cleaned up the code, moved some functions to private headers
 - started with APIDOC
+
+
+
+-----------------------------------------------------------------------------
+Below are some templates to be copied to the top of this file when needed.
+
+- API version modifications
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
 

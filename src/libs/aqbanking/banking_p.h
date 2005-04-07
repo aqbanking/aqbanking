@@ -34,6 +34,7 @@ struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
   char *appName;
   char *appEscName;
+  int appExtensions;
 
   char *dataDir;
 
