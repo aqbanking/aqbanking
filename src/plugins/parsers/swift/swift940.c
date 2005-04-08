@@ -213,11 +213,13 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   isStructured=0;
   code=999;
   if (strlen(p)>3) {
-    if (isdigit(p[0]) && isdigit(p[1]) && isdigit(p[2]) && p[3]=='?') {
-      /* it is structured, get the code */
+    if (isdigit(p[0]) && isdigit(p[1]) && isdigit(p[2])) {
+      /* starts with a three digit number */
       code=(((p[0]-'0')*100) + ((p[1]-'0')*10) + (p[2]-'0'));
+      if (p[3]=='?')
+	/* it is structured, get the code */
+	isStructured=1;
       p+=3;
-      isStructured=1;
     }
   }
 
