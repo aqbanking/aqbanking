@@ -161,3 +161,9 @@ install-data-local: catalogs
 CLEANFILES += $(I18NCATALOGS)
 
 endif
+
+# Extra rule instead of "all" which creates the auto-generated headers
+# *first* and only then starts "make all". This avoids duplicate
+# compilation.
+quick: config.h version.h
+	make
