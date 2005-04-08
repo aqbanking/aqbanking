@@ -53,7 +53,18 @@ extern "C" {
  *
  */
 /*@{*/
-#define AB_BANKING_EXTENSION_NONE 0x00000000
+#define AB_BANKING_EXTENSION_NONE             0x00000000
+/**
+ * If this flag is set then the application allows nesting progress
+ * dialogs. If the application does it might be best to use the toplevel
+ * progress widget and just add a progress bar to it.
+ * If this flag is not set then AqBanking keeps track of the nesting level
+ * and dismisses further calls to @ref AB_Banking_ProgressStart until
+ * @ref AB_Banking_ProgressEnd has been called often enough to reset the
+ * nesting counter. I.e. the application will not receive nesting calls
+ * to @ref AB_Banking_ProgressStart.
+ */
+#define AB_BANKING_EXTENSION_NESTING_PROGRESS 0x00000001
 /*@}*/
 
 

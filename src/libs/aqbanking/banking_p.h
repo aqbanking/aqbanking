@@ -78,6 +78,8 @@ struct AB_BANKING {
 
   GWEN_WAITCALLBACK *waitCallback;
 
+  int progressNestingLevel;
+  GWEN_TYPE_UINT32 lastProgressId;
 };
 
 

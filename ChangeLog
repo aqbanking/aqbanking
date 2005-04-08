@@ -4,6 +4,17 @@
   ------------------------------------------------------------------------
 
 
+2005/04/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- the default for pinCacheEnabled changed now to FALSE. That means pins
+  will only be cached while executing a job queue. Christian was right
+  all along about this feature ;-) It is best to let the user always
+  acknowledge online operations by entering his pin (chip cards will have
+  to ask anyway). Furthermore the status of this flag is neither written nor
+  read from the config file. So if an application wants this feature on it
+  must set this flag after each AB_Banking_Init() explicitly.
+
+
 2005/04/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added AB_Banking_newExtended which takes the extensions supported by the
@@ -17,6 +28,8 @@
   existing programs don't need to be recompiled.
 - AQBANKING_VERSION stuff is no longer defined in config.h, this now allows
   to include "version.h" within AqBanking's source files
+- added special treatment for nested progress contexts (-> first extension
+  to GUI callbacks AB_Banking_ProgressStart() and AB_Banking_ProgressEnd())
 
 
 2005-04-07   Christian Stimming <stimming@tuhh.de>

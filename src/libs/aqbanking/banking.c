@@ -127,7 +127,7 @@ AB_BANKING *AB_Banking_newExtended(const char *appName, const char *fname,
   ab->data=GWEN_DB_Group_new("BankingData");
   ab->configFile=strdup(fname);
   ab->pinList=AB_Pin_List_new();
-  ab->pinCacheEnabled=1;
+  ab->pinCacheEnabled=0;
   GWEN_Buffer_free(buf);
   GWEN_Buffer_free(nbuf);
 
@@ -779,10 +779,33 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
                                           GWEN_TYPE_UINT32 total){
   assert(ab);
   if (ab->progressStartFn) {
-    return ab->progressStartFn(ab, title, text, total);
+    GWEN_TYPE_UINT32 pid;
+
+    if (ab->progressNestingLevel>0) {
+      /* nesting, check whether the application supports it */
+      if (!(ab->appExtensions & AB_BANKING_EXTENSION_NESTING_PROGRESS)) {
+        /* nope, app doesn't support nesting, return currently active
+         * progress id */
+        ab->progressNestingLevel++;
+        return ab->lastProgressId;
+      }
+    }
+
+    pid=ab->progressStartFn(ab, title, text, total);
+    if (pid) {
+      ab->progressNestingLevel++;
+      ab->lastProgressId=pid;
+    }
+    else {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      ab->lastProgressId=0;
+    }
+    return pid;
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressStart function set");
-  return 0;
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "No progressStart function set");
+    return 0;
+  }
 }
 
 
@@ -805,9 +828,8 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
                            AB_BANKING_LOGLEVEL level,
                            const char *text){
   assert(ab);
-  if (ab->progressLogFn) {
+  if (ab->progressLogFn)
     return ab->progressLogFn(ab, id, level, text);
-  }
   DBG_WARN(AQBANKING_LOGDOMAIN, "No progressLog function set");
   return 0;
 }
@@ -817,10 +839,33 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
 int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
   assert(ab);
   if (ab->progressEndFn) {
-    return ab->progressEndFn(ab, id);
+    if (ab->progressNestingLevel<1) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No progress context open");
+      return AB_ERROR_INVALID;
+    }
+    else {
+      int rv;
+
+      if (!(ab->appExtensions & AB_BANKING_EXTENSION_NESTING_PROGRESS)) {
+        /* app does not support nesting progress */
+        if ((ab->progressNestingLevel)>1) {
+          /* just count down the nesting level and return */
+          ab->progressNestingLevel--;
+          return 0;
+        }
+      }
+      rv=ab->progressEndFn(ab, id);
+      if (rv==0) {
+        ab->progressNestingLevel--;
+      }
+      ab->lastProgressId=0;
+      return rv;
+    }
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressEnd function set");
-  return 0;
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "No progressEnd function set");
+    return 0;
+  }
 }
 
 
@@ -1090,8 +1135,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
   ab->alwaysAskForCert=GWEN_DB_GetIntValue(ab->data,
                                            "static/alwaysAskForCert", 0, 0);
-  ab->pinCacheEnabled=GWEN_DB_GetIntValue(ab->data,
-                                          "static/pinCacheEnabled", 0, 1);
+  ab->pinCacheEnabled=0;
 
   /* init active providers */
   if (GWEN_StringList_Count(ab->activeProviders)) {
@@ -1224,9 +1268,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   GWEN_DB_SetIntValue(ab->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "static/alwaysAskForCert",
                       ab->alwaysAskForCert);
-  GWEN_DB_SetIntValue(ab->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "static/pinCacheEnabled",
-                      ab->pinCacheEnabled);
 
   db=GWEN_DB_Group_new("config");
   assert(db);
