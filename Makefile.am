@@ -138,7 +138,7 @@ merge: po/$(PACKAGE).pot
 	done
 
 MSGFMT = msgfmt
-catalogs: merge $(I18NLINGUAS)
+catalogs: $(I18NLINGUAS)
 	@for i in $(ALL_LINGUAS); do \
 	  filelingua=$(srcdir)/po/$$i.po; \
 	  filecat=$(top_builddir)/po/$$i.mo; \
