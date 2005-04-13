@@ -33,6 +33,15 @@ Set this property with @ref AB_BankInfo_SetBankId,
 get it with @ref AB_BankInfo_GetBankId
 </p>
 
+@anchor AB_BANKINFO_Bic
+<h3>Bic</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_BankInfo_SetBic, 
+get it with @ref AB_BankInfo_GetBic
+</p>
+
 @anchor AB_BANKINFO_BankName
 <h3>BankName</h3>
 <p>
@@ -206,6 +215,15 @@ AQBANKING_API const char *AB_BankInfo_GetBankId(const AB_BANKINFO *el);
 * Set the property @ref AB_BANKINFO_BankId
 */
 AQBANKING_API void AB_BankInfo_SetBankId(AB_BANKINFO *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_Bic
+*/
+AQBANKING_API const char *AB_BankInfo_GetBic(const AB_BANKINFO *el);
+/**
+* Set the property @ref AB_BANKINFO_Bic
+*/
+AQBANKING_API void AB_BankInfo_SetBic(AB_BANKINFO *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_BankName

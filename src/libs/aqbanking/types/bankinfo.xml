@@ -31,11 +31,51 @@
       <header type="sys" >aqbanking/error.h</header>
     </headers>
     
-    <elem name="type" type="char" ptr="1" />
-    <elem name="address" type="char" ptr="1" />
-    <elem name="suffix" type="char" ptr="1" />
-    <elem name="pversion" type="char" ptr="1" />
-    <elem name="mode" type="char" ptr="1" />
+    <elem name="type" type="char" ptr="1" >
+      <descr>
+        The following types have been registered with AqBanking:
+        <ul>
+          <li><b>HBCI</b> - German homebanking protocol</li>
+          <li><b>OFX</b>  - OFX direct connect protocol</li>
+        </ul>
+      </descr>
+    </elem>
+    <elem name="address" type="char" ptr="1">
+      <descr>
+        For most services this is the URL or hostname of the server.
+      </descr>
+    </elem>
+    <elem name="suffix" type="char" ptr="1">
+      <descr>
+        For IP based services this is the port to be used (if omitted
+        a default value suitable for the service is chosen).
+      </descr>
+    </elem>
+    <elem name="pversion" type="char" ptr="1">
+      <descr>
+        The content of this field depends on the service type.
+        For <b>HBCI</b> this is the protocol version to be used:
+        <ul>
+          <li>2.01</li>
+          <li>2.10</li>
+          <li>2.20</li>
+        </ul>
+      </descr>
+    </elem>
+    <elem name="mode" type="char" ptr="1">
+      <descr>
+        The content of this field depends on the service type.
+        For <b>HBCI</b> the following values are used:
+        <ul>
+          <li>DDV</li>
+          <li>RDH1</li>
+          <li>RDH2</li>
+          <li>RDH3</li>
+          <li>RDH4</li>
+          <li>PINTAN</li>
+        </ul>
+      </descr>
+    </elem>
   </type>
 
 
@@ -55,6 +95,7 @@
     <elem name="country" type="char" ptr="1" />
     <elem name="branchId" type="char" ptr="1" />
     <elem name="bankId" type="char" ptr="1" />
+    <elem name="bic" type="char" ptr="1" />
     <elem name="bankName" type="char" ptr="1" />
     <elem name="location" type="char" ptr="1" />
     <elem name="street" type="char" ptr="1" />

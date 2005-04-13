@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=8
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -129,7 +129,7 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(1,9,11,0)
+AC_GWENHYWFAR(1,11,0,2)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -438,8 +438,11 @@ AC_CONFIG_FILES([
   src/libs/aqbanking++/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
+  src/plugins/bankinfo/at/Makefile
+  src/plugins/bankinfo/at/at.xml
   src/plugins/bankinfo/de/Makefile
   src/plugins/bankinfo/de/de.xml
+  src/plugins/bankinfo/generic/Makefile
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dbio/Makefile
   src/plugins/imexporters/dbio/dbio.xml

@@ -1,0 +1,25 @@
+
+This folder contains a convenience library which is used by bank info plugins
+to provide basic administration of bank info data.
+
+It is used by the plugin for AT and DE.
+
+
+Creating Data Files
+===================
+The makefiles in this folder expect the following files to exist in the 
+folder "data":
+
+German Banks:
+- blz.csv 
+  The CSV file of the Deutsche Bundesbank containing information about German
+  banks
+- fints_institute.csv
+  CSV file containing information about banks supporting FinTS (see 
+  homepage of FinTS)
+
+Austrian Banks:
+- blz-at.csv
+  CSV file containing the list of Austrian banks (as provided by the
+  Oesterreichische Bundesbank)
+

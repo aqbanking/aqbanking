@@ -2,9 +2,6 @@ INCLUDES = $(all_includes)
 EXTRA_DIST=de.c de_p.h
 
 bankinfoplugindir=@aqbanking_plugindir@/bankinfo
-bankinfoplugin_dedatadir=@aqbanking_pkgdatadir@/plugins/bankinfo/de
-
-DEFS=@DEFS@ -DAB_BANKINFO_DE_DATAFILE=\"@aqbanking_pkgdatadir@/plugins/bankinfo/de/bankinfo.csv\"
 
 bankinfoplugin_LTLIBRARIES=de.la
 bankinfoplugin_DATA=de.xml
@@ -15,7 +12,7 @@ noinst_HEADERS=\
 de_la_SOURCES=\
  de.c
 
-de_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking @ktoblzcheck_libs@
+de_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking ../generic/libbankinfo.la @ktoblzcheck_libs@
 de_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

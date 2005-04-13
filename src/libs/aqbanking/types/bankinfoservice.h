@@ -9,6 +9,30 @@ This page describes the properties of AB_BANKINFO_SERVICE
 @anchor AB_BANKINFO_SERVICE_Type
 <h3>Type</h3>
 <p>
+The following types have been registered with AqBanking:
+
+<ul>
+<li>
+<b>
+HBCI
+
+</b>
+
+- German homebanking protocol
+
+</li>
+
+<li>
+<b>
+OFX
+
+</b>
+
+- OFX direct connect protocol
+
+</li>
+
+</ul>
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetType, 
@@ -18,6 +42,7 @@ get it with @ref AB_BankInfoService_GetType
 @anchor AB_BANKINFO_SERVICE_Address
 <h3>Address</h3>
 <p>
+For most services this is the URL or hostname of the server.
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetAddress, 
@@ -27,6 +52,7 @@ get it with @ref AB_BankInfoService_GetAddress
 @anchor AB_BANKINFO_SERVICE_Suffix
 <h3>Suffix</h3>
 <p>
+For IP based services this is the port to be used (if omitted a default value suitable for the service is chosen).
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetSuffix, 
@@ -36,6 +62,32 @@ get it with @ref AB_BankInfoService_GetSuffix
 @anchor AB_BANKINFO_SERVICE_Pversion
 <h3>Pversion</h3>
 <p>
+The content of this field depends on the service type. For
+
+<b>
+HBCI
+
+</b>
+
+this is the protocol version to be used:
+
+<ul>
+<li>
+2.01
+
+</li>
+
+<li>
+2.10
+
+</li>
+
+<li>
+2.20
+
+</li>
+
+</ul>
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetPversion, 
@@ -45,6 +97,47 @@ get it with @ref AB_BankInfoService_GetPversion
 @anchor AB_BANKINFO_SERVICE_Mode
 <h3>Mode</h3>
 <p>
+The content of this field depends on the service type. For
+
+<b>
+HBCI
+
+</b>
+
+the following values are used:
+
+<ul>
+<li>
+DDV
+
+</li>
+
+<li>
+RDH1
+
+</li>
+
+<li>
+RDH2
+
+</li>
+
+<li>
+RDH3
+
+</li>
+
+<li>
+RDH4
+
+</li>
+
+<li>
+PINTAN
+
+</li>
+
+</ul>
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetMode, 

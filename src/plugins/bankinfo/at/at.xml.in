@@ -1,9 +1,9 @@
-<plugin name="de" type="bankinfo" >
+<plugin name="at" type="bankinfo" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Bank info checker for Germany</short>
+  <short>Bank info provider for Austria</short>
   <descr>
-    This plugin handles German banks and accounts.
+    This plugin handles Austrian banks.
   </descr>
 </plugin>
 

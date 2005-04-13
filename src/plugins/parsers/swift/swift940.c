@@ -50,7 +50,7 @@ void AHB_SWIFT__HbciToUtf8(const char *p,
 
     case 0xe4: /* ae */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe4);
+      GWEN_Buffer_AppendByte(buf, 0xa4);
       break;
 
     case 0xd6: /* OE */
@@ -60,7 +60,7 @@ void AHB_SWIFT__HbciToUtf8(const char *p,
 
     case 0xf6: /* oe */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xf6);
+      GWEN_Buffer_AppendByte(buf, 0xb6);
       break;
 
     case 0xdc: /* UE */
@@ -70,7 +70,7 @@ void AHB_SWIFT__HbciToUtf8(const char *p,
 
     case 0xfc: /* ue */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xfc);
+      GWEN_Buffer_AppendByte(buf, 0xbc);
       break;
 
     case 0xdf: /* sz */
@@ -80,99 +80,99 @@ void AHB_SWIFT__HbciToUtf8(const char *p,
 
     case 0xa7: /* section sign */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xa7);
+      GWEN_Buffer_AppendByte(buf, 0x67);
       break;
 
       /* english chars */
     case 0xa3: /* pound swign */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xa3);
+      GWEN_Buffer_AppendByte(buf, 0x63);
       break;
 
       /* french chars */
     case 0xc7: /* C cedille */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xc7);
+      GWEN_Buffer_AppendByte(buf, 0x87);
       break;
 
     case 0xe0: /* a accent grave */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe0);
+      GWEN_Buffer_AppendByte(buf, 0xa0);
       break;
 
     case 0xe1: /* a accent aigu */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe1);
+      GWEN_Buffer_AppendByte(buf, 0xa1);
       break;
 
     case 0xe2: /* a accent circumflex */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe2);
+      GWEN_Buffer_AppendByte(buf, 0xa2);
       break;
 
     case 0xe7: /* c cedille */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe7);
+      GWEN_Buffer_AppendByte(buf, 0xa7);
       break;
 
     case 0xe8: /* e accent grave */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe8);
+      GWEN_Buffer_AppendByte(buf, 0xa8);
       break;
 
     case 0xe9: /* e accent aigu */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xe9);
+      GWEN_Buffer_AppendByte(buf, 0xa9);
       break;
 
     case 0xea: /* e accent circumflex */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xea);
+      GWEN_Buffer_AppendByte(buf, 0xaa);
       break;
 
     case 0xec: /* i accent grave (never heard of this) */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xec);
+      GWEN_Buffer_AppendByte(buf, 0xac);
       break;
 
     case 0xed: /* i accent aigu (never heard of this, either) */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xed);
+      GWEN_Buffer_AppendByte(buf, 0xad);
       break;
 
     case 0xee: /* i accent circumflex (never heard of this, either) */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xee);
+      GWEN_Buffer_AppendByte(buf, 0xae);
       break;
 
     case 0xf2: /* o accent grave */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xf2);
+      GWEN_Buffer_AppendByte(buf, 0xb2);
       break;
 
     case 0xf3: /* o accent aigu */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xf3);
+      GWEN_Buffer_AppendByte(buf, 0xb3);
       break;
 
     case 0xf4: /* o accent circumflex */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xf4);
+      GWEN_Buffer_AppendByte(buf, 0xb4);
       break;
 
     case 0xf9: /* u accent grave */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xf9);
+      GWEN_Buffer_AppendByte(buf, 0xb9);
       break;
 
     case 0xfa: /* u accent aigu */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xfa);
+      GWEN_Buffer_AppendByte(buf, 0xba);
       break;
 
     case 0xfb: /* u accent circumflex */
       GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xfb);
+      GWEN_Buffer_AppendByte(buf, 0xbb);
       break;
 
     default:

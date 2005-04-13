@@ -1,4 +1,4 @@
-SUBDIRS=de
+SUBDIRS=generic de at
 
 
 sources:

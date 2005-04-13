@@ -1,4 +1,13 @@
 
+2005/04/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added generic bankinfo convenience library (to be used by bankinfo plugins)
+- implemented lookup code in German bankinfo plugin: Now much information is 
+  available for German banks
+- added bankinfo module for Austria (few informations, though, only bank id
+  and bank name)
+
+
 2005/04/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - improved the SWIFT parser: Now if the tag :86: starts with a 999 which

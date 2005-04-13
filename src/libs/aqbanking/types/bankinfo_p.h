@@ -14,6 +14,7 @@ struct AB_BANKINFO {
   char *country;
   char *branchId;
   char *bankId;
+  char *bic;
   char *bankName;
   char *location;
   char *street;
@@ -26,6 +27,7 @@ struct AB_BANKINFO {
   char *website;
   AB_BANKINFO_SERVICE_LIST *services;
 };
+
 
 
 

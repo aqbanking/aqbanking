@@ -38,6 +38,8 @@ void AB_BankInfo_free(AB_BANKINFO *st) {
     free(st->branchId);
   if (st->bankId)
     free(st->bankId);
+  if (st->bic)
+    free(st->bic);
   if (st->bankName)
     free(st->bankName);
   if (st->location)
@@ -79,6 +81,8 @@ AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO *d) {
     st->branchId=strdup(d->branchId);
   if (d->bankId)
     st->bankId=strdup(d->bankId);
+  if (d->bic)
+    st->bic=strdup(d->bic);
   if (d->bankName)
     st->bankName=strdup(d->bankName);
   if (d->location)
@@ -116,6 +120,9 @@ int AB_BankInfo_toDb(const AB_BANKINFO *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->bankId)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankId", st->bankId))
+      return -1;
+  if (st->bic)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bic", st->bic))
       return -1;
   if (st->bankName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankName", st->bankName))
@@ -173,6 +180,7 @@ AB_BANKINFO *st;
   AB_BankInfo_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, 0));
   AB_BankInfo_SetBranchId(st, GWEN_DB_GetCharValue(db, "branchId", 0, 0));
   AB_BankInfo_SetBankId(st, GWEN_DB_GetCharValue(db, "bankId", 0, 0));
+  AB_BankInfo_SetBic(st, GWEN_DB_GetCharValue(db, "bic", 0, 0));
   AB_BankInfo_SetBankName(st, GWEN_DB_GetCharValue(db, "bankName", 0, 0));
   AB_BankInfo_SetLocation(st, GWEN_DB_GetCharValue(db, "location", 0, 0));
   AB_BankInfo_SetStreet(st, GWEN_DB_GetCharValue(db, "street", 0, 0));
@@ -261,6 +269,24 @@ void AB_BankInfo_SetBankId(AB_BANKINFO *st, const char *d) {
     st->bankId=strdup(d);
   else
     st->bankId=0;
+  st->_modified=1;
+}
+
+
+const char *AB_BankInfo_GetBic(const AB_BANKINFO *st) {
+  assert(st);
+  return st->bic;
+}
+
+
+void AB_BankInfo_SetBic(AB_BANKINFO *st, const char *d) {
+  assert(st);
+  if (st->bic)
+    free(st->bic);
+  if (d)
+    st->bic=strdup(d);
+  else
+    st->bic=0;
   st->_modified=1;
 }
 

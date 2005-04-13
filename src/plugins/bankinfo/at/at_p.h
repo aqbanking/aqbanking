@@ -10,37 +10,24 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AQBANKING_BANKINFO_DE_P_H
-#define AQBANKING_BANKINFO_DE_P_H
+#ifndef AQBANKING_BANKINFO_AT_P_H
+#define AQBANKING_BANKINFO_AT_P_H
 
 #include <aqbanking/bankinfoplugin_be.h>
 #include <aqbanking/banking.h>
 
-#ifdef HAVE_KTOBLZCHECK
-# include <ktoblzcheck.h>
-#endif
 
-
-
-typedef struct AB_BANKINFO_PLUGIN_DE AB_BANKINFO_PLUGIN_DE;
-struct AB_BANKINFO_PLUGIN_DE {
+typedef struct AB_BANKINFO_PLUGIN_AT AB_BANKINFO_PLUGIN_AT;
+struct AB_BANKINFO_PLUGIN_AT {
   AB_BANKING *banking;
-#ifdef HAVE_KTOBLZCHECK
-  AccountNumberCheck *checker;
-#endif
   GWEN_DB_NODE *dbData;
 };
 
 
-void AB_BankInfoPluginDE_FreeData(void *bp, void *p);
+void AB_BankInfoPluginAT_FreeData(void *bp, void *p);
 
-AB_BANKINFO_CHECKRESULT
-AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,
-                                 const char *branchId,
-                                 const char *bankId,
-                                 const char *accountId);
 
-#endif /* AQBANKING_BANKINFO_DE_P_H */
+#endif /* AQBANKING_BANKINFO_AT_P_H */
 
 
 

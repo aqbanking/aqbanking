@@ -800,6 +800,255 @@ int test8(int argc, char **argv) {
 
 
 
+int test9(int argc, char **argv) {
+  AB_BANKING *ab;
+  AB_BANKINFO_LIST2 *bl;
+  AB_BANKINFO_LIST2_ITERATOR *bit;
+  AB_BANKINFO *tbi;
+  int rv;
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  bl=AB_BankInfo_List2_new();
+  tbi=AB_BankInfo_new();
+  AB_BankInfo_SetLocation(tbi, "Wilhelmshaven");
+  rv=AB_Banking_GetBankInfoByTemplate(ab, "de", tbi, bl);
+  if (rv) {
+    fprintf(stderr, "Error looking for bank info: %d\n", rv);
+    return 2;
+  }
+
+  bit=AB_BankInfo_List2_First(bl);
+  if (bit) {
+    AB_BANKINFO *bi;
+    int count=0;
+
+    fprintf(stdout, "Found the following banks:\n");
+    bi=AB_BankInfo_List2Iterator_Data(bit);
+    assert(bi);
+    while(bi) {
+      count++;
+      fprintf(stdout, "%5d %s %s %s\n",
+              count,
+              AB_BankInfo_GetBankId(bi),
+              AB_BankInfo_GetBankName(bi),
+              AB_BankInfo_GetLocation(bi));
+      bi=AB_BankInfo_List2Iterator_Next(bit);
+    }
+    AB_BankInfo_List2Iterator_free(bit);
+  }
+  AB_BankInfo_List2_free(bl);
+
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+int test10(int argc, char **argv) {
+  AB_BANKING *ab;
+  AB_BANKINFO_LIST2 *bl;
+  AB_BANKINFO_LIST2_ITERATOR *bit;
+  AB_BANKINFO *tbi;
+  int rv;
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  bl=AB_BankInfo_List2_new();
+  tbi=AB_BankInfo_new();
+  AB_BankInfo_SetBankId(tbi, "28250110");
+  rv=AB_Banking_GetBankInfoByTemplate(ab, "de", tbi, bl);
+  if (rv) {
+    fprintf(stderr, "Error looking for bank info: %d\n", rv);
+    return 2;
+  }
+
+  bit=AB_BankInfo_List2_First(bl);
+  if (bit) {
+    AB_BANKINFO *bi;
+    int count=0;
+
+    fprintf(stdout, "Found the following banks:\n");
+    bi=AB_BankInfo_List2Iterator_Data(bit);
+    assert(bi);
+    while(bi) {
+      count++;
+      fprintf(stdout, "%5d %s %s %s\n",
+              count,
+              AB_BankInfo_GetBankId(bi),
+              AB_BankInfo_GetBankName(bi),
+              AB_BankInfo_GetLocation(bi));
+      bi=AB_BankInfo_List2Iterator_Next(bit);
+    }
+    AB_BankInfo_List2Iterator_free(bit);
+  }
+  AB_BankInfo_List2_free(bl);
+
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+
+int test11(int argc, char **argv) {
+  AB_BANKING *ab;
+  AB_BANKINFO_LIST2 *bl;
+  AB_BANKINFO_LIST2_ITERATOR *bit;
+  AB_BANKINFO *tbi;
+  int rv;
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  bl=AB_BankInfo_List2_new();
+  tbi=AB_BankInfo_new();
+  rv=AB_Banking_GetBankInfoByTemplate(ab, "de", tbi, bl);
+  if (rv) {
+    fprintf(stderr, "Error looking for bank info: %d\n", rv);
+    return 2;
+  }
+
+  bit=AB_BankInfo_List2_First(bl);
+  if (bit) {
+    AB_BANKINFO *bi;
+    int count=0;
+
+    fprintf(stdout, "Found the following banks:\n");
+    bi=AB_BankInfo_List2Iterator_Data(bit);
+    assert(bi);
+    while(bi) {
+      count++;
+      fprintf(stdout, "%5d %s %s %s\n",
+              count,
+              AB_BankInfo_GetBankId(bi),
+              AB_BankInfo_GetBankName(bi),
+              AB_BankInfo_GetLocation(bi));
+      bi=AB_BankInfo_List2Iterator_Next(bit);
+    }
+    AB_BankInfo_List2Iterator_free(bit);
+  }
+  AB_BankInfo_List2_free(bl);
+
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+
+int test12(int argc, char **argv) {
+  AB_BANKING *ab;
+  AB_BANKINFO_LIST2 *bl;
+  AB_BANKINFO_LIST2_ITERATOR *bit;
+  AB_BANKINFO *tbi;
+  int rv;
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  bl=AB_BankInfo_List2_new();
+  tbi=AB_BankInfo_new();
+  rv=AB_Banking_GetBankInfoByTemplate(ab, "at", tbi, bl);
+  if (rv) {
+    fprintf(stderr, "Error looking for bank info: %d\n", rv);
+    return 2;
+  }
+
+  bit=AB_BankInfo_List2_First(bl);
+  if (bit) {
+    AB_BANKINFO *bi;
+    int count=0;
+
+    fprintf(stdout, "Found the following banks:\n");
+    bi=AB_BankInfo_List2Iterator_Data(bit);
+    assert(bi);
+    while(bi) {
+      count++;
+      fprintf(stdout, "%5d %s %s %s\n",
+              count,
+              AB_BankInfo_GetBankId(bi),
+              AB_BankInfo_GetBankName(bi),
+              AB_BankInfo_GetLocation(bi));
+      bi=AB_BankInfo_List2Iterator_Next(bit);
+    }
+    AB_BankInfo_List2Iterator_free(bit);
+  }
+  AB_BankInfo_List2_free(bl);
+
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -829,6 +1078,14 @@ int main(int argc, char **argv) {
     rv=test7(argc, argv);
   else if (strcasecmp(cmd, "test8")==0)
     rv=test8(argc, argv);
+  else if (strcasecmp(cmd, "test9")==0)
+    rv=test9(argc, argv);
+  else if (strcasecmp(cmd, "test10")==0)
+    rv=test10(argc, argv);
+  else if (strcasecmp(cmd, "test11")==0)
+    rv=test11(argc, argv);
+  else if (strcasecmp(cmd, "test12")==0)
+    rv=test12(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;
