@@ -1,4 +1,10 @@
 
+2005/04/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in JobGetTransactions() (was storing the fromTime instead of the
+  toTime)
+
+
 2005/04/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added generic bankinfo convenience library (to be used by bankinfo plugins)

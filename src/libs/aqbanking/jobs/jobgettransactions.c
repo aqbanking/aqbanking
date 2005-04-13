@@ -220,7 +220,7 @@ int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
     AB_Job_DateOnlyToDb(aj->fromTime, db, "args/fromdate");
 
   if (aj->toTime)
-    AB_Job_DateOnlyToDb(aj->fromTime, db, "args/todate");
+    AB_Job_DateOnlyToDb(aj->toTime, db, "args/todate");
 
   dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "result");
   assert(dbT);
