@@ -32,7 +32,7 @@ de.banks.bz2:
 de.banks: de.banks.bz2
 	bunzip2 -f -k de.banks.bz2
 
-install-de:
+install-de: de.banks
 	./mkdeinfo install de.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/de
 
 at.banks.bz2:
@@ -42,7 +42,7 @@ at.banks.bz2:
 at.banks: at.banks.bz2
 	bunzip2 -f -k at.banks.bz2
 
-install-at:
+install-at: at.banks
 	./mkdeinfo install at.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/at
 
 install-bankdata: install-de install-at
