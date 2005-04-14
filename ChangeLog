@@ -3,6 +3,12 @@
 -------------------------------------------------
 - fixed a bug in JobGetTransactions() (was storing the fromTime instead of the
   toTime)
+- sped up work with bank info files. Also, bankinfo files are now stored in
+  a single file which still is a simple GWEN_DB file (this might change
+  later, however, for now this is faster than before and doesn't need too
+  many files)
+- improved Makefile regarding building of bankinfo files: Now they are only
+  created once (unless changed)
 
 
 2005/04/13: Martin Preuss<martin@libchipcard.de>

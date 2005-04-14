@@ -18,9 +18,14 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/waitcallback.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 
 
@@ -83,40 +88,76 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
                                                     const char *num){
   AB_BANKINFO_PLUGIN_GENERIC *bde;
   GWEN_BUFFER *pbuf;
-  GWEN_DB_NODE *dbBi;
   AB_BANKINFO *bi;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+  GWEN_DB_NODE *dbT;
+  GWEN_TYPE_UINT32 pos;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
                            bip);
   assert(bde);
 
-  assert(strlen(num)==4);
+  /* get position */
+  assert(strlen(num)==8);
+  if (1!=sscanf(num, "%08x", &pos)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid index");
+    return 0;
+  }
 
+  /* get path */
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/banks/");
-  GWEN_Buffer_AppendBytes(pbuf, num, 2);
-  GWEN_Buffer_AppendByte(pbuf, '/');
-  GWEN_Buffer_AppendBytes(pbuf, num+2, 2);
-  GWEN_Buffer_AppendString(pbuf, ".bank");
+  GWEN_Buffer_AppendString(pbuf, "/banks.data");
 
-  dbBi=GWEN_DB_Group_new("bank");
-  if (GWEN_DB_ReadFile(dbBi, GWEN_Buffer_GetStart(pbuf),
-                       GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading file \"%s\"",
-             GWEN_Buffer_GetStart(pbuf));
-    GWEN_DB_Group_free(dbBi);
+  /* open file */
+  fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
+  if (fd==-1) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s",
+              GWEN_Buffer_GetStart(pbuf), strerror(errno));
     GWEN_Buffer_free(pbuf);
     return 0;
   }
-  bi=AB_BankInfo_fromDb(dbBi);
-  assert(bi);
-  GWEN_DB_Group_free(dbBi);
-  GWEN_Buffer_free(pbuf);
-  return bi;
+  /* seek position */
+  DBG_ERROR(0, "Seeking to %08x (%d)", pos, pos);
+  if ((off_t)-1==lseek(fd, pos, SEEK_SET)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "lseek(%s, "GWEN_TYPE_TMPL_UINT32"): %s",
+              GWEN_Buffer_GetStart(pbuf),
+              pos,
+              strerror(errno));
+    close(fd);
+    GWEN_Buffer_free(pbuf);
+    return 0;
+  }
 
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 512);
+
+  /* read data */
+  dbT=GWEN_DB_Group_new("bank");
+
+  if (GWEN_DB_ReadFromStream(dbT, bio,
+                             GWEN_DB_FLAGS_DEFAULT |
+                             GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
+                             GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_ERROR(0, "Could not load file \"%s\"",
+              GWEN_Buffer_GetStart(pbuf));
+    GWEN_DB_Group_free(dbT);
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(pbuf);
+    return 0;
+  }
+
+  bi=AB_BankInfo_fromDb(dbT);
+  assert(bi);
+  GWEN_DB_Group_free(dbT);
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  GWEN_Buffer_free(pbuf);
+
+  return bi;
 }
 
 
@@ -505,36 +546,81 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
   AB_BANKINFO_PLUGIN_GENERIC *bde;
   GWEN_TYPE_UINT32 count=0;
   GWEN_TYPE_UINT32 i=0;
+  GWEN_BUFFEREDIO *bio;
+  GWEN_BUFFER *pbuf;
+  int fd;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
                            bip);
   assert(bde);
 
-  for (i=1; ; i++) {
-    char numbuf[32];
+  /* get path */
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
+  GWEN_Buffer_AppendString(pbuf, "/banks.data");
+  /* open file */
+  fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
+  if (fd==-1) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "open(%s): %s",
+              GWEN_Buffer_GetStart(pbuf),
+              strerror(errno));
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_NOT_FOUND;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_DB_NODE *dbT;
     AB_BANKINFO *bi;
+    int pos;
 
-    snprintf(numbuf, sizeof(numbuf), "%04x", i);
-    bi=AB_BankInfoPluginGENERIC__ReadBankInfo(bip, numbuf);
-    if (bi) {
-      if (AB_BankInfoPluginGENERIC__CmpTemplate(bi, tbi, flags)==1) {
-        count++;
-        AB_BankInfo_List2_PushBack(bl, bi);
-      }
-      else {
-        AB_BankInfo_free(bi);
+    if (i & ~63) {
+      if (GWEN_WaitCallbackProgress(AB_BANKING_PROGRESS_NONE)==
+          GWEN_WaitCallbackResult_Abort) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Aborted by user");
+        GWEN_BufferedIO_Abandon(bio);
+        GWEN_BufferedIO_free(bio);
+        GWEN_Buffer_free(pbuf);
+        return AB_ERROR_USER_ABORT;
       }
     }
-    else
-      break;
 
-    if (i>100000000) {
+    dbT=GWEN_DB_Group_new("bank");
+    pos=GWEN_BufferedIO_GetBytesRead(bio);
+    if (GWEN_DB_ReadFromStream(dbT, bio,
+                               GWEN_DB_FLAGS_DEFAULT |
+                               GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
+                               GWEN_PATH_FLAGS_CREATE_GROUP)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Emergency brake: Loop error?");
-      abort();
+                "Could not read from file \"%s\"",
+                GWEN_Buffer_GetStart(pbuf));
+      GWEN_DB_Group_free(dbT);
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      GWEN_Buffer_free(pbuf);
+      return AB_ERROR_GENERIC;
     }
-  } /* for */
+
+    bi=AB_BankInfo_fromDb(dbT);
+    assert(bi);
+    if (AB_BankInfoPluginGENERIC__CmpTemplate(bi, tbi, flags)==1) {
+      count++;
+      AB_BankInfo_List2_PushBack(bl, bi);
+    }
+    else {
+      AB_BankInfo_free(bi);
+    }
+    GWEN_DB_Group_free(dbT);
+    i++;
+  } /* while */
+
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  GWEN_Buffer_free(pbuf);
 
   if (count==0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "No matching bank found");

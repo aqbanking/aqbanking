@@ -20,6 +20,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/bio_file.h>
+#include <gwenhywfar/idlist.h>
 #include "../../../libs/aqbanking/types/bankinfo_l.h"
 #include <time.h>
 #include <stdio.h>
@@ -29,11 +32,11 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <fcntl.h>
 
 
 static AB_BANKINFO_LIST *bis=0;
-
+static GWEN_DB_NODE *dbIdx=0;
 
 int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbParams;
@@ -496,8 +499,18 @@ int makeIndexBlz(const char *fname) {
 
   bi=AB_BankInfo_List_First(bis);
   while(bi) {
+    GWEN_TYPE_UINT32 pos;
+    char numbuf[32];
+
     count++;
-    fprintf(f, "%s\t%04x\n", AB_BankInfo_GetBankId(bi), count);
+    snprintf(numbuf, sizeof(numbuf), "%08x", count);
+    pos=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(dbIdx, numbuf, 0, 0);
+    if (pos==0 && count!=1) {
+      DBG_ERROR(0, "No index given for \"%s\" (%d)", numbuf, count);
+      fclose(f);
+      return -1;
+    }
+    fprintf(f, "%s\t%08x\n", AB_BankInfo_GetBankId(bi), pos);
     bi=AB_BankInfo_List_Next(bi);
   }
 
@@ -529,7 +542,17 @@ int makeIndexBic(const char *fname) {
     count++;
     s=AB_BankInfo_GetBic(bi);
     if (s && *s) {
-      fprintf(f, "%s\t%04x\n", s, count);
+      GWEN_TYPE_UINT32 pos;
+      char numbuf[32];
+
+      snprintf(numbuf, sizeof(numbuf), "%08x", count);
+      pos=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(dbIdx, numbuf, 0, 0);
+      if (pos==0 && count!=1) {
+        DBG_ERROR(0, "No index given for \"%s\" (%d)", numbuf, count);
+        fclose(f);
+        return -1;
+      }
+      fprintf(f, "%s\t%08x\n", s, pos);
     }
     bi=AB_BankInfo_List_Next(bi);
   }
@@ -564,7 +587,17 @@ int makeIndexNameAndLoc(const char *fname) {
     name=AB_BankInfo_GetBankName(bi);
     loc=AB_BankInfo_GetLocation(bi);
     if (name && *name && loc && *loc) {
-      fprintf(f, "%s\t%s\t%04x\n", name, loc, count);
+      GWEN_TYPE_UINT32 pos;
+      char numbuf[32];
+  
+      snprintf(numbuf, sizeof(numbuf), "%08x", count);
+      pos=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(dbIdx, numbuf, 0, 0);
+      if (pos==0 && count!=1) {
+        DBG_ERROR(0, "No index given for \"%s\" (%d)", numbuf, count);
+        fclose(f);
+        return -1;
+      }
+      fprintf(f, "%s\t%s\t%08x\n", name, loc, pos);
     }
     bi=AB_BankInfo_List_Next(bi);
   }
@@ -583,17 +616,52 @@ int saveBankInfos(const char *path) {
   AB_BANKINFO *bi;
   GWEN_TYPE_UINT32 count=0;
   GWEN_BUFFER *xbuf;
-  GWEN_DB_NODE *dbData;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+  GWEN_ERRORCODE err;
 
   fprintf(stdout, "Saving database...\n");
+  fd=open(path, O_RDWR | O_CREAT | O_TRUNC,
+          S_IRUSR | S_IWUSR
+#ifdef S_IRGRP
+          |S_IRGRP
+#endif
+#ifdef S_IROTH
+          |S_IROTH
+#endif
+          );
+  if (fd==-1) {
+    DBG_ERROR(0, "open(%s): %s", path, strerror(errno));
+    return -1;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+
+  err=GWEN_BufferedIO_WriteLine(bio,
+                                "# This is an automatically created file");
+  if (GWEN_Error_IsOk(err))
+    err=GWEN_BufferedIO_WriteLine(bio,
+                                  "# All banks are separated by newlines");
+  if (GWEN_Error_IsOk(err))
+    err=GWEN_BufferedIO_WriteLine(bio,
+                                  "# Please do not modify this file, "
+                                  "the index files rely on exact positions.");
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    DBG_ERROR(0, "Error writing bank file \"%s\"", path);
+    return -1;
+  }
+
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  dbData=GWEN_DB_Group_new("banks");
   bi=AB_BankInfo_List_First(bis);
   while(bi) {
     const char *s;
     GWEN_DB_NODE *dbT;
+    GWEN_TYPE_UINT32 pos;
+    char numbuf[32];
 
     count++;
+
     /* some conversions to UTF8 */
     s=AB_BankInfo_GetBankName(bi);
     assert(s);
@@ -610,28 +678,47 @@ int saveBankInfos(const char *path) {
     }
 
     /* create DB */
-    dbT=GWEN_DB_GetGroup(dbData,
-                         GWEN_PATH_FLAGS_CREATE_GROUP,
-                         "bank");
+    dbT=GWEN_DB_Group_new("bank");
     AB_BankInfo_toDb(bi, dbT);
+
+    pos=GWEN_BufferedIO_GetBytesWritten(bio);
+    snprintf(numbuf, sizeof(numbuf), "%08x", count);
+    GWEN_DB_SetIntValue(dbIdx, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        numbuf, pos);
+    if (GWEN_DB_WriteToStream(dbT, bio,
+                              GWEN_DB_FLAGS_QUOTE_VALUES | \
+                              GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                              GWEN_DB_FLAGS_INDEND | \
+                              GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+                              GWEN_DB_FLAGS_OMIT_TYPES)) {
+      DBG_ERROR(0, "Error writing bank file \"%s\"", path);
+      GWEN_DB_Group_free(dbT);
+      return -1;
+    }
+    err=GWEN_BufferedIO_WriteLine(bio, "");
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      DBG_ERROR(0, "Error writing bank file \"%s\"", path);
+      GWEN_DB_Group_free(dbT);
+      return -1;
+    }
+    GWEN_DB_Group_free(dbT);
+
+    if (count & ~31) {
+      fprintf(stdout, GWEN_TYPE_TMPL_UINT32"\r", count);
+    }
 
     bi=AB_BankInfo_List_Next(bi);
   } /* while bi */
+  fprintf(stdout, "\n");
 
-  /* write file */
-  if (GWEN_DB_WriteFile(dbData,
-                        path,
-                        GWEN_DB_FLAGS_QUOTE_VALUES | \
-                        GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
-                        GWEN_DB_FLAGS_INDEND | \
-                        GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
-                        GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-                        GWEN_DB_FLAGS_OMIT_TYPES)) {
-    DBG_ERROR(0, "Error writing bank file \"%s\"", path);
-    GWEN_DB_Group_free(dbData);
+  err=GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    DBG_ERROR(0, "Error closing bank file \"%s\"", path);
     return -1;
   }
-  GWEN_DB_Group_free(dbData);
   fprintf(stdout, "Written %d banks.\n", count);
   return 0;
 }
@@ -724,33 +811,48 @@ int makeBankInfos(const char *path) {
 
 
 int loadBanks(const char *fname) {
-  GWEN_DB_NODE *dbData;
-  GWEN_DB_NODE *dbT;
   GWEN_TYPE_UINT32 count=0;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
 
-  fprintf(stdout, "Loading bank file...\n");
-  dbData=GWEN_DB_Group_new("banks");
-  if (GWEN_DB_ReadFile(dbData, fname,
-                       GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP)) {
-    DBG_ERROR(0, "Could not load file \"%s\"", fname);
+  fprintf(stdout, "Loading database...\n");
+  fd=open(fname, O_RDONLY | O_EXCL);
+  if (fd==-1) {
+    DBG_ERROR(0, "open(%s): %s", fname, strerror(errno));
     return -1;
   }
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
 
-  fprintf(stdout, "Building database...\n");
-  dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_DB_NODE *dbT;
     AB_BANKINFO *bi;
+    int pos;
+    char numbuf[32];
+
+    dbT=GWEN_DB_Group_new("bank");
+    pos=GWEN_BufferedIO_GetBytesRead(bio);
+    if (GWEN_DB_ReadFromStream(dbT, bio,
+                               GWEN_DB_FLAGS_DEFAULT |
+                               GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
+                               GWEN_PATH_FLAGS_CREATE_GROUP)) {
+      DBG_ERROR(0, "Could not load file \"%s\"", fname);
+      GWEN_DB_Group_free(dbT);
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      return -1;
+    }
 
     bi=AB_BankInfo_fromDb(dbT);
     assert(bi);
     AB_BankInfo_List_Add(bi, bis);
+    GWEN_DB_Group_free(dbT);
     count++;
-    dbT=GWEN_DB_FindNextGroup(dbT, "bank");
-  }
+    snprintf(numbuf, sizeof(numbuf), "%08x", count);
+    GWEN_DB_SetIntValue(dbIdx, GWEN_DB_FLAGS_OVERWRITE_VARS, numbuf, pos);
+  } /* while */
+  fprintf(stdout, "Read %d banks.\n", count);
 
-  GWEN_DB_Group_free(dbData);
-  fprintf(stdout, "Read %d banks\n", count);
   return 0;
 }
 
@@ -779,6 +881,7 @@ int main(int argc, char **argv) {
     hbciFile=argv[3];
     dstFile=argv[4];
     bis=AB_BankInfo_List_new();
+    dbIdx=GWEN_DB_Group_new("indexList");
     if (readDBBFile(dbbFile)) {
       DBG_ERROR(0, "Error.");
       return 2;
@@ -807,6 +910,7 @@ int main(int argc, char **argv) {
     blzFile=argv[2];
     dstFile=argv[3];
     bis=AB_BankInfo_List_new();
+    dbIdx=GWEN_DB_Group_new("indexList");
     if (readATBLZFile(blzFile)) {
       DBG_ERROR(0, "Error.");
       return 2;
@@ -814,6 +918,12 @@ int main(int argc, char **argv) {
 
     if (saveBankInfos(dstFile)) {
       return 3;
+    }
+    if (GWEN_DB_WriteFile(dbIdx,
+                          "index.conf",
+                          GWEN_DB_FLAGS_DEFAULT)) {
+      DBG_ERROR(0, "Error writing index file");
+      return -1;
     }
   }
   else if (strcasecmp(argv[1], "install")==0) {
@@ -832,21 +942,25 @@ int main(int argc, char **argv) {
     srcFile=argv[2];
     path=argv[3];
     bis=AB_BankInfo_List_new();
+    dbIdx=GWEN_DB_Group_new("indexList");
     if (loadBanks(srcFile)) {
       fprintf(stderr, "Error loading data file.\n");
       return 2;
     }
 
     fprintf(stdout, "Installing database to %s...\n", path);
-    if (makeBankInfos(path)) {
-      fprintf(stderr, "Error saving data files.\n");
-      return 3;
-    }
-
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(dbuf, path);
     GWEN_Buffer_AppendByte(dbuf, '/');
     pos=GWEN_Buffer_GetPos(dbuf);
+
+    fprintf(stdout, "Installing data file...\n");
+    GWEN_Buffer_AppendString(dbuf, "banks.data");
+    if (saveBankInfos(GWEN_Buffer_GetStart(dbuf))) {
+      fprintf(stderr, "Error saving data files.\n");
+      return 3;
+    }
+    GWEN_Buffer_Crop(dbuf, 0, pos);
 
     fprintf(stdout, "Installing BLZ index...\n");
     GWEN_Buffer_AppendString(dbuf, "blz.idx");
@@ -874,7 +988,31 @@ int main(int argc, char **argv) {
       return 3;
     }
     GWEN_Buffer_free(dbuf);
+  }
+  else if (strcasecmp(argv[1], "debug")==0) {
+    const char *bankFile;
 
+    if (argc<3) {
+      fprintf(stderr,
+              "Usage:\n"
+              "%s debug BLZ-file\n",
+              argv[0]);
+      return 1;
+    }
+    bankFile=argv[2];
+    bis=AB_BankInfo_List_new();
+    dbIdx=GWEN_DB_Group_new("indexList");
+    if (loadBanks(bankFile)) {
+      DBG_ERROR(0, "Error.");
+      return 2;
+    }
+
+    if (GWEN_DB_WriteFile(dbIdx,
+                          "index.conf.out",
+                          GWEN_DB_FLAGS_DEFAULT)) {
+      DBG_ERROR(0, "Error writing index file");
+      return -1;
+    }
   }
 
   return 0;

@@ -25,6 +25,9 @@ libbankinfo_la_SOURCES=\
 libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
 libbankinfo_la_LDFLAGS = $(STRIPALL)
 
+at_files=data/at/blz.idx data/at/bic.idx data/at/namloc.idx data/at/banks.data
+de_files=data/de/blz.idx data/de/bic.idx data/de/namloc.idx data/de/banks.data
+
 de.banks.bz2:
 	./mkdeinfo build data/blz.csv data/fints_institute.csv de.banks && \
 	bzip2 -9 de.banks
@@ -32,8 +35,17 @@ de.banks.bz2:
 de.banks: de.banks.bz2
 	bunzip2 -f -k de.banks.bz2
 
-install-de: de.banks
-	./mkdeinfo install de.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/de
+$(de_files): de.banks
+	test -d data/de || \
+	  mkdir -p data/de
+	./mkdeinfo install de.banks data/de
+
+de-data: $(de_files)
+
+install-de: de-data
+	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de || \
+	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de
+	cp $(de_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de/
 
 at.banks.bz2:
 	./mkdeinfo build-at data/blz-at.csv at.banks && \
@@ -42,10 +54,21 @@ at.banks.bz2:
 at.banks: at.banks.bz2
 	bunzip2 -f -k at.banks.bz2
 
-install-at: at.banks
-	./mkdeinfo install at.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/at
+$(at_files): at.banks
+	test -d data/at || \
+	  mkdir -p data/at
+	./mkdeinfo install at.banks data/at
 
-install-bankdata: install-de install-at
+at-data: $(at_files)
+
+install-at: at-data
+	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at || \
+	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at
+	cp $(at_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at/
+
+bankdata: at-data de-data
+
+install-bankdata: install-at install-de
 
 install-data-local: install-bankdata
 

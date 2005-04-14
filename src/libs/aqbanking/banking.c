@@ -725,7 +725,7 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
   if (ab->messageBoxFn) {
     return ab->messageBoxFn(ab, flags, title, text, b1, b2, b3);
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No messageBox function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No messageBox function set");
   return 0;
 }
 
@@ -756,7 +756,7 @@ GWEN_TYPE_UINT32 AB_Banking_ShowBox(AB_BANKING *ab,
   if (ab->showBoxFn) {
     return ab->showBoxFn(ab, flags, title, text);
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No showBox function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No showBox function set");
   return 0;
 }
 
@@ -768,7 +768,7 @@ void AB_Banking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
     ab->hideBoxFn(ab, id);
     return;
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No hideBox function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No hideBox function set");
 }
 
 
@@ -803,7 +803,7 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
     return pid;
   }
   else {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "No progressStart function set");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "No progressStart function set");
     return 0;
   }
 }
@@ -817,7 +817,7 @@ int AB_Banking_ProgressAdvance(AB_BANKING *ab,
   if (ab->progressAdvanceFn) {
     return ab->progressAdvanceFn(ab, id, progress);
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressAdvance function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No progressAdvance function set");
   return 0;
 }
 
@@ -830,7 +830,7 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
   assert(ab);
   if (ab->progressLogFn)
     return ab->progressLogFn(ab, id, level, text);
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No progressLog function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No progressLog function set");
   return 0;
 }
 
@@ -863,7 +863,7 @@ int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
     }
   }
   else {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "No progressEnd function set");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No progressEnd function set");
     return 0;
   }
 }
@@ -879,7 +879,7 @@ int AB_Banking_Print(AB_BANKING *ab,
   if (ab->printFn) {
     return ab->printFn(ab, docTitle, docType, descr, text);
   }
-  DBG_WARN(AQBANKING_LOGDOMAIN, "No print function set");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No print function set");
   return AB_ERROR_NOT_SUPPORTED;
 }
 

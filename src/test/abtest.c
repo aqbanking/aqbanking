@@ -932,6 +932,7 @@ int test11(int argc, char **argv) {
   AB_BANKINFO *tbi;
   int rv;
 
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelNotice);
   fprintf(stderr, "Creating AB_Banking...\n");
   ab=AB_Banking_new("abtest", 0);
 
