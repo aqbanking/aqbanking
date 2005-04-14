@@ -1,9 +1,9 @@
 INCLUDES = $(all_includes)
 EXTRA_DIST=dbb.conf hbci.conf atblz.conf README at.banks de.banks
 
-bankinfoplugindir=@aqbanking_plugindir@/bankinfo
+bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 
-DEFS=@DEFS@ -DPLUGIN_DATADIR=\"@aqbanking_pkgdatadir@/bankinfo\"
+DEFS += -DPLUGIN_DATADIR=\"$(aqbanking_pkgdatadir)/bankinfo\"
 
 noinst_LTLIBRARIES=libbankinfo.la
 #bankinfoplugin_DATA=de.xml
@@ -22,8 +22,8 @@ noinst_HEADERS=\
 libbankinfo_la_SOURCES=\
  generic.c
 
-libbankinfo_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
-libbankinfo_la_LDFLAGS=@STRIPALL@
+libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
+libbankinfo_la_LDFLAGS = $(STRIPALL)
 
 de.banks.bz2:
 	./mkdeinfo build data/blz.csv data/fints_institute.csv de.banks && \
@@ -33,7 +33,7 @@ de.banks: de.banks.bz2
 	bunzip2 -f -k de.banks.bz2
 
 install-de:
-	./mkdeinfo install de.banks $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de
+	./mkdeinfo install de.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/de
 
 at.banks.bz2:
 	./mkdeinfo build-at data/blz-at.csv at.banks && \
@@ -43,7 +43,7 @@ at.banks: at.banks.bz2
 	bunzip2 -f -k at.banks.bz2
 
 install-at:
-	./mkdeinfo install at.banks $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at
+	./mkdeinfo install at.banks $(DESTDIR)$(aqbanking_pkgdatadir)/bankinfo/at
 
 install-bankdata: install-de install-at
 
@@ -53,7 +53,7 @@ dist-local: at.banks de.banks
 
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c
-mkdeinfo_LDADD=@gwenhywfar_libs@ -L../../../libs/aqbanking -laqbanking
+mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
 
 sources:
 	for f in $(de_la_SOURCES); do \
