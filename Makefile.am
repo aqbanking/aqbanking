@@ -59,6 +59,7 @@ wintmpdir = win32-tmp
 setup: aqbanking.iss
 	mkdir -p $(wintmpdir)
 	make prefix="`pwd`/$(wintmpdir)" \
+	     aqbanking_pkgdatadir="`pwd`/$(wintmpdir)/share/$(PACKAGE)" \
 	     gwenhywfar_plugins="`pwd`/$(wintmpdir)/gwen" \
 	     WIN_PATH_WINDOWS_MINGW="`pwd`/$(wintmpdir)/windows" \
 	     install \
