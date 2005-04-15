@@ -2,8 +2,9 @@ INCLUDES = $(all_includes)
 EXTRA_DIST=dbb.conf hbci.conf atblz.conf fedachdir.conf README at.tar.bz2 de.tar.bz2 us.tar.bz2
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
+bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
 
-DEFS += -DPLUGIN_DATADIR=\"$(aqbanking_pkgdatadir)/bankinfo\"
+DEFS += -DPLUGIN_DATADIR=\"$(bankinfodatadir)\"
 
 noinst_LTLIBRARIES=libbankinfo.la
 
@@ -31,14 +32,13 @@ at.tar.bz2:
 
 $(at_files): at.tar.bz2
 	test -d at || mkdir -p at
-	bunzip2 -k -f at.tar.bz2 && tar xf at.tar && rm -f at.tar
+	bunzip2 -k -f at.tar.bz2 && tar xmf at.tar && rm -f at.tar
 
 at-data: $(at_files)
 
-install-at: at-data
-	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at || \
-	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at
-	cp $(at_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at/
+install-at: $(at_files)
+	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/at
+	$(INSTALL_DATA) $(at_files) $(DESTDIR)$(bankinfodatadir)/at
 
 
 de.tar.bz2:
@@ -50,14 +50,13 @@ de.tar.bz2:
 
 $(de_files): de.tar.bz2
 	test -d de || mkdir -p de
-	bunzip2 -k -f de.tar.bz2 && tar xf de.tar && rm -f de.tar
+	bunzip2 -k -f de.tar.bz2 && tar xmf de.tar && rm -f de.tar
 
 de-data: $(de_files)
 
-install-de: de-data
-	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de || \
-	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de
-	cp $(de_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/de/
+install-de: $(de_files)
+	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/de
+	$(INSTALL_DATA) $(de_files) $(DESTDIR)$(bankinfodatadir)/de
 
 
 us.tar.bz2:
@@ -69,14 +68,13 @@ us.tar.bz2:
 
 $(us_files): us.tar.bz2
 	test -d us || mkdir -p us
-	bunzip2 -k -f us.tar.bz2 && tar xf us.tar && rm -f us.tar
+	bunzip2 -k -f us.tar.bz2 && tar xmf us.tar && rm -f us.tar
 
 us-data: $(us_files)
 
-install-us: us-data
-	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/us || \
-	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/us
-	cp $(us_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/us/
+install-us: $(us_files)
+	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/us
+	$(INSTALL_DATA) $(us_files) $(DESTDIR)$(bankinfodatadir)/us
 
 bankdata: at-data de-data us-data
 
