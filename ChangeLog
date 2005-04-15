@@ -1,4 +1,14 @@
 
+
+2005/04/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added bankinfo files for USA (about 24000 banks)
+- all necessary bankinfo files for the generic bank info plugin are now
+  provided by the AqBanking tarball (only need to be rebuilt by myself,
+  and since rebuilding those files takes a long time it is best to do it
+  only once)
+
+
 2005/04/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in JobGetTransactions() (was storing the fromTime instead of the
@@ -9,6 +19,7 @@
   many files)
 - improved Makefile regarding building of bankinfo files: Now they are only
   created once (unless changed)
+- added bankinfo plugin for USA (this also lists some banks with OFX servers)
 
 
 2005/04/13: Martin Preuss<martin@libchipcard.de>

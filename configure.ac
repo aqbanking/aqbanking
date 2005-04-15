@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=8
-AQBANKING_VERSION_BUILD=3
+AQBANKING_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -155,14 +155,29 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 ###-------------------------------------------------------------------------
 # LibOFX
 
-HAVE_OFX="yes"
-AC_CHECK_LIB(ofx, libofx_proc_buffer, [], [HAVE_OFX="no"])
-AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
-if test "$HAVE_OFX" != "yes"; then
-  AC_MSG_WARN([
-*** LibOFX >=0.7 not found, the OFX plugin will not be compiled.
-*** Please get LibOFX from http://libofx.sf.net/.
-*** Make sure that the libofx-devel packages are also installed.])
+AC_MSG_CHECKING(whether OFX should be used)
+AC_ARG_ENABLE(libofx,
+  [  --enable-libofx         use OFX (default=auto)],
+  [ case "${enableval}" in
+    yes) enable_libofx="yes";;
+    no)  enable_libofx="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
+    esac
+  ],
+  enable_libofx="yes")
+
+if test "$enable_libofx" = "yes"; then
+  HAVE_OFX="yes"
+  AC_CHECK_LIB(ofx, libofx_proc_buffer, [], [HAVE_OFX="no"])
+  AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
+  if test "$HAVE_OFX" != "yes"; then
+    AC_MSG_WARN([
+  *** LibOFX >=0.7 not found, the OFX plugin will not be compiled.
+  *** Please get LibOFX from http://libofx.sf.net/.
+  *** Make sure that the libofx-devel packages are also installed.])
+  fi
+else
+  HAVE_OFX="no"
 fi
 
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
@@ -442,6 +457,8 @@ AC_CONFIG_FILES([
   src/plugins/bankinfo/at/at.xml
   src/plugins/bankinfo/de/Makefile
   src/plugins/bankinfo/de/de.xml
+  src/plugins/bankinfo/us/Makefile
+  src/plugins/bankinfo/us/us.xml
   src/plugins/bankinfo/generic/Makefile
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dbio/Makefile

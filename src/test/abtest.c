@@ -994,6 +994,14 @@ int test12(int argc, char **argv) {
   AB_BANKINFO_LIST2_ITERATOR *bit;
   AB_BANKINFO *tbi;
   int rv;
+  const char *country;
+
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelError);
+  if (argc<3) {
+    fprintf(stderr, "Country code needed.\n");
+    return 1;
+  }
+  country=argv[2];
 
   fprintf(stderr, "Creating AB_Banking...\n");
   ab=AB_Banking_new("abtest", 0);
@@ -1007,7 +1015,7 @@ int test12(int argc, char **argv) {
 
   bl=AB_BankInfo_List2_new();
   tbi=AB_BankInfo_new();
-  rv=AB_Banking_GetBankInfoByTemplate(ab, "at", tbi, bl);
+  rv=AB_Banking_GetBankInfoByTemplate(ab, country, tbi, bl);
   if (rv) {
     fprintf(stderr, "Error looking for bank info: %d\n", rv);
     return 2;
