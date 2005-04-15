@@ -1,4 +1,8 @@
+2005-04-15  Christian Stimming <stimming@tuhh.de>
 
+	* src/libs/aqbanking/banking.c: For win32, rename(2) fails if the
+	target exists. Therefore explicitly unlink(2) the target
+	beforehand.
 
 2005/04/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

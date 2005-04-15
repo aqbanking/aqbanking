@@ -442,6 +442,17 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+#ifdef OS_WIN32
+  if (unlink(GWEN_Buffer_GetStart(rpbuf))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not delete old file \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf),
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+#endif
   if (rename(GWEN_Buffer_GetStart(pbuf),
              GWEN_Buffer_GetStart(rpbuf))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -589,6 +600,17 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+#ifdef OS_WIN32
+  if (unlink(GWEN_Buffer_GetStart(rpbuf))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not delete old file \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf),
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+#endif
   if (rename(GWEN_Buffer_GetStart(pbuf),
              GWEN_Buffer_GetStart(rpbuf))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -1364,10 +1386,21 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     GWEN_DB_Group_free(db);
     return AB_ERROR_BAD_CONFIG_FILE;
   }
+#ifdef OS_WIN32
+  if (unlink(ab->configFile)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not delete old file \"%s\": %s",
+	      ab->configFile,
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_DB_Group_free(db);
+    return AB_ERROR_GENERIC;
+  }
+#endif
   if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not rename file to \"%s\": %s",
-              GWEN_Buffer_GetStart(rpbuf),
+              ab->configFile,
               strerror(errno));
     GWEN_Buffer_free(rpbuf);
     GWEN_DB_Group_free(db);
@@ -1525,6 +1558,17 @@ int AB_Banking_Save(AB_BANKING *ab) {
     GWEN_DB_Group_free(db);
     return AB_ERROR_GENERIC;
   }
+#ifdef OS_WIN32
+  if (unlink(ab->configFile)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not delete old file \"%s\": %s",
+              ab->configFile,
+              strerror(errno));
+    GWEN_Buffer_free(rpbuf);
+    GWEN_DB_Group_free(db);
+    return AB_ERROR_GENERIC;
+  }
+#endif
   if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not rename file to \"%s\": %s",
