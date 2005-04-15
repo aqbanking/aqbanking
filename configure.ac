@@ -186,20 +186,29 @@ AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 ###-------------------------------------------------------------------------
 # Python
 
-# By default, python support is switched off
-AZ_PYTHON_DEFAULT( )
-# Check for python executable
-AZ_PYTHON_WITH( )
-# If python is enabled
-if test -n "$PYTHON"; then
+AC_MSG_CHECKING(whether to install python-bindings)
+AC_ARG_ENABLE(python,
+  [  --enable-python         install python bindings (default=no)],
+  [ case "${enableval}" in
+    yes) enable_python="yes";;
+    no)  enable_python="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-python);;
+    esac
+  ],
+  enable_python="no")
+
+if test "x$enable_python" = "xyes"; then
+  AC_MSG_RESULT(yes)
   # Make sure at least version 2.3 is available (otherwise ctypes
   # won't work)
-  AZ_PYTHON_VERSION_ENSURE( [2.3] )
-  # Save the python prefix
-  AZ_PYTHON_PREFIX( )
-  # Check for python ctypes module
-  AC_PYTHON_MODULE( [ctypes] )
+  AM_PATH_PYTHON( [2.3] )
+
+  # Check for python ctypes module, otherwise terminate
+  AC_PYTHON_MODULE( [ctypes], [required] )
+else
+  AC_MSG_RESULT(no)
 fi
+AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 
 
 ###-------------------------------------------------------------------------

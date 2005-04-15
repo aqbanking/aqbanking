@@ -95,8 +95,21 @@ interaction which can be overloaded by applications.
 4.1. Required Packages
 ----------------------
 
-The only direct dependency of AqBanking is Gwenhywfar (available from
-http://gwenhywfar.sf.net/).
+AqBanking has several direct dependencies:
+
+- "Gwenhywfar", available from http://gwenhywfar.sf.net/, is
+absolutely required
+
+- "LibOFX" from http://sf.net/projects/libofx is required for the ofx
+parts, otherwise the ofx parts will not be compiled.
+
+- "KtoBlzCheck" from http://sf.net/projects/ktoblzcheck is required
+for the German bank account number checking, otherwise the account
+number checking will not be compiled.
+
+- The python module "ctypes" http://sf.net/projects/ctypes is required
+for the python wrappers of aqbanking. Otherwise you cannot enable
+python support (--enable-python).
 
 
 4.2. Strongly Recommended Packages

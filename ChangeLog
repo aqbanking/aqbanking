@@ -1,3 +1,11 @@
+2005-04-15  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac, bindings/python/*: Add the python bindings. They
+	can be enabled by --enable-python. You need ctypes for that, see
+	README, and you need to call automake --add-missing once before
+	you can install the python bindings, because otherwise the file
+	py-compile is missing.
+
 2005-04-15  Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: For win32, rename(2) fails if the

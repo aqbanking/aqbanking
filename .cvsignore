@@ -25,3 +25,4 @@ version.h
 aqbanking-*.tar.gz
 i18nsources
 aqbanking.iss
+py-compile

@@ -1,0 +1,431 @@
+#!/usr/bin/python2.4
+# -*- encoding: latin1 -*-
+import re, os, sys
+#from xml.dom import ext
+import xml.dom.ext.reader.Sax2
+from xml.sax.expatreader import ExpatParser
+from xml.dom.NodeFilter import NodeFilter
+
+
+fileheader = """\
+# -*- encoding: utf-8 -*-
+# This file is generated be aqcodegen
+# DO NOT CHANGE BY HAND
+
+from _basetypes import *\
+"""
+
+classheader = """
+
+class %(class)s(c_void_p):
+%(comm)s
+    def _check_retval_(p):
+        if p is None:
+            return None
+        v = %(class)s.__new__(%(class)s)
+        c_void_p.__init__(v, p)
+        aqb.%(prefix)s_Attach(v)
+        return v
+    _check_retval_ = staticmethod(_check_retval_)
+
+    def __init__(self):
+        tr = aqb.%(prefix)s_new()
+        c_void_p.__init__(self, tr)
+
+    def __del__(self):
+        aqb.%(prefix)s_free(self)\
+"""
+
+def capitalize(s):
+    return s[0].upper() + s[1:]
+
+def attrValue(a, name):
+    if isinstance(a, dict):
+        return a[name]
+    return a[None,name].nodeValue
+
+def attrValueDefault(a, name, default=None):
+    try:
+        if isinstance(a, dict):
+            return a[name]
+        return a[None,name].nodeValue
+    except KeyError:
+        return default
+
+class ClassDesc(object):
+
+    def __init__(self, classname, prefix, fullprefix=None):
+        self.classname = classname
+        self.prefix = prefix
+        if fullprefix == None:
+            self.fullprefix = 'aqb.' + prefix
+        else:
+            self.fullprefix = fullprefix
+
+
+class ValueType(object):
+
+    def fname(self, cls, tp, propname):
+        return "%s_%s%s" % \
+               (cls.fullprefix, tp, capitalize(propname))
+
+    def print_property(self, cls, attr, comment):
+        pass
+
+    def print_declaration(self, cls, attr):
+        pass
+
+    def print_helpers(self):
+        pass
+
+
+class ValueType_ctypes(ValueType):
+
+    def __init__(self, typename):
+        self.typename = typename
+
+    def print_property(self, cls, attr, comment):
+        propname = attrValue(attr,'name')
+        getter = self.fname(
+            cls, attrValueDefault(attr,'getprefix','Get'), propname)
+        setter = self.fname(
+            cls, attrValueDefault(attr,'setprefix','Set'), propname)
+        if comment:
+            comment = ',\n' + comment
+        print '\n    %s = property(\n        %s,\n        %s%s)' \
+              % (propname, getter, setter, comment)
+
+    def gettype(self, attr):
+        try:
+            ptr = attrValue(attr,'ptr')
+        except KeyError:
+            return self.typename
+        if ptr == '1':
+            return self.typename + '_p'
+        return self.typename
+
+    def print_declaration(self, cls, attr):
+        propname = attrValue(attr,'name')
+        tp = self.gettype(attr)
+        print "%s.restype = %s" % (self.fname(
+            cls, attrValueDefault(attr,'getprefix','Get'), propname), tp)
+        print "%s.argtypes = %s, %s" % (
+            self.fname(cls, attrValueDefault(attr,'setprefix','Set'),
+                       propname),
+            cls.classname, tp)
+
+
+class ValueType_class(ValueType_ctypes):
+
+    def __init__(self, typename):
+        ValueType_ctypes.__init__(self, typename)
+
+    def gettype(self, attr):
+        try:
+            ptr = attrValue(attr,'ptr')
+        except KeyError:
+            pass
+        else:
+            if ptr == '1':
+                return self.typename
+        raise ValueError("don't know how to handle call/return by value")
+
+
+listconstruct = """\
+def make%(listclass)s(v):
+    if v is None:
+        return None
+    sl = %(fullprefix)s_new()
+    for s in v:
+        %(fullprefix)s_Add(s, c_void_p(sl))
+    return sl
+
+def tuple%(listclass)s(sl):
+    if not sl:
+        return ()
+    e = %(fullprefix)s_First(sl)
+    l = []
+    while e:
+        l.append(%(elemtypename)s._check_retval_(e))
+        e = %(fullprefix)s_Next(e)
+    return tuple(l)
+
+%(fullprefix)s_Add.argtypes = %(elemtypename)s, c_void_p
+"""
+
+listproperty = """
+    %(name)s = property(
+        %(getter)s,
+        lambda self, v: %(fullprefix)s_Set%(Name)s(self, make%(listclass)s(v)))\
+"""
+
+class ValueType_list(ValueType):
+
+    def __init__(self, elemtypename, listclass,
+                 prefix=None, fullprefix=None):
+        self.elemtypename = elemtypename
+        self.listclass = listclass
+        self.prefix = prefix
+        if fullprefix is None:
+            if prefix is not None:
+                fullprefix = 'aqb.%s' % prefix
+        self.fullprefix = fullprefix
+        self.tuplegetter = "tuple%s" % listclass
+        self.used = False
+
+    def print_property(self, cls, attr, comment):
+        propname = attrValue(attr,'name')
+        d = { 'Name': capitalize(propname),
+              'name': propname,
+              'listclass': self.listclass,
+              'fullprefix': cls.fullprefix,
+              'getter': self.fname(cls, 'Get', propname),
+              }
+        print listproperty % d
+        self.used = True
+
+    def print_declaration(self, cls, attr):
+        propname = attrValue(attr,'name')
+        print "%s.restype = %s" % (self.fname(cls, 'Get', propname),
+                                   self.tuplegetter)
+
+    def print_helpers(self):
+        if not self.used:
+            return
+        print listconstruct % vars(self)
+
+
+listconstruct2 = """\
+def make%(listclass)s(v):
+    if v is None:
+        return None
+    sl = %(fullprefix)s_new()
+    for s in v:
+        se = %(fullprefix)sEntry_new(s, False)
+        %(fullprefix)s_AppendEntry(sl, se)
+    return sl
+
+def tuple%(listclass)s(sl):
+    if not sl:
+        return ()
+    l = []
+    e = %(fullprefix)s_FirstEntry(sl)
+    while e:
+        l.append(%(fullprefix)sEntry_Data(e))
+        e = %(fullprefix)sEntry_Next(e)
+    return tuple(l)
+
+%(fullprefix)sEntry_new.argtypes = %(elemtypename)s, c_int
+%(fullprefix)sEntry_Data.restype = %(elemtypename)s
+"""
+
+class ValueType_list2(ValueType_list):
+
+    def __init__(self, elemtypename, listclass,
+                 prefix=None, fullprefix=None):
+        ValueType_list.__init__(
+            self, elemtypename, listclass, prefix, fullprefix)
+
+    def print_property(self, cls, attr, comment):
+        propname = attrValue(attr,'name')
+        d = { 'Name': capitalize(propname),
+              'name': propname,
+              'listclass': self.listclass,
+              'fullprefix': cls.fullprefix,
+              'getter': self.fname(cls, 'Get', propname),
+              }
+        print listproperty % d
+        self.used = True
+
+    def print_declaration(self, cls, attr):
+        propname = attrValue(attr,'name')
+        print "%s.restype = %s" % (self.fname(cls, 'Get', propname),
+                                   self.tuplegetter)
+
+    def print_helpers(self):
+        if not self.used:
+            return
+        d = vars(self)
+        print listconstruct2 % d
+
+
+class MyParser(ExpatParser):
+
+    def __init__(self, namespaceHandling=0, bufsize=2**16-20, systempath=''):
+        ExpatParser.__init__(self, namespaceHandling, bufsize)
+        self.systempath = systempath
+
+    def external_entity_ref(self, context, base, sysid, pubid):
+        return ExpatParser.external_entity_ref(
+            self, context, base, os.path.join(self.systempath,sysid), pubid)
+
+
+class CodeGenerator(object):
+
+    def __init__(self, fileName, systempath):
+        self.typedict = {}
+        self.funcdecl = []
+        self.type_id = {
+            'int': ValueType_ctypes('c_int'),
+            'char': ValueType_ctypes('c_char'),
+            'AB_VALUE': ValueType_class('Value'),
+            'GWEN_TIME': ValueType_class('GWEN_Time'),
+            'GWEN_STRINGLIST':
+            ValueType_list2('c_char_p', 'Stringlist',
+                            fullprefix='gwen.GWEN_StringList'),
+            'AB_SPLIT_LIST':
+            ValueType_list('Split', 'Splitlist',
+                           prefix='AB_Split_List'),
+            'AB_BANKINFO_SERVICE_LIST':
+            ValueType_list('BankInfoService', 'BankInfoServicelist',
+                           prefix='AB_BankInfoService_List'),
+            'AB_TRANSACTION_LIMITS':
+            ValueType_list('TransactionLimits','TransactionLimitslist',
+                           prefix='AB_TransactionLimits_List'),
+            }
+        self.errors = 0
+        reader = xml.dom.ext.reader.Sax2.Reader(
+            parser = MyParser(systempath=systempath))
+        print fileheader
+        doc = reader.fromUri(fileName)
+        for tp in doc.getElementsByTagName('typedefs'):
+            for t in tp.getElementsByTagName('type'):
+                self.parse_type(t)
+        for tp in doc.getElementsByTagName('types'):
+            for t in tp.getElementsByTagName('type'):
+                self.print_type(t)
+        self.print_helpers()
+        self.print_decl()
+        if self.errors:
+            print '***************'
+            print '%d errors in output' % self.errors
+            raise SystemExit(1)
+
+    def parse_type(self, n):
+        a = n.attributes
+        tp = attrValue(a,'id')
+        try:
+            otp = attrValue(a,'dbtype')
+        except KeyError:
+            otp = ValueType_class(tp)
+        else:
+            otp = self.type_id[otp]
+        if tp in self.type_id:
+            return
+        self.type_id[tp] = otp
+
+    def print_helpers(self):
+        print '\n\n# list helpers\n'
+        for tp in self.type_id.values():
+            tp.print_helpers()
+
+    def print_decl(self):
+        for cls, fdef in self.typedict.values():
+            print
+            print '# %s' % cls.classname
+            for tp, cls, attr in fdef:
+                tp.print_declaration(cls, attr)
+
+    def print_type(self, t):
+        a = t.attributes
+        classname = attrValue(a,'class')
+        self.cls = ClassDesc(classname,
+                             attrValue(a,'prefix'))
+        s = []
+        for c in t.childNodes:
+            if c.nodeName == 'descr':
+                s.append(self.get_text_string(c,4))
+        s = ''.join(s)
+        if s:
+            s += '\n'
+        d = {'class': classname,
+             'prefix': self.cls.prefix,
+             'comm': s,
+             }
+        self.proplist = []
+        print classheader % d
+        self.print_property('int','modified',getprefix='Is')
+        for c in t.childNodes:
+            if c.nodeName == "group":
+                self.print_group(c)
+            elif c.nodeName == 'elem':
+                self.print_elem(c)
+        print '\n    def __str__(self):\n        return "%s" %% (%s)' \
+              % (r'<class %s:\n%s\n/%s>' \
+                 % (classname,
+                    r'\n'.join(['%s=%%s' % p for p in self.proplist]),
+                    classname),
+                 ','.join(['self.%s' % p for p in self.proplist]))
+        self.proplist = None
+        if self.funcdecl:
+            self.typedict[attrValue(a,'id')] = self.cls, self.funcdecl
+            self.funcdecl = []
+
+    def print_group(self, c):
+        a = c.attributes
+        print '\n    # Group %s' % attrValue(c.attributes, 'name')
+        for t in c.getElementsByTagName('descr'):
+            print self.get_text_comment(t)
+        for t in c.getElementsByTagName('elem'):
+            self.print_elem(t)
+
+    @staticmethod
+    def get_all_text(n):
+        if n.nodeType == xml.dom.Node.TEXT_NODE:
+            yield n.nodeValue
+            return
+        for c in n.childNodes:
+            for t in CodeGenerator.get_all_text(c):
+                yield t
+
+    ws_match = re.compile(' *').match
+
+    @staticmethod
+    def get_text(n):
+        l = re.sub(' *\n[ \n]*','\n',''.join(
+            CodeGenerator.get_all_text(n))).split('\n')
+        m = 999
+        for i in l:
+            if i:
+                m = min(m, CodeGenerator.ws_match(i).end())
+        return '\n'.join([i[m:] for i in l]).strip()
+
+    @staticmethod
+    def get_text_comment(n):
+        return '\n'.join(
+            ['    # '+i for i in CodeGenerator.get_text(n).split('\n')])
+
+    @staticmethod
+    def get_text_string(n, indent=8):
+        t = CodeGenerator.get_text(n)
+        if not t:
+            return ''
+        ind = indent * " "
+        t = ["%s'%s" % (ind, l.replace("'",r"\'"))
+             for l in t.split('\n')]
+        return "\\n'\n".join(t)+"'"
+
+    def gettype(self, n):
+        return self.type_id[attrValue(n.attributes,'type')]
+
+    def print_property(self, tp, name, **kw):
+        tp = self.type_id['int']
+        kw['name'] = name
+        tp.print_property(self.cls, kw, '')
+        self.proplist.append(name)
+        self.funcdecl.append((tp, self.cls, kw))
+
+
+    def print_elem(self, n):
+        tp = self.gettype(n)
+        a = n.attributes
+        tp.print_property(self.cls, a, self.get_text_string(n))
+        self.proplist.append(attrValue(a,'name'))
+        self.funcdecl.append((tp, self.cls, a))
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print >>sys.stderr, 'usage: acodegen <main-xml-file> <xml-include-path>'
+        raise SystemExit, 1
+    CodeGenerator(sys.argv[1], systempath=sys.argv[2])
