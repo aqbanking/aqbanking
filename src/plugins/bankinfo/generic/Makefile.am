@@ -38,7 +38,7 @@ at-data: $(at_files)
 install-at: at-data
 	test -d $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at || \
 	  mkdir -p $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at
-	cp $(de_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at/
+	cp $(at_files) $(DESTDIR)/@aqbanking_pkgdatadir@/bankinfo/at/
 
 
 de.tar.bz2:

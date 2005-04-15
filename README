@@ -53,6 +53,11 @@ Currently there are plugins for the following formats:
 AqBanking supports plugins which allow lookup and verification of bank code/
 account id pair validity. For Germany the library KtoBlzCheck is used.
 
+Currently AqBanking provides informations about:
+- ca 25,000 US banks
+- ca 20,000 German banks
+- ca  1,000 Austrian banks
+
 AqBanking also provides information about countries: Country name, ISO-3166
 country code (both numeric and alpha) and currency information (ISO 4217
 currency codes).
