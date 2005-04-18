@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/env python
 # -*- encoding: latin1 -*-
 import re, os, sys
 #from xml.dom import ext
@@ -7,7 +7,7 @@ from xml.sax.expatreader import ExpatParser
 from xml.dom.NodeFilter import NodeFilter
 
 
-fileheader = """\
+fileheader = u"""\
 # -*- encoding: utf-8 -*-
 # This file is generated be aqcodegen
 # DO NOT CHANGE BY HAND
@@ -15,7 +15,7 @@ fileheader = """\
 from _basetypes import *\
 """
 
-classheader = """
+classheader = u"""
 
 class %(class)s(c_void_p):
 %(comm)s
@@ -69,13 +69,13 @@ class ValueType(object):
         return "%s_%s%s" % \
                (cls.fullprefix, tp, capitalize(propname))
 
-    def print_property(self, cls, attr, comment):
+    def print_property(self, write, cls, attr, comment):
         pass
 
-    def print_declaration(self, cls, attr):
+    def print_declaration(self, write, cls, attr):
         pass
 
-    def print_helpers(self):
+    def print_helpers(self, write):
         pass
 
 
@@ -84,7 +84,7 @@ class ValueType_ctypes(ValueType):
     def __init__(self, typename):
         self.typename = typename
 
-    def print_property(self, cls, attr, comment):
+    def print_property(self, write, cls, attr, comment):
         propname = attrValue(attr,'name')
         getter = self.fname(
             cls, attrValueDefault(attr,'getprefix','Get'), propname)
@@ -92,8 +92,8 @@ class ValueType_ctypes(ValueType):
             cls, attrValueDefault(attr,'setprefix','Set'), propname)
         if comment:
             comment = ',\n' + comment
-        print '\n    %s = property(\n        %s,\n        %s%s)' \
-              % (propname, getter, setter, comment)
+        write(u'\n    %s = property(\n        %s,\n        %s%s)'
+              % (propname, getter, setter, comment))
 
     def gettype(self, attr):
         try:
@@ -104,15 +104,15 @@ class ValueType_ctypes(ValueType):
             return self.typename + '_p'
         return self.typename
 
-    def print_declaration(self, cls, attr):
+    def print_declaration(self, write, cls, attr):
         propname = attrValue(attr,'name')
         tp = self.gettype(attr)
-        print "%s.restype = %s" % (self.fname(
-            cls, attrValueDefault(attr,'getprefix','Get'), propname), tp)
-        print "%s.argtypes = %s, %s" % (
+        write(u"%s.restype = %s" % (self.fname(
+            cls, attrValueDefault(attr,'getprefix','Get'), propname), tp))
+        write(u"%s.argtypes = %s, %s" % (
             self.fname(cls, attrValueDefault(attr,'setprefix','Set'),
                        propname),
-            cls.classname, tp)
+            cls.classname, tp))
 
 
 class ValueType_class(ValueType_ctypes):
@@ -131,7 +131,7 @@ class ValueType_class(ValueType_ctypes):
         raise ValueError("don't know how to handle call/return by value")
 
 
-listconstruct = """\
+listconstruct = u"""\
 def make%(listclass)s(v):
     if v is None:
         return None
@@ -153,7 +153,7 @@ def tuple%(listclass)s(sl):
 %(fullprefix)s_Add.argtypes = %(elemtypename)s, c_void_p
 """
 
-listproperty = """
+listproperty = u"""
     %(name)s = property(
         %(getter)s,
         lambda self, v: %(fullprefix)s_Set%(Name)s(self, make%(listclass)s(v)))\
@@ -173,7 +173,7 @@ class ValueType_list(ValueType):
         self.tuplegetter = "tuple%s" % listclass
         self.used = False
 
-    def print_property(self, cls, attr, comment):
+    def print_property(self, write, cls, attr, comment):
         propname = attrValue(attr,'name')
         d = { 'Name': capitalize(propname),
               'name': propname,
@@ -181,21 +181,21 @@ class ValueType_list(ValueType):
               'fullprefix': cls.fullprefix,
               'getter': self.fname(cls, 'Get', propname),
               }
-        print listproperty % d
+        write(listproperty % d)
         self.used = True
 
-    def print_declaration(self, cls, attr):
+    def print_declaration(self, write, cls, attr):
         propname = attrValue(attr,'name')
-        print "%s.restype = %s" % (self.fname(cls, 'Get', propname),
-                                   self.tuplegetter)
+        write(u"%s.restype = %s" % (self.fname(cls, 'Get', propname),
+                                    self.tuplegetter))
 
-    def print_helpers(self):
+    def print_helpers(self, write):
         if not self.used:
             return
-        print listconstruct % vars(self)
+        write(listconstruct % vars(self))
 
 
-listconstruct2 = """\
+listconstruct2 = u"""\
 def make%(listclass)s(v):
     if v is None:
         return None
@@ -226,7 +226,7 @@ class ValueType_list2(ValueType_list):
         ValueType_list.__init__(
             self, elemtypename, listclass, prefix, fullprefix)
 
-    def print_property(self, cls, attr, comment):
+    def print_property(self, write, cls, attr, comment):
         propname = attrValue(attr,'name')
         d = { 'Name': capitalize(propname),
               'name': propname,
@@ -234,19 +234,19 @@ class ValueType_list2(ValueType_list):
               'fullprefix': cls.fullprefix,
               'getter': self.fname(cls, 'Get', propname),
               }
-        print listproperty % d
+        write(listproperty % d)
         self.used = True
 
-    def print_declaration(self, cls, attr):
+    def print_declaration(self, write, cls, attr):
         propname = attrValue(attr,'name')
-        print "%s.restype = %s" % (self.fname(cls, 'Get', propname),
-                                   self.tuplegetter)
+        write(u"%s.restype = %s" % (self.fname(cls, 'Get', propname),
+                                    self.tuplegetter))
 
-    def print_helpers(self):
+    def print_helpers(self, write):
         if not self.used:
             return
         d = vars(self)
-        print listconstruct2 % d
+        write(listconstruct2 % d)
 
 
 class MyParser(ExpatParser):
@@ -277,16 +277,18 @@ class CodeGenerator(object):
             ValueType_list('Split', 'Splitlist',
                            prefix='AB_Split_List'),
             'AB_BANKINFO_SERVICE_LIST':
-            ValueType_list('BankInfoService', 'BankInfoServicelist',
+            ValueType_list('BankInfoService',
+                           'BankInfoServicelist',
                            prefix='AB_BankInfoService_List'),
             'AB_TRANSACTION_LIMITS':
-            ValueType_list('TransactionLimits','TransactionLimitslist',
+            ValueType_list('TransactionLimits',
+                           'TransactionLimitslist',
                            prefix='AB_TransactionLimits_List'),
             }
         self.errors = 0
         reader = xml.dom.ext.reader.Sax2.Reader(
             parser = MyParser(systempath=systempath))
-        print fileheader
+        self.write(fileheader)
         doc = reader.fromUri(fileName)
         for tp in doc.getElementsByTagName('typedefs'):
             for t in tp.getElementsByTagName('type'):
@@ -297,9 +299,14 @@ class CodeGenerator(object):
         self.print_helpers()
         self.print_decl()
         if self.errors:
-            print '***************'
-            print '%d errors in output' % self.errors
+            self.write(u'***************')
+            self.write(u'%d errors in output' % self.errors)
             raise SystemExit(1)
+
+    def write(self, s):
+        assert isinstance(s, unicode)
+        sys.stdout.write(s.encode('utf-8'))
+        sys.stdout.write('\n')
 
     def parse_type(self, n):
         a = n.attributes
@@ -315,16 +322,15 @@ class CodeGenerator(object):
         self.type_id[tp] = otp
 
     def print_helpers(self):
-        print '\n\n# list helpers\n'
+        self.write(u'\n\n# list helpers\n')
         for tp in self.type_id.values():
-            tp.print_helpers()
+            tp.print_helpers(self.write)
 
     def print_decl(self):
         for cls, fdef in self.typedict.values():
-            print
-            print '# %s' % cls.classname
+            self.write(u'\n# %s' % cls.classname)
             for tp, cls, attr in fdef:
-                tp.print_declaration(cls, attr)
+                tp.print_declaration(self.write, cls, attr)
 
     def print_type(self, t):
         a = t.attributes
@@ -343,19 +349,19 @@ class CodeGenerator(object):
              'comm': s,
              }
         self.proplist = []
-        print classheader % d
+        self.write(classheader % d)
         self.print_property('int','modified',getprefix='Is')
         for c in t.childNodes:
             if c.nodeName == "group":
                 self.print_group(c)
             elif c.nodeName == 'elem':
                 self.print_elem(c)
-        print '\n    def __str__(self):\n        return "%s" %% (%s)' \
-              % (r'<class %s:\n%s\n/%s>' \
-                 % (classname,
-                    r'\n'.join(['%s=%%s' % p for p in self.proplist]),
-                    classname),
-                 ','.join(['self.%s' % p for p in self.proplist]))
+        self.write(u'\n    def __str__(self):\n        return "%s" %% (%s)'
+                   % (r'<class %s:\n%s\n/%s>' \
+                      % (classname,
+                         r'\n'.join(['%s=%%s' % p for p in self.proplist]),
+                         classname),
+                      ','.join(['self.%s' % p for p in self.proplist])))
         self.proplist = None
         if self.funcdecl:
             self.typedict[attrValue(a,'id')] = self.cls, self.funcdecl
@@ -363,13 +369,12 @@ class CodeGenerator(object):
 
     def print_group(self, c):
         a = c.attributes
-        print '\n    # Group %s' % attrValue(c.attributes, 'name')
+        self.write(u'\n    # Group %s' % attrValue(c.attributes, 'name'))
         for t in c.getElementsByTagName('descr'):
-            print self.get_text_comment(t)
+            self.write(self.get_text_comment(t))
         for t in c.getElementsByTagName('elem'):
             self.print_elem(t)
 
-    @staticmethod
     def get_all_text(n):
         if n.nodeType == xml.dom.Node.TEXT_NODE:
             yield n.nodeValue
@@ -377,10 +382,10 @@ class CodeGenerator(object):
         for c in n.childNodes:
             for t in CodeGenerator.get_all_text(c):
                 yield t
+    get_all_text = staticmethod(get_all_text)
 
     ws_match = re.compile(' *').match
 
-    @staticmethod
     def get_text(n):
         l = re.sub(' *\n[ \n]*','\n',''.join(
             CodeGenerator.get_all_text(n))).split('\n')
@@ -389,13 +394,13 @@ class CodeGenerator(object):
             if i:
                 m = min(m, CodeGenerator.ws_match(i).end())
         return '\n'.join([i[m:] for i in l]).strip()
+    get_text = staticmethod(get_text)
 
-    @staticmethod
     def get_text_comment(n):
         return '\n'.join(
             ['    # '+i for i in CodeGenerator.get_text(n).split('\n')])
+    get_text_comment = staticmethod(get_text_comment)
 
-    @staticmethod
     def get_text_string(n, indent=8):
         t = CodeGenerator.get_text(n)
         if not t:
@@ -404,6 +409,7 @@ class CodeGenerator(object):
         t = ["%s'%s" % (ind, l.replace("'",r"\'"))
              for l in t.split('\n')]
         return "\\n'\n".join(t)+"'"
+    get_text_string = staticmethod(get_text_string)
 
     def gettype(self, n):
         return self.type_id[attrValue(n.attributes,'type')]
@@ -411,7 +417,7 @@ class CodeGenerator(object):
     def print_property(self, tp, name, **kw):
         tp = self.type_id['int']
         kw['name'] = name
-        tp.print_property(self.cls, kw, '')
+        tp.print_property(self.write, self.cls, kw, '')
         self.proplist.append(name)
         self.funcdecl.append((tp, self.cls, kw))
 
@@ -419,7 +425,7 @@ class CodeGenerator(object):
     def print_elem(self, n):
         tp = self.gettype(n)
         a = n.attributes
-        tp.print_property(self.cls, a, self.get_text_string(n))
+        tp.print_property(self.write, self.cls, a, self.get_text_string(n))
         self.proplist.append(attrValue(a,'name'))
         self.funcdecl.append((tp, self.cls, a))
 

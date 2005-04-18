@@ -29,23 +29,42 @@ class BankInfoService(c_void_p):
 
     type = property(
         aqb.AB_BankInfoService_GetType,
-        aqb.AB_BankInfoService_SetType)
+        aqb.AB_BankInfoService_SetType,
+        'The following types have been registered with AqBanking:\n'
+        'HBCI - German homebanking protocol\n'
+        'OFX  - OFX direct connect protocol')
 
     address = property(
         aqb.AB_BankInfoService_GetAddress,
-        aqb.AB_BankInfoService_SetAddress)
+        aqb.AB_BankInfoService_SetAddress,
+        'For most services this is the URL or hostname of the server.')
 
     suffix = property(
         aqb.AB_BankInfoService_GetSuffix,
-        aqb.AB_BankInfoService_SetSuffix)
+        aqb.AB_BankInfoService_SetSuffix,
+        'For IP based services this is the port to be used (if omitted\n'
+        'a default value suitable for the service is chosen).')
 
     pversion = property(
         aqb.AB_BankInfoService_GetPversion,
-        aqb.AB_BankInfoService_SetPversion)
+        aqb.AB_BankInfoService_SetPversion,
+        'The content of this field depends on the service type.\n'
+        'For HBCI this is the protocol version to be used:\n'
+        '2.01\n'
+        '2.10\n'
+        '2.20')
 
     mode = property(
         aqb.AB_BankInfoService_GetMode,
-        aqb.AB_BankInfoService_SetMode)
+        aqb.AB_BankInfoService_SetMode,
+        'The content of this field depends on the service type.\n'
+        'For HBCI the following values are used:\n'
+        'DDV\n'
+        'RDH1\n'
+        'RDH2\n'
+        'RDH3\n'
+        'RDH4\n'
+        'PINTAN')
 
     def __str__(self):
         return "<class BankInfoService:\nmodified=%s\ntype=%s\naddress=%s\nsuffix=%s\npversion=%s\nmode=%s\n/BankInfoService>" % (self.modified,self.type,self.address,self.suffix,self.pversion,self.mode)
@@ -84,6 +103,10 @@ class BankInfo(c_void_p):
     bankId = property(
         aqb.AB_BankInfo_GetBankId,
         aqb.AB_BankInfo_SetBankId)
+
+    bic = property(
+        aqb.AB_BankInfo_GetBic,
+        aqb.AB_BankInfo_SetBic)
 
     bankName = property(
         aqb.AB_BankInfo_GetBankName,
@@ -130,7 +153,7 @@ class BankInfo(c_void_p):
         lambda self, v: aqb.AB_BankInfo_SetServices(self, makeBankInfoServicelist(v)))
 
     def __str__(self):
-        return "<class BankInfo:\nmodified=%s\ncountry=%s\nbranchId=%s\nbankId=%s\nbankName=%s\nlocation=%s\nstreet=%s\nzipcode=%s\ncity=%s\nregion=%s\nphone=%s\nfax=%s\nemail=%s\nwebsite=%s\nservices=%s\n/BankInfo>" % (self.modified,self.country,self.branchId,self.bankId,self.bankName,self.location,self.street,self.zipcode,self.city,self.region,self.phone,self.fax,self.email,self.website,self.services)
+        return "<class BankInfo:\nmodified=%s\ncountry=%s\nbranchId=%s\nbankId=%s\nbic=%s\nbankName=%s\nlocation=%s\nstreet=%s\nzipcode=%s\ncity=%s\nregion=%s\nphone=%s\nfax=%s\nemail=%s\nwebsite=%s\nservices=%s\n/BankInfo>" % (self.modified,self.country,self.branchId,self.bankId,self.bic,self.bankName,self.location,self.street,self.zipcode,self.city,self.region,self.phone,self.fax,self.email,self.website,self.services)
 
 
 class EuTransferInfo(c_void_p):
@@ -891,6 +914,8 @@ aqb.AB_BankInfo_GetBranchId.restype = c_char_p
 aqb.AB_BankInfo_SetBranchId.argtypes = BankInfo, c_char_p
 aqb.AB_BankInfo_GetBankId.restype = c_char_p
 aqb.AB_BankInfo_SetBankId.argtypes = BankInfo, c_char_p
+aqb.AB_BankInfo_GetBic.restype = c_char_p
+aqb.AB_BankInfo_SetBic.argtypes = BankInfo, c_char_p
 aqb.AB_BankInfo_GetBankName.restype = c_char_p
 aqb.AB_BankInfo_SetBankName.argtypes = BankInfo, c_char_p
 aqb.AB_BankInfo_GetLocation.restype = c_char_p
