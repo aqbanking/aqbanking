@@ -1,3 +1,16 @@
+2005-04-18  Andreas Degert  <ad@papyrus-gmbh.de>
+
+	* bindings/python/_aqtypes.py: generated with current version of
+	xml files; some comments and the BankInfo property bic got added.
+
+	* bindings/python/aqcodegen: change decorators into syntax usable
+	with python versions before 2.4.
+
+	* bindings/python/aqcodegen: replace "print" with a function that
+	writes UTF-8 encoded output as declared in the output header
+	(no change in output because the text from the xml-input files is
+	pure ascii; just in case this changes sometime).
+
 2005-04-15  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac, bindings/python/*: Add the python bindings. They
