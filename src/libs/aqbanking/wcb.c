@@ -114,8 +114,8 @@ void AB_WaitCallback_Log(GWEN_WAITCALLBACK *ctx,
   wcb=GWEN_INHERIT_GETDATA(GWEN_WAITCALLBACK, AB_WAITCALLBACK, ctx);
   assert(wcb);
 
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "Logging this: %d/%d %s",
-            level, loglevel, s);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Logging this: %d/%d %s",
+	   level, loglevel, s);
 
   switch(loglevel) {
   case GWEN_LoggerLevelError:     nl=AB_Banking_LogLevelError; break;
