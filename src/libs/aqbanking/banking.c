@@ -3453,6 +3453,17 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
 
   fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(pbuf), 0);
   if (fd!=-1) {
+#ifdef OS_WIN32
+    /* For windows, first close the file, then unlink it */
+    AB_Banking__CloseFile(fd);
+    if (unlink(GWEN_Buffer_GetStart(pbuf))) {
+      DBG_DEBUG(AQBANKING_LOGDOMAIN, "unlink(%s): %s",
+                GWEN_Buffer_GetStart(pbuf),
+                strerror(errno));
+      GWEN_Buffer_free(pbuf);
+      return AB_ERROR_GENERIC;
+    }
+#else
     if (unlink(GWEN_Buffer_GetStart(pbuf))) {
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "unlink(%s): %s",
                 GWEN_Buffer_GetStart(pbuf),
@@ -3462,6 +3473,7 @@ int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
       return AB_ERROR_GENERIC;
     }
     AB_Banking__CloseFile(fd);
+#endif
   }
 
   GWEN_Buffer_free(pbuf);

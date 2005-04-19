@@ -1,5 +1,10 @@
 2005-04-19  Christian Stimming <stimming@tuhh.de>
 
+	* src/libs/aqbanking/banking.c (AB_Banking__UnlinkJobAs): On
+	windows, the file descriptor has to be close before trying to
+	unlink(2) a file. Maybe this is true on unix, too? Martin needs to
+	check this.
+
 	* src/libs/aqbanking/banking.c: Add PluginManager path lookup for
 	ImExporter plugins. Necessary for win32.
 
