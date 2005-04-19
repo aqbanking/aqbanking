@@ -1,3 +1,8 @@
+2005-04-19  Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Add PluginManager path lookup for
+	ImExporter plugins. Necessary for win32.
+
 2005-04-18  Andreas Degert  <ad@papyrus-gmbh.de>
 
 	* bindings/python/_aqtypes.py: generated with current version of

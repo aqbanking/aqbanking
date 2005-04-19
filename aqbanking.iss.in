@@ -74,6 +74,7 @@ Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "p
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
