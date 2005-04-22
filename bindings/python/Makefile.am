@@ -10,5 +10,6 @@ noinst_PYTHON = aqcodegen
 xmlsourcedir = $(top_srcdir)/src/libs/aqbanking/types
 
 _aqtypes.py: types.xml $(xmlsourcedir)/*.xml aqcodegen
-	./aqcodegen types.xml $(xmlsourcedir) > $@
-
+	./aqcodegen types.xml $(xmlsourcedir) > $@.tmp && \
+	  mv $@.tmp $@ || \
+	  rm -f $@.tmp
