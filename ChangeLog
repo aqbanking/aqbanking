@@ -1,4 +1,10 @@
 
+2005/04/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AB_ImExporter_ImportFile (found by Andreas Degert):
+  Was not setting a read buffer for BIO
+
+
 ===========================================================================
 MARK: released AqBanking - 1.0.9 (2005/04/22)
 ===========================================================================

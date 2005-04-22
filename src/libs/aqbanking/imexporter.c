@@ -135,6 +135,7 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
   }
 
   bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
   rv=AB_ImExporter_Import(ie, ctx, bio, dbProfile);
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
