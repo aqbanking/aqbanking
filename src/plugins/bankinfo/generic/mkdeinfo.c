@@ -1331,7 +1331,7 @@ int makeBankInfos(const char *path) {
                                GWEN_DIR_FLAGS_PUBLIC_NAME)) {
       DBG_ERROR(0, "Error creating path \"%s\"",
 		GWEN_Buffer_GetStart(dbuf));
-      GWEN_DB_Group_free(dbT);
+      /* GWEN_DB_Group_free(dbT); -- not yet initialized */
       GWEN_Buffer_free(dbuf);
       return -1;
     }

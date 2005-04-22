@@ -3812,7 +3812,7 @@ AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
   AB_IMEXPORTER_FACTORY_FN fn;
   void *p;
   const char *s;
-  GWEN_ERRORCODE err;
+  GWEN_ERRORCODE err = 0;
   GWEN_BUFFER *mbuf;
   GWEN_DB_NODE *db;
   GWEN_PLUGIN_MANAGER *pm;
