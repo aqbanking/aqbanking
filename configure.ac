@@ -14,10 +14,10 @@ AC_CONFIG_HEADER([config.h])
 #
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
-AQBANKING_VERSION_PATCHLEVEL=8
-AQBANKING_VERSION_BUILD=4
+AQBANKING_VERSION_PATCHLEVEL=9
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-AQBANKING_VERSION_TAG="cvs"
+AQBANKING_VERSION_TAG="stable"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
@@ -25,9 +25,9 @@ AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQB
 #
 # SO version
 #
-AQBANKING_SO_CURRENT=3
+AQBANKING_SO_CURRENT=4
 AQBANKING_SO_REVISION=0
-AQBANKING_SO_AGE=3
+AQBANKING_SO_AGE=4
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -129,7 +129,7 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(1,11,0,2)
+AC_GWENHYWFAR(1,12,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -155,6 +155,7 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 ###-------------------------------------------------------------------------
 # LibOFX
 
+HAVE_OFX_WITH_CONNECT="no"
 AC_MSG_CHECKING(whether OFX should be used)
 AC_ARG_ENABLE(libofx,
   [  --enable-libofx         use OFX (default=auto)],
@@ -165,6 +166,7 @@ AC_ARG_ENABLE(libofx,
     esac
   ],
   enable_libofx="yes")
+AC_MSG_RESULT($enable_libofx)
 
 if test "$enable_libofx" = "yes"; then
   HAVE_OFX="yes"
@@ -175,6 +177,11 @@ if test "$enable_libofx" = "yes"; then
   *** LibOFX >=0.7 not found, the OFX plugin will not be compiled.
   *** Please get LibOFX from http://libofx.sf.net/.
   *** Make sure that the libofx-devel packages are also installed.])
+  else
+    AC_CHECK_LIB(ofx, libofx_request_statement, [HAVE_OFX_WITH_CONNECT="yes"])
+    if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
+       AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
+    fi
   fi
 else
   HAVE_OFX="no"

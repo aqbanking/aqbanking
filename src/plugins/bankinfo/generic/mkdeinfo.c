@@ -942,6 +942,13 @@ int readMSMFiles(const char *path, const char *country) {
                 AB_BankInfoService_SetType(sv, "OFX");
                 AB_BankInfoService_SetAddress(sv, server);
                 AB_BankInfoService_SetPversion(sv, pver);
+                s=readCharValueXml(b, "provider:fid", dbuf);
+                if (s && *s)
+                    AB_BankInfoService_SetAux1(sv, s);
+                s=readCharValueXml(b, "provider:org", dbuf);
+                if (s && *s)
+                    AB_BankInfoService_SetAux2(sv, s);
+
                 AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
               }
 	    }

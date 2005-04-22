@@ -901,7 +901,6 @@ AQBANKING_API
 AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
                                   GWEN_TYPE_UINT32 uniqueId);
 
-
 /**
  * This function does an account lookup based on the given bank code and
  * account number. No wildards or jokers allowed.

@@ -182,5 +182,16 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
                         GWEN_DB_NODE *cert,
                         void *user_data);
 
+/**
+ * This function updates the list of accounts. You should call this function
+ * especially after setting up a backend (or after activating/deactivating
+ * a backend because those actions most likely change the number of
+ * managed accounts).
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab pointer to the AB_BANKING object
+ */
+AQBANKING_API 
+int AB_Banking_UpdateAccountList(AB_BANKING *ab);
+
 
 #endif /* AQBANKING_BANKING_P_H */

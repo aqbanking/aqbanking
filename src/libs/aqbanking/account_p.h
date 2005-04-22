@@ -36,6 +36,7 @@ struct AB_ACCOUNT {
   int availability;
 };
 
+AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData);
 
 
 

@@ -1,3 +1,25 @@
+
+===========================================================================
+MARK: released AqBanking - 1.0.9 (2005/04/22)
+===========================================================================
+
+
+2005/04/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added two general purpose fields to AB_BankinfoService (used by OFX
+  entries for FID and ORG)
+
+
+2005/04/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- OFX importer now stores the account type
+
+
+2005/04/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Account_List2_FreeAll() to be used by backends only
+
+
 2005-04-19  Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c (AB_Banking__UnlinkJobAs): On
@@ -7,6 +29,7 @@
 
 	* src/libs/aqbanking/banking.c: Add PluginManager path lookup for
 	ImExporter plugins. Necessary for win32.
+
 
 2005-04-18  Andreas Degert  <ad@papyrus-gmbh.de>
 
@@ -21,6 +44,7 @@
 	(no change in output because the text from the xml-input files is
 	pure ascii; just in case this changes sometime).
 
+
 2005-04-15  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac, bindings/python/*: Add the python bindings. They
@@ -29,11 +53,13 @@
 	you can install the python bindings, because otherwise the file
 	py-compile is missing.
 
+
 2005-04-15  Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: For win32, rename(2) fails if the
 	target exists. Therefore explicitly unlink(2) the target
 	beforehand.
+
 
 2005/04/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

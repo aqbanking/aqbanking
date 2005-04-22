@@ -20,6 +20,8 @@ extern "C" {
 
 #include <aqbanking/account.h>
 
+GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
+
 
 /**
  *  This constructor MUST NOT be used by applications. Only backends
@@ -29,6 +31,15 @@ AQBANKING_API
 AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
                            AB_PROVIDER *pro,
                            const char *idForProvider);
+
+/**
+ * Frees a List2 of accounts and all its members.
+ * This MUST NOT be used on account lists returned by AqBanking, but only
+ * on account lists created by backends.
+ * Therefore this function is only defined here.
+ */
+AQBANKING_API 
+void AB_Account_List2_FreeAll(AB_ACCOUNT_LIST2 *al);
 
 AQBANKING_API 
 AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc);

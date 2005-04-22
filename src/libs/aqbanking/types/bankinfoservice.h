@@ -144,6 +144,26 @@ Set this property with @ref AB_BankInfoService_SetMode,
 get it with @ref AB_BankInfoService_GetMode
 </p>
 
+@anchor AB_BANKINFO_SERVICE_Aux1
+<h3>Aux1</h3>
+<p>
+This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the FID from the bankinfo file.
+</p>
+<p>
+Set this property with @ref AB_BankInfoService_SetAux1, 
+get it with @ref AB_BankInfoService_GetAux1
+</p>
+
+@anchor AB_BANKINFO_SERVICE_Aux2
+<h3>Aux2</h3>
+<p>
+This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the ORG field from the bankinfo file.
+</p>
+<p>
+Set this property with @ref AB_BankInfoService_SetAux2, 
+get it with @ref AB_BankInfoService_GetAux2
+</p>
+
 */
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
@@ -238,6 +258,24 @@ AQBANKING_API const char *AB_BankInfoService_GetMode(const AB_BANKINFO_SERVICE *
 * Set the property @ref AB_BANKINFO_SERVICE_Mode
 */
 AQBANKING_API void AB_BankInfoService_SetMode(AB_BANKINFO_SERVICE *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_SERVICE_Aux1
+*/
+AQBANKING_API const char *AB_BankInfoService_GetAux1(const AB_BANKINFO_SERVICE *el);
+/**
+* Set the property @ref AB_BANKINFO_SERVICE_Aux1
+*/
+AQBANKING_API void AB_BankInfoService_SetAux1(AB_BANKINFO_SERVICE *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_SERVICE_Aux2
+*/
+AQBANKING_API const char *AB_BankInfoService_GetAux2(const AB_BANKINFO_SERVICE *el);
+/**
+* Set the property @ref AB_BANKINFO_SERVICE_Aux2
+*/
+AQBANKING_API void AB_BankInfoService_SetAux2(AB_BANKINFO_SERVICE *el, const char *d);
 
 
 #ifdef __cplusplus

@@ -19,8 +19,6 @@
 #include <gwenhywfar/inherit.h>
 #include <aqbanking/account_be.h>
 
-GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
-
 
 void AB_Account_Attach(AB_ACCOUNT *acc);
 

@@ -432,6 +432,18 @@ AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc){
 
 
 
+AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData) {
+  AB_Account_free(a);
+  return 0;
+}
+
+
+
+void AB_Account_List2_FreeAll(AB_ACCOUNT_LIST2 *al){
+  AB_Account_List2_ForEach(al, AB_Account__freeAll_cb, 0);
+  AB_Account_List2_free(al);
+}
+
 
 
 

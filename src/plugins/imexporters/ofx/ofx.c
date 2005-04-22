@@ -214,6 +214,20 @@ int AH_ImExporterOFX_AccountCallback_cb(const struct OfxAccountData data,
   ieh=(AH_IMEXPORTER_OFX*)user_data;
 
   ai=AB_ImExporterAccountInfo_new();
+#ifdef HAVE_OFX_WITH_CONNECT
+  if (data.account_number_valid) {
+    AB_ImExporterAccountInfo_SetAccountNumber(ai, data.account_number);
+    if (*(data.account_name))
+      AB_ImExporterAccountInfo_SetAccountName(ai, data.account_name);
+  }
+  else if (data.account_id_valid)
+    AB_ImExporterAccountInfo_SetAccountNumber(ai, data.account_id);
+  else
+    AB_ImExporterAccountInfo_SetAccountNumber(ai, "----");
+
+  if (data.bank_id_valid)
+    AB_ImExporterAccountInfo_SetBankCode(ai, data.bank_id);
+#else
   if (data.account_id_valid) {
     AB_ImExporterAccountInfo_SetAccountNumber(ai, data.account_id);
     if (*(data.account_name))
@@ -222,6 +236,29 @@ int AH_ImExporterOFX_AccountCallback_cb(const struct OfxAccountData data,
   else {
     AB_ImExporterAccountInfo_SetAccountNumber(ai, "----");
   }
+#endif
+
+  if (data.account_type_valid) {
+    AB_ACCOUNT_TYPE at;
+
+    switch(data.account_type) {
+    case OFX_CHECKING:   at=AB_AccountType_Checking; break;
+    case OFX_SAVINGS:    at=AB_AccountType_Savings; break;
+    case OFX_MONEYMRKT:  at=AB_AccountType_Investment; break;
+    case OFX_CREDITLINE: at=AB_AccountType_Bank; break;
+    case OFX_CMA:        at=AB_AccountType_Cash; break;
+    case OFX_CREDITCARD: at=AB_AccountType_CreditCard; break;
+    case OFX_INVESTMENT: at=AB_AccountType_Investment; break;
+    default:
+      at=AB_AccountType_Bank;
+      break;
+    }
+    AB_ImExporterAccountInfo_SetType(ai, at);
+  }
+  else {
+    AB_ImExporterAccountInfo_SetType(ai, AB_AccountType_Bank);
+  }
+
   AB_ImExporterContext_AddAccountInfo(ieh->context, ai);
   ieh->lastAccountInfo=ai;
   return 0;

@@ -120,7 +120,7 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
     return 0;
   }
   /* seek position */
-  DBG_ERROR(0, "Seeking to %08x (%d)", pos, pos);
+  DBG_VERBOUS(0, "Seeking to %08x (%d)", pos, pos);
   if ((off_t)-1==lseek(fd, pos, SEEK_SET)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "lseek(%s, "GWEN_TYPE_TMPL_UINT32"): %s",
               GWEN_Buffer_GetStart(pbuf),
@@ -395,6 +395,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
              GWEN_Buffer_GetStart(pbuf),
              strerror(errno));
     GWEN_Buffer_free(pbuf);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "namloc index file not available");
     return AB_ERROR_NOT_AVAILABLE;
   }
 
@@ -430,7 +431,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
         AB_BANKINFO *bi;
 
         bi=AB_BankInfoPluginGENERIC__ReadBankInfo(bip, num);
-        if (bi) {
+	if (bi) {
           AB_BankInfo_List2_PushBack(bl, bi);
           count++;
         }
@@ -705,9 +706,11 @@ int AB_BankInfoPluginGENERIC_SearchbyTemplate(AB_BANKINFO_PLUGIN *bip,
                                                  AB_BankInfo_GetLocation(tbi),
                                                  bl);
   }
-  else
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "No quick search implemented for these flags (%08x)", flags);
     rv=AB_ERROR_NOT_AVAILABLE;
-
+  }
   if (rv==AB_ERROR_NOT_AVAILABLE) {
     rv=AB_BankInfoPluginGENERIC_AddByTemplate(bip, tbi, bl, flags);
   }

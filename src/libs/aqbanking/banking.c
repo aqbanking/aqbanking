@@ -1805,6 +1805,32 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
 
 
 
+int AB_Banking_UpdateAccountList(AB_BANKING *ab){
+  assert(ab);
+  if (GWEN_StringList_Count(ab->activeProviders)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(ab->activeProviders);
+    assert(se);
+    while(se) {
+      const char *p;
+      int rv;
+
+      p=GWEN_StringListEntry_Data(se);
+      assert(p);
+      rv=AB_Banking_ImportProviderAccounts(ab, p);
+      if (rv) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error importing accounts from backend \"%s\"", p);
+      }
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
+  return 0;
+}
+
+
+
 int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   int rv;
   AB_JOB_STATUS jst;
@@ -2152,7 +2178,8 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
 
   rv=AB_Banking_ImportProviderAccounts(ab, pname);
   if (rv) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not import accounts from backend \"%s\"",
+    DBG_WARN(AQBANKING_LOGDOMAIN,
+             "Could not import accounts from backend \"%s\"",
              pname);
     AB_Banking_FiniProvider(ab, pro);
     return rv;
