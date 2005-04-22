@@ -419,7 +419,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
       assert(*p=='\t');
       *p=0;
       p++;
-      key2=p;
+      key2=/* GCC4 pointer-signedness fix: */ (char*) p;
       while(*p && *p!='\t')
         p++;
       assert(*p=='\t');
