@@ -1,3 +1,7 @@
+2005-04-24  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Change path lookup order to avoid
+	warnings on win32.
 
 2005/04/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

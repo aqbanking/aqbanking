@@ -1082,13 +1082,13 @@ int AB_Banking_Init(AB_BANKING *ab) {
   /* create bankinfo plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");
   pm=GWEN_PluginManager_new("bankinfo");
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "bankinfodir");
   GWEN_PluginManager_AddPath(pm,
                              AQBANKING_PLUGINS
                              DIRSEP
                              AB_BANKINFO_PLUGIN_FOLDER);
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "bankinfodir");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not register bankinfo plugin manager");
@@ -1099,13 +1099,13 @@ int AB_Banking_Init(AB_BANKING *ab) {
   /* create provider plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering provider plugin manager");
   pm=GWEN_PluginManager_new("provider");
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "providerdir");
   GWEN_PluginManager_AddPath(pm,
 			     AQBANKING_PLUGINS
 			     DIRSEP
 			     AB_PROVIDER_FOLDER);
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "providerdir");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register provider plugin manager");
@@ -1116,13 +1116,13 @@ int AB_Banking_Init(AB_BANKING *ab) {
   /* create imexporters plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
   pm=GWEN_PluginManager_new("imexporters");
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "imexporterdir");
   GWEN_PluginManager_AddPath(pm,
 			     AQBANKING_PLUGINS
 			     DIRSEP
 			     AB_IMEXPORTER_FOLDER);
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "imexporterdir");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register imexporters plugin manager");
