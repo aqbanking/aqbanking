@@ -1,7 +1,7 @@
 INCLUDES = $(all_includes)
 EXTRA_DIST=us.c us_p.h
 
-bankinfoplugindir=@aqbanking_plugindir@/bankinfo
+bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 
 bankinfoplugin_LTLIBRARIES=us.la
 bankinfoplugin_DATA=us.xml

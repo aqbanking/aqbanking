@@ -3,7 +3,7 @@ SUBDIRS=profiles
 INCLUDES = $(all_includes)
 EXTRA_DIST=README
 
-imexporterplugindir=@aqbanking_plugindir@/imexporters
+imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=openhbci1.la
 if IS_WINDOWS

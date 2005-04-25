@@ -3,7 +3,7 @@ SUBDIRS=profiles
 INCLUDES = -I$(top_srcdir)/src/libs/aqbanking $(all_includes)
 #EXTRA_DIST=README
 
-imexporterplugindir=@aqbanking_plugindir@/imexporters
+imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=qif.la
 if IS_WINDOWS

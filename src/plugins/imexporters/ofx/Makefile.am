@@ -12,7 +12,7 @@ if WITH_OFX_PLUGIN
 INCLUDES = $(all_includes)
 #EXTRA_DIST=README
 
-imexporterplugindir=@aqbanking_plugindir@/imexporters
+imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=ofx.la
 imexporterplugin_DATA=ofx.xml
