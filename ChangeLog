@@ -1,3 +1,8 @@
+2005-04-25  Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Add PluginManager for path lookup
+	of loading the profiles.
+
 2005-04-24  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Change path lookup order to avoid

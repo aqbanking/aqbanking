@@ -7,10 +7,10 @@ lib_LTLIBRARIES=libaqbanking.la
 # We define those here because within the configure script the variables 
 # $(datadir) et al are not available.
 localedir=$(datadir)/locale
-DEFS= @DEFS@ \
+DEFS += \
  -DLOCALEDIR=\"$(localedir)\" \
- -DAQBANKING_PLUGINS=\"@aqbanking_plugindir@\" \
- -DDATADIR=\"$(aqbanking_pkgdatadir)\"
+ -DAQBANKING_PLUGINS=\"$(aqbanking_plugindir)\" \
+ -DPKGDATADIR=\"$(aqbanking_pkgdatadir)\"
 
 noinst_HEADERS=\
  account_l.h \

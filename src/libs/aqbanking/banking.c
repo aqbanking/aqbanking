@@ -1130,6 +1130,21 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
   ab->pluginManagerImExporter=pm;
 
+  /* create imexporters plugin manager */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering pkgdatadir plugin manager");
+  pm=GWEN_PluginManager_new("pkgdatadir");
+  GWEN_PluginManager_AddPathFromWinReg(pm,
+				       "Software\\Aqbanking\\Paths",
+				       "pkgdatadir");
+  GWEN_PluginManager_AddPath(pm,
+			     PKGDATADIR);
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not register pkgdatadir plugin manager");
+    return AB_ERROR_GENERIC;
+  }
+  ab->pluginManagerPkgdatadir=pm;
+
   /* read config file */
   if (access(ab->configFile, F_OK)) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
@@ -1459,6 +1474,16 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     }
     GWEN_PluginManager_free(ab->pluginManagerImExporter);
     ab->pluginManagerImExporter=0;
+  }
+
+  /* unregister and unload imexporters plugin manager */
+  if (ab->pluginManagerPkgdatadir) {
+    if (GWEN_PluginManager_Unregister(ab->pluginManagerPkgdatadir)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not unregister Pkgdatadir plugin manager");
+    }
+    GWEN_PluginManager_free(ab->pluginManagerPkgdatadir);
+    ab->pluginManagerPkgdatadir=0;
   }
 
   GWEN_DB_ClearGroup(ab->data, 0);
@@ -2441,12 +2466,34 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   GWEN_BUFFER *buf;
   GWEN_DB_NODE *db;
   int rv;
+  const char *pkgdatadir;
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_STRINGLISTENTRY *sentry;
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
   db=GWEN_DB_Group_new("profiles");
 
+  /* New loading code -- use path list from PluginManager but don't
+     use its loading code */
+  pm = GWEN_PluginManager_FindPluginManager("pkgdatadir");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "pkgdatadir");
+    return 0;
+  }
+
+  sentry = GWEN_StringList_FirstEntry(GWEN_PluginManager_GetPaths(pm));
+  assert(sentry);
+  /* For now, using the first entry will work both on windows (where
+     this is the registry key) and on unix (where this is the
+     compile-time variable). */
+  pkgdatadir = GWEN_StringListEntry_Data(sentry);
+  assert(pkgdatadir);
+
   /* read global profiles */
-  GWEN_Buffer_AppendString(buf, DATADIR DIRSEP "imexporters" DIRSEP);
+  GWEN_Buffer_AppendString(buf, pkgdatadir);
+  GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad name for importer/exporter");
