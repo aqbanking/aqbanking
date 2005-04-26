@@ -1062,6 +1062,115 @@ int readMSMFiles(const char *path, const char *country) {
 
 
 
+int readBcFile(const char *fname) {
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbT;
+  int count=0;
+
+  dbData=GWEN_DB_Group_new("data");
+  fprintf(stdout, "Reading BC Bankenstamm file...\n");
+  if (readCSVFile(fname, "bcbankenstamm.conf", dbData)) {
+    DBG_ERROR(0, "Error reading BC Bankenstamm file \"%s\"", fname);
+    GWEN_DB_Group_free(dbData);
+    return -1;
+  }
+
+  if (GWEN_DB_WriteFile(dbData,
+                        "out.conf",
+                        GWEN_DB_FLAGS_QUOTE_VALUES | \
+                        GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                        GWEN_DB_FLAGS_INDEND | \
+                        GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
+                        GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+                        GWEN_DB_FLAGS_OMIT_TYPES)) {
+    DBG_ERROR(0, "Error writing bank file");
+    return -1;
+  }
+
+  fprintf(stdout, "Building database...\n");
+  dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
+  while(dbT) {
+    const char *lblz;
+    const char *lloc;
+
+    lblz=GWEN_DB_GetCharValue(dbT, "xNewBankId", 0, 0);
+    if (!lblz || !*lblz)
+      lblz=GWEN_DB_GetCharValue(dbT, "bankId", 0, 0);
+    lloc=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
+    if (lloc && *lloc && lblz && isdigit(*lblz)) {
+      AB_BANKINFO *bi;
+      GWEN_BUFFER *tbuf;
+      const char *s;
+
+      /* compose phone number */
+      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+      s=GWEN_DB_GetCharValue(dbT, "xCountryPrefix", 0, 0);
+      if (s && *s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendByte(tbuf, '-');
+      }
+      s=GWEN_DB_GetCharValue(dbT, "xPhone", 0, 0);
+      if (s && *s)
+        GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "phone", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+
+      /* compose fax number */
+      s=GWEN_DB_GetCharValue(dbT, "xCountryPrefix", 0, 0);
+      if (s && *s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendByte(tbuf, '-');
+      }
+      s=GWEN_DB_GetCharValue(dbT, "xFax", 0, 0);
+      if (s && *s)
+	GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "fax", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+
+      /* compose bank code */
+      s=GWEN_DB_GetCharValue(dbT, "xNewBankId", 0, 0);
+      if (s && *s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        /*
+        GWEN_Buffer_AppendString(tbuf, "0000");
+        */
+        GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             "bankId", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_Reset(tbuf);
+      }
+      else {
+        s=GWEN_DB_GetCharValue(dbT, "bankId", 0, 0);
+        assert(s);
+        GWEN_Buffer_AppendString(tbuf, s);
+        /*
+        s=GWEN_DB_GetCharValue(dbT, "xFilialId", 0, 0);
+        if (s)
+          GWEN_Buffer_AppendString(tbuf, s);
+        */
+        GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             "bankId", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_Reset(tbuf);
+      }
+
+      bi=AB_BankInfo_fromDb(dbT);
+      assert(bi);
+      AB_BankInfo_SetCity(bi, lloc);
+      AB_BankInfo_List_Add(bi, bis);
+      GWEN_Buffer_free(tbuf);
+      count++;
+    }
+    dbT=GWEN_DB_FindNextGroup(dbT, "bank");
+  }
+
+  GWEN_DB_Group_free(dbData);
+  fprintf(stdout, "Found %d banks\n", count);
+  return 0;
+}
+
+
+
 
 
 int makeIndexBlz(const char *fname) {
@@ -1493,6 +1602,29 @@ int main(int argc, char **argv) {
     bis=AB_BankInfo_List_new();
     dbIdx=GWEN_DB_Group_new("indexList");
     if (readATBLZFile(blzFile)) {
+      DBG_ERROR(0, "Error.");
+      return 2;
+    }
+
+    if (saveBankInfos(dstFile)) {
+      return 3;
+    }
+  }
+  else if (strcasecmp(argv[1], "build-ch")==0) {
+    const char *blzFile, *dstFile;
+
+    if (argc<4) {
+      fprintf(stderr,
+              "Usage:\n"
+              "%s build-ch BLZ-file DESTFILE\n",
+              argv[0]);
+      return 1;
+    }
+    blzFile=argv[2];
+    dstFile=argv[3];
+    bis=AB_BankInfo_List_new();
+    dbIdx=GWEN_DB_Group_new("indexList");
+    if (readBcFile(blzFile)) {
       DBG_ERROR(0, "Error.");
       return 2;
     }

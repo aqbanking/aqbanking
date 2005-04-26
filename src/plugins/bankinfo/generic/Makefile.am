@@ -1,5 +1,7 @@
 INCLUDES = $(all_includes)
-EXTRA_DIST=dbb.conf hbci.conf atblz.conf fedachdir.conf README at.tar.bz2 de.tar.bz2 us.tar.bz2
+EXTRA_DIST=\
+  dbb.conf hbci.conf atblz.conf fedachdir.conf bcbankenstamm.conf \
+  README at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
@@ -20,6 +22,7 @@ libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenh
 libbankinfo_la_LDFLAGS = $(STRIPALL)
 
 at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
+ch_files=ch/blz.idx ch/bic.idx ch/namloc.idx ch/banks.data
 de_files=de/blz.idx de/bic.idx de/namloc.idx de/banks.data
 us_files=us/blz.idx us/bic.idx us/namloc.idx us/banks.data
 
@@ -39,6 +42,24 @@ at-data: $(at_files)
 install-at: $(at_files)
 	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/at
 	$(INSTALL_DATA) $(at_files) $(DESTDIR)$(bankinfodatadir)/at
+
+
+ch.tar.bz2:
+	./mkdeinfo build-ch data/bcbankenstamm.csv tmp.banks
+	test -d ch || mkdir -p ch
+	./mkdeinfo install tmp.banks ch
+	tar cf ch.tar ch && bzip2 -9 ch.tar
+	rm -rf tmp.banks
+
+$(ch_files): ch.tar.bz2
+	test -d ch || mkdir -p ch
+	bunzip2 -k -f ch.tar.bz2 && tar xmf ch.tar && rm -f ch.tar
+
+ch-data: $(ch_files)
+
+install-ch: $(ch_files)
+	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/ch
+	$(INSTALL_DATA) $(ch_files) $(DESTDIR)$(bankinfodatadir)/ch
 
 
 de.tar.bz2:
@@ -76,15 +97,15 @@ install-us: $(us_files)
 	$(mkinstalldirs) $(DESTDIR)$(bankinfodatadir)/us
 	$(INSTALL_DATA) $(us_files) $(DESTDIR)$(bankinfodatadir)/us
 
-bankdata: at-data de-data us-data
+bankdata: at-data ch-data de-data us-data
 
-install-bankdata: install-at install-de install-us
+install-bankdata: install-at install-ch install-de install-us
 
 install-data-local: install-bankdata
 
 all-local: bankdata
 
-dist-local: at.tar.bz2 de.tar.bz2 us.tar.bz2
+dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
 
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c

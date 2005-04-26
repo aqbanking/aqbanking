@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=9
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -471,6 +471,8 @@ AC_CONFIG_FILES([
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile
   src/plugins/bankinfo/at/at.xml
+  src/plugins/bankinfo/ch/Makefile
+  src/plugins/bankinfo/ch/ch.xml
   src/plugins/bankinfo/de/Makefile
   src/plugins/bankinfo/de/de.xml
   src/plugins/bankinfo/us/Makefile

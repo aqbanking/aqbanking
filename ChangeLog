@@ -7,6 +7,7 @@
 2005/04/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a function which checks whether a given IBAN is valid
+- added bankinfo plugin for Switzerland (about 3,500 banks)
 
 
 2005-04-25  Christian Stimming <stimming@tuhh.de>
