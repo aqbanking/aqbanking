@@ -1913,6 +1913,16 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
                         const char *branchId,
                         const char *bankId,
                         const char *accountId);
+
+/**
+ * Checks whether a given international bank account number (IBAN) is
+ * valid or not.
+ * @return 0 if valid, 1 if not and -1 on error
+ * @param iban IBAN (e.g. "DE88 2008 0000 09703 7570 0")
+ */
+AQBANKING_API
+int AB_Banking_CheckIban(const char *iban);
+
 /*@}*/
 
 

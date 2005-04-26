@@ -195,4 +195,8 @@ AQBANKING_API
 int AB_Banking_UpdateAccountList(AB_BANKING *ab);
 
 
+int AB_Banking__TransformIban(const char *iban, int len,
+                              char *newIban, int maxLen);
+
+
 #endif /* AQBANKING_BANKING_P_H */

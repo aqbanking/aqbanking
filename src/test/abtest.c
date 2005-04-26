@@ -1058,6 +1058,52 @@ int test12(int argc, char **argv) {
 
 
 
+int test13(int argc, char **argv) {
+  AB_BANKING *ab;
+  int rv;
+  const char *iban;
+
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelError);
+  if (argc<3) {
+    fprintf(stderr, "IBAN needed.\n");
+    return 1;
+  }
+  iban=argv[2];
+
+  /*
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+  */
+
+  rv=AB_Banking_CheckIban(iban);
+  fprintf(stderr, "Result for IBAN \"%s\": %d\n",
+          iban, rv);
+
+  /*
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+  */
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -1095,6 +1141,8 @@ int main(int argc, char **argv) {
     rv=test11(argc, argv);
   else if (strcasecmp(cmd, "test12")==0)
     rv=test12(argc, argv);
+  else if (strcasecmp(cmd, "test13")==0)
+    rv=test13(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;

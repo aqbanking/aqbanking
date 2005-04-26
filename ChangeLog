@@ -1,12 +1,25 @@
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/04/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a function which checks whether a given IBAN is valid
+
+
 2005-04-25  Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Add PluginManager for path lookup
 	of loading the profiles.
 
+
 2005-04-24  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Change path lookup order to avoid
 	warnings on win32.
+
 
 2005/04/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
