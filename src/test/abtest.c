@@ -1059,7 +1059,7 @@ int test12(int argc, char **argv) {
 
 
 int test13(int argc, char **argv) {
-  AB_BANKING *ab;
+  /* AB_BANKING *ab; */
   int rv;
   const char *iban;
 
