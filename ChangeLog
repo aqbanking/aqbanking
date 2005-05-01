@@ -3,6 +3,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/05/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added field "period" to AB_TRANSACTION (started to prepare for standing
+  orders. To rebuild the transaction.* files you'll need the latest CVS
+  version of Gwen, because only the latest typemaker version is able to
+  handle enums)
+
 
 2005/04/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

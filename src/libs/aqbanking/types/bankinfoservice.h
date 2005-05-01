@@ -10,30 +10,14 @@ This page describes the properties of AB_BANKINFO_SERVICE
 <h3>Type</h3>
 <p>
 The following types have been registered with AqBanking:
-
 <ul>
-<li>
-<b>
-HBCI
-
-</b>
-
-- German homebanking protocol
-
-</li>
-
-<li>
-<b>
-OFX
-
-</b>
-
-- OFX direct connect protocol
-
-</li>
-
-</ul>
-</p>
+  <li>
+    <b>HBCI</b>
+    - German homebanking protocol</li>
+  <li>
+    <b>OFX</b>
+    - OFX direct connect protocol</li>
+</ul></p>
 <p>
 Set this property with @ref AB_BankInfoService_SetType, 
 get it with @ref AB_BankInfoService_GetType
@@ -42,8 +26,7 @@ get it with @ref AB_BankInfoService_GetType
 @anchor AB_BANKINFO_SERVICE_Address
 <h3>Address</h3>
 <p>
-For most services this is the URL or hostname of the server.
-</p>
+For most services this is the URL or hostname of the server.</p>
 <p>
 Set this property with @ref AB_BankInfoService_SetAddress, 
 get it with @ref AB_BankInfoService_GetAddress
@@ -52,8 +35,7 @@ get it with @ref AB_BankInfoService_GetAddress
 @anchor AB_BANKINFO_SERVICE_Suffix
 <h3>Suffix</h3>
 <p>
-For IP based services this is the port to be used (if omitted a default value suitable for the service is chosen).
-</p>
+For IP based services this is the port to be used (if omitted a default value suitable for the service is chosen).</p>
 <p>
 Set this property with @ref AB_BankInfoService_SetSuffix, 
 get it with @ref AB_BankInfoService_GetSuffix
@@ -63,32 +45,13 @@ get it with @ref AB_BankInfoService_GetSuffix
 <h3>Pversion</h3>
 <p>
 The content of this field depends on the service type. For
-
-<b>
-HBCI
-
-</b>
-
+<b>HBCI</b>
 this is the protocol version to be used:
-
 <ul>
-<li>
-2.01
-
-</li>
-
-<li>
-2.10
-
-</li>
-
-<li>
-2.20
-
-</li>
-
-</ul>
-</p>
+  <li>2.01</li>
+  <li>2.10</li>
+  <li>2.20</li>
+</ul></p>
 <p>
 Set this property with @ref AB_BankInfoService_SetPversion, 
 get it with @ref AB_BankInfoService_GetPversion
@@ -98,47 +61,16 @@ get it with @ref AB_BankInfoService_GetPversion
 <h3>Mode</h3>
 <p>
 The content of this field depends on the service type. For
-
-<b>
-HBCI
-
-</b>
-
+<b>HBCI</b>
 the following values are used:
-
 <ul>
-<li>
-DDV
-
-</li>
-
-<li>
-RDH1
-
-</li>
-
-<li>
-RDH2
-
-</li>
-
-<li>
-RDH3
-
-</li>
-
-<li>
-RDH4
-
-</li>
-
-<li>
-PINTAN
-
-</li>
-
-</ul>
-</p>
+  <li>DDV</li>
+  <li>RDH1</li>
+  <li>RDH2</li>
+  <li>RDH3</li>
+  <li>RDH4</li>
+  <li>PINTAN</li>
+</ul></p>
 <p>
 Set this property with @ref AB_BankInfoService_SetMode, 
 get it with @ref AB_BankInfoService_GetMode
@@ -147,8 +79,7 @@ get it with @ref AB_BankInfoService_GetMode
 @anchor AB_BANKINFO_SERVICE_Aux1
 <h3>Aux1</h3>
 <p>
-This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the FID from the bankinfo file.
-</p>
+This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the FID from the bankinfo file.</p>
 <p>
 Set this property with @ref AB_BankInfoService_SetAux1, 
 get it with @ref AB_BankInfoService_GetAux1
@@ -157,8 +88,7 @@ get it with @ref AB_BankInfoService_GetAux1
 @anchor AB_BANKINFO_SERVICE_Aux2
 <h3>Aux2</h3>
 <p>
-This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the ORG field from the bankinfo file.
-</p>
+This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the ORG field from the bankinfo file.</p>
 <p>
 Set this property with @ref AB_BankInfoService_SetAux2, 
 get it with @ref AB_BankInfoService_GetAux2

@@ -7,29 +7,16 @@
 /** @page P_AB_TRANSACTION_PUBLIC AB_Transaction (public)
 This page describes the properties of AB_TRANSACTION
 This type contains all important information about transactions. All text fields are in UTF-8. Please note: Since version 0.9.9.1 of AqBanking a transaction may contain splits. If an AB_TRANSACTION actually does contain splits then some variables (like
-
-<i>
-localCountry
-
-</i>
-
+<i>localCountry</i>
 ) are stored within the AB_SPLITs rather than in AB_TRANSACTION. So your application should first check for splits and read the information (marked as
-
-<i>
-in AB_SPLIT
-
-</i>
-
-below) from them.
-<h3>Local Account Info</h3>
+<i>in AB_SPLIT</i>
+below) from them.<h3>Local Account Info</h3>
 <p>
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 @anchor AB_TRANSACTION_LocalCountry
 <h4>LocalCountry</h4>
 <p>
-This is the two-character country code according to ISO 3166-1 (Alpha-2). This is also used in DNS toplevel domain names. For Germany use &quot;DE&quot; (not case-sensitive).
-</p>
+This is the two-character country code according to ISO 3166-1 (Alpha-2). This is also used in DNS toplevel domain names. For Germany use &quot;DE&quot; (not case-sensitive).</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalCountry, 
 get it with @ref AB_Transaction_GetLocalCountry
@@ -39,14 +26,8 @@ get it with @ref AB_Transaction_GetLocalCountry
 <h4>LocalBankCode</h4>
 <p>
 This is the code of the local bank (i.e.
-
-<b>
-your
-
-</b>
-
-bank).
-</p>
+<b>your</b>
+bank).</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBankCode, 
 get it with @ref AB_Transaction_GetLocalBankCode
@@ -55,8 +36,7 @@ get it with @ref AB_Transaction_GetLocalBankCode
 @anchor AB_TRANSACTION_LocalBranchId
 <h4>LocalBranchId</h4>
 <p>
-This is the branch id of the local bank (OFX only)
-</p>
+This is the branch id of the local bank (OFX only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBranchId, 
 get it with @ref AB_Transaction_GetLocalBranchId
@@ -74,8 +54,7 @@ get it with @ref AB_Transaction_GetLocalAccountNumber
 @anchor AB_TRANSACTION_LocalSuffix
 <h4>LocalSuffix</h4>
 <p>
-If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it&apos;s empty. (HBCI only)
-</p>
+If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it&apos;s empty. (HBCI only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalSuffix, 
 get it with @ref AB_Transaction_GetLocalSuffix
@@ -92,13 +71,11 @@ get it with @ref AB_Transaction_GetLocalName
 
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 @anchor AB_TRANSACTION_RemoteCountry
 <h4>RemoteCountry</h4>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.
-</p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.</p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteCountry, 
 get it with @ref AB_Transaction_GetRemoteCountry
@@ -134,8 +111,7 @@ get it with @ref AB_Transaction_GetRemoteBankCode
 @anchor AB_TRANSACTION_RemoteBranchId
 <h4>RemoteBranchId</h4>
 <p>
-This is the branch id of the remote bank (OFX only)
-</p>
+This is the branch id of the remote bank (OFX only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteBranchId, 
 get it with @ref AB_Transaction_GetRemoteBranchId
@@ -163,77 +139,29 @@ get it with @ref AB_Transaction_GetRemoteSuffix
 <h4>RemoteIban</h4>
 <p>
 International Bank Account Number according to ECBS EBS 204.
-
 <table>
-<tr>
-<th>
-Pos
-
-</th>
-
-<th>
-Meaning
-
-</th>
-
-</tr>
-
-<tr>
-<td>
-0-1
-
-</td>
-
-<td>
-Country code according to ISO 3166
-
-</td>
-
-</tr>
-
-<tr>
-<td>
-2-3
-
-</td>
-
-<td>
-Checksum
-
-</td>
-
-</tr>
-
-<tr>
-<td>
-4-33
-
-</td>
-
-<td>
-Country specific account info
-
-</td>
-
-</tr>
-
+  <tr>
+    <th>Pos</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td>0-1</td>
+    <td>Country code according to ISO 3166</td>
+  </tr>
+  <tr>
+    <td>2-3</td>
+    <td>Checksum</td>
+  </tr>
+  <tr>
+    <td>4-33</td>
+    <td>Country specific account info</td>
+  </tr>
 </table>
-
 Examples:
-
 <ul>
-<li>
-BE62510007547061
-
-</li>
-
-<li>
-FR1420041010050500013M02606
-
-</li>
-
-</ul>
-</p>
+  <li>BE62510007547061</li>
+  <li>FR1420041010050500013M02606</li>
+</ul></p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteIban, 
 get it with @ref AB_Transaction_GetRemoteIban
@@ -251,8 +179,7 @@ get it with @ref AB_Transaction_GetRemoteName
 @anchor AB_TRANSACTION_UniqueId
 <h3>UniqueId</h3>
 <p>
-This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.
-</p>
+This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.</p>
 <p>
 Set this property with @ref AB_Transaction_SetUniqueId, 
 get it with @ref AB_Transaction_GetUniqueId
@@ -264,8 +191,7 @@ get it with @ref AB_Transaction_GetUniqueId
 @anchor AB_TRANSACTION_ValutaDate
 <h4>ValutaDate</h4>
 <p>
-The date when the transaction was really executed (Datum Valuta/Wertstellung)
-</p>
+The date when the transaction was really executed (Datum Valuta/Wertstellung)</p>
 <p>
 Set this property with @ref AB_Transaction_SetValutaDate, 
 get it with @ref AB_Transaction_GetValutaDate
@@ -274,8 +200,7 @@ get it with @ref AB_Transaction_GetValutaDate
 @anchor AB_TRANSACTION_Date
 <h4>Date</h4>
 <p>
-The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)
-</p>
+The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)</p>
 <p>
 Set this property with @ref AB_Transaction_SetDate, 
 get it with @ref AB_Transaction_GetDate
@@ -283,8 +208,7 @@ get it with @ref AB_Transaction_GetDate
 
 <h3>Value</h3>
 <p>
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 @anchor AB_TRANSACTION_Value
 <h4>Value</h4>
 <p>
@@ -305,36 +229,15 @@ get it with @ref AB_Transaction_GetSplits
 
 <h3>Info Which Is Not Supported by All Backends</h3>
 <p>
+<p>This group contains information which differ between backends.</p>
 <p>
-This group contains information which differ between backends.
-
-</p>
-
-<p>
-Some of this information might not even be
-
-<b>
-supported
-
-</b>
-
-by every backends.
-
-</p>
-</p>
+  Some of this information might not even be<b>supported</b>
+  by every backends.</p></p>
 @anchor AB_TRANSACTION_TextKey
 <h4>TextKey</h4>
 <p>
-<p>
-A 3 digit numerical transaction code, defined for all kinds of different actions. (Textschluessel)
-
-</p>
-
-<p>
-For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
-
-</p>
-</p>
+<p>A 3 digit numerical transaction code, defined for all kinds of different actions. (Textschluessel)</p>
+<p>For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKey, 
 get it with @ref AB_Transaction_GetTextKey
@@ -343,8 +246,7 @@ get it with @ref AB_Transaction_GetTextKey
 @anchor AB_TRANSACTION_TransactionKey
 <h4>TransactionKey</h4>
 <p>
-this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)
-</p>
+this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionKey, 
 get it with @ref AB_Transaction_GetTransactionKey
@@ -353,8 +255,7 @@ get it with @ref AB_Transaction_GetTransactionKey
 @anchor AB_TRANSACTION_CustomerReference
 <h4>CustomerReference</h4>
 <p>
-Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise &quot;NONREF&quot; or empty (Kundenreferenz)
-</p>
+Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise &quot;NONREF&quot; or empty (Kundenreferenz)</p>
 <p>
 Set this property with @ref AB_Transaction_SetCustomerReference, 
 get it with @ref AB_Transaction_GetCustomerReference
@@ -363,8 +264,7 @@ get it with @ref AB_Transaction_GetCustomerReference
 @anchor AB_TRANSACTION_BankReference
 <h4>BankReference</h4>
 <p>
-Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)
-</p>
+Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)</p>
 <p>
 Set this property with @ref AB_Transaction_SetBankReference, 
 get it with @ref AB_Transaction_GetBankReference
@@ -373,8 +273,7 @@ get it with @ref AB_Transaction_GetBankReference
 @anchor AB_TRANSACTION_TransactionCode
 <h4>TransactionCode</h4>
 <p>
-A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)
-</p>
+A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionCode, 
 get it with @ref AB_Transaction_GetTransactionCode
@@ -383,8 +282,7 @@ get it with @ref AB_Transaction_GetTransactionCode
 @anchor AB_TRANSACTION_TransactionText
 <h4>TransactionText</h4>
 <p>
-Transaction text (e.g. STANDING ORDER) (Buchungstext)
-</p>
+Transaction text (e.g. STANDING ORDER) (Buchungstext)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionText, 
 get it with @ref AB_Transaction_GetTransactionText
@@ -402,11 +300,7 @@ get it with @ref AB_Transaction_GetPrimanota
 @anchor AB_TRANSACTION_FiId
 <h4>FiId</h4>
 <p>
-<p>
-This is an id optionally assigned by the Financial Institute. It is mostly used by OFX.
-
-</p>
-</p>
+<p>This is an id optionally assigned by the Financial Institute. It is mostly used by OFX.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetFiId, 
 get it with @ref AB_Transaction_GetFiId
@@ -415,11 +309,7 @@ get it with @ref AB_Transaction_GetFiId
 @anchor AB_TRANSACTION_Purpose
 <h4>Purpose</h4>
 <p>
-<p>
-This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.
-
-</p>
-</p>
+<p>This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetPurpose, 
 get it with @ref AB_Transaction_GetPurpose
@@ -428,14 +318,22 @@ get it with @ref AB_Transaction_GetPurpose
 @anchor AB_TRANSACTION_Category
 <h4>Category</h4>
 <p>
-<p>
-This string list contains the categories this transaction belongs to. This element is not used by AqBanking itself but some im/exporter plugins may choose to use these.
-
-</p>
-</p>
+<p>This string list contains the categories this transaction belongs to. This element is not used by AqBanking itself but some im/exporter plugins may choose to use these.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetCategory, 
 get it with @ref AB_Transaction_GetCategory
+</p>
+
+<h3>Additional Information for Standing Orders</h3>
+<p>
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p></p>
+@anchor AB_TRANSACTION_Period
+<h4>Period</h4>
+<p>
+This variable contains the execution period (e.g. whether a standing order is to be executed weekly or monthly etc).</p>
+<p>
+Set this property with @ref AB_Transaction_SetPeriod, 
+get it with @ref AB_Transaction_GetPeriod
 </p>
 
 */
@@ -451,6 +349,17 @@ get it with @ref AB_Transaction_GetCategory
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef enum {
+  AB_Transaction_PeriodUnknown=-1,
+  /** The standing order is to be executed every month.  */
+  AB_Transaction_PeriodMonthly=0,
+  /** The standing order is to be executed every week.  */
+  AB_Transaction_PeriodWeekly
+} AB_TRANSACTION_PERIOD;
+
+AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s);
+const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v);
 
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
@@ -490,10 +399,10 @@ AQBANKING_API int AB_Transaction_IsModified(const AB_TRANSACTION *st);
 AQBANKING_API void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
 
 
+
 /** @name Local Account Info
  *
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 /**
@@ -554,8 +463,7 @@ AQBANKING_API void AB_Transaction_SetLocalName(AB_TRANSACTION *el, const char *d
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 /**
@@ -679,8 +587,7 @@ AQBANKING_API void AB_Transaction_SetDate(AB_TRANSACTION *el, const GWEN_TIME *d
 
 /** @name Value
  *
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 /**
@@ -705,23 +612,10 @@ AQBANKING_API void AB_Transaction_SetSplits(AB_TRANSACTION *el, AB_SPLIT_LIST *d
 
 /** @name Info Which Is Not Supported by All Backends
  *
+<p>This group contains information which differ between backends.</p>
 <p>
-This group contains information which differ between backends.
-
-</p>
-
-<p>
-Some of this information might not even be
-
-<b>
-supported
-
-</b>
-
-by every backends.
-
-</p>
-*/
+  Some of this information might not even be<b>supported</b>
+  by every backends.</p>*/
 /*@{*/
 
 /**
@@ -821,6 +715,22 @@ AQBANKING_API void AB_Transaction_AddCategory(AB_TRANSACTION *st, const char *d,
 AQBANKING_API void AB_Transaction_RemoveCategory(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearCategory(AB_TRANSACTION *st);
 AQBANKING_API int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const char *d);
+
+/*@}*/
+
+/** @name Additional Information for Standing Orders
+ *
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_Period
+*/
+AQBANKING_API AB_TRANSACTION_PERIOD AB_Transaction_GetPeriod(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Period
+*/
+AQBANKING_API void AB_Transaction_SetPeriod(AB_TRANSACTION *el, AB_TRANSACTION_PERIOD d);
 
 /*@}*/
 

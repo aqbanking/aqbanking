@@ -26,8 +26,7 @@ struct AB_SPLIT {
 
 /** @name Account Info
  *
-This group contains information about the remote account.
-*/
+This group contains information about the remote account.*/
 /*@{*/
 
 

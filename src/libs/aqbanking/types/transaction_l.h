@@ -7,54 +7,30 @@
 /** @page P_AB_TRANSACTION_LIB AB_Transaction (lib)
 This page describes the properties of AB_TRANSACTION
 This type contains all important information about transactions. All text fields are in UTF-8. Please note: Since version 0.9.9.1 of AqBanking a transaction may contain splits. If an AB_TRANSACTION actually does contain splits then some variables (like
-
-<i>
-localCountry
-
-</i>
-
+<i>localCountry</i>
 ) are stored within the AB_SPLITs rather than in AB_TRANSACTION. So your application should first check for splits and read the information (marked as
-
-<i>
-in AB_SPLIT
-
-</i>
-
-below) from them.
-<h3>Local Account Info</h3>
+<i>in AB_SPLIT</i>
+below) from them.<h3>Local Account Info</h3>
 <p>
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 <h3>Dates</h3>
 <p>
 </p>
 <h3>Value</h3>
 <p>
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-</p>
+Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
 <h3>Info Which Is Not Supported by All Backends</h3>
 <p>
+<p>This group contains information which differ between backends.</p>
 <p>
-This group contains information which differ between backends.
-
-</p>
-
+  Some of this information might not even be<b>supported</b>
+  by every backends.</p></p>
+<h3>Additional Information for Standing Orders</h3>
 <p>
-Some of this information might not even be
-
-<b>
-supported
-
-</b>
-
-by every backends.
-
-</p>
-</p>
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p></p>
 */
 #include <gwenhywfar/misc.h>
 #include "transaction.h"
@@ -68,10 +44,10 @@ GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
 AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
 
 
+
 /** @name Local Account Info
  *
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -84,8 +60,7 @@ This group contains information about the local account. Functions of this group
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -109,8 +84,7 @@ This group contains information about the remote account. Functions of this grou
 
 /** @name Value
  *
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -119,23 +93,10 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 /** @name Info Which Is Not Supported by All Backends
  *
+<p>This group contains information which differ between backends.</p>
 <p>
-This group contains information which differ between backends.
-
-</p>
-
-<p>
-Some of this information might not even be
-
-<b>
-supported
-
-</b>
-
-by every backends.
-
-</p>
-*/
+  Some of this information might not even be<b>supported</b>
+  by every backends.</p>*/
 /*@{*/
 
 
@@ -146,6 +107,14 @@ by every backends.
 
 
 
+
+
+/*@}*/
+
+/** @name Additional Information for Standing Orders
+ *
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
+/*@{*/
 
 
 /*@}*/

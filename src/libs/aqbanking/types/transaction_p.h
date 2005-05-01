@@ -42,14 +42,15 @@ struct AB_TRANSACTION {
   char *fiId;
   GWEN_STRINGLIST *purpose;
   GWEN_STRINGLIST *category;
+  AB_TRANSACTION_PERIOD period;
 };
+
 
 
 
 /** @name Local Account Info
  *
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -62,8 +63,7 @@ This group contains information about the local account. Functions of this group
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -87,8 +87,7 @@ This group contains information about the remote account. Functions of this grou
 
 /** @name Value
  *
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.
-*/
+Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
 /*@{*/
 
 
@@ -97,23 +96,10 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 /** @name Info Which Is Not Supported by All Backends
  *
+<p>This group contains information which differ between backends.</p>
 <p>
-This group contains information which differ between backends.
-
-</p>
-
-<p>
-Some of this information might not even be
-
-<b>
-supported
-
-</b>
-
-by every backends.
-
-</p>
-*/
+  Some of this information might not even be<b>supported</b>
+  by every backends.</p>*/
 /*@{*/
 
 
@@ -124,6 +110,14 @@ by every backends.
 
 
 
+
+
+/*@}*/
+
+/** @name Additional Information for Standing Orders
+ *
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
+/*@{*/
 
 
 /*@}*/

@@ -11,6 +11,7 @@
 #include <gwenhywfar/debug.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <strings.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)

@@ -11,6 +11,7 @@
 #include <gwenhywfar/debug.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <strings.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_SPLIT)

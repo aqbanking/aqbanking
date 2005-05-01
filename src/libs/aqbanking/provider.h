@@ -10,6 +10,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+/** @file provider.h
+ * @short This file is used by AqBanking and provider backends.
+ */
+
 
 #ifndef AQBANKING_PROVIDER_H
 #define AQBANKING_PROVIDER_H
@@ -63,9 +67,54 @@ extern "C" {
 /** @defgroup G_AB_PROVIDER AB_PROVIDER (Online Banking Backends)
  * @ingroup G_AB_C_INTERFACE
  *
- * @brief This group represents backends. 
+ * @brief This group represents backends. (Don't use in applications)
  *
- * ("Provider" is simply another word for "backend".)
+ * <p>
+ * (<i>Provider</i> is simply another word for <i>backend</i>.)
+ * </p>
+ *
+ * <p>
+ * Functions in this group <b>MUST NEVER</b> be used by applications or
+ * depending libraries ! They may only be called by AqBanking or a provider
+ * on its own.
+ * </p>
+ *
+ * <p>
+ * Writing an online banking provider for AqBanking is easy. There are only
+ * a few callback functions which must be set by the provider (marked as
+ * <i>Virtual Functions</i> below).
+ * </p>
+ *
+ * <p>
+ * The work of a provider is based on jobs (see @ref AB_JOB).
+ * AqBanking also works based on jobs. If the application wants to create
+ * a job AqBanking calls the function @ref AB_Provider_UpdateJob. This
+ * function lets the provider prepare some parameters for the job given (e.g.
+ * the maximum number of purpose lines for transfer jobs etc). These limits
+ * are used by applications when preparing a job.
+ * </p>
+ * <p>
+ * If the application is finished preparing the job it calls
+ * @ref AB_Banking_EnqueueJob. After the application has enqueued all jobs
+ * it calls @ref AB_Banking_ExecuteQueue. This function now sends all jobs
+ * to their respective providers using @ref AB_Provider_AddJob. When all
+ * jobs for a given provider are added AqBanking calls
+ * @ref AB_Provider_Execute on this provider. This functions really sends the
+ * jobs to the bank server or creates DTAUS discs or whatever the provider is
+ * supposed to do.
+ * After that AqBanking call @ref AB_Provider_ResetQueue to make sure no job
+ * is left in the providers queue after execution.
+ * </p>
+ * <p>
+ * Another base class used between AqBanking and providers is @ref AB_ACCOUNT.
+ * When executing @ref AB_Banking_Init AqBanking calls
+ * @ref AB_Provider_GetAccountList on every active provider. This makes sure
+ * that AqBanking always has an updated list of accounts.
+ * When loading account information AqBanking also calls the function
+ * @ref AB_Provider_UpdateAccount on the appropriate provider to make sure
+ * that all accounts have updated information (such as account name, owner
+ * name etc).
+ * </p>
  */
 /*@{*/
 

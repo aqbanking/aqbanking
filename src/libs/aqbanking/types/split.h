@@ -6,16 +6,13 @@
 
 /** @page P_AB_SPLIT_PUBLIC AB_Split (public)
 This page describes the properties of AB_SPLIT
-This type contains all important information about transaction splits. Please note that all text fields are in UTF-8.
-<h3>Account Info</h3>
+This type contains all important information about transaction splits. Please note that all text fields are in UTF-8.<h3>Account Info</h3>
 <p>
-This group contains information about the remote account.
-</p>
+This group contains information about the remote account.</p>
 @anchor AB_SPLIT_Country
 <h4>Country</h4>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.
-</p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.</p>
 <p>
 Set this property with @ref AB_Split_SetCountry, 
 get it with @ref AB_Split_GetCountry
@@ -33,8 +30,7 @@ get it with @ref AB_Split_GetBankCode
 @anchor AB_SPLIT_BranchId
 <h4>BranchId</h4>
 <p>
-This is the branch id of the remote bank (OFX only)
-</p>
+This is the branch id of the remote bank (OFX only)</p>
 <p>
 Set this property with @ref AB_Split_SetBranchId, 
 get it with @ref AB_Split_GetBranchId
@@ -82,11 +78,7 @@ get it with @ref AB_Split_GetValue
 @anchor AB_SPLIT_Purpose
 <h3>Purpose</h3>
 <p>
-<p>
-This string list contains the purpose of the split. Every entry of this list represents a single purpose line.
-
-</p>
-</p>
+<p>This string list contains the purpose of the split. Every entry of this list represents a single purpose line.</p></p>
 <p>
 Set this property with @ref AB_Split_SetPurpose, 
 get it with @ref AB_Split_GetPurpose
@@ -149,8 +141,7 @@ AQBANKING_API void AB_Split_SetModified(AB_SPLIT *st, int i);
 
 /** @name Account Info
  *
-This group contains information about the remote account.
-*/
+This group contains information about the remote account.*/
 /*@{*/
 
 /**

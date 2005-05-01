@@ -11,11 +11,37 @@
 #include <gwenhywfar/debug.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <strings.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_TRANSACTION)
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
 GWEN_LIST2_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
+
+
+AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "monthly")==0)
+      return AB_Transaction_PeriodMonthly;
+    else if (strcasecmp(s, "weekly")==0)
+      return AB_Transaction_PeriodWeekly;
+  }
+  return AB_Transaction_PeriodUnknown;
+}
+
+
+const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v) {
+  switch(v) {
+    case AB_Transaction_PeriodMonthly:
+      return "monthly";
+
+    case AB_Transaction_PeriodWeekly:
+      return "weekly";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
 
 
 AB_TRANSACTION *AB_Transaction_new() {
@@ -162,6 +188,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->purpose=GWEN_StringList_dup(d->purpose);
   if (d->category)
     st->category=GWEN_StringList_dup(d->category);
+  st->period=d->period;
   return st;
 }
 
@@ -306,6 +333,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "period", AB_Transaction_Period_toString(st->period))) 
+    return -1;
   return 0;
 }
 
@@ -415,6 +444,7 @@ AB_TRANSACTION *st;
       AB_Transaction_AddCategory(st, s, 0);
     } /* for */
   }
+  AB_Transaction_SetPeriod(st, AB_Transaction_Period_fromString(GWEN_DB_GetCharValue(db, "period", 0, 0)));
   st->_modified=0;
   return st;
 }
@@ -1035,6 +1065,19 @@ void AB_Transaction_ClearCategory(AB_TRANSACTION *st) {
 
 int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->category, d);
+}
+
+
+AB_TRANSACTION_PERIOD AB_Transaction_GetPeriod(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->period;
+}
+
+
+void AB_Transaction_SetPeriod(AB_TRANSACTION *st, AB_TRANSACTION_PERIOD d) {
+  assert(st);
+  st->period=d;
+  st->_modified=1;
 }
 
 

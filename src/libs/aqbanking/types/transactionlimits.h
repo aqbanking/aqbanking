@@ -7,40 +7,16 @@
 /** @page P_AB_TRANSACTION_LIMITS_PUBLIC AB_TransactionLimits (public)
 This page describes the properties of AB_TRANSACTION_LIMITS
 This type describes the limits for fields of an @ref AB_TRANSACTION. The limits have the following meanings:
-
 <ul>
-<li>
-maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the described element is not allowed to be set in the transaction. All other values represent the maximum lenght of the described field.
-
-</li>
-
-<li>
-minLenSOMETHING: if 0 then this limit is unknown. All other values represent the minimum lenght of the described field.
-
-</li>
-
-<li>
-maxLinesSOMETHING: if 0 then this limit is unknown All other values represent the maximum number of lines for the described field.
-
-</li>
-
-<li>
-minLinesSOMETHING: if 0 then this limit is unknown. All other values represent the minimum number of lines for the described field.
-
-</li>
-
-<li>
-valuesSOMETHING: A list of allowed values (as string). If this list is empty then there all values are allowed (those lists @b exist in any case, so the appropriate getter function will never return NULL).
-
-</li>
-
+  <li>maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the described element is not allowed to be set in the transaction. All other values represent the maximum lenght of the described field.</li>
+  <li>minLenSOMETHING: if 0 then this limit is unknown. All other values represent the minimum lenght of the described field.</li>
+  <li>maxLinesSOMETHING: if 0 then this limit is unknown All other values represent the maximum number of lines for the described field.</li>
+  <li>minLinesSOMETHING: if 0 then this limit is unknown. All other values represent the minimum number of lines for the described field.</li>
+  <li>valuesSOMETHING: A list of allowed values (as string). If this list is empty then there all values are allowed (those lists @b exist in any case, so the appropriate getter function will never return NULL).</li>
 </ul>
-
-So if you want to check whether an given field is at all allowed you must check whether &quot;maxLenSOMETHING&quot; has a value of &quot;-1&quot;.
-<h3>Issuer Name</h3>
+So if you want to check whether an given field is at all allowed you must check whether &quot;maxLenSOMETHING&quot; has a value of &quot;-1&quot;.<h3>Issuer Name</h3>
 <p>
-Limits for the issuer name.
-</p>
+Limits for the issuer name.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenLocalName
 <h4>MaxLenLocalName</h4>
 <p>
@@ -61,8 +37,7 @@ get it with @ref AB_TransactionLimits_GetMinLenLocalName
 
 <h3>Payee Name</h3>
 <p>
-Limits for the payee name.
-</p>
+Limits for the payee name.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenRemoteName
 <h4>MaxLenRemoteName</h4>
 <p>
@@ -101,8 +76,7 @@ get it with @ref AB_TransactionLimits_GetMinLinesRemoteName
 
 <h3>Local Bank Code</h3>
 <p>
-Limits for local bank code.
-</p>
+Limits for local bank code.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenLocalBankCode
 <h4>MaxLenLocalBankCode</h4>
 <p>
@@ -123,8 +97,7 @@ get it with @ref AB_TransactionLimits_GetMinLenLocalBankCode
 
 <h3>Local Account Id</h3>
 <p>
-Limits for local account id.
-</p>
+Limits for local account id.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenLocalAccountNumber
 <h4>MaxLenLocalAccountNumber</h4>
 <p>
@@ -145,8 +118,7 @@ get it with @ref AB_TransactionLimits_GetMinLenLocalAccountNumber
 
 <h3>Local Account Number</h3>
 <p>
-Limits for local account id suffix.
-</p>
+Limits for local account id suffix.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenLocalSuffix
 <h4>MaxLenLocalSuffix</h4>
 <p>
@@ -167,8 +139,7 @@ get it with @ref AB_TransactionLimits_GetMinLenLocalSuffix
 
 <h3>Remote Bank Code</h3>
 <p>
-Limits for remote bank code.
-</p>
+Limits for remote bank code.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenRemoteBankCode
 <h4>MaxLenRemoteBankCode</h4>
 <p>
@@ -189,8 +160,7 @@ get it with @ref AB_TransactionLimits_GetMinLenRemoteBankCode
 
 <h3>Remote Account Number</h3>
 <p>
-Limits for remote account number.
-</p>
+Limits for remote account number.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenRemoteAccountNumber
 <h4>MaxLenRemoteAccountNumber</h4>
 <p>
@@ -211,8 +181,7 @@ get it with @ref AB_TransactionLimits_GetMinLenRemoteAccountNumber
 
 <h3>Remote Account Number Suffix</h3>
 <p>
-Limits for remote account id suffix.
-</p>
+Limits for remote account id suffix.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenRemoteSuffix
 <h4>MaxLenRemoteSuffix</h4>
 <p>
@@ -233,8 +202,7 @@ get it with @ref AB_TransactionLimits_GetMinLenRemoteSuffix
 
 <h3>Remote IBAN</h3>
 <p>
-Limits for remote IAN.
-</p>
+Limits for remote IAN.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenRemoteIban
 <h4>MaxLenRemoteIban</h4>
 <p>
@@ -255,8 +223,7 @@ get it with @ref AB_TransactionLimits_GetMinLenRemoteIban
 
 <h3>Text Key</h3>
 <p>
-Limits for textKey.
-</p>
+Limits for textKey.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenTextKey
 <h4>MaxLenTextKey</h4>
 <p>
@@ -278,8 +245,7 @@ get it with @ref AB_TransactionLimits_GetMinLenTextKey
 @anchor AB_TRANSACTION_LIMITS_ValuesTextKey
 <h4>ValuesTextKey</h4>
 <p>
-This string list contains one entry for every supported text key. The values must be positive integers in decimal form (no leading zero, no comma or decimal point).
-</p>
+This string list contains one entry for every supported text key. The values must be positive integers in decimal form (no leading zero, no comma or decimal point).</p>
 <p>
 Set this property with @ref AB_TransactionLimits_SetValuesTextKey, 
 get it with @ref AB_TransactionLimits_GetValuesTextKey
@@ -287,8 +253,7 @@ get it with @ref AB_TransactionLimits_GetValuesTextKey
 
 <h3>Customer Reference</h3>
 <p>
-Limits for customer reference.
-</p>
+Limits for customer reference.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenCustomerReference
 <h4>MaxLenCustomerReference</h4>
 <p>
@@ -309,8 +274,7 @@ get it with @ref AB_TransactionLimits_GetMinLenCustomerReference
 
 <h3>Bank Reference</h3>
 <p>
-Limits for bank reference.
-</p>
+Limits for bank reference.</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenBankReference
 <h4>MaxLenBankReference</h4>
 <p>
@@ -332,14 +296,8 @@ get it with @ref AB_TransactionLimits_GetMinLenBankReference
 <h3>Purpose</h3>
 <p>
 Limits for purpose (called
-
-<i>
-memo
-
-</i>
-
-in some apps).
-</p>
+<i>memo</i>
+in some apps).</p>
 @anchor AB_TRANSACTION_LIMITS_MaxLenPurpose
 <h4>MaxLenPurpose</h4>
 <p>
@@ -430,8 +388,7 @@ AQBANKING_API void AB_TransactionLimits_SetModified(AB_TRANSACTION_LIMITS *st, i
 
 /** @name Issuer Name
  *
-Limits for the issuer name.
-*/
+Limits for the issuer name.*/
 /*@{*/
 
 /**
@@ -456,8 +413,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenLocalName(AB_TRANSACTION_LIMITS
 
 /** @name Payee Name
  *
-Limits for the payee name.
-*/
+Limits for the payee name.*/
 /*@{*/
 
 /**
@@ -500,8 +456,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLinesRemoteName(AB_TRANSACTION_LIM
 
 /** @name Local Bank Code
  *
-Limits for local bank code.
-*/
+Limits for local bank code.*/
 /*@{*/
 
 /**
@@ -526,8 +481,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenLocalBankCode(AB_TRANSACTION_LI
 
 /** @name Local Account Id
  *
-Limits for local account id.
-*/
+Limits for local account id.*/
 /*@{*/
 
 /**
@@ -552,8 +506,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenLocalAccountNumber(AB_TRANSACTI
 
 /** @name Local Account Number
  *
-Limits for local account id suffix.
-*/
+Limits for local account id suffix.*/
 /*@{*/
 
 /**
@@ -578,8 +531,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenLocalSuffix(AB_TRANSACTION_LIMI
 
 /** @name Remote Bank Code
  *
-Limits for remote bank code.
-*/
+Limits for remote bank code.*/
 /*@{*/
 
 /**
@@ -604,8 +556,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenRemoteBankCode(AB_TRANSACTION_L
 
 /** @name Remote Account Number
  *
-Limits for remote account number.
-*/
+Limits for remote account number.*/
 /*@{*/
 
 /**
@@ -630,8 +581,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenRemoteAccountNumber(AB_TRANSACT
 
 /** @name Remote Account Number Suffix
  *
-Limits for remote account id suffix.
-*/
+Limits for remote account id suffix.*/
 /*@{*/
 
 /**
@@ -656,8 +606,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenRemoteSuffix(AB_TRANSACTION_LIM
 
 /** @name Remote IBAN
  *
-Limits for remote IAN.
-*/
+Limits for remote IAN.*/
 /*@{*/
 
 /**
@@ -682,8 +631,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenRemoteIban(AB_TRANSACTION_LIMIT
 
 /** @name Text Key
  *
-Limits for textKey.
-*/
+Limits for textKey.*/
 /*@{*/
 
 /**
@@ -721,8 +669,7 @@ AQBANKING_API int AB_TransactionLimits_HasValuesTextKey(const AB_TRANSACTION_LIM
 
 /** @name Customer Reference
  *
-Limits for customer reference.
-*/
+Limits for customer reference.*/
 /*@{*/
 
 /**
@@ -747,8 +694,7 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenCustomerReference(AB_TRANSACTIO
 
 /** @name Bank Reference
  *
-Limits for bank reference.
-*/
+Limits for bank reference.*/
 /*@{*/
 
 /**
@@ -774,14 +720,8 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenBankReference(AB_TRANSACTION_LI
 /** @name Purpose
  *
 Limits for purpose (called
-
-<i>
-memo
-
-</i>
-
-in some apps).
-*/
+<i>memo</i>
+in some apps).*/
 /*@{*/
 
 /**

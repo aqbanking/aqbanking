@@ -59,7 +59,7 @@
       <header type="sys" >gwenhywfar/stringlist.h</header>
       <header type="sys" >aqbanking/value.h</header>
     </headers>
-    
+  
     <group name="Account Info">
       <descr>
         This group contains information about the remote account.
@@ -103,6 +103,7 @@
         filename="transactionlimits"
         list="public"
         list2="public" >
+
   <descr>
     This type describes the limits for fields of an @ref AB_TRANSACTION.
     The limits have the following meanings:
@@ -270,6 +271,24 @@
         inherit="public" 
         list="lib"
         list2="public" >
+
+    <subtypes>
+      <type id="PERIOD" prefix="Period" mode="enum" access="public" >
+        <values>
+          <value value="0">monthly
+            <descr>
+              The standing order is to be executed every month.
+            </descr>
+          </value>
+          <value>weekly
+            <descr>
+              The standing order is to be executed every week.
+            </descr>
+          </value>
+        </values>
+      </type>
+    </subtypes>
+  
     <descr>
       This type contains all important information about transactions.
       All text fields are in UTF-8.
@@ -488,6 +507,25 @@
       </elem>
       
     </group>
+    
+    
+    <group name="Additional Information for Standing Orders">
+      <descr>
+        <p>
+         This group contains information which is used with standing orders.
+         It is not needed for other usage of this type.
+        </p>
+      </descr>
+      <elem name="period" type="PERIOD" >
+        <descr>
+          This variable contains the execution period (e.g. whether a standing
+          order is to be executed weekly or monthly etc).
+        </descr>
+      </elem>
+
+    </group>
+    
+    
   </type>
   
   
