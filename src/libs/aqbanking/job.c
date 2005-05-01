@@ -20,6 +20,7 @@
 #include "banking_l.h"
 #include "provider_l.h"
 #include "jobs/jobgettransactions_l.h"
+#include "jobs/jobgetstandingorders_l.h"
 #include "jobs/jobgetbalance_l.h"
 #include "jobs/jobsingletransfer_l.h"
 #include "jobs/jobsingledebitnote_l.h"
@@ -172,13 +173,14 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   const char *s;
 
   switch(i) {
-  case AB_Job_TypeGetBalance:      s="getbalance"; break;
-  case AB_Job_TypeGetTransactions: s="gettransactions"; break;
-  case AB_Job_TypeTransfer:        s="transfer"; break;
-  case AB_Job_TypeDebitNote:       s="debitnote"; break;
-  case AB_Job_TypeEuTransfer:      s="eutransfer"; break;
+  case AB_Job_TypeGetBalance:        s="getbalance"; break;
+  case AB_Job_TypeGetTransactions:   s="gettransactions"; break;
+  case AB_Job_TypeTransfer:          s="transfer"; break;
+  case AB_Job_TypeDebitNote:         s="debitnote"; break;
+  case AB_Job_TypeEuTransfer:        s="eutransfer"; break;
+  case AB_Job_TypeGetStandingOrders: s="getstandingorders"; break;
   default:
-  case AB_Job_TypeUnknown:         s="unknown"; break;
+  case AB_Job_TypeUnknown:           s="unknown"; break;
   }
 
   return s;
@@ -194,6 +196,7 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
   else if (strcasecmp(s, "transfer")==0) i=AB_Job_TypeTransfer;
   else if (strcasecmp(s, "debitnote")==0) i=AB_Job_TypeDebitNote;
   else if (strcasecmp(s, "eutransfer")==0) i=AB_Job_TypeEuTransfer;
+  else if (strcasecmp(s, "getstandingorders")==0) i=AB_Job_TypeGetStandingOrders;
   else i=AB_Job_TypeUnknown;
 
   return i;
@@ -259,6 +262,13 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   case AB_Job_TypeEuTransfer:
     if (AB_JobEuTransfer_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeGetStandingOrders:
+    if (AB_JobGetStandingOrders_toDb(j, db)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
@@ -424,6 +434,11 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   case AB_Job_TypeEuTransfer:
     j=AB_JobEuTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeGetStandingOrders:
+    j=AB_JobGetStandingOrders_fromDb(a, db);
     assert(j);
     break;
 

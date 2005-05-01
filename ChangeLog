@@ -9,6 +9,8 @@
   orders. To rebuild the transaction.* files you'll need the latest CVS
   version of Gwen, because only the latest typemaker version is able to
   handle enums)
+- added some more fields needed for standing orders to struct AB_TRANSACTION
+- added definitions for job AB_JobGetStandingOrders
 
 
 2005/04/26: Martin Preuss<martin@libchipcard.de>

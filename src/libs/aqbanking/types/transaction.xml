@@ -523,6 +523,45 @@
         </descr>
       </elem>
 
+      <elem name="cycle" type="int" >
+        <descr>
+          The standing order is executed every <i>cycle</i> x <i>period</i>.
+          So if <i>period</i> is <i>weekly</i> and <i>cycle</i> is <i>2</i> 
+          then the standing order is executed every 2 weeks.
+        </descr>
+      </elem>
+
+      <elem name="executionDay" type="int" >
+        <descr>
+          The execution day. The meaning of this variable depends on the
+          content of <i>period</i>:
+          <ul>
+            <li>monthly: day of the month (starting with <i>1</i>)</li>
+            <li>weekly: day of the week (starting with <i>1</i>=Monday)</li>
+          </ul>
+        </descr>
+      </elem>
+
+      <elem name="firstExecutionDate" type="GWEN_TIME" ptr="1" >
+        <descr>
+          The date when the standing order is to be executed for the first
+          time.
+        </descr>
+      </elem>
+      <elem name="lastExecutionDate" type="GWEN_TIME" ptr="1" >
+        <descr>
+          The date when the standing order is to be executed for the last
+          time.
+        </descr>
+      </elem>
+      <elem name="nextExecutionDate" type="GWEN_TIME" ptr="1" >
+        <descr>
+          The date when the standing order is to be executed next (this field
+          is only interesting when retrieving the list of currently active
+          standing orders)
+        </descr>
+      </elem>
+
     </group>
     
     

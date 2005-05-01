@@ -118,6 +118,12 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     GWEN_StringList_free(st->purpose);
   if (st->category)
     GWEN_StringList_free(st->category);
+  if (st->firstExecutionDate)
+    GWEN_Time_free(st->firstExecutionDate);
+  if (st->lastExecutionDate)
+    GWEN_Time_free(st->lastExecutionDate);
+  if (st->nextExecutionDate)
+    GWEN_Time_free(st->nextExecutionDate);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -189,6 +195,14 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
   if (d->category)
     st->category=GWEN_StringList_dup(d->category);
   st->period=d->period;
+  st->cycle=d->cycle;
+  st->executionDay=d->executionDay;
+  if (d->firstExecutionDate)
+    st->firstExecutionDate=GWEN_Time_dup(d->firstExecutionDate);
+  if (d->lastExecutionDate)
+    st->lastExecutionDate=GWEN_Time_dup(d->lastExecutionDate);
+  if (d->nextExecutionDate)
+    st->nextExecutionDate=GWEN_Time_dup(d->nextExecutionDate);
   return st;
 }
 
@@ -335,6 +349,19 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
     }
   if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "period", AB_Transaction_Period_toString(st->period))) 
     return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "cycle", st->cycle))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "executionDay", st->executionDay))
+    return -1;
+  if (st->firstExecutionDate)
+    if (GWEN_Time_toDb(st->firstExecutionDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "firstExecutionDate")))
+      return -1;
+  if (st->lastExecutionDate)
+    if (GWEN_Time_toDb(st->lastExecutionDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "lastExecutionDate")))
+      return -1;
+  if (st->nextExecutionDate)
+    if (GWEN_Time_toDb(st->nextExecutionDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "nextExecutionDate")))
+      return -1;
   return 0;
 }
 
@@ -445,6 +472,26 @@ AB_TRANSACTION *st;
     } /* for */
   }
   AB_Transaction_SetPeriod(st, AB_Transaction_Period_fromString(GWEN_DB_GetCharValue(db, "period", 0, 0)));
+  AB_Transaction_SetCycle(st, GWEN_DB_GetIntValue(db, "cycle", 0, 0));
+  AB_Transaction_SetExecutionDay(st, GWEN_DB_GetIntValue(db, "executionDay", 0, 0));
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "firstExecutionDate");
+    if (dbT)  AB_Transaction_SetFirstExecutionDate(st, GWEN_Time_fromDb(dbT));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastExecutionDate");
+    if (dbT)  AB_Transaction_SetLastExecutionDate(st, GWEN_Time_fromDb(dbT));
+  }
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "nextExecutionDate");
+    if (dbT)  AB_Transaction_SetNextExecutionDate(st, GWEN_Time_fromDb(dbT));
+  }
   st->_modified=0;
   return st;
 }
@@ -1077,6 +1124,86 @@ AB_TRANSACTION_PERIOD AB_Transaction_GetPeriod(const AB_TRANSACTION *st) {
 void AB_Transaction_SetPeriod(AB_TRANSACTION *st, AB_TRANSACTION_PERIOD d) {
   assert(st);
   st->period=d;
+  st->_modified=1;
+}
+
+
+int AB_Transaction_GetCycle(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->cycle;
+}
+
+
+void AB_Transaction_SetCycle(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->cycle=d;
+  st->_modified=1;
+}
+
+
+int AB_Transaction_GetExecutionDay(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->executionDay;
+}
+
+
+void AB_Transaction_SetExecutionDay(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->executionDay=d;
+  st->_modified=1;
+}
+
+
+const GWEN_TIME *AB_Transaction_GetFirstExecutionDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->firstExecutionDate;
+}
+
+
+void AB_Transaction_SetFirstExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
+  assert(st);
+  if (st->firstExecutionDate)
+    GWEN_Time_free(st->firstExecutionDate);
+  if (d)
+    st->firstExecutionDate=GWEN_Time_dup(d);
+  else
+    st->firstExecutionDate=0;
+  st->_modified=1;
+}
+
+
+const GWEN_TIME *AB_Transaction_GetLastExecutionDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->lastExecutionDate;
+}
+
+
+void AB_Transaction_SetLastExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
+  assert(st);
+  if (st->lastExecutionDate)
+    GWEN_Time_free(st->lastExecutionDate);
+  if (d)
+    st->lastExecutionDate=GWEN_Time_dup(d);
+  else
+    st->lastExecutionDate=0;
+  st->_modified=1;
+}
+
+
+const GWEN_TIME *AB_Transaction_GetNextExecutionDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->nextExecutionDate;
+}
+
+
+void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
+  assert(st);
+  if (st->nextExecutionDate)
+    GWEN_Time_free(st->nextExecutionDate);
+  if (d)
+    st->nextExecutionDate=GWEN_Time_dup(d);
+  else
+    st->nextExecutionDate=0;
   st->_modified=1;
 }
 

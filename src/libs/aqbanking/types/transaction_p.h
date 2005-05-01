@@ -43,6 +43,11 @@ struct AB_TRANSACTION {
   GWEN_STRINGLIST *purpose;
   GWEN_STRINGLIST *category;
   AB_TRANSACTION_PERIOD period;
+  int cycle;
+  int executionDay;
+  GWEN_TIME *firstExecutionDate;
+  GWEN_TIME *lastExecutionDate;
+  GWEN_TIME *nextExecutionDate;
 };
 
 
@@ -118,6 +123,11 @@ Functions of this group are also available in AB_SPLIT, please make your applica
  *
 <p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
 /*@{*/
+
+
+
+
+
 
 
 /*@}*/

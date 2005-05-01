@@ -336,6 +336,73 @@ Set this property with @ref AB_Transaction_SetPeriod,
 get it with @ref AB_Transaction_GetPeriod
 </p>
 
+@anchor AB_TRANSACTION_Cycle
+<h4>Cycle</h4>
+<p>
+The standing order is executed every
+<i>cycle</i>
+x
+<i>period</i>
+. So if
+<i>period</i>
+is
+<i>weekly</i>
+and
+<i>cycle</i>
+is
+<i>2</i>
+then the standing order is executed every 2 weeks.</p>
+<p>
+Set this property with @ref AB_Transaction_SetCycle, 
+get it with @ref AB_Transaction_GetCycle
+</p>
+
+@anchor AB_TRANSACTION_ExecutionDay
+<h4>ExecutionDay</h4>
+<p>
+The execution day. The meaning of this variable depends on the content of
+<i>period</i>
+:
+<ul>
+  <li>
+    monthly: day of the month (starting with<i>1</i>
+    )</li>
+  <li>
+    weekly: day of the week (starting with<i>1</i>
+    =Monday)</li>
+</ul></p>
+<p>
+Set this property with @ref AB_Transaction_SetExecutionDay, 
+get it with @ref AB_Transaction_GetExecutionDay
+</p>
+
+@anchor AB_TRANSACTION_FirstExecutionDate
+<h4>FirstExecutionDate</h4>
+<p>
+The date when the standing order is to be executed for the first time.</p>
+<p>
+Set this property with @ref AB_Transaction_SetFirstExecutionDate, 
+get it with @ref AB_Transaction_GetFirstExecutionDate
+</p>
+
+@anchor AB_TRANSACTION_LastExecutionDate
+<h4>LastExecutionDate</h4>
+<p>
+The date when the standing order is to be executed for the last time.</p>
+<p>
+Set this property with @ref AB_Transaction_SetLastExecutionDate, 
+get it with @ref AB_Transaction_GetLastExecutionDate
+</p>
+
+@anchor AB_TRANSACTION_NextExecutionDate
+<h4>NextExecutionDate</h4>
+<p>
+The date when the standing order is to be executed next (this field is only interesting when retrieving the list of currently active standing orders)</p>
+<p>
+Set this property with @ref AB_Transaction_SetNextExecutionDate, 
+get it with @ref AB_Transaction_GetNextExecutionDate
+</p>
+
 */
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
@@ -731,6 +798,51 @@ AQBANKING_API AB_TRANSACTION_PERIOD AB_Transaction_GetPeriod(const AB_TRANSACTIO
 * Set the property @ref AB_TRANSACTION_Period
 */
 AQBANKING_API void AB_Transaction_SetPeriod(AB_TRANSACTION *el, AB_TRANSACTION_PERIOD d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_Cycle
+*/
+AQBANKING_API int AB_Transaction_GetCycle(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Cycle
+*/
+AQBANKING_API void AB_Transaction_SetCycle(AB_TRANSACTION *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_ExecutionDay
+*/
+AQBANKING_API int AB_Transaction_GetExecutionDay(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_ExecutionDay
+*/
+AQBANKING_API void AB_Transaction_SetExecutionDay(AB_TRANSACTION *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_FirstExecutionDate
+*/
+AQBANKING_API const GWEN_TIME *AB_Transaction_GetFirstExecutionDate(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_FirstExecutionDate
+*/
+AQBANKING_API void AB_Transaction_SetFirstExecutionDate(AB_TRANSACTION *el, const GWEN_TIME *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LastExecutionDate
+*/
+AQBANKING_API const GWEN_TIME *AB_Transaction_GetLastExecutionDate(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_LastExecutionDate
+*/
+AQBANKING_API void AB_Transaction_SetLastExecutionDate(AB_TRANSACTION *el, const GWEN_TIME *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_NextExecutionDate
+*/
+AQBANKING_API const GWEN_TIME *AB_Transaction_GetNextExecutionDate(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_NextExecutionDate
+*/
+AQBANKING_API void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *el, const GWEN_TIME *d);
 
 /*@}*/
 
