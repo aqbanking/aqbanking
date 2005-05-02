@@ -63,6 +63,9 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   AB_TRANSACTION *nextTransaction;
   AB_ACCOUNT_STATUS_LIST *accStatusList;
   AB_ACCOUNT_STATUS *nextAccountStatus;
+
+  AB_TRANSACTION_LIST *standingOrders;
+  AB_TRANSACTION *nextStandingOrder;
 };
 
 

@@ -3,6 +3,19 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2005/05/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in ImExporter: When returning a transaction from an accountInfo
+  object the transactions was falsely unlinked from the list
+- added StandingOrders to ImExporter_Context
+- AB_Banking_GatherResponses() now also samples standing orders
+- AB_Banking_RequestTransactions(): 
+  - firstDate and lastDate are now const
+  - both dates are now set in the job if present
+- added function AB_Banking_RequestStandingOrders()
+
+
 2005/05/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added field "period" to AB_TRANSACTION (started to prepare for standing

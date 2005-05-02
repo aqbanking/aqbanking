@@ -2057,6 +2057,7 @@ AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByLocalName(AB_BANKING *ab,
  * You need to call @ref AB_Banking_ExecuteQueue to actually perform the
  * job.
  */
+AQBANKING_API 
 int AB_Banking_RequestBalance(AB_BANKING *ab,
                               const char *bankCode,
                               const char *accountNumber);
@@ -2068,11 +2069,23 @@ int AB_Banking_RequestBalance(AB_BANKING *ab,
  * Please note that not all backends and all banks allow a time span to be
  * given to this function. In such cases the dates are simply ignored.
  */
+AQBANKING_API 
 int AB_Banking_RequestTransactions(AB_BANKING *ab,
                                    const char *bankCode,
                                    const char *accountNumber,
-                                   GWEN_TIME *firstDate,
-                                   GWEN_TIME *lastDate);
+                                   const GWEN_TIME *firstDate,
+                                   const GWEN_TIME *lastDate);
+
+/**
+ * This function enqueues a request for the standing orders of an account.
+ * You need to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * job.
+ */
+AQBANKING_API 
+int AB_Banking_RequestStandingOrders(AB_BANKING *ab,
+                                     const char *bankCode,
+                                     const char *accountNumber);
+
 
 /**
  * <p>
@@ -2096,6 +2109,7 @@ int AB_Banking_RequestTransactions(AB_BANKING *ab,
  * @param ab AqBanking main object
  * @param ctx import/export context to which all information is to be added
  */
+AQBANKING_API 
 int AB_Banking_GatherResponses(AB_BANKING *ab,
                                AB_IMEXPORTER_CONTEXT *ctx);
 /*@}*/
@@ -2122,6 +2136,7 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
  * @param a online account of AqBanking you wish to map your account to
  * @param alias unique id of your application's own account structure
  */
+AQBANKING_API 
 void AB_Banking_SetAccountAlias(AB_BANKING *ab,
                                 AB_ACCOUNT *a, const char *alias);
 
@@ -2141,6 +2156,7 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
  * @param ab AqBanking main object
  * @param alias unique id of your application's own account structure
  */
+AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
                                          const char *alias);
 /*@}*/

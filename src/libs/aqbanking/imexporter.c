@@ -232,6 +232,7 @@ AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new() {
   GWEN_NEW_OBJECT(AB_IMEXPORTER_ACCOUNTINFO, iea);
   GWEN_LIST_INIT(AB_IMEXPORTER_ACCOUNTINFO, iea);
   iea->transactions=AB_Transaction_List_new();
+  iea->standingOrders=AB_Transaction_List_new();
   iea->accStatusList=AB_AccountStatus_List_new();
   return iea;
 }
@@ -246,6 +247,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->accountName);
     free(iea->owner);
     free(iea->description);
+    AB_Transaction_List_free(iea->standingOrders);
     AB_Transaction_List_free(iea->transactions);
     AB_AccountStatus_List_free(iea->accStatusList);
     GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
@@ -293,7 +295,6 @@ AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   t=iea->nextTransaction;
   if (t) {
     iea->nextTransaction=AB_Transaction_List_Next(t);
-    AB_Transaction_List_Del(t);
     return t;
   }
   iea->nextTransaction=0;
@@ -301,21 +302,47 @@ AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
 }
 
 
-/*
-AB_ACCOUNT*
-AB_ImExporterAccountInfo_GetAccount(const AB_IMEXPORTER_ACCOUNTINFO *iea){
+
+void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               AB_TRANSACTION *t){
   assert(iea);
-  return iea->account;
+  assert(t);
+
+  AB_Transaction_List_Add(t, iea->standingOrders);
 }
 
 
 
-void AB_ImExporterAccountInfo_SetAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                         AB_ACCOUNT *a){
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
   assert(iea);
-  iea->account=a;
+  t=AB_Transaction_List_First(iea->standingOrders);
+  if (t) {
+    iea->nextStandingOrder=AB_Transaction_List_Next(t);
+    return t;
+  }
+  iea->nextStandingOrder=0;
+  return 0;
 }
-*/
+
+
+
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
+  assert(iea);
+  t=iea->nextStandingOrder;
+  if (t) {
+    iea->nextStandingOrder=AB_Transaction_List_Next(t);
+    return t;
+  }
+  iea->nextStandingOrder=0;
+  return 0;
+}
+
 
 
 const char*

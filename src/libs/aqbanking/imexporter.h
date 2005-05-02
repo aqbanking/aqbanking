@@ -230,7 +230,6 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
 /**
  * Returns the first transaction stored within the context.
  * The context remains the owner of the object returned.
- * @ref AB_Transaction_free.
  */
 AQBANKING_API 
 const AB_TRANSACTION*
@@ -239,7 +238,6 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /**
  * Returns the next transaction stored within the context.
  * The context remains the owner of the object returned.
- * @ref AB_Transaction_free.
  */
 AQBANKING_API 
 const AB_TRANSACTION*
@@ -272,6 +270,29 @@ AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 AB_ACCOUNT_STATUS*
 AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+
+/**
+ * Takes over ownership of the given standing order.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             AB_TRANSACTION *t);
+/**
+ * Returns the first standing order stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns the next standing order stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 
 /**
