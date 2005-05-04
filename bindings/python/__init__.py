@@ -166,6 +166,7 @@ class AccountType(Enum):
 class AccountTypeAdapter(c_int):
     def _check_retval_(i):
         return AccountType(i)
+    _check_retval_ = staticmethod(_check_retval_)
 def from_param(cls, e):
     check_enum(e, AccountType, 'argument')
     return int(e)
@@ -888,6 +889,8 @@ class Job(c_void_p):
 
     jobstatus = property(aqb.AB_Job_GetStatus)
 
+    lastStatusChange = property(aqb.AB_Job_GetLastStatusChange)
+
     createdBy = property(aqb.AB_Job_GetCreatedBy)
 
     account = property(aqb.AB_Job_GetAccount)
@@ -896,9 +899,9 @@ class Job(c_void_p):
         return aqb.AB_Job_CheckAvailability(self)
 
     def __str__(self):
-        return "%s(id=%d/%s, type=%s, status=%s, mem=0x%x)" % \
+        return "%s(id=%d/%s, type=%s, status=%s(%s), mem=0x%x)" % \
                (self.__class__.__name__, self.jobid, self.createdBy,
-                self.jobtype, self.jobstatus, self.value)
+                self.jobtype, self.jobstatus, self.lastStatusChange, self.value)
 
 def from_param(cls, value):
     if not isinstance(value, Job):
@@ -906,6 +909,7 @@ def from_param(cls, value):
     return value
 Job.from_param = classmethod(from_param)
 
+aqb.AB_Job_GetLastStatusChange.restype = GWEN_Time
 aqb.AB_Job_GetAccount.restype = Account
 aqb.AB_Job_GetCreatedBy.restype = c_char_p
 aqb.AB_Job_GetStatus.restype = JobStatus
@@ -1325,16 +1329,11 @@ class BankingBase(c_void_p):
 	chk(aqb.AB_Banking_RequestBalance(self, bankCode, accountNumber))
 
     def requestTransactions(self, bankCode, accountNumber, firstDate, lastDate):
-        f = gwen.GWEN_Time_new(
-            firstDate.year, firstDate.month, firstDate.day,
-            firstDate.hour, firstDate.minute, firstDate.second,
-            False)
-        l = gwen.GWEN_Time_new(
-            lastDate.year, lastDate.month, lastDate.day,
-            lastDate.hour, lastDate.minute, lastDate.second,
-            False)
         chk(aqb.AB_Banking_RequestTransactions(
-            self, bankCode, accountNumber, f, l))
+            self, bankCode, accountNumber, firstDate, lastDate))
+
+    def gatherResponses(self, context):
+        chk(aqb.AB_Banking_GatherResponses(self, context))
 
     def iterAccounts(self):
 	al = aqb.AB_Banking_GetAccounts(self)
@@ -1417,8 +1416,11 @@ aqb.AB_Banking_GetImExporter.restype = ImExporter
 aqb.AB_Banking_GetImExporter.argtypes = BankingBase, c_char_p
 aqb.AB_Banking_GetImExporterProfiles.restype = GWEN_DB_Node
 aqb.AB_Banking_GetImExporterProfiles.argtypes = BankingBase, c_char_p
-aqb.AB_Banking_FindWizard.argtypes = (BankingBase, c_char_p, c_char_p,
-                                      GWEN_Buffer)
+aqb.AB_Banking_FindWizard.argtypes = (
+    BankingBase, c_char_p, c_char_p, GWEN_Buffer)
+aqb.AB_Banking_RequestTransactions.argtypes = (
+    BankingBase, c_char_p, c_char_p, GWEN_Time, GWEN_Time)
+aqb.AB_Banking_GatherResponses.argtypes = BankingBase, ImExporterContext
 
 # FIXME: should not be needed for stable version of aqBanking
 # shut up aqBanking.. too noisy..

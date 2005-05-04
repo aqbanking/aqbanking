@@ -3,6 +3,7 @@
 # DO NOT CHANGE BY HAND
 
 from _basetypes import *
+from enum import Enum, check_enum
 
 
 class BankInfoService(c_void_p):
@@ -66,8 +67,22 @@ class BankInfoService(c_void_p):
         'RDH4\n'
         'PINTAN')
 
+    aux1 = property(
+        aqb.AB_BankInfoService_GetAux1,
+        aqb.AB_BankInfoService_SetAux1,
+        'This is a multi purpose field to be used by a bankinfo plugin as\n'
+        'it sees fit.\n'
+        'OFX uses this to store the FID from the bankinfo file.')
+
+    aux2 = property(
+        aqb.AB_BankInfoService_GetAux2,
+        aqb.AB_BankInfoService_SetAux2,
+        'This is a multi purpose field to be used by a bankinfo plugin as\n'
+        'it sees fit.\n'
+        'OFX uses this to store the ORG field from the bankinfo file.')
+
     def __str__(self):
-        return "<class BankInfoService:\nmodified=%s\ntype=%s\naddress=%s\nsuffix=%s\npversion=%s\nmode=%s\n/BankInfoService>" % (self.modified,self.type,self.address,self.suffix,self.pversion,self.mode)
+        return "<class BankInfoService:\nmodified=%s\ntype=%s\naddress=%s\nsuffix=%s\npversion=%s\nmode=%s\naux1=%s\naux2=%s\n/BankInfoService>" % (self.modified,self.type,self.address,self.suffix,self.pversion,self.mode,self.aux1,self.aux2)
 
 
 class BankInfo(c_void_p):
@@ -554,6 +569,20 @@ class Transaction(c_void_p):
     def __del__(self):
         aqb.AB_Transaction_free(self)
 
+    class Period(Enum):
+        monthly = 0 # The standing order is to be executed every month.
+        weekly = 1 # The standing order is to be executed every week.
+
+    class PeriodAdapter(c_int):
+        def _check_retval_(i):
+            return Period(i)
+        _check_retval_ = staticmethod(_check_retval_)
+    def from_param(cls, e):
+        check_enum(e, Period, 'argument')
+        return int(e)
+    PeriodAdapter.from_param = classmethod(from_param)
+
+
     modified = property(
         aqb.AB_Transaction_IsModified,
         aqb.AB_Transaction_SetModified)
@@ -793,8 +822,68 @@ class Transaction(c_void_p):
         aqb.AB_Transaction_GetCategory,
         lambda self, v: aqb.AB_Transaction_SetCategory(self, makeStringlist(v)))
 
+    # Group Additional Information for Standing Orders
+    # This group contains information which is used with standing orders.
+    # It is not needed for other usage of this type.
+    # This variable contains the execution period (e.g. whether a standing
+    # order is to be executed weekly or monthly etc).
+    # The standing order is executed every cycle x period.
+    # So if period is weekly and cycle is 2
+    # then the standing order is executed every 2 weeks.
+    # The execution day. The meaning of this variable depends on the
+    # content of period:
+    # monthly: day of the month (starting with 1)
+    # weekly: day of the week (starting with 1=Monday)
+    # The date when the standing order is to be executed for the first
+    # time.
+    # The date when the standing order is to be executed for the last
+    # time.
+    # The date when the standing order is to be executed next (this field
+    # is only interesting when retrieving the list of currently active
+    # standing orders)
+
+    period = property(
+        aqb.AB_Transaction_GetPeriod,
+        aqb.AB_Transaction_SetPeriod,
+        'This variable contains the execution period (e.g. whether a standing\n'
+        'order is to be executed weekly or monthly etc).')
+
+    cycle = property(
+        aqb.AB_Transaction_GetCycle,
+        aqb.AB_Transaction_SetCycle,
+        'The standing order is executed every cycle x period.\n'
+        'So if period is weekly and cycle is 2\n'
+        'then the standing order is executed every 2 weeks.')
+
+    executionDay = property(
+        aqb.AB_Transaction_GetExecutionDay,
+        aqb.AB_Transaction_SetExecutionDay,
+        'The execution day. The meaning of this variable depends on the\n'
+        'content of period:\n'
+        'monthly: day of the month (starting with 1)\n'
+        'weekly: day of the week (starting with 1=Monday)')
+
+    firstExecutionDate = property(
+        aqb.AB_Transaction_GetFirstExecutionDate,
+        aqb.AB_Transaction_SetFirstExecutionDate,
+        'The date when the standing order is to be executed for the first\n'
+        'time.')
+
+    lastExecutionDate = property(
+        aqb.AB_Transaction_GetLastExecutionDate,
+        aqb.AB_Transaction_SetLastExecutionDate,
+        'The date when the standing order is to be executed for the last\n'
+        'time.')
+
+    nextExecutionDate = property(
+        aqb.AB_Transaction_GetNextExecutionDate,
+        aqb.AB_Transaction_SetNextExecutionDate,
+        'The date when the standing order is to be executed next (this field\n'
+        'is only interesting when retrieving the list of currently active\n'
+        'standing orders)')
+
     def __str__(self):
-        return "<class Transaction:\nmodified=%s\nlocalCountry=%s\nlocalBankCode=%s\nlocalBranchId=%s\nlocalAccountNumber=%s\nlocalSuffix=%s\nlocalName=%s\nremoteCountry=%s\nremoteBankName=%s\nremoteBankLocation=%s\nremoteBankCode=%s\nremoteBranchId=%s\nremoteAccountNumber=%s\nremoteSuffix=%s\nremoteIban=%s\nremoteName=%s\nuniqueId=%s\nvalutaDate=%s\ndate=%s\nvalue=%s\nsplits=%s\ntextKey=%s\ntransactionKey=%s\ncustomerReference=%s\nbankReference=%s\ntransactionCode=%s\ntransactionText=%s\nprimanota=%s\nfiId=%s\npurpose=%s\ncategory=%s\n/Transaction>" % (self.modified,self.localCountry,self.localBankCode,self.localBranchId,self.localAccountNumber,self.localSuffix,self.localName,self.remoteCountry,self.remoteBankName,self.remoteBankLocation,self.remoteBankCode,self.remoteBranchId,self.remoteAccountNumber,self.remoteSuffix,self.remoteIban,self.remoteName,self.uniqueId,self.valutaDate,self.date,self.value,self.splits,self.textKey,self.transactionKey,self.customerReference,self.bankReference,self.transactionCode,self.transactionText,self.primanota,self.fiId,self.purpose,self.category)
+        return "<class Transaction:\nmodified=%s\nlocalCountry=%s\nlocalBankCode=%s\nlocalBranchId=%s\nlocalAccountNumber=%s\nlocalSuffix=%s\nlocalName=%s\nremoteCountry=%s\nremoteBankName=%s\nremoteBankLocation=%s\nremoteBankCode=%s\nremoteBranchId=%s\nremoteAccountNumber=%s\nremoteSuffix=%s\nremoteIban=%s\nremoteName=%s\nuniqueId=%s\nvalutaDate=%s\ndate=%s\nvalue=%s\nsplits=%s\ntextKey=%s\ntransactionKey=%s\ncustomerReference=%s\nbankReference=%s\ntransactionCode=%s\ntransactionText=%s\nprimanota=%s\nfiId=%s\npurpose=%s\ncategory=%s\nperiod=%s\ncycle=%s\nexecutionDay=%s\nfirstExecutionDate=%s\nlastExecutionDate=%s\nnextExecutionDate=%s\n/Transaction>" % (self.modified,self.localCountry,self.localBankCode,self.localBranchId,self.localAccountNumber,self.localSuffix,self.localName,self.remoteCountry,self.remoteBankName,self.remoteBankLocation,self.remoteBankCode,self.remoteBranchId,self.remoteAccountNumber,self.remoteSuffix,self.remoteIban,self.remoteName,self.uniqueId,self.valutaDate,self.date,self.value,self.splits,self.textKey,self.transactionKey,self.customerReference,self.bankReference,self.transactionCode,self.transactionText,self.primanota,self.fiId,self.purpose,self.category,self.period,self.cycle,self.executionDay,self.firstExecutionDate,self.lastExecutionDate,self.nextExecutionDate)
 
 
 # list helpers
@@ -997,6 +1086,18 @@ aqb.AB_Transaction_GetFiId.restype = c_char_p
 aqb.AB_Transaction_SetFiId.argtypes = Transaction, c_char_p
 aqb.AB_Transaction_GetPurpose.restype = tupleStringlist
 aqb.AB_Transaction_GetCategory.restype = tupleStringlist
+aqb.AB_Transaction_GetPeriod.restype = Transaction.PeriodAdapter
+aqb.AB_Transaction_SetPeriod.argtypes = Transaction, Transaction.PeriodAdapter
+aqb.AB_Transaction_GetCycle.restype = c_int
+aqb.AB_Transaction_SetCycle.argtypes = Transaction, c_int
+aqb.AB_Transaction_GetExecutionDay.restype = c_int
+aqb.AB_Transaction_SetExecutionDay.argtypes = Transaction, c_int
+aqb.AB_Transaction_GetFirstExecutionDate.restype = GWEN_Time
+aqb.AB_Transaction_SetFirstExecutionDate.argtypes = Transaction, GWEN_Time
+aqb.AB_Transaction_GetLastExecutionDate.restype = GWEN_Time
+aqb.AB_Transaction_SetLastExecutionDate.argtypes = Transaction, GWEN_Time
+aqb.AB_Transaction_GetNextExecutionDate.restype = GWEN_Time
+aqb.AB_Transaction_SetNextExecutionDate.argtypes = Transaction, GWEN_Time
 
 # Split
 aqb.AB_Split_IsModified.restype = c_int
@@ -1029,6 +1130,10 @@ aqb.AB_BankInfoService_GetPversion.restype = c_char_p
 aqb.AB_BankInfoService_SetPversion.argtypes = BankInfoService, c_char_p
 aqb.AB_BankInfoService_GetMode.restype = c_char_p
 aqb.AB_BankInfoService_SetMode.argtypes = BankInfoService, c_char_p
+aqb.AB_BankInfoService_GetAux1.restype = c_char_p
+aqb.AB_BankInfoService_SetAux1.argtypes = BankInfoService, c_char_p
+aqb.AB_BankInfoService_GetAux2.restype = c_char_p
+aqb.AB_BankInfoService_SetAux2.argtypes = BankInfoService, c_char_p
 
 # TransactionLimits
 aqb.AB_TransactionLimits_IsModified.restype = c_int

@@ -12,7 +12,23 @@ fileheader = u"""\
 # This file is generated be aqcodegen
 # DO NOT CHANGE BY HAND
 
-from _basetypes import *\
+from _basetypes import *
+from enum import Enum, check_enum\
+"""
+
+enumheader = u"""
+%(i)sclass %(name)s(Enum):\
+"""
+
+enumadapter = u"""
+%(i)sclass %(name)sAdapter(c_int):
+%(i)s    def _check_retval_(i):
+%(i)s        return %(name)s(i)
+%(i)s    _check_retval_ = staticmethod(_check_retval_)
+%(i)sdef from_param(cls, e):
+%(i)s    check_enum(e, %(name)s, 'argument')
+%(i)s    return int(e)
+%(i)s%(name)sAdapter.from_param = classmethod(from_param)
 """
 
 classheader = u"""
@@ -114,6 +130,22 @@ class ValueType_ctypes(ValueType):
                        propname),
             cls.classname, tp))
 
+
+class ValueType_enum(ValueType_ctypes):
+
+    def __init__(self, typename):
+        ValueType_ctypes.__init__(self, typename)
+
+    def gettype(self, attr):
+        try:
+            ptr = attrValue(attr,'ptr')
+        except KeyError:
+            pass
+        else:
+            if ptr == '1':
+                raise ValueError("ptr to enum??")
+        return self.typename + 'Adapter'
+        
 
 class ValueType_class(ValueType_ctypes):
 
@@ -294,8 +326,9 @@ class CodeGenerator(object):
             for t in tp.getElementsByTagName('type'):
                 self.parse_type(t)
         for tp in doc.getElementsByTagName('types'):
-            for t in tp.getElementsByTagName('type'):
-                self.print_type(t)
+            for t in tp.childNodes:
+                if t.nodeType != xml.dom.Node.TEXT_NODE:
+                    self.print_type(t)
         self.print_helpers()
         self.print_decl()
         if self.errors:
@@ -332,9 +365,45 @@ class CodeGenerator(object):
             for tp, cls, attr in fdef:
                 tp.print_declaration(self.write, cls, attr)
 
-    def print_type(self, t):
+    def print_enum(self, t, outer=None, indent=0):
+        self.parse_type(t)
+        p = " " * indent
         a = t.attributes
-        classname = attrValue(a,'class')
+        enumname = attrValue(a,'prefix')
+        if outer:
+            oname = outer + '.' + enumname
+        else:
+            oname = enumname
+        self.type_id[attrValue(a,'id')] = ValueType_enum(oname)
+        d = {"i": p, "name": enumname}
+        self.write(enumheader % d)
+        n = 0
+        for c in t.getElementsByTagName('value'):
+            a = c.attributes
+            v = a.get((None,'value'))
+            if v is not None:
+                n = int(v.nodeValue)
+            name = c.childNodes[0].nodeValue.strip()
+            s = []
+            for tc in c.childNodes:
+                if tc.nodeName == 'descr':
+                    s.append(self.get_text(tc))
+            s = ''.join(s)
+            if s:
+                s = ' # ' + s
+            self.write(u"%s    %s = %d%s" % (p, name, n, s))
+            n += 1
+        self.write(enumadapter % d)
+
+    def print_type(self, t, outer=None, indent=0):
+        a = t.attributes
+	try:
+	    classname = attrValue(a,'class')
+	except KeyError:
+            if attrValue(a, 'mode') != 'enum':
+                raise ValueError("type is no class, and mode <> enum")
+            self.print_enum(t, outer, indent)
+            return
         self.cls = ClassDesc(classname,
                              attrValue(a,'prefix'))
         s = []
@@ -350,6 +419,11 @@ class CodeGenerator(object):
              }
         self.proplist = []
         self.write(classheader % d)
+        for c in t.childNodes:
+            if c.nodeName == 'subtypes':
+                for ct in c.childNodes:
+                    if ct.nodeType != xml.dom.Node.TEXT_NODE:
+                        self.print_type(ct, outer=classname, indent=indent+4)
         self.print_property('int','modified',getprefix='Is')
         for c in t.childNodes:
             if c.nodeName == "group":

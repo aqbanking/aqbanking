@@ -1,7 +1,16 @@
-
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
+
+
+2005-05-04  Andreas Degert  <ad@papyrus-gmbh.de>
+
+	* bindings/python/_aqtypes.py: regenerated.
+
+	* bindings/python/aqcodegen: added nested type definitions and
+	enums (but as of now only nested enum definitions will work..).
+
+	* bindings/python/__init__.py: some fixes and additions.
 
 
 2005/05/02: Martin Preuss<martin@libchipcard.de>
