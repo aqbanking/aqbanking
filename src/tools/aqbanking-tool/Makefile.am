@@ -1,3 +1,5 @@
+EXTRA_DIST=README
+
 INCLUDES = $(gwenhywfar_includes) -I$(all_includes)
 noinst_PROGRAMS=aqbanking-tool
 

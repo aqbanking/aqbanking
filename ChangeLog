@@ -12,6 +12,7 @@
   - AB_ImExporterAccountInfo_fromDb()
   - AB_AccountStatus_List_dup()
 - added command line tool which allows some basic operations (aqbanking-tool)
+- added a README for aqbanking-tool
 
 
 2005-05-04  Andreas Degert  <ad@papyrus-gmbh.de>

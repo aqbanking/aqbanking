@@ -1,0 +1,159 @@
+
+This folder contains a tool for basic operations on AqBanking.
+
+Usage:
+aqbanking-tool [GLOBAL-OPTIONS] COMMAND [COMMAND-SPECIFIC-OPTIONS]
+
+Every command may have local command line options which must follow the
+command. These local arguments are described below.
+
+
+
+Global Options
+==============
+
+This tool has global options and command-specific options.
+Globals options are those before the COMMAND, command-specific options
+follow the COMMAND.
+
+[-P           ARG]     PINFILE to be used for automatic PIN lookup
+                       For HBCI pins you can use the tool "aqhbci-tool" to 
+                       create an empty pin file:
+                       "aqhbci-tool mkpinlist -o PINFILE"
+                       After that just edit the newly created file with your
+                       favorite editor and insert the pins you want to use
+                       automatically.
+
+
+
+
+The following is a list of commands which are implemented so far.
+
+
+"listaccs"
+==========
+
+This command prints a TAB separated list of currently available accounts
+to stdout.
+
+
+Options
+-------
+--bank        ARG      Bank code ("Bankleitzahl")
+--account     ARG      Account number
+--bankname    ARG      Bank name
+--accountname ARG      Account name
+
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+
+Examples
+--------
+aqbanking-tool listaccs
+aqbanking-tool listaccs --bank 28250110
+aqbanking-tool listaccs --bankname "*Sparkasse*"
+aqbanking-tool listaccs --account 123456
+
+
+
+"request"
+=========
+
+This command enqueues a request for specified accounts. To actually perform
+the request (i.e. send it to the bank) you will have to use the command
+"exec" after "request".
+
+
+Options
+-------
+[--bank        ARG]      Bank code ("Bankleitzahl")
+[--account     ARG]      Account number
+[--bankname    ARG]      Bank name
+[--accountname ARG]      Account name
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+At least one of the following options must be specified:
+[--transactions   ]      Add a request for transactions
+[--balance        ]      Add a request for account balance
+[--sto            ]      Add a request for standing orders
+
+For transaction requests these options are supported in addition:
+[--fromdate    ARG]      Specify the first date for which transactions are to
+                         requested
+[--todate      ARG]      Specify the last date for which transactions are to
+                         requested
+
+
+Examples
+--------
+aqbanking-tool request --balance
+aqbanking-tool request --transactions
+aqbanking-tool request --transactions --fromdate 20050501
+aqbanking-tool request --transactions --fromdate 20050501 --todate 20050513
+aqbanking-tool request --transactions --balance
+aqbanking-tool request --transactions --balance --sto
+
+
+
+"exec"
+======
+
+This command executes previously enqueued requests.
+The results are either printed to stdout or written to a file.
+
+
+Options
+-------
+[--ctxfile     ARG]      Specify the file to which the results are to be
+                         stored. This file is needed for some other commands
+                         so it is best to specify it. Defaults to stdout.
+
+
+Examples
+--------
+aqbanking-tool exec --ctxfile result.ctx
+
+
+
+"listtrans"
+===========
+
+This command inspects the result file from the command "exec" and dumps 
+transaction statements from this file.
+
+
+Options
+-------
+[--bank         ARG]     Bank code ("Bankleitzahl")
+[--account      ARG]     Account number
+[--bankname     ARG]     Bank name
+[--accountname  ARG]     Account name
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+[--ctxfile      ARG]     The result file to be used (defaults to stdin)
+[--outfile      ARG]     Name of the output file to which the transactions
+                         are to be stored. Defaults to stdout.
+[--exporter     ARG]     Name of the export plugin to be used for storage.
+                         This defaults to "csv".
+[--profile      ARG]     Name of the profile of the exporter plugin to be
+                         used. Defaults to "default" (for every exporter
+                         plugin a "default" profile is provided by AqBanking).
+
+Normally the system-wide profiles (and local AqBanking profiles of the user)
+are used when searching for a profile. However, with the following option
+you can use you own profiles database.
+[--profile-file ARG]     Optional profile database file (a GWEN_DB)
+
+
+Examples
+--------
+aqbanking-tool listtrans --ctxfile result.ctx --outfile result.csv
+aqbanking-tool listtrans --bankname "*Sparkasse*" --ctxfile result.ctx
+                         --outfile result.csv
+aqbanking-tool listtrans --ctxfile result.ctx --outfile result.csv
+                         --profile MyOwnProfile
+
+
