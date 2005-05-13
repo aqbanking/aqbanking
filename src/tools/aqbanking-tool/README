@@ -5,7 +5,8 @@ Usage:
 aqbanking-tool [GLOBAL-OPTIONS] COMMAND [COMMAND-SPECIFIC-OPTIONS]
 
 Every command may have local command line options which must follow the
-command. These local arguments are described below.
+command. These local arguments are described with the individual commands
+below.
 
 
 
@@ -13,6 +14,7 @@ Global Options
 ==============
 
 This tool has global options and command-specific options.
+
 Globals options are those before the COMMAND, command-specific options
 follow the COMMAND.
 
@@ -43,7 +45,6 @@ Options
 --account     ARG      Account number
 --bankname    ARG      Bank name
 --accountname ARG      Account name
-
 Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
 above automatically matches any account.
 
@@ -121,7 +122,7 @@ aqbanking-tool exec --ctxfile result.ctx
 ===========
 
 This command inspects the result file from the command "exec" and dumps 
-transaction statements from this file.
+transaction statements from this file to stdout or a file.
 
 
 Options
@@ -144,7 +145,7 @@ above automatically matches any account.
 
 Normally the system-wide profiles (and local AqBanking profiles of the user)
 are used when searching for a profile. However, with the following option
-you can use you own profiles database.
+you can use your own profiles database.
 [--profile-file ARG]     Optional profile database file (a GWEN_DB)
 
 
