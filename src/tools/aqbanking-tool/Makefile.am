@@ -16,4 +16,10 @@ aqbanking_tool_SOURCES=main.c cbanking.c progress.c \
 aqbanking_tool_LDADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs) $(aqbanking_libs)
 
 sources:
+	for f in $(aqbanking_tool_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
 
