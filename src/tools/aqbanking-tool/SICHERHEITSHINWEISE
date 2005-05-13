@@ -1,0 +1,51 @@
+Tips zur Sicherheit
+===================
+
+Insbesondere, wenn Sie mit einer PIN-Datei arbeiten wollen, sollten Sie diesen
+Abschnitt aufmerksam lesen.
+
+
+Der sicherste Weg AqBanking-Tool zu verwenden ist der folgende:
+- eine neue Gruppe "aqbanking-tool" anlegen
+- einen neuen Benutzer "aqbanking-tool" anlegen, zur Gruppe "aqbanking-tool" 
+  gehoerend, mit der shell "/bin/false". Das verhindert, dass sich 
+  irgendjemand als Benutzer "aqbanking-tool" einloggen kann
+- die ausfuehrbare Datei "aqbanking-tool" folgendermassen bearbeiten:
+  - chown aqbanking-tool:aqbanking-tool aqbanking-tool
+  - chmod o-rwx aqbanking-tool
+  - chmod g+rx aqbanking-tool
+  - chmod o+s aqbanking-tool
+  Der letzte Schritt sorgt dafuer, dass AqBanking-Tool immer als Benutzer 
+  "aqbanking-tool" ausgefuehrt wird, die Schritte davor sorgen dafuer, dass 
+  nur DIE Benutzer AqBanking-Tool ausfuehren duerfen, die Mitglieder der 
+  Gruppe "aqbanking-tool" sind
+- Verzeichnis "/home/aqbanking-tool" anlegen, nur les- und schreibbar fuer den
+  Benutzer "aqbanking-tool"
+- den Benutzer, der mit AqBanking-Tool arbeitet will, zur Gruppe 
+  "aqbanking-tool" hinzufuegen
+
+Alle Dateien (und insbesondere die PIN-Datei!) sollten im Heimat-Verzeichnis
+des Benutzers "aqbanking-tool" liegen, und vor allem nur les- und schreibbar 
+fuer diesen Benutzer sein !
+
+Dieser Anleitung folgend kann nicht einmal der ausfuehrende Benutzer die 
+PIN-Datei lesen oder gar veraendern, AqBanking-Tool aber kann diese Datei 
+lesen.
+
+Ohne diese Vorkehrungen - also wenn sie als normaler Benutzer ohne SUID
+starten - kann jeder Prozess, den sie als normaler Benutzer starten, die
+PIN-Datei lesen. Bedenken Sie dabei, dass auch die Internet-Browser etc
+mit Ihrer Benutzerkennung laufen und folglich diese Datei lesen koennten !
+
+Ein protentieller Angreifer muesste also nicht einmal root sein, um Ihre PINs
+auszuspionieren !
+
+Bedenken Sie bitte, dass wenn AqBanking-Tool irgendwelche Dateien erzeugen
+soll, es diese Dateien nicht im Heimatverzeichnis des aufrufenden Benutzers 
+ablegen kann, da es im Normalfall dazu keine Berechtigung hat.
+
+Alternativ koennen Sie im Heimat-Verzeichnis des Benutzers "aqbanking-tool" 
+ein Verzeichnis einrichten, dass auch von den Mitgliedern der Gruppe 
+"aqbanking-tool" bearbeitet werden darf.
+
+
