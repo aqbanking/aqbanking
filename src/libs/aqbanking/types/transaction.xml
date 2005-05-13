@@ -273,9 +273,15 @@
         list2="public" >
 
     <subtypes>
+
       <type id="PERIOD" prefix="Period" mode="enum" access="public" >
         <values>
-          <value value="0">monthly
+          <value value="0">none
+            <descr>
+              No period.
+            </descr>
+          </value>
+          <value>monthly
             <descr>
               The standing order is to be executed every month.
             </descr>
@@ -287,7 +293,59 @@
           </value>
         </values>
       </type>
+
+      <type id="TYPE" prefix="Type" mode="enum" access="public" >
+        <values>
+          <value value="0">transaction
+            <descr>
+              Simple transaction (as in transaction statements)
+            </descr>
+          </value>
+          <value>transfer
+            <descr>
+              Transfer type of transaction (as used with transfer jobs)
+            </descr>
+          </value>
+          <value>debitNote
+            <descr>
+              Debit note type of transaction (as used with debit note jobs)
+            </descr>
+          </value>
+          <value>euTransfer
+            <descr>
+              EU-Transfer type of transaction (as used for with transfer jobs)
+            </descr>
+          </value>
+        </values>
+      </type>
+
+      <type id="STATUS" prefix="Status" mode="enum" access="public" >
+        <values>
+          <value value="0">none
+            <descr>
+              No status.
+            </descr>
+          </value>
+          <value>accepted
+            <descr>
+              The transfer has been accepted by the bank
+            </descr>
+          </value>
+          <value>rejected
+            <descr>
+              The transfer has been rejected by the bank (or was errornous)
+            </descr>
+          </value>
+          <value>pending
+            <descr>
+              The transfer is still pending.
+            </descr>
+          </value>
+        </values>
+      </type>
+
     </subtypes>
+
   
     <descr>
       This type contains all important information about transactions.
@@ -306,6 +364,7 @@
       <header type="sys" >gwenhywfar/stringlist.h</header>
       <header type="sys" >aqbanking/value.h</header>
       <header type="sys" >aqbanking/split.h</header>
+      <header type="sys" >aqbanking/transactionlimits.h</header>
     </headers>
 
     <group name="Local Account Info">
@@ -507,8 +566,7 @@
       </elem>
       
     </group>
-    
-    
+
     <group name="Additional Information for Standing Orders">
       <descr>
         <p>
@@ -563,7 +621,31 @@
       </elem>
 
     </group>
-    
+
+    <group name="Additional Information for Transfers" >
+      <descr>
+        <p>
+         This group contains information which is used with all kinds of
+         transfers.
+         It is setup by the function @ref AB_Banking_GatherResponses for
+         transfers but not used by AqBanking otherwise.
+        </p>
+      </descr>
+      <elem name="type" type="TYPE" >
+        <descr>
+          This variable contains the type of transfer (transfer, debit note
+          etc).
+        </descr>
+      </elem>
+      <elem name="status" type="STATUS" >
+        <descr>
+          This variable contains the status of the transfer (accepted,
+          rejected, pending).
+          etc).
+        </descr>
+      </elem>
+
+    </group>
     
   </type>
   

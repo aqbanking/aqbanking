@@ -234,6 +234,7 @@ AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new() {
   iea->transactions=AB_Transaction_List_new();
   iea->standingOrders=AB_Transaction_List_new();
   iea->accStatusList=AB_AccountStatus_List_new();
+  iea->transfers=AB_Transaction_List_new();
   return iea;
 }
 
@@ -247,6 +248,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->accountName);
     free(iea->owner);
     free(iea->description);
+    AB_Transaction_List_free(iea->transfers);
     AB_Transaction_List_free(iea->standingOrders);
     AB_Transaction_List_free(iea->transactions);
     AB_AccountStatus_List_free(iea->accStatusList);
@@ -279,6 +281,7 @@ AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
   iea->accStatusList=AB_AccountStatus_List_dup(oi->accStatusList);
   iea->transactions=AB_Transaction_List_dup(oi->transactions);
   iea->standingOrders=AB_Transaction_List_dup(oi->standingOrders);
+  iea->transfers=AB_Transaction_List_dup(oi->transfers);
   return iea;
 }
 
@@ -379,6 +382,30 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
     }
   }
 
+  if (iea->transfers) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List_First(iea->transfers);
+    if (t) {
+      GWEN_DB_NODE *dbG;
+
+      dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "transferList");
+      assert(dbG);
+
+      while(t) {
+	GWEN_DB_NODE *dbT;
+
+	dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			     "transfer");
+	assert(dbT);
+	if (AB_Transaction_toDb(t, dbT))
+	  return -1;
+	t=AB_Transaction_List_Next(t);
+      }
+    }
+  }
+
   return 0;
 }
 
@@ -446,6 +473,20 @@ AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
       assert(t);
       AB_Transaction_List_Add(t, iea->standingOrders);
       dbT=GWEN_DB_FindNextGroup(dbT, "standingOrder");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "transferList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "transfer");
+    while(dbT) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_fromDb(dbT);
+      assert(t);
+      AB_Transaction_List_Add(t, iea->transfers);
+      dbT=GWEN_DB_FindNextGroup(dbT, "transfer");
     }
   }
 
@@ -536,6 +577,48 @@ AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
     return t;
   }
   iea->nextStandingOrder=0;
+  return 0;
+}
+
+
+
+void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             AB_TRANSACTION *t){
+  assert(iea);
+  assert(t);
+
+  AB_Transaction_List_Add(t, iea->transfers);
+}
+
+
+
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
+  assert(iea);
+  t=AB_Transaction_List_First(iea->transfers);
+  if (t) {
+    iea->nextTransfer=AB_Transaction_List_Next(t);
+    return t;
+  }
+  iea->nextTransfer=0;
+  return 0;
+}
+
+
+
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
+  AB_TRANSACTION *t;
+
+  assert(iea);
+  t=iea->nextTransfer;
+  if (t) {
+    iea->nextTransfer=AB_Transaction_List_Next(t);
+    return t;
+  }
+  iea->nextTransfer=0;
   return 0;
 }
 

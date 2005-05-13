@@ -28,6 +28,97 @@
 
 
 
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AB_TRANSACTION *t;
+  const char *s;
+  int i;
+
+  assert(a);
+  assert(db);
+  t=AB_Transaction_new();
+
+  /* local account */
+  s=AB_Account_GetCountry(a);
+  if (!s || !*s)
+    s="de";
+  AB_Transaction_SetLocalCountry(t, s);
+  AB_Transaction_SetRemoteCountry(t, s);
+
+  s=AB_Account_GetBankCode(a);
+  if (s && *s)
+    AB_Transaction_SetLocalBankCode(t, s);
+  s=AB_Account_GetAccountNumber(a);
+  if (s && *s)
+    AB_Transaction_SetLocalAccountNumber(t, s);
+  s=AB_Account_GetOwnerName(a);
+  if (s && *s)
+    AB_Transaction_SetLocalName(t, s);
+
+  /* remote account */
+  s=GWEN_DB_GetCharValue(db, "remoteBankId", 0, 0);
+  if (s && *s)
+    AB_Transaction_SetRemoteBankCode(t, s);
+  else {
+    DBG_ERROR(0, "No remote bank id given");
+    AB_Transaction_free(t);
+    return 0;
+  }
+  s=GWEN_DB_GetCharValue(db, "remoteAccountId", 0, 0);
+  if (s && *s)
+    AB_Transaction_SetRemoteAccountNumber(t, s);
+  for (i=0; i<10; i++) {
+    s=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
+    if (!s)
+      break;
+    if (*s)
+      AB_Transaction_AddRemoteName(t, s, 0);
+  }
+  if (i<1) {
+    DBG_ERROR(0, "No remote name given");
+    AB_Transaction_free(t);
+    return 0;
+  }
+
+  /* transfer data */
+  for (i=0; i<20; i++) {
+    s=GWEN_DB_GetCharValue(db, "purpose", i, 0);
+    if (!s)
+      break;
+    if (*s)
+      AB_Transaction_AddPurpose(t, s, 0);
+  }
+  if (i<1) {
+    DBG_ERROR(0, "No purpose given");
+    AB_Transaction_free(t);
+    return 0;
+  }
+
+  i=GWEN_DB_GetIntValue(db, "textkey", 0, -1);
+  if (i>0)
+    AB_Transaction_SetTextKey(t, i);
+
+  s=GWEN_DB_GetCharValue(db, "value", 0, 0);
+  if (s && *s) {
+    AB_VALUE *v;
+
+    v=AB_Value_fromString(s);
+    assert(v);
+    if (AB_Value_IsNegative(v) || AB_Value_IsZero(v)) {
+      DBG_ERROR(0, "Only positive non-zero amount allowed");
+      AB_Transaction_free(t);
+      return 0;
+    }
+    AB_Transaction_SetValue(t, v);
+    AB_Value_free(v);
+  }
+  else {
+    DBG_ERROR(0, "No value given");
+    AB_Transaction_free(t);
+    return 0;
+  }
+
+  return t;
+}
 
 
 
@@ -147,6 +238,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "listtrans")==0) {
     rv=listTrans(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "transfer")==0) {
+    rv=transfer(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

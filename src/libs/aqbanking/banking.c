@@ -46,6 +46,10 @@
 #include "jobgetbalance.h"
 #include "jobgettransactions.h"
 #include "jobgetstandingorders.h"
+#include "jobsingletransfer.h"
+#include "jobsingledebitnote.h"
+#include "jobeutransfer.h"
+
 
 #ifdef OS_WIN32
 # define ftruncate chsize
@@ -4394,6 +4398,87 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
         AB_Transaction_List2Iterator_free(it);
       }
 
+      tryRemove=1;
+    }
+    else if (AB_Job_GetType(j)==AB_Job_TypeTransfer) {
+      const AB_TRANSACTION *t;
+
+      t=AB_JobSingleTransfer_GetTransaction(j);
+      if (t) {
+        AB_TRANSACTION *nt;
+
+        nt=AB_Transaction_dup(t);
+        assert(nt);
+        AB_Transaction_SetType(nt, AB_Transaction_TypeTransfer);
+        switch(AB_Job_GetStatus(j)) {
+        case AB_Job_StatusPending:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusPending);
+          break;
+        case AB_Job_StatusFinished:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusAccepted);
+          break;
+        case AB_Job_StatusError:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusRejected);
+          break;
+        default:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusUnknown);
+        };
+        AB_ImExporterAccountInfo_AddTransfer(ai, nt);
+      }
+      tryRemove=1;
+    }
+    else if (AB_Job_GetType(j)==AB_Job_TypeDebitNote) {
+      const AB_TRANSACTION *t;
+
+      t=AB_JobSingleDebitNote_GetTransaction(j);
+      if (t) {
+        AB_TRANSACTION *nt;
+
+        nt=AB_Transaction_dup(t);
+        assert(nt);
+        AB_Transaction_SetType(nt, AB_Transaction_TypeDebitNote);
+        switch(AB_Job_GetStatus(j)) {
+        case AB_Job_StatusPending:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusPending);
+          break;
+        case AB_Job_StatusFinished:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusAccepted);
+          break;
+        case AB_Job_StatusError:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusRejected);
+          break;
+        default:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusUnknown);
+        };
+        AB_ImExporterAccountInfo_AddTransfer(ai, nt);
+      }
+      tryRemove=1;
+    }
+    else if (AB_Job_GetType(j)==AB_Job_TypeEuTransfer) {
+      const AB_TRANSACTION *t;
+
+      t=AB_JobEuTransfer_GetTransaction(j);
+      if (t) {
+        AB_TRANSACTION *nt;
+
+        nt=AB_Transaction_dup(t);
+        assert(nt);
+        AB_Transaction_SetType(nt, AB_Transaction_TypeEuTransfer);
+        switch(AB_Job_GetStatus(j)) {
+        case AB_Job_StatusPending:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusPending);
+          break;
+        case AB_Job_StatusFinished:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusAccepted);
+          break;
+        case AB_Job_StatusError:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusRejected);
+          break;
+        default:
+          AB_Transaction_SetStatus(nt, AB_Transaction_StatusUnknown);
+        };
+        AB_ImExporterAccountInfo_AddTransfer(ai, nt);
+      }
       tryRemove=1;
     }
     else {

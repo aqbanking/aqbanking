@@ -66,6 +66,10 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
 
   AB_TRANSACTION_LIST *standingOrders;
   AB_TRANSACTION *nextStandingOrder;
+
+  AB_TRANSACTION_LIST *transfers;
+  AB_TRANSACTION *nextTransfer;
+
 };
 
 

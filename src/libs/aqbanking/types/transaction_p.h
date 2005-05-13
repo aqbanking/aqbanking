@@ -48,6 +48,8 @@ struct AB_TRANSACTION {
   GWEN_TIME *firstExecutionDate;
   GWEN_TIME *lastExecutionDate;
   GWEN_TIME *nextExecutionDate;
+  AB_TRANSACTION_TYPE type;
+  AB_TRANSACTION_STATUS status;
 };
 
 
@@ -127,6 +129,15 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 
 
+
+
+
+/*@}*/
+
+/** @name Additional Information for Transfers
+ *
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
+/*@{*/
 
 
 

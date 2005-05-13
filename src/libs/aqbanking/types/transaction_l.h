@@ -31,6 +31,9 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 <h3>Additional Information for Standing Orders</h3>
 <p>
 <p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p></p>
+<h3>Additional Information for Transfers</h3>
+<p>
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p></p>
 */
 #include <gwenhywfar/misc.h>
 #include "transaction.h"
@@ -119,6 +122,15 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 
 
+
+
+
+/*@}*/
+
+/** @name Additional Information for Transfers
+ *
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
+/*@{*/
 
 
 

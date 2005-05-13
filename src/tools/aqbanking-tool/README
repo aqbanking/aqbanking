@@ -41,10 +41,10 @@ to stdout.
 
 Options
 -------
---bank        ARG      Bank code ("Bankleitzahl")
---account     ARG      Account number
---bankname    ARG      Bank name
---accountname ARG      Account name
+--bank       =ARG      Bank code ("Bankleitzahl")
+--account    =ARG      Account number
+--bankname   =ARG      Bank name
+--accountname=ARG      Account name
 Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
 above automatically matches any account.
 
@@ -52,9 +52,9 @@ above automatically matches any account.
 Examples
 --------
 aqbanking-tool listaccs
-aqbanking-tool listaccs --bank 28250110
-aqbanking-tool listaccs --bankname "*Sparkasse*"
-aqbanking-tool listaccs --account 123456
+aqbanking-tool listaccs --bank=28250110
+aqbanking-tool listaccs --bankname="*Sparkasse*"
+aqbanking-tool listaccs --account=123456
 
 
 
@@ -68,10 +68,10 @@ the request (i.e. send it to the bank) you will have to use the command
 
 Options
 -------
-[--bank        ARG]      Bank code ("Bankleitzahl")
-[--account     ARG]      Account number
-[--bankname    ARG]      Bank name
-[--accountname ARG]      Account name
+[--bank       =ARG]      Bank code ("Bankleitzahl")
+[--account    =ARG]      Account number
+[--bankname   =ARG]      Bank name
+[--accountname=ARG]      Account name
 Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
 above automatically matches any account.
 
@@ -81,9 +81,9 @@ At least one of the following options must be specified:
 [--sto            ]      Add a request for standing orders
 
 For transaction requests these options are supported in addition:
-[--fromdate    ARG]      Specify the first date for which transactions are to
+[--fromdate   =ARG]      Specify the first date for which transactions are to
                          requested
-[--todate      ARG]      Specify the last date for which transactions are to
+[--todate     =ARG]      Specify the last date for which transactions are to
                          requested
 
 
@@ -91,8 +91,8 @@ Examples
 --------
 aqbanking-tool request --balance
 aqbanking-tool request --transactions
-aqbanking-tool request --transactions --fromdate 20050501
-aqbanking-tool request --transactions --fromdate 20050501 --todate 20050513
+aqbanking-tool request --transactions --fromdate=20050501
+aqbanking-tool request --transactions --fromdate=20050501 --todate=20050513
 aqbanking-tool request --transactions --balance
 aqbanking-tool request --transactions --balance --sto
 
@@ -107,14 +107,14 @@ The results are either printed to stdout or written to a file.
 
 Options
 -------
-[--ctxfile     ARG]      Specify the file to which the results are to be
+[--ctxfile    =ARG]      Specify the file to which the results are to be
                          stored. This file is needed for some other commands
                          so it is best to specify it. Defaults to stdout.
 
 
 Examples
 --------
-aqbanking-tool exec --ctxfile result.ctx
+aqbanking-tool exec --ctxfile=result.ctx
 
 
 
@@ -127,34 +127,80 @@ transaction statements from this file to stdout or a file.
 
 Options
 -------
-[--bank         ARG]     Bank code ("Bankleitzahl")
-[--account      ARG]     Account number
-[--bankname     ARG]     Bank name
-[--accountname  ARG]     Account name
+[--bank        =ARG]     Bank code ("Bankleitzahl")
+[--account     =ARG]     Account number
+[--bankname    =ARG]     Bank name
+[--accountname =ARG]     Account name
 Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
 above automatically matches any account.
 
-[--ctxfile      ARG]     The result file to be used (defaults to stdin)
-[--outfile      ARG]     Name of the output file to which the transactions
+[--ctxfile     =ARG]     The result file to be used (defaults to stdin)
+[--outfile     =ARG]     Name of the output file to which the transactions
                          are to be stored. Defaults to stdout.
-[--exporter     ARG]     Name of the export plugin to be used for storage.
+[--exporter    =ARG]     Name of the export plugin to be used for storage.
                          This defaults to "csv".
-[--profile      ARG]     Name of the profile of the exporter plugin to be
+[--profile     =ARG]     Name of the profile of the exporter plugin to be
                          used. Defaults to "default" (for every exporter
                          plugin a "default" profile is provided by AqBanking).
 
 Normally the system-wide profiles (and local AqBanking profiles of the user)
 are used when searching for a profile. However, with the following option
 you can use your own profiles database.
-[--profile-file ARG]     Optional profile database file (a GWEN_DB)
+[--profile-file=ARG]     Optional profile database file (a GWEN_DB)
 
 
 Examples
 --------
-aqbanking-tool listtrans --ctxfile result.ctx --outfile result.csv
-aqbanking-tool listtrans --bankname "*Sparkasse*" --ctxfile result.ctx
-                         --outfile result.csv
-aqbanking-tool listtrans --ctxfile result.ctx --outfile result.csv
-                         --profile MyOwnProfile
+aqbanking-tool listtrans --ctxfile=result.ctx --outfile=result.csv
+aqbanking-tool listtrans --bankname="*Sparkasse*" --ctxfile=result.ctx
+                         --outfile=result.csv
+aqbanking-tool listtrans --ctxfile=result.ctx --outfile=result.csv
+                         --profile=MyOwnProfile
+
+
+
+"transfer"
+===========
+
+This command enqueues a transfer request. To actually perform the request
+the command "exec" must be used afterwards.
+
+
+Options
+-------
+The following options can be used to specify the local account. It must be
+specified unambiguously.
+[--bank        =ARG]     Bank code ("Bankleitzahl")
+[--account     =ARG]     Account number
+[--bankname    =ARG]     Bank name
+[--accountname =ARG]     Account name
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+--rbank        =ARG      Remote bank id
+--raccount     =ARG      Remote account id
+--value        =ARG      Amount to transfer including currency (1234,56:EUR)
+--textkey      =ARG      Text key (defaults to 51 for standard transfers)
+--rname        =ARG      Remote name (payee name), can be specified multiple
+                         times
+--purpose      =ARG      Purpose of the transfer, can be specified multiple
+                         times
+--force-check            If given then the check for the combination of
+                         remote bank code and account number is required to
+                         succeed in order to allow the transfer.
+                         If omitted the transfer will only be rejected if
+                         AqBanking is sure that the combination is invalid.
+
+
+Examples
+--------
+aqbanking-tool transfer --bank=2345678 --account=12345
+                        --rbank=12345678 --raccount=67890
+                        --rname=Test-User
+                        --value="123,45:EUR"
+                        --textkey=51
+                        --purpose="Small test"
+                        --force-check
+
 
 

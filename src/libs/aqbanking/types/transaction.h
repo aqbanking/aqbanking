@@ -403,6 +403,27 @@ Set this property with @ref AB_Transaction_SetNextExecutionDate,
 get it with @ref AB_Transaction_GetNextExecutionDate
 </p>
 
+<h3>Additional Information for Transfers</h3>
+<p>
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p></p>
+@anchor AB_TRANSACTION_Type
+<h4>Type</h4>
+<p>
+This variable contains the type of transfer (transfer, debit note etc).</p>
+<p>
+Set this property with @ref AB_Transaction_SetType, 
+get it with @ref AB_Transaction_GetType
+</p>
+
+@anchor AB_TRANSACTION_Status
+<h4>Status</h4>
+<p>
+This variable contains the status of the transfer (accepted, rejected, pending). etc).</p>
+<p>
+Set this property with @ref AB_Transaction_SetStatus, 
+get it with @ref AB_Transaction_GetStatus
+</p>
+
 */
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
@@ -412,6 +433,7 @@ get it with @ref AB_Transaction_GetNextExecutionDate
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/value.h>
 #include <aqbanking/split.h>
+#include <aqbanking/transactionlimits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -419,14 +441,46 @@ extern "C" {
 
 typedef enum {
   AB_Transaction_PeriodUnknown=-1,
+  /** No period.  */
+  AB_Transaction_PeriodNone=0,
   /** The standing order is to be executed every month.  */
-  AB_Transaction_PeriodMonthly=0,
+  AB_Transaction_PeriodMonthly,
   /** The standing order is to be executed every week.  */
   AB_Transaction_PeriodWeekly
 } AB_TRANSACTION_PERIOD;
 
 AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s);
 const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v);
+
+typedef enum {
+  AB_Transaction_TypeUnknown=-1,
+  /** Simple transaction (as in transaction statements)  */
+  AB_Transaction_TypeTransaction=0,
+  /** Transfer type of transaction (as used with transfer jobs)  */
+  AB_Transaction_TypeTransfer,
+  /** Debit note type of transaction (as used with debit note jobs)  */
+  AB_Transaction_TypeDebitNote,
+  /** EU-Transfer type of transaction (as used for with transfer jobs)  */
+  AB_Transaction_TypeEuTransfer
+} AB_TRANSACTION_TYPE;
+
+AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);
+const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v);
+
+typedef enum {
+  AB_Transaction_StatusUnknown=-1,
+  /** No status.  */
+  AB_Transaction_StatusNone=0,
+  /** The transfer has been accepted by the bank  */
+  AB_Transaction_StatusAccepted,
+  /** The transfer has been rejected by the bank (or was errornous)  */
+  AB_Transaction_StatusRejected,
+  /** The transfer is still pending.  */
+  AB_Transaction_StatusPending
+} AB_TRANSACTION_STATUS;
+
+AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
+const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v);
 
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
@@ -843,6 +897,31 @@ AQBANKING_API const GWEN_TIME *AB_Transaction_GetNextExecutionDate(const AB_TRAN
 * Set the property @ref AB_TRANSACTION_NextExecutionDate
 */
 AQBANKING_API void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *el, const GWEN_TIME *d);
+
+/*@}*/
+
+/** @name Additional Information for Transfers
+ *
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_Type
+*/
+AQBANKING_API AB_TRANSACTION_TYPE AB_Transaction_GetType(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Type
+*/
+AQBANKING_API void AB_Transaction_SetType(AB_TRANSACTION *el, AB_TRANSACTION_TYPE d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_Status
+*/
+AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Status
+*/
+AQBANKING_API void AB_Transaction_SetStatus(AB_TRANSACTION *el, AB_TRANSACTION_STATUS d);
 
 /*@}*/
 

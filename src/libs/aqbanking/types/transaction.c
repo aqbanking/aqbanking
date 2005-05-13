@@ -21,7 +21,9 @@ GWEN_LIST2_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
 
 AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s) {
   if (s) {
-    if (strcasecmp(s, "monthly")==0)
+    if (strcasecmp(s, "none")==0)
+      return AB_Transaction_PeriodNone;
+    else if (strcasecmp(s, "monthly")==0)
       return AB_Transaction_PeriodMonthly;
     else if (strcasecmp(s, "weekly")==0)
       return AB_Transaction_PeriodWeekly;
@@ -32,11 +34,84 @@ AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s) {
 
 const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v) {
   switch(v) {
+    case AB_Transaction_PeriodNone:
+      return "none";
+
     case AB_Transaction_PeriodMonthly:
       return "monthly";
 
     case AB_Transaction_PeriodWeekly:
       return "weekly";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
+
+
+AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "transaction")==0)
+      return AB_Transaction_TypeTransaction;
+    else if (strcasecmp(s, "transfer")==0)
+      return AB_Transaction_TypeTransfer;
+    else if (strcasecmp(s, "debitNote")==0)
+      return AB_Transaction_TypeDebitNote;
+    else if (strcasecmp(s, "euTransfer")==0)
+      return AB_Transaction_TypeEuTransfer;
+  }
+  return AB_Transaction_TypeUnknown;
+}
+
+
+const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v) {
+  switch(v) {
+    case AB_Transaction_TypeTransaction:
+      return "transaction";
+
+    case AB_Transaction_TypeTransfer:
+      return "transfer";
+
+    case AB_Transaction_TypeDebitNote:
+      return "debitNote";
+
+    case AB_Transaction_TypeEuTransfer:
+      return "euTransfer";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
+
+
+AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "none")==0)
+      return AB_Transaction_StatusNone;
+    else if (strcasecmp(s, "accepted")==0)
+      return AB_Transaction_StatusAccepted;
+    else if (strcasecmp(s, "rejected")==0)
+      return AB_Transaction_StatusRejected;
+    else if (strcasecmp(s, "pending")==0)
+      return AB_Transaction_StatusPending;
+  }
+  return AB_Transaction_StatusUnknown;
+}
+
+
+const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v) {
+  switch(v) {
+    case AB_Transaction_StatusNone:
+      return "none";
+
+    case AB_Transaction_StatusAccepted:
+      return "accepted";
+
+    case AB_Transaction_StatusRejected:
+      return "rejected";
+
+    case AB_Transaction_StatusPending:
+      return "pending";
 
     default:
       return "unknown";
@@ -203,6 +278,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->lastExecutionDate=GWEN_Time_dup(d->lastExecutionDate);
   if (d->nextExecutionDate)
     st->nextExecutionDate=GWEN_Time_dup(d->nextExecutionDate);
+  st->type=d->type;
+  st->status=d->status;
   return st;
 }
 
@@ -362,6 +439,10 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->nextExecutionDate)
     if (GWEN_Time_toDb(st->nextExecutionDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "nextExecutionDate")))
       return -1;
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", AB_Transaction_Type_toString(st->type))) 
+    return -1;
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "status", AB_Transaction_Status_toString(st->status))) 
+    return -1;
   return 0;
 }
 
@@ -492,6 +573,8 @@ AB_TRANSACTION *st;
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "nextExecutionDate");
     if (dbT)  AB_Transaction_SetNextExecutionDate(st, GWEN_Time_fromDb(dbT));
   }
+  AB_Transaction_SetType(st, AB_Transaction_Type_fromString(GWEN_DB_GetCharValue(db, "type", 0, 0)));
+  AB_Transaction_SetStatus(st, AB_Transaction_Status_fromString(GWEN_DB_GetCharValue(db, "status", 0, 0)));
   st->_modified=0;
   return st;
 }
@@ -1204,6 +1287,32 @@ void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d)
     st->nextExecutionDate=GWEN_Time_dup(d);
   else
     st->nextExecutionDate=0;
+  st->_modified=1;
+}
+
+
+AB_TRANSACTION_TYPE AB_Transaction_GetType(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->type;
+}
+
+
+void AB_Transaction_SetType(AB_TRANSACTION *st, AB_TRANSACTION_TYPE d) {
+  assert(st);
+  st->type=d;
+  st->_modified=1;
+}
+
+
+AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->status;
+}
+
+
+void AB_Transaction_SetStatus(AB_TRANSACTION *st, AB_TRANSACTION_STATUS d) {
+  assert(st);
+  st->status=d;
   st->_modified=1;
 }
 

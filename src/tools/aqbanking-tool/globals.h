@@ -30,6 +30,7 @@
 #define I18N_NOOP(msg) msg
 
 #include <aqbanking/banking.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>
@@ -38,6 +39,8 @@
 
 #include "cbanking.h"
 
+
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 int listAccs(AB_BANKING *ab,
@@ -59,6 +62,11 @@ int listTrans(AB_BANKING *ab,
               GWEN_DB_NODE *dbArgs,
               int argc,
               char **argv);
+
+int transfer(AB_BANKING *ab,
+             GWEN_DB_NODE *dbArgs,
+             int argc,
+             char **argv);
 
 
 #endif
