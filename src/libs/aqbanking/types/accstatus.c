@@ -261,6 +261,26 @@ void AB_AccountStatus_SetNotedBalance(AB_ACCOUNT_STATUS *as,
 
 
 
+AB_ACCOUNT_STATUS_LIST *AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *asl) {
+  if (asl) {
+    AB_ACCOUNT_STATUS_LIST *nl;
+    AB_ACCOUNT_STATUS *e;
+
+    nl=AB_AccountStatus_List_new();
+    e=AB_AccountStatus_List_First(asl);
+    while(e) {
+      AB_ACCOUNT_STATUS *ne;
+
+      ne=AB_AccountStatus_dup(e);
+      assert(ne);
+      AB_AccountStatus_List_Add(ne, nl);
+      e=AB_AccountStatus_List_Next(e);
+    } /* while (e) */
+    return nl;
+  }
+  else
+    return 0;
+}
 
 
 

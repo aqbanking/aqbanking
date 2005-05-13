@@ -1,5 +1,4 @@
-SUBDIRS=libs plugins tools test
-
+SUBDIRS=aqbanking-tool
 
 sources:
 	for d in $(SUBDIRS); do \

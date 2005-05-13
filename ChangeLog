@@ -2,6 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/05/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions
+  - AB_ImExporterContext_toDb()
+  - AB_ImExporterContext_fromDb()
+  - AB_ImExporterAccountInfo_dup()
+  - AB_ImExporterAccountInfo_toDb()
+  - AB_ImExporterAccountInfo_fromDb()
+  - AB_AccountStatus_List_dup()
+- added command line tool which allows some basic operations (aqbanking-tool)
+
 
 2005-05-04  Andreas Degert  <ad@papyrus-gmbh.de>
 
@@ -16,7 +27,7 @@
 2005/05/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in ImExporter: When returning a transaction from an accountInfo
-  object the transactions was falsely unlinked from the list
+  object the transactions were falsely unlinked from the list
 - added StandingOrders to ImExporter_Context
 - AB_Banking_GatherResponses() now also samples standing orders
 - AB_Banking_RequestTransactions(): 

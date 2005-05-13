@@ -21,6 +21,8 @@ GWEN_LIST_FUNCTION_LIB_DEFS(AB_ACCOUNT_STATUS,
                             AB_AccountStatus,
                             AQBANKING_API)
 
+AB_ACCOUNT_STATUS_LIST *AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *asl);
+
 
 #endif /* AQBANKING_ACCSTATUS_L_H */
 

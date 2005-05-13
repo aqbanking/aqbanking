@@ -147,6 +147,19 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
 AQBANKING_API 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
 
+/** Stores a complete import/export context to a GWEN_DB.
+ *
+ */
+AQBANKING_API 
+int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
+                              GWEN_DB_NODE *db);
+
+/** Restores a complete import/export context from a GWEN_DB.
+ *
+ */
+AQBANKING_API 
+AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db);
+
 /**
  * Takes over ownership of the given account info.
  */
@@ -221,6 +234,18 @@ AQBANKING_API
 AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new();
 AQBANKING_API 
 void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns a copy of the given account info. Please note that only the data
+ * is copied, internal pointers for
+ * @ref AB_ImExporterAccountInfo_GetNextTransaction et al are reset in the
+ * copy.
+ */
+AQBANKING_API 
+  AB_IMEXPORTER_ACCOUNTINFO*
+  AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oldiea);
+
+
 /**
  * Takes over ownership of the given transaction.
  */

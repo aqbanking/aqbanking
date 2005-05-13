@@ -257,6 +257,202 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  GWEN_NEW_OBJECT(AB_IMEXPORTER_ACCOUNTINFO, iea);
+  GWEN_LIST_INIT(AB_IMEXPORTER_ACCOUNTINFO, iea);
+
+#define COPY_CHAR(NAME) \
+  if (oi->NAME) \
+    iea->NAME=strdup(oi->NAME);
+  COPY_CHAR(bankCode);
+  COPY_CHAR(bankName);
+  COPY_CHAR(accountNumber);
+  COPY_CHAR(accountName);
+  COPY_CHAR(owner);
+  COPY_CHAR(description);
+  iea->accountType=oi->accountType;
+#undef COPY_CHAR
+
+  iea->accStatusList=AB_AccountStatus_List_dup(oi->accStatusList);
+  iea->transactions=AB_Transaction_List_dup(oi->transactions);
+  iea->standingOrders=AB_Transaction_List_dup(oi->standingOrders);
+  return iea;
+}
+
+
+
+int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
+				  GWEN_DB_NODE *db){
+  assert(iea);
+
+#define STORE_CHAR(NAME) \
+  if (iea->NAME) \
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, \
+                         __STRING(NAME), iea->NAME)
+#define STORE_INT(NAME) \
+  if (iea->NAME) \
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, \
+                        __STRING(NAME), iea->NAME)
+  STORE_CHAR(bankCode);
+  STORE_CHAR(bankName);
+  STORE_CHAR(accountNumber);
+  STORE_CHAR(accountName);
+  STORE_CHAR(owner);
+  STORE_CHAR(description);
+  STORE_INT(accountType);
+#undef STORE_CHAR
+#undef STORE_INT
+
+  if (iea->accStatusList) {
+    AB_ACCOUNT_STATUS *ast;
+
+    ast=AB_AccountStatus_List_First(iea->accStatusList);
+    if (ast) {
+      GWEN_DB_NODE *dbG;
+
+      dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "statusList");
+      assert(dbG);
+
+      while(ast) {
+	GWEN_DB_NODE *dbT;
+
+	dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			     "status");
+	assert(dbT);
+	if (AB_AccountStatus_toDb(ast, dbT))
+	  return -1;
+
+	ast=AB_AccountStatus_List_Next(ast);
+      }
+    }
+  }
+
+  if (iea->transactions) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List_First(iea->transactions);
+    if (t) {
+      GWEN_DB_NODE *dbG;
+
+      dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "transactionList");
+      assert(dbG);
+
+      while(t) {
+	GWEN_DB_NODE *dbT;
+
+	dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			     "transaction");
+	assert(dbT);
+	if (AB_Transaction_toDb(t, dbT))
+	  return -1;
+	t=AB_Transaction_List_Next(t);
+      }
+    }
+  }
+
+  if (iea->standingOrders) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List_First(iea->standingOrders);
+    if (t) {
+      GWEN_DB_NODE *dbG;
+
+      dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "standingOrderList");
+      assert(dbG);
+
+      while(t) {
+	GWEN_DB_NODE *dbT;
+
+	dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			     "standingOrder");
+	assert(dbT);
+	if (AB_Transaction_toDb(t, dbT))
+	  return -1;
+	t=AB_Transaction_List_Next(t);
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  const char *s;
+  GWEN_DB_NODE *dbT;
+
+  iea=AB_ImExporterAccountInfo_new();
+
+#define RESTORE_CHAR(NAME) \
+  s=GWEN_DB_GetCharValue(db, __STRING(NAME), 0, 0);\
+  if (s)\
+    iea->NAME=strdup(s);
+#define RESTORE_INT(NAME, DEFAULT) \
+  iea->NAME=GWEN_DB_GetIntValue(db, __STRING(NAME), 0, DEFAULT);
+  RESTORE_CHAR(bankCode);
+  RESTORE_CHAR(bankName);
+  RESTORE_CHAR(accountNumber);
+  RESTORE_CHAR(owner);
+  RESTORE_CHAR(description);
+  RESTORE_INT(accountType, AB_AccountType_Bank);
+#undef RESTORE_CHAR
+#undef RESTORE_INT
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "statusList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "status");
+    while(dbT) {
+      AB_ACCOUNT_STATUS *ast;
+
+      ast=AB_AccountStatus_fromDb(dbT);
+      assert(ast);
+      AB_AccountStatus_List_Add(ast, iea->accStatusList);
+      dbT=GWEN_DB_FindNextGroup(dbT, "status");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "transactionList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "transaction");
+    while(dbT) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_fromDb(dbT);
+      assert(t);
+      AB_Transaction_List_Add(t, iea->transactions);
+      dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "standingOrderList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "standingOrder");
+    while(dbT) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_fromDb(dbT);
+      assert(t);
+      AB_Transaction_List_Add(t, iea->standingOrders);
+      dbT=GWEN_DB_FindNextGroup(dbT, "standingOrder");
+    }
+  }
+
+  return iea;
+}
+
+
 
 
 
@@ -535,6 +731,60 @@ void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
     AB_ImExporterAccountInfo_List_free(iec->accountInfoList);
     GWEN_FREE_OBJECT(iec);
   }
+}
+
+
+
+int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
+			       GWEN_DB_NODE *db){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  if (iea) {
+    GWEN_DB_NODE *dbG;
+
+    dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "accountInfoList");
+    assert(dbG);
+
+    while(iea) {
+      GWEN_DB_NODE *dbT;
+
+      dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			   "accountInfo");
+      assert(dbT);
+
+      if (AB_ImExporterAccountInfo_toDb(iea, dbT))
+	return -1;
+      iea=AB_ImExporterAccountInfo_List_Next(iea);
+    }
+  }
+
+  return 0;
+}
+
+
+
+AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db) {
+  AB_IMEXPORTER_CONTEXT *iec;
+  GWEN_DB_NODE *dbT;
+
+  iec=AB_ImExporterContext_new();
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "accountInfoList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "accountInfo");
+    while(dbT) {
+      AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+      iea=AB_ImExporterAccountInfo_fromDb(dbT);
+      assert(iea);
+      AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+      dbT=GWEN_DB_FindNextGroup(dbT, "accountInfo");
+    }
+  }
+
+  return iec;
 }
 
 
