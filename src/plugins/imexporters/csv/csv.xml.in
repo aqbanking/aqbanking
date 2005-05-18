@@ -1,20 +1,13 @@
-<plugin name="csv" type="imexporter" import="1" export="1" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>CSV</short>
-  <descr>
-    This plugin imports/exports CSV data.
-  </descr>
-</plugin>
-
-
-<plugin name="csv" type="imexporter" import="1" export="1" lang="de" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>CSV</short>
-  <descr>
-    Diese Erweiterung importiert/exportiert CSV-Dateien.
-  </descr>
-</plugin>
-
-
+<PluginDescr>
+  <plugin name="csv" type="imexporter" import="1" export="1" >
+    <version>@AQBANKING_VERSION_STRING@</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>CSV</short>
+    <descr>
+      This plugin imports/exports CSV data.
+    </descr>
+    <descr lang="de">
+      Diese Erweiterung importiert/exportiert CSV-Dateien.
+    </descr>
+  </plugin>
+</PluginDescr>

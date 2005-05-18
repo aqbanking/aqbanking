@@ -1,10 +1,16 @@
-<plugin name="ch" type="bankinfo" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Bank info provider for Switzerland</short>
-  <descr>
-    This plugin handles Swiss banks.
-  </descr>
-</plugin>
+<PluginDescr>
+  <plugin name="ch" type="bankinfo" >
+    <version>@AQBANKING_VERSION_STRING@</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Bank info provider for Switzerland</short>
+    <short lang="de">Bankenliste fuer die Schweiz</short>
+    <descr>
+      This plugin handles Swiss banks.
+    </descr>
+    <descr lang="de">
+      Diese Erweiterung behandelt schweizerische Banken
+    </descr>
+  </plugin>
+</PluginDescr>
 
 

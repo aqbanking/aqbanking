@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/05/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted plugin description files to latest changes in gwen
+- fixed DTAUS plugin description: currently there is no export function
+
+
 2005/05/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added functions

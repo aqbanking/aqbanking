@@ -1,10 +1,14 @@
-<plugin name="swift" type="dbio" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Importer and Exporter for SWIFT</short>
-  <descr>
-    This plugin imports SWIFT (MT940) data.
-  </descr>
-</plugin>
-
-
+<PluginDescr>
+  <plugin name="swift" type="dbio" >
+    <version>@AQBANKING_VERSION_STRING@</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Importer and Exporter for SWIFT</short>
+    <short lang="de">Im- und Exporter fuerr SWIFT</short>
+    <descr>
+      This plugin imports SWIFT (MT940) data.
+    </descr>
+    <descr lang="de">
+      Diese Erweiterung importiert SWIFT (MT940) Daten.
+    </descr>
+  </plugin>
+</PluginDescr>
