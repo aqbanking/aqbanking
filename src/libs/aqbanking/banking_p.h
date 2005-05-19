@@ -198,5 +198,11 @@ int AB_Banking_UpdateAccountList(AB_BANKING *ab);
 int AB_Banking__TransformIban(const char *iban, int len,
                               char *newIban, int maxLen);
 
+/* @param jm 0:finished job, 1:pending job */
+int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
+                                      AB_JOB_LIST2 *jl,
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      int jm);
+
 
 #endif /* AQBANKING_BANKING_P_H */

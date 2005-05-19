@@ -4294,28 +4294,19 @@ void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl) {
 
 
 
-int AB_Banking_GatherResponses(AB_BANKING *ab,
-			       AB_IMEXPORTER_CONTEXT *ctx) {
+int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
+                                      AB_JOB_LIST2 *jl,
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      int jm) {
   AB_JOB *j;
-  AB_JOB_LIST2 *jl;
   AB_JOB_LIST2_ITERATOR *jit;
 
-
-  jl=AB_Banking_GetFinishedJobs(ab);
-  if (!jl) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "No finished jobs");
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  AB_Banking__RemoveDuplicateJobs(ab, jl);
 
   jit=AB_Job_List2_First(jl);
   if (!jit) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "No finished jobs left");
-    AB_Job_List2_FreeAll(jl);
-    return AB_ERROR_NOT_FOUND;
+             "No jobs left");
+    return 0;
   }
 
   j=AB_Job_List2Iterator_Data(jit);
@@ -4495,10 +4486,12 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
           int rv;
 
           /* hey job: I created you, I can destroy you ;-) */
-          rv=AB_Banking_DelFinishedJob(ab, j);
-          if (rv) {
-            DBG_INFO(AQBANKING_LOGDOMAIN,
-                     "Could not delete finished job (%d)", rv)
+          if (jm==0) {
+            rv=AB_Banking_DelFinishedJob(ab, j);
+            if (rv) {
+              DBG_INFO(AQBANKING_LOGDOMAIN,
+                       "Could not delete finished job (%d)", rv)
+            }
           }
         } /* if it is our own job */
       } /* if appName */
@@ -4507,9 +4500,53 @@ int AB_Banking_GatherResponses(AB_BANKING *ab,
     j=AB_Job_List2Iterator_Next(jit);
   } /* while */
   AB_Job_List2Iterator_free(jit);
-  AB_Job_List2_FreeAll(jl);
 
   return 0;
+}
+
+
+
+int AB_Banking_GatherResponses(AB_BANKING *ab,
+			       AB_IMEXPORTER_CONTEXT *ctx) {
+  AB_JOB_LIST2 *jl;
+  int someOk=0;
+  int rv;
+
+  jl=AB_Banking_GetFinishedJobs(ab);
+  if (jl) {
+    AB_Banking__RemoveDuplicateJobs(ab, jl);
+    rv=AB_Banking_GatherJobListResponses(ab, jl, ctx, 0);
+    AB_Job_List2_FreeAll(jl);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return rv;
+    }
+    someOk=1;
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "No finished jobs");
+  }
+
+  jl=AB_Banking_GetPendingJobs(ab);
+  if (jl) {
+    AB_Banking__RemoveDuplicateJobs(ab, jl);
+    rv=AB_Banking_GatherJobListResponses(ab, jl, ctx, 1);
+    AB_Job_List2_FreeAll(jl);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return rv;
+    }
+    someOk=1;
+  }
+  else {
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+              "No pending jobs");
+  }
+
+  if (someOk)
+    return 0;
+  return AB_ERROR_NOT_FOUND;
 }
 
 

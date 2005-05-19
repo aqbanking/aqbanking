@@ -142,7 +142,7 @@ int request(AB_BANKING *ab,
     "Specify the first date for which transactions are wanted (YYYYMMDD)" /* long */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT | GWEN_ARGS_FLAGS_LAST, /* flags */
+    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
     "help",                       /* name */
     0,                            /* minnum */
