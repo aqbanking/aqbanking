@@ -92,6 +92,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
+%{_bindir}/aqbanking-tool
 
 %files devel
 %defattr(-,root,root)
