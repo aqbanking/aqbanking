@@ -1,7 +1,7 @@
 EXTRA_DIST=README SICHERHEITSHINWEISE
 
 INCLUDES = $(gwenhywfar_includes) -I$(all_includes)
-noinst_PROGRAMS=aqbanking-tool
+bin_PROGRAMS=aqbanking-tool
 
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\"
