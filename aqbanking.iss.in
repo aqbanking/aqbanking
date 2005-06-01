@@ -169,9 +169,9 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 ; The customized messages with their translations here.
 [CustomMessages]
 ; *** Prerequisite message
-PrereqNotFound=The setup program did not find the DLL of the Gwenhywfar package. You need to install Gwenhywfar, and then start this setup again.
+PrereqNotFound=The setup program did not find the DLL of the Gwenhywfar package and/or the registry keys of the Gwenhywfar installation. You need to install Gwenhywfar from the setup executable, and then start this setup again.
 
-de.PrereqNotFound=Das Setup-Programm hat die DLL des Gwenhywfar-Pakets nicht gefunden. Sie müssen zuerst Gwenhywfar installieren und dann dieses Setup-Programm erneut starten.
+de.PrereqNotFound=Das Setup-Programm hat die DLL des Gwenhywfar-Pakets und/oder dessen Registry-Keys nicht gefunden. Sie müssen zuerst Gwenhywfar über dessen Setup-Programm installieren und dann dieses Setup-Programm erneut starten.
 
 ; *** "Select Components" wizard page
 FullInstall=Full installation
