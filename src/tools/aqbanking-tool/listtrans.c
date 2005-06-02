@@ -150,7 +150,7 @@ int listTrans(AB_BANKING *ab,
     "Specify the file to load the export profile from" /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT | GWEN_ARGS_FLAGS_LAST, /* flags */
+    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
     "help",                       /* name */
     0,                            /* minnum */
