@@ -36,7 +36,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = swift
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../../../libs/aqbanking -laqbanking32_0
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs/aqbanking -laqbanking32_0
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(dbioplugin_LTLIBRARIES)
 
