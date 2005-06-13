@@ -638,7 +638,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
     /* align buffer to 256 */
     size=(GWEN_Buffer_GetPos(dst)-startPos);
-    assert(size<256);
+    assert(size<=256);
     j=256-size;
     for (i=0; i<j; i++) GWEN_Buffer_AppendByte(dst, ' ');
   }
