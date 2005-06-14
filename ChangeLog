@@ -1,7 +1,13 @@
 
+===========================================================================
+MARK: released AqBanking - 1.0.12 (2005/06/14)
+===========================================================================
+
 2005/06/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in dtaus-exporter (wrong size<256 assertion)
+- added "CHARGE" field to AB_TRANSACTION
+- added some fields needed for foreign transfers
 
 
 ===========================================================================

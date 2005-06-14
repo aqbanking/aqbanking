@@ -236,7 +236,7 @@ get it with @ref AB_Transaction_GetSplits
 @anchor AB_TRANSACTION_TextKey
 <h4>TextKey</h4>
 <p>
-<p>A 3 digit numerical transaction code, defined for all kinds of different actions. (Textschluessel)</p>
+<p>A numerical transaction code, defined for all kinds of different actions. (Textschluessel)</p>
 <p>For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKey, 
@@ -415,6 +415,15 @@ Set this property with @ref AB_Transaction_SetType,
 get it with @ref AB_Transaction_GetType
 </p>
 
+@anchor AB_TRANSACTION_SubType
+<h4>SubType</h4>
+<p>
+This variable contains the sub-type of transfer.</p>
+<p>
+Set this property with @ref AB_Transaction_SetSubType, 
+get it with @ref AB_Transaction_GetSubType
+</p>
+
 @anchor AB_TRANSACTION_Status
 <h4>Status</h4>
 <p>
@@ -422,6 +431,54 @@ This variable contains the status of the transfer (accepted, rejected, pending).
 <p>
 Set this property with @ref AB_Transaction_SetStatus, 
 get it with @ref AB_Transaction_GetStatus
+</p>
+
+@anchor AB_TRANSACTION_Charge
+<h4>Charge</h4>
+<p>
+Specify who is to be charged for the transaction.</p>
+<p>
+Set this property with @ref AB_Transaction_SetCharge, 
+get it with @ref AB_Transaction_GetCharge
+</p>
+
+<h3>Additional Information for Foreign Transfers</h3>
+<p>
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p></p>
+@anchor AB_TRANSACTION_RemoteAddrStreet
+<h4>RemoteAddrStreet</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteAddrStreet, 
+get it with @ref AB_Transaction_GetRemoteAddrStreet
+</p>
+
+@anchor AB_TRANSACTION_RemoteAddrZipcode
+<h4>RemoteAddrZipcode</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteAddrZipcode, 
+get it with @ref AB_Transaction_GetRemoteAddrZipcode
+</p>
+
+@anchor AB_TRANSACTION_RemoteAddrCity
+<h4>RemoteAddrCity</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteAddrCity, 
+get it with @ref AB_Transaction_GetRemoteAddrCity
+</p>
+
+@anchor AB_TRANSACTION_RemotePhone
+<h4>RemotePhone</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemotePhone, 
+get it with @ref AB_Transaction_GetRemotePhone
 </p>
 
 */
@@ -468,6 +525,31 @@ AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);
 const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v);
 
 typedef enum {
+  AB_Transaction_SubTypeUnknown=-1,
+  /** No transfer sub-type  */
+  AB_Transaction_SubTypeNone=0,
+  /** Standard transfer.  */
+  AB_Transaction_SubTypeStandard,
+  /** Check.  */
+  AB_Transaction_SubTypeCheck,
+  /** Debit note (Abbuchungsverfahren)  */
+  AB_Transaction_SubTypeBookedDebitNote,
+  /** Debit note (Einzugsermaechtigung)  */
+  AB_Transaction_SubTypeDrawnDebitNote,
+  /** Standing order (Dauerauftrag)  */
+  AB_Transaction_SubTypeStandingOrder,
+  /** Loan transfer.  */
+  AB_Transaction_SubTypeLoan,
+  /** EU standard transfer.  */
+  AB_Transaction_SubTypeEuStandard,
+  /** Eu transfer which is to be executed the same day.  */
+  AB_Transaction_SubTypeEuASAP
+} AB_TRANSACTION_SUBTYPE;
+
+AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s);
+const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE v);
+
+typedef enum {
   AB_Transaction_StatusUnknown=-1,
   /** No status.  */
   AB_Transaction_StatusNone=0,
@@ -481,6 +563,21 @@ typedef enum {
 
 AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
 const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v);
+
+typedef enum {
+  AB_Transaction_ChargeUnknown=-1,
+  /** Nobody is to be charged.  */
+  AB_Transaction_ChargeNobody=0,
+  /** Issuer is to be charged.  */
+  AB_Transaction_ChargeLocal,
+  /** Peer is to be charged.  */
+  AB_Transaction_ChargeRemote,
+  /** Issuer and peer share the charges.  */
+  AB_Transaction_ChargeShare
+} AB_TRANSACTION_CHARGE;
+
+AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s);
+const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v);
 
 typedef struct AB_TRANSACTION AB_TRANSACTION;
 
@@ -915,6 +1012,15 @@ AQBANKING_API AB_TRANSACTION_TYPE AB_Transaction_GetType(const AB_TRANSACTION *e
 AQBANKING_API void AB_Transaction_SetType(AB_TRANSACTION *el, AB_TRANSACTION_TYPE d);
 
 /**
+* Returns the property @ref AB_TRANSACTION_SubType
+*/
+AQBANKING_API AB_TRANSACTION_SUBTYPE AB_Transaction_GetSubType(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_SubType
+*/
+AQBANKING_API void AB_Transaction_SetSubType(AB_TRANSACTION *el, AB_TRANSACTION_SUBTYPE d);
+
+/**
 * Returns the property @ref AB_TRANSACTION_Status
 */
 AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *el);
@@ -922,6 +1028,58 @@ AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTIO
 * Set the property @ref AB_TRANSACTION_Status
 */
 AQBANKING_API void AB_Transaction_SetStatus(AB_TRANSACTION *el, AB_TRANSACTION_STATUS d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_Charge
+*/
+AQBANKING_API AB_TRANSACTION_CHARGE AB_Transaction_GetCharge(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Charge
+*/
+AQBANKING_API void AB_Transaction_SetCharge(AB_TRANSACTION *el, AB_TRANSACTION_CHARGE d);
+
+/*@}*/
+
+/** @name Additional Information for Foreign Transfers
+ *
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteAddrStreet
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteAddrStreet(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteAddrStreet
+*/
+AQBANKING_API void AB_Transaction_SetRemoteAddrStreet(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteAddrZipcode
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteAddrZipcode(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteAddrZipcode
+*/
+AQBANKING_API void AB_Transaction_SetRemoteAddrZipcode(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteAddrCity
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteAddrCity(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteAddrCity
+*/
+AQBANKING_API void AB_Transaction_SetRemoteAddrCity(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemotePhone
+*/
+AQBANKING_API const char *AB_Transaction_GetRemotePhone(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemotePhone
+*/
+AQBANKING_API void AB_Transaction_SetRemotePhone(AB_TRANSACTION *el, const char *d);
 
 /*@}*/
 

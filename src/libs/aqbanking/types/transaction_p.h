@@ -49,7 +49,13 @@ struct AB_TRANSACTION {
   GWEN_TIME *lastExecutionDate;
   GWEN_TIME *nextExecutionDate;
   AB_TRANSACTION_TYPE type;
+  AB_TRANSACTION_SUBTYPE subType;
   AB_TRANSACTION_STATUS status;
+  AB_TRANSACTION_CHARGE charge;
+  char *remoteAddrStreet;
+  char *remoteAddrZipcode;
+  char *remoteAddrCity;
+  char *remotePhone;
 };
 
 
@@ -138,6 +144,19 @@ Functions of this group are also available in AB_SPLIT, please make your applica
  *
 <p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
 /*@{*/
+
+
+
+
+
+/*@}*/
+
+/** @name Additional Information for Foreign Transfers
+ *
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
+
+
 
 
 

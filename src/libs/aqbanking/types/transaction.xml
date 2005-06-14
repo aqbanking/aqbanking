@@ -319,6 +319,57 @@
         </values>
       </type>
 
+      <type id="SUBTYPE" prefix="SubType" mode="enum" access="public" >
+        <values>
+          <value value="0">none
+            <descr>
+              No transfer sub-type
+            </descr>
+          </value>
+          <value>standard
+            <descr>
+              Standard transfer.
+            </descr>
+          </value>
+          <value>check
+            <descr>
+              Check.
+            </descr>
+          </value>
+          <value>bookedDebitNote
+            <descr>
+              Debit note (Abbuchungsverfahren)
+            </descr>
+          </value>
+          <value>drawnDebitNote
+            <descr>
+              Debit note (Einzugsermaechtigung)
+            </descr>
+          </value>
+          <value>standingOrder
+            <descr>
+              Standing order (Dauerauftrag)
+            </descr>
+          </value>
+          <value>loan
+            <descr>
+              Loan transfer.
+            </descr>
+          </value>
+          <value>euStandard
+            <descr>
+              EU standard transfer.
+            </descr>
+          </value>
+          <value>euASAP
+            <descr>
+              Eu transfer which is to be executed the same day.
+            </descr>
+          </value>
+        </values>
+      </type>
+
+
       <type id="STATUS" prefix="Status" mode="enum" access="public" >
         <values>
           <value value="0">none
@@ -339,6 +390,31 @@
           <value>pending
             <descr>
               The transfer is still pending.
+            </descr>
+          </value>
+        </values>
+      </type>
+
+      <type id="CHARGE" prefix="Charge" mode="enum" access="public" >
+        <values>
+          <value value="0">Nobody
+            <descr>
+              Nobody is to be charged.
+            </descr>
+          </value>
+          <value>local
+            <descr>
+              Issuer is to be charged.
+            </descr>
+          </value>
+          <value>remote
+            <descr>
+              Peer is to be charged.
+            </descr>
+          </value>
+          <value>share
+            <descr>
+              Issuer and peer share the charges.
             </descr>
           </value>
         </values>
@@ -494,7 +570,7 @@
       <elem name="textKey" type="int" >
         <descr>
           <p>
-            A 3 digit numerical transaction code, defined for all kinds of
+            A numerical transaction code, defined for all kinds of
             different actions. (Textschluessel)
           </p>
           <p>
@@ -637,6 +713,11 @@
           etc).
         </descr>
       </elem>
+      <elem name="subType" type="SUBTYPE" >
+        <descr>
+          This variable contains the sub-type of transfer.
+        </descr>
+      </elem>
       <elem name="status" type="STATUS" >
         <descr>
           This variable contains the status of the transfer (accepted,
@@ -645,7 +726,29 @@
         </descr>
       </elem>
 
+      <elem name="charge" type="CHARGE" >
+        <descr>
+          Specify who is to be charged for the transaction.
+        </descr>
+      </elem>
+
     </group>
+
+
+    <group name="Additional Information for Foreign Transfers" >
+      <descr>
+        <p>
+         This group contains information which is used with transfers to
+         other countries in the world.
+         It is used by backends and applications but not by AqBanking itself.
+        </p>
+      </descr>
+      <elem name="remoteAddrStreet" type="char" ptr="1" />
+      <elem name="remoteAddrZipcode" type="char" ptr="1" />
+      <elem name="remoteAddrCity" type="char" ptr="1" />
+      <elem name="remotePhone" type="char" ptr="1" />
+    </group>
+
     
   </type>
   

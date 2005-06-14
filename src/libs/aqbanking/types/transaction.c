@@ -84,6 +84,66 @@ const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v) {
 } 
 
 
+AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "none")==0)
+      return AB_Transaction_SubTypeNone;
+    else if (strcasecmp(s, "standard")==0)
+      return AB_Transaction_SubTypeStandard;
+    else if (strcasecmp(s, "check")==0)
+      return AB_Transaction_SubTypeCheck;
+    else if (strcasecmp(s, "bookedDebitNote")==0)
+      return AB_Transaction_SubTypeBookedDebitNote;
+    else if (strcasecmp(s, "drawnDebitNote")==0)
+      return AB_Transaction_SubTypeDrawnDebitNote;
+    else if (strcasecmp(s, "standingOrder")==0)
+      return AB_Transaction_SubTypeStandingOrder;
+    else if (strcasecmp(s, "loan")==0)
+      return AB_Transaction_SubTypeLoan;
+    else if (strcasecmp(s, "euStandard")==0)
+      return AB_Transaction_SubTypeEuStandard;
+    else if (strcasecmp(s, "euASAP")==0)
+      return AB_Transaction_SubTypeEuASAP;
+  }
+  return AB_Transaction_SubTypeUnknown;
+}
+
+
+const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE v) {
+  switch(v) {
+    case AB_Transaction_SubTypeNone:
+      return "none";
+
+    case AB_Transaction_SubTypeStandard:
+      return "standard";
+
+    case AB_Transaction_SubTypeCheck:
+      return "check";
+
+    case AB_Transaction_SubTypeBookedDebitNote:
+      return "bookedDebitNote";
+
+    case AB_Transaction_SubTypeDrawnDebitNote:
+      return "drawnDebitNote";
+
+    case AB_Transaction_SubTypeStandingOrder:
+      return "standingOrder";
+
+    case AB_Transaction_SubTypeLoan:
+      return "loan";
+
+    case AB_Transaction_SubTypeEuStandard:
+      return "euStandard";
+
+    case AB_Transaction_SubTypeEuASAP:
+      return "euASAP";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
+
+
 AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s) {
   if (s) {
     if (strcasecmp(s, "none")==0)
@@ -112,6 +172,41 @@ const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v) {
 
     case AB_Transaction_StatusPending:
       return "pending";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
+
+
+AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "Nobody")==0)
+      return AB_Transaction_ChargeNobody;
+    else if (strcasecmp(s, "local")==0)
+      return AB_Transaction_ChargeLocal;
+    else if (strcasecmp(s, "remote")==0)
+      return AB_Transaction_ChargeRemote;
+    else if (strcasecmp(s, "share")==0)
+      return AB_Transaction_ChargeShare;
+  }
+  return AB_Transaction_ChargeUnknown;
+}
+
+
+const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v) {
+  switch(v) {
+    case AB_Transaction_ChargeNobody:
+      return "Nobody";
+
+    case AB_Transaction_ChargeLocal:
+      return "local";
+
+    case AB_Transaction_ChargeRemote:
+      return "remote";
+
+    case AB_Transaction_ChargeShare:
+      return "share";
 
     default:
       return "unknown";
@@ -199,6 +294,14 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     GWEN_Time_free(st->lastExecutionDate);
   if (st->nextExecutionDate)
     GWEN_Time_free(st->nextExecutionDate);
+  if (st->remoteAddrStreet)
+    free(st->remoteAddrStreet);
+  if (st->remoteAddrZipcode)
+    free(st->remoteAddrZipcode);
+  if (st->remoteAddrCity)
+    free(st->remoteAddrCity);
+  if (st->remotePhone)
+    free(st->remotePhone);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -279,7 +382,17 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
   if (d->nextExecutionDate)
     st->nextExecutionDate=GWEN_Time_dup(d->nextExecutionDate);
   st->type=d->type;
+  st->subType=d->subType;
   st->status=d->status;
+  st->charge=d->charge;
+  if (d->remoteAddrStreet)
+    st->remoteAddrStreet=strdup(d->remoteAddrStreet);
+  if (d->remoteAddrZipcode)
+    st->remoteAddrZipcode=strdup(d->remoteAddrZipcode);
+  if (d->remoteAddrCity)
+    st->remoteAddrCity=strdup(d->remoteAddrCity);
+  if (d->remotePhone)
+    st->remotePhone=strdup(d->remotePhone);
   return st;
 }
 
@@ -441,8 +554,24 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", AB_Transaction_Type_toString(st->type))) 
     return -1;
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "subType", AB_Transaction_SubType_toString(st->subType))) 
+    return -1;
   if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "status", AB_Transaction_Status_toString(st->status))) 
     return -1;
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "charge", AB_Transaction_Charge_toString(st->charge))) 
+    return -1;
+  if (st->remoteAddrStreet)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAddrStreet", st->remoteAddrStreet))
+      return -1;
+  if (st->remoteAddrZipcode)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAddrZipcode", st->remoteAddrZipcode))
+      return -1;
+  if (st->remoteAddrCity)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteAddrCity", st->remoteAddrCity))
+      return -1;
+  if (st->remotePhone)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remotePhone", st->remotePhone))
+      return -1;
   return 0;
 }
 
@@ -574,7 +703,13 @@ AB_TRANSACTION *st;
     if (dbT)  AB_Transaction_SetNextExecutionDate(st, GWEN_Time_fromDb(dbT));
   }
   AB_Transaction_SetType(st, AB_Transaction_Type_fromString(GWEN_DB_GetCharValue(db, "type", 0, 0)));
+  AB_Transaction_SetSubType(st, AB_Transaction_SubType_fromString(GWEN_DB_GetCharValue(db, "subType", 0, 0)));
   AB_Transaction_SetStatus(st, AB_Transaction_Status_fromString(GWEN_DB_GetCharValue(db, "status", 0, 0)));
+  AB_Transaction_SetCharge(st, AB_Transaction_Charge_fromString(GWEN_DB_GetCharValue(db, "charge", 0, 0)));
+  AB_Transaction_SetRemoteAddrStreet(st, GWEN_DB_GetCharValue(db, "remoteAddrStreet", 0, 0));
+  AB_Transaction_SetRemoteAddrZipcode(st, GWEN_DB_GetCharValue(db, "remoteAddrZipcode", 0, 0));
+  AB_Transaction_SetRemoteAddrCity(st, GWEN_DB_GetCharValue(db, "remoteAddrCity", 0, 0));
+  AB_Transaction_SetRemotePhone(st, GWEN_DB_GetCharValue(db, "remotePhone", 0, 0));
   st->_modified=0;
   return st;
 }
@@ -1304,6 +1439,19 @@ void AB_Transaction_SetType(AB_TRANSACTION *st, AB_TRANSACTION_TYPE d) {
 }
 
 
+AB_TRANSACTION_SUBTYPE AB_Transaction_GetSubType(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->subType;
+}
+
+
+void AB_Transaction_SetSubType(AB_TRANSACTION *st, AB_TRANSACTION_SUBTYPE d) {
+  assert(st);
+  st->subType=d;
+  st->_modified=1;
+}
+
+
 AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *st) {
   assert(st);
   return st->status;
@@ -1313,6 +1461,91 @@ AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *st) {
 void AB_Transaction_SetStatus(AB_TRANSACTION *st, AB_TRANSACTION_STATUS d) {
   assert(st);
   st->status=d;
+  st->_modified=1;
+}
+
+
+AB_TRANSACTION_CHARGE AB_Transaction_GetCharge(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->charge;
+}
+
+
+void AB_Transaction_SetCharge(AB_TRANSACTION *st, AB_TRANSACTION_CHARGE d) {
+  assert(st);
+  st->charge=d;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteAddrStreet(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteAddrStreet;
+}
+
+
+void AB_Transaction_SetRemoteAddrStreet(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteAddrStreet)
+    free(st->remoteAddrStreet);
+  if (d)
+    st->remoteAddrStreet=strdup(d);
+  else
+    st->remoteAddrStreet=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteAddrZipcode(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteAddrZipcode;
+}
+
+
+void AB_Transaction_SetRemoteAddrZipcode(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteAddrZipcode)
+    free(st->remoteAddrZipcode);
+  if (d)
+    st->remoteAddrZipcode=strdup(d);
+  else
+    st->remoteAddrZipcode=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemoteAddrCity(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteAddrCity;
+}
+
+
+void AB_Transaction_SetRemoteAddrCity(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteAddrCity)
+    free(st->remoteAddrCity);
+  if (d)
+    st->remoteAddrCity=strdup(d);
+  else
+    st->remoteAddrCity=0;
+  st->_modified=1;
+}
+
+
+const char *AB_Transaction_GetRemotePhone(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remotePhone;
+}
+
+
+void AB_Transaction_SetRemotePhone(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remotePhone)
+    free(st->remotePhone);
+  if (d)
+    st->remotePhone=strdup(d);
+  else
+    st->remotePhone=0;
   st->_modified=1;
 }
 
