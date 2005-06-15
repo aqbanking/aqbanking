@@ -1,17 +1,12 @@
 # translation of de.po to deutsch
 # Markus Frisch, 2005.
-# Markus Frisch, 2005.
-# Markus Frisch, 2005.
-# Markus Frisch, 2005.
-# Markus Frisch, 2005.
-# Markus Frisch, 2005.
 # Martin Preuss <martin@libchipcard.de>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-05-13 23:59+0200\n"
-"PO-Revision-Date: 2005-04-04 10:42+0200\n"
+"PO-Revision-Date: 2005-06-15 10:19+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2197,7 +2192,7 @@ msgstr "Wert für Betrag in Umsatz-Teilbuchung"
 #~ msgstr "Peru"
 
 #~ msgid "PHILIPPINES"
-#~ msgstr "Philipinen"
+#~ msgstr "Philippinen"
 
 #~ msgid "POLAND"
 #~ msgstr "Polen"
