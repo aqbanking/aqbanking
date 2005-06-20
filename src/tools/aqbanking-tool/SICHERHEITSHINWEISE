@@ -21,7 +21,7 @@ Der sicherste Weg AqBanking-Tool zu verwenden ist der folgende:
   Gruppe "aqbanking-tool" sind
 - Verzeichnis "/home/aqbanking-tool" anlegen, nur les- und schreibbar fuer den
   Benutzer "aqbanking-tool"
-- den Benutzer, der mit AqBanking-Tool arbeitet will, zur Gruppe 
+- den Benutzer, der mit AqBanking-Tool arbeiten will, zur Gruppe 
   "aqbanking-tool" hinzufuegen
 
 Alle Dateien (und insbesondere die PIN-Datei!) sollten im Heimat-Verzeichnis

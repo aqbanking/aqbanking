@@ -48,7 +48,7 @@ $(at_files): at.tar.bz2
 	test -d at || mkdir -p at
 	bunzip2 -k -f at.tar.bz2 && tar xmf at.tar && rm -f at.tar
 	
-data/at/gke_kidaten.csv.utf8: data/at/gke_kidaten.csv
+at-daten: data/at/gke_kidaten.csv
 	$(SED) s/\"//g <data/at/gke_kidaten.csv >data/at/gke_kidaten.csv.out
 	iconv -f iso8859-15 -t utf-8 data/at/gke_kidaten.csv.out -o data/at/gke_kidaten.csv.utf8
 

@@ -11,7 +11,8 @@ noinst_HEADERS=\
   progress_p.h progress_l.h globals.h
 
 aqbanking_tool_SOURCES=main.c cbanking.c progress.c \
- listaccs.c request.c exec.c listtrans.c transfer.c
+ listaccs.c request.c exec.c listtrans.c \
+ transfer.c debitnote.c
 
 aqbanking_tool_LDADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs) $(aqbanking_libs)
 

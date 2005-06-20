@@ -153,6 +153,30 @@ int main(int argc, char **argv) {
     "Specify the PIN file"        /* long description */
   },
   {
+    0,                            /* flags */
+    GWEN_ArgsTypeInt,             /* type */
+    "nonInteractive",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "n",                          /* short option */
+    "noninteractive",             /* long option */
+    "Select non-interactive mode",/* short description */
+    "Select non-interactive mode.\n"        /* long description */
+    "This automatically returns a confirmative answer to any non-critical\n"
+    "message."
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "charset",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "charset",                    /* long option */
+    "Specify the output character set",       /* short description */
+    "Specify the output character set"        /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
     "help",                       /* name */
@@ -212,7 +236,14 @@ int main(int argc, char **argv) {
 
   ab=CBanking_new("aqbanking-tool",
                   GWEN_DB_GetCharValue(db, "cfgfile", 0, 0));
-  CBanking_SetCharSet(ab, "ISO-8859-15");
+  CBanking_SetCharSet(ab,
+                      GWEN_DB_GetCharValue(db,
+                                           "charset", 0,
+                                           "ISO-8859-15"));
+  CBanking_SetIsNonInteractive(ab,
+                               GWEN_DB_GetIntValue(db,
+                                                   "nonInteractive", 0, 0));
+
   pinFile=GWEN_DB_GetCharValue(db, "pinFile", 0, 0);
   if (pinFile) {
     GWEN_DB_NODE *dbPins;
@@ -241,6 +272,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "transfer")==0) {
     rv=transfer(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "debitnote")==0) {
+    rv=debitNote(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

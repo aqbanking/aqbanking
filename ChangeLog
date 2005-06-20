@@ -4,6 +4,13 @@
 - updated Austrian bank info files: Added address, zipcode, city etc from
   another source (Oesterreichische Nationalbank). Now we have info about
   ca 2200 Austrian banks
+- added missing header checks to configure.ac
+- fixed a bug in banking.h: AB_BANKING_MSG_FLAGS_SEVERITY_IS_DANGEROUS
+  was missing the argument
+- work on AqBanking-Tool:
+  - added non-interactive mode
+  - character-set for output is now adjustable via a command line switch
+  - added module for debit notes
 
 
 2005/06/17: Martin Preuss<martin@libchipcard.de>

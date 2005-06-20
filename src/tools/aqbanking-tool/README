@@ -18,6 +18,7 @@ This tool has global options and command-specific options.
 Globals options are those before the COMMAND, command-specific options
 follow the COMMAND.
 
+[-C           ARG]     AqBanking configuration file
 [-P           ARG]     PINFILE to be used for automatic PIN lookup
                        For HBCI pins you can use the tool "aqhbci-tool" to 
                        create an empty pin file:
@@ -25,7 +26,9 @@ follow the COMMAND.
                        After that just edit the newly created file with your
                        favorite editor and insert the pins you want to use
                        automatically.
-
+[-n              ]     Work in non-interactive mode
+[--charset   =ARG]     Select the character set for console output (defaults
+                       to "ISO-8859-15")
 
 
 
@@ -201,6 +204,50 @@ aqbanking-tool transfer --bank=2345678 --account=12345
                         --textkey=51
                         --purpose="Small test"
                         --force-check
+
+
+"debitnote"
+===========
+
+This command enqueues a debit note request. To actually perform the request
+the command "exec" must be used afterwards.
+
+
+Options
+-------
+The following options can be used to specify the local account. It must be
+specified unambiguously.
+[--bank        =ARG]     Bank code ("Bankleitzahl")
+[--account     =ARG]     Account number
+[--bankname    =ARG]     Bank name
+[--accountname =ARG]     Account name
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+--rbank        =ARG      Remote bank id
+--raccount     =ARG      Remote account id
+--value        =ARG      Amount to draw including currency (1234,56:EUR)
+--textkey      =ARG      Text key (defaults to 51 for standard debitnotes)
+--rname        =ARG      Remote name (payee name), can be specified multiple
+                         times
+--purpose      =ARG      Purpose of the debit note, can be specified multiple
+                         times
+--force-check            If given then the check for the combination of
+                         remote bank code and account number is required to
+                         succeed in order to allow the debitnote.
+                         If omitted the debit note will only be rejected if
+                         AqBanking is sure that the combination is invalid.
+
+
+Examples
+--------
+aqbanking-tool debitnote --bank=2345678 --account=12345
+                         --rbank=12345678 --raccount=67890
+                         --rname=Test-User
+                         --value="123,45:EUR"
+                         --textkey=5
+                         --purpose="Small test"
+                         --force-check
 
 
 

@@ -33,6 +33,7 @@ struct CBANKING {
   GWEN_TYPE_UINT32 nextProgressId;
   char *charSet;
   GWEN_DB_NODE *dbPins;
+  int nonInteractive;
 };
 void CBanking_FreeData(void *bp, void *p);
 

@@ -29,5 +29,9 @@ void CBanking_SetCharSet(AB_BANKING *ab, const char *s);
 /** Takes over the DB */
 void CBanking_SetPinDb(AB_BANKING *ab, GWEN_DB_NODE *dbPins);
 
+
+int CBanking_GetIsNonInteractive(const AB_BANKING *ab);
+void CBanking_SetIsNonInteractive(AB_BANKING *ab, int i);
+
 #endif
 

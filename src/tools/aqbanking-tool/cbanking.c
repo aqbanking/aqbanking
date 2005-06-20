@@ -234,11 +234,34 @@ int CBanking_MessageBox(AB_BANKING *ab,
                         const char *b1,
                         const char *b2,
                         const char *b3){
+  CBANKING *cb;
   GWEN_BUFFER *tbuf;
   int c;
 
+  assert(ab);
+  cb=GWEN_INHERIT_GETDATA(AB_BANKING, CBANKING, ab);
+  assert(cb);
+
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   CBanking_GetRawText(ab, text, tbuf);
+
+  if (cb->nonInteractive) {
+    if (AB_BANKING_MSG_FLAGS_SEVERITY_IS_DANGEROUS(flags)) {
+      fprintf(stderr,
+              "Got the following dangerous message:\n%s\n",
+              GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      return 0;
+    }
+    else {
+      DBG_INFO(0,
+               "Auto-answering the following message with %d:\n%s",
+               AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(flags),
+               GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      return AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(flags);
+    }
+  }
 
   fprintf(stderr, "===== %s =====\n", title);
   fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
@@ -268,11 +291,11 @@ int CBanking_MessageBox(AB_BANKING *ab,
       fprintf(stderr, "1\n");
       return 1;
     }
-    else if (c=='2' && b1) {
+    else if (c=='2' && b2) {
       fprintf(stderr, "2\n");
       return 2;
     }
-    else if (c=='3' && b1) {
+    else if (c=='3' && b3) {
       fprintf(stderr, "3\n");
       return 3;
     }
@@ -710,6 +733,30 @@ int CBanking_GetPin(AB_BANKING *ab,
                              buffer,
                              minLen,
                              maxLen);
+}
+
+
+
+int CBanking_GetIsNonInteractive(const AB_BANKING *ab) {
+  CBANKING *cb;
+
+  assert(ab);
+  cb=GWEN_INHERIT_GETDATA(AB_BANKING, CBANKING, ab);
+  assert(cb);
+
+  return cb->nonInteractive;
+}
+
+
+
+void CBanking_SetIsNonInteractive(AB_BANKING *ab, int i) {
+  CBANKING *cb;
+
+  assert(ab);
+  cb=GWEN_INHERIT_GETDATA(AB_BANKING, CBANKING, ab);
+  assert(cb);
+
+  cb->nonInteractive=i;
 }
 
 
