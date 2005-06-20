@@ -37,7 +37,7 @@ chbankdata_DATA = $(ch_files)
 usbankdatadir = $(bankinfodatadir)/us
 usbankdata_DATA = $(us_files)
 
-at.tar.bz2: data/at/blz-at.csv data/at/gke_kidaten.csv.utf8
+at.tar.bz2:
 	./mkdeinfo build-at data/at/blz-at.csv data/at/gke_kidaten.csv.utf8 tmp.banks
 	test -d at || mkdir -p at
 	./mkdeinfo install tmp.banks at
