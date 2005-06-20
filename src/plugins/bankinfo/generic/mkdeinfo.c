@@ -67,17 +67,21 @@ int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db) {
 
 
 AB_BANKINFO *findBankInfo(AB_BANKINFO *bi,
-			  const char *blz, const char *location) {
+			  const char *blz,
+			  const char *location) {
   while(bi) {
     const char *lblz;
     const char *lloc;
 
     lblz=AB_BankInfo_GetBankId(bi);
     lloc=AB_BankInfo_GetLocation(bi);
-    if (lblz && lloc && blz && location) {
-      if (GWEN_Text_ComparePattern(lblz, blz, 0)!=-1 &&
-	  GWEN_Text_ComparePattern(lloc, location, 0)!=-1)
-	break;
+    if (lblz && blz) {
+      if (GWEN_Text_ComparePattern(lblz, blz, 0)!=-1) {
+	if (!location ||
+	    (location && lloc &&
+	     GWEN_Text_ComparePattern(lloc, location, 0)!=-1))
+	  break;
+      }
     }
     bi=AB_BankInfo_List_Next(bi);
   }
@@ -97,7 +101,8 @@ AB_BANKINFO *findFirstBankInfo(const char *blz, const char *location) {
 
 
 AB_BANKINFO *findNextBankInfo(AB_BANKINFO *bi,
-			      const char *blz, const char *location) {
+			      const char *blz,
+			      const char *location) {
   bi=AB_BankInfo_List_Next(bi);
   return findBankInfo(bi, blz, location);
 }
@@ -665,6 +670,86 @@ int readATBLZFile(const char *fname) {
 
   GWEN_DB_Group_free(dbData);
   fprintf(stdout, "Found %d banks\n", count);
+  return 0;
+}
+
+
+
+int readATBLZFile2(const char *fname) {
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbT;
+  int count=0;
+
+  dbData=GWEN_DB_Group_new("data");
+  fprintf(stdout, "Reading KIDATEN file...\n");
+  if (readCSVFile(fname, "kidaten.conf", dbData)) {
+    DBG_ERROR(0, "Error reading KIDATEN file \"%s\"", fname);
+    GWEN_DB_Group_free(dbData);
+    return -1;
+  }
+
+  if (GWEN_DB_WriteFile(dbData,
+                        "out.conf",
+                        GWEN_DB_FLAGS_QUOTE_VALUES | \
+                        GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                        GWEN_DB_FLAGS_INDEND | \
+                        GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
+                        GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+                        GWEN_DB_FLAGS_OMIT_TYPES)) {
+    DBG_ERROR(0, "Error writing bank file");
+    return -1;
+  }
+
+
+  fprintf(stdout, "Updating database...\n");
+  dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
+  while(dbT) {
+    const char *lblz;
+    const char *lloc;
+
+    lblz=GWEN_DB_GetCharValue(dbT, "bankId", 0, 0);
+    lloc=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
+    if (lblz && lloc) {
+      AB_BANKINFO *bi;
+
+      bi=findFirstBankInfo(lblz, 0);
+      if (!bi) {
+	/* new bank, add it */
+	bi=AB_BankInfo_fromDb(dbT);
+	if (bi) {
+	  AB_BankInfo_List_Add(bi, bis);
+          count++;
+	}
+      } /* if bank is new */
+      else {
+	while(bi) {
+	  const char *s;
+
+	  s=GWEN_DB_GetCharValue(dbT, "bankName", 0, 0);
+	  if (s && *s)
+	    AB_BankInfo_SetBankName(bi, s);
+	  s=GWEN_DB_GetCharValue(dbT, "street", 0, 0);
+	  if (s && *s)
+	    AB_BankInfo_SetStreet(bi, s);
+	  s=GWEN_DB_GetCharValue(dbT, "zipCode", 0, 0);
+	  if (s && *s)
+	    AB_BankInfo_SetZipcode(bi, s);
+	  s=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
+	  if (s && *s) {
+	    AB_BankInfo_SetLocation(bi, s);
+	    AB_BankInfo_SetCity(bi, s);
+	  }
+	  count++;
+
+	  bi=findNextBankInfo(bi, lblz, 0);
+	} /* while bi */
+      } /* if bank already exists */
+    }
+    dbT=GWEN_DB_FindNextGroup(dbT, "bank");
+  }
+
+  GWEN_DB_Group_free(dbData);
+  fprintf(stdout, "Updated %d banks\n", count);
   return 0;
 }
 
@@ -1588,20 +1673,25 @@ int main(int argc, char **argv) {
   }
 
   else if (strcasecmp(argv[1], "build-at")==0) {
-    const char *blzFile, *dstFile;
+    const char *blzFile, *kiFile, *dstFile;
 
-    if (argc<4) {
+    if (argc<5) {
       fprintf(stderr,
               "Usage:\n"
-              "%s build-at BLZ-file DESTFILE\n",
+              "%s build-at BLZ-file KI-file DESTFILE\n",
               argv[0]);
       return 1;
     }
     blzFile=argv[2];
-    dstFile=argv[3];
+    kiFile=argv[3];
+    dstFile=argv[4];
     bis=AB_BankInfo_List_new();
     dbIdx=GWEN_DB_Group_new("indexList");
     if (readATBLZFile(blzFile)) {
+      DBG_ERROR(0, "Error.");
+      return 2;
+    }
+    if (readATBLZFile2(kiFile)) {
       DBG_ERROR(0, "Error.");
       return 2;
     }

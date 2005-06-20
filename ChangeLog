@@ -1,4 +1,11 @@
 
+2005/06/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- updated Austrian bank info files: Added address, zipcode, city etc from
+  another source (Oesterreichische Nationalbank). Now we have info about
+  ca 2200 Austrian banks
+
+
 2005/06/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - updated German bank info files
