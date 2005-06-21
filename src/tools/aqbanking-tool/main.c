@@ -215,10 +215,66 @@ int main(int argc, char **argv) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
+
+    GWEN_Buffer_AppendString(ubuf, I18N("Usage: "));
+    GWEN_Buffer_AppendString(ubuf, argv[0]);
+    GWEN_Buffer_AppendString(ubuf, I18N(" [GLOBAL OPTIONS] "
+                                       "COMMAND "
+                                       "[LOCAL OPTIONS]\n"));
+
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, I18N("Global Options\n"));
+    GWEN_Buffer_AppendString(ubuf, I18N("==============\n\n"));
+    GWEN_Buffer_AppendString(ubuf, I18N("Global options preceed a command.\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("Every command has the local option "
+                                  "\"-h\".\n"
+                                  "Please use that option on the commands"
+                                  "you are interested in.\n"));
     if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
+    GWEN_Buffer_AppendString(ubuf, "\n\n");
+    GWEN_Buffer_AppendString(ubuf, I18N("Commands\n"));
+    GWEN_Buffer_AppendString(ubuf, I18N("========\n\n"));
+    GWEN_Buffer_AppendString(ubuf, " listaccs\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Prints a list of accounts\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " request\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Enqueues a request for transactions, "
+                                  " balances, standing orders\n"
+                                  "  etc.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " transfer\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Enqueues a transfer request.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " debitnote\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Enqueues a debit note request.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " exec\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Executes all jobs in the queue.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " listtrans\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Exports results from the queue's "
+                                  "execution.\n"
+                                  "  This command specifically exports "
+                                  "transactions.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n\n");
+    GWEN_Buffer_AppendString(ubuf, I18N("Example\n"));
+    GWEN_Buffer_AppendString(ubuf, I18N("=======\n\n"));
+    GWEN_Buffer_AppendString(ubuf, argv[0]);
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N(" listtrans -h\n"
+                                  "This example prints the help screen "
+                                  "for the command \"listtrans\"\n"));
+
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return 0;

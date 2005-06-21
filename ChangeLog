@@ -1,4 +1,10 @@
 
+2005/06/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added job JobGetDatedTransfers
+- improved help screen of AqBanking-Tool
+
+
 2005/06/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - updated Austrian bank info files: Added address, zipcode, city etc from

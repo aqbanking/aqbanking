@@ -8,6 +8,7 @@ noinst_LTLIBRARIES=libjobs.la
 noinst_HEADERS=\
  jobgettransactions_p.h \
  jobgetstandingorders_p.h \
+ jobgetdatedtransfers_p.h \
  jobgetbalance_p.h \
  jobsingletransfer_p.h \
  jobsingledebitnote_p.h \
@@ -32,6 +33,9 @@ iheader_HEADERS= \
  jobsingledebitnote.h \
  jobsingledebitnote_be.h \
  jobsingledebitnote_l.h \
+ jobgetdatedtransfers.h \
+ jobgetdatedtransfers_be.h \
+ jobgetdatedtransfers_l.h \
  jobeutransfer.h \
  jobeutransfer_l.h \
  jobeutransfer_be.h
@@ -40,6 +44,7 @@ libjobs_la_SOURCES=\
  jobgetbalance.c \
  jobgettransactions.c \
  jobgetstandingorders.c \
+ jobgetdatedtransfers.c \
  jobsingletransfer.c \
  jobsingledebitnote.c \
  jobeutransfer.c

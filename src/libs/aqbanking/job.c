@@ -19,6 +19,7 @@
 #include "account_l.h"
 #include "banking_l.h"
 #include "provider_l.h"
+#include "jobs/jobgetdatedtransfers_l.h"
 #include "jobs/jobgettransactions_l.h"
 #include "jobs/jobgetstandingorders_l.h"
 #include "jobs/jobgetbalance_l.h"
@@ -179,6 +180,7 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeDebitNote:         s="debitnote"; break;
   case AB_Job_TypeEuTransfer:        s="eutransfer"; break;
   case AB_Job_TypeGetStandingOrders: s="getstandingorders"; break;
+  case AB_Job_TypeGetDatedTransfers: s="getdatedtransfers"; break;
   default:
   case AB_Job_TypeUnknown:           s="unknown"; break;
   }
@@ -197,6 +199,7 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
   else if (strcasecmp(s, "debitnote")==0) i=AB_Job_TypeDebitNote;
   else if (strcasecmp(s, "eutransfer")==0) i=AB_Job_TypeEuTransfer;
   else if (strcasecmp(s, "getstandingorders")==0) i=AB_Job_TypeGetStandingOrders;
+  else if (strcasecmp(s, "getdatedtransfers")==0) i=AB_Job_TypeGetDatedTransfers;
   else i=AB_Job_TypeUnknown;
 
   return i;
@@ -269,6 +272,13 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   case AB_Job_TypeGetStandingOrders:
     if (AB_JobGetStandingOrders_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeGetDatedTransfers:
+    if (AB_JobGetDatedTransfers_toDb(j, db)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
@@ -439,6 +449,11 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   case AB_Job_TypeGetStandingOrders:
     j=AB_JobGetStandingOrders_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeGetDatedTransfers:
+    j=AB_JobGetDatedTransfers_fromDb(a, db);
     assert(j);
     break;
 
