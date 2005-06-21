@@ -3,6 +3,8 @@
 -------------------------------------------------
 - added job JobGetDatedTransfers
 - improved help screen of AqBanking-Tool
+- added a aqbanking-tool module which checks for a given bank code and 
+  account number combination
 
 
 2005/06/20: Martin Preuss<martin@libchipcard.de>

@@ -266,6 +266,11 @@ int main(int argc, char **argv) {
                                   "execution.\n"
                                   "  This command specifically exports "
                                   "transactions.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " chkacc\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Check a combination of bank id and "
+                                  "account number\n"));
     GWEN_Buffer_AppendString(ubuf, "\n\n");
     GWEN_Buffer_AppendString(ubuf, I18N("Example\n"));
     GWEN_Buffer_AppendString(ubuf, I18N("=======\n\n"));
@@ -331,6 +336,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "debitnote")==0) {
     rv=debitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "chkacc")==0) {
+    rv=chkAcc(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
