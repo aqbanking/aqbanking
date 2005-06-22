@@ -7,6 +7,16 @@
 /** @page P_AB_PIN_LIB AB_Pin (lib)
 This page describes the properties of AB_PIN
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_PIN AB_PIN;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/misc.h>
@@ -17,8 +27,6 @@ This page describes the properties of AB_PIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_PIN AB_PIN;
 
 GWEN_LIST_FUNCTION_DEFS(AB_PIN, AB_Pin)
 AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl);

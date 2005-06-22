@@ -95,6 +95,16 @@ get it with @ref AB_BankInfoService_GetAux2
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_BANKINFO_SERVICE AB_BANKINFO_SERVICE;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
@@ -104,8 +114,6 @@ get it with @ref AB_BankInfoService_GetAux2
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_BANKINFO_SERVICE AB_BANKINFO_SERVICE;
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_BANKINFO_SERVICE, AB_BankInfoService, AQBANKING_API)
 AB_BANKINFO_SERVICE_LIST *AB_BankInfoService_List_dup(const AB_BANKINFO_SERVICE_LIST *stl);

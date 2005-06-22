@@ -441,6 +441,7 @@
       <header type="sys" >aqbanking/value.h</header>
       <header type="sys" >aqbanking/split.h</header>
       <header type="sys" >aqbanking/transactionlimits.h</header>
+      <header type="sys" >aqbanking/transactionfns.h</header>
     </headers>
 
     <group name="Local Account Info">

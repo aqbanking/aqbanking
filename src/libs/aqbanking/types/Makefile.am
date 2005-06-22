@@ -35,6 +35,7 @@ iheader_HEADERS=\
   bankinfoservice.h \
   split.h \
   transaction.h \
+  transactionfns.h \
   transactionlimits.h \
   eutransferinfo.h \
   value.h
@@ -48,6 +49,7 @@ libtypes_la_SOURCES=\
   pin.c \
   split.c \
   transaction.c \
+  transactionfns.c \
   transactionlimits.c \
   value.c
 

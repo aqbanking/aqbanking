@@ -335,6 +335,16 @@ get it with @ref AB_TransactionLimits_GetMinLinesPurpose
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_TRANSACTION_LIMITS AB_TRANSACTION_LIMITS;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
@@ -345,8 +355,6 @@ get it with @ref AB_TransactionLimits_GetMinLinesPurpose
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_TRANSACTION_LIMITS AB_TRANSACTION_LIMITS;
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_TRANSACTION_LIMITS, AB_TransactionLimits, AQBANKING_API)
 AB_TRANSACTION_LIMITS_LIST *AB_TransactionLimits_List_dup(const AB_TRANSACTION_LIMITS_LIST *stl);

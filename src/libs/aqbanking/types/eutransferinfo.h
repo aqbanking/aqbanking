@@ -43,6 +43,16 @@ get it with @ref AB_EuTransferInfo_GetLimitForeignValue
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_EUTRANSFER_INFO AB_EUTRANSFER_INFO;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
@@ -53,8 +63,6 @@ get it with @ref AB_EuTransferInfo_GetLimitForeignValue
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_EUTRANSFER_INFO AB_EUTRANSFER_INFO;
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_EUTRANSFER_INFO, AB_EuTransferInfo, AQBANKING_API)
 AB_EUTRANSFER_INFO_LIST *AB_EuTransferInfo_List_dup(const AB_EUTRANSFER_INFO_LIST *stl);

@@ -482,6 +482,16 @@ get it with @ref AB_Transaction_GetRemotePhone
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_TRANSACTION AB_TRANSACTION;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list2.h>
@@ -491,6 +501,7 @@ get it with @ref AB_Transaction_GetRemotePhone
 #include <aqbanking/value.h>
 #include <aqbanking/split.h>
 #include <aqbanking/transactionlimits.h>
+#include <aqbanking/transactionfns.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -578,8 +589,6 @@ typedef enum {
 
 AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s);
 const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v);
-
-typedef struct AB_TRANSACTION AB_TRANSACTION;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_TRANSACTION, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)

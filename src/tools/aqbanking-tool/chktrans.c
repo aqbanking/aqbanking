@@ -18,19 +18,25 @@
 #include <gwenhywfar/text.h>
 #include <aqbanking/jobsingletransfer.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
 
 
-int transfer(AB_BANKING *ab,
-             GWEN_DB_NODE *dbArgs,
-             int argc,
-             char **argv) {
+int chkTransfer(AB_BANKING *ab,
+                GWEN_DB_NODE *dbArgs,
+                int argc,
+                char **argv) {
   AB_ACCOUNT_LIST2 *al;
   GWEN_DB_NODE *db;
   int rv;
-  int jobOk=0;
+  const char *ctxFile;
+  AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT *matchingAcc=0;
-  int forceCheck=0;
-  int doExec=0;
+  int fd;
+  AB_TRANSACTION_STATUS st=AB_Transaction_StatusUnknown;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -154,30 +160,16 @@ int transfer(AB_BANKING *ab,
     "Specify the purpose"         /* long description */
   },
   {
-    0,                            /* flags */
-    GWEN_ArgsTypeInt,             /* type */
-    "forceCheck",                 /* name */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "ctxFile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    0,                            /* short option */
-    "force-check",                /* long option */
-    "check of remote account must succeed",  /* short description */
-    0
+    "c",                          /* short option */
+    "ctxfile",                    /* long option */
+    "Specify the file to store the context in",   /* short description */
+    "Specify the file to store the context in"      /* long description */
   },
-  {
-    0, /* flags */
-    GWEN_ArgsTypeInt,            /* type */
-    "exec",                      /* name */
-    0,                           /* minnum */
-    1,                           /* maxnum */
-    "x",                         /* short option */
-    "exec",                      /* long option */
-    /* short description */
-    "Immediately execute the queue after enqueuing transfer",
-    /* long description */
-    "Immediately execute the queue after enqueuing transfer"
-  },
-
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
@@ -213,13 +205,59 @@ int transfer(AB_BANKING *ab,
     return 0;
   }
 
-  forceCheck=GWEN_DB_VariableExists(db, "forceCheck");
-  doExec=GWEN_DB_VariableExists(db, "exec");
-
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
+  }
+
+  /* read context */
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  if (ctxFile==0)
+    fd=fileno(stdin);
+  else
+    fd=open(ctxFile, O_RDONLY);
+  if (fd<0) {
+    DBG_ERROR(0, "Error selecting output file: %s",
+              strerror(errno));
+    return 4;
+  }
+  else {
+    GWEN_BUFFEREDIO *bio;
+    GWEN_ERRORCODE err;
+    GWEN_DB_NODE *dbCtx;
+
+    dbCtx=GWEN_DB_Group_new("context");
+    bio=GWEN_BufferedIO_File_new(fd);
+    if (!ctxFile)
+      GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+    GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+    if (GWEN_DB_ReadFromStream(dbCtx, bio,
+                               GWEN_DB_FLAGS_DEFAULT |
+                               GWEN_PATH_FLAGS_CREATE_GROUP)) {
+      DBG_ERROR(0, "Error reading context");
+      GWEN_DB_Group_free(dbCtx);
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      return 4;
+    }
+    err=GWEN_BufferedIO_Close(bio);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      GWEN_DB_Group_free(dbCtx);
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      return 4;
+    }
+    GWEN_BufferedIO_free(bio);
+
+    ctx=AB_ImExporterContext_fromDb(dbCtx);
+    if (!ctx) {
+      DBG_ERROR(0, "No context in input data");
+      GWEN_DB_Group_free(dbCtx);
+      return 4;
+    }
+    GWEN_DB_Group_free(dbCtx);
   }
 
   al=AB_Banking_GetAccounts(ab);
@@ -231,7 +269,7 @@ int transfer(AB_BANKING *ab,
       AB_ACCOUNT *a;
       AB_TRANSACTION *t;
       AB_JOB *j;
-      AB_BANKINFO_CHECKRESULT res;
+      AB_IMEXPORTER_ACCOUNTINFO *iea;
       const char *bankId;
       const char *accountId;
       const char *bankName;
@@ -295,79 +333,38 @@ int transfer(AB_BANKING *ab,
       }
       if (AB_Transaction_GetTextKey(t)<1)
         AB_Transaction_SetTextKey(t, 51);
+
       j=AB_JobSingleTransfer_new(matchingAcc);
       rv=AB_Job_CheckAvailability(j);
       if (rv) {
         DBG_ERROR(0, "Jobs is not available with this account");
         return 3;
       }
-      res=AB_Banking_CheckAccount(ab,
-                                  AB_Transaction_GetRemoteCountry(t),
-                                  0,
-                                  AB_Transaction_GetRemoteBankCode(t),
-                                  AB_Transaction_GetRemoteAccountNumber(t));
-      switch(res) {
-      case AB_BankInfoCheckResult_NotOk:
-        DBG_ERROR(0,
-                  "Invalid combination of bank code and account number "
-                  "for remote account");
-        return 1;
-
-      case AB_BankInfoCheckResult_UnknownBank:
-        if (forceCheck) {
-          DBG_ERROR(0, "Remote bank code is unknown");
-          return 1;
-        }
-        break;
-      case AB_BankInfoCheckResult_UnknownResult:
-        if (forceCheck) {
-          DBG_ERROR(0,
-                    "Indifferent result for remote account check");
-          return 1;
-        }
-        break;
-      case AB_BankInfoCheckResult_Ok:
-        break;
-      default:
-        DBG_ERROR(0, "Unknown check result %d", res);
-        return 3;
-      }
-
       rv=AB_JobSingleTransfer_SetTransaction(j, t);
       if (rv) {
         DBG_ERROR(0, "Could not store transaction to job (%d)", rv);
         return 3;
       }
-      rv=AB_Banking_EnqueueJob(ab, j);
-      if (rv) {
-        DBG_ERROR(0, "Could not enqueue job (%d)", rv);
-        return 3;
-      }
-      else {
-        DBG_INFO(0, "Job successfully enqueued");
-        if (doExec) {
-          rv=AB_Banking_ExecuteQueue(ab);
-          if (rv) {
-            DBG_ERROR(0, "Error executing queue: %d", rv);
-            jobOk=-1;
-          }
-          else {
-            switch(AB_Job_GetStatus(j)) {
-            case AB_Job_StatusPending:
-              jobOk=2;
-              break;
-            case AB_Job_StatusFinished:
-              jobOk=1;
-              break;
-            case AB_Job_StatusError:
-            default:
-              jobOk=-2;
-            }
-          }
+
+      /* search for matching transfer in context */
+      iea=AB_ImExporterContext_FindAccountInfo(ctx,
+                                               AB_Account_GetBankCode(matchingAcc),
+                                               AB_Account_GetAccountNumber(matchingAcc));
+      if (iea) {
+        const AB_TRANSACTION *ct;
+
+        ct=AB_ImExporterAccountInfo_GetFirstTransfer(iea);
+        while(ct) {
+          if (AB_Transaction_Compare(ct, t)==0)
+            break;
+          ct=AB_ImExporterAccountInfo_GetNextTransfer(iea);
+        } /* while */
+        if (ct) {
+          /* found a transfer */
+	  st=AB_Transaction_GetStatus(ct);
         }
-        else
-          jobOk=1;
       }
+      AB_Job_free(j);
     }
   }
 
@@ -377,22 +374,12 @@ int transfer(AB_BANKING *ab,
     return 5;
   }
 
-  switch(jobOk) {
-  case 0:
-    DBG_ERROR(0, "No job executed.");
-    return 1;
-  case 1:
-    return 0;
-  case 2:
-    return 99;
-  case -1:
-    return 3;
-  case -2:
-  default:
-    return 4;
+  switch(st) {
+  case AB_Transaction_StatusAccepted: return 0;
+  case AB_Transaction_StatusRejected: return 3;
+  case AB_Transaction_StatusPending:  return 99;
+  default:                            return 4;
   }
-
-  return 0;
 }
 
 

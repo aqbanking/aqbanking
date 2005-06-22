@@ -30,6 +30,8 @@ int debitNote(AB_BANKING *ab,
   int jobOk=0;
   AB_ACCOUNT *matchingAcc=0;
   int forceCheck=0;
+  int doExec=0;
+
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -163,6 +165,19 @@ int debitNote(AB_BANKING *ab,
     "check of remote account must succeed",  /* short description */
     0
   },
+  {
+    0, /* flags */
+    GWEN_ArgsTypeInt,            /* type */
+    "exec",                      /* name */
+    0,                           /* minnum */
+    1,                           /* maxnum */
+    "x",                         /* short option */
+    "exec",                      /* long option */
+    /* short description */
+    "Immediately execute the queue after enqueuing transfer",
+    /* long description */
+    "Immediately execute the queue after enqueuing transfer"
+  },
 
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -200,6 +215,7 @@ int debitNote(AB_BANKING *ab,
   }
 
   forceCheck=GWEN_DB_VariableExists(db, "forceCheck");
+  doExec=GWEN_DB_VariableExists(db, "exec");
 
   rv=AB_Banking_Init(ab);
   if (rv) {
@@ -330,7 +346,29 @@ int debitNote(AB_BANKING *ab,
       }
       else {
         DBG_INFO(0, "Job successfully enqueued");
-        jobOk=1;
+
+        if (doExec) {
+          rv=AB_Banking_ExecuteQueue(ab);
+          if (rv) {
+            DBG_ERROR(0, "Error executing queue: %d", rv);
+            jobOk=-1;
+          }
+          else {
+            switch(AB_Job_GetStatus(j)) {
+            case AB_Job_StatusPending:
+              jobOk=2;
+              break;
+            case AB_Job_StatusFinished:
+              jobOk=1;
+              break;
+            case AB_Job_StatusError:
+            default:
+              jobOk=-2;
+            }
+          }
+        }
+        else
+          jobOk=1;
       }
     }
   }
@@ -341,12 +379,19 @@ int debitNote(AB_BANKING *ab,
     return 5;
   }
 
-  if (!jobOk) {
-    DBG_ERROR(0, "Could not create transfer job");
+  switch(jobOk) {
+  case 0:
     return 3;
+  case 1:
+    return 0;
+  case 2:
+    return 99;
+  case -1:
+    return 3;
+  case -2:
+  default:
+    return 4;
   }
-
-  return 0;
 }
 
 

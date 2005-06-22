@@ -85,6 +85,16 @@ get it with @ref AB_Split_GetPurpose
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_SPLIT AB_SPLIT;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
@@ -97,8 +107,6 @@ get it with @ref AB_Split_GetPurpose
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_SPLIT AB_SPLIT;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_SPLIT, AQBANKING_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_SPLIT, AB_Split, AQBANKING_API)

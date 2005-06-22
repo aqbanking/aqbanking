@@ -142,6 +142,16 @@ get it with @ref AB_BankInfo_GetServices
 </p>
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct AB_BANKINFO AB_BANKINFO;
+
+#ifdef __cplusplus
+} /* __cplusplus */
+#endif
+
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/types.h>
@@ -151,8 +161,6 @@ get it with @ref AB_BankInfo_GetServices
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct AB_BANKINFO AB_BANKINFO;
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_BANKINFO, AB_BankInfo, AQBANKING_API)
 

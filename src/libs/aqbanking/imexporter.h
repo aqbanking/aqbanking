@@ -311,7 +311,7 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
  */
 AQBANKING_API 
 void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                             AB_TRANSACTION *t);
+                                               AB_TRANSACTION *t);
 /**
  * <p>
  * Returns the first standing order stored within the context.
