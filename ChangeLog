@@ -7,6 +7,7 @@
 - started adding functions for transactions (transactionfns.{c,h})
 - added command line arguments for logging to AqBanking-Tool
 - aqbanking-tool now uses its own log domain
+- updated README of aqbanking-tool
 
 
 2005/06/21: Martin Preuss<martin@libchipcard.de>

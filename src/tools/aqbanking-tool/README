@@ -9,6 +9,18 @@ command. These local arguments are described with the individual commands
 below.
 
 
+Return Values
+=============
+ 0: ok
+ 1: parameter error (missing/bad/invalid arguments)
+ 2: setup error (AB_Banking_Init)
+ 3: error executing the command
+ 4: error *after* executing the command
+ 5: deinit error (AB_Banking_Fini)
+99: job has been executed but is still pending (mostly used with transfer
+    requests which are delayed by the bank)
+
+
 
 Global Options
 ==============
@@ -29,7 +41,9 @@ follow the COMMAND.
 [-n              ]     Work in non-interactive mode
 [--charset   =ARG]     Select the character set for console output (defaults
                        to "ISO-8859-15")
-
+[--logtype   =ARG]     type of logging (console, file)
+[--loglevel  =ARG]     log level (info, notice, warning, error)
+[--logfile   =ARG]     log file (if log type is "file")
 
 
 The following is a list of commands which are implemented so far.
@@ -193,6 +207,15 @@ above automatically matches any account.
                          succeed in order to allow the transfer.
                          If omitted the transfer will only be rejected if
                          AqBanking is sure that the combination is invalid.
+-x                       Immediately execute the queue after enqueing the
+                         transfer
+
+
+There are special return values when using this command:
+0:   everything is ok
+1-x: error (see above)
+99:  transfer has been executed and accepted by the bank, but the bank did not
+     yet decide on whether the transfer is to be performed (job is pending)
 
 
 Examples
@@ -237,6 +260,15 @@ above automatically matches any account.
                          succeed in order to allow the debitnote.
                          If omitted the debit note will only be rejected if
                          AqBanking is sure that the combination is invalid.
+-x                       Immediately execute the queue after enqueing the
+                         transfer
+
+
+There are special return values when using this command:
+0:   everything is ok
+1-x: error (see above)
+99:  transfer has been executed and accepted by the bank, but the bank did not
+     yet decide on whether the transfer is to be performed (job is pending)
 
 
 Examples
