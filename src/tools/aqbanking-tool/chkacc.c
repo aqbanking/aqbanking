@@ -108,7 +108,7 @@ int chkAcc(AB_BANKING *ab,
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
@@ -119,24 +119,24 @@ int chkAcc(AB_BANKING *ab,
                               accountId);
   switch(res) {
   case AB_BankInfoCheckResult_NotOk:
-    DBG_ERROR(0,
+    DBG_ERROR(AQT_LOGDOMAIN,
               "Invalid combination of bank code and account number "
               "for remote account");
     return 3;
 
   case AB_BankInfoCheckResult_UnknownBank:
-    DBG_ERROR(0, "Remote bank code is unknown");
+    DBG_ERROR(AQT_LOGDOMAIN, "Remote bank code is unknown");
     return 4;
 
   case AB_BankInfoCheckResult_UnknownResult:
-    DBG_ERROR(0,
+    DBG_ERROR(AQT_LOGDOMAIN,
               "Indifferent result for remote account check");
     return 4;
 
   case AB_BankInfoCheckResult_Ok:
     break;
   default:
-    DBG_ERROR(0, "Unknown check result %d", res);
+    DBG_ERROR(AQT_LOGDOMAIN, "Unknown check result %d", res);
     return 4;
   }
 

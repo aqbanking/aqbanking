@@ -183,7 +183,7 @@ int request(AB_BANKING *ab,
   if (s && *s) {
     fromTime=GWEN_Time_fromString(s, "YYYYMMDD");
     if (fromTime==0) {
-      DBG_ERROR(0, "Invalid fromdate value \"%s\"", s);
+      DBG_ERROR(AQT_LOGDOMAIN, "Invalid fromdate value \"%s\"", s);
       return 1;
     }
   }
@@ -191,14 +191,14 @@ int request(AB_BANKING *ab,
   if (s && *s) {
     toTime=GWEN_Time_fromString(s, "YYYYMMDD");
     if (toTime==0) {
-      DBG_ERROR(0, "Invalid todate value \"%s\"", s);
+      DBG_ERROR(AQT_LOGDOMAIN, "Invalid todate value \"%s\"", s);
       return 1;
     }
   }
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
@@ -256,7 +256,7 @@ int request(AB_BANKING *ab,
 					      fromTime,
 					      toTime);
             if (rv) {
-              DBG_ERROR(0,
+              DBG_ERROR(AQT_LOGDOMAIN,
                         "Error requesting transactions for %s/%s: %d",
                         AB_Account_GetBankCode(a),
                         AB_Account_GetAccountNumber(a),
@@ -270,7 +270,7 @@ int request(AB_BANKING *ab,
                                          AB_Account_GetBankCode(a),
                                          AB_Account_GetAccountNumber(a));
             if (rv) {
-              DBG_ERROR(0,
+              DBG_ERROR(AQT_LOGDOMAIN,
                         "Error requesting balance for %s/%s: %d",
                         AB_Account_GetBankCode(a),
                         AB_Account_GetAccountNumber(a),
@@ -284,7 +284,7 @@ int request(AB_BANKING *ab,
                                                 AB_Account_GetBankCode(a),
                                                 AB_Account_GetAccountNumber(a));
             if (rv) {
-              DBG_ERROR(0,
+              DBG_ERROR(AQT_LOGDOMAIN,
                         "Error requesting standing orders for %s/%s: %d",
                         AB_Account_GetBankCode(a),
                         AB_Account_GetAccountNumber(a),
@@ -304,10 +304,10 @@ int request(AB_BANKING *ab,
   }
 
   if (requests) {
-    DBG_INFO(0, "%d requests created", requests);
+    DBG_INFO(AQT_LOGDOMAIN, "%d requests created", requests);
   }
   else {
-    DBG_ERROR(0, "No requests created");
+    DBG_ERROR(AQT_LOGDOMAIN, "No requests created");
     return 4;
   }
 

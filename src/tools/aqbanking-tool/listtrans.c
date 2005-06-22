@@ -194,14 +194,14 @@ int listTrans(AB_BANKING *ab,
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
   /* get export module */
   exporter=AB_Banking_GetImExporter(ab, exporterName);
   if (!exporter) {
-    DBG_ERROR(0, "Export module \"%s\" not found", exporterName);
+    DBG_ERROR(AQT_LOGDOMAIN, "Export module \"%s\" not found", exporterName);
     return 3;
   }
 
@@ -211,7 +211,7 @@ int listTrans(AB_BANKING *ab,
     if (GWEN_DB_ReadFile(dbProfiles, profileFile,
                          GWEN_DB_FLAGS_DEFAULT |
                          GWEN_PATH_FLAGS_CREATE_GROUP)) {
-      DBG_ERROR(0, "Error reading profiles from \"%s\"",
+      DBG_ERROR(AQT_LOGDOMAIN, "Error reading profiles from \"%s\"",
                 profileFile);
       return 3;
     }
@@ -232,7 +232,7 @@ int listTrans(AB_BANKING *ab,
     dbProfile=GWEN_DB_GetNextGroup(dbProfile);
   }
   if (!dbProfile) {
-    DBG_ERROR(0, "Profile \"%s\" for exporter \"%s\" not found",
+    DBG_ERROR(AQT_LOGDOMAIN, "Profile \"%s\" for exporter \"%s\" not found",
               profileName, exporterName);
     return 3;
   }
@@ -243,7 +243,7 @@ int listTrans(AB_BANKING *ab,
   else
     fd=open(ctxFile, O_RDONLY);
   if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
+    DBG_ERROR(AQT_LOGDOMAIN, "Error selecting output file: %s",
               strerror(errno));
     return 4;
   }
@@ -260,7 +260,7 @@ int listTrans(AB_BANKING *ab,
     if (GWEN_DB_ReadFromStream(dbCtx, bio,
                                GWEN_DB_FLAGS_DEFAULT |
                                GWEN_PATH_FLAGS_CREATE_GROUP)) {
-      DBG_ERROR(0, "Error reading context");
+      DBG_ERROR(AQT_LOGDOMAIN, "Error reading context");
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -268,7 +268,7 @@ int listTrans(AB_BANKING *ab,
     }
     err=GWEN_BufferedIO_Close(bio);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(AQT_LOGDOMAIN, err);
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -278,7 +278,7 @@ int listTrans(AB_BANKING *ab,
 
     ctx=AB_ImExporterContext_fromDb(dbCtx);
     if (!ctx) {
-      DBG_ERROR(0, "No context in input data");
+      DBG_ERROR(AQT_LOGDOMAIN, "No context in input data");
       GWEN_DB_Group_free(dbCtx);
       return 4;
     }
@@ -297,7 +297,7 @@ int listTrans(AB_BANKING *ab,
     s2=AB_ImExporterAccountInfo_GetAccountNumber(iea);
     a=AB_Banking_GetAccountByCodeAndNumber(ab, s1, s2);
     if (!a) {
-      DBG_ERROR(0, "Account %s/%s not found, ignoring",
+      DBG_ERROR(AQT_LOGDOMAIN, "Account %s/%s not found, ignoring",
                 bankId, accountId);
       matches=0;
     }
@@ -353,7 +353,7 @@ int listTrans(AB_BANKING *ab,
 #endif
            );
   if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
+    DBG_ERROR(AQT_LOGDOMAIN, "Error selecting output file: %s",
               strerror(errno));
     AB_ImExporterContext_free(nctx);
     GWEN_DB_Group_free(dbProfiles);
@@ -372,7 +372,7 @@ int listTrans(AB_BANKING *ab,
                             bio,
                             dbProfile);
     if (rv) {
-      DBG_ERROR(0, "Error exporting data (%d)", rv);
+      DBG_ERROR(AQT_LOGDOMAIN, "Error exporting data (%d)", rv);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
       AB_ImExporterContext_free(nctx);
@@ -381,7 +381,7 @@ int listTrans(AB_BANKING *ab,
     }
     err=GWEN_BufferedIO_Close(bio);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(AQT_LOGDOMAIN, err);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
       AB_ImExporterContext_free(nctx);

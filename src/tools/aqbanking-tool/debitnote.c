@@ -219,7 +219,7 @@ int debitNote(AB_BANKING *ab,
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
@@ -274,7 +274,7 @@ int debitNote(AB_BANKING *ab,
 
         if (matches) {
           if (matchingAcc) {
-            DBG_ERROR(0, "Ambiguous local account specification.");
+            DBG_ERROR(AQT_LOGDOMAIN, "Ambiguous local account specification.");
             return 2;
           }
           matchingAcc=a;
@@ -284,14 +284,14 @@ int debitNote(AB_BANKING *ab,
       }
       AB_Account_List2Iterator_free(ait);
       if (matchingAcc==0) {
-        DBG_ERROR(0, "No matching local account.");
+        DBG_ERROR(AQT_LOGDOMAIN, "No matching local account.");
         return 2;
       }
 
       /* Create transaction */
       t=mkTransfer(matchingAcc, db);
       if (!t) {
-        DBG_ERROR(0, "Could not create transfer from arguments");
+        DBG_ERROR(AQT_LOGDOMAIN, "Could not create transfer from arguments");
         return 1;
       }
       if (AB_Transaction_GetTextKey(t)<1)
@@ -299,7 +299,7 @@ int debitNote(AB_BANKING *ab,
       j=AB_JobSingleDebitNote_new(matchingAcc);
       rv=AB_Job_CheckAvailability(j);
       if (rv) {
-        DBG_ERROR(0, "Jobs is not available with this account");
+        DBG_ERROR(AQT_LOGDOMAIN, "Jobs is not available with this account");
         return 3;
       }
       res=AB_Banking_CheckAccount(ab,
@@ -309,20 +309,20 @@ int debitNote(AB_BANKING *ab,
                                   AB_Transaction_GetRemoteAccountNumber(t));
       switch(res) {
       case AB_BankInfoCheckResult_NotOk:
-        DBG_ERROR(0,
+        DBG_ERROR(AQT_LOGDOMAIN,
                   "Invalid combination of bank code and account number "
                   "for remote account");
         return 1;
 
       case AB_BankInfoCheckResult_UnknownBank:
         if (forceCheck) {
-          DBG_ERROR(0, "Remote bank code is unknown");
+          DBG_ERROR(AQT_LOGDOMAIN, "Remote bank code is unknown");
           return 1;
         }
         break;
       case AB_BankInfoCheckResult_UnknownResult:
         if (forceCheck) {
-          DBG_ERROR(0,
+          DBG_ERROR(AQT_LOGDOMAIN,
                     "Indifferent result for remote account check");
           return 1;
         }
@@ -330,27 +330,27 @@ int debitNote(AB_BANKING *ab,
       case AB_BankInfoCheckResult_Ok:
         break;
       default:
-        DBG_ERROR(0, "Unknown check result %d", res);
+        DBG_ERROR(AQT_LOGDOMAIN, "Unknown check result %d", res);
         return 3;
       }
 
       rv=AB_JobSingleDebitNote_SetTransaction(j, t);
       if (rv) {
-        DBG_ERROR(0, "Could not store transaction to job (%d)", rv);
+        DBG_ERROR(AQT_LOGDOMAIN, "Could not store transaction to job (%d)", rv);
         return 3;
       }
       rv=AB_Banking_EnqueueJob(ab, j);
       if (rv) {
-        DBG_ERROR(0, "Could not enqueue job (%d)", rv);
+        DBG_ERROR(AQT_LOGDOMAIN, "Could not enqueue job (%d)", rv);
         return 3;
       }
       else {
-        DBG_INFO(0, "Job successfully enqueued");
+        DBG_INFO(AQT_LOGDOMAIN, "Job successfully enqueued");
 
         if (doExec) {
           rv=AB_Banking_ExecuteQueue(ab);
           if (rv) {
-            DBG_ERROR(0, "Error executing queue: %d", rv);
+            DBG_ERROR(AQT_LOGDOMAIN, "Error executing queue: %d", rv);
             jobOk=-1;
           }
           else {

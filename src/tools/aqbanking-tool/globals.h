@@ -40,6 +40,9 @@
 #include "cbanking.h"
 
 
+#define AQT_LOGDOMAIN "aqbanking-tool"
+
+
 AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 

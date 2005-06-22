@@ -17,6 +17,7 @@
 
 #include "progress_p.h"
 #include "cbanking_l.h"
+#include "globals.h"
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/debug.h>
@@ -143,7 +144,7 @@ int CBankingProgress_Advance(CBANKING_PROGRESS *pr,
 
     /* set stdin to nonblocking */
     if (fcntl(fileno(stdin), F_SETFL, fl | O_NONBLOCK)) {
-      DBG_INFO(0, "fcntl(stdin): %s", strerror(errno));
+      DBG_INFO(AQT_LOGDOMAIN, "fcntl(stdin): %s", strerror(errno));
       return 0;
     }
     /* check whether there is a character */

@@ -88,20 +88,20 @@ int qexec(AB_BANKING *ab,
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
   rv=AB_Banking_ExecuteQueue(ab);
   if (rv) {
-    DBG_ERROR(0, "Error executing queue: %d", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error executing queue: %d", rv);
     return 3;
   }
 
   ctx=AB_ImExporterContext_new();
   rv=AB_Banking_GatherResponses(ab, ctx);
   if (rv) {
-    DBG_ERROR(0, "Error gathering responses: %d", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error gathering responses: %d", rv);
     AB_ImExporterContext_free(ctx);
     return 4;
   }
@@ -109,7 +109,7 @@ int qexec(AB_BANKING *ab,
   dbCtx=GWEN_DB_Group_new("context");
   rv=AB_ImExporterContext_toDb(ctx, dbCtx);
   if (rv) {
-    DBG_ERROR(0, "Error storing context: %d", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error storing context: %d", rv);
     AB_ImExporterContext_free(ctx);
     return 4;
   }
@@ -127,7 +127,7 @@ int qexec(AB_BANKING *ab,
 #endif
            );
   if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
+    DBG_ERROR(AQT_LOGDOMAIN, "Error selecting output file: %s",
               strerror(errno));
     return 4;
   }
@@ -140,7 +140,7 @@ int qexec(AB_BANKING *ab,
       GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
     GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
     if (GWEN_DB_WriteToStream(dbCtx, bio, GWEN_DB_FLAGS_DEFAULT)) {
-      DBG_ERROR(0, "Error writing context");
+      DBG_ERROR(AQT_LOGDOMAIN, "Error writing context");
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -148,7 +148,7 @@ int qexec(AB_BANKING *ab,
     }
     err=GWEN_BufferedIO_Close(bio);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(AQT_LOGDOMAIN, err);
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);

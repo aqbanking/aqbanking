@@ -59,7 +59,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   if (s && *s)
     AB_Transaction_SetRemoteBankCode(t, s);
   else {
-    DBG_ERROR(0, "No remote bank id given");
+    DBG_ERROR(AQT_LOGDOMAIN, "No remote bank id given");
     AB_Transaction_free(t);
     return 0;
   }
@@ -74,7 +74,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
       AB_Transaction_AddRemoteName(t, s, 0);
   }
   if (i<1) {
-    DBG_ERROR(0, "No remote name given");
+    DBG_ERROR(AQT_LOGDOMAIN, "No remote name given");
     AB_Transaction_free(t);
     return 0;
   }
@@ -88,7 +88,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
       AB_Transaction_AddPurpose(t, s, 0);
   }
   if (i<1) {
-    DBG_ERROR(0, "No purpose given");
+    DBG_ERROR(AQT_LOGDOMAIN, "No purpose given");
     AB_Transaction_free(t);
     return 0;
   }
@@ -104,7 +104,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
     v=AB_Value_fromString(s);
     assert(v);
     if (AB_Value_IsNegative(v) || AB_Value_IsZero(v)) {
-      DBG_ERROR(0, "Only positive non-zero amount allowed");
+      DBG_ERROR(AQT_LOGDOMAIN, "Only positive non-zero amount allowed");
       AB_Transaction_free(t);
       return 0;
     }
@@ -112,7 +112,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
     AB_Value_free(v);
   }
   else {
-    DBG_ERROR(0, "No value given");
+    DBG_ERROR(AQT_LOGDOMAIN, "No value given");
     AB_Transaction_free(t);
     return 0;
   }
@@ -125,6 +125,9 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
+  GWEN_LOGGER_LOGTYPE logType;
+  GWEN_LOGGER_LEVEL logLevel;
+  const char *s;
   const char *cmd;
   const char *pinFile;
   int rv;
@@ -177,6 +180,39 @@ int main(int argc, char **argv) {
     "Specify the output character set"        /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "logtype",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "logtype",                    /* long option */
+    "Set the logtype",            /* short description */
+    "Set the logtype (console, file)."
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "loglevel",                   /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "loglevel",                   /* long option */
+    "Set the log level",          /* short description */
+    "Set the log level (info, notice, warning, error)."
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "logfile",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "logfile",                   /* long option */
+    "Set the log file",          /* short description */
+    "Set the log file (if log type is \"file\")."
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
     "help",                       /* name */
@@ -194,12 +230,6 @@ int main(int argc, char **argv) {
   if (bindtextdomain(PACKAGE,  LOCALEDIR)==0)
     fprintf(stderr, "Error binding locale\n");
 #endif
-
-  GWEN_Logger_Open("aqbanking-tool", "aqbanking-tool", 0,
-                   GWEN_LoggerTypeConsole,
-                   GWEN_LoggerFacilityUser);
-  GWEN_Logger_SetLevel("aqbanking-tool", GWEN_LoggerLevelNotice);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
@@ -289,6 +319,32 @@ int main(int argc, char **argv) {
     argv+=rv-1;
   }
 
+  /* setup logging */
+  s=GWEN_DB_GetCharValue(db, "loglevel", 0, "warning");
+  logLevel=GWEN_Logger_Name2Level(s);
+  if (logLevel==GWEN_LoggerLevelUnknown) {
+    fprintf(stderr, "ERROR: Unknown log level (%s)\n", s);
+    return 1;
+  }
+  s=GWEN_DB_GetCharValue(db, "logtype", 0, "console");
+  logType=GWEN_Logger_Name2Logtype(s);
+  if (logType==GWEN_LoggerTypeUnknown) {
+    fprintf(stderr, "ERROR: Unknown log type (%s)\n", s);
+    return 1;
+  }
+  rv=GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
+                      "aqbanking-tool",
+                      GWEN_DB_GetCharValue(db, "logfile", 0,
+                                           "aqbanking-tool.log"),
+                      logType,
+                      GWEN_LoggerFacilityUser);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not setup logging (%d).\n", rv);
+    return 2;
+  }
+  GWEN_Logger_SetLevel(AQT_LOGDOMAIN, logLevel);
+
+
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
   if (!cmd) {
     fprintf(stderr, "ERROR: Command needed.\n");
@@ -313,7 +369,7 @@ int main(int argc, char **argv) {
     if (GWEN_DB_ReadFile(dbPins, pinFile,
 			 GWEN_DB_FLAGS_DEFAULT |
 			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
-      DBG_ERROR(0, "Error reading pinfile \"%s\"", pinFile);
+      DBG_ERROR(AQT_LOGDOMAIN, "Error reading pinfile \"%s\"", pinFile);
       return 2;
     }
     CBanking_SetPinDb(ab, dbPins);

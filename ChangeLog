@@ -5,6 +5,8 @@
   "debitnote" and "transfer". With these arguments given the queue is
   immediately executed and the result returned after enqueuing a request.
 - started adding functions for transactions (transactionfns.{c,h})
+- added command line arguments for logging to AqBanking-Tool
+- aqbanking-tool now uses its own log domain
 
 
 2005/06/21: Martin Preuss<martin@libchipcard.de>

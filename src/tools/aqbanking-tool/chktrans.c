@@ -207,7 +207,7 @@ int chkTransfer(AB_BANKING *ab,
 
   rv=AB_Banking_Init(ab);
   if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+    DBG_ERROR(AQT_LOGDOMAIN, "Error on init (%d)", rv);
     return 2;
   }
 
@@ -218,7 +218,7 @@ int chkTransfer(AB_BANKING *ab,
   else
     fd=open(ctxFile, O_RDONLY);
   if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
+    DBG_ERROR(AQT_LOGDOMAIN, "Error selecting output file: %s",
               strerror(errno));
     return 4;
   }
@@ -235,7 +235,7 @@ int chkTransfer(AB_BANKING *ab,
     if (GWEN_DB_ReadFromStream(dbCtx, bio,
                                GWEN_DB_FLAGS_DEFAULT |
                                GWEN_PATH_FLAGS_CREATE_GROUP)) {
-      DBG_ERROR(0, "Error reading context");
+      DBG_ERROR(AQT_LOGDOMAIN, "Error reading context");
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -243,7 +243,7 @@ int chkTransfer(AB_BANKING *ab,
     }
     err=GWEN_BufferedIO_Close(bio);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(AQT_LOGDOMAIN, err);
       GWEN_DB_Group_free(dbCtx);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -253,7 +253,7 @@ int chkTransfer(AB_BANKING *ab,
 
     ctx=AB_ImExporterContext_fromDb(dbCtx);
     if (!ctx) {
-      DBG_ERROR(0, "No context in input data");
+      DBG_ERROR(AQT_LOGDOMAIN, "No context in input data");
       GWEN_DB_Group_free(dbCtx);
       return 4;
     }
@@ -311,7 +311,7 @@ int chkTransfer(AB_BANKING *ab,
 
         if (matches) {
           if (matchingAcc) {
-            DBG_ERROR(0, "Ambiguous local account specification.");
+            DBG_ERROR(AQT_LOGDOMAIN, "Ambiguous local account specification.");
             return 2;
           }
           matchingAcc=a;
@@ -321,14 +321,14 @@ int chkTransfer(AB_BANKING *ab,
       }
       AB_Account_List2Iterator_free(ait);
       if (matchingAcc==0) {
-        DBG_ERROR(0, "No matching local account.");
+        DBG_ERROR(AQT_LOGDOMAIN, "No matching local account.");
         return 2;
       }
 
       /* Create transaction */
       t=mkTransfer(matchingAcc, db);
       if (!t) {
-        DBG_ERROR(0, "Could not create transfer from arguments");
+        DBG_ERROR(AQT_LOGDOMAIN, "Could not create transfer from arguments");
         return 1;
       }
       if (AB_Transaction_GetTextKey(t)<1)
@@ -337,12 +337,14 @@ int chkTransfer(AB_BANKING *ab,
       j=AB_JobSingleTransfer_new(matchingAcc);
       rv=AB_Job_CheckAvailability(j);
       if (rv) {
-        DBG_ERROR(0, "Jobs is not available with this account");
+        DBG_ERROR(AQT_LOGDOMAIN, "Jobs is not available with this account");
         return 3;
       }
       rv=AB_JobSingleTransfer_SetTransaction(j, t);
       if (rv) {
-        DBG_ERROR(0, "Could not store transaction to job (%d)", rv);
+        DBG_ERROR(AQT_LOGDOMAIN,
+                  "Could not store transaction to job (%d)",
+                  rv);
         return 3;
       }
 
