@@ -8,6 +8,7 @@
 - added command line arguments for logging to AqBanking-Tool
 - aqbanking-tool now uses its own log domain
 - updated README of aqbanking-tool
+- documentation is now installed
 
 
 2005/06/21: Martin Preuss<martin@libchipcard.de>

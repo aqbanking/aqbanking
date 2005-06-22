@@ -6,6 +6,9 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  Doxyfile.in version.h.in \
  i18nsources
 
+idatadir=${datadir}/doc/aqbanking
+idata_DATA=AUTHORS COPYING ChangeLog README
+
 bin_SCRIPTS=aqbanking-config
 aclocaldir = $(datadir)/aclocal
 dist_aclocal_DATA = aqbanking.m4
