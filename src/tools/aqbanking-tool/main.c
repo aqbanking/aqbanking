@@ -297,6 +297,13 @@ int main(int argc, char **argv) {
                                   "  This command specifically exports "
                                   "transactions.\n"));
     GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, " listbal\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  Exports results from the queue's "
+                                  "execution.\n"
+                                  "  This command specifically exports "
+                                  "balances.\n"));
+    GWEN_Buffer_AppendString(ubuf, "\n");
     GWEN_Buffer_AppendString(ubuf, " chkacc\n");
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  Check a combination of bank id and "
@@ -395,6 +402,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "chkacc")==0) {
     rv=chkAcc(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "listbal")==0) {
+    rv=listBal(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

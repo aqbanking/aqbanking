@@ -176,6 +176,62 @@ aqbanking-tool listtrans --ctxfile=result.ctx --outfile=result.csv
 
 
 
+"listbal"
+===========
+
+This command inspects the result file from the command "exec" and dumps 
+account balances from this file to stdout or a file (format: CSV).
+
+
+Options
+-------
+[--bank        =ARG]     Bank code ("Bankleitzahl")
+[--account     =ARG]     Account number
+[--bankname    =ARG]     Bank name
+[--accountname =ARG]     Account name
+Wildcards ("*") and jokers ("?") are allowed. Every missing option of those
+above automatically matches any account.
+
+[--ctxfile     =ARG]     The result file to be used (defaults to stdin)
+[--outfile     =ARG]     Name of the output file to which the transactions
+                         are to be stored. Defaults to stdout.
+
+
+Output Format
+-------------
+The statements are written in TAB-delimited CSV lines. Each line contains
+the following data:
+
+Column! Data                                     ! Example Data
+------!------------------------------------------!---------------------
+ 1    ! "Account" (fixed)                        ! Account
+ 2    ! Bank code (Bankleitzahl)                 ! 20050550
+ 3    ! Account number                           ! 1234567890
+ 4    ! Bank name (if known, empty otherwise)    ! Hamburger Sparkasse
+ 5    ! Account name (empty if unknown)          ! Giro
+      !                                          !
+ 6-9  ! Booked balance                           !
+ 6    ! Date of balance (DD.MM.YYYY or empty)    ! 19.05.2005
+ 7    ! Time of balance (hh:mm or empty)         ! 16:53
+ 8    ! Balance (10 digits, precision 2)         ! 12345,04
+ 9    ! Currency (ISO code, empty if unknown)    ! EUR
+      !                                          !
+10-13 ! Noted balance                            !
+10    ! Date of balance (DD.MM.YYYY or empty)    ! 19.05.2005
+11    ! Time of balance (hh:mm or empty)         ! 16:53
+12    ! Balance (10 digits, precision 2)         ! 12345,04
+13    ! Currency (ISO code, empty if unknown)    ! EUR
+
+
+
+Examples
+--------
+aqbanking-tool listbal --ctxfile=result.ctx --outfile=result.csv
+aqbanking-tool listbal --bankname="*Sparkasse*" --ctxfile=result.ctx
+                       --outfile=result.csv
+
+
+
 "transfer"
 ===========
 
