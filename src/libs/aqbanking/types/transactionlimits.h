@@ -13,6 +13,7 @@ This type describes the limits for fields of an @ref AB_TRANSACTION. The limits 
   <li>maxLinesSOMETHING: if 0 then this limit is unknown All other values represent the maximum number of lines for the described field.</li>
   <li>minLinesSOMETHING: if 0 then this limit is unknown. All other values represent the minimum number of lines for the described field.</li>
   <li>valuesSOMETHING: A list of allowed values (as string). If this list is empty then there all values are allowed (those lists @b exist in any case, so the appropriate getter function will never return NULL).</li>
+  <li>allowSOMETHING: If SOMETHING is allowed then the value is &quot;1&quot;. If SOMETHING is NOT allowed then the value is &quot;-1&quot;. If it is unknown whether SOMETHING is allowed or not then this value is &quot;0&quot;.</li>
 </ul>
 So if you want to check whether an given field is at all allowed you must check whether &quot;maxLenSOMETHING&quot; has a value of &quot;-1&quot;.<h3>Issuer Name</h3>
 <p>
@@ -332,6 +333,153 @@ get it with @ref AB_TransactionLimits_GetMaxLinesPurpose
 <p>
 Set this property with @ref AB_TransactionLimits_SetMinLinesPurpose, 
 get it with @ref AB_TransactionLimits_GetMinLinesPurpose
+</p>
+
+<h3>Standing Orders And Dated Transfer</h3>
+<p>
+These limits apply to standing orders and dated transfers only.</p>
+@anchor AB_TRANSACTION_LIMITS_MinValueSetupTime
+<h4>MinValueSetupTime</h4>
+<p>
+Minimum time in days between issueing of a request and its first execution.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMinValueSetupTime, 
+get it with @ref AB_TransactionLimits_GetMinValueSetupTime
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MaxValueSetupTime
+<h4>MaxValueSetupTime</h4>
+<p>
+Maximum time in days between issueing of a request and its first execution.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTime, 
+get it with @ref AB_TransactionLimits_GetMaxValueSetupTime
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_ValuesCycleWeek
+<h4>ValuesCycleWeek</h4>
+<p>
+This string list contains one entry for every supported cycle. These value are accepted when &quot;period&quot; is &quot;weekly&quot;. The values must be positive integers in decimal form (no leading zero, no comma or decimal point). Allowed values are &quot;0&quot; (all cycles possible) and &quot;1&quot;-&quot;52&quot;.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetValuesCycleWeek, 
+get it with @ref AB_TransactionLimits_GetValuesCycleWeek
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_ValuesCycleMonth
+<h4>ValuesCycleMonth</h4>
+<p>
+This string list contains one entry for every supported cycle. These value are accepted when &quot;period&quot; is &quot;monthly&quot;. The values must be positive integers in decimal form (no leading zero, no comma or decimal point). Allowed values are &quot;0&quot; (all cycles possible) and &quot;1&quot;-&quot;12&quot;.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetValuesCycleMonth, 
+get it with @ref AB_TransactionLimits_GetValuesCycleMonth
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_ValuesExecutionDayWeek
+<h4>ValuesExecutionDayWeek</h4>
+<p>
+This string list contains one entry for every supported day of the week. These value are accepted when &quot;period&quot; is &quot;weekly&quot;. The values must be positive integers in decimal form (no leading zero, no comma or decimal point). Allowed values are &quot;0&quot; (all days allowed) and &quot;1&quot;-&quot;7&quot;.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetValuesExecutionDayWeek, 
+get it with @ref AB_TransactionLimits_GetValuesExecutionDayWeek
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_ValuesExecutionDayMonth
+<h4>ValuesExecutionDayMonth</h4>
+<p>
+This string list contains one entry for every supported monthly cycle. These value are accepted when &quot;period&quot; is &quot;monthly&quot;. The values must be positive integers in decimal form (no leading zero, no comma or decimal point). Allowed are &quot;0&quot; (all days possible), &quot;1&quot;-&quot;30&quot;, &quot;97&quot; (ultimo-2), &quot;98&quot; (ultimo-1) and &quot;99&quot; (ultimo).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetValuesExecutionDayMonth, 
+get it with @ref AB_TransactionLimits_GetValuesExecutionDayMonth
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeRecipientAccount
+<h4>AllowChangeRecipientAccount</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeRecipientAccount, 
+get it with @ref AB_TransactionLimits_GetAllowChangeRecipientAccount
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeRecipientName
+<h4>AllowChangeRecipientName</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeRecipientName, 
+get it with @ref AB_TransactionLimits_GetAllowChangeRecipientName
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeValue
+<h4>AllowChangeValue</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeValue, 
+get it with @ref AB_TransactionLimits_GetAllowChangeValue
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeTextKey
+<h4>AllowChangeTextKey</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeTextKey, 
+get it with @ref AB_TransactionLimits_GetAllowChangeTextKey
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangePurpose
+<h4>AllowChangePurpose</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangePurpose, 
+get it with @ref AB_TransactionLimits_GetAllowChangePurpose
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeFirstExecutionDate
+<h4>AllowChangeFirstExecutionDate</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeFirstExecutionDate, 
+get it with @ref AB_TransactionLimits_GetAllowChangeFirstExecutionDate
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeLastExecutionDate
+<h4>AllowChangeLastExecutionDate</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeLastExecutionDate, 
+get it with @ref AB_TransactionLimits_GetAllowChangeLastExecutionDate
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeCycle
+<h4>AllowChangeCycle</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeCycle, 
+get it with @ref AB_TransactionLimits_GetAllowChangeCycle
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangePeriod
+<h4>AllowChangePeriod</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangePeriod, 
+get it with @ref AB_TransactionLimits_GetAllowChangePeriod
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowChangeExecutionDay
+<h4>AllowChangeExecutionDay</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowChangeExecutionDay, 
+get it with @ref AB_TransactionLimits_GetAllowChangeExecutionDay
 </p>
 
 */
@@ -767,6 +915,173 @@ AQBANKING_API int AB_TransactionLimits_GetMinLinesPurpose(const AB_TRANSACTION_L
 * Set the property @ref AB_TRANSACTION_LIMITS_MinLinesPurpose
 */
 AQBANKING_API void AB_TransactionLimits_SetMinLinesPurpose(AB_TRANSACTION_LIMITS *el, int d);
+
+/*@}*/
+
+/** @name Standing Orders And Dated Transfer
+ *
+These limits apply to standing orders and dated transfers only.*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTime
+*/
+AQBANKING_API int AB_TransactionLimits_GetMinValueSetupTime(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTime
+*/
+AQBANKING_API void AB_TransactionLimits_SetMinValueSetupTime(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTime
+*/
+AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTime(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTime
+*/
+AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_ValuesCycleWeek
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_ValuesCycleWeek
+*/
+AQBANKING_API void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_AddValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
+AQBANKING_API void AB_TransactionLimits_RemoveValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const char *d);
+AQBANKING_API void AB_TransactionLimits_ClearValuesCycleWeek(AB_TRANSACTION_LIMITS *st);
+AQBANKING_API int AB_TransactionLimits_HasValuesCycleWeek(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_ValuesCycleMonth
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_ValuesCycleMonth
+*/
+AQBANKING_API void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_AddValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
+AQBANKING_API void AB_TransactionLimits_RemoveValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const char *d);
+AQBANKING_API void AB_TransactionLimits_ClearValuesCycleMonth(AB_TRANSACTION_LIMITS *st);
+AQBANKING_API int AB_TransactionLimits_HasValuesCycleMonth(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayWeek
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayWeek
+*/
+AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_AddValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
+AQBANKING_API void AB_TransactionLimits_RemoveValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const char *d);
+AQBANKING_API void AB_TransactionLimits_ClearValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st);
+AQBANKING_API int AB_TransactionLimits_HasValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayMonth
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayMonth
+*/
+AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_AddValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
+AQBANKING_API void AB_TransactionLimits_RemoveValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const char *d);
+AQBANKING_API void AB_TransactionLimits_ClearValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st);
+AQBANKING_API int AB_TransactionLimits_HasValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeRecipientAccount
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeRecipientAccount(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeRecipientAccount
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeRecipientAccount(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeRecipientName
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeRecipientName(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeRecipientName
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeRecipientName(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeValue
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeValue(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeValue
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeValue(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeTextKey
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeTextKey(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeTextKey
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeTextKey(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangePurpose
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangePurpose(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangePurpose
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangePurpose(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeFirstExecutionDate
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeFirstExecutionDate(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeFirstExecutionDate
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeFirstExecutionDate(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeLastExecutionDate
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeLastExecutionDate(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeLastExecutionDate
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeLastExecutionDate(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeCycle
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeCycle(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeCycle
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeCycle(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangePeriod
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangePeriod(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangePeriod
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangePeriod(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeExecutionDay
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowChangeExecutionDay(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowChangeExecutionDay
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowChangeExecutionDay(AB_TRANSACTION_LIMITS *el, int d);
 
 /*@}*/
 

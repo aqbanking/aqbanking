@@ -1,4 +1,18 @@
 
+2005/06/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- extended AB_TRANSACTION_LIMITS to contain limits for standing orders and
+  dated transfers: Started working on standing orders and dated transfers
+  (possibly sponsored by Frank Hansen).
+- very much simplified transaction-based jobs: JobSingleTransfer,
+  JobSingleDebitNote and the future jobs JobCreateStandingOrder,
+  JobModifyStandingOrder, JobDeleteStandingOrder, JobCreateDatedTransfer,
+  JobModifyDatedTransfer and JobDeleteDatedTransfer will internally share the
+  new base job JobTransferBase. 
+  This is completely transparent, applications or backends won't notice this
+  change.
+
+
 2005/06/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added command "listbal" to aqbanking-tool. This command shows balances

@@ -13,6 +13,7 @@ This type describes the limits for fields of an @ref AB_TRANSACTION. The limits 
   <li>maxLinesSOMETHING: if 0 then this limit is unknown All other values represent the maximum number of lines for the described field.</li>
   <li>minLinesSOMETHING: if 0 then this limit is unknown. All other values represent the minimum number of lines for the described field.</li>
   <li>valuesSOMETHING: A list of allowed values (as string). If this list is empty then there all values are allowed (those lists @b exist in any case, so the appropriate getter function will never return NULL).</li>
+  <li>allowSOMETHING: If SOMETHING is allowed then the value is &quot;1&quot;. If SOMETHING is NOT allowed then the value is &quot;-1&quot;. If it is unknown whether SOMETHING is allowed or not then this value is &quot;0&quot;.</li>
 </ul>
 So if you want to check whether an given field is at all allowed you must check whether &quot;maxLenSOMETHING&quot; has a value of &quot;-1&quot;.<h3>Issuer Name</h3>
 <p>
@@ -55,6 +56,9 @@ Limits for bank reference.</p>
 Limits for purpose (called
 <i>memo</i>
 in some apps).</p>
+<h3>Standing Orders And Dated Transfer</h3>
+<p>
+These limits apply to standing orders and dated transfers only.</p>
 */
 #include "transactionlimits.h"
 
@@ -181,6 +185,29 @@ Limits for purpose (called
 <i>memo</i>
 in some apps).*/
 /*@{*/
+
+
+
+
+
+/*@}*/
+
+/** @name Standing Orders And Dated Transfer
+ *
+These limits apply to standing orders and dated transfers only.*/
+/*@{*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

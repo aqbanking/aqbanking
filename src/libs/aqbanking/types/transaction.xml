@@ -134,6 +134,11 @@
         is empty then there all values are allowed (those lists @b exist in
         any case, so the appropriate getter function will never return NULL).
       </li>
+      <li>
+        allowSOMETHING: If SOMETHING is allowed then the value is "1".
+        If SOMETHING is NOT allowed then the value is "-1". If it is
+        unknown whether SOMETHING is allowed or not then this value is "0".
+      </li>
     </ul>
     So if you want to check whether an given field is at all allowed you
     must check whether "maxLenSOMETHING" has a value of "-1".
@@ -258,6 +263,75 @@
       <elem name="minLenPurpose" type="int" />
       <elem name="maxLinesPurpose" type="int" />
       <elem name="minLinesPurpose" type="int" />
+    </group>
+
+    <group name="Standing Orders And Dated Transfer" >
+      <descr>
+        These limits apply to standing orders and dated transfers only.
+      </descr>
+      <elem name="minValueSetupTime" type="int">
+        <descr>
+          Minimum time in days between issueing of a request and its
+          first execution.
+        </descr>
+      </elem>
+      <elem name="maxValueSetupTime" type="int">
+        <descr>
+          Maximum time in days between issueing of a request and its
+          first execution.
+        </descr>
+      </elem>
+      <elem name="valuesCycleWeek" type="GWEN_STRINGLIST" ptr="1">
+        <descr>
+          This string list contains one entry for every supported cycle. 
+          These value are accepted when "period" is "weekly".
+          The values must be positive integers in decimal form (no leading
+          zero, no comma or decimal point).
+          Allowed values are "0" (all cycles possible) and "1"-"52".
+        </descr>
+      </elem>
+      <elem name="valuesCycleMonth" type="GWEN_STRINGLIST" ptr="1">
+        <descr>
+          This string list contains one entry for every supported cycle.
+          These value are accepted when "period" is "monthly".
+          The values must be positive integers in decimal form (no leading
+          zero, no comma or decimal point).
+          Allowed values are "0" (all cycles possible) and "1"-"12".
+        </descr>
+      </elem>
+      <elem name="valuesExecutionDayWeek" type="GWEN_STRINGLIST" ptr="1">
+        <descr>
+          This string list contains one entry for every supported day of the
+          week.
+          These value are accepted when "period" is "weekly".
+          The values must be positive integers in decimal form (no leading
+          zero, no comma or decimal point).
+          Allowed values are "0" (all days allowed) and "1"-"7".
+        </descr>
+      </elem>
+      <elem name="valuesExecutionDayMonth" type="GWEN_STRINGLIST" ptr="1">
+        <descr>
+          This string list contains one entry for every supported monthly 
+          cycle.
+          These value are accepted when "period" is "monthly".
+          The values must be positive integers in decimal form (no leading
+          zero, no comma or decimal point).
+          Allowed are "0" (all days possible), "1"-"30", "97" (ultimo-2), 
+          "98" (ultimo-1) and "99" (ultimo).
+        </descr>
+      </elem>
+
+      <elem name="allowChangeRecipientAccount" type="int" />
+      <elem name="allowChangeRecipientName" type="int" />
+      <elem name="allowChangeValue" type="int" />
+      <elem name="allowChangeTextKey" type="int" />
+      <elem name="allowChangePurpose" type="int" />
+      <elem name="allowChangeFirstExecutionDate" type="int" />
+      <elem name="allowChangeLastExecutionDate" type="int" />
+      <elem name="allowChangeCycle" type="int" />
+      <elem name="allowChangePeriod" type="int" />
+      <elem name="allowChangeExecutionDay" type="int" />
+
     </group>
 
   </type>

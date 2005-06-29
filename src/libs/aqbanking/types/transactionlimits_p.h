@@ -42,6 +42,22 @@ struct AB_TRANSACTION_LIMITS {
   int minLenPurpose;
   int maxLinesPurpose;
   int minLinesPurpose;
+  int minValueSetupTime;
+  int maxValueSetupTime;
+  GWEN_STRINGLIST *valuesCycleWeek;
+  GWEN_STRINGLIST *valuesCycleMonth;
+  GWEN_STRINGLIST *valuesExecutionDayWeek;
+  GWEN_STRINGLIST *valuesExecutionDayMonth;
+  int allowChangeRecipientAccount;
+  int allowChangeRecipientName;
+  int allowChangeValue;
+  int allowChangeTextKey;
+  int allowChangePurpose;
+  int allowChangeFirstExecutionDate;
+  int allowChangeLastExecutionDate;
+  int allowChangeCycle;
+  int allowChangePeriod;
+  int allowChangeExecutionDay;
 };
 
 
@@ -163,6 +179,29 @@ Limits for purpose (called
 <i>memo</i>
 in some apps).*/
 /*@{*/
+
+
+
+
+
+/*@}*/
+
+/** @name Standing Orders And Dated Transfer
+ *
+These limits apply to standing orders and dated transfers only.*/
+/*@{*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

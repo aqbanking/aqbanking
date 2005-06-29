@@ -15,13 +15,14 @@
 #define AQBANKING_JOBSINGLEDEBITNOTE_BE_H
 
 
-#include <aqbanking/job.h>
 #include <aqbanking/jobsingledebitnote.h>
 
 
-AQBANKING_API 
 void AB_JobSingleDebitNote_SetFieldLimits(AB_JOB *j,
                                           AB_TRANSACTION_LIMITS *limits);
+AB_JOB *AB_JobSingleDebitNote_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+int AB_JobSingleDebitNote_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
+
 
 #endif
 

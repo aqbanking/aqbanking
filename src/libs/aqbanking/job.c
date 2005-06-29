@@ -23,8 +23,9 @@
 #include "jobs/jobgettransactions_l.h"
 #include "jobs/jobgetstandingorders_l.h"
 #include "jobs/jobgetbalance_l.h"
-#include "jobs/jobsingletransfer_l.h"
-#include "jobs/jobsingledebitnote_l.h"
+#include "jobs/jobtransferbase_l.h"
+#include "jobs/jobsingletransfer_be.h"
+#include "jobs/jobsingledebitnote_be.h"
 #include "jobs/jobeutransfer_l.h"
 
 #include <gwenhywfar/debug.h>
