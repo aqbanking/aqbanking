@@ -93,6 +93,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 %{_bindir}/aqbanking-tool
+%{_datadir}/doc/%{name}
 
 %files devel
 %defattr(-,root,root)
