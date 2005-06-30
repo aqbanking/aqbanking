@@ -14,7 +14,7 @@
 -------------------------------------------------
 - extended AB_TRANSACTION_LIMITS to contain limits for standing orders and
   dated transfers: Started working on standing orders and dated transfers
-  (possibly sponsored by Frank Hansen).
+  (sponsored by Frank Hansen).
 - very much simplified transaction-based jobs: JobSingleTransfer,
   JobSingleDebitNote and the future jobs JobCreateStandingOrder,
   JobModifyStandingOrder, JobDeleteStandingOrder, JobCreateDatedTransfer,
