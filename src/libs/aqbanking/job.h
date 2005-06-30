@@ -91,7 +91,13 @@ typedef enum {
   /** retrieve list of standing orders for an online account */
   AB_Job_TypeGetStandingOrders,
   /** retrieve list of dated transfers for an online account */
-  AB_Job_TypeGetDatedTransfers
+  AB_Job_TypeGetDatedTransfers,
+  /* creates a new standing order */
+  AB_Job_TypeCreateStandingOrder,
+  /* modifies an existing standing order */
+  AB_Job_TypeModifyStandingOrder,
+  /* deletes an existing standing order */
+  AB_Job_TypeDeleteStandingOrder,
 } AB_JOB_TYPE;
 
 

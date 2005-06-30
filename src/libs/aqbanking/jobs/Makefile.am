@@ -34,6 +34,12 @@ iheader_HEADERS= \
  jobgetdatedtransfers.h \
  jobgetdatedtransfers_be.h \
  jobgetdatedtransfers_l.h \
+ jobcreatesto.h \
+ jobcreatesto_be.h \
+ jobmodifysto.h \
+ jobmodifysto_be.h \
+ jobdeletesto.h \
+ jobdeletesto_be.h \
  jobeutransfer.h \
  jobeutransfer_l.h \
  jobeutransfer_be.h
@@ -46,6 +52,9 @@ libjobs_la_SOURCES=\
  jobtransferbase.c \
  jobsingletransfer.c \
  jobsingledebitnote.c \
+ jobcreatesto.c \
+ jobmodifysto.c \
+ jobdeletesto.c \
  jobeutransfer.c
 
 

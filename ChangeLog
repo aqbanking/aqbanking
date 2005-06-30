@@ -1,4 +1,12 @@
 
+2005/06/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added jobs:
+  - CreateStandingOrder
+  - ModifyStandingOrder
+  - DeleteStandingOrder
+
+
 2005/06/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - extended AB_TRANSACTION_LIMITS to contain limits for standing orders and

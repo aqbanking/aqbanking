@@ -27,6 +27,9 @@
 #include "jobs/jobsingletransfer_be.h"
 #include "jobs/jobsingledebitnote_be.h"
 #include "jobs/jobeutransfer_l.h"
+#include "jobs/jobcreatesto_be.h"
+#include "jobs/jobmodifysto_be.h"
+#include "jobs/jobdeletesto_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -175,15 +178,18 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   const char *s;
 
   switch(i) {
-  case AB_Job_TypeGetBalance:        s="getbalance"; break;
-  case AB_Job_TypeGetTransactions:   s="gettransactions"; break;
-  case AB_Job_TypeTransfer:          s="transfer"; break;
-  case AB_Job_TypeDebitNote:         s="debitnote"; break;
-  case AB_Job_TypeEuTransfer:        s="eutransfer"; break;
-  case AB_Job_TypeGetStandingOrders: s="getstandingorders"; break;
-  case AB_Job_TypeGetDatedTransfers: s="getdatedtransfers"; break;
+  case AB_Job_TypeGetBalance:          s="getbalance"; break;
+  case AB_Job_TypeGetTransactions:     s="gettransactions"; break;
+  case AB_Job_TypeTransfer:            s="transfer"; break;
+  case AB_Job_TypeDebitNote:           s="debitnote"; break;
+  case AB_Job_TypeEuTransfer:          s="eutransfer"; break;
+  case AB_Job_TypeGetStandingOrders:   s="getstandingorders"; break;
+  case AB_Job_TypeGetDatedTransfers:   s="getdatedtransfers"; break;
+  case AB_Job_TypeCreateStandingOrder: s="createstandingorder"; break;
+  case AB_Job_TypeModifyStandingOrder: s="modifystandingorder"; break;
+  case AB_Job_TypeDeleteStandingOrder: s="deletestandingorder"; break;
   default:
-  case AB_Job_TypeUnknown:           s="unknown"; break;
+  case AB_Job_TypeUnknown:             s="unknown"; break;
   }
 
   return s;
@@ -201,6 +207,13 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
   else if (strcasecmp(s, "eutransfer")==0) i=AB_Job_TypeEuTransfer;
   else if (strcasecmp(s, "getstandingorders")==0) i=AB_Job_TypeGetStandingOrders;
   else if (strcasecmp(s, "getdatedtransfers")==0) i=AB_Job_TypeGetDatedTransfers;
+  else if (strcasecmp(s, "createstandingorder")==0)
+    i=AB_Job_TypeCreateStandingOrder;
+  else if (strcasecmp(s, "modifystandingorder")==0)
+    i=AB_Job_TypeModifyStandingOrder;
+  else if (strcasecmp(s, "deletestandingorder")==0)
+    i=AB_Job_TypeDeleteStandingOrder;
+
   else i=AB_Job_TypeUnknown;
 
   return i;
@@ -280,6 +293,27 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   case AB_Job_TypeGetDatedTransfers:
     if (AB_JobGetDatedTransfers_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeCreateStandingOrder:
+    if (AB_JobCreateStandingOrder_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeModifyStandingOrder:
+    if (AB_JobModifyStandingOrder_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeDeleteStandingOrder:
+    if (AB_JobDeleteStandingOrder_toDb(j, db)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
@@ -455,6 +489,21 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   case AB_Job_TypeGetDatedTransfers:
     j=AB_JobGetDatedTransfers_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeCreateStandingOrder:
+    j=AB_JobCreateStandingOrder_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeModifyStandingOrder:
+    j=AB_JobModifyStandingOrder_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeDeleteStandingOrder:
+    j=AB_JobDeleteStandingOrder_fromDb(a, db);
     assert(j);
     break;
 
