@@ -5,6 +5,9 @@
   - CreateStandingOrder
   - ModifyStandingOrder
   - DeleteStandingOrder
+  - CreateDatedTransfer
+  - ModifyDatedTransfer
+  - DeleteDatedTransfer
 
 
 2005/06/29: Martin Preuss<martin@libchipcard.de>

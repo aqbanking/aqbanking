@@ -98,6 +98,12 @@ typedef enum {
   AB_Job_TypeModifyStandingOrder,
   /* deletes an existing standing order */
   AB_Job_TypeDeleteStandingOrder,
+  /* creates a new dated transfer */
+  AB_Job_TypeCreateDatedTransfer,
+  /* modifies an existing dated transfer */
+  AB_Job_TypeModifyDatedTransfer,
+  /* deletes an existing dated transfer */
+  AB_Job_TypeDeleteDatedTransfer
 } AB_JOB_TYPE;
 
 

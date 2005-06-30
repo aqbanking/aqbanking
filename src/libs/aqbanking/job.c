@@ -30,6 +30,9 @@
 #include "jobs/jobcreatesto_be.h"
 #include "jobs/jobmodifysto_be.h"
 #include "jobs/jobdeletesto_be.h"
+#include "jobs/jobcreatedatedtransfer_be.h"
+#include "jobs/jobmodifydatedtransfer_be.h"
+#include "jobs/jobdeletedatedtransfer_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -188,6 +191,9 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeCreateStandingOrder: s="createstandingorder"; break;
   case AB_Job_TypeModifyStandingOrder: s="modifystandingorder"; break;
   case AB_Job_TypeDeleteStandingOrder: s="deletestandingorder"; break;
+  case AB_Job_TypeCreateDatedTransfer: s="createdatedtransfer"; break;
+  case AB_Job_TypeModifyDatedTransfer: s="modifydatedtransfer"; break;
+  case AB_Job_TypeDeleteDatedTransfer: s="deletedatedtransfer"; break;
   default:
   case AB_Job_TypeUnknown:             s="unknown"; break;
   }
@@ -213,6 +219,12 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
     i=AB_Job_TypeModifyStandingOrder;
   else if (strcasecmp(s, "deletestandingorder")==0)
     i=AB_Job_TypeDeleteStandingOrder;
+  else if (strcasecmp(s, "createdatedtransfer")==0)
+    i=AB_Job_TypeCreateDatedTransfer;
+  else if (strcasecmp(s, "modifydatedtransfer")==0)
+    i=AB_Job_TypeModifyDatedTransfer;
+  else if (strcasecmp(s, "deletedatedtransfer")==0)
+    i=AB_Job_TypeDeleteDatedTransfer;
 
   else i=AB_Job_TypeUnknown;
 
@@ -314,6 +326,27 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   case AB_Job_TypeDeleteStandingOrder:
     if (AB_JobDeleteStandingOrder_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeCreateDatedTransfer:
+    if (AB_JobCreateDatedTransfer_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeModifyDatedTransfer:
+    if (AB_JobModifyDatedTransfer_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeDeleteDatedTransfer:
+    if (AB_JobDeleteDatedTransfer_toDb(j, db)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
@@ -504,6 +537,21 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   case AB_Job_TypeDeleteStandingOrder:
     j=AB_JobDeleteStandingOrder_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeCreateDatedTransfer:
+    j=AB_JobCreateDatedTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeModifyDatedTransfer:
+    j=AB_JobModifyDatedTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeDeleteDatedTransfer:
+    j=AB_JobDeleteDatedTransfer_fromDb(a, db);
     assert(j);
     break;
 
