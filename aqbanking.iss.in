@@ -16,7 +16,6 @@ AppUpdatesURL=http://sourceforge.net/project/showfiles.php?group_id=115695
 DefaultDirName={pf}\@PACKAGE@
 LicenseFile=COPYING
 Compression=lzma
-SolidCompression=yes
 OutputDir=.
 OutputBaseFilename=@PACKAGE@-@VERSION@-setup
 UninstallFilesDir={app}\uninstall\@PACKAGE@
@@ -42,6 +41,9 @@ Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.dll"; DestDir: 
 
 ; The lib file for linking against it
 Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+
+; The c++ DLL; might be removed in the future?
+Source: "src\libs\aqbanking++\@PACKAGE@pp32.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
 
 ; The config-script. It is post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig({app}\bin\@PACKAGE@-config)

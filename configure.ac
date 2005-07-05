@@ -473,6 +473,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile
+  src/libs/aqbanking++/ressource.rc
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

@@ -2,3 +2,8 @@ Debug
 *.ncb
 *.sln
 *.suo
+*.def
+*.dll
+*.lib
+dlldir
+ressource.rc

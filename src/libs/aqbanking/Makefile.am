@@ -135,6 +135,8 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	)
 
 CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
+clean-local:
+	-rm -rf dlldir
 
 endif
 # IS_WINDOWS
