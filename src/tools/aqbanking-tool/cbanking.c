@@ -314,12 +314,12 @@ char CBanking__readCharFromStdin(int waitFor) {
   struct termios OldAttr, NewAttr;
   int AttrChanged = 0;
 #endif
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigset_t snew, sold;
 #endif
 
   // disable canonical mode to receive a single character
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigemptyset(&snew);
   sigaddset(&snew, SIGINT);
   sigaddset(&snew, SIGSTOP);
@@ -354,7 +354,7 @@ char CBanking__readCharFromStdin(int waitFor) {
     tcsetattr (fileno (stdin), TCSADRAIN, &OldAttr);
 #endif
 
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigprocmask(SIG_BLOCK, &sold, 0);
 #endif
 
@@ -376,13 +376,13 @@ int CBanking__input(GWEN_TYPE_UINT32 flags,
   int chr;
   unsigned int pos;
   int rv;
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigset_t snew, sold;
 #endif
 
   /* if possible, disable echo from stdin to stderr during password
    * entry */
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigemptyset(&snew);
   sigaddset(&snew, SIGINT);
   sigaddset(&snew, SIGSTOP);
@@ -465,7 +465,7 @@ int CBanking__input(GWEN_TYPE_UINT32 flags,
     tcsetattr (fileno (stdin), TCSADRAIN, &OldInAttr);
 #endif
 
-#ifdef HAVE_SIGNAL_H
+#if HAVE_DECL_SIGPROCMASK
   sigprocmask(SIG_BLOCK, &sold, 0);
 #endif
   return rv;

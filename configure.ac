@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=12
-AQBANKING_VERSION_BUILD=9
+AQBANKING_VERSION_BUILD=10
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -115,6 +115,11 @@ AC_CHECK_PROG(SED,sed,sed)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h locale.h])
 AC_CHECK_HEADERS([termios.h signal.h iconv.h])
+AC_CHECK_DECLS([sigprocmask], [], [], [
+  #ifdef HAVE_SIGNAL_H
+  #  include <signal.h>
+  #endif
+])
 
 ###-------------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
