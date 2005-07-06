@@ -57,7 +57,7 @@ rpm:    $(PACKAGE).spec dist
 
 # Rule for using the Inno Setup compiler. The path to iscc.exe is set
 # manually here for now.
-ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
+ISCC = "C:\Programme\Inno Setup 5\iscc.exe"
 wintmpdir = win32-tmp
 setup: aqbanking.iss
 	mkdir -p $(wintmpdir)

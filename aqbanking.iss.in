@@ -46,7 +46,7 @@ Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.lib"; DestDir: 
 Source: "src\libs\aqbanking++\@PACKAGE@pp32.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
 
 ; The config-script. It is post-processed by the Pascal script below.
-Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig({app}\bin\@PACKAGE@-config)
+Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig('{app}\bin\@PACKAGE@-config')
 
 ; The headers, and the aclocal macro. 
 Source: "win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
@@ -106,7 +106,7 @@ var
 begin
 
   { Load the unchanged original file }
-  Res := LoadStringFromFile(Format1('%s.in.in',FileName), FileString);
+  Res := LoadStringFromFile(Format('%s.in.in',[FileName]), FileString);
   if Res = False then
     MsgBox('Error on loading '+FileName+'.in.in for final adaptation', mbInformation, MB_OK);
 
