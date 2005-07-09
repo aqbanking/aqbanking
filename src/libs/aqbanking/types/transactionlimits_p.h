@@ -48,6 +48,8 @@ struct AB_TRANSACTION_LIMITS {
   GWEN_STRINGLIST *valuesCycleMonth;
   GWEN_STRINGLIST *valuesExecutionDayWeek;
   GWEN_STRINGLIST *valuesExecutionDayMonth;
+  int allowMonthly;
+  int allowWeekly;
   int allowChangeRecipientAccount;
   int allowChangeRecipientName;
   int allowChangeValue;
@@ -190,6 +192,8 @@ in some apps).*/
  *
 These limits apply to standing orders and dated transfers only.*/
 /*@{*/
+
+
 
 
 

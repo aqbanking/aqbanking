@@ -102,6 +102,8 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
     st->valuesExecutionDayWeek=GWEN_StringList_dup(d->valuesExecutionDayWeek);
   if (d->valuesExecutionDayMonth)
     st->valuesExecutionDayMonth=GWEN_StringList_dup(d->valuesExecutionDayMonth);
+  st->allowMonthly=d->allowMonthly;
+  st->allowWeekly=d->allowWeekly;
   st->allowChangeRecipientAccount=d->allowChangeRecipientAccount;
   st->allowChangeRecipientName=d->allowChangeRecipientName;
   st->allowChangeValue=d->allowChangeValue;
@@ -263,6 +265,10 @@ int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db)
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "allowMonthly", st->allowMonthly))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "allowWeekly", st->allowWeekly))
+    return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "allowChangeRecipientAccount", st->allowChangeRecipientAccount))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "allowChangeRecipientName", st->allowChangeRecipientName))
@@ -384,6 +390,8 @@ AB_TRANSACTION_LIMITS *st;
       AB_TransactionLimits_AddValuesExecutionDayMonth(st, s, 0);
     } /* for */
   }
+  AB_TransactionLimits_SetAllowMonthly(st, GWEN_DB_GetIntValue(db, "allowMonthly", 0, 0));
+  AB_TransactionLimits_SetAllowWeekly(st, GWEN_DB_GetIntValue(db, "allowWeekly", 0, 0));
   AB_TransactionLimits_SetAllowChangeRecipientAccount(st, GWEN_DB_GetIntValue(db, "allowChangeRecipientAccount", 0, 0));
   AB_TransactionLimits_SetAllowChangeRecipientName(st, GWEN_DB_GetIntValue(db, "allowChangeRecipientName", 0, 0));
   AB_TransactionLimits_SetAllowChangeValue(st, GWEN_DB_GetIntValue(db, "allowChangeValue", 0, 0));
@@ -685,13 +693,13 @@ void AB_TransactionLimits_SetMinLenTextKey(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
-const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesTextKey(const AB_TRANSACTION_LIMITS *st) {
+GWEN_STRINGLIST *AB_TransactionLimits_GetValuesTextKey(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesTextKey;
 }
 
 
-void AB_TransactionLimits_SetValuesTextKey(AB_TRANSACTION_LIMITS *st, const GWEN_STRINGLIST *d) {
+void AB_TransactionLimits_SetValuesTextKey(AB_TRANSACTION_LIMITS *st, GWEN_STRINGLIST *d) {
   assert(st);
   if (st->valuesTextKey)
     GWEN_StringList_free(st->valuesTextKey);
@@ -860,13 +868,13 @@ void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMITS *st, int d)
 }
 
 
-const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *st) {
+GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesCycleWeek;
 }
 
 
-void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const GWEN_STRINGLIST *d) {
+void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *st, GWEN_STRINGLIST *d) {
   assert(st);
   if (st->valuesCycleWeek)
     GWEN_StringList_free(st->valuesCycleWeek);
@@ -905,13 +913,13 @@ int AB_TransactionLimits_HasValuesCycleWeek(const AB_TRANSACTION_LIMITS *st, con
 }
 
 
-const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *st) {
+GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesCycleMonth;
 }
 
 
-void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const GWEN_STRINGLIST *d) {
+void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *st, GWEN_STRINGLIST *d) {
   assert(st);
   if (st->valuesCycleMonth)
     GWEN_StringList_free(st->valuesCycleMonth);
@@ -950,13 +958,13 @@ int AB_TransactionLimits_HasValuesCycleMonth(const AB_TRANSACTION_LIMITS *st, co
 }
 
 
-const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *st) {
+GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesExecutionDayWeek;
 }
 
 
-void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const GWEN_STRINGLIST *d) {
+void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, GWEN_STRINGLIST *d) {
   assert(st);
   if (st->valuesExecutionDayWeek)
     GWEN_StringList_free(st->valuesExecutionDayWeek);
@@ -995,13 +1003,13 @@ int AB_TransactionLimits_HasValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *
 }
 
 
-const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st) {
+GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesExecutionDayMonth;
 }
 
 
-void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const GWEN_STRINGLIST *d) {
+void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, GWEN_STRINGLIST *d) {
   assert(st);
   if (st->valuesExecutionDayMonth)
     GWEN_StringList_free(st->valuesExecutionDayMonth);
@@ -1037,6 +1045,32 @@ void AB_TransactionLimits_ClearValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st
 
 int AB_TransactionLimits_HasValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st, const char *d) {
   return GWEN_StringList_HasString(st->valuesExecutionDayMonth, d);
+}
+
+
+int AB_TransactionLimits_GetAllowMonthly(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->allowMonthly;
+}
+
+
+void AB_TransactionLimits_SetAllowMonthly(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->allowMonthly=d;
+  st->_modified=1;
+}
+
+
+int AB_TransactionLimits_GetAllowWeekly(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->allowWeekly;
+}
+
+
+void AB_TransactionLimits_SetAllowWeekly(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->allowWeekly=d;
+  st->_modified=1;
 }
 
 

@@ -392,6 +392,24 @@ Set this property with @ref AB_TransactionLimits_SetValuesExecutionDayMonth,
 get it with @ref AB_TransactionLimits_GetValuesExecutionDayMonth
 </p>
 
+@anchor AB_TRANSACTION_LIMITS_AllowMonthly
+<h4>AllowMonthly</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowMonthly, 
+get it with @ref AB_TransactionLimits_GetAllowMonthly
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_AllowWeekly
+<h4>AllowWeekly</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetAllowWeekly, 
+get it with @ref AB_TransactionLimits_GetAllowWeekly
+</p>
+
 @anchor AB_TRANSACTION_LIMITS_AllowChangeRecipientAccount
 <h4>AllowChangeRecipientAccount</h4>
 <p>
@@ -811,11 +829,11 @@ AQBANKING_API void AB_TransactionLimits_SetMinLenTextKey(AB_TRANSACTION_LIMITS *
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesTextKey
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesTextKey(const AB_TRANSACTION_LIMITS *el);
+AQBANKING_API GWEN_STRINGLIST *AB_TransactionLimits_GetValuesTextKey(const AB_TRANSACTION_LIMITS *el);
 /**
 * Set the property @ref AB_TRANSACTION_LIMITS_ValuesTextKey
 */
-AQBANKING_API void AB_TransactionLimits_SetValuesTextKey(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_SetValuesTextKey(AB_TRANSACTION_LIMITS *el, GWEN_STRINGLIST *d);
 AQBANKING_API void AB_TransactionLimits_AddValuesTextKey(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
 AQBANKING_API void AB_TransactionLimits_RemoveValuesTextKey(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesTextKey(AB_TRANSACTION_LIMITS *st);
@@ -944,11 +962,11 @@ AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMI
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesCycleWeek
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *el);
+AQBANKING_API GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *el);
 /**
 * Set the property @ref AB_TRANSACTION_LIMITS_ValuesCycleWeek
 */
-AQBANKING_API void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *el, GWEN_STRINGLIST *d);
 AQBANKING_API void AB_TransactionLimits_AddValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
 AQBANKING_API void AB_TransactionLimits_RemoveValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesCycleWeek(AB_TRANSACTION_LIMITS *st);
@@ -957,11 +975,11 @@ AQBANKING_API int AB_TransactionLimits_HasValuesCycleWeek(const AB_TRANSACTION_L
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesCycleMonth
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *el);
+AQBANKING_API GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *el);
 /**
 * Set the property @ref AB_TRANSACTION_LIMITS_ValuesCycleMonth
 */
-AQBANKING_API void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *el, GWEN_STRINGLIST *d);
 AQBANKING_API void AB_TransactionLimits_AddValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
 AQBANKING_API void AB_TransactionLimits_RemoveValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesCycleMonth(AB_TRANSACTION_LIMITS *st);
@@ -970,11 +988,11 @@ AQBANKING_API int AB_TransactionLimits_HasValuesCycleMonth(const AB_TRANSACTION_
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayWeek
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *el);
+AQBANKING_API GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *el);
 /**
 * Set the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayWeek
 */
-AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *el, GWEN_STRINGLIST *d);
 AQBANKING_API void AB_TransactionLimits_AddValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
 AQBANKING_API void AB_TransactionLimits_RemoveValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st);
@@ -983,15 +1001,33 @@ AQBANKING_API int AB_TransactionLimits_HasValuesExecutionDayWeek(const AB_TRANSA
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayMonth
 */
-AQBANKING_API const GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *el);
+AQBANKING_API GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *el);
 /**
 * Set the property @ref AB_TRANSACTION_LIMITS_ValuesExecutionDayMonth
 */
-AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *el, GWEN_STRINGLIST *d);
 AQBANKING_API void AB_TransactionLimits_AddValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk);
 AQBANKING_API void AB_TransactionLimits_RemoveValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st);
 AQBANKING_API int AB_TransactionLimits_HasValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowMonthly
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowMonthly(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowMonthly
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowMonthly(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_AllowWeekly
+*/
+AQBANKING_API int AB_TransactionLimits_GetAllowWeekly(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_AllowWeekly
+*/
+AQBANKING_API void AB_TransactionLimits_SetAllowWeekly(AB_TRANSACTION_LIMITS *el, int d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_AllowChangeRecipientAccount

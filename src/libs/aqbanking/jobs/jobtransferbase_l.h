@@ -27,7 +27,9 @@ int AB_JobTransferBase_GetMaxPurposeLines(const AB_JOB *j);
 
 void AB_JobTransferBase_SetFieldLimits(AB_JOB *j,
                                        AB_TRANSACTION_LIMITS *limits);
-AB_JOB *AB_JobTransferBase_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+AB_JOB *AB_JobTransferBase_fromDb(AB_JOB_TYPE jt,
+                                  AB_ACCOUNT *a,
+                                  GWEN_DB_NODE *db);
 int AB_JobTransferBase_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
 

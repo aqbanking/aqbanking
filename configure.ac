@@ -135,7 +135,7 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
-AC_GWENHYWFAR(1,13,3,0)
+AC_GWENHYWFAR(1,13,3,5)
 
 all_includes="$all_includes $gwenhywfar_includes"
 

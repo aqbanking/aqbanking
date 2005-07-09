@@ -241,12 +241,14 @@ int AB_JobTransferBase_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
 
 
 
-AB_JOB *AB_JobTransferBase_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+AB_JOB *AB_JobTransferBase_fromDb(AB_JOB_TYPE jt,
+                                  AB_ACCOUNT *a,
+                                  GWEN_DB_NODE *db) {
   AB_JOB *j;
   AB_JOBTRANSFERBASE *jd;
   GWEN_DB_NODE *dbT;
 
-  j=AB_Job_new(AB_Job_TypeTransfer, a);
+  j=AB_Job_new(jt, a);
   GWEN_NEW_OBJECT(AB_JOBTRANSFERBASE, jd);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBTRANSFERBASE, j, jd,
                        AB_JobTransferBase_FreeData);

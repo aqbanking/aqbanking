@@ -230,7 +230,7 @@
       </descr>
       <elem name="maxLenTextKey" type="int" />
       <elem name="minLenTextKey" type="int" />
-      <elem name="valuesTextKey" type="GWEN_STRINGLIST" ptr="1">
+      <elem name="valuesTextKey" type="GWEN_STRINGLIST" ptr="1" const="0" >
         <descr>
           This string list contains one entry for every supported text key.
           The values must be positive integers in decimal form (no leading
@@ -281,7 +281,7 @@
           first execution.
         </descr>
       </elem>
-      <elem name="valuesCycleWeek" type="GWEN_STRINGLIST" ptr="1">
+      <elem name="valuesCycleWeek" type="GWEN_STRINGLIST" ptr="1" const="0">
         <descr>
           This string list contains one entry for every supported cycle. 
           These value are accepted when "period" is "weekly".
@@ -290,7 +290,7 @@
           Allowed values are "0" (all cycles possible) and "1"-"52".
         </descr>
       </elem>
-      <elem name="valuesCycleMonth" type="GWEN_STRINGLIST" ptr="1">
+      <elem name="valuesCycleMonth" type="GWEN_STRINGLIST" ptr="1" const="0">
         <descr>
           This string list contains one entry for every supported cycle.
           These value are accepted when "period" is "monthly".
@@ -299,7 +299,7 @@
           Allowed values are "0" (all cycles possible) and "1"-"12".
         </descr>
       </elem>
-      <elem name="valuesExecutionDayWeek" type="GWEN_STRINGLIST" ptr="1">
+      <elem name="valuesExecutionDayWeek" type="GWEN_STRINGLIST" ptr="1" const="0">
         <descr>
           This string list contains one entry for every supported day of the
           week.
@@ -309,7 +309,7 @@
           Allowed values are "0" (all days allowed) and "1"-"7".
         </descr>
       </elem>
-      <elem name="valuesExecutionDayMonth" type="GWEN_STRINGLIST" ptr="1">
+      <elem name="valuesExecutionDayMonth" type="GWEN_STRINGLIST" ptr="1" const="0">
         <descr>
           This string list contains one entry for every supported monthly 
           cycle.
@@ -320,6 +320,9 @@
           "98" (ultimo-1) and "99" (ultimo).
         </descr>
       </elem>
+
+      <elem name="allowMonthly" type="int" />
+      <elem name="allowWeekly" type="int" />
 
       <elem name="allowChangeRecipientAccount" type="int" />
       <elem name="allowChangeRecipientName" type="int" />

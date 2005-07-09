@@ -1,9 +1,25 @@
+
+2005/07/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- transactionlimits: Now stringlists are no longer returned as const (making
+  it easier for backends to modify them)
+- fixed some bugs in base transfer job
+
+
+2005/07/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added fields to transaction limits:
+  - allowMonthly (monthly cycles allowed for standing orders)
+  - allowWeekly (weekly cycles allowed for standing orders)
+
+
 2005-07-05   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, src/tools/aqbanking-tool/cbanking.c:
 	Windows/mingw32 now has <signal.h> but is missing the actual
 	functions that we use. Therefore add configure check for the
 	declaration of sigprocmask() and #if accordingly.
+
 
 2005/06/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

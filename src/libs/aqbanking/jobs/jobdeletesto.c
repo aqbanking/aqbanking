@@ -64,7 +64,7 @@ int AB_JobDeleteStandingOrder_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
 
 
 AB_JOB *AB_JobDeleteStandingOrder_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
-  return AB_JobTransferBase_fromDb(a, db);
+  return AB_JobTransferBase_fromDb(AB_Job_TypeDeleteStandingOrder, a, db);
 }
 
 
