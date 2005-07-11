@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released AqBanking - 1.1.0 (2005/07/10)
+===========================================================================
+
+
 2005/07/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - transactionlimits: Now stringlists are no longer returned as const (making
