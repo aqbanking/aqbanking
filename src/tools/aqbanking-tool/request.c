@@ -39,6 +39,7 @@ int request(AB_BANKING *ab,
   int reqTrans=0;
   int reqBalance=0;
   int reqSto=0;
+  int reqDT=0;
   GWEN_TIME *fromTime=0;
   GWEN_TIME *toTime=0;
   const GWEN_ARGS args[]={
@@ -120,6 +121,17 @@ int request(AB_BANKING *ab,
     "Request standing orders"     /* long description */
   },
   {
+    0,                            /* flags */
+    GWEN_ArgsTypeInt,             /* type */
+    "reqDT",                      /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "dated",                      /* long option */
+    "Request dated transfers",    /* short description */
+    "Request dated transfers"     /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsTypeChar,            /* type */
     "fromDate",                   /* name */
@@ -179,6 +191,7 @@ int request(AB_BANKING *ab,
   reqTrans=GWEN_DB_GetIntValue(db, "reqTrans", 0, 0);
   reqBalance=GWEN_DB_GetIntValue(db, "reqBalance", 0, 0);
   reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
+  reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
   if (s && *s) {
     fromTime=GWEN_Time_fromString(s, "YYYYMMDD");
@@ -286,6 +299,20 @@ int request(AB_BANKING *ab,
             if (rv) {
               DBG_ERROR(AQT_LOGDOMAIN,
                         "Error requesting standing orders for %s/%s: %d",
+                        AB_Account_GetBankCode(a),
+                        AB_Account_GetAccountNumber(a),
+                        rv);
+              return 3;
+            }
+            requests++;
+          }
+	  if (reqDT) {
+	    rv=AB_Banking_RequestDatedTransfers(ab,
+						AB_Account_GetBankCode(a),
+						AB_Account_GetAccountNumber(a));
+	    if (rv) {
+              DBG_ERROR(AQT_LOGDOMAIN,
+			"Error requesting dated transfers for %s/%s: %d",
                         AB_Account_GetBankCode(a),
                         AB_Account_GetAccountNumber(a),
                         rv);

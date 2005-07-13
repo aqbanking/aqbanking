@@ -1,4 +1,11 @@
 
+2005/07/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a list of datedTransfers to import/export context
+- added function AB_Banking_RequestDatedTransfers()
+- added request for dated transfers to aqbanking-tool
+
+
 2005/07/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed order in LDFLAGS for parser plugins dtaus and swift

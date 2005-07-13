@@ -4200,6 +4200,66 @@ int AB_Banking_RequestStandingOrders(AB_BANKING *ab,
 
 
 
+int AB_Banking_RequestDatedTransfers(AB_BANKING *ab,
+                                     const char *bankCode,
+                                     const char *accountNumber) {
+  AB_ACCOUNT *a;
+  AB_JOB *j;
+  int rv;
+
+  if (!accountNumber) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Account number is required");
+    return AB_ERROR_INVALID;
+  }
+
+  a=AB_Banking_GetAccountByCodeAndNumber(ab, bankCode, accountNumber);
+  if (!a)
+    return AB_ERROR_INVALID;
+
+  /* TODO: check if there already is such a job in the queue */
+
+  j=AB_JobGetDatedTransfers_new(a);
+  assert(j);
+  rv=AB_Job_CheckAvailability(j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Job not available with the backend for this account (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Unsupported Request"),
+			  I18N("The backend for this banking account "
+			       "does not support your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  rv=AB_Banking_EnqueueJob(ab, j);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not enqueue the job (%d)",
+	      rv);
+    AB_Banking_MessageBox(ab,
+			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			  AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                          I18N("Queue Error"),
+			  I18N("Unable to enqueue your request."),
+			  I18N("Dismiss"), 0, 0);
+    AB_Job_free(j);
+    return AB_ERROR_GENERIC;
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+	   "Job successfully enqueued");
+  AB_Job_free(j);
+  return 0;
+}
+
+
+
 int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2) {
   if (t1 && t2) {
     GWEN_BUFFER *d1, *d2;
@@ -4384,6 +4444,35 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
 	  AB_Transaction_SetLocalBankCode(nt, AB_Account_GetBankCode(a));
 
 	  AB_ImExporterAccountInfo_AddStandingOrder(ai, nt);
+	  t=AB_Transaction_List2Iterator_Next(it);
+	} /* while */
+        AB_Transaction_List2Iterator_free(it);
+      }
+
+      tryRemove=1;
+    }
+    else if (AB_Job_GetType(j)==AB_Job_TypeGetDatedTransfers) {
+      AB_TRANSACTION_LIST2 *tl;
+
+      tl=AB_JobGetDatedTransfers_GetDatedTransfers(j);
+      if (tl) {
+        AB_TRANSACTION_LIST2_ITERATOR *it;
+        AB_TRANSACTION *t;
+
+        it=AB_Transaction_List2_First(tl);
+        assert(it);
+        t=AB_Transaction_List2Iterator_Data(it);
+        assert(t);
+        while(t) {
+	  AB_TRANSACTION *nt;
+
+          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a standing order");
+	  nt=AB_Transaction_dup(t);
+	  AB_Transaction_SetLocalAccountNumber(nt,
+					       AB_Account_GetAccountNumber(a));
+	  AB_Transaction_SetLocalBankCode(nt, AB_Account_GetBankCode(a));
+
+	  AB_ImExporterAccountInfo_AddDatedTransfer(ai, nt);
 	  t=AB_Transaction_List2Iterator_Next(it);
 	} /* while */
         AB_Transaction_List2Iterator_free(it);

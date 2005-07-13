@@ -2086,6 +2086,17 @@ int AB_Banking_RequestStandingOrders(AB_BANKING *ab,
                                      const char *bankCode,
                                      const char *accountNumber);
 
+/**
+ * This function enqueues a request for the list of pending dated transfers of
+ * an account.
+ * You need to call @ref AB_Banking_ExecuteQueue to actually perform the
+ * job.
+ */
+AQBANKING_API 
+int AB_Banking_RequestDatedTransfers(AB_BANKING *ab,
+                                     const char *bankCode,
+                                     const char *accountNumber);
+
 
 /**
  * <p>
