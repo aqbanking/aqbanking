@@ -5,6 +5,7 @@
 - added some options to CSV im/exporter: It is now able to handle positive/
   negative marks in CSV files and modifies the amount of a transaction
   accordingly.
+- added CSV profile for Mijnpostbank.nl provided by Peter deVrijer
 
 
 2005/07/13: Martin Preuss<martin@libchipcard.de>
