@@ -426,7 +426,7 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 
 	v=AB_Transaction_GetValue(t);
 	if (v) {
-	  if (AB_Value_IsNegative(v)) {
+          if (!AB_Value_IsNegative(v)) {
 	    s=GWEN_DB_GetCharValue(params, "positiveValues", 0, 0);
 	    if (s) {
 	      GWEN_DB_SetCharValue(dbTransaction,
