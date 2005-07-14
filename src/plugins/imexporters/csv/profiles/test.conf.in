@@ -1,5 +1,5 @@
 
-char name="default"
+char name="test"
 char shortDescr="test profile"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the CSV format"
