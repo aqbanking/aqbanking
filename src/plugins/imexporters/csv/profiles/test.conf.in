@@ -1,6 +1,6 @@
 
 char name="default"
-char shortDescr="default profile"
+char shortDescr="test profile"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the CSV format"
 int import="1"
@@ -15,10 +15,10 @@ int utc="0"
 # record which defines the sign of the amount.
 # Some banks use "C" (positive) and "D" (negative) or "Af" (negative) and
 # "Bij" (positive)
-int usePosNegField="0"
+int usePosNegField="1"
 char posNegFieldName="posNeg"
-#char positiveValues="Bij", "C"
-#char negativeValues="Af", "D"
+char positiveValues="Bij", "C"
+char negativeValues="Af", "D"
 int defaultIsPositive="1"
 
 
@@ -75,6 +75,7 @@ params {
     28="category[5]"
     29="category[6]"
     30="category[7]"
+    31="posNeg"
   } # columns
 
 } # params

@@ -16,6 +16,7 @@
 
 #include "csv_p.h"
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 #include <gwenhywfar/waitcallback.h>
 
 
@@ -110,11 +111,18 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   GWEN_DB_NODE *dbT;
   const char *dateFormat;
   int inUtc;
+  int usePosNegField;
+  int defaultIsPositive;
+  const char *posNegFieldName;
 
   dbT=GWEN_DB_GetFirstGroup(db);
 
   dateFormat=GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYYY/MM/DD");
   inUtc=GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
+  usePosNegField=GWEN_DB_GetIntValue(dbParams, "usePosNegField", 0, 0);
+  defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
+  posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0,
+				       "posNeg");
 
   while(dbT) {
     int matches;
@@ -181,7 +189,76 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
             AB_Transaction_SetValutaDate(t, ti);
           GWEN_Time_free(ti);
         }
+
+        /* possibly translate value */
+	if (usePosNegField) {
+          const char *s;
+	  int determined=0;
+
+	  /* get positive/negative mark */
+	  s=GWEN_DB_GetCharValue(dbT, posNegFieldName, 0, 0);
+	  if (s) {
+	    int j;
+
+            /* try positive marks first */
+	    for (j=0; ; j++) {
+	      const char *patt;
+
+	      patt=GWEN_DB_GetCharValue(dbParams, "positiveValues", j, 0);
+	      if (!patt)
+		break;
+	      if (-1!=GWEN_Text_ComparePattern(s, patt, 0)) {
+                /* value already is positive, keep it that way */
+		determined=1;
+                break;
+	      }
+	    } /* for */
+
+	    if (!determined) {
+	      for (j=0; ; j++) {
+		const char *patt;
   
+		patt=GWEN_DB_GetCharValue(dbParams, "negativeValues", j, 0);
+		if (!patt)
+		  break;
+		if (-1!=GWEN_Text_ComparePattern(s, patt, 0)) {
+                  const AB_VALUE *pv;
+
+		  /* value must be negated */
+		  pv=AB_Transaction_GetValue(t);
+		  if (pv) {
+		    AB_VALUE *v;
+
+		    v=AB_Value_dup(pv);
+                    AB_Value_Negate(v);
+		    AB_Transaction_SetValue(t, v);
+                    AB_Value_free(v);
+		  }
+		  determined=1;
+                  break;
+		}
+	      } /* for */
+	    }
+	  }
+
+	  /* still undecided? */
+	  if (!determined && !defaultIsPositive) {
+	    const AB_VALUE *pv;
+
+	    /* value must be negated, because default is negative */
+	    pv=AB_Transaction_GetValue(t);
+	    if (pv) {
+	      AB_VALUE *v;
+
+	      v=AB_Value_dup(pv);
+	      AB_Value_Negate(v);
+	      AB_Transaction_SetValue(t, v);
+	      AB_Value_free(v);
+	    }
+	  }
+
+        } /* if usePosNegField */
+
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
         AB_ImExporterContext_AddTransaction(ctx, t);
       }
@@ -239,6 +316,9 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
   int rv;
   const char *dateFormat;
   int inUtc;
+  int usePosNegField;
+  int defaultIsPositive;
+  const char *posNegFieldName;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie);
@@ -250,6 +330,10 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
   dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0,
 				  "YYYY/MM/DD");
   inUtc=GWEN_DB_GetIntValue(params, "utc", 0, 0);
+  usePosNegField=GWEN_DB_GetIntValue(params, "usePosNegField", 0, 0);
+  defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
+  posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
+				       "posNeg");
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
@@ -333,6 +417,61 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			       "valutaDate", GWEN_Buffer_GetStart(tbuf));
 	GWEN_Buffer_free(tbuf);
+      }
+
+      /* possibly transform value */
+      if (usePosNegField) {
+	const AB_VALUE *v;
+        const char *s;
+
+	v=AB_Transaction_GetValue(t);
+	if (v) {
+	  if (AB_Value_IsNegative(v)) {
+	    s=GWEN_DB_GetCharValue(params, "positiveValues", 0, 0);
+	    if (s) {
+	      GWEN_DB_SetCharValue(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   posNegFieldName,
+				   s);
+	    }
+	    else {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                        "No value for \"positiveValues\" in params");
+	      GWEN_DB_Group_free(dbData);
+	      return AB_ERROR_GENERIC;
+	    }
+	  }
+	  else {
+	    s=GWEN_DB_GetCharValue(params, "negativeValues", 0, 0);
+	    if (s) {
+	      AB_VALUE *nv;
+              GWEN_DB_NODE *dbV;
+
+	      GWEN_DB_SetCharValue(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   posNegFieldName,
+				   s);
+	      nv=AB_Value_dup(v);
+	      AB_Value_Negate(nv);
+	      dbV=GWEN_DB_GetGroup(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+				   "value");
+	      assert(dbV);
+	      if (AB_Value_toDb(nv, dbV)) {
+		DBG_ERROR(AQBANKING_LOGDOMAIN,
+			  "Could not store value to DB");
+		GWEN_DB_Group_free(dbData);
+		return AB_ERROR_GENERIC;
+	      }
+	    }
+	    else {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN,
+			"No value for \"negativeValues\" in params");
+	      GWEN_DB_Group_free(dbData);
+	      return AB_ERROR_GENERIC;
+	    }
+	  }
+	}
       }
 
       /* add transaction db */
