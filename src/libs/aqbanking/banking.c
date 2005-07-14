@@ -49,6 +49,7 @@
 #include "jobsingletransfer.h"
 #include "jobsingledebitnote.h"
 #include "jobeutransfer.h"
+#include "jobgetdatedtransfers.h"
 
 
 #ifdef OS_WIN32
