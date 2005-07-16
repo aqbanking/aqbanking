@@ -1,0 +1,13 @@
+<PluginDescr>
+  <plugin name="eri" type="imexporter" import="1" export="0" >
+    <version>@AQBANKING_VERSION_STRING@</version>
+    <author>Peter de Vrijer (pdevrijer@home.nl)</author>
+    <short>ERI</short>
+    <descr>
+      This plugin imports ERI data.
+    </descr>
+    <descr lang="de">
+      Diese Erweiterung importiert ERI-Dateien.
+    </descr>
+  </plugin>
+</PluginDescr>
