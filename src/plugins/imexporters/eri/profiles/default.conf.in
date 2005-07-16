@@ -1,10 +1,10 @@
 
-char name="ERI"
-char shortDescr="Rabobank ERI (mut.asc)"
+char name="default"
+char shortDescr="default Rabobank ERI (mut.asc)"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the ERI format used by Rabobank mut.asc files"
 int import="1"
-int export="1"
+int export="0"
 
 params {
 }
