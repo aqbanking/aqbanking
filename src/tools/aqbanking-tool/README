@@ -338,4 +338,38 @@ aqbanking-tool debitnote --bank=2345678 --account=12345
                          --force-check
 
 
+"import"
+========
+
+This command imports a given file (or from stdin) using a given importer and
+writes the imported data to a new context-file which can be used for the
+commands "listtrans" etc.
+
+
+Options
+-------
+[--ctxfile     =ARG]     The result file to be used (defaults to stdout)
+[--infile      =ARG]     Name of the input file from which the transactions
+                         are to be read. Defaults to stdin.
+[--importer    =ARG]     Name of the import plugin to be used for storage.
+                         This defaults to "csv".
+[--profile     =ARG]     Name of the profile of the importer plugin to be
+                         used. Defaults to "default" (for every importer
+                         plugin a "default" profile is provided by AqBanking).
+
+Normally the system-wide profiles (and local AqBanking profiles of the user)
+are used when searching for a profile. However, with the following option
+you can use your own profiles database.
+[--profile-file=ARG]     Optional profile database file (a GWEN_DB)
+
+
+Examples
+--------
+aqbanking-tool import --ctxfile=out.ctx --infile=testfile 
+                      --importer=swift --profile=SWIFT-MT940
+aqbanking-tool import --ctxfile=out.ctx --infile=testfile 
+                      --importer=csv --profile=MyProfile
+                      --profile-file=myProfileFile
+
+
 

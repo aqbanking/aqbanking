@@ -1,4 +1,12 @@
 
+2005/07/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added command "import" to aqbanking-tool.
+  Example of usage:
+  aqbanking-tool import -c out.ctx -f testfile --importer=swift 
+                        --profile=SWIFT-MT940
+
+
 ===========================================================================
 MARK: released AqBanking - 1.2.0 (2005/07/15)
 ===========================================================================
