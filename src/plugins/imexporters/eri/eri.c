@@ -37,7 +37,7 @@ AB_IMEXPORTER *eri_factory(AB_BANKING *ab, GWEN_DB_NODE *db) {
     } */
 
   AB_ImExporter_SetImportFn(ie, AH_ImExporterERI_Import);
-  //  AB_ImExporter_SetExportFn(ie, AH_ImExporterERI_Export);
+  AB_ImExporter_SetExportFn(ie, AH_ImExporterERI_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterERI_CheckFile);
 
   return ie;
@@ -56,15 +56,48 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params) {
+  AH_IMEXPORTER_ERI *ieeri;
+  AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
+  AB_TRANSACTION *t = 0;
+  AB_VALUE *vAmount = 0;
+  GWEN_TIME *ti = 0;
+
+  assert(ie);
+  ieeri = GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_ERI, ie);
+  assert(ieeri);
+
+  iea = AB_ImExporterAccountInfo_new();
+  AB_ImExporterContext_AddAccountInfo(ctx, iea);
+
+  AB_ImExporterAccountInfo_SetAccountName(iea, "P.J. de Vrijer");
+  AB_ImExporterAccountInfo_SetDescription(iea, "Betaalrekening");
+  AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Bank);
+  AB_ImExporterAccountInfo_SetBankName(iea, "Rabobank");
+  AB_ImExporterAccountInfo_SetAccountNumber(iea, "3066900");
+
+  vAmount = AB_Value_new(12.34, "EUR");
+
+  t = AB_Transaction_new();
+  AB_Transaction_SetValue(t, vAmount);
+  AB_Transaction_AddRemoteName(t, "AH vd Capellenstraat, Zwolle", 0);
+  AB_Transaction_AddPurpose(t, "Testboeking 1", 0);
+
+  ti = GWEN_Time_fromString("13062220050717", "hhmmssYYYYMMDD");
+
+  AB_Transaction_SetValutaDate(t, ti);
+  AB_Transaction_SetDate(t,ti);
+
+  AB_ImExporterAccountInfo_AddTransaction(iea, t);
+
   return 0;
 }
 
-/* int AH_ImExporterERI_Export(AB_IMEXPORTER *ie,
+int AH_ImExporterERI_Export(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params) {
-  return 0;
-  } */
+  return AB_ERROR_NOT_SUPPORTED;
+}
 
 int AH_ImExporterERI_CheckFile(AB_IMEXPORTER *ie, const char *fname) {
   int fd;
