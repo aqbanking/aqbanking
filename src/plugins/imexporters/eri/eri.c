@@ -26,15 +26,6 @@ AB_IMEXPORTER *eri_factory(AB_BANKING *ab, GWEN_DB_NODE *db) {
 		       AH_ImExporterERI_FreeData);
 
   ieh->dbData = db;
-  /*  ieh->dbio = GWEN_DBIO_GetPlugin("eri");
-
-  if (!ieh->dbio) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "GWEN DBIO plugin \"ERI\" not available");
-
-    AB_ImExporter_free(ie);
-    return 0;
-    } */
 
   AB_ImExporter_SetImportFn(ie, AH_ImExporterERI_Import);
   AB_ImExporter_SetExportFn(ie, AH_ImExporterERI_Export);
@@ -56,15 +47,15 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params) {
-  AH_IMEXPORTER_ERI *ieeri;
+  //  AH_IMEXPORTER_ERI *ieeri;
   AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
   AB_TRANSACTION *t = 0;
   AB_VALUE *vAmount = 0;
   GWEN_TIME *ti = 0;
 
   assert(ie);
-  ieeri = GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_ERI, ie);
-  assert(ieeri);
+  //  ieeri = GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_ERI, ie);
+  //  assert(ieeri);
 
   iea = AB_ImExporterAccountInfo_new();
   AB_ImExporterContext_AddAccountInfo(ctx, iea);
@@ -81,6 +72,7 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
   AB_Transaction_SetValue(t, vAmount);
   AB_Transaction_AddRemoteName(t, "AH vd Capellenstraat, Zwolle", 0);
   AB_Transaction_AddPurpose(t, "Testboeking 1", 0);
+  AB_Transaction_AddPurpose(t, "Beschrijving regel 2", 0);
 
   ti = GWEN_Time_fromString("13062220050717", "hhmmssYYYYMMDD");
 
@@ -128,10 +120,6 @@ int AH_ImExporterERI_CheckFile(AB_IMEXPORTER *ie, const char *fname) {
     GWEN_BufferedIO_free(bio);
     return AB_ERROR_BAD_DATA;
   }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Line read in buffer is: %s", 
-	   lbuffer);
 
   if ( -1 != GWEN_Text_ComparePattern(lbuffer, "*EUR99999999992000*", 0)) {
     /* match */
