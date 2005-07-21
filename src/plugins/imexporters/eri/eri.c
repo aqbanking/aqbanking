@@ -1,3 +1,15 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Thu 21-07-2005
+    copyright   : (C) 2005 by Peter de Vrijer
+    email       : pdevrijer@home.nl
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif

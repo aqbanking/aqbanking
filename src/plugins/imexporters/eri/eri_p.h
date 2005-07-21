@@ -1,3 +1,15 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Thu 21-07-2005
+    copyright   : (C) 2005 by Peter de Vrijer
+    email       : pdevrijer@home.nl
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
 #ifndef AQHBCI_IMEX_ERI_P_H
 #define AQHBCI_IMEX_ERI_P_H
 
