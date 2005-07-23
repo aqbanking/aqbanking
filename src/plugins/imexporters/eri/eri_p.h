@@ -7,7 +7,7 @@
     email       : pdevrijer@home.nl
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ *    Please see the file COPYING in this directory for license details    *
  ***************************************************************************/
 
 #ifndef AQHBCI_IMEX_ERI_P_H

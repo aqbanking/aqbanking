@@ -7,7 +7,7 @@
     email       : pdevrijer@home.nl
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ *    Please see the file COPYING in this directory for license details    *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -59,6 +59,13 @@ void stripPzero(char *dest, char *src) {
     src++;
   }
 
+  // if string was all zeroes, the result is an empty string
+  if (!*src) {
+    *dest = 0;
+    return;
+  }
+
+  // copy the remaining string
   while (*src) {
     *dest++ = *src++;
   }
