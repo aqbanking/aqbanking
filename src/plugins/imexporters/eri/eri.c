@@ -30,7 +30,7 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_ERI);
 /* varstrcut cuts strings of length n and startig at position start from
    the source string and copies them to the destination string
    start is decreaseb by one, because column 1 is at position 0 in string */
-void varstrcut(char *dest, char *src, int start, int n) {
+void AB_ERI_varstrcut(char *dest, char *src, int start, int n) {
   int i;
 
   start--;
@@ -53,7 +53,7 @@ void varstrcut(char *dest, char *src, int start, int n) {
 
 /* stripPzero strips leading zeroes in accountNumber strings 
    and the P for Postgiro accounts */
-void stripPzero(char *dest, char *src) {
+void AB_ERI_stripPzero(char *dest, char *src) {
 
   while ((*src == 'P') || (*src == '0')) { 
     src++;
@@ -77,7 +77,7 @@ void stripPzero(char *dest, char *src) {
 /* The strings are of fixed length. If info is shorter than the rest
    is filled with spaces. We want to get rid of those trailing spaces 
    and shorten the strings if possible */
-void stripTrailSpaces(char *buffer) {
+void AB_ERI_stripTrailSpaces(char *buffer) {
   char *p;
 
   p = buffer;
@@ -99,7 +99,7 @@ void stripTrailSpaces(char *buffer) {
 }
 
 /* My Own Simple Error Codes for GWEN */
-int mySimpleCode(GWEN_ERRORCODE err) {
+int AB_ERI_mySimpleCode(GWEN_ERRORCODE err) {
   int serr;
 
   serr = (int)(err & 0xFF);
@@ -107,7 +107,7 @@ int mySimpleCode(GWEN_ERRORCODE err) {
 }
 
 /* For debugging a function to print GWEN_BUFFEREDIO Errors */
-void printGWEN_BufferedIO_Errors(GWEN_ERRORCODE err) {
+void AB_ERI_printGWEN_BufferedIO_Errors(GWEN_ERRORCODE err) {
   char es[128];
   int serr;
 
@@ -115,12 +115,12 @@ void printGWEN_BufferedIO_Errors(GWEN_ERRORCODE err) {
   GWEN_Error_ToString(err, es, 128);
   printf("Gwen Error Code is %s\n", es);
 
-  serr = mySimpleCode(err);
+  serr = AB_ERI_mySimpleCode(err);
   printf("Simplified Error Code is %u\n", serr);
   return;
 }
 
-int eriReadRecord(GWEN_BUFFEREDIO *bio,
+int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
 		  char *buffer) {
   GWEN_ERRORCODE gwerr;
   int serr, count, *cnt = &count;
@@ -135,7 +135,7 @@ int eriReadRecord(GWEN_BUFFEREDIO *bio,
 
   if (gwerr) {
     /* printf("Bytes read is %d\n", *cnt); */
-    printGWEN_BufferedIO_Errors(gwerr);
+    AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
   }
 
   /* When buffer was not filled enough not all cnt char are read,
@@ -147,120 +147,120 @@ int eriReadRecord(GWEN_BUFFEREDIO *bio,
 
     if (gwerr) {
       /* printf("Bytes read is %d\n", *cnt); */
-      printGWEN_BufferedIO_Errors(gwerr);
+      AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
     }
   }
-  serr = mySimpleCode(gwerr);
+  serr = AB_ERI_mySimpleCode(gwerr);
   return serr;
 }
 
-int parseFirstRecord(char *recbuf, ERI_TRANSACTION *current) {
+int AB_ERI_parseFirstRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN], s[MAXVARLEN];
 
   /* Sanity check, is this an ERI file?? */
-  varstrcut(varbuf, recbuf, 11, 17);
+  AB_ERI_varstrcut(varbuf, recbuf, 11, 17);
   if (strcmp(varbuf, "EUR99999999992000") != 0) {
     printf("This is not an ERI file!!\n");
     return REC_BAD;
   }
 
   /* first local account number */
-  varstrcut(varbuf, recbuf, 1, 10);
-  stripPzero(s, varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 1, 10);
+  AB_ERI_stripPzero(s, varbuf);
   strcpy(current->localAccountNumber, s);
 
   /* remote account number 
      can be empty if bank itself is Payee */
-  varstrcut(varbuf, recbuf, 39, 10);
-  stripPzero(s, varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 39, 10);
+  AB_ERI_stripPzero(s, varbuf);
   strcpy(current->remoteAccountNumber, s);
 
   /* Name payee */
-  varstrcut(varbuf, recbuf, 49, 24);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 49, 24);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->namePayee, varbuf);
 
   /* Amount of transaction */
-  varstrcut(varbuf, recbuf, 74, 13);
+  AB_ERI_varstrcut(varbuf, recbuf, 74, 13);
   current->amount = strtod(varbuf, (char**)NULL)/100;
 
   /* Sign of transaction C is plus, D is minus */
-  varstrcut(varbuf, recbuf, 87, 1);
+  AB_ERI_varstrcut(varbuf, recbuf, 87, 1);
   if (*varbuf == 'D') {
     current->amount *= -1;
   }
 
   /* Transaction date next, Is simple string, No changes needed */
-  varstrcut(current->date, recbuf, 88, 6);
+  AB_ERI_varstrcut(current->date, recbuf, 88, 6);
 
   /* Valuta date same */
-  varstrcut(current->valutaDate, recbuf, 94, 6);
+  AB_ERI_varstrcut(current->valutaDate, recbuf, 94, 6);
 
   /* Transaction Id, only valid when BETALINGSKENM. is present 
      (see ERI format description) */
-  varstrcut(varbuf, recbuf, 109, 16);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 109, 16);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->transactionId, varbuf);
 
   return REC_OK;
 }
 
-int parseSecondRecord(char *recbuf, ERI_TRANSACTION *current) {
+int AB_ERI_parseSecondRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
 
   /* Sanity check, is this record type 3? */
-  varstrcut(varbuf, recbuf, 11, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999993") != 0) {
     printf("Second record of transaction is not of type 3!\n");
     return REC_BAD;
   }
 
   /* Check if theres is a transaction Id */
-  varstrcut(varbuf, recbuf, 25, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 25, 14);
   if (strcmp(varbuf, "BETALINGSKENM.") == 0) {
     current->transactionIdValid = TRUE;
   }
 
   /* Purpose line 1 */
-  varstrcut(varbuf, recbuf, 57, 32);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 57, 32);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose1, varbuf);
 
   /* Purpose line 2 */
-  varstrcut(varbuf, recbuf, 89, 32);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 89, 32);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose2, varbuf);
 
   return REC_OK;
 }
 
-int parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
+int AB_ERI_parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
 
   /* Sanity check, is this record type 4? */
-  varstrcut(varbuf, recbuf, 11, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999994") != 0) {
     printf("Third record of transaction is not of type 4!\n");
     return REC_BAD;
   }
 
   /* Purpose line 3 */
-  varstrcut(varbuf, recbuf, 25, 32);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 25, 32);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose3, varbuf);
 
   /* Purpose line 4 */
-  varstrcut(varbuf, recbuf, 57, 32);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 57, 32);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose4, varbuf);
 
   /* Purpose line 5 */
-  varstrcut(varbuf, recbuf, 89, 32);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 89, 32);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose5, varbuf);
 
   /* Check if theres is a transaction Id */
-  varstrcut(varbuf, recbuf, 25, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 25, 14);
   if (strcmp(varbuf, "BETALINGSKENM.") == 0) {
     current->transactionIdValid = TRUE;
     /* If so kill purpose3 field, it contains no real info */
@@ -270,23 +270,23 @@ int parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
   return REC_OK;
 }
 
-int parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
+int AB_ERI_parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
 
   /* Sanity check, is this record type 4? */
-  varstrcut(varbuf, recbuf, 11, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999994") != 0) {
     printf("Fourth record of transaction is not of type 4!\n");
     return REC_BAD;
   }
 
   /* Purpose line 6 */
-  varstrcut(varbuf, recbuf, 25, 96);
-  stripTrailSpaces(varbuf);
+  AB_ERI_varstrcut(varbuf, recbuf, 25, 96);
+  AB_ERI_stripTrailSpaces(varbuf);
   strcpy(current->purpose6, varbuf);
 
   /* Check if theres is a transaction Id */
-  varstrcut(varbuf, recbuf, 25, 14);
+  AB_ERI_varstrcut(varbuf, recbuf, 25, 14);
   if (strcmp(varbuf, "BETALINGSKENM.") == 0) {
     current->transactionIdValid = TRUE;
     /* If so kill purpose 6 field, it contains no real info */
@@ -303,7 +303,7 @@ void eriAddPurpose(AB_TRANSACTION *t, char *purpose) {
   }
 }
 
-int eriAddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
+int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 		      ERI_TRANSACTION *current) {
   AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
   AB_TRANSACTION *t = 0;
@@ -377,11 +377,11 @@ int eriAddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   return TRANS_OK;
 }
 
-int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
+int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 		     GWEN_BUFFEREDIO *bio) {
 
   ERI_TRANSACTION trans, *current = &trans;
-  int rerr, terr, aerr, translen;
+  int rerr, terr, aerr, translen = 0;
   char recbuf[REC_LENGTH+1];
   recbuf[REC_LENGTH] = 0;
   current->transactionIdValid = FALSE;
@@ -389,7 +389,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   GWEN_BufferedIO_SetReadBuffer(bio, 0, REC_LENGTH);
 
   /* Read the first record of the transaction */
-  rerr = eriReadRecord(bio, recbuf);
+  rerr = AB_ERI_ReadRecord(bio, recbuf);
 
   if (rerr == GWEN_BUFFEREDIO_ERROR_READ) {
     /* When Error on Read occurs here, buffer was empty, normal EOF */
@@ -401,7 +401,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   }
 
   /* Get the info from the first record of the transaction and place them in the struct */
-  terr = parseFirstRecord(recbuf, current);
+  terr = AB_ERI_parseFirstRecord(recbuf, current);
 
   if (terr == REC_BAD) {
     return TRANS_BAD;
@@ -412,7 +412,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 	 current->date, current->valutaDate, current->transactionId);
 
   /* Read the second record into recbuf */
-  rerr = eriReadRecord(bio, recbuf);
+  rerr = AB_ERI_ReadRecord(bio, recbuf);
 
   /* End of File should not happen here! */
   if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
@@ -434,7 +434,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   }
 
   /* get the info from the second record and place them in transaction struct */
-  terr = parseSecondRecord(recbuf, current);
+  terr = AB_ERI_parseSecondRecord(recbuf, current);
 
   if (terr == REC_BAD) {
     return TRANS_BAD;
@@ -452,7 +452,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   /* If 1 or 2 type 4 records (3 lines or 4 lines transaction), read and parse them */
   if (translen >= LINES3) {
     /* Read third record in recbuf */
-    rerr = eriReadRecord(bio, recbuf);
+    rerr = AB_ERI_ReadRecord(bio, recbuf);
 
     /* End of File should not happen here! */
     if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
@@ -461,7 +461,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     }
 
     /* get the info from the third record and place them in transaction struct */
-    terr = parseThirdRecord(recbuf, current);
+    terr = AB_ERI_parseThirdRecord(recbuf, current);
 
     if (terr == REC_BAD) {
       return TRANS_BAD;
@@ -473,7 +473,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     /* If 4 line is present in transaction, read and parse it */
     if (translen == LINES4) {
       /* Read fourth record in buffer */
-      rerr = eriReadRecord(bio, recbuf);
+      rerr = AB_ERI_ReadRecord(bio, recbuf);
 
       /* End of File should not happen here! */
       if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
@@ -482,7 +482,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
       }
 
       /* get the info from the fourth record and place them in transaction struct */
-      terr = parseFourthRecord(recbuf, current);
+      terr = AB_ERI_parseFourthRecord(recbuf, current);
 
       if (terr == REC_BAD) {
         return TRANS_BAD;
@@ -498,7 +498,7 @@ int parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     printf("t %s.\n", current->transactionId);
   }
 
-  aerr = eriAddTransaction(ctx, current);
+  aerr = AB_ERI_AddTransaction(ctx, current);
 
   return TRANS_OK;
 }
@@ -540,7 +540,7 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
   assert(bio);
 
   /* Now start reading and parsing transactions until EOF or error */
-  while (!(err = parseTransaction(ctx, bio)));
+  while (!(err = AB_ERI_parseTransaction(ctx, bio)));
 
   if (err == TRANS_EOF) return 0;  /* EOF everything Ok */
 
