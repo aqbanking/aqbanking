@@ -133,10 +133,12 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   *cnt = REC_LENGTH;
   gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
+#ifdef ERI_DEBUG
   if (gwerr) {
     /* printf("Bytes read is %d\n", *cnt); */
     AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
   }
+#endif
 
   /* When buffer was not filled enough not all cnt char are read,
      So in that case we do a read for the rest. */
@@ -145,11 +147,14 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
     gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
+#ifdef ERI_DEBUG
     if (gwerr) {
       /* printf("Bytes read is %d\n", *cnt); */
       AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
     }
   }
+#endif
+
   serr = AB_ERI_mySimpleCode(gwerr);
   return serr;
 }
@@ -407,9 +412,11 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     return TRANS_BAD;
   }
 
+#ifdef ERI_DEBUG
   printf("l %s, r %s, n %s, a %f, d %s, v %s, i %s.\n", current->localAccountNumber, 
 	 current->remoteAccountNumber, current->namePayee, current->amount,
 	 current->date, current->valutaDate, current->transactionId);
+#endif
 
   /* Read the second record into recbuf */
   rerr = AB_ERI_ReadRecord(bio, recbuf);
@@ -440,7 +447,9 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     return TRANS_BAD;
   }
 
+#ifdef ERI_DEBUG
   printf("p1 %s, p2 %s.\n", current->purpose1, current->purpose2);
+#endif
 
   /* Clear all purpose strings of line 3 and 4. 
      They may contain rubbish when lines are not there */
@@ -467,8 +476,10 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
       return TRANS_BAD;
     }
 
+#ifdef ERI_DEBUG
     printf("p3 %s, p4 %s, p5 %s.\n", current->purpose3, current->purpose4, 
 	   current->purpose5);
+#endif
 
     /* If 4 line is present in transaction, read and parse it */
     if (translen == LINES4) {
@@ -488,15 +499,19 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
         return TRANS_BAD;
       }
 
+#ifdef ERI_DEBUG
       printf("p6 %s.\n", current->purpose6);
+#endif
 
     }
 
   }
 
+#ifdef ERI_DEBUG
   if (current->transactionIdValid) {
     printf("t %s.\n", current->transactionId);
   }
+#endif
 
   aerr = AB_ERI_AddTransaction(ctx, current);
 
