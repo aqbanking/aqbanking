@@ -104,16 +104,6 @@ void AB_ERI_stripTrailSpaces(char *buffer) {
 
 
 
-/* My Own Simple Error Codes for GWEN */
-int AB_ERI_mySimpleCode(GWEN_ERRORCODE err) {
-  int serr;
-
-  serr = (int)(err & 0xFF);
-  return serr;
-}
-
-
-
 int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
 		      char *buffer) {
   GWEN_ERRORCODE gwerr;
@@ -145,7 +135,7 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     }
   }
 
-  serr = AB_ERI_mySimpleCode(gwerr);
+  serr = GWEN_Error_GetSimpleCode(gwerr);
   return serr;
 }
 
