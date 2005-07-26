@@ -127,7 +127,7 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   *cnt = REC_LENGTH;
   gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-  if (gwerr) {
+  if (!GWEN_Error_IsOk(gwerr)) {
     /* printf("Bytes read is %d\n", *cnt); */
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
   }
@@ -139,7 +139,7 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
     gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-    if (gwerr) {
+    if (!GWEN_Error_IsOk(gwerr)) {
       /* printf("Bytes read is %d\n", *cnt); */
       DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
     }
