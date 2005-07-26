@@ -1,3 +1,8 @@
+2005-07-26   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/cryptmanager.c: Introduce a temporary
+	password buffer to avoid pointer signedness warnings (gcc4.x)
+	between AB_CryptManager_GetPin and AB_Banking_GetPin.
 
 2005/07/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

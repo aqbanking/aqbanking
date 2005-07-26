@@ -79,6 +79,7 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   const char *name;
   const char *numeric_warning = "";
   char buffer[512];
+  char *notunsigned_pwbuffer;
   GWEN_TYPE_UINT32 bflags=0;
 
   assert(cm);
@@ -127,6 +128,10 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
 	     numeric_warning);
   }
 
+  /* Allocate new buffer that is not marked as unsigned in order
+     to pass the correct pointer type into AB_Banking_GetPin. */
+  notunsigned_pwbuffer = (char*)malloc((maxLength+1)*sizeof(char));
+
   name=GWEN_CryptToken_GetTokenName(token);
   if (name) {
     GWEN_BUFFER *nbuf;
@@ -139,7 +144,7 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                          GWEN_Buffer_GetStart(nbuf),
 			 I18N("Enter Password"),
 			 buffer,
-			 pwbuffer,
+			 notunsigned_pwbuffer,
                          minLength,
 			 maxLength);
     GWEN_Buffer_free(nbuf);
@@ -149,18 +154,35 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                            bflags,
 			   I18N("Enter Password"),
                            buffer,
-			   pwbuffer,
+			   notunsigned_pwbuffer,
 			   minLength,
 			   maxLength);
   }
 
   if (rv) {
+    free(notunsigned_pwbuffer);
     if (rv==AB_ERROR_USER_ABORT)
       return GWEN_ERROR_USER_ABORTED;
     return -1;
   }
 
-  *pinLength=strlen(pwbuffer);
+  *pinLength=strlen(notunsigned_pwbuffer);
+  {
+    /* Copy the resulting password into the original buffer. Copy
+       this byte-wise and not by strcpy() because strcpy() does
+       not accept an unsigned char pointer but only a char
+       pointer. (would give a "pointer differ in signedness"
+       warning in gcc4.x) */
+    int k;
+    for (k=0; k < *pinLength; ++k)
+      pwbuffer[k] = notunsigned_pwbuffer[k];
+    /* The returned length of strlen() does not include the
+       trailing \0, so append it extra. */
+    pwbuffer[k] = '\0';
+    /* Clear the temporary buffer. */
+    memset(notunsigned_pwbuffer, '\0', maxLength+1);
+  }
+  free(notunsigned_pwbuffer);
   return 0;
 }
 
