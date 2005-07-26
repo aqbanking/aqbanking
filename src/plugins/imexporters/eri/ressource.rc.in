@@ -49,7 +49,7 @@ BEGIN
         BEGIN
             //VALUE "Comments", "\0"
             //VALUE "CompanyName", " Aquamaniac\0"
-            VALUE "FileDescription", "Home banking library\0"
+            VALUE "FileDescription", "ERI Importer\0"
             VALUE "FileVersion", "v@AQBANKING_VERSION_RELEASE_STRING@\0"
             VALUE "InternalName", "Aqbanking\0"
             VALUE "LegalCopyright", "Copyright © 2005 by Peter de Vrijer\0"
@@ -60,7 +60,7 @@ BEGIN
             VALUE "ProductVersion", "v@AQBANKING_VERSION_FULL_STRING@\0"
             VALUE "Author", "Peter de Vrijer\0"
             VALUE "Email", "pdevrijer@home.nl\0"
-            //VALUE "Homepage", "http://www.sf.net/projects/aqbanking\0"
+            VALUE "Homepage", "http://www.aquamaniac.de/aqbanking\0"
             VALUE "Description", "Online banking\0"
 	    VALUE "License", "LGPL\0"
             //VALUE "SpecialBuild", "\0"

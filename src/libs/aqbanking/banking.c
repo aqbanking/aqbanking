@@ -18,10 +18,12 @@
 #include "provider_l.h"
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
+#include "cryptmanager_l.h"
 #include "i18n_l.h"
 #include "country_l.h"
 #include "wcb_l.h"
 
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
@@ -1151,6 +1153,29 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
   ab->pluginManagerPkgdatadir=pm;
 
+  /* create crypt plugin manager */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering crypttoken plugin manager");
+  pm=AB_CryptManager_new(ab);
+  if (pm) {
+    GWEN_BUFFER *ctbuf;
+
+    /* add path from gwen since all crypt token plugins are installed there */
+    ctbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_GetPluginPath(ctbuf);
+    GWEN_Buffer_AppendString(ctbuf, DIRSEP);
+    GWEN_Buffer_AppendString(ctbuf, "crypttoken");
+    GWEN_PluginManager_AddPath(pm,
+                               GWEN_Buffer_GetStart(ctbuf));
+    GWEN_Buffer_free(ctbuf);
+
+    if (GWEN_PluginManager_Register(pm)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not register crypttoken plugin manager");
+      return AB_ERROR_GENERIC;
+    }
+    ab->pluginManagerCryptToken=pm;
+  }
+
   /* read config file */
   if (access(ab->configFile, F_OK)) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
@@ -1451,6 +1476,16 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_Job_List_Clear(ab->enqueuedJobs);
   AB_Account_List_Clear(ab->accounts);
   AB_Provider_List_Clear(ab->providers);
+
+  /* unregister and unload crypt token plugin manager */
+  if (ab->pluginManagerCryptToken) {
+      if (GWEN_PluginManager_Unregister(ab->pluginManagerCryptToken)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not unregister crypt token plugin manager");
+      }
+      GWEN_PluginManager_free(ab->pluginManagerCryptToken);
+      ab->pluginManagerCryptToken=0;
+  }
 
   /* unregister and unload provider plugin manager */
   if (ab->pluginManagerProvider) {

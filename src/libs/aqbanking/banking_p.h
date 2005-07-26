@@ -76,6 +76,7 @@ struct AB_BANKING {
   GWEN_PLUGIN_MANAGER *pluginManagerProvider;
   GWEN_PLUGIN_MANAGER *pluginManagerImExporter;
   GWEN_PLUGIN_MANAGER *pluginManagerPkgdatadir;
+  GWEN_PLUGIN_MANAGER *pluginManagerCryptToken;
   void *user_data;
 
   GWEN_WAITCALLBACK *waitCallback;

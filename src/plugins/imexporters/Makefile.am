@@ -1,4 +1,4 @@
-SUBDIRS=qif dbio dtaus ofx swift csv openhbci1
+SUBDIRS=qif dbio dtaus ofx swift csv openhbci1 eri
 
 sources:
 	for d in $(SUBDIRS); do \

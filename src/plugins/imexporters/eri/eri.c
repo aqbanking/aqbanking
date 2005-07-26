@@ -25,7 +25,8 @@
 #include <errno.h>
 #include <string.h>
 
-GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_ERI);
+GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_ERI)
+
 
 /* varstrcut cuts strings of length n and startig at position start from
    the source string and copies them to the destination string
@@ -37,8 +38,8 @@ void AB_ERI_varstrcut(char *dest, char *src, int start, int n) {
 
   /* go to start char */
   /*  for (i = 0; i < start; ++i) {
-    *src++;
-    } */
+   *src++;
+   } */
 
   src += start;  /* will this work on every machine and compiler? */
 
@@ -49,6 +50,7 @@ void AB_ERI_varstrcut(char *dest, char *src, int start, int n) {
   *dest = 0;
   return;
 }
+
 
 
 /* stripPzero strips leading zeroes in accountNumber strings 
@@ -74,6 +76,8 @@ void AB_ERI_stripPzero(char *dest, char *src) {
   return;
 }
 
+
+
 /* The strings are of fixed length. If info is shorter than the rest
    is filled with spaces. We want to get rid of those trailing spaces 
    and shorten the strings if possible */
@@ -98,6 +102,8 @@ void AB_ERI_stripTrailSpaces(char *buffer) {
   *++p = 0;
 }
 
+
+
 /* My Own Simple Error Codes for GWEN */
 int AB_ERI_mySimpleCode(GWEN_ERRORCODE err) {
   int serr;
@@ -106,22 +112,10 @@ int AB_ERI_mySimpleCode(GWEN_ERRORCODE err) {
   return serr;
 }
 
-/* For debugging a function to print GWEN_BUFFEREDIO Errors */
-void AB_ERI_printGWEN_BufferedIO_Errors(GWEN_ERRORCODE err) {
-  char es[128];
-  int serr;
 
-
-  GWEN_Error_ToString(err, es, 128);
-  printf("Gwen Error Code is %s\n", es);
-
-  serr = AB_ERI_mySimpleCode(err);
-  printf("Simplified Error Code is %u\n", serr);
-  return;
-}
 
 int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
-		  char *buffer) {
+		      char *buffer) {
   GWEN_ERRORCODE gwerr;
   int serr, count, *cnt = &count;
   char c;
@@ -133,12 +127,10 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   *cnt = REC_LENGTH;
   gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-#ifdef ERI_DEBUG
   if (gwerr) {
     /* printf("Bytes read is %d\n", *cnt); */
-    AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
+    DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
   }
-#endif
 
   /* When buffer was not filled enough not all cnt char are read,
      So in that case we do a read for the rest. */
@@ -147,17 +139,17 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
     gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-#ifdef ERI_DEBUG
     if (gwerr) {
       /* printf("Bytes read is %d\n", *cnt); */
-      AB_ERI_printGWEN_BufferedIO_Errors(gwerr);
+      DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
     }
   }
-#endif
 
   serr = AB_ERI_mySimpleCode(gwerr);
   return serr;
 }
+
+
 
 int AB_ERI_parseFirstRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN], s[MAXVARLEN];
@@ -210,6 +202,8 @@ int AB_ERI_parseFirstRecord(char *recbuf, ERI_TRANSACTION *current) {
   return REC_OK;
 }
 
+
+
 int AB_ERI_parseSecondRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
 
@@ -238,6 +232,8 @@ int AB_ERI_parseSecondRecord(char *recbuf, ERI_TRANSACTION *current) {
 
   return REC_OK;
 }
+
+
 
 int AB_ERI_parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
@@ -275,6 +271,8 @@ int AB_ERI_parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
   return REC_OK;
 }
 
+
+
 int AB_ERI_parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
   char varbuf[MAXVARLEN];
 
@@ -301,12 +299,16 @@ int AB_ERI_parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
   return REC_OK;
 }
 
+
+
 void eriAddPurpose(AB_TRANSACTION *t, char *purpose) {
 
   if (strlen(purpose) > 0) {
     AB_Transaction_AddPurpose(t, purpose, 0);
   }
 }
+
+
 
 int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 		      ERI_TRANSACTION *current) {
@@ -382,8 +384,10 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   return TRANS_OK;
 }
 
+
+
 int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
-		     GWEN_BUFFEREDIO *bio) {
+			    GWEN_BUFFEREDIO *bio) {
 
   ERI_TRANSACTION trans, *current = &trans;
   int rerr, terr, aerr, translen = 0;
@@ -518,6 +522,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   return TRANS_OK;
 }
 
+
+
 AB_IMEXPORTER *eri_factory(AB_BANKING *ab, GWEN_DB_NODE *db) {
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_ERI *ieh;
@@ -566,12 +572,16 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
 
 }
 
+
+
 int AH_ImExporterERI_Export(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params) {
   return AB_ERROR_NOT_SUPPORTED;
 }
+
+
 
 int AH_ImExporterERI_CheckFile(AB_IMEXPORTER *ie, const char *fname) {
   int fd;
@@ -617,3 +627,5 @@ int AH_ImExporterERI_CheckFile(AB_IMEXPORTER *ie, const char *fname) {
   GWEN_BufferedIO_free(bio);
   return AB_ERROR_BAD_DATA;
 }
+
+

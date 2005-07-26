@@ -1,4 +1,11 @@
 
+2005/07/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- enabled Peter de Vrijer's ERI file importer
+- fixed a bug in the ERI importer (a closing curly bracket was within an
+  #ifdef)
+
+
 2005/07/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added command "import" to aqbanking-tool.
