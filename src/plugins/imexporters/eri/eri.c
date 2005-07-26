@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_ERI)
 
@@ -107,7 +108,8 @@ void AB_ERI_stripTrailSpaces(char *buffer) {
 int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
 		      char *buffer) {
   GWEN_ERRORCODE gwerr;
-  int serr, count, *cnt = &count;
+  int serr;
+  unsigned int count, *cnt = &count;
   char c;
 
   /* check if there are no CR and or LF in the buffer */
@@ -126,6 +128,10 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
      So in that case we do a read for the rest. */
     if (*cnt != REC_LENGTH) {
       buffer += *cnt;                   /* Set start pointer to right point */
+      /* This is asserted because *cnt has been changed to an
+	 unsigned char. Is it always fulfilled? If yes, then this
+	 assert() can be removed again. */
+      assert(*cnt < REC_LENGTH);
       *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
       gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
