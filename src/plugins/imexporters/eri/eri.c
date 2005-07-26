@@ -121,17 +121,18 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     /* printf("Bytes read is %d\n", *cnt); */
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
   }
-
-  /* When buffer was not filled enough not all cnt char are read,
+  else {
+    /* When buffer was not filled enough not all cnt char are read,
      So in that case we do a read for the rest. */
-  if (*cnt != REC_LENGTH) {
-    buffer += *cnt;                   /* Set start pointer to right point */
-    *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
-    gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
+    if (*cnt != REC_LENGTH) {
+      buffer += *cnt;                   /* Set start pointer to right point */
+      *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
+      gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-    if (!GWEN_Error_IsOk(gwerr)) {
-      /* printf("Bytes read is %d\n", *cnt); */
-      DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
+      if (!GWEN_Error_IsOk(gwerr)) {
+        /* printf("Bytes read is %d\n", *cnt); */
+        DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
+      }
     }
   }
 
