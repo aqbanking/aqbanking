@@ -6,6 +6,11 @@ char longDescr="This profile supports the ERI format used by Rabobank mut.asc fi
 int import="1"
 int export="0"
 
+# default bank name
+bankName="Rabobank"
+currency="EUR"
+dateFormat="hhmmssYYYYMMDD"
+
 params {
 }
 

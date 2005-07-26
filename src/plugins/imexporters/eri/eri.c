@@ -302,18 +302,27 @@ void eriAddPurpose(AB_TRANSACTION *t, char *purpose) {
 
 
 int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
-		      ERI_TRANSACTION *current) {
+                          ERI_TRANSACTION *current,
+                          GWEN_DB_NODE *params) {
   AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
   AB_TRANSACTION *t = 0;
   AB_VALUE *vAmount = 0;
   GWEN_TIME *ti = 0;
   char *defaultTime = "12000020", dateTime[15];
+  const char *bankName;
+  const char *dateFormat;
+  const char *currency;
+
+  bankName=GWEN_DB_GetCharValue(params, "bankName", 0, "Rabobank");
+  dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0, "hhmmssYYYYMMDD");
+  currency=GWEN_DB_GetCharValue(params, "currency", 0, "EUR");
 
   /* Search if account number is already in context
      If so add transaction there, else make new account number in context. */
   iea = AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(iea) {
-    if (strcmp(AB_ImExporterAccountInfo_GetAccountNumber(iea), current->localAccountNumber) == 0) 
+    if (strcmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
+               current->localAccountNumber) == 0)
       break;
     iea = AB_ImExporterContext_GetNextAccountInfo(ctx);
   }
@@ -323,8 +332,9 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     iea = AB_ImExporterAccountInfo_new();
     AB_ImExporterContext_AddAccountInfo(ctx, iea);
     AB_ImExporterAccountInfo_SetType(iea, AB_AccountType_Bank);
-    AB_ImExporterAccountInfo_SetBankName(iea, "Rabobank");
-    AB_ImExporterAccountInfo_SetAccountNumber(iea, current->localAccountNumber);
+    AB_ImExporterAccountInfo_SetBankName(iea, bankName);
+    AB_ImExporterAccountInfo_SetAccountNumber(iea,
+                                              current->localAccountNumber);
   }
 
   /* Now create AB Transaction and start filling it with what we know */
@@ -337,7 +347,7 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   AB_Transaction_AddRemoteName(t, current->namePayee, 0);
 
   /* amount */
-  vAmount = AB_Value_new(current->amount, "EUR");
+  vAmount = AB_Value_new(current->amount, currency);
   AB_Transaction_SetValue(t, vAmount);
   AB_Value_free(vAmount);
 
@@ -345,14 +355,15 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
      Transaction time, we take noon */
   strcpy(dateTime, defaultTime);
   strcat(dateTime, current->date);
-  ti = GWEN_Time_fromString(dateTime, "hhmmssYYYYMMDD");
+
+  ti = GWEN_Time_fromString(dateTime, dateFormat);
   AB_Transaction_SetDate(t, ti);
   GWEN_Time_free(ti);
 
   /* Same for valuta date */
   strcpy(dateTime, defaultTime);
   strcat(dateTime, current->valutaDate);
-  ti = GWEN_Time_fromString(dateTime, "hhmmssYYYYMMDD");
+  ti = GWEN_Time_fromString(dateTime, dateFormat);
   AB_Transaction_SetValutaDate(t, ti);
   GWEN_Time_free(ti);
 
@@ -378,7 +389,8 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_BUFFEREDIO *bio) {
+                            GWEN_BUFFEREDIO *bio,
+                            GWEN_DB_NODE *params) {
 
   ERI_TRANSACTION trans, *current = &trans;
   int rerr, terr, aerr, translen = 0;
@@ -508,7 +520,7 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   }
 #endif
 
-  aerr = AB_ERI_AddTransaction(ctx, current);
+  aerr = AB_ERI_AddTransaction(ctx, current, params);
 
   return TRANS_OK;
 }
@@ -552,7 +564,7 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
   assert(bio);
 
   /* Now start reading and parsing transactions until EOF or error */
-  while (!(err = AB_ERI_parseTransaction(ctx, bio)));
+  while (!(err = AB_ERI_parseTransaction(ctx, bio, params)));
 
   if (err == TRANS_EOF) return 0;  /* EOF everything Ok */
 
