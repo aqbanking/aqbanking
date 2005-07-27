@@ -119,12 +119,7 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   *cnt = REC_LENGTH;
   gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
-
-  if (!GWEN_Error_IsOk(gwerr)) {
-    /* printf("Bytes read is %d\n", *cnt); */
-    DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
-  }
-  else {
+  if (GWEN_Error_IsOk(gwerr)) {
     /* When buffer was not filled enough not all cnt char are read,
      So in that case we do a read for the rest. */
     if (*cnt != REC_LENGTH) {
@@ -135,21 +130,25 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
       assert(*cnt < REC_LENGTH);
       *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
       gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
-
-      if (!GWEN_Error_IsOk(gwerr)) {
-        /* printf("Bytes read is %d\n", *cnt); */
-        DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
-      }
     }
   }
 
-  serr = GWEN_Error_GetCode(gwerr); /* The real code without severity is needed here */
+  serr = GWEN_Error_GetSimpleCode(gwerr);
 
 #ifdef ERI_DEBUG
   printf("Error Code is %d\n", serr);
 #endif
 
-  return serr;
+  /* since there is no other way than EOF to see that the last record has been read,
+     ERROR_READ may not be an error in the ERI file and should not be handled here 
+     ERROR_EOF is a corrupt ERI file and is also handled by the calling function. Other
+     errors are should not happen at all */
+  if ((serr == GWEN_SUCCESS) || (serr == GWEN_ERROR_READ) || (serr == GWEN_ERROR_EOF)) {
+    return serr;
+  } else {
+    DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
+    return GWEN_ERROR_GENERIC;
+  }
 }
 
 
@@ -411,12 +410,15 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   /* Read the first record of the transaction */
   rerr = AB_ERI_ReadRecord(bio, recbuf);
 
-  if (rerr == GWEN_BUFFEREDIO_ERROR_READ) {
+  if (rerr == GWEN_ERROR_READ) {
     /* When Error on Read occurs here, buffer was empty, normal EOF */
     return TRANS_EOF;
-  } else if (rerr == GWEN_BUFFEREDIO_ERROR_EOF) {
+  } else if (rerr == GWEN_ERROR_EOF) {
     /* With Error met EOF, EOF occured in middle of record */
     printf("Bad first record in Transaction\n");
+    return TRANS_BAD;
+  } else if (rerr == GWEN_ERROR_GENERIC) {
+    /* This error something unexpected went wrong and nothing can be trusted */
     return TRANS_BAD;
   }
 
@@ -437,8 +439,11 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   rerr = AB_ERI_ReadRecord(bio, recbuf);
 
   /* End of File should not happen here! */
-  if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
+  if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
     printf("Transaction not complete, bad second record!\n");
+    return TRANS_BAD;
+  } else if (rerr == GWEN_ERROR_GENERIC) {
+    /* This error something unexpected went wrong and nothing can be trusted */
     return TRANS_BAD;
   }
 
@@ -479,8 +484,11 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     rerr = AB_ERI_ReadRecord(bio, recbuf);
 
     /* End of File should not happen here! */
-    if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
+    if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
       printf("Transaction not complete, bad third record!\n");
+      return TRANS_BAD;
+    } else if (rerr == GWEN_ERROR_GENERIC) {
+      /* This error something unexpected went wrong and nothing can be trusted */
       return TRANS_BAD;
     }
 
@@ -502,8 +510,11 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
       rerr = AB_ERI_ReadRecord(bio, recbuf);
 
       /* End of File should not happen here! */
-      if ((rerr == GWEN_BUFFEREDIO_ERROR_READ) || (rerr == GWEN_BUFFEREDIO_ERROR_EOF)) {
+      if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
         printf("Transaction not complete, bad fourth record!\n");
+        return TRANS_BAD;
+      } else if (rerr == GWEN_ERROR_GENERIC) {
+        /* This error something unexpected went wrong and nothing can be trusted */
         return TRANS_BAD;
       }
 

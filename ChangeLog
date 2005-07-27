@@ -1,4 +1,10 @@
 2005-07-27   Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri/eri.c: Changed the call
+	back to GWEN_Error_GetSimpleCode() and changed the errorhandling
+	in calling function accordingly. Added handling of errors not resulting
+	from EOF in the eri file.
+	
+2005-07-27   Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c: Changed the call to
 	GWEN_Error_GetSimpleCode() in AB_ERI_ReadRecord into a
 	call to GWEN_Error_GetCode(). Really need the code without
