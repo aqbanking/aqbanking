@@ -119,6 +119,7 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   *cnt = REC_LENGTH;
   gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
 
+
   if (!GWEN_Error_IsOk(gwerr)) {
     /* printf("Bytes read is %d\n", *cnt); */
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
@@ -142,7 +143,12 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
     }
   }
 
-  serr = GWEN_Error_GetSimpleCode(gwerr);
+  serr = GWEN_Error_GetCode(gwerr); /* The real code without severity is needed here */
+
+#ifdef ERI_DEBUG
+  printf("Error Code is %d\n", serr);
+#endif
+
   return serr;
 }
 
@@ -296,16 +302,12 @@ int AB_ERI_parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
   return REC_OK;
 }
 
-
-
-void eriAddPurpose(AB_TRANSACTION *t, char *purpose) {
+void AB_ERI_AddPurpose(AB_TRANSACTION *t, char *purpose) {
 
   if (strlen(purpose) > 0) {
     AB_Transaction_AddPurpose(t, purpose, 0);
   }
 }
-
-
 
 int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
                           ERI_TRANSACTION *current,
@@ -379,12 +381,12 @@ int AB_ERI_AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   }
 
   /* Now add all the purpose descriptions if there */
-  eriAddPurpose(t, current->purpose1);
-  eriAddPurpose(t, current->purpose2);
-  eriAddPurpose(t, current->purpose3);
-  eriAddPurpose(t, current->purpose4);
-  eriAddPurpose(t, current->purpose5);
-  eriAddPurpose(t, current->purpose6);
+  AB_ERI_AddPurpose(t, current->purpose1);
+  AB_ERI_AddPurpose(t, current->purpose2);
+  AB_ERI_AddPurpose(t, current->purpose3);
+  AB_ERI_AddPurpose(t, current->purpose4);
+  AB_ERI_AddPurpose(t, current->purpose5);
+  AB_ERI_AddPurpose(t, current->purpose6);
 
   /* Add it to the AccountInfo List */
   AB_ImExporterAccountInfo_AddTransaction(iea, t);

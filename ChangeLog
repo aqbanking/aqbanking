@@ -1,3 +1,9 @@
+2005-07-27   Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri/eri.c: Changed the call to
+	GWEN_Error_GetSimpleCode() in AB_ERI_ReadRecord into a
+	call to GWEN_Error_GetCode(). Really need the code without
+	any regard to the severity.
+	
 2005-07-26   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/cryptmanager.c: Introduce a temporary
