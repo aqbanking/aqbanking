@@ -71,7 +71,7 @@ int AH_ImExporterERI__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 #define FALSE 0
 #define TRUE 1
 
-// my own errorcodes for transactions reading
+/* my own errorcodes for transactions reading */
 #define TRANS_OK 0
 #define REC_OK 0
 #define TRANS_BAD -1
@@ -79,6 +79,6 @@ int AH_ImExporterERI__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 #define TRANS_EOF 1
 
 /* for debugging purposes */
-/* #define ERI_DEBUG  */
+/* #define ERI_DEBUG */
 
 #endif /* AQHBCI_IMEX_ERI_P_H */
