@@ -79,6 +79,6 @@ int AH_ImExporterERI__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 #define TRANS_EOF 1
 
 /* for debugging purposes */
-/* #define ERI_DEBUG */
+/* #define ERI_DEBUG  */
 
 #endif /* AQHBCI_IMEX_ERI_P_H */
