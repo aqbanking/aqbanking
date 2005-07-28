@@ -145,7 +145,7 @@ all_includes="$all_includes $gwenhywfar_includes"
 
 have_ktoblzcheck="yes"
 AC_CHECK_LIB(ktoblzcheck, AccountNumberCheck_new,
-             [], [have_ktoblzcheck="no"])
+             [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
 AC_CHECK_HEADERS(ktoblzcheck.h, [], [have_ktoblzcheck="no"])
 if test "$have_ktoblzcheck" != "yes"; then
   ktoblzcheck_libs=""
@@ -176,7 +176,7 @@ AC_MSG_RESULT($enable_libofx)
 
 if test "$enable_libofx" = "yes"; then
   HAVE_OFX="yes"
-  AC_CHECK_LIB(ofx, libofx_proc_buffer, [], [HAVE_OFX="no"])
+  AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
   AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
   if test "$HAVE_OFX" != "yes"; then
     AC_MSG_WARN([
