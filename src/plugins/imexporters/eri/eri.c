@@ -116,22 +116,21 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   while (((c = GWEN_BufferedIO_PeekChar(bio)) == '\n') || (c == '\r')) 
                      c = GWEN_BufferedIO_ReadChar(bio);
 
-  *cnt = REC_LENGTH;
-  gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
+  /* We did a peek for the next character, we can use that to detect EOF 
+     in the first column of the next line */
 
-  if (GWEN_Error_IsOk(gwerr)) {
-    /* When buffer was not filled enough not all cnt char are read,
-     So in that case we do a read for the rest. */
-    if (*cnt != REC_LENGTH) {
-      buffer += *cnt;                   /* Set start pointer to right point */
-      /* This is asserted because *cnt has been changed to an
-	 unsigned char. Is it always fulfilled? If yes, then this
-	 assert() can be removed again. */
-      assert(*cnt < REC_LENGTH);
-      *cnt = REC_LENGTH - *cnt;         /* Calculate char to do */
-      gwerr = GWEN_BufferedIO_ReadRaw(bio, buffer, cnt);
-    }
+#ifdef ERI_DEBUG
+  printf("Char is 0x%X\n", c);
+#endif
+
+  if (c == GWEN_BUFFEREDIO_CHAR_EOF) {
+    /* seems stupid to return ERROR_READ, but calling function uses that to
+       detect End Of File at this point */
+    return GWEN_ERROR_READ;
   }
+
+  *cnt = REC_LENGTH;
+  gwerr = GWEN_BufferedIO_ReadRawForced(bio, buffer, cnt);
 
   serr = GWEN_Error_GetSimpleCode(gwerr);
 
@@ -141,9 +140,9 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
 
   /* since there is no other way than EOF to see that the last record has been read,
      ERROR_READ may not be an error in the ERI file and should not be handled here 
-     ERROR_EOF is a corrupt ERI file and is also handled by the calling function. Other
+     ERROR_PARTIAL is a corrupt ERI file and is also handled by the calling function. Other
      errors are should not happen at all */
-  if ((serr == GWEN_SUCCESS) || (serr == GWEN_ERROR_READ) || (serr == GWEN_ERROR_EOF)) {
+  if ((serr == GWEN_SUCCESS) || (serr == GWEN_ERROR_READ) || (serr == GWEN_ERROR_PARTIAL)) {
     return serr;
   } else {
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
@@ -413,9 +412,9 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   if (rerr == GWEN_ERROR_READ) {
     /* When Error on Read occurs here, buffer was empty, normal EOF */
     return TRANS_EOF;
-  } else if (rerr == GWEN_ERROR_EOF) {
+  } else if (rerr == GWEN_ERROR_PARTIAL) {
     /* With Error met EOF, EOF occured in middle of record */
-    printf("Bad first record in Transaction\n");
+    printf("Short first record in Transaction\n");
     return TRANS_BAD;
   } else if (rerr == GWEN_ERROR_GENERIC) {
     /* This error something unexpected went wrong and nothing can be trusted */
@@ -439,8 +438,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   rerr = AB_ERI_ReadRecord(bio, recbuf);
 
   /* End of File should not happen here! */
-  if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
-    printf("Transaction not complete, bad second record!\n");
+  if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
+    printf("Transaction not complete, short second record!\n");
     return TRANS_BAD;
   } else if (rerr == GWEN_ERROR_GENERIC) {
     /* This error something unexpected went wrong and nothing can be trusted */
@@ -484,8 +483,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     rerr = AB_ERI_ReadRecord(bio, recbuf);
 
     /* End of File should not happen here! */
-    if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
-      printf("Transaction not complete, bad third record!\n");
+    if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
+      printf("Transaction not complete, short third record!\n");
       return TRANS_BAD;
     } else if (rerr == GWEN_ERROR_GENERIC) {
       /* This error something unexpected went wrong and nothing can be trusted */
@@ -510,8 +509,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
       rerr = AB_ERI_ReadRecord(bio, recbuf);
 
       /* End of File should not happen here! */
-      if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_EOF)) {
-        printf("Transaction not complete, bad fourth record!\n");
+      if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
+        printf("Transaction not complete, short fourth record!\n");
         return TRANS_BAD;
       } else if (rerr == GWEN_ERROR_GENERIC) {
         /* This error something unexpected went wrong and nothing can be trusted */
@@ -577,16 +576,19 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
 			    GWEN_DB_NODE *params) {
-  int err;
+  int err, transcount = 0;
 
   /* check buffered IO is in place */
   assert(bio);
 
   /* Now start reading and parsing transactions until EOF or error */
-  while (!(err = AB_ERI_parseTransaction(ctx, bio, params)));
+  while (!(err = AB_ERI_parseTransaction(ctx, bio, params))) 
+    transcount++;
 
-  if (err == TRANS_EOF) return 0;  /* EOF everything Ok */
-
+  if (err == TRANS_EOF) {  /* EOF everything Ok */
+    printf("ERI plugin: File imported Ok, %d transactions read.\n", transcount);
+    return GWEN_SUCCESS;
+  }
 
   if (err == TRANS_BAD) return AB_ERROR_BAD_DATA;  /* Something is wrong with the transactions */
 

@@ -1,14 +1,24 @@
+2005-07-28   Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri/eri.c: Changed the use of
+	GWEN_BufferedIO_ReadRaw() in AB_ERI_ReadRecord() to the
+	use of GWEN_BufferedIO_ReadRawForced(). Changed error handling
+	accordingly. Also detecting EOF exactly after a record by the use of
+	the character we took already a GWEN_BufferedIO_PeekChar() to.
+
+	
 2005-07-27   Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c: Changed the call
 	back to GWEN_Error_GetSimpleCode() and changed the errorhandling
 	in calling function accordingly. Added handling of errors not resulting
 	from EOF in the eri file.
+
 	
 2005-07-27   Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c: Changed the call to
 	GWEN_Error_GetSimpleCode() in AB_ERI_ReadRecord into a
 	call to GWEN_Error_GetCode(). Really need the code without
 	any regard to the severity.
+
 	
 2005-07-26   Christian Stimming <stimming@tuhh.de>
 
