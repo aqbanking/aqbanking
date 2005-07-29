@@ -295,6 +295,10 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       }
     }
     done++;
+    if (GWEN_WaitCallbackProgress(done)==GWEN_WaitCallbackResult_Abort) {
+      GWEN_WaitCallback_Leave();
+      return AB_ERROR_USER_ABORT;
+    }
     GWEN_WaitCallback_SetProgressPos(done);
     dbT=GWEN_DB_GetNextGroup(dbT);
   } // while
