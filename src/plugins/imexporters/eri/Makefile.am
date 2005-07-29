@@ -1,7 +1,7 @@
 SUBDIRS=profiles
 
 INCLUDES = $(all_includes)
-EXTRA_DIST=README
+#EXTRA_DIST=README
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
