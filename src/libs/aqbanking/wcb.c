@@ -68,8 +68,8 @@ GWEN_WAITCALLBACK_RESULT AB_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
   wcb=GWEN_INHERIT_GETDATA(GWEN_WAITCALLBACK, AB_WAITCALLBACK, ctx);
   assert(wcb);
 
-  DBG_VERBOUS(0, "WaitCallback: %s (level %d)",
-              GWEN_WaitCallback_GetId(ctx), level);
+  DBG_VERBOUS(0, "WaitCallback %p: %s (level %d)",
+	      ctx, GWEN_WaitCallback_GetId(ctx), level);
 
   if (level!=0) {
     DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Level: %d", level);
@@ -80,12 +80,17 @@ GWEN_WAITCALLBACK_RESULT AB_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
       rv=AB_Banking_ProgressAdvance(wcb->banking, 0, AB_BANKING_PROGRESS_NONE);
     else {
       wcb->lastProgress=GWEN_WaitCallback_GetProgressPos(ctx);
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Progress changed to %lld", wcb->lastProgress);
+      DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		 "Progress changed to %lld",
+		 wcb->lastProgress);
       rv=AB_Banking_ProgressAdvance(wcb->banking, 0, wcb->lastProgress);
     }
   }
-  if (rv==AB_ERROR_USER_ABORT)
+
+  if (rv==AB_ERROR_USER_ABORT) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Aborted");
     return GWEN_WaitCallbackResult_Abort;
+  }
   return GWEN_WaitCallbackResult_Continue;
 }
 

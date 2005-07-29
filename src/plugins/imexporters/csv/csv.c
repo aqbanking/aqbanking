@@ -114,8 +114,22 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   int usePosNegField;
   int defaultIsPositive;
   const char *posNegFieldName;
+  GWEN_TYPE_UINT64 cnt=0;
+  GWEN_TYPE_UINT64 done;
 
+  /* first count the groups */
   dbT=GWEN_DB_GetFirstGroup(db);
+  while(dbT) {
+    cnt++;
+    dbT=GWEN_DB_GetNextGroup(dbT);
+  } /* while */
+
+  /* enter waitcallback context */
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
+                                  I18N("Importing transactions ..."),
+                                  GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
+  GWEN_WaitCallback_SetProgressTotal(cnt);
+  GWEN_WaitCallback_SetProgressPos(0);
 
   dateFormat=GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYYY/MM/DD");
   inUtc=GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
@@ -124,14 +138,13 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0,
 				       "posNeg");
 
+  done=0;
+  dbT=GWEN_DB_GetFirstGroup(db);
   while(dbT) {
     int matches;
     int i;
     const char *p;
     const char *gn;
-
-    DBG_ERROR(GWEN_LOGDOMAIN, "Have this transaction:");
-    GWEN_DB_Dump(dbT, stderr, 2);
 
     /* check whether the name of the current groups matches */
     matches=0;
@@ -165,6 +178,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
           GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                                 "Error in config file");
+          GWEN_WaitCallback_Leave();
           return AB_ERROR_GENERIC;
         }
   
@@ -274,11 +288,16 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams);
       if (rv) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+        GWEN_WaitCallback_Leave();
         return rv;
       }
     }
+    done++;
+    GWEN_WaitCallback_SetProgressPos(done);
     dbT=GWEN_DB_GetNextGroup(dbT);
   } // while
+
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }

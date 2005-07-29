@@ -816,6 +816,7 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
       if (!(ab->appExtensions & AB_BANKING_EXTENSION_NESTING_PROGRESS)) {
         /* nope, app doesn't support nesting, return currently active
          * progress id */
+        GWEN_WaitCallback_Enter(AB_BANKING_WCB_GENERIC);
         ab->progressNestingLevel++;
         return ab->lastProgressId;
       }
@@ -823,6 +824,7 @@ GWEN_TYPE_UINT32 AB_Banking_ProgressStart(AB_BANKING *ab,
 
     pid=ab->progressStartFn(ab, title, text, total);
     if (pid) {
+      GWEN_WaitCallback_Enter(AB_BANKING_WCB_GENERIC);
       ab->progressNestingLevel++;
       ab->lastProgressId=pid;
     }
@@ -867,7 +869,11 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
 
 
 int AB_Banking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
+
   assert(ab);
+  if (ab->progressNestingLevel)
+    GWEN_WaitCallback_Leave();
+
   if (ab->progressEndFn) {
     if (ab->progressNestingLevel<1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No progress context open");
@@ -1316,8 +1322,6 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
   GWEN_DB_Group_free(dbT);
 
-  GWEN_WaitCallback_Enter(AB_BANKING_WCB_GENERIC);
-
   return 0;
 }
 
@@ -1531,7 +1535,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   free(ab->dataDir);
   ab->dataDir=0;
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
-  GWEN_WaitCallback_Leave();
   return 0;
 }
 
