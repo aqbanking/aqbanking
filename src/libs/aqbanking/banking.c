@@ -2151,13 +2151,21 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
   int rv;
   AB_JOB *j;
   AB_PROVIDER *pro;
+  GWEN_TYPE_UINT32 pid;
 
   assert(ab);
 
   /* clear temporarily accepted certificates */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
 
+  /* execute jobs */
+  pid=AB_Banking_ProgressStart(ab,
+                               I18N("Executing Jobs"),
+                               I18N("Now the jobs are send via their "
+                                    "backends to the credit institutes."),
+                               AB_Job_List_GetCount(ab->enqueuedJobs));
   rv=AB_Banking__ExecuteQueue(ab, ab->enqueuedJobs);
+  AB_Banking_ProgressEnd(ab, pid);
 
   /* clear temporarily accepted certificates again */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");

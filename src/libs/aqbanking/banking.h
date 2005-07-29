@@ -76,6 +76,14 @@ extern "C" {
  */
 #define AB_BANKING_PROGRESS_NONE 0xffffffff
 
+/**
+ * This value is used when the total number of steps is not known to the
+ * caller and he just wants to advance the progress by one (e.g. backends
+ * use this value when a job has been finished, but the backends do not know
+ * how many jobs there still are in AqBanking's queue).
+ */
+#define AB_BANKING_PROGRESS_ONE  0xfffffffe
+
 
 /**
  * Object to be operated on by functions in this group (@ref AB_BANKING).

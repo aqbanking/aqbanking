@@ -1,4 +1,13 @@
 
+2005/07/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- defined AB_BANKING_PROGRESS_ONE
+- now AB_Banking_ExecuteQueue calls AB_Banking_ProgressStart and -End,
+  not each backend. This change has to be implemented in the backends as well.
+  This is needed because otherwise if there are multiple backends involved
+  in one queue execution then there will be multiple progress windows which
+  is quite annoying.
+
 
 2005/07/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

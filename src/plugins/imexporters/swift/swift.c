@@ -15,6 +15,7 @@
 #endif
 
 #include "swift_p.h"
+#include "i18n_l.h"
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -110,9 +111,28 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
                                         GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbT;
+  GWEN_TYPE_UINT64 cnt=0;
+  GWEN_TYPE_UINT64 done;
 
+  /* first count the groups */
   dbT=GWEN_DB_GetFirstGroup(db);
+  while(dbT) {
+    cnt++;
+    dbT=GWEN_DB_GetNextGroup(dbT);
+  } /* while */
 
+  /* enter waitcallback context */
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "Entering callback...");
+
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
+                                  I18N("Importing transactions ..."),
+                                  I18N("transaction(s)"),
+                                  GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
+  GWEN_WaitCallback_SetProgressTotal(cnt);
+  GWEN_WaitCallback_SetProgressPos(0);
+
+  done=0;
+  dbT=GWEN_DB_GetFirstGroup(db);
   while(dbT) {
     int matches;
     int i;
@@ -147,6 +167,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
         GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                               "Error in config file");
+        GWEN_WaitCallback_Leave();
         return AB_ERROR_GENERIC;
       }
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
@@ -157,9 +178,17 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
       // not a transaction, check subgroups
       rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbT, dbParams);
-      if (rv)
+      if (rv) {
+        GWEN_WaitCallback_Leave();
         return rv;
+      }
     }
+    done++;
+    if (GWEN_WaitCallbackProgress(done)==GWEN_WaitCallbackResult_Abort) {
+      GWEN_WaitCallback_Leave();
+      return AB_ERROR_USER_ABORT;
+    }
+    GWEN_WaitCallback_SetProgressPos(done);
     dbT=GWEN_DB_GetNextGroup(dbT);
   } // while
 
