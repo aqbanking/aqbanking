@@ -16,7 +16,7 @@
 
 #include <gwenhywfar/dbio.h>
 #include <aqbanking/imexporter_be.h>
-
+#include <aqbanking/banking.h>
 
 typedef struct AH_IMEXPORTER_ERI AH_IMEXPORTER_ERI;
 struct AH_IMEXPORTER_ERI {
