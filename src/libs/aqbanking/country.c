@@ -106,7 +106,7 @@ static AB_COUNTRY ab_country_list[]= {
 { I18N_NOOP("Guadeloupe"), "GP", 312, I18N_NOOP("Euro"),  "EUR" },
 { I18N_NOOP("Guam"), "GU", 316, I18N_NOOP("US Dollar"),  "USD" },
 { I18N_NOOP("Guatemala"), "GT", 320, I18N_NOOP("Quetzal"),  "GTQ" },
-{ I18N_NOOP("Guinea"), "GN", 324, I18N_NOOP("Guinea Syli "),  "GNS" },
+{ I18N_NOOP("Guinea"), "GN", 324, I18N_NOOP("Guinea Syli"),  "GNS" },
 { I18N_NOOP("Guinea-Bissau"), "GW", 624, I18N_NOOP("Guinea-Bissau Peso and Franc de la Communaut&eacute; financi&egrave;re africaine"),  "GWP" },
 { I18N_NOOP("Guyana"), "GY", 328, I18N_NOOP("Guyana Dollar"),  "GYD" },
 { I18N_NOOP("Heard and McDonald Islands"), "HM", 334, I18N_NOOP("Australian Dollar"),  "AUD" },
