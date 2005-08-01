@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-13 23:59+0200\n"
-"PO-Revision-Date: 2005-06-15 10:19+0200\n"
+"POT-Creation-Date: 2005-08-01 14:06+0200\n"
+"PO-Revision-Date: 2005-08-01 14:06+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -14,11 +14,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:2083 src/libs/aqbanking/banking.c:4644
+#: src/libs/aqbanking/banking.c:2122 src/libs/aqbanking/banking.c:4817
+#: src/libs/aqbanking/cryptmanager.c:290 src/libs/aqbanking/cryptmanager.c:355
 msgid "Error"
 msgstr "Fehler"
 
-#: src/libs/aqbanking/banking.c:2084
+#: src/libs/aqbanking/banking.c:2123
 msgid ""
 "Error executing backend's queue.\n"
 "What shall we do?"
@@ -26,43 +27,57 @@ msgstr ""
 "Es gab einen Fehler bei der Verarbeitung des Ausgangskorbs im\n"
 "zuständigen Modul.  Was möchten Sie tun?"
 
-#: src/libs/aqbanking/banking.c:2086
+#: src/libs/aqbanking/banking.c:2125
 msgid "Continue"
 msgstr "Fortsetzen"
 
-#: src/libs/aqbanking/banking.c:2086 src/libs/aqbanking/banking.c:5220
+#: src/libs/aqbanking/banking.c:2125 src/libs/aqbanking/banking.c:5393
+#: src/libs/aqbanking/cryptmanager.c:273 src/libs/aqbanking/cryptmanager.c:338
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/libs/aqbanking/banking.c:4044 src/libs/aqbanking/banking.c:4106
-#: src/libs/aqbanking/banking.c:4172
+#: src/libs/aqbanking/banking.c:2163
+msgid "Executing Jobs"
+msgstr "Aufträge werden ausgeführt"
+
+#: src/libs/aqbanking/banking.c:2164
+msgid "Now the jobs are send via their backends to the credit institutes."
+msgstr ""
+"Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
+"gesendet."
+
+#: src/libs/aqbanking/banking.c:4091 src/libs/aqbanking/banking.c:4153
+#: src/libs/aqbanking/banking.c:4219 src/libs/aqbanking/banking.c:4279
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:4045 src/libs/aqbanking/banking.c:4107
-#: src/libs/aqbanking/banking.c:4173
+#: src/libs/aqbanking/banking.c:4092 src/libs/aqbanking/banking.c:4154
+#: src/libs/aqbanking/banking.c:4220 src/libs/aqbanking/banking.c:4280
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:4047 src/libs/aqbanking/banking.c:4062
-#: src/libs/aqbanking/banking.c:4109 src/libs/aqbanking/banking.c:4129
-#: src/libs/aqbanking/banking.c:4175 src/libs/aqbanking/banking.c:4190
-#: src/libs/aqbanking/banking.c:4647
+#: src/libs/aqbanking/banking.c:4094 src/libs/aqbanking/banking.c:4109
+#: src/libs/aqbanking/banking.c:4156 src/libs/aqbanking/banking.c:4176
+#: src/libs/aqbanking/banking.c:4222 src/libs/aqbanking/banking.c:4237
+#: src/libs/aqbanking/banking.c:4282 src/libs/aqbanking/banking.c:4297
+#: src/libs/aqbanking/banking.c:4820 src/libs/aqbanking/cryptmanager.c:282
+#: src/libs/aqbanking/cryptmanager.c:292 src/libs/aqbanking/cryptmanager.c:347
+#: src/libs/aqbanking/cryptmanager.c:357 src/libs/aqbanking/cryptmanager.c:382
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:4060 src/libs/aqbanking/banking.c:4127
-#: src/libs/aqbanking/banking.c:4188
+#: src/libs/aqbanking/banking.c:4107 src/libs/aqbanking/banking.c:4174
+#: src/libs/aqbanking/banking.c:4235 src/libs/aqbanking/banking.c:4295
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:4061 src/libs/aqbanking/banking.c:4128
-#: src/libs/aqbanking/banking.c:4189
+#: src/libs/aqbanking/banking.c:4108 src/libs/aqbanking/banking.c:4175
+#: src/libs/aqbanking/banking.c:4236 src/libs/aqbanking/banking.c:4296
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:4645
+#: src/libs/aqbanking/banking.c:4818
 msgid ""
 "No valid PIN (tried too often).\n"
 "Aborting."
@@ -70,11 +85,11 @@ msgstr ""
 "Keine gültige PIN (zu oft versucht).\n"
 "Aktion wird abgebrochen."
 
-#: src/libs/aqbanking/banking.c:4694
+#: src/libs/aqbanking/banking.c:4867
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:4696
+#: src/libs/aqbanking/banking.c:4869
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
@@ -87,15 +102,15 @@ msgstr ""
 "PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
 "b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:4708
+#: src/libs/aqbanking/banking.c:4881
 msgid "Use this"
 msgstr "Trotzdem verwenden"
 
-#: src/libs/aqbanking/banking.c:4709
+#: src/libs/aqbanking/banking.c:4882
 msgid "Re-enter"
 msgstr "Neu eingeben"
 
-#: src/libs/aqbanking/banking.c:5017
+#: src/libs/aqbanking/banking.c:5190
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -144,38 +159,38 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/libs/aqbanking/banking.c:5139 src/libs/aqbanking/banking.c:5155
+#: src/libs/aqbanking/banking.c:5312 src/libs/aqbanking/banking.c:5328
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
 #. the same again for HTML
-#: src/libs/aqbanking/banking.c:5179 src/libs/aqbanking/banking.c:5180
-#: src/libs/aqbanking/banking.c:5181 src/libs/aqbanking/banking.c:5182
-#: src/libs/aqbanking/banking.c:5183 src/libs/aqbanking/banking.c:5184
-#: src/libs/aqbanking/banking.c:5187 src/libs/aqbanking/banking.c:5189
-#: src/libs/aqbanking/banking.c:5190 src/libs/aqbanking/banking.c:5191
-#: src/libs/aqbanking/banking.c:5192 src/libs/aqbanking/banking.c:5193
-#: src/libs/aqbanking/banking.c:5194 src/libs/aqbanking/banking.c:5198
+#: src/libs/aqbanking/banking.c:5352 src/libs/aqbanking/banking.c:5353
+#: src/libs/aqbanking/banking.c:5354 src/libs/aqbanking/banking.c:5355
+#: src/libs/aqbanking/banking.c:5356 src/libs/aqbanking/banking.c:5357
+#: src/libs/aqbanking/banking.c:5360 src/libs/aqbanking/banking.c:5362
+#: src/libs/aqbanking/banking.c:5363 src/libs/aqbanking/banking.c:5364
+#: src/libs/aqbanking/banking.c:5365 src/libs/aqbanking/banking.c:5366
+#: src/libs/aqbanking/banking.c:5367 src/libs/aqbanking/banking.c:5371
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/libs/aqbanking/banking.c:5206
+#: src/libs/aqbanking/banking.c:5379
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:5208
+#: src/libs/aqbanking/banking.c:5381
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:5208
+#: src/libs/aqbanking/banking.c:5381
 msgid "No"
 msgstr "Nein"
 
-#: src/libs/aqbanking/banking.c:5214
+#: src/libs/aqbanking/banking.c:5387
 msgid "Certificate"
 msgstr "Zertifikat"
 
-#: src/libs/aqbanking/banking.c:5216
+#: src/libs/aqbanking/banking.c:5389
 msgid ""
 "Do you want to accept this certificate permanently?<html>Do you want to "
 "accept this certificate permanently?</html>"
@@ -183,11 +198,11 @@ msgstr ""
 "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie dieses "
 "Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
 
-#: src/libs/aqbanking/banking.c:5218
+#: src/libs/aqbanking/banking.c:5391
 msgid "Permanently"
 msgstr "Dauerhaft"
 
-#: src/libs/aqbanking/banking.c:5219
+#: src/libs/aqbanking/banking.c:5392
 msgid "This session only"
 msgstr "Nur für diese Sitzung"
 
@@ -772,8 +787,8 @@ msgid "Guinea"
 msgstr "Guinea"
 
 #: src/libs/aqbanking/country.c:109
-msgid "Guinea Syli "
-msgstr ""
+msgid "Guinea Syli"
+msgstr "Guinea Syli"
 
 #: src/libs/aqbanking/country.c:110
 msgid "Guinea-Bissau"
@@ -1664,6 +1679,111 @@ msgstr "Simbabwe"
 msgid "Zimbabwe Dollar"
 msgstr "Simbabwe Dollar"
 
+#: src/libs/aqbanking/cryptmanager.c:98
+msgid " You must only enter numbers, not letters."
+msgstr " Sie dürfen nur Zahlen eingeben, keine Buchstaben."
+
+#: src/libs/aqbanking/cryptmanager.c:103
+#, c-format
+msgid ""
+"Please enter a new password for \n"
+"%s\n"
+"The password must be at least %d characters long.%s<html>Please enter a new "
+"password for <i>%s</i>. The password must be at least %d characters long.%s</"
+"html>"
+msgstr ""
+"Bitte geben Sie ein neues Passwort für \n"
+"%s\n"
+"ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html>Bitte geben "
+"Sie ein neues Passwort für <i>%s</i> ein. Das Passwort muß mindestens %d "
+"Zeichen lang sein.%s</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:120
+#, c-format
+msgid ""
+"Please enter the password for \n"
+"%s\n"
+"%s<html>Please enter the password for <i>%s</i>.%s</html>"
+msgstr ""
+"Bitte geben Sie das Passwort für \n"
+"%s\n"
+"ein.%s<html>Bitte geben Sie das Passwort für <i>%s</i> ein.%s</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:145 src/libs/aqbanking/cryptmanager.c:155
+msgid "Enter Password"
+msgstr "Password eingeben"
+
+#: src/libs/aqbanking/cryptmanager.c:206
+msgid ""
+"Please enter your PIN into the card reader.<html>Please enter your PIN into "
+"the card reader.</html>"
+msgstr ""
+"Bitte geben Sie Ihre PIN am Kartenleser ein.<html>Bitte geben Sie Ihre PIN "
+"am Kartenleser ein.</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:212
+msgid "Secure PIN Input"
+msgstr "Sichere PIN-Eingabe"
+
+#: src/libs/aqbanking/cryptmanager.c:252
+#, c-format
+msgid ""
+"Please insert the security disc\n"
+"for %s<html>Please insert the security disc for <i>%s</i></html>"
+msgstr ""
+"Bitte legen Sie die Sicherheitsdiskette für %s in das Laufwerk.<html>Bitte "
+"legen Sie die Sicherheitsdiskette für <i>%s</i> in das Laufwerk.</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:260
+#, c-format
+msgid ""
+"Please insert the chip card\n"
+"for %s<html>Please insert the chip card for <i>%s</i></html>"
+msgstr ""
+"Bitte legen Sie die Chipkarte für %s in den Kartenleser ein.<html>Bitte "
+"legen Sie die Chipkarte für <i>%s</i> in den Kartenleser ein.</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:271 src/libs/aqbanking/cryptmanager.c:336
+msgid "Insert Medium"
+msgstr "Medium einlegen"
+
+#: src/libs/aqbanking/cryptmanager.c:273 src/libs/aqbanking/cryptmanager.c:338
+msgid "OK"
+msgstr "Ok"
+
+#: src/libs/aqbanking/cryptmanager.c:280 src/libs/aqbanking/cryptmanager.c:345
+msgid "User Abort"
+msgstr "Abbruch durch Benutzer"
+
+#: src/libs/aqbanking/cryptmanager.c:281 src/libs/aqbanking/cryptmanager.c:346
+msgid "Action aborted by user."
+msgstr "Die Aktion ist durch den Benutzer abgebrochen worden."
+
+#: src/libs/aqbanking/cryptmanager.c:291 src/libs/aqbanking/cryptmanager.c:356
+msgid "An internal error occurred."
+msgstr "Ein interner Fehler trat auf."
+
+#: src/libs/aqbanking/cryptmanager.c:316
+#, c-format
+msgid ""
+"Please insert the correct security disc\n"
+"for %s<html>Please insert the <b>correct</b> security disc for <i>%s</i></"
+"html>"
+msgstr ""
+"Bitte legen Sie die richtige Sicherheitsdiskette für %s in das Laufwerk."
+"<html>Bitte legen Sie die <b>richtige</b> Sicherheitsdiskette für <i>%s</i> "
+"in das Laufwerk.</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:325
+#, c-format
+msgid ""
+"Please insert the correct chip card\n"
+"for %s<html>Please insert the <b>correct</b> chip card for <i>%s</i></html>"
+msgstr ""
+"Bitte legen Sie die richtige Chipkarte für %s in den Kartenleser ein."
+"<html>Bitte legen Sie die <b>richtige</b> Chipkarte für <i>%s</i> in den "
+"Kartenleser ein.</html>"
+
 #: src/plugins/imexporters/qif/qif.c:80
 msgid "Please enter the date format for the following item:\n"
 msgstr "Bitte legen Sie das Datumsformat fest:\n"
@@ -1792,549 +1912,12 @@ msgstr "Wert für Betrag in Umsatzbuchung"
 msgid "Transaction split amount value"
 msgstr "Wert für Betrag in Umsatz-Teilbuchung"
 
-#~ msgid "AFGHANISTAN"
-#~ msgstr "Afghanistan"
-
-#~ msgid "ALBANIA"
-#~ msgstr "Albanien"
-
-#~ msgid "ALGERIA"
-#~ msgstr "Algerien"
-
-#~ msgid "AMERICAN SAMOA"
-#~ msgstr "Amerikanisch Samoa"
-
-#~ msgid "ANDORRA"
-#~ msgstr "Andorra"
-
-#~ msgid "ANGOLA"
-#~ msgstr "Angola"
-
-#~ msgid "ANGUILLA"
-#~ msgstr "Anguilla"
-
-#~ msgid "ANTARCTICA"
-#~ msgstr "Antarktik"
-
-#~ msgid "ANTIGUA AND BARBUDA"
-#~ msgstr "Antigua und Barbuda"
-
-#~ msgid "ARGENTINA"
-#~ msgstr "Argentinien"
-
-#~ msgid "ARMENIA"
-#~ msgstr "Armenien"
-
-#~ msgid "ARUBA"
-#~ msgstr "Aruba"
-
-#~ msgid "AUSTRALIA"
-#~ msgstr "Australien"
-
-#~ msgid "AUSTRIA"
-#~ msgstr "Österreich"
-
-#~ msgid "AZERBAIJAN"
-#~ msgstr "Aserbeidschan"
-
-#~ msgid "BAHAMAS"
-#~ msgstr "Bahamas"
-
-#~ msgid "BAHRAIN"
-#~ msgstr "Bahrain"
-
-#~ msgid "BANGLADESH"
-#~ msgstr "Bangladesch"
-
-#~ msgid "BARBADOS"
-#~ msgstr "Barbados"
-
-#~ msgid "BELARUS"
-#~ msgstr "Weißrußland"
-
-#~ msgid "BELGIUM"
-#~ msgstr "Belgien"
-
-#~ msgid "BELIZE"
-#~ msgstr "Belize"
-
-#~ msgid "BENIN"
-#~ msgstr "Benin"
-
-#~ msgid "BERMUDA"
-#~ msgstr "Bermuda"
-
-#~ msgid "BHUTAN"
-#~ msgstr "Bhutan"
-
-#~ msgid "BOLIVIA"
-#~ msgstr "Bolivien"
-
-#~ msgid "BOSNIA AND HERZEGOVINA"
-#~ msgstr "Bosnien und Herzegovina"
-
-#~ msgid "BOTSWANA"
-#~ msgstr "Botswana"
-
-#~ msgid "BRAZIL"
-#~ msgstr "Brasilien"
-
-#~ msgid "BULGARIA"
-#~ msgstr "Bulgarien"
-
-#~ msgid "BURKINA FASO"
-#~ msgstr "Burkina Faso"
-
-#~ msgid "BURUNDI"
-#~ msgstr "Burundi"
-
-#~ msgid "CAMBODIA"
-#~ msgstr "Kambodscha"
-
-#~ msgid "CAMEROON"
-#~ msgstr "Kamerun"
-
-#~ msgid "CANADA"
-#~ msgstr "Kanada"
-
-#~ msgid "CAPE VERDE"
-#~ msgstr "Kapverden"
-
-#~ msgid "CAYMAN ISLANDS"
-#~ msgstr "Kayman-Inseln"
-
-#~ msgid "CENTRAL AFRICAN REPUBLIC"
-#~ msgstr "Zentralafrikanische Republik"
-
-#~ msgid "CHAD"
-#~ msgstr "Tschad"
-
-#~ msgid "CHILE"
-#~ msgstr "Chile"
-
-#~ msgid "CHINA"
-#~ msgstr "China"
-
-#~ msgid "CHRISTMAS ISLAND"
-#~ msgstr "Weihnachtsinseln"
-
-#~ msgid "COLOMBIA"
-#~ msgstr "Kolumbien"
-
-#~ msgid "CONGO"
-#~ msgstr "Kongo"
-
-#~ msgid "CONGO, THE DEMOCRATIC REPUBLIC OF THE"
-#~ msgstr "Kongo, Demokratische Republik"
-
-#~ msgid "COSTA RICA"
-#~ msgstr "Costa Rica"
-
-#~ msgid "COTE D'IVOIRE"
-#~ msgstr "Elfenbeinküste"
-
-#~ msgid "CROATIA"
-#~ msgstr "Kroatien"
-
-#~ msgid "CUBA"
-#~ msgstr "Kuba"
-
-#~ msgid "CYPRUS"
-#~ msgstr "Zypern"
-
-#~ msgid "CZECH REPUBLIC"
-#~ msgstr "Tschechische Republik"
-
-#~ msgid "DENMARK"
-#~ msgstr "Dänemark"
-
-#~ msgid "DOMINICAN REPUBLIC"
-#~ msgstr "Dominikanische Republik"
-
-#~ msgid "ECUADOR"
-#~ msgstr "Ecuador"
-
-#~ msgid "EGYPT"
-#~ msgstr "Ägypten"
-
-#~ msgid "EL SALVADOR"
-#~ msgstr "El Salvador"
-
-#~ msgid "EQUATORIAL GUINEA"
-#~ msgstr "Äquatorial-Guinea"
-
-#~ msgid "ERITREA"
-#~ msgstr "Eritrea"
-
-#~ msgid "ESTONIA"
-#~ msgstr "Estland"
-
-#~ msgid "ETHIOPIA"
-#~ msgstr "Äthiopien"
-
-#~ msgid "FALKLAND ISLANDS (MALVINAS)"
-#~ msgstr "Falkland Inseln"
-
-#~ msgid "FAROE ISLANDS"
-#~ msgstr "Faröer-Inseln"
-
-#~ msgid "FIJI"
-#~ msgstr "Fiji"
-
-#~ msgid "FINLAND"
-#~ msgstr "Finnland"
-
-#~ msgid "FRANCE"
-#~ msgstr "Frankreich"
-
-#~ msgid "FRENCH GUIANA"
-#~ msgstr "Französisch-Guiana"
-
-#~ msgid "GABON"
-#~ msgstr "Gabun"
-
-#~ msgid "GAMBIA"
-#~ msgstr "Gambia"
-
-#~ msgid "GEORGIA"
-#~ msgstr "Georgien"
-
-#~ msgid "GERMANY"
-#~ msgstr "Deutschland"
-
-#~ msgid "GHANA"
-#~ msgstr "Ghana"
-
-#~ msgid "GIBRALTAR"
-#~ msgstr "Gibraltar"
-
-#~ msgid "GREECE"
-#~ msgstr "Griechenland"
-
-#~ msgid "GREENLAND"
-#~ msgstr "Grönland"
-
-#~ msgid "GRENADA"
-#~ msgstr "Grenada"
-
-#~ msgid "GUAM"
-#~ msgstr "Guam"
-
-#~ msgid "GUATEMALA"
-#~ msgstr "Guatemala"
-
-#~ msgid "GUYANA"
-#~ msgstr "Guyana"
-
-#~ msgid "HAITI"
-#~ msgstr "Haiti"
-
-#~ msgid "HOLY SEE (VATICAN CITY STATE)"
-#~ msgstr "Vatikan"
-
-#~ msgid "HONDURAS"
-#~ msgstr "Honduras"
-
-#~ msgid "HONG KONG"
-#~ msgstr "Hong Kong"
-
-#~ msgid "HUNGARY"
-#~ msgstr "Ungarn"
-
-#~ msgid "ICELAND"
-#~ msgstr "Island"
-
-#~ msgid "INDIA"
-#~ msgstr "Indien"
-
-#~ msgid "INDONESIA"
-#~ msgstr "Indonesien"
-
-#~ msgid "IRAN, ISLAMIC REPUBLIC OF"
-#~ msgstr "Iran"
-
-#~ msgid "IRAQ"
-#~ msgstr "Irak"
-
-#~ msgid "IRELAND"
-#~ msgstr "Irland"
-
-#~ msgid "ISRAEL"
-#~ msgstr "Israel"
-
-#~ msgid "ITALY"
-#~ msgstr "Italien"
-
-#~ msgid "JAMAICA"
-#~ msgstr "Jamaika"
-
-#~ msgid "JAPAN"
-#~ msgstr "Japan"
-
-#~ msgid "JORDAN"
-#~ msgstr "Jordanien"
-
-#~ msgid "KAZAKHSTAN"
-#~ msgstr "Kasachstan"
-
-#~ msgid "KENYA"
-#~ msgstr "Kenia"
-
-#~ msgid "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF"
-#~ msgstr "Korea, Volksrepublik"
-
-#~ msgid "KOREA, REPUBLIC OF"
-#~ msgstr "Korea, Republik"
-
-#~ msgid "KUWAIT"
-#~ msgstr "Kuwait"
-
-#~ msgid "KYRGYZSTAN"
-#~ msgstr "Kirgisien"
-
-#~ msgid "LATVIA"
-#~ msgstr "Lettland"
-
-#~ msgid "LEBANON"
-#~ msgstr "Libanon"
-
-#~ msgid "LIBERIA"
-#~ msgstr "Liberia"
-
-#~ msgid "LIECHTENSTEIN"
-#~ msgstr "Liechtenstein"
-
-#~ msgid "LITHUANIA"
-#~ msgstr "Lettland"
-
-#~ msgid "LUXEMBOURG"
-#~ msgstr "Luxemburg"
-
-#~ msgid "MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF"
-#~ msgstr "Mazedonien, frühere Jugoslawische Republik"
-
-#~ msgid "MADAGASCAR"
-#~ msgstr "Magadaskar"
-
-#~ msgid "MALAYSIA"
-#~ msgstr "Malaysia"
-
-#~ msgid "MALI"
-#~ msgstr "Mali"
-
-#~ msgid "MALTA"
-#~ msgstr "Malta"
-
-#~ msgid "MARSHALL ISLANDS"
-#~ msgstr "Marshall-Inseln"
-
-#~ msgid "MARTINIQUE"
-#~ msgstr "Martinique"
-
-#~ msgid "MAURITANIA"
-#~ msgstr "Mauretanien"
-
-#~ msgid "MAURITIUS"
-#~ msgstr "Mauritius"
-
-#~ msgid "MEXICO"
-#~ msgstr "Mexiko"
-
-#~ msgid "MONACO"
-#~ msgstr "Monako"
-
-#~ msgid "MONGOLIA"
-#~ msgstr "Mongolei"
-
-#~ msgid "MOROCCO"
-#~ msgstr "Marokko"
-
-#~ msgid "NAMIBIA"
-#~ msgstr "Namibia"
-
-#~ msgid "NEPAL"
-#~ msgstr "Nepal"
-
-#~ msgid "NETHERLANDS"
-#~ msgstr "Niederlande"
-
-#~ msgid "NEW ZEALAND"
-#~ msgstr "Neuseeland"
-
-#~ msgid "NICARAGUA"
-#~ msgstr "Nikaragua"
-
-#~ msgid "NIGER"
-#~ msgstr "Niger"
-
-#~ msgid "NIGERIA"
-#~ msgstr "Nigeria"
-
-#~ msgid "NORWAY"
-#~ msgstr "Norwegen"
-
-#~ msgid "OMAN"
-#~ msgstr "Oman"
-
-#~ msgid "PAKISTAN"
-#~ msgstr "Pakistan"
-
-#~ msgid "PANAMA"
-#~ msgstr "Panama"
-
-#~ msgid "PAPUA NEW GUINEA"
-#~ msgstr "Papua Neu-Guinea"
-
-#~ msgid "PARAGUAY"
-#~ msgstr "Paraguay"
-
-#~ msgid "PERU"
-#~ msgstr "Peru"
-
-#~ msgid "PHILIPPINES"
-#~ msgstr "Philippinen"
-
-#~ msgid "POLAND"
-#~ msgstr "Polen"
-
-#~ msgid "PORTUGAL"
-#~ msgstr "Portugal"
-
-#~ msgid "QATAR"
-#~ msgstr "Quatar"
-
-#~ msgid "ROMANIA"
-#~ msgstr "Rumänien"
-
-#~ msgid "RUSSIAN FEDERATION"
-#~ msgstr "Russland"
-
-#~ msgid "RWANDA"
-#~ msgstr "Ruanda"
-
-#~ msgid "SAUDI ARABIA"
-#~ msgstr "Saudi-Arabien"
-
-#~ msgid "SENEGAL"
-#~ msgstr "Senegal"
-
-#~ msgid "SERBIA AND MONTENEGRO"
-#~ msgstr "Serbien und Montenegro"
-
-#~ msgid "SIERRA LEONE"
-#~ msgstr "Sierra Leone"
-
-#~ msgid "SINGAPORE"
-#~ msgstr "Singapur"
-
-#~ msgid "SLOVAKIA"
-#~ msgstr "Slowakei"
-
-#~ msgid "SLOVENIA"
-#~ msgstr "Slowenien"
-
-#~ msgid "SOMALIA"
-#~ msgstr "Somalia"
-
-#~ msgid "SOUTH AFRICA"
-#~ msgstr "Südafrika"
-
-#~ msgid "SPAIN"
-#~ msgstr "Spanien"
-
-#~ msgid "SRI LANKA"
-#~ msgstr "Sri Lanka"
-
-#~ msgid "SUDAN"
-#~ msgstr "Sudan"
-
-#~ msgid "SURINAME"
-#~ msgstr "Surinam"
-
-#~ msgid "SWEDEN"
-#~ msgstr "Schweden"
-
-#~ msgid "SWITZERLAND"
-#~ msgstr "Schweiz"
-
-#~ msgid "TAJIKISTAN"
-#~ msgstr "Tadschikistan"
-
-#~ msgid "TANZANIA, UNITED REPUBLIC OF"
-#~ msgstr "Tansania, Vereinigte Republik"
-
-#~ msgid "THAILAND"
-#~ msgstr "Thailand"
-
-#~ msgid "TOGO"
-#~ msgstr "Togo"
-
-#~ msgid "TONGA"
-#~ msgstr "Tonga"
-
-#~ msgid "TRINIDAD AND TOBAGO"
-#~ msgstr "Trinidad und Tobago"
-
-#~ msgid "TUNISIA"
-#~ msgstr "Tunesien"
-
-#~ msgid "TURKEY"
-#~ msgstr "Türkei"
-
-#~ msgid "TURKMENISTAN"
-#~ msgstr "Turkmenistan"
-
-#~ msgid "UGANDA"
-#~ msgstr "Uganda"
-
-#~ msgid "UKRAINE"
-#~ msgstr "Ukraine"
-
-#~ msgid "UNITED ARAB EMIRATES"
-#~ msgstr "Vereinigte Arabische Emirate"
-
-#~ msgid "UNITED KINGDOM"
-#~ msgstr "Vereinigtes Königreich (UK)"
-
-#~ msgid "UNITED STATES"
-#~ msgstr "Vereinigte Staaten von Amerika"
-
-#~ msgid "URUGUAY"
-#~ msgstr "Uruguay"
-
-#~ msgid "UZBEKISTAN"
-#~ msgstr "Usbekistan"
-
-#~ msgid "VENEZUELA"
-#~ msgstr "Venezuela"
-
-#~ msgid "VIET NAM"
-#~ msgstr "Vietnam"
-
-#~ msgid "WESTERN SAHARA"
-#~ msgstr "West-Sahara"
-
-#~ msgid "YEMEN"
-#~ msgstr "Jemen"
-
-#~ msgid "ZAMBIA"
-#~ msgstr "Sambia"
-
-#~ msgid "ZIMBABWE"
-#~ msgstr "Simbabwe"
-
-#~ msgid "Account Not Mapped"
-#~ msgstr "Konto nicht zugeordnet"
-
-#~ msgid "The given account has not been mapped to online accounts."
-#~ msgstr ""
-#~ "Das angegebene Konto wurde noch nicht einem Online-Konto zugeordnet."
-
-#~ msgid "Bad Account Mapping"
-#~ msgstr "Fehlerhafte Kontozuordnung"
-
-#~ msgid ""
-#~ "The mapping between the application account the banking account is "
-#~ "invalid."
-#~ msgstr ""
-#~ "Die Zuordnung eines Anwendungskontos zu einem Online-Konto ist fehlerhaft."
+#: src/plugins/imexporters/swift/swift.c:128
+#: src/plugins/imexporters/csv/csv.c:130
+msgid "Importing transactions ..."
+msgstr "Buchungen importieren..."
+
+#: src/plugins/imexporters/swift/swift.c:129
+#: src/plugins/imexporters/csv/csv.c:131
+msgid "transaction(s)"
+msgstr "Buchung(en)"
