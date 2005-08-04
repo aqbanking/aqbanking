@@ -140,13 +140,16 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   printf("Error Code is %d\n", serr);
 #endif
 
-  /* since there is no other way than EOF to see that the last record has been read,
-     ERROR_READ may not be an error in the ERI file and should not be handled here 
-     ERROR_PARTIAL is a corrupt ERI file and is also handled by the calling function. Other
-     errors are should not happen at all */
-  if ((serr == GWEN_SUCCESS) || (serr == GWEN_ERROR_READ) || (serr == GWEN_ERROR_PARTIAL)) {
+  /* since there is no other way than EOF to see that the last record has been
+   read, ERROR_READ may not be an error in the ERI file and should not be
+   handled here ERROR_PARTIAL is a corrupt ERI file and is also handled by the
+   calling function. Other errors are should not happen at all */
+  if ((serr == GWEN_SUCCESS) ||
+      (serr == GWEN_ERROR_READ) ||
+      (serr == GWEN_ERROR_PARTIAL)) {
     return serr;
-  } else {
+  }
+  else {
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, gwerr);
     return GWEN_ERROR_GENERIC;
   }
@@ -160,7 +163,7 @@ int AB_ERI_parseFirstRecord(char *recbuf, ERI_TRANSACTION *current) {
   /* Sanity check, is this an ERI file?? */
   AB_ERI_varstrcut(varbuf, recbuf, 11, 17);
   if (strcmp(varbuf, "EUR99999999992000") != 0) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
 			  "ERI plugin: Error in syntax of first record!");
     return REC_BAD;
   }
@@ -214,7 +217,7 @@ int AB_ERI_parseSecondRecord(char *recbuf, ERI_TRANSACTION *current) {
   /* Sanity check, is this record type 3? */
   AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999993") != 0) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
 			  "ERI plugin: Error in syntax of second record!");
     return REC_BAD;
   }
@@ -246,7 +249,7 @@ int AB_ERI_parseThirdRecord(char *recbuf, ERI_TRANSACTION *current) {
   /* Sanity check, is this record type 4? */
   AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999994") != 0) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
 			  "ERI plugin: Error in syntax of third record!");
     return REC_BAD;
   }
@@ -285,7 +288,7 @@ int AB_ERI_parseFourthRecord(char *recbuf, ERI_TRANSACTION *current) {
   /* Sanity check, is this record type 4? */
   AB_ERI_varstrcut(varbuf, recbuf, 11, 14);
   if (strcmp(varbuf, "EUR99999999994") != 0) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
 			  "ERI plugin: Error in syntax of fourth record!");
     return REC_BAD;
   }
@@ -418,19 +421,24 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   if (rerr == GWEN_ERROR_READ) {
     /* When Error on Read occurs here, buffer was empty, normal EOF */
     return TRANS_EOF;
-  } else if (rerr == GWEN_ERROR_PARTIAL) {
+  }
+  else if (rerr == GWEN_ERROR_PARTIAL) {
     /* With Error met EOF, EOF occured in middle of record */
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			  "ERI plugin: Short first record in Transaction!");
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "ERI plugin: Short first record in Transaction!");
     return TRANS_BAD;
-  } else if (rerr == GWEN_ERROR_GENERIC) {
-    /* This error something unexpected went wrong and nothing can be trusted */
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			  "ERI plugin: UNKNOWN ERROR, while importing ERI file");
+  }
+  else if (rerr == GWEN_ERROR_GENERIC) {
+    /* This error something unexpected went wrong and nothing can be
+     trusted */
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "ERI plugin: UNKNOWN ERROR, while importing "
+                          "ERI file");
     return TRANS_BAD;
   }
 
-  /* Get the info from the first record of the transaction and place them in the struct */
+  /* Get the info from the first record of the transaction and place them in
+   the struct */
   terr = AB_ERI_parseFirstRecord(recbuf, current);
 
   if (terr == REC_BAD) {
@@ -438,7 +446,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   }
 
 #ifdef ERI_DEBUG
-  printf("l %s, r %s, n %s, a %f, d %s, v %s, i %s.\n", current->localAccountNumber, 
+  printf("l %s, r %s, n %s, a %f, d %s, v %s, i %s.\n",
+         current->localAccountNumber,
 	 current->remoteAccountNumber, current->namePayee, current->amount,
 	 current->date, current->valutaDate, current->transactionId);
 #endif
@@ -448,13 +457,17 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
   /* End of File should not happen here! */
   if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			  "ERI plugin: Transaction not complete, short second record!");
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
+                          "ERI plugin: Transaction not complete, short "
+                          "second record!");
     return TRANS_BAD;
-  } else if (rerr == GWEN_ERROR_GENERIC) {
-    /* This error something unexpected went wrong and nothing can be trusted */
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			  "ERI plugin: UNKNOWN ERROR, while importing ERI file");
+  }
+  else if (rerr == GWEN_ERROR_GENERIC) {
+    /* This error something unexpected went wrong and nothing can be
+     trusted */
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "ERI plugin: UNKNOWN ERROR, while importing "
+                          "ERI file");
     return TRANS_BAD;
   }
 
@@ -471,7 +484,8 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     break;
   }
 
-  /* get the info from the second record and place them in transaction struct */
+  /* get the info from the second record and place them in transaction
+   struct */
   terr = AB_ERI_parseSecondRecord(recbuf, current);
 
   if (terr == REC_BAD) {
@@ -489,24 +503,29 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   *current->purpose5 = 0;
   *current->purpose6 = 0;
 
-  /* If 1 or 2 type 4 records (3 lines or 4 lines transaction), read and parse them */
+  /* If 1 or 2 type 4 records (3 lines or 4 lines transaction), read and parse
+   them */
   if (translen >= LINES3) {
     /* Read third record in recbuf */
     rerr = AB_ERI_ReadRecord(bio, recbuf);
 
     /* End of File should not happen here! */
     if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			    "ERI plugin: Transaction not complete, short third record!");
+      GWEN_WaitCallback_Log(GWEN_LoggerLevelError, 
+                            "ERI plugin: Transaction not complete, short "
+                            "third record!");
       return TRANS_BAD;
     } else if (rerr == GWEN_ERROR_GENERIC) {
-      /* This error something unexpected went wrong and nothing can be trusted */
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			    "ERI plugin: UNKNOWN ERROR, while importing ERI file");
+      /* This error something unexpected went wrong and nothing can be
+       trusted */
+      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                            "ERI plugin: UNKNOWN ERROR, while importing "
+                            "ERI file");
       return TRANS_BAD;
     }
 
-    /* get the info from the third record and place them in transaction struct */
+    /* get the info from the third record and place them in transaction struct
+     */
     terr = AB_ERI_parseThirdRecord(recbuf, current);
 
     if (terr == REC_BAD) {
@@ -525,17 +544,21 @@ int AB_ERI_parseTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
       /* End of File should not happen here! */
       if ((rerr == GWEN_ERROR_READ) || (rerr == GWEN_ERROR_PARTIAL)) {
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			      "ERI plugin: Transaction not complete, short fourth record!");
+        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                              "ERI plugin: Transaction not complete, short "
+                              "fourth record!");
         return TRANS_BAD;
       } else if (rerr == GWEN_ERROR_GENERIC) {
-        /* This error something unexpected went wrong and nothing can be trusted */
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, 
-			      "ERI plugin: UNKNOWN ERROR, while importing ERI file");
+        /* This error something unexpected went wrong and nothing can be
+         trusted */
+        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                              "ERI plugin: UNKNOWN ERROR, while importing "
+                              "ERI file");
         return TRANS_BAD;
       }
 
-      /* get the info from the fourth record and place them in transaction struct */
+      /* get the info from the fourth record and place them in transaction
+       struct */
       terr = AB_ERI_parseFourthRecord(recbuf, current);
 
       if (terr == REC_BAD) {
@@ -597,7 +620,8 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
   char strbuf[128];
   int err, transcount = 0;
 
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, "ERI plugin: Importing started.");
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                        "ERI plugin: Importing started.");
 
   /* check buffered IO is in place */
   assert(bio);
@@ -607,15 +631,20 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
     transcount++;
 
   if (err == TRANS_EOF) {  /* EOF everything Ok */
-    sprintf(strbuf, "ERI plugin: File imported Ok, %d transactions read.", transcount);
+    sprintf(strbuf, "ERI plugin: File imported Ok, %d transactions read.",
+            transcount);
     GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, strbuf);
     return GWEN_SUCCESS;
   }
 
-  sprintf(strbuf, "ERI plugin: File NOT imported Ok! Error in transaction %d.", transcount+1);
+  sprintf(strbuf,
+          "ERI plugin: File NOT imported Ok! Error in transaction %d.",
+          transcount+1);
   GWEN_WaitCallback_Log(GWEN_LoggerLevelError, strbuf);
 
-  if (err == TRANS_BAD) return AB_ERROR_BAD_DATA;  /* Something is wrong with the transactions */
+  if (err == TRANS_BAD)
+    /* Something is wrong with the transactions */
+    return AB_ERROR_BAD_DATA;
 
   return AB_ERROR_UNKNOWN;
 

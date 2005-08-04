@@ -3,6 +3,9 @@
 -------------------------------------------------
 - added flag AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT
 - added error code AB_ERROR_DEFAULT_VALUE
+- changes to eri.c: 
+  - changed loglevel from Notice to Error
+  - make the file fit into lines of 80 characters
 
 
 2005-07-31   Peter de Vrijer <pdevrijer@home.nl>
