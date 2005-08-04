@@ -1,4 +1,9 @@
+2005-08-04  Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri/eri.c
+	- Changed one log message back to
+	  LogLevelNotice
 
+	
 2005/08/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added flag AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT

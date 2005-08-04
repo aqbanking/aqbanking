@@ -620,7 +620,7 @@ int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
   char strbuf[128];
   int err, transcount = 0;
 
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                         "ERI plugin: Importing started.");
 
   /* check buffered IO is in place */
