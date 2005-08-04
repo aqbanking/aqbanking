@@ -40,7 +40,8 @@ void CBanking_FreeData(void *bp, void *p);
 
 char CBanking__readCharFromStdin(int waitFor);
 
-int CBanking__input(GWEN_TYPE_UINT32 flags,
+int CBanking__input(AB_BANKING *ab,
+                    GWEN_TYPE_UINT32 flags,
                     char *buffer,
                     int minLen,
                     int maxLen);

@@ -77,6 +77,8 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   AB_CRYPTMANAGER *bcm;
   int rv;
   const char *name;
+  const char *dname;
+  const char *mode;
   const char *numeric_warning = "";
   char buffer[512];
   char *notunsigned_pwbuffer;
@@ -92,39 +94,58 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
     return GWEN_ERROR_INVALID;
   }
 
+  dname=GWEN_CryptToken_GetDescriptiveName(token);
+  if (!dname || !*dname)
+    dname=GWEN_CryptToken_GetTokenName(token);
+
+  if (pt==GWEN_CryptToken_PinType_Access)
+    mode=I18N("access password");
+  else if (pt==GWEN_CryptToken_PinType_Manage)
+    mode=I18N("manager password");
+  else
+    mode=I18N("password");
+
   buffer[0]=0;
   buffer[sizeof(buffer)-1]=0;
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_NUMERIC) {
-    numeric_warning = I18N(" You must only enter numbers, not letters.");
+    numeric_warning = I18N("\nYou must only enter numbers, not letters.");
     bflags|=AB_BANKING_INPUT_FLAGS_NUMERIC;
   }
+
+  if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT)
+    bflags|=AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT;
+
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_CONFIRM) {
     snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please enter a new password for \n"
+	     I18N("Please enter a new %s for \n"
 		  "%s\n"
 		  "The password must be at least %d characters long.%s"
 		  "<html>"
-		  "Please enter a new password for <i>%s</i>. "
+		  "Please enter a new %s for <i>%s</i>. "
 		  "The password must be at least %d characters long.%s"
-		  "</html>"),
-             GWEN_CryptToken_GetDescriptiveName(token),
+                  "</html>"),
+             mode,
+             dname,
 	     minLength,
-	     numeric_warning,
-             GWEN_CryptToken_GetDescriptiveName(token),
+             numeric_warning,
+             mode,
+             dname,
 	     minLength,
 	     numeric_warning);
     bflags|=AB_BANKING_INPUT_FLAGS_CONFIRM;
   }
   else {
     snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please enter the password for \n"
+	     I18N("Please enter the %s for \n"
 		  "%s\n"
 		  "%s<html>"
-		  "Please enter the password for <i>%s</i>.%s"
-		  "</html>"),
-	     GWEN_CryptToken_GetDescriptiveName(token),
-	     numeric_warning,
-	     GWEN_CryptToken_GetDescriptiveName(token),
+		  "Please enter the %s for <i>%s</i>.%s"
+                  "</html>"),
+             mode,
+             dname,
+             numeric_warning,
+             mode,
+             dname,
 	     numeric_warning);
   }
 
@@ -163,6 +184,8 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
     free(notunsigned_pwbuffer);
     if (rv==AB_ERROR_USER_ABORT)
       return GWEN_ERROR_USER_ABORTED;
+    else if (rv==AB_ERROR_DEFAULT_VALUE)
+      return GWEN_ERROR_CT_DEFAULT_PIN;
     return -1;
   }
 

@@ -116,13 +116,16 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  */
 /*@{*/
 /** input must be confirmed (e.g. by asking for the same input twice) */
-#define AB_BANKING_INPUT_FLAGS_CONFIRM 0x00000001
+#define AB_BANKING_INPUT_FLAGS_CONFIRM        0x00000001
 /** input may be shown (otherwise it should be hidden, e.g. for passwords) */
-#define AB_BANKING_INPUT_FLAGS_SHOW    0x00000002
+#define AB_BANKING_INPUT_FLAGS_SHOW           0x00000002
 /** numeric input is requested (e.g. for PINs) */
-#define AB_BANKING_INPUT_FLAGS_NUMERIC 0x00000004
+#define AB_BANKING_INPUT_FLAGS_NUMERIC        0x00000004
 /** if set then this is a retry (esp. when getting a PIN) */
-#define AB_BANKING_INPUT_FLAGS_RETRY   0x00000008
+#define AB_BANKING_INPUT_FLAGS_RETRY          0x00000008
+/** allow a default value to be used instead of an entered one.
+ * A graphical UI should add a "default" button to the dialog. */
+#define AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT  0x00000010
 /*@}*/
 
 
@@ -1495,7 +1498,11 @@ int AB_Banking_MessageBox(AB_BANKING *ab,
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
  *
- * @return Zero on success, nonzero when the user requested abort or there was any error.
+ * @return Zero on success, nonzero when the user requested abort or there was
+ * any error. The special value AB_ERROR_DEFAULT_VALUE should be returned if
+ * the flag AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT was given and the user has
+ * chosen to use the default value (e.g. pressed the "default" button in a
+ * GUI).
  */
 AQBANKING_API 
 int AB_Banking_InputBox(AB_BANKING *ab,

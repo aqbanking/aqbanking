@@ -1,3 +1,7 @@
+
+MP_CFLAGS=-ggdb -Wall -O
+
+
 default: all
 
 dist:
@@ -56,5 +60,5 @@ mp:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static
+	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure --enable-maintainer-mode --disable-static
 	make sources

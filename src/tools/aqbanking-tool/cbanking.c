@@ -272,9 +272,9 @@ int CBanking_MessageBox(AB_BANKING *ab,
   if (b1) {
     fprintf(stderr, "(1) %s", b1);
     if (b2) {
-      fprintf(stderr, "(2) %s", b2);
+      fprintf(stderr, "  (2) %s", b2);
       if (b3) {
-        fprintf(stderr, "(3) %s", b3);
+        fprintf(stderr, "  (3) %s", b3);
       }
     }
     fprintf(stderr, "\n");
@@ -363,7 +363,8 @@ char CBanking__readCharFromStdin(int waitFor) {
 
 
 
-int CBanking__input(GWEN_TYPE_UINT32 flags,
+int CBanking__input(AB_BANKING *ab,
+                    GWEN_TYPE_UINT32 flags,
                     char *buffer,
                     int minLen,
                     int maxLen){
@@ -417,8 +418,30 @@ int CBanking__input(GWEN_TYPE_UINT32 flags,
     }
     else if (chr==CBANKING_CHAR_ENTER) {
       if (minLen && pos<minLen) {
-        /* too few characters */
-        fprintf(stderr, "\007");
+        if (pos==0 && (flags & AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT)) {
+          rv=AB_Banking_MessageBox(ab,
+                                   AB_BANKING_MSG_FLAGS_TYPE_INFO |
+                                   AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+                                   AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                   I18N("Empty Input"),
+                                   I18N("Your input was empty.\n"
+                                        "Do you want to use the default?"),
+                                   I18N("Yes"),
+                                   I18N("No"),
+                                   I18N("Abort"));
+          if (rv==1) {
+            rv=AB_ERROR_DEFAULT_VALUE;
+            break;
+          }
+          else {
+            rv=AB_ERROR_USER_ABORT;
+            break;
+          }
+        }
+        else {
+          /* too few characters */
+          fprintf(stderr, "\007");
+        }
       }
       else {
         fprintf(stderr, "\n");
@@ -501,14 +524,14 @@ int CBanking_InputBox(AB_BANKING *ab,
         return AB_ERROR_INVALID;
       }
       fprintf(stderr, "Input: ");
-      rv=CBanking__input(flags, lbuffer, minLen, maxLen);
+      rv=CBanking__input(ab, flags, lbuffer, minLen, maxLen);
       if (rv) {
         free(lbuffer);
         return rv;
       }
 
       fprintf(stderr, "Again: ");
-      rv=CBanking__input(flags, buffer, minLen, maxLen);
+      rv=CBanking__input(ab, flags, buffer, minLen, maxLen);
       if (rv) {
         free(lbuffer);
         return rv;
@@ -526,7 +549,7 @@ int CBanking_InputBox(AB_BANKING *ab,
   }
   else {
     fprintf(stderr, "Input: ");
-    rv=CBanking__input(flags, buffer, minLen, maxLen);
+    rv=CBanking__input(ab, flags, buffer, minLen, maxLen);
   }
 
   return rv;

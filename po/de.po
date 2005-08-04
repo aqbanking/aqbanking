@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-01 14:06+0200\n"
-"PO-Revision-Date: 2005-08-01 14:06+0200\n"
+"POT-Creation-Date: 2005-08-04 05:17+0200\n"
+"PO-Revision-Date: 2005-08-04 05:17+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 
 #: src/libs/aqbanking/banking.c:2122 src/libs/aqbanking/banking.c:4817
-#: src/libs/aqbanking/cryptmanager.c:290 src/libs/aqbanking/cryptmanager.c:355
+#: src/libs/aqbanking/cryptmanager.c:313 src/libs/aqbanking/cryptmanager.c:378
 msgid "Error"
 msgstr "Fehler"
 
@@ -32,7 +32,7 @@ msgid "Continue"
 msgstr "Fortsetzen"
 
 #: src/libs/aqbanking/banking.c:2125 src/libs/aqbanking/banking.c:5393
-#: src/libs/aqbanking/cryptmanager.c:273 src/libs/aqbanking/cryptmanager.c:338
+#: src/libs/aqbanking/cryptmanager.c:296 src/libs/aqbanking/cryptmanager.c:361
 msgid "Abort"
 msgstr "Abbrechen"
 
@@ -54,16 +54,15 @@ msgstr "Auftrag nicht verfügbar"
 #: src/libs/aqbanking/banking.c:4092 src/libs/aqbanking/banking.c:4154
 #: src/libs/aqbanking/banking.c:4220 src/libs/aqbanking/banking.c:4280
 msgid "The backend for this banking account does not support your request."
-msgstr ""
-"Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
+msgstr "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
 #: src/libs/aqbanking/banking.c:4094 src/libs/aqbanking/banking.c:4109
 #: src/libs/aqbanking/banking.c:4156 src/libs/aqbanking/banking.c:4176
 #: src/libs/aqbanking/banking.c:4222 src/libs/aqbanking/banking.c:4237
 #: src/libs/aqbanking/banking.c:4282 src/libs/aqbanking/banking.c:4297
-#: src/libs/aqbanking/banking.c:4820 src/libs/aqbanking/cryptmanager.c:282
-#: src/libs/aqbanking/cryptmanager.c:292 src/libs/aqbanking/cryptmanager.c:347
-#: src/libs/aqbanking/cryptmanager.c:357 src/libs/aqbanking/cryptmanager.c:382
+#: src/libs/aqbanking/banking.c:4820 src/libs/aqbanking/cryptmanager.c:305
+#: src/libs/aqbanking/cryptmanager.c:315 src/libs/aqbanking/cryptmanager.c:370
+#: src/libs/aqbanking/cryptmanager.c:380 src/libs/aqbanking/cryptmanager.c:405
 msgid "Dismiss"
 msgstr "Schließen"
 
@@ -1049,8 +1048,7 @@ msgid "Mali"
 msgstr "Mali"
 
 #: src/libs/aqbanking/country.c:144
-msgid ""
-"Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
+msgid "Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
 msgstr "CFA Franc"
 
 #: src/libs/aqbanking/country.c:145
@@ -1679,41 +1677,54 @@ msgstr "Simbabwe"
 msgid "Zimbabwe Dollar"
 msgstr "Simbabwe Dollar"
 
-#: src/libs/aqbanking/cryptmanager.c:98
-msgid " You must only enter numbers, not letters."
-msgstr " Sie dürfen nur Zahlen eingeben, keine Buchstaben."
+#: src/libs/aqbanking/cryptmanager.c:102
+msgid "access password"
+msgstr "Zugriffs-Password"
 
-#: src/libs/aqbanking/cryptmanager.c:103
-#, c-format
+#: src/libs/aqbanking/cryptmanager.c:104
+msgid "manager password"
+msgstr "Management-Password"
+
+#: src/libs/aqbanking/cryptmanager.c:106
+msgid "password"
+msgstr "Password"
+
+#: src/libs/aqbanking/cryptmanager.c:111
 msgid ""
-"Please enter a new password for \n"
-"%s\n"
-"The password must be at least %d characters long.%s<html>Please enter a new "
-"password for <i>%s</i>. The password must be at least %d characters long.%s</"
-"html>"
-msgstr ""
-"Bitte geben Sie ein neues Passwort für \n"
-"%s\n"
-"ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html>Bitte geben "
-"Sie ein neues Passwort für <i>%s</i> ein. Das Passwort muß mindestens %d "
-"Zeichen lang sein.%s</html>"
+"\n"
+"You must only enter numbers, not letters."
+msgstr "\nSie dürfen nur Zahlen eingeben, keine Buchstaben."
 
 #: src/libs/aqbanking/cryptmanager.c:120
 #, c-format
 msgid ""
-"Please enter the password for \n"
+"Please enter a new %s for \n"
 "%s\n"
-"%s<html>Please enter the password for <i>%s</i>.%s</html>"
+"The password must be at least %d characters long.%s<html>Please enter a new %"
+"s for <i>%s</i>. The password must be at least %d characters long.%s</html>"
 msgstr ""
-"Bitte geben Sie das Passwort für \n"
+"Bitte geben Sie ein neues %s für \n"
 "%s\n"
-"ein.%s<html>Bitte geben Sie das Passwort für <i>%s</i> ein.%s</html>"
+"ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html>Bitte geben "
+"Sie ein neues %s für <i>%s</i> ein. Das Passwort muß mindestens %d Zeichen "
+"lang sein.%s</html>"
 
-#: src/libs/aqbanking/cryptmanager.c:145 src/libs/aqbanking/cryptmanager.c:155
+#: src/libs/aqbanking/cryptmanager.c:139
+#, c-format
+msgid ""
+"Please enter the %s for \n"
+"%s\n"
+"%s<html>Please enter the %s for <i>%s</i>.%s</html>"
+msgstr ""
+"Bitte geben Sie das %s für \n"
+"%s\n"
+"ein.%s<html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
+
+#: src/libs/aqbanking/cryptmanager.c:166 src/libs/aqbanking/cryptmanager.c:176
 msgid "Enter Password"
 msgstr "Password eingeben"
 
-#: src/libs/aqbanking/cryptmanager.c:206
+#: src/libs/aqbanking/cryptmanager.c:229
 msgid ""
 "Please enter your PIN into the card reader.<html>Please enter your PIN into "
 "the card reader.</html>"
@@ -1721,11 +1732,11 @@ msgstr ""
 "Bitte geben Sie Ihre PIN am Kartenleser ein.<html>Bitte geben Sie Ihre PIN "
 "am Kartenleser ein.</html>"
 
-#: src/libs/aqbanking/cryptmanager.c:212
+#: src/libs/aqbanking/cryptmanager.c:235
 msgid "Secure PIN Input"
 msgstr "Sichere PIN-Eingabe"
 
-#: src/libs/aqbanking/cryptmanager.c:252
+#: src/libs/aqbanking/cryptmanager.c:275
 #, c-format
 msgid ""
 "Please insert the security disc\n"
@@ -1734,7 +1745,7 @@ msgstr ""
 "Bitte legen Sie die Sicherheitsdiskette für %s in das Laufwerk.<html>Bitte "
 "legen Sie die Sicherheitsdiskette für <i>%s</i> in das Laufwerk.</html>"
 
-#: src/libs/aqbanking/cryptmanager.c:260
+#: src/libs/aqbanking/cryptmanager.c:283
 #, c-format
 msgid ""
 "Please insert the chip card\n"
@@ -1743,27 +1754,27 @@ msgstr ""
 "Bitte legen Sie die Chipkarte für %s in den Kartenleser ein.<html>Bitte "
 "legen Sie die Chipkarte für <i>%s</i> in den Kartenleser ein.</html>"
 
-#: src/libs/aqbanking/cryptmanager.c:271 src/libs/aqbanking/cryptmanager.c:336
+#: src/libs/aqbanking/cryptmanager.c:294 src/libs/aqbanking/cryptmanager.c:359
 msgid "Insert Medium"
 msgstr "Medium einlegen"
 
-#: src/libs/aqbanking/cryptmanager.c:273 src/libs/aqbanking/cryptmanager.c:338
+#: src/libs/aqbanking/cryptmanager.c:296 src/libs/aqbanking/cryptmanager.c:361
 msgid "OK"
 msgstr "Ok"
 
-#: src/libs/aqbanking/cryptmanager.c:280 src/libs/aqbanking/cryptmanager.c:345
+#: src/libs/aqbanking/cryptmanager.c:303 src/libs/aqbanking/cryptmanager.c:368
 msgid "User Abort"
 msgstr "Abbruch durch Benutzer"
 
-#: src/libs/aqbanking/cryptmanager.c:281 src/libs/aqbanking/cryptmanager.c:346
+#: src/libs/aqbanking/cryptmanager.c:304 src/libs/aqbanking/cryptmanager.c:369
 msgid "Action aborted by user."
 msgstr "Die Aktion ist durch den Benutzer abgebrochen worden."
 
-#: src/libs/aqbanking/cryptmanager.c:291 src/libs/aqbanking/cryptmanager.c:356
+#: src/libs/aqbanking/cryptmanager.c:314 src/libs/aqbanking/cryptmanager.c:379
 msgid "An internal error occurred."
 msgstr "Ein interner Fehler trat auf."
 
-#: src/libs/aqbanking/cryptmanager.c:316
+#: src/libs/aqbanking/cryptmanager.c:339
 #, c-format
 msgid ""
 "Please insert the correct security disc\n"
@@ -1774,7 +1785,7 @@ msgstr ""
 "<html>Bitte legen Sie die <b>richtige</b> Sicherheitsdiskette für <i>%s</i> "
 "in das Laufwerk.</html>"
 
-#: src/libs/aqbanking/cryptmanager.c:325
+#: src/libs/aqbanking/cryptmanager.c:348
 #, c-format
 msgid ""
 "Please insert the correct chip card\n"
@@ -1921,3 +1932,13 @@ msgstr "Buchungen importieren..."
 #: src/plugins/imexporters/csv/csv.c:131
 msgid "transaction(s)"
 msgstr "Buchung(en)"
+
+#~ msgid "access"
+#~ msgstr "Zugangs-"
+
+#~ msgid "manager"
+#~ msgstr "Manager"
+
+#~ msgid "(unknown mode)"
+#~ msgstr "(unbekannter Modus)"
+

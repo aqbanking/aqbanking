@@ -1,10 +1,17 @@
+
+2005/08/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added flag AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT
+- added error code AB_ERROR_DEFAULT_VALUE
+
+
 2005-07-31   Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c
 	Changed all the printf() call's for logging purposes
 	to calls to GWEN_WaitCallback_log(). This way the messages
 	go into the messagebox which is already there.
 
-	
+
 2005/07/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - defined AB_BANKING_PROGRESS_ONE
