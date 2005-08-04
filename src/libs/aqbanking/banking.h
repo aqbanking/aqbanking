@@ -1088,19 +1088,6 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
  * <p>
  * Enqueued jobs are preserved across shutdowns. As soon as a job has been
  * sent to the appropriate backend it will be removed from the queue.
- * Only those jobs are saved/reloaded which have been enqueued but never
- * presented to the backend.
- * </p>
- * <p>
- * This means after calling @ref AB_Banking_ExecuteQueue only those jobs are
- * still in the queue which have not been processed (e.g. because they
- * belonged to a second backend but the user aborted while the jobs for
- * a first backend were in process).
- * </p>
- * <p>
- * Even with this being a quite rare case the application should be aware of
- * the possibilities so it is strongly advised to check the qeueue for unsent
- * jobs after calling @ref AB_Banking_ExecuteQueue and retry if appropriate.
  * </p>
  */
 /*@{*/
@@ -1144,7 +1131,7 @@ AQBANKING_API
 int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j);
 
 /**
- * This function enqueues alle pending jobs so that they will be send the
+ * This function enqueues all pending jobs so that they will be send the
  * next time @ref AB_Banking_ExecuteQueue is called.
  * You should call this function directly before calling
  * @ref AB_Banking_ExecuteQueue to let the backend update the status of
@@ -1169,9 +1156,7 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
  * and allows those backends to process it.
  * </p>
  * <p>
- * If the user did not abort and there was no fatal error the queue is
- * empty upon return. You can verify this by calling
- * @ref AB_Banking_GetEnqueuedJobs.
+ * The queue is always empty upon return.
  * </p>
  * <p>
  * Jobs which have been finished (even errornous jobs) are move from the

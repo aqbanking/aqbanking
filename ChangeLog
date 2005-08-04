@@ -1,3 +1,5 @@
+
+
 2005-08-04  Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c
 	- Changed one log message back to
@@ -11,6 +13,8 @@
 - changes to eri.c: 
   - changed loglevel from Notice to Error
   - make the file fit into lines of 80 characters
+- updated German bank info files
+- updated APIDOC in banking.h
 
 
 2005-07-31   Peter de Vrijer <pdevrijer@home.nl>
