@@ -10,7 +10,7 @@ BUILT_SOURCES = version.h
 CLEANFILES = $(BUILT_SOURCES)
 
 
-plugindir= $(aqbanking_plugins)/providers
+plugindir= $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqhbci.la
 if IS_WINDOWS
 plugin_DATA = aqhbci.xml aqhbci.dll

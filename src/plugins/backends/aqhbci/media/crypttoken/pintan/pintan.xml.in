@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf8"?>
+
+<plugin type="crypttoken" name="pintan" device="none" >
+  <version>@CHIPCARD_VERSION_STRING@</version>
+  <author>Martin Preuss (martin@libchipcard.de)</author>
+  <short>Pin/Tan Pseudo Medium</short>
+
+  <descr>
+    This plugins provides support for PIN/TAN mode.
+
+    <text format="html" >
+      <p>
+        This plugins provides support for PIN/TAN mode.
+      </p>
+    </text>
+
+    <text format="html" lang="de" >
+      <p>
+        Dieses Modul unterstuetzt den PIN/TAN-Modus.
+      </p>
+    </text>
+
+  </descr>
+
+
+  <crypttokens>
+    <crypttoken typeName="pintan">
+  
+      <flags>
+        <flag>manages_signseq</flag>
+        <flag>predef_context_only</flag>
+        <flag>context_management</flag>
+        <flag>context_ro_keys</flag>
+        <flag>context_ro_descr</flag>
+        <flag>context_ro_signdescr</flag>
+        <flag>context_ro_cryptdescr</flag>
+        <flag>context_ro_keydescrs</flag>
+      </flags>
+  
+      <signinfos>
+        <signinfo>
+          <id>1</id>
+          <hashalgo>none</hashalgo>
+          <paddalgo>none</paddalgo>
+        </signinfo>
+      </signinfos>
+      
+      <cryptinfos>
+        <cryptinfo>
+          <id>1</id>
+          <cryptalgo>none</cryptalgo>
+          <paddalgo>none</paddalgo>
+        </cryptinfo>
+      </cryptinfos>
+      
+      <keyinfos>
+        <keyinfo>
+          <keyId>1</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>none</cryptalgo>
+          <keyDescription>Local Sign Key</keyDescription>
+          <keyFlags>
+            <flag>canSign</flag>
+            <flag>canVerify</flag>
+            <flag>hasSignSeq</flag>
+            <flag>canEncrypt</flag>
+            <flag>canDecrypt</flag>
+          </keyFlags>
+        </keyinfo>
+      </keyinfos>
+  
+      <contexts>
+        <!-- There only is one context, and it is the context for HBCI -->
+        <context>
+          <id>1</id>
+          <contextType>hbci</contextType>
+          <description>Context for HBCI operations</description>
+          
+          <signkeyinfo>
+            <keyId>1</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>none</cryptalgo>
+            <keyDescription>Local Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canSign</flag>
+              <flag>canVerify</flag>
+              <flag>hasSignSeq</flag>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </signkeyinfo>
+          
+          <verifykeyinfo>
+            <keyId>1</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>none</cryptalgo>
+            <keyDescription>Local Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canSign</flag>
+              <flag>canVerify</flag>
+              <flag>hasSignSeq</flag>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </verifykeyinfo>
+  
+          <signinfo>
+            <id>1</id>
+            <hashalgo>none</hashalgo>
+            <paddalgo>none</paddalgo>
+          </signinfo>
+  
+          <encryptKeyInfo>
+            <keyId>1</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>none</cryptalgo>
+            <keyDescription>Local Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canSign</flag>
+              <flag>canVerify</flag>
+              <flag>hasSignSeq</flag>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </encryptKeyInfo>
+  
+          <decryptKeyInfo>
+            <keyId>1</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>none</cryptalgo>
+            <keyDescription>Local Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canSign</flag>
+              <flag>canVerify</flag>
+              <flag>hasSignSeq</flag>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </decryptKeyInfo>
+  
+          <cryptinfo>
+            <id>1</id>
+            <cryptalgo>none</cryptalgo>
+            <paddalgo>none</paddalgo>
+          </cryptinfo>
+          
+        </context>
+      </contexts>
+      
+    </crypttoken>
+  </crypttokens>
+
+</plugin>
+
+

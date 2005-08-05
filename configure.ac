@@ -805,7 +805,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/tools/Makefile
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
-  src/plugins/backends/aqhbci/Doxyfile
   src/plugins/backends/aqhbci/aqhbci-config.in
   src/test/Makefile
   src/tools/Makefile
