@@ -1,4 +1,4 @@
-SUBDIRS=parsers imexporters bankinfo backends
+SUBDIRS=aqhbci
 
 sources:
 	for d in $(SUBDIRS); do \

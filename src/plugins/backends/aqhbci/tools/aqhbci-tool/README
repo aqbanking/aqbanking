@@ -1,0 +1,46 @@
+
+This folder contains the tool "aqhbci-tool". It can be used to setup and
+manage HBCI users/customers/accounts.
+
+It is under heavy construction.
+
+
+The following commands are implemented:
+
+
+mkpinlist
+=========
+
+Creates an empty PIN file to be used by "aqbanking-tool".
+
+
+
+adduser
+=======
+
+Creates a HBCI user. Currently only importing of existing security media is
+supported.
+
+
+
+getaccounts
+===========
+
+Retrieves a list of accounts from the bank. However, some banks don't return
+such a list.
+
+
+
+activate
+========
+
+Activates AqHBCI so that it can be used with AqBanking programs.
+
+
+
+deactivate
+==========
+
+Deactivates AqHBCI.
+
+

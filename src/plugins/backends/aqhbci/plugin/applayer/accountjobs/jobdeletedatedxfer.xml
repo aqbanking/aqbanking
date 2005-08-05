@@ -1,0 +1,117 @@
+
+<SEGs>
+
+ <!-- 
+  ------------------------------------------------------------------------
+  Geschaeftsvorfall: Terminierte Einzelueberweisung loeschen (version 1)
+  ------------------------------------------------------------------------ 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DeleteDatedSingleTransfer"
+         code="HKTUL"
+         version="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="TransferBase" version="1" name="transaction" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITULS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  ------------------------------------------------------------------------
+  Geschaeftsvorfall: Terminierte Einzelueberweisung loeschen (version 2)
+  ------------------------------------------------------------------------ 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DeleteDatedSingleTransfer"
+         code="HKTUL"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="TransferBase" version="2" name="transaction" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITULS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung loeschen (v 1) -->
+ <JOBdef id="JobDeleteDatedTransfer"
+    	   code="HKTUL"
+         params="HITULS"
+         version="1"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteDatedSingleTransfer" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung loeschen (v 2) -->
+ <JOBdef id="JobDeleteDatedTransfer"
+    	   code="HKTUL"
+         params="HITULS"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteDatedSingleTransfer" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+</JOBs>
+
+
+

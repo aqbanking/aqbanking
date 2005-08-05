@@ -5,6 +5,7 @@
   "headers" in $(top_builddir)
 - added frontend "cbanking" (console) (aqbanking-tool now uses this rather
   than having its own console ui files)
+- swallowed AqHBCI (-> src/plugins/backends/aqhbci)
 
 
 2005-08-04  Peter de Vrijer <pdevrijer@home.nl>

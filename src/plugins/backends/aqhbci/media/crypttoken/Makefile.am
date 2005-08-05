@@ -1,4 +1,4 @@
-SUBDIRS=parsers imexporters bankinfo backends
+SUBDIRS=pintan
 
 sources:
 	for d in $(SUBDIRS); do \

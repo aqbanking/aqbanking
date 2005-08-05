@@ -1,0 +1,29 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AQHBCI_VERSION_H
+#define AQHBCI_VERSION_H
+
+#define AQHBCI_VERSION_MAJOR @AQHBCI_VERSION_MAJOR@
+#define AQHBCI_VERSION_MINOR @AQHBCI_VERSION_MINOR@
+#define AQHBCI_VERSION_PATCHLEVEL @AQHBCI_VERSION_PATCHLEVEL@
+#define AQHBCI_VERSION_BUILD @AQHBCI_VERSION_BUILD@
+#define AQHBCI_VERSION_TAG "@AQHBCI_VERSION_TAG@"
+#define AQHBCI_VERSION_FULL_STRING "@AQHBCI_VERSION_FULL_STRING@"
+#define AQHBCI_VERSION_STRING "@AQHBCI_VERSION_STRING@"
+
+
+
+#endif /* AQHBCI_VERSION_H */
+
+

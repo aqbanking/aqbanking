@@ -1,0 +1,357 @@
+
+<GROUPs>
+
+  <GROUPdef id="StoSpecial" delimiter=":">
+    <ELEM name="xfirstExecutionDate" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="xperiod" type="an" maxsize="1" />
+    <ELEM name="cycle" type="num" maxsize="2" />
+    <ELEM name="executionDay" type="num" maxsize="2" />
+    <ELEM name="xlastExecutionDate" type="date" minnum="0" minsize="8" maxsize="8" />
+  </GROUPdef>
+
+
+<!-- HBCI 2.01 -->
+
+ <GROUPdef id="StandingOrderBase"
+         delimiter="+" version="1" >
+   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="1" />
+   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="1" />
+   <ELEM name="othername" type="dta" maxsize="27" minnum="1" maxnum="2" 
+    addemptymode="max" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   <ELEM name="textkey" type="num" maxsize="2" />
+   <ELEM name="textkeyext" type="num" maxsize="3" minnum="0" />
+   <GROUP delimiter=":" >
+     <ELEM name="purpose" type="dta" maxsize="27" minnum="1" maxnum="99" 
+           trustlevel="4" />
+   </GROUP>
+   <ELEM name="xnextExecutionDate" type="date" minnum="0" />
+   <ELEM name="fiId" type="ascii" minnum="0" />
+   <GROUP type="StoSpecial" minnum="0" name="special" />
+   <GROUP name="stop" delimiter=":" minnum="0" >
+     <ELEM name="yearly" type="an" maxsize="1" />
+     <ELEM name="fromDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="toDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="num" type="num" maxsize="2" minnum="0" />
+   </GROUP>
+
+   <VALUES>
+   </VALUES>
+ </GROUPdef>
+
+
+
+<!-- HBCI 2.10 -->
+
+ <GROUPdef id="StandingOrderBase"
+         delimiter="+" version="2" >
+   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="1" />
+   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="1" />
+   <ELEM name="othername" type="dta" maxsize="27" minnum="1" maxnum="2" 
+    addemptymode="max" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   <ELEM name="textkey" type="num" maxsize="2" />
+   <ELEM name="textkeyext" type="num" maxsize="3" minnum="0" />
+   <GROUP delimiter=":" >
+     <ELEM name="purpose" type="dta" maxsize="27" minnum="1" maxnum="99" 
+           trustlevel="4" />
+   </GROUP>
+   <ELEM name="xnextExecutionDate" type="date" minnum="0" />
+   <ELEM name="fiId" type="ascii" minnum="0" />
+   <GROUP type="StoSpecial" minnum="0" name="special" />
+   <GROUP name="stop" delimiter=":" minnum="0" >
+     <ELEM name="yearly" type="an" maxsize="1" />
+     <ELEM name="fromDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="toDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="num" type="num" maxsize="2" minnum="0" />
+     <GROUP name="value" type="btg" minnum="0" trustlevel="4" version="1" />
+   </GROUP>
+
+   <VALUES>
+   </VALUES>
+ </GROUPdef>
+
+
+
+<!-- HBCI 2.20 -->
+
+ <GROUPdef id="StandingOrderBase"
+         delimiter="+" version="3" >
+   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="2" />
+   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="2" />
+   <ELEM name="othername" type="dta" maxsize="27" minnum="1" maxnum="2" 
+    addemptymode="max" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   <ELEM name="textkey" type="num" maxsize="2" />
+   <ELEM name="textkeyext" type="num" maxsize="3" minnum="0" />
+   <GROUP delimiter=":" >
+     <ELEM name="purpose" type="dta" maxsize="27" minnum="1" maxnum="99" 
+           trustlevel="4" />
+   </GROUP>
+   <ELEM name="xnextExecutionDate" type="date" minnum="0" />
+   <ELEM name="fiId" type="ascii" minnum="0" />
+   <GROUP type="StoSpecial" minnum="0" name="special" />
+ 
+   <GROUP name="stop" delimiter=":" minnum="0" >
+     <ELEM name="yearly" type="an" maxsize="1" />
+     <ELEM name="fromDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="toDate" type="date" maxsize="8" minsize="8" minnum="0" />
+     <ELEM name="num" type="num" maxsize="2" minnum="0" />
+   </GROUP>
+
+   <VALUES>
+   </VALUES>
+ </GROUPdef>
+
+
+</GROUPs>
+
+
+
+
+<SEGs>
+
+<!-- HBCI 2.01 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+  
+ <!-- Kundennachricht -->
+ <SEGdef id="GetStandingOrders"
+         code="HKDAB"
+         version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="1" />
+   <ELEM name="jobid" type="ascii" maxsize="99" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetStandingOrdersResponse"
+    	   code="HIDAB" 
+         version="1"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP name="standingOrder" type="StandingOrderBase" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDABS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+<!-- HBCI 2.10 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+  
+ <!-- Kundennachricht -->
+ <SEGdef id="GetStandingOrders"
+         code="HKDAB"
+         version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="1" />
+   <ELEM name="jobid" type="ascii" maxsize="99" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetStandingOrdersResponse"
+    	   code="HIDAB" 
+         version="2"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP name="standingOrder" type="StandingOrderBase" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDABS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+<!-- HBCI 2.20 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 3)
+  --------------------------------------------------------------------- 
+  -->
+  
+ <!-- Kundennachricht -->
+ <SEGdef id="GetStandingOrders"
+         code="HKDAB"
+         version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="jobid" type="ascii" maxsize="99" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetStandingOrdersResponse"
+    	   code="HIDAB" 
+         version="3"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP name="standingOrder" type="StandingOrderBase" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDABS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+</SEGs>
+
+
+
+<JOBS>
+
+<!-- HBCI 2.01 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+ <JOBdef 
+ 		id="JobGetStandingOrders" 
+    code="HKDAB" params="HIDABS"
+    version="1" 
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="GetStandingOrdersResponse"
+    single="1"
+    attachable="1"
+ >
+   <SEG type="GetStandingOrders" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+<!-- HBCI 2.10 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+ <JOBdef 
+ 		id="JobGetStandingOrders" 
+    code="HKDAB" params="HIDABS"
+    version="2" 
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="GetStandingOrdersResponse"
+    single="1"
+    attachable="1"
+ >
+   <SEG type="GetStandingOrders" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+<!-- HBCI 2.20 -->
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 3)
+  --------------------------------------------------------------------- 
+  -->
+ <JOBdef 
+ 		id="JobGetStandingOrders" 
+    code="HKDAB" params="HIDABS"
+    version="3"
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="GetStandingOrdersResponse"
+    single="1"
+    attachable="1"
+ >
+   <SEG type="GetStandingOrders" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+</JOBS>
+

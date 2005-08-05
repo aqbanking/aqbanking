@@ -1,0 +1,187 @@
+
+<SEGs>
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag loeschen (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DeleteStandingOrder"
+         code="HKDAL"
+         version="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="1" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDALS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowDate" type="an" maxsize="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag loeschen (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DeleteStandingOrder"
+         code="HKDAL"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="2" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDALS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowDate" type="an" maxsize="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag loeschen (Version 3)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DeleteStandingOrder"
+         code="HKDAL"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="3" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDALS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowDate" type="an" maxsize="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Dauerauftrag loeschen (Version 1) -->
+ <JOBdef id="JobDeleteStandingOrder"
+    	   code="HKDAL"
+         params="HIDALS"
+         version="1"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteStandingOrder" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Dauerauftrag loeschen (Version 2) -->
+ <JOBdef id="JobDeleteStandingOrder"
+    	   code="HKDAL"
+         params="HIDALS"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteStandingOrder" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Dauerauftrag loeschen (Version 3) -->
+ <JOBdef id="JobDeleteStandingOrder"
+    	   code="HKDAL"
+         params="HIDALS"
+         version="3"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteStandingOrder" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+
+
+
+

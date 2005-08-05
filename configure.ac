@@ -9,8 +9,9 @@ AC_CONFIG_HEADER([config.h])
 
 
 
+###-------------------------------------------------------------------------
 #
-# versions
+# AqBanking versions
 #
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
@@ -22,16 +23,52 @@ AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
 
+###-------------------------------------------------------------------------
 #
-# SO version
+# AqBanking SO version
 #
 AQBANKING_SO_CURRENT=8
 AQBANKING_SO_AGE=8
 AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
+
+###-------------------------------------------------------------------------
 #
-# Create release string
+# AqHBCI versions
+#
+AQHBCI_VERSION_MAJOR=1
+AQHBCI_VERSION_MINOR=2
+AQHBCI_VERSION_PATCHLEVEL=0
+AQHBCI_VERSION_BUILD=4
+dnl "stable", "rcX", "betaX", "cvs"
+AQHBCI_VERSION_TAG="cvs"
+AQHBCI_VERSION_FULL_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL.$AQHBCI_VERSION_BUILD${AQHBCI_VERSION_TAG}"
+AQHBCI_VERSION_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL"
+
+
+###-------------------------------------------------------------------------
+#
+# AqHBCI SO version
+#
+AQHBCI_SO_CURRENT=6
+AQHBCI_SO_AGE=4
+AQHBCI_SO_REVISION=0
+AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
+
+
+
+###-------------------------------------------------------------------------
+#
+# datetime
+#
+DATETIME="`date +\"%Y%m%d%H%M%S\"`"
+AC_SUBST(DATETIME)
+
+
+###-------------------------------------------------------------------------
+#
+# Create AqBanking release string
 #
 case "$AQBANKING_VERSION_TAG" in
   cvs)
@@ -47,7 +84,29 @@ case "$AQBANKING_VERSION_TAG" in
      AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_RELEASE_STRING${AQBANKING_VERSION_TAG}"
      ;;
 esac
+
+
+#
+# for AqHBCI
+#
+case "$AQHBCI_VERSION_TAG" in
+  cvs)
+     AQHBCI_VERSION_RELEASE_STRING="$AQHBCI_VERSION_FULL_STRING"
+     ;;
+  stable)
+     AQHBCI_VERSION_RELEASE_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     AQHBCI_VERSION_RELEASE_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     AQHBCI_VERSION_RELEASE_STRING="$AQHBCI_VERSION_RELEASE_STRING${AQHBCI_VERSION_TAG}"
+     ;;
+esac
+
+
    
+###-------------------------------------------------------------------------
 #
 # SUBST and DEFINE versions
 #
@@ -79,11 +138,46 @@ AC_SUBST(AQBANKING_SO_AGE)
 AC_SUBST(AQBANKING_SO_EFFECTIVE)
 
 
+#
+# same for AqHBCI
+#
+AC_SUBST(AQHBCI_VERSION_MAJOR)
+AC_SUBST(AQHBCI_VERSION_MINOR)
+AC_SUBST(AQHBCI_VERSION_PATCHLEVEL)
+AC_SUBST(AQHBCI_VERSION_BUILD)
+AC_SUBST(AQHBCI_VERSION_TAG)
+AC_SUBST(AQHBCI_VERSION_FULL_STRING)
+AC_SUBST(AQHBCI_VERSION_STRING)
+AC_SUBST(AQHBCI_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_MAJOR,$AQHBCI_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_MINOR,$AQHBCI_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_PATCHLEVEL,$AQHBCI_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_BUILD,$AQHBCI_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_STRING,"$AQHBCI_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_FULL_STRING,"$AQHBCI_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(AQHBCI_VERSION_TAG,$AQHBCI_VERSION_TAG, [tag])
+
+AC_SUBST(AQHBCI_SO_CURRENT)
+AC_SUBST(AQHBCI_SO_REVISION)
+AC_SUBST(AQHBCI_SO_AGE)
+AC_SUBST(AQHBCI_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQHBCI_SO_EFFECTIVE_STR, "$AQHBCI_SO_EFFECTIVE",
+                   [effective SO version])
+
+
 AM_INIT_AUTOMAKE(aqbanking, $AQBANKING_VERSION_RELEASE_STRING)
 
 
 ###-------------------------------------------------------------------------
-dnl prefix handling
+#
+# prefix handling
+#
 AC_PREFIX_DEFAULT(/usr)
 if test "x$prefix" = "xNONE"; then
   prefix=$ac_default_prefix
@@ -101,7 +195,9 @@ AC_ENABLE_SHARED(yes)
 
 
 ###-------------------------------------------------------------------------
+#
 # Checks for programs.
+#
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
@@ -111,7 +207,9 @@ AC_CHECK_PROG(SED,sed,sed)
 # Checks for libraries.
 
 ###-------------------------------------------------------------------------
+#
 # Checks for header files.
+#
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h locale.h])
 AC_CHECK_HEADERS([termios.h signal.h iconv.h])
@@ -122,12 +220,16 @@ AC_CHECK_DECLS([sigprocmask], [], [], [
 ])
 
 ###-------------------------------------------------------------------------
+#
 # Checks for typedefs, structures, and compiler characteristics.
+#
 AC_C_CONST
 AC_STRUCT_TM
 
 ###-------------------------------------------------------------------------
+#
 # Checks for library functions.
+#
 AC_FUNC_MALLOC
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([memmove memset strcasecmp strdup strerror snprintf])
@@ -135,13 +237,19 @@ AC_CHECK_FUNCS([setlocale])
 
 
 ###-------------------------------------------------------------------------
+#
+# Check for Gwen
+#
 AC_GWENHYWFAR(1,14,0,5)
 
 all_includes="$all_includes $gwenhywfar_includes"
+XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 
 
 ###-------------------------------------------------------------------------
+#
 # KtoBlzCheck
+#
 
 have_ktoblzcheck="yes"
 AC_CHECK_LIB(ktoblzcheck, AccountNumberCheck_new,
@@ -159,7 +267,9 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 
 
 ###-------------------------------------------------------------------------
+#
 # LibOFX
+#
 
 HAVE_OFX_WITH_CONNECT="no"
 AC_MSG_CHECKING(whether OFX should be used)
@@ -197,7 +307,9 @@ AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 
 
 ###-------------------------------------------------------------------------
+#
 # Python
+#
 
 AC_MSG_CHECKING(whether to install python-bindings)
 AC_ARG_ENABLE(python,
@@ -225,8 +337,9 @@ AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 
 
 ###-------------------------------------------------------------------------
-dnl OS dependant settings
-
+#
+# OS dependant settings
+#
 AQ_CHECK_OS
 
 case "$OS_TYPE" in
@@ -305,10 +418,11 @@ AC_MSG_RESULT($enable_release)
 
 ACX_COMPILE_WARN()
 
+
 ###-------------------------------------------------------------------------
-AS_SCRUB_INCLUDE(all_includes)
-AC_SUBST(all_includes)
-AC_SUBST(all_libraries)
+#
+# Subst
+#
 AS_SCRUB_INCLUDE(aqbanking_includes)
 AC_SUBST(aqbanking_includes)
 AC_SUBST(aqbanking_internal_libs)
@@ -320,7 +434,10 @@ AC_SUBST(aqbanking_pkgdatadir)
 AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
 
 
+###-------------------------------------------------------------------------
+#
 # Check for additional aclocal flags
+#
 ADD_ACLOCAL_FLAGS=""
 for A in "${GWEN_PREFIX}/share/aclocal" \
 	 "${prefix}/share/aclocal"; do 
@@ -329,6 +446,7 @@ for A in "${GWEN_PREFIX}/share/aclocal" \
   fi
 done
 AC_SUBST(ADD_ACLOCAL_FLAGS)
+
 
 ###-------------------------------------------------------------------------
 #
@@ -341,7 +459,7 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 aqbanking_modules=". jobs types"
 aqbankingpp_modules="."
 aqbanking_frontends="cbanking"
-
+aqbanking_backends="aqhbci"
 
 #
 # code
@@ -415,9 +533,6 @@ done
 
 # symlink all headers from src/frontends
 
-lprefix="${srcdir}"
-lprefix=`( cd ${lprefix} ; pwd )`
-
 for frontend in ${aqbanking_frontends}; do
   rm -Rf ${frontend}
   mkdir -p headers/${frontend}
@@ -436,6 +551,45 @@ for frontend in ${aqbanking_frontends}; do
   done
 done
 
+
+# symlink all headers from src/plugins/backends/
+
+for backend in ${aqbanking_backends}; do
+  mkdir -p headers/${backend}
+
+  dfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin" && ls 2>/dev/null )`
+  for d in ${dfiles}; do
+    if test -d "${srcdir}/src/plugins/backends/${backend}/plugin/$d"; then
+      case $d in
+        . | ..)
+          ;;
+        *)
+          hfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin/$d" && ls *.h 2>/dev/null )`
+          for f in ${hfiles}; do
+            case ${f} in
+              *_p.h | *_l.h)
+                ;;
+              *)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/$d/${f}"
+                ln -s "${lprefix}/src/plugins/backends/${backend}/plugin/$d/${f}" "headers/${backend}/${f}"
+                ;;
+            esac
+          done
+          ;;
+        esac
+    else
+      case ${d} in
+        *_p.h | *_l.h)
+          ;;
+        *.h)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/$d"
+          ln -s "${lprefix}/src/plugins/backends/${backend}/plugin/$d" "headers/${backend}/$d"
+          ;;
+      esac
+    fi
+  done
+
+done
 
 
 AC_SUBST(AQ_HEADER_FILES)
@@ -505,6 +659,54 @@ else
 fi
 AC_SUBST(DOXYGEN_TAGFILES)
 
+
+
+
+###-------------------------------------------------------------------------
+#
+# Configure stuff for backend AqHBCI
+#
+
+case "$OS_TYPE" in
+    posix)
+        aqhbci_internal_libs="-laqhbci"
+        aqhbci_libs="${aqhbci_internal_libs}"
+        aqhbci_ldflags="-L\${libdir}"
+        aqhbci_includes="-I`eval echo $prefix/include`"
+        aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
+        aqhbci_data="`eval echo $prefix/share`/aqhbci"
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
+        ACX_WINDOWS_PATHS
+        aqhbci_internal_libs="-laqhbci32_${AQHBCI_SO_EFFECTIVE}"
+        aqhbci_libs="${aqhbci_internal_libs}"
+        aqhbci_ldflags="-L\${libdir}"
+        aqhbci_includes="-I`eval echo $prefix/include`"
+        aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
+        aqhbci_data="c:/mingw/1.0`eval echo $prefix/share`/aqhbci"
+    	;;
+esac
+
+AS_SCRUB_INCLUDE(aqhbci_includes)
+AC_SUBST(aqhbci_includes)
+AC_SUBST(aqhbci_internal_libs)
+AC_SUBST(aqhbci_libs)
+AC_SUBST(aqhbci_ldflags)
+AC_SUBST(aqhbci_plugindir)
+AC_SUBST(aqhbci_data)
+AC_SUBST(XMLMERGE)
+AC_DEFINE_UNQUOTED(AQHBCI_DATA, "${aqhbci_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Cleanup includes, define all_XXX
+#
+AS_SCRUB_INCLUDE(all_includes)
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
 
 
 ###-------------------------------------------------------------------------
@@ -582,6 +784,29 @@ AC_CONFIG_FILES([
   src/plugins/parsers/swift/Makefile
   src/plugins/parsers/swift/swift.xml
   src/plugins/parsers/swift/ressource.rc
+  src/plugins/backends/Makefile
+  src/plugins/backends/aqhbci/Makefile
+  src/plugins/backends/aqhbci/media/Makefile
+  src/plugins/backends/aqhbci/media/crypttoken/Makefile
+  src/plugins/backends/aqhbci/media/crypttoken/pintan/Makefile
+  src/plugins/backends/aqhbci/media/crypttoken/pintan/pintan.xml
+  src/plugins/backends/aqhbci/media/crypttoken/pintan/ressource.rc
+  src/plugins/backends/aqhbci/plugin/Makefile
+  src/plugins/backends/aqhbci/plugin/aqhbci.xml
+  src/plugins/backends/aqhbci/plugin/ressource.rc
+  src/plugins/backends/aqhbci/plugin/banking/Makefile
+  src/plugins/backends/aqhbci/plugin/msglayer/Makefile
+  src/plugins/backends/aqhbci/plugin/joblayer/Makefile
+  src/plugins/backends/aqhbci/plugin/applayer/Makefile
+  src/plugins/backends/aqhbci/plugin/applayer/header.xml
+  src/plugins/backends/aqhbci/plugin/applayer/accountjobs/Makefile
+  src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
+  src/plugins/backends/aqhbci/plugin/version.h
+  src/plugins/backends/aqhbci/tools/Makefile
+  src/plugins/backends/aqhbci/tools/hbcixml/Makefile
+  src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
+  src/plugins/backends/aqhbci/Doxyfile
+  src/plugins/backends/aqhbci/aqhbci-config.in
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile

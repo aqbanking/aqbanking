@@ -1,0 +1,25 @@
+
+This folder contains high-level modules to be used by applications.
+
+
+
+
+
+HBCI-XML Descriptions
+=====================
+
+Segmente fuer Geschaeftsvorfaelle 
+---------------------------------
+Fuer die meisten Geschaeftvorfaelle werden mindestens 3 Segmente
+benoetigt:
+1) Kundennachricht : beschreibt die Struktur der Nachricht, die das
+                     Kundensystem an die Bank sendet
+2) Institutsnachr. : beschreibt die Struktur der Nachricht, die das
+                     Kreditinstitut als Antwort sendet
+3) GV-parameter    : beschreibt Parameter zu einem Geschaeftsvorfall
+                     (z.B. die Anzahl der Verwendungszweck-Zeilen)
+
+Ausserdem ist zu beachten, dass in der <JOB>-Sektion der Versionsdatei
+entsprechende Jobs angelegt werden muessen, damit die Anwendung einen 
+solchen Job auch erzeugen kann (siehe JOBGetBalance)
+

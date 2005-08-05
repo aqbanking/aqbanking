@@ -1,0 +1,159 @@
+
+<SEGs>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Terminierte Einzelueberweisung aendern (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ModifyDatedSingleTransfer"
+         code="HKTUA"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="TransferBase" version="1" name="transaction" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="ModifyDatedSingleTransferResponse" code="HITUA" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceIdOld" type="AN" maxsize="99" />
+   <ELEM name="referenceIdNew" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUAS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Terminierte Einzelueberweisung aendern (Version 3)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ModifyDatedSingleTransfer"
+         code="HKTUA"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="TransferBase" version="2" name="transaction" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="ModifyDatedSingleTransferResponse" code="HITUA" version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceIdOld" type="AN" maxsize="99" />
+   <ELEM name="referenceIdNew" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUAS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung aendern (v 2) -->
+ <JOBdef id="JobModifyDatedTransfer"
+    	   code="HKTUA"
+         params="HITUAS"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="ModifyDatedSingleTransferResponse"
+  >
+   <SEG type="ModifyDatedSingleTransfer" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung aendern (v 3) -->
+ <JOBdef id="JobModifyDatedTransfer"
+    	   code="HKTUA"
+         params="HITUAS"
+         version="3"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="ModifyDatedSingleTransferResponse"
+  >
+   <SEG type="ModifyDatedSingleTransfer" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+</JOBs>
+
+
+

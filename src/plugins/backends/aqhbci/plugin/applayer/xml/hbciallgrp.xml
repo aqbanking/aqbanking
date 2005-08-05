@@ -1,0 +1,373 @@
+<GROUPs>
+<!-- This file contains groups for all HBCI versions -->
+
+
+  <GROUPdef id="SegHead" delimiter=":" hide="1" >
+    <!-- "Segmentkopf" -->
+    <ELEM name="code" type="AN" maxsize="6" />
+    <ELEM name="seq" type="num" maxsize="15" topdown="1" >
+      <!-- Topdown="1" means: Definitions from higher levels overwrite
+           definitions inside this group. Otherwise local definitions
+           here overwrite those from higher levels.
+      -->
+    </ELEM>
+    <ELEM name="version" type="num" maxsize="3"/>
+    <ELEM name="ref" type="num" maxsize="3" minnum=0 />
+    
+    <VALUES>
+      <!-- "+" means: use the given global property and post-increment it 
+               You need to preset it before starting to create a message -->
+      <VALUE path="seq" overwrite="0" >+SegmentNumber</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="btg" delimiter=":" version="1">
+    <!-- "Betrag" -->
+    <ELEM name="value" type="float" maxsize="20" trustlevel="1" />
+    <ELEM name="currency" type="alpha" maxsize="3" />
+  </GROUPdef>
+
+  
+  <GROUPdef id="kik" delimiter=":" version="1">
+    <!-- "Kreditinstitutskennung" -->
+    <ELEM name="country" type="num" maxsize="3" />
+    <ELEM name="bankcode" type="ascii" maxsize="30" minnum="0" />
+    <VALUES>
+      <VALUE path="country">280</VALUE>
+      <VALUE path="bankcode">?bankcode</VALUE>
+    </VALUES>
+    
+  </GROUPdef>
+
+  <GROUPdef id="ktv" delimiter=":" version="1">
+    <!-- "Kontoverbindung" -->
+    <ELEM name="accountid" type="ascii" maxsize="20" />
+    <GROUP type="kik" />
+  </GROUPdef>
+
+  <GROUPdef id="ktv" delimiter=":" version="2">
+    <!-- "Kontoverbindung" -->
+    <ELEM name="accountid" type="ascii" maxsize="20" />
+    <ELEM name="accountsubid" type="ascii" maxsize="20" minnum="0" />
+    <GROUP type="kik" />
+  </GROUPdef>
+
+  
+  <GROUPdef id="saldo" delimiter=":" version="1">
+    <!-- "Saldo" -->
+    <ELEM name="debitmark" type="alpha" minsize="1" maxsize="1" />
+    <GROUP type="btg" trustlevel="4" />
+    <ELEM name="date" type="date" minsize="8" maxsize="8" />
+    <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" />
+  </GROUPdef>
+
+  <GROUPdef id="limit" delimiter=":" version="1">
+    <!-- "Limit" -->
+    <ELEM name="type" type="alpha" maxsize="1" />
+    <GROUP type="btg" trustlevel="4" />
+    <ELEM name="days" type="num" maxsize="3" minnum="0" />
+  </GROUPdef>
+
+  <GROUPdef id="updjob" delimiter=":" version="1">
+    <!-- "Erlaubter Geschaeftsvorfall" -->
+    <ELEM name="job" type="an" maxsize="6" />
+    <ELEM name="minsign" type="num" maxsize="3" />
+    <ELEM name="limit/type" type="alpha" maxsize="1" minnum="0" />
+    <ELEM name="limit/value" type="float" maxsize="20" trustlevel="1" minnum="0" />
+    <ELEM name="limit/currency" type="alpha" maxsize="3" minnum="0" />
+    <ELEM name="limit/days" type="num" maxsize="3" minnum="0" />
+  </GROUPdef>
+
+
+  <GROUPdef id="adr" delimiter=":" version="1">
+    <!-- "Adresse" -->
+    <ELEM name="name1" type="ascii" maxsize="35" />
+    <ELEM name="name2" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="street" type="ascii" maxsize="35" trustlevel="2" />
+    <ELEM name="city" type="ascii" maxsize="35" trustlevel="2" />
+    <ELEM name="phone" type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+  </GROUPdef>
+
+  <GROUPdef id="adr" delimiter=":" version="2">
+    <!-- "Adresse" -->
+    <ELEM name="name1" type="ascii" maxsize="35" />
+    <ELEM name="name2" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="street" type="ascii" maxsize="35" trustlevel="2" />
+    <ELEM name="zipcode" type="ascii" maxsize="10" trustlevel="2" />
+    <ELEM name="city" type="ascii" maxsize="35" trustlevel="2" />
+    <ELEM name="country" type="num" maxsize="3" />
+    <ELEM name="phone" type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+    <ELEM name="fax" type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+    <ELEM name="email" type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+  </GROUPdef>
+
+
+  <GROUPdef id="msgref" delimiter=":" version="1" >
+    <!-- "Bezugsnachricht" -->
+    <ELEM name="dialogId" type="ascii" maxsize="35" />
+    <ELEM name="msgnum" type="num" maxsize="4" />
+  </GROUPdef>
+
+
+  <GROUPdef id="result" delimiter=":" version="1">
+    <!-- Rueckmeldung -->
+    <ELEM name="resultcode" type="num" maxsize="4" />
+    <ELEM name="elementref" type="an" maxsize="7" minnum="0" />
+    <ELEM name="text" type="an" maxsize="80" />
+    <ELEM name="param" type="ascii" maxsize="35" minnum="0" maxnum="10" />
+  </GROUPdef>
+
+
+  <GROUPdef id="BPDJob" delimiter="+" version="1" >
+    <!-- "Geschaeftsvorfallparameter, allgemein" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="3" />
+  </GROUPdef>
+
+
+  <GROUPdef id="language" delimiter=":" version="1" >
+    <ELEM name="language" type="num" maxsize="3" minnum="1" maxnum="9" />
+  </GROUPdef>
+
+
+  <GROUPdef id="version" delimiter=":" version="1" >
+    <ELEM name="version" type="num" maxsize="3" minnum="1" maxnum="9" />
+  </GROUPdef>
+
+
+  <GROUPdef id="keyname" delimiter=":" version="1">
+    <!-- Schluesselname -->
+    <GROUP type="kik" version="1" />
+    <ELEM name="userid" type="ascii" maxsize="35" trustlevel="3" />
+    <ELEM name="keytype" type="alpha" maxsize="1" minsize="1" />
+    <ELEM name="keynum" type="num" maxsize="3" />
+    <ELEM name="keyversion" type="num" maxsize="3" />
+  </GROUPdef>
+
+
+  <GROUPdef id="SignKeyName" delimiter=":" version="1">
+    <!-- Sign-Schluesselname -->
+    <GROUP type="keyname" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">S</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="CryptKeyName" delimiter=":" version="1">
+    <!-- Crypt-Schluesselname -->
+    <GROUP type="keyname" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">V</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="secstamp" delimiter=":" version="1">
+    <!-- Sicherheits-/ Gueltigkeitsdatum und -uhrzeit -->
+    <ELEM name="stampcode" type="num" maxsize="1" />
+    <ELEM name="date" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" />
+  </GROUPdef>
+
+
+  <GROUPdef id="cert" delimiter=":" version="1">
+    <!-- Zertifikat -->
+    <ELEM name="type" type="num" maxsize="1" />
+    <ELEM name="cert" type="bin" maxsize="2048" />
+  </GROUPdef>
+
+
+  <GROUPdef id="key" delimiter=":" version="1">
+    <!-- oeffentlicher Schluessel -->
+    <ELEM name="purpose" type="num" maxsize="3" />
+    <ELEM name="opmode" type="num" maxsize="3" />
+    <ELEM name="type" type="num" maxsize="3" />
+    <ELEM name="modulus" type="bin" maxsize="512" />
+    <ELEM name="modname" type="num" maxsize="3" />
+    <ELEM name="exponent" type="bin" maxsize="512" />
+    <ELEM name="expname" type="num" maxsize="3" />
+    
+    <VALUES>
+      <VALUE path="opmode">16</VALUE>
+      <VALUE path="type">10</VALUE>
+      <VALUE path="modname">12</VALUE>
+      <VALUE path="expname">13</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  
+  <GROUPdef id="signkey" delimiter=":" version="1">
+    <!-- oeffentlicher Signier-Schluessel -->
+    <GROUP type="key" version="1" />
+    
+    <VALUES>
+      <VALUE path="purpose">6</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="cryptkey" delimiter=":" version="1">
+    <!-- oeffentlicher Crypt-Schluessel -->
+    <GROUP type="key" version="1" />
+    
+    <VALUES>
+      <VALUE path="purpose">5</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="HashAlgo" delimiter=":" version="1">
+    <!-- Hash-Algo -->
+    <ELEM name="purpose" type="an" maxsize="3" />
+    <ELEM name="algo" type="an" maxsize="3" />
+    <ELEM name="pname" type="an" maxsize="3" />
+    <ELEM name="param" type="bin" maxsize="512" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="purpose">1</VALUE>
+      <VALUE path="algo">999</VALUE>
+      <VALUE path="pname">1</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="SignAlgoBase" delimiter=":" version="1">
+    <!-- Signatur-Algo -->
+    <ELEM name="purpose" type="an" maxsize="3" />
+    <ELEM name="algo" type="an" maxsize="3" />
+    <ELEM name="mode" type="an" maxsize="3" />
+
+    <VALUES>
+      <VALUE path="purpose">6</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+  <GROUPdef id="CryptAlgoBase" delimiter=":" version="1">
+    <!-- Crypt-Algo -->
+    <ELEM name="purpose" type="an" maxsize="3" />
+    <ELEM name="mode" type="an" maxsize="3" />
+    <ELEM name="algo" type="an" maxsize="3" />
+    <ELEM name="MsgKey" type="bin" maxsize="512" />
+    <ELEM name="KeyType" type="an" maxsize="3" />
+    <ELEM name="pname" type="an" maxsize="3" />
+    <ELEM name="param" type="bin" maxsize="512" minnum="0" />
+
+    <VALUES>
+      <VALUE path="purpose">2</VALUE>
+      <VALUE path="mode">2</VALUE>
+      <VALUE path="algo">13</VALUE>
+      <VALUE path="pname">1</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+
+  <!-- DDV stuff -->
+
+  <GROUPdef id="SignAlgo" delimiter=":" version="1" mode="DDV" >
+    <!-- Signatur-Algo fuer DDV -->
+    <GROUP type="SignAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="algo">1</VALUE>
+      <VALUE path="mode">999</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  <GROUPdef id="CryptAlgo" delimiter=":" version="1" mode="DDV" >
+    <!-- Crypt-Algo fuer DDV -->
+    <GROUP type="CryptAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">5</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  <GROUPdef id="SecDetails" delimiter=":" version="1" mode="DDV" >
+    <!-- Sicherheitsidentifikation, Details -->
+    <ELEM name="dir" type="num" maxsize=3 />
+    <ELEM name="SecId" type="bin" maxsize="256" minnum="1" trustlevel="3" />
+  </GROUPdef>
+
+
+  <!-- RDH stuff -->
+  
+  <GROUPdef id="SignAlgo" delimiter=":" version="1" mode="RDH" >
+    <!-- Signatur-Algo fuer RDH -->
+    <GROUP type="SignAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="algo">10</VALUE>
+      <VALUE path="mode">16</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+
+  <GROUPdef id="CryptAlgo" delimiter=":" version="1" mode="RDH" >
+    <!-- Crypt-Algo fuer RDH -->
+    <GROUP type="CryptAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">6</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  <GROUPdef id="SecDetails" delimiter=":" version="1" mode="RDH" >
+    <!-- Sicherheitsidentifikation, Details -->
+    <ELEM name="dir" type="num" maxsize=3 />
+    <ELEM type="an" addemptymode="none"/>
+    <ELEM name="SecId" type="ascii" maxsize="256" minnum="1" />
+  </GROUPdef>
+
+
+
+
+  <!-- PINTAN stuff -->
+  
+  <GROUPdef id="SignAlgo" delimiter=":" version="1" mode="PINTAN" >
+    <!-- Signatur-Algo fuer PINTAN -->
+    <GROUP type="SignAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="algo">10</VALUE>
+      <VALUE path="mode">16</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+
+  <GROUPdef id="CryptAlgo" delimiter=":" version="1" mode="PINTAN" >
+    <!-- Crypt-Algo fuer PINTAN -->
+    <GROUP type="CryptAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">6</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  <GROUPdef id="SecDetails" delimiter=":" version="1" mode="PINTAN" >
+    <!-- Sicherheitsidentifikation, Details -->
+    <ELEM name="dir" type="num" maxsize=3 />
+    <ELEM type="an" addemptymode="none"/>
+    <ELEM name="SecId" type="ascii" maxsize="256" minnum="1" />
+  </GROUPdef>
+
+
+
+  <GROUPdef id="needtan" delimiter=":" version="1">
+    <!-- "Angabe: Braucht Geschaeftsvorfall TAN?" -->
+    <ELEM name="job" type="an" maxsize="6" />
+    <ELEM name="needTan" type="an" maxsize="1" />
+  </GROUPdef>
+</GROUPs>
+
+
+
+

@@ -1,0 +1,283 @@
+
+<SEGs>
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag aendern (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ModifyStandingOrder"
+         code="HKDAN"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="1" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="ModifyStandingOrderResponse" code="HIDAN" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceIdOld" type="AN" maxsize="99" minnum="1" />
+   <ELEM name="referenceIdNew" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDANS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="AllowedChanges" type="num" maxsize="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowChgOtherAccount" type="an" maxsize="1" />
+   <ELEM name="AllowChgOtherName" type="an" maxsize="1" />
+   <ELEM name="AllowChgValue" type="an" maxsize="1" />
+   <ELEM name="AllowChgTextKey" type="an" maxsize="1" />
+   <ELEM name="AllowChgPurpose" type="an" maxsize="1" />
+   <ELEM name="AllowChgFirstDate" type="an" maxsize="1" />
+   <ELEM name="AllowChgUnit" type="an" maxsize="1" />
+   <ELEM name="AllowChgTurnus" type="an" maxsize="1" />
+   <ELEM name="AllowChgDay" type="an" maxsize="1" />
+   <ELEM name="AllowChgLastDate" type="an" maxsize="1" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <ELEM name="AllowedTurnusMonths" type="an" maxsize="24" />
+   <ELEM name="AllowedMonthDays" type="an" maxsize="64" />
+   <ELEM name="AllowedTurnusWeeks" type="an" maxsize="104" minnum="0" />
+   <ELEM name="AllowedWeekDays" type="an" maxsize="7" minnum="0" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag aendern (Version 3)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ModifyStandingOrder"
+         code="HKDAN"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="2" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="ModifyStandingOrderResponse" code="HIDAN" version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceIdOld" type="AN" maxsize="99" minnum="1" />
+   <ELEM name="referenceIdNew" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDANS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="AllowedDatedChanges" type="num" maxsize="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowChgOtherAccount" type="an" maxsize="1" />
+   <ELEM name="AllowChgOtherName" type="an" maxsize="1" />
+   <ELEM name="AllowChgValue" type="an" maxsize="1" />
+   <ELEM name="AllowChgTextKey" type="an" maxsize="1" />
+   <ELEM name="AllowChgPurpose" type="an" maxsize="1" />
+   <ELEM name="AllowChgFirstDate" type="an" maxsize="1" />
+   <ELEM name="AllowChgUnit" type="an" maxsize="1" />
+   <ELEM name="AllowChgTurnus" type="an" maxsize="1" />
+   <ELEM name="AllowChgDay" type="an" maxsize="1" />
+   <ELEM name="AllowChgLastDate" type="an" maxsize="1" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <ELEM name="AllowedTurnusMonths" type="an" maxsize="24" />
+   <ELEM name="AllowedMonthDays" type="an" maxsize="64" />
+   <ELEM name="AllowedTurnusWeeks" type="an" maxsize="104" minnum="0" />
+   <ELEM name="AllowedWeekDays" type="an" maxsize="7" minnum="0" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftrag aendern (Version 4)
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ModifyStandingOrder"
+         code="HKDAN"
+         version="4"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="StandingOrderBase" version="3" name="transaction"/>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="ModifyStandingOrderResponse" code="HIDAN" version="4"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceIdOld" type="AN" maxsize="99" minnum="1" />
+   <ELEM name="referenceIdNew" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIDANS" version="4"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="AllowedChanges" type="num" maxsize="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="AllowChgOtherAccount" type="an" maxsize="1" />
+   <ELEM name="AllowChgOtherName" type="an" maxsize="1" />
+   <ELEM name="AllowChgValue" type="an" maxsize="1" />
+   <ELEM name="AllowChgTextKey" type="an" maxsize="1" />
+   <ELEM name="AllowChgPurpose" type="an" maxsize="1" />
+   <ELEM name="AllowChgFirstDate" type="an" maxsize="1" />
+   <ELEM name="AllowChgUnit" type="an" maxsize="1" />
+   <ELEM name="AllowChgTurnus" type="an" maxsize="1" />
+   <ELEM name="AllowChgDay" type="an" maxsize="1" />
+   <ELEM name="AllowChgLastDate" type="an" maxsize="1" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <ELEM name="AllowedTurnusMonths" type="an" maxsize="24" />
+   <ELEM name="AllowedMonthDays" type="an" maxsize="64" />
+   <ELEM name="AllowedTurnusWeeks" type="an" maxsize="104" minnum="0" />
+   <ELEM name="AllowedWeekDays" type="an" maxsize="7" minnum="0" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Dauerauftrag loeschen (Version 1) -->
+ <JOBdef id="JobDeleteStandingOrder"
+    	   code="HKDAL"
+         params="HIDALS"
+         version="1"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="DeleteStandingOrder" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Dauerauftrag aendern (Version 2) -->
+ <JOBdef id="JobModifyStandingOrder"
+    	   code="HKDAN"
+         params="HIDANS"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="ModifyStandingOrderResponse"
+  >
+   <SEG type="ModifyStandingOrder" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Dauerauftrag aendern (Version 3) -->
+ <JOBdef id="JobModifyStandingOrder"
+    	   code="HKDAN"
+         params="HIDANS"
+         version="3"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="ModifyStandingOrderResponse"
+  >
+   <SEG type="ModifyStandingOrder" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+
+
+
+

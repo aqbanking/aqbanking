@@ -1,4 +1,4 @@
-SUBDIRS=parsers imexporters bankinfo backends
+SUBDIRS=crypttoken
 
 sources:
 	for d in $(SUBDIRS); do \
