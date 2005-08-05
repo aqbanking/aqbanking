@@ -15,7 +15,7 @@
 #endif
 
 #include "cbanking_p.h"
-#include "globals.h"
+#include "i18n_l.h"
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/debug.h>
@@ -128,14 +128,14 @@ int CBanking__ConvertFromUtf8(AB_BANKING *ab,
   if (cb->charSet) {
     if (strcasecmp(cb->charSet, "utf-8")!=0) {
 #ifndef HAVE_ICONV_H
-      DBG_INFO(AQT_LOGDOMAIN, "iconv not available, can not convert to \"%s\"",
+      DBG_INFO(AQBANKING_LOGDOMAIN, "iconv not available, can not convert to \"%s\"",
                cb->charSet);
 #else
       iconv_t ic;
 
       ic=iconv_open(cb->charSet, "UTF-8");
       if (ic==((iconv_t)-1)) {
-        DBG_ERROR(AQT_LOGDOMAIN, "Charset \"%s\" not available",
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Charset \"%s\" not available",
                   cb->charSet);
       }
       else {
@@ -160,7 +160,7 @@ int CBanking__ConvertFromUtf8(AB_BANKING *ab,
         pOutbuf=outbuf;
         done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
         if (done==(size_t)-1) {
-          DBG_ERROR(AQT_LOGDOMAIN, "Error in conversion: %s (%d)",
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in conversion: %s (%d)",
                     strerror(errno), errno);
           free(outbuf);
           iconv_close(ic);
@@ -169,7 +169,7 @@ int CBanking__ConvertFromUtf8(AB_BANKING *ab,
 
         GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
         free(outbuf);
-        DBG_DEBUG(AQT_LOGDOMAIN, "Conversion done.");
+        DBG_DEBUG(AQBANKING_LOGDOMAIN, "Conversion done.");
         iconv_close(ic);
         return 0;
       }
@@ -216,7 +216,7 @@ void CBanking_GetRawText(AB_BANKING *ab,
   else
     rv=CBanking__ConvertFromUtf8(ab, text, strlen(text), tbuf);
   if (rv) {
-    DBG_ERROR(AQT_LOGDOMAIN, "Error converting text");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error converting text");
     GWEN_Buffer_Reset(tbuf);
     if (p)
       GWEN_Buffer_AppendBytes(tbuf, text, (p-text));
@@ -255,7 +255,7 @@ int CBanking_MessageBox(AB_BANKING *ab,
       return 0;
     }
     else {
-      DBG_INFO(AQT_LOGDOMAIN,
+      DBG_INFO(AQBANKING_LOGDOMAIN,
                "Auto-answering the following message with %d:\n%s",
                AB_BANKING_MSG_FLAGS_CONFIRM_BUTTON(flags),
                GWEN_Buffer_GetStart(tbuf));
@@ -453,7 +453,7 @@ int CBanking__input(AB_BANKING *ab,
     else {
       if (pos<maxLen) {
         if (chr==CBANKING_CHAR_ABORT) {
-          DBG_INFO(AQT_LOGDOMAIN, "User aborted");
+          DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
           rv=AB_ERROR_USER_ABORT;
           break;
         }
@@ -520,7 +520,7 @@ int CBanking_InputBox(AB_BANKING *ab,
 
       lbuffer=(char*)malloc(maxLen);
       if (!lbuffer) {
-        DBG_ERROR(AQT_LOGDOMAIN, "Not enough memory for %d bytes", maxLen);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Not enough memory for %d bytes", maxLen);
         return AB_ERROR_INVALID;
       }
       fprintf(stderr, "Input: ");
@@ -648,7 +648,7 @@ int CBanking_ProgressAdvance(AB_BANKING *ab,
 
   pr=CBanking__findProgress(ab, id);
   if (!pr) {
-    DBG_INFO(AQT_LOGDOMAIN, "Progress \"%d\" not found", id);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Progress \"%d\" not found", id);
     return AB_ERROR_INVALID;
   }
 
@@ -670,7 +670,7 @@ int CBanking_ProgressLog(AB_BANKING *ab,
 
   pr=CBanking__findProgress(ab, id);
   if (!pr) {
-    DBG_INFO(AQT_LOGDOMAIN, "Progress \"%d\" not found", id);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Progress \"%d\" not found", id);
     return AB_ERROR_INVALID;
   }
 
@@ -690,7 +690,7 @@ int CBanking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
 
   pr=CBanking__findProgress(ab, id);
   if (!pr) {
-    DBG_ERROR(AQT_LOGDOMAIN, "Progress \"%d\" not found", id);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Progress \"%d\" not found", id);
     return AB_ERROR_INVALID;
   }
 
@@ -735,7 +735,7 @@ int CBanking_GetPin(AB_BANKING *ab,
 
     nbuf=GWEN_Buffer_new(0, 256, 0, 1);
     if (GWEN_Text_EscapeToBuffer(token, nbuf)) {
-      DBG_ERROR(AQT_LOGDOMAIN, "Error escaping token name");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error escaping token name");
       return -1;
     }
     s=GWEN_DB_GetCharValue(cb->dbPins, GWEN_Buffer_GetStart(nbuf), 0, 0);

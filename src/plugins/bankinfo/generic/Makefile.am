@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_builddir)/headers $(all_includes)
 EXTRA_DIST=\
   dbb.conf hbci.conf atblz.conf fedachdir.conf bcbankenstamm.conf \
   kidaten.conf README at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2

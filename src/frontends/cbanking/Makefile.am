@@ -1,29 +1,31 @@
-SUBDIRS=profiles
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes)
-EXTRA_DIST=README
+INCLUDES = -I../../libs/aqbanking -I$(top_builddir)/headers $(all_includes)
+#EXTRA_DIST=README
 
-imexporterplugindir = $(aqbanking_plugindir)/imexporters
+lib_LTLIBRARIES=libcbanking.la
 
-imexporterplugin_LTLIBRARIES=dtaus.la
-if IS_WINDOWS
-imexporterplugin_DATA=dtaus.xml dtaus.dll
-else
-imexporterplugin_DATA=dtaus.xml
-endif
+iheaderdir=${includedir}/cbanking
+iheader_HEADERS=cbanking.h
+  
 
 noinst_HEADERS=\
- dtaus_p.h
+ cbanking_l.h \
+ cbanking_p.h \
+ progress_l.h \
+ progress_p.h
+ 
 
-dtaus_la_SOURCES=\
- dtaus.c
+libcbanking_la_SOURCES=\
+ cbanking.c \
+ progress.c
 
-dtaus_la_LIBADD=-L../../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
-dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
+libcbanking_la_LIBADD=-L../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
+libcbanking_la_LDFLAGS=@STRIPALL@ \
+  -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 
 sources:
-	for f in $(dtaus_la_SOURCES); do \
+	for f in $(libcbanking_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
@@ -32,10 +34,10 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = dtaus
+LIBRARY_NAME = cbanking
 DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
-DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
+DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
 ###------------------------------------------------------------------------
 # You should not have to make any modifications below this point

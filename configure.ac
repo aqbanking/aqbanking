@@ -15,7 +15,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=5
+AQBANKING_VERSION_BUILD=7
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -334,16 +334,30 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 #
 # create header directory, make symlinks
 #
+
+#
+# settings
+#
 aqbanking_modules=". jobs types"
+aqbankingpp_modules="."
+aqbanking_frontends="cbanking"
+
+
+#
+# code
+#
+rm -Rf headers 2>/dev/null
 
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf aqbanking
-mkdir -p aqbanking
+mkdir -p headers/aqbanking
 AQ_HEADER_FILES="${lprefix}/version.h"
 
+
+#
 # symlink all headers from src/libs
+#
 hfiles=`( cd "${srcdir}/src/libs/" && ls *.h 2>/dev/null )`
 for f in ${hfiles}; do
   case ${f} in
@@ -351,12 +365,15 @@ for f in ${hfiles}; do
       ;;
     *)
       AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/${f}"
-      ln -s "${lprefix}/src/libs/${f}" "aqbanking/${f}"
+      ln -s "${lprefix}/src/libs/${f}" "headers/aqbanking/${f}"
       ;;
   esac
 done
 
+
+#
 # symlink all headers from src/libs/*
+#
 for sm in $aqbanking_modules; do
   hfiles=`( cd "${srcdir}/src/libs/aqbanking/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -365,20 +382,19 @@ for sm in $aqbanking_modules; do
          ;;
       *)   
          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/libs/aqbanking/${sm}/${f}"
-         ln -s "${lprefix}/src/libs/aqbanking/${sm}/${f}" "aqbanking/${f}"
+         ln -s "${lprefix}/src/libs/aqbanking/${sm}/${f}" "headers/aqbanking/${f}"
          ;;
     esac
   done
 done
 
-ln -s "${lprefix}/version.h" aqbanking/version.h
+ln -s "${lprefix}/version.h" headers/aqbanking/version.h
 
 
-
+#
 # symlink all headers from src/libs/aqbanking++
-aqbankingpp_modules="."
-rm -Rf aqbanking++
-mkdir aqbanking++
+#
+mkdir headers/aqbanking++
 
 # symlink all headers from src/libs/*
 for sm in $aqbankingpp_modules; do
@@ -389,12 +405,41 @@ for sm in $aqbankingpp_modules; do
          ;;
       *)   
          AQ_HEADER_FILES="${AQ_HEADER_FILES} src/libs/aqbanking++/${sm}/${f}"
-         ln -s "${lprefix}/src/libs/aqbanking++/${sm}/${f}" "aqbanking++/${f}"
+         ln -s "${lprefix}/src/libs/aqbanking++/${sm}/${f}" "headers/aqbanking++/${f}"
          ;;
     esac
   done
 done
+
+
+
+# symlink all headers from src/frontends
+
+lprefix="${srcdir}"
+lprefix=`( cd ${lprefix} ; pwd )`
+
+for frontend in ${aqbanking_frontends}; do
+  rm -Rf ${frontend}
+  mkdir -p headers/${frontend}
+  
+  # symlink all headers
+  hfiles=`( cd "${srcdir}/src/frontends/${frontend}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_p.h | *_l.h)
+        ;;
+      *)
+        AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/${f}"
+        ln -s "${lprefix}/src/frontends/${frontend}/${f}" "headers/${frontend}/${f}"
+        ;;
+    esac
+  done
+done
+
+
+
 AC_SUBST(AQ_HEADER_FILES)
+
 
 
 ###-------------------------------------------------------------------------
@@ -474,6 +519,8 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile
   src/libs/aqbanking++/ressource.rc
+  src/frontends/Makefile
+  src/frontends/cbanking/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

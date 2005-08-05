@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES =-I$(top_builddir)/headers $(all_includes)
 EXTRA_DIST=at.c at_p.h
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo

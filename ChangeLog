@@ -1,4 +1,11 @@
 
+2005/08/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- build-system: Now the symlinks for all headers are created below the folder
+  "headers" in $(top_builddir)
+- added frontend "cbanking" (console) (aqbanking-tool now uses this rather
+  than having its own console ui files)
+
 
 2005-08-04  Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c

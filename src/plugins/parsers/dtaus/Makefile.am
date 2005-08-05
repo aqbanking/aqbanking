@@ -1,4 +1,4 @@
-INCLUDES = $(gwenhywfar_includes)
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) $(all_includes)
 EXTRA_DIST=README
 
 dbioplugindir = $(gwenhywfar_plugins)/dbio

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir) \
+INCLUDES = -I$(top_builddir)/headers \
   $(all_includes) \
   -I$(srcdir)/.. \
   -I$(srcdir)/../types

@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir) $(all_includes)
+INCLUDES=-I$(top_builddir)/headers $(all_includes)
 
 lib_LTLIBRARIES=libaqbankingpp.la
 

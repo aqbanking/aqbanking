@@ -1,5 +1,4 @@
-SUBDIRS=libs plugins frontends tools test
-
+SUBDIRS=cbanking
 
 sources:
 	for d in $(SUBDIRS); do \
