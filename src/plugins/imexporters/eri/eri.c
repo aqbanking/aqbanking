@@ -125,8 +125,10 @@ int AB_ERI_ReadRecord(GWEN_BUFFEREDIO *bio,
   printf("Char is 0x%X\n", c);
 #endif
 
-  if (c == GWEN_BUFFEREDIO_CHAR_EOF) {
-    /* seems stupid to return ERROR_READ, but calling function uses that to
+  if ((c == 0x1A) || (c == GWEN_BUFFEREDIO_CHAR_EOF)) {
+    /* After the last record a ^Z is at the end of the file. The ...CHAR_EOF
+       is used for hand edited testfiles which miss the ^Z.
+       Seems stupid to return ERROR_READ, but calling function uses that to
        detect End Of File at this point */
     return GWEN_ERROR_READ;
   }

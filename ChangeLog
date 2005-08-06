@@ -1,4 +1,11 @@
+2005-07-06  Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri/eri.c
+	- Fixed bug in finding EOF. ERI files end with
+	  ^Z character after the last record in the file.
+	  Changed EOF detecting in AB_ERI_ReadRecord() 
+	  accordingly
 
+	
 2005/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - build-system: Now the symlinks for all headers are created below the folder
