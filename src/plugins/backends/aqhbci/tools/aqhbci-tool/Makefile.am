@@ -20,8 +20,10 @@ aqhbci_tool_SOURCES=main.c cbanking.c progress.c \
  sendkeys.c \
  getaccounts.c
 
-aqhbci_tool_LDADD = -L$(top_builddir)/src/libs $(aqhbci_internal_libs) \
-  $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs)
+aqhbci_tool_LDADD = \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(gwenhywfar_libs)
 
 sources:
 

@@ -13,7 +13,10 @@ plugin_DATA=pintan.xml
 endif
 
 pintan_la_LDFLAGS=-module -avoid-version
-pintan_la_LIBADD = -L$(top_builddir)/src/libs $(aqhbci_internal_libs) $(aqbanking_libs) $(gwenhywfar_libs)
+pintan_la_LIBADD = \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(gwenhywfar_libs)
 pintan_la_SOURCES=pintan.c
 
 sources:

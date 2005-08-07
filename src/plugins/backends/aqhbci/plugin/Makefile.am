@@ -34,11 +34,14 @@ sources:
 	  make -C $$d sources; \
 	done
 
-libaqhbci_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+libaqhbci_la_LIBADD = \
   msglayer/libhbcimsg.la \
   joblayer/libhbcijob.la \
   applayer/libhbciapp.la \
-  banking/libhbcibanking.la
+  banking/libhbcibanking.la \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(gwenhywfar_libs)
+
 
 libaqhbci_la_LDFLAGS=\
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
@@ -46,7 +49,10 @@ libaqhbci_la_LDFLAGS=\
 
 aqhbci_la_SOURCES=aqhbci-plugin.c
 #aqhbci_la_SOURCES=dummy.c
-aqhbci_la_LIBADD = -L$(top_builddir)/src/libs $(aqhbci_internal_libs) $(gwenhywfar_libs) $(aqbanking_libs)
+aqhbci_la_LIBADD = \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(gwenhywfar_libs)
 aqhbci_la_LDFLAGS=-module \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
@@ -56,7 +62,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = $(PACKAGE)32_$(AQHBCI_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) $(aqbanking_libs)
+DLLLDLIBS = -L/mingw/lib $(aqbanking_libs) $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 PLUGIN_LIBRARY_NAME = $(PACKAGE)
@@ -135,7 +141,7 @@ $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
 	   --driver-name $(CC) \
 	   -o ../$(PLUGIN_DLLNAME) \
 	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) -L../$(top_builddir)/src/libs $(aqhbci_internal_libs) $(DLLLDLIBS) \
+	     ../ressource.o $(DLLLDFLAGS) -L../$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) $(DLLLDLIBS) \
 	) \
 	&& rm -rf dlldir
 
