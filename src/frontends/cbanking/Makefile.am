@@ -1,5 +1,6 @@
 
-INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(top_srcdir)/src/libs/aqbanking \
+  -I$(top_builddir)/headers $(all_includes)
 #EXTRA_DIST=README
 
 lib_LTLIBRARIES=libcbanking.la
@@ -17,8 +18,10 @@ libcbanking_la_SOURCES=\
  cbanking.c \
  progress.c
 
-libcbanking_la_LIBADD=-L../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
-libcbanking_la_LDFLAGS=@STRIPALL@ \
+libcbanking_la_LIBADD = \
+  -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+  $(gwenhywfar_libs)
+libcbanking_la_LDFLAGS = $(STRIPALL) \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 
