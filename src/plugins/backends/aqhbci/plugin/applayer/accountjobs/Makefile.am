@@ -11,7 +11,7 @@ noinst_HEADERS=\
   accountjob_p.h \
   jobgetbalance_p.h \
   jobgettransactions_p.h \
-  jobgetstandingorders_p.h \
+  jobgetsto_p.h \
   jobgetdatedxfers_p.h \
   jobsingletransfer_p.h \
   jobeutransfer_p.h \
@@ -23,7 +23,7 @@ iheader_HEADERS=\
   accountjob.h \
   jobgetbalance.h \
   jobgettransactions.h \
-  jobgetstandingorders.h \
+  jobgetsto.h \
   jobgetdatedxfers.h \
   jobsingletransfer.h \
   jobeutransfer.h \
@@ -34,7 +34,7 @@ libhbciaccjobs_la_SOURCES=\
   jobgetbalance.c \
   jobgettransactions.c \
   jobgetdatedxfers.c \
-  jobgetstandingorders.c \
+  jobgetsto.c \
   jobsingletransfer.c \
   jobeutransfer.c \
   jobmultitransfer.c
@@ -51,7 +51,7 @@ sources:
 xmlfiles=\
   $(srcdir)/jobgetbalance.xml \
   $(srcdir)/jobgettransactions.xml \
-  $(srcdir)/jobgetstandingorders.xml \
+  $(srcdir)/jobgetsto.xml \
   $(srcdir)/jobsingletransfer.xml \
   $(srcdir)/jobsingledebitnote.xml \
   $(srcdir)/jobeutransfer.xml \
