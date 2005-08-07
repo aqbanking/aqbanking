@@ -1,19 +1,17 @@
 
-INCLUDES = -I../../libs/aqbanking -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(top_builddir)/headers $(all_includes)
 #EXTRA_DIST=README
 
 lib_LTLIBRARIES=libcbanking.la
 
 iheaderdir=${includedir}/cbanking
 iheader_HEADERS=cbanking.h
-  
 
 noinst_HEADERS=\
  cbanking_l.h \
  cbanking_p.h \
  progress_l.h \
  progress_p.h
- 
 
 libcbanking_la_SOURCES=\
  cbanking.c \
