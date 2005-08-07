@@ -46,8 +46,8 @@ at.tar.bz2:
 
 $(at_files): at.tar.bz2
 	test -d at || mkdir -p at
-	bunzip2 -k -f at.tar.bz2 && tar xmf at.tar && rm -f at.tar
-	
+	bunzip2 -k -c $< | tar xmf -
+
 at-daten: data/at/gke_kidaten.csv
 	$(SED) s/\"//g <data/at/gke_kidaten.csv >data/at/gke_kidaten.csv.out
 	iconv -f iso8859-15 -t utf-8 data/at/gke_kidaten.csv.out -o data/at/gke_kidaten.csv.utf8
@@ -61,7 +61,7 @@ ch.tar.bz2:
 
 $(ch_files): ch.tar.bz2
 	test -d ch || mkdir -p ch
-	bunzip2 -k -f ch.tar.bz2 && tar xmf ch.tar && rm -f ch.tar
+	bunzip2 -k -c $< | tar xmf -
 
 de.tar.bz2:
 	./mkdeinfo build data/de/blz.csv data/de/fints_institute.csv tmp.banks
@@ -72,7 +72,7 @@ de.tar.bz2:
 
 $(de_files): de.tar.bz2
 	test -d de || mkdir -p de
-	bunzip2 -k -f de.tar.bz2 && tar xmf de.tar && rm -f de.tar
+	bunzip2 -k -c $< | tar xmf -
 
 us.tar.bz2:
 	./mkdeinfo build-am data/us/bankinfo us data/us/FedACHdir.txt tmp.banks
@@ -83,7 +83,7 @@ us.tar.bz2:
 
 $(us_files): us.tar.bz2
 	test -d us || mkdir -p us
-	bunzip2 -k -f us.tar.bz2 && tar xmf us.tar && rm -f us.tar
+	bunzip2 -k -c $< | tar xmf -
 
 
 bankdata: $(at_files) $(ch_files) $(de_files) $(us_files)
@@ -91,6 +91,8 @@ bankdata: $(at_files) $(ch_files) $(de_files) $(us_files)
 all-local: bankdata
 
 dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
+
+CLEANFILES = $(at_files) $(ch_files) $(de_files) $(us_files)
 
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c
