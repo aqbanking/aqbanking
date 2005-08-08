@@ -17,7 +17,7 @@
 
 
 #include "kbanking.h"
-#include "flagstaff.h"
+#include "kbflagstaff.h"
 
 #include <assert.h>
 #include <qstring.h>
@@ -38,7 +38,7 @@ KBanking::KBanking(const char *appname,
                    const char *fname)
 :QBanking(appname, fname)
 ,_translator(0){
-  _flagStaff=new FlagStaff();
+  _flagStaff=new KBFlagStaff();
 }
 
 
@@ -53,7 +53,7 @@ KBanking::~KBanking(){
 
 
 
-FlagStaff *KBanking::flagStaff(){
+KBFlagStaff *KBanking::flagStaff(){
   return _flagStaff;
 }
 

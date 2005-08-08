@@ -30,12 +30,12 @@ class QTranslator;
 class KBanking;
 
 #include <qbanking/qbanking.h>
-#include "flagstaff.h"
+#include <kbanking/kbflagstaff.h>
 
 
 class KBanking: public QBanking {
 private:
-  FlagStaff *_flagStaff;
+  KBFlagStaff *_flagStaff;
   QTranslator *_translator;
 
   AB_ACCOUNT *_getAccount(const char *accountId);
@@ -49,7 +49,7 @@ public:
   int fini();
 
 
-  FlagStaff *flagStaff();
+  KBFlagStaff *flagStaff();
 
   int executeQueue();
 

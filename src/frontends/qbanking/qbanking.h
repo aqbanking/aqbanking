@@ -29,8 +29,8 @@ class QTranslator;
 
 class QBanking;
 
-#include "banking.h"
-#include "qbflagstaff.h"
+#include <qbanking/banking.h>
+#include <qbanking/qbflagstaff.h>
 
 
 class QBProgress;

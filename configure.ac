@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=10
+AQBANKING_VERSION_BUILD=11
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1245,6 +1245,13 @@ for frontend in $aqbanking_frontends; do
         AC_MSG_NOTICE([*** KDE3 is required for KDE-frontend "kbanking". Specify --with-frontends="cbanking g2banking qbanking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
+      case $aqbanking_frontends in 
+        *qbanking*)
+          ;;
+        *)
+          AC_MSG_ERROR([QT3 frontend is needed by KDE-frontend.])
+          ;;
+      esac
       ;;
   esac
 done
@@ -1527,7 +1534,6 @@ AC_CONFIG_FILES([
   src/frontends/kbanking/Makefile
   src/frontends/kbanking/po/Makefile
   src/frontends/kbanking/dialogs/Makefile
-  src/frontends/kbanking/prg/Makefile
   src/frontends/kbanking/views/Makefile
   src/frontends/kbanking/widgets/Makefile
   src/frontends/kbanking/version.h

@@ -15,7 +15,7 @@
 #endif
 
 
-#include "jobview.h"
+#include "kbjobview.h"
 #include "kbanking.h"
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
@@ -34,9 +34,9 @@
 
 
 KBJobView::KBJobView(KBanking *kb,
-                 QWidget* parent,
-                 const char* name,
-                 WFlags fl)
+                     QWidget* parent,
+                     const char* name,
+                     WFlags fl)
 :KBJobViewUi(parent, name, fl), _app(kb) {
   assert(kb);
 
@@ -46,7 +46,7 @@ KBJobView::KBJobView(KBanking *kb,
   QBoxLayout *jobBoxLayout = new QHBoxLayout( jobBox->layout() );
   jobBoxLayout->setAlignment( Qt::AlignTop );
 
-  _jobList=new JobListView((QWidget*)jobBox, name);
+  _jobList=new KBJobListView((QWidget*)jobBox, name);
   jobBoxLayout->addWidget(_jobList);
 
   QObject::connect((QObject*)_app->flagStaff(), SIGNAL(signalQueueUpdated()),
