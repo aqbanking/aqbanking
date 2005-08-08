@@ -58,7 +58,7 @@ if test "$enable_chipcard_client" != "no"; then
   done
   if test -z "$chipcard_client_dir"; then
       AC_MSG_RESULT([not found ])
-      AC_MSG_ERROR([
+      AC_MSG_NOTICE([
 *** The library libchipcard2c was not found. Obtain it from 
 *** http://www.libchipcard.de.
 *** If it is already installed (including the -devel package), 
@@ -67,6 +67,8 @@ if test "$enable_chipcard_client" != "no"; then
 ***
 *** Please note that it is not Libchipcard this package requested, it is the
 *** successor chipcard2.])
+      have_chipcard_client="no"
+      enable_chipcard_client_test="no"
   else
       AC_MSG_RESULT($chipcard_client_dir)
       AC_MSG_CHECKING(for chipcard-client libs)
@@ -121,7 +123,11 @@ if test "$enable_chipcard_client" != "no"; then
     have_chipcard_client="yes"
     #AC_MSG_RESULT(yes)
   else
-    have_chipcard_client="yes"
+    if test -z "$chipcard_client_dir"; then
+      have_chipcard_client="no"
+    else
+      have_chipcard_client="yes"
+    fi
     AC_MSG_RESULT(assuming yes)
   fi
 dnl end of "if enable-chipcard-client"
