@@ -16,8 +16,8 @@
 
 
 #include "settings.ui.h"
-#include "accountlist.h"
-#include "plugindescrlist.h"
+#include "kbaccountlist.h"
+#include "kbplugindescrlist.h"
 
 #include "kbanking.h"
 
@@ -27,8 +27,8 @@ class KBankingSettings: public KBankingSettingsUi {
   Q_OBJECT
 private:
   KBanking *_banking;
-  AccountListView *_accListView;
-  PluginDescrListView *_providerListView;
+  KBAccountListView *_accListView;
+  KBPluginDescrListView *_providerListView;
 
   void _accountRescan();
   void _backendRescan();

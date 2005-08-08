@@ -16,7 +16,7 @@
 
 
 #include "settings.h"
-#include "processwatcher.h"
+#include <qbanking/qbprocesswatcher.h>
 
 #include <qwidget.h>
 #include <qgroupbox.h>
@@ -60,7 +60,7 @@ KBankingSettings::KBankingSettings(KBanking *ab,
   QBoxLayout *accountsBoxLayout = new QHBoxLayout( accountsBox->layout() );
   accountsBoxLayout->setAlignment( Qt::AlignTop );
 
-  _accListView=new AccountListView((QWidget*)accountsBox, "AccountList");
+  _accListView=new KBAccountListView((QWidget*)accountsBox, "AccountList");
   accountsBoxLayout->addWidget(_accListView);
 
   _accListView->setResizeMode(QListView::NoColumn);
@@ -83,8 +83,8 @@ KBankingSettings::KBankingSettings(KBanking *ab,
   QBoxLayout *backendsBoxLayout = new QHBoxLayout( backendsBox->layout() );
   backendsBoxLayout->setAlignment( Qt::AlignTop );
 
-  _providerListView=new PluginDescrListView((QWidget*)backendsBox,
-                                            "BackendList");
+  _providerListView=new KBPluginDescrListView((QWidget*)backendsBox,
+                                              "BackendList");
   backendsBoxLayout->addWidget(_providerListView);
 
   _providerListView->setResizeMode(QListView::NoColumn);
@@ -338,19 +338,19 @@ void KBankingSettings::slotBackendSetup(){
       return;
     }
 
-    ProcessWatcher pwatcher(&wp,
-                            tr("<qt>"
-                               "<p>"
-                               "Running KDE wizard, this window will close "
-                               "automatically when the wizard finishes."
-                               "</p>"
-                               "<p>"
-                               "Please wait..."
-                               "</p>"
-                               "</qt"
-                              ),
-                            this,
-                            "ProcessWatcher",
+    QBProcessWatcher pwatcher(&wp,
+                              tr("<qt>"
+                                 "<p>"
+                                 "Running KDE wizard, this window will close "
+                                 "automatically when the wizard finishes."
+                                 "</p>"
+                                 "<p>"
+                                 "Please wait..."
+                                 "</p>"
+                                 "</qt"
+                                ),
+                              this,
+                              "ProcessWatcher",
                             true);
     pwatcher.setCaption(caption());
     pwatcher.exec();

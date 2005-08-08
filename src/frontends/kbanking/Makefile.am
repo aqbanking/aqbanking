@@ -18,18 +18,16 @@ dist_M4_DATA=kbanking.m4
 
 iheaderdir=${includedir}/kbanking
 iheader_HEADERS=\
- flagstaff.h \
+ kbflagstaff.h \
  kbanking_p.h \
- kbanking.h \
- waitcallback.h 
+ kbanking.h
 
 libkbanking_la_SOURCES=\
- flagstaff.cpp \
- kbanking.cpp \
- waitcallback.cpp
+ kbflagstaff.cpp \
+ kbanking.cpp
 
 nodist_libkbanking_la_SOURCES=\
- flagstaff.moc.cpp
+ kbflagstaff.moc.cpp
 
 kbanking-config: kbanking-config.in
 	echo "#! /bin/sh" >kbanking-config && \
@@ -45,8 +43,9 @@ libkbanking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- $(kde3_libs) -lkdeui -lkdecore -lkio \
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
+ -L../qbanking -lqbanking \
+ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(kde3_libs) -lkdeui -lkdecore -lkio $(gwenhywfar_libs)
 
 libkbanking_la_LDFLAGS=\
  -version-info @KBANKING_SO_CURRENT@:@KBANKING_SO_REVISION@:@KBANKING_SO_AGE@
