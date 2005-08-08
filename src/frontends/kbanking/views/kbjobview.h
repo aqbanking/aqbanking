@@ -15,7 +15,7 @@
 #ifndef KBANKING_JOBVIEW_H
 #define KBANKING_JOBVIEW_H
 
-#include "jobview.ui.h"
+#include "kbjobview.ui.h"
 
 #include <qwidget.h>
 
@@ -27,12 +27,12 @@ class JobView;
 #include "kbanking.h"
 
 
-class JobView: public JobViewUi {
+class KBJobView: public KBJobViewUi {
   Q_OBJECT
 public:
-  JobView(KBanking *kb,
-          QWidget* parent=0, const char* name=0, WFlags fl=0);
-  ~JobView();
+  KBJobView(KBanking *kb,
+            QWidget* parent=0, const char* name=0, WFlags fl=0);
+  ~KBJobView();
 
   bool init();
   bool fini();
@@ -42,7 +42,7 @@ protected:
 
 private:
   KBanking *_app;
-  JobListView *_jobList;
+  KBJobListView *_jobList;
 
 public slots:
   void slotQueueUpdated();

@@ -33,11 +33,11 @@
 #define BUTTON_WIDTH 110
 
 
-JobView::JobView(KBanking *kb,
+KBJobView::KBJobView(KBanking *kb,
                  QWidget* parent,
                  const char* name,
                  WFlags fl)
-:JobViewUi(parent, name, fl), _app(kb) {
+:KBJobViewUi(parent, name, fl), _app(kb) {
   assert(kb);
 
   // Manually create and add layout here because the .ui-generated
@@ -60,12 +60,12 @@ JobView::JobView(KBanking *kb,
 
 
 
-JobView::~JobView(){
+KBJobView::~KBJobView(){
 }
 
 
 
-bool JobView::init(){
+bool KBJobView::init(){
   GWEN_DB_NODE *db;
 
   db=_app->getAppData();
@@ -91,7 +91,7 @@ bool JobView::init(){
 
 
 
-bool JobView::fini(){
+bool KBJobView::fini(){
   GWEN_DB_NODE *db;
   int i, j;
 
@@ -109,7 +109,7 @@ bool JobView::fini(){
 }
 
 
-void JobView::slotQueueUpdated(){
+void KBJobView::slotQueueUpdated(){
   DBG_NOTICE(0, "Job queue updated");
   _jobList->clear();
   _jobList->addJobs(_app->getEnqueuedJobs());
@@ -117,7 +117,7 @@ void JobView::slotQueueUpdated(){
 
 
 
-void JobView::slotExecute(){
+void KBJobView::slotExecute(){
   std::list<AB_JOB*> jl;
   int rv;
   bool updated;
@@ -153,7 +153,7 @@ void JobView::slotExecute(){
 
 
 
-void JobView::slotDequeue(){
+void KBJobView::slotDequeue(){
 }
 
 

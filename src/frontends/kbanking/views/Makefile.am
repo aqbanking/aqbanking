@@ -8,19 +8,19 @@ noinst_LTLIBRARIES=libviews.la
 
 iheaderdir=${includedir}/kbanking
 iheader_HEADERS=\
- jobview.h
+ kbjobview.h
 
 nodist_iheader_HEADERS= \
- jobview.ui.h
+ kbjobview.ui.h
 
 libviews_la_SOURCES=\
- jobview.cpp
+ kbjobview.cpp
 
 nodist_libviews_la_SOURCES=\
-  jobview.ui.cpp jobview.ui.moc.cpp \
-  jobview.moc.cpp
+  kbjobview.ui.cpp kbjobview.ui.moc.cpp \
+  kbjobview.moc.cpp
 
-UI_FILES = jobview.ui
+UI_FILES = kbjobview.ui
 
 EXTRA_DIST = $(UI_FILES)
 
