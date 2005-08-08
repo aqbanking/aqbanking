@@ -1,0 +1,29 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef QBANKING_VERSION_H
+#define QBANKING_VERSION_H
+
+#define QBANKING_VERSION_MAJOR @QBANKING_VERSION_MAJOR@
+#define QBANKING_VERSION_MINOR @QBANKING_VERSION_MINOR@
+#define QBANKING_VERSION_PATCHLEVEL @QBANKING_VERSION_PATCHLEVEL@
+#define QBANKING_VERSION_BUILD @QBANKING_VERSION_BUILD@
+#define QBANKING_VERSION_TAG "@QBANKING_VERSION_TAG@"
+#define QBANKING_VERSION_FULL_STRING "@QBANKING_VERSION_FULL_STRING@"
+#define QBANKING_VERSION_STRING "@QBANKING_VERSION_STRING@"
+
+
+
+#endif /* QBANKING_VERSION_H */
+
+

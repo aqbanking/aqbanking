@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=9
+AQBANKING_VERSION_BUILD=10
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -69,6 +69,11 @@ KBANKING_SO_CURRENT=2
 KBANKING_SO_REVISION=1
 KBANKING_SO_AGE=1
 KBANKING_SO_EFFECTIVE="`echo \$(($KBANKING_SO_CURRENT-$KBANKING_SO_AGE))`"
+
+QBANKING_SO_CURRENT=1
+QBANKING_SO_REVISION=0
+QBANKING_SO_AGE=0
+QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
 
 
 
@@ -159,6 +164,21 @@ dnl "stable", "rcX", "betaX", "cvs"
 KBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 KBANKING_VERSION_FULL_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL.$KBANKING_VERSION_BUILD${KBANKING_VERSION_TAG}"
 KBANKING_VERSION_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL"
+
+
+
+###-------------------------------------------------------------------------
+#
+# QBanking versions
+#
+QBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+QBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+QBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+QBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+QBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
+QBANKING_VERSION_FULL_STRING="$QBANKING_VERSION_MAJOR.$QBANKING_VERSION_MINOR.$QBANKING_VERSION_PATCHLEVEL.$QBANKING_VERSION_BUILD${QBANKING_VERSION_TAG}"
+QBANKING_VERSION_STRING="$QBANKING_VERSION_MAJOR.$QBANKING_VERSION_MINOR.$QBANKING_VERSION_PATCHLEVEL"
 
 
 
@@ -266,7 +286,65 @@ case "$AQOFXCONNECT_VERSION_TAG" in
 esac
 
 
-   
+
+#
+# for G2Banking
+#
+case "$G2BANKING_VERSION_TAG" in
+  cvs)
+     G2BANKING_VERSION_RELEASE_STRING="$G2BANKING_VERSION_FULL_STRING"
+     ;;
+  stable)
+     G2BANKING_VERSION_RELEASE_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     G2BANKING_VERSION_RELEASE_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     G2BANKING_VERSION_RELEASE_STRING="$G2BANKING_VERSION_RELEASE_STRING${G2BANKING_VERSION_TAG}"
+     ;;
+esac
+
+
+#
+# for KBanking
+#
+case "$KBANKING_VERSION_TAG" in
+  cvs)
+     KBANKING_VERSION_RELEASE_STRING="$KBANKING_VERSION_FULL_STRING"
+     ;;
+  stable)
+     KBANKING_VERSION_RELEASE_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     KBANKING_VERSION_RELEASE_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     KBANKING_VERSION_RELEASE_STRING="$KBANKING_VERSION_RELEASE_STRING${KBANKING_VERSION_TAG}"
+     ;;
+esac
+
+
+#
+# for QBanking
+#
+case "$QBANKING_VERSION_TAG" in
+  cvs)
+     QBANKING_VERSION_RELEASE_STRING="$QBANKING_VERSION_FULL_STRING"
+     ;;
+  stable)
+     QBANKING_VERSION_RELEASE_STRING="$QBANKING_VERSION_MAJOR.$QBANKING_VERSION_MINOR.$QBANKING_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     QBANKING_VERSION_RELEASE_STRING="$QBANKING_VERSION_MAJOR.$QBANKING_VERSION_MINOR.$QBANKING_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     QBANKING_VERSION_RELEASE_STRING="$QBANKING_VERSION_RELEASE_STRING${QBANKING_VERSION_TAG}"
+     ;;
+esac
+
+
+
 ###-------------------------------------------------------------------------
 #
 # SUBST and DEFINE versions
@@ -502,6 +580,40 @@ AC_DEFINE_UNQUOTED(KBANKING_SO_EFFECTIVE_STR, "$KBANKING_SO_EFFECTIVE",
                    [effective SO version])
 
 
+#
+# same for QBanking
+#
+
+AC_SUBST(QBANKING_VERSION_MAJOR)
+AC_SUBST(QBANKING_VERSION_MINOR)
+AC_SUBST(QBANKING_VERSION_PATCHLEVEL)
+AC_SUBST(QBANKING_VERSION_BUILD)
+AC_SUBST(QBANKING_VERSION_TAG)
+AC_SUBST(QBANKING_VERSION_FULL_STRING)
+AC_SUBST(QBANKING_VERSION_STRING)
+AC_SUBST(QBANKING_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_MAJOR,$QBANKING_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_MINOR,$QBANKING_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_PATCHLEVEL,$QBANKING_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_BUILD,$QBANKING_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_STRING,"$QBANKING_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_FULL_STRING,"$QBANKING_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(QBANKING_VERSION_TAG,$QBANKING_VERSION_TAG, [tag])
+
+AC_SUBST(QBANKING_SO_CURRENT)
+AC_SUBST(QBANKING_SO_REVISION)
+AC_SUBST(QBANKING_SO_AGE)
+AC_SUBST(QBANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
+                   [effective SO version])
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -707,12 +819,12 @@ AC_SUBST(GTK2_LIBS)
 
 ###-------------------------------------------------------------------------
 #
-# KDE3
+# QT3
 #
 
-AQ_CHECK_KDE3
-if test "$have_kde3" = "yes"; then
-  all_includes="$all_includes $qt3_includes $kde3_includes"
+AQ_CHECK_QT3
+if test "$have_qt3" = "yes"; then
+  all_includes="$all_includes $qt3_includes"
 
   # Define this macro to disable the cast from QString to const char
   # which implicitly uses latin1()!
@@ -723,6 +835,18 @@ if test "$have_kde3" = "yes"; then
   AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
   AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
   AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# KDE3
+#
+
+AQ_CHECK_KDE3
+if test "$have_kde3" = "yes"; then
+  all_includes="$all_includes $kde3_includes"
 fi
 
 
@@ -848,7 +972,7 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 AC_ARG_WITH(frontends, 
   [  --with-frontends=list      space separated list of frontends (default:all)],
   [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="cbanking g2banking kbanking"]
+  [aqbanking_frontends="cbanking g2banking qbanking kbanking"]
 )
 
 
@@ -1106,6 +1230,11 @@ for frontend in $aqbanking_frontends; do
         AC_MSG_ERROR([GTK2 is required for GTK2-frontend.])
       fi
       ;;
+    qbanking)
+      if test "x$have_qt3" != "xyes"; then
+        AC_MSG_ERROR([QT3 is required for QT-frontend.])
+      fi
+      ;;
     kbanking)
       if test "x$have_kde3" != "xyes"; then
         AC_MSG_ERROR([KDE3 is required for KDE-frontend.])
@@ -1322,6 +1451,32 @@ AC_SUBST(kbanking_data)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for frontend qbanking
+#
+
+case "$OS_TYPE" in
+    posix)
+        qbanking_libs="-L`eval echo $prefix/lib` -lqbanking"
+        qbanking_includes="-I`eval echo $prefix/include`"
+        qbanking_data="`eval echo $prefix/share`/qbanking"
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        qbanking_libs="-L`eval echo $prefix/lib` -lqbanking32_${G2BANKING_SO_EFFECTIVE}"
+        qbanking_includes="-I`eval echo $prefix/include`"
+        qbanking_data="`eval echo $prefix/share`/qbanking"
+	all_includes="$all_includes -mms-bitfields"
+    	;;
+esac
+
+AC_SUBST(qbanking_includes)
+AC_SUBST(qbanking_libs)
+AC_SUBST(qbanking_data)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Cleanup includes, define all_XXX
 #
 
@@ -1360,6 +1515,7 @@ AC_CONFIG_FILES([
   src/frontends/g2banking/views/Makefile
   src/frontends/g2banking/widgets/Makefile
   src/frontends/kbanking/Makefile
+  src/frontends/kbanking/po/Makefile
   src/frontends/kbanking/dialogs/Makefile
   src/frontends/kbanking/prg/Makefile
   src/frontends/kbanking/views/Makefile
@@ -1367,6 +1523,15 @@ AC_CONFIG_FILES([
   src/frontends/kbanking/version.h
   src/frontends/kbanking/kbanking-config.in
   src/frontends/kbanking/ressource.rc
+  src/frontends/qbanking/Makefile
+  src/frontends/qbanking/dialogs/Makefile
+  src/frontends/qbanking/prg/Makefile
+  src/frontends/qbanking/views/Makefile
+  src/frontends/qbanking/widgets/Makefile
+  src/frontends/qbanking/version.h
+  src/frontends/qbanking/qbanking-config.in
+  src/frontends/qbanking/ressource.rc
+  src/frontends/qbanking/po/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

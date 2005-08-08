@@ -1,0 +1,296 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>QBankingSettingsUi</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>QBankingSettingsUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>749</width>
+            <height>479</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Banking Settings</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTabWidget">
+            <property name="name">
+                <cstring>QBankingUI</cstring>
+            </property>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>TabPage</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Intro</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox1_2</cstring>
+                        </property>
+                        <property name="title">
+                            <string></string>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QTextBrowser">
+                                <property name="name">
+                                    <cstring>introBrowser</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>&lt;qt&gt;
+&lt;h2&gt;&lt;font color="blue"&gt;AqBanking Settings&lt;/font&gt; &lt;/h2&gt;
+&lt;p&gt;
+This dialog allows setting up the &lt;b&gt;Aquamaniac Banking Interface&lt;/b&gt;.
+&lt;/p&gt;
+
+&lt;br&gt;
+&lt;h3&gt;Accounts&lt;/h3&gt;
+&lt;p&gt;
+This page show the accounts which are already setup with 
+&lt;i&gt;AqBanking&lt;/i&gt;. It lets you map those accounts to accounts of your
+application.
+&lt;/p&gt;
+
+&lt;br&gt;
+&lt;h3&gt;Backends&lt;/h3&gt;
+&lt;p&gt;
+&lt;i&gt;AqBanking&lt;/i&gt; uses backend plugins to provide support for the 
+various online banking protocols. On this page, you can enable,
+disable and setup those backends.
+&lt;/p&gt;
+
+&lt;/qt&gt;</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>accounts</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Accounts</string>
+                </attribute>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>accountsBox</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>7</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="title">
+                            <string></string>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout10</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>accountMapButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Map</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>map the selected account to application accounts</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>&lt;qt&gt;
+&lt;p&gt;
+When you press this button you can map online accounts to accounts
+of your application.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer9</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>221</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Backends</string>
+                </attribute>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>backendsBox</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>7</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="title">
+                            <string></string>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout11</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>backendDetailsButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Details</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>backendSetupButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Setup</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>backendEnableButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Enable</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>backendDisableButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Disable</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer10</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>141</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout12</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer11</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>81</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>closeButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Close</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<tabstops>
+    <tabstop>QBankingUI</tabstop>
+    <tabstop>introBrowser</tabstop>
+    <tabstop>backendSetupButton</tabstop>
+    <tabstop>backendDetailsButton</tabstop>
+    <tabstop>backendEnableButton</tabstop>
+    <tabstop>backendDisableButton</tabstop>
+    <tabstop>closeButton</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
