@@ -1,6 +1,7 @@
-INCLUDES = -I.. -I../widgets -I../../libs/aqbanking -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(srcdir)/.. -I.. -I$(srcdir)/../widgets \
+  -I$(top_builddir)/headers $(all_includes)
 
-DEFS=\
+DEFS += \
   -DPACKAGE_DATA_DIR=\""$(datadir)"\" \
   -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 

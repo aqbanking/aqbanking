@@ -7,16 +7,17 @@ DEFS += \
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
   -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
 
-INCLUDES = -Iwidgets -Idialogs -Iviews -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(srcdir)/widgets -I$(srcdir)/dialogs -I$(srcdir)/views \
+  -I$(top_builddir)/headers $(all_includes)
 
 bin_SCRIPTS=g2banking-config
-M4dir=${prefix}/share/aclocal
-M4_DATA=g2banking.m4
+M4dir=$(datadir)/aclocal
+dist_M4_DATA=g2banking.m4
 
 g2banking-config: g2banking-config.in
 	echo "#! /bin/sh" >g2banking-config && \
 	echo 'dir="@prefix@"' >>g2banking-config && \
-	cat $< >> g2banking-config && \
+	cat $<  >> g2banking-config && \
 	chmod a+x g2banking-config
 
 EXTRA_DIST = g2banking.glade
