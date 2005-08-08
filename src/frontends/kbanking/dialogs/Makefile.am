@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers -I../widgets -I.. -I../prg @all_includes@
+INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. -I$(srcdir)/../prg @all_includes@
 
 UI_FILES=\
   processwatcher.ui \

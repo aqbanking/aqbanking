@@ -2,7 +2,11 @@ SUBDIRS=prg widgets dialogs views po
 
 SUBPACKAGE=qbanking
 
-INCLUDES=-Idialogs -Iwidgets -Iprg -Iviews -I$(top_builddir)/headers @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/prg -I$(srcdir)/views \
+  -Idialogs -Iwidgets -Iprg -Iviews \
+  $(all_includes)
 
 DEFS += -DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
 
@@ -10,7 +14,7 @@ lib_LTLIBRARIES=libqbanking.la
 
 bin_SCRIPTS=qbanking-config
 M4dir=${prefix}/share/aclocal
-M4_DATA=qbanking.m4
+dist_M4_DATA=qbanking.m4
 
 iheaderdir=${includedir}/qbanking
 iheader_HEADERS=\

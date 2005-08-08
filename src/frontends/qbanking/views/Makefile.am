@@ -1,5 +1,8 @@
-INCLUDES=-I$(top_builddir)/headers \
-  -I../widgets -I../dialogs -I../prg -I.. @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/../widgets -I$(srcdir)/../dialogs \
+  -I$(srcdir)/../prg -I$(srcdir)/.. \
+  $(all_includes)
 
 noinst_LTLIBRARIES=libviews.la
 

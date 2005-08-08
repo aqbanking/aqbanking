@@ -1,4 +1,7 @@
-INCLUDES=-I$(top_builddir)/headers -I.. -I../prg -I../dialogs @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/.. -I$(srcdir)/../prg -I$(srcdir)/../dialogs \
+  $(all_includes)
 
 UI_FILES= \
  qbprogress.ui \
