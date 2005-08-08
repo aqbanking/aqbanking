@@ -1,4 +1,4 @@
-INCLUDES=@all_includes@
+INCLUDES=-I$(top_builddir)/headers @all_includes@
 
 localedir=$(datadir)/locale
 DEFS= @DEFS@ -DLOCALEDIR=\"$(localedir)\"

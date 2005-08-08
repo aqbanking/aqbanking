@@ -842,6 +842,26 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 
 ###-------------------------------------------------------------------------
 #
+# backends and frontends
+#
+
+AC_ARG_WITH(frontends, 
+  [  --with-frontends=list      space separated list of frontends (default:all)],
+  [aqbanking_frontends="$withval"],
+  [aqbanking_frontends="cbanking g2banking kbanking"]
+)
+
+
+AC_ARG_WITH(backends, 
+  [  --with-backends=list      space separated list of backends (default:all)],
+  [aqbanking_backends="$withval"],
+  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
+)
+
+
+
+###-------------------------------------------------------------------------
+#
 # create header directory, make symlinks
 #
 
@@ -1054,26 +1074,9 @@ AC_SUBST(DOXYGEN_TAGFILES)
 
 ###-------------------------------------------------------------------------
 #
-# backends and frontends
-#
-
-AC_ARG_WITH(frontends, 
-  [  --with-frontends=list      space separated list of frontends (default:all)],
-  [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="cbanking g2banking kbanking"]
-)
-
-
-AC_ARG_WITH(backends, 
-  [  --with-backends=list      space separated list of backends (default:all)],
-  [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
-)
-
-
-#
 # check for dependencies of backends
 #
+
 for backend in $aqbanking_backends; do
   case "$backend" in
     aqofxconnect)
@@ -1091,9 +1094,11 @@ done
 
 
 
+###-------------------------------------------------------------------------
 #
 # check for dependencies of frontends
 #
+
 for frontend in $aqbanking_frontends; do
   case "$frontend" in
     g2banking)

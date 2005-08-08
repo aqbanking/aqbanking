@@ -7,7 +7,7 @@ DEFS=\
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
   -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
 
-INCLUDES = -Iwidgets -Idialogs -Iviews $(aqbanking_includes) $(all_includes)
+INCLUDES = -Iwidgets -Idialogs -Iviews -I$(top_builddir)/headers $(all_includes)
 
 bin_SCRIPTS=g2banking-config
 M4dir=${prefix}/share/aclocal
