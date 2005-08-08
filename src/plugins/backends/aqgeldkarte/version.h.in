@@ -1,0 +1,29 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AQGELDKARTE_VERSION_H
+#define AQGELDKARTE_VERSION_H
+
+#define AQGELDKARTE_VERSION_MAJOR @AQGELDKARTE_VERSION_MAJOR@
+#define AQGELDKARTE_VERSION_MINOR @AQGELDKARTE_VERSION_MINOR@
+#define AQGELDKARTE_VERSION_PATCHLEVEL @AQGELDKARTE_VERSION_PATCHLEVEL@
+#define AQGELDKARTE_VERSION_BUILD @AQGELDKARTE_VERSION_BUILD@
+#define AQGELDKARTE_VERSION_TAG "@AQGELDKARTE_VERSION_TAG@"
+#define AQGELDKARTE_VERSION_FULL_STRING "@AQGELDKARTE_VERSION_FULL_STRING@"
+#define AQGELDKARTE_VERSION_STRING "@AQGELDKARTE_VERSION_STRING@"
+
+
+
+#endif /* AQGELDKARTE_VERSION_H */
+
+
