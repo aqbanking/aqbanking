@@ -19,7 +19,7 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
   version.h
 
-CLEANFILES = aqbanking-config
+CLEANFILES = aqbanking-config aqbanking-config.in
 
 aqbanking-config: aqbanking-config.in
 	echo "#! /bin/sh" >aqbanking-config && \

@@ -1,13 +1,13 @@
-SUBDIRS=msglayer joblayer applayer banking
+SUBDIRS=msglayer joblayer accountjobs applayer banking
 
-EXTRA_DIST=aqhbci.xml.in
+EXTRA_DIST=aqhbci.xml.in header.xml.in
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
  -I$(srcdir)/joblayer
 
 BUILT_SOURCES = version.h
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES) hbci.xml
 
 
 plugindir= $(aqbanking_plugindir)/providers
@@ -26,6 +26,13 @@ noinst_HEADERS = aqhbci_l.h
 lib_LTLIBRARIES=libaqhbci.la
 libaqhbci_la_SOURCES=dummy.c
 
+xmldatadir = $(aqhbci_data)/xml
+xmldata_DATA=hbci.xml
+
+hbci.xml: header.xml applayer/applayer.xml accountjobs/accountjobs.xml
+	$(XMLMERGE) --compact --header -v header.xml applayer/applayer.xml accountjobs/accountjobs.xml -o $@
+
+
 sources:
 	for f in $(libaqhbci_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
@@ -37,6 +44,7 @@ sources:
 libaqhbci_la_LIBADD = \
   msglayer/libhbcimsg.la \
   joblayer/libhbcijob.la \
+  accountjobs/libhbciaccjobs.la \
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
   -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
@@ -62,7 +70,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = $(PACKAGE)32_$(AQHBCI_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(aqbanking_libs) $(gwenhywfar_libs)
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking -laqbanking
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 PLUGIN_LIBRARY_NAME = $(PACKAGE)

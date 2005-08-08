@@ -1,0 +1,1237 @@
+
+=============================== WARNING =====================================
+AqHBCI is currently in a transitional state. Do not use this CVS version it 
+with production systems !!
+=============================================================================
+
+
+2005/08/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed prototype of AH_Outbox_Execute()
+
+
+2005/08/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more fixes to new medium code
+
+
+2005/08/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- hbci: 
+  - added connect timeout
+  - use GWEN_NetConnection_Connect_Wait() instead of asynchronous
+    GWEN_NetConnection_StartConnect(). This will allow the application to 
+    determine whether the server is reachable.
+  - removed plugin loading stuff for media (security media are now fully
+    based on GWEN_CRYPTTOKEN, so we use its plugin mechanisms)
+- medium:
+  - removed AH_MEDIUM_PROVIDER (no use for it, since GWEN_CRYPTTOKENs are now
+    used which provide their own plugin mechanisms)
+- completed transition from medium plugins to crypttoken (tested with
+  OpenHBCI key files and DDV cards)
+- removed ohbci plugin (is now provided by gwen)
+- removed some other unused media plugins
+
+
+2005/07/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started moving medium management from AH_MEDIUM_PROVIDER to Gwens generic
+  plugin API
+- started on crypt token plugins (ctddv and ctrdh), they will replace
+  the current security media (except the pintan medium)
+
+
+2005/07/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in Gwen and AqBanking
+- removed old server code, thus simplifying the message handling significantly
+- added peerId to AH_User
+
+
+2005/07/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in jobgetstandingorders.c (was not reading nextExecutionDate
+  properly)
+
+
+===========================================================================
+MARK: released aqhbci-1.2.0 (2005/07/15)
+===========================================================================
+
+
+2005/07/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AH_Job_UpdateBank_Process(): Only warn if no account list has been
+  received, don't make it an error
+
+
+2005/07/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- text keys are now sorted with multi jobs, too
+- added function AH_User_SetUserId() (use with care!)
+
+
+2005/07/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented dated transfers
+
+
+===========================================================================
+MARK: released aqhbci-1.1.0 (2005/07/10)
+===========================================================================
+
+
+2005/07/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- job HKDAN (modify standing order) now sets all corresponding transaction
+  limits
+- jobs CreateStandingOrder and ModifyStandingOrder now work (tested with
+  Hamburger Sparkasse)
+
+
+2005/07/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in JobGetStandingOrders
+- fixed a security related bug: Now the local crypt key owner is used as
+  expected crypter
+
+
+2005/07/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in OpenHBCI-Medium: Now we always start with a localSignSeq of 1
+
+
+2005/06/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- extended JobSingleTransfer: It will from now on handle most transfer-like 
+  jobs, inclusing standing orders and dated transfers
+- started implementing standing orders
+
+
+2005/06/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added missing "code" attribute to jobs where they were missing (-> resulted
+  in AqHBCI not asking for the TAN)
+- added command to "hbcixml" tool: "check" now checks for the sanity of
+  jobs
+
+
+===========================================================================
+MARK: released aqhbci-1.0.10beta (2005/06/14)
+===========================================================================
+
+
+2005/05/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a lot more commands to AqHBCI tool (mainly for Holger Kiskowski):
+  - adduser
+  - getaccounts
+  - activate
+  - deactivate
+
+
+2005-05-23   Christian Stimming <stimming@tuhh.de>
+
+	* src/media/ohbci/ohbci.c, src/media/rdhkeyfile/rdhkeyfile.c,
+	src/libs/msglayer/dialog.c: Fix gcc4 warnings about different
+	pointer signedness.
+
+
+2005/05/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in generic job code
+- fixed a bug in src/tools/aqhbci-tool/Makefile.am: Was not linking against
+  local libaqhbci.so
+
+
+===========================================================================
+MARK: released aqhbci-1.0.9beta (2005/05/20)
+===========================================================================
+
+
+2005/05/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added customer property: preferSingleTransfer. This is now used to determine
+  whether single or multi transfers are to be used (if multi transfers aren't
+  available single transfers are used)
+- added configuration option "transferTimeout" to settings file: This allows
+  to specify different timeouts
+
+
+2005/05/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added tool aqhbci-tool (for now only the command "mkpinlist" is
+  implemented. This command creates a pin file)
+- started working on multi transfer jobs
+
+
+2005-05-09  Andreas Degert  <ad@papyrus-gmbh.de>
+
+	* src/libs/applayer/accountjobs/jobgettransactions.xml: textkey
+	and textkeyext must be sent with leading zeros (TransferBase,
+	version 2; same change as in version 1 some time ago; tested with
+	account on Deutsche Bank).
+
+
+2005/05/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- README: Added a section about environment variables used by AqHBCI
+- jobgettransactions.c: Writing of the file "/tmp/booked.mt" is now only
+  performed when the environment variable "AQHBCI_LOGBOOKED" exists
+- XML files: changed some names to make a standing order easier to import
+- improved logging: Now the separating ":" between pin and tan is also 
+  printed. This keeps logfiles parsable.
+- implemented JobGetStandingOrders (not tested yet)
+
+
+2005/04/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- modified segment HNSHA for PIN/TAN (necessary to keep the log manager
+  working)
+
+
+2005-04-24  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/msglayer/hbci.c: Change path lookup order to avoid
+	warnings on win32.
+
+
+===========================================================================
+MARK: released aqhbci-1.0.8 (2005/04/23)
+===========================================================================
+
+
+2005/04/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in OHBCI medium
+
+
+===========================================================================
+MARK: released aqhbci-1.0.7 (2005/04/21)
+===========================================================================
+
+
+2005/04/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AH_Job_TestVersion_Process(): Was not using the correct 
+  DB when searching for result codes
+
+
+2005/04/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added fake of HILASS and HKLAS version 3 (in the official specs there is
+  no version 3 of this job, HBCI 2.1 uses 2 and HBCI 2.2 uses 4)
+
+
+===========================================================================
+MARK: released aqhbci-1.0.6 (2005/04/08)
+Emergency release.
+Due to the bug shown below XML files are not created correctly with the last
+version.
+===========================================================================
+
+
+2005-04-08   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/applayer/*/Makefile.am: Unfortunately, the gnu make
+	3.79.1 somehow only took one file of the prerequisite variable $<
+	into account. This broke the xml file generation. Fixed this.
+
+	* aqhbci.iss.in, src/libs/msglayer/hbci.c: Add path lookup of xml
+	files via PluginManager to enable this on win32-systems.
+
+
+===========================================================================
+MARK: released aqhbci-1.0.5 (2005/04/08)
+===========================================================================
+
+
+2005/04/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- increased trustlevel of encrypted data: Normally encrypted data within
+  a HBCI message is of no use, because to decrypt it the bank's private keys
+  are needed. However, in PIN/TAN mode this segment contains the unencrypted
+  message, since in PIN/TAN mode no encryption is used (in addition to SSL, 
+  that is).
+- in transfers now empty lines for purpose and remote name are ignored
+
+
+2005/04/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in description for EU transfer (otherAccount is not needed if
+  IBAN is given)
+- fixed a bug in description of JobGetTransactions in HBCI 2.2
+
+
+2005-04-04   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/msglayer/hbci.c: Path for plugins are looked up via
+	PluginManager. For windows, this finally enables the run-time
+	lookup of paths according to the installation location.
+
+
+2005/03/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed WaitCallback definitions and registrations. This is now done
+  centrally in AqBanking.
+
+
+2005-03-29   Christian Stimming <stimming@tuhh.de>
+
+	* aqhbci.iss.in: Complete the support for Setup file creation.
+
+
+===========================================================================
+MARK: released aqhbci-1.0.4beta (2005/03/28)
+===========================================================================
+
+
+2005/03/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed error detection code (especially for getting the server keys)
+- relaxed expectations when closing a dialog (when the servers' response
+  is not received we now just ignore this error. In this case it is not a 
+  clean shutdown of the dialog, but that doesn't matter too much to the
+  client, because he wanted to close the dialog anyway, so the dialog is
+  no longer needed. Also, the specs make it clear that all previously
+  answered jobs are still valid even when the dialog is aborted.
+- added I18N to pin medium plugin
+- use option "--header" of tool "xmlmerge" (adds some XML file headers to
+  resulting file)
+- fixed some bug in openhbci medium
+
+
+2005/03/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed bugs in EuTransfers
+- fixed a bug in jobgetransactions.xml for HBCI 2.2
+- now the PIN is no longer stored in log files, added user notification about
+  this (only shown once when updating from a previous version)
+- jobgetkeys: Better checks for signature and encryption of server response,
+  ignore error results (just reads all keys it can get).
+- message results which indicate an error no longer set the HASERROR flag
+  of a job (only segment error results do)
+
+
+2005/03/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions:
+  - AH_Customer_GetHttpVMajor()
+  - AH_Customer_SetHttpVMajor()
+  - AH_Customer_GetHttpVMinor()
+  - AH_Customer_SetHttpVMinor()
+  So from now on the HTTP version used in PIN/TAN mode can be defined on a
+  per customer basis. The default is to use 1.0 (this was the default before).
+- worked on some internal SSL stuff
+  This needs the latest Gwen CVS version.
+- PIN/TAN: changed header "connection" from "close" to "keep-alive"
+- added functions:
+  - AH_Customer_SetHttpHost()
+  - AH_Customer_GetHttpHost()
+  - AH_Customer_GetHttpUserAgent()
+  - AH_Customer_SetHttpUserAgent()
+- added HTTP header "host", this should allow connecting to virtual hosts
+- added HTTP header "User-Agent"
+- added chunked encoding handling
+
+
+2005/03/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented EU transfer (transfers within the EMU, not tested yet)
+
+
+2005-03-22   Christian Stimming <stimming@tuhh.de>
+
+	* aqhbci.iss.in: Add initial setup compiler configuration for
+	aqhbci. Unfinished: Needs more work with aqhbci's plugins.
+
+
+2005/03/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- special handling of signature counter 0 in bank messages (obviously my bank
+  just stopped using it). Now if such a signature counter (0) is received
+  the user will be asked whether he wants to accept it this time, always or
+  not at all. Therefore the functions AH_Customer_SetBankUsesSignSeq() and
+  AH_Customer_GetBankUsesSignSeq() were added.
+
+
+2005-03-13  Christian Stimming  <stimming@tuhh.de>
+
+	* Makefile.am: Modify rules for i18n so that the catalogs are
+	rebuilt only at install-time or explicitly, not during normal
+	make.
+
+
+2005-03-12  Christian Stimming  <stimming@tuhh.de>
+
+	* src/media/ohbci/ohbci.c: When entering a wrong PIN, ask the user
+	whether to try again.
+
+
+2005/03/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added medium flags (to be used especially to influence the behaviour of
+  RSA keys in regard to signing)
+
+
+2005/02/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- convert BPD/UPD settings for accounts and banks to UTF8 before assigning
+  them to accounts and banks
+
+
+===========================================================================
+MARK: released aqhbci-1.0.3beta (2005/02/19)
+===========================================================================
+
+
+2005/02/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed descriptions for SingleDebitNotes, moved them to the appropriate
+  file
+
+
+2005/02/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- add flag "O_BINARY" on win32 platforms to open() call
+- show newly introduced "HexFingerPrint" of a certificate. This is considered
+  a security fix since now you can really check the certificate
+
+
+2005/02/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- applied a patch submitted by Sasha Silbe (via gentoo) to treat hbcixml2s'
+  mental problem with its own name ;-)
+
+
+2005/02/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- this lib now uses $libdir instead of $prefix/lib)
+- fixed a problem in AH_Job_TestVersion_Process() (was stopping after
+  encountering a code which indicated "OK". However, sometimes an error code
+  follows such a code, and now this gets detected)
+
+
+2005/02/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now the highest BPD supported version of a job is used instead of the
+  first one
+- fixed HKPRO (removed multiple definitions)
+
+
+2005-01-31   Christian Stimming <stimming@tuhh.de>
+
+	* src/test/Makefile.am, cbanking.c: Fix test file for mingw32
+	platform.
+
+
+2005/01/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented debit notes (Lastschriften)
+
+
+===========================================================================
+MARK: released aqhbci-1.0.2beta (2005/01/30)
+===========================================================================
+
+
+2005/01/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- major changes in medium management: now working with context indices 
+  internally instead of full userId/bankId stuff. This will make it easier
+  to support RSA cards without HBCI applications
+- fixed some bugs in file media
+- disabled plugin description files for security media pintanfile and 
+  rdhkeyfile so that the wizard will no longer show them as options.
+  However, at least rdhkeyfile is still supported but deprecated (it is
+  easier to maintain only the OpenHBCI-keyfile code)
+- added fix for the spurious message "could not decrypt" when the server sends
+  an encrypted message key with less than 96 bytes in length.
+- improved handling of temporarily accepted SSL certificates
+
+
+2005/01/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in WaitCallback usage: Now JobGetTransaction uses its own
+  WaitCallback when parsing data
+- don't expect the server to send a PIN with his signatures
+- started with a console frontend (CBanking). I needed this for testing
+  purposes anyway, so I decided to go for the whole nine yards...
+
+
+===========================================================================
+MARK: released aqhbci-1.0.1beta (2005/01/27)
+===========================================================================
+
+
+2005/01/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added some fixes for SSL connections (dude, that's complicated stuff ;-)
+- added HTTP header "connection" from "keep-alive" to "close" since we close
+  the connection anyway
+- added missing translations
+
+
+===========================================================================
+MARK: released aqhbci-1.0.0beta (2005/01/26)
+===========================================================================
+
+
+2005/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in gwen (mostly connection-related stuff)
+
+
+2005/01/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a glitch in de.po: Don't use "&uuml;", it is not supported by QTs
+  parsers... UTF-8 umlauts work just fine (as for the rest of the library)
+
+
+===========================================================================
+MARK: released aqhbci-0.9.19beta (2005/01/23)
+===========================================================================
+
+
+2005/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented backend callback function resetQueue()
+- added file i18nsources to EXTRA_DIST (it seems that this file is not
+  created on all systems)
+- fixed a bug in AH_Outbox__CBox_PerformQueue(): Was not clearing some
+  queue flags
+- now the PIN status is set to bad if mode is PIN/TAN and the server reported
+  segment error code 9340 (bad signature).
+
+
+2005-01-22  Christian Stimming  <stimming@tuhh.de>
+
+	* po/de.po: Update German translation.
+	
+	* src/libs/banking/provider.c: Improve some message markup, and
+	change I18S into I18N_NOOP. Make AH_Provider__FindMyJob less
+	verbose.
+
+	* src/libs/aqhbci_l.h: Instead of defining I18S, define I18N_NOOP
+	as no-operation marker.
+
+	* src/tools/Makefile.am: Oops, enable forgotten hbcixml2 tool
+	again -- the outcommenting on mingw32 was accidentally checked
+	into CVS. My fault. Sorry.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.18beta (2005/01/22)
+===========================================================================
+
+
+2005/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in gwen
+
+
+2005/01/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AH_Provider_AskAddCert(), now the GWEN-function to ask the user
+  whether he wants to accept an SSL cert is implemented within AqHBCI.
+  It now also stores the users' answer to such a request and use it later
+  to automatically answer this question on behalf of the user (but only if
+  the user accepted the certificate permanently).
+  This needs the lates GWEN CVS.
+
+
+2005-01-15  Christian Stimming  <stimming@tuhh.de>
+
+	* src/media/*/Makefile.am, src/libs/Makefile.am: Reorder library
+	flags so that the currently compiled libaqhbci is linked in
+	first. This is necessary so that the other shared objects do not
+	accidentally link against a previously installed libaqhbci.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.17beta (2005/01/14)
+===========================================================================
+
+
+2005/01/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved function AH_ConnectionHBCI_Work() (now only calls WorkIO if nothing
+  could be done. It also tries to do as much as it can before returning).
+- added a debug call to AH_Outbox__CBox_RecvQueue() in case there is no active
+  connection.
+
+
+2005/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- some fixes in doc files
+- future version numbers always use a level of 3 (even if the patchlevel is 0)
+
+
+===========================================================================
+MARK: released aqhbci-0.9.16beta (2005/01/12)
+===========================================================================
+
+2005/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a stupid bug (HBCIXML2 was relying on installed OpenHBCI2)
+
+
+===========================================================================
+MARK: released aqhbci-0.9.15beta (2005/01/12)
+===========================================================================
+
+
+2005/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- ported tool HBCIXML from OpenHBCI2 to AqHBCI (here now called hbcixml2)
+- added workaround for bug in old OpenHBCI versions: Here the escape character
+  "?" was falsely included in the key owner name
+
+
+2005-01-11   Christian Stimming <stimming@tuhh.de>
+
+	* aqhbci.spec.in: Add BuildRequires to ensure a sane rpm building
+	environment.
+
+
+2005/01/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added debugging messages for the case of unexpected signers
+- AqHBCI now looks for the environment variable "AQHBCI_LOGLEVEL". The
+  value of this variable (if it exists) will be translated to a loglevel
+  for the AQHBCI-logdomain and thus overwrites any settings of the calling
+  application
+
+
+2005/01/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- JOBGetStatus is now attachable
+
+
+2004/12/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in AqBanking: Additional _factory function for
+  GWEN_PLUGIN. Needs the latest CVS version of GWEN and AqBanking.
+
+
+2004/11/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- introduced job plugins: now support for AqBanking jobs can be added via
+  job plugins.
+
+
+2004/11/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- log file handling: now contains the Gwenhywfar runtime version number
+  instead of the gwen version from the headers.
+- configure.ac: improved readability
+
+
+2004/11/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now the server address is stored within AH_USER. This allows for one bank to
+  use multiple address (which in turn allows to use PIN/TAN and DDV/RDH in
+  parallel with one bank). The config file loader code takes care of this
+  changes, so you should update.
+
+
+2004/11/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started moving server address information from bank to customer/user.
+  First step: Catching HIKOM segments, storing info in AH_BPD
+  - added type AH_BPD_ADDR (subtype of AH_BPD, this one contains data read
+    from segment "HIKOM". This contains communication parameters (such as
+    server address etc).
+  - AH_Medium_FromDb/ToDb: keyspecs are no longer stored/retrieved (since they
+    are always created upon AH_Medium_SelectUser)
+
+
+2004/11/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AH_JobGetTransactions (was using a false value for month of
+  toTime)
+
+
+2004/11/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- introduced new device type "pseudo" (no real device, used for on-the-fly
+  created media, such as the new PIN/TAN medium)
+- added an easier PIN/TAN medium. This doesn't use a file.
+- lightened up some message code
+
+
+2004/11/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in job GetKeys (was not selecting the user)
+- some mor minor fixes
+- now a generic waitcallback is entered upon provider init. This way we can
+  make sure that we always have an active WaitCallback
+- added an outbox execution function which does not close the progress
+  window (this allows to continue using the progress window after the queue
+  has been executed). This function also doesn't automatically unmount
+  the latest mounted medium. This very much improves the KDE-Wizard for AqHBCI
+  because it reduces the number of pin entries.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.14beta (2004/11/02)
+===========================================================================
+
+
+2004-10-30  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/joblayer/job.c: Fix segfault on "accept unsigned
+	response always". 
+
+	Also note: The non-HTML parts of user messages are not allowed to
+	contain quotation marks `"' !! Gwen's extraction code will not
+	work with them.
+	
+	* src/libs/joblayer/job.c: Fix errornous html message. Improve
+	verbosity of the signature error message.
+	
+	* aqhbci.spec.in (Requires): Add spec file for rpm creation.
+
+
+2004/10/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a field to AH_CUSTOMER which tells AqHBCI whether the bank signs
+  it's messages or not.
+  This is needed in case the bank once signed its messages (so we have a
+  sign key) but now stopped to do so.
+  If a response from the bank is not signed as expected a message box will
+  pop up asking the user whether he wants to accept this response (or all
+  further unsigned responses).
+
+
+2004/10/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed prototypes of some RDH medium functions
+
+
+2004/10/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- the functions AH_Medium_FromDB and _ToDB are now used. This allows the media
+  to store/restore data from the user's settings (e.g. for chipcards we can
+  now store the context data in the DB instead of the medium. This is needed
+  because some chipcard media can't be written to).
+
+
+2004-10-02  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/msglayer/medium.c: Add support for descriptiveName in
+	medium's fromdb and todb functions.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.13beta (2004/09/26)
+===========================================================================
+
+
+2004-09-25  Christian Stimming  <stimming@tuhh.de>
+
+	* src/media/pintanfile/pintanfile.c: Sorry, obviously NUMERIC is
+	ok for PinTan input, but nevertheless it has to be active at all
+	times.
+
+	* src/libs/msglayer/medium.c: Add an extra warning if
+	AB_BANKING_INPUT_FLAGS_NUMERIC had been specified because this is
+	*very* unexpected otherwise.
+
+	* src/media/pintanfile/pintanfile.c: Don't use
+	AB_BANKING_INPUT_FLAGS_NUMERIC when entering a password for the
+	file, because this hasn't been asked for during file
+	creation.
+
+
+2004/09/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- media/ohbci: added missing lseek()
+- media/rdhkeyfile: added missing ftruncate
+- accountjobs: added property "single=1" to all account jobs. This slows down
+  the communication with the server (especially with chip cards) but this also
+  ensures that AqHBCI works with banks which do not accept multiple jobs
+  within a single message.
+
+
+2004-09-24   Christian Stimming <stimming@tuhh.de>
+
+	* src/media/*: Add rules for Windows DLL creation.
+
+	* src/media/pintanfile/pintanfile.c: Add cache/restore mechanism
+	for the file access permissions.
+
+	* configure.ac: Introduce new AC_SUBST variable
+	aqhbci_internal_libs that has the linker command without the
+	lib directory.
+
+
+2004-09-23   Christian Stimming <stimming@tuhh.de>
+
+	* src/media/ohbci/ohbci.c: Add cache/restore mechanism for the
+	file access permissions. This should be done in all medium
+	files. Especially group permissions are usually intended by the
+	user and should not be discarded silently.
+
+
+2004/09/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added sharedRuntimeData to AH_HBCI. This is needed for the DDV card
+  and RSA card plugin to share a pointer to LC_CLIENT without AqHBCI having
+  to know about libchipcard. With this mechanism multiple plugins may share
+  data while in session. This data is created upon AH_HBCI_Init and destroyed
+  upon AH_HBCI_Fini. Since the plugins get removed prior to the destruction
+  of the data they get the opportunity to remove the data themselves.
+
+
+2004/09/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AH_Outbox_Execute now enters and leaves a waitcallback context
+- provider.c: now the waitcallback only directly catches the callback enter
+  for the outbox, all other are not handled directly. However, the fallback
+  mechanism in Gwen is to instantiated from the template of the currently 
+  active callback. The fact that the new callback is not directly derived from
+  the type the caller wanted is flagged by level!=0.
+  This now fixes the bug with the progress bar showing an inaccurate 
+  percentage when executing the outbox.
+- when receiving new BPD the old BPD jobs are completely deleted. So we always
+  have the BPD the bank sent to us (no more funny merging)
+- now always tries to read the BPD description for a given job (not only if
+  marked with "needBPD").
+
+
+2004-09-21   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/Makefile.am, src/libs/aqhbci-plugin.c: Fix creation of
+	aqhbci plugin DLL for Windows by adding the symbol aqhbci_factory
+	into the aqhbci.so library. This is necessary to enable DLL
+	loading. As confirmation of this approach, it is now possible to
+	start the Win/MSVC kde_wizard! Yeah.
+
+
+2004/09/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- job.c: add SINGLE flag to every jobs when in PIN/TAN mode
+
+
+2004-09-20   Christian Stimming <stimming@tuhh.de>
+
+	* po/de.po: Improved some of the German translation even further
+	(heh, couldn't resist...)
+
+
+2004/09/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug: Was not committing system data (->UPD version/BPD version was
+  not updating and so requested every time a dialog was opened)
+
+
+===========================================================================
+MARK: released aqhbci-0.9.12beta (2004/09/19)
+===========================================================================
+
+
+2004/09/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added job JobGetStatus (retrieves status reports "HKPRO")
+- more information is now stored in AqBanking jobs (for JobGetStatus to work)
+- fixed a bug in JobGetTransactions (was not taking date arguments into
+  account)
+- JobGetBalance and JobGetTransactions no longer insist on being alone in
+  a queue (makes interaction with the bank much faster)
+- server messages are now transformed to Utf8 before logging them with
+  AqBanking
+- when updating AqHBCI from a newer version all UPD- and BPD-versions are
+  reset to 0 to enforce update of the BPD/UPD (this is to catch some BPD jobs
+  for which new definitions become available)
+- fixed a bug in AH_Job_CheckEncryption()
+
+
+2004/09/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added UTF8-DTA conversions
+- AqHBCI now detects it when the server closes the dialog
+- added more I18N
+
+
+===========================================================================
+MARK: released aqhbci-0.9.11beta (2004/09/15)
+===========================================================================
+
+
+2004/09/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added I18N code
+
+
+2004/09/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in Makefile.am of OpenHBCI-Plugin
+- fixed JobTransfer: 
+  - Transactions are now validated before passed to the
+    message engine (adding missing fields, truncating others etc)
+  - values are now stored in the correct format for the message engine
+- hbci.c: AH_HBCI_BeginDialog() now first tries the given bank server address
+  as an IP address and falls back to DNS resolving (as planned).
+- AH_Job: now updates the bank name as well
+
+
+2004-09-12  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/applayer/outbox.c, src/libs/banking/provider.c: When
+	adding a signer, always use the userId instead of the customerId.
+
+
+2004-09-10   Christian Stimming <stimming@tuhh.de>
+
+	* configure.in: Add ACX_WINDOWS_PATHS.
+	
+	* src/libs/Makefile.am: Add rules to build the two different
+	needed DLLs.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.10beta (2004/09/10)
+===========================================================================
+
+
+2004/09/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added OpenHBCI plugin (was a stand-alone package before)
+- fixed some bugs in the new message code
+- some work on PIN/TAN: transfer job (which needs a TAN) now works !!! ;-)
+- now the application is informed about whether a TAN has been used
+- on WIN32: "#define ftruncate chsize"
+- more work on PIN/TAN
+- OpenHBCI plugin: if a bad pin has been entered the user will now simply
+  be asked for the correct one (before this change the current operation
+  was aborted).
+
+
+2004/09/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- redesigned outbox handling: Since I dropped the server stuff I can now
+  completely concentrate on synchronous clients. This makes the outbox
+  code very much easier to debug.
+- started hardening AqHBCI: Now the jobs check the security status of a
+  response before handling it (signature, ecnryption)
+
+
+2004/09/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added sanity checks for some string arguments
+- fixed a bug
+- removed im/exporter plugins (they are now part of AqBanking)
+
+
+2004/08/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- valgrind session: fixed some memory leaks
+- message.c: removed one WriteLine in log function to be compatible with
+  OpenHBCI's tool hbcixml
+
+
+2004/08/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- messages are now logged to logfiles (similiar to how I did it in
+  OpenHBCI2). This makes it much easier to debug the code.
+
+
+2004/08/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed DTAUS importer plugin
+- added generic DBIO plugin (includes profiles for DTAUS and SWIFT)
+- fixed DBIO plugin (now it works !! ;-)
+
+
+2004/08/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AqBanking importer/exporter for DTAUS
+
+
+2004/08/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in AqBanking
+
+
+2004/08/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- created log domain for AqHBCI (needs current Gwen CVS)
+
+
+2004/08/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added adminjob "AH_Job_TestVersion" which allows to check whether the
+  currently used HBCI protocol version is supported by the server.
+- fixed some bugs concerning malloc() and free()
+- started working on JOBSingleTransfer
+
+
+2004/08/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in AqBanking
+- changed behaviour of AH_Provider_UpdateJob and _AddJob (AH_JOBs are
+  now only created upon AH_Provider_AddJob)
+
+
+2004/08/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed SWIFT parser, finished JobGetTransactions (well, there are some
+  things missing, but it now basically works)
+
+
+2004/08/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted parser plugins so that they now produce/expect the transaction
+  format of AqBanking (makes many things easier)
+- added job GetTransactions
+
+
+===========================================================================
+MARK: released aqhbci-0.9.7alpha (2004/08/13)
+===========================================================================
+
+
+2004/08/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added some setters to AH_Account
+- added missing prototype for AH_Bank_AddAccount()
+- removed double prototypes :-}
+
+
+2004/08/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a memory leak in rdhkeyfile medium
+- fixed a potential problem with security ids
+- use customer's system id for HNSHK and HNVSK as well
+- fixed a bug in jobqueue: was not adjusting the job status after processing a
+  job
+- improved AH_Job_UpdateBank, it now monitors the accounts received (needed
+  for the setup wizard)
+- account: added AH_Account_List2_freeAll function
+- added aqhbci.h: This defines the macro AQHBCI_API
+- hbci: added functions to retrieve a list of installed users
+- removed server code
+- configuration is now loaded from a single file
+
+
+2004-08-11   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/Makefile.am: Add DLL build rules on windows.
+
+	* src/libs/msglayer/account.h, bank.h, customer.h, hbci.h,
+	medium.h, user.h: Add AQHBCI_API to function declarations. This is
+	not yet completed, but good enough for testing.
+	
+	* src/libs/msglayer/objectref.h: Add declaration of
+	__declspec(dllimport/export) macro AQHBCI_API, depending on
+	BUILDING_AQHBCI_DLL.
+
+
+===========================================================================
+MARK: released aqhbci-0.9.6alpha (2004/08/11)
+===========================================================================
+
+
+2004/08/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved logging (now *every* HBCI result is logged)
+
+
+2004/08/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- mediumrdh: added functions to retrieve the temporary keys
+- fixed many bugs
+
+
+2004/08/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AH_HBCI_CheckMedium() (looks for a plugin which supports a given
+  medium)
+- added admin job: GetSysId
+
+
+2004/08/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AH_HBCI_AddMedium()
+- medium: 
+  - added functions 
+    - AH_Medium_RemoveUser()
+    - AH_Medium_GetContext()
+    - AH_Medium_ChgContext()
+- MediumPinTan, MediumRDHFile: Implemented check-function
+
+
+2004/08/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- hbci, bank: added functions which allow to remove objects once enlisted.
+  This is needed for setup wizards for a clean undo.
+
+
+2004/08/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- medium: added error code to flag generic errors when checking for
+  a medium which supports a given file/card.
+- HBCI: added a function to retrieve a list of plugin descriptions for
+  security media
+
+
+2004-08-06   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/banking/provider.c, src/libs/applayer/outbox.c,
+	src/libs/msglayer/message.c, src/libs/media/pintanfile,
+	src/libs/media/rdhfile: Fix warnings about uninitialized variables
+	which could in fact be real problems.
+
+
+2004/08/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added XML descriptions for all plugins (to be used by the wizard I'm
+  about to create)
+
+
+2004/08/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some important bugs in banking/provider
+
+
+2004-08-02   Christian Stimming <stimming@tuhh.de>
+
+	* src/media/rdhkeyfile/rdhkeyfile.c, serverrdhfile.c,
+	pintanfile.c: Deactivate file locking on windows for now because
+	the fcntl calls seem to work differently, or at least the
+	constants from windows don't exist on mingw32.
+
+
+2004/08/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- very much improved generation of API doc. In combination with the
+  changes in my other projects the new target "install-srcdoc" now
+  creates combined API docs (e.g. API doc for AqBanking now links to
+  that of Gwenhywfar etc)
+
+
+2004/08/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs
+- adapted to latest changes in gwen
+- banking/provider.c: added a generic WaitCallback. This one catches *every*
+  callback entered and forwards the calls to the corresponding functions of
+  AB_BANKING. Executing a job from within KBanking now works, so the interface
+  seems to be usable ;-)
+
+
+2004-07-31  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/msglayer/hbciserver.h,
+	src/media/rdhkeyfile/rdhkeyfile_p.h,
+	src/media/serverrdhfile/serverrdhfile_p.h: Add include <time.h>
+	for mingw32 platform.
+
+
+2004/07/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI is now longer a library of its own. It is now just a plugin to
+  my new Banking Interface.
+
+
+2004/07/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added first AccountJob: JobGetBalance
+- msglayer/hbci:
+  - cleaned up headers (moved many private functions to "*_l.h" files)
+  - added action code AH_CryptoActionUnmount
+- src/*: major cleanup of some header files (moved more internal stuff to
+  "*_l.h" files
+- job counts are now more acurate
+- retrieving the account balance now works !!! ;-)
+- fixed some bugs
+- made headers includeable from C++
+
+
+2004/07/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more work on PIN/TAN code
+- started reorganizing XML data
+
+
+2004-07-26  Christian Stimming <stimming@tuhh.de>
+
+	* src/*/Makefile.am: Add inclusion of Gwen header directories
+
+	* Makefile.am: Add code for automatic lookup of gwen's aclocal
+	macros.
+
+
+2004-07-24  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/msglayer/bank.h, bank.c: GnuCash would need functions
+	to access the full list of users/accounts, too. However, there is
+	a problem with the circular inclusion of account.h and bank.h to
+	get the declarations of the AH_ACCOUNT_LIST, so for now my my
+	proposed extra functions are commented out in the header. 
+
+	* configure.ac, Doxyfile.in: Add check for DOT tool.
+
+
+2004/07/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started working on PIN/TAN mode
+- added security medium: PinTanFile (might later be used to optionally store
+  TANs)
+- added some missing files
+
+
+2004/07/20: Christian Stimming <stimming@tuhh.de>
+-------------------------------------------------
+- Makefile.cvs: Make initial makefile generation much more
+  verbose. BTW the file account_l.h is missing in CVS.
+
+
+2004/07/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed yet more bugs, added support for BPD jobs
+- added some types used for banking (balance, account status)
+- started adding account jobs
+- fixed a poblem which occurred when the bank did not send reasonable
+  customer ids in segment HIUPD
+
+
+2004/07/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs in signature header, fixed some bugs concerning DDV mode
+  It now works !!! I just made my first contact with my real bank (since the
+  PPI server was shutdown without prior notice I have no testing platform,
+  so I'm now using AqHBCI with my real DDV account).
+
+
+2004/06/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- merged AqHBCI and AqHBCI-Banking packages
+
+
+2004/05/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started to modify tools so that they now use GWEN_ARGS
+- src/tools/hbcicadmin: added command "getkeys"
+- many internal fixes
+
+
+2004/04/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added log function (not used internally for now, but might be used by
+  inheriting classes/applications)
+- added some READMEs
+- changed prototype for medium function AH_MediumProvider_Check, added
+  documentation for this function
+
+
+-----------------------------------------------------------------------------
+Below are some templates to be copied to the top of this file when needed.
+
+- API version modifications
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+

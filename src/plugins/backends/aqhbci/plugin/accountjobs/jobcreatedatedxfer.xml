@@ -1,0 +1,163 @@
+
+<SEGs>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Terminierte Einzelueberweisung (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DatedSingleTransfer"
+         code="HKTUE"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="TransferBase" version="1" name="transaction" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="DatedSingleTransferResponse" code="HITUE" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUES" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="DatedSingleTransfer"
+         code="HKTUE"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <Group type="TransferBase" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="DatedSingleTransferResponse" code="HITUE" version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUES" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="mindelay" type="num" maxsize="4" />
+   <ELEM name="maxdelay" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung (Version 2) -->
+ <JOBdef id="JobCreateDatedTransfer"
+    	   code="HKTUE"
+         params="HITUES"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="DatedSingleTransferResponse"
+  >
+   <SEG type="DatedSingleTransfer" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Terminierte Einzelueberweisung (Version 3) -->
+ <JOBdef id="JobCreateDatedTransfer"
+    	   code="HKTUE"
+         params="HITUES"
+         version="3"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="DatedSingleTransferResponse"
+  >
+   <SEG type="DatedSingleTransfer" version="3" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+
+
+
+

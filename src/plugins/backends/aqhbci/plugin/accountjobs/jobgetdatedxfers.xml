@@ -1,0 +1,153 @@
+
+<SEGs>
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Terminierte Einzelueberweisungen abrufen (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="GetDatedTransfers"
+         code="HKTUB"
+         version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="1" />
+   <ELEM name="fromdate" type="date" minnum="0" />
+   <ELEM name="todate" type="date" minnum="0" />
+   <ELEM name="maxEntries" type="num" minnum="0" maxsize="4" />
+   <ELEM name="attach" type="ascii" minnum="0" maxsize="35" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetDatedTransfersResponse"
+    	   code="HITUB" 
+         version="1"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP name="datedTransfer" type="TransferBase" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUBS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="dateAllowed" type="alpha" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Terminierte Einzelueberweisungen abrufen (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="GetDatedTransfers"
+         code="HKTUB"
+         version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="fromdate" type="date" minnum="0" />
+   <ELEM name="todate" type="date" minnum="0" />
+   <ELEM name="maxEntries" type="num" minnum="0" maxsize="4" />
+   <ELEM name="attach" type="ascii" minnum="0" maxsize="35" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetDatedTransfersResponse"
+    	   code="HITUB" 
+         version="2"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP name="datedTransfer" type="TransferBase" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HITUBS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="dateAllowed" type="alpha" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Term. Einzelueberweisungen abrufen (Version 1) -->
+ <JOBdef id="JobGetDatedTransfers"
+    	   code="HKTUB"
+         params="HITUBS"
+         version="1"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="GetDatedTransfersResponse"
+         single="1"
+         attachable="1"
+  >
+  <SEG type="GetDatedTransfers" version="1" />
+   <VALUES>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Term. Einzelueberweisungen abrufen (Version 2) -->
+ <JOBdef id="JobGetDatedTransfers"
+    	   code="HKTUB"
+         params="HITUBS"
+         version="2"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="GetDatedTransfersResponse"
+         attachable="1"
+  >
+  <SEG type="GetDatedTransfers" version="2" />
+   <VALUES>
+   </VALUES>
+ </JOBdef>
+
+
+
+</JOBs>
+
+
+

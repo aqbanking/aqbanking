@@ -1,6 +1,6 @@
 SUBDIRS=plugin tools media
 
-CLEANFILES = $(BUILT_SOURCES) aqhbci-config
+CLEANFILES = $(BUILT_SOURCES) aqhbci-config aqhbci-config.in
 
 bin_SCRIPTS=aqhbci-config
 

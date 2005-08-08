@@ -1,0 +1,38 @@
+
+2005/07/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed some debugging messages
+
+
+2005/07/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed some debugging messages
+
+
+2005/04/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- handled Christian's FIXMEs
+- fixed function AO_Provider_FindMyBank(): It now searches the account list
+  of a bank for the requested bank id if the bank itself doesn't have any
+- fixed AO_Context_Update(): Now the bank id from the bank is only used
+  if it represents a number. If the context contains a valid pointer to a job
+  then the bank id is taken from the account instead
+
+
+2005-04-29  Christian Stimming  <stimming@tuhh.de>
+
+	* src/plugin/provider.c: Mark potential bugs as FIXME that are
+	shown by compiler warnings about uninitialized variables.
+
+	* Makefile.am: Copy po catalog rules from aqbanking.
+
+
+2005/04/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed many bugs
+- added many functions which are needed by the setup wizard
+
+
+2005/04/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- initial import

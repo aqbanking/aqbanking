@@ -1,0 +1,20 @@
+<plugin name="aqdtaus" type="provider" >
+  <version>@AQDTAUS_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>DTAUS backend using AqDTAUS</short>
+  <descr>
+    This backend provides support for DTAUS using AqDTAUS.
+  </descr>
+</plugin>
+
+
+<plugin name="aqdtaus" type="provider" lang="de" >
+  <version>@AQDTAUS_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>DTAUS Homebanking Erweiterung</short>
+  <descr>
+    Diese Erweiterung erlaubt Homebanking mittels DTAUS.
+  </descr>
+</plugin>
+
+

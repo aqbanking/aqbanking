@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=7
+AQBANKING_VERSION_BUILD=8
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -25,36 +25,120 @@ AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQB
 
 ###-------------------------------------------------------------------------
 #
-# AqBanking SO version
+# SO versions
 #
 AQBANKING_SO_CURRENT=8
 AQBANKING_SO_AGE=8
 AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
+#
+# backends
+#
+
+AQHBCI_SO_CURRENT=6
+AQHBCI_SO_AGE=4
+AQHBCI_SO_REVISION=0
+AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
+
+AQDTAUS_SO_CURRENT=1
+AQDTAUS_SO_REVISION=2
+AQDTAUS_SO_AGE=0
+AQDTAUS_SO_EFFECTIVE="`echo \$(($AQDTAUS_SO_CURRENT-$AQDTAUS_SO_AGE))`"
+
+AQGELDKARTE_SO_CURRENT=1
+AQGELDKARTE_SO_REVISION=2
+AQGELDKARTE_SO_AGE=0
+AQGELDKARTE_SO_EFFECTIVE="`echo \$(($AQGELDKARTE_SO_CURRENT-$AQGELDKARTE_SO_AGE))`"
+
+AQOFXCONNECT_SO_CURRENT=1
+AQOFXCONNECT_SO_REVISION=0
+AQOFXCONNECT_SO_AGE=0
+AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
+
+#
+# frontends
+#
+
+G2BANKING_SO_CURRENT="0"
+G2BANKING_SO_REVISION="0"
+G2BANKING_SO_AGE="0"
+G2BANKING_SO_EFFECTIVE="`echo \$(($G2BANKING_SO_CURRENT-$G2BANKING_SO_AGE))`"
+
+
 
 ###-------------------------------------------------------------------------
 #
 # AqHBCI versions
 #
-AQHBCI_VERSION_MAJOR=1
-AQHBCI_VERSION_MINOR=2
-AQHBCI_VERSION_PATCHLEVEL=0
-AQHBCI_VERSION_BUILD=4
+AQHBCI_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQHBCI_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQHBCI_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQHBCI_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 dnl "stable", "rcX", "betaX", "cvs"
-AQHBCI_VERSION_TAG="cvs"
+AQHBCI_VERSION_TAG=$AQBANKING_VERSION_TAG
 AQHBCI_VERSION_FULL_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL.$AQHBCI_VERSION_BUILD${AQHBCI_VERSION_TAG}"
 AQHBCI_VERSION_STRING="$AQHBCI_VERSION_MAJOR.$AQHBCI_VERSION_MINOR.$AQHBCI_VERSION_PATCHLEVEL"
 
 
+
 ###-------------------------------------------------------------------------
 #
-# AqHBCI SO version
+# AqDTAUS versions
 #
-AQHBCI_SO_CURRENT=6
-AQHBCI_SO_AGE=4
-AQHBCI_SO_REVISION=0
-AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
+AQDTAUS_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQDTAUS_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQDTAUS_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQDTAUS_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+AQDTAUS_VERSION_TAG=$AQBANKING_VERSION_TAG
+AQDTAUS_VERSION_FULL_STRING="$AQDTAUS_VERSION_MAJOR.$AQDTAUS_VERSION_MINOR.$AQDTAUS_VERSION_PATCHLEVEL.$AQDTAUS_VERSION_BUILD${AQDTAUS_VERSION_TAG}"
+AQDTAUS_VERSION_STRING="$AQDTAUS_VERSION_MAJOR.$AQDTAUS_VERSION_MINOR.$AQDTAUS_VERSION_PATCHLEVEL"
+
+
+
+###-------------------------------------------------------------------------
+#
+# AqGELDKARTE versions
+#
+AQGELDKARTE_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQGELDKARTE_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQGELDKARTE_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQGELDKARTE_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+AQGELDKARTE_VERSION_TAG=$AQBANKING_VERSION_TAG
+AQGELDKARTE_VERSION_FULL_STRING="$AQGELDKARTE_VERSION_MAJOR.$AQGELDKARTE_VERSION_MINOR.$AQGELDKARTE_VERSION_PATCHLEVEL.$AQGELDKARTE_VERSION_BUILD${AQGELDKARTE_VERSION_TAG}"
+AQGELDKARTE_VERSION_STRING="$AQGELDKARTE_VERSION_MAJOR.$AQGELDKARTE_VERSION_MINOR.$AQGELDKARTE_VERSION_PATCHLEVEL"
+
+
+
+###-------------------------------------------------------------------------
+#
+# AqOFXCONNECT versions
+#
+AQOFXCONNECT_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQOFXCONNECT_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQOFXCONNECT_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQOFXCONNECT_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+AQOFXCONNECT_VERSION_TAG=$AQBANKING_VERSION_TAG
+AQOFXCONNECT_VERSION_FULL_STRING="$AQOFXCONNECT_VERSION_MAJOR.$AQOFXCONNECT_VERSION_MINOR.$AQOFXCONNECT_VERSION_PATCHLEVEL.$AQOFXCONNECT_VERSION_BUILD${AQOFXCONNECT_VERSION_TAG}"
+AQOFXCONNECT_VERSION_STRING="$AQOFXCONNECT_VERSION_MAJOR.$AQOFXCONNECT_VERSION_MINOR.$AQOFXCONNECT_VERSION_PATCHLEVEL"
+
+
+
+###-------------------------------------------------------------------------
+#
+# G2Banking versions
+#
+G2BANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+G2BANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+G2BANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+G2BANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+G2BANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
+G2BANKING_VERSION_FULL_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL.$G2BANKING_VERSION_BUILD${G2BANKING_VERSION_TAG}"
+G2BANKING_VERSION_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL"
 
 
 
@@ -105,6 +189,63 @@ case "$AQHBCI_VERSION_TAG" in
 esac
 
 
+#
+# for AqDTAUS
+#
+case "$AQDTAUS_VERSION_TAG" in
+  cvs)
+     AQDTAUS_VERSION_RELEASE_STRING="$AQDTAUS_VERSION_FULL_STRING"
+     ;;
+  stable)
+     AQDTAUS_VERSION_RELEASE_STRING="$AQDTAUS_VERSION_MAJOR.$AQDTAUS_VERSION_MINOR.$AQDTAUS_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     AQDTAUS_VERSION_RELEASE_STRING="$AQDTAUS_VERSION_MAJOR.$AQDTAUS_VERSION_MINOR.$AQDTAUS_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     AQDTAUS_VERSION_RELEASE_STRING="$AQDTAUS_VERSION_RELEASE_STRING${AQDTAUS_VERSION_TAG}"
+     ;;
+esac
+
+
+#
+# for AqGELDKARTE
+#
+case "$AQGELDKARTE_VERSION_TAG" in
+  cvs)
+     AQGELDKARTE_VERSION_RELEASE_STRING="$AQGELDKARTE_VERSION_FULL_STRING"
+     ;;
+  stable)
+     AQGELDKARTE_VERSION_RELEASE_STRING="$AQGELDKARTE_VERSION_MAJOR.$AQGELDKARTE_VERSION_MINOR.$AQGELDKARTE_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     AQGELDKARTE_VERSION_RELEASE_STRING="$AQGELDKARTE_VERSION_MAJOR.$AQGELDKARTE_VERSION_MINOR.$AQGELDKARTE_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     AQGELDKARTE_VERSION_RELEASE_STRING="$AQGELDKARTE_VERSION_RELEASE_STRING${AQGELDKARTE_VERSION_TAG}"
+     ;;
+esac
+
+
+#
+# for AqOFXCONNECT
+#
+case "$AQOFXCONNECT_VERSION_TAG" in
+  cvs)
+     AQOFXCONNECT_VERSION_RELEASE_STRING="$AQOFXCONNECT_VERSION_FULL_STRING"
+     ;;
+  stable)
+     AQOFXCONNECT_VERSION_RELEASE_STRING="$AQOFXCONNECT_VERSION_MAJOR.$AQOFXCONNECT_VERSION_MINOR.$AQOFXCONNECT_VERSION_PATCHLEVEL"
+     ;;
+  *)
+     AQOFXCONNECT_VERSION_RELEASE_STRING="$AQOFXCONNECT_VERSION_MAJOR.$AQOFXCONNECT_VERSION_MINOR.$AQOFXCONNECT_VERSION_PATCHLEVEL"
+     
+     # add TAG
+     AQOFXCONNECT_VERSION_RELEASE_STRING="$AQOFXCONNECT_VERSION_RELEASE_STRING${AQOFXCONNECT_VERSION_TAG}"
+     ;;
+esac
+
+
    
 ###-------------------------------------------------------------------------
 #
@@ -136,6 +277,8 @@ AC_SUBST(AQBANKING_SO_CURRENT)
 AC_SUBST(AQBANKING_SO_REVISION)
 AC_SUBST(AQBANKING_SO_AGE)
 AC_SUBST(AQBANKING_SO_EFFECTIVE)
+
+AM_INIT_AUTOMAKE(aqbanking, $AQBANKING_VERSION_RELEASE_STRING)
 
 
 #
@@ -171,7 +314,139 @@ AC_DEFINE_UNQUOTED(AQHBCI_SO_EFFECTIVE_STR, "$AQHBCI_SO_EFFECTIVE",
                    [effective SO version])
 
 
-AM_INIT_AUTOMAKE(aqbanking, $AQBANKING_VERSION_RELEASE_STRING)
+#
+# same for AqDTAUS
+#
+AC_SUBST(AQDTAUS_VERSION_MAJOR)
+AC_SUBST(AQDTAUS_VERSION_MINOR)
+AC_SUBST(AQDTAUS_VERSION_PATCHLEVEL)
+AC_SUBST(AQDTAUS_VERSION_BUILD)
+AC_SUBST(AQDTAUS_VERSION_TAG)
+AC_SUBST(AQDTAUS_VERSION_FULL_STRING)
+AC_SUBST(AQDTAUS_VERSION_STRING)
+AC_SUBST(AQDTAUS_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_MAJOR,$AQDTAUS_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_MINOR,$AQDTAUS_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_PATCHLEVEL,$AQDTAUS_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_BUILD,$AQDTAUS_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_STRING,"$AQDTAUS_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_FULL_STRING,"$AQDTAUS_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(AQDTAUS_VERSION_TAG,$AQDTAUS_VERSION_TAG, [tag])
+
+AC_SUBST(AQDTAUS_SO_CURRENT)
+AC_SUBST(AQDTAUS_SO_REVISION)
+AC_SUBST(AQDTAUS_SO_AGE)
+AC_SUBST(AQDTAUS_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQDTAUS_SO_EFFECTIVE_STR, "$AQDTAUS_SO_EFFECTIVE",
+                   [effective SO version])
+
+#
+# same for AqGELDKARTE
+#
+
+AC_SUBST(AQGELDKARTE_VERSION_MAJOR)
+AC_SUBST(AQGELDKARTE_VERSION_MINOR)
+AC_SUBST(AQGELDKARTE_VERSION_PATCHLEVEL)
+AC_SUBST(AQGELDKARTE_VERSION_BUILD)
+AC_SUBST(AQGELDKARTE_VERSION_TAG)
+AC_SUBST(AQGELDKARTE_VERSION_FULL_STRING)
+AC_SUBST(AQGELDKARTE_VERSION_STRING)
+AC_SUBST(AQGELDKARTE_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_MAJOR,$AQGELDKARTE_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_MINOR,$AQGELDKARTE_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_PATCHLEVEL,$AQGELDKARTE_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_BUILD,$AQGELDKARTE_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_STRING,"$AQGELDKARTE_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_FULL_STRING,"$AQGELDKARTE_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(AQGELDKARTE_VERSION_TAG,$AQGELDKARTE_VERSION_TAG, [tag])
+
+AC_SUBST(AQGELDKARTE_SO_CURRENT)
+AC_SUBST(AQGELDKARTE_SO_REVISION)
+AC_SUBST(AQGELDKARTE_SO_AGE)
+AC_SUBST(AQGELDKARTE_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQGELDKARTE_SO_EFFECTIVE_STR, "$AQGELDKARTE_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+#
+# same for AqOFXCONNECT
+#
+
+AC_SUBST(AQOFXCONNECT_VERSION_MAJOR)
+AC_SUBST(AQOFXCONNECT_VERSION_MINOR)
+AC_SUBST(AQOFXCONNECT_VERSION_PATCHLEVEL)
+AC_SUBST(AQOFXCONNECT_VERSION_BUILD)
+AC_SUBST(AQOFXCONNECT_VERSION_TAG)
+AC_SUBST(AQOFXCONNECT_VERSION_FULL_STRING)
+AC_SUBST(AQOFXCONNECT_VERSION_STRING)
+AC_SUBST(AQOFXCONNECT_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_MAJOR,$AQOFXCONNECT_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_MINOR,$AQOFXCONNECT_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_PATCHLEVEL,$AQOFXCONNECT_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_BUILD,$AQOFXCONNECT_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_STRING,"$AQOFXCONNECT_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_FULL_STRING,"$AQOFXCONNECT_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_VERSION_TAG,$AQOFXCONNECT_VERSION_TAG, [tag])
+
+AC_SUBST(AQOFXCONNECT_SO_CURRENT)
+AC_SUBST(AQOFXCONNECT_SO_REVISION)
+AC_SUBST(AQOFXCONNECT_SO_AGE)
+AC_SUBST(AQOFXCONNECT_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_SO_EFFECTIVE_STR, "$AQOFXCONNECT_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+#
+# same for G2Banking
+#
+
+AC_SUBST(G2BANKING_VERSION_MAJOR)
+AC_SUBST(G2BANKING_VERSION_MINOR)
+AC_SUBST(G2BANKING_VERSION_PATCHLEVEL)
+AC_SUBST(G2BANKING_VERSION_BUILD)
+AC_SUBST(G2BANKING_VERSION_TAG)
+AC_SUBST(G2BANKING_VERSION_FULL_STRING)
+AC_SUBST(G2BANKING_VERSION_STRING)
+AC_SUBST(G2BANKING_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_MAJOR,$G2BANKING_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_MINOR,$G2BANKING_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_PATCHLEVEL,$G2BANKING_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_BUILD,$G2BANKING_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_STRING,"$G2BANKING_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_FULL_STRING,"$G2BANKING_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(G2BANKING_VERSION_TAG,$G2BANKING_VERSION_TAG, [tag])
+
+AC_SUBST(G2BANKING_SO_CURRENT)
+AC_SUBST(G2BANKING_SO_REVISION)
+AC_SUBST(G2BANKING_SO_AGE)
+AC_SUBST(G2BANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(G2BANKING_SO_EFFECTIVE_STR, "$G2BANKING_SO_EFFECTIVE",
+                   [effective SO version])
+
 
 
 ###-------------------------------------------------------------------------
@@ -219,12 +494,16 @@ AC_CHECK_DECLS([sigprocmask], [], [], [
   #endif
 ])
 
+
+
 ###-------------------------------------------------------------------------
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
 AC_C_CONST
 AC_STRUCT_TM
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -236,14 +515,34 @@ AC_CHECK_FUNCS([memmove memset strcasecmp strdup strerror snprintf])
 AC_CHECK_FUNCS([setlocale])
 
 
+
 ###-------------------------------------------------------------------------
 #
 # Check for Gwen
 #
+
 AC_GWENHYWFAR(1,14,0,5)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
+
+
+
+###-------------------------------------------------------------------------
+#
+# Check for LibChipcard2
+#
+
+AC_CHIPCARD_CLIENT(1,9,11)
+AC_MSG_CHECKING(if chipcard_client is useable)
+if test "x$have_chipcard_client" != "xyes"; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+all_includes="$all_includes $chipcard2_client_includes"
+
 
 
 ###-------------------------------------------------------------------------
@@ -264,6 +563,7 @@ fi
 AC_SUBST(ktoblzcheck_libs)
 
 AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
+
 
 
 ###-------------------------------------------------------------------------
@@ -306,6 +606,7 @@ fi
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 
 
+
 ###-------------------------------------------------------------------------
 #
 # Python
@@ -334,6 +635,20 @@ else
   AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# GTK2
+#
+
+pkg_modules="gtk+-2.0 >= 2.0.0"
+PKG_CHECK_MODULES(GTK2, [$pkg_modules])
+all_includes="$all_includes $GTK2_CFLAGS"
+AC_SUBST(GTK2_CFLAGS)
+AC_SUBST(GTK2_LIBS)
+
 
 
 ###-------------------------------------------------------------------------
@@ -448,6 +763,7 @@ done
 AC_SUBST(ADD_ACLOCAL_FLAGS)
 
 
+
 ###-------------------------------------------------------------------------
 #
 # create header directory, make symlinks
@@ -458,8 +774,6 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 #
 aqbanking_modules=". jobs types"
 aqbankingpp_modules="."
-aqbanking_frontends="cbanking"
-aqbanking_backends="aqhbci"
 
 #
 # code
@@ -478,7 +792,7 @@ AQ_HEADER_FILES="${lprefix}/version.h"
 #
 hfiles=`( cd "${srcdir}/src/libs/" && ls *.h 2>/dev/null )`
 for f in ${hfiles}; do
-  case ${f} in
+  case "${f}" in
     *_p.h | *_l.h)
       ;;
     *)
@@ -495,7 +809,7 @@ done
 for sm in $aqbanking_modules; do
   hfiles=`( cd "${srcdir}/src/libs/aqbanking/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    case ${f} in
+    case "${f}" in
       *_p.h | *_l.h)
          ;;
       *)   
@@ -518,7 +832,7 @@ mkdir headers/aqbanking++
 for sm in $aqbankingpp_modules; do
   hfiles=`( cd "${srcdir}/src/libs/aqbanking++/${sm}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    case ${f} in
+    case "${f}" in
       *_p.h | *_l.h)
          ;;
       *)   
@@ -540,7 +854,7 @@ for frontend in ${aqbanking_frontends}; do
   # symlink all headers
   hfiles=`( cd "${srcdir}/src/frontends/${frontend}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    case ${f} in
+    case "${f}" in
       *_p.h | *_l.h)
         ;;
       *)
@@ -560,13 +874,13 @@ for backend in ${aqbanking_backends}; do
   dfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin" && ls 2>/dev/null )`
   for d in ${dfiles}; do
     if test -d "${srcdir}/src/plugins/backends/${backend}/plugin/$d"; then
-      case $d in
+      case "$d" in
         . | ..)
           ;;
         *)
           hfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin/$d" && ls *.h 2>/dev/null )`
           for f in ${hfiles}; do
-            case ${f} in
+            case "${f}" in
               *_p.h | *_l.h)
                 ;;
               *)
@@ -578,7 +892,7 @@ for backend in ${aqbanking_backends}; do
           ;;
         esac
     else
-      case ${d} in
+      case "${d}" in
         *_p.h | *_l.h)
           ;;
         *.h)
@@ -635,6 +949,7 @@ AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
 
 
+
 ###-------------------------------------------------------------------------
 #
 # search for tag files
@@ -661,31 +976,87 @@ AC_SUBST(DOXYGEN_TAGFILES)
 
 
 
+###-------------------------------------------------------------------------
+#
+# backends and frontends
+#
+
+AC_ARG_WITH(frontends, 
+  [  --with-frontends=list      space separated list of frontends (default:all)],
+  [aqbanking_frontends="$withval"],
+  [aqbanking_frontends="cbanking g2banking"]
+)
+
+
+AC_ARG_WITH(backends, 
+  [  --with-backends=list      space separated list of backends (default:all)],
+  [aqbanking_backends="$withval"],
+  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
+)
+
+
+#
+# check for dependencies of backends
+#
+for backend in $aqbanking_backends; do
+  case "$backend" in
+    aqofxconnect)
+      if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
+        AC_MSG_ERROR([LibOFX>0.7.0 is required for OFX direct connect.])
+      fi
+      ;;
+    aqgeldkarte)
+      if test "x$have_chipcard_client" != "xyes"; then
+        AC_MSG_ERROR([Libchipcard2-client is required for AqGeldKarte.])
+      fi
+      ;;
+  esac
+done
+
+
+
+#
+# check for dependencies of frontends
+#
+for frontend in $aqbanking_frontends; do
+  case "$frontend" in
+    g2banking)
+      if test -z "$GTK2_LIBS"; then
+        AC_MSG_ERROR([GTK2 is required for GTK2-frontend.])
+      fi
+      ;;
+  esac
+done
+
+
 
 ###-------------------------------------------------------------------------
 #
 # Configure stuff for backend AqHBCI
 #
 
-case "$OS_TYPE" in
-    posix)
-        aqhbci_internal_libs="-laqhbci"
-        aqhbci_libs="${aqhbci_internal_libs}"
-        aqhbci_ldflags="-L\${libdir}"
-        aqhbci_includes="-I`eval echo $prefix/include`"
-        aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-        aqhbci_data="`eval echo $prefix/share`/aqhbci"
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
-        ACX_WINDOWS_PATHS
-        aqhbci_internal_libs="-laqhbci32_${AQHBCI_SO_EFFECTIVE}"
-        aqhbci_libs="${aqhbci_internal_libs}"
-        aqhbci_ldflags="-L\${libdir}"
-        aqhbci_includes="-I`eval echo $prefix/include`"
-        aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-        aqhbci_data="c:/mingw/1.0`eval echo $prefix/share`/aqhbci"
-    	;;
+case "$aqbanking_backends" in *aqhbci*)
+  case "$OS_TYPE" in
+      posix)
+          aqhbci_internal_libs="-laqhbci"
+          aqhbci_libs="${aqhbci_internal_libs}"
+          aqhbci_ldflags="-L\${libdir}"
+          aqhbci_includes="-I`eval echo $prefix/include`"
+          aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
+          aqhbci_data="`eval echo $prefix/share`/aqhbci"
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
+          ACX_WINDOWS_PATHS
+          aqhbci_internal_libs="-laqhbci32_${AQHBCI_SO_EFFECTIVE}"
+          aqhbci_libs="${aqhbci_internal_libs}"
+          aqhbci_ldflags="-L\${libdir}"
+          aqhbci_includes="-I`eval echo $prefix/include`"
+          aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
+          aqhbci_data="c:/mingw/1.0`eval echo $prefix/share`/aqhbci"
+          ;;
+  esac
+  ;;
 esac
 
 AS_SCRUB_INCLUDE(aqhbci_includes)
@@ -702,14 +1073,160 @@ AC_DEFINE_UNQUOTED(AQHBCI_DATA, "${aqhbci_data}", [data dir])
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for backend AqDTAUS
+#
+
+case "$aqbanking_backends" in *aqdtaus*)
+  case "$OS_TYPE" in
+      posix)
+          aqdtaus_internal_libs="-laqdtaus"
+          aqdtaus_libs="-L\${libdir} ${aqdtaus_internal_libs}"
+          aqdtaus_includes="-I`eval echo $prefix/include`"
+          aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
+          aqdtaus_data="`eval echo $prefix/share`/aqdtaus"
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQDTAUS_DLL,1, [Define if DLL is built])
+          ACX_WINDOWS_PATHS
+          aqdtaus_internal_libs="-laqdtaus32_${AQDTAUS_SO_EFFECTIVE}"
+          aqdtaus_libs="-L\${libdir} ${aqdtaus_internal_libs}"
+          aqdtaus_includes="-I`eval echo $prefix/include`"
+          aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
+          aqdtaus_data="c:/mingw/1.0`eval echo $prefix/share`/aqdtaus"
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqdtaus_includes)
+AC_SUBST(aqdtaus_includes)
+AC_SUBST(aqdtaus_internal_libs)
+AC_SUBST(aqdtaus_libs)
+AC_SUBST(aqdtaus_plugins)
+AC_SUBST(aqdtaus_data)
+AC_DEFINE_UNQUOTED(AQDTAUS_DATA, "${aqdtaus_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Configure stuff for backend AqGeldKarte
+#
+
+case "$aqbanking_backends" in *aqgeldkarte*)
+  case "$OS_TYPE" in
+      posix)
+          aqgeldkarte_internal_libs="-laqgeldkarte"
+          aqgeldkarte_libs="-L\${libdir} ${aqgeldkarte_internal_libs}"
+          aqgeldkarte_includes="-I`eval echo $prefix/include`"
+          aqgeldkarte_plugins="\${libdir}/aqgeldkarte/plugins/${AQGELDKARTE_SO_EFFECTIVE}"
+          aqgeldkarte_data="`eval echo $prefix/share`/aqgeldkarte"
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQGELDKARTE_DLL,1, [Define if DLL is built])
+          ACX_WINDOWS_PATHS
+          aqgeldkarte_internal_libs="-laqgeldkarte32_${AQGELDKARTE_SO_EFFECTIVE}"
+          aqgeldkarte_libs="-L\${libdir} ${aqgeldkarte_internal_libs}"
+          aqgeldkarte_includes="-I`eval echo $prefix/include`"
+          aqgeldkarte_plugins="\${libdir}/aqgeldkarte/plugins/${AQGELDKARTE_SO_EFFECTIVE}"
+          aqgeldkarte_data="c:/mingw/1.0`eval echo $prefix/share`/aqgeldkarte"
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqgeldkarte_includes)
+AC_SUBST(aqgeldkarte_includes)
+AC_SUBST(aqgeldkarte_internal_libs)
+AC_SUBST(aqgeldkarte_libs)
+AC_SUBST(aqgeldkarte_plugins)
+AC_SUBST(aqgeldkarte_data)
+AC_DEFINE_UNQUOTED(AQGELDKARTE_DATA, "${aqgeldkarte_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Configure stuff for backend AqOfxConnect
+#
+
+case "$aqbanking_backends" in *aqofxconnect*)
+  case "$OS_TYPE" in
+      posix)
+          aqofxconnect_internal_libs="-laqofxconnect"
+          aqofxconnect_libs="-L\${libdir} ${aqofxconnect_internal_libs}"
+          aqofxconnect_includes="-I`eval echo $prefix/include`"
+          aqofxconnect_plugins="\${libdir}/aqofxconnect/plugins/${AQOFXCONNECT_SO_EFFECTIVE}"
+          aqofxconnect_data="`eval echo $prefix/share`/aqofxconnect"
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQOFXCONNECT_DLL,1, [Define if DLL is built])
+          ACX_WINDOWS_PATHS
+          aqofxconnect_internal_libs="-laqofxconnect32_${AQOFXCONNECT_SO_EFFECTIVE}"
+          aqofxconnect_libs="-L\${libdir} ${aqofxconnect_internal_libs}"
+          aqofxconnect_includes="-I`eval echo $prefix/include`"
+          aqofxconnect_plugins="\${libdir}/aqofxconnect/plugins/${AQOFXCONNECT_SO_EFFECTIVE}"
+          aqofxconnect_data="c:/mingw/1.0`eval echo $prefix/share`/aqofxconnect"
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqofxconnect_includes)
+AC_SUBST(aqofxconnect_includes)
+AC_SUBST(aqofxconnect_internal_libs)
+AC_SUBST(aqofxconnect_libs)
+AC_SUBST(aqofxconnect_plugins)
+AC_SUBST(aqofxconnect_data)
+AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Configure stuff for frontend g2banking
+#
+
+case "$OS_TYPE" in
+    posix)
+        g2banking_libs="-L`eval echo $prefix/lib` -lg2banking"
+        g2banking_includes="-I`eval echo $prefix/include`"
+        g2banking_data="`eval echo $prefix/share`/g2banking"
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        g2banking_libs="-L`eval echo $prefix/lib` -lg2banking32_${G2BANKING_SO_EFFECTIVE}"
+        g2banking_includes="-I`eval echo $prefix/include`"
+        g2banking_data="`eval echo $prefix/share`/g2banking"
+	all_includes="$all_includes -mms-bitfields"
+    	;;
+esac
+
+AC_SUBST(g2banking_includes)
+AC_SUBST(g2banking_libs)
+AC_SUBST(g2banking_data)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Cleanup includes, define all_XXX
 #
+
 AS_SCRUB_INCLUDE(all_includes)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 
+AC_SUBST(aqbanking_frontends)
+AC_SUBST(aqbanking_backends)
+
+
 
 ###-------------------------------------------------------------------------
+#
+# Output files
+#
+
 AC_CONFIG_FILES([
   doc/Makefile
   m4/Makefile
@@ -723,6 +1240,13 @@ AC_CONFIG_FILES([
   src/libs/aqbanking++/ressource.rc
   src/frontends/Makefile
   src/frontends/cbanking/Makefile
+  src/frontends/g2banking/Makefile
+  src/frontends/g2banking/g2banking-config.in
+  src/frontends/g2banking/version.h
+  src/frontends/g2banking/ressource.rc
+  src/frontends/g2banking/dialogs/Makefile
+  src/frontends/g2banking/views/Makefile
+  src/frontends/g2banking/widgets/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile
@@ -793,19 +1317,34 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/media/crypttoken/pintan/ressource.rc
   src/plugins/backends/aqhbci/plugin/Makefile
   src/plugins/backends/aqhbci/plugin/aqhbci.xml
+  src/plugins/backends/aqhbci/plugin/header.xml
   src/plugins/backends/aqhbci/plugin/ressource.rc
   src/plugins/backends/aqhbci/plugin/banking/Makefile
   src/plugins/backends/aqhbci/plugin/msglayer/Makefile
   src/plugins/backends/aqhbci/plugin/joblayer/Makefile
   src/plugins/backends/aqhbci/plugin/applayer/Makefile
-  src/plugins/backends/aqhbci/plugin/applayer/header.xml
-  src/plugins/backends/aqhbci/plugin/applayer/accountjobs/Makefile
+  src/plugins/backends/aqhbci/plugin/accountjobs/Makefile
   src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
   src/plugins/backends/aqhbci/plugin/version.h
   src/plugins/backends/aqhbci/tools/Makefile
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
   src/plugins/backends/aqhbci/aqhbci-config.in
+  src/plugins/backends/aqdtaus/Makefile
+  src/plugins/backends/aqdtaus/version.h
+  src/plugins/backends/aqdtaus/aqdtaus-config.in
+  src/plugins/backends/aqdtaus/plugin/Makefile
+  src/plugins/backends/aqdtaus/plugin/aqdtaus.xml
+  src/plugins/backends/aqgeldkarte/Makefile
+  src/plugins/backends/aqgeldkarte/version.h
+  src/plugins/backends/aqgeldkarte/aqgeldkarte-config.in
+  src/plugins/backends/aqgeldkarte/plugin/Makefile
+  src/plugins/backends/aqgeldkarte/plugin/aqgeldkarte.xml
+  src/plugins/backends/aqofxconnect/Makefile
+  src/plugins/backends/aqofxconnect/version.h
+  src/plugins/backends/aqofxconnect/aqofxconnect-config.in
+  src/plugins/backends/aqofxconnect/plugin/Makefile
+  src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile
@@ -820,4 +1359,22 @@ AC_CONFIG_FILES([
   version.h
 ])
 AC_OUTPUT
+
+
+
+###-------------------------------------------------------------------------
+#
+# Summary
+#
+
+echo
+echo
+echo "Summary"
+echo "----------------------------------------------------"
+echo "AqBanking version  : $AQBANKING_VERSION_FULL_STRING"
+echo "Supported backends : $aqbanking_backends"
+echo "Supported frontends: $aqbanking_frontends"
+echo
+echo "You can now run \"make\" (or gmake on FreeBSD) to compile."
+
 

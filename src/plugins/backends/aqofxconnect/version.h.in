@@ -1,0 +1,29 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AQOFXCONNECT_VERSION_H
+#define AQOFXCONNECT_VERSION_H
+
+#define AQOFXCONNECT_VERSION_MAJOR @AQOFXCONNECT_VERSION_MAJOR@
+#define AQOFXCONNECT_VERSION_MINOR @AQOFXCONNECT_VERSION_MINOR@
+#define AQOFXCONNECT_VERSION_PATCHLEVEL @AQOFXCONNECT_VERSION_PATCHLEVEL@
+#define AQOFXCONNECT_VERSION_BUILD @AQOFXCONNECT_VERSION_BUILD@
+#define AQOFXCONNECT_VERSION_TAG "@AQOFXCONNECT_VERSION_TAG@"
+#define AQOFXCONNECT_VERSION_FULL_STRING "@AQOFXCONNECT_VERSION_FULL_STRING@"
+#define AQOFXCONNECT_VERSION_STRING "@AQOFXCONNECT_VERSION_STRING@"
+
+
+
+#endif /* AQOFXCONNECT_VERSION_H */
+
+

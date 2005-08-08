@@ -1,10 +1,10 @@
-SUBDIRS=xml accountjobs
+SUBDIRS=xml
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/accountjobs \
   -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
 
-EXTRA_DIST=README header.xml.in
+EXTRA_DIST=README
 
 noinst_LTLIBRARIES=libhbciapp.la
 
@@ -30,12 +30,9 @@ sources:
 	  make -C $$d sources; \
 	done
 
-libhbciapp_la_LIBADD= accountjobs/libhbciaccjobs.la
+all-local: applayer.xml
 
-xmldatadir = $(aqhbci_data)/xml
-xmldata_DATA=hbci.xml
-
-hbci.xml: header.xml xml/base.xml accountjobs/accountjobs.xml
-	$(XMLMERGE) --compact --header -v header.xml xml/base.xml  accountjobs/accountjobs.xml -o $@
+applayer.xml: xml/base.xml accountjobs/accountjobs.xml
+	$(XMLMERGE) --compact xml/base.xml  accountjobs/accountjobs.xml -o $@
 
 CLEANFILES = $(xmldata_DATA) tmp.xml

@@ -1,9 +1,17 @@
-2005-08-07  Christian Stimming  <stimming@tuhh.de>
 
+2005/08/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- swallowed more backends (aqdtaus, aqgeldkarte, aqofxconnect)
+- swallowed gtk2 frontend
+
+
+2005-08-07  Christian Stimming  <stimming@tuhh.de>
 	* src/plugins/backends/aqhbci/plugin/applayer/accountjobs/Makefile.am:
 	Rename the jobgetstandingorders.{h,c,xml,_p.h} files to
 	jobgetsto.* because of tar's file name length limitation on "make
 	dist".
+
+
 
 2005-08-06  Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri/eri.c

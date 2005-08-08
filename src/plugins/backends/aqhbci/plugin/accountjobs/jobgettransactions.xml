@@ -1,0 +1,345 @@
+<GROUPs>
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.01
+   ***********************************************************************
+ -->
+ <GROUPdef id="TransferBase"
+         delimiter="+" version="1" >
+   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="1" />
+   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="1" />
+   <ELEM name="othername" type="dta" maxsize="27" minnum="1" maxnum="2" 
+    addemptymode="max" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   <ELEM name="textkey" type="num" maxsize="2" leftfill="1" />
+   <ELEM name="textkeyext" type="num" maxsize="3" minnum="0" leftfill="1" />
+   <GROUP delimiter=":" >
+     <ELEM name="purpose" type="dta" maxsize="27" minnum="1" maxnum="99" 
+           trustlevel="4" />
+   </GROUP>
+   <ELEM name="xdate" type="date" minnum="0" />
+   <ELEM name="fiid" type="ascii" minnum="0" />
+   <VALUES>
+   </VALUES>
+ </GROUPdef>
+
+
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.20
+   ***********************************************************************
+ -->
+ <GROUPdef id="TransferBase"
+         delimiter="+" version="2" >
+   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="2" />
+   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="2" />
+   <ELEM name="othername" type="dta" maxsize="27" minnum="1" maxnum="2" 
+    addemptymode="max" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   <ELEM name="textkey" type="num" maxsize="2" leftfill="1" />
+   <ELEM name="textkeyext" type="num" maxsize="3" minnum="0" leftfill="1" />
+   <GROUP delimiter=":" >
+     <ELEM name="purpose" type="dta" maxsize="27" minnum="1" maxnum="99" 
+           trustlevel="4" />
+   </GROUP>
+   <ELEM name="xdate" type="date" minnum="0" />
+   <ELEM name="fiid" type="ascii" minnum="0" />
+   <VALUES>
+   </VALUES>
+ </GROUPdef>
+
+
+</GROUPs>
+
+
+
+<SEGs>
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.01
+   ***********************************************************************
+ -->
+  <!-- Kundennachricht -->
+  <SEGdef id="GetTransactions" 
+          code="HKKAZ"
+          version="3" 
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="1" />
+   <ELEM name="currency" type="an" maxsize="128" minnum="0" />
+   <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="toDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+  <SEGdef id="Transactions" 
+          code="HIKAZ" 
+          version="3"
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="booked" 
+         type="bin" bintype="swift" binsubtype="mt940"
+         trustlevel="2" 
+         readbin="0" />
+   <ELEM name="noted" type="bin" bintype="swift" binsubtype="mt942"
+         minnum="0" trustlevel="2" readbin="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+  
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIKAZS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="StoreDays" type="num" maxsize="4" />
+   <ELEM name="MaxEntryAllowed" type="an" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.10
+   ***********************************************************************
+ -->
+
+ <!-- Kundennachricht -->
+   <SEGdef id="GetTransactions" 
+     code="HKKAZ" 
+     version="4" 
+     delimiter="+" 
+     terminator="'"
+   >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktv" version="1" />
+    <ELEM name="currency" type="an" maxsize="128" minnum="0" />
+    <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="toDate" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+    <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+ 
+ <!-- Banknachricht -->
+  <SEGdef id="Transactions" 
+          code="HIKAZ" 
+          version="4"
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="booked" 
+         type="bin" bintype="swift" binsubtype="mt940"
+         trustlevel="2" 
+         readbin="0" />
+   <ELEM name="noted" type="bin" bintype="swift" binsubtype="mt942"
+         minnum="0" trustlevel="2" readbin="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+  
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIKAZS" version="4"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="StoreDays" type="num" maxsize="4" />
+   <ELEM name="MaxEntryAllowed" type="an" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.20
+   ***********************************************************************
+ -->
+ <!-- Kundennachricht -->
+  <SEGdef id="GetTransactions" 
+          code="HKKAZ"
+          version="5" 
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="allAccounts" type="an" maxsize="1" />
+   <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="toDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="allAccounts">N</VALUE>
+   </VALUES>
+  </SEGdef>
+
+  <SEGdef id="Transactions" 
+          code="HIKAZ" 
+          version="5"
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="booked" 
+         type="bin" bintype="swift" binsubtype="mt940"
+         trustlevel="2" 
+         readbin="0" />
+   <ELEM name="noted" type="bin" bintype="swift" binsubtype="mt942"
+         minnum="0" trustlevel="2" readbin="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+  
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIKAZS" version="5"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="StoreDays" type="num" maxsize="4" />
+   <ELEM name="MaxEntryAllowed" type="an" maxsize="1" />
+   <ELEM name="AllAccountsAllowed" type="an" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+</SEGs>
+
+
+
+
+
+
+
+<JOBs>
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.01
+   ***********************************************************************
+ -->
+ <JOBdef 
+ 		id="JobGetTransactions" 
+    code="HKKAZ" params="HIKAZS"
+    version="3" 
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="Transactions"
+    attachable="1"
+    single="1"
+ >
+   <SEG type="GetTransactions" version="3" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.10
+   ***********************************************************************
+ -->
+  <JOBdef 
+ 		id="JobGetTransactions"
+    code="HKKAZ" params="HIKAZS"
+    version="4"
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="Transactions"
+    attachable="1"
+    single="1"
+ >
+  <SEG type="GetTransactions" version="4" />
+  <VALUES>
+    <VALUE path="head/code">%code</VALUE>
+    <VALUE path="head/version">%version</VALUE>
+  </VALUES>
+ </JOBdef>
+
+
+
+
+ <!-- 
+   ***********************************************************************
+                                HBCI 2.20
+   ***********************************************************************
+ -->
+ <JOBdef 
+ 		id="JobGetTransactions" 
+    code="HKKAZ" params="HIKAZS"
+    version="5" 
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="Transactions"
+    attachable="1"
+    single="1"
+ >
+   <SEG type="GetTransactions" version="5" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="allAccounts">N</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+

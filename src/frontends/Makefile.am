@@ -1,4 +1,4 @@
-SUBDIRS=cbanking
+SUBDIRS=@aqbanking_frontends@
 
 sources:
 	for d in $(SUBDIRS); do \

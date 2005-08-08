@@ -1,4 +1,4 @@
-SUBDIRS=aqhbci
+SUBDIRS=@aqbanking_backends@
 
 sources:
 	for d in $(SUBDIRS); do \
