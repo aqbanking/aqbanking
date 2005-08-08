@@ -4,7 +4,7 @@ SUBPACKAGE=kbanking
 
 INCLUDES=-Idialogs -Iwidgets -Iprg -Iviews -I$(top_builddir)/headers @all_includes@
 
-DEFS=-DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
+DEFS += -DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
 
 lib_LTLIBRARIES=libkbanking.la
 

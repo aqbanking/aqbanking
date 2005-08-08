@@ -1,7 +1,7 @@
 INCLUDES=-I$(top_builddir)/headers @all_includes@
 
 localedir=$(datadir)/locale
-DEFS= @DEFS@ -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DLOCALEDIR=\"$(localedir)\"
 
 EXTRA_DIST=aqgeldkarte.xml.in
 

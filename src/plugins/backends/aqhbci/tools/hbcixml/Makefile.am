@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
 
-DEFS= @DEFS@ -DXMLDATA_DIR=\"$(aqhbci_data)/xml\"
+DEFS += -DXMLDATA_DIR=\"$(aqhbci_data)/xml\"
 
 bin_PROGRAMS=hbcixml2
 noinst_HEADERS=loganalyzer.h error.h pointer.h
