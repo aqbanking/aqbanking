@@ -38,7 +38,7 @@ kbanking-config: kbanking-config.in
 	chmod a+x kbanking-config
 
 BUILT_SOURCES =$(nodist_libkbanking_la_SOURCES) version.h i18nsources
-CLEANFILES=$(BUILT_SOURCES) i18nsources
+CLEANFILES=$(BUILT_SOURCES) i18nsources kbanking-config
 
 libkbanking_la_LIBADD=\
  prg/libprg.la \
@@ -104,7 +104,7 @@ merge: messages
 	fi ;\
 	done
 
-catalog: merge $(I18NLINGUAS)
+catalog: $(I18NLINGUAS)
 	 LIST=`find ./po -name "*.po"`; \
 	 for i in $$LIST; do \
 	  file2=`echo $$i | sed -e "s#\.po#\.qm#"`; \

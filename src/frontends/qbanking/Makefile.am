@@ -110,7 +110,7 @@ merge: messages
 	fi ;\
 	done
 
-catalog: merge $(I18NLINGUAS)
+catalog: $(I18NLINGUAS)
 	 LIST=`find ./po -name "*.po"`; \
 	 for i in $$LIST; do \
 	  file2=`echo $$i | sed -e "s#\.po#\.qm#"`; \
