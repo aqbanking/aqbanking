@@ -29,8 +29,8 @@ libaqhbci_la_SOURCES=dummy.c
 xmldatadir = $(aqhbci_data)/xml
 xmldata_DATA=hbci.xml
 
-hbci.xml: header.xml applayer/applayer.xml accountjobs/accountjobs.xml
-	$(XMLMERGE) --compact --header -v header.xml applayer/applayer.xml accountjobs/accountjobs.xml -o $@
+hbci.xml: header.xml applayer/xml/base.xml accountjobs/accountjobs.xml
+	$(XMLMERGE) --compact --header -v header.xml applayer/xml/base.xml accountjobs/accountjobs.xml -o $@
 
 
 sources:

@@ -30,9 +30,4 @@ sources:
 	  make -C $$d sources; \
 	done
 
-all-local: applayer.xml
-
-applayer.xml: xml/base.xml accountjobs/accountjobs.xml
-	$(XMLMERGE) --compact xml/base.xml  accountjobs/accountjobs.xml -o $@
-
 CLEANFILES = $(xmldata_DATA) tmp.xml
