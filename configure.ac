@@ -1201,16 +1201,19 @@ AC_SUBST(DOXYGEN_TAGFILES)
 # check for dependencies of backends
 #
 
+dependencies_ok="yes"
 for backend in $aqbanking_backends; do
   case "$backend" in
     aqofxconnect)
       if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
-        AC_MSG_ERROR([LibOFX>0.7.0 is required for OFX direct connect.])
+        AC_MSG_NOTICE([*** LibOFX>0.7.0 is required for backend "aqofxconnect". Specify --with-backends="aqhbci aqdtaus aqgeldkarte" to build aqbanking without that backend.])
+	dependencies_ok="no"
       fi
       ;;
     aqgeldkarte)
       if test "x$have_chipcard_client" != "xyes"; then
-        AC_MSG_ERROR([Libchipcard2-client is required for AqGeldKarte.])
+        AC_MSG_NOTICE([*** Libchipcard2-client is required for backend "AqGeldKarte". Specify --with-backends="aqhbci aqdtaus aqofxconnect" to build aqbanking without that backend.])
+	dependencies_ok="no"
       fi
       ;;
   esac
@@ -1227,21 +1230,28 @@ for frontend in $aqbanking_frontends; do
   case "$frontend" in
     g2banking)
       if test -z "$GTK2_LIBS"; then
-        AC_MSG_ERROR([GTK2 is required for GTK2-frontend.])
+        AC_MSG_NOTICE([*** GTK2 is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
+	dependencies_ok="no"
       fi
       ;;
     qbanking)
       if test "x$have_qt3" != "xyes"; then
-        AC_MSG_ERROR([QT3 is required for QT-frontend.])
+        AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="cbanking g2banking" to build aqbanking without that frontend.])
+	dependencies_ok="no"
       fi
       ;;
     kbanking)
       if test "x$have_kde3" != "xyes"; then
-        AC_MSG_ERROR([KDE3 is required for KDE-frontend.])
+        AC_MSG_NOTICE([*** KDE3 is required for KDE-frontend "kbanking". Specify --with-frontends="cbanking g2banking qbanking" to build aqbanking without that frontend.])
+	dependencies_ok="no"
       fi
       ;;
   esac
 done
+
+if test "x$dependencies_ok" != "yes"; then
+  AC_MSG_ERROR([*** Requirements not fulfilled. Fix your requirements or change the configuration.])
+fi
 
 
 
