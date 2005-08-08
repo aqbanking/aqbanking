@@ -1249,7 +1249,7 @@ for frontend in $aqbanking_frontends; do
   esac
 done
 
-if test "x$dependencies_ok" != "yes"; then
+if test "x$dependencies_ok" != "xyes"; then
   AC_MSG_ERROR([*** Requirements not fulfilled. Fix your requirements or change the configuration.])
 fi
 
