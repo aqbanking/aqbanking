@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-08 10:14+0200\n"
+"POT-Creation-Date: 2005-08-08 13:25+0200\n"
 "PO-Revision-Date: 2005-08-08 10:14+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -16,50 +16,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: qbanking.cpp:507
+#: qbanking.cpp:512
 msgid "Account Not Mapped"
 msgstr "Konto nicht zugewiesen"
 
-#: qbanking.cpp:508
+#: qbanking.cpp:513
 msgid ""
 "<qt><p>The given application account has not been mapped to banking accounts."
 "</p></qt>"
 msgstr ""
 
-#: qbanking.cpp:515 qbanking.cpp:554 qbanking.cpp:593 qbanking.cpp:686
-#: dialogs/qbprocesswatcher.cpp:95 dialogs/qbsettings.cpp:206
-#: dialogs/qbsettings.cpp:251 dialogs/qbsettings.cpp:290
-#: dialogs/qbsettings.cpp:317 dialogs/qbsettings.cpp:333
-#: dialogs/qbsettings.cpp:369 dialogs/qbsettings.cpp:387
-#: dialogs/qbimporter.cpp:152 dialogs/qbimporter.cpp:440
-#: dialogs/qbimporter.cpp:478 dialogs/qbimporter.cpp:497
-#: dialogs/qbimporter.cpp:655 dialogs/qbimporter.cpp:843
-#: dialogs/qbselectbank.cpp:353 dialogs/qbprintdialog.cpp:471
-#: dialogs/qbprintdialog.cpp:481 dialogs/qbprintdialog.cpp:548
-#: views/qbjobview.cpp:134 views/qbjobview.cpp:168
+#: qbanking.cpp:520 qbanking.cpp:559 qbanking.cpp:598 qbanking.cpp:691
+#: qbanking.cpp:830 qbanking.cpp:851 dialogs/qbprocesswatcher.cpp:95
+#: dialogs/qbsettings.cpp:206 dialogs/qbsettings.cpp:251
+#: dialogs/qbsettings.cpp:290 dialogs/qbsettings.cpp:317
+#: dialogs/qbsettings.cpp:333 dialogs/qbsettings.cpp:369
+#: dialogs/qbsettings.cpp:387 dialogs/qbimporter.cpp:152
+#: dialogs/qbimporter.cpp:440 dialogs/qbimporter.cpp:478
+#: dialogs/qbimporter.cpp:497 dialogs/qbimporter.cpp:655
+#: dialogs/qbimporter.cpp:843 dialogs/qbselectbank.cpp:353
+#: dialogs/qbprintdialog.cpp:471 dialogs/qbprintdialog.cpp:481
+#: dialogs/qbprintdialog.cpp:548 views/qbjobview.cpp:134
+#: views/qbjobview.cpp:168
 msgid "Dismiss"
 msgstr ""
 
-#: qbanking.cpp:547 qbanking.cpp:679
+#: qbanking.cpp:552 qbanking.cpp:684
 msgid "Queue Error"
 msgstr ""
 
-#: qbanking.cpp:548 qbanking.cpp:680
+#: qbanking.cpp:553 qbanking.cpp:685
 msgid "<qt><p>Unable to enqueue your request.</p></qt>"
 msgstr ""
 
-#: qbanking.cpp:588
+#: qbanking.cpp:593
 msgid "Job Not Available"
 msgstr ""
 
-#: qbanking.cpp:589
+#: qbanking.cpp:594
 msgid ""
 "The job you requested is not availablewith\n"
 "the backend which handles this account.\n"
 msgstr ""
 
-#: qbanking.cpp:707
+#: qbanking.cpp:712
 msgid "Jobs added to outbox"
+msgstr ""
+
+#: qbanking.cpp:818 qbanking.cpp:839 dialogs/qbimporter.cpp:486
+msgid "Internal Error"
+msgstr ""
+
+#: qbanking.cpp:819
+msgid ""
+"<qt><p>Could not register SimpleCallback.</p><p>This is an internal error, "
+"please report it to <b>martin@libchipcard.de</b></p></qt>"
+msgstr ""
+
+#: qbanking.cpp:840
+msgid ""
+"<qt><p>Could not register FastCallback.</p><p>This is an internal error, "
+"please report it to <b>martin@libchipcard.de</b></p></qt>"
 msgstr ""
 
 #: qbwcb_progress.cpp:73
@@ -359,10 +376,6 @@ msgstr ""
 
 #: dialogs/qbimporter.cpp:477
 msgid "Please select the profile you want to use."
-msgstr ""
-
-#: dialogs/qbimporter.cpp:486
-msgid "Internal Error"
 msgstr ""
 
 #: dialogs/qbimporter.cpp:487

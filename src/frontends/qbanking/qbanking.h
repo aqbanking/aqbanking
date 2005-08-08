@@ -35,6 +35,7 @@ class QBanking;
 
 class QBProgress;
 class QBSimpleBox;
+class QBWaitCallback;
 
 
 class QBanking: public Banking {
@@ -48,13 +49,23 @@ private:
   QBFlagStaff *_flagStaff;
   QTranslator *_translator;
 
+  QBWaitCallback *_simpleCallback;
+  QBWaitCallback *_fastCallback;
+
   QBProgress *_findProgressWidget(GWEN_TYPE_UINT32 id);
   void _cleanupProgressWidgets();
 
   AB_ACCOUNT *_getAccount(const char *accountId);
-  int _extractHTML(const char *text, GWEN_BUFFER *buf);
+  static int _extractHTML(const char *text, GWEN_BUFFER *buf);
 
-protected:
+public:
+  QBanking(const char *appname,
+           const char *fname=0);
+  virtual ~QBanking();
+
+  int init();
+  int fini();
+
   virtual int messageBox(GWEN_TYPE_UINT32 flags,
 			 const char *title,
 			 const char *text,
@@ -97,16 +108,7 @@ protected:
                     const char *descr,
                     const char *text);
 
-public:
-  QBanking(const char *appname,
-           const char *fname=0);
-  virtual ~QBanking();
-
-  int init();
-  int fini();
-
-
-  QBFlagStaff *flagStaff();
+  virtual QBFlagStaff *flagStaff();
 
   void setParentWidget(QWidget *w);
 
@@ -176,6 +178,8 @@ public:
                           const QString &location="");
 
   static std::string QStringToUtf8String(const QString &qs);
+
+  static std::string guiString(const char *s);
 
 };
 

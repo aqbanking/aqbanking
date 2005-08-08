@@ -1068,7 +1068,7 @@ done
 # symlink all headers from src/frontends
 
 for frontend in ${aqbanking_frontends}; do
-  rm -Rf ${frontend}
+  rm -Rf headers/${frontend}
   mkdir -p headers/${frontend}
   
   # symlink all headers

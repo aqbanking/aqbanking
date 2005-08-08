@@ -27,6 +27,9 @@
 #include "qbprintdialog.h"
 #include "qbselectbank.h"
 
+#include "qbwcb_fast.h"
+#include "qbwcb_simple.h"
+
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
 
@@ -51,7 +54,9 @@ QBanking::QBanking(const char *appname,
 ,_parentWidget(0)
 ,_lastWidgetId(0)
 ,_logLevel(AB_Banking_LogLevelInfo)
-,_translator(0){
+,_translator(0)
+,_simpleCallback(0)
+,_fastCallback(0){
   _flagStaff=new QBFlagStaff();
 }
 
@@ -441,7 +446,7 @@ int QBanking::enqueueJob(AB_JOB *j){
 
   rv=Banking::enqueueJob(j);
 
-  _flagStaff->queueUpdated();
+  flagStaff()->queueUpdated();
   return rv;
 }
 
@@ -451,7 +456,7 @@ int QBanking::dequeueJob(AB_JOB *j){
   int rv;
 
   rv=Banking::dequeueJob(j);
-  _flagStaff->queueUpdated();
+  flagStaff()->queueUpdated();
   return rv;
 }
 
@@ -461,14 +466,14 @@ int QBanking::executeQueue(){
   int rv;
 
   rv=Banking::executeQueue();
-  _flagStaff->queueUpdated();
+  flagStaff()->queueUpdated();
   return rv;
 }
 
 
 
 void QBanking::accountsUpdated(){
-  _flagStaff->accountsUpdated();
+  flagStaff()->accountsUpdated();
 }
 
 
@@ -807,6 +812,48 @@ int QBanking::init(){
     _translator=0;
   }
 
+  _simpleCallback=new QBSimpleCallback(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
+  if (_simpleCallback->registerCallback()) {
+    QMessageBox::critical(0,
+                          QWidget::tr("Internal Error"),
+                          QWidget::tr("<qt>"
+                                      "<p>"
+                                      "Could not register SimpleCallback."
+                                      "</p>"
+                                      "<p>"
+                                      "This is an internal error, please "
+                                      "report it to "
+                                      "<b>martin@libchipcard.de</b>"
+                                      "</p>"
+                                      "</qt>"
+                                     ),
+                          QWidget::tr("Dismiss"), 0, 0, 0);
+    delete _simpleCallback;
+    _simpleCallback=0;
+    return false;
+  }
+
+  _fastCallback=new QBFastCallback(GWEN_WAITCALLBACK_ID_FAST);
+  if (_fastCallback->registerCallback()) {
+    QMessageBox::critical(0,
+                          QWidget::tr("Internal Error"),
+                          QWidget::tr("<qt>"
+                                      "<p>"
+                                      "Could not register FastCallback."
+                                      "</p>"
+                                      "<p>"
+                                      "This is an internal error, please "
+                                      "report it to "
+                                      "<b>martin@libchipcard.de</b>"
+                                      "</p>"
+                                      "</qt>"
+                                     ),
+                          QWidget::tr("Dismiss"), 0, 0, 0);
+    delete _fastCallback;
+    _fastCallback=0;
+    return false;
+  }
+
   return 0;
 }
 
@@ -814,6 +861,17 @@ int QBanking::init(){
 
 int QBanking::fini(){
   int rv;
+
+  if (_fastCallback) {
+    _fastCallback->unregisterCallback();
+    delete _fastCallback;
+    _fastCallback=0;
+  }
+  if (_simpleCallback) {
+    _simpleCallback->unregisterCallback();
+    delete _simpleCallback;
+    _simpleCallback=0;
+  }
 
   rv=Banking::fini();
   if (_translator) {
@@ -828,13 +886,13 @@ int QBanking::fini(){
 
 
 void QBanking::outboxCountChanged(int count){
-  _flagStaff->outboxCountChanged(count);
+  flagStaff()->outboxCountChanged(count);
 }
 
 
 
 void QBanking::statusMessage(const QString &s){
-  _flagStaff->statusMessage(s);
+  flagStaff()->statusMessage(s);
 }
 
 
@@ -882,6 +940,24 @@ std::string QBanking::QStringToUtf8String(const QString &qs) {
     result+=(unsigned char)utfData[i];
 
   return result;
+}
+
+
+
+std::string QBanking::guiString(const char *s) {
+  GWEN_BUFFER *tbuf;
+  std::string res;
+
+  assert(s);
+  tbuf=GWEN_Buffer_new(0, strlen(s), 0, 1);
+  if (_extractHTML(s, tbuf)) {
+    GWEN_Buffer_free(tbuf);
+    return s;
+  }
+  res=std::string(GWEN_Buffer_GetStart(tbuf),
+                  GWEN_Buffer_GetUsedBytes(tbuf));
+  GWEN_Buffer_free(tbuf);
+  return res;
 }
 
 
