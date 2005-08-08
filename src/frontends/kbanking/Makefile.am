@@ -1,4 +1,4 @@
-SUBDIRS=prg widgets dialogs views po
+SUBDIRS=widgets dialogs views po
 
 SUBPACKAGE=kbanking
 
@@ -39,7 +39,6 @@ BUILT_SOURCES =$(nodist_libkbanking_la_SOURCES) version.h i18nsources
 CLEANFILES=$(BUILT_SOURCES) i18nsources kbanking-config
 
 libkbanking_la_LIBADD=\
- prg/libprg.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
