@@ -1,41 +1,19 @@
 INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/.. -I$(srcdir)/../prg -I$(srcdir)/../dialogs @all_includes@
 
-UI_FILES= \
- progress.ui \
- simplebox.ui
-
 EXTRA_DIST=$(UI_FILES)
 
 noinst_LTLIBRARIES=libwidgets.la
 
-nodist_iheader_HEADERS=\
- progress.ui.h \
- simplebox.ui.h
-
 iheaderdir=${includedir}/kbanking
 iheader_HEADERS=\
- simplebox.h \
- accountlist.h \
- inputbox.h \
- joblist.h \
- plugindescrlist.h \
- progress.h
-
-nodist_libwidgets_la_SOURCES=\
- progress.ui.cpp progress.ui.moc.cpp \
- simplebox.ui.cpp simplebox.ui.moc.cpp \
- inputbox.moc.cpp \
- progress.moc.cpp \
- simplebox.moc.cpp
-
+ kbaccountlist.h \
+ kbjoblist.h \
+ kbplugindescrlist.h
 
 libwidgets_la_SOURCES=\
- accountlist.cpp \
- joblist.cpp \
- inputbox.cpp \
- plugindescrlist.cpp \
- progress.cpp \
- simplebox.cpp
+ kbaccountlist.cpp \
+ kbjoblist.cpp \
+ kbplugindescrlist.cpp
 
 BUILT_SOURCES = $(nodist_libwidgets_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
