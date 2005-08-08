@@ -1,0 +1,140 @@
+
+
+2005/07/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in progress widget: Was not setting variable "_aborted"
+
+
+2005/07/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in importer (was not working)
+
+
+2005/04/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added bank selection dialog and a corresponding member function to
+  class KBanking
+
+
+===========================================================================
+MARK: released KBanking - 0.9.9 (2005/04/13)
+===========================================================================
+
+
+2005/04/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in Gwen
+
+
+===========================================================================
+MARK: released KBanking - 0.9.8 (2005/03/28)
+===========================================================================
+
+
+2005/03/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved PrintDialog (taken from QBankManager)
+
+
+===========================================================================
+MARK: released KBanking - 0.9.7 (2005/02/19)
+===========================================================================
+
+
+2005/02/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added print dialog
+- implemented AB_Banking_Print()
+
+
+===========================================================================
+MARK: released KBanking - 0.9.6 (2005/01/12)
+===========================================================================
+
+
+2004-10-03  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/widgets/progress.h, inputbox.h, simplebox.h: Change the
+	text arguments of these widgets into QStrings so that there are no
+	further utf8 conversions.
+
+	* configure.ac: Define the macro QT_NO_ASCII_CAST because
+	otherwise we will silently have many casts from QString to latin1
+	instead of utf8.
+
+
+===========================================================================
+MARK: released KBanking - 0.9.5 (2004/09/28)
+===========================================================================
+
+
+2004/09/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in AqBanking
+
+
+2004/09/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug: KBanking did not remove the current progress widget from
+  internal lists upon progressEnd().
+
+
+===========================================================================
+MARK: released KBanking - 0.9.4 (2004/09/19)
+===========================================================================
+
+
+2004/09/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in importer
+- log messages are now correctly transformed from UTF8
+- log messages now only show the time (no longer the date)
+
+
+===========================================================================
+MARK: released KBanking - 0.9.3 (2004/09/15)
+===========================================================================
+
+
+2004/09/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- modified the importer after a discussion with Ace Jones from KMyMoney
+- importer now uses the KDE file dialog instead of the QT version
+- virtual interactive user functions can now extract HTML information and
+  display it
+
+
+===========================================================================
+MARK: released KBanking - 0.9.2 (2004/09/10)
+===========================================================================
+
+
+2004/09/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added I18N framework, started working on German translation
+
+
+2004/09/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added an importer wizard. This wizard asks the user for files to import and
+  for the importer/profile to be used. It then reads the files and passes
+  the data read to the application.
+
+
+===========================================================================
+MARK: released KBanking - 0.9.1 (2004/09/02)
+===========================================================================
+
+
+2004/08/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added m4 macro file, config-script
+
+
+2004/08/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- initial import
+- added methods to KBanking for requesting account status and transaction
+  reports
+- added a dialog for mapping application accounts to online accounts
+

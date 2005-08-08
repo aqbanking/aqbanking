@@ -3,6 +3,7 @@
 -------------------------------------------------
 - swallowed more backends (aqdtaus, aqgeldkarte, aqofxconnect)
 - swallowed gtk2 frontend
+- swallowed kde frontend
 
 
 2005-08-07  Christian Stimming  <stimming@tuhh.de>

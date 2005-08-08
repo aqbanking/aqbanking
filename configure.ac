@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=8
+AQBANKING_VERSION_BUILD=9
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -64,6 +64,11 @@ G2BANKING_SO_CURRENT="0"
 G2BANKING_SO_REVISION="0"
 G2BANKING_SO_AGE="0"
 G2BANKING_SO_EFFECTIVE="`echo \$(($G2BANKING_SO_CURRENT-$G2BANKING_SO_AGE))`"
+
+KBANKING_SO_CURRENT=2
+KBANKING_SO_REVISION=1
+KBANKING_SO_AGE=1
+KBANKING_SO_EFFECTIVE="`echo \$(($KBANKING_SO_CURRENT-$KBANKING_SO_AGE))`"
 
 
 
@@ -139,6 +144,21 @@ dnl "stable", "rcX", "betaX", "cvs"
 G2BANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 G2BANKING_VERSION_FULL_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL.$G2BANKING_VERSION_BUILD${G2BANKING_VERSION_TAG}"
 G2BANKING_VERSION_STRING="$G2BANKING_VERSION_MAJOR.$G2BANKING_VERSION_MINOR.$G2BANKING_VERSION_PATCHLEVEL"
+
+
+
+###-------------------------------------------------------------------------
+#
+# KBanking versions
+#
+KBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+KBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+KBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+KBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+dnl "stable", "rcX", "betaX", "cvs"
+KBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
+KBANKING_VERSION_FULL_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL.$KBANKING_VERSION_BUILD${KBANKING_VERSION_TAG}"
+KBANKING_VERSION_STRING="$KBANKING_VERSION_MAJOR.$KBANKING_VERSION_MINOR.$KBANKING_VERSION_PATCHLEVEL"
 
 
 
@@ -448,6 +468,40 @@ AC_DEFINE_UNQUOTED(G2BANKING_SO_EFFECTIVE_STR, "$G2BANKING_SO_EFFECTIVE",
                    [effective SO version])
 
 
+#
+# same for KBanking
+#
+
+AC_SUBST(KBANKING_VERSION_MAJOR)
+AC_SUBST(KBANKING_VERSION_MINOR)
+AC_SUBST(KBANKING_VERSION_PATCHLEVEL)
+AC_SUBST(KBANKING_VERSION_BUILD)
+AC_SUBST(KBANKING_VERSION_TAG)
+AC_SUBST(KBANKING_VERSION_FULL_STRING)
+AC_SUBST(KBANKING_VERSION_STRING)
+AC_SUBST(KBANKING_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_MAJOR,$KBANKING_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_MINOR,$KBANKING_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_PATCHLEVEL,$KBANKING_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_BUILD,$KBANKING_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_STRING,"$KBANKING_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_FULL_STRING,"$KBANKING_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(KBANKING_VERSION_TAG,$KBANKING_VERSION_TAG, [tag])
+
+AC_SUBST(KBANKING_SO_CURRENT)
+AC_SUBST(KBANKING_SO_REVISION)
+AC_SUBST(KBANKING_SO_AGE)
+AC_SUBST(KBANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(KBANKING_SO_EFFECTIVE_STR, "$KBANKING_SO_EFFECTIVE",
+                   [effective SO version])
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -648,6 +702,28 @@ PKG_CHECK_MODULES(GTK2, [$pkg_modules])
 all_includes="$all_includes $GTK2_CFLAGS"
 AC_SUBST(GTK2_CFLAGS)
 AC_SUBST(GTK2_LIBS)
+
+
+
+###-------------------------------------------------------------------------
+#
+# KDE3
+#
+
+AQ_CHECK_KDE3
+if test "$have_kde3" = "yes"; then
+  all_includes="$all_includes $qt3_includes $kde3_includes"
+
+  # Define this macro to disable the cast from QString to const char
+  # which implicitly uses latin1()!
+  AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+  
+  dnl Check for Qts lupdate tools
+  AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+  AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+  AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
+  AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
+fi
 
 
 
@@ -984,7 +1060,7 @@ AC_SUBST(DOXYGEN_TAGFILES)
 AC_ARG_WITH(frontends, 
   [  --with-frontends=list      space separated list of frontends (default:all)],
   [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="cbanking g2banking"]
+  [aqbanking_frontends="cbanking g2banking kbanking"]
 )
 
 
@@ -1023,6 +1099,11 @@ for frontend in $aqbanking_frontends; do
     g2banking)
       if test -z "$GTK2_LIBS"; then
         AC_MSG_ERROR([GTK2 is required for GTK2-frontend.])
+      fi
+      ;;
+    kbanking)
+      if test "x$have_kde3" != "xyes"; then
+        AC_MSG_ERROR([KDE3 is required for KDE-frontend.])
       fi
       ;;
   esac
@@ -1210,6 +1291,32 @@ AC_SUBST(g2banking_data)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for frontend kbanking
+#
+
+case "$OS_TYPE" in
+    posix)
+        libsuffix=`eval kde-config --libsuffix`
+        kbanking_libs="-L`eval echo $prefix/lib`$libsuffix -lkbanking"
+        kbanking_includes="-I`eval echo $prefix/include`"
+        kbanking_data="`eval echo $prefix/share`/kbanking"
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_KBANKING_DLL,1, [Define if DLL is built])
+        kbanking_libs="-L`eval echo $prefix/lib` -lkbanking32_${KBANKING_SO_EFFECTIVE}"
+        kbanking_includes="-I`eval echo $prefix/include`"
+        kbanking_data="`eval echo $prefix/share`/kbanking"
+    	;;
+esac
+
+AC_SUBST(kbanking_includes)
+AC_SUBST(kbanking_libs)
+AC_SUBST(kbanking_data)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Cleanup includes, define all_XXX
 #
 
@@ -1247,6 +1354,14 @@ AC_CONFIG_FILES([
   src/frontends/g2banking/dialogs/Makefile
   src/frontends/g2banking/views/Makefile
   src/frontends/g2banking/widgets/Makefile
+  src/frontends/kbanking/Makefile
+  src/frontends/kbanking/dialogs/Makefile
+  src/frontends/kbanking/prg/Makefile
+  src/frontends/kbanking/views/Makefile
+  src/frontends/kbanking/widgets/Makefile
+  src/frontends/kbanking/version.h
+  src/frontends/kbanking/kbanking-config.in
+  src/frontends/kbanking/ressource.rc
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

@@ -1,0 +1,44 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KBSimpleBoxUi</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>KBSimpleBoxUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>373</width>
+            <height>89</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Simple Box</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Minimum</enum>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textWidget</cstring>
+            </property>
+            <property name="text">
+                <string>TextLabel1</string>
+            </property>
+            <property name="textFormat">
+                <enum>AutoText</enum>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+            <property name="hAlign" stdset="0">
+            </property>
+        </widget>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

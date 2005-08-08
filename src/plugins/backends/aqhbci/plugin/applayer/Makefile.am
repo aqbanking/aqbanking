@@ -1,7 +1,7 @@
 SUBDIRS=xml
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
-  -I$(srcdir)/accountjobs \
+  -I$(srcdir)/../accountjobs \
   -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
 
 EXTRA_DIST=README

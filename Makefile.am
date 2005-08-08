@@ -140,6 +140,7 @@ merge: po/$(PACKAGE).pot
 	rm -f $$cat.new.1 $$cat.new.2 ;\
 	fi ;\
 	done
+	make -C src/frontends/kbanking merge
 
 MSGFMT = msgfmt
 catalogs: $(I18NLINGUAS)
@@ -150,6 +151,7 @@ catalogs: $(I18NLINGUAS)
 	  echo "  $(MSGFMT) -o $${filecat} $${filelingua}"; \
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
 	done
+	make -C src/frontends/kbanking catalog
 
 localedir = $(datadir)/locale
 install-data-local: catalogs
