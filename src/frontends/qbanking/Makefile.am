@@ -1,10 +1,10 @@
-SUBDIRS=prg widgets dialogs views
+SUBDIRS=prg widgets dialogs views po
 
 SUBPACKAGE=qbanking
 
 INCLUDES=-Idialogs -Iwidgets -Iprg -Iviews -I$(top_builddir)/headers @all_includes@
 
-DEFS=-DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
+DEFS += -DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
 
 lib_LTLIBRARIES=libqbanking.la
 
@@ -21,7 +21,6 @@ iheader_HEADERS=\
  qbwcb_fast.h \
  qbwcb_simple.h \
  qbwcb_progress.h
- 
 
 libqbanking_la_SOURCES=\
  qbflagstaff.cpp \
@@ -30,7 +29,6 @@ libqbanking_la_SOURCES=\
  qbwcb_fast.cpp \
  qbwcb_simple.cpp \
  qbwcb_progress.cpp
- 
 
 nodist_libqbanking_la_SOURCES=\
  qbflagstaff.moc.cpp
@@ -41,7 +39,6 @@ qbanking-config: qbanking-config.in
 	cat qbanking-config.in >>qbanking-config && \
 	chmod a+x qbanking-config
 
- 
 BUILT_SOURCES =$(nodist_libqbanking_la_SOURCES) version.h
 CLEANFILES=$(BUILT_SOURCES) i18nsources qbanking-config qbanking-config.in ressource.rc
 

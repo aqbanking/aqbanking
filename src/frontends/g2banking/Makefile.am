@@ -3,7 +3,7 @@
 SUBDIRS=widgets dialogs views
 
 LIBDATADIR="$(datadir)/g2banking"
-DEFS=\
+DEFS += \
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
   -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
 
@@ -16,10 +16,10 @@ M4_DATA=g2banking.m4
 g2banking-config: g2banking-config.in
 	echo "#! /bin/sh" >g2banking-config && \
 	echo 'dir="@prefix@"' >>g2banking-config && \
-	cat g2banking-config.in >>g2banking-config && \
+	cat $< >> g2banking-config && \
 	chmod a+x g2banking-config
 
-
+EXTRA_DIST = g2banking.glade
 GLADE_SOURCES=support.c interface.c callbacks.c
 GLADE_HDRS=support.h interface.h callbacks.h
 
@@ -40,11 +40,12 @@ libg2banking_la_SOURCES = \
 nodist_libg2banking_la_SOURCES=$(GLADE_SOURCES)
 
 libg2banking_la_LIBADD =\
- @gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(gwenhywfar_libs) \
  views/libviews.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
- @all_libraries@
+ $(all_libraries)
 
 libg2banking_la_LDFLAGS =\
   -version-info @G2BANKING_SO_CURRENT@:@G2BANKING_SO_REVISION@:@G2BANKING_SO_AGE@
@@ -52,10 +53,10 @@ libg2banking_la_LDFLAGS =\
 
 CLEANFILES=g2banking-config g2banking-config.in ressource.rc $(BUILT_SOURCES)
 
-$(GLADE_SOURCES) $(GLADE_HDRS):
+$(GLADE_SOURCES) $(GLADE_HDRS): g2banking.glade
 	rm -Rf tmp.glade >/dev/null
 	mkdir tmp.glade
-	cp g2banking.glade tmp.glade
+	cp $< tmp.glade
 	( cd tmp.glade && glade-2 -w g2banking.glade ) 
 	for f in $(GLADE_SOURCES) $(GLADE_HDRS); do \
 	      cp tmp.glade/src/$$f . ; \

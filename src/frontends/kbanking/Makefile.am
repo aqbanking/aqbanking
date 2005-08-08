@@ -1,4 +1,4 @@
-SUBDIRS=prg widgets dialogs views
+SUBDIRS=prg widgets dialogs views po
 
 SUBPACKAGE=kbanking
 
@@ -17,8 +17,7 @@ iheader_HEADERS=\
  flagstaff.h \
  kbanking_p.h \
  kbanking.h \
- waitcallback.h
- 
+ waitcallback.h 
 
 libkbanking_la_SOURCES=\
  flagstaff.cpp \
@@ -34,7 +33,6 @@ kbanking-config: kbanking-config.in
 	cat kbanking-config.in >>kbanking-config && \
 	chmod a+x kbanking-config
 
- 
 BUILT_SOURCES =$(nodist_libkbanking_la_SOURCES) version.h i18nsources
 CLEANFILES=$(BUILT_SOURCES) i18nsources
 
@@ -44,7 +42,7 @@ libkbanking_la_LIBADD=\
  dialogs/libdialogs.la \
  views/libviews.la \
  $(kde3_libs) -lkdeui -lkdecore -lkio \
- -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
+ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 libkbanking_la_LDFLAGS=\
  -version-info @KBANKING_SO_CURRENT@:@KBANKING_SO_REVISION@:@KBANKING_SO_AGE@
