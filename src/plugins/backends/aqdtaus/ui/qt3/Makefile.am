@@ -1,4 +1,4 @@
-SUBDIRS=libs qt3_wizard
+SUBDIRS=libs qt3_wizard po
 
 SUBPACKAGE=aqdtaus-qt-tools
 
