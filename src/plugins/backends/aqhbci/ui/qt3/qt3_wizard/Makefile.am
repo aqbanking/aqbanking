@@ -1,8 +1,8 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/../libs/widgets \
-  -I$(srcdir)/../libs/dialogs \
+  -I$(srcdir)/../libs/widgets -I$(srcdir)/../libs/dialogs \
   -I$(srcdir)/../libs \
+  -I../libs/widgets -I../libs/dialogs -I../libs \
   $(qt3_includes) $(all_includes)
 
 DEFS += -DDATADIR=\"$(pkgdatadir)\"
