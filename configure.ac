@@ -1016,8 +1016,12 @@ aqbankingpp_modules="."
 #
 rm -Rf headers 2>/dev/null
 
+# The prefix to the source code (=srcdir)
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
+
+# The prefix to the build directory (=builddir)
+bprefix=`pwd`
 
 mkdir -p headers/aqbanking
 AQ_HEADER_FILES="${lprefix}/version.h"
@@ -1056,7 +1060,7 @@ for sm in $aqbanking_modules; do
   done
 done
 
-ln -s "${lprefix}/version.h" headers/aqbanking/version.h
+ln -s "${bprefix}/version.h" headers/aqbanking/version.h
 
 
 #
@@ -1099,12 +1103,12 @@ for frontend in ${aqbanking_frontends}; do
               *_p.h | *_l.h | *.ui.h | version.h)
                 ;;
               *.ui)
-                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/$d/${f}.h"
-                ln -s "${lprefix}/src/frontends/${frontend}/$d/${f}.h" "headers/${frontend}/${f}.h"
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/$d/${f}.h"
+                ln -s "${bprefix}/src/frontends/${frontend}/$d/${f}.h" "headers/${frontend}/${f}.h"
                 ;;
               version.h.in)
-                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/version.h"
-                ln -s "${lprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/version.h"
+                ln -s "${bprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
                 ;;
               *)
                 AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/$d/${f}"
@@ -1119,12 +1123,12 @@ for frontend in ${aqbanking_frontends}; do
         *_p.h | *_l.h | *.ui.h | version.h)
           ;;
         *.ui)
-          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/${d}.h"
-          ln -s "${lprefix}/src/frontends/${frontend}/${d}.h" "headers/${frontend}/${d}.h"
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/${d}.h"
+          ln -s "${bprefix}/src/frontends/${frontend}/${d}.h" "headers/${frontend}/${d}.h"
           ;;
         version.h.in)
-          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/version.h"
-          ln -s "${lprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/version.h"
+          ln -s "${bprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
           ;;
         *.h)
           AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/frontends/${frontend}/$d"
@@ -1155,8 +1159,8 @@ for backend in ${aqbanking_backends}; do
               *_p.h | *_l.h | version.h)
                 ;;
               version.h.in)
-                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/$d/version.h"
-                ln -s "${lprefix}/src/plugins/backends/${backend}/plugin/$d/version.h" "headers/${backend}/version.h"
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/plugins/backends/${backend}/plugin/$d/version.h"
+                ln -s "${bprefix}/src/plugins/backends/${backend}/plugin/$d/version.h" "headers/${backend}/version.h"
                 ;;
               *)
                 AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/$d/${f}"
@@ -1171,8 +1175,8 @@ for backend in ${aqbanking_backends}; do
         *_p.h | *_l.h | version.h)
           ;;
         version.h.in)
-          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/version.h"
-          ln -s "${lprefix}/src/plugins/backends/${backend}/plugin/version.h" "headers/${backend}/version.h"
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/plugins/backends/${backend}/plugin/version.h"
+          ln -s "${bprefix}/src/plugins/backends/${backend}/plugin/version.h" "headers/${backend}/version.h"
           ;;
         *.h)
           AQ_HEADER_FILES="${AQ_HEADER_FILES} ${lprefix}/src/plugins/backends/${backend}/plugin/$d"
