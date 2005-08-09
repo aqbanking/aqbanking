@@ -1671,6 +1671,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/widgets/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/po/Makefile
   src/plugins/backends/aqdtaus/Makefile
   src/plugins/backends/aqdtaus/version.h
   src/plugins/backends/aqdtaus/aqdtaus-config.in
@@ -1684,6 +1685,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/libs/views/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/libs/widgets/Makefile
+  src/plugins/backends/aqdtaus/ui/qt3/po/Makefile
   src/plugins/backends/aqgeldkarte/Makefile
   src/plugins/backends/aqgeldkarte/version.h
   src/plugins/backends/aqgeldkarte/aqgeldkarte-config.in
