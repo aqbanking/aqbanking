@@ -1,4 +1,4 @@
-SUBDIRS=libs plugins frontends tools test
+SUBDIRS=libs frontends plugins tools test
 
 
 sources:

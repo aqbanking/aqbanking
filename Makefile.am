@@ -141,6 +141,7 @@ merge: po/$(PACKAGE).pot
 	fi ;\
 	done
 	make -C src/frontends/kbanking merge
+	make -C src/plugins/backends/aqhbci/ui/qt3 merge
 
 MSGFMT = msgfmt
 catalogs: $(I18NLINGUAS)
@@ -152,6 +153,7 @@ catalogs: $(I18NLINGUAS)
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
 	done
 	make -C src/frontends/kbanking catalog
+	make -C src/plugins/backends/aqhbci/ui/qt3 catalog
 
 localedir = $(datadir)/locale
 install-data-local: catalogs

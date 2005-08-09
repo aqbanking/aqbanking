@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=11
+AQBANKING_VERSION_BUILD=12
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1239,6 +1239,10 @@ for frontend in $aqbanking_frontends; do
         AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="cbanking g2banking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
+      aqhbci_ui="qt3"
+      aqdtaus_ui="qt3"
+      aqgeldkarte_ui="qt3"
+      aqofxconnect_ui="qt3"
       ;;
     kbanking)
       if test "x$have_kde3" != "xyes"; then
@@ -1494,6 +1498,18 @@ AC_SUBST(qbanking_data)
 
 ###-------------------------------------------------------------------------
 #
+# subst selected UIs
+#
+
+AC_SUBST(aqhbci_ui)
+AC_SUBST(aqdtaus_ui)
+AC_SUBST(aqgeldkarte_ui)
+AC_SUBST(aqofxconnect_ui)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Cleanup includes, define all_XXX
 #
 
@@ -1631,6 +1647,17 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
   src/plugins/backends/aqhbci/aqhbci-config.in
+  src/plugins/backends/aqhbci/ui/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/qt3_wizard/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/qt3_wizard/kde_wizard.xml
+  src/plugins/backends/aqhbci/ui/qt3/qt3_debug/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
+  src/plugins/backends/aqhbci/ui/qt3/libs/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/libs/widgets/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/po/Makefile
   src/plugins/backends/aqdtaus/Makefile
   src/plugins/backends/aqdtaus/version.h
   src/plugins/backends/aqdtaus/aqdtaus-config.in

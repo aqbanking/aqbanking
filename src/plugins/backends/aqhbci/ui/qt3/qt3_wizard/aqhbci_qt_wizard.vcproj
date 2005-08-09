@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.00"
+	Name="aqhbci_qt_wizard"
+	ProjectGUID="{715BAF0F-84D5-4E49-BC35-D0A6F8D48E83}"
+	Keyword="MakeFileProj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\libs\logmanager;libs;libs\dialogs;libs\prg;libs\views;libs\widgets;..\libs;..\libs\widgets;..\libs\dialogs;c:\Programme\gwenhywfar\include;c:\Programme\aqbanking\include;c:\msys\1.0\include;C:\Qt\3.2.1NonCommercial\include;&quot;C:\Qt\3.2.1NonCommercial\mkspecs\win32-msvc.net&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NO_VARIADIC_MACROS;PKGDATADIR=&quot;&quot;c:\\Programme\\Aqhbci\\wizard&quot;&quot;;strcasecmp=stricmp;snprintf=_snprintf;AQHBCI_DATAFOLDER=&quot;&quot;c:\\Programme\\aqhbci&quot;&quot;"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				WarningLevel="3"
+				SuppressStartupBanner="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="qt-mtnc321.lib qtmain.lib aqhbci32_2.lib aqbanking32_0.lib gwenhywfar32_17.lib"
+				AdditionalLibraryDirectories="..\..\..\..\aqhbci\src\libs;&quot;..\..\..\..\..\aqbanking-cvs\aqbanking\src\libs\aqbanking&quot;;C:\Qt\3.2.1NonCommercial\lib;&quot;c:\work\simth-win\gwenhywfar-cvs\src&quot;"
+				GenerateDebugInformation="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+	</Configurations>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
+			<File
+				RelativePath="..\libs\widgets\accountlist.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\aqbanking-cvs\aqbanking\src\libs\aqbanking++\banking.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\editaccount.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\error.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\hbcisettings.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\inputbox.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\kbanking.cpp">
+			</File>
+			<File
+				RelativePath="kde_wizard.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\loganalyzer.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\logmanager.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageacclist.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagecheckcard.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagecheckfile.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagecreatekeys.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageimport.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageiniletter.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageinitmode.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagemedium.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageselectfile.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagesendkeys.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageservercert.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageserverkeys.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageservertest.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagesummary1.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pagesysid.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageuserdata.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\pageverifykeys.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\progress.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectcontext.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectbank.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\simplebox.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\userlist.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\versionpicker.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\wizard.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc">
+			<File
+				RelativePath="..\libs\widgets\accountlist.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\editaccount.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing editaccount.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\editaccount.h -o tmp\moc\moc_editaccount.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_editaccount.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\error.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\hbcisettings.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing hbcisettings.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\hbcisettings.h -o tmp\moc\moc_hbcisettings.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_hbcisettings.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\inputbox.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing inputbox.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\widgets\inputbox.h -o tmp\moc\moc_inputbox.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_inputbox.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\kbanking.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing kbanking.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\kbanking.h -o tmp\moc\moc_kbanking.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_kbanking.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\kbanking_p.h">
+			</File>
+			<File
+				RelativePath="kde_wizard.h">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\loganalyzer.h">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\logmanager.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing logmanager.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\logmanager\logmanager.h -o tmp\moc\moc_logmanager.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_logmanager.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\pointer.h">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\progress.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing progress.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\widgets\progress.h -o tmp\moc\moc_progress.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_progress.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectcontext.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing selectcontext.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\selectcontext.h -o tmp\moc\moc_selectcontext.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_selectcontext.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectbank.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing selectbank.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\selectbank.h -o tmp\moc\moc_selectbank.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_selectbank.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\simplebox.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing simplebox.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\widgets\simplebox.h -o tmp\moc\moc_simplebox.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_simplebox.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\userlist.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\versionpicker.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing versionpicker.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\versionpicker.h -o tmp\moc\moc_versionpicker.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_versionpicker.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\wizard.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wizard.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\dialogs\wizard.h -o tmp\moc\moc_wizard.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_wizard.cpp"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		</Filter>
+		<Filter
+			Name="Generated MOC Files">
+			<File
+				RelativePath="tmp\moc\moc_editaccount.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_editaccount.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_hbcisettings.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_hbcisettings.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_inputbox.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_kbanking.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_logmanager.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_logmanager.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_progress.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_progress.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_selectcontext.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_selectcontext.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_selectbank.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_selectbank.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_simplebox.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_simplebox.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_versionpicker.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_versionpicker.ui.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_wizard.cpp">
+			</File>
+			<File
+				RelativePath="tmp\moc\moc_wizard.ui.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated UI Files">
+			<File
+				RelativePath="..\libs\dialogs\editaccount.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\editaccount.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\hbcisettings.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\hbcisettings.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\logmanager.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\logmanager.ui.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing logmanager.ui.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe ..\libs\logmanager\logmanager.ui.h -o tmp\moc\moc_logmanager.ui.cpp
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="tmp\moc\moc_logmanager.ui.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\progress.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\progress.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectcontext.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectcontext.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectbank.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectbank.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\simplebox.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\widgets\simplebox.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\versionpicker.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\versionpicker.ui.h">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\wizard.ui.cpp">
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\wizard.ui.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Forms">
+			<File
+				RelativePath="..\libs\dialogs\editaccount.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing editaccount.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\editaccount.ui&quot; -o &quot;..\libs\dialogs\editaccount.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\editaccount.ui&quot; -i &quot;editaccount.ui.h&quot; -o &quot;..\libs\dialogs\editaccount.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\editaccount.ui.h&quot; -o &quot;tmp\moc\moc_editaccount.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\editaccount.ui.h&quot;;&quot;..\libs\dialogs\editaccount.ui.cpp&quot;;&quot;tmp\moc\moc_editaccount.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\hbcisettings.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing hbcisettings.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\hbcisettings.ui&quot; -o &quot;..\libs\dialogs\hbcisettings.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\hbcisettings.ui&quot; -i &quot;hbcisettings.ui.h&quot; -o &quot;..\libs\dialogs\hbcisettings.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\hbcisettings.ui.h&quot; -o &quot;tmp\moc\moc_hbcisettings.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\hbcisettings.ui.h&quot;;&quot;..\libs\dialogs\hbcisettings.ui.cpp&quot;;&quot;tmp\moc\moc_hbcisettings.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\logmanager\logmanager.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing logmanager.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\logmanager\logmanager.ui&quot; -o &quot;..\libs\logmanager\logmanager.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\logmanager\logmanager.ui&quot; -i &quot;logmanager.ui.h&quot; -o &quot;..\libs\logmanager\logmanager.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\logmanager\logmanager.ui.h&quot; -o &quot;tmp\moc\moc_logmanager.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\logmanager\logmanager.ui.h&quot;;&quot;..\libs\logmanager\logmanager.ui.cpp&quot;;&quot;tmp\moc\moc_logmanager.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\progress.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing progress.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\widgets\progress.ui&quot; -o &quot;..\libs\widgets\progress.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\widgets\progress.ui&quot; -i &quot;progress.ui.h&quot; -o &quot;..\libs\widgets\progress.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\widgets\progress.ui.h&quot; -o &quot;tmp\moc\moc_progress.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\widgets\progress.ui.h&quot;;&quot;..\libs\widgets\progress.ui.cpp&quot;;&quot;tmp\moc\moc_progress.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectcontext.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing selectcontext.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\selectcontext.ui&quot; -o &quot;..\libs\dialogs\selectcontext.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\selectcontext.ui&quot; -i &quot;selectcontext.ui.h&quot; -o &quot;..\libs\dialogs\selectcontext.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\selectcontext.ui.h&quot; -o &quot;tmp\moc\moc_selectcontext.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\selectcontext.ui.h&quot;;&quot;..\libs\dialogs\selectcontext.ui.cpp&quot;;&quot;tmp\moc\moc_selectcontext.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\selectbank.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing selectbank.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\selectbank.ui&quot; -o &quot;..\libs\dialogs\selectbank.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\selectbank.ui&quot; -i &quot;selectbank.ui.h&quot; -o &quot;..\libs\dialogs\selectbank.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\selectbank.ui.h&quot; -o &quot;tmp\moc\moc_selectbank.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\selectbank.ui.h&quot;;&quot;..\libs\dialogs\selectbank.ui.cpp&quot;;&quot;tmp\moc\moc_selectbank.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\widgets\simplebox.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing simplebox.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\widgets\simplebox.ui&quot; -o &quot;..\libs\widgets\simplebox.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\widgets\simplebox.ui&quot; -i &quot;simplebox.ui.h&quot; -o &quot;..\libs\widgets\simplebox.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\widgets\simplebox.ui.h&quot; -o &quot;tmp\moc\moc_simplebox.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\widgets\simplebox.ui.h&quot;;&quot;..\libs\widgets\simplebox.ui.cpp&quot;;&quot;tmp\moc\moc_simplebox.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\versionpicker.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing versionpicker.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\versionpicker.ui&quot; -o &quot;..\libs\dialogs\versionpicker.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\versionpicker.ui&quot; -i &quot;versionpicker.ui.h&quot; -o &quot;..\libs\dialogs\versionpicker.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\versionpicker.ui.h&quot; -o &quot;tmp\moc\moc_versionpicker.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\versionpicker.ui.h&quot;;&quot;..\libs\dialogs\versionpicker.ui.cpp&quot;;&quot;tmp\moc\moc_versionpicker.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libs\dialogs\wizard.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing wizard.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\wizard.ui&quot; -o &quot;..\libs\dialogs\wizard.ui.h&quot; &amp;&amp; $(QTDIR)\bin\uic.exe &quot;..\libs\dialogs\wizard.ui&quot; -i &quot;wizard.ui.h&quot; -o &quot;..\libs\dialogs\wizard.ui.cpp&quot; &amp;&amp; $(QTDIR)\bin\moc.exe &quot;..\libs\dialogs\wizard.ui.h&quot; -o &quot;tmp\moc\moc_wizard.ui.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\libs\dialogs\wizard.ui.h&quot;;&quot;..\libs\dialogs\wizard.ui.cpp&quot;;&quot;tmp\moc\moc_wizard.ui.cpp&quot;"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

@@ -1,4 +1,4 @@
-SUBDIRS=plugin tools media
+SUBDIRS=plugin tools media ui
 
 CLEANFILES = $(BUILT_SOURCES) aqhbci-config aqhbci-config.in
 

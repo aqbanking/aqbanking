@@ -1,4 +1,10 @@
 
+2005/08/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- swallowed and adapted AqHBCI-QT-Tools
+- fixed QT frontend
+
+
 2005/08/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - swallowed more backends (aqdtaus, aqgeldkarte, aqofxconnect)

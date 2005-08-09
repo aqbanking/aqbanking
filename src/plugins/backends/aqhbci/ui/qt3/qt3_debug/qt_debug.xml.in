@@ -1,0 +1,10 @@
+<plugin name="aqhbci-qt3-debug" type="ProviderDebugger" frontend="qt" backend="aqhbci" >
+  <version>@WIZARD_KDE_VERSION_FULL_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>QT debugger for AqHBCI</short>
+  <descr>
+    This is the debugger for QT/KDE environments.
+  </descr>
+</plugin>
+
+

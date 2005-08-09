@@ -1,0 +1,753 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-08-09 05:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: libs/dialogs/editaccount.cpp:82
+msgid "Select a customer"
+msgstr ""
+
+#: libs/dialogs/editaccount.cpp:194 libs/dialogs/editaccount.cpp:264
+msgid "No Bank List"
+msgstr ""
+
+#: libs/dialogs/editaccount.cpp:195
+msgid ""
+"<qt><p>There are no banks set up.</p><p>Banks are created when users are "
+"added. Please add a user and come back later.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/editaccount.cpp:205 libs/dialogs/editaccount.cpp:275
+#: libs/dialogs/edituser.cpp:175 libs/dialogs/editcustomer.cpp:324
+#: libs/dialogs/hbcisettings.cpp:250 libs/dialogs/hbcisettings.cpp:322
+#: libs/dialogs/hbcisettings.cpp:401 libs/dialogs/hbcisettings.cpp:450
+#: libs/dialogs/hbcisettings.cpp:479 libs/dialogs/hbcisettings.cpp:547
+#: libs/dialogs/hbcisettings.cpp:565 libs/dialogs/hbcisettings.cpp:581
+#: libs/dialogs/hbcisettings.cpp:620 libs/dialogs/wizard.cpp:501
+#: libs/dialogs/wizard.cpp:759 libs/dialogs/wizard.cpp:789
+#: libs/dialogs/wizard.cpp:826 libs/dialogs/pageacclist.cpp:136
+#: libs/dialogs/pagecheckcard.cpp:103 libs/dialogs/pagecheckcard.cpp:120
+#: libs/dialogs/pagecheckfile.cpp:102 libs/dialogs/pagecheckfile.cpp:112
+#: libs/dialogs/pagecreatekeys.cpp:113 libs/dialogs/pageimport.cpp:102
+#: libs/dialogs/pageimport.cpp:110 libs/dialogs/pageiniletter.cpp:88
+#: libs/dialogs/pageiniletter.cpp:198 libs/dialogs/pagemedium.cpp:138
+#: libs/dialogs/pageselectfile.cpp:117 libs/dialogs/pageselectfile.cpp:134
+#: libs/dialogs/pageselectfile.cpp:142 libs/dialogs/pagesendkeys.cpp:86
+#: libs/dialogs/pageuserdata.cpp:148 libs/dialogs/pageuserdata.cpp:203
+#: libs/dialogs/pageuserdata.cpp:301 libs/dialogs/pageuserdata.cpp:365
+#: libs/dialogs/pageservercert.cpp:281 libs/dialogs/pageservercert.cpp:321
+#: libs/dialogs/pageservercert.cpp:351 libs/dialogs/pageservercert.cpp:362
+#: libs/dialogs/pagesysid.cpp:132 libs/dialogs/pageverifykeys.cpp:88
+#: libs/dialogs/pageverifykeys.cpp:174 libs/dialogs/selectcontext.cpp:72
+#: libs/dialogs/selectcontext.cpp:114 libs/logmanager/logmanager.cpp:87
+#: libs/logmanager/logmanager.cpp:355 libs/logmanager/logmanager.cpp:486
+#: libs/logmanager/logmanager.cpp:505
+msgid "Dismiss"
+msgstr ""
+
+#: libs/dialogs/editaccount.cpp:213 libs/dialogs/pageuserdata.cpp:555
+#: qt3_wizard/qt3_wizard.cpp:74
+msgid "Select a bank"
+msgstr ""
+
+#: libs/dialogs/editaccount.cpp:265
+msgid ""
+"<qt><p>Your input is incomplete.</p><p>Please fill out all required fields "
+"or abort the dialog.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:55 libs/dialogs/edituser.cpp:62
+#: libs/widgets/userlist.cpp:104
+msgid "New"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:56 libs/dialogs/edituser.cpp:63
+#: libs/widgets/userlist.cpp:107
+msgid "Enabled"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:57 libs/dialogs/edituser.cpp:64
+#: libs/widgets/userlist.cpp:110
+msgid "Pending"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:58 libs/dialogs/edituser.cpp:65
+#: libs/widgets/userlist.cpp:113
+msgid "Disabled"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:59 libs/dialogs/edituser.cpp:66
+msgid "Unknown"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:168
+msgid "Empty Fields"
+msgstr ""
+
+#: libs/dialogs/edituser.cpp:169
+msgid "<qt><p>Please fill out all necessary fields.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:71
+msgid "1.0"
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:72
+msgid "1.1"
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:228 libs/dialogs/pageserverkeys.cpp:98
+msgid "Saving keys, please wait"
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:240 libs/dialogs/pageserverkeys.cpp:111
+msgid "Keys saved."
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:320 libs/dialogs/wizard.cpp:497
+#: libs/dialogs/wizard.cpp:757 libs/dialogs/pagecheckcard.cpp:100
+#: libs/dialogs/pagecheckcard.cpp:117 libs/dialogs/pagecheckfile.cpp:99
+#: libs/dialogs/pagecheckfile.cpp:109 libs/dialogs/pagecreatekeys.cpp:109
+#: libs/dialogs/pageimport.cpp:99 libs/dialogs/pageimport.cpp:107
+#: libs/dialogs/pageiniletter.cpp:84 libs/dialogs/pageselectfile.cpp:114
+#: libs/dialogs/pageselectfile.cpp:131 libs/dialogs/pageselectfile.cpp:139
+#: libs/dialogs/pagesendkeys.cpp:82 libs/dialogs/pagesysid.cpp:128
+#: libs/dialogs/pageverifykeys.cpp:84
+msgid "Medium Error"
+msgstr ""
+
+#: libs/dialogs/editcustomer.cpp:321 libs/dialogs/pagecreatekeys.cpp:110
+#: libs/dialogs/pageiniletter.cpp:85 libs/dialogs/pagesendkeys.cpp:83
+#: libs/dialogs/pagesysid.cpp:129 libs/dialogs/pageverifykeys.cpp:85
+msgid ""
+"Could not select user context on medium.\n"
+"Please check the logs."
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:242 libs/dialogs/hbcisettings.cpp:394
+#: libs/dialogs/hbcisettings.cpp:440 libs/dialogs/hbcisettings.cpp:469
+#: libs/dialogs/hbcisettings.cpp:537 libs/dialogs/hbcisettings.cpp:558
+#: libs/dialogs/hbcisettings.cpp:574 libs/dialogs/hbcisettings.cpp:610
+#: libs/logmanager/logmanager.cpp:342
+msgid "Error"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:243
+msgid "<qt><p>This action is only supported in keyfile mode.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:269
+msgid "Delete User"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:270
+msgid "Are you sure you want to delete the selected user?"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:271 libs/dialogs/hbcisettings.cpp:390
+#: libs/dialogs/hbcisettings.cpp:502 libs/dialogs/pagecreatekeys.cpp:87
+#: libs/dialogs/pagemedium.cpp:157 libs/dialogs/pageuserdata.cpp:241
+#: libs/dialogs/pageuserdata.cpp:263 libs/dialogs/pageservercert.cpp:202
+#: libs/logmanager/logmanager.cpp:469
+msgid "Yes"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:271 libs/dialogs/hbcisettings.cpp:390
+#: libs/dialogs/hbcisettings.cpp:502 libs/dialogs/pagecreatekeys.cpp:87
+#: libs/dialogs/pagemedium.cpp:157 libs/dialogs/pageuserdata.cpp:264
+#: libs/dialogs/pageservercert.cpp:203 libs/logmanager/logmanager.cpp:469
+msgid "No"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:312
+msgid "No Bank"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:313
+msgid ""
+"<qt><p>No bank settings found.</p><p>Please add a user before and come back "
+"later</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:327
+msgid "New Account"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:358
+msgid "Edit Account"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:384
+msgid "Delete Account"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:385
+msgid "<qt>Are you sure you want to delete this account?</qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:395
+msgid "<qt><p>Could not delete this account.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:441 libs/dialogs/hbcisettings.cpp:611
+msgid ""
+"<qt><p>No customer for this user.</p><p>This is an internal error.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:470
+msgid ""
+"<qt><p>We have no bank info for this user.</p><p>This is an internal error.</"
+"p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:491
+msgid "Version Not Supported"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:492
+msgid ""
+"<qt><p>The version you selected is not supported by your bank.</p><p>Do you "
+"want to try it anyway?</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:538
+msgid ""
+"<qt><p>UpdateBankInfo job not available.</p><p>This is an internal error.</"
+"p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:559
+msgid "<qt><p>Could not execute outbox.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/hbcisettings.cpp:575
+msgid "<qt><p>Could not commit result.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:79
+msgid "Success"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:81
+msgid "Failed"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:83
+msgid "Supported"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:85
+msgid "Not supported"
+msgstr ""
+
+#. In qt-3.2, these texts do not seem to be translated. We do this
+#. manually here. May be commented out at a later point in time.
+#: libs/dialogs/wizard.cpp:108
+msgid "&Next >"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:109
+msgid "< &Back"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:110
+msgid "&Finish"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:111
+msgid "&Cancel"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:112
+msgid "&Help"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:270
+msgid "Select File Type"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:498
+msgid ""
+"Could not unmount the medium.\n"
+"Please check the logs."
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:758
+msgid "Unsupported medium type."
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:781 libs/dialogs/wizard.cpp:818
+msgid "Invalid Setup"
+msgstr ""
+
+#: libs/dialogs/wizard.cpp:782 libs/dialogs/wizard.cpp:819
+msgid "<qt><p>No customer found. You should remove this user.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pageacclist.cpp:118
+msgid "Success, but no list"
+msgstr ""
+
+#: libs/dialogs/pageacclist.cpp:121
+msgid "No Account List"
+msgstr ""
+
+#: libs/dialogs/pageacclist.cpp:122
+msgid ""
+"<qt><p>The server did not send an account list.</p><p>As stated before this "
+"is quite normal (although annoying).</p><p>Therefore you have to add your "
+"accounts manually. Please press \"Next\" to go to the next page.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pagecheckcard.cpp:101 libs/dialogs/pagecheckfile.cpp:100
+msgid ""
+"Medium does not exist.\n"
+"Please check the console logs."
+msgstr ""
+
+#: libs/dialogs/pagecheckcard.cpp:118 libs/dialogs/pagecheckfile.cpp:110
+msgid ""
+"Could not mount the medium.\n"
+"Please check the console logs."
+msgstr ""
+
+#: libs/dialogs/pagecreatekeys.cpp:77
+msgid "Keys already exist"
+msgstr ""
+
+#: libs/dialogs/pagecreatekeys.cpp:78
+msgid ""
+"<qt><p>The necessary keys already exist.</p><p>Do you want to overwrite them?"
+"</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pagecreatekeys.cpp:87 libs/logmanager/logmanager.cpp:469
+msgid "Abort"
+msgstr ""
+
+#: libs/dialogs/pagecreatekeys.cpp:94
+msgid "Creating Keys"
+msgstr ""
+
+#: libs/dialogs/pagecreatekeys.cpp:95
+msgid "Creating keys, please wait..."
+msgstr ""
+
+#: libs/dialogs/pageimport.cpp:100
+msgid ""
+"Plugin for PIN/TAN does not exist.\n"
+"Please check the console logs."
+msgstr ""
+
+#: libs/dialogs/pageimport.cpp:108 libs/dialogs/pageselectfile.cpp:132
+#: libs/dialogs/pageselectfile.cpp:140
+msgid ""
+"Could not create the medium.\n"
+"Please check the console logs."
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:107
+msgid "User Data (Ini Letter)"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:109
+msgid "User Name"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:115
+msgid "Date"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:118
+msgid "Time"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:121 libs/dialogs/pagesummary1.cpp:90
+msgid "User Id"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:127
+msgid "Key Number"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:131
+msgid "Key Version"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:134
+msgid "Application Name"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:143
+msgid "Public Key for Electronic Signature"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:144 libs/dialogs/pageverifykeys.cpp:111
+msgid "Exponent"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:154 libs/dialogs/pageverifykeys.cpp:121
+msgid "Modulus"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:164 libs/dialogs/pageverifykeys.cpp:131
+msgid "Hash"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:171
+msgid "Location/Date/Signature"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:196
+msgid "Print Ini letter"
+msgstr ""
+
+#: libs/dialogs/pageiniletter.cpp:197
+msgid "Ini letter does not fit on the page."
+msgstr ""
+
+#: libs/dialogs/pagemedium.cpp:101
+msgid "Enter existing or new medium file name"
+msgstr ""
+
+#: libs/dialogs/pagemedium.cpp:130
+msgid "Medium not found"
+msgstr ""
+
+#: libs/dialogs/pagemedium.cpp:131
+msgid ""
+"<qt><p>The specified file does not exist. </p><p>If you want to import a "
+"file, the file needs to exist. Please go back to the page \"Import or Create"
+"\" and choose \"Create\" if you want to create a new medium.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pagemedium.cpp:151
+msgid "File already exists"
+msgstr ""
+
+#: libs/dialogs/pagemedium.cpp:152
+msgid ""
+"<qt><p>The specified file already exists. However, you chose to create a new "
+"medium. In that case the existing file will be overwritten and all old data "
+"in that file will be lost.</p><p>Do you want to overwrite the existing file?"
+"</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pageselectfile.cpp:57
+msgid "Please select a file type"
+msgstr ""
+
+#: libs/dialogs/pageselectfile.cpp:88 libs/dialogs/pageselectfile.cpp:97
+msgid "no description available"
+msgstr ""
+
+#: libs/dialogs/pageselectfile.cpp:115
+msgid ""
+"The medium already exists.\n"
+"Please select another name."
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:146
+msgid "Mount Medium"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:147 libs/dialogs/selectcontext.cpp:71
+msgid "Could not mount medium"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:195
+msgid "Invalid Input"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:196
+msgid ""
+"<qt><p>The bank code needs at least 8 digits.</p><p>Please correct your "
+"entry.</p>"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:233
+msgid "Unknown Bank"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:234
+msgid ""
+"<qt><p>The bank you selected is unknown.</p><p>Do you want to use it anyway?"
+"</p>"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:241
+msgid "No, let me edit"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:249
+msgid "No customer id found"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:250
+msgid ""
+"<qt><p>You did not enter a customer id.</p><p>Many banks do not need an "
+"explicit customer id. But some other banks absolutey require a customer id. "
+"Please double-check the information provided to you by your bank.</p><p>Are "
+"you sure you want to leave the customer id empty?</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:284 libs/dialogs/pageservercert.cpp:307
+msgid "Please Wait"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:285
+msgid "Resolving host address..."
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:297 libs/dialogs/pageservercert.cpp:277
+#: libs/dialogs/pageservercert.cpp:316
+msgid "Network Error"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:298
+msgid ""
+"Could not resolve the address %1.\n"
+"Maybe there is a typo?"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:350
+msgid "User Exists"
+msgstr ""
+
+#: libs/dialogs/pageuserdata.cpp:351
+msgid ""
+"<qt><p>The user already exists.</p><p>This setup is not necessary for users "
+"which have already been set up.</p><p>Please press <i>cancel</i> after "
+"dismissing this message.</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:81
+msgid "Received an unknown certificate:"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:86
+msgid "Name"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:96
+msgid "Organization"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:106
+msgid "Department"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:116
+msgid "Country"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:126
+msgid "City"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:136
+msgid "State"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:146
+msgid "Valid after"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:171
+msgid "Valid until"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:197
+msgid "Do you accept this certificate?"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:200 libs/dialogs/pageservercert.cpp:210
+msgid "New Certificate"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:211
+msgid ""
+"Do you accept this certificate permanently\n"
+"or for this session only (temporarily)?"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:215
+msgid "Permanently"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:216
+msgid "Temporarily"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:278
+msgid ""
+"Could not resolve the given address.\n"
+"May there is a typo?"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:308
+msgid "Retrieving certificate..."
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:317
+msgid ""
+"Could not connect to the bank's server.\n"
+"Please check the logs."
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:332
+msgid "No Certificate"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:334
+msgid ""
+"<qt><p>The server does not seem to use valid SSL certificates.</p><p><font "
+"color=red>We strongly suggest not using PIN/TAN mode with this server, "
+"because without a valid SSL certificate you can never be sure about to whom "
+"you are talking.</font></p><p>However, you may continue using this bank "
+"server at your own risk, but you have been <b>warned</b>!</p></qt>"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:356
+msgid "Certificate Accepted"
+msgstr ""
+
+#: libs/dialogs/pageservercert.cpp:357
+msgid ""
+"Either the certificate is ok or you accepted it anyway.\n"
+"In either case a usable certificate is present."
+msgstr ""
+
+#: libs/dialogs/pageservertest.cpp:80
+msgid "<qt>Checking...</qt>"
+msgstr ""
+
+#: libs/dialogs/pageservertest.cpp:121
+msgid "Maybe supported"
+msgstr ""
+
+#: libs/dialogs/pagesummary1.cpp:74
+msgid "Bank Code "
+msgstr ""
+
+#: libs/dialogs/pagesummary1.cpp:80
+msgid "Server "
+msgstr ""
+
+#: libs/dialogs/pagesummary1.cpp:85 libs/widgets/userlist.cpp:161
+msgid "HBCI Version"
+msgstr ""
+
+#: libs/dialogs/pagesummary1.cpp:96
+msgid "Customer Id"
+msgstr ""
+
+#: libs/dialogs/pagesummary1.cpp:104
+msgid "Description"
+msgstr ""
+
+#: libs/dialogs/pageverifykeys.cpp:172
+msgid "Wrong Server Keys"
+msgstr ""
+
+#: libs/dialogs/pageverifykeys.cpp:173
+msgid ""
+"You said the fingerprint of the server's cryptographic keys are wrong. In "
+"this case, you need to contact your bank and ask whether their server keys "
+"have changed. You should take some notes of the key fingerprint that is "
+"displayed right now. Then you need to abort this user setup for now."
+msgstr ""
+
+#: libs/dialogs/selectcontext.cpp:70 libs/dialogs/selectcontext.cpp:112
+msgid "Select Context"
+msgstr ""
+
+#: libs/dialogs/selectcontext.cpp:113
+msgid "No user found on this medium"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:82
+msgid "Could not parse HBCI XML file"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:83
+msgid "<qt>The HBCI XML file \"%1\" could not be parsed.</qt>"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:279
+msgid "Error: Could not read logfile."
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:290 libs/logmanager/logmanager.cpp:356
+msgid "Error: Could not anonymize logfile."
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:343
+msgid ""
+"<qt><p>An error occurred while anonymizing the logfile \"%1\".</p><p>This is "
+"very unlikely, in most cases this is a setup error. Please make sure that "
+"AqHBCI is properly installed.</p></qt>"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:442
+msgid "Enter file name"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:459
+msgid "Warning"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:460
+msgid ""
+"<qt><p>File \"%1\" already exists. </p><p>Do you want me to overwrite it?</"
+"p></qt>"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:479 libs/logmanager/logmanager.cpp:498
+msgid "File Error"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:480
+msgid "<qt><p>Could not create file \"%1\"</p></qt>"
+msgstr ""
+
+#: libs/logmanager/logmanager.cpp:499
+msgid "<qt><p>Could not write to file \"%1\"</p></qt>"
+msgstr ""
+
+#: libs/widgets/accountlist.cpp:109 libs/widgets/userlist.cpp:158
+msgid "Institute"
+msgstr ""
+
+#: libs/widgets/accountlist.cpp:110
+msgid "Account"
+msgstr ""
+
+#: libs/widgets/accountlist.cpp:111
+msgid "Owner"
+msgstr ""
+
+#: libs/widgets/userlist.cpp:116 libs/widgets/userlist.cpp:145
+msgid "unknown"
+msgstr ""
+
+#: libs/widgets/userlist.cpp:159
+msgid "User"
+msgstr ""
+
+#: libs/widgets/userlist.cpp:160
+msgid "Status"
+msgstr ""
