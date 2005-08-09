@@ -1,8 +1,9 @@
-
 INCLUDES = \
- -I../libs/widgets \
- -I../libs/dialogs \
- -I../libs $(qt3_includes) $(all_includes)
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/../libs/widgets \
+  -I$(srcdir)/../libs/dialogs \
+  -I$(srcdir)/../libs \
+  $(qt3_includes) $(all_includes)
 
 DEFS += -DDATADIR=\"$(pkgdatadir)\"
 
@@ -16,10 +17,10 @@ plugin_DATA=kde_wizard.xml
 
 aqhbci_qt3_wizard_SOURCES = qt3_wizard.cpp
 aqhbci_qt3_wizard_LDADD = \
-  ../libs/libqt3wizard.la \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci \
   -L$(top_builddir)/src/libs/aqbanking -laqbanking \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci \
+  ../libs/libqt3wizard.la \
   $(gwenhywfar_libs) $(qt3_libs)
 
 
