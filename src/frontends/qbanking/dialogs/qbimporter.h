@@ -72,10 +72,9 @@ private:
   GWEN_DB_NODE *_dbData;
   GWEN_LOGGER_LEVEL _logLevel;
 
-  void _wcbLog(GWEN_LOGGER_LEVEL loglevel, const QString &s);
   bool _updateImporterList();
-  bool _readFile(const QString &fname);
   bool _checkFileType(const QString &fname);
+  bool _readFile(const QString &fname);
   bool _importData(AB_IMEXPORTER_CONTEXT *ctx);
 
   bool _doPage(QWidget *p);
@@ -89,7 +88,6 @@ private:
   bool undoSelectSourcePage(QWidget *p);
 
   bool initSelectImporterPage();
-  bool enterSelectImporterPage(QWidget *p);
   bool doSelectImporterPage(QWidget *p);
   bool undoSelectImporterPage(QWidget *p);
 
@@ -97,8 +95,10 @@ private:
   bool doSelectProfilePage(QWidget *p);
   bool undoSelectProfilePage(QWidget *p);
 
-  void enterWorkingPage(QWidget *p);
-  void enterImportingPage(QWidget *p);
+  bool doWorkingPage(QWidget *p);
+  bool undoWorkingPage(QWidget *p);
+
+  bool doImportPage(QWidget *p);
 
   void save();
 

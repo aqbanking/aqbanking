@@ -127,7 +127,8 @@ int QBProgress::start(GWEN_TYPE_UINT32 total){
     logWidget->hide();
   }
 
-  progressBar->setTotalSteps(total);
+  if (_total!=AB_BANKING_PROGRESS_NONE)
+    progressBar->setTotalSteps(total);
   progressBar->setProgress(0);
   _lastProgress=0;
 
@@ -141,7 +142,20 @@ int QBProgress::start(GWEN_TYPE_UINT32 total){
 
 
 
-void QBProgress::_handleTime(){
+int QBProgress::setTotalPos(GWEN_TYPE_UINT32 total){
+  if (total!=_total) {
+    _total=total;
+    if (_total!=AB_BANKING_PROGRESS_NONE)
+      progressBar->setTotalSteps(total);
+    progressBar->setProgress(_lastProgress);
+    qApp->processEvents();
+  }
+  return 0;
+}
+
+
+
+bool QBProgress::_handleTime(){
   time_t currTime;
 
   if (!_closed) {
@@ -161,44 +175,50 @@ void QBProgress::_handleTime(){
       // snprintf(buf, sizeof(buf), "%d:%02d min", mins, secs);
       timeLabel->setText(label);
 
+      return true;
     }
   }
+  return false;
 }
 
 
 
 int QBProgress::advance(GWEN_TYPE_UINT32 progress){
-  _handleTime();
+  bool chg;
 
-  if (_total==AB_BANKING_PROGRESS_NONE) {
-    if (progress==AB_BANKING_PROGRESS_ONE)
-      progress=_lastProgress+1;
-
-    if (progress!=AB_BANKING_PROGRESS_NONE) {
-      if (progress!=_lastProgress) {
-	QString qs;
-
-	qs=QString::number(progress);
-	if (!_units.isEmpty()) {
-	  qs+=" ";
-	  qs+=_units;
-	}
-	progressUnitsLabel->setText(qs);
-	_lastProgress=progress;
+  chg=_handleTime();
+  if (chg) {
+    if (_total==AB_BANKING_PROGRESS_NONE) {
+      if (progress==AB_BANKING_PROGRESS_ONE)
+        progress=_lastProgress+1;
+  
+      if (progress!=AB_BANKING_PROGRESS_NONE) {
+        if (progress!=_lastProgress) {
+          QString qs;
+  
+          qs=QString::number(progress);
+          if (!_units.isEmpty()) {
+            qs+=" ";
+            qs+=_units;
+          }
+          progressUnitsLabel->setText(qs);
+          _lastProgress=progress;
+        }
       }
     }
-  }
-  else {
-    if (progress==AB_BANKING_PROGRESS_NONE) {
-    }
-    else if (progress==AB_BANKING_PROGRESS_ONE) {
-      progressBar->setProgress(progressBar->progress()+1);
-    }
     else {
-      progressBar->setProgress(progress);
+      if (progress==AB_BANKING_PROGRESS_NONE) {
+      }
+      else if (progress==AB_BANKING_PROGRESS_ONE) {
+        progressBar->setProgress(progressBar->progress()+1);
+      }
+      else {
+        progressBar->setProgress(progress);
+      }
     }
+    qApp->processEvents();
   }
-  qApp->processEvents();
+
   if (_aborted)
     return AB_ERROR_USER_ABORT;
   return 0;
@@ -227,10 +247,15 @@ int QBProgress::log(AB_BANKING_LOGLEVEL level,
     tmp+=text;
     tmp+="</font>";
   }
-  else if (level>=AB_Banking_LogLevelInfo) {
+  else if (level==AB_Banking_LogLevelInfo) {
     tmp+="<font color=\"green\">";
     tmp+=text;
     tmp+="</font>";
+  }
+  else if (level>=AB_Banking_LogLevelDebug) {
+    if (_aborted)
+      return AB_ERROR_USER_ABORT;
+    return 0;
   }
   else
     tmp+=text;

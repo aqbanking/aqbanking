@@ -36,6 +36,9 @@ private:
                    const char *s);
   static void _freeData(void *bp, void *p);
 
+protected:
+  GWEN_WAITCALLBACK *cCallback();
+
 public:
   /**
    * Returns the current progress position (as set by
@@ -73,6 +76,8 @@ public:
   void setDistance(int d);
 
   int nestingLevel() const;
+
+  GWEN_TYPE_UINT32 flags() const;
 
   /** @name Functions Called by Gwenhywfar
    *

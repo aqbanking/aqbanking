@@ -53,7 +53,7 @@ private:
 
   static int _openCount;
 
-  void _handleTime();
+  bool _handleTime();
 
 protected:
   virtual void closeEvent(QCloseEvent *e);
@@ -66,6 +66,8 @@ public:
              const QString& units,
              QWidget* parent=0, const char* name=0, WFlags fl=0);
   ~QBProgress();
+
+  int setTotalPos(GWEN_TYPE_UINT32 total);
 
   int start(GWEN_TYPE_UINT32 total);
   int advance(GWEN_TYPE_UINT32 progress);

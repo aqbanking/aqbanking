@@ -188,6 +188,18 @@ int QBWaitCallback::nestingLevel() const {
 
 
 
+GWEN_TYPE_UINT32 QBWaitCallback::flags() const {
+  return GWEN_WaitCallback_GetFlags(_ctx);
+}
+
+
+
+GWEN_WAITCALLBACK *QBWaitCallback::cCallback() {
+  return _ctx;
+}
+
+
+
 
 
 

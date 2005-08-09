@@ -29,7 +29,7 @@ QBProgressCallback::QBProgressCallback(const char *id,
 ,_progressWidget(0)
 ,_progressType(pt)
 ,_lastProgress(0)
-,_started(false) {
+,_started(false){
 }
 
 
@@ -55,32 +55,47 @@ QBWaitCallback *QBProgressCallback::instantiate(){
 
 
 bool QBProgressCallback::_checkStart(bool force) {
-  time_t currTime;
-  double d;
+  GWEN_TYPE_UINT64 total64;
+  GWEN_TYPE_UINT32 total32;
 
-  currTime=time(0);
-  d=difftime(currTime, lastEntered());
-  if (!_started &&
-      (force ||
-       _progressType==QBProgress::ProgressTypeNormal ||
-       (_progressType==QBProgress::ProgressTypeFast && d>=5) ||
-       (_progressType==QBProgress::ProgressTypeSimple && d>=2))
-     ) {
-    DBG_ERROR(0, "Starting with %d",
-              (int) getProgressTotal());
-    _progressWidget=new QBProgress(0,
-                                   _progressType,
-                                   QWidget::tr("Waiting..."),
-                                   getText(),
-                                   getUnits(),
-                                   0,
-                                   "ProgressWidget",
-                                   Qt::WType_Dialog | Qt::WShowModal);
-    _progressWidget->setProgressText(getText());
-    _progressWidget->setProgressUnits(getUnits());
-    _progressWidget->start(getProgressTotal());
-    _progressWidget->show();
-    _started=true;
+  total64=getProgressTotal();
+  if (total64==GWEN_WAITCALLBACK_PROGRESS_NONE)
+    total32=AB_BANKING_PROGRESS_NONE;
+  else
+    total32=(GWEN_TYPE_UINT32)total64;
+
+  if (_started) {
+    _progressWidget->setTotalPos(total32);
+  }
+  else {
+    time_t currTime;
+    double d;
+
+    currTime=time(0);
+    d=difftime(currTime, lastEntered());
+    if ((total64!=0 || d>=2) &&
+        (force ||
+         _progressType==QBProgress::ProgressTypeNormal ||
+         (_progressType==QBProgress::ProgressTypeFast && d>=5) ||
+         (_progressType==QBProgress::ProgressTypeSimple && d>=2))
+       ) {
+
+      DBG_ERROR(0, "Starting with %d (after %d secs)",
+                (int) total32, (int)d);
+      _progressWidget=new QBProgress(0,
+                                     _progressType,
+                                     QWidget::tr("Waiting..."),
+                                     getText(),
+                                     getUnits(),
+                                     0,
+                                     "ProgressWidget",
+                                     Qt::WType_Dialog | Qt::WShowModal);
+      _progressWidget->setProgressText(getText());
+      _progressWidget->setProgressUnits(getUnits());
+      _progressWidget->start(total32);
+      _progressWidget->show();
+      _started=true;
+    }
   }
   return _started;
 }
@@ -90,7 +105,7 @@ GWEN_WAITCALLBACK_RESULT
 QBProgressCallback::checkAbort(unsigned int level){
   int rv;
 
-  if (_checkStart(false)) {
+  if (_checkStart((flags() & GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY))) {
     if (level!=0) {
       rv=_progressWidget->advance(AB_BANKING_PROGRESS_NONE);
     }
@@ -118,11 +133,14 @@ void QBProgressCallback::log(unsigned int level,
                              const char *s){
   AB_BANKING_LOGLEVEL nl;
 
-  if (_checkStart(loglevel<=GWEN_LoggerLevelWarning)) {
+  if (_checkStart(loglevel<=GWEN_LoggerLevelWarning ||
+                  (flags() & GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY))) {
     switch(loglevel) {
     case GWEN_LoggerLevelError:     nl=AB_Banking_LogLevelError; break;
     case GWEN_LoggerLevelWarning:   nl=AB_Banking_LogLevelWarn; break;
     case GWEN_LoggerLevelNotice:    nl=AB_Banking_LogLevelNotice; break;
+    case GWEN_LoggerLevelDebug:     nl=AB_Banking_LogLevelDebug; break;
+    case GWEN_LoggerLevelVerbous:   nl=AB_Banking_LogLevelVerbous; break;
     default:
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "Loglevel %d -> info", loglevel);
       nl=AB_Banking_LogLevelInfo;

@@ -63,6 +63,9 @@ QBImporter::QBImporter(QBanking *kb,
 ,_logLevel(GWEN_LoggerLevelInfo){
   setModal(modal);
 
+  setBackEnabled(finishPage, false);
+  setFinishEnabled(finishPage, true);
+
   // connect buttons
   QObject::connect((QObject*)selectFileButton, SIGNAL(clicked()),
 		   this, SLOT(slotSelectFile()));
@@ -255,6 +258,10 @@ bool QBImporter::_doPage(QWidget *p){
     rv=doSelectImporterPage(p);
   else if (p==selectProfilePage)
     rv=doSelectProfilePage(p);
+  else if (p==workingPage)
+    rv=doWorkingPage(p);
+  else if (p==importPage)
+    rv=doImportPage(p);
 
   if (rv) {
     DBG_NOTICE(0, "Pushing page %p", p);
@@ -274,6 +281,8 @@ bool QBImporter::_undoPage(QWidget *p){
     rv=undoSelectImporterPage(p);
   else if (p==selectProfilePage)
     rv=undoSelectProfilePage(p);
+  else if (p==workingPage)
+    rv=undoWorkingPage(p);
 
   if (rv) {
     DBG_NOTICE(0, "Popping page");
@@ -299,22 +308,6 @@ bool QBImporter::enterPage(QWidget *p, bool bk){
     setNextEnabled(selectProfilePage, isSelected);
   }
 
-  if (p==selectImporterPage) {
-    if (!bk) {
-      enterSelectImporterPage(p);
-    }
-  }
-  else if (p==workingPage) {
-    if (!bk) {
-      enterWorkingPage(p);
-    }
-  }
-  else if (p==importPage) {
-    if (!bk) {
-      enterImportingPage(p);
-    }
-  }
-
   if (bk)
     return _undoPage(p);
   return true;
@@ -338,7 +331,10 @@ bool QBImporter::initSelectSourcePage(){
 
 
 bool QBImporter::doSelectSourcePage(QWidget *p){
-  return true;
+  bool res;
+
+  res=_checkFileType(selectFileEdit->text());
+  return res;
 }
 
 
@@ -353,15 +349,6 @@ bool QBImporter::initSelectImporterPage(){
   return true;
 }
 
-
-
-bool QBImporter::enterSelectImporterPage(QWidget *p){
-  bool res;
-
-  res=_checkFileType(selectFileEdit->text());
-  setNextEnabled(selectImporterPage, res);
-  return res;
-}
 
 
 
@@ -509,20 +496,30 @@ bool QBImporter::undoSelectProfilePage(QWidget *p){
 
 
 
-void QBImporter::enterWorkingPage(QWidget *p){
-  setNextEnabled(workingPage, false);
-  setNextEnabled(workingPage, _readFile(selectFileEdit->text()));
+bool QBImporter::doWorkingPage(QWidget *p){
+  bool res;
+
+  res=_readFile(selectFileEdit->text());
+  return res;
 }
 
 
-void QBImporter::enterImportingPage(QWidget *p){
+
+bool QBImporter::undoWorkingPage(QWidget *p){
+  AB_ImExporterContext_free(_context);
+  _context=AB_ImExporterContext_new();
+  return true;
+}
+
+
+
+bool QBImporter::doImportPage(QWidget *p){
   bool res;
 
-  setNextEnabled(importPage, false);
-  setBackEnabled(importPage, false);
   res=_importData(_context);
-  setFinishEnabled(importPage, true);
-  cancelButton()->setEnabled(!res);
+  if (!res)
+    reject();
+  return res;
 }
 
 
@@ -549,11 +546,15 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
                           QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES|
                           QBANKING_IMPORTER_FLAGS_FUZZY);
   if (res) {
-    qs=tr("Importing files completed.");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                          QBanking::QStringToUtf8String(qs).c_str());
+    DBG_INFO(0, "Importing files completed.");
   }
   else {
+    QMessageBox::critical(0,
+                          tr("Error"),
+                          tr("Error importing data into the application."),
+			  tr("Dismiss"), 0, 0, 0);
+    return false;
+
     qs=tr("Error importing files.");
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                           QBanking::QStringToUtf8String(qs).c_str());
@@ -573,7 +574,6 @@ bool QBImporter::_checkFileType(const QString &fname){
 
   importer=0;
   _logText="";
-  setNextEnabled(selectImporterPage, false);
 
   GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
   assert(_importerList);
@@ -766,14 +766,9 @@ bool QBImporter::_readFile(const QString &fname){
   int rv;
 
   _logText="";
-  setNextEnabled(workingPage, false);
 
   AB_ImExporterContext_free(_context);
   _context=AB_ImExporterContext_new();
-
-  GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        "Starting...");
 
   QFile f(fname);
 
@@ -782,29 +777,25 @@ bool QBImporter::_readFile(const QString &fname){
 	       fname.latin1());
     qs=QString(tr("File \"%s\" does not exist"))
       .arg(fname);
-    GWEN_WaitCallback_Leave();
+    QMessageBox::critical(this,
+			  tr("Error"),
+			  qs,
+			  tr("Dismiss"),0,0,0);
     return false;
   }
   else {
     int fd;
 
-    qs=QString(tr("Importing file \"%1\""))
-      .arg(fname);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                          QBanking::QStringToUtf8String(qs).c_str());
     DBG_INFO(0, "Importing file \"%s\"", fname.latin1());
-    GWEN_WaitCallback_SetProgressTotal(0);
-    GWEN_WaitCallback_SetProgressPos(0);
-    currentProgressBar->setTotalSteps(0);
-    currentProgressBar->setProgress(0);
     fd=open(fname.latin1(), O_RDONLY);
     if (fd==-1) {
       qs=QString(tr("Could not open file \"%1\": %2"))
 	.arg(fname)
 	.arg(strerror(errno));
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                            QBanking::QStringToUtf8String(qs).c_str());
-      GWEN_WaitCallback_Leave();
+      QMessageBox::critical(this,
+			    tr("Error"),
+			    qs,
+			    tr("Dismiss"),0,0,0);
       return false;
     }
     else {
@@ -826,22 +817,10 @@ bool QBImporter::_readFile(const QString &fname){
 	DBG_NOTICE(0, "Error importing file \"%s\"",
 		   fname.latin1());
         qs=QString(tr("Error importing file \"%1\"")).arg(fname);
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                              QBanking::QStringToUtf8String(qs).c_str());
-	QMessageBox::critical(0,
+	QMessageBox::critical(this,
 			      tr("Error"),
-			      tr("<qt>"
-				 "<p>"
-				 "An error occurred while importing a "
-				 "file."
-				 "</>"
-				 "<p>"
-				 "Please see the log for a reason"
-				 "</p>"
-				 "</qt>"
-				),
-			      tr("Dismiss"), 0, 0, 0);
-	GWEN_WaitCallback_Leave();
+			      qs,
+			      tr("Dismiss"),0,0,0);
 	return false;
       }
       DBG_NOTICE(0, "File \"%s\" imported",
@@ -851,9 +830,6 @@ bool QBImporter::_readFile(const QString &fname){
 
   DBG_NOTICE(0, "Reading files completed.");
   qs=tr("Reading files completed.");
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        QBanking::QStringToUtf8String(qs).c_str());
-  GWEN_WaitCallback_Leave();
   DBG_NOTICE(0, "Returning to caller.");
   return true;
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QBImporterUi</class>
 <widget class="QWizard">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>484</height>
+            <height>310</height>
         </rect>
     </property>
     <property name="caption">
@@ -155,36 +155,28 @@ The next page will check for the type of the selected file.
                 </property>
                 <property name="text">
                     <string>&lt;qt&gt;
-Trying to determine the type of the selected file ...
+The file type has been determined. The next page will allow you to
+choose an importer profile.
 &lt;/qt&gt;</string>
                 </property>
             </widget>
-            <widget class="QGroupBox">
+            <spacer>
                 <property name="name">
-                    <cstring>groupBox6</cstring>
+                    <cstring>spacer4</cstring>
                 </property>
-                <property name="sizePolicy">
-                    <sizepolicy>
-                        <hsizetype>7</hsizetype>
-                        <vsizetype>7</vsizetype>
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                    </sizepolicy>
+                <property name="orientation">
+                    <enum>Vertical</enum>
                 </property>
-                <property name="title">
-                    <string>Log</string>
+                <property name="sizeType">
+                    <enum>Expanding</enum>
                 </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QTextBrowser">
-                        <property name="name">
-                            <cstring>checkLogBrowser</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
+                <property name="sizeHint">
+                    <size>
+                        <width>21</width>
+                        <height>41</height>
+                    </size>
+                </property>
+            </spacer>
             <widget class="QGroupBox">
                 <property name="name">
                     <cstring>groupBox5</cstring>
@@ -423,33 +415,20 @@ Please select the profile from the list below.
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
-            <widget class="QTextBrowser">
+            <widget class="QLabel">
                 <property name="name">
-                    <cstring>readBrowser</cstring>
+                    <cstring>textLabel1</cstring>
                 </property>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout10</cstring>
+                <property name="text">
+                    <string>&lt;qt&gt;
+&lt;p&gt;
+The file type has been determined and the profile is selected.
+&lt;/p&gt;
+&lt;p&gt;
+Please click &lt;i&gt;next&lt;/i&gt; to let the determined import module read the file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
                 </property>
-                <grid>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QProgressBar" row="0" column="1">
-                        <property name="name">
-                            <cstring>currentProgressBar</cstring>
-                        </property>
-                    </widget>
-                    <widget class="QLabel" row="0" column="0">
-                        <property name="name">
-                            <cstring>textLabel6</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Progress</string>
-                        </property>
-                    </widget>
-                </grid>
             </widget>
         </vbox>
     </widget>
@@ -464,9 +443,42 @@ Please select the profile from the list below.
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
-            <widget class="QTextBrowser">
+            <widget class="QLabel">
                 <property name="name">
-                    <cstring>importBrowser</cstring>
+                    <cstring>textLabel2_3</cstring>
+                </property>
+                <property name="text">
+                    <string>&lt;qt&gt;
+&lt;p&gt;
+The file has been successfully read.
+&lt;/p&gt;
+&lt;p&gt;
+The next page will allow your application to import the data read from this file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                </property>
+            </widget>
+        </vbox>
+    </widget>
+    <widget class="QWidget">
+        <property name="name">
+            <cstring>finishPage</cstring>
+        </property>
+        <attribute name="title">
+            <string>Finished</string>
+        </attribute>
+        <vbox>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLabel">
+                <property name="name">
+                    <cstring>textLabel3_2</cstring>
+                </property>
+                <property name="text">
+                    <string>&lt;qt&gt;
+The file has been successfully imported into the application.
+&lt;/qt&gt;</string>
                 </property>
             </widget>
         </vbox>
