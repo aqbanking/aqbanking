@@ -35,8 +35,8 @@ kbanking-config: kbanking-config.in
 	cat kbanking-config.in >>kbanking-config && \
 	chmod a+x kbanking-config
 
-BUILT_SOURCES =$(nodist_libkbanking_la_SOURCES) version.h i18nsources
-CLEANFILES=$(BUILT_SOURCES) i18nsources kbanking-config
+BUILT_SOURCES =$(nodist_libkbanking_la_SOURCES) version.h
+CLEANFILES=$(BUILT_SOURCES) kbanking-config
 
 libkbanking_la_LIBADD=\
  widgets/libwidgets.la \
