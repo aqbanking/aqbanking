@@ -1,4 +1,7 @@
-INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../logmanager -I$(srcdir)/.. @all_includes@
+INCLUDES=\
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/.. -I.. \
+  @all_includes@
 
 #UI_FILES=
 EXTRA_DIST= $(UI_FILES)
