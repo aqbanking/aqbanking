@@ -104,11 +104,11 @@ int AO_Context_Update(AO_CONTEXT *ctx){
       /* only copy bank id if it is a number (-> routing number)
        * otherwise it serves only identification purposes for this backend
        * and doesn't represent a routing number */
-      strncpy(ctx->fi->bankid, s, OFX_BANKID_LENGTH-1);
+      strncpy(ctx->ai->bankid, s, OFX_BANKID_LENGTH-1);
 
     s=AO_Bank_GetBrokerId(ctx->bank);
     if (s)
-      strncpy(ctx->fi->brokerid, s, OFX_BROKERID_LENGTH-1);
+      strncpy(ctx->ai->brokerid, s, OFX_BROKERID_LENGTH-1);
 
     s=AO_Bank_GetOrg(ctx->bank);
     if (s)
@@ -176,7 +176,7 @@ int AO_Context_Update(AO_CONTEXT *ctx){
     s=AB_Account_GetBankCode(a);
     if (s)
       /* use bank id from account */
-      strncpy(ctx->fi->bankid, s, OFX_BANKID_LENGTH-1);
+      strncpy(ctx->ai->bankid, s, OFX_BANKID_LENGTH-1);
 
     s=AB_Account_GetAccountNumber(a);
     if (s)
@@ -195,7 +195,7 @@ int AO_Context_Update(AO_CONTEXT *ctx){
     case AB_AccountType_Bank:
     case AB_AccountType_Unknown:
     default:
-      t=OFX_BANK_ACCT;
+      t=OFX_BANK_ACCOUNT;
       break;
     }
     ctx->ai->type=t;
