@@ -7,14 +7,14 @@ INCLUDES = \
 noinst_LTLIBRARIES=libviews.la
 
 iheaderdir=${includedir}/kbanking
-iheader_HEADERS=\
- kbjobview.h
+iheader_HEADERS=kbjobview.h jobview.h
 
 nodist_iheader_HEADERS= \
  kbjobview.ui.h
 
 libviews_la_SOURCES=\
- kbjobview.cpp
+ kbjobview.cpp \
+ jobview.cpp
 
 nodist_libviews_la_SOURCES=\
   kbjobview.ui.cpp kbjobview.ui.moc.cpp \

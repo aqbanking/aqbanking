@@ -12,8 +12,8 @@
 
 
 
-#ifndef KBANKING_JOBVIEW_H
-#define KBANKING_JOBVIEW_H
+#ifndef KBANKING_KBJOBVIEW_H
+#define KBANKING_KBJOBVIEW_H
 
 #include "kbjobview.ui.h"
 
@@ -56,7 +56,7 @@ public slots:
 
 
 
-#endif /* KBANKING_JOBVIEW_H */
+#endif /* KBANKING_KBJOBVIEW_H */
 
 
 
