@@ -46,7 +46,7 @@ int debug(int argc, char **argv) {
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqbanking", GWEN_LoggerLevelInfo);
 
-  QString datadir = PKGDATADIR;
+  QString datadir = DATADIR;
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");
@@ -110,7 +110,7 @@ int wizard(int argc, char **argv) {
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqbanking", GWEN_LoggerLevelInfo);
 
-  QString datadir = PKGDATADIR;
+  QString datadir = DATADIR;
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");

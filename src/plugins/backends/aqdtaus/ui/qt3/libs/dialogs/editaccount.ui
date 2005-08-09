@@ -1,0 +1,600 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>EditAccountUi</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>EditAccountUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>530</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Edit Account</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox1</cstring>
+            </property>
+            <property name="title">
+                <string>Basic Settings</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank Name</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank Code</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget" row="0" column="1">
+                    <property name="name">
+                        <cstring>layout5</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>bankCodeEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+This is the bank code of your bank.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>bankCodeButton</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLabel" row="3" column="0">
+                    <property name="name">
+                        <cstring>textLabel2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Account Number</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="2" column="0">
+                    <property name="name">
+                        <cstring>textLabel4</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Account Name</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="4" column="0">
+                    <property name="name">
+                        <cstring>textLabel5</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Owner Name</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="4" column="1">
+                    <property name="name">
+                        <cstring>ownerNameEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+&lt;p&gt;
+Name of the owner of the account.
+&lt;/p&gt;
+&lt;p&gt;
+You should enter the name exactly as you would on a paper transfer.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="3" column="1">
+                    <property name="name">
+                        <cstring>accountIdEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This is the account number. An account is identified by bank code and
+this account number.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="2" column="1">
+                    <property name="name">
+                        <cstring>accountNameEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Freely selectable name for your account. This field is not used by AqDTAUS.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="1">
+                    <property name="name">
+                        <cstring>bankNameEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This is the name of your bank. This wizard tries to lookup this name for
+you.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox3</cstring>
+            </property>
+            <property name="title">
+                <string>DTAUS Settings</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>textLabel1</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Maximum Purpose Lines</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="0" column="1">
+                    <property name="name">
+                        <cstring>maxPurposeSpin</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This field contains the maximum number of purpose lines.
+Most banks accept at least &lt;b&gt;two&lt;/b&gt; lines. Please ask your bank if
+unsure.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>debitNoteCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Allow Debit Notes</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+&lt;p&gt;
+Private customers are normally not allowed to issue debit notes.
+&lt;/p&gt;
+&lt;p&gt;
+Business customers however may use this feature after applying for it
+at their bank.
+&lt;/p&gt;
+&lt;p&gt;
+If this box is not checked AqDTAUS refuses to create such debit notes.
+&lt;/p&gt;
+&lt;p&gt;
+However, verification is done at the bank, so if you check this box even
+if you haven't applied for debit notes your bank will most likely reject
+your DTAUS disc.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>printAllCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Print All Transactions</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+&lt;p&gt;
+This influences the behaviour when doing the paper work.
+&lt;/p&gt;
+&lt;p&gt;
+If this field is checked then the paper which accompanies the DTAUS discs will show one line per transaction contained in that file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <spacer row="0" column="2">
+                    <property name="name">
+                        <cstring>spacer5_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>131</width>
+                            <height>21</height>
+                        </size>
+                    </property>
+                </spacer>
+            </grid>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox4</cstring>
+            </property>
+            <property name="title">
+                <string>Storage Settings</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Data Folder</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>folderEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the folder to be used when storing DTAUS files.
+&lt;/p&gt;
+&lt;h3&gt;Floppy Disc Mode&lt;/h3&gt;
+&lt;p&gt;
+If floppy discs are used then this should be the path to your floppy disc,
+normally something like &lt;i&gt;/floppy&lt;/i&gt; or &lt;i&gt;/media/floppy&lt;/i&gt;. 
+It depends on your system where the floppy discs are usually mounted.
+&lt;/p&gt;
+&lt;p&gt;
+In floppy mode AqDTAUS checks whether this folder is empty when
+creating a new DTAUS disc.
+&lt;/p&gt;
+
+&lt;h3&gt;Non-Floppy Mode&lt;/h3&gt;
+&lt;p&gt;
+If not using floppy discs then this path will be used to store the DTAUS
+files. In this mode this folder does not need to be empty.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>folderButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>useFloppyCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use Floppy Disc</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+If you select &lt;i&gt;Floppy Disc Mode&lt;/i&gt; then AqDTAUS creates real DTAUS
+discs. The DTAUS specs require that a DTAUS disc only contains a
+single file called &lt;i&gt;DTAUS0.TXT&lt;/i&gt;. AqDTAUS tries to make sure that this
+is the case when this box is checked.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>mountCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Allow Mounting</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+Some systems (like Linux, BSD systems etc) need you to &lt;i&gt;mount&lt;/i&gt; a 
+floppy disc before you can access it. After using the disc it must be 
+&lt;i&gt;unmounted&lt;/i&gt; before removal to avoid data loss.
+&lt;/p&gt;
+&lt;p&gt;
+If this box is checked AqDTAUS tries to mount and unmount the discs as
+needed. For this to work you must enter the mount and unmount
+commando into the next fields.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer8</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>170</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout4</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Mount Command</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>mountCmdEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the command needed to mount the floppy disc.
+&lt;/p&gt;
+&lt;p&gt;It contains the command itself and its parameters, like in&lt;/p&gt;
+&lt;p align="center"&gt;&lt;b&gt;mount /floppy&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;
+The command above works with Debian systems. For SuSE you might
+need this:&lt;/p&gt;
+&lt;p align="center"&gt;mount /media/floppy&lt;/p&gt;
+&lt;p&gt;
+As you can see in case of the &lt;i&gt;mount&lt;/i&gt; command the path for the
+floppy must be given.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2_2</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Unmount Command</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>unmountCmdEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the command and its arguments to unmount a floppy. In case you 
+used the command &lt;b&gt;mount&lt;/b&gt; in the previous field you must now use
+the corresponding &lt;b&gt;unmount&lt;/b&gt; command. This command takes the
+same argument:
+&lt;/p&gt;
+&lt;p align="center"&gt;umount /floppy (for Debian(&lt;/p&gt;
+&lt;p align="center"&gt;umount /media/floppy (for SuSE)&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer39</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>40</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>whatsThisButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>What's This?</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer4</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>51</width>
+                            <height>21</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel6</cstring>
+                    </property>
+                    <property name="text">
+                        <string>(c) 2005 M.Preuss</string>
+                    </property>
+                    <property name="alignment">
+                        <set>AlignCenter</set>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer5</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>31</width>
+                            <height>31</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>okButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Ok</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>abortButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Abort</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>EditAccountUi</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>abortButton</sender>
+        <signal>clicked()</signal>
+        <receiver>EditAccountUi</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>bankCodeEdit</tabstop>
+    <tabstop>bankCodeButton</tabstop>
+    <tabstop>bankNameEdit</tabstop>
+    <tabstop>accountNameEdit</tabstop>
+    <tabstop>accountIdEdit</tabstop>
+    <tabstop>ownerNameEdit</tabstop>
+    <tabstop>maxPurposeSpin</tabstop>
+    <tabstop>debitNoteCheck</tabstop>
+    <tabstop>printAllCheck</tabstop>
+    <tabstop>folderEdit</tabstop>
+    <tabstop>folderButton</tabstop>
+    <tabstop>useFloppyCheck</tabstop>
+    <tabstop>mountCheck</tabstop>
+    <tabstop>mountCmdEdit</tabstop>
+    <tabstop>unmountCmdEdit</tabstop>
+    <tabstop>whatsThisButton</tabstop>
+    <tabstop>okButton</tabstop>
+    <tabstop>abortButton</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

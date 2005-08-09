@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-04 05:17+0200\n"
+"POT-Creation-Date: 2005-08-09 08:29+0200\n"
 "PO-Revision-Date: 2005-08-04 05:17+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -16,6 +16,12 @@ msgstr ""
 
 #: src/libs/aqbanking/banking.c:2122 src/libs/aqbanking/banking.c:4817
 #: src/libs/aqbanking/cryptmanager.c:313 src/libs/aqbanking/cryptmanager.c:378
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1186
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1247
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1292
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1343
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:645
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:832
 msgid "Error"
 msgstr "Fehler"
 
@@ -28,19 +34,31 @@ msgstr ""
 "zuständigen Modul.  Was möchten Sie tun?"
 
 #: src/libs/aqbanking/banking.c:2125
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:456
 msgid "Continue"
 msgstr "Fortsetzen"
 
 #: src/libs/aqbanking/banking.c:2125 src/libs/aqbanking/banking.c:5393
 #: src/libs/aqbanking/cryptmanager.c:296 src/libs/aqbanking/cryptmanager.c:361
+#: src/frontends/cbanking/cbanking.c:431
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:952
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1732
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1162
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1228
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:984
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:1060
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:574
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:167
 msgid "Abort"
 msgstr "Abbrechen"
 
 #: src/libs/aqbanking/banking.c:2163
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1947
 msgid "Executing Jobs"
 msgstr "Aufträge werden ausgeführt"
 
 #: src/libs/aqbanking/banking.c:2164
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1948
 msgid "Now the jobs are send via their backends to the credit institutes."
 msgstr ""
 "Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
@@ -54,7 +72,8 @@ msgstr "Auftrag nicht verfügbar"
 #: src/libs/aqbanking/banking.c:4092 src/libs/aqbanking/banking.c:4154
 #: src/libs/aqbanking/banking.c:4220 src/libs/aqbanking/banking.c:4280
 msgid "The backend for this banking account does not support your request."
-msgstr "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
+msgstr ""
+"Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
 #: src/libs/aqbanking/banking.c:4094 src/libs/aqbanking/banking.c:4109
 #: src/libs/aqbanking/banking.c:4156 src/libs/aqbanking/banking.c:4176
@@ -63,11 +82,55 @@ msgstr "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nich
 #: src/libs/aqbanking/banking.c:4820 src/libs/aqbanking/cryptmanager.c:305
 #: src/libs/aqbanking/cryptmanager.c:315 src/libs/aqbanking/cryptmanager.c:370
 #: src/libs/aqbanking/cryptmanager.c:380 src/libs/aqbanking/cryptmanager.c:405
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1195
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1256
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1301
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1336
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1352
+#: src/frontends/qbanking/qbanking.cpp:520
+#: src/frontends/qbanking/qbanking.cpp:559
+#: src/frontends/qbanking/qbanking.cpp:598
+#: src/frontends/qbanking/qbanking.cpp:691
+#: src/frontends/qbanking/qbanking.cpp:830
+#: src/frontends/qbanking/qbanking.cpp:851
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:95
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:206
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:251
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:290
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:317
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:333
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:369
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:387
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:152
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:440
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:478
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:497
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:655
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:843
+#: src/frontends/qbanking/dialogs/qbselectbank.cpp:353
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:471
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:481
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:548
+#: src/frontends/qbanking/views/qbjobview.cpp:134
+#: src/frontends/qbanking/views/qbjobview.cpp:168
+#: src/frontends/kbanking/dialogs/settings.cpp:206
+#: src/frontends/kbanking/dialogs/settings.cpp:251
+#: src/frontends/kbanking/dialogs/settings.cpp:290
+#: src/frontends/kbanking/dialogs/settings.cpp:317
+#: src/frontends/kbanking/dialogs/settings.cpp:333
+#: src/frontends/kbanking/dialogs/settings.cpp:369
+#: src/frontends/kbanking/dialogs/settings.cpp:387
+#: src/frontends/kbanking/views/kbjobview.cpp:132
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.cpp:134
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:194
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:217
 msgid "Dismiss"
 msgstr "Schließen"
 
 #: src/libs/aqbanking/banking.c:4107 src/libs/aqbanking/banking.c:4174
 #: src/libs/aqbanking/banking.c:4235 src/libs/aqbanking/banking.c:4295
+#: src/frontends/qbanking/qbanking.cpp:552
+#: src/frontends/qbanking/qbanking.cpp:684
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
@@ -170,6 +233,12 @@ msgstr "DD.MM.YYYY hh:mm:ss"
 #: src/libs/aqbanking/banking.c:5363 src/libs/aqbanking/banking.c:5364
 #: src/libs/aqbanking/banking.c:5365 src/libs/aqbanking/banking.c:5366
 #: src/libs/aqbanking/banking.c:5367 src/libs/aqbanking/banking.c:5371
+#: src/plugins/backends/aqdtaus/plugin/provider.c:880
+#: src/plugins/backends/aqdtaus/plugin/provider.c:882
+#: src/plugins/backends/aqdtaus/plugin/provider.c:884
+#: src/plugins/backends/aqdtaus/plugin/provider.c:891
+#: src/plugins/backends/aqdtaus/plugin/provider.c:893
+#: src/plugins/backends/aqdtaus/plugin/provider.c:895
 msgid "unknown"
 msgstr "unbekannt"
 
@@ -177,11 +246,20 @@ msgstr "unbekannt"
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:5381
+#: src/libs/aqbanking/banking.c:5381 src/frontends/cbanking/cbanking.c:429
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:241
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:574
+#: src/frontends/qbanking/views/qbjobview.cpp:176
+#: src/frontends/kbanking/dialogs/settings.cpp:241
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:224
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:5381
+#: src/libs/aqbanking/banking.c:5381 src/frontends/cbanking/cbanking.c:430
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:241
+#: src/frontends/qbanking/views/qbjobview.cpp:176
+#: src/frontends/kbanking/dialogs/settings.cpp:241
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:224
 msgid "No"
 msgstr "Nein"
 
@@ -1048,7 +1126,8 @@ msgid "Mali"
 msgstr "Mali"
 
 #: src/libs/aqbanking/country.c:144
-msgid "Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
+msgid ""
+"Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
 msgstr "CFA Franc"
 
 #: src/libs/aqbanking/country.c:145
@@ -1693,7 +1772,9 @@ msgstr "Password"
 msgid ""
 "\n"
 "You must only enter numbers, not letters."
-msgstr "\nSie dürfen nur Zahlen eingeben, keine Buchstaben."
+msgstr ""
+"\n"
+"Sie dürfen nur Zahlen eingeben, keine Buchstaben."
 
 #: src/libs/aqbanking/cryptmanager.c:120
 #, c-format
@@ -1721,6 +1802,9 @@ msgstr ""
 "ein.%s<html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
 
 #: src/libs/aqbanking/cryptmanager.c:166 src/libs/aqbanking/cryptmanager.c:176
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1257
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1267
+#: src/plugins/backends/aqofxconnect/plugin/context.c:149
 msgid "Enter Password"
 msgstr "Password eingeben"
 
@@ -1759,6 +1843,8 @@ msgid "Insert Medium"
 msgstr "Medium einlegen"
 
 #: src/libs/aqbanking/cryptmanager.c:296 src/libs/aqbanking/cryptmanager.c:361
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:984
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:1060
 msgid "OK"
 msgstr "Ok"
 
@@ -1794,6 +1880,16 @@ msgstr ""
 "Bitte legen Sie die richtige Chipkarte für %s in den Kartenleser ein."
 "<html>Bitte legen Sie die <b>richtige</b> Chipkarte für <i>%s</i> in den "
 "Kartenleser ein.</html>"
+
+#: src/frontends/cbanking/cbanking.c:426
+msgid "Empty Input"
+msgstr ""
+
+#: src/frontends/cbanking/cbanking.c:427
+msgid ""
+"Your input was empty.\n"
+"Do you want to use the default?"
+msgstr ""
 
 #: src/plugins/imexporters/qif/qif.c:80
 msgid "Please enter the date format for the following item:\n"
@@ -1925,13 +2021,1428 @@ msgstr "Wert für Betrag in Umsatz-Teilbuchung"
 
 #: src/plugins/imexporters/swift/swift.c:128
 #: src/plugins/imexporters/csv/csv.c:130
+#: src/plugins/backends/aqhbci/plugin/accountjobs/jobgettransactions.c:156
 msgid "Importing transactions ..."
 msgstr "Buchungen importieren..."
 
 #: src/plugins/imexporters/swift/swift.c:129
 #: src/plugins/imexporters/csv/csv.c:131
+#: src/plugins/backends/aqhbci/plugin/accountjobs/jobgettransactions.c:157
 msgid "transaction(s)"
 msgstr "Buchung(en)"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/connection.c:106
+#, c-format
+msgid "Connection established with %s (port %d)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/connection.c:120
+msgid "Connection established"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/connection.c:144
+#, c-format
+msgid "Connection closed to %s (port %d)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/connection.c:159
+msgid "Connection closed"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:260
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:936
+msgid "No status, bad HTTP response, assuming HTTP 0.9 response"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:274
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:950
+#, c-format
+msgid "HTTP-Error: %d %s"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:278
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:954
+#, c-format
+msgid "HTTP-Status: %d %s"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:436
+msgid "Answer too small to be a HBCI message"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:448
+msgid "Answer does not contain a HBCI message"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:550
+msgid "Waiting for incoming message..."
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:551
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:739
+#, fuzzy
+msgid "second(s)"
+msgstr "Buchung(en)"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:646
+msgid "Restarting connection"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:738
+msgid "Sending message..."
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:415
+msgid "AqHBCI-Notice"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:417
+msgid ""
+"Since version 1.0.3.9 AqHBCI no longer\n"
+"stores the PIN in your private logfiles when\n"
+"logging PIN/TAN connections.\n"
+"Because previous versions did, you should\n"
+"delete all logfiles in your local AqBanking\n"
+"Logfolder (usually something like\n"
+"$HOME/.banking/backends/aqhbci/data/...)\n"
+"\n"
+"Logfiles have the extension \".log\", \n"
+"please do only delete those files!\n"
+"This only affects PIN/TAN mode, all other modes\n"
+"are not affected.\n"
+"<html><p>Since version 1.0.3.9 AqHBCI no longer\n"
+"stores the PIN in your private logfiles when\n"
+"logging <b>PIN/TAN</b> connections.\n"
+"</p><p>Because previous versions did, you should\n"
+"delete all logfiles in your local \n"
+"AqBanking Logfolder (usually something like\n"
+"<i>$HOME/.banking/backends/aqhbci/data/...\n"
+"</i>)</p><p>Logfiles have the extension \".log\", \n"
+"<font color=red>please do only delete <b>those</b> files!</font></p><p>This "
+"only affects <b>PIN/TAN mode,</b> all other modes\n"
+"are not affected.\n"
+"</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1647
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1729
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1206
+#, c-format
+msgid "Resolving hostname \"%s\" ..."
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1658
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1740
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1217
+#, c-format
+msgid "Unknown hostname \"%s\""
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1681
+#: src/plugins/backends/aqhbci/plugin/msglayer/hbci.c:1764
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1242
+#, c-format
+msgid "IP address is %s"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1216
+#, fuzzy
+msgid " You must only enter numbers, not letters."
+msgstr ""
+"\n"
+"Sie dürfen nur Zahlen eingeben, keine Buchstaben."
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1220
+#, fuzzy, c-format
+msgid ""
+"Please enter a new password for \n"
+"%s\n"
+"The password must be at least %d characters long.%s<html>Please enter a new "
+"password for <i>%s</i>. The password must be at least %d characters long.%s</"
+"html>"
+msgstr ""
+"Bitte geben Sie ein neues %s für \n"
+"%s\n"
+"ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html>Bitte geben "
+"Sie ein neues %s für <i>%s</i> ein. Das Passwort muß mindestens %d Zeichen "
+"lang sein.%s</html>"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1236
+#, fuzzy, c-format
+msgid ""
+"Please enter the password for \n"
+"%s\n"
+"%s<html>Please enter the password for <i>%s</i>.%s</html>"
+msgstr ""
+"Bitte geben Sie das %s für \n"
+"%s\n"
+"ein.%s<html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1317
+#, fuzzy, c-format
+msgid ""
+"Please enter the next TAN\n"
+"for %s<html>Please enter the next TAN for <i>%s</i></html>"
+msgstr ""
+"Bitte geben Sie das %s für \n"
+"%s\n"
+"ein.%s<html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1329
+#: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1339
+msgid "Enter TAN"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/message.c:956
+msgid "Bad message number, ignoring"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/message.c:1021
+msgid "Bad message reference number, ignoring"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:823
+msgid "BankId in received message does not match, ignoring"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:925
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1703
+msgid "Security Warning"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:927
+msgid ""
+"The HBCI response of the bank has an invalid signature counter,\n"
+"contrary to what has been expected. This can be the case because the \n"
+"bank just stopped using the signature counter. This error message \n"
+"would also occur if there were a replay attack against your computer \n"
+"in progress right now, which is probably quite unlikely. \n"
+" \n"
+"Please contact your bank and ask them whether their HBCI server \n"
+"stopped using the signature counter in HBCI responses. \n"
+"\n"
+"Do you nevertheless want to accept this response this time or always?"
+"<html><p>The HBCI response of the bank has an invalid signature counter, "
+"contrary to what has been expected. This can be the case because the\n"
+"bank just stopped using the signature counter. This error message\n"
+"would also occur if there were a replay attack against your computer\n"
+"in progress right now, which is probably quite unlikely.\n"
+"</p><p>Please contact your bank and ask them whether their HBCI server\n"
+"stopped using the signature counter in HBCI responses.\n"
+"</p><p>Do you nevertheless want to accept this response this time or always?"
+"</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:950
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1730
+msgid "Accept this time"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:951
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1731
+msgid "Accept always"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:957
+msgid "User accepts this response with an invalid signature counter"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:964
+msgid "User accepts all further responses with an invalid signature counter"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:972
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1756
+#, fuzzy
+msgid "Aborted"
+msgstr "Abbrechen"
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1590
+msgid "Response without security info (internal)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1602
+msgid "Response encrypted with invalid key"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1614
+msgid "Response is not encrypted as expected"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1693
+msgid "Response not signed by the bank"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1705
+msgid ""
+"The HBCI response of the bank has not been signed by the bank, \n"
+"contrary to what has been expected. This can be the case because the \n"
+"bank just stopped signing their HBCI responses. This error message \n"
+"would also occur if there were a replay attack against your computer \n"
+"in progress right now, which is probably quite unlikely. \n"
+" \n"
+"Please contact your bank and ask them whether their HBCI server \n"
+"stopped signing the HBCI responses. If the bank is concerned about \n"
+"your security, it should not stop signing the HBCI responses. \n"
+" \n"
+"Do you nevertheless want to accept this response this time or always?"
+"<html><p>The HBCI response of the bank has not been signed by the bank, \n"
+"contrary to what has been expected. This can be the case because the \n"
+"bank just stopped signing their HBCI responses. This error message \n"
+"would also occur if there were a replay attack against your computer \n"
+"in progress right now, which is probably quite unlikely. \n"
+"</p><p>Please contact your bank and ask them whether their HBCI server \n"
+"stopped signing the HBCI responses. If the bank is concerned about \n"
+"your security, it should not stop signing the HBCI responses. \n"
+"</p><p>Do you nevertheless want to accept this response this time or always?"
+"</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1737
+msgid "User accepts this unsigned response"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1746
+msgid "User accepts all further unsigned responses"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:667
+#, fuzzy
+msgid "Encoding queue"
+msgstr "Indische Rupie"
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:674
+msgid "Unable to encode"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:681
+#, fuzzy
+msgid "Sending queue"
+msgstr "Indische Rupie"
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:691
+msgid "Unable to send (network error)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:735
+msgid "Waiting for response"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:745
+msgid "No response (timeout)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:753
+msgid "Response received"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:764
+msgid "Bad response (unable to decode)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:776
+msgid "Bad response (bad message reference)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:787
+#, fuzzy
+msgid "Dialog aborted by server"
+msgstr "Die Aktion ist durch den Benutzer abgebrochen worden."
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:794
+msgid "Bad response (unable to dispatch)"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:875
+msgid "Opening dialog"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:926
+msgid "Closing dialog"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1619
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1764
+#, c-format
+msgid "Error processing job %s"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1903
+msgid "AqHBCI started"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1934
+msgid "AqHBCI finished."
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:711
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1176
+msgid "Mounting disc"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:712
+msgid "Mounting floppy disc, please wait..."
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:735
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1282
+msgid "Unmounting disc"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:736
+msgid "Unmounting floppy disc, please wait..."
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:765
+#, c-format
+msgid ""
+"Begleitzettel fuer beleglosen Datentraegeraustausch\n"
+"\n"
+"Name           : %s\n"
+"BLZ            : %s\n"
+"Kontonummer    : %s\n"
+"Datum          : %s\n"
+"Diskettennummer: %d\n"
+"Anzahl C-Saetze : %d\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:776
+#, c-format
+msgid ""
+"<h2>Begleitzettel fuer beleglosen Datentraegeraustausch</h2>\n"
+"<table>\n"
+"<tr><td>Name</td><td>%s</td></tr>\n"
+"<tr><td>BLZ</td><td>%s</td></tr>\n"
+"<tr><td>Kontonummer</td><td>%s</td></tr>\n"
+"<tr><td>Datum</td><td>%s</td></tr>\n"
+"<tr><td>Disketten-Nummer</td><td>%d</td></tr>\n"
+"<tr><td>Anzahl C-Saetze</td><td>%d</td></tr>\n"
+"</table>\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:788
+msgid ""
+"<h2>Transaktionen</h2><table>\n"
+"<tr><th>Name</th><th>BLZ</th><th>Konto</th><th>Betrag</th></tr>\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:794
+#, c-format
+msgid "Name: %s BLZ: %s Kto: %s Betrag: %8.2lf Euro\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:798
+#, c-format
+msgid "<tr><td>%s</td><td>%s</td><td>%s</td><td>%8.2lf EUR</td></tr>\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:802
+#, c-format
+msgid ""
+"\n"
+"Pruefsummen\n"
+"BLZ-Summe: %.0lf Kto-Summe: %.0lf Euro-Summe: %.2lf\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:809
+msgid "</table>\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:813
+#, c-format
+msgid ""
+"<h2>Pruefsummen</h2>\n"
+"<table>\n"
+"<tr><th>BLZ-Summe</th><th>Kto-Summe</th><th>Euro-Summe</th></tr>\n"
+"<tr><td>%.0lf</td><td>%.0lf</td><td>%.2lf</td></tr>\n"
+"</table>\n"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:834
+#, fuzzy
+msgid "YYYY/MM/DD"
+msgstr "DD.MM.YYYY hh:mm:ss"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:939
+msgid "Begleitzettel fuer DTAUS Disketten"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:941
+msgid "Diesen Zettel muessen Sie der Diskette beilegen."
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1013
+msgid "DTAUS parser not available"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1039
+msgid "Creating DTAUS object from job"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1047
+#, fuzzy
+msgid "No transactions"
+msgstr "Buchung(en)"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1067
+#, fuzzy
+msgid "Malformed transaction"
+msgstr "Buchung(en)"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1088
+msgid "Could not create DTAUS data"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1097
+msgid "Verifying DTAUS object"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1107
+msgid "Could not flush DTAUS data"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1127
+msgid "Could not re-import DTAUS data"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1143
+#, c-format
+msgid ""
+"Please label a disc with \"Vol %d\"\n"
+"and insert it into the disc drive<html>Please label a disc with <b>Vol %d</"
+"b> and insert it into the disc drive</html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1160
+#, fuzzy
+msgid "Insert Disc"
+msgstr "Medium einlegen"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1162
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1226
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:213
+#: src/frontends/kbanking/dialogs/settings.cpp:213
+msgid "Ok"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1169
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1237
+#, fuzzy
+msgid "User aborted"
+msgstr "Abbruch durch Benutzer"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1187
+msgid ""
+"Could not mount disc.\n"
+"Please see console logs for details.<html><p>Could not mount disc.Please see "
+"console logs for details.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1196
+msgid "Could not mount disc"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1204
+msgid "Checking whether disc is empty"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1213
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1321
+msgid "Warning"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1214
+msgid ""
+"The disc is not empty.\n"
+"Please insert an empty disc and click  \"OK\"<html><p>The disc is not empty."
+"</p><p>Please insert an <b>empty</b> disc and click <i>OK</i></p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1227
+#, fuzzy
+msgid "Use This Disc"
+msgstr "Trotzdem verwenden"
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1248
+msgid ""
+"Could not open disc folder.\n"
+"Please see console logs for details.<html><p>Could not open disc folder."
+"Please see console logs for details.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1261
+msgid "Could not open disc folder"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1273
+msgid "Saving DTAUS object"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1293
+msgid ""
+"Could not create DTAUS file.\n"
+"Please see console logs for details.<html><p>Could not create DTAUS file."
+"Please see console logs for details.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1302
+msgid "Could not write DTAUS file"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1308
+msgid "Ok."
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1313
+msgid "Printing Begleitzettel"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1322
+msgid ""
+"Your application does not support printing.\n"
+"Therefore the Begleitzettel can not be printed.<html><p>Your application "
+"does not support printing.</p><p>Therefore the Begleitzettel can not be "
+"printed.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1344
+msgid ""
+"Could not print Begleitzettel.\n"
+"Please see console logs for details.<html><p>Could not print "
+"BegleitzettelPlease see console logs for details.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1386
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:824
+msgid "Handling job"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1423
+#, fuzzy
+msgid "Internal error: Job not found"
+msgstr "Ein interner Fehler trat auf."
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1448
+#, c-format
+msgid ""
+"Please prepare %d disc(s).\n"
+"These discs will be filled with DTAUS data sets.\n"
+"<html><p>Please prepare <b>%d</b> disc(s).</p><p>These discs will be filled "
+"with DTAUS data sets.</p></html>"
+msgstr ""
+
+#: src/plugins/backends/aqdtaus/plugin/provider.c:1470
+msgid "Creating DTAUS Disc(s)"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:471
+msgid "Reading loaded amount"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:525
+msgid "Reading business transactions"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:534
+#, fuzzy
+msgid "No business transactions"
+msgstr "Buchungen importieren..."
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:544
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:634
+msgid "Error reading BLOG card transactions"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:566
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:657
+msgid "STORNO"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:569
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:660
+msgid "BUY"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:573
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:664
+msgid "CARD UNLOADED"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:577
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:668
+msgid "CARD LOADED"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:605
+msgid "Adding business transaction"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:617
+msgid "Reading load/unload transactions"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:624
+msgid "No load/unload transactions"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:712
+msgid "Adding load/unload transaction"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:724
+msgid "Job exeuted successfully"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:750
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.cpp:192
+#, fuzzy
+msgid "Accessing Card"
+msgstr "Zugriffs-Password"
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:751
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.cpp:193
+msgid "Reading card, please wait..."
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:809
+#, fuzzy
+msgid "Executing GeldKarte jobs"
+msgstr "Aufträge werden ausgeführt"
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:810
+msgid "All GeldKarte jobs are now executed"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:831
+#, fuzzy
+msgid "User aborted."
+msgstr "Abbruch durch Benutzer"
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:977
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:1052
+#, fuzzy
+msgid "Insert Card"
+msgstr "Medium einlegen"
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:978
+#, fuzzy
+msgid ""
+"Please insert your chipcard into the reader and click OK<html>Please insert "
+"your chipcard into the reader and click <i>ok</i></html>"
+msgstr ""
+"Bitte geben Sie Ihre PIN am Kartenleser ein.<html>Bitte geben Sie Ihre PIN "
+"am Kartenleser ein.</html>"
+
+#: src/plugins/backends/aqgeldkarte/plugin/provider.c:1053
+#, fuzzy
+msgid ""
+"Please insert the correct chipcard into the reader and click OK<html>Please "
+"insert the <b>correct</b> chipcard into the reader and click <i>ok</i></html>"
+msgstr ""
+"Bitte legen Sie die richtige Chipkarte für %s in den Kartenleser ein."
+"<html>Bitte legen Sie die <b>richtige</b> Chipkarte für <i>%s</i> in den "
+"Kartenleser ein.</html>"
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:720
+msgid "Sending Requests"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:721
+msgid ""
+"We are now sending all requests to the banks.\n"
+"<html>We are now sending all requests to the banks.\n"
+"</html>"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1142
+msgid "Creating HTTP connection"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1152
+msgid "Creating HTTPS connection"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1403
+msgid "Connecting..."
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1414
+msgid "Sending request..."
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1438
+msgid "Waiting for response..."
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1451
+msgid "Parsing response..."
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1466
+msgid "Disconnecting..."
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1534
+msgid "Requesting account list"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1535
+msgid ""
+"We are now requesting a list of accounts\n"
+"which can be managed via OFX.\n"
+"<html>We are now requesting a list of accounts which can be managed via "
+"<i>OFX</i>.\n"
+"</html>"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1587
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1719
+msgid "Parsing response"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1602
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:1739
+msgid "Processing response"
+msgstr ""
+
+#: src/plugins/backends/aqofxconnect/plugin/context.c:136
+#, fuzzy, c-format
+msgid ""
+"Please enter the password for user %s<html>Please enter the password for "
+"user <b>%s</b></html>"
+msgstr ""
+"Bitte geben Sie das %s für \n"
+"%s\n"
+"ein.%s<html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
+
+#: src/plugins/backends/aqofxconnect/plugin/context.c:696
+#, c-format
+msgid "Adding account %s to bank %s"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:512
+#, fuzzy
+msgid "Account Not Mapped"
+msgstr "Kontoauszugsdatum"
+
+#: src/frontends/qbanking/qbanking.cpp:513
+msgid ""
+"<qt><p>The given application account has not been mapped to banking accounts."
+"</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:553
+#: src/frontends/qbanking/qbanking.cpp:685
+#, fuzzy
+msgid "<qt><p>Unable to enqueue your request.</p></qt>"
+msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
+
+#: src/frontends/qbanking/qbanking.cpp:593
+msgid "Job Not Available"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:594
+msgid ""
+"The job you requested is not availablewith\n"
+"the backend which handles this account.\n"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:712
+msgid "Jobs added to outbox"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:818
+#: src/frontends/qbanking/qbanking.cpp:839
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:486
+msgid "Internal Error"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:819
+msgid ""
+"<qt><p>Could not register SimpleCallback.</p><p>This is an internal error, "
+"please report it to <b>martin@libchipcard.de</b></p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/qbanking.cpp:840
+msgid ""
+"<qt><p>Could not register FastCallback.</p><p>This is an internal error, "
+"please report it to <b>martin@libchipcard.de</b></p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/qbwcb_progress.cpp:73
+msgid "Waiting..."
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:117
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:117
+msgid "Institute Code"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:118
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:118
+msgid "Institute Name"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:119
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:119
+msgid "Account Number"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:120
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:120
+#, fuzzy
+msgid "Account Name"
+msgstr "Kontoauszugsdatum"
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:121
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:121
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/widgets/accountlist.cpp:108
+msgid "Owner"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbaccountlist.cpp:122
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:223
+#: src/frontends/kbanking/widgets/kbaccountlist.cpp:122
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:181
+msgid "Backend"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:86
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:87
+msgid "Get Balance"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:89
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:90
+#, fuzzy
+msgid "Get Transactions"
+msgstr "Buchung(en)"
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:92
+msgid "Get Standing Orders"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:95
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:93
+msgid "Transfer"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:98
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:96
+msgid "Debit Note"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:101
+msgid "EU-Transfer"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:110
+msgid "Get Dated Transfers"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:121
+msgid "Create Standing Order"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:124
+msgid "Modify Standing Order"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:127
+msgid "Delete Standing Order"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:130
+msgid "Create Dated Transfer"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:133
+msgid "Modify Dated Transfer"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:136
+msgid "Delete Dated Transfer"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:141
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:151
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:159
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:186
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:99
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:109
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:117
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:144
+#, fuzzy
+msgid "(unknown)"
+msgstr "unbekannt"
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:165
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:123
+msgid "new"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:168
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:126
+msgid "updated"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:171
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:129
+msgid "enqueued"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:174
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:132
+msgid "sent"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:177
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:135
+#, fuzzy
+msgid "pending"
+msgstr "Benin"
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:180
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:138
+msgid "finished"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:183
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:141
+#, fuzzy
+msgid "error"
+msgstr "Fehler"
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:218
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:176
+msgid "Job Id"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:219
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:177
+msgid "Job Type"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:220
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:178
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/widgets/accountlist.cpp:106
+msgid "Institute"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:221
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:179
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/widgets/accountlist.cpp:107
+msgid "Account"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:222
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:180
+#, fuzzy
+msgid "Status"
+msgstr "Lats"
+
+#: src/frontends/qbanking/widgets/qbjoblist.cpp:224
+#: src/frontends/kbanking/widgets/kbjoblist.cpp:182
+msgid "Application"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:143
+msgid "&Input"
+msgstr ""
+
+#. add label
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:161
+msgid "&Confirm"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:174
+msgid "&Ok"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:175
+#, fuzzy
+msgid "&Abort"
+msgstr "Abbrechen"
+
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:110
+#: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:110
+msgid "Name"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:111
+#: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:111
+#, fuzzy
+msgid "Version"
+msgstr "Wertanalyse"
+
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:112
+#: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:112
+msgid "Active"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:113
+#: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:113
+#, fuzzy
+msgid "Author"
+msgstr "Österreich"
+
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:114
+#: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:114
+msgid "Description"
+msgstr ""
+
+#: src/frontends/qbanking/widgets/qbprogress.cpp:271
+msgid "Finished. You may close this window."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:42
+msgid "Process running..."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:88
+msgid "Process Error"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:89
+msgid "<qt><p>Process exited with status %1</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:204
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:249
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:305
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:363
+#: src/frontends/kbanking/dialogs/settings.cpp:204
+#: src/frontends/kbanking/dialogs/settings.cpp:249
+#: src/frontends/kbanking/dialogs/settings.cpp:305
+#: src/frontends/kbanking/dialogs/settings.cpp:363
+msgid "Backend Error"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:205
+#: src/frontends/kbanking/dialogs/settings.cpp:205
+msgid "Could not activate this backend.\n"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:210
+#: src/frontends/kbanking/dialogs/settings.cpp:210
+msgid "Backend Activated"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:211
+#: src/frontends/kbanking/dialogs/settings.cpp:211
+msgid "This backend has successfully been activated.\n"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:236
+#: src/frontends/kbanking/dialogs/settings.cpp:236
+msgid "Disable Backend"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:237
+#: src/frontends/kbanking/dialogs/settings.cpp:237
+msgid ""
+"This would remove all accounts currently supported by that backend.\n"
+"\n"
+"Do you still want me to disable it ?"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:250
+#: src/frontends/kbanking/dialogs/settings.cpp:250
+msgid "Could not deactivate this backend.\n"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:283
+#: src/frontends/kbanking/dialogs/settings.cpp:283
+msgid "Wizard Not Installed"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:284
+#: src/frontends/kbanking/dialogs/settings.cpp:284
+msgid "<qt><p>The KDE wizard for this backend is not installed.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:306
+#: src/frontends/kbanking/dialogs/settings.cpp:306
+msgid ""
+"<qt><p>Error suspending the backend.</p><p>To edit the settings of a backend "
+"we need to temporarily suspend it, otherwise your new settings would be "
+"silently overwritten upon shutdown of the program.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:326
+#: src/frontends/kbanking/dialogs/settings.cpp:326
+msgid "Wizard Not Started"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:327
+#: src/frontends/kbanking/dialogs/settings.cpp:327
+msgid "<qt><p>The KDE wizard for this backend could not be started.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:342
+#: src/frontends/kbanking/dialogs/settings.cpp:342
+msgid ""
+"<qt><p>Running KDE wizard, this window will close automatically when the "
+"wizard finishes.</p><p>Please wait...</p></qt"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:364
+#: src/frontends/kbanking/dialogs/settings.cpp:364
+msgid "<qt><p>Could not resume the backend.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:385
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:476
+#: src/frontends/qbanking/dialogs/qbselectbank.cpp:351
+#: src/frontends/kbanking/dialogs/settings.cpp:385
+#, fuzzy
+msgid "Selection Error"
+msgstr "Fehler im Ausgangskorb"
+
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:386
+#: src/frontends/kbanking/dialogs/settings.cpp:386
+msgid "No account selected.\n"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:145
+msgid "No Importers"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:146
+msgid "<qt><p>There are currently no importers installed.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:429
+msgid "No Profiles"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:430
+msgid ""
+"<qt><p>There are no profiles installed for the selected importer.</p><p></"
+"p>Please select another one or abort.</qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:477
+msgid "Please select the profile you want to use."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:487
+msgid ""
+"<qt><p>Could not select the profile.</p><p>This is an internal error, please "
+"report it to <b>martin@libchipcard.de</b></p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:544
+msgid "Letting application import data"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:552
+msgid "Importing files completed."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:557
+msgid "Error importing files."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:581
+msgid "-- checking --"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:583
+msgid "Checking for file type ..."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:599
+msgid "Trying type \"%1\""
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:606
+msgid "Type \"%1\" is not available"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:617
+msgid "File type is \"%1\""
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:624
+msgid "File type might be \"%1\", checking further"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:631
+msgid "File is not of type \"%1\""
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:646
+msgid ""
+"<qt><p>Could not determine the file type.</p><p>This file can not be "
+"imported.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:676
+msgid "Select Importer"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:677
+msgid ""
+"<qt><p>The correct importer could not be autodetected.</p><p>However, the "
+"following importers claim to support the given selected file.</p><p>Please "
+"choose the correct one.</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:692
+msgid "Possible Importers"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:783
+#, c-format
+msgid "File \"%s\" does not exist"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:791
+msgid "Importing file \"%1\""
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:802
+msgid "Could not open file \"%1\": %2"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:828
+msgid "Error importing file \"%1\""
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:833
+msgid ""
+"<qt><p>An error occurred while importing a file.</><p>Please see the log for "
+"a reason</p></qt>"
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:853
+msgid "Reading files completed."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbselectbank.cpp:352
+msgid "No Bank Selected."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:469
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:479
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:546
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:571
+#, fuzzy
+msgid "Print"
+msgstr "Forint"
+
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:470
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:547
+#, fuzzy
+msgid "Printing aborted."
+msgstr "Die Aktion ist durch den Benutzer abgebrochen worden."
+
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:480
+msgid "Text does not fit on the page."
+msgstr ""
+
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:572
+msgid ""
+"Text does not fit on the page.\n"
+"Do you want to print it anyway?"
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:132
+#: src/frontends/kbanking/views/kbjobview.cpp:130
+msgid "No Jobs"
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:133
+#: src/frontends/kbanking/views/kbjobview.cpp:131
+msgid "There are no jobs in the queue."
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:166
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:192
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:215
+msgid "No Selection"
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:167
+msgid "Please select a job first."
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:173
+msgid "Delete job"
+msgstr ""
+
+#: src/frontends/qbanking/views/qbjobview.cpp:174
+msgid "Do you really want to delete the selected job(s) ?"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.cpp:123
+msgid "Insufficient Input"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.cpp:124
+msgid ""
+"<qt><p>Your input is incomplete.</p><p>Please fill out all required fields "
+"or abort the dialog.</p></qt>"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:164
+msgid "New Account"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:165
+msgid ""
+"This account already exists.\n"
+"Please check your input."
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:167
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:85
+msgid "Edit"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:193
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:216
+msgid "Please select an account first."
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:221
+msgid "Remove Account"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:222
+msgid "Are you sure you want to remove the selcted account?"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:82
+msgid "AqGeldKarte Settings"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:83
+msgid "Accounts"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:84
+msgid "New"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:86
+msgid "Remove"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:87
+msgid "Close"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.moc.cpp:34
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.moc.cpp:42
+msgid "AccountViewUi"
+msgstr ""
+
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.moc.cpp:34
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.moc.cpp:42
+msgid "AccountView"
+msgstr ""
 
 #~ msgid "access"
 #~ msgstr "Zugangs-"
@@ -1941,4 +3452,3 @@ msgstr "Buchung(en)"
 
 #~ msgid "(unknown mode)"
 #~ msgstr "(unbekannter Modus)"
-

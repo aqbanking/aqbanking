@@ -74,12 +74,12 @@ if USE_I18N
 # We directly read that file list. For old make programs, you would
 # set this to an empty variable, because they are only needed by the
 # developers and release technicians.
-I18NFILES=$(shell cat $(srcdir)/i18nsources)
+I18NFILES=$(shell cat $(srcdir)/i18nsources $(srcdir)/qtsources)
 # Current build rule:
 sources:
 	rm -f $(srcdir)/i18nsources
 	make -C $(top_srcdir)/src sources
-$(srcdir)/i18nsources:
+$(srcdir)/i18nsources $(srcdir)/qtsources:
 	make sources
 
 # Could also be solved this way: Read the I18NFILES variable from file
@@ -109,6 +109,7 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 # List of mo files. Only necessary for cleanup. For old make programs,
 # you would simply set this to an empty variable.
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
+I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
 po/$(PACKAGE).pot: $(I18NFILES)
 	if test -n "$(I18NFILES)"; then \
@@ -140,35 +141,54 @@ merge: po/$(PACKAGE).pot
 	rm -f $$cat.new.1 $$cat.new.2 ;\
 	fi ;\
 	done
-	make -C src/frontends/kbanking merge
-	make -C src/plugins/backends/aqhbci/ui/qt3 merge
 
 MSGFMT = msgfmt
 catalogs: $(I18NLINGUAS)
 	@for i in $(ALL_LINGUAS); do \
 	  filelingua=$(srcdir)/po/$$i.po; \
 	  filecat=$(top_builddir)/po/$$i.mo; \
-	  echo "Creating translation catalog $${filecat}"; \
-	  echo "  $(MSGFMT) -o $${filecat} $${filelingua}"; \
+	  fileqm=$(top_builddir)/po/$$i.qm; \
+	  echo "Creating translation catalogs for language \"$$i\""; \
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
+	  $(MSGFMT) -o $${fileqm} --qt $${filelingua} || touch $${filelingua}; \
 	done
-	make -C src/frontends/kbanking catalog
-	make -C src/plugins/backends/aqhbci/ui/qt3 catalog
+
+
 
 localedir = $(datadir)/locale
-install-data-local: catalogs
+install-mo-catalogs: catalogs
 	@for i in $(ALL_LINGUAS); do \
 	  filecat=$(top_builddir)/po/$$i.mo; \
-          echo "Installing translation catalog $$i"; \
-          echo "  $(mkinstalldirs) \"$(DESTDIR)$(localedir)/$$i/LC_MESSAGES\""; \
-          echo "  $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
+	  fileqm=$(top_builddir)/po/$$i.qm; \
+          echo "Installing translation catalog for language \"$$i\""; \
           $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
           $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
 
+
+if MAKE_QT_CATS
+
+qtlocaledir = $(pkgdatadir)/i18n
+install-qt-catalogs: catalogs
+	$(mkinstalldirs) "$(DESTDIR)$(qtlocaledir)"; \
+	@for i in $(ALL_LINGUAS); do \
+	  fileqm=$(top_builddir)/po/$$i.qm; \
+          echo "Installing translation catalog for language \"$$i\""; \
+          $(INSTALL_DATA) $${fileqm} $(DESTDIR)$(qtlocaledir)/$$i.qm; \
+        done
+
+install-data-local: install-qt-catalogs install-mo-catalogs
+
+else
+
+install-data-local: install-mo-catalogs
+
+endif # if MAKE_QT_CATS
+
 CLEANFILES += $(I18NCATALOGS)
 
-endif
+endif # if USE_I18N
+
 
 # Extra rule instead of "all" which creates the auto-generated headers
 # *first* and only then starts "make all". This avoids duplicate

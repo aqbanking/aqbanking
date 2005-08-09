@@ -4,11 +4,11 @@ INCLUDES = \
  -I../libs/dialogs \
  -I../libs $(qt3_includes) $(all_includes)
 
-DEFS+= -DPKGDATADIR=\"$(datadir)/locale/aqhbci-qt-tools\"
+DEFS += -DDATADIR=\"$(pkgdatadir)\"
 
 EXTRA_DIST = kde_wizard.xml.in aqhbci_qt_wizard.vcproj
 
-plugindir = $(aqbanking_plugins)/wizards/aqhbci
+plugindir = $(aqbanking_plugindir)/wizards/aqhbci
 plugin_PROGRAMS = aqhbci-qt3-wizard
 plugin_DATA=kde_wizard.xml
 
@@ -27,7 +27,7 @@ CLEANFILES=kde_wizard.xml
 
 sources:
 	for f in $(aqhbci_qt3_wizard_SOURCES); do \
-	  echo $(subdir)/$$f >>../i18nsources; \
+	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \

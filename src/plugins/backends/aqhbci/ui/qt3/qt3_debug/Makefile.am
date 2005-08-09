@@ -4,11 +4,11 @@ INCLUDES = \
  -I../libs/logmanager \
  -I../libs $(qt3_includes) $(all_includes)
 
-DEFS+= -DPKGDATADIR=\"$(datadir)/locale/aqhbci-qt-tools\"
+DEFS += -DDATADIR=\"$(pkgdatadir)\"
 
 EXTRA_DIST=qt_debug.xml.in
 
-plugindir = $(aqbanking_plugins)/debugger/aqhbci
+plugindir = $(aqbanking_plugindir)/debugger/aqhbci
 plugin_PROGRAMS = aqhbci-qt3-debug
 plugin_DATA = qt_debug.xml
 
@@ -27,7 +27,7 @@ CLEANFILES=qt_debug.xml
 
 sources:
 	for f in $(aqhbci_qt3_debug_SOURCES); do \
-	  echo $(subdir)/$$f >>../i18nsources; \
+	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \

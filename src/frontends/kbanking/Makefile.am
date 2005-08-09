@@ -8,7 +8,7 @@ INCLUDES = \
   -Idialogs -Iwidgets -Iprg -Iviews \
   $(all_includes)
 
-DEFS += -DDATADIR=\"$(datadir)/$(SUBPACKAGE)\"
+DEFS += -DDATADIR=\"$(pkgdatadir)\"
 
 lib_LTLIBRARIES=libkbanking.la
 
@@ -52,19 +52,11 @@ libkbanking_la_LDFLAGS=\
 
 sources:
 	for f in $(libkbanking_la_SOURCES) $(UI_FILES); do \
-	  echo $(subdir)/$$f >>i18nsources; \
+	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
-	done ; \
-	ofiles="`cat i18nsources`"; \
-	files=""; \
-	rm -f i18nsources.tmp 2>/dev/null ;\
-	for i in $$ofiles; do \
-	  echo $$i | $(SED) "s:$(subdir)/::g" >>i18nsources.tmp ; \
-	done ; \
-	rm -f i18nsources ; \
-	mv i18nsources.tmp i18nsources
+	done ;
 
 i18nsources: sources
 

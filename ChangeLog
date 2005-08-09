@@ -3,6 +3,8 @@
 -------------------------------------------------
 - swallowed and adapted AqHBCI-QT-Tools
 - fixed QT frontend
+- swallowed and adapted AqDTAUS-QT-Tools
+- swallowed and adapted AqGeldKarte-QT-Tools
 
 
 2005/08/08: Martin Preuss<martin@libchipcard.de>

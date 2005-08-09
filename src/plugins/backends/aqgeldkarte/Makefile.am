@@ -1,4 +1,4 @@
-SUBDIRS=plugin
+SUBDIRS=plugin ui
 
 EXTRA_DIST=ChangeLog README aqgeldkarte.m4 version.h.in
 

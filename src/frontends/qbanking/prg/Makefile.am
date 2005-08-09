@@ -16,5 +16,5 @@ libprg_la_SOURCES=\
 
 sources:
 	for f in $(libprg_la_SOURCES) $(UI_FILES); do \
-	  echo $(subdir)/$$f >>../i18nsources; \
+	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done

@@ -34,7 +34,7 @@ CLEANFILES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS)
 
 sources:
 	for f in $(liblogmanager_la_SOURCES); do \
-	  echo $(subdir)/$$f >>../../i18nsources; \
+	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
