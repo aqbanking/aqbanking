@@ -635,6 +635,16 @@ AC_ENABLE_STATIC(no)
 AC_ENABLE_SHARED(yes)
 
 
+
+###-------------------------------------------------------------------------
+#
+# Enable some GNU extensions if using the GNU C library
+#
+
+AC_GNU_SOURCE
+
+
+
 ###-------------------------------------------------------------------------
 #
 # Checks for programs.
@@ -756,11 +766,13 @@ if test "$enable_libofx" = "yes"; then
   AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
   if test "$HAVE_OFX" != "yes"; then
     AC_MSG_WARN([
-  *** LibOFX >=0.7 not found, the OFX plugin will not be compiled.
+  *** LibOFX >=0.8.0 not found, the OFX plugin will not be compiled.
   *** Please get LibOFX from http://libofx.sf.net/.
   *** Make sure that the libofx-devel packages are also installed.])
   else
-    AC_CHECK_LIB(ofx, libofx_request_statement, [HAVE_OFX_WITH_CONNECT="yes"])
+    AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
+                     [HAVE_OFX_WITH_CONNECT="yes"], [],
+                     [#include <libofx/libofx.h>])
     if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
        AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
     fi
@@ -1206,7 +1218,7 @@ for backend in $aqbanking_backends; do
   case "$backend" in
     aqofxconnect)
       if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
-        AC_MSG_NOTICE([*** LibOFX>0.7.0 is required for backend "aqofxconnect". Specify --with-backends="aqhbci aqdtaus aqgeldkarte" to build aqbanking without that backend.])
+        AC_MSG_NOTICE([*** LibOFX>=0.8.0 is required for backend "aqofxconnect". Specify --with-backends="aqhbci aqdtaus aqgeldkarte" to build aqbanking without that backend.])
 	dependencies_ok="no"
       fi
       ;;
