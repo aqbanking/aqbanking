@@ -3,6 +3,8 @@ SUBDIRS=plugin tools media ui
 CLEANFILES = $(BUILT_SOURCES) aqhbci-config aqhbci-config.in
 
 bin_SCRIPTS=aqhbci-config
+M4dir=${prefix}/share/aclocal
+dist_M4_DATA=aqhbci.m4
 
 aqhbci-config: aqhbci-config.in
 	echo "#! /bin/sh" >aqhbci-config && \

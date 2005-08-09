@@ -3,6 +3,8 @@ SUBDIRS=plugin ui
 EXTRA_DIST=ChangeLog README aqdtaus.m4 version.h.in
 
 bin_SCRIPTS=aqdtaus-config
+M4dir=${prefix}/share/aclocal
+dist_M4_DATA=aqdtaus.m4
 
 iheaderdir=${includedir}/aqdtaus
 iheader_HEADERS=\

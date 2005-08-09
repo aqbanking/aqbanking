@@ -170,7 +170,7 @@ if MAKE_QT_CATS
 
 qtlocaledir = $(pkgdatadir)/i18n
 install-qt-catalogs: catalogs
-	$(mkinstalldirs) "$(DESTDIR)$(qtlocaledir)"; \
+	$(mkinstalldirs) "$(DESTDIR)$(qtlocaledir)";
 	@for i in $(ALL_LINGUAS); do \
 	  fileqm=$(top_builddir)/po/$$i.qm; \
           echo "Installing translation catalog for language \"$$i\""; \

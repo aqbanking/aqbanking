@@ -3,6 +3,8 @@ SUBDIRS=plugin ui
 EXTRA_DIST=ChangeLog README aqofxconnect.m4 version.h.in
 
 bin_SCRIPTS=aqofxconnect-config
+M4dir=${prefix}/share/aclocal
+dist_M4_DATA=aqofxconnect.m4
 
 iheaderdir=${includedir}/aqofxconnect
 iheader_HEADERS=\

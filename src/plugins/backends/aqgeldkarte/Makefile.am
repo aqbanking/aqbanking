@@ -3,6 +3,8 @@ SUBDIRS=plugin ui
 EXTRA_DIST=ChangeLog README aqgeldkarte.m4 version.h.in
 
 bin_SCRIPTS=aqgeldkarte-config
+M4dir=${prefix}/share/aclocal
+dist_M4_DATA=aqgeldkarte.m4
 
 iheaderdir=${includedir}/aqgeldkarte
 iheader_HEADERS=\
