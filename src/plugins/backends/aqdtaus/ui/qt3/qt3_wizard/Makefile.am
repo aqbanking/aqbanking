@@ -17,11 +17,12 @@ plugin_DATA=qt_wizard.xml
 #noinst_HEADERS=qt3_wizard.h
 
 aqdtaus_qt3_wizard_SOURCES = qt3_wizard.cpp
-aqdtaus_qt3_wizard_LDADD = $(gwenhywfar_libs) \
-  ../libs/libqt3wizard.la $(qt3_libs) \
+aqdtaus_qt3_wizard_LDADD = \
+  ../libs/libqt3wizard.la \
   -L$(top_builddir)/src/libs/aqbanking -laqbanking \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
-  -L$(top_builddir)/src/plugins/backends/aqdtaus/plugin -laqdtaus
+  -L$(top_builddir)/src/plugins/backends/aqdtaus/plugin -laqdtaus \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
 CLEANFILES=qt_wizard.xml

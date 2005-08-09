@@ -1,0 +1,290 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>EditAccountUi</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>EditAccountUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>293</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Edit Account</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Minimum</enum>
+        </property>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox1</cstring>
+            </property>
+            <property name="title">
+                <string>Basic Settings</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="5" column="0">
+                    <property name="name">
+                        <cstring>textLabel5</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Owner</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="4" column="1">
+                    <property name="name">
+                        <cstring>accountIdEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This is the account number. An account is identified by bank code and
+this account number.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="4" column="0">
+                    <property name="name">
+                        <cstring>textLabel2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Account Number</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="3" column="0">
+                    <property name="name">
+                        <cstring>textLabel4</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Account Name</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="2" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank Name</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="2" column="1">
+                    <property name="name">
+                        <cstring>bankNameEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This is the name of your bank. This wizard tries to lookup this name for
+you.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="3" column="1">
+                    <property name="name">
+                        <cstring>accountNameEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Freely selectable name for your account. This field is not used by AqDTAUS.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget" row="1" column="1">
+                    <property name="name">
+                        <cstring>layout5</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>bankCodeEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+This is the bank code of your bank.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>bankCodeButton</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank Code</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>textLabel1</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Country</string>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="5" column="1">
+                    <property name="name">
+                        <cstring>userCombo</cstring>
+                    </property>
+                    <property name="duplicatesEnabled">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="0" column="1">
+                    <property name="name">
+                        <cstring>countryCombo</cstring>
+                    </property>
+                    <property name="duplicatesEnabled">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer39</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>whatsThisButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>What's This?</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer4</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel6</cstring>
+                    </property>
+                    <property name="text">
+                        <string>(c) 2005 M.Preuss</string>
+                    </property>
+                    <property name="alignment">
+                        <set>AlignCenter</set>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer5</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>okButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Ok</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>abortButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Abort</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>EditAccountUi</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>abortButton</sender>
+        <signal>clicked()</signal>
+        <receiver>EditAccountUi</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>countryCombo</tabstop>
+    <tabstop>bankCodeEdit</tabstop>
+    <tabstop>bankCodeButton</tabstop>
+    <tabstop>bankNameEdit</tabstop>
+    <tabstop>accountNameEdit</tabstop>
+    <tabstop>accountIdEdit</tabstop>
+    <tabstop>userCombo</tabstop>
+    <tabstop>whatsThisButton</tabstop>
+    <tabstop>okButton</tabstop>
+    <tabstop>abortButton</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

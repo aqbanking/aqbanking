@@ -1,4 +1,4 @@
-<plugin name="aqgeldkarte-qt-wizard" type="ProviderWizard" frontend="qt" backend="aqgeldkarte" >
+<plugin name="aqgeldkarte-qt3-wizard" type="ProviderWizard" frontend="qt" backend="aqgeldkarte" >
   <version>@WIZARD_KDE_VERSION_FULL_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>QT/KDE Setup Wizard for AqGeldKarte</short>

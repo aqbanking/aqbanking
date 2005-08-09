@@ -1,0 +1,10 @@
+<plugin name="aqofxconnect-qt3-wizard" type="ProviderWizard" frontend="qt" backend="aqofxconnect" >
+  <version>@WIZARD_KDE_VERSION_FULL_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>QT/KDE Setup Wizard for OFX Direct Connect</short>
+  <descr>
+    This module provides a setup wizard for OFX Direct Connect for QT/KDE.
+  </descr>
+</plugin>
+
+

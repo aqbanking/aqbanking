@@ -15,11 +15,12 @@ plugin_DATA = qt_debug.xml
 #noinst_HEADERS=
 
 aqhbci_qt3_debug_SOURCES = qt3_debug.cpp
-aqhbci_qt3_debug_LDADD = $(gwenhywfar_libs) \
-  ../libs/libqt3wizard.la $(qt3_libs) \
+aqhbci_qt3_debug_LDADD = \
+  ../libs/libqt3wizard.la \
   -L$(top_builddir)/src/libs/aqbanking -laqbanking \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
 CLEANFILES=qt_debug.xml

@@ -6,6 +6,8 @@
 - swallowed and adapted AqDTAUS-QT-Tools
 - swallowed and adapted AqGeldKarte-QT-Tools
 - adapted OFXDirectConnect plugin to latest LibOFX release (0.8.0)
+- fixed library linking order in backend wizards
+- swallowed last backend wizard (ofx direct connect)
 
 
 2005/08/08: Martin Preuss<martin@libchipcard.de>

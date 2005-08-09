@@ -776,12 +776,16 @@ if test "$enable_libofx" = "yes"; then
     if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
        AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
     fi
+    LIBOFX_INCLUDES=""
+    LIBOFX_LIBS="-lofx"
   fi
 else
   HAVE_OFX="no"
 fi
 
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
+AC_SUBST(LIBOFX_INCLUDES)
+AC_SUBST(LIBOFX_LIBS)
 
 
 
@@ -1704,6 +1708,14 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/aqofxconnect-config.in
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
+  src/plugins/backends/aqofxconnect/ui/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/qt3_wizard/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/qt3_wizard/qt_wizard.xml
+  src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/libs/views/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt3/libs/widgets/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile
