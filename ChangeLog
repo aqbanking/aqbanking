@@ -1,8 +1,10 @@
+
 2005-08-09  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/banking.h: Move banking.{h,_p.h,cpp} from
 	sub-library prg/ to the library itself -- this way the header is
 	correctly copied to the top_builddir/header directory.
+
 
 2005/08/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -13,6 +15,7 @@
 - adapted OFXDirectConnect plugin to latest LibOFX release (0.8.0)
 - fixed library linking order in backend wizards
 - swallowed last backend wizard (ofx direct connect)
+- now correctly create all necessary symlinks
 
 
 2005/08/08: Martin Preuss<martin@libchipcard.de>
