@@ -2,15 +2,12 @@ INCLUDES=-I$(top_builddir)/headers -I. @all_includes@
 
 #EXTRA_DIST=
 
-noinst_LTLIBRARIES=libprg.la
+noinst_LTLIBRARIES=
 
 iheaderdir=${includedir}/qbanking
-iheader_HEADERS=\
- banking.h \
- banking_p.h
+iheader_HEADERS=
 
-libprg_la_SOURCES=\
- banking.cpp
+#libprg_la_SOURCES=
 
 
 

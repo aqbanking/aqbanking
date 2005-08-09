@@ -17,12 +17,16 @@ dist_M4_DATA=qbanking.m4
 iheaderdir=${includedir}/qbanking
 iheader_HEADERS=\
  qbflagstaff.h \
- qbanking_p.h \
  qbanking.h \
  qbwaitcallback.h \
  qbwcb_fast.h \
  qbwcb_simple.h \
- qbwcb_progress.h
+ qbwcb_progress.h \
+ banking.h
+
+noinst_HEADERS = \
+ qbanking_p.h \
+ banking_p.h
 
 libqbanking_la_SOURCES=\
  qbflagstaff.cpp \
@@ -30,7 +34,8 @@ libqbanking_la_SOURCES=\
  qbwaitcallback.cpp \
  qbwcb_fast.cpp \
  qbwcb_simple.cpp \
- qbwcb_progress.cpp
+ qbwcb_progress.cpp \
+ banking.cpp
 
 nodist_libqbanking_la_SOURCES=\
  qbflagstaff.moc.cpp
@@ -45,7 +50,6 @@ BUILT_SOURCES =$(nodist_libqbanking_la_SOURCES) version.h
 CLEANFILES=$(BUILT_SOURCES) i18nsources qbanking-config qbanking-config.in ressource.rc
 
 libqbanking_la_LIBADD=\
- prg/libprg.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
