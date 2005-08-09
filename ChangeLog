@@ -16,6 +16,7 @@
 - fixed library linking order in backend wizards
 - swallowed last backend wizard (ofx direct connect)
 - now correctly create all necessary symlinks
+- improved QBanking importer dialog, progress widget and callbacks
 
 
 2005/08/08: Martin Preuss<martin@libchipcard.de>

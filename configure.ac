@@ -697,7 +697,7 @@ AC_CHECK_FUNCS([setlocale])
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,14,0,5)
+AC_GWENHYWFAR(1,14,0,7)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
