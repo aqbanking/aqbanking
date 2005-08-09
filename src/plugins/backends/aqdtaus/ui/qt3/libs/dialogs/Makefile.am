@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers -I../widgets -I.. @all_includes@
+INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. @all_includes@
 
 UI_FILES= editaccount.ui
 

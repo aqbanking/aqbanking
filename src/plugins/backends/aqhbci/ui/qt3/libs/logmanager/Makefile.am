@@ -1,6 +1,9 @@
-INCLUDES=-I$(top_builddir)/headers -I../widgets -I.. @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  $(all_includes)
 
-DEFS=-DAQHBCI_DATAFOLDER=\"@aqhbci_data@\"
+DEFS += -DAQHBCI_DATAFOLDER=\"@aqhbci_data@\"
 
 UI_FILES= \
   logmanager.ui
