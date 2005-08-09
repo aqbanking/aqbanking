@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. @all_includes@
+INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. -I../widgets -I.. @all_includes@
 
 UI_FILES= editaccount.ui
 
@@ -7,6 +7,8 @@ EXTRA_DIST= $(UI_FILES)
 noinst_LTLIBRARIES=libdialogs.la
 
 nodist_noinst_HEADERS=editaccount.ui.h
+
+noinst_HEADERS = editaccount.h
 
 nodist_libdialogs_la_SOURCES=\
  editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp
