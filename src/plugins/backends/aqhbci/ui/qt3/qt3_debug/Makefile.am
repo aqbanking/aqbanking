@@ -1,8 +1,8 @@
 INCLUDES = \
- -I../libs/widgets \
- -I../libs/dialogs \
- -I../libs/logmanager \
- -I../libs $(qt3_includes) $(all_includes)
+ -I$(srcdir)/../libs/widgets -I$(srcdir)/../libs/dialogs \
+ -I$(srcdir)/../libs/logmanager -I$(srcdir)/../libs \
+ -I../libs/widgets -I../libs/dialogs -I../libs/logmanager -I../libs \
+ $(qt3_includes) $(all_includes)
 
 DEFS += -DDATADIR=\"$(pkgdatadir)\"
 
