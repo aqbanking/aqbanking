@@ -79,4 +79,13 @@ clean-ui:
 	rm -f *.ui.{cpp,h}
 
 
-
+# This section is for a qt4 environment
+qt4-port:
+	for A in $(libqbanking_la_SOURCES) $(HEADERS); do \
+	 $(YES) | $(QT3TO4) $$A; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d qt4-port; \
+	done
+# For qt3 compatibility of qt4
+DEFS += -DQT3_SUPPORT

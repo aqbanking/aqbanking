@@ -215,3 +215,9 @@ srpm: $(PACKAGE).spec dist
 	rpmbuild="rpm" && \
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild --nodeps -ts $(PACKAGE)-$(VERSION).tar.gz
+
+# This section is for a qt4 environment
+qt4-port:
+	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3; do \
+	  make -C $$d qt4-port; \
+	done

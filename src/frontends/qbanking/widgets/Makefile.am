@@ -59,3 +59,10 @@ sources:
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
 
+# This section is for a qt4 environment
+qt4-port:
+	for A in $(libwidgets_la_SOURCES) $(iheader_HEADERS); do \
+	 $(YES) | $(QT3TO4) $$A; \
+	done
+# For qt3 compatibility of qt4
+DEFS += -DQT3_SUPPORT

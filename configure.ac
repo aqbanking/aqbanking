@@ -853,6 +853,16 @@ if test "$have_qt3" = "yes"; then
   AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
 fi
 
+dnl Check for potential qt4 environment
+AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
+dnl windows/mingw doesnt have the yes program, so add this emulation
+AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+
+dnl Store the bin dir for the windows dlls
+QT_BINDIR=` echo ${qt3_moc} | sed 's-/moc--' | sed 's-/c/-c:\\\\-' | sed 's-/-\\\\-g' `
+AC_SUBST(QT_BINDIR)
 
 
 ###-------------------------------------------------------------------------
