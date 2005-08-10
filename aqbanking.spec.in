@@ -7,6 +7,11 @@
 %define dist redhat
 %define disttag rh
 
+## Watch out: We need some agreement whether the chipcard-client
+## package should always be compiled into aqbanking.
+%define have_libchipcard 1
+%define have_libofx 1
+
 %if %is_mandrake
 %define dist mandrake
 %define disttag mdk
@@ -21,6 +26,18 @@
 %endif
 #
 %define version @VERSION@
+%define plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
+
+# Choose backends to be built
+%if %have_libofx
+%if %have_libchipcard
+%define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect"
+%else
+%define backendlist "aqhbci aqdtaus aqofxconnect"
+%endif
+%else
+%define backendlist "aqhbci aqdtaus"
+%endif
 
 %define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
 
@@ -39,8 +56,10 @@ Packager: Christian Stimming <stimming@tuhh.de>
 URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Note: We might add ktoblzcheck here as well
-BuildRequires: gwenhywfar-devel
-BuildRequires: libofx >= 0.7.0
+#BuildRequires: gwenhywfar-devel
+%if %have_libofx
+BuildRequires: libofx >= 0.8.0
+%endif
 Prereq: /sbin/ldconfig
 Prefix: %{_prefix}
 
@@ -62,11 +81,29 @@ Requires: %{name} = %{version}-%{release}
 This package contains aqbanking-config and header files for writing and
 compiling programs using Aqbanking.
 
+%package qt3-tools
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description qt3-tools
+Necessary.
+
+%package gnome2-tools
+Summary: Aqbanking tools for Gnome2
+Group: System Environment/Libraries
+%description gnome2-tools
+Necessary.
+
+%package kde-tools
+Summary: Aqbanking tools for KDE
+Group: System Environment/Libraries
+%description kde-tools
+Necessary.
+
 %prep
 %setup -q
 
 %build
-%{configure}
+%{configure} --with-backends=%{backendlist}
 make
 
 %install
@@ -86,19 +123,70 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %files
 %defattr(-,root,root)
 %doc AUTHORS README COPYING ChangeLog
-%{_libdir}/*.so.*
-%{_libdir}/*.so
-%{_libdir}/%{name}
+### The original aqbanking files
+%{_libdir}/libaqbanking*
 %{_libdir}/gwenhywfar
-%{_datadir}/%{name}
+%{_datadir}/%{name}/bankinfo
+%{_datadir}/%{name}/imexporters
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 %{_bindir}/aqbanking-tool
 %{_datadir}/doc/%{name}
+%{plugindir}/bankinfo
+%{plugindir}/imexporters
+%{plugindir}/providers
+### The aqhbci files
+%{_datadir}/aqhbci
+%{_bindir}/aqhbci-tool
+%{_libdir}/libaqhbci*
+### The dtaus files
+%{_libdir}/libaqdtaus*
+### The cbanking files
+%{_libdir}/libcbanking*
+
+%files qt3-tools
+%{_libdir}/libqbanking*
+%{plugindir}/wizards/aqhbci
+%{plugindir}/debugger/aqhbci
+%{plugindir}/wizards/aqdtaus
+%if %have_libofx
+%{plugindir}/wizards/aqofxconnect
+%endif
+%if %have_libchipcard
+%{plugindir}/wizards/aqgeldkarte
+%endif
+%{_datadir}/%{name}/i18n
+
+%files gnome2-tools
+%{_libdir}/libg2banking*
+
+%files kde-tools
+%{_libdir}/libkbanking*
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/aqbanking-config
+### The aqbanking files
 %{_includedir}/aqbanking
 %{_includedir}/aqbanking++
+%{_bindir}/aqbanking-config
 %{_libdir}/*.la
-%{_datadir}/aclocal/aqbanking.m4
+%{_datadir}/aclocal
+#%{_datadir}/aclocal/aqbanking.m4
+### The aqhbci files
+%{_includedir}/aqhbci
+%{_bindir}/aqhbci-config
+%{_bindir}/hbcixml2
+#%{_datadir}/aclocal/aqhbci.m4
+### The cbanking files
+%{_includedir}/cbanking
+### The g2banking files
+%{_includedir}/g2banking
+%{_bindir}/g2banking-config
+### The qbanking files
+%{_includedir}/qbanking
+%{_bindir}/qbanking-config
+### The kbanking files
+%{_includedir}/kbanking
+%{_bindir}/kbanking-config
+### The aqdtaus files
+%{_includedir}/aqdtaus
+%{_bindir}/aqdtaus-config
