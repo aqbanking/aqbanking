@@ -195,8 +195,35 @@ This installs the linked doc to the path you gave to ./configure in
  "--with-docpath=PATH". It defaults to "$HOME/apidoc".
 
 
+5.4. Notes on porting the qt parts to Qt-4: 
+------------------------------------------
 
+The Qt4 library is now available as GPL on Linux *and* Windows,
+which means this online banking programm is available on windows
+as well, which is a GOOD THING!
 
+But qt4 is not at all source compatible to qt3, see
+http://doc.trolltech.com/4.0/porting4.html. Trolltech provides a tool
+for the necessary class renaming, called "qt3to4". This package
+already has the necessary make rules ("make qt4-port") for calling
+that tool on all source files, if the qt4 library has been detected at
+configure time. I.e. if you want to use this package in qt4, do the
+following two steps:
+
+1. Call ./configure with the proper QTDIR, qt3_libs and qt3_includes
+2. Call "make qt4-port"
+3. As usual "make"
+
+An example for ./configure is this, where $QTDIR has been set to
+/my/qt4/dir beforehand:
+
+  ./configure --enable-maintainer-mode --enable-debug --prefix=/my/prefix QTDIR=$QTDIR qt3_libs="-L$QTDIR/lib -lQtCore -lQtGui -lQt3Support" qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support"
+
+or on Windows/mingw32
+
+  ./configure -C --enable-maintainer-mode --enable-debug QTDIR=$QTDIR qt3_libs="-L$QTDIR/bin -lQtCore4 -lQtGui4 -lQt3Support4" qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support" --with-gwen-dir=/c/Programme/gwenhywfar --with-aqbanking-dir=/c/Programme/aqbanking
+
+-- 2005-08-10, cstim
 
 
 
