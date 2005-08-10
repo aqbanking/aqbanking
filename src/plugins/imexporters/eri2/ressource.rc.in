@@ -1,0 +1,67 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Thu 21-07-2005
+    copyright   : (C) 2005 by Peter de Vrijer
+    email       : pdevrijer@home.nl
+
+ ***************************************************************************
+ *    Please see the file COPYING in this directory for license details    *
+ ***************************************************************************/
+
+/*
+  Changes
+ */
+
+
+#include <windows.h>
+
+// Language: 407=DE, 409=US, 809=UK
+
+// German resources
+
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// Version
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION @AQBANKING_VERSION_MAJOR@, @AQBANKING_VERSION_MINOR@, @AQBANKING_VERSION_PATCHLEVEL@, @AQBANKING_VERSION_BUILD@
+ PRODUCTVERSION @AQBANKING_VERSION_MAJOR@, @AQBANKING_VERSION_MINOR@, @AQBANKING_VERSION_PATCHLEVEL@, @AQBANKING_VERSION_BUILD@
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L      // Windows NT
+ FILETYPE 0x2L        // DLL
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            //VALUE "Comments", "\0"
+            //VALUE "CompanyName", " Aquamaniac\0"
+            VALUE "FileDescription", "ERI Importer\0"
+            VALUE "FileVersion", "v@AQBANKING_VERSION_RELEASE_STRING@\0"
+            VALUE "InternalName", "Aqbanking\0"
+            VALUE "LegalCopyright", "Copyright © 2005 by Peter de Vrijer\0"
+            VALUE "LegalTrademarks", "Aquamaniac\0"
+            VALUE "OriginalFilename", "eri.dll\0"
+            //VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Aqbanking\0"
+            VALUE "ProductVersion", "v@AQBANKING_VERSION_FULL_STRING@\0"
+            VALUE "Author", "Peter de Vrijer\0"
+            VALUE "Email", "pdevrijer@home.nl\0"
+            VALUE "Homepage", "http://www.aquamaniac.de/aqbanking\0"
+            VALUE "Description", "Online banking\0"
+	    VALUE "License", "LGPL\0"
+            //VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
