@@ -40,12 +40,13 @@ libg2banking_la_SOURCES = \
 
 nodist_libg2banking_la_SOURCES=$(GLADE_SOURCES)
 
-libg2banking_la_LIBADD =\
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
- $(gwenhywfar_libs) \
+libg2banking_la_LIBADD = \
  views/libviews.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
+ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(GTK2_LIBS) \
+ $(gwenhywfar_libs) \
  $(all_libraries)
 
 libg2banking_la_LDFLAGS =\
