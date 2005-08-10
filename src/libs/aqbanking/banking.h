@@ -496,12 +496,18 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  * @param appName name of the application which wants to use AqBanking.
  * This allows AqBanking to separate settings and data for multiple
  * applications.
- * @param fname path and name of the configuration file to use. You should
+ * @param dname path for the user data of AqBanking. You should
  * in most cases present a NULL for this parameter (which let's AqBanking
- * load the users default configuration file, see @ref AB_BANKING_CONFIGFILE).
+ * choose the default user data folder which is $HOME/.banking).
+ * The configuration (aqbanking.conf) file is searched for in this folder.
+ * Versions of AqBanking before 1.2.0.16 used this argument to specify the
+ * path and name of the configuration file. The default configuration file
+ * was $HOME/.aqbanking.conf. This file is now also searched for, but if
+ * it exsited it will be moved to the new default path and name upon
+ * AB_Banking_Fini (new path is $HOME/.banking/settings.conf).
  */
 AQBANKING_API
-AB_BANKING *AB_Banking_new(const char *appName, const char *fname);
+AB_BANKING *AB_Banking_new(const char *appName, const char *dname);
 
 /**
  * This does the same as @ref AB_Banking_new. In addition, the application
@@ -514,7 +520,7 @@ AB_BANKING *AB_Banking_new(const char *appName, const char *fname);
  */
 AQBANKING_API
 AB_BANKING *AB_Banking_newExtended(const char *appName,
-                                   const char *fname,
+                                   const char *dname,
                                    GWEN_TYPE_UINT32 extensions);
 
 
@@ -841,6 +847,17 @@ AQBANKING_API
 int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
                                 GWEN_BUFFER *buf);
+
+/**
+ * Returns the list of global data folders. In most cases this is something
+ * like $PREFIX/share/aqbanking. Plugins are required to use the folders
+ * returned here when searching for their specific data instead of using the
+ * compile time fixed values. This way it is easier under windows to find
+ * data.
+ */
+AQBANKING_API 
+const GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(const AB_BANKING *ab);
+
 
 /** Returns the void pointer that was stored by
  * AB_Banking_SetUserData(). This might be useful for passing data to

@@ -31,6 +31,7 @@
 #include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/md.h>
+#include <gwenhywfar/xml.h>
 #include <gwenhywfar/nettransportssl.h>
 
 #include <stdlib.h>
@@ -70,16 +71,87 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include <aqbanking/error.h>
 
 
-AB_BANKING *AB_Banking_new(const char *appName, const char *fname){
-  return AB_Banking_newExtended(appName, fname, 0);
+AB_BANKING *AB_Banking_new(const char *appName, const char *dname){
+  return AB_Banking_newExtended(appName, dname, 0);
 }
 
 
 
-AB_BANKING *AB_Banking_newExtended(const char *appName, const char *fname,
+void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
+					     const char *dname) {
+  GWEN_BUFFER *buf;
+  char home[256];
+
+  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not determine home directory, aborting.");
+    abort();
+  }
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (dname) {
+    /* determine config file name */
+    GWEN_Buffer_AppendString(buf, dname);
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_CONFIGFILE);
+    ab->configFile=strdup(GWEN_Buffer_GetStart(buf));
+    /* setup default data dir */
+    GWEN_Buffer_Reset(buf);
+    GWEN_Buffer_AppendString(buf, home);
+    GWEN_Buffer_AppendString(buf,
+			     DIRSEP AB_BANKING_USERDATADIR);
+    ab->dataDir=strdup(GWEN_Buffer_GetStart(buf));
+  }
+  else {
+    GWEN_TYPE_UINT32 pos;
+    FILE *f;
+
+    /* determine config file name */
+    GWEN_Buffer_AppendString(buf, home);
+    GWEN_Buffer_AppendString(buf, DIRSEP);
+    pos=GWEN_Buffer_GetPos(buf);
+    GWEN_Buffer_AppendString(buf, AB_BANKING_USERDATADIR);
+    /* as we are at it: store default data dir */
+    ab->dataDir=strdup(GWEN_Buffer_GetStart(buf));
+
+    /* first try new default file */
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_CONFIGFILE);
+    f=fopen(GWEN_Buffer_GetStart(buf), "r");
+    if (f) {
+      fclose(f);
+      ab->configFile=strdup(GWEN_Buffer_GetStart(buf));
+    }
+    else {
+      /* try old default file */
+      GWEN_Buffer_Crop(buf, 0, pos);
+      GWEN_Buffer_AppendString(buf, AB_BANKING_OLD_CONFIGFILE);
+      f=fopen(GWEN_Buffer_GetStart(buf), "r");
+      if (f) {
+	fclose(f);
+	ab->configFile=strdup(GWEN_Buffer_GetStart(buf));
+	/* New file did not exist, if the old file exists we will move it
+	 * upon AB_Banking_Fini(). */
+      }
+      else {
+	/* file not found, create new default file later */
+	GWEN_Buffer_Crop(buf, 0, pos);
+	GWEN_Buffer_AppendString(buf,
+				 AB_BANKING_USERDATADIR DIRSEP
+				 AB_BANKING_CONFIGFILE);
+	ab->configFile=strdup(GWEN_Buffer_GetStart(buf));
+      }
+    }
+  }
+  GWEN_Buffer_free(buf);
+}
+
+
+
+
+AB_BANKING *AB_Banking_newExtended(const char *appName,
+				   const char *dname,
                                    GWEN_TYPE_UINT32 extensions){
   AB_BANKING *ab;
-  GWEN_BUFFER *buf;
   GWEN_BUFFER *nbuf;
 
   assert(appName);
@@ -105,22 +177,6 @@ AB_BANKING *AB_Banking_newExtended(const char *appName, const char *fname,
     }
   }
 
-  buf=0;
-  if (!fname) {
-    char home[256];
-
-    if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not determine home directory, aborting.");
-      GWEN_Buffer_free(nbuf);
-      abort();
-    }
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_CONFIGFILE);
-    fname=GWEN_Buffer_GetStart(buf);
-  }
-
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
   ab->providers=AB_Provider_List_new();
@@ -133,11 +189,11 @@ AB_BANKING *AB_Banking_newExtended(const char *appName, const char *fname,
   ab->activeProviders=GWEN_StringList_new();
   GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
   ab->data=GWEN_DB_Group_new("BankingData");
-  ab->configFile=strdup(fname);
   ab->pinList=AB_Pin_List_new();
   ab->pinCacheEnabled=0;
-  GWEN_Buffer_free(buf);
   GWEN_Buffer_free(nbuf);
+
+  AB_Banking__GetConfigFileNameAndDataDir(ab, dname);
 
   ab->dbTempConfig=GWEN_DB_Group_new("tmpConfig");
 
@@ -1097,8 +1153,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");
   pm=GWEN_PluginManager_new("bankinfo");
   GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "bankinfodir");
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_BANKINFODIR);
   GWEN_PluginManager_AddPath(pm,
                              AQBANKING_PLUGINS
                              DIRSEP
@@ -1114,8 +1170,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering provider plugin manager");
   pm=GWEN_PluginManager_new("provider");
   GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "providerdir");
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_PROVIDERDIR);
   GWEN_PluginManager_AddPath(pm,
 			     AQBANKING_PLUGINS
 			     DIRSEP
@@ -1131,8 +1187,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
   pm=GWEN_PluginManager_new("imexporters");
   GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "imexporterdir");
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_IMPORTERDIR);
   GWEN_PluginManager_AddPath(pm,
 			     AQBANKING_PLUGINS
 			     DIRSEP
@@ -1148,10 +1204,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering pkgdatadir plugin manager");
   pm=GWEN_PluginManager_new("pkgdatadir");
   GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqbanking\\Paths",
-				       "pkgdatadir");
-  GWEN_PluginManager_AddPath(pm,
-			     PKGDATADIR);
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_DATADIR);
+  GWEN_PluginManager_AddPath(pm, GLOBALDATADIR);
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register pkgdatadir plugin manager");
@@ -1209,11 +1264,6 @@ int AB_Banking_Init(AB_BANKING *ab) {
       break;
     GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
   }
-
-  s=GWEN_DB_GetCharValue(dbT, "datadir", 0, 0);
-  free(ab->dataDir);
-  if (s) ab->dataDir=strdup(s);
-  else ab->dataDir=0;
 
   /* read data */
   dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banking");
@@ -1335,7 +1385,8 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_JOB *j;
   int rv;
   AB_PROVIDER *pro;
-  GWEN_BUFFER *rpbuf;
+  GWEN_BUFFER *rpbuf1;
+  GWEN_BUFFER *rpbuf2;
 
   assert(ab);
 
@@ -1360,10 +1411,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   db=GWEN_DB_Group_new("config");
   assert(db);
-
-  if (ab->dataDir)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "dataDir", ab->dataDir);
 
   /* save accounts */
   a=AB_Account_List_First(ab->accounts);
@@ -1440,40 +1487,47 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
 
   /* write config file. TODO: make backups */
-
-  rpbuf=GWEN_Buffer_new(0, strlen(ab->configFile)+4, 0, 1);
-  GWEN_Buffer_AppendString(rpbuf, ab->configFile);
-  GWEN_Buffer_AppendString(rpbuf, ".tmp");
-  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf),
-                        GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
+  rpbuf1=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(rpbuf1, ab->dataDir);
+  GWEN_Buffer_AppendString(rpbuf1, DIRSEP AB_BANKING_CONFIGFILE);
+  rpbuf2=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(rpbuf1)+4, 0, 1);
+  GWEN_Buffer_AppendBuffer(rpbuf2, rpbuf1);
+  GWEN_Buffer_AppendString(rpbuf2, ".tmp");
+  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf2),
+			GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "Could not save app config file \"%s\"",
-             GWEN_Buffer_GetStart(rpbuf));
-    GWEN_Buffer_free(rpbuf);
+	     GWEN_Buffer_GetStart(rpbuf2));
+    GWEN_Buffer_free(rpbuf2);
+    GWEN_Buffer_free(rpbuf1);
     GWEN_DB_Group_free(db);
     return AB_ERROR_BAD_CONFIG_FILE;
   }
 #ifdef OS_WIN32
-  if (unlink(ab->configFile)) {
+  if (unlink(GWEN_Buffer_GetStart(rpbuf1))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not delete old file \"%s\": %s",
-	      ab->configFile,
-              strerror(errno));
-    GWEN_Buffer_free(rpbuf);
+	      GWEN_Buffer_GetStart(rpbuf1),
+	      strerror(errno));
+    GWEN_Buffer_free(rpbuf2);
+    GWEN_Buffer_free(rpbuf1);
     GWEN_DB_Group_free(db);
     return AB_ERROR_GENERIC;
   }
 #endif
-  if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
+  if (rename(GWEN_Buffer_GetStart(rpbuf2),
+	     GWEN_Buffer_GetStart(rpbuf1))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not rename file to \"%s\": %s",
-              ab->configFile,
-              strerror(errno));
-    GWEN_Buffer_free(rpbuf);
+	      "Could not rename file to \"%s\": %s",
+              GWEN_Buffer_GetStart(rpbuf1),
+	      strerror(errno));
+    GWEN_Buffer_free(rpbuf2);
+    GWEN_Buffer_free(rpbuf1);
     GWEN_DB_Group_free(db);
     return AB_ERROR_GENERIC;
   }
-  GWEN_Buffer_free(rpbuf);
+  GWEN_Buffer_free(rpbuf2);
+  GWEN_Buffer_free(rpbuf1);
 
   GWEN_DB_Group_free(db);
 
@@ -1532,8 +1586,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
 
   GWEN_DB_ClearGroup(ab->data, 0);
-  free(ab->dataDir);
-  ab->dataDir=0;
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
   return 0;
 }
@@ -2326,7 +2378,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
       return -1;
     }
     GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf, DIRSEP ".banking");
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_USERDATADIR);
   }
   return 0;
 }
@@ -2349,7 +2401,7 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
       return -1;
     }
     GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf, DIRSEP ".banking");
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_USERDATADIR);
   }
 
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
@@ -2518,53 +2570,48 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   GWEN_BUFFER *buf;
   GWEN_DB_NODE *db;
   int rv;
-  const char *pkgdatadir;
-  GWEN_PLUGIN_MANAGER *pm;
+  const GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *sentry;
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
   db=GWEN_DB_Group_new("profiles");
 
-  /* New loading code -- use path list from PluginManager but don't
-     use its loading code */
-  pm = GWEN_PluginManager_FindPluginManager("pkgdatadir");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "pkgdatadir");
-    return 0;
-  }
+  sl=AB_Banking_GetGlobalDataDirs(ab);
+  assert(sl);
 
-  sentry = GWEN_StringList_FirstEntry(GWEN_PluginManager_GetPaths(pm));
+  sentry=GWEN_StringList_FirstEntry(sl);
   assert(sentry);
-  /* For now, using the first entry will work both on windows (where
-     this is the registry key) and on unix (where this is the
-     compile-time variable). */
-  pkgdatadir = GWEN_StringListEntry_Data(sentry);
-  assert(pkgdatadir);
 
-  /* read global profiles */
-  GWEN_Buffer_AppendString(buf, pkgdatadir);
-  GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
-  if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Bad name for importer/exporter");
-    GWEN_DB_Group_free(db);
-    GWEN_Buffer_free(buf);
-    return 0;
+  while(sentry) {
+    const char *pkgdatadir;
+
+    pkgdatadir = GWEN_StringListEntry_Data(sentry);
+    assert(pkgdatadir);
+
+    /* read global profiles */
+    GWEN_Buffer_AppendString(buf, pkgdatadir);
+    GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
+    if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Bad name for importer/exporter");
+      GWEN_DB_Group_free(db);
+      GWEN_Buffer_free(buf);
+      return 0;
+    }
+    GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
+    rv=AB_Banking__ReadImExporterProfiles(ab,
+                                          GWEN_Buffer_GetStart(buf),
+                                          db);
+    if (rv && rv!=AB_ERROR_NOT_FOUND) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Error reading global profiles");
+      GWEN_DB_Group_free(db);
+      GWEN_Buffer_free(buf);
+      return 0;
+    }
+    GWEN_Buffer_Reset(buf);
+    sentry=GWEN_StringListEntry_Next(sentry);
   }
-  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
-  rv=AB_Banking__ReadImExporterProfiles(ab,
-                                        GWEN_Buffer_GetStart(buf),
-                                        db);
-  if (rv && rv!=AB_ERROR_NOT_FOUND) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error reading global profiles");
-    GWEN_DB_Group_free(db);
-    GWEN_Buffer_free(buf);
-    return 0;
-  }
-  GWEN_Buffer_Reset(buf);
 
   /* read local user profiles */
   if (AB_Banking_GetUserDataDir(ab, buf)) {
@@ -5596,7 +5643,19 @@ int AB_Banking_CheckIban(const char *iban) {
 }
 
 
+const GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(const AB_BANKING *ab) {
+  GWEN_PLUGIN_MANAGER *pm;
 
+  pm=GWEN_PluginManager_FindPluginManager("pkgdatadir");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "pkgdatadir");
+    return 0;
+  }
+
+  return GWEN_PluginManager_GetPaths(pm);
+}
 
 
 

@@ -18,6 +18,12 @@
 
 #define AB_BANKING_WCB_GENERIC "AB_BANKING_WCB_GENERIC"
 
+#define AB_BANKING_REGKEY_PATHS       "Software\\AqBanking\\Paths"
+#define AB_BANKING_REGKEY_DATADIR     "pkgdatadir"
+#define AB_BANKING_REGKEY_BANKINFODIR "bankinfodir"
+#define AB_BANKING_REGKEY_PROVIDERDIR "providerdir"
+#define AB_BANKING_REGKEY_IMPORTERDIR "importerdir"
+
 #include "banking_l.h"
 #include "account_l.h"
 #include "job_l.h"
@@ -85,6 +91,9 @@ struct AB_BANKING {
   GWEN_TYPE_UINT32 lastProgressId;
 };
 
+
+void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
+                                             const char *dname);
 
 
 AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);

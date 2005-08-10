@@ -9,10 +9,15 @@
 #include <gwenhywfar/text.h>
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/msgengine.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 int test1(int argc, char **argv) {
@@ -1103,6 +1108,108 @@ int test13(int argc, char **argv) {
 
 
 
+int testMsgEngine(int argc, char **argv) {
+  const char *xmlFile;
+  const char *dataFile;
+  GWEN_XMLNODE *nRoot;
+  GWEN_MSGENGINE *e;
+  int fd;
+  int c;
+  GWEN_BUFFEREDIO *bio;
+  GWEN_DB_NODE *db;
+  GWEN_BUFFER *mbuf;
+
+  if (argc<4) {
+    fprintf(stderr, "Usage: %s msg XMLFILE DATAFILE\n", argv[0]);
+    return 1;
+  }
+
+  xmlFile=argv[2];
+  dataFile=argv[3];
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelDebug);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelDebug);
+
+  e=AB_MsgEngine_new();
+
+  nRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  if (GWEN_XML_ReadFile(nRoot, xmlFile,
+                        GWEN_XML_FLAGS_DEFAULT |
+                        GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+    DBG_ERROR(0, "Could not read XML file.\n");
+    return 2;
+  }
+  GWEN_MsgEngine_SetDefinitions(e, nRoot, 1);
+
+
+  fd=open(dataFile, O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(0, "Could not open file (%s)", strerror(errno));
+    return 2;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  mbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  db=GWEN_DB_Group_new("transactions");
+
+  while(1) {
+    GWEN_ERRORCODE err;
+    int rv;
+
+    GWEN_Buffer_Reset(mbuf);
+    c=GWEN_BufferedIO_PeekChar(bio);
+    if (c==GWEN_BUFFEREDIO_CHAR_EOF || c==26)
+      break;
+    else if (c==GWEN_BUFFEREDIO_CHAR_ERROR) {
+      DBG_ERROR(0, "Error reading message");
+      return 2;
+    }
+
+    err=GWEN_BufferedIO_ReadLine2Buffer(bio, mbuf);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return 2;
+    }
+
+    GWEN_Buffer_Rewind(mbuf);
+    rv=GWEN_MsgEngine_ReadMessage(e, "SEG", mbuf, db, 0);
+    if (rv) {
+      GWEN_Buffer_Dump(mbuf, stderr, 4);
+      DBG_ERROR(0, "Error reading message (%d)", rv);
+      return 2;
+    }
+  }
+
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+
+  GWEN_DB_Dump(db, stdout, 4);
+  DBG_ERROR(0, "Parsing ok.");
+
+  return 0;
+}
+
+
+
+int testDate(int argc, char **argv) {
+  GWEN_TIME *ti;
+  int y,m,d;
+
+  if (argc<4) {
+    fprintf(stderr, "Usage: %s msg XMLFILE DATAFILE\n", argv[0]);
+    return 1;
+  }
+  ti=AB_ImExporter_DateFromString(argv[2], argv[3], 1);
+  assert(ti);
+  GWEN_Time_GetBrokenDownDate(ti, &d, &m, &y);
+  DBG_ERROR(0, "Date: %02d %02d %04d", d, m, y);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -1142,6 +1249,10 @@ int main(int argc, char **argv) {
     rv=test12(argc, argv);
   else if (strcasecmp(cmd, "test13")==0)
     rv=test13(argc, argv);
+  else if (strcasecmp(cmd, "msg")==0)
+    rv=testMsgEngine(argc, argv);
+  else if (strcasecmp(cmd, "date")==0)
+    rv=testDate(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;

@@ -1,7 +1,20 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
 
 2005/08/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed cbanking stuff from aqhbci-tool (now uses the frontend "cbanking")
+- changed interpretation of the second argument to AB_Banking_new(): It now
+  expects the path to the data folder. The configuration file will be read
+  from this data folder (new default is $HOME/.banking/settings.conf instead
+  of $HOME/.aqbanking.conf). The old file is still loaded if the new file
+  doesn't exist, but when writing it back the new location is used.
+- added function AB_Banking_GetGlobalDataDir()
+- added my own eri importer, just to test a new approach to be used in general
+  for binary record-oriented file formats (to be used forthe Spanish Q43
+  format)
 
 
 2005-08-09  Christian Stimming  <stimming@tuhh.de>

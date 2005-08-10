@@ -23,7 +23,10 @@
 /**
  * Name of the default configuration file within the users home folder.
  */
-#define AB_BANKING_CONFIGFILE ".aqbanking.conf"
+#define AB_BANKING_CONFIGFILE "settings.conf"
+#define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
+
+#define AB_BANKING_USERDATADIR ".banking"
 
 
 GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);

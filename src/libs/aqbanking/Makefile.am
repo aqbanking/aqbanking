@@ -10,7 +10,7 @@ localedir=$(datadir)/locale
 DEFS += \
  -DLOCALEDIR=\"$(localedir)\" \
  -DAQBANKING_PLUGINS=\"$(aqbanking_plugindir)\" \
- -DPKGDATADIR=\"$(aqbanking_pkgdatadir)\"
+ -DGLOBALDATADIR=\"$(aqbanking_pkgdatadir)\"
 
 noinst_HEADERS=\
  account_l.h \
@@ -31,7 +31,8 @@ noinst_HEADERS=\
  provider_l.h \
  provider_p.h \
  wcb_l.h \
- wcb_p.h
+ wcb_p.h \
+ msgengine_p.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -49,7 +50,9 @@ iheader_HEADERS=\
  job.h \
  job_be.h \
  provider.h \
- provider_be.h
+ provider_be.h\
+ msgengine.h
+
 
 libaqbanking_la_SOURCES=\
  account.c \
@@ -60,7 +63,9 @@ libaqbanking_la_SOURCES=\
  imexporter.c \
  job.c \
  provider.c \
- wcb.c
+ wcb.c\
+ msgengine.c
+
 
 libaqbanking_la_LIBADD=@gwenhywfar_libs@ \
  jobs/libjobs.la \

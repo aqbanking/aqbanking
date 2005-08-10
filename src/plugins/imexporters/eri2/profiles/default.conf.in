@@ -9,7 +9,7 @@ int export="0"
 # default bank name
 bankName="Rabobank"
 currency="EUR"
-dateFormat="YYMMDD"
+dateFormat="hhmmssYYYYMMDD"
 
 params {
 }

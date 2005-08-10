@@ -99,6 +99,6 @@ mkdeinfo_SOURCES=mkdeinfo.c
 mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
 
 sources:
-	for f in $(de_la_SOURCES); do \
+	for f in $(libbankinfo_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
