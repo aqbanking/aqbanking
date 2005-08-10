@@ -4,6 +4,7 @@ INCLUDES = \
   -I$(srcdir)/../libs/dialogs \
   -I$(srcdir)/../libs/views \
   -I$(srcdir)/../libs \
+  -I../libs/widgets -I../libs/dialogs -I../libs/views -I../libs \
   $(qt3_includes) $(all_includes)
 
 DEFS += -DDATADIR=\"$(pkgdatadir)\"
