@@ -321,7 +321,7 @@ void QBankingSettings::slotBackendSetup(){
 
     QProcess wp(qs);
 
-    if (!wp.launch("")) {
+    if (!wp.launch(QString(""))) {
       QMessageBox::critical(0,
                             tr("Wizard Not Started"),
                             tr("<qt>"
