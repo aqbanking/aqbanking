@@ -39,7 +39,7 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
 
-#include "cbanking.h"
+#include <cbanking/cbanking.h>
 
 
 

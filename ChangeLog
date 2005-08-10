@@ -1,4 +1,9 @@
 
+2005/08/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed cbanking stuff from aqhbci-tool (now uses the frontend "cbanking")
+
+
 2005-08-09  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/banking.h: Move banking.{h,_p.h,cpp} from

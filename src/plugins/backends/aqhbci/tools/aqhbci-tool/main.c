@@ -23,7 +23,7 @@
 #include <aqbanking/banking.h>
 
 
-#include "cbanking.h"
+#include <cbanking/cbanking.h>
 #include "globals.h"
 
 

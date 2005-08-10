@@ -4,11 +4,9 @@ bin_PROGRAMS=aqhbci-tool
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\"
 
-noinst_HEADERS=\
-  cbanking_p.h cbanking_l.h cbanking.h \
-  progress_p.h progress_l.h globals.h
+noinst_HEADERS=globals.h
 
-aqhbci_tool_SOURCES=main.c cbanking.c progress.c \
+aqhbci_tool_SOURCES=main.c \
  mkpinlist.c \
  addmedium.c \
  listmedia.c \
@@ -23,6 +21,7 @@ aqhbci_tool_SOURCES=main.c cbanking.c progress.c \
 aqhbci_tool_LDADD = \
   -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
   -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  -L$(top_builddir)/src/frontends/cbanking -lcbanking \
   $(gwenhywfar_libs)
 
 sources:
