@@ -53,9 +53,9 @@ sources:
 
 
 %.ui.cpp: %.ui
-	$(qt3_uic) $< -impl $<.h -o $@
+	$(UIC3) $< -impl $<.h -o $@
 %.ui.h: %.ui
-	$(qt3_uic) $< -o $@
+	$(UIC3) $< -o $@
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
 
