@@ -164,6 +164,12 @@ install-mo-catalogs: catalogs
           $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
           $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
+uninstall-mo-catalogs:
+	@$(NORMAL_UNINSTALL)
+	@for i in $(ALL_LINGUAS); do \
+	  echo " rm -f '$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo'"; \
+	  rm -f "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
+	done
 
 
 if MAKE_QT_CATS
@@ -176,12 +182,20 @@ install-qt-catalogs: catalogs
           echo "Installing translation catalog for language \"$$i\""; \
           $(INSTALL_DATA) $${fileqm} $(DESTDIR)$(qtlocaledir)/$$i.qm; \
         done
+uninstall-qt-catalogs:
+	@$(NORMAL_UNINSTALL)
+	@for i in $(ALL_LINGUAS); do \
+	  echo " rm -f '$(DESTDIR)$(qtlocaledir)/$$i.qm'"; \
+	  rm -f "$(DESTDIR)$(qtlocaledir)/$$i.qm"; \
+	done
 
 install-data-local: install-qt-catalogs install-mo-catalogs
+uninstall-local: uninstall-qt-catalogs uninstall-mo-catalogs
 
 else
 
 install-data-local: install-mo-catalogs
+uninstall-local: uninstall-mo-catalogs
 
 endif # if MAKE_QT_CATS
 
