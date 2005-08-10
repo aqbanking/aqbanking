@@ -64,7 +64,12 @@ QBProgress::QBProgress(GWEN_TYPE_UINT32 id,
   if (pt==ProgressTypeNormal) {
     _doShowText=true;
     _shouldStay=true;
-    setWFlags(Qt::WDestructiveClose);
+#if (QT_VERSION >= 0x040000)
+    setWindowFlags
+#else
+    setWFlags
+#endif
+	(Qt::WDestructiveClose);
     logWidget->setMinimumHeight(350);
   }
 
@@ -269,7 +274,12 @@ int QBProgress::log(AB_BANKING_LOGLEVEL level,
 
   if (level<=AB_Banking_LogLevelWarn) {
     _shouldStay=true;
-    setWFlags(Qt::WDestructiveClose);
+#if (QT_VERSION >= 0x040000)
+    setWindowFlags
+#else
+    setWFlags
+#endif
+	(Qt::WDestructiveClose);
   }
 
   tmp+="</td></tr>";
