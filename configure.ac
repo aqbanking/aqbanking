@@ -770,43 +770,40 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 #
 
 HAVE_OFX_WITH_CONNECT="no"
-case "$aqbanking_backends" in *aqofxconnect*)
-  AC_MSG_CHECKING(whether OFX should be used)
-  AC_ARG_ENABLE(libofx,
-    [  --enable-libofx         use OFX (default=auto)],
-    [ case "${enableval}" in
-      yes) enable_libofx="yes";;
-      no)  enable_libofx="no";;
-      *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
-      esac
-    ],
-    enable_libofx="yes")
-  AC_MSG_RESULT($enable_libofx)
-  
-  if test "$enable_libofx" = "yes"; then
-    HAVE_OFX="yes"
-    AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
-    AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
-    if test "$HAVE_OFX" != "yes"; then
-      AC_MSG_WARN([
-    *** LibOFX >=0.8.0 not found, the OFX plugin will not be compiled.
-    *** Please get LibOFX from http://libofx.sf.net/.
-    *** Make sure that the libofx-devel packages are also installed.])
-    else
-      AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
-                       [HAVE_OFX_WITH_CONNECT="yes"], [],
-                       [#include <libofx/libofx.h>])
-      if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
-         AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
-      fi
-      LIBOFX_INCLUDES=""
-      LIBOFX_LIBS="-lofx"
-    fi
+AC_MSG_CHECKING(whether OFX should be used)
+AC_ARG_ENABLE(libofx,
+  [  --enable-libofx         use OFX (default=auto)],
+  [ case "${enableval}" in
+    yes) enable_libofx="yes";;
+    no)  enable_libofx="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
+    esac
+  ],
+  enable_libofx="yes")
+AC_MSG_RESULT($enable_libofx)
+
+if test "$enable_libofx" = "yes"; then
+  HAVE_OFX="yes"
+  AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
+  AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
+  if test "$HAVE_OFX" != "yes"; then
+    AC_MSG_WARN([
+  *** LibOFX >=0.7.0 not found, the OFX plugin will not be compiled.
+  *** Please get LibOFX from http://libofx.sf.net/.
+  *** Make sure that the libofx-devel packages are also installed.])
   else
-    HAVE_OFX="no"
+    AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
+                     [HAVE_OFX_WITH_CONNECT="yes"], [],
+                     [#include <libofx/libofx.h>])
+    if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
+       AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
+    fi
+    LIBOFX_INCLUDES=""
+    LIBOFX_LIBS="-lofx"
   fi
-  ;;
-esac
+else
+  HAVE_OFX="no"
+fi
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 AC_SUBST(LIBOFX_INCLUDES)
 AC_SUBST(LIBOFX_LIBS)

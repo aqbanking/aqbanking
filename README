@@ -26,7 +26,7 @@ The backend AqHBCI currently supports these security media:
                      with OpenHBCI in parallel) 
  - PIN/TAN (PIN/TAN mode using HTTP over SSL)
 
-This packages contains the following backends:
+This package contains the following backends:
  - AqHBCI (German Online Banking protocol HBCI 2.01, 2.10 and 2.20)
  - AqDTAUS (creates DTAUS discs and prints the necessary documents)
  - AqOfxConnect (OFX Direct Connect)
@@ -95,7 +95,7 @@ Basically all possible frontends (such as KDE, GNOME, console etc) are
 supported. This is accomplished by only a few callback functions for user 
 interaction which can be overloaded by applications. 
 
-This packages contains the following frontends:
+This package contains the following frontends:
  - GTK 2
  - Qt 3
  - KDE 3
