@@ -13,7 +13,7 @@ imexporterplugin_DATA=eri2.xml
 endif
 
 imexporterdatadir=$(aqbanking_pkgdatadir)/imexporters/eri2
-imexporterdata_DATA=eriformat.xml
+dist_imexporterdata_DATA=eriformat.xml
 
 noinst_HEADERS=\
  eri2_p.h
