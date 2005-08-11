@@ -6,6 +6,7 @@ EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
+noinst_HEADERS=editaccount.h edituser.h
 nodist_noinst_HEADERS=editaccount.ui.h edituser.ui.h
 
 nodist_libdialogs_la_SOURCES=\
