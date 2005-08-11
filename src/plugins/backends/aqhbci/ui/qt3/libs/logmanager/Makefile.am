@@ -29,7 +29,8 @@ liblogmanager_la_SOURCES=\
   error.cpp \
   loganalyzer.cpp
 
-liblogmanager_la_LIBADD=@gwenhywfar_libs@ @aqhbci_libs@
+liblogmanager_la_LIBADD = \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci
 
 BUILT_SOURCES = $(nodist_liblogmanager_la_SOURCES)
 CLEANFILES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS)
