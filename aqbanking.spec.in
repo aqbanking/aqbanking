@@ -36,7 +36,11 @@
 %define backendlist "aqhbci aqdtaus aqofxconnect"
 %endif
 %else
+%if %have_libchipcard
+%define backendlist "aqhbci aqdtaus aqgeldkarte"
+%else
 %define backendlist "aqhbci aqdtaus"
+%endif
 %endif
 
 %define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
@@ -56,10 +60,12 @@ Packager: Christian Stimming <stimming@tuhh.de>
 URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Note: We might add ktoblzcheck here as well
-#BuildRequires: gwenhywfar-devel
+BuildRequires: gwenhywfar-devel >= 1.15.0
 %if %have_libofx
 BuildRequires: libofx >= 0.8.0
 %endif
+Provides: aqhbci
+Provides: aqdtaus
 Prereq: /sbin/ldconfig
 Prefix: %{_prefix}
 
@@ -77,6 +83,8 @@ format), SWIFT (MT940 and MT942).
 Summary: Aqbanking development kit
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Provides: aqhbci-devel
+Provides: aqdtaus-devel
 %description devel
 This package contains aqbanking-config and header files for writing and
 compiling programs using Aqbanking.
@@ -84,6 +92,8 @@ compiling programs using Aqbanking.
 %package qt3-tools
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
+Provides: aqhbci-qt-tools
+Provides: aqdtaus-qt-tools
 %description qt3-tools
 Necessary.
 
@@ -98,6 +108,40 @@ Summary: Aqbanking tools for KDE
 Group: System Environment/Libraries
 %description kde-tools
 Necessary.
+
+### Sub-packages for OFX
+
+%if %have_libofx
+%package ofx
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description ofx
+Necessary.
+
+%package ofx-qt3-tools
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description ofx-qt3-tools
+Necessary.
+%endif
+
+### Sub-packages for Geldkarte
+
+%if %have_libchipcard
+%package geldkarte
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description geldkarte
+Necessary.
+
+%package geldkarte-qt3-tools
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description geldkarte-qt3-tools
+Necessary.
+%endif
+
+### The build commands
 
 %prep
 %setup -q
@@ -120,6 +164,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %postun
 /sbin/ldconfig
 
+### The file list for all packages
+
 %files
 %defattr(-,root,root)
 %doc AUTHORS README COPYING ChangeLog
@@ -127,19 +173,31 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/libaqbanking*
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}/bankinfo
-%{_datadir}/%{name}/imexporters
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 %{_bindir}/aqbanking-tool
 %{_datadir}/doc/%{name}
 %{plugindir}/bankinfo
-%{plugindir}/imexporters
-%{plugindir}/providers
+%{plugindir}/imexporters/csv.*
+%{plugindir}/imexporters/dbio.*
+%{plugindir}/imexporters/dtaus.*
+%{plugindir}/imexporters/eri.*
+%{plugindir}/imexporters/openhbci1.*
+%{plugindir}/imexporters/qif.*
+%{plugindir}/imexporters/swift.*
+%{_datadir}/%{name}/imexporters/csv
+%{_datadir}/%{name}/imexporters/dtaus
+%{_datadir}/%{name}/imexporters/eri
+%{_datadir}/%{name}/imexporters/ofx
+%{_datadir}/%{name}/imexporters/openhbci1
+%{_datadir}/%{name}/imexporters/swift
 ### The aqhbci files
 %{_datadir}/aqhbci
 %{_bindir}/aqhbci-tool
 %{_libdir}/libaqhbci*
+%{plugindir}/providers/aqhbci.*
 ### The dtaus files
 %{_libdir}/libaqdtaus*
+%{plugindir}/providers/aqdtaus.*
 ### The cbanking files
 %{_libdir}/libcbanking*
 
@@ -148,13 +206,25 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{plugindir}/wizards/aqhbci
 %{plugindir}/debugger/aqhbci
 %{plugindir}/wizards/aqdtaus
+%{_datadir}/%{name}/i18n
+
 %if %have_libofx
+%files ofx
+%{plugindir}/providers/aqofxconnect.*
+%{_includedir}/aqofxconnect
+%{plugindir}/imexporters/ofx.*
+%{_datadir}/%{name}/imexporters/ofx
+%files ofx-qt3-tools
 %{plugindir}/wizards/aqofxconnect
 %endif
+
 %if %have_libchipcard
+%files geldkarte
+%{plugindir}/providers/aqgeldkarte.*
+%{_includedir}/aqgeldkarte
+%files geldkarte-qt3-tools
 %{plugindir}/wizards/aqgeldkarte
 %endif
-%{_datadir}/%{name}/i18n
 
 %files gnome2-tools
 %{_libdir}/libg2banking*
