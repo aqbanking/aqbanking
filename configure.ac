@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=17
+AQBANKING_VERSION_BUILD=18
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -694,6 +694,26 @@ AC_CHECK_FUNCS([setlocale])
 
 ###-------------------------------------------------------------------------
 #
+# backends and frontends
+#
+
+AC_ARG_WITH(frontends, 
+  [  --with-frontends=list      space separated list of frontends (default:all)],
+  [aqbanking_frontends="$withval"],
+  [aqbanking_frontends="cbanking g2banking qbanking kbanking"]
+)
+
+
+AC_ARG_WITH(backends, 
+  [  --with-backends=list      space separated list of backends (default:all)],
+  [aqbanking_backends="$withval"],
+  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
+)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Check for Gwen
 #
 
@@ -709,16 +729,18 @@ XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 # Check for LibChipcard2
 #
 
-AC_CHIPCARD_CLIENT(1,9,11)
-AC_MSG_CHECKING(if chipcard_client is useable)
-if test "x$have_chipcard_client" != "xyes"; then
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_RESULT(no)
-fi
-
-all_includes="$all_includes $chipcard2_client_includes"
-
+case "$aqbanking_backends" in *aqgeldkarte*)
+  AC_CHIPCARD_CLIENT(1,9,11)
+  AC_MSG_CHECKING(if chipcard_client is useable)
+  if test "x$have_chipcard_client" != "xyes"; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+  
+  all_includes="$all_includes $chipcard2_client_includes"
+  ;;
+esac
 
 
 ###-------------------------------------------------------------------------
@@ -748,41 +770,43 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 #
 
 HAVE_OFX_WITH_CONNECT="no"
-AC_MSG_CHECKING(whether OFX should be used)
-AC_ARG_ENABLE(libofx,
-  [  --enable-libofx         use OFX (default=auto)],
-  [ case "${enableval}" in
-    yes) enable_libofx="yes";;
-    no)  enable_libofx="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
-    esac
-  ],
-  enable_libofx="yes")
-AC_MSG_RESULT($enable_libofx)
-
-if test "$enable_libofx" = "yes"; then
-  HAVE_OFX="yes"
-  AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
-  AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
-  if test "$HAVE_OFX" != "yes"; then
-    AC_MSG_WARN([
-  *** LibOFX >=0.8.0 not found, the OFX plugin will not be compiled.
-  *** Please get LibOFX from http://libofx.sf.net/.
-  *** Make sure that the libofx-devel packages are also installed.])
-  else
-    AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
-                     [HAVE_OFX_WITH_CONNECT="yes"], [],
-                     [#include <libofx/libofx.h>])
-    if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
-       AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
+case "$aqbanking_backends" in *aqofxconnect*)
+  AC_MSG_CHECKING(whether OFX should be used)
+  AC_ARG_ENABLE(libofx,
+    [  --enable-libofx         use OFX (default=auto)],
+    [ case "${enableval}" in
+      yes) enable_libofx="yes";;
+      no)  enable_libofx="no";;
+      *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
+      esac
+    ],
+    enable_libofx="yes")
+  AC_MSG_RESULT($enable_libofx)
+  
+  if test "$enable_libofx" = "yes"; then
+    HAVE_OFX="yes"
+    AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
+    AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
+    if test "$HAVE_OFX" != "yes"; then
+      AC_MSG_WARN([
+    *** LibOFX >=0.8.0 not found, the OFX plugin will not be compiled.
+    *** Please get LibOFX from http://libofx.sf.net/.
+    *** Make sure that the libofx-devel packages are also installed.])
+    else
+      AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
+                       [HAVE_OFX_WITH_CONNECT="yes"], [],
+                       [#include <libofx/libofx.h>])
+      if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
+         AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
+      fi
+      LIBOFX_INCLUDES=""
+      LIBOFX_LIBS="-lofx"
     fi
-    LIBOFX_INCLUDES=""
-    LIBOFX_LIBS="-lofx"
+  else
+    HAVE_OFX="no"
   fi
-else
-  HAVE_OFX="no"
-fi
-
+  ;;
+esac
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
 AC_SUBST(LIBOFX_INCLUDES)
 AC_SUBST(LIBOFX_LIBS)
@@ -825,9 +849,12 @@ AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 # GTK2
 #
 
-pkg_modules="gtk+-2.0 >= 2.0.0"
-PKG_CHECK_MODULES(GTK2, [$pkg_modules])
-all_includes="$all_includes $GTK2_CFLAGS"
+case "$aqbanking_frontends" in *g2banking*)
+  pkg_modules="gtk+-2.0 >= 2.0.0"
+  PKG_CHECK_MODULES(GTK2, [$pkg_modules])
+  all_includes="$all_includes $GTK2_CFLAGS"
+  ;;
+esac
 AC_SUBST(GTK2_CFLAGS)
 AC_SUBST(GTK2_LIBS)
 
@@ -838,31 +865,35 @@ AC_SUBST(GTK2_LIBS)
 # QT3
 #
 
-AQ_CHECK_QT3
-if test "$have_qt3" = "yes"; then
-  all_includes="$all_includes $qt3_includes"
-
-  # Define this macro to disable the cast from QString to const char
-  # which implicitly uses latin1()!
-  AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+case "$aqbanking_frontends" in *qbanking*)
+  AQ_CHECK_QT3
+  if test "$have_qt3" = "yes"; then
+    all_includes="$all_includes $qt3_includes"
   
-  dnl Check for Qts lupdate tools
-  AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-  AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-  AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
-  AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
-fi
-
-dnl Check for potential qt4 environment
-AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
-dnl windows/mingw doesnt have the yes program, so add this emulation
-AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-
-dnl Store the bin dir for the windows dlls
-QT_BINDIR=` echo ${qt3_moc} | sed 's-/moc--' | sed 's-/c/-c:\\\\-' | sed 's-/-\\\\-g' `
+    # Define this macro to disable the cast from QString to const char
+    # which implicitly uses latin1()!
+    AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+    
+    dnl Check for Qts lupdate tools
+    AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+    AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+    AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
+    AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
+  fi
+  
+  dnl Check for potential qt4 environment
+  AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+  AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+  AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
+  dnl windows/mingw doesnt have the yes program, so add this emulation
+  AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+  
+  dnl Store the bin dir for the windows dlls
+  QT_BINDIR=` echo ${qt3_moc} | sed 's-/moc--' | sed 's-/c/-c:\\\\-' | sed 's-/-\\\\-g' `
+  ;;
+esac
 AC_SUBST(QT_BINDIR)
+
 
 
 ###-------------------------------------------------------------------------
@@ -870,10 +901,13 @@ AC_SUBST(QT_BINDIR)
 # KDE3
 #
 
-AQ_CHECK_KDE3
-if test "$have_kde3" = "yes"; then
-  all_includes="$all_includes $kde3_includes"
-fi
+case "$aqbanking_frontends" in *kbanking*)
+  AQ_CHECK_KDE3
+  if test "$have_kde3" = "yes"; then
+    all_includes="$all_includes $kde3_includes"
+  fi
+  ;;
+esac
 
 
 
@@ -987,26 +1021,6 @@ for A in "${GWEN_PREFIX}/share/aclocal" \
   fi
 done
 AC_SUBST(ADD_ACLOCAL_FLAGS)
-
-
-
-###-------------------------------------------------------------------------
-#
-# backends and frontends
-#
-
-AC_ARG_WITH(frontends, 
-  [  --with-frontends=list      space separated list of frontends (default:all)],
-  [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="cbanking g2banking qbanking kbanking"]
-)
-
-
-AC_ARG_WITH(backends, 
-  [  --with-backends=list      space separated list of backends (default:all)],
-  [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
-)
 
 
 

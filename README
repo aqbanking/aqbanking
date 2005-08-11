@@ -21,9 +21,16 @@ protocol.
 The backend AqHBCI currently supports these security media: 
  - RDH keyfile (RSA-DES-Hybrid mode)
  - DDV chipcard (DES-DES-Verfahren)
+ - RSA chipcard (RSA-DES-Hybrid mode)
  - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use 
                      with OpenHBCI in parallel) 
  - PIN/TAN (PIN/TAN mode using HTTP over SSL)
+
+This packages contains the following backends:
+ - AqHBCI (German Online Banking protocol HBCI 2.01, 2.10 and 2.20)
+ - AqDTAUS (creates DTAUS discs and prints the necessary documents)
+ - AqOfxConnect (OFX Direct Connect)
+ - AqGeldKarte (shows account information from a GeldKarte)
 
 
 1.2. Generic Financial Data Importer/Exporter Framework
@@ -41,6 +48,7 @@ Currently there are plugins for the following formats:
   - OFX
   - CSV
   - OpenHBCI1 transactions
+  - ERI
   
 - Exporters
   - DTAUS (German financial format)
@@ -86,6 +94,12 @@ This includes (but is not limited to):
 Basically all possible frontends (such as KDE, GNOME, console etc) are 
 supported. This is accomplished by only a few callback functions for user 
 interaction which can be overloaded by applications. 
+
+This packages contains the following frontends:
+ - GTK 2
+ - Qt 3
+ - KDE 3
+ - Console
 
 
 
@@ -217,11 +231,22 @@ following two steps:
 An example for ./configure is this, where $QTDIR has been set to
 /my/qt4/dir beforehand:
 
-  ./configure --enable-maintainer-mode --enable-debug --prefix=/my/prefix QTDIR=$QTDIR qt3_libs="-L$QTDIR/lib -lQtCore -lQtGui -lQt3Support" qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support"
+  ./configure 
+     --enable-maintainer-mode 
+     --enable-debug 
+     --prefix=/my/prefix QTDIR=$QTDIR 
+     qt3_libs="-L$QTDIR/lib -lQtCore -lQtGui -lQt3Support" 
+     qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support"
 
 or on Windows/mingw32
 
-  ./configure -C --enable-maintainer-mode --enable-debug QTDIR=$QTDIR qt3_libs="-L$QTDIR/bin -lQtCore4 -lQtGui4 -lQt3Support4" qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support" --with-gwen-dir=/c/Programme/gwenhywfar --with-aqbanking-dir=/c/Programme/aqbanking
+  ./configure -C 
+    --enable-maintainer-mode 
+    --enable-debug QTDIR=$QTDIR 
+    qt3_libs="-L$QTDIR/bin -lQtCore4 -lQtGui4 -lQt3Support4" 
+    qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support" 
+    --with-gwen-dir=/c/Programme/gwenhywfar 
+    --with-aqbanking-dir=/c/Programme/aqbanking
 
 -- 2005-08-10, cstim
 

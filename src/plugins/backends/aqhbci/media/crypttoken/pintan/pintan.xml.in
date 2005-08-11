@@ -29,12 +29,6 @@
       <flags>
         <flag>manages_signseq</flag>
         <flag>predef_context_only</flag>
-        <flag>context_management</flag>
-        <flag>context_ro_keys</flag>
-        <flag>context_ro_descr</flag>
-        <flag>context_ro_signdescr</flag>
-        <flag>context_ro_cryptdescr</flag>
-        <flag>context_ro_keydescrs</flag>
       </flags>
   
       <signinfos>
@@ -61,7 +55,7 @@
           <maxKeySize>768</maxKeySize>
           <chunksize>96</chunksize>
           <cryptalgo>none</cryptalgo>
-          <keyDescription>Local Sign Key</keyDescription>
+          <keyDescription>Fake Key for all Operations</keyDescription>
           <keyFlags>
             <flag>canSign</flag>
             <flag>canVerify</flag>
@@ -78,87 +72,12 @@
           <id>1</id>
           <contextType>hbci</contextType>
           <description>Context for HBCI operations</description>
-          
-          <signkeyinfo>
-            <keyId>1</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>none</cryptalgo>
-            <keyDescription>Local Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canSign</flag>
-              <flag>canVerify</flag>
-              <flag>hasSignSeq</flag>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </signkeyinfo>
-          
-          <verifykeyinfo>
-            <keyId>1</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>none</cryptalgo>
-            <keyDescription>Local Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canSign</flag>
-              <flag>canVerify</flag>
-              <flag>hasSignSeq</flag>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </verifykeyinfo>
-  
-          <signinfo>
-            <id>1</id>
-            <hashalgo>none</hashalgo>
-            <paddalgo>none</paddalgo>
-          </signinfo>
-  
-          <encryptKeyInfo>
-            <keyId>1</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>none</cryptalgo>
-            <keyDescription>Local Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canSign</flag>
-              <flag>canVerify</flag>
-              <flag>hasSignSeq</flag>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </encryptKeyInfo>
-  
-          <decryptKeyInfo>
-            <keyId>1</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>none</cryptalgo>
-            <keyDescription>Local Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canSign</flag>
-              <flag>canVerify</flag>
-              <flag>hasSignSeq</flag>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </decryptKeyInfo>
-  
-          <cryptinfo>
-            <id>1</id>
-            <cryptalgo>none</cryptalgo>
-            <paddalgo>none</paddalgo>
-          </cryptinfo>
-          
+          <signkeyinfo id="1" />
+          <verifykeyinfo id="1" />
+          <signinfo id="1" />
+          <encryptKeyInfo id="1" />
+          <decryptKeyInfo id="1" />
+          <cryptinfo id="1" />
         </context>
       </contexts>
       

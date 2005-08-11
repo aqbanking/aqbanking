@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/08/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted CryptToken plugin for Pin/Tan to the latest changes in Gwen
+- improved configure.ac: Now some checks are only performed if the list of
+  requested backends and frontends require it (e.g. tests for GTK, QT etc)
+
 
 2005/08/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
