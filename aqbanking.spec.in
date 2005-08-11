@@ -1,4 +1,13 @@
 %define name @PACKAGE@
+%define version @VERSION@
+%define plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
+
+### Optionally disable chipcard and ofx sub-packages - resulting
+### rpms should not be released!
+%define have_libchipcard 0
+%define have_libofx 0
+
+### Define the distribution-specific name parts
 
 %define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
 %define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
@@ -6,11 +15,6 @@
 
 %define dist redhat
 %define disttag rh
-
-## Watch out: We need some agreement whether the chipcard-client
-## package should always be compiled into aqbanking.
-%define have_libchipcard 1
-%define have_libofx 1
 
 %if %is_mandrake
 %define dist mandrake
@@ -24,11 +28,14 @@
 %define dist fedora
 %define disttag rhfc
 %endif
-#
-%define version @VERSION@
-%define plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
 
-# Choose backends to be built
+%define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
+
+# Note: There is not yet a special symbol for the rpm release
+# version. We set it to one here.
+%define release 1.%{disttag}%{distver}
+
+### Choose backends to be built
 %if %have_libofx
 %if %have_libchipcard
 %define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect"
@@ -43,11 +50,7 @@
 %endif
 %endif
 
-%define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
-
-# Note: There is not yet a special symbol for the rpm release
-# version. We set it to one here.
-%define release 1.%{disttag}%{distver}
+### The standard information fields.
 
 Name: %{name}
 Summary: A library for online banking functions and financial data import/export.
@@ -61,9 +64,6 @@ URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Note: We might add ktoblzcheck here as well
 BuildRequires: gwenhywfar-devel >= 1.15.0
-%if %have_libofx
-BuildRequires: libofx >= 0.8.0
-%endif
 Provides: aqhbci
 Provides: aqdtaus
 Prereq: /sbin/ldconfig
@@ -89,55 +89,59 @@ Provides: aqdtaus-devel
 This package contains aqbanking-config and header files for writing and
 compiling programs using Aqbanking.
 
-%package qt3-tools
+%package qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 Provides: aqhbci-qt-tools
 Provides: aqdtaus-qt-tools
-%description qt3-tools
+%description qt3
 Necessary.
 
-%package gnome2-tools
+%package gnome2
 Summary: Aqbanking tools for Gnome2
 Group: System Environment/Libraries
-%description gnome2-tools
+%description gnome2
 Necessary.
 
-%package kde-tools
+%package kde
 Summary: Aqbanking tools for KDE
 Group: System Environment/Libraries
-%description kde-tools
+Requires: aqbanking-qt3
+%description kde
 Necessary.
 
 ### Sub-packages for OFX
 
 %if %have_libofx
 %package ofx
+BuildRequires: libofx >= 0.8.0
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description ofx
 Necessary.
 
-%package ofx-qt3-tools
+%package ofx-qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
-%description ofx-qt3-tools
+%description ofx-qt3
 Necessary.
 %endif
 
 ### Sub-packages for Geldkarte
 
 %if %have_libchipcard
+Requires: libchipcard2
+BuildRequires: libchipcard2-devel >= 1.9.13
 %package geldkarte
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description geldkarte
 Necessary.
 
-%package geldkarte-qt3-tools
+%package geldkarte-qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
-%description geldkarte-qt3-tools
+%description geldkarte-qt3
 Necessary.
 %endif
 
@@ -181,12 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{plugindir}/imexporters/dbio.*
 %{plugindir}/imexporters/dtaus.*
 %{plugindir}/imexporters/eri.*
+%{plugindir}/imexporters/eri2.*
 %{plugindir}/imexporters/openhbci1.*
 %{plugindir}/imexporters/qif.*
 %{plugindir}/imexporters/swift.*
 %{_datadir}/%{name}/imexporters/csv
 %{_datadir}/%{name}/imexporters/dtaus
 %{_datadir}/%{name}/imexporters/eri
+%{_datadir}/%{name}/imexporters/eri2
 %{_datadir}/%{name}/imexporters/ofx
 %{_datadir}/%{name}/imexporters/openhbci1
 %{_datadir}/%{name}/imexporters/swift
@@ -201,7 +207,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 ### The cbanking files
 %{_libdir}/libcbanking*
 
-%files qt3-tools
+%files qt3
 %{_libdir}/libqbanking*
 %{plugindir}/wizards/aqhbci
 %{plugindir}/debugger/aqhbci
@@ -214,7 +220,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_includedir}/aqofxconnect
 %{plugindir}/imexporters/ofx.*
 %{_datadir}/%{name}/imexporters/ofx
-%files ofx-qt3-tools
+%files ofx-qt3
 %{plugindir}/wizards/aqofxconnect
 %endif
 
@@ -222,14 +228,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %files geldkarte
 %{plugindir}/providers/aqgeldkarte.*
 %{_includedir}/aqgeldkarte
-%files geldkarte-qt3-tools
+%files geldkarte-qt3
 %{plugindir}/wizards/aqgeldkarte
 %endif
 
-%files gnome2-tools
+%files gnome2
 %{_libdir}/libg2banking*
 
-%files kde-tools
+%files kde
 %{_libdir}/libkbanking*
 
 %files devel
