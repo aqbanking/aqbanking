@@ -1,12 +1,17 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released AqBanking - 1.3.0beta (2005/07/15)
+===========================================================================
+
 
 2005/08/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - adapted CryptToken plugin for Pin/Tan to the latest changes in Gwen
 - improved configure.ac: Now some checks are only performed if the list of
   requested backends and frontends require it (e.g. tests for GTK, QT etc)
+- backported ui files to 3.2
+- added a missing include in AqGeldKarte-Qt-Wizard and AqOfxConnect-Qt3-Wizard
+- polished README
 
 
 2005/08/10: Martin Preuss<martin@libchipcard.de>

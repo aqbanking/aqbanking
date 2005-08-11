@@ -1,7 +1,7 @@
 SUBDIRS=profiles
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
-#EXTRA_DIST=README
+EXTRA_DIST=eriformat.xml
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
 

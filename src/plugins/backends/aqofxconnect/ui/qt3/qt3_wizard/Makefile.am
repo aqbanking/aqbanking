@@ -1,5 +1,6 @@
 
 INCLUDES = \
+ -I$(top_builddir)/headers \
  -I../libs/widgets \
  -I../libs/dialogs \
  -I../libs/views \
