@@ -1,7 +1,7 @@
 INCLUDES=-I$(top_builddir)/headers -I../logmanager -I.. @all_includes@
 
 #UI_FILES=
-EXTRA_DIST= $(UI_FILES)
+#EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libwidgets.la
 
