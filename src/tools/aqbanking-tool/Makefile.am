@@ -1,6 +1,6 @@
 EXTRA_DIST=README SICHERHEITSHINWEISE
 
-idatadir=${datadir}/doc/aqbanking/aqbanking-tool
+idatadir=$(datadir)/doc/aqbanking/aqbanking-tool
 idata_DATA=README SICHERHEITSHINWEISE
 
 INCLUDES = $(gwenhywfar_includes) \
@@ -28,9 +28,9 @@ aqbanking_tool_SOURCES=\
  import.c
 
 aqbanking_tool_LDADD = \
+  -L$(top_builddir)/src/frontends/cbanking $(cbanking_internal_libs) \
   -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
-  $(gwenhywfar_libs) \
-  -L$(top_builddir)/src/frontends/cbanking -lcbanking
+  $(gwenhywfar_libs)
 
 sources:
 	for f in $(aqbanking_tool_la_SOURCES); do \

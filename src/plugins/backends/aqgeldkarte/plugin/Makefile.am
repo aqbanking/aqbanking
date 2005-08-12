@@ -143,7 +143,7 @@ $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
 	   --driver-name $(CC) \
 	   -o ../$(PLUGIN_DLLNAME) \
 	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) -L../$(top_builddir)/src/libs $(aqhbci_internal_libs) $(DLLLDLIBS) \
+	     ../ressource.o $(DLLLDFLAGS) -L.. $(aqgeldkarte_internal_libs) $(DLLLDLIBS) \
 	) \
 	&& rm -rf dlldir
 
