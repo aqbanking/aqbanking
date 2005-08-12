@@ -179,7 +179,7 @@ if test -z "$kde3_includes" || \
    	kde3_app=""
    	have_kde3="no"
    	if test "$kde3_local_lforce" = "yes"; then
-        	AC_MSG_ERROR([
+        	AC_MSG_WARN([
  Compilation of KDE3 applications is enabled but I could not find some KDE3
  components (see which are missing in messages above).
  If you don't want to compile KDE3 applications please use "--disable-kde3".

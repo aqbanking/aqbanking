@@ -1,3 +1,15 @@
+2005-08-12   Christian Stimming <stimming@tuhh.de>
+
+	* m4/kde3.m4, qt3.m4: If KDE or Qt is not there, only give
+	warnings; the error will come in configure.ac.
+
+	* configure.ac: Fix build system -- put the AM_CONDITIONAL macros
+	always at top-level, never inside an if-branch, or else configure
+	will break.
+
+	* aqbanking.spec.in: RPM spec file updated; will create
+	sub-packages for qt3, kde, gnome2, geldkarte, geldkarte-qt3, ofx,
+	ofx-qt3.
 
 ===========================================================================
 MARK: released AqBanking - 1.3.0beta (2005/07/15)

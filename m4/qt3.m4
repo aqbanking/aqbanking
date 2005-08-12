@@ -229,7 +229,7 @@ if test -z "$qt3_includes" || \
    	qt3_app=""
    	have_qt3="no"
    	if test "$lforce" = "yes"; then
-        	AC_MSG_ERROR([
+        	AC_MSG_WARN([
  Compilation of QT applications is enabled but I could not find some QT
  components (see which are missing in messages above).
  If you don't want to compile KDE applications please use "--disable-qt3".

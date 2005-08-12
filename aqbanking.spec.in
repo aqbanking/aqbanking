@@ -4,8 +4,8 @@
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
 ### rpms should not be released!
-%define have_libchipcard 0
-%define have_libofx 0
+%define have_libchipcard 1
+%define have_libofx 1
 
 ### Define the distribution-specific name parts
 

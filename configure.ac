@@ -708,18 +708,8 @@ case "$aqbanking_frontends" in *qbanking*)
     # Define this macro to disable the cast from QString to const char
     # which implicitly uses latin1()!
     AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
-    
-    dnl Check for Qts lupdate tools
-    AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-    AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-    AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
-    AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
   fi
   
-  dnl Check for potential qt4 environment
-  AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-  AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-  AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
   dnl windows/mingw doesnt have the yes program, so add this emulation
   AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
   
@@ -727,8 +717,19 @@ case "$aqbanking_frontends" in *qbanking*)
   QT_BINDIR=` echo ${qt3_moc} | sed 's-/moc--' | sed 's-/c/-c:\\\\-' | sed 's-/-\\\\-g' `
   ;;
 esac
-AC_SUBST(QT_BINDIR)
 
+# Put the AM_CONDITIONAL macros always at top-level, never inside
+# an if-branch.
+dnl Check for Qts lupdate tools
+AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
+AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
+AC_SUBST(QT_BINDIR)
+dnl Check for potential qt4 environment
+AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 
 
 ###-------------------------------------------------------------------------
