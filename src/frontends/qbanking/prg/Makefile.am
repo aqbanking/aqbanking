@@ -12,6 +12,6 @@ iheader_HEADERS=
 
 
 sources:
-	for f in $(libprg_la_SOURCES) $(UI_FILES); do \
+	for f in $(libprg_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done

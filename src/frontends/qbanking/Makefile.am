@@ -61,7 +61,7 @@ libqbanking_la_LDFLAGS=\
 
 
 sources:
-	for f in $(libqbanking_la_SOURCES) $(UI_FILES); do \
+	for f in $(libqbanking_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \

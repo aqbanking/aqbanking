@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/.. -I$(srcdir)/../prg -I$(srcdir)/../dialogs @all_includes@
 
-EXTRA_DIST=$(UI_FILES)
+#EXTRA_DIST=$(UI_FILES)
 
 noinst_LTLIBRARIES=libwidgets.la
 
@@ -19,7 +19,7 @@ BUILT_SOURCES = $(nodist_libwidgets_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
 
 sources:
-	for f in $(libwidgets_la_SOURCES) $(UI_FILES); do \
+	for f in $(libwidgets_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 
