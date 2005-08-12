@@ -18,7 +18,7 @@ noinst_HEADERS=\
 openhbci1_la_SOURCES=\
  openhbci1.c
 
-openhbci1_la_LIBADD=-L../../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
+openhbci1_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) @gwenhywfar_libs@ 
 openhbci1_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

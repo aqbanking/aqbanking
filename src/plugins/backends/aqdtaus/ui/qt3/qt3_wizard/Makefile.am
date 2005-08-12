@@ -20,7 +20,7 @@ plugin_DATA=qt_wizard.xml
 aqdtaus_qt3_wizard_SOURCES = qt3_wizard.cpp
 aqdtaus_qt3_wizard_LDADD = \
   ../libs/libqt3wizard.la \
-  -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
   -L$(top_builddir)/src/plugins/backends/aqdtaus/plugin -laqdtaus \
   $(gwenhywfar_libs) $(qt3_libs)

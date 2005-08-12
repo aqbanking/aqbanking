@@ -17,8 +17,8 @@ plugin_DATA=kde_wizard.xml
 
 aqhbci_qt3_wizard_SOURCES = qt3_wizard.cpp
 aqhbci_qt3_wizard_LDADD = \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci \
-  -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
   ../libs/libqt3wizard.la \
   $(gwenhywfar_libs) $(qt3_libs)

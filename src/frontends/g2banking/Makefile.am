@@ -103,7 +103,7 @@ if IS_WINDOWS
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = g2banking32_$(G2BANKING_SO_EFFECTIVE)
 DLLLDLIBS = \
-  -L/mingw/lib @gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking -laqbanking
+  -L/mingw/lib @gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 

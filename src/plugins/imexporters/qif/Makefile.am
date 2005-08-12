@@ -18,7 +18,7 @@ noinst_HEADERS=\
 qif_la_SOURCES=\
  qif.c
 
-qif_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking -laqbanking \
+qif_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 qif_la_LDFLAGS=@STRIPALL@ -module -omit-version
 

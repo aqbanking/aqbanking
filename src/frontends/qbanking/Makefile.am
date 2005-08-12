@@ -54,7 +54,7 @@ libqbanking_la_LIBADD=\
  dialogs/libdialogs.la \
  views/libviews.la \
  $(qt3_libs) \
- -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
+ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 libqbanking_la_LDFLAGS=\
  -version-info @QBANKING_SO_CURRENT@:@QBANKING_SO_REVISION@:@QBANKING_SO_AGE@

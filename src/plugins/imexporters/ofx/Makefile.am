@@ -23,7 +23,7 @@ noinst_HEADERS=\
 ofx_la_SOURCES=\
  ofx.c
 
-ofx_la_LIBADD=-L../../../libs/aqbanking -laqbanking -lofx @gwenhywfar_libs@ 
+ofx_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) -lofx @gwenhywfar_libs@ 
 ofx_la_LDFLAGS=@STRIPALL@ \
   -module -omit-version
 
@@ -38,7 +38,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = ofx
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../../../libs/aqbanking -laqbanking32_0
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../../../libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
 

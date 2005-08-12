@@ -53,9 +53,9 @@ aqofxconnect_la_SOURCES= \
  queues.c \
  user.c
 
-libaqofxconnect_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking -laqbanking \
+libaqofxconnect_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   @LIBOFX_LIBS@ @gwenhywfar_libs@
-aqofxconnect_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking -laqbanking \
+aqofxconnect_la_LIBADD=-L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   @LIBOFX_LIBS@ @gwenhywfar_libs@
 aqofxconnect_la_LDFLAGS=-module \
   -version-info @AQOFXCONNECT_SO_CURRENT@:@AQOFXCONNECT_SO_REVISION@:@AQOFXCONNECT_SO_AGE@

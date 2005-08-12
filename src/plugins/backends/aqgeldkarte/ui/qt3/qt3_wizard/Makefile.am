@@ -19,7 +19,7 @@ plugin_DATA=qt_wizard.xml
 aqgeldkarte_qt3_wizard_SOURCES = qt3_wizard.cpp
 aqgeldkarte_qt3_wizard_LDADD = \
   ../libs/libqt3wizard.la \
-  -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   -L$(top_builddir)/src/frontends/qbanking -lqbanking \
   -L$(top_builddir)/src/plugins/backends/aqgeldkarte/plugin -laqgeldkarte \
   $(gwenhywfar_libs) $(qt3_libs)

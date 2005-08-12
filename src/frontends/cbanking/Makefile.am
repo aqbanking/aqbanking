@@ -19,7 +19,7 @@ libcbanking_la_SOURCES=\
  progress.c
 
 libcbanking_la_LIBADD = \
-  -L$(top_builddir)/src/libs/aqbanking -laqbanking \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 libcbanking_la_LDFLAGS = $(STRIPALL) \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@

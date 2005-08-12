@@ -30,7 +30,7 @@ liblogmanager_la_SOURCES=\
   loganalyzer.cpp
 
 liblogmanager_la_LIBADD = \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin -laqhbci
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs)
 
 BUILT_SOURCES = $(nodist_liblogmanager_la_SOURCES)
 CLEANFILES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS)

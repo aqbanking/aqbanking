@@ -21,7 +21,7 @@ noinst_HEADERS=\
 eri2_la_SOURCES=\
  eri2.c
 
-eri2_la_LIBADD=-L../../../libs/aqbanking -laqbanking @gwenhywfar_libs@ 
+eri2_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) @gwenhywfar_libs@ 
 eri2_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 sources:

@@ -17,7 +17,7 @@ noinst_HEADERS=\
 libbankinfo_la_SOURCES=\
  generic.c
 
-libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
+libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
 libbankinfo_la_LDFLAGS = $(STRIPALL)
 
 at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
@@ -96,7 +96,7 @@ CLEANFILES = $(at_files) $(ch_files) $(de_files) $(us_files)
 
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c
-mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking -laqbanking $(gwenhywfar_libs)
+mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 sources:
 	for f in $(libbankinfo_la_SOURCES); do \

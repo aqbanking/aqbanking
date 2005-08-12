@@ -43,8 +43,8 @@ aqdtaus_la_SOURCES= \
  provider.c \
  aqdtaus-plugin.c
 
-libaqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking -laqbanking
-aqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking -laqbanking
+libaqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+aqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 aqdtaus_la_LDFLAGS=-module \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 
@@ -64,7 +64,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = $(PACKAGE)32_$(AQDTAUS_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking -laqbanking
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 PLUGIN_LIBRARY_NAME = $(PACKAGE)
