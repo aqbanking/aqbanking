@@ -220,6 +220,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_includedir}/aqofxconnect
 %{plugindir}/imexporters/ofx.*
 %{_datadir}/%{name}/imexporters/ofx
+%{_bindir}/aqofxconnect-config
+%{_libdir}/libaqofxconnect*
 %files ofx-qt3
 %{plugindir}/wizards/aqofxconnect
 %endif
@@ -228,6 +230,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %files geldkarte
 %{plugindir}/providers/aqgeldkarte.*
 %{_includedir}/aqgeldkarte
+%{_bindir}/aqgeldkarte-config
+%{_libdir}/libaqgeldkarte*
 %files geldkarte-qt3
 %{plugindir}/wizards/aqgeldkarte
 %endif
