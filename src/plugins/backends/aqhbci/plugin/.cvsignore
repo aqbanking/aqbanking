@@ -3,3 +3,6 @@ ressource.rc
 version.h
 hbci.xml
 header.xml
+*.dll
+*.def
+*.lib

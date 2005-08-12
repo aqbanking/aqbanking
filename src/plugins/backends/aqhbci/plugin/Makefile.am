@@ -69,11 +69,11 @@ aqhbci_la_LDFLAGS=-module \
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = $(PACKAGE)32_$(AQHBCI_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking -laqbanking
+LIBRARY_NAME = aqhbci32_$(AQHBCI_SO_EFFECTIVE)
+DLLLDLIBS = -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
-PLUGIN_LIBRARY_NAME = $(PACKAGE)
+PLUGIN_LIBRARY_NAME = aqhbci
 
 ###------------------------------------------------------------------------
 # You should not have to make any modifications below this point
