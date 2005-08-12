@@ -63,11 +63,11 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = $(PACKAGE)32_$(AQGELDKARTE_SO_EFFECTIVE)
+LIBRARY_NAME = aqgeldkarte32_$(AQGELDKARTE_SO_EFFECTIVE)
 DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
-PLUGIN_LIBRARY_NAME = $(PACKAGE)
+PLUGIN_LIBRARY_NAME = aqgeldkarte
 
 ###------------------------------------------------------------------------
 # You should not have to make any modifications below this point
