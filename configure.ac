@@ -762,6 +762,7 @@ case "$OS_TYPE" in
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
+        cbanking_internal_libs="-lcbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
@@ -773,6 +774,7 @@ case "$OS_TYPE" in
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
+        cbanking_internal_libs="-lcbanking32"
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
@@ -1127,18 +1129,36 @@ AC_SUBST(DOXYGEN_TAGFILES)
 dependencies_ok="yes"
 for backend in $aqbanking_backends; do
   case "$backend" in
+
+    aqhbci)
+      have_cbanking="no"
+      for frontend in $aqbanking_frontends; do
+	case "$frontend" in
+	  cbanking)
+	  have_cbanking="yes"
+	  ;;
+	esac
+      done
+      if test "x$have_cbanking" != "xyes"; then
+        AC_MSG_NOTICE([*** The backend aqhbci (currently) requires the cbanking frontend. Specify --with-frontends="cbanking" to build aqbanking with at least the cbanking frontend.])
+	dependencies_ok="no"
+      fi
+      ;;
+
     aqofxconnect)
       if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
         AC_MSG_NOTICE([*** LibOFX>=0.8.0 is required for backend "aqofxconnect". Specify --with-backends="aqhbci aqdtaus aqgeldkarte" to build aqbanking without that backend.])
 	dependencies_ok="no"
       fi
       ;;
+
     aqgeldkarte)
       if test "x$have_chipcard_client" != "xyes"; then
         AC_MSG_NOTICE([*** Libchipcard2-client is required for backend "AqGeldKarte". Specify --with-backends="aqhbci aqdtaus aqofxconnect" to build aqbanking without that backend.])
 	dependencies_ok="no"
       fi
       ;;
+
   esac
 done
 
@@ -1465,6 +1485,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking++/ressource.rc
   src/frontends/Makefile
   src/frontends/cbanking/Makefile
+  src/frontends/cbanking/ressource.rc
   src/frontends/g2banking/Makefile
   src/frontends/g2banking/g2banking-config.in
   src/frontends/g2banking/version.h

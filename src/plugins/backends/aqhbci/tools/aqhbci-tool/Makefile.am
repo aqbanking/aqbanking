@@ -20,8 +20,8 @@ aqhbci_tool_SOURCES=main.c \
 
 aqhbci_tool_LDADD = \
   -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
-  -L$(top_builddir)/src/frontends/cbanking -lcbanking \
+  -L$(top_builddir)/src/frontends/cbanking $(cbanking_internal_libs) \
+  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
 sources:

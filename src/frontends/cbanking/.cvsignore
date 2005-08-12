@@ -1,0 +1,4 @@
+*.dll
+*.def
+*.lib
+*.rc

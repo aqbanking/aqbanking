@@ -45,7 +45,7 @@ if test ${GCC}x = yesx; then
   AC_ARG_ENABLE(warnings,
     [  --enable-warnings       enable compilation warnings, default=yes],
     [case "${enableval}" in
-       yes) CXXFLAGS="${CXXFLAGS} -Wall -ansi"
+       yes) CXXFLAGS="${CXXFLAGS} -Wall"
 	    CFLAGS="${CFLAGS} -Wall" ;;
        all) CXXFLAGS="${CXXFLAGS} -Wall -pedantic -ansi"
 	    CFLAGS="${CFLAGS} -Wall -pedantic -ansi" ;;
