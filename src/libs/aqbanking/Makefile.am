@@ -67,7 +67,7 @@ libaqbanking_la_SOURCES=\
  msgengine.c
 
 
-libaqbanking_la_LIBADD=@gwenhywfar_libs@ \
+libaqbanking_la_LIBADD= $(gwenhywfar_libs) \
  jobs/libjobs.la \
  types/libtypes.la
 

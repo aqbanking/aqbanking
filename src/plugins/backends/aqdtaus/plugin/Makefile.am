@@ -43,8 +43,8 @@ aqdtaus_la_SOURCES= \
  provider.c \
  aqdtaus-plugin.c
 
-libaqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
-aqdtaus_la_LIBADD=@gwenhywfar_libs@ -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+libaqdtaus_la_LIBADD= $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+aqdtaus_la_LIBADD= $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 aqdtaus_la_LDFLAGS=-module \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 

@@ -42,9 +42,9 @@ aqgeldkarte_la_SOURCES= \
  provider.c \
  aqgeldkarte-plugin.c
 
-libaqgeldkarte_la_LIBADD=@gwenhywfar_libs@ @chipcard_client_libs@ \
+libaqgeldkarte_la_LIBADD= $(gwenhywfar_libs) @chipcard_client_libs@ \
    -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
-aqgeldkarte_la_LIBADD=@gwenhywfar_libs@ @chipcard_client_libs@ \
+aqgeldkarte_la_LIBADD= $(gwenhywfar_libs) @chipcard_client_libs@ \
    -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 aqgeldkarte_la_LDFLAGS=-module \
   -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@

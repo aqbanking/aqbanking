@@ -18,7 +18,7 @@ noinst_HEADERS=\
 eri_la_SOURCES=\
  eri.c
 
-eri_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) @gwenhywfar_libs@ 
+eri_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 eri_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 sources:

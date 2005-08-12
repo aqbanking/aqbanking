@@ -12,7 +12,7 @@ noinst_HEADERS=\
 ch_la_SOURCES=\
  ch.c
 
-ch_la_LIBADD=@gwenhywfar_libs@ -L../../../libs/aqbanking $(aqbanking_internal_libs) ../generic/libbankinfo.la @ktoblzcheck_libs@
+ch_la_LIBADD= $(gwenhywfar_libs) -L../../../libs/aqbanking $(aqbanking_internal_libs) ../generic/libbankinfo.la @ktoblzcheck_libs@
 ch_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 

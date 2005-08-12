@@ -23,7 +23,7 @@ noinst_HEADERS=\
 ofx_la_SOURCES=\
  ofx.c
 
-ofx_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) -lofx @gwenhywfar_libs@ 
+ofx_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) -lofx $(gwenhywfar_libs) 
 ofx_la_LDFLAGS=@STRIPALL@ \
   -module -omit-version
 
