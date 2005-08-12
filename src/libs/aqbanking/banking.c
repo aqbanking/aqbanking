@@ -1125,7 +1125,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_DB_NODE *dbTsrc;
   AB_JOB_LIST2 *jl;
   int i;
+#ifdef HAVE_I18N
   const char *s;
+#endif
   GWEN_PLUGIN_MANAGER *pm;
 
   assert(ab);
