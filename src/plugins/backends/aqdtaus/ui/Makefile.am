@@ -1,4 +1,5 @@
 SUBDIRS=@aqdtaus_ui@
+DIST_SUBDIRS = qt3
 
 sources:
 	for d in $(SUBDIRS); do \
