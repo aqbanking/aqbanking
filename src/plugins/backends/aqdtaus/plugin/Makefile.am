@@ -63,11 +63,13 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = $(PACKAGE)32_$(AQDTAUS_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+LIBRARY_NAME = aqdtaus32_$(AQDTAUS_SO_EFFECTIVE)
+DLLLDLIBS = \
+  -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+  -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
-PLUGIN_LIBRARY_NAME = $(PACKAGE)
+PLUGIN_LIBRARY_NAME = aqdtaus
 
 ###------------------------------------------------------------------------
 # You should not have to make any modifications below this point

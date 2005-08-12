@@ -845,6 +845,7 @@ AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugindir)
 AC_SUBST(aqbanking_pkgdatadir)
 AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
+AC_SUBST(cbanking_internal_libs)
 
 
 ###-------------------------------------------------------------------------
@@ -1614,6 +1615,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqdtaus/aqdtaus-config.in
   src/plugins/backends/aqdtaus/plugin/Makefile
   src/plugins/backends/aqdtaus/plugin/aqdtaus.xml
+  src/plugins/backends/aqdtaus/plugin/ressource.rc
   src/plugins/backends/aqdtaus/ui/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/qt3_wizard/Makefile

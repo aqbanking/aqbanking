@@ -32,7 +32,10 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = pintan
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs $(pintan_la_LIBADD)
+DLLLDLIBS = \
+  -L../$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+  -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(plugin_LTLIBRARIES)
 

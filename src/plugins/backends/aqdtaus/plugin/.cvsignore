@@ -1,1 +1,5 @@
 aqdtaus.xml
+*.rc
+*.dll
+*.def
+*.lib
