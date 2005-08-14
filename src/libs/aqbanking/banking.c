@@ -1125,9 +1125,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_DB_NODE *dbTsrc;
   AB_JOB_LIST2 *jl;
   int i;
-#ifdef HAVE_I18N
   const char *s;
-#endif
   GWEN_PLUGIN_MANAGER *pm;
 
   assert(ab);
@@ -1138,6 +1136,16 @@ int AB_Banking_Init(AB_BANKING *ab) {
                      GWEN_LoggerTypeConsole,
                      GWEN_LoggerFacilityUser);
   }
+
+  s=getenv("AQBANKING_LOGLEVEL");
+  if (s && *s) {
+    GWEN_LOGGER_LEVEL ll;
+
+    ll=GWEN_Logger_Name2Level(s);
+    GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, ll);
+  }
+  else
+    GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelNotice);
 
 #ifdef HAVE_I18N
   setlocale(LC_ALL,"");
