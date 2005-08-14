@@ -28,3 +28,4 @@ aqbanking.iss
 py-compile
 headers
 qtsources
+*.rpm

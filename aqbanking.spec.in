@@ -97,17 +97,19 @@ Provides: aqdtaus-qt-tools
 %description qt3
 Necessary.
 
-%package gnome2
-Summary: Aqbanking tools for Gnome2
+%package gtk2
+Summary: Aqbanking tools for Gnome2/Gtk2
 Group: System Environment/Libraries
-%description gnome2
+Provides: aqbanking-gnome2
+%description gtk2
 Necessary.
 
-%package kde
-Summary: Aqbanking tools for KDE
+%package kde3
+Summary: Aqbanking tools for KDE3
 Group: System Environment/Libraries
 Requires: aqbanking-qt3
-%description kde
+Provides: aqbanking-kde
+%description kde3
 Necessary.
 
 ### Sub-packages for OFX
@@ -236,10 +238,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{plugindir}/wizards/aqgeldkarte
 %endif
 
-%files gnome2
+%files gtk2
 %{_libdir}/libg2banking*
 
-%files kde
+%files kde3
 %{_libdir}/libkbanking*
 
 %files devel
