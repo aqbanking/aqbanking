@@ -63,7 +63,7 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = aqgeldkarte
+LIBRARY_NAME = aqgeldkarte32_$(AQGELDKARTE_SO_EFFECTIVE)
 DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 

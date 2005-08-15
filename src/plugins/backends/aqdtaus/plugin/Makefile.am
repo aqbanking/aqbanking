@@ -63,7 +63,7 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = aqdtaus
+LIBRARY_NAME = aqdtaus32_$(AQDTAUS_SO_EFFECTIVE)
 DLLLDLIBS = \
   -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
   -L/mingw/lib $(gwenhywfar_libs)
