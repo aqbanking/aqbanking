@@ -6,8 +6,6 @@
   customer id
 - fixed a bug in openhbci1 importer: Was not using the correct date when
   importing
-- backends: don't bear "32_SO_VERSION" in the dll name (makes it impossible
-  to find a backend under windows)
 
 
 2005/08/14: Martin Preuss<martin@libchipcard.de>

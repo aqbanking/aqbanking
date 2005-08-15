@@ -1252,6 +1252,13 @@ int AB_Banking_Init(AB_BANKING *ab) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
                "Configuration file \"%s\" does not exist, "
                "will create it later.", ab->configFile);
+    if (GWEN_Directory_GetPath(ab->dataDir, GWEN_PATH_FLAGS_DEFAULT)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Data folder \"%s\" could not be created.",
+		ab->dataDir);
+      return AB_ERROR_NOT_FOUND;
+    }
+
     return 0;
   }
 

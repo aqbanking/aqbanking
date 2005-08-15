@@ -89,7 +89,6 @@
     <GROUP type="SegHead" />
     <ELEM name="purpose" type="ascii" size="96" filler="32">
       <descr>Lines 3-6 of description</descr>
-      
     </ELEM>
     <ELEM name="Reserved2" type="ascii" size="8" filler="32" condense="1" />
 
