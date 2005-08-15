@@ -1071,14 +1071,11 @@ int AH_HBCI_RemoveBank(AH_HBCI *hbci, AH_BANK *b) {
 
 
 
-AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_CUSTOMER *cu){
+AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_USER *u){
   AH_MEDIUM *m;
   AH_BANK *b;
-  AH_USER *u;
 
   assert(hbci);
-  assert(cu);
-  u=AH_Customer_GetUser(cu);
   assert(u);
   b=AH_User_GetBank(u);
   assert(b);

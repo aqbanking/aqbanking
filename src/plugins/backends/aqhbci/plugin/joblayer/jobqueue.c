@@ -466,8 +466,7 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
     assert(m);
 
     if (!AH_Medium_IsMounted(m))
-      m=AH_HBCI_GetMedium(AH_Job_GetHbci(j),
-                          AH_Job_GetCustomer(j));
+      m=AH_HBCI_GetMedium(AH_Job_GetHbci(j), u);
 
     tan=AH_Job_GetUsedTan(j);
     if (tan) {

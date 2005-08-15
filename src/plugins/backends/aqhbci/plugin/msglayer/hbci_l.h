@@ -37,7 +37,7 @@ void AH_HBCI_EmitDialogDown(AH_HBCI *hbci, AH_DIALOG *dlg);
  * and that a medium is only mounted and unmounted at this point in a program.
  * @param cu customer whose medium is needed
  */
-AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_CUSTOMER *cu);
+AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_USER *u);
 /*@}*/
 
 

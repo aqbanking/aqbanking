@@ -71,7 +71,7 @@ int AH_Msg_AddMsgTail(AH_MSG *hmsg);
 int AH_Msg_AddMsgHead(AH_MSG *hmsg);
 
 int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
-                            AH_CUSTOMER *cu,
+                            AH_USER *u,
                             GWEN_DB_NODE *cfg,
                             const GWEN_KEYSPEC *ks,
                             int crypt,

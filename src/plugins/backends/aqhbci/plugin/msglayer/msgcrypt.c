@@ -43,8 +43,8 @@
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
-                            AH_CUSTOMER *cu,
-                            GWEN_DB_NODE *cfg,
+			    AH_USER *u,
+			    GWEN_DB_NODE *cfg,
                             const GWEN_KEYSPEC *ks,
                             int crypt,
                             int createCtrlRef) {
@@ -55,7 +55,6 @@ int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
   time_t tt;
   GWEN_MSGENGINE *e;
   AH_BANK *b;
-  AH_USER *u;
   const char *userId;
   const char *peerId;
 
@@ -67,8 +66,6 @@ int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
   assert(b);
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
-  u=AH_Customer_GetUser(cu);
-  assert(u);
 
   userId=AH_User_GetUserId(u);
   assert(userId);
@@ -157,49 +154,47 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
   AH_MEDIUM *medium;
   AH_MEDIUM_CTX *mctx;
   AH_BANK *b;
-  AH_USER *u;
-  AH_CUSTOMER *scu; /* singing customer */
+  AH_USER *su;
   const char *userId;
 
   assert(hmsg);
   b=AH_Dialog_GetBank(hmsg->dialog);
-  u=AH_Customer_GetUser(AH_Dialog_GetDialogOwner(hmsg->dialog));
-  assert(u);
+  su=AH_Customer_GetUser(AH_Dialog_GetDialogOwner(hmsg->dialog));
+  assert(su);
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
   userId=GWEN_KeySpec_GetOwner(ks);
-  //if (!userId || *userId==0)
-  //  userId=AH_User_GetUserId(u);
+  if (!userId || *userId==0)
+    userId=AH_User_GetUserId(su);
   assert(userId);
   assert(*userId);
 
-  scu=AH_HBCI_FindCustomer(AH_Bank_GetHbci(b),
-                           AH_Bank_GetCountry(b),
-                           AH_Bank_GetBankId(b),
-                           "*",
-                           userId);
-  if (!scu) {
+  su=AH_HBCI_FindUser(AH_Bank_GetHbci(b),
+		      AH_Bank_GetCountry(b),
+		      AH_Bank_GetBankId(b),
+		      userId);
+  if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Unknown customer \"%s\"",
-              userId);
+	      "Unknown user \"%s\"",
+	      userId);
     return -1;
   }
 
   /* get medium of signer */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for signing");
-  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), scu);
+  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), su);
   if (!medium) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not find medium for user \"%s\"",
-             AH_User_GetUserId(u));
+             AH_User_GetUserId(su));
     return -1;
   }
 
   mctx=AH_Medium_GetCurrentContext(medium);
   assert(mctx);
 
-  p=AH_CryptMode_toString(AH_User_GetCryptMode(u));
+  p=AH_CryptMode_toString(AH_User_GetCryptMode(su));
   GWEN_MsgEngine_SetMode(e, p);
 
   node=GWEN_MsgEngine_FindNodeByProperty(e,
@@ -226,7 +221,7 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
             userId);
 
   /* prepare config for segment */
-  if (AH_Msg_PrepareCryptoSeg(hmsg, scu, cfg, ks, 0, 1)) {
+  if (AH_Msg_PrepareCryptoSeg(hmsg, su, cfg, ks, 0, 1)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     GWEN_DB_Group_free(cfg);
     return -1;
@@ -245,9 +240,9 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
 
         remoteId=GWEN_KeySpec_GetOwner(eks);
         if (!remoteId || *remoteId==0)
-          remoteId=AH_User_GetPeerId(u);
+          remoteId=AH_User_GetPeerId(su);
         if (!remoteId || *remoteId==0)
-          remoteId=AH_User_GetUserId(u);
+          remoteId=AH_User_GetUserId(su);
         assert(remoteId);
         assert(*remoteId);
 
@@ -283,9 +278,9 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
 
         remoteId=GWEN_KeySpec_GetOwner(eks);
         if (!remoteId || *remoteId==0)
-          remoteId=AH_User_GetPeerId(u);
+          remoteId=AH_User_GetPeerId(su);
         if (!remoteId || *remoteId==0)
-          remoteId=AH_User_GetUserId(u);
+          remoteId=AH_User_GetUserId(su);
         assert(remoteId);
         assert(*remoteId);
 
@@ -542,8 +537,7 @@ int AH_Msg_EncryptMsg(AH_MSG *hmsg) {
 
   /* get medium */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for encrypting");
-  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b),
-                           AH_Dialog_GetDialogOwner(hmsg->dialog));
+  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), u);
   if (!medium) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not find medium for customer \"%s\"",
@@ -622,9 +616,7 @@ int AH_Msg_EncryptMsg(AH_MSG *hmsg) {
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", 998);
 
-  if (AH_Msg_PrepareCryptoSeg(hmsg,
-                              AH_Dialog_GetDialogOwner(hmsg->dialog),
-                              cfg, ks, 1, 0)) {
+  if (AH_Msg_PrepareCryptoSeg(hmsg, u, cfg, ks, 1, 0)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
@@ -1087,8 +1079,7 @@ int AH_Msg_Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* get medium */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for decrypting");
-  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b),
-                           AH_Dialog_GetDialogOwner(hmsg->dialog));
+  medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), u);
   if (!medium) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not find medium for user \"%s\"",
@@ -1389,7 +1380,7 @@ int AH_Msg_Verify(AH_MSG *hmsg,
 
     /* get medium */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for verification");
-    medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), cu);
+    medium=AH_HBCI_GetMedium(AH_Bank_GetHbci(b), u);
     assert(medium);
     mctx=AH_Medium_GetCurrentContext(medium);
     assert(mctx);
