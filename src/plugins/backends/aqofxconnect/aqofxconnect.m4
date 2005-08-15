@@ -2,7 +2,7 @@
 # (c) 2004 Martin Preuss<martin@libchipcard.de>
 # This function checks for AqOFXCONNECT
 
-AC_DEFUN(AC_AQOFXCONNECT, [
+AC_DEFUN([AC_AQOFXCONNECT], [
 dnl searches for aqofxconnect
 dnl Arguments: 
 dnl   $1: major version minimum

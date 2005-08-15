@@ -2,7 +2,7 @@
 # (c) 2004 Martin Preuss<martin@libchipcard.de>
 # This function checks for AqGeldKarte
 
-AC_DEFUN(AC_AQGELDKARTE, [
+AC_DEFUN([AC_AQGELDKARTE], [
 dnl searches for aqgeldkarte
 dnl Arguments: 
 dnl   $1: major version minimum
