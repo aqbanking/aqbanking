@@ -169,8 +169,8 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
   assert(e);
 
   userId=GWEN_KeySpec_GetOwner(ks);
-  if (!userId || *userId==0)
-    userId=AH_User_GetUserId(u);
+  //if (!userId || *userId==0)
+  //  userId=AH_User_GetUserId(u);
   assert(userId);
   assert(*userId);
 

@@ -1,4 +1,11 @@
 
+
+2005/08/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AH_Provider_AddJob(): Was using the userId instead of the
+  customer id
+
+
 2005/08/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - set the loglevel of the AqBanking logdomain according to the environment

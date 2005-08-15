@@ -776,8 +776,8 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 			       "ERROR: Multiple signatures not yet supported");
 	return AB_ERROR_GENERIC;
       }
-      AH_Job_AddSigner(mj, // AH_Customer_GetCustomerId(mcu));
-		       AH_User_GetUserId(AH_Customer_GetUser(mcu)));
+      AH_Job_AddSigner(mj, AH_Customer_GetCustomerId(mcu));
+      //AH_User_GetUserId(AH_Customer_GetUser(mcu)));
     }
   }
 
