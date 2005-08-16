@@ -104,12 +104,36 @@ int main(int argc, char **argv) {
                                   "    This command creates an empty PIN "
                                   "file\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  addmedium:\n"
+                                  "    Makes a crypttoken (medium) known to "
+                                  "AqHBCI\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  listmedia:\n"
+                                  "    Shows the list of currently known "
+                                  "crypttoken (media)\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  adduser:\n"
                                   "    Adds a user "
                                   "(-> setup HBCI for a bank)\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  getkeys:\n"
+                                  "    Requests the server's key\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  createkeys:\n"
+                                  "    Create user keys.\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  resetkeys:\n"
+                                  "    Destroy keys (use with care!!)\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  sendkeys:\n"
+                                  "    Send the user keys to the bank.\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  getaccounts:\n"
                                   "    Requests account list for a "
+                                  "user\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  getsysid:\n"
+                                  "    Requests a system id for the given "
                                   "user\n\n"));
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  activate:\n"

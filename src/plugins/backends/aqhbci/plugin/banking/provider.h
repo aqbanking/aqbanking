@@ -30,6 +30,7 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name);
 
 
 
+AQHBCI_API
 AH_HBCI *AH_Provider_GetHbci(AB_PROVIDER *pro);
 
 

@@ -14,6 +14,18 @@ mkpinlist
 Creates an empty PIN file to be used by "aqbanking-tool".
 
 
+addmedium
+=========
+
+Makes a new crypttoken available to AqHBCI.
+
+
+listmedia
+=========
+
+Shows a list containing the currently known media.
+
+
 
 adduser
 =======
@@ -23,12 +35,48 @@ supported.
 
 
 
+getkeys
+=======
+
+Retrieve the servers keys and store them in the crypttoken of the given
+user.
+
+
+createkeys
+==========
+
+Create new keys for the given user. These must be sent to the server.
+
+
+
+resetkeys
+=========
+
+Use this function to overwrite keys which already exist on your crypttoken.
+Only use this for keys you haven't already sent to the bank !
+
+
+sendkeys
+========
+
+Send the users keys to the bank server. After this you will have to print
+the ini letter and sent this via mail to your bank. A few days later your
+account will be activated and you can use the next commands.
+
+
 getaccounts
 ===========
 
 Retrieves a list of accounts from the bank. However, some banks don't return
 such a list.
 
+
+
+getsysid
+========
+
+Retrieves a system id for this application. This is needed for PIN/TAN and 
+RDH modes.
 
 
 activate

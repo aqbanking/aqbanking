@@ -1,7 +1,8 @@
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/..
 
-DEFS += -DAQHBCI_PLUGINS=\"$(aqhbci_plugindir)\"
+DEFS += -DAQHBCI_PLUGINS=\"$(aqhbci_plugindir)\" \
+  -DAQHBCI_DATA=\"@aqhbci_data@\"
 
 typefiles=mediumctx.xml
 

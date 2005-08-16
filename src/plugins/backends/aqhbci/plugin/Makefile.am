@@ -111,7 +111,13 @@ ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@
 
 
+# This target contains an ugly hack: Unfortunately the *.a files don't 
+# include object files from the current level. so we have to copy them
+# manually. However, the object file aqhbci-plugin.o must not be copied
+# for the library dll but only for the plugin dll. So for now we just
+# delete the file aqhbci-plugin.o from dlldir...
 $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
+	test -d dlldir && rm -rf dlldir
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(DLLSRC_LIB); then \
@@ -119,6 +125,8 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	  else \
 	    SRCLIB=.libs/$(DLLSRC_LIB); \
 	  fi; \
+	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
+	  rm -f dlldir/aqhbci-plugin.o 2>/dev/null; \
 	  cd dlldir && ar x "../$${SRCLIB}" && \
 	 $(DLLTOOL) -e ../exports.o *.o && \
 	 $(DLLWRAP) \
@@ -133,6 +141,7 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	&& rm -rf dlldir
 
 $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
+	test -d dlldir && rm -rf dlldir
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(PLUGIN_DLLSRC_LIB); then \
@@ -150,7 +159,7 @@ $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
 	   --driver-name $(CC) \
 	   -o ../$(PLUGIN_DLLNAME) \
 	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) -L../$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) $(DLLLDLIBS) \
+	     ../ressource.o $(DLLLDFLAGS) $(aqhbci_internal_libs) $(DLLLDLIBS) \
 	) \
 	&& rm -rf dlldir
 

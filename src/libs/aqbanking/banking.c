@@ -1211,17 +1211,18 @@ int AB_Banking_Init(AB_BANKING *ab) {
   ab->pluginManagerImExporter=pm;
 
   /* create imexporters plugin manager */
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering pkgdatadir plugin manager");
-  pm=GWEN_PluginManager_new("pkgdatadir");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering aqbanking_datadir plugin manager");
+  pm=GWEN_PluginManager_new("aqbanking_datadir");
   GWEN_PluginManager_AddPathFromWinReg(pm,
                                        AB_BANKING_REGKEY_PATHS,
                                        AB_BANKING_REGKEY_DATADIR);
   GWEN_PluginManager_AddPath(pm, GLOBALDATADIR);
+  /*
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not register pkgdatadir plugin manager");
+	      "Could not register aqbanking_datadir plugin manager");
     return AB_ERROR_GENERIC;
-  }
+  } */
   ab->pluginManagerPkgdatadir=pm;
 
   /* create crypt plugin manager */
@@ -1593,12 +1594,13 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     ab->pluginManagerImExporter=0;
   }
 
-  /* unregister and unload imexporters plugin manager */
+  /* unregister and unload pkgdata plugin manager */
   if (ab->pluginManagerPkgdatadir) {
+    /*
     if (GWEN_PluginManager_Unregister(ab->pluginManagerPkgdatadir)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not unregister Pkgdatadir plugin manager");
-    }
+		"Could not unregister aqbanking_datadir plugin manager");
+    }*/
     GWEN_PluginManager_free(ab->pluginManagerPkgdatadir);
     ab->pluginManagerPkgdatadir=0;
   }
@@ -5664,11 +5666,12 @@ int AB_Banking_CheckIban(const char *iban) {
 const GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(const AB_BANKING *ab) {
   GWEN_PLUGIN_MANAGER *pm;
 
-  pm=GWEN_PluginManager_FindPluginManager("pkgdatadir");
+  assert(ab);
+  pm=ab->pluginManagerPkgdatadir;
   if (!pm) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not find plugin manager for \"%s\"",
-              "pkgdatadir");
+              "aqbanking_datadir");
     return 0;
   }
 

@@ -16,6 +16,13 @@
 -------------------------------------------------
 - more work on build system
 - implemented Create function in pintan crypttoken
+- improved help message of aqhbci-tool
+- improved build-system: 
+  - removed "eval SOMETHING" where encountered
+  - no longer AC_DEFINE_UNQUOTED data dirs, instead add DEFS to
+    Makefile.am where the data dir is needed
+- renamed plugin "pkgdatadir" to "aqbanking_datadir" which is no longer
+  registered (it is private to AqBanking)
 
 
 2005/08/15: Martin Preuss<martin@libchipcard.de>

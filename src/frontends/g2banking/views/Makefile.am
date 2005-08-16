@@ -1,9 +1,10 @@
 INCLUDES = -I$(srcdir)/.. -I.. -I$(srcdir)/../widgets \
   -I$(top_builddir)/headers $(all_includes)
 
+LIBDATADIR="$(datadir)/g2banking"
 DEFS += \
-  -DPACKAGE_DATA_DIR=\""$(datadir)"\" \
-  -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
+  -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
+  -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
 
 noinst_LTLIBRARIES=libviews.la
 

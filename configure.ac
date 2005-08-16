@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=3
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=6
+AQBANKING_VERSION_BUILD=7
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -905,7 +905,7 @@ AC_SUBST(aqbanking_libs)
 AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugindir)
 AC_SUBST(aqbanking_pkgdatadir)
-AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
+#AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
 
 
 ###-------------------------------------------------------------------------
@@ -1103,9 +1103,9 @@ case "$aqbanking_backends" in *aqhbci*)
           aqhbci_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqhbci/plugin -laqhbci"
           aqhbci_libs="-laqhbci"
           aqhbci_ldflags="-L\${libdir}"
-          aqhbci_includes="-I`eval echo $prefix/include`"
+          aqhbci_includes="-I\${prefix}/include"
           aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-          aqhbci_data="`eval echo $prefix/share`/aqhbci"
+          aqhbci_data="\${datadir}/share/aqhbci"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
@@ -1113,9 +1113,9 @@ case "$aqbanking_backends" in *aqhbci*)
           aqhbci_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqhbci/plugin -laqhbci32_${AQHBCI_SO_EFFECTIVE}"
           aqhbci_libs="-laqhbci32_${AQHBCI_SO_EFFECTIVE}"
           aqhbci_ldflags="-L\${libdir}"
-          aqhbci_includes="-I`eval echo $prefix/include`"
+          aqhbci_includes="-I\${prefix}/include"
           aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-          aqhbci_data="c:/mingw/1.0`eval echo $prefix/share`/aqhbci"
+          aqhbci_data="\${datadir}/share/aqhbci"
           ;;
   esac
   ;;
@@ -1129,7 +1129,6 @@ AC_SUBST(aqhbci_ldflags)
 AC_SUBST(aqhbci_plugindir)
 AC_SUBST(aqhbci_data)
 AC_SUBST(XMLMERGE)
-AC_DEFINE_UNQUOTED(AQHBCI_DATA, "${aqhbci_data}", [data dir])
 
 
 
@@ -1143,9 +1142,9 @@ case "$aqbanking_backends" in *aqdtaus*)
       posix)
           aqdtaus_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqdtaus/plugin -laqdtaus"
           aqdtaus_libs="-L\${libdir} ${aqdtaus_internal_libs}"
-          aqdtaus_includes="-I`eval echo $prefix/include`"
+          aqdtaus_includes="-I\${prefix}/include"
           aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
-          aqdtaus_data="`eval echo $prefix/share`/aqdtaus"
+          aqdtaus_data="\${datadir}/aqdtaus"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQDTAUS_DLL,1, [Define if DLL is built])
@@ -1154,7 +1153,7 @@ case "$aqbanking_backends" in *aqdtaus*)
           aqdtaus_libs="-L\${libdir} -laqdtaus32_${AQDTAUS_SO_EFFECTIVE}"
           aqdtaus_includes="-I`eval echo $prefix/include`"
           aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
-          aqdtaus_data="c:/mingw/1.0`eval echo $prefix/share`/aqdtaus"
+          aqdtaus_data="\${datadir}/aqdtaus"
           ;;
   esac
   ;;
@@ -1166,7 +1165,7 @@ AC_SUBST(aqdtaus_internal_libs)
 AC_SUBST(aqdtaus_libs)
 AC_SUBST(aqdtaus_plugins)
 AC_SUBST(aqdtaus_data)
-AC_DEFINE_UNQUOTED(AQDTAUS_DATA, "${aqdtaus_data}", [data dir])
+#AC_DEFINE_UNQUOTED(AQDTAUS_DATA, "${aqdtaus_data}", [data dir])
 
 
 
@@ -1180,18 +1179,18 @@ case "$aqbanking_backends" in *aqgeldkarte*)
       posix)
           aqgeldkarte_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqgeldkarte/plugin -laqgeldkarte"
           aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
-          aqgeldkarte_includes="-I`eval echo $prefix/include`"
+          aqgeldkarte_includes="-I\${prefix}/include"
           aqgeldkarte_plugins="\${libdir}/aqgeldkarte/plugins/${AQGELDKARTE_SO_EFFECTIVE}"
-          aqgeldkarte_data="`eval echo $prefix/share`/aqgeldkarte"
+          aqgeldkarte_data="\${datadir}/aqgeldkarte"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQGELDKARTE_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
           aqgeldkarte_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqgeldkarte/plugin -laqgeldkarte32_${AQGELDKARTE_SO_EFFECTIVE}"
           aqgeldkarte_libs="-L\${libdir} -laqgeldkarte32_${AQGELDKARTE_SO_EFFECTIVE}"
-          aqgeldkarte_includes="-I`eval echo $prefix/include`"
+          aqgeldkarte_includes="-I\${prefix}/include"
           aqgeldkarte_plugins="\${libdir}/aqgeldkarte/plugins/${AQGELDKARTE_SO_EFFECTIVE}"
-          aqgeldkarte_data="c:/mingw/1.0`eval echo $prefix/share`/aqgeldkarte"
+          aqgeldkarte_data="\${datadir}/aqgeldkarte"
           ;;
   esac
   ;;
@@ -1203,7 +1202,7 @@ AC_SUBST(aqgeldkarte_internal_libs)
 AC_SUBST(aqgeldkarte_libs)
 AC_SUBST(aqgeldkarte_plugins)
 AC_SUBST(aqgeldkarte_data)
-AC_DEFINE_UNQUOTED(AQGELDKARTE_DATA, "${aqgeldkarte_data}", [data dir])
+#AC_DEFINE_UNQUOTED(AQGELDKARTE_DATA, "${aqgeldkarte_data}", [data dir])
 
 
 
@@ -1217,18 +1216,18 @@ case "$aqbanking_backends" in *aqofxconnect*)
       posix)
           aqofxconnect_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqofxconnect/plugin -laqofxconnect"
           aqofxconnect_libs="-L\${libdir} -laqofxconnect"
-          aqofxconnect_includes="-I`eval echo $prefix/include`"
+          aqofxconnect_includes="-I\${prefix}/include"
           aqofxconnect_plugins="\${libdir}/aqofxconnect/plugins/${AQOFXCONNECT_SO_EFFECTIVE}"
-          aqofxconnect_data="`eval echo $prefix/share`/aqofxconnect"
+          aqofxconnect_data="\${datadir}/aqofxconnect"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQOFXCONNECT_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
           aqofxconnect_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqofxconnect/plugin -laqofxconnect32_${AQOFXCONNECT_SO_EFFECTIVE}"
           aqofxconnect_libs="-L\${libdir} -laqofxconnect32_${AQOFXCONNECT_SO_EFFECTIVE}"
-          aqofxconnect_includes="-I`eval echo $prefix/include`"
+          aqofxconnect_includes="-I\${prefix}/include"
           aqofxconnect_plugins="\${libdir}/aqofxconnect/plugins/${AQOFXCONNECT_SO_EFFECTIVE}"
-          aqofxconnect_data="c:/mingw/1.0`eval echo $prefix/share`/aqofxconnect"
+          aqofxconnect_data="\${datadir}/aqofxconnect"
           ;;
   esac
   ;;
@@ -1240,7 +1239,7 @@ AC_SUBST(aqofxconnect_internal_libs)
 AC_SUBST(aqofxconnect_libs)
 AC_SUBST(aqofxconnect_plugins)
 AC_SUBST(aqofxconnect_data)
-AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
+#AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
 
 
 
@@ -1251,17 +1250,17 @@ AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
 
 case "$OS_TYPE" in
     posix)
-        g2banking_libs="-L`eval echo $prefix/lib` -lg2banking"
+        g2banking_libs="-L\${libdir} -lg2banking"
         g2banking_internal_libs="-L${abs_top_builddir}/src/frontends/g2banking -lg2banking"
-        g2banking_includes="-I`eval echo $prefix/include`"
-        g2banking_data="`eval echo $prefix/share`/g2banking"
+        g2banking_includes="-I\${prefix}/include"
+        g2banking_data="\${datadir}/g2banking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         g2banking_internal_libs="-L${abs_top_builddir}/src/frontends/g2banking -lg2banking32_${G2BANKING_SO_EFFECTIVE}"
         g2banking_libs="-L`eval echo $prefix/lib` -lg2banking32_${G2BANKING_SO_EFFECTIVE}"
         g2banking_includes="-I`eval echo $prefix/include`"
-        g2banking_data="`eval echo $prefix/share`/g2banking"
+        g2banking_data="\${datadir}/g2banking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1280,18 +1279,18 @@ AC_SUBST(g2banking_data)
 
 case "$OS_TYPE" in
     posix)
-        libsuffix=`eval kde-config --libsuffix`
-        kbanking_libs="-L`eval echo $prefix/lib`$libsuffix -lkbanking"
+        libsuffix="`eval kde-config --libsuffix`"
+        kbanking_libs="-L\${libdir}${libsuffix} -lkbanking"
         kbanking_internal_libs="-L${abs_top_builddir}/src/frontends/kbanking -lkbanking"
-        kbanking_includes="-I`eval echo $prefix/include`"
-        kbanking_data="`eval echo $prefix/share`/kbanking"
+        kbanking_includes="-I\${prefix}/include"
+        kbanking_data="\${datadir}/kbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_KBANKING_DLL,1, [Define if DLL is built])
-        kbanking_libs="-L`eval echo $prefix/lib` -lkbanking32_${KBANKING_SO_EFFECTIVE}"
+        kbanking_libs="-L\${libdir} -lkbanking32_${KBANKING_SO_EFFECTIVE}"
         kbanking_internal_libs="-L${abs_top_builddir}/src/frontends/kbanking -lkbanking32_${KBANKING_SO_EFFECTIVE}"
-        kbanking_includes="-I`eval echo $prefix/include`"
-        kbanking_data="`eval echo $prefix/share`/kbanking"
+        kbanking_includes="-I\${prefix}/include"
+        kbanking_data="\${datadir}/kbanking"
     	;;
 esac
 
@@ -1309,17 +1308,17 @@ AC_SUBST(kbanking_data)
 
 case "$OS_TYPE" in
     posix)
-        qbanking_libs="-L`eval echo $prefix/lib` -lqbanking"
+        qbanking_libs="-L\${libdir} -lqbanking"
         qbanking_internal_libs="-L${abs_top_builddir}/src/frontends/qbanking -lqbanking"
-        qbanking_includes="-I`eval echo $prefix/include`"
-        qbanking_data="`eval echo $prefix/share`/qbanking"
+        qbanking_includes="-I\${prefix}/include"
+        qbanking_data="\${datadir}/qbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         qbanking_internal_libs="-L${abs_top_builddir}/src/frontends/qbanking -lqbanking32_${QBANKING_SO_EFFECTIVE}"
-        qbanking_libs="-L`eval echo $prefix/lib` -lqbanking32_${QBANKING_SO_EFFECTIVE}"
-        qbanking_includes="-I`eval echo $prefix/include`"
-        qbanking_data="`eval echo $prefix/share`/qbanking"
+        qbanking_libs="-L\$libdir} -lqbanking32_${QBANKING_SO_EFFECTIVE}"
+        qbanking_includes="-I\${prefix}/include"
+        qbanking_data="\${datadir}/qbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1338,17 +1337,17 @@ AC_SUBST(qbanking_data)
 
 case "$OS_TYPE" in
     posix)
-        cbanking_libs="-L`eval echo $prefix/lib` -lcbanking"
+        cbanking_libs="-L\${libdir} -lcbanking"
         cbanking_internal_libs="-L${abs_top_builddir}/src/frontends/cbanking -lcbanking"
-        cbanking_includes="-I`eval echo $prefix/include`"
-        cbanking_data="`eval echo $prefix/share`/cbanking"
+        cbanking_includes="-I\${prefix}/include"
+        cbanking_data="\${datadir}/cbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         cbanking_internal_libs="-L${abs_top_builddir}/src/frontends/cbanking -lcbanking32_${CBANKING_SO_EFFECTIVE}"
-        cbanking_libs="-L`eval echo $prefix/lib` -lcbanking32_${CBANKING_SO_EFFECTIVE}"
-        cbanking_includes="-I`eval echo $prefix/include`"
-        cbanking_data="`eval echo $prefix/share`/cbanking"
+        cbanking_libs="-L\${libdir} -lcbanking32_${CBANKING_SO_EFFECTIVE}"
+        cbanking_includes="-I\${prefix}/include"
+        cbanking_data="\${datadir}/cbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
