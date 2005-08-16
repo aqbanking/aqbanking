@@ -29,3 +29,5 @@ py-compile
 headers
 qtsources
 *.rpm
+mksymlinks.sh
+sl-headers
