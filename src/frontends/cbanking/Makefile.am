@@ -34,7 +34,7 @@ sources:
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = cbanking32
+LIBRARY_NAME = cbanking32_$(CBANKING_SO_EFFECTIVE)
 DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(lib_LTLIBRARIES)
@@ -68,8 +68,8 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	  else \
 	    SRCLIB=.libs/$(DLLSRC_LIB); \
 	  fi; \
+	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
 	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 ( ls ../.libs/*.o && cp ../.libs/*.o .) && \
 	 $(DLLTOOL) -e ../exports.o *.o && \
 	 $(DLLWRAP) \
 	   --export-all \
