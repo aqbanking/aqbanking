@@ -1,3 +1,5 @@
+
+
 2005/08/16  Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri2/eri2.c
 	* src/plugins/imexproters/eri2/eriformat.xml
@@ -8,10 +10,12 @@
 	- Changed purpose adding system
 	- Added __HandleRec4() to add purpose 6 correctly.
 	- Changed in eriformat.xml purpose17_32 to CustomerReference
+
 	
 2005/08/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - more work on build system
+- implemented Create function in pintan crypttoken
 
 
 2005/08/15: Martin Preuss<martin@libchipcard.de>

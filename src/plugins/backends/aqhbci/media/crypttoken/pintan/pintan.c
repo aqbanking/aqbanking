@@ -185,6 +185,14 @@ int AH_CryptTokenPinTan_Open(GWEN_CRYPTTOKEN *ct, int manage) {
 
 
 int AH_CryptTokenPinTan_Create(GWEN_CRYPTTOKEN *ct) {
+  int rv;
+
+  rv=AH_CryptTokenPinTan_Open(ct, 0);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
   return 0;
 }
 
