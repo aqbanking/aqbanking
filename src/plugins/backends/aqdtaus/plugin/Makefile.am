@@ -43,8 +43,8 @@ aqdtaus_la_SOURCES= \
  provider.c \
  aqdtaus-plugin.c
 
-libaqdtaus_la_LIBADD= $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
-aqdtaus_la_LIBADD= $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+libaqdtaus_la_LIBADD= $(aqbanking_internal_libs) $(gwenhywfar_libs)
+aqdtaus_la_LIBADD= $(aqbanking_internal_libs) $(gwenhywfar_libs)
 aqdtaus_la_LDFLAGS=-module \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 
@@ -64,8 +64,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = aqdtaus32_$(AQDTAUS_SO_EFFECTIVE)
-DLLLDLIBS = \
-  -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+DLLLDLIBS = $(aqbanking_internal_libs) \
   -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
@@ -153,3 +152,7 @@ CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 
 endif
 # IS_WINDOWS
+
+
+built_sources:
+

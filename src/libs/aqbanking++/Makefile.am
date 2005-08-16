@@ -18,6 +18,7 @@ libaqbankingpp_la_LIBADD = \
  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
  $(gwenhywfar_libs)
 
+
 sources:
 	for f in $(libaqbankingpp_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
@@ -28,8 +29,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = aqbankingpp32
-DLLLDLIBS = \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+DLLLDLIBS = $(aqbanking_internal_libs) \
   -L/mingw/lib $(gwenhywfar_libs) \
   -L/mingw/lib -lstdc++
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)

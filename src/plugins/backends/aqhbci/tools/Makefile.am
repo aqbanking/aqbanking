@@ -6,3 +6,5 @@ SUBDIRS = hbcixml aqhbci-tool # aqhbci hbcisadmin
 endif
 
 sources:
+
+built_sources:

@@ -53,8 +53,7 @@ libqbanking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- $(qt3_libs) \
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
+ $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
 
 libqbanking_la_LDFLAGS=\
  -version-info @QBANKING_SO_CURRENT@:@QBANKING_SO_REVISION@:@QBANKING_SO_AGE@
@@ -89,3 +88,10 @@ qt4-port:
 	done
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
+
+
+built_sources: $(BUILT_SOURCES)
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;
+

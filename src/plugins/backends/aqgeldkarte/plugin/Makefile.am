@@ -42,10 +42,10 @@ aqgeldkarte_la_SOURCES= \
  provider.c \
  aqgeldkarte-plugin.c
 
-libaqgeldkarte_la_LIBADD= $(gwenhywfar_libs) @chipcard_client_libs@ \
-   -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
-aqgeldkarte_la_LIBADD= $(gwenhywfar_libs) @chipcard_client_libs@ \
-   -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+libaqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs) @chipcard_client_libs@
+aqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
+   $(gwenhywfar_libs) @chipcard_client_libs@
 aqgeldkarte_la_LDFLAGS=-module \
   -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
 
@@ -64,7 +64,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = aqgeldkarte32_$(AQGELDKARTE_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs) @chipcard_client_libs@
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 PLUGIN_LIBRARY_NAME = aqgeldkarte
@@ -152,4 +152,8 @@ CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 endif
 # IS_WINDOWS
 
+built_sources:
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;
 

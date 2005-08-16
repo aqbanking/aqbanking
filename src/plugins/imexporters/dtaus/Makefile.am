@@ -18,7 +18,7 @@ noinst_HEADERS=\
 dtaus_la_SOURCES=\
  dtaus.c
 
-dtaus_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+dtaus_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
 dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 
@@ -33,7 +33,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = dtaus
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
 

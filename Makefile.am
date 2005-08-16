@@ -4,7 +4,8 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
  aqbanking.iss.in aqbanking.iss \
  Doxyfile.in version.h.in \
- i18nsources
+ i18nsources \
+ mksymlinks.sh.in mksymlinks.sh
 
 idatadir=${datadir}/doc/aqbanking
 idata_DATA=AUTHORS COPYING ChangeLog README
@@ -221,3 +222,11 @@ qt4-port:
 	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3; do \
 	  make -C $$d qt4-port; \
 	done
+
+BUILT_SOURCES=sl-headers
+CLEANFILES += $(BUILT_SOURCES)
+
+sl-headers:
+	make -C src built_sources
+	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
+

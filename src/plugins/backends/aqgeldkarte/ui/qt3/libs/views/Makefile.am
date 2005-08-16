@@ -51,3 +51,6 @@ workaround-missing-uic3-include:
 	done
 # For qt3 compatibility of qt4
 DEFS += -DQT_COMPAT
+
+built_sources: $(BUILT_SOURCES)
+

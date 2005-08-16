@@ -3,6 +3,8 @@ SUBDIRS=profiles
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
 #EXTRA_DIST=README
 
+abs_top_builddir=$(shell (cd $(top_builddir) && pwd) )
+
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=eri.la
@@ -18,7 +20,7 @@ noinst_HEADERS=\
 eri_la_SOURCES=\
  eri.c
 
-eri_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+eri_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
 eri_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 sources:
@@ -32,7 +34,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = eri
-DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs) -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
 

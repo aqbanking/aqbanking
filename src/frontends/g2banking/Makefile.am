@@ -44,7 +44,7 @@ libg2banking_la_LIBADD = \
  views/libviews.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(aqbanking_internal_libs) \
  $(GTK2_LIBS) \
  $(gwenhywfar_libs) \
  $(all_libraries)
@@ -102,7 +102,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = g2banking32_$(G2BANKING_SO_EFFECTIVE)
-DLLLDLIBS = -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
@@ -161,4 +161,6 @@ endif
 
 
 CLEANFILES += $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF) $(BUILT_SOURCES)
+
+built_sources: $(BUILT_SOURCES)
 

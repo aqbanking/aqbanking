@@ -13,10 +13,7 @@ plugin_DATA=pintan.xml
 endif
 
 pintan_la_LDFLAGS=-module -avoid-version
-pintan_la_LIBADD = \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
-  $(gwenhywfar_libs)
+pintan_la_LIBADD = $(gwenhywfar_libs)
 pintan_la_SOURCES=pintan.c
 
 sources:
@@ -32,10 +29,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = pintan
-DLLLDLIBS = \
-  -L../$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
-  -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
-  -L/mingw/lib $(gwenhywfar_libs)
+DLLLDLIBS = -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(plugin_LTLIBRARIES)
 

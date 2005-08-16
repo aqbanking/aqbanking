@@ -13,3 +13,6 @@ sources:
 	for f in $(abtest_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+
+built_sources:
+

@@ -23,5 +23,9 @@ sources:
 	  make -C $$d sources; \
 	done
 
+built_sources: $(BUILT_SOURCES)
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;
 
 

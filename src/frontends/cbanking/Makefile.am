@@ -19,8 +19,7 @@ libcbanking_la_SOURCES=\
  progress.c
 
 libcbanking_la_LIBADD = \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(aqbanking_internal_libs) $(gwenhywfar_libs)
 libcbanking_la_LDFLAGS = $(STRIPALL) \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
@@ -36,7 +35,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = cbanking32
-DLLLDLIBS = -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
@@ -88,4 +87,5 @@ CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 endif
 # IS_WINDOWS
 
+built_sources:
 

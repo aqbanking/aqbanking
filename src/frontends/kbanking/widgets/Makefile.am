@@ -34,3 +34,6 @@ sources:
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
 
+built_sources: $(BUILT_SOURCES)
+
+

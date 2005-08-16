@@ -2,6 +2,8 @@ SUBDIRS=profiles
 
 INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(top_builddir)/headers $(all_includes)
 
+abs_top_builddir=$(shell (cd $(top_builddir) && pwd) )
+
 EXTRA_DIST=README
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
@@ -19,7 +21,7 @@ noinst_HEADERS=\
 csv_la_SOURCES=\
  csv.c
 
-csv_la_LIBADD=-L../../../libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+csv_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
 csv_la_LDFLAGS=@STRIPALL@ -module -omit-version
 
 sources:
@@ -33,7 +35,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = csv
-DLLLDLIBS = -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
+DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLSRC_LIBLA = $(imexporterplugin_LTLIBRARIES)
 

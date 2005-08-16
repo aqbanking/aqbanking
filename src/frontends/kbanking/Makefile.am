@@ -43,7 +43,7 @@ libkbanking_la_LIBADD=\
  dialogs/libdialogs.la \
  views/libviews.la \
  -L../qbanking -lqbanking \
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(aqbanking_internal_libs) \
  $(kde3_libs) -lkdeui -lkdecore -lkio $(gwenhywfar_libs)
 
 libkbanking_la_LDFLAGS=\
@@ -69,5 +69,9 @@ clean-local:
 clean-ui: 
 	rm -f *.ui.{cpp,h}
 
+built_sources: $(BUILT_SOURCES)
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;
 
 

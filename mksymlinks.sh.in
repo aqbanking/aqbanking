@@ -1,0 +1,190 @@
+#!/bin/sh
+
+aqbanking_modules="@aqbanking_modules@"
+aqbankingpp_modules="@aqbankingpp_modules@"
+
+srcdir="$1"
+builddir="$2"
+
+
+#
+# code
+#
+rm -Rf headers 2>/dev/null
+
+# The prefix to the source code (=srcdir)
+sprefix=`( cd ${srcdir} ; pwd )`
+
+# The prefix to the build directory (=builddir)
+bprefix=`pwd`
+
+mkdir -p headers/aqbanking
+AQ_HEADER_FILES="${sprefix}/version.h"
+
+
+#
+# symlink all headers from src/libs
+#
+hfiles=`( cd "${srcdir}/src/libs/" && ls *.h 2>/dev/null )`
+for f in ${hfiles}; do
+  case "${f}" in
+    *_p.h | *_l.h)
+      ;;
+    *)
+      AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/libs/${f}"
+      ln -s "${sprefix}/src/libs/${f}" "headers/aqbanking/${f}"
+      ;;
+  esac
+done
+
+
+#
+# symlink all headers from src/libs/*
+#
+for sm in $aqbanking_modules; do
+  hfiles=`( cd "${srcdir}/src/libs/aqbanking/${sm}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case "${f}" in
+      *_p.h | *_l.h)
+         ;;
+      *)   
+         AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/libs/aqbanking/${sm}/${f}"
+         ln -s "${sprefix}/src/libs/aqbanking/${sm}/${f}" "headers/aqbanking/${f}"
+         ;;
+    esac
+  done
+done
+
+ln -s "${bprefix}/version.h" headers/aqbanking/version.h
+
+
+#
+# symlink all headers from src/libs/aqbanking++
+#
+mkdir headers/aqbanking++
+
+# symlink all headers from src/libs/*
+for sm in $aqbankingpp_modules; do
+  hfiles=`( cd "${srcdir}/src/libs/aqbanking++/${sm}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case "${f}" in
+      *_p.h | *_l.h)
+         ;;
+      *)   
+         AQ_HEADER_FILES="${AQ_HEADER_FILES} src/libs/aqbanking++/${sm}/${f}"
+         ln -s "${sprefix}/src/libs/aqbanking++/${sm}/${f}" "headers/aqbanking++/${f}"
+         ;;
+    esac
+  done
+done
+
+
+
+# symlink all headers from src/frontends
+
+for frontend in @aqbanking_frontends@; do
+  mkdir -p headers/${frontend}
+
+  dfiles=`( cd "${srcdir}/src/frontends/${frontend}" && ls 2>/dev/null )`
+  for d in ${dfiles}; do
+    if test -d "${srcdir}/src/frontends/${frontend}/$d"; then
+      case "$d" in
+        . | ..)
+          ;;
+        *)
+          hfiles=`( cd "${srcdir}/src/frontends/${frontend}/$d" && ls *.{h,ui} 2>/dev/null )`
+          for f in ${hfiles}; do
+            case "${f}" in
+              *_p.h | *_l.h | *.ui.h | version.h)
+                ;;
+              *.ui)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/$d/${f}.h"
+                ln -s "${bprefix}/src/frontends/${frontend}/$d/${f}.h" "headers/${frontend}/${f}.h"
+                ;;
+              version.h.in)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/version.h"
+                ln -s "${bprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
+                ;;
+              *)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/frontends/${frontend}/$d/${f}"
+                ln -s "${sprefix}/src/frontends/${frontend}/$d/${f}" "headers/${frontend}/${f}"
+                ;;
+            esac
+          done
+          ;;
+        esac
+    else
+      case "${d}" in
+        *_p.h | *_l.h | *.ui.h | version.h)
+          ;;
+        *.ui)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/${d}.h"
+          ln -s "${bprefix}/src/frontends/${frontend}/${d}.h" "headers/${frontend}/${d}.h"
+          ;;
+        version.h.in)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/frontends/${frontend}/version.h"
+          ln -s "${bprefix}/src/frontends/${frontend}/version.h" "headers/${frontend}/version.h"
+          ;;
+        *.h)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/frontends/${frontend}/$d"
+          ln -s "${sprefix}/src/frontends/${frontend}/$d" "headers/${frontend}/$d"
+          ;;
+      esac
+    fi
+  done
+
+done
+
+
+# symlink all headers from src/plugins/backends/
+
+for backend in @aqbanking_backends@; do
+  mkdir -p headers/${backend}
+
+  dfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin" && ls 2>/dev/null )`
+  for d in ${dfiles}; do
+    if test -d "${srcdir}/src/plugins/backends/${backend}/plugin/$d"; then
+      case "$d" in
+        . | ..)
+          ;;
+        *)
+          hfiles=`( cd "${srcdir}/src/plugins/backends/${backend}/plugin/$d" && ls *.h 2>/dev/null )`
+          for f in ${hfiles}; do
+            case "${f}" in
+              *_p.h | *_l.h | version.h)
+                ;;
+              version.h.in)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/plugins/backends/${backend}/plugin/$d/version.h"
+                ln -s "${bprefix}/src/plugins/backends/${backend}/plugin/$d/version.h" "headers/${backend}/version.h"
+                ;;
+              *)
+                AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/plugins/backends/${backend}/plugin/$d/${f}"
+                ln -s "${sprefix}/src/plugins/backends/${backend}/plugin/$d/${f}" "headers/${backend}/${f}"
+                ;;
+            esac
+          done
+          ;;
+        esac
+    else
+      case "${d}" in
+        *_p.h | *_l.h | version.h)
+          ;;
+        version.h.in)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${bprefix}/src/plugins/backends/${backend}/plugin/version.h"
+          ln -s "${bprefix}/src/plugins/backends/${backend}/plugin/version.h" "headers/${backend}/version.h"
+          ;;
+        *.h)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${sprefix}/src/plugins/backends/${backend}/plugin/$d"
+          ln -s "${sprefix}/src/plugins/backends/${backend}/plugin/$d" "headers/${backend}/$d"
+          ;;
+      esac
+    fi
+  done
+
+done
+
+rm -f sl-headers 2>/dev/null
+for i in ${AQ_HEADER_FILES}; do
+  echo "$i" >>sl-headers
+done
+

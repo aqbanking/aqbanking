@@ -64,3 +64,6 @@ qt4-port:
 	rm -f $(BUILT_SOURCES)
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
+
+built_sources: $(BUILT_SOURCES)
+

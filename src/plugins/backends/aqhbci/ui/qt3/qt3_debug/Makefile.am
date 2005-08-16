@@ -17,9 +17,9 @@ plugin_DATA = qt_debug.xml
 aqhbci_qt3_debug_SOURCES = qt3_debug.cpp
 aqhbci_qt3_debug_LDADD = \
   ../libs/libqt3wizard.la \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
-  -L$(top_builddir)/src/frontends/qbanking -lqbanking \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(qbanking_internal_libs) \
+  $(aqhbci_internal_libs) \
   $(gwenhywfar_libs) $(qt3_libs)
 
 
@@ -42,3 +42,6 @@ qt4-port:
 #	rm $(BUILT_SOURCES)
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
+
+built_sources: $(BUILT_SOURCES)
+

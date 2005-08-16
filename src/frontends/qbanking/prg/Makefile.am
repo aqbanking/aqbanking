@@ -15,3 +15,5 @@ sources:
 	for f in $(libprg_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
+
+built_sources:

@@ -58,8 +58,8 @@ libaqhbci_la_LDFLAGS=\
 aqhbci_la_SOURCES=aqhbci-plugin.c
 #aqhbci_la_SOURCES=dummy.c
 aqhbci_la_LIBADD = \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs) \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(aqhbci_internal_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 aqhbci_la_LDFLAGS=-module \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
@@ -70,7 +70,9 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = aqhbci32_$(AQHBCI_SO_EFFECTIVE)
-DLLLDLIBS = -L../$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
+DLLLDLIBS = \
+  $(aqbanking_internal_libs) \
+  -L/mingw/lib $(gwenhywfar_libs)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 PLUGIN_LIBRARY_NAME = aqhbci
@@ -158,4 +160,5 @@ CLEANFILES += $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 endif
 # IS_WINDOWS
 
+built_sources: $(BUILT_SOURCES)
 
