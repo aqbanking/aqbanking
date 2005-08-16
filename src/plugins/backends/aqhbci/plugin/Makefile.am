@@ -119,7 +119,6 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	  else \
 	    SRCLIB=.libs/$(DLLSRC_LIB); \
 	  fi; \
-	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
 	  cd dlldir && ar x "../$${SRCLIB}" && \
 	 $(DLLTOOL) -e ../exports.o *.o && \
 	 $(DLLWRAP) \
@@ -141,8 +140,8 @@ $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
 	  else \
 	    SRCLIB=.libs/$(PLUGIN_DLLSRC_LIB); \
 	  fi; \
+	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
 	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 ( ls ../.libs/*.o && cp ../.libs/*.o .) && \
 	 $(DLLTOOL) -e ../exports.o *.o && \
 	 $(DLLWRAP) \
 	   --export-all \
