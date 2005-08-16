@@ -15,6 +15,9 @@
 
 #define AB_ERI2_XMLFILE "eriformat.xml"
 
+/* for debugging */
+#define ERI2DEBUG
+
 #include <aqbanking/imexporter_be.h>
 #include <aqbanking/banking.h>
 #include <gwenhywfar/msgengine.h>

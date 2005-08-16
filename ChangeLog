@@ -1,4 +1,14 @@
-
+2005/08/16  Peter de Vrijer <pdevrijer@home.nl>
+	* src/plugins/imexporters/eri2/eri2.c
+	* src/plugins/imexproters/eri2/eriformat.xml
+	Changed both files to improve importing of erifiles
+	according to my understanding of the eri format.
+	- Added stripping of leading zeroes (and P of Postgiro)
+	  in account numbers
+	- Changed purpose adding system
+	- Added __HandleRec4() to add purpose 6 correctly.
+	- Changed in eriformat.xml purpose17_32 to CustomerReference
+	
 2005/08/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - more work on build system

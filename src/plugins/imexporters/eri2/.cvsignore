@@ -3,3 +3,5 @@
 *.dll
 *.def
 *.lib
+*.pdv
+*.orig

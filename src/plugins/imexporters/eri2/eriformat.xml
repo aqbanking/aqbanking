@@ -3,7 +3,7 @@
   <GROUPdef id="SegHead" hide="0" >
     <!-- Part of the record header to identify a record -->
     <ELEM name="localAccountNumber" type="ascii" size="10" 
-          filler="32" condense="1" />
+          lfiller="48" />
     <ELEM name="currency" type="ascii" size="3" filler="32" condense="1" />
     <ELEM name="MainGroup" type="num" size="5" filler="32" condense="1"/>
     <ELEM name="TransactionGroup" type="num" size="5" 
@@ -40,7 +40,7 @@
     <ELEM name="ValutaDate" type="ascii" size="6" />
     <ELEM name="NumberOfListing" type="num" size="4" />
     <ELEM name="CategoryNumber" type="num" size="5" />
-    <ELEM name="Purpose17_32" type="ascii" size="16" />
+    <ELEM name="CustomerReference" type="ascii" size="16" />
     <ELEM name="MediaCode" type="num" size="2" />
     <ELEM name="Reserved" type="ascii" size="2" filler="32" condense="1" />
 
@@ -64,7 +64,8 @@
     <GROUP type="SegHead" />
     <ELEM name="BankReference" type="ascii" size="29" filler="32" condense="1" />
     <ELEM name="Reserved1" type="ascii" size="3" filler="32" condense="1" />
-    <ELEM name="purpose" type="ascii" size="64" filler="32">
+    <ELEM name="purpose1" type="ascii" size="32" filler="32" condense="1" />
+    <ELEM name="purpose2" type="ascii" size="32" filler="32" condense="1">
       <descr>Lines 1-2 of description</descr>
       
     </ELEM>
@@ -87,8 +88,11 @@
           version="1"
   >
     <GROUP type="SegHead" />
-    <ELEM name="purpose" type="ascii" size="96" filler="32">
-      <descr>Lines 3-6 of description</descr>
+    <ELEM name="purpose3" type="ascii" size="32" filler="32" condense="1" />
+    <ELEM name="purpose4" type="ascii" size="32" filler="32" condense="1" />
+    <ELEM name="purpose5" type="ascii" size="32" filler="32" condense="1">
+      <descr>Lines 3-5 or 6 of description</descr>
+      
     </ELEM>
     <ELEM name="Reserved2" type="ascii" size="8" filler="32" condense="1" />
 
