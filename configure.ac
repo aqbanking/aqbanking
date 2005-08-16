@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=3
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=4
+AQBANKING_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -778,7 +778,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
-        aqbanking_internal_libs="-L${ac_abs_top_builddir}/src/libs/aqbanking -laqbanking32_${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_internal_libs="-L${abs_top_builddir}/src/libs/aqbanking -laqbanking32_${AQBANKING_SO_EFFECTIVE}"
 	aqbanking_ldflags="-L\${libdir}"
         aqbanking_libs="-laqbanking32_${AQBANKING_SO_EFFECTIVE}"
         aqbanking_libspp="-laqbankingpp32"
