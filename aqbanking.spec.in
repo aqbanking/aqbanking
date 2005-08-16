@@ -64,8 +64,8 @@ URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Note: We might add ktoblzcheck here as well
 BuildRequires: gwenhywfar-devel >= 1.15.0
-Provides: aqhbci
-Provides: aqdtaus
+Obsoletes: aqhbci
+Obsoletes: aqdtaus
 Prereq: /sbin/ldconfig
 Prefix: %{_prefix}
 
@@ -83,8 +83,8 @@ format), SWIFT (MT940 and MT942).
 Summary: Aqbanking development kit
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
-Provides: aqhbci-devel
-Provides: aqdtaus-devel
+Obsoletes: aqhbci-devel
+Obsoletes: aqdtaus-devel
 %description devel
 This package contains aqbanking-config and header files for writing and
 compiling programs using Aqbanking.
@@ -92,15 +92,15 @@ compiling programs using Aqbanking.
 %package qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
-Provides: aqhbci-qt-tools
-Provides: aqdtaus-qt-tools
+Obsoletes: aqhbci-qt-tools
+Obsoletes: aqdtaus-qt-tools
 %description qt3
 Necessary.
 
 %package gtk2
 Summary: Aqbanking tools for Gnome2/Gtk2
 Group: System Environment/Libraries
-Provides: aqbanking-gnome2
+Obsoletes: aqbanking-gnome2
 %description gtk2
 Necessary.
 
@@ -108,7 +108,7 @@ Necessary.
 Summary: Aqbanking tools for KDE3
 Group: System Environment/Libraries
 Requires: aqbanking-qt3
-Provides: aqbanking-kde
+Obsoletes: aqbanking-kde
 %description kde3
 Necessary.
 
