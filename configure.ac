@@ -1105,7 +1105,7 @@ case "$aqbanking_backends" in *aqhbci*)
           aqhbci_ldflags="-L\${libdir}"
           aqhbci_includes="-I\${prefix}/include"
           aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-          aqhbci_data="\${datadir}/share/aqhbci"
+          aqhbci_data="\${datadir}/aqhbci"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
@@ -1115,7 +1115,7 @@ case "$aqbanking_backends" in *aqhbci*)
           aqhbci_ldflags="-L\${libdir}"
           aqhbci_includes="-I\${prefix}/include"
           aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-          aqhbci_data="\${datadir}/share/aqhbci"
+          aqhbci_data="\${datadir}/aqhbci"
           ;;
   esac
   ;;
