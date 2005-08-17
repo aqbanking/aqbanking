@@ -143,7 +143,6 @@ merge: po/$(PACKAGE).pot
 	fi ;\
 	done
 
-MSGFMT = msgfmt
 catalogs: $(I18NLINGUAS)
 	@for i in $(ALL_LINGUAS); do \
 	  filelingua=$(srcdir)/po/$$i.po; \
@@ -151,7 +150,11 @@ catalogs: $(I18NLINGUAS)
 	  fileqm=$(top_builddir)/po/$$i.qm; \
 	  echo "Creating translation catalogs for language \"$$i\""; \
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
-	  $(MSGFMT) -o $${fileqm} --qt $${filelingua} || touch $${filelingua}; \
+	  if test $(MSGFMT_SUPPORTS_QT) = "yes"; then \
+	    $(MSGFMT) -o $${fileqm} --qt $${filelingua} || touch $${filelingua}; \
+	  else \
+	    echo "$(MSGFMT) does not have the option --qt; ignoring qt translations"; \
+	  fi; \
 	done
 
 
@@ -178,11 +181,13 @@ if MAKE_QT_CATS
 qtlocaledir = $(pkgdatadir)/i18n
 install-qt-catalogs: catalogs
 	$(mkinstalldirs) "$(DESTDIR)$(qtlocaledir)";
-	@for i in $(ALL_LINGUAS); do \
-	  fileqm=$(top_builddir)/po/$$i.qm; \
-          echo "Installing translation catalog for language \"$$i\""; \
-          $(INSTALL_DATA) $${fileqm} $(DESTDIR)$(qtlocaledir)/$$i.qm; \
-        done
+	@if test $(MSGFMT_SUPPORTS_QT) = "yes"; then \
+	  for i in $(ALL_LINGUAS); do \
+	    fileqm=$(top_builddir)/po/$$i.qm; \
+            echo "Installing translation catalog for language \"$$i\""; \
+            $(INSTALL_DATA) $${fileqm} $(DESTDIR)$(qtlocaledir)/$$i.qm; \
+          done \
+	fi
 uninstall-qt-catalogs:
 	@$(NORMAL_UNINSTALL)
 	@for i in $(ALL_LINGUAS); do \

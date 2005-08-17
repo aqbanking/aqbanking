@@ -860,6 +860,20 @@ if test "$HAVE_I18N" = "yes"; then
 fi
 AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
 
+# check for --qt argument of msgfmt
+AC_PATH_PROG([MSGFMT], [msgfmt], [NO])
+AC_MSG_CHECKING(whether msgfmt understands --qt)
+if test "x${MSGFMT}" != "x"; then
+  if ${MSGFMT} --qt --help >/dev/null 2>&1; then
+    MSGFMT_SUPPORTS_QT=yes
+  else
+    MSGFMT_SUPPORTS_QT=no
+  fi
+else
+  MSGFMT_SUPPORTS_QT=no
+fi
+AC_SUBST(MSGFMT_SUPPORTS_QT)
+AC_MSG_RESULT($MSGFMT_SUPPORTS_QT)
 
 
 ###-------------------------------------------------------------------------
