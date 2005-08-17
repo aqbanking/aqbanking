@@ -1026,15 +1026,19 @@ AC_SUBST(DOXYGEN_TAGFILES)
 AC_MSG_CHECKING(whether local install mode is wanted)
 enable_local_install="no"
 
-AC_ARG_ENABLE(local-install,
-  [  --enable-local-install     allow local installation (default=$enable_local_install)],
+AC_ARG_ENABLE(local,
+  [  --enable-local     allow local installation (default=$enable_local_install)],
   [ case "${enableval}" in
     yes) enable_local_install="yes";;
     no)  enable_local_install="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-local-install);;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-local);;
     esac
   ],[])
 AC_MSG_RESULT($enable_local_install)
+
+if test "x${enable_local_install}" = "xyes"; then
+  AC_DEFINE([LOCAL_INSTALL], 1, [if local installation is allowed])
+fi
 
 
 

@@ -1,6 +1,7 @@
 
 MP_CFLAGS=-ggdb -Wall -O
-
+#MP_CONF_FLAGS=--enable-maintainer-mode --disable-static
+MP_CONF_FLAGS=--enable-maintainer-mode --disable-static --enable-local
 
 default: all
 
@@ -60,8 +61,8 @@ mp:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure --enable-maintainer-mode --disable-static
+	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS)
 	make sources
 
 mp-win:
-	CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local-install
+	CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local

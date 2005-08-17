@@ -23,6 +23,7 @@
 #include "country_l.h"
 #include "wcb_l.h"
 
+#include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
