@@ -42,7 +42,6 @@ nodist_libqbanking_la_SOURCES=\
 
 qbanking-config: qbanking-config.in
 	echo "#! /bin/sh" >qbanking-config && \
-	echo 'dir="@prefix@"' >>qbanking-config && \
 	cat qbanking-config.in >>qbanking-config && \
 	chmod a+x qbanking-config
 

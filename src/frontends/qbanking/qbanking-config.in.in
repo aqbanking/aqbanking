@@ -1,6 +1,11 @@
 # $Id$
 # Author of this file: Martin Preuss<martin@libchipcard.de>
 
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+datadir="@datadir@"
+
 result=""
 
 for d in $*; do
@@ -9,28 +14,28 @@ for d in $*; do
 	    result="$result @all_includes@ @kbanking_includes@"
 	    ;;
 	--libraries)
-	    result="$result @kbanking_libs@"
+	    result="$result @qbanking_libs@"
 	    ;;
 	--data)
-	    result="$result @kbanking_data@"
+	    result="$result @qbanking_data@"
 	    ;;
 	--vmajor)
-	    result="$result @KBANKING_VERSION_MAJOR@"
+	    result="$result @QBANKING_VERSION_MAJOR@"
 	    ;;
 	--vminor)
-	    result="$result @KBANKING_VERSION_MINOR@"
+	    result="$result @QBANKING_VERSION_MINOR@"
 	    ;;
 	--vpatchlevel)
-	    result="$result @KBANKING_VERSION_PATCHLEVEL@"
+	    result="$result @QBANKING_VERSION_PATCHLEVEL@"
 	    ;;
 	--vbuild)
-	    result="$result @KBANKING_VERSION_BUILD@"
+	    result="$result @QBANKING_VERSION_BUILD@"
 	    ;;
 	--vtag)
-	    result="$result @KBANKING_VERSION_TAG@"
+	    result="$result @QBANKING_VERSION_TAG@"
 	    ;;
         --vstring)
-	    result="$result @KBANKING_VERSION_MAJOR@.@KBANKING_VERSION_MINOR@.@KBANKING_VERSION_PATCHLEVEL@"
+	    result="$result @QBANKING_VERSION_MAJOR@.@QBANKING_VERSION_MINOR@.@QBANKING_VERSION_PATCHLEVEL@"
             ;;
 	*)
 	    echo "Usage:"

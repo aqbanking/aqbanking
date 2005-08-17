@@ -14,7 +14,6 @@ CLEANFILES = $(BUILT_SOURCES) aqofxconnect-config aqofxconnect-config.in
 
 aqofxconnect-config: aqofxconnect-config.in
 	echo "#! /bin/sh" >aqofxconnect-config && \
-	echo 'dir="@prefix@"' >>aqofxconnect-config && \
 	cat aqofxconnect-config.in >>aqofxconnect-config && \
 	chmod a+x aqofxconnect-config
 

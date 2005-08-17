@@ -1,4 +1,8 @@
 
+2005/08/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed *-config scripts
+
 
 2005/08/16  Peter de Vrijer <pdevrijer@home.nl>
 	* src/plugins/imexporters/eri2/eri2.c

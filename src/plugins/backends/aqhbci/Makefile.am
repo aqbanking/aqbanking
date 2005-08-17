@@ -8,7 +8,6 @@ dist_M4_DATA=aqhbci.m4
 
 aqhbci-config: aqhbci-config.in
 	echo "#! /bin/sh" >aqhbci-config && \
-	echo 'dir="@prefix@"' >>aqhbci-config && \
 	cat aqhbci-config.in >>aqhbci-config && \
 	chmod a+x aqhbci-config
 

@@ -1,6 +1,11 @@
 # $Id$
 # Author of this file: Martin Preuss<martin@libchipcard.de>
 
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+datadir="@datadir@"
+
 result=""
 
 for d in $*; do

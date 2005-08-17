@@ -14,7 +14,6 @@ CLEANFILES = $(BUILT_SOURCES) aqgeldkarte-config aqgeldkarte-config.in
 
 aqgeldkarte-config: aqgeldkarte-config.in
 	echo "#! /bin/sh" >aqgeldkarte-config && \
-	echo 'dir="@prefix@"' >>aqgeldkarte-config && \
 	cat aqgeldkarte-config.in >>aqgeldkarte-config && \
 	chmod a+x aqgeldkarte-config
 

@@ -31,7 +31,6 @@ nodist_libkbanking_la_SOURCES=\
 
 kbanking-config: kbanking-config.in
 	echo "#! /bin/sh" >kbanking-config && \
-	echo 'dir="@prefix@"' >>kbanking-config && \
 	cat kbanking-config.in >>kbanking-config && \
 	chmod a+x kbanking-config
 

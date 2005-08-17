@@ -14,7 +14,6 @@ CLEANFILES = $(BUILT_SOURCES) aqdtaus-config aqdtaus-config.in
 
 aqdtaus-config: aqdtaus-config.in
 	echo "#! /bin/sh" >aqdtaus-config && \
-	echo 'dir="@prefix@"' >>aqdtaus-config && \
 	cat aqdtaus-config.in >>aqdtaus-config && \
 	chmod a+x aqdtaus-config
 
