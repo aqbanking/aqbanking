@@ -357,7 +357,7 @@ int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
   const char *p1, *p2, *p3;
   GWEN_BUFFER *pbuf;
   char strbuf[97];
-  int strlen = 0, *ps = &strlen;
+  unsigned int strlen = 0, *ps = &strlen;
 
   pbuf = GWEN_Buffer_new(0, 96, 0, 1);
 
