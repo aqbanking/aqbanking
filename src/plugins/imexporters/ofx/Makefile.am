@@ -91,6 +91,8 @@ endif
 # IS_WINDOWS
 
 
+else
+sources:
 
 endif
 #####
