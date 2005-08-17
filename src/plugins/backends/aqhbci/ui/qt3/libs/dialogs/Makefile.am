@@ -77,7 +77,7 @@ CLEANFILES = $(nodist_libdialogs_la_SOURCES) $(nodist_noinst_HEADERS)
 
 
 sources:
-	for f in $(libdialogs_la_SOURCES); do \
+	for f in $(libdialogs_la_SOURCES) $(nodist_libdialogs_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \

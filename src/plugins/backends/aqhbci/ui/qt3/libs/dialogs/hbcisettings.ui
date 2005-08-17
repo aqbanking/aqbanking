@@ -210,6 +210,9 @@ import a deleted user again via the security medium.
                                         <property name="text">
                                             <string>Ini-Letter</string>
                                         </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Only show the Ini-Letter of this user</string>
+                                        </property>
                                     </widget>
                                     <widget class="QGroupBox">
                                         <property name="name">
