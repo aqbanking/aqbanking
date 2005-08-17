@@ -108,9 +108,6 @@ void AB_BankInfoPluginGENERIC__GetDataDir(AB_BANKINFO_PLUGIN *bip,
         GWEN_Buffer_AppendString(buf, s);
         GWEN_Buffer_AppendString(buf, DIRSEP "bankinfo" DIRSEP);
         GWEN_Buffer_AppendString(buf, bde->country);
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Trying folder \"%s\"",
-                  GWEN_Buffer_GetStart(buf));
         pos=GWEN_Buffer_GetPos(buf);
         GWEN_Buffer_AppendString(buf, DIRSEP);
         GWEN_Buffer_AppendString(buf, "banks.data");
