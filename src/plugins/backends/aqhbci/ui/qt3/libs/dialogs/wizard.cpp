@@ -827,7 +827,7 @@ bool Wizard::showIniLetter(AH_USER *u) {
     return false;
   }
 
-  initIniLetterPage();
+  //initIniLetterPage(); -- already done in constructor!
   showPage(iniLetterPage);
 	
   enterIniLetterPage(iniLetterPage);
