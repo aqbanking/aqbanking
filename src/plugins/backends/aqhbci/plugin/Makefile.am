@@ -117,7 +117,7 @@ ressource.o: ressource.rc
 # for the library dll but only for the plugin dll. So for now we just
 # delete the file aqhbci-plugin.o from dlldir...
 $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
-	if test -d dlldir; then rm -rf dlldir
+	if test -d dlldir; then rm -rf dlldir; fi
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(DLLSRC_LIB); then \
@@ -141,7 +141,7 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	&& rm -rf dlldir
 
 $(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
-	if test -d dlldir; then rm -rf dlldir
+	if test -d dlldir; then rm -rf dlldir; fi
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(PLUGIN_DLLSRC_LIB); then \
