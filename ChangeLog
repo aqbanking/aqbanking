@@ -1,11 +1,23 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
 2005-08-17   Christian Stimming <stimming@tuhh.de>
 
 	* Makefile.am, configure.ac: Only use msgfmt --qt if the program
 	supports this argument.
 
+
 2005/08/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed *-config scripts
+- define AQBANKING_SO_EFFECTIVE_STR
+- add --enable-local-install (to be used for windows programs). 
+  With this enabled plugins are also searched for below the working dir of the
+  running program
+- added function AB_Banking_GetGlobalSysconfDirs()
+- added description of used Windows Registry Keys
 
 
 2005/08/16  Peter de Vrijer <pdevrijer@home.nl>

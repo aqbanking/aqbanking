@@ -62,3 +62,6 @@ mp:
 	autoconf
 	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure --enable-maintainer-mode --disable-static
 	make sources
+
+mp-win:
+	CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local-install

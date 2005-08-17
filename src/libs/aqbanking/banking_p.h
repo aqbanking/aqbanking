@@ -23,6 +23,7 @@
 #define AB_BANKING_REGKEY_BANKINFODIR "bankinfodir"
 #define AB_BANKING_REGKEY_PROVIDERDIR "providerdir"
 #define AB_BANKING_REGKEY_IMPORTERDIR "importerdir"
+#define AB_BANKING_REGKEY_SYSCONFDIR  "sysconfdir"
 
 #include "banking_l.h"
 #include "account_l.h"
@@ -50,6 +51,8 @@ struct AB_BANKING {
   GWEN_STRINGLIST *activeProviders;
 
   char *configFile;
+
+  char *startFolder;
 
   GWEN_DB_NODE *data;
   GWEN_DB_NODE *dbTempConfig;

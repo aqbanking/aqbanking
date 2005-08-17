@@ -37,7 +37,6 @@ AB_BANKINFO_PLUGIN *AB_BankInfoPlugin_new(const char *country){
   GWEN_INHERIT_INIT(AB_BANKINFO_PLUGIN, bip);
   GWEN_LIST_INIT(AB_BANKINFO_PLUGIN, bip);
   bip->usage=1;
-
   bip->country=strdup(country);
 
   return bip;
@@ -75,6 +74,7 @@ const char *AB_BankInfoPlugin_GetCountry(const AB_BANKINFO_PLUGIN *bip){
   assert(bip->usage);
   return bip->country;
 }
+
 
 
 AB_BANKINFO *AB_BankInfoPlugin_GetBankInfo(AB_BANKINFO_PLUGIN *bip,

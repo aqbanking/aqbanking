@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=3
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=11
+AQBANKING_VERSION_BUILD=14
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -227,6 +227,8 @@ AC_SUBST(AQBANKING_SO_CURRENT)
 AC_SUBST(AQBANKING_SO_REVISION)
 AC_SUBST(AQBANKING_SO_AGE)
 AC_SUBST(AQBANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQBANKING_SO_EFFECTIVE_STR, "$AQBANKING_SO_EFFECTIVE",
+                   [effective SO version])
 
 AM_INIT_AUTOMAKE(aqbanking, $AQBANKING_VERSION_RELEASE_STRING)
 
@@ -612,7 +614,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,14,0,7)
+AC_GWENHYWFAR(1,15,0,2)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -1013,6 +1015,26 @@ else
   AC_MSG_RESULT(found)
 fi
 AC_SUBST(DOXYGEN_TAGFILES)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for local install mode
+#
+
+AC_MSG_CHECKING(whether local install mode is wanted)
+enable_local_install="no"
+
+AC_ARG_ENABLE(local-install,
+  [  --enable-local-install     allow local installation (default=$enable_local_install)],
+  [ case "${enableval}" in
+    yes) enable_local_install="yes";;
+    no)  enable_local_install="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-local-install);;
+    esac
+  ],[])
+AC_MSG_RESULT($enable_local_install)
 
 
 

@@ -16,6 +16,7 @@
 
 #include "generic_p.h"
 
+#include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/waitcallback.h>
@@ -27,6 +28,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
 
 
 GWEN_INHERIT(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC)
@@ -70,16 +76,60 @@ void AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p){
 void AB_BankInfoPluginGENERIC__GetDataDir(AB_BANKINFO_PLUGIN *bip,
                                           GWEN_BUFFER *pbuf) {
   AB_BANKINFO_PLUGIN_GENERIC *bde;
+  int gotit=0;
+
+  assert(pbuf);
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
                            bip);
   assert(bde);
 
-  assert(pbuf);
-  GWEN_Buffer_AppendString(pbuf, PLUGIN_DATADIR);
-  GWEN_Buffer_AppendByte(pbuf, '/');
-  GWEN_Buffer_AppendString(pbuf, bde->country);
+  if (bde->dataDir) {
+    gotit=1;
+    GWEN_Buffer_AppendString(pbuf, bde->dataDir);
+  }
+  else {
+    GWEN_STRINGLIST *sl;
+
+    sl=AB_Banking_GetGlobalDataDirs();
+    if (sl) {
+      GWEN_STRINGLISTENTRY *se;
+      GWEN_BUFFER *buf;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        FILE *f;
+        const char *s;
+        unsigned int pos;
+
+        s=GWEN_StringListEntry_Data(se);
+        GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, DIRSEP "bankinfo" DIRSEP);
+        GWEN_Buffer_AppendString(buf, bde->country);
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Trying folder \"%s\"",
+                  GWEN_Buffer_GetStart(buf));
+        pos=GWEN_Buffer_GetPos(buf);
+        GWEN_Buffer_AppendString(buf, DIRSEP);
+        GWEN_Buffer_AppendString(buf, "banks.data");
+        f=fopen(GWEN_Buffer_GetStart(buf), "r");
+        if (f) {
+          fclose(f);
+          GWEN_Buffer_Crop(buf, 0, pos);
+          bde->dataDir=strdup(GWEN_Buffer_GetStart(buf));
+          GWEN_Buffer_AppendBuffer(pbuf, buf);
+          gotit=1;
+          break;
+        }
+        GWEN_Buffer_Reset(buf);
+        se=GWEN_StringListEntry_Next(se);
+      }
+    }
+    GWEN_StringList_free(sl);
+  }
+  assert(gotit);
 }
 
 

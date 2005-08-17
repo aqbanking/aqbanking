@@ -416,7 +416,7 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
 
 
 
-GWEN_DBIO *swift_factory() {
+GWEN_DBIO *GWEN_DBIO_SWIFT_Factory(GWEN_PLUGIN *pl) {
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("swift", "Imports and exports SWIFT data");
@@ -427,6 +427,20 @@ GWEN_DBIO *swift_factory() {
 }
 
 
+
+GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,
+                                const char *modName,
+                                const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=GWEN_DBIO_Plugin_new(pm, modName, fileName);
+  assert(pl);
+
+  GWEN_DBIO_Plugin_SetFactoryFn(pl, GWEN_DBIO_SWIFT_Factory);
+
+  return pl;
+
+}
 
 
 

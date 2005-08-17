@@ -16,7 +16,10 @@
 #include <gwenhywfar/dbio.h>
 
 
-GWEN_DBIO *dtaus_factory();
+GWEN_PLUGIN *dbio_dtaus_factory(GWEN_PLUGIN_MANAGER *pm,
+                                const char *modName,
+                                const char *fileName);
+GWEN_DBIO *AHB_DTAUS_Factory(GWEN_PLUGIN *pl);
 
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,

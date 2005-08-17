@@ -78,6 +78,7 @@ void AB_BankInfoPlugin_Attach(AB_BANKINFO_PLUGIN *bip);
  *
  */
 /*@{*/
+
 const char *AB_BankInfoPlugin_GetCountry(const AB_BANKINFO_PLUGIN *bip);
 /*@}*/
 

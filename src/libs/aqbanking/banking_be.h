@@ -39,6 +39,21 @@ extern "C" {
 AQBANKING_API 
 AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
 
+
+/**
+ * Returns the list of global data folders. In most cases this is something
+ * like $PREFIX/share/aqbanking. Plugins are required to use the folders
+ * returned here when searching for their specific data instead of using the
+ * compile time fixed values. This way it is easier under windows to find
+ * data.
+ */
+AQBANKING_API
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs();
+
+
+AQBANKING_API
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs();
+
 /*@}*/
 
 

@@ -22,6 +22,7 @@ struct AB_BANKINFO_PLUGIN_GENERIC {
   AB_BANKING *banking;
   GWEN_DB_NODE *dbData;
   char *country;
+  char *dataDir;
 };
 
 

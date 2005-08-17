@@ -33,6 +33,7 @@
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/nettransportssl.h>
+#include <gwenhywfar/pathmanager.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -153,6 +154,7 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
                                    GWEN_TYPE_UINT32 extensions){
   AB_BANKING *ab;
   GWEN_BUFFER *nbuf;
+  char buffer[256];
 
   assert(appName);
 
@@ -209,6 +211,22 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
 
   ab->appExtensions=extensions;
 
+  if (getcwd(buffer, sizeof(buffer)-1)==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "getcwd: %s", strerror(errno));
+  }
+  else {
+    struct stat st;
+
+    if (stat(buffer, &st)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "stat(%s): %s", buffer, strerror(errno));
+    }
+    else {
+      ab->startFolder=strdup(buffer);
+    }
+  }
+
   return ab;
 }
 
@@ -250,6 +268,7 @@ void AB_Banking_free(AB_BANKING *ab){
     GWEN_DB_Group_free(ab->data);
     AB_Pin_List_free(ab->pinList);
     GWEN_DB_Group_free(ab->dbTempConfig);
+    free(ab->startFolder);
     free(ab->appName);
     free(ab->appEscName);
     free(ab->configFile);
@@ -1127,6 +1146,10 @@ int AB_Banking_Init(AB_BANKING *ab) {
   int i;
   const char *s;
   GWEN_PLUGIN_MANAGER *pm;
+#ifdef LOCAL_INSTALL
+  GWEN_BUFFER *buf=0;
+  unsigned int pos;
+#endif
 
   assert(ab);
 
@@ -1159,9 +1182,78 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
 #endif
 
+
+  /* define sysconf paths */
+  GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
+#ifdef OS_WIN32
+  GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
+                                     AB_PM_LIBNAME,
+                                     AB_PM_DATADIR,
+                                     AB_BANKING_REGKEY_PATHS,
+                                     AB_BANKING_REGKEY_SYSCONFDIR);
+#endif
+  GWEN_PathManager_AddPath(AB_PM_LIBNAME,
+                           AB_PM_LIBNAME,
+                           AB_PM_SYSCONFDIR,
+                           AQBANKING_SYSCONF_DIR);
+
+
+  /* define data paths */
+  GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
+#ifdef OS_WIN32
+  GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
+                                     AB_PM_LIBNAME,
+                                     AB_PM_DATADIR,
+                                     AB_BANKING_REGKEY_PATHS,
+                                     AB_BANKING_REGKEY_DATADIR);
+#endif
+  GWEN_PathManager_AddPath(AB_PM_LIBNAME,
+                           AB_PM_LIBNAME,
+                           AB_PM_DATADIR,
+                           AQBANKING_DATA_DIR);
+
+#ifdef LOCAL_INSTALL
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (ab->startFolder) {
+    GWEN_Buffer_AppendString(buf, ab->startFolder);
+    GWEN_Buffer_AppendString(buf, DIRSEP);
+  }
+  pos=GWEN_Buffer_GetPos(buf);
+
+  /* add local sysconf dir */
+  GWEN_Buffer_AppendString(buf, "etc");
+  GWEN_PathManager_InsertPath(AB_PM_LIBNAME,
+                              AB_PM_LIBNAME,
+                              AB_PM_SYSCONFDIR,
+                              GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+
+  /* add local data dir */
+  GWEN_Buffer_AppendString(buf, "share" DIRSEP "aqbanking");
+  GWEN_PathManager_InsertPath(AB_PM_LIBNAME,
+                              AB_PM_LIBNAME,
+                              AB_PM_DATADIR,
+                              GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+
+  /* add local plugin paths */
+  GWEN_Buffer_AppendString(buf, "lib" DIRSEP "aqbanking" DIRSEP
+                           "plugins" DIRSEP
+                           AQBANKING_SO_EFFECTIVE_STR DIRSEP);
+  pos=GWEN_Buffer_GetPos(buf);
+
+#endif
+
+
   /* create bankinfo plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");
   pm=GWEN_PluginManager_new("bankinfo");
+
+#ifdef LOCAL_INSTALL
+  GWEN_Buffer_AppendString(buf, "bankinfo");
+  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+#endif
   GWEN_PluginManager_AddPathFromWinReg(pm,
                                        AB_BANKING_REGKEY_PATHS,
                                        AB_BANKING_REGKEY_BANKINFODIR);
@@ -1172,13 +1264,22 @@ int AB_Banking_Init(AB_BANKING *ab) {
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Could not register bankinfo plugin manager");
+#ifdef LOCAL_INSTALL
+    GWEN_Buffer_free(buf);
+#endif
     return AB_ERROR_GENERIC;
   }
   ab->pluginManagerBankInfo=pm;
 
+
   /* create provider plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering provider plugin manager");
   pm=GWEN_PluginManager_new("provider");
+#ifdef LOCAL_INSTALL
+  GWEN_Buffer_AppendString(buf, "provider");
+  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+#endif
   GWEN_PluginManager_AddPathFromWinReg(pm,
                                        AB_BANKING_REGKEY_PATHS,
                                        AB_BANKING_REGKEY_PROVIDERDIR);
@@ -1189,6 +1290,9 @@ int AB_Banking_Init(AB_BANKING *ab) {
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register provider plugin manager");
+#ifdef LOCAL_INSTALL
+    GWEN_Buffer_free(buf);
+#endif
     return AB_ERROR_GENERIC;
   }
   ab->pluginManagerProvider=pm;
@@ -1196,6 +1300,11 @@ int AB_Banking_Init(AB_BANKING *ab) {
   /* create imexporters plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
   pm=GWEN_PluginManager_new("imexporters");
+#ifdef LOCAL_INSTALL
+  GWEN_Buffer_AppendString(buf, "imexporters");
+  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+#endif
   GWEN_PluginManager_AddPathFromWinReg(pm,
                                        AB_BANKING_REGKEY_PATHS,
                                        AB_BANKING_REGKEY_IMPORTERDIR);
@@ -1206,29 +1315,33 @@ int AB_Banking_Init(AB_BANKING *ab) {
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not register imexporters plugin manager");
+#ifdef LOCAL_INSTALL
+    GWEN_Buffer_free(buf);
+#endif
     return AB_ERROR_GENERIC;
   }
   ab->pluginManagerImExporter=pm;
 
-  /* create imexporters plugin manager */
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering aqbanking_datadir plugin manager");
-  pm=GWEN_PluginManager_new("aqbanking_datadir");
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-                                       AB_BANKING_REGKEY_PATHS,
-                                       AB_BANKING_REGKEY_DATADIR);
-  GWEN_PluginManager_AddPath(pm, GLOBALDATADIR);
-  /*
-  if (GWEN_PluginManager_Register(pm)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not register aqbanking_datadir plugin manager");
-    return AB_ERROR_GENERIC;
-  } */
-  ab->pluginManagerPkgdatadir=pm;
 
   /* create crypt plugin manager */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering crypttoken plugin manager");
   pm=AB_CryptManager_new(ab);
-  if (pm) {
+#ifdef LOCAL_INSTALL
+  GWEN_Buffer_Reset(buf);
+  if (ab->startFolder) {
+    GWEN_Buffer_AppendString(buf, ab->startFolder);
+    GWEN_Buffer_AppendString(buf, DIRSEP);
+  }
+  GWEN_Buffer_AppendString(buf, "lib" DIRSEP "gwenhywfar" DIRSEP
+                           "plugin" DIRSEP
+                           GWENHYWFAR_SO_EFFECTIVE_STR DIRSEP);
+  pos=GWEN_Buffer_GetPos(buf);
+  GWEN_Buffer_AppendString(buf, "crypttoken");
+  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_Crop(buf, 0, pos);
+#endif
+
+  if (1) { /* this "if" is just to have local vars in the next block */
     GWEN_BUFFER *ctbuf;
 
     /* add path from gwen since all crypt token plugins are installed there */
@@ -1239,14 +1352,31 @@ int AB_Banking_Init(AB_BANKING *ab) {
     GWEN_PluginManager_AddPath(pm,
                                GWEN_Buffer_GetStart(ctbuf));
     GWEN_Buffer_free(ctbuf);
-
-    if (GWEN_PluginManager_Register(pm)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Could not register crypttoken plugin manager");
-      return AB_ERROR_GENERIC;
-    }
-    ab->pluginManagerCryptToken=pm;
   }
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not register crypttoken plugin manager");
+#ifdef LOCAL_INSTALL
+    GWEN_Buffer_free(buf);
+#endif
+    return AB_ERROR_GENERIC;
+  }
+  ab->pluginManagerCryptToken=pm;
+
+
+  /* add local path for DBIO plugins if in local installation mode */
+#ifdef LOCAL_INSTALL
+  pm=GWEN_PluginManager_FindPluginManager("dbio");
+  if (pm) {
+    GWEN_Buffer_AppendString(buf, "dbio");
+    GWEN_PluginManager_InsertPath(pm, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_Crop(buf, 0, pos);
+  }
+#endif
+
+#ifdef LOCAL_INSTALL
+  GWEN_Buffer_free(buf);
+#endif
 
   /* read config file */
   if (access(ab->configFile, F_OK)) {
@@ -1604,6 +1734,9 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     GWEN_PluginManager_free(ab->pluginManagerPkgdatadir);
     ab->pluginManagerPkgdatadir=0;
   }
+
+  GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
+  GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
 
   GWEN_DB_ClearGroup(ab->data, 0);
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
@@ -2590,7 +2723,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   GWEN_BUFFER *buf;
   GWEN_DB_NODE *db;
   int rv;
-  const GWEN_STRINGLIST *sl;
+  GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *sentry;
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -2614,6 +2747,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Bad name for importer/exporter");
+      GWEN_StringList_free(sl);
       GWEN_DB_Group_free(db);
       GWEN_Buffer_free(buf);
       return 0;
@@ -2625,6 +2759,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     if (rv && rv!=AB_ERROR_NOT_FOUND) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Error reading global profiles");
+      GWEN_StringList_free(sl);
       GWEN_DB_Group_free(db);
       GWEN_Buffer_free(buf);
       return 0;
@@ -2632,6 +2767,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     GWEN_Buffer_Reset(buf);
     sentry=GWEN_StringListEntry_Next(sentry);
   }
+  GWEN_StringList_free(sl);
 
   /* read local user profiles */
   if (AB_Banking_GetUserDataDir(ab, buf)) {
@@ -5663,19 +5799,21 @@ int AB_Banking_CheckIban(const char *iban) {
 }
 
 
-const GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(const AB_BANKING *ab) {
-  GWEN_PLUGIN_MANAGER *pm;
 
-  assert(ab);
-  pm=ab->pluginManagerPkgdatadir;
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "aqbanking_datadir");
-    return 0;
-  }
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs() {
+  GWEN_STRINGLIST *sl;
 
-  return GWEN_PluginManager_GetPaths(pm);
+  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_DATADIR);
+  return sl;
+}
+
+
+
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs() {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
+  return sl;
 }
 
 

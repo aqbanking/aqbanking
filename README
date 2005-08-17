@@ -18,6 +18,7 @@
                5.2. Building from CVS
                5.3. Building the API Documentation
                5.4. Notes on porting the qt parts to Qt-4: 
+               6. Windows Registry Keys Used
 
 
 
@@ -260,6 +261,41 @@ or on Windows/mingw32
     --with-aqbanking-dir=/c/Programme/aqbanking
 
 -- 2005-08-10, cstim
+
+
+
+6. Windows Registry Keys Used
+=============================
+
+AqBanking uses regstry keys below HKEY_CURRENT_USER.
+Currently the following keys are used.
+
+
+6.1. Software\\AqBanking\\Paths\\pkgdatadir
+-------------------------------------------
+This is the data folder (i.e. $PREFIX/share on POSIX systems).
+
+
+6.2. Software\\AqBanking\\Paths\\sysconfdir
+-------------------------------------------
+This is the folder containing system configuration files.
+(i.e. $PREFIX/etc on POSIX systems).
+
+
+6.3. Software\\AqBanking\\Paths\\bankinfodir
+-------------------------------------------
+This folder is used to store bankinfo plugins.
+
+
+6.4. Software\\AqBanking\\Paths\\providerdir
+-------------------------------------------
+This folder is used to store provider (backend) plugins.
+
+
+6.5. Software\\AqBanking\\Paths\\importerdir
+-------------------------------------------
+This folder is used to store importer/exporter plugins.
+
 
 
 

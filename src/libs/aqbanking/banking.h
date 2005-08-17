@@ -25,6 +25,12 @@
 #include <aqbanking/error.h> /* for AQBANKING_API */
 #include <aqbanking/version.h>
 
+
+#define AB_PM_LIBNAME    "aqbanking"
+#define AB_PM_SYSCONFDIR "sysconfdir"
+#define AB_PM_DATADIR    "datadir"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -847,17 +853,6 @@ AQBANKING_API
 int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
                                 GWEN_BUFFER *buf);
-
-/**
- * Returns the list of global data folders. In most cases this is something
- * like $PREFIX/share/aqbanking. Plugins are required to use the folders
- * returned here when searching for their specific data instead of using the
- * compile time fixed values. This way it is easier under windows to find
- * data.
- */
-AQBANKING_API 
-const GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(const AB_BANKING *ab);
-
 
 /** Returns the void pointer that was stored by
  * AB_Banking_SetUserData(). This might be useful for passing data to

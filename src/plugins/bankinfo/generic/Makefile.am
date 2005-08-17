@@ -6,7 +6,7 @@ EXTRA_DIST=\
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
 
-DEFS += -DPLUGIN_DATADIR=\"$(bankinfodatadir)\"
+#DEFS += -DPLUGIN_DATADIR=\"$(bankinfodatadir)\"
 
 noinst_LTLIBRARIES=libbankinfo.la
 
