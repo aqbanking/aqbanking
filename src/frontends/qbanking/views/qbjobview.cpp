@@ -172,7 +172,7 @@ void QBJobView::slotDequeue(){
   if (QMessageBox::warning(0,
 			   tr("Delete job"),
 			   tr("Do you really want to delete the "
-			      "selected job(s) ?"),
+			      "selected job(s)?"),
 			   tr("Yes"), tr("No"), 0, 0)!=0)
     return;
 

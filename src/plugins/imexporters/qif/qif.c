@@ -249,7 +249,7 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
 		  "represents the decimal fixpoint:\n"
 		  " 1) \'.\' (as in \"123.45\")\n"
 		  " 2) \',\' (as in \"123,45\")\n"
-		  "What is the fixpoint in the value above ?");
+		  "What is the fixpoint in the value above?");
       const char *t1h=
 	I18N_NOOP("<htlm>The following value could not be parsed: <br>");
       const char *t2h=
@@ -260,7 +260,7 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
 		  " <li>\'.\' (as in \"123.45\")</li>\n"
 		  " <li>\',\' (as in \"123,45\")</li>\n"
 		  "</ol>"
-		  "What is the fixpoint in the value above ?"
+		  "What is the fixpoint in the value above?"
 		  "</html>");
 
       /* this is weird, ask the user */

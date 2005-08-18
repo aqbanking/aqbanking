@@ -122,7 +122,7 @@ disable and setup those backends.
                                     <string>Map</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>map the selected account to application accounts</string>
+                                    <string>Map the selected account to application accounts</string>
                                 </property>
                                 <property name="whatsThis" stdset="0">
                                     <string>&lt;qt&gt;

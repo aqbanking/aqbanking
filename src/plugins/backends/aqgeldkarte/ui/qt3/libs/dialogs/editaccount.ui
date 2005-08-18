@@ -198,7 +198,7 @@ You should enter the name exactly as you would on a paper transfer.
                         <cstring>whatsThisButton</cstring>
                     </property>
                     <property name="text">
-                        <string>What's This ?</string>
+                        <string>What's This?</string>
                     </property>
                 </widget>
                 <spacer>

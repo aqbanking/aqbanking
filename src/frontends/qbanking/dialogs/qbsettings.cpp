@@ -237,7 +237,7 @@ void QBankingSettings::slotBackendDisable(){
                              tr("This would remove all accounts currently "
                                 "supported by that backend.\n"
                                 "\n"
-                                "Do you still want me to disable it ?"),
+                                "Do you still want me to disable it?"),
                              tr("Yes"),tr("No"),0,0)!=0)
       return;
 
