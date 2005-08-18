@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-08-18 10:42+0200\n"
-"PO-Revision-Date: 2005-08-18 10:46+0200\n"
+"PO-Revision-Date: 2005-08-18 10:56+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3418,7 +3418,6 @@ msgstr "Abgelaufene Zeit:"
 msgid "0:00"
 msgstr "0:00"
 
-# message
 #: src/frontends/qbanking/widgets/qbprogress.ui.cpp:94
 msgid "(c) 2004 Martin Preuss"
 msgstr "(c) 2004 M. Preuss"
@@ -3726,7 +3725,6 @@ msgstr "Beenden"
 msgid "Kill"
 msgstr "Abbrechen"
 
-# message
 #: src/frontends/qbanking/dialogs/qbsettings.ui.cpp:131
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:131
 msgid "Banking Settings"
@@ -3760,7 +3758,6 @@ msgid ""
 "</qt>"
 msgstr ""
 
-# message
 #: src/frontends/qbanking/dialogs/qbsettings.ui.cpp:156
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:156
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:229
@@ -3775,7 +3772,7 @@ msgstr "Zuordnen"
 #: src/frontends/qbanking/dialogs/qbsettings.ui.cpp:159
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:159
 msgid "Map the selected account to application accounts"
-msgstr ""
+msgstr "Das gewählte Online-Konto zu einem Konto der Anwendung zuordnen"
 
 #: src/frontends/qbanking/dialogs/qbsettings.ui.cpp:160
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:160
@@ -3841,7 +3838,6 @@ msgstr ""
 msgid "Application Account"
 msgstr "Anwendungskonto"
 
-# message
 #: src/frontends/qbanking/dialogs/qbmapaccount.ui.cpp:104
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:84
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:148
@@ -3855,7 +3851,6 @@ msgstr "Anwendungskonto"
 msgid "Bank Code"
 msgstr "Bankleitzahl (BLZ)"
 
-# message
 #: src/frontends/qbanking/dialogs/qbmapaccount.ui.cpp:106
 msgid "Online Accounts"
 msgstr "Online-Konto"
@@ -3868,7 +3863,6 @@ msgstr "Zuweisen"
 msgid "Import Wizard"
 msgstr "Import-Assistent"
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:192
 msgid ""
 "<qt>\n"
@@ -3906,13 +3900,11 @@ msgstr ""
 "</p>\n"
 "</qt>"
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:209
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4309
 msgid "Start"
 msgstr "Start"
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:210
 msgid ""
 "<qt>\n"
@@ -3930,7 +3922,6 @@ msgstr ""
 msgid "File"
 msgstr "Datei"
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:220
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4353
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4444
@@ -3966,7 +3957,6 @@ msgstr "-- Dateiname --"
 msgid "File Type"
 msgstr "Dateityp"
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:231
 msgid "Check File Type"
 msgstr "Dateityp prüfen"
@@ -3996,8 +3986,6 @@ msgstr "Profile"
 msgid "Edit"
 msgstr "Ändern"
 
-# message
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:240
 msgid "Select Profile"
 msgstr "Profil wählen"
@@ -4042,20 +4030,14 @@ msgid ""
 "</qt>"
 msgstr ""
 
-# message
 #: src/frontends/qbanking/dialogs/qbimporter.ui.cpp:262
 msgid "Finished"
 msgstr "Abgeschlossen."
 
-# message
-# message
-# message
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:120
 msgid "Pick Start Date"
 msgstr "Wählen Sie das Anfangsdatum"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:121
 msgid ""
 "<qt>\n"
@@ -4077,27 +4059,22 @@ msgstr ""
 "</p>\n"
 "</qt>"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:129
 msgid "Start Date"
 msgstr "Anfangsdatum"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:130
 msgid "No date (let the bank determine the start date)"
 msgstr "Keine Angabe (Festlegung des Startdatums durch die Bank)"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:132
 msgid "Pick date"
 msgstr "Datum wählen"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:133
 msgid "First possible date"
 msgstr "Frühestes mögliches Datum"
 
-# message
 #: src/frontends/qbanking/dialogs/qbpickstartdate.ui.cpp:135
 msgid "Last Update"
 msgstr "Letzte Aktualisierung"
@@ -4117,7 +4094,6 @@ msgstr "&Ok"
 msgid "&Cancel"
 msgstr "&Abbrechen"
 
-# message
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:85
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:147
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:151
@@ -4140,13 +4116,11 @@ msgstr "Ort"
 msgid "BIC"
 msgstr "BIC"
 
-# message
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:88
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:154
 msgid "Online Banking"
 msgstr "Online-Banking"
 
-# message
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:144
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:138
 msgid "Select Bank"
@@ -4156,9 +4130,6 @@ msgstr "Wählen Sie eine Bank"
 msgid "SWIFT Code"
 msgstr "SWIFT Kode"
 
-# message
-# message
-# message
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:149
 msgid "Matching Banks"
 msgstr "Passende Banken"
@@ -4175,7 +4146,6 @@ msgstr "nur Banken mit Online-Banking"
 msgid "&Help"
 msgstr "&Hilfe"
 
-# message
 #: src/frontends/qbanking/dialogs/qbselectbank.ui.cpp:157
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:147
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:184
@@ -4205,7 +4175,6 @@ msgstr ""
 msgid "Print Preview"
 msgstr "Druckvorschau"
 
-# message
 #: src/frontends/qbanking/dialogs/qbprintdialog.ui.cpp:95
 msgid "Output"
 msgstr "Ausgabe"
@@ -5012,13 +4981,10 @@ msgstr "Benutzer auswählen"
 msgid "No user found on this medium"
 msgstr "Kein Benutzer auf diesem Medium gefunden"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4298
 msgid "AqHBCI User Wizard"
 msgstr "AqHBCI Benutzer Wizard"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4299
 msgid ""
 "<qt>\n"
@@ -5052,7 +5018,6 @@ msgstr ""
 "</ul>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4310
 msgid ""
 "<qt>\n"
@@ -5088,32 +5053,26 @@ msgstr ""
 "<p>Bitte wählen Sie nun eine Vorgehensweise.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4327
 msgid "Mode"
 msgstr "Vorgehensweise"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4328
 msgid "Import existing medium (especially chipcards)"
 msgstr "Existierendes Medium importieren (besonders Chipkarten)"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4329
 msgid "Create new medium"
 msgstr "Neues Medium erstellen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4330
 msgid "Use PIN/TAN mode"
 msgstr "PIN/TAN-Modus benutzen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4331
 msgid "Import or Create?"
 msgstr "Importieren oder neu erstellen?"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4332
 msgid ""
 "<qt>\n"
@@ -5147,44 +5106,36 @@ msgstr ""
 "geprüft, ob Ihre Chipkarte unterstützt wird.)</p></li>\n"
 "</ul></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4350
 msgid "Medium Type"
 msgstr "Mediumtyp"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4351
 msgid "Key file (RDH mode)"
 msgstr "Schlüsseldatei (RDH-Modus)"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4352
 msgid "Path"
 msgstr "Pfad"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4354
 msgid "Chip card"
 msgstr "Chipkarte"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4355
 msgid "Security Medium"
 msgstr "Sicherheitsmedium"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4356
 msgid ""
 "<qt>\n"
 "We will now check the type of the chip card.</qt>"
 msgstr "<qt>Der Typ der Chipkarte wird nun geprüft.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4358
 msgid "Check chip card"
 msgstr "Chipkarte prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4359
 msgid ""
 "<qt>\n"
@@ -5225,18 +5176,15 @@ msgstr ""
 "</ul>\n"
 "<p>Bitte klicken Sie den Knopf unten, um die Prüfung durchzuführen.</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4384
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4427
 msgid "Check Now"
 msgstr "Jetzt prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4385
 msgid "Check the type of chip card now"
 msgstr "Die Chipkarte jetzt prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4386
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4429
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4541
@@ -5247,13 +5195,10 @@ msgstr "Die Chipkarte jetzt prüfen"
 msgid "Result:"
 msgstr "Ergebnis:"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4388
 msgid "Check Card"
 msgstr "Karte prüfen"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4389
 msgid ""
 "<qt>\n"
@@ -5272,22 +5217,18 @@ msgstr ""
 "<p>Bitte wählen Sie einen Dateityp und gehen dann weiter zur nächsten Seite."
 "</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4399
 msgid "Type"
 msgstr "Dateityp"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4400
 msgid "Select a file type for the key file here"
 msgstr "Wählen Sie einen Dateityp für die Schlüsseldatei"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4401
 msgid "Explanation of the chosen file type"
 msgstr "Erklärung des ausgewählten Dateityps"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4403
 msgid ""
 "<qt>\n"
@@ -5295,12 +5236,10 @@ msgid ""
 "</qt>"
 msgstr "<qt>Die Schlüsseldatei wird nun geprüft.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4406
 msgid "Check Key File"
 msgstr "Schlüsseldatei prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4407
 msgid ""
 "<qt>\n"
@@ -5351,22 +5290,18 @@ msgstr ""
 "</ul>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4428
 msgid "Check the key file now"
 msgstr "Schlüsseldatei jetzt prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4431
 msgid "Result of the key file check"
 msgstr "Ergebnis der Prüfung der Schlüsseldatei"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4432
 msgid "Check File"
 msgstr "Datei prüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4433
 msgid ""
 "<qt>\n"
@@ -5380,14 +5315,12 @@ msgstr ""
 "importieren.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4437
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:152
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:139
 msgid "Bank"
 msgstr "Bank"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4438
 msgid ""
 "Enter the address of the bank server. For PIN/TAN, this is a full URL with "
@@ -5396,20 +5329,12 @@ msgstr ""
 "Geben Sie die Adresse des Bankservers an. Für PIN/TAN ist dies eine URL mit "
 "Adresse und Pfadangabe."
 
-# message
-# message
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4439
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:38
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:79
 msgid "Server"
 msgstr "Server"
 
-# message
-# message
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4443
 msgid "Enter the bank code (BLZ) of your bank"
 msgstr "Geben Sie die Bankleitzahl (BLZ) ein"
@@ -5420,7 +5345,6 @@ msgstr "Geben Sie die Bankleitzahl (BLZ) ein"
 msgid "User"
 msgstr "Benutzer"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4448
 msgid ""
 "Enter the name of the user. This is needed as originator name when an online "
@@ -5429,13 +5353,11 @@ msgstr ""
 "Geben Sie den Namen des Benutzers ein. Dieser Name wird als Name des "
 "Auftraggebers benötigt, wenn ein Überweisungsauftrag ausgeführt wird."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4449
 msgid "Enter the user id that the bank has given to you."
 msgstr ""
 "Geben Sie die Benutzerkennung ein, die Ihnen von der Bank zugeteilt wurde."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4450
 msgid ""
 "Enter the customer id, if the bank has given one to you. If the bank has not "
@@ -5445,8 +5367,6 @@ msgstr ""
 "Wenn Ihre Bank keine HBCI-Kundennummer erwähnt hat, lassen Sie dieses Feld "
 "leer."
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4452
 msgid ""
 "A description of this user. This field is only used for yourself and can "
@@ -5455,27 +5375,22 @@ msgstr ""
 "Beschreibung dieses Benutzers. Dieses Feld dient nur zur Merkhilfe für Sie "
 "selber und kann wahlweise auch freigelassen werden."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4453
 msgid "Description (optional)"
 msgstr "Beschreibung (optional)"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4454
 msgid "Import from medium"
 msgstr "Vom Medium importieren"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4455
 msgid "Click to import all available data from an existing medium."
 msgstr "Benutzerdaten vom existierenden Medium importieren."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4456
 msgid "Enter User Data"
 msgstr "Benutzerdaten eingeben"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4457
 msgid ""
 "<qt>\n"
@@ -5521,23 +5436,19 @@ msgstr ""
 "</dl>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4482
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4485
 msgid "Initialisation Mode"
 msgstr "Art der Einrichtung"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4483
 msgid "First Initialisation"
 msgstr "Allererste Einrichtung"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4484
 msgid "Already used by other programs"
 msgstr "Bereits von anderen Programmen benutzt"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4486
 msgid ""
 "<qt>\n"
@@ -5571,49 +5482,40 @@ msgstr ""
 "der Test allerdings nicht erfolgreich ist, werden wahrscheinlich auch die "
 "nächsten Schritte fehlschlagen.</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4507
 msgid "2.01"
 msgstr "2.01"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4508
 msgid "2.1"
 msgstr "2.1"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4509
 msgid "2.2"
 msgstr "2.2"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4510
 msgid "Choose the HBCI protocol version"
 msgstr "Wählen Sie die HBCI Protokoll-Version"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4511
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:206
 msgid "Test"
 msgstr "Test"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4512
 msgid "Test the HBCI protocol version by communicating with the bank server."
 msgstr ""
 "Die HBCI Prokotoll-Version testen, die vom Bank-Server unterstützt wird."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4514
 msgid "Result of the communication test with the bank server"
 msgstr "Ergebnis des Kommunikationstests mit dem Bank-Server"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4515
 msgid "HBCI Protocol Version"
 msgstr "HBCI Protokoll-Version"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4516
 msgid ""
 "<qt>\n"
@@ -5630,23 +5532,18 @@ msgstr ""
 "Sie daher alle Angaben nochmals. Wenn alles richtig ist, klicken Sie \"Weiter"
 "\".</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4522
 msgid "Your Settings"
 msgstr "Ihre Einstellungen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4524
 msgid "Summary of the new HBCI User"
 msgstr "Zusammenfassung für den neuen HBCI Benutzer"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4525
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4526
 msgid ""
 "<qt>\n"
@@ -5655,12 +5552,10 @@ msgid ""
 msgstr ""
 "<qt>Die öffentlichen Schlüssel des Bank-Servers werden nun abgerufen.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4529
 msgid "Get Server's Keys"
 msgstr "Server-Schlüssel abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4530
 msgid ""
 "<qt>\n"
@@ -5697,24 +5592,20 @@ msgstr ""
 "Kommunikation mit dem Bank-Server beobachten können.\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4539
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4544
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:181
 msgid "Get Server Keys"
 msgstr "Server-Schlüssel abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4540
 msgid "Get the public keys of the bank server now."
 msgstr "Die öffentlichen Schlüssel jetzt abrufen."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4543
 msgid "Result of retrieving the public keys."
 msgstr "Ergebnis des Abrufs der öffentlichen Schlüssel."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4545
 msgid ""
 "<qt>\n"
@@ -5728,17 +5619,14 @@ msgstr ""
 "\") mit dem auf Papier abgedruckten, den Sie von Ihrer Bank erhalten haben.</"
 "qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4549
 msgid "Server's Ini-Letter"
 msgstr "Ini-Brief des Bank-Servers"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4550
 msgid "The Ini-Letter of the bank server"
 msgstr "Ini-Brief des Bank-Servers"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4551
 msgid ""
 "<qt>\n"
@@ -5748,8 +5636,6 @@ msgstr ""
 "<qt>Stimmt dieser elektronische Fingerabdruck (\"Hash\") mit demjenigen aus "
 "dem Brief der Bank überein?"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4555
 msgid ""
 "Click yes if the Ini-Letter is identical to the paper letter from your bank."
@@ -5757,8 +5643,6 @@ msgstr ""
 "Klicken Sie Ja, wenn der gezeigte Ini-Brief mit dem Papier-Brief von Ihrer "
 "Bank übereinstimmt."
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4557
 msgid ""
 "Click No if the Ini-Letter is not identical with the paper letter from your "
@@ -5767,12 +5651,10 @@ msgstr ""
 "Klicken Sie Nein, wenn der gezeigte Ini-Brief nicht mit dem Papier-Brief "
 "übereinstimmt (und kontaktieren Sie Ihre Bank)"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4558
 msgid "Verify Server Keys"
 msgstr "Öffentliche Schlüssel überprüfen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4559
 msgid ""
 "<qt>\n"
@@ -5780,12 +5662,10 @@ msgid ""
 "</qt>"
 msgstr "<qt>Ihre öffentlichen Schlüssel werden nun erstellt.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4562
 msgid "Create Your Keys"
 msgstr "Ihre Schlüssel erstellen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4563
 msgid ""
 "<qt>\n"
@@ -5827,23 +5707,19 @@ msgstr ""
 "</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4579
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4584
 msgid "Create Keys"
 msgstr "Schlüssel erstellen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4580
 msgid "Create your public keys now"
 msgstr "Öffentliche Schlüssel jetzt erstellen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4583
 msgid "Result of creating the public keys"
 msgstr "Ergebnis des Erstellens der öffentlichen Schlüssel"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4585
 msgid ""
 "<qt>\n"
@@ -5852,12 +5728,10 @@ msgid ""
 msgstr ""
 "<qt>Ihre öffentlichen Schlüssel werden nun an den Bank-Server geschickt.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4588
 msgid "Send Your Keys"
 msgstr "Ihre Schlüssel senden"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4589
 #, fuzzy
 msgid ""
@@ -5927,24 +5801,19 @@ msgstr ""
 "zurückzusetzen.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4631
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4636
 msgid "Send Keys"
 msgstr "Schlüssel senden"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4632
 msgid "Send your public keys to the bank server now"
 msgstr "Öffentliche Schlüssel jetzt an den Bank-Server schicken"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4635
 msgid "Result of sending the public keys to the bank server"
 msgstr "Ergebnis des Sendens der öffentlichen Schlüssel"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4637
 msgid ""
 "<qt>\n"
@@ -5966,23 +5835,19 @@ msgstr ""
 "Sie dann \"Weiter\".</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4646
 msgid "Your Ini-Letter"
 msgstr "Ihr Ini-Brief"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4648
 msgid "Print your Ini-Letter now"
 msgstr "Ihren Ini-Brief jetzt drucken"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4649
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:252
 msgid "Ini-Letter"
 msgstr "Ini-Brief"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4650
 msgid ""
 "<qt>\n"
@@ -6034,22 +5899,18 @@ msgstr ""
 "erhaltenen Zertifikats nicht überzeugt sind.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4679
 msgid "Get Server Certificate"
 msgstr "Server-Zertifikat abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4680
 msgid "Get server certificates now"
 msgstr "Server-Zertifikat abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4681
 msgid "Server Certificate"
 msgstr "Server-Zertifikat"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4682
 msgid ""
 "<qt>\n"
@@ -6068,13 +5929,11 @@ msgstr ""
 "abzurufen und einzurichten. Erst danach können Sie auch tatsächlich auf Ihre "
 "Konten online zugreifen.</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4690
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4759
 msgid "Finished."
 msgstr "Abgeschlossen."
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4691
 msgid ""
 "<qt>\n"
@@ -6082,13 +5941,11 @@ msgid ""
 "</qt>"
 msgstr "<qt>Eine Systemkennung wird nun abgerufen.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4694
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4711
 msgid "Acquire System Id"
 msgstr "Systemkennung abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4695
 msgid ""
 "<qt>\n"
@@ -6114,24 +5971,19 @@ msgstr ""
 "mit dem Bank-Server beobachten können.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4706
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:182
 msgid "Get System Id"
 msgstr "Systemkennung abrufen"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4707
 msgid "Get system id now"
 msgstr "Systemkennung jetzt abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4710
 msgid "Result of getting the system id"
 msgstr "Ergebnis des Abrufs der Systemkennung"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4712
 msgid ""
 "<qt>\n"
@@ -6139,13 +5991,11 @@ msgid ""
 "</qt>"
 msgstr "<qt>Die Kontenliste wird nun abgerufen.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4715
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4733
 msgid "Retrieve Account List"
 msgstr "Kontenliste abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4716
 msgid ""
 "<qt>\n"
@@ -6173,23 +6023,18 @@ msgstr ""
 "mit dem Bank-Server beobachten können.\n"
 "</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4728
 msgid "Get account list"
 msgstr "Kontenliste abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4729
 msgid "Get account list from bank server now"
 msgstr "Kontenliste jetzt vom Bank-Server abrufen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4732
 msgid "Result of account list retrieval"
 msgstr "Ergebnis des Abrufs der Kontenliste"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4734
 msgid ""
 "<qt>\n"
@@ -6231,7 +6076,6 @@ msgstr ""
 "p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4756
 msgid ""
 "<qt>\n"
@@ -6239,25 +6083,19 @@ msgid ""
 "</qt>"
 msgstr "<qt>Der neue Benutzer ist nun erfolgreich eingerichtet.</qt>"
 
-# message
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:35
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:76
 msgid "Id"
 msgstr "Nummer"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:175
 msgid "AqHBCI Settings"
 msgstr "AqHBCI Einrichtung"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:176
 msgid "Welcome"
 msgstr "Willkommen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:177
 msgid ""
 "<qt>\n"
@@ -6377,7 +6215,6 @@ msgstr ""
 "</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:230
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:284
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.cpp:32
@@ -6385,14 +6222,10 @@ msgstr ""
 msgid "Users"
 msgstr "Benutzer"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:232
 msgid "Start the user wizard"
 msgstr "Den Assistenten für neue Benutzer starten"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:233
 msgid ""
 "<qt>\n"
@@ -6414,13 +6247,10 @@ msgstr ""
 msgid "Remove"
 msgstr "Entfernen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:238
 msgid "Remove a user"
 msgstr "Einen Benutzer löschen"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:239
 msgid ""
 "<qt>\n"
@@ -6448,27 +6278,22 @@ msgstr ""
 "Sicherheitsmedium importieren könnten.</p>\n"
 "</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:253
 msgid "Only show the Ini-Letter of this user"
 msgstr "Ini-Brief dieses Benutzers erneut anzeigen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:254
 msgid "Online Actions"
 msgstr "Online-Aktionen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:255
 msgid "Complete"
 msgstr "Vervollständigen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:256
 msgid "Complete a pending setup"
 msgstr "Eine teilweise Einrichtung vervollständigen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:257
 msgid ""
 "<qt>\n"
@@ -6479,17 +6304,14 @@ msgstr ""
 "<qt>Klicken Sie diesen Knopf, um die Einrichtung eines Benutzers zu "
 "vervollständigen, der als <i>Unvollständig</i> markiert ist.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:260
 msgid "Change Version"
 msgstr "Version ändern"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:261
 msgid "Change the HBCI protocol version to be used for this user"
 msgstr "HBCI-Version für diesen Benutzer ändern"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:262
 msgid ""
 "<qt>\n"
@@ -6506,17 +6328,14 @@ msgstr ""
 "Server verwendet. Dazu wird eine Verbindung zum Server aufgenommen, um die "
 "Bankinformationen zu aktualisieren.</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:271
 msgid "Update Info"
 msgstr "Aktualisieren"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:272
 msgid "Update the bank information for this user"
 msgstr "Die Bank-Informationen für diesen Benutzer aktualisieren"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:273
 msgid ""
 "<qt>\n"
@@ -6532,13 +6351,11 @@ msgstr ""
 "<qt><p>Aktualisiert die Bankinformationen des gewählten Benutzers. Dazu wird "
 "eine Verbindung zum Server aufgenommen.</p></qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:282
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:180
 msgid "Expert Actions"
 msgstr "Experten-Aktionen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:290
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:366
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:182
@@ -6547,8 +6364,6 @@ msgstr "Experten-Aktionen"
 msgid "What's This?"
 msgstr "Was ist das?"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:292
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:367
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:183
@@ -6557,133 +6372,107 @@ msgstr "Was ist das?"
 msgid "(c) 2005 M.Preuss"
 msgstr "(c) 2005 M. Preuss"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:293
 msgid "&Close"
 msgstr "&Schließen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:294
 msgid "Alt+C"
 msgstr "Alt+C"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:150
 msgid "Required Info"
 msgstr "Benötigte Informationen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:151
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:241
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:172
 msgid "Owner Name"
 msgstr "Name des Kontoinhabers"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:153
 msgid "Customer"
 msgstr "Kunde"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:156
 msgid "Optional Info"
 msgstr "Optionale Information"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:158
 msgid "(c) 2004 M.Preuss"
 msgstr "(c) 2004 M. Preuss"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:84
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:144
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:171
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:137
 msgid "Edit User Settings"
 msgstr "Benutzer-Einstellungen bearbeiten"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:138
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:207
 msgid "Server URL"
 msgstr "Server-URL"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:140
 msgid "Descriptive Medium Name"
 msgstr "Beschreibender Medium-Name"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:141
 msgid "User Status"
 msgstr "Benutzer-Status"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:142
 msgid "Customers"
 msgstr "Kunden"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:169
 msgid "Customer Settings"
 msgstr "Einstellungen Kunden"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:170
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:172
 msgid "Prefer single transfers over multi transfers"
 msgstr "Einzelüberweisung anstelle Sammelüberweisungen bevorzugen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:173
 msgid "PIN/TAN Settings"
 msgstr "PIN/TAN-Einstellungen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:174
 msgid "HTTP protocol version"
 msgstr "HTTP Protokoll-Version"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:175
 msgid "HTTP User Agent"
 msgstr "HTTP User Agent"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:176
 msgid "HTTP Host"
 msgstr "HTTP Server-Adresse"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:177
 msgid "Expert Settings"
 msgstr "Experten-Einstellungen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:178
 msgid "Bank signs its messages"
 msgstr "Bank signiert ihre Nachrichten"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:179
 msgid "Bank uses signature counter"
 msgstr "Bank verwendet Signaturzähler"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:80
 msgid "Pick HBCI Version"
 msgstr "HBCI Version wählen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:81
 msgid ""
 "<qt>\n"
@@ -6693,18 +6482,14 @@ msgstr ""
 "<qt>Bitte wählen Sie die HBCI-Version, die mit dem Server der Bank benutzt "
 "werden soll.</qt>"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:86
 msgid "201"
 msgstr "201"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:87
 msgid "210"
 msgstr "210"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:88
 msgid "220"
 msgstr "220"
@@ -6762,54 +6547,42 @@ msgstr "<qt>Konnte Datei \"%1\" nicht erstellen.</p></qt>"
 msgid "<qt><p>Could not write to file \"%1\"</p></qt>"
 msgstr "<qt>Konnte in Datei \"%1\" nicht schreiben.</qt>"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:137
 msgid "Logfile Manager"
 msgstr "Protokolldatei-Manager"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:140
 msgid "Select Logfile"
 msgstr "Protokolldatei wählen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:142
 msgid "Anonymized Logfile"
 msgstr "Anonymisierte Protokolldatei"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:143
 msgid "Trustlevel"
 msgstr "Vertrauensstufe"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:145
 msgid "Untrusted"
 msgstr "Ohne Vertrauen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:146
 msgid "Low Trust"
 msgstr "Geringes Vertrauen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:147
 msgid "Medium Trust"
 msgstr "Mittleres Vertrauen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:148
 msgid "High Trust"
 msgstr "Hohes Vertrauen"
 
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:149
 msgid "Full Trust"
 msgstr "Vollständiges Vertrauen"
 
-# message
-# message
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:150
 msgid "Save as..."
 msgstr "Speichern unter..."
@@ -6821,27 +6594,21 @@ msgstr "Speichern unter..."
 msgid "Insufficient Input"
 msgstr "Unvollständige Angaben"
 
-# message
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:232
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:152
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/editaccount.ui.cpp:158
 msgid "Basic Settings"
-msgstr ""
+msgstr "Grundlegende Einstellungen"
 
-# message
-# message
-# message
-# message
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:235
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:167
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/editaccount.ui.cpp:174
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:198
-#, fuzzy
 msgid ""
 "<qt>\n"
 "This is the bank code of your bank.\n"
 "</qt>"
-msgstr "Geben Sie die Bankleitzahl (BLZ) ein"
+msgstr "<qt>Dies ist die Bankleitzahl (BLZ) der Bank.</qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:242
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:173
@@ -6891,7 +6658,7 @@ msgstr "DTAUS Einstellungen"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:262
 msgid "Maximum Purpose Lines"
-msgstr ""
+msgstr "Maximale Anzahl Verwendungszweckzeilen"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:263
 msgid ""
@@ -6944,15 +6711,13 @@ msgid ""
 "</qt>"
 msgstr ""
 
-# message
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:295
-#, fuzzy
 msgid "Storage Settings"
-msgstr "Ihre Einstellungen"
+msgstr "Einstellungen zur Datenspeicherung"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:296
 msgid "Data Folder"
-msgstr ""
+msgstr "Datenverzeichnis"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:297
 msgid ""
@@ -6995,7 +6760,7 @@ msgstr ""
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:326
 msgid "Allow Mounting"
-msgstr ""
+msgstr "Laufwerkseinbindung erlauben"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:327
 msgid ""
@@ -7015,7 +6780,7 @@ msgstr ""
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:339
 msgid "Mount Command"
-msgstr ""
+msgstr "Kommando zur Laufwerkseinbindung"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:340
 msgid ""
@@ -7038,7 +6803,7 @@ msgstr ""
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:355
 msgid "Unmount Command"
-msgstr "Kommando zum Lösen der Einbindung"
+msgstr "Kommando zum Lösen der Laufwerkseinbindung"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:356
 msgid ""
@@ -7099,7 +6864,7 @@ msgstr ""
 
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:181
 msgid "Read From Chipcard"
-msgstr ""
+msgstr "Von Chipkarte einlesen"
 
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:82
 msgid "AqGeldKarte Settings"
@@ -7114,24 +6879,17 @@ msgstr "-- Land wählen --"
 msgid "-- select user --"
 msgstr "-- Benutzer wählen --"
 
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.cpp:340
 msgid "Select a Bank"
 msgstr "Wählen Sie eine Bank"
 
-# message
-# message
-# message
-# message
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:196
 msgid "Edit User"
 msgstr "Benutzer bearbeiten"
 
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:197
 msgid "Bank Settings"
-msgstr ""
+msgstr "Bank-Einstellungen"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:203
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:209
@@ -7153,8 +6911,6 @@ msgstr "FID"
 msgid "ORG"
 msgstr "ORG"
 
-# message
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:221
 msgid "User Settings"
 msgstr "Benutzer-Einstellungen"
@@ -7176,7 +6932,6 @@ msgstr "Auswahl kann nicht verwendet werden"
 msgid "The selected user has an incomplete setup."
 msgstr "Der gewählte User ist nicht vollständig eingerichtet."
 
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:78
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:84
 msgid "OFX Account Settings"
@@ -7213,12 +6968,10 @@ msgid ""
 "</qt>"
 msgstr ""
 
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:98
 msgid "Get Account List"
 msgstr "Kontenliste abrufen"
 
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.ui.cpp:89
 msgid "OFX Settings"
 msgstr "OFX-Einstellungen"
@@ -7250,15 +7003,10 @@ msgid ""
 "</qt>"
 msgstr ""
 
-# message
-# message
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.ui.cpp:111
 msgid "Introduction"
 msgstr "Einführung"
 
-# message
-# message
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.ui.cpp:114
 msgid "(c) 2005 M. Preuss"
 msgstr "(c) 2005 M. Preuss"
