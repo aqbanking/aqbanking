@@ -84,7 +84,7 @@ void QBProcessWatcher::slotProcessFinished() {
   rv=_process->exitStatus();
   _result=rv;
   if (rv) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Process Error"),
                           QString(tr("<qt>"
                                      "<p>"

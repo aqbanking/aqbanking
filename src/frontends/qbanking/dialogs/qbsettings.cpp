@@ -200,13 +200,13 @@ void QBankingSettings::slotBackendEnable(){
     _accountRescan();
     _backendRescan();
     if (rv) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not activate this backend.\n"),
                             tr("Dismiss"),0,0,0);
     }
     else {
-      QMessageBox::information(0,
+      QMessageBox::information(this,
                                tr("Backend Activated"),
                                tr("This backend has successfully been "
                                   "activated.\n"),
@@ -232,7 +232,7 @@ void QBankingSettings::slotBackendDisable(){
       return;
     }
 
-    if (QMessageBox::warning(0,
+    if (QMessageBox::warning(this,
                              tr("Disable Backend"),
                              tr("This would remove all accounts currently "
                                 "supported by that backend.\n"
@@ -245,7 +245,7 @@ void QBankingSettings::slotBackendDisable(){
     _accountRescan();
     _backendRescan();
     if (rv) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not deactivate this backend.\n"),
                             tr("Dismiss"),0,0,0);
@@ -279,7 +279,7 @@ void QBankingSettings::slotBackendSetup(){
                               "kde;qt;gtk;gnome",
 			      pbuf)) {
       DBG_ERROR(0, "Could not get wizard path");
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
 			    tr("Wizard Not Installed"),
                             tr("<qt>"
                                "<p>"
@@ -301,7 +301,7 @@ void QBankingSettings::slotBackendSetup(){
       if (rv) {
         DBG_ERROR(0, "Error suspending backend \"%s\" (%d)",
                   GWEN_PluginDescription_GetName(pd), rv);
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Backend Error"),
                               tr("<qt>"
                                  "<p>"
@@ -322,7 +322,7 @@ void QBankingSettings::slotBackendSetup(){
     QProcess wp(qs);
 
     if (!wp.launch(QString(""))) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Wizard Not Started"),
                             tr("<qt>"
                                "<p>"
@@ -359,7 +359,7 @@ void QBankingSettings::slotBackendSetup(){
       rv=AB_Banking_ResumeProvider(_banking->getCInterface(),
                                    GWEN_PluginDescription_GetName(pd));
       if (rv) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Backend Error"),
                               tr("<qt>"
                                  "<p>"
@@ -381,7 +381,7 @@ void QBankingSettings::slotAccountMap(){
 
   al=_accListView->getSelectedAccounts();
   if (al.empty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No account selected.\n"),
                           tr("Dismiss"),0,0,0);

@@ -465,7 +465,7 @@ void QBPrintDialog::slotPrint(){
   const int YMargin=50;
 
   if (!p.begin(_printer)) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Print"),
                           tr("Printing aborted."),
                           tr("Dismiss"),0,0,0);
@@ -475,7 +475,7 @@ void QBPrintDialog::slotPrint(){
   QPaintDeviceMetrics metrics(_printer);
   QSimpleRichText txt(textBrowser->text(), fnt);
   if (txt.height()+YMargin>metrics.height()-YMargin) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Print"),
                           tr("Text does not fit on the page."),
                           tr("Dismiss"),0,0,0);
@@ -542,7 +542,7 @@ void QBPrintDialog::slotPrint(){
   int YMargin;
 
   if (!p.begin(_printer)) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Print"),
                           tr("Printing aborted."),
                           tr("Dismiss"),0,0,0);
@@ -567,7 +567,7 @@ void QBPrintDialog::slotPrint(){
   txt.setWidth(&p, body.width());
 
   if (txt.widthUsed()>body.width()) {
-    if (QMessageBox::critical(0,
+    if (QMessageBox::critical(this,
                               tr("Print"),
                               tr("Text does not fit on the page.\n"
                                  "Do you want to print it anyway?"),

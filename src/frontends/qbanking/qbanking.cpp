@@ -592,7 +592,7 @@ bool QBanking::requestTransactions(const char *accountId,
   if (rv) {
     DBG_NOTICE(0, "Job \"GetTransactions\" is not available (%d)", rv);
     AB_Job_free(job);
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
 			  QWidget::tr("Job Not Available"),
 			  QWidget::tr("The job you requested is not available"
 				      "with\n"

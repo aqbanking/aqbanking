@@ -347,7 +347,7 @@ void QBSelectBank::accept() {
   if (_bankInfo)
     QBSelectBankUi::accept();
   else {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No Bank Selected."),
                           tr("Dismiss"),0,0,0);

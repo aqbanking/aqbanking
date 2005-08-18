@@ -144,7 +144,7 @@ bool QBImporter::_updateImporterList() {
     GWEN_PluginDescription_List2_freeAll(_importerList);
   _importerList=AB_Banking_GetImExporterDescrs(_app->getCInterface());
   if (!_importerList) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("No Importers"),
 			  tr("<qt>"
 			     "<p>"
@@ -412,7 +412,7 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
     }
   }
 
-  QMessageBox::critical(0,
+  QMessageBox::critical(this,
                         tr("No Profiles"),
                         tr("<qt>"
                            "<p>"
@@ -459,7 +459,7 @@ bool QBImporter::doSelectProfilePage(QWidget *p){
   } // for
 
   if (qs.isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("Please select the profile you want to use."),
                           tr("Dismiss"), 0, 0, 0);
@@ -469,7 +469,7 @@ bool QBImporter::doSelectProfilePage(QWidget *p){
   _profile=GWEN_DB_GetGroup(_profiles, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                             qs.latin1());
   if (!_profile) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Internal Error"),
                           tr("<qt>"
                              "<p>"
@@ -549,7 +549,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
     DBG_INFO(0, "Importing files completed.");
   }
   else {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Error"),
                           tr("Error importing data into the application."),
 			  tr("Dismiss"), 0, 0, 0);
@@ -641,7 +641,7 @@ bool QBImporter::_checkFileType(const QString &fname){
   GWEN_PluginDescription_List2Iterator_free(it);
   if (!pd) {
     if (possibles.empty()) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Error"),
                             tr("<qt>"
                                "<p>"

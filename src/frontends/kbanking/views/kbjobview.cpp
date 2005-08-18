@@ -126,7 +126,7 @@ void KBJobView::slotExecute(){
   updated=false;
   jl=_app->getEnqueuedJobs();
   if (jl.size()==0) {
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Jobs"),
                          tr("There are no jobs in the queue."),
                          tr("Dismiss"), 0, 0, 0);

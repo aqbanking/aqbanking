@@ -128,7 +128,7 @@ void QBJobView::slotExecute(){
   updated=false;
   jl=_app->getEnqueuedJobs();
   if (jl.size()==0) {
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Jobs"),
                          tr("There are no jobs in the queue."),
                          tr("Dismiss"), 0, 0, 0);
@@ -162,14 +162,14 @@ void QBJobView::slotDequeue(){
   jl=_jobList->getSelectedJobs();
   if (jl.empty()) {
     DBG_DEBUG(0, "No job selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
 			 tr("No Selection"),
                          tr("Please select a job first."),
 			 tr("Dismiss"), 0, 0, 0);
     return;
   }
 
-  if (QMessageBox::warning(0,
+  if (QMessageBox::warning(this,
 			   tr("Delete job"),
 			   tr("Do you really want to delete the "
 			      "selected job(s)?"),
