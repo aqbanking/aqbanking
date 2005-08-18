@@ -2,6 +2,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-08-18   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/qbanking.h: Improve storing of
+	parentWidget pointer; enable querying it.
+	
+	* src/frontends/qbanking/qbanking.cpp: Use parentWidget pointer
+	when opening a MessageBox to prevent a globally modal messageBox
+	that might be hidden underneath the application's window.
 
 2005-08-17   Christian Stimming <stimming@tuhh.de>
 

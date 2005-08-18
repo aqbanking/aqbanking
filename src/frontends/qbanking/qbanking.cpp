@@ -154,20 +154,20 @@ int QBanking::messageBox(GWEN_TYPE_UINT32 flags,
 
   switch(flags & AB_BANKING_MSG_FLAGS_TYPE_MASK) {
   case AB_BANKING_MSG_FLAGS_TYPE_WARN:
-    rv=QMessageBox::warning(0, QString::fromUtf8(title), QString::fromUtf8(text), 
+    rv=QMessageBox::warning(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text), 
 			    b1 ? QString::fromUtf8(b1) : QString::null,
 			    b2 ? QString::fromUtf8(b2) : QString::null,
 			    b3 ? QString::fromUtf8(b3) : QString::null);
     break;
   case AB_BANKING_MSG_FLAGS_TYPE_ERROR:
-    rv=QMessageBox::critical(0, QString::fromUtf8(title), QString::fromUtf8(text), 
+    rv=QMessageBox::critical(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text), 
 			     b1 ? QString::fromUtf8(b1) : QString::null,
 			     b2 ? QString::fromUtf8(b2) : QString::null,
 			     b3 ? QString::fromUtf8(b3) : QString::null);
     break;
   case AB_BANKING_MSG_FLAGS_TYPE_INFO:
   default:
-    rv=QMessageBox::information(0, QString::fromUtf8(title), QString::fromUtf8(text),
+    rv=QMessageBox::information(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text),
 				b1 ? QString::fromUtf8(b1) : QString::null,
 				b2 ? QString::fromUtf8(b2) : QString::null,
 				b3 ? QString::fromUtf8(b3) : QString::null);
@@ -433,6 +433,9 @@ void QBanking::setParentWidget(QWidget *w) {
   _parentWidget=w;
 }
 
+QWidget *QBanking::getParentWidget() {
+  return _parentWidget;
+}
 
 
 QBFlagStaff *QBanking::flagStaff(){
@@ -508,7 +511,7 @@ AB_ACCOUNT *QBanking::_getAccount(const char *accountId){
   a=AB_Banking_GetAccountByAlias(getCInterface(), accountId);
   if (!a) {
     // should not happen anyway
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
 			  QWidget::tr("Account Not Mapped"),
 			  QWidget::tr("<qt>"
 				      "<p>"
@@ -548,7 +551,7 @@ bool QBanking::requestBalance(const char *accountId){
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Request error (%d)",
 	      rv);
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
                           QWidget::tr("Queue Error"),
                           QWidget::tr("<qt>"
 				      "<p>"
@@ -680,7 +683,7 @@ bool QBanking::requestTransactions(const char *accountId,
     DBG_ERROR(0,
 	      "Request error (%d)",
 	      rv);
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
 			  QWidget::tr("Queue Error"),
 			  QWidget::tr("<qt>"
 				      "<p>"
@@ -780,7 +783,7 @@ bool QBanking::interactiveImport(){
   QBImporter *w;
   bool res;
 
-  w=new QBImporter(this, 0, "Importer", true);
+  w=new QBImporter(this, _parentWidget, "Importer", true);
   if (!w->init()) {
     delete w;
     return false;
@@ -814,7 +817,7 @@ int QBanking::init(){
 
   _simpleCallback=new QBSimpleCallback(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
   if (_simpleCallback->registerCallback()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
                           QWidget::tr("Internal Error"),
                           QWidget::tr("<qt>"
                                       "<p>"
@@ -835,7 +838,7 @@ int QBanking::init(){
 
   _fastCallback=new QBFastCallback(GWEN_WAITCALLBACK_ID_FAST);
   if (_fastCallback->registerCallback()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(_parentWidget,
                           QWidget::tr("Internal Error"),
                           QWidget::tr("<qt>"
                                       "<p>"
@@ -914,7 +917,7 @@ int QBanking::print(const char *docTitle,
     text=GWEN_Buffer_GetStart(buf2);
   }
 
-  QBPrintDialog pdlg(this, docTitle, docType, descr, text, 0,
+  QBPrintDialog pdlg(this, docTitle, docType, descr, text, _parentWidget,
                      "printdialog", true);
 
   if (pdlg.exec()==QDialog::Accepted)

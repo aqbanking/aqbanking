@@ -22,6 +22,7 @@
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qstring.h>
+#include <qguardedptr.h>
 
 #include <list>
 
@@ -41,7 +42,7 @@ class QBWaitCallback;
 class QBanking: public Banking {
   friend class QBanking_Linker;
 private:
-  QWidget *_parentWidget;
+  QGuardedPtr<QWidget> _parentWidget;
   GWEN_TYPE_UINT32 _lastWidgetId;
   AB_BANKING_LOGLEVEL _logLevel;
   std::list<QBProgress*> _progressWidgets;
@@ -111,6 +112,7 @@ public:
   virtual QBFlagStaff *flagStaff();
 
   void setParentWidget(QWidget *w);
+  QWidget *getParentWidget();
 
   int enqueueJob(AB_JOB *j);
   int dequeueJob(AB_JOB *j);
