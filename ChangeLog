@@ -4,6 +4,11 @@
 
 2005-08-18   Christian Stimming <stimming@tuhh.de>
 
+	* src/plugins/backends/aqhbci/*.cpp: Set the QBanking
+	parentWidget. Also, Always give 'this' as parent widget when
+	opening a MessageBox to prevent a globally modal messageBox that
+	might be hidden underneath the application's window.
+
 	* src/frontends/qbanking/dialogs/*.cpp, src/frontends/kbanking/*:
 	Always give 'this' as parent widget when opening a MessageBox to
 	prevent a globally modal messageBox that might be hidden

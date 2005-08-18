@@ -173,7 +173,7 @@ void EditAccount::accept(){
   if (bankCodeEdit->text().isEmpty() ||
       accountIdEdit->text().isEmpty() ||
       ownerNameEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Insufficient Input"),
                           tr("<qt>"
                              "<p>"

@@ -190,7 +190,7 @@ bool EditAccount::init() {
 
   _banks=AH_HBCI_GetBanks(_hbci, 0, "*");
   if (!_banks) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("No Bank List"),
                           tr("<qt>"
                              "<p>"
@@ -260,7 +260,7 @@ void EditAccount::accept(){
       ownerNameEdit->text().isEmpty() ||
       bankCombo->currentItem()==0 ||
       customerIdCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("No Bank List"),
                           tr("<qt>"
                              "<p>"

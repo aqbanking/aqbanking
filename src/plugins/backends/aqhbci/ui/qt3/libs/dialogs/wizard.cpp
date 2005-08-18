@@ -43,6 +43,7 @@
 #include "userlist.h"
 
 #include <gwenhywfar/debug.h>
+#include <qbanking/qbanking.h>
 
 #ifdef WIN32
 # define strcasecmp stricmp
@@ -114,6 +115,11 @@ Wizard::Wizard(AH_HBCI *hbci,
   helpButton()->setEnabled(false);
 
   setAppropriate(initModePage, true);
+
+  // Store the previous parent widget of QBanking; set ourself as
+  // the new parent
+  _prevParentWidget = _app->getParentWidget();
+  _app->setParentWidget(this);
 
   // QT_VERSION is (major << 16) + (minor << 8) + patch
 #if QT_VERSION >= 0x040000
@@ -195,7 +201,11 @@ Wizard::Wizard(AH_HBCI *hbci,
 
 
 
-Wizard::~Wizard(){
+Wizard::~Wizard() {
+  // Note: Since _prevParentWidget is a guarded pointer, we don't
+  // have to care whether the old pointer might be no longer
+  // valid.
+  _app->setParentWidget(_prevParentWidget);
 }
 
 
@@ -493,7 +503,7 @@ void Wizard::accept() {
   if (_medium) {
     if (AH_Medium_IsMounted(_medium)) {
       if (AH_Medium_Unmount(_medium, 1)) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Medium Error"),
                               tr("Could not unmount the medium.\n"
                                  "Please check the logs."
@@ -753,7 +763,7 @@ bool Wizard::_adjustToUser(AH_USER *u) {
     break;
   default:
     DBG_ERROR(0, "Unsupported medium type");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Unsupported medium type."),
                           tr("Dismiss"),0,0,0);
@@ -777,7 +787,7 @@ bool Wizard::completeUser(AH_USER *u) {
   _customer=AH_User_FindCustomer(u, "*");
   if (!_customer) {
     DBG_ERROR(0, "No customer found");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Invalid Setup"),
                           tr("<qt>"
                              "<p>"
@@ -814,7 +824,7 @@ bool Wizard::showIniLetter(AH_USER *u) {
   _customer=AH_User_FindCustomer(u, "*");
   if (!_customer) {
     DBG_ERROR(0, "No customer found");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Invalid Setup"),
                           tr("<qt>"
                              "<p>"

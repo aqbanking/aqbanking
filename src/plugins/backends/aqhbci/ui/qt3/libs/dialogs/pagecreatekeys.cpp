@@ -73,7 +73,7 @@ void Wizard::slotCreateKeys(){
 
   setNextEnabled(createKeysPage, _hasAllKeys);
   if (_hasAllKeys) {
-    rv=QMessageBox::warning(0,
+    rv=QMessageBox::warning(this,
                             tr("Keys already exist"),
                             tr("<qt>"
                                "<p>"
@@ -105,7 +105,7 @@ void Wizard::slotCreateKeys(){
 
   if (AH_Medium_SelectContext(_medium, AH_User_GetContextIdx(_user))) {
     DBG_ERROR(0, "Could not select user");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."

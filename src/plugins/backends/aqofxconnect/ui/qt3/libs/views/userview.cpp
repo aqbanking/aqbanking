@@ -182,7 +182,7 @@ void UserView::slotEdit(){
   u=userListView->getCurrentUser();
   if (!u) {
     DBG_NOTICE(0, "No user selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select user first."),
                          tr("Dismiss"), 0, 0, 0);
@@ -214,7 +214,7 @@ void UserView::slotGetAccounts() {
   u=userListView->getCurrentUser();
   if (!u) {
     DBG_NOTICE(0, "No user selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select user first."),
                          tr("Dismiss"), 0, 0, 0);
@@ -228,7 +228,7 @@ void UserView::slotGetAccounts() {
   userId=AO_User_GetUserId(u);
   if (!country || !bankId || !userId) {
     DBG_NOTICE(0, "Bad user selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("Bad Selection"),
                          tr("The selected user has an incomplete setup."),
                          tr("Dismiss"), 0, 0, 0);

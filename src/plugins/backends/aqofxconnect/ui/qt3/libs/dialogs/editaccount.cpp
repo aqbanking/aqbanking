@@ -238,7 +238,7 @@ void EditAccount::accept(){
   if (bankCodeEdit->text().isEmpty() ||
       accountIdEdit->text().isEmpty() ||
       userCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Insufficient Input"),
 			  tr("<qt>"
 			     "<p>"

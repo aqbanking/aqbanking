@@ -96,7 +96,7 @@ bool Wizard::doCheckCardPage(QWidget *p){
     DBG_ERROR(0, "Medium \"%s:%s\" does not exist",
               _mediumTypeName.c_str(),
               _mediumName.c_str());
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Medium Error"),
                           tr("Medium does not exist.\n"
                              "Please check the console logs."),
@@ -113,7 +113,7 @@ bool Wizard::doCheckCardPage(QWidget *p){
                                  1);
 
     if (AH_Medium_Mount(_medium)) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Medium Error"),
                             tr("Could not mount the medium.\n"
                                "Please check the console logs."),

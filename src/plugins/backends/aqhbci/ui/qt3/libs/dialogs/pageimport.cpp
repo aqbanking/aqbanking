@@ -95,7 +95,7 @@ bool Wizard::doImportPage(QWidget *p) {
 
     if (!_medium) {
       DBG_ERROR(0, "PIN/TAN plugin not installed");
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Medium Error"),
                             tr("Plugin for PIN/TAN does not exist.\n"
                                "Please check the console logs."),
@@ -103,7 +103,7 @@ bool Wizard::doImportPage(QWidget *p) {
       return false;
     }
     if (AH_Medium_Create(_medium)) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Medium Error"),
                             tr("Could not create the medium.\n"
                                "Please check the console logs."),

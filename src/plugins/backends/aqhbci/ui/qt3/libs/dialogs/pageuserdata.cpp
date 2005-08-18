@@ -142,7 +142,7 @@ AH_CRYPT_MODE Wizard::_getCryptMode(AH_MEDIUM *m, int idx) {
     rv=AH_Medium_Mount(m);
     if (rv) {
       DBG_ERROR(0, "Error mounting (%d)", rv);
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Mount Medium"),
                             tr("Could not mount medium"),
                             tr("Dismiss"),0,0,0);
@@ -191,7 +191,7 @@ bool Wizard::doUserDataPage(QWidget *p){
 
   /* do user data page, we have to create the medium etc */
   if (bankCodeEdit->text().length()<8) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Invalid Input"),
                           tr("<qt>"
                              "<p>"
@@ -229,7 +229,7 @@ bool Wizard::doUserDataPage(QWidget *p){
   }
 
   if (!_bankInfo) {
-    if (QMessageBox::critical(0,
+    if (QMessageBox::critical(this,
                               tr("Unknown Bank"),
                               tr("<qt>"
                                  "<p>"
@@ -245,7 +245,7 @@ bool Wizard::doUserDataPage(QWidget *p){
 
   _hasAllKeys=false;
   if (customerIdEdit->text().isEmpty()) {
-    if (QMessageBox::warning(0,
+    if (QMessageBox::warning(this,
                              tr("No customer id found"),
                              tr("<qt>"
                                 "<p>"
@@ -293,7 +293,7 @@ bool Wizard::doUserDataPage(QWidget *p){
                 "Error resolving hostname \"%s\":",
                 qs.latin1());
       DBG_ERROR_ERR(0, err);
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
 			    QWidget::tr("Could not resolve the address %1.\n"
                                         "Maybe there is a typo?")
@@ -346,7 +346,7 @@ bool Wizard::doUserDataPage(QWidget *p){
     _userCreated=true;
   }
   else {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("User Exists"),
                           tr("<qt>"
                              "<p>"

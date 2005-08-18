@@ -126,7 +126,7 @@ bool Wizard::doMediumPage(QWidget *p){
     if (_importMode) {
       DBG_NOTICE(0, "Import mode");
       if (!QFile::exists(fileNameEdit->text())) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Medium not found"),
                               tr("<qt><p>The specified file does not exist. </p><p>"
                                  "If you want to import a file, the file needs to exist. "
@@ -147,7 +147,7 @@ bool Wizard::doMediumPage(QWidget *p){
     else {
       DBG_NOTICE(0, "Create mode");
       if (QFile::exists(fileNameEdit->text())) {
-	if (QMessageBox::warning(0,
+	if (QMessageBox::warning(this,
 				 tr("File already exists"),
 				 tr("<qt><p>The specified file already exists. However, you chose to create "
 				    "a new medium. In that case the existing file will be overwritten and "

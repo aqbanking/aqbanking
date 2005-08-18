@@ -164,7 +164,7 @@ void EditUser::accept() {
   if (userIdEdit->text().isEmpty() ||
       serverEdit->text().isEmpty()) {
     DBG_ERROR(0, "Error: Empty fields");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Empty Fields"),
                           tr("<qt>"
                              "<p>"

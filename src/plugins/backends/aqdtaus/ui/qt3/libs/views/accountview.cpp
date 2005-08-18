@@ -160,7 +160,7 @@ void AccountView::slotNew(){
       if (AD_Provider_HasAccount(_provider,
                                  AB_Account_GetBankCode(a),
                                  AB_Account_GetAccountNumber(a))){
-        if (QMessageBox::critical(0,
+        if (QMessageBox::critical(this,
                                   tr("New Account"),
                                   tr("This account already exists.\n"
                                      "Please check your input."),
@@ -188,7 +188,7 @@ void AccountView::slotEdit(){
   a=accountListView->getCurrentAccount();
   if (!a) {
     DBG_NOTICE(0, "No account selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select an account first."),
                          tr("Dismiss"), 0, 0, 0);
@@ -211,13 +211,13 @@ void AccountView::slotRemove(){
   a=accountListView->getCurrentAccount();
   if (!a) {
     DBG_NOTICE(0, "No account selected");
-    QMessageBox::warning(0,
+    QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select an account first."),
                          tr("Dismiss"), 0, 0, 0);
     return;
   }
-  if (QMessageBox::warning(0,
+  if (QMessageBox::warning(this,
                            tr("Remove Account"),
                            tr("Are you sure you want to remove "
                               "the selcted account?"),

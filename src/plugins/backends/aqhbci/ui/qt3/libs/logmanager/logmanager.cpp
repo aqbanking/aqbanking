@@ -78,7 +78,7 @@ LogManager::LogManager(const char *baseDir,
   if (GWEN_XML_ReadFile(defs, xmlfilename,
                         GWEN_XML_FLAGS_DEFAULT)){
     DBG_ERROR(0,"Error parsing XML file");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Could not parse HBCI XML file"),
                           tr("<qt>"
                              "The HBCI XML file \"%1\" could not be parsed."
@@ -338,7 +338,7 @@ string LogManager::_anonymize(const string &bankCode,
                                              lstr);
     tstr=anonMsg.toString();
     if (tstr.empty()) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Error"),
                             tr("<qt>"
                                "<p>"
@@ -455,7 +455,7 @@ void LogManager::saveFile() {
       if (f.exists()) {
         int rv;
 
-        rv=QMessageBox::warning(0,
+        rv=QMessageBox::warning(this,
                                 tr("Warning"),
                                 tr("<qt>"
                                    "<p>"
@@ -475,7 +475,7 @@ void LogManager::saveFile() {
 
       // IO_Raw doesn't exist in qt4
       if (!f.open(IO_WriteOnly | IO_Truncate)) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("File Error"),
                               tr("<qt>"
                                  "<p>"
@@ -494,7 +494,7 @@ void LogManager::saveFile() {
 
         l=f.writeBlock(p, left);
         if (l<1) {
-          QMessageBox::critical(0,
+          QMessageBox::critical(this,
                                 tr("File Error"),
                                 tr("<qt>"
                                    "<p>"

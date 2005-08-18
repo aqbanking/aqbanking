@@ -117,7 +117,7 @@ void Wizard::slotGetAccList(){
     getAccListLabel->setText(QString("<qt><font color=\"green\">")
 			     + tr("Success, but no list")
 			     + QString("</font></qt>"));
-    QMessageBox::information(0,
+    QMessageBox::information(this,
                              tr("No Account List"),
                              tr("<qt>"
                                 "<p>"

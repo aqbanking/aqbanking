@@ -17,6 +17,7 @@
 
 #include "wizard.ui.h"
 
+#include <qguardedptr.h>
 #include <aqhbci/hbci.h>
 #include <gwenhywfar/nettransportssl.h>
 #include <string>
@@ -47,6 +48,7 @@ private:
   std::string _customerId;
   bool _isFile;
   std::list<QWidget*> _pagesDone;
+  QGuardedPtr<QWidget> _prevParentWidget;
 
   AH_MEDIUM *_medium;
   AH_BANK *_bank;

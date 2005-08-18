@@ -316,7 +316,7 @@ void EditCustomer::slotGetSysId() {
 
   if (AH_Medium_SelectContext(m, AH_User_GetContextIdx(u))) {
     DBG_ERROR(0, "Could not select user");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."

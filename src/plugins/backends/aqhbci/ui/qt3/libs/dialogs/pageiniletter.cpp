@@ -80,7 +80,7 @@ bool Wizard::enterIniLetterPage(QWidget *p) {
 
   if (AH_Medium_SelectContext(_medium, AH_User_GetContextIdx(_user))) {
     DBG_ERROR(0, "Could not select user");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
@@ -192,7 +192,7 @@ void Wizard::slotPrintIniLetter(){
     QPaintDeviceMetrics metrics(&printer);
     QSimpleRichText txt(iniBrowser->text(), fnt);
     if (txt.height()+YMargin>metrics.height()-YMargin) {
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Print Ini letter"),
                             tr("Ini letter does not fit on the page."),
                             tr("Dismiss"),0,0,0);

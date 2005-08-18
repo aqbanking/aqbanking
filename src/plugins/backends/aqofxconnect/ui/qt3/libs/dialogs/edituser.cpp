@@ -263,7 +263,7 @@ void EditUser::accept(){
       userIdEdit->text().isEmpty() ||
       countryCombo->currentItem()==0 ||
       urlEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Insufficient Input"),
 			  tr("<qt>"
 			     "<p>"

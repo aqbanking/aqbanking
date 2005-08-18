@@ -273,7 +273,7 @@ void Wizard::slotGetCert() {
 		"Error resolving hostname \"%s\":",
 		GWEN_Buffer_GetStart(nbuf));
       DBG_ERROR_ERR(0, err);
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
 			    QWidget::tr("Could not resolve the given "
 					"address.\n"
@@ -312,7 +312,7 @@ void Wizard::slotGetCert() {
   AB_Banking_SetAlwaysAskForCert(_app->getCInterface(), alwaysAskForCert);
   if (rv) {
     DBG_ERROR(0, "Could not connect");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           QWidget::tr("Network Error"),
                           QWidget::tr("Could not connect to the bank's "
                                       "server.\n"
@@ -328,7 +328,7 @@ void Wizard::slotGetCert() {
   GWEN_NetConnection_StartDisconnect(conn);
   GWEN_NetConnection_free(conn);
   if (!dbCert) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  QWidget::tr("No Certificate"),
 			  QWidget::tr(
     "<qt>"
@@ -352,7 +352,7 @@ void Wizard::slotGetCert() {
 
   }
   else {
-    QMessageBox::information(0,
+    QMessageBox::information(this,
                              QWidget::tr("Certificate Accepted"),
                              QWidget::tr("Either the certificate is ok or "
                                          "you accepted it anyway.\n"

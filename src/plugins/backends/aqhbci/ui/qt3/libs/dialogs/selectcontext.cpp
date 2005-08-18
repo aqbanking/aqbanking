@@ -66,7 +66,7 @@ bool SelectContext::selectContext(std::string &instcode,
     rv=AH_Medium_Mount(_medium);
     if (rv) {
       DBG_ERROR(0, "Error mounting (%d)", rv);
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Select Context"),
                             tr("Could not mount medium"),
                             tr("Dismiss"),0,0,0);
@@ -108,7 +108,7 @@ bool SelectContext::selectContext(std::string &instcode,
 
   if (!i) {
     DBG_ERROR(0, "No context");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Select Context"),
                           tr("No user found on this medium"),
                           tr("Dismiss"),0,0,0);

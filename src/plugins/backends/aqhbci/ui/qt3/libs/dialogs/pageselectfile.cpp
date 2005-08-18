@@ -110,7 +110,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
   if (_medium) {
     /* medium exists while it shouldn't */
     DBG_ERROR(0, "Medium already exists");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Medium Error"),
                           tr("The medium already exists.\n"
                              "Please select another name."),
@@ -127,7 +127,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
                                 _mediumSubTypeName.c_str(),
                                 _mediumName.c_str());
   if (!_medium) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Medium Error"),
                           tr("Could not create the medium.\n"
                              "Please check the console logs."),
@@ -135,7 +135,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
     return false;
   }
   if (AH_Medium_Create(_medium)) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Medium Error"),
                           tr("Could not create the medium.\n"
                              "Please check the console logs."),

@@ -32,6 +32,7 @@
 #include <aqhbci/outbox.h>
 #include <aqhbci/adminjobs.h>
 #include <gwenhywfar/debug.h>
+#include <qbanking/qbanking.h>
 
 
 
@@ -108,6 +109,9 @@ HBCISettings::HBCISettings(AH_HBCI *hbci,
                    SIGNAL(selectionChanged()),
                    this,
 		   SLOT(slotUserSelectionChanged()));
+
+  // Set ourself as the new parent of QBanking
+  _app->setParentWidget(this);
 
   updateLists();
 
@@ -238,7 +242,7 @@ void HBCISettings::slotIniLetter(){
         w.showIniLetter(u);
       }
       else {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Error"),
                               tr("<qt>"
                                  "<p>"
@@ -265,7 +269,7 @@ void HBCISettings::slotDelUser(){
     u=AH_User_List2_GetFront(ul);
     AH_User_List2_free(ul);
     if (u) {
-      if (QMessageBox::question(0,
+      if (QMessageBox::question(this,
                                 tr("Delete User"),
                                 "<qt>"+tr("Are you sure you want to delete the selected user?")+"</qt>",
                                 tr("Yes"),tr("No"), 0, 0)==0) {
@@ -308,7 +312,7 @@ void HBCISettings::slotNewAccount(){
 
   b=AH_HBCI_FindBank(_hbci, 0, "*");
   if (!b) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("No Bank"),
                           tr("<qt>"
                              "<p>"
@@ -380,7 +384,7 @@ void HBCISettings::slotDelAccount(){
     a=AH_Account_List2_GetFront(al);
     AH_Account_List2_free(al);
     if (a) {
-      if (QMessageBox::question(0,
+      if (QMessageBox::question(this,
                                 tr("Delete Account"),
                                 tr("<qt>"
                                    "Are you sure you want to delete "
@@ -390,7 +394,7 @@ void HBCISettings::slotDelAccount(){
                                 tr("Yes"),tr("No"), 0, 0)!=0)
         return;
       if (AH_Bank_RemoveAccount(AH_Account_GetBank(a), a)) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
                               tr("Error"),
                               tr("<qt>"
                                  "<p>"
@@ -436,7 +440,7 @@ void HBCISettings::slotChangeVersion(){
 
       cu=AH_User_FindCustomer(u, "*");
       if (!cu) {
-	QMessageBox::critical(0,
+	QMessageBox::critical(this,
 			      tr("Error"),
 			      tr("<qt>"
 				 "<p>"
@@ -465,7 +469,7 @@ void HBCISettings::slotChangeVersion(){
 	  // version changed, check whether it is supported
 	  bpd=AH_Customer_GetBpd(cu);
 	  if (!bpd) {
-	    QMessageBox::critical(0,
+	    QMessageBox::critical(this,
 				  tr("Error"),
 				  tr("<qt>"
 				     "<p>"
@@ -487,7 +491,7 @@ void HBCISettings::slotChangeVersion(){
             vl++;
 	  } // while
 	  if (!*vl) {
-	    if (QMessageBox::critical(0,
+	    if (QMessageBox::critical(this,
 				      tr("Version Not Supported"),
 				      tr("<qt>"
 					 "<p>"
@@ -533,7 +537,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
   j=AH_Job_UpdateBank_new(cu);
   if (!j) {
     DBG_ERROR(0, "Job not supported, should not happen");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Error"),
                           tr("<qt>"
                              "<p>"
@@ -554,7 +558,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
   rv=AH_Outbox_Execute(ob, 1, 0);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox (%d)", rv);
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Error"),
                           tr("<qt>"
                              "<p>"
@@ -570,7 +574,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
   else {
     if (AH_Job_Commit(j)) {
       DBG_ERROR(0, "Could not commit result.\n");
-      QMessageBox::critical(0,
+      QMessageBox::critical(this,
                             tr("Error"),
                             tr("<qt>"
                                "<p>"
@@ -606,7 +610,7 @@ void HBCISettings::slotUpdateBPD(){
 
       cu=AH_User_FindCustomer(u, "*");
       if (!cu) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(this,
 			      tr("Error"),
 			      tr("<qt>"
 				 "<p>"

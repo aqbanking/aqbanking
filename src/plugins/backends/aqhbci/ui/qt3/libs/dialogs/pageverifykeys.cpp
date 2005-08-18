@@ -80,7 +80,7 @@ bool Wizard::enterVerifyKeysPage(QWidget *p){
 
   if (AH_Medium_SelectContext(_medium, AH_User_GetContextIdx(_user))) {
     DBG_ERROR(0, "Could not select user");
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
@@ -168,7 +168,7 @@ void Wizard::slotKeysNotOk(){
   //serverKeysOkButton->setEnabled(false);
   //serverKeysBadButton->setEnabled(false); 
   // dont deactivate this here -- maybe the user only pressed the wrong button.
-  QMessageBox::critical(0,
+  QMessageBox::critical(this,
 			tr("Wrong Server Keys"),
 			tr("You said the fingerprint of the server's cryptographic keys are wrong. In this case, you need to contact your bank and ask whether their server keys have changed. You should take some notes of the key fingerprint that is displayed right now. Then you need to abort this user setup for now."),
 			tr("Dismiss"),0,0,0);
