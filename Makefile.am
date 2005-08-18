@@ -78,7 +78,7 @@ if USE_I18N
 I18NFILES=$(shell cat $(srcdir)/i18nsources $(srcdir)/qtsources)
 # Current build rule:
 sources:
-	rm -f $(srcdir)/i18nsources
+	rm -f $(srcdir)/i18nsources $(srcdir)/qtsources
 	make -C $(top_srcdir)/src sources
 $(srcdir)/i18nsources $(srcdir)/qtsources:
 	make sources

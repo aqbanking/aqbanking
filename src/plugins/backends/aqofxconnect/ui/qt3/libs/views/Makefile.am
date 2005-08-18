@@ -22,7 +22,7 @@ CLEANFILES = $(nodist_libviews_la_SOURCES) $(nodist_noinst_HEADERS)
 
 
 sources:
-	for f in $(libviews_la_SOURCES) $(nodist_libviews_la_SOURCES); do \
+	for f in $(libviews_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 

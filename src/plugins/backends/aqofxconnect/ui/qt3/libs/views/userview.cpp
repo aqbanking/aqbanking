@@ -184,7 +184,7 @@ void UserView::slotEdit(){
     DBG_NOTICE(0, "No user selected");
     QMessageBox::warning(0,
                          tr("No Selection"),
-                         tr("Please select u user first."),
+                         tr("Please select user first."),
                          tr("Dismiss"), 0, 0, 0);
     return;
   }
@@ -216,7 +216,7 @@ void UserView::slotGetAccounts() {
     DBG_NOTICE(0, "No user selected");
     QMessageBox::warning(0,
                          tr("No Selection"),
-                         tr("Please select u user first."),
+                         tr("Please select user first."),
                          tr("Dismiss"), 0, 0, 0);
     return;
   }

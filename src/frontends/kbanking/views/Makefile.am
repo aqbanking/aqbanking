@@ -30,7 +30,7 @@ BUILT_SOURCES = $(nodist_libviews_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
 
 sources:
-	for f in $(libviews_la_SOURCES) $(UI_FILES); do \
+	for f in $(libviews_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 
