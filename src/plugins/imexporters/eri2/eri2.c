@@ -21,6 +21,7 @@
 #include <gwenhywfar/waitcallback.h>
 
 #include <aqbanking/msgengine.h>
+#include <aqbanking/banking_be.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
