@@ -198,6 +198,7 @@ Banking::Banking(const char *appname,
   AB_Banking_SetProgressAdvanceFn(_banking, Banking_Linker::ProgressAdvance);
   AB_Banking_SetProgressLogFn(_banking, Banking_Linker::ProgressLog);
   AB_Banking_SetProgressEndFn(_banking, Banking_Linker::ProgressEnd);
+  AB_Banking_SetPrintFn(_banking, Banking_Linker::Print);
 }
 
 
