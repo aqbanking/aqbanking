@@ -30,18 +30,19 @@
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/waitcallback.h>
 
 
 
 QBPrintDialog::QBPrintDialog(QBanking *app,
-                         const char *docTitle,
-                         const char *docType,
-                         const char *descr,
-                         const char *text,
-                         QWidget* parent,
-                         const char* name,
-                         bool modal,
-                         WFlags fl)
+                             const char *docTitle,
+                             const char *docType,
+                             const char *descr,
+                             const char *text,
+                             QWidget* parent,
+                             const char* name,
+                             bool modal,
+                             WFlags fl)
 :QBPrintDialogUi(parent, name, modal, fl)
 ,_banking(app)
 ,_docTitle(docTitle)
@@ -55,7 +56,6 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
 {
   setCaption(QString::fromUtf8(docTitle));
   descrLabel->setText(QString::fromUtf8(descr));
-  textBrowser->setText(QString::fromUtf8(text));
 
   QObject::connect((QObject*)printButton, SIGNAL(clicked()),
                    this, SLOT(slotPrint()));
@@ -70,6 +70,10 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
 
   loadGuiSetup();
   loadPrinterSetup();
+
+  DBG_ERROR(0, "Setting text...");
+  textBrowser->setText(QString::fromUtf8(text));
+  DBG_ERROR(0, "Setting text... done");
 
   //GWEN_Text_DumpString(text, strlen(text), stderr, 2);
 }
@@ -456,53 +460,6 @@ void QBPrintDialog::savePrinterSetup() {
 }
 
 
-
-#if 0
-void QBPrintDialog::slotPrint(){
-  QPainter p;
-  QFont fnt("times", 12);
-  const int XMargin=20;
-  const int YMargin=50;
-
-  if (!p.begin(_printer)) {
-    QMessageBox::critical(this,
-                          tr("Print"),
-                          tr("Printing aborted."),
-                          tr("Dismiss"),0,0,0);
-    return;
-  }
-
-  QPaintDeviceMetrics metrics(_printer);
-  QSimpleRichText txt(textBrowser->text(), fnt);
-  if (txt.height()+YMargin>metrics.height()-YMargin) {
-    QMessageBox::critical(this,
-                          tr("Print"),
-                          tr("Text does not fit on the page."),
-                          tr("Dismiss"),0,0,0);
-    return;
-  }
-  txt.draw(&p,XMargin,YMargin,
-           QRegion(XMargin,YMargin,
-                   metrics.width()-XMargin*2,
-                   metrics.height()-YMargin*2),
-           QColorGroup(QBrush("black"), // foreground
-                       QBrush("white"), // button (unused)
-                       QBrush("white"), // light (unused)
-                       QBrush("white"), // dark (unused)
-                       QBrush("white"), // mid (unused)
-                       QBrush("black"), // text
-                       QBrush("black"), // bright-text
-                       QBrush("white"), // base (unused)
-                       QBrush("white")) // background
-          );
-  p.end();
-
-  accept();
-}
-#endif
-
-
-
 void QBPrintDialog::accept(){
   savePrinterSetup();
   saveGuiSetup();
@@ -540,6 +497,8 @@ void QBPrintDialog::slotPrint(){
   QFont fnt(_fontFamily, _fontSize, _fontWeight);
   int XMargin;
   int YMargin;
+  std::string swText;
+  std::string swUnits;
 
   if (!p.begin(_printer)) {
     QMessageBox::critical(this,
@@ -575,9 +534,18 @@ void QBPrintDialog::slotPrint(){
       return;
   }
 
+  swText=QBanking::QStringToUtf8String(tr("Printing, please wait..."));
+  swUnits=QBanking::QStringToUtf8String(tr("page(s)"));
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
+                                  swText.c_str(),
+                                  swUnits.c_str(),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+
   QRect view(body);
   int page = 1;
   do {
+    DBG_ERROR(0, "Printing page %d", page);
     txt.draw(&p, body.left(), body.top(), view, colorGroup());
     view.moveBy(0, body.height());
     p.translate(0 , -body.height());
@@ -587,8 +555,19 @@ void QBPrintDialog::slotPrint(){
     if (view.top()>=txt.height())
       break;
     _printer->newPage();
+    if (GWEN_WaitCallbackProgress(page)==
+        GWEN_WaitCallbackResult_Abort) {
+      if (QMessageBox::critical(this,
+                                tr("Aborted"),
+                                tr("Do you really want to abort?"),
+                                tr("Yes"),tr("No"),0)!=0) {
+        GWEN_WaitCallback_Leave();
+        return;
+      }
+    }
     page++;
   } while (TRUE);
+  GWEN_WaitCallback_Leave();
 
   p.end();
 }
