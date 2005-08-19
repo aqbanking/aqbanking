@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf8"?>
 
 <plugin type="crypttoken" name="pintan" device="none" >
-  <version>@CHIPCARD_VERSION_STRING@</version>
+  <version>@AQHBCI_VERSION_STRING@</version>
   <author>Martin Preuss (martin@libchipcard.de)</author>
   <short>Pin/Tan Pseudo Medium</short>
 
