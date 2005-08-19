@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-08-18 10:42+0200\n"
-"PO-Revision-Date: 2005-08-18 10:56+0200\n"
+"PO-Revision-Date: 2005-08-19 14:25+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4154,7 +4154,6 @@ msgid "F1"
 msgstr "F1"
 
 #: src/frontends/qbanking/dialogs/qbselectfromlist.ui.cpp:90
-#, fuzzy
 msgid ""
 "<qt>\n"
 "<p>\n"
@@ -4166,10 +4165,7 @@ msgid ""
 "correct one.\n"
 "</p>\n"
 "</qt>"
-msgstr ""
-"<qt> <p>Das passende Importer-Modul konnte nicht automatisch bestimmt werden."
-"</p> <p>Allerdings gibt es mehrere Importer-Module, von denen eines passend "
-"sein könnte.</p> <p>Bitte wählen Sie das korrekte Modul aus.</p> </qt>"
+msgstr "<qt> <p>Der Dateityp und passende Importer-Modul dafür konnte nicht automatisch bestimmt werden.</p> <p>Allerdings gibt es mehrere Importer-Module, von denen eines passend sein könnte.</p> <p>Bitte wählen Sie das korrekte Modul aus.</p> </qt>"
 
 #: src/frontends/qbanking/dialogs/qbprintdialog.ui.cpp:93
 msgid "Print Preview"
@@ -6622,6 +6618,9 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Name des Kontoeigentümers.\n"
+"</p> <p> Sie sollten den Namen hier genauso angeben wie Sie ihn auf einem "
+"Überweisungsvordruck eingeben würden. </p></qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:250
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:153
@@ -6633,6 +6632,8 @@ msgid ""
 "this account number.\n"
 "</qt>"
 msgstr ""
+"<qt> Die ist Ihre Kontonummer. Ein Konto wird durch die Bankleitzahl und "
+"diese Kontonummer eindeutig identifiziert. </qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:254
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/editaccount.ui.cpp:171
@@ -6640,7 +6641,7 @@ msgid ""
 "<qt>\n"
 "Freely selectable name for your account. This field is not used by AqDTAUS.\n"
 "</qt>"
-msgstr ""
+msgstr "<qt> Sie haben hier freie Wahl bei der Eingabe. Dieses Feld wird nicht von AqBanking ausgewertet.</qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:257
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:158
@@ -6651,6 +6652,9 @@ msgid ""
 "you.\n"
 "</qt>"
 msgstr ""
+"<qt> Dies ist der Name Ihrer Bank. Dieser Assistent versucht den Namen "
+"automatisch herauszufinden, sobald Sie die Bankleitzahl eingegeben haben. </"
+"qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:261
 msgid "DTAUS Settings"
@@ -6668,6 +6672,9 @@ msgid ""
 "unsure.\n"
 "</qt>"
 msgstr ""
+"<qt> Dieses Feld enthält die maximale Anzahl von Verwendungszweck-Zeilen.\n"
+"Die meisten Banken akzeptieren mindestens 2 Zeilen. Fragen Sie im Zweifel "
+"bei Ihrer Bank nach.</qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:268
 msgid "Allow Debit Notes"
@@ -6693,6 +6700,14 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p>Privatkunden ist es meistens nicht erlaubt Lastschriften "
+"einzuziehen. </p> <p> Geschäftskunden hingegen können dieses Feature nutzen "
+"nachdem sie dies bei ihrer Bank beantragt haben.</p> <p> Wenn dieses Feld "
+"nicht markiert ist wird AqDTAUS keine Lastschriften erzeugen und "
+"dahingehende Aufträge ablehnen.</p> <p> Allerdings findet die tatsächliche "
+"Überprüfung bei der Bank statt. Falls Sie also dieses Feld markiert haben "
+"ohne Lastschriften-Einzug mit Ihrer Bank vereinbart zu haben wird sie sehr "
+"wahrscheinlich Ihre Aufträge ablehnen. </p></qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:286
 msgid "Print All Transactions"
@@ -6710,6 +6725,9 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Hiermit beinflussen Sie die Ausgabe des Begleitzettels.</p> <p> "
+"Wenn dieses Feld markiert ist enthält der Begleitzettel zusätzlich für jede "
+"Überweisung/Lastschrift eine kurze Zeile mit den Angaben daraus.</p></qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:295
 msgid "Storage Settings"
@@ -6743,6 +6761,15 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Dies ist das Verzeichnis in dem AqDTAUS die erzeugten Dateien "
+"ablegt. </p> <h3>Diskettenmodus</h3> <p> Wenn Disketten verwendet werden "
+"sollen muß dies der Pfad sein an dem in Ihrem System das Diskettenlaufwerk "
+"eingebunden wird, üblicherweise <i>/floppy</i> oder <i>/media/floppy</i>. "
+"Dieser Pfad hängt von Ihrem System ab.</p> <p> Im Diskettenmodus prüft "
+"AqDTAUS vor dem Ablegen der Dateien ob dieses Verzeichnis leer ist.</p> "
+"<h3>Nicht-Diskettenmodus</h3> <p>In diesem Modus werden neue DTAUS-Dateien "
+"in diesem Verzeichnis abgelegt. Dabei wird nicht geprüft, ob dieses "
+"Verzeichnis leer ist.</p> </qt> "
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:319
 msgid "Use Floppy Disc"
@@ -6757,6 +6784,10 @@ msgid ""
 "is the case when this box is checked.\n"
 "</qt>"
 msgstr ""
+"<qt> Wenn Sie <i>Diskettenmodus</i> wählen erzeugt AqDTAUS echte DTAUS-"
+"Disketten. Laut DTAUS-Spezifikationen darf eine solche Diskette nur eine "
+"einzige Datei enthalten, nämlich <i>DTAUS0.TXT</i>. AqDTAUS versucht "
+"sicherzustellen, daß dies der Fall ist, wenn dieses Feld markiert ist.</qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:326
 msgid "Allow Mounting"
@@ -6777,6 +6808,13 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Auf einigen Systemen (wie Linux, BSD-Systeme etc) müssen Disketten "
+"ins System eingebunden werden, bevor auf sie zugegriffen werden kann. Nach "
+"der Benutzung muß diese Einbindung wieder gelöst werden um Datenverluste zu "
+"vermeiden. </p> <p> Wenn dieses Feld markiert ist versucht AqDTAUS diese "
+"Einbindung selber zu verwalten, was insbesondere bei Verwendung mehrerer "
+"Disketten hilfreich ist. Damit dies funktioniert müssen Sie in den folgenden "
+"Feldern die nötigen Kommandos eintragen.</p></qt>"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:339
 msgid "Mount Command"
@@ -6800,6 +6838,12 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Dies ist das Kommando um die Diskette einzubinden.</p> <p> Dieses "
+"Feld enthält das Kommando selbst nebst seinen Argumenten, beispielsweise: <p "
+"align=\"center\"><b>mount /floppy</b></p> <p> Dieses Kommando sollten Sie "
+"unter Debian verwenden. Für SuSE benötigen Sie wahrscheinlich: </p> <p align="
+"\"center\"><b>mount /media/floppy</b></p> <p> Wie Sie sehen müssen Sie dem "
+"Kommando den Pfad zu Ihrem Diskettenlaufwerk übergeben.</p> </qt> "
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:355
 msgid "Unmount Command"
@@ -6818,6 +6862,13 @@ msgid ""
 "<p align=\"center\">umount /media/floppy (for SuSE)</p>\n"
 "</qt>"
 msgstr ""
+"<qt> <p> Mit diesem Kommando wird die Einbindung der Diskette wieder gelöst. "
+"Falls Sie den Befehl <b>mount</b> im vorigen Feld verwendet haben müssen Sie "
+"nun das passende <b>umount</b> Kommando eingeben. Dieser Befehl hat "
+"dieselben Argumente wie der vorige Befehl:</p> <p align=\"center\">umount /"
+"floppy (für Debian(</p>\n"
+"<p align=\"center\">umount /media/floppy (für SuSE)</p>\n"
+"</qt> "
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:165
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:165
@@ -6860,7 +6911,7 @@ msgid ""
 "Freely selectable name for your account. This field is not used by "
 "AqGeldKarte.\n"
 "</qt>"
-msgstr ""
+msgstr "<qt> Sie haben hier freie Wahl bei der Eingabe. Dieses Feld wird nicht von AqBanking ausgewertet.</qt>"
 
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:181
 msgid "Read From Chipcard"
@@ -6901,7 +6952,7 @@ msgid ""
 "Freely selectable name for your account. This field is not used by "
 "AqOfxConnect.\n"
 "</qt>"
-msgstr ""
+msgstr "<qt> Sie haben hier freie Wahl bei der Eingabe. Dieses Feld wird nicht von AqBanking ausgewertet.</qt>"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:212
 msgid "FID"
