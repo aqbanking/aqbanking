@@ -48,6 +48,7 @@ all:
 	 aclocal $${ACLOCAL_FLAGS} || (echo -e '***\n*** If the line above shows the error message "macro AC_GWENHYWFAR not \n*** found", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
 	autoheader
 	if test ! -f i18nsources; then echo > i18nsources; fi
+	if test ! -f qtsources; then echo > qtsources; fi
 	automake --add-missing
 	@echo "autoconf"; \
 	 autoconf || (echo -e '***\n*** If the line above shows the error message "possibly undefined macro: \n*** AC_GWENHYWFAR", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
