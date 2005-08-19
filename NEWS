@@ -12,3 +12,67 @@ and code duplication has been replaced by the new QT3 frontend.
 
 Please note that the media plugins for AqHBCI (DDVCard, RSACard) are now 
 obsoleted by the latest versions of AqBanking, Gwen and Libchipcard2.
+
+New package structure since aqbanking-1.3.0
+-------------------------------------------
+
+Starting from aqbanking-1.3.0, the aqbanking package now includes
+all sub-packages that previously were released in separate
+packages or projects.
+
+Source packages
+---------------
+
+In particular, all the following source packages are now included
+by and obsoleted by aqbanking-1.3.0.tar.gz and newer versions:
+
+aqhbci
+aqhbci-qt-tools
+aqdtaus
+aqdtaus-qt-tools
+aqgeldkarte
+aqgeldkarte-qt-tools
+aqofxconnect
+aqofxconnect-qt-tools
+kbanking
+g2banking
+
+-> Again, these are now all obsoleted by aqbanking-1.3.0.tar.gz
+and newer.
+
+The chipcard-related sub-packages of aqbanking/aqhbci are also
+obsoleted by aqbanking-1.3.0 and libchipcard-1.9.13, because the
+relevant source code files are now included in libchipcard:
+
+aqhbci-ddvcard
+aqhbci-rsacard
+
+-> Again, these are now all obsoleted by aqbanking-1.3.0.tar.gz
+with libchipcard-1.9.13.tar.gz and newer.
+
+
+RPM packages
+------------
+
+The aqbanking-1.3.0.tar.gz source packages will create several
+different RPM packages according to the different requirements of
+each of its parts. In particular:
+
+aqbanking -> Still named  aqbanking
+aqhbci    -> Obsoleted by aqbanking
+aqdtaus   -> Obsoleted by aqbanking
+
+aqhbci-qt-tools  -> Obsoleted by aqbanking-qt3
+aqdtaus-qt-tools -> Obsoleted by aqbanking-qt3
+
+kbanking -> Obsoleted by aqbanking-kde3
+
+g2banking -> Obsoleted by aqbanking-gtk2
+
+aqhbci-ddvcard -> Obsoleted by libchipcard
+aqhbci-rsacard -> Obsoleted by libchipcard
+
+aqgeldkarte           -> Obsoleted by aqbanking-geldkarte
+aqgeldkarte-qt-tools  -> Obsoleted by aqbanking-geldkarte-qt3
+aqofxconnect          -> Obsoleted by aqbanking-ofx
+aqofxconnect-qt-tools -> Obsoleted by aqbanking-ofx-qt3

@@ -26,8 +26,9 @@
 1. What Is AqBanking ?
 ======================
 
-AqBanking has three major goals which are described in the following
-paragraphs. 
+AqBanking is a library for online banking and financial
+applications. It has three major goals which are described in the
+following paragraphs.
 
 
 1.1. Generic Online Banking Interface
@@ -36,7 +37,7 @@ paragraphs.
 The intention of AqBanking is to provide a middle layer between the program
 and the various Online Banking libraries (e.g. AqHBCI, OpenHBCI etc). 
 
-The real work is done in banking backends. 
+The real work is done in so-called banking backends. 
 The first backend which is already supported is AqHBCI, a library which 
 implements a client for the German HBCI (Home Banking Computer Interface) 
 protocol. 
@@ -49,11 +50,12 @@ The backend AqHBCI currently supports these security media:
                      with OpenHBCI in parallel) 
  - PIN/TAN (PIN/TAN mode using HTTP over SSL)
 
-This package contains the following backends:
+The aqbanking package already contains the following backends:
  - AqHBCI (German Online Banking protocol HBCI 2.01, 2.10 and 2.20)
  - AqDTAUS (creates DTAUS discs and prints the necessary documents)
- - AqOfxConnect (OFX Direct Connect)
- - AqGeldKarte (shows account information from a GeldKarte)
+ - AqOfxConnect (OFX Direct Connect), if libofx is available
+ - AqGeldKarte (shows account information from a GeldKarte), if 
+   libchipcard is available
 
 
 1.2. Generic Financial Data Importer/Exporter Framework
@@ -81,8 +83,10 @@ Currently there are plugins for the following formats:
 1.3. Bank/Account Information
 -----------------------------
 
-AqBanking supports plugins which allow lookup and verification of bank code/
-account id pair validity. For Germany the library KtoBlzCheck is used.
+AqBanking supports plugins which allow lookup and verification of
+bank code/ account id pair validity. For Germany the library
+KtoBlzCheck is used for validation, but the bank information is
+shipped with aqbanking.
 
 Currently AqBanking provides informations about:
 - ca 25,000 US banks
@@ -107,22 +111,30 @@ This includes (but is not limited to):
  - Linux (of course ;-)
  - Windows (WIN32 platforms, such as Windows95 up to Windows XP)
  - most POSIX systems (such as the BSDs) should also be supported, 
-   however, this is untested)
+   however, this is untested
 
 
 
 3. Supported Frontends
 ======================
 
-Basically all possible frontends (such as KDE, GNOME, console etc) are 
-supported. This is accomplished by only a few callback functions for user 
-interaction which can be overloaded by applications. 
+The aqbanking package includes several so-called frontends which
+offer a simplified interface between aqbanking and GUI
+applications. The aqbanking library itself requires the
+implementation of various user interaction functions (e.g. opening
+a message box), and for particular GUI libraries these are already
+available in the respective frontends. 
+
+Basically all common GUI libraries (KDE, GNOME, Qt, console) are
+supported, and the exist frontend libraries for each of them. This
+is accomplished by only a few callback functions for user
+interaction which can be overloaded by applications.
 
 This package contains the following frontends:
- - GTK 2
- - Qt 3
- - KDE 3
- - Console
+ - GTK 2 ("g2banking")
+ - Qt 3  ("qbanking"), can also be converted to Qt4 as described below
+ - KDE 3 ("kbanking")
+ - Console ("cbanking")
 
 
 
@@ -135,26 +147,36 @@ This package contains the following frontends:
 
 AqBanking has several direct dependencies:
 
-- "Gwenhywfar", available from http://gwenhywfar.sf.net/, is
-absolutely required
+- "Gwenhywfar" >= 1.16.0, available from
+http://gwenhywfar.sf.net/, is absolutely required
 
-- "LibOFX" from http://sf.net/projects/libofx is required for the ofx
-parts, otherwise the ofx parts will not be compiled.
+- "LibOFX" >= 0.8.0 from http://sf.net/projects/libofx is required
+for the ofx parts, otherwise the ofx parts will not be compiled.
 
-- "KtoBlzCheck" from http://sf.net/projects/ktoblzcheck is required
-for the German bank account number checking, otherwise the account
-number checking will not be compiled.
+- "KtoBlzCheck" >= 1.0 from http://sf.net/projects/ktoblzcheck is
+required for the German bank account number checking, otherwise
+the account number checking will not be compiled.
+
+- "libchipcard" >= 1.9.13 from http://www.libchipcard.de is
+required for the aqgeldkarte backend, otherwise the geldkarte
+parts cannot be compiled
 
 - The python module "ctypes" http://sf.net/projects/ctypes is required
 for the python wrappers of aqbanking. Otherwise you cannot enable
-python support (--enable-python).
+python support (--enable-python), which is disabled by default.
+
+In aqbanking versions earlier than 1.3.0, the backends (e.g.
+"aqhbci") were available in separate packages, but since 1.3.0
+these have now been integrated in the aqbanking package. For
+details, see the NEWS entry of the 1.3.0 release.
 
 
 4.2. Bindings
 -------------
 
-AqBanking also has KDE bindings which allow you to add support for AqBanking
-in very short time (kbanking, see home page of AqBanking)
+AqBanking also has KDE bindings which allow you to add support for
+AqBanking in very short time. These are included in the "kbanking"
+frontend, see home page of AqBanking.
 
 
 4.3. Applications
@@ -164,9 +186,12 @@ These application fully or partially support AqBanking:
  - QBankManager (http://www.aquamaniac.de/qbanking/)
  - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://kmymoney2.sf.net/)
- - AqHBCI QT Tools (http:/aqhbci.sf.net/)
-     This includes standalone tools used by Gnucash, KMyMoney and QBanking to 
-     let the user setup, modify and debug HBCI settings.
+ - (partially) Grisbi (http://sourceforge.net/projects/grisbi)
+
+The aqbanking package also includes several command-line tools
+(aqbanking-tool, aqhbci-tool) and GUI tools (aqhbci-qt-wizard etc)
+used by Gnucash, KMyMoney and QBanking to let the user setup,
+modify and debug HBCI settings.
 
 
 
@@ -202,9 +227,8 @@ Compilation hints for specific platforms:
 ----------------------
 
 #>make -fMakefile.cvs
-#>./configure
-#>make
-#>make install
+
+and continue as described in "5.1. Building from the Tar File".
 
 
 5.3. Building the API Documentation
@@ -217,8 +241,9 @@ API documentations of the projects AqBanking depends on) use this:
 
 #>make install-srcdoc
 
-This installs the linked doc to the path you gave to ./configure in 
- "--with-docpath=PATH". It defaults to "$HOME/apidoc".
+This installs the linked doc to the path you gave to ./configure
+by "--with-docpath=PATH". It defaults to "$HOME/apidoc", which
+means it does *not* obey the --prefix argument.
 
 
 5.4. Notes on porting the qt parts to Qt-4: 
@@ -229,16 +254,18 @@ which means this online banking programm is available on windows
 as well, which is a GOOD THING!
 
 But qt4 is not at all source compatible to qt3, see
-http://doc.trolltech.com/4.0/porting4.html. Trolltech provides a tool
-for the necessary class renaming, called "qt3to4". This package
-already has the necessary make rules ("make qt4-port") for calling
-that tool on all source files, if the qt4 library has been detected at
-configure time. I.e. if you want to use this package in qt4, do the
-following two steps:
+http://doc.trolltech.com/4.0/porting4.html. Trolltech provides a
+tool for the necessary class renaming, called "qt3to4". This
+aqbanking package already has the necessary make rules ("make
+qt4-port") for calling that tool on all source files for the
+"qbanking" frontend and the ui-tools of the "aqhbci" backend, if
+the qt4 library has been detected at configure time. I.e. if you
+want to use this package in qt4, do the following two steps:
 
-1. Call ./configure with the proper QTDIR, qt3_libs and qt3_includes
+1. Call ./configure with qt3_libs and qt3_includes set so that the
+   Qt4 libraries are found
 2. Call "make qt4-port"
-3. As usual "make"
+3. As usual call "make"
 
 An example for ./configure is this, where $QTDIR has been set to
 /my/qt4/dir beforehand:
@@ -267,8 +294,9 @@ or on Windows/mingw32
 6. Windows Registry Keys Used
 =============================
 
-AqBanking uses regstry keys below HKEY_CURRENT_USER.
-Currently the following keys are used.
+AqBanking uses regstry keys below HKEY_CURRENT_USER.  Currently
+the following keys are used. (FIXME: Where are they created? Only
+by setup.exe, or also by other means?)
 
 
 6.1. Software\\AqBanking\\Paths\\pkgdatadir
