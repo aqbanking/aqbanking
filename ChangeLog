@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released AqBanking - 1.4.1beta (2005/08/19)
+===========================================================================
+
+
 2005/08/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug: banking.cpp did not set the pint function, ergo printing
