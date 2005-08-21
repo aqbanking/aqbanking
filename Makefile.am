@@ -28,8 +28,8 @@ aqbanking-config: aqbanking-config.in
 	cat aqbanking-config.in >>aqbanking-config && \
 	chmod a+x aqbanking-config
 
-listdoc.h: @AQ_HEADER_FILES@
-	mklistdoc -v @AQ_HEADER_FILES@ >listdoc.h
+listdoc.h:
+	mklistdoc -v `find headers -name '*.h' ` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
 	doxygen

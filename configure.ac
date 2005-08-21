@@ -984,7 +984,7 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h ${AQ_HEADER_FILES}"
+	DOXYGEN_INPUT="listdoc.h headers"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
