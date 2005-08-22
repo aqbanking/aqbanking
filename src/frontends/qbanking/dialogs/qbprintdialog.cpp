@@ -560,7 +560,7 @@ void QBPrintDialog::slotPrint(){
       if (QMessageBox::critical(this,
                                 tr("Aborted"),
                                 tr("Do you really want to abort?"),
-                                tr("Yes"),tr("No"),0)!=0) {
+                                tr("Yes"),tr("No"),0,0)!=0) {
         GWEN_WaitCallback_Leave();
         return;
       }
