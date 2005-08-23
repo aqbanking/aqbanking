@@ -14,8 +14,8 @@ AC_CONFIG_HEADER([config.h])
 # AqBanking versions
 #
 AQBANKING_VERSION_MAJOR=1
-AQBANKING_VERSION_MINOR=4
-AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_MINOR=5
+AQBANKING_VERSION_PATCHLEVEL=0
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="beta"
@@ -32,8 +32,8 @@ AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQB
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=10
-AQBANKING_SO_AGE=10
+AQBANKING_SO_CURRENT=11
+AQBANKING_SO_AGE=11
 AQBANKING_SO_REVISION=1
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
@@ -614,7 +614,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,16,0,0)
+AC_GWENHYWFAR(1,17,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -1514,6 +1514,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/ressource.rc
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
+  src/plugins/imexporters/csv/profiles/aqmoney1.conf
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
   src/plugins/imexporters/csv/profiles/comdirect.conf
   src/plugins/imexporters/csv/profiles/mijnpostbank.conf

@@ -14,7 +14,6 @@
 #ifndef AQHBCI_IMEX_CSV_P_H
 #define AQHBCI_IMEX_CSV_P_H
 
-
 #include <gwenhywfar/dbio.h>
 #include <aqbanking/imexporter_be.h>
 
@@ -44,5 +43,10 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
                                       GWEN_DB_NODE *dbParams);
+
+int AH_ImExporterCSV__Transform_Var(GWEN_DB_NODE *db, int level);
+
+int AH_ImExporterCSV__Transform_Group(GWEN_DB_NODE *db, int level);
+
 
 #endif /* AQHBCI_IMEX_CSV_P_H */

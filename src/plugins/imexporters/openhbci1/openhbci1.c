@@ -15,6 +15,7 @@
 #endif
 
 #include "openhbci1_p.h"
+#include "i18n_l.h"
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -92,7 +93,16 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
 
   /* transform DB to transactions */
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        "Data imported, transforming to transactions");
+                        I18N("Data imported, transforming to UTF-8"));
+  rv=AH_ImExporter_DbFromIso8859_1ToUtf8(dbData);
+  if (rv) {
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "Error converting data");
+    GWEN_DB_Group_free(dbData);
+    return rv;
+  }
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+                        "Transforming data to transactions");
   rv=AH_ImExporterOpenHBCI1__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,

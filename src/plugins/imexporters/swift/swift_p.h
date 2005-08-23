@@ -41,4 +41,5 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
                                         GWEN_DB_NODE *dbParams);
 
+
 #endif /* AQHBCI_IMEX_SWIFT_P_H */

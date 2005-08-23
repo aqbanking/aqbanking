@@ -264,9 +264,9 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
 
     if (*p!=':') {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Error in SWIFT data: no tag name (data follows)");
-      GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
-                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
+                "Error in SWIFT data: no tag name");
+      /*GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
+                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);*/
       GWEN_Buffer_free(lbuf);
       return -1;
     }
@@ -275,9 +275,9 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     while(*p2 && *p2!=':') p2++;
     if (*p2!=':') {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Error in SWIFT data: incomplete tag name (data follows)");
-      GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
-                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
+                "Error in SWIFT data: incomplete tag name");
+      /*GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
+                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);*/
       GWEN_Buffer_free(lbuf);
       return -1;
     }

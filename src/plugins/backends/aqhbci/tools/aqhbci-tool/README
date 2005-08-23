@@ -2,33 +2,46 @@
 This folder contains the tool "aqhbci-tool". It can be used to setup and
 manage HBCI users/customers/accounts.
 
-It is under heavy construction.
+                              Content
 
+                     1. Command Overview
+                     2. Setup Scenarios
+                     2.1. Setup using a blank RSA card
+                     2.2. Setup using a new RSA keyfile
+                     2.3. Setup using a DDV card
+                     2.4. Setup using Pin/Tan
+                     2.5. Setup using an existing RSA keyfile
+                     2.6. Setup using a pre-personalized RSA card
+
+
+
+1. Command Overview
+===================
 
 The following commands are implemented:
 
 
 mkpinlist
-=========
+---------
 
 Creates an empty PIN file to be used by "aqbanking-tool".
 
 
 addmedium
-=========
+---------
 
 Makes a new crypttoken available to AqHBCI.
 
 
 listmedia
-=========
+---------
 
 Shows a list containing the currently known media.
 
 
 
 adduser
-=======
+-------
 
 Creates a HBCI user. Currently only importing of existing security media is
 supported.
@@ -36,28 +49,28 @@ supported.
 
 
 getkeys
-=======
+-------
 
 Retrieve the servers keys and store them in the crypttoken of the given
 user.
 
 
 createkeys
-==========
+----------
 
 Create new keys for the given user. These must be sent to the server.
 
 
 
 resetkeys
-=========
+---------
 
 Use this function to overwrite keys which already exist on your crypttoken.
 Only use this for keys you haven't already sent to the bank !
 
 
 sendkeys
-========
+--------
 
 Send the users keys to the bank server. After this you will have to print
 the ini letter and sent this via mail to your bank. A few days later your
@@ -65,7 +78,7 @@ account will be activated and you can use the next commands.
 
 
 getaccounts
-===========
+-----------
 
 Retrieves a list of accounts from the bank. However, some banks don't return
 such a list.
@@ -73,22 +86,205 @@ such a list.
 
 
 getsysid
-========
+--------
 
 Retrieves a system id for this application. This is needed for PIN/TAN and 
 RDH modes.
 
 
 activate
-========
+--------
 
 Activates AqHBCI so that it can be used with AqBanking programs.
 
 
 
 deactivate
-==========
+----------
 
 Deactivates AqHBCI.
+
+
+
+
+
+2. Setup Scenarios
+==================
+
+Please note that after successfully setting up an HBCI account you must
+use the command
+
+"aqhbci-tool activate"
+
+to activate the AqHBCI backend of AqBanking.
+
+
+2.1. Setup using a blank RSA card
+---------------------------------
+
+ 1) aqhbci-tool addmedium -t card
+ 2) aqhbci-tool listmedia
+ 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 4) aqhbci-tool getkeys [-c CUSTOMER_ID]
+     You will be asked three times to enter a pin:
+     a) normal cardholder pin
+     b) normal cardholder pin
+     c) gateway pin
+        Normally this pin is left to the initial value, so in this case you
+        must hit the ENTER key without entering any data !
+        You will then be asked whether you want to use the default value
+        which is ok in this case.
+        However, some banks set this pin to a secret value. In such a case you
+        can not change public or private keys on the card.
+
+ 5) aqhbci-tool iniletter -B [-c CUSTOMER_ID]
+     This prints the iniletter of your bank. Please compare the data to the
+     one on the letter from your bank.
+
+ 6) aqhbci-tool createkeys [-c CUSTOMER_ID]
+     You will be asked twice to enter a pin:
+     a) normal cardholder pin
+     b) gateway pin
+        Normally this pin is left to the initial value, so in this case you
+        must hit the ENTER key without entering any data !
+        You will then be asked whether you want to use the default value
+        which is ok in this case.
+        However, some banks set this pin to a secret value. In such a case you
+        can not change public or private keys on the card.
+
+ 7) aqhbci-tool sendkeys [-c CUSTOMER_ID]
+
+ 8) aqhbci-tool iniletter [-c CUSTOMER_ID]
+     This prints your iniletter to stdout. 
+     If you just created and sent your keys you will have to create the 
+     INI-Letter and send it via mail to your bank.
+     A few days later the bank will approve your application and enable your
+     HBCI account. Only then you can continue with the following steps.
+
+ 9) aqhbci-tool getsysid [-c CUSTOMER_ID]
+
+10) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+11) aqhbci-tool listaccounts
+
+
+
+2.2. Setup using a new RSA keyfile
+----------------------------------
+
+ 1) gct-tool create -t ohbci -n ABSOLUTE_PATH_TO_NEW_FILE
+    This creates an empty keyfile. This file can not be used with older
+    version of AqHBCI/AqBanking or OpenHBCI!
+ 
+ 2) aqhbci-tool addmedium -t file -m ABSOLUTE_PATH_TO_FILE
+ 3) aqhbci-tool listmedia
+ 4) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 5) aqhbci-tool getkeys [-c CUSTOMER_ID]
+ 6) aqhbci-tool iniletter -B [-c CUSTOMER_ID]
+     This prints the iniletter of your bank. Please compare the data to the
+     one on the letter from your bank.
+
+ 7) aqhbci-tool createkeys [-c CUSTOMER_ID]
+
+ 8) aqhbci-tool sendkeys [-c CUSTOMER_ID]
+
+ 9) aqhbci-tool iniletter [-c CUSTOMER_ID]
+     This prints your iniletter to stdout. 
+     If you just created and sent your keys you will have to create the 
+     INI-Letter and send it via mail to your bank.
+     A few days later the bank will approve your application and enable your
+     HBCI account. Only then you can continue with the following steps.
+
+10) aqhbci-tool getsysid [-c CUSTOMER_ID]
+
+11) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+11) aqhbci-tool listaccounts
+
+
+
+2.3. Setup using a DDV card
+---------------------------
+
+ 1) aqhbci-tool addmedium -t card
+
+ 2) aqhbci-tool listmedia
+
+ 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+
+ 4) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+ 5) aqhbci-tool listaccounts
+
+
+
+2.4. Setup using Pin/Tan
+------------------------
+
+ 1) aqhbci-tool addmedium -t pintan
+
+ 2) aqhbci-tool listmedia
+
+ 3) aqhbci-tool adduser -m 0 
+                        -u USER_ID [-c CUSTOMER_ID] 
+                        -b BANKLEITZAHL 
+                        [-s SERVER-ADDRESS]
+
+ 4) aqhbci-tool getsysid [-c CUSTOMER_ID]
+   This is the first contact with the bank server, so you will most
+   probably be presented a dialog which contains the servers SSL
+   certificate. Please check the line "Status : xyz".
+   If this line looks suspect to you or the given finger print does not
+   match a known fingerprint of the servers SSL certificate you should
+   abort the connection and contact your bank.
+
+ 5) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+ 6) aqhbci-tool listaccounts
+
+
+
+2.5. Setup using an existing RSA keyfile
+----------------------------------------
+
+ You can only import keyfiles created by programs based on OpenHBCI or
+ AqHBCI/AqBanking.
+ Proprietary keyfiles (StarMoney, MoneyPlex) can not be used since the
+ manufacturers of these programs do not publish the format of their files.
+ 
+ 1) aqhbci-tool addmedium -t file -m ABSOLUTE_PATH_TO_FILE
+ 
+ 2) aqhbci-tool listmedia
+ 
+ 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 
+ 4) aqhbci-tool getsysid [-c CUSTOMER_ID]
+
+ 5) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+ 6) aqhbci-tool listaccounts
+
+
+
+2.6. Setup using a pre-personalized RSA card
+--------------------------------------------
+
+ You can simply import RSA cards which have been used with other
+ programs (like MoneyPlex, or OpenHBCI-/AqHBCI-based programs).
+ 
+ 1) aqhbci-tool addmedium -t card
+ 
+ 2) aqhbci-tool listmedia
+ 
+ 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 
+ 4) aqhbci-tool getsysid [-c CUSTOMER_ID]
+
+ 5) aqhbci-tool getaccounts [-c CUSTOMER_ID]
+
+ 6) aqhbci-tool listaccounts
+
+
+
 
 

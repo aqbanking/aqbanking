@@ -24,6 +24,7 @@
 
 #include "hbci_p.h"
 #include "aqhbci_l.h"
+#include "hbci-updates_l.h"
 #include "bank_l.h"
 
 #include <aqbanking/banking_be.h>
@@ -42,7 +43,7 @@
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/netconnectionhttp.h>
-#include <gwenhywfar/plugin.h>
+#include <gwenhywfar/pathmanager.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -201,8 +202,8 @@ int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   
       m=AH_HBCI_MediumFactoryDb(hbci, typeName, subTypeName, dbT);
       assert(m);
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Loaded medium \"%s\"", name);
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Loaded medium \"%s\"", name);
       AH_HBCI_AddMedium(hbci, m);
   
       dbT=GWEN_DB_FindNextGroup(dbT, "medium");
@@ -250,27 +251,28 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *gr;
   GWEN_DB_NODE *db;
-  GWEN_TYPE_UINT32 oldVersion;
-  GWEN_TYPE_UINT32 currentVersion;
-  GWEN_PLUGIN_MANAGER *pm;
+  int rv;
 
   assert(hbci);
 
-  /* create xml file plugin manager -- well, there are no "plugins",
-     but since it includes the registry path management, we simply
-     abuse this here for registry lookup. */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Registering xmldata plugin manager");
-  pm=GWEN_PluginManager_new("xmldata");
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-				       "Software\\Aqhbci\\Paths",
-				       "xmldatadir");
-  GWEN_PluginManager_AddPath(pm,
-			     AQHBCI_DATA AH_PATH_SEP "xml");
-  if (GWEN_PluginManager_Register(pm)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Could not register xmldata plugin manager");
-    return AB_ERROR_GENERIC;
+  /* load and update config data */
+  db=AB_Provider_GetData(hbci->provider);
+  rv=AH_HBCI_UpdateDb(hbci, db);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
+
+  GWEN_PathManager_DefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
+  GWEN_PathManager_AddPath(AH_PM_LIBNAME,
+                           AH_PM_LIBNAME,
+                           AH_PM_XMLDATADIR,
+                           AH_XMLDATADIR);
+  GWEN_PathManager_AddPathFromWinReg(AH_PM_LIBNAME,
+                                     AH_PM_LIBNAME,
+                                     AH_PM_XMLDATADIR,
+                                     AH_REGKEY_PATHS,
+                                     AH_REGKEY_XMLDATADIR);
 
   /* Load XML files */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Loading XML files");
@@ -290,94 +292,11 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 
   hbci->sharedRuntimeData=GWEN_DB_Group_new("sharedRuntimeData");
 
-  /* load config data */
-  db=AB_Provider_GetData(hbci->provider);
-
   hbci->transferTimeout=GWEN_DB_GetIntValue(db, "transferTimeout", 0,
 					    AH_HBCI_DEFAULT_TRANSFER_TIMEOUT);
   hbci->connectTimeout=GWEN_DB_GetIntValue(db, "connectTimeout", 0,
 					   AH_HBCI_DEFAULT_CONNECT_TIMEOUT);
 
-  oldVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0,
-                                 AH_HBCI_LAST_VERSION_NONE);
-  currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
-
-  if (oldVersion!=AH_HBCI_LAST_VERSION_NONE &&
-      oldVersion<((1<<24) | (2<<16) | (0<<8) | 3)) {
-    GWEN_DB_NODE *dbMedia;
-    GWEN_DB_NODE *dbBanks;
-
-    DBG_WARN(AQHBCI_LOGDOMAIN,
-             "Updating from version prior to 1.2.0.3");
-
-    dbMedia=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "media");
-    assert(dbMedia);
-
-    dbBanks=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banks");
-    if (dbBanks) {
-      GWEN_DB_NODE *dbBank;
-
-      dbBank=GWEN_DB_FindFirstGroup(dbBanks, "bank");
-      while(dbBank) {
-        GWEN_DB_NODE *dbUsers;
-
-        dbUsers=GWEN_DB_GetGroup(dbBank,
-                                 GWEN_PATH_FLAGS_NAMEMUSTEXIST, "users");
-        if (dbUsers) {
-          GWEN_DB_NODE *dbUser;
-
-          dbUser=GWEN_DB_FindFirstGroup(dbUsers, "user");
-          while(dbUser) {
-            GWEN_DB_NODE *dbMedium;
-
-            dbMedium=GWEN_DB_GetGroup(dbUser,
-                                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                      "medium");
-            if (dbMedium) {
-              GWEN_DB_NODE *dbDst;
-              const char *s;
-              int i;
-
-              dbDst=GWEN_DB_GetGroup(dbMedia, GWEN_PATH_FLAGS_CREATE_GROUP,
-				     "medium");
-	      assert(dbDst);
-	      s=GWEN_DB_GetCharValue(dbMedium, "mediumTypeName", 0, 0);
-	      if (s)
-		GWEN_DB_SetCharValue(dbDst, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				     "mediumTypeName", s);
-	      s=GWEN_DB_GetCharValue(dbMedium, "mediumSubTypeName", 0, 0);
-              if (s)
-                GWEN_DB_SetCharValue(dbDst, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                     "mediumSubTypeName", s);
-              s=GWEN_DB_GetCharValue(dbMedium, "mediumName", 0, 0);
-              if (s)
-                GWEN_DB_SetCharValue(dbDst, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                     "mediumName", s);
-              s=GWEN_DB_GetCharValue(dbMedium, "descriptiveName", 0, 0);
-              if (s)
-                GWEN_DB_SetCharValue(dbDst, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                     "descriptiveName", s);
-              i=GWEN_DB_GetIntValue(dbMedium, "flags", 0, 0);
-              if (i)
-                GWEN_DB_SetIntValue(dbDst, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                    "flags", i);
-              s=GWEN_DB_GetCharValue(dbMedium, "mediumType", 0, 0);
-              if (s)
-                GWEN_DB_SetCharValue(dbUser, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                     "cryptMode", s);
-	    } /* if medium */
-
-            dbUser=GWEN_DB_FindNextGroup(dbUser, "user");
-	  } /* if user */
-	} /* if users */
-        dbBank=GWEN_DB_FindNextGroup(dbBank, "bank");
-      } /* if bank */
-    } /* if banks */
-  } /* if update from before 1.2.0.3 */
 
   /* load media */
   AH_HBCI__LoadMedia(hbci, db);
@@ -398,117 +317,6 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
       gr=GWEN_DB_FindNextGroup(gr, "bank");
     } /* while */
   } /* if "banks" */
-
-  if (oldVersion!=AH_HBCI_LAST_VERSION_NONE &&
-      currentVersion>oldVersion) {
-    AH_BANK *b;
-
-    if (oldVersion<
-        ((1<<24) |
-         (0<<16) |
-         (3<<8) |
-         9)) {
-      AB_Banking_MessageBox(hbci->banking,
-                            AB_BANKING_MSG_FLAGS_TYPE_INFO |
-                            AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                            AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                            I18N("AqHBCI-Notice"),
-                            I18N(
-      "Since version 1.0.3.9 AqHBCI no longer\n"
-      "stores the PIN in your private logfiles when\n"
-      "logging PIN/TAN connections.\n"
-      "Because previous versions did, you should\n"
-      "delete all logfiles in your local "
-      "AqBanking\n"
-      "Logfolder (usually something like\n"
-      "$HOME/.banking/backends/aqhbci/data/...)\n"
-      "\n"
-      "Logfiles have the extension \".log\", \n"
-      "please do only delete those files!"
-      "\n"
-       "This only affects PIN/TAN mode, all other modes\n"
-       "are not affected.\n"
-       ""
-       "<html>"
-      "<p>"
-      "Since version 1.0.3.9 AqHBCI no longer\n"
-      "stores the PIN in your private logfiles when\n"
-      "logging <b>PIN/TAN</b> connections.\n"
-      "</p>"
-       "<p>"
-       "Because previous versions did, you should\n"
-       "delete all logfiles in your local \n"
-       "AqBanking Logfolder (usually something like\n"
-       "<i>"
-       "$HOME/.banking/backends/aqhbci/data/...\n"
-       "</i>)"
-       "</p>"
-       "<p>"
-       "Logfiles have the extension \".log\", \n"
-       "<font color=red>please do only delete <b>those</b> files!</font>"
-       "</p>"
-       "<p>"
-       "This only affects <b>PIN/TAN mode,</b> all other modes\n"
-       "are not affected.\n"
-       "</p>"
-       "</html>"
-                                ),
-                            I18N("Continue"), 0, 0);
-    }
-
-    /* this is an update, set all UPD/BPD-Versions to zero */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Updating from %d.%d.%d.%d",
-               (oldVersion>>24) & 0xff,
-               (oldVersion>>16) & 0xff,
-               (oldVersion>>8) & 0xff,
-               oldVersion & 0xff);
-    b=AH_Bank_List_First(hbci->banks);
-    while(b) {
-      AH_USER_LIST2 *ul;
-
-      ul=AH_Bank_GetUsers(b, "*");
-      if (ul) {
-        AH_USER_LIST2_ITERATOR *it;
-
-        it=AH_User_List2_First(ul);
-        if (it) {
-          AH_USER *u;
-
-          u=AH_User_List2Iterator_Data(it);
-          while(u) {
-            AH_CUSTOMER_LIST2 *cl;
-
-            cl=AH_User_GetCustomers(u, "*");
-            if (cl) {
-              AH_CUSTOMER_LIST2_ITERATOR *cit;
-
-              cit=AH_Customer_List2_First(cl);
-              if (cit) {
-                AH_CUSTOMER *cu;
-
-                cu=AH_Customer_List2Iterator_Data(cit);
-                while(cu) {
-                  AH_Customer_SetUpdVersion(cu, 0);
-                  AH_Customer_SetBpdVersion(cu, 0);
-                  cu=AH_Customer_List2Iterator_Next(cit);
-                }
-                AH_Customer_List2Iterator_free(cit);
-              }
-              AH_Customer_List2_free(cl);
-            }
-
-            u=AH_User_List2Iterator_Next(it);
-          }
-          AH_User_List2Iterator_free(it);
-        }
-        AH_User_List2_free(ul);
-      }
-      b=AH_Bank_List_Next(b);
-    }
-  }
-
-
 
   return 0;
 }
@@ -590,23 +398,11 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
   AH_HBCI__SaveMedia(hbci, db);
 
   /* clear active media */
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "%d active media",
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "%d active media",
             AH_Medium_List_GetCount(hbci->activeMedia));
   AH_Medium_List_Clear(hbci->activeMedia);
 
-  {
-    GWEN_PLUGIN_MANAGER *pm;
-
-    /* clear xmldata pluginmanager */
-    pm=GWEN_PluginManager_FindPluginManager("xmldata");
-    if (pm) {
-      if (GWEN_PluginManager_Unregister(pm)) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Could not unregister xmldata plugin manager");
-      }
-      GWEN_PluginManager_free(pm);
-    }
-  }
+  GWEN_PathManager_UndefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
 
   GWEN_DB_Group_free(hbci->sharedRuntimeData);
   hbci->sharedRuntimeData=0;
@@ -667,30 +463,22 @@ GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci){
 
 GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci){
   GWEN_XMLNODE *xmlNode;
-  GWEN_PLUGIN_MANAGER *pm;
-  const GWEN_STRINGLIST *slist;
+  GWEN_STRINGLIST *slist;
 
   xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
-  /* New loading code -- use path list from PluginManager but don't
-     use its loading code */
-  pm=GWEN_PluginManager_FindPluginManager("xmldata");
-  if (!pm) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "xmldata");
-    return 0;
-  }
-  slist = GWEN_PluginManager_GetPaths(pm);
+  slist=GWEN_PathManager_GetPaths(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
   if (GWEN_XML_ReadFileSearch(xmlNode,
-			      "hbci.xml",
-			      GWEN_XML_FLAGS_DEFAULT |
+                              "hbci.xml",
+                              GWEN_XML_FLAGS_DEFAULT |
 			      GWEN_XML_FLAGS_HANDLE_HEADERS,
-			      (GWEN_STRINGLIST*)slist) ) {
+                              slist) ) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not load XML file.\n");
+    GWEN_StringList_free(slist);
     GWEN_XMLNode_free(xmlNode);
     return 0;
   }
+  GWEN_StringList_free(slist);
 
   return xmlNode;
 }

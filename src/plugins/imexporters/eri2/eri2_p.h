@@ -18,6 +18,8 @@
 /* for debugging */
 #define ERI2DEBUG
 
+#define AH_IMEXPORTER_ERI2_MAXLEVEL 16
+
 #include <aqbanking/imexporter_be.h>
 #include <aqbanking/banking.h>
 #include <gwenhywfar/msgengine.h>
@@ -48,6 +50,10 @@ int AB_ImExporterERI2__HandleRec2(GWEN_DB_NODE *dbT,
 int AB_ImExporterERI2__HandleRec3(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
                                   AB_TRANSACTION *t);
+int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
+                                  GWEN_DB_NODE *dbParams,
+                                  AB_TRANSACTION *t);
+
 void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s);
 void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
                                        AB_TRANSACTION *t,
@@ -58,8 +64,6 @@ int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              GWEN_BUFFEREDIO *bio,
                              GWEN_DB_NODE *params);
-
-
 
 
 

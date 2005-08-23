@@ -22,6 +22,7 @@
 
 #include <aqbanking/msgengine.h>
 #include <aqbanking/banking_be.h>
+#include "i18n_l.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -133,6 +134,7 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
     else if (c == GWEN_BUFFEREDIO_CHAR_ERROR) {
       DBG_ERROR(0, "Error reading message");
       GWEN_Buffer_free(mbuf);
+      GWEN_DB_Group_free(dbData);
       return AB_ERROR_GENERIC;
     }
 
@@ -140,6 +142,7 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
       GWEN_Buffer_free(mbuf);
+      GWEN_DB_Group_free(dbData);
       return AB_ERROR_GENERIC;
     }
 
@@ -148,17 +151,31 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
     rv = GWEN_MsgEngine_ReadMessage(ieh->msgEngine, "SEG", mbuf, dbData, 0);
     if (rv) {
       GWEN_Buffer_free(mbuf);
+      GWEN_DB_Group_free(dbData);
       return AB_ERROR_GENERIC;
     }
   }
   GWEN_Buffer_free(mbuf);
 
   /* import from db */
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+                        I18N("Data imported, transforming to UTF-8"));
+  rv=AH_ImExporter_DbFromIso8859_1ToUtf8(dbData);
+  if (rv) {
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "Error converting data");
+    GWEN_DB_Group_free(dbData);
+    return rv;
+  }
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+                        "Transforming data to transactions");
   rv = AB_ImExporterERI2__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbData);
     return rv;
   }
+  GWEN_DB_Group_free(dbData);
 
   return 0;
 }
@@ -367,10 +384,14 @@ int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
   p3 = GWEN_DB_GetCharValue(dbT, "purpose5", 0, 0);
 
   if (p1) GWEN_Buffer_AppendString(pbuf, p1);
-  if (GWEN_Buffer_GetUsedBytes(pbuf) < 32) GWEN_Buffer_AppendString(pbuf, " ");
-  if (p2) GWEN_Buffer_AppendString(pbuf, p2);
-  if (GWEN_Buffer_GetUsedBytes(pbuf) < 64) GWEN_Buffer_AppendString(pbuf, " ");
-  if (p3) GWEN_Buffer_AppendString(pbuf, p3);
+  if (GWEN_Buffer_GetUsedBytes(pbuf) < 32)
+    GWEN_Buffer_AppendString(pbuf, " ");
+  if (p2)
+    GWEN_Buffer_AppendString(pbuf, p2);
+  if (GWEN_Buffer_GetUsedBytes(pbuf) < 64)
+    GWEN_Buffer_AppendString(pbuf, " ");
+  if (p3)
+    GWEN_Buffer_AppendString(pbuf, p3);
 
   strlen = GWEN_Buffer_GetUsedBytes(pbuf);
   if (strlen) {
@@ -574,9 +595,6 @@ int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
 
   return AB_ERROR_GENERIC;
 }
-
-
-
 
 
 

@@ -125,11 +125,18 @@ int CBankingProgress_Advance(CBANKING_PROGRESS *pr,
 #endif
 
   assert(pr);
+  if (progress==AB_BANKING_PROGRESS_ONE)
+    progress=pr->current+1;
   if (progress!=AB_BANKING_PROGRESS_NONE) {
     if (progress!=pr->current) {
-      fprintf(stderr,
-              "%s: "GWEN_TYPE_TMPL_UINT32" of "GWEN_TYPE_TMPL_UINT32"\n",
-              pr->title, progress, pr->total);
+      if (pr->total==AB_BANKING_PROGRESS_NONE)
+        fprintf(stderr,
+                "%s: "GWEN_TYPE_TMPL_UINT32"\n",
+                pr->title, progress);
+      else
+        fprintf(stderr,
+                "%s: "GWEN_TYPE_TMPL_UINT32" of "GWEN_TYPE_TMPL_UINT32"\n",
+                pr->title, progress, pr->total);
       pr->current=progress;
     }
   }

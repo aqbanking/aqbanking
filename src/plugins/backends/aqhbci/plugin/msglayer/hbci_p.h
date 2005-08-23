@@ -17,6 +17,13 @@
 #include "hbci_l.h"
 #include <aqhbci/message.h>
 
+#define AH_REGKEY_PATHS       "Software\\AqHbci\\Paths"
+#define AH_REGKEY_XMLDATADIR  "xmldatadir"
+
+#define AH_PM_LIBNAME       "aqhbci"
+#define AH_PM_XMLDATADIR    "xmldatadir"
+
+
 #define AH_HBCI_DEFAULT_CONNECT_TIMEOUT 30
 #define AH_HBCI_DEFAULT_TRANSFER_TIMEOUT 60
 

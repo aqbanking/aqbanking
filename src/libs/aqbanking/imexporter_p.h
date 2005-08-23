@@ -15,6 +15,8 @@
 #define AQBANKING_IMEXPORTER_P_H
 
 
+#define AH_IMEXPORTER_TRANSFORM_MAXLEVEL 16
+
 #include "imexporter_l.h"
 #include "account_l.h"
 #include "transaction_l.h"
@@ -74,6 +76,11 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   AB_TRANSACTION *nextTransfer;
 
 };
+
+
+int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level);
+int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level);
+
 
 
 

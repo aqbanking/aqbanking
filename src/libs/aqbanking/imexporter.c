@@ -1182,8 +1182,221 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
 }
 
 
+void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
+                                   int size,
+                                   GWEN_BUFFER *buf) {
+  while(*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    switch(c) {
+    case 0xc4: /* AE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x84);
+      break;
+
+    case 0xe4: /* ae */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa4);
+      break;
+
+    case 0xd6: /* OE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x96);
+      break;
+
+    case 0xf6: /* oe */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xb6);
+      break;
+
+    case 0xdc: /* UE */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x9c);
+      break;
+
+    case 0xfc: /* ue */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xbc);
+      break;
+
+    case 0xdf: /* sz */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x9f);
+      break;
+
+    case 0xa7: /* section sign */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x67);
+      break;
+
+      /* english chars */
+    case 0xa3: /* pound swign */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x63);
+      break;
+
+      /* french chars */
+    case 0xc7: /* C cedille */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0x87);
+      break;
+
+    case 0xe0: /* a accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa0);
+      break;
+
+    case 0xe1: /* a accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa1);
+      break;
+
+    case 0xe2: /* a accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa2);
+      break;
+
+    case 0xe7: /* c cedille */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa7);
+      break;
+
+    case 0xe8: /* e accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa8);
+      break;
+
+    case 0xe9: /* e accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xa9);
+      break;
+
+    case 0xea: /* e accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xaa);
+      break;
+
+    case 0xec: /* i accent grave (never heard of this) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xac);
+      break;
+
+    case 0xed: /* i accent aigu (never heard of this, either) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xad);
+      break;
+
+    case 0xee: /* i accent circumflex (never heard of this, either) */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xae);
+      break;
+
+    case 0xf2: /* o accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xb2);
+      break;
+
+    case 0xf3: /* o accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xb3);
+      break;
+
+    case 0xf4: /* o accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xb4);
+      break;
+
+    case 0xf9: /* u accent grave */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xb9);
+      break;
+
+    case 0xfa: /* u accent aigu */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xba);
+      break;
+
+    case 0xfb: /* u accent circumflex */
+      GWEN_Buffer_AppendByte(buf, 0xc3);
+      GWEN_Buffer_AppendByte(buf, 0xbb);
+      break;
+
+    default:
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    if (size!=-1)
+      size--;
+  } /* while */
+}
 
 
+
+int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
+  GWEN_DB_NODE *dbC;
+
+  dbC=GWEN_DB_GetFirstValue(db);
+  while(dbC) {
+    if (GWEN_DB_GetValueType(dbC)==GWEN_DB_VALUETYPE_CHAR) {
+      const char *s;
+      unsigned int l;
+
+      s=GWEN_DB_GetCharValueFromNode(dbC);
+      assert(s);
+      l=strlen(s);
+      if (l) {
+        GWEN_BUFFER *vbuf;
+
+        vbuf=GWEN_Buffer_new(0, 1+(l*15/10), 0, 1);
+        AB_ImExporter_Iso8859_1ToUtf8(s, l, vbuf);
+        GWEN_DB_SetCharValueInNode(dbC, GWEN_Buffer_GetStart(vbuf));
+        GWEN_Buffer_free(vbuf);
+      }
+    }
+    dbC=GWEN_DB_GetNextValue(dbC);
+  }
+
+  return 0;
+}
+
+
+
+int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
+  GWEN_DB_NODE *dbC;
+  int rv;
+
+  if (level>AH_IMEXPORTER_TRANSFORM_MAXLEVEL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "DB too deep (%d)", level);
+    return -1;
+  }
+
+  dbC=GWEN_DB_GetFirstGroup(db);
+  while(dbC) {
+    rv=AH_ImExporter__Transform_Group(dbC, level+1);
+    if (rv)
+      return rv;
+    dbC=GWEN_DB_GetNextGroup(dbC);
+  }
+
+  dbC=GWEN_DB_GetFirstVar(db);
+  while(dbC) {
+    rv=AH_ImExporter__Transform_Var(dbC, level+1);
+    if (rv)
+      return rv;
+    dbC=GWEN_DB_GetNextVar(dbC);
+  }
+
+  return 0;
+}
+
+
+
+int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
+  return AH_ImExporter__Transform_Group(db, 0);
+}
 
 
 

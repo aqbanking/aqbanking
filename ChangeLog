@@ -1,5 +1,39 @@
 
 ===========================================================================
+MARK: released AqBanking - 1.5.0beta (2005/08/23)
+===========================================================================
+
+
+2005/08/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: 
+  - Now uses Gwen's PathManager which replaces the plugin code to
+    find the XML files
+  - moved update code into its own files (hbci-updates*.{c,h})
+  - added documentation about what each update does
+- aqhbci-tool:
+  - added command "listusers"
+  - added command "iniletter"
+  - added command "listaccounts"
+- improved documentation of aqhbci-tool (README)
+- README of AqHBCI is now installed to $(datadir)/doc/aqhbci
+
+
+2005/08/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added option "-os FILE" to tool hbcixml2 which extracts SWIFT records
+  from log messages (this allowed me to re-import all old transactions from
+  AqMoney2 and very old AqHBCI log files)
+- added import profile for AqMoney1 CSV files
+- made SWIFT importer less verbous
+- importers csv, eri2 and openhbci1 now transform data to UTF-8 before
+  import
+- added functions
+  - AB_ImExporter_Iso8859_1ToUtf8()
+  - AH_ImExporter_DbFromIso8859_1ToUtf8()
+
+
+===========================================================================
 MARK: released AqBanking - 1.4.1beta (2005/08/19)
 ===========================================================================
 

@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
     argv+=rv-1;
   }
 
-  GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, GWEN_LoggerLevelInfo);
+  /*GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, GWEN_LoggerLevelInfo); */
 
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
   if (!cmd) {
@@ -192,6 +192,16 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "sendkeys")==0) {
     rv=sendKeys(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "listusers")==0) {
+    rv=listUsers(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "listaccounts")==0) {
+    rv=listAccounts(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "iniletter")==0) {
+    rv=iniLetter(ab, db, argc, argv);
+  }
+
   else if (strcasecmp(cmd, "activate")==0) {
     int res;
 

@@ -204,7 +204,15 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
 	    ci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
 						   GWEN_CryptToken_CryptAlgo_DES_3K,
 						   GWEN_CryptToken_PaddAlgo_None);
-	  }
+          }
+          else if (algo==GWEN_CryptToken_CryptAlgo_None) {
+            si=GWEN_CryptToken_GetSignInfoByAlgos(ct,
+                                                  GWEN_CryptToken_HashAlgo_None,
+                                                  GWEN_CryptToken_PaddAlgo_None);
+            ci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
+                                                   GWEN_CryptToken_CryptAlgo_None,
+                                                   GWEN_CryptToken_PaddAlgo_None);
+          }
 	  else {
 	    DBG_ERROR(AQHBCI_LOGDOMAIN,
 		      "Invalid crypt algo \"%s\"",

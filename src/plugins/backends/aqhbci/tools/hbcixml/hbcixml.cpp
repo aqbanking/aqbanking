@@ -120,6 +120,7 @@ void usage(const char *prg) {
           " --analyze F    - name of the file to analyze\n"
           " -ol F          - name of anonymized output logfile\n"
           " -od F          - name of anonymized parsed logfile\n"
+          " -os F          - name of SWIFT MT940/942 file to export\n"
           "\n"
           " --logfile FILE   - use given FILE as log file\n"
           " --logtype TYPE   - use given TYPE as log type\n"
@@ -157,6 +158,7 @@ struct s_args {
   string analyzeFile;          // --analyze
   string outFile;              // -ol
   string parseFile;            // -od
+  string swiftFile;            // -os
   int trustLevel;              // --trustlevel
   string logFile;              // --logfile
   GWEN_LOGGER_LOGTYPE logType; // --logtype
@@ -247,6 +249,12 @@ int checkArgs(s_args &args, int argc, char **argv) {
       if (i>=argc)
         return 1;
       args.parseFile=argv[i];
+    }
+    else if (tmp=="-os") {
+      i++;
+      if (i>=argc)
+        return 1;
+      args.swiftFile=argv[i];
     }
     else if (tmp=="--trustlevel") {
       i++;
@@ -937,6 +945,104 @@ int analyzeLog(const s_args &args) {
         return 0;
       }
     }
+
+    if (!args.swiftFile.empty()) {
+      int bnum=0;
+      int nnum=0;
+
+      if ((strcasecmp(GWEN_DB_GetCharValue(gr, "logHeader/sender", 0,
+					   "bank"), "bank")==0) &&
+	  (strcasecmp(GWEN_DB_GetCharValue(gr, "logHeader/crypt", 0,
+					   "no"), "no")==0)
+	 ) {
+	GWEN_DB_NODE *dbT;
+
+	dbT=GWEN_DB_FindFirstGroup(gr, "transactions");
+	while(dbT) {
+	  const void *p;
+	  unsigned int len;
+
+	  p=GWEN_DB_GetBinValue(dbT, "booked", 0, 0, 0, &len);
+	  if (p && len) {
+	    GWEN_BUFFER *fbuf;
+	    FILE *f;
+
+	    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	    GWEN_Buffer_AppendString(fbuf, args.swiftFile.c_str());
+	    GWEN_Buffer_AppendString(fbuf, ".booked");
+	    if (bnum!=0) {
+	      char numbuf[32];
+
+	      snprintf(numbuf, sizeof(numbuf), "%d", bnum);
+	      GWEN_Buffer_AppendString(fbuf, ".");
+	      GWEN_Buffer_AppendString(fbuf, numbuf);
+	    }
+	    f=fopen(GWEN_Buffer_GetStart(fbuf), "w+");
+	    if (!f) {
+	      DBG_ERROR(0, "fopen(%s): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			strerror(errno));
+	      return 2;
+	    }
+	    if (1!=fwrite(p, len, 1, f)) {
+	      DBG_ERROR(0, "fwrite(%s, %d bytes): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			len,
+			strerror(errno));
+	      return 2;
+	    }
+	    if (fclose(f)) {
+	      DBG_ERROR(0, "fclose(%s): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			strerror(errno));
+	      return 2;
+	    }
+	    GWEN_Buffer_free(fbuf);
+	    bnum++;
+	  }
+
+	  p=GWEN_DB_GetBinValue(dbT, "noted", 0, 0, 0, &len);
+	  if (p && len) {
+	    GWEN_BUFFER *fbuf;
+	    FILE *f;
+
+	    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	    GWEN_Buffer_AppendString(fbuf, args.swiftFile.c_str());
+	    GWEN_Buffer_AppendString(fbuf, ".noted");
+	    if (nnum!=0) {
+	      char numbuf[32];
+
+	      snprintf(numbuf, sizeof(numbuf), "%d", nnum);
+	      GWEN_Buffer_AppendString(fbuf, ".");
+	      GWEN_Buffer_AppendString(fbuf, numbuf);
+	    }
+	    f=fopen(GWEN_Buffer_GetStart(fbuf), "w+");
+	    if (!f) {
+	      DBG_ERROR(0, "fopen(%s): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			strerror(errno));
+	      return 2;
+	    }
+	    if (1!=fwrite(p, len, 1, f)) {
+	      DBG_ERROR(0, "fwrite(%s, %d bytes): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			len,
+			strerror(errno));
+	      return 2;
+	    }
+	    if (fclose(f)) {
+	      DBG_ERROR(0, "fclose(%s): %s",
+			GWEN_Buffer_GetStart(fbuf),
+			strerror(errno));
+	      return 2;
+	    }
+	    GWEN_Buffer_free(fbuf);
+	    nnum++;
+	  }
+	  dbT=GWEN_DB_FindNextGroup(dbT, "transactions");
+	}
+      }
+    } // if swiftFile
 
     // anonymize
     ntd=trustedData;

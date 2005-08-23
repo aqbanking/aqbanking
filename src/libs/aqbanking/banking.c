@@ -661,8 +661,8 @@ int AB_Banking__SaveProviderData(AB_BANKING *ab,
     return AB_ERROR_GENERIC;
   }
 
-  DBG_NOTICE(AQBANKING_LOGDOMAIN,
-             "Saving file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_DEBUG(AQBANKING_LOGDOMAIN,
+            "Saving file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
 			     GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -1175,7 +1175,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   setlocale(LC_ALL,"");
   s=bindtextdomain(PACKAGE,  LOCALEDIR);
   if (s) {
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Locale bound.");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Locale bound.");
     bind_textdomain_codeset(PACKAGE, "UTF-8");
   }
   else {
@@ -1984,7 +1984,7 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   ta=AB_Account_List_First(ab->accounts);
   if (!ta) {
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "No accounts.");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts.");
   }
   while(ta) {
     if (AB_Account_GetProvider(a)==AB_Account_GetProvider(ta)) {
@@ -2006,14 +2006,14 @@ int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   if (!ta) {
     /* account is new, simply add it */
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding account");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account");
     AB_Account_SetUniqueId(a, AB_Banking_GetUniqueId(ab));
     AB_Account_List_Add(a, ab->accounts);
     return 0;
   }
 
   /* copy new provider data over old data */
-  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Updating account");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating account");
   dbNew=AB_Account_GetProviderData(ta);
   assert(dbNew);
   dbOld=AB_Account_GetProviderData(a);

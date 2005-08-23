@@ -93,6 +93,21 @@ int sendKeys(AB_BANKING *ab,
              int argc,
              char **argv);
 
+int listUsers(AB_BANKING *ab,
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
+
+int listAccounts(AB_BANKING *ab,
+                 GWEN_DB_NODE *dbArgs,
+                 int argc,
+                 char **argv);
+
+int iniLetter(AB_BANKING *ab,
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
+
 
 #endif
 

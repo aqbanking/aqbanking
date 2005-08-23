@@ -1,7 +1,7 @@
-INCLUDES = -I$(top_builddir)/headers $(all_includes) \
-  -I$(srcdir)/..
+INCLUDES = -I$(top_builddir)/headers -I$(top_srcdir)/src/libs/aqbanking \
+  $(all_includes) -I$(srcdir)/..
 
-DEFS += -DAQHBCI_DATA=\"@aqhbci_data@\"
+DEFS += -DAH_XMLDATADIR=\"@aqhbci_data@/xml\"
 
 typefiles=mediumctx.xml
 
@@ -21,6 +21,8 @@ noinst_HEADERS=\
  dialog_p.h \
  hbci_l.h \
  hbci_p.h \
+ hbci-updates_l.h \
+ hbci-updates_p.h \
  medium_l.h \
  medium_p.h \
  mediumheader_p.h \
@@ -60,6 +62,7 @@ libhbcimsg_la_SOURCES=\
  customer.c \
  dialog.c \
  hbci.c \
+ hbci-updates.c \
  medium.c \
  mediumheader.c \
  mediumctx.c \

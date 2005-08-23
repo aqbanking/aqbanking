@@ -298,7 +298,7 @@ int listTrans(AB_BANKING *ab,
     a=AB_Banking_GetAccountByCodeAndNumber(ab, s1, s2);
     if (!a) {
       DBG_ERROR(AQT_LOGDOMAIN, "Account %s/%s not found, ignoring",
-                bankId, accountId);
+                s1, s2);
       matches=0;
     }
     else {

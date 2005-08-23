@@ -1,5 +1,10 @@
+EXTRA_DIST=README
+
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
 bin_PROGRAMS=aqhbci-tool
+
+idatadir=$(datadir)/doc/aqhbci/aqhbci-tool
+idata_DATA=README
 
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\"
@@ -16,7 +21,10 @@ aqhbci_tool_SOURCES=main.c \
  resetkeys.c \
  createkeys.c \
  sendkeys.c \
- getaccounts.c
+ getaccounts.c \
+ listusers.c \
+ listaccounts.c \
+ iniletter.c
 
 aqhbci_tool_LDADD = \
   $(aqhbci_internal_libs) \

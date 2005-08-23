@@ -91,7 +91,16 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 
   /* transform DB to transactions */
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        "Data imported, transforming to transactions");
+                        I18N("Data imported, transforming to UTF-8"));
+  rv=AH_ImExporter_DbFromIso8859_1ToUtf8(dbData);
+  if (rv) {
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+                          "Error converting data");
+    GWEN_DB_Group_free(dbData);
+    return rv;
+  }
+  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+                        "Transforming data to transactions");
   rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
@@ -174,7 +183,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         AB_TRANSACTION *t;
         const char *p;
 
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Found a possible transaction");
+        DBG_DEBUG(AQBANKING_LOGDOMAIN, "Found a possible transaction");
         t=AB_Transaction_fromDb(dbT);
         if (!t) {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
@@ -275,7 +284,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
         } /* if usePosNegField */
 
-        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
+        DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
         AB_ImExporterContext_AddTransaction(ctx, t);
       }
       else {
@@ -285,7 +294,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     else {
       int rv;
 
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a transaction, checking subgroups");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Not a transaction, checking subgroups");
       /* not a transaction, check subgroups */
       rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams);
       if (rv) {
@@ -523,6 +532,7 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 
   return 0;
 }
+
 
 
 
