@@ -202,7 +202,7 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
 
   GWEN_NetTransportSSL_SetAskAddCertFn2(AB_Banking_AskAddCert, ab);
 
-  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Registering callbacks");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering callbacks");
   ab->waitCallback=AB_WaitCallback_new(ab, AB_BANKING_WCB_GENERIC);
   if (GWEN_WaitCallback_Register(ab->waitCallback)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -459,7 +459,7 @@ int AB_Banking__LoadAppData(AB_BANKING *ab) {
   db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
                       ab->appEscName);
   assert(db);
-  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+  DBG_INFO(AQBANKING_LOGDOMAIN,
              "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
                        GWEN_DB_FLAGS_DEFAULT |
@@ -503,7 +503,7 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
     return AB_ERROR_GENERIC;
   }
 
-  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+  DBG_INFO(AQBANKING_LOGDOMAIN,
              "Writing file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
 			     GWEN_PATH_FLAGS_VARIABLE)) {
@@ -616,8 +616,8 @@ int AB_Banking__LoadProviderData(AB_BANKING *ab,
   assert(db);
   db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
   assert(db);
-  DBG_NOTICE(AQBANKING_LOGDOMAIN,
-             "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
                        GWEN_DB_FLAGS_DEFAULT |
                        GWEN_PATH_FLAGS_CREATE_GROUP |
@@ -2273,7 +2273,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
 
       jnext=AB_Job_List_Next(j);
       jst=AB_Job_GetStatus(j);
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Checking job...");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Checking job...");
       if (jst==AB_Job_StatusEnqueued ||
 	  jst==AB_Job_StatusPending) {
         AB_ACCOUNT *a;
@@ -2281,7 +2281,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
         a=AB_Job_GetAccount(j);
         assert(a);
 	if (AB_Account_GetProvider(a)==pro) {
-	  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Same provider, adding job");
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Same provider, adding job");
           /* same provider, add job */
           rv=AB_Provider_AddJob(pro, j);
           if (rv) {
@@ -2310,7 +2310,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
       j=jnext;
     } /* while */
     if (jobs) {
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro);
       if (rv) {
@@ -4659,7 +4659,7 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
         while(t) {
 	  AB_TRANSACTION *nt;
 
-          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a transaction");
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got a transaction");
 	  nt=AB_Transaction_dup(t);
 	  AB_Transaction_SetLocalAccountNumber(nt,
 					       AB_Account_GetAccountNumber(a));
@@ -4688,7 +4688,7 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
         while(t) {
 	  AB_TRANSACTION *nt;
 
-          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a standing order");
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got a standing order");
 	  nt=AB_Transaction_dup(t);
 	  AB_Transaction_SetLocalAccountNumber(nt,
 					       AB_Account_GetAccountNumber(a));
@@ -4717,7 +4717,7 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
         while(t) {
 	  AB_TRANSACTION *nt;
 
-          DBG_NOTICE(AQBANKING_LOGDOMAIN, "Got a standing order");
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got a dated transfer");
 	  nt=AB_Transaction_dup(t);
 	  AB_Transaction_SetLocalAccountNumber(nt,
 					       AB_Account_GetAccountNumber(a));
@@ -5287,7 +5287,7 @@ int AB_Banking__SaveBadPins(AB_BANKING *ab) {
   while(p) {
     const char *st;
 
-    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+    DBG_INFO(AQBANKING_LOGDOMAIN,
                "Checking pin \"%s\"",
                AB_Pin_GetToken(p));
     st=AB_Pin_GetStatus(p);

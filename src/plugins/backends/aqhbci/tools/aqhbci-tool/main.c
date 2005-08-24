@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
   GWEN_Logger_Open("aqhbci-tool", "aqhbci-tool", 0,
                    GWEN_LoggerTypeConsole,
                    GWEN_LoggerFacilityUser);
-  GWEN_Logger_SetLevel("aqhbci-tool", GWEN_LoggerLevelNotice);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel("aqhbci-tool", GWEN_LoggerLevelWarning);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
