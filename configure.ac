@@ -614,7 +614,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,17,0,1)
+AC_GWENHYWFAR(1,18,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -627,7 +627,7 @@ XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 #
 
 case "$aqbanking_backends" in *aqgeldkarte*)
-  AC_CHIPCARD_CLIENT(1,9,11)
+  AC_CHIPCARD_CLIENT(1,9,15)
   AC_MSG_CHECKING(if chipcard_client is useable)
   if test "x$have_chipcard_client" != "xyes"; then
     AC_MSG_RESULT(yes)

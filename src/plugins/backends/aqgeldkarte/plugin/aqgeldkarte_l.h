@@ -14,7 +14,7 @@
 #ifndef AQGELDKARTE_AQGELDKARTE_L_H
 #define AQGELDKARTE_AQGELDKARTE_L_H
 
-#include <aqdtaus/aqdtaus.h>
+#include <aqgeldkarte/aqgeldkarte.h>
 
 #ifdef HAVE_I18N
 # ifdef HAVE_LOCALE_H
