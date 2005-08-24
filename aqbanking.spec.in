@@ -186,6 +186,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 %{_bindir}/aqbanking-tool
 %{_datadir}/doc/%{name}
+%{_datadir}/doc/aqhbci
 %{plugindir}/bankinfo
 %{plugindir}/imexporters/csv.*
 %{plugindir}/imexporters/dbio.*
