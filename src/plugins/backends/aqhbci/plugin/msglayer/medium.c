@@ -259,15 +259,23 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
     }
     else {
       GWEN_CRYPTTOKEN_CONTEXT *tctx;
+      int idx=1;
 
       tctx=GWEN_CryptToken_Context_List_First(cl);
       while (tctx) {
         AH_MEDIUM_CTX *ctx;
+        GWEN_CRYPTTOKEN_USER *u;
 
-        ctx=AH_MediumCtx_new();
-        AH_MediumCtx_SetTokenContext(ctx, tctx);
-        AH_MediumCtx_List_Add(ctx, m->contextList);
-        tctx=GWEN_CryptToken_Context_List_Next(tctx);
+	ctx=AH_MediumCtx_new();
+	AH_MediumCtx_SetTokenContext(ctx, tctx);
+	u=GWEN_CryptToken_User_new();
+        /* create an empty user */
+        GWEN_CryptToken_User_SetId(u, idx);
+	AH_MediumCtx_SetUser(ctx, u);
+	GWEN_CryptToken_User_free(u);
+	AH_MediumCtx_List_Add(ctx, m->contextList);
+        idx++;
+	tctx=GWEN_CryptToken_Context_List_Next(tctx);
       }
     }
     GWEN_CryptToken_Context_List_free(cl);

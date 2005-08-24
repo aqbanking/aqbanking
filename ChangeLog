@@ -1,4 +1,10 @@
 
+2005/08/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a possible problem with security media which do not provide a
+  user list (create empty user instead)
+
+
 ===========================================================================
 MARK: released AqBanking - 1.5.1beta (2005/08/24)
 ===========================================================================
