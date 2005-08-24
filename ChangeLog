@@ -1,4 +1,13 @@
 
+2005/08/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved README of AqHBCI-Tool: Now a pristine RSA card can also be
+  setup
+- adapted to latest changes in Gwen: Now when CryptManager_GetPin is called
+  with a pin encoding which differs from ascii the pin is transformed
+  accordingly
+
+
 ===========================================================================
 MARK: released AqBanking - 1.5.0beta (2005/08/23)
 ===========================================================================

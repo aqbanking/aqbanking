@@ -488,7 +488,7 @@ int AH_Medium_ChangePin(AH_MEDIUM *m){
     return -1;
   }
 
-  rv=GWEN_CryptToken_ChangePin(m->cryptToken);
+  rv=GWEN_CryptToken_ChangePin(m->cryptToken, GWEN_CryptToken_PinType_Access);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error changing pin (%d)", rv);
     return rv;

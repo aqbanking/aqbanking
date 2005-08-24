@@ -88,12 +88,6 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
   assert(bcm);
 
-  if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Unhandled pin encoding %d", pe);
-    return GWEN_ERROR_INVALID;
-  }
-
   dname=GWEN_CryptToken_GetDescriptiveName(token);
   if (!dname || !*dname)
     dname=GWEN_CryptToken_GetTokenName(token);
@@ -206,6 +200,19 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
     memset(notunsigned_pwbuffer, '\0', maxLength+1);
   }
   free(notunsigned_pwbuffer);
+
+  if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
+    rv=GWEN_CryptToken_TransformPin(GWEN_CryptToken_PinEncoding_ASCII,
+				    pe,
+				    pwbuffer,
+				    maxLength,
+				    pinLength);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
   return 0;
 }
 
