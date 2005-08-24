@@ -70,14 +70,17 @@ Prereq: /sbin/ldconfig
 Prefix: %{_prefix}
 
 %description 
-The intention of AqBanking is to provide a middle layer between the
-program and the various Online Banking libraries (e.g. AqHBCI). The
-first backend which is already supported is AqHBCI, a library which
-implements a client for the German HBCI (Home Banking Computer
-Interface) protocol. Additionally, Aqbanking provides various plugins
-to simplify import and export of financial data. Currently there are
-import plugins for the following formats: DTAUS (German financial
-format), SWIFT (MT940 and MT942).
+The intention of AqBanking is to provide a middle layer between
+the program and the various Online Banking libraries
+(e.g. AqHBCI). The first backend which is already supported is
+AqHBCI, a library which implements a client for the German HBCI
+(Home Banking Computer Interface) protocol. Additionally,
+Aqbanking provides various plugins to simplify import and export
+of financial data. Currently there are import plugins for the
+following formats: DTAUS (German financial format), SWIFT (MT940
+and MT942). Further information in German can be found on
+http://linuxwiki.de/AqBanking
+
 
 %package devel
 Summary: Aqbanking development kit
@@ -95,14 +98,15 @@ Group: System Environment/Libraries
 Obsoletes: aqhbci-qt-tools
 Obsoletes: aqdtaus-qt-tools
 %description qt3
-Necessary.
+Necessary for all banking applications.
 
 %package gtk2
 Summary: Aqbanking tools for Gnome2/Gtk2
 Group: System Environment/Libraries
 Obsoletes: aqbanking-gnome2
 %description gtk2
-Necessary.
+Necessary for gtk2-based banking applications, e.g. Grisbi (but
+not gnucash).
 
 %package kde3
 Summary: Aqbanking tools for KDE3
@@ -110,7 +114,7 @@ Group: System Environment/Libraries
 Requires: aqbanking-qt3
 Obsoletes: aqbanking-kde
 %description kde3
-Necessary.
+Necessary for KDE-based banking applications, e.g. KMyMoney.
 
 ### Sub-packages for OFX
 
@@ -120,13 +124,13 @@ BuildRequires: libofx >= 0.8.0
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description ofx
-Necessary.
+Necessary for OFX direct connect access.
 
 %package ofx-qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description ofx-qt3
-Necessary.
+Necessary for OFX direct connect access.
 %endif
 
 ### Sub-packages for Geldkarte
@@ -138,13 +142,13 @@ BuildRequires: libchipcard2-devel >= 1.9.13
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description geldkarte
-Necessary.
+Necessary for Geldkarte access.
 
 %package geldkarte-qt3
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
 %description geldkarte-qt3
-Necessary.
+Necessary for Geldkarte access.
 %endif
 
 ### The build commands

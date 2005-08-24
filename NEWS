@@ -2,16 +2,19 @@
                Released AqBanking - 1.3.0beta (2005/07/15)
 ===========================================================================
 
-This release now includes all backends (AqHBCI, AqDTAUS, AqGeldKarte,
-AqOfxConnect) and all frontends (console, gtk2, qt3, kde3) and all QT3
-setup wizards for all backends.
-AqHBCI now uses Gwenhywfar's CryptToken plugins instead of its own media
-plugins. "aqhbci-tool" can now be used to setup a new user from console.
-An ERI importer plugin has been added, some important bugs have been fixed
-and code duplication has been replaced by the new QT3 frontend.
+This release now includes all backends (AqHBCI, AqDTAUS,
+AqGeldKarte, AqOfxConnect) and all frontends (console, gtk2, qt3,
+kde3) and all QT3 setup wizards for all backends.  AqHBCI now uses
+Gwenhywfar's CryptToken plugins instead of its own media
+plugins. "aqhbci-tool" can now be used to setup a new user from
+console.  An ERI importer plugin has been added, some important
+bugs have been fixed and code duplication has been replaced by the
+new QT3 frontend. (Note: Further information in German can be
+found on http://linuxwiki.de/AqBanking )
 
-Please note that the media plugins for AqHBCI (DDVCard, RSACard) are now 
-obsoleted by the latest versions of AqBanking, Gwen and Libchipcard2.
+Please note that the media plugins for AqHBCI (DDVCard, RSACard)
+are now obsoleted by the latest versions of AqBanking, Gwen and
+Libchipcard2.
 
 New package structure since aqbanking-1.3.0
 -------------------------------------------
