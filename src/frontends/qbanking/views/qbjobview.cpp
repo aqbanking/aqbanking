@@ -120,7 +120,7 @@ void QBJobView::slotQueueUpdated(){
 
 void QBJobView::slotExecute(){
   std::list<AB_JOB*> jl;
-  std::list<AB_JOB*>::iterator jit;
+  //std::list<AB_JOB*>::iterator jit;
   int rv;
   bool updated;
   AB_IMEXPORTER_CONTEXT *ctx;

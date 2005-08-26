@@ -214,7 +214,7 @@ int LogManager::_scanBank(const string &bankCode) {
 string LogManager::_anonymize(const string &bankCode,
                               const string &fname,
                               int trustLevel){
-  list<string>::const_iterator it;
+  //list<string>::const_iterator it;
   Pointer<LogAnalyzer::LogFile> logfile;
   list<Pointer<LogAnalyzer::LogFile::LogMessage> > lmsgs;
   list<Pointer<LogAnalyzer::LogFile::LogMessage> >::iterator lmit;
