@@ -38,11 +38,11 @@
 #include <aqhbci/msgengine.h>
 #include "loganalyzer.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
 
-#include <string.h>
+#include <cstring>
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif

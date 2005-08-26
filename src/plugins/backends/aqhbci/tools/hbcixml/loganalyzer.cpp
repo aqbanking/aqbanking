@@ -41,12 +41,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <string.h>
-#include <errno.h>
+#include <cstring>
+#include <cerrno>
 
 #ifdef OS_WIN32
 # define mkdir(a,b) mkdir(a)
 #endif
+using namespace std;
 
 
 LogAnalyzer::LogFile::LogMessage::LogMessage(GWEN_DB_NODE *header,
