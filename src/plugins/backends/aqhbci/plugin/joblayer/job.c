@@ -71,6 +71,7 @@ AH_JOB *AH_Job_new(const char *name,
     j->accountId=strdup(accountId);
   j->customer=cu;
   j->signers=GWEN_StringList_new();
+  j->log=GWEN_StringList_new();
 
   /* get job descriptions */
   u=AH_Customer_GetUser(cu);
@@ -324,6 +325,9 @@ AH_JOB *AH_Job_new(const char *name,
   j->segResults=AH_Result_List_new();
   j->msgResults=AH_Result_List_new();
 
+  AH_Job_Log(j, AB_Banking_LogLevelInfo,
+             "HBCI-Job created");
+
   return j;
 }
 
@@ -335,6 +339,7 @@ void AH_Job_free(AH_JOB *j) {
     assert(j->usage);
     if (--(j->usage)==0) {
       AH_Customer_free(j->customer);
+      GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
       free(j->name);
       free(j->accountId);
@@ -405,6 +410,8 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
                  "Job has an attachpoint, so yes, we need more messages");
     j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
+    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+               "Job has an attachpoint");
     return 1;
   }
 
@@ -419,6 +426,8 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
   if (j->msgNode) {
     /* there is another message, so set flags accordingly */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Multi-message job, still more messages");
+    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+               "Job has more messages");
 
     /* sample some flags for the next message */
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "sign", "1"))!=0) {
@@ -444,6 +453,8 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is finished", j->name);
+    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+               "Job has no more messages");
     j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
     return 0;
   }
@@ -616,24 +627,54 @@ AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j){
 void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
   assert(j);
   assert(j->usage);
-  DBG_INFO(AQHBCI_LOGDOMAIN,
-           "Changing status of job \"%s\" from \"%s\" (%d) to \"%s\" (%d)",
-           j->name,
-           AH_Job_StatusName(j->status), j->status,
-           AH_Job_StatusName(st), st);
-  j->status=st;
+  if (j->status!=st) {
+    GWEN_BUFFER *lbuf;
+
+    lbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Changing status of job \"%s\" from \"%s\" (%d) to \"%s\" (%d)",
+             j->name,
+             AH_Job_StatusName(j->status), j->status,
+             AH_Job_StatusName(st), st);
+    GWEN_Buffer_AppendString(lbuf, "Status changed from \"");
+    GWEN_Buffer_AppendString(lbuf, AH_Job_StatusName(j->status));
+    GWEN_Buffer_AppendString(lbuf, "\" to \"");
+    GWEN_Buffer_AppendString(lbuf, AH_Job_StatusName(st));
+    GWEN_Buffer_AppendString(lbuf, "\"");
+
+    AH_Job_Log(j, AB_Banking_LogLevelInfo,
+               GWEN_Buffer_GetStart(lbuf));
+    GWEN_Buffer_free(lbuf);
+    j->status=st;
+  }
 }
 
 
 
 void AH_Job_AddSigner(AH_JOB *j, const char *s){
+  GWEN_BUFFER *lbuf;
+
   assert(j);
   assert(j->usage);
   assert(s);
 
+  lbuf=GWEN_Buffer_new(0, 128, 0, 1);
   if (!GWEN_StringList_AppendString(j->signers, s, 0, 1)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Signer \"%s\" already in list", s);
+    GWEN_Buffer_AppendString(lbuf, "Signer \"");
+    GWEN_Text_EscapeToBufferTolerant(s, lbuf);
+    GWEN_Buffer_AppendString(lbuf, "\" already in list");
+    AH_Job_Log(j, AB_Banking_LogLevelWarn,
+               GWEN_Buffer_GetStart(lbuf));
   }
+  else {
+    GWEN_Buffer_AppendString(lbuf, "Signer \"");
+    GWEN_Text_EscapeToBufferTolerant(s, lbuf);
+    GWEN_Buffer_AppendString(lbuf, "\" added");
+    AH_Job_Log(j, AB_Banking_LogLevelInfo,
+               GWEN_Buffer_GetStart(lbuf));
+  }
+  GWEN_Buffer_free(lbuf);
   j->flags|=AH_JOB_FLAGS_SIGN;
 }
 
@@ -659,7 +700,8 @@ GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j){
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_MULTIMSG) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Multi message node, returning current message node");
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Multi message node, returning current message node");
     return j->msgNode;
   }
   return j->xmlNode;
@@ -911,7 +953,30 @@ void AH_Job_SampleResults(AH_JOB *j) {
 
           code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
           text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+          if (code) {
+            GWEN_BUFFER *lbuf;
+            char numbuf[32];
+            AB_BANKING_LOGLEVEL ll;
 
+            if (code>=9000)
+              ll=AB_Banking_LogLevelError;
+            else if (code>=3000)
+              ll=AB_Banking_LogLevelWarn;
+            else
+              ll=AB_Banking_LogLevelInfo;
+            lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+            GWEN_Buffer_AppendString(lbuf, "SegResult: ");
+            snprintf(numbuf, sizeof(numbuf), "%d", code);
+            GWEN_Buffer_AppendString(lbuf, numbuf);
+            if (text) {
+              GWEN_Buffer_AppendString(lbuf, "(");
+              GWEN_Buffer_AppendString(lbuf, text);
+              GWEN_Buffer_AppendString(lbuf, ")");
+            }
+            AH_Job_Log(j, ll,
+                       GWEN_Buffer_GetStart(lbuf));
+            GWEN_Buffer_free(lbuf);
+          }
           /* found a result */
           r=AH_Result_new(code,
                           text,
@@ -948,6 +1013,30 @@ void AH_Job_SampleResults(AH_JOB *j) {
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
             text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+            if (code) {
+              GWEN_BUFFER *lbuf;
+              char numbuf[32];
+              AB_BANKING_LOGLEVEL ll;
+  
+              if (code>=9000)
+                ll=AB_Banking_LogLevelError;
+              else if (code>=3000)
+                ll=AB_Banking_LogLevelWarn;
+              else
+                ll=AB_Banking_LogLevelInfo;
+              lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+              GWEN_Buffer_AppendString(lbuf, "MsgResult: ");
+              snprintf(numbuf, sizeof(numbuf), "%d", code);
+              GWEN_Buffer_AppendString(lbuf, numbuf);
+              if (text) {
+                GWEN_Buffer_AppendString(lbuf, "(");
+                GWEN_Buffer_AppendString(lbuf, text);
+                GWEN_Buffer_AppendString(lbuf, ")");
+              }
+              AH_Job_Log(j, ll,
+                         GWEN_Buffer_GetStart(lbuf));
+              GWEN_Buffer_free(lbuf);
+            }
 
             /* found a result */
             r=AH_Result_new(code,
@@ -1302,6 +1391,8 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         const GWEN_STRINGLIST *customers;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Found AccountData");
+        AH_Job_Log(j, AB_Banking_LogLevelInfo,
+                   "Job contains account data");
 
         /* account data found */
         accountId=GWEN_DB_GetCharValue(dbRd, "accountId", 0, 0);
@@ -1808,6 +1899,36 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s){
 
 
 
+void AH_Job_Log(AH_JOB *j, AB_BANKING_LOGLEVEL ll, const char *txt) {
+  char buffer[32];
+  GWEN_TIME *ti;
+  GWEN_BUFFER *lbuf;
+
+  assert(j);
+
+  lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  snprintf(buffer, sizeof(buffer), "%02d", ll);
+  GWEN_Buffer_AppendString(lbuf, buffer);
+  GWEN_Buffer_AppendByte(lbuf, ':');
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  GWEN_Time_toString(ti, "YYYYMMDD:hhmmss:", lbuf);
+  GWEN_Time_free(ti);
+  GWEN_Text_EscapeToBufferTolerant("aqhbci", lbuf);
+  GWEN_Buffer_AppendByte(lbuf, ':');
+  GWEN_Text_EscapeToBufferTolerant(txt, lbuf);
+  GWEN_StringList_AppendString(j->log,
+                               GWEN_Buffer_GetStart(lbuf),
+                               0, 0);
+  GWEN_Buffer_free(lbuf);
+}
+
+
+
+const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j) {
+  assert(j);
+  return j->log;
+}
 
 
 

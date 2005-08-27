@@ -90,6 +90,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp);
 const char *AH_Job_GetUsedTan(const AH_JOB *j);
 void AH_Job_SetUsedTan(AH_JOB *j, const char *s);
 
+void AH_Job_Log(AH_JOB *j, AB_BANKING_LOGLEVEL ll, const char *txt);
 
 
 #endif /* AH_JOB_L_H */

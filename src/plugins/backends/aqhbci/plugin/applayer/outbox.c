@@ -486,6 +486,8 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
           errors++;
         }
         else {
+          AH_Job_Log(j, AB_Banking_LogLevelInfo,
+                     "Dialog job enqueued");
           /* job added. This is a dialog job, so we need to begin and
            * and end the dialog */
           AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_BEGINDIALOG);
@@ -539,6 +541,8 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
           /* set status to ERROR and move to finished queue */
           AH_Job_SetStatus(j, AH_JobStatusError);
           AH_Job_List_Add(j, cbox->finishedJobs);
+          AH_Job_Log(j, AB_Banking_LogLevelError,
+                     "Could not enqueing HBCI-job");
           errors++;
         } /* if first job failed */
         else {
@@ -579,6 +583,8 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
         /* job added successfully */
         DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" successfully added",
                  AH_Job_GetName(j));
+        AH_Job_Log(j, AB_Banking_LogLevelInfo,
+                   "HBCI-job enqueued (1)");
         firstJob=0;
         jobsAdded++;
       }
@@ -1048,10 +1054,14 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 	      AH_JobQueueAddResultOk){
 	    DBG_ERROR(AQHBCI_LOGDOMAIN,
 		      "That's weird, I could not add the job to redo queue");
-	    AH_Job_SetStatus(j, AH_JobStatusError);
+            AH_Job_Log(j, AB_Banking_LogLevelError,
+                       "Could not re-enqueue HBCI-job");
+            AH_Job_SetStatus(j, AH_JobStatusError);
 	  }
 	  else {
 	    jobsTodo++;
+            AH_Job_Log(j, AB_Banking_LogLevelInfo,
+                       "HBCI-job re-enqueued (multi-message job)");
 	    j=0; /* mark that this job has been dealt with */
 	  }
 	} /* if more messages */
@@ -1065,9 +1075,13 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "That's weird, I could not add the job to redo queue");
 	  AH_Job_SetStatus(j, AH_JobStatusError);
+          AH_Job_Log(j, AB_Banking_LogLevelError,
+                     "Could not enqueue HBCI-job");
 	}
 	else {
 	  jobsTodo++;
+          AH_Job_Log(j, AB_Banking_LogLevelInfo,
+                     "HBCI-job enqueued (2)");
 	  j=0; /* mark that this job has been dealt with */
 	}
       }

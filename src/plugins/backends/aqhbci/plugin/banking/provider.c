@@ -869,6 +869,8 @@ int AH_Provider_Execute(AB_PROVIDER *pro){
       AH_JOB *mj;
       GWEN_DB_NODE *beData;
       const char *s;
+      const GWEN_STRINGLIST *sl;
+      GWEN_STRINGLISTENTRY *se;
 
       mj=AH_Provider__FindMyJob(mjl, AB_Job_GetIdForProvider(bj));
       assert(mj);
@@ -878,9 +880,11 @@ int AH_Provider_Execute(AB_PROVIDER *pro){
 
       /* store used TAN (if any) */
       s=AH_Job_GetUsedTan(mj);
-      if (s)
+      if (s) {
         GWEN_DB_SetCharValue(beData, GWEN_DB_FLAGS_OVERWRITE_VARS,
                              "usedTan", s);
+        AB_Job_SetUsedTan(bj, s);
+      }
 
       if (getenv("AQHBCI_DEBUG_JOBS")) { /* DEBUG */
         GWEN_DB_NODE *dbDebug;
@@ -903,6 +907,20 @@ int AH_Provider_Execute(AB_PROVIDER *pro){
                                  AH_Job_GetResponses(mj));
       }
 
+      /* exchange logs */
+      sl=AH_Job_GetLogs(mj);
+      assert(sl);
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        AB_Job_LogRaw(bj, s);
+        se=GWEN_StringListEntry_Next(se);
+      }
+
+
       /* exchange results */
       rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults);
       if (rv) {
@@ -917,12 +935,16 @@ int AH_Provider_Execute(AB_PROVIDER *pro){
             AB_Job_SetStatus(bj, AB_Job_StatusError);
             /* TODO: Copy errors */
             AB_Job_SetResultText(bj, "Job contains errors");
+            AB_Job_Log(bj, AB_Banking_LogLevelWarn, "aqhbci",
+                       "Job contains errors");
           }
         }
         else {
           /* job is ok */
           if (AB_Job_GetStatus(bj)==AB_Job_StatusSent) {
             AB_Job_SetStatus(bj, AB_Job_StatusFinished);
+            AB_Job_Log(bj, AB_Banking_LogLevelNotice, "aqhbci",
+                       "Job finished successfully");
             AB_Job_SetResultText(bj, "Ok.");
           }
           successfull++;

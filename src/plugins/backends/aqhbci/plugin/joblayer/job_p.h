@@ -67,6 +67,8 @@ struct AH_JOB {
   AH_RESULT_LIST *msgResults;
 
   GWEN_TYPE_UINT32 id;
+
+  GWEN_STRINGLIST *log;
 };
 
 

@@ -1,24 +1,32 @@
-                                                                    2005/08/11
+                                                                    2005/08/27
 
                                 Content
                                 =======
 
-               1. What Is AqBanking ?
-               1.1. Generic Online Banking Interface
-               1.2. Generic Financial Data Importer/Exporter Framework
-               1.3. Bank/Account Information
-               2. Supported Platforms
-               3. Supported Frontends
-               4. What Do I Need ?
-               4.1. Required Packages
-               4.2. Bindings
-               4.3. Applications
-               5. Building AqBanking
-               5.1. Building from the Tar File
-               5.2. Building from CVS
-               5.3. Building the API Documentation
-               5.4. Notes on porting the qt parts to Qt-4: 
-               6. Windows Registry Keys Used
+               1.   What Is AqBanking ?
+               1.1.   Generic Online Banking Interface
+               1.2.   Generic Financial Data Importer/Exporter Framework
+               1.3.   Bank/Account Information
+               2.   Supported Platforms
+               3.   Supported Frontends
+               4.   What Do I Need ?
+               4.1.   Required Packages
+               4.2.   Bindings
+               4.3.   Applications
+               5.   Building AqBanking
+               5.1.   Building from the Tar File
+               5.2.   Building from CVS
+               5.3.   Building the API Documentation
+               5.4.   Notes on porting the qt parts to Qt-4: 
+               6.   Windows Registry Keys Used
+               6.1.   Software\\AqBanking\\Paths\\pkgdatadir
+               6.2.   Software\\AqBanking\\Paths\\sysconfdir
+               6.3.   Software\\AqBanking\\Paths\\bankinfodir
+               6.4.   Software\\AqBanking\\Paths\\providerdir
+               6.5.   Software\\AqBanking\\Paths\\importerdir
+               7.   Environment Variables Used
+               7.1.   AQBANKING_LOGLEVEL
+               7.2.   AQBANKING_STORE_JOBLOGS
 
 
 
@@ -335,6 +343,24 @@ This folder is used to store provider (backend) plugins.
 This folder is used to store importer/exporter plugins.
 
 
+
+7. Environment Variables Used
+=============================
+
+
+7.1. AQBANKING_LOGLEVEL
+-----------------------
+
+This variable stores the loglevel to be used for AqBanking.
+Possible values are: emergency, alert, critical, error, warning, notice,
+info, debug and verbous.
+
+
+7.2. AQBANKING_STORE_JOBLOGS
+----------------------------
+If this variable is defined then AqBanking will always store job logs with 
+jobs. Otherwise job logs are only stored for jobs with a status other tan
+"finished". Job logs can become quite big.
 
 
 

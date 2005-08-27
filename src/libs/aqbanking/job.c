@@ -36,10 +36,12 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+
 
 
 GWEN_LIST_FUNCTIONS(AB_JOB, AB_Job)
@@ -100,6 +102,7 @@ void AB_Job_free(AB_JOB *j){
       GWEN_DB_Group_free(j->dbData);
       free(j->resultText);
       free(j->createdBy);
+      free(j->usedTan);
       GWEN_FREE_OBJECT(j);
     }
   }
@@ -125,9 +128,22 @@ AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j){
 void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st){
   assert(j);
   if (j->status!=st) {
+    GWEN_BUFFER *lbuf;
+
     GWEN_Time_free(j->lastStatusChange);
+    lbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(lbuf, "Status changed from \"");
+    GWEN_Buffer_AppendString(lbuf, AB_Job_Status2Char(j->status));
+    GWEN_Buffer_AppendString(lbuf, "\" to \"");
+    GWEN_Buffer_AppendString(lbuf, AB_Job_Status2Char(st));
+    GWEN_Buffer_AppendString(lbuf, "\"");
+
+    AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+	       GWEN_Buffer_GetStart(lbuf));
+    GWEN_Buffer_free(lbuf);
     j->lastStatusChange=GWEN_CurrentTime();
     j->status=st;
+
   }
 }
 
@@ -136,6 +152,22 @@ void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st){
 AB_JOB_TYPE AB_Job_GetType(const AB_JOB *j){
   assert(j);
   return j->jobType;
+}
+
+
+
+const char *AB_Job_GetUsedTan(const AB_JOB *j) {
+  assert(j);
+  return j->usedTan;
+}
+
+
+
+void AB_Job_SetUsedTan(AB_JOB *j, const char *s) {
+  assert(j);
+  free(j->usedTan);
+  if (s) j->usedTan=strdup(s);
+  else j->usedTan=0;
 }
 
 
@@ -236,6 +268,7 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
 int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
   const char *p;
   GWEN_DB_NODE *dbT;
+  GWEN_DB_NODE *dbL;
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "jobId", j->jobId);
@@ -246,6 +279,8 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
                        "jobType", p);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "createdBy", j->createdBy);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "usedTan", j->usedTan);
 
   p=AB_Job_Status2Char(j->status);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -359,7 +394,32 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "data");
   assert(dbT);
+
+  dbL=GWEN_DB_GetGroup(j->dbData, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "logs");
+  if (dbL)
+    GWEN_DB_UnlinkGroup(dbL);
   GWEN_DB_AddGroupChildren(dbT, j->dbData);
+  if (dbL) {
+    if (j->status!=AB_Job_StatusFinished ||
+        getenv("AQBANKING_STORE_JOBLOGS")) {
+      const char *s;
+      unsigned int i;
+      GWEN_DB_NODE *dbN;
+
+      dbN=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "logs");
+      assert(dbN);
+      for (i=0; ; i++) {
+        s=GWEN_DB_GetCharValue(dbL, "log", i, 0);
+        if (!s)
+          break;
+        GWEN_DB_SetCharValue(dbN,
+                             GWEN_DB_FLAGS_DEFAULT |
+                             GWEN_PATH_FLAGS_CREATE_VAR,
+                             "log", s);
+      }
+    }
+    GWEN_DB_AddGroup(j->dbData, dbL);
+  }
 
   return 0;
 }
@@ -476,14 +536,14 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   assert(accountId);
   a=AB_Banking_GetAccount(ab, accountId);
   if (!a) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account \"%08x\" not found, ignoring job", accountId);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Account \"%08x\" not found, ignoring job", accountId);
     return 0;
   }
 
   p=GWEN_DB_GetCharValue(db, "jobType", 0, "unknown");
   jt=AB_Job_Char2Type(p);
   if (jt==AB_Job_TypeUnknown) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown job type \"%s\", ignoring job", p);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Unknown job type \"%s\", ignoring job", p);
     return 0;
   }
 
@@ -565,6 +625,10 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   j->status=AB_Job_Char2Status(GWEN_DB_GetCharValue(db,
                                                     "jobStatus", 0,
 						    "unknown"));
+  p=GWEN_DB_GetCharValue(db, "usedTan", 0, 0);
+  if (p)
+    j->usedTan=strdup(p);
+
   p=GWEN_DB_GetCharValue(db, "resultText", 0, 0);
   if (p)
     j->resultText=strdup(p);
@@ -693,6 +757,80 @@ const GWEN_TIME *AB_Job_GetLastStatusChange(const AB_JOB *j){
 
 
 
+void AB_Job_Log(AB_JOB *j,
+		AB_BANKING_LOGLEVEL ll,
+                const char *who,
+		const char *txt) {
+  GWEN_DB_NODE *db;
+  char buffer[32];
+  GWEN_TIME *ti;
+  GWEN_BUFFER *lbuf;
+
+  assert(j);
+
+  db=GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, "logs");
+  assert(db);
+
+  lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  snprintf(buffer, sizeof(buffer), "%02d", ll);
+  GWEN_Buffer_AppendString(lbuf, buffer);
+  GWEN_Buffer_AppendByte(lbuf, ':');
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  GWEN_Time_toString(ti, "YYYYMMDD:hhmmss:", lbuf);
+  GWEN_Time_free(ti);
+  GWEN_Text_EscapeToBufferTolerant(who, lbuf);
+  GWEN_Buffer_AppendByte(lbuf, ':');
+  GWEN_Text_EscapeToBufferTolerant(txt, lbuf);
+
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "log", GWEN_Buffer_GetStart(lbuf));
+
+  GWEN_Buffer_free(lbuf);
+}
 
 
+
+void AB_Job_LogRaw(AB_JOB *j, const char *txt) {
+  GWEN_DB_NODE *db;
+
+  assert(j);
+
+  db=GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, "logs");
+  assert(db);
+
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "log", txt);
+}
+
+
+
+GWEN_STRINGLIST *AB_Job_GetLogs(const AB_JOB *j) {
+  const char *s;
+  int i;
+  GWEN_STRINGLIST *sl;
+  GWEN_DB_NODE *db;
+
+  assert(j);
+
+  db=GWEN_DB_GetGroup(j->dbData, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "logs");
+  if (!db)
+    return 0;
+
+  sl=GWEN_StringList_new();
+  for (i=0; ; i++) {
+    s=GWEN_DB_GetCharValue(db, "log", i, 0);
+    if (!s)
+      break;
+    GWEN_StringList_AppendString(sl, s, 0, 0);
+  }
+  if (GWEN_StringList_Count(sl)==0) {
+    GWEN_StringList_free(sl);
+    return 0;
+  }
+
+  return sl;
+}
 

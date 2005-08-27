@@ -2115,6 +2115,8 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   rv=AB_Job_CheckAvailability(j);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Job is not available, refusing to enqueue.");
+    AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+               "Job is not available with the backend, not enqueueing");
     return rv;
   }
   jst=AB_Job_GetStatus(j);
@@ -2124,6 +2126,9 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Job has already been enqueued or even finished, "
 	      "not enqueueing it");
+    AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+               "Job has already been enqueued or finished, "
+               "not enqueueing");
     return AB_ERROR_INVALID;
   }
 
@@ -2183,6 +2188,8 @@ int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j){
   if (jst!=AB_Job_StatusEnqueued) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "I can only defer jobs which haven't been executed.");
+    AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+               "Job is not enqueued, cannot be deferred");
     return AB_ERROR_INVALID;
   }
 
@@ -2283,11 +2290,15 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
 	if (AB_Account_GetProvider(a)==pro) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "Same provider, adding job");
           /* same provider, add job */
+          AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+                     "Adding job to backend");
           rv=AB_Provider_AddJob(pro, j);
           if (rv) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
             AB_Job_SetStatus(j, AB_Job_StatusError);
             AB_Job_SetResultText(j, "Refused by backend");
+            AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+                       "Adding job: Refused by backend");
           }
           else {
 	    jobs++;
@@ -2391,6 +2402,8 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       /* job still enqueued, so it has never been sent */
       AB_Job_SetStatus(j, AB_Job_StatusError);
       AB_Job_SetResultText(j, "Job has never been sent");
+      AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+                 "Job has never been sent");
       if (AB_Banking__SaveJobAs(ab, j, "finished")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
       }
@@ -2398,6 +2411,8 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
       break;
 
     case AB_Job_StatusPending:
+      AB_Job_Log(j, AB_Banking_LogLevelNotice, "aqbanking",
+                 "Job is still pending");
       if (AB_Banking__SaveJobAs(ab, j, "pending")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
       }
@@ -2408,6 +2423,8 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
     case AB_Job_StatusFinished:
     case AB_Job_StatusError:
     default:
+      AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+                 "Job finished");
       if (AB_Banking__SaveJobAs(ab, j, "finished")) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
       }
@@ -3845,8 +3862,8 @@ AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as) {
 	  /* job found */
 	  j=AB_Banking__LoadJobFile(ab, GWEN_Buffer_GetStart(pbuf));
 	  if (!j) {
-	    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in job file \"%s\"",
-		      GWEN_Buffer_GetStart(pbuf));
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Error in job file \"%s\"",
+                     GWEN_Buffer_GetStart(pbuf));
 	  }
 	  else {
 	    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding job \"%s\"", GWEN_Buffer_GetStart(pbuf));

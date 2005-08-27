@@ -1,3 +1,19 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/08/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function: AB_Job_Log(). Now the jobs will keep a history of what
+  is being done to/with them
+- added function AB_Job_GetLogs()
+- AqHBCI now uses the job-log mechanism
+- added functiuns AB_Job_SetUsedTan() and AB_Job_GetUsedTan()
+- added section to README about which environment variables AqBanking uses
+- job logger code now checks for the environment variable 
+  "AQBANKING_STORE_JOBLOGS"
+
 
 2005/08/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

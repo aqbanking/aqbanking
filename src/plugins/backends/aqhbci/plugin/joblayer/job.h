@@ -180,6 +180,9 @@ void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
 
 void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert);
 
+const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j);
+
+
 #ifdef __cplusplus
 }
 #endif

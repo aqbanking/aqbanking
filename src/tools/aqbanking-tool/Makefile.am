@@ -25,7 +25,8 @@ aqbanking_tool_SOURCES=\
  chkacc.c \
  chktrans.c \
  listbal.c \
- import.c
+ import.c \
+ joblog.c
 
 aqbanking_tool_LDADD = \
   -L$(top_builddir)/src/frontends/cbanking $(cbanking_internal_libs) \

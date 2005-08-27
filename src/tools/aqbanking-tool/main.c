@@ -409,6 +409,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "import")==0) {
     rv=import(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "joblog")==0) {
+    rv=jobLog(ab, db, argc, argv);
+  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

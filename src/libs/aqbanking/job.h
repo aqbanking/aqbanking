@@ -204,6 +204,9 @@ AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j);
  */
 AQBANKING_API
 const char *AB_Job_GetResultText(const AB_JOB *j);
+
+AQBANKING_API
+const char *AB_Job_GetUsedTan(const AB_JOB *j);
 /*@}*/
 
 
@@ -235,6 +238,23 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i);
  */
 AQBANKING_API
 AB_JOB_TYPE AB_Job_Char2Type(const char *s);
+/*@}*/
+
+
+
+/** @name Logging Functions
+ *
+ */
+/*@{*/
+AQBANKING_API
+void AB_Job_Log(AB_JOB *j,
+		AB_BANKING_LOGLEVEL ll,
+                const char *who,
+		const char *txt);
+
+AQBANKING_API
+GWEN_STRINGLIST *AB_Job_GetLogs(const AB_JOB *j);
+
 /*@}*/
 
 
