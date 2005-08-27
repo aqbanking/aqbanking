@@ -159,12 +159,12 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
     GWEN_CRYPTTOKEN_USER *u;
 
     /* there are users */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "There are users");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "There are users");
     u=GWEN_CryptToken_User_List_First(ul);
     while(u) {
       GWEN_TYPE_UINT32 cid;
 
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
+      DBG_INFO(AQHBCI_LOGDOMAIN,
                 "Checking user \"%s\"",
                 GWEN_CryptToken_User_GetUserId(u));
 
@@ -214,7 +214,7 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
                                                    GWEN_CryptToken_PaddAlgo_None);
           }
 	  else {
-	    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	    DBG_WARN(AQHBCI_LOGDOMAIN,
 		      "Invalid crypt algo \"%s\"",
 		      GWEN_CryptToken_CryptAlgo_toString(algo));
 	    si=0; ci=0;
@@ -227,7 +227,7 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
 	    ctx=AH_MediumCtx_new();
 	    AH_MediumCtx_SetUser(ctx, u);
 	    AH_MediumCtx_SetTokenContext(ctx, nctx);
-	    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
 		      "Adding user \"%s\"",
 		      GWEN_CryptToken_User_GetUserId(u));
 	    AH_MediumCtx_List_Add(ctx, m->contextList);
@@ -235,11 +235,11 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
 	  GWEN_CryptToken_Context_free(nctx);
 	}
         else {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Context %d not found", (int)cid);
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Context %d not found", (int)cid);
         }
       }
       else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No context id");
+        DBG_WARN(AQHBCI_LOGDOMAIN, "No context id");
       }
       u=GWEN_CryptToken_User_List_Next(u);
     }
@@ -310,7 +310,7 @@ int AH_Medium__MountCt(AH_MEDIUM *m){
 
   pl=GWEN_PluginManager_GetPlugin(pm, m->typeName);
   if (pl==0) {
-    DBG_ERROR(0, "Plugin not found");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin not found");
     return AB_ERROR_NOT_FOUND;
   }
 
@@ -318,7 +318,7 @@ int AH_Medium__MountCt(AH_MEDIUM *m){
                                         m->subTypeName,
                                         m->mediumName);
   if (ct==0) {
-    DBG_ERROR(0, "Could not create crypt token");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
     return AB_ERROR_GENERIC;
   }
 
@@ -407,14 +407,14 @@ int AH_Medium_Create(AH_MEDIUM *m){
 
   pl=GWEN_PluginManager_GetPlugin(pm, m->typeName);
   if (pl==0) {
-    DBG_ERROR(0, "Plugin not found");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin not found");
     return AB_ERROR_NOT_FOUND;
   }
 
   ct=GWEN_CryptToken_Plugin_CreateToken(pl, m->subTypeName,
                                         AH_Medium_GetMediumName(m));
   if (ct==0) {
-    DBG_ERROR(0, "Could not create crypt token");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
     return AB_ERROR_GENERIC;
   }
 
@@ -814,7 +814,7 @@ AH_MEDIUM_RESULT AH_Medium_DecryptKey(AH_MEDIUM *m,
       GWEN_CryptToken_PaddAlgo_LeftZero) {
     GWEN_CRYPTTOKEN_CRYPTINFO *nci;
 
-    DBG_ERROR(0, "Setting cryptinfo");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Setting cryptinfo");
     nci=GWEN_CryptToken_CryptInfo_dup(ci);
     GWEN_CryptToken_CryptInfo_SetPaddAlgo(nci,
                                           GWEN_CryptToken_PaddAlgo_None);
@@ -1930,11 +1930,11 @@ int AH_Medium__ResetKey(AH_MEDIUM *m, int kid){
   rv=GWEN_CryptToken_ReadKeySpec(m->cryptToken, kid, &ks);
   if (rv) {
     if (rv==GWEN_ERROR_NO_DATA) {
-      DBG_ERROR(0, "No keyspec for key %d", kid);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No keyspec for key %d", kid);
       return rv;
     }
     else {
-      DBG_ERROR(0, "Could not read key spec (%d)", rv);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read key spec (%d)", rv);
       return rv;
     }
   }
@@ -1942,7 +1942,7 @@ int AH_Medium__ResetKey(AH_MEDIUM *m, int kid){
   GWEN_KeySpec_SetStatus(ks, GWEN_CRYPTTOKEN_KEYSTATUS_FREE);
   rv=GWEN_CryptToken_WriteKeySpec(m->cryptToken, kid, ks);
   if (rv) {
-    DBG_ERROR(0, "Could not write key spec (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key spec (%d)", rv);
     GWEN_KeySpec_free(ks);
     return rv;
   }

@@ -398,7 +398,7 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
   else if (strcasecmp(name, "systemId")==0){
     const char *p;
 
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
+    DBG_WARN(AQHBCI_LOGDOMAIN,
               "SystemId requested (deprecated)");
     p=AH_Customer_GetSystemId(x->customer);
     if (p)
