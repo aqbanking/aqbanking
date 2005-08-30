@@ -161,6 +161,7 @@ int iniLetter(AB_BANKING *ab,
     unsigned int l;
     GWEN_BUFFER *bbuf;
     GWEN_BUFFER *lbuf;
+    GWEN_BUFFER *keybuf;
     int i;
     GWEN_TIME *ti;
     char numbuf[32];
@@ -223,6 +224,7 @@ int iniLetter(AB_BANKING *ab,
     }
 
     lbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+    keybuf=GWEN_Buffer_new(0, 257, 0, 1);
 
     /* prelude */
     GWEN_Buffer_AppendString(lbuf,
@@ -311,6 +313,8 @@ int iniLetter(AB_BANKING *ab,
       p+=16;
       GWEN_Buffer_AppendString(lbuf, "\n");
     }
+    GWEN_Buffer_FillLeftWithBytes(keybuf, 0, 32);
+    GWEN_Buffer_AppendBytes(keybuf, GWEN_Buffer_GetStart(bbuf), l);
     GWEN_Buffer_free(bbuf);
 
     /* modulus */
@@ -349,6 +353,11 @@ int iniLetter(AB_BANKING *ab,
       GWEN_Buffer_AppendString(lbuf, "\n");
     }
 
+    GWEN_Buffer_IncrementPos(keybuf, 128);
+    GWEN_Buffer_FillLeftWithBytes(keybuf, 0, 32);
+    GWEN_Buffer_AppendBytes(keybuf, GWEN_Buffer_GetStart(bbuf), l);
+    GWEN_Buffer_free(bbuf);
+
     GWEN_Buffer_AppendString(lbuf, "\n");
     GWEN_Buffer_AppendString(lbuf, "  ");
     GWEN_Buffer_AppendString(lbuf,
@@ -356,14 +365,14 @@ int iniLetter(AB_BANKING *ab,
     GWEN_Buffer_AppendString(lbuf, "\n");
     l=20;
     if (GWEN_MD_Hash("RMD160",
-                     GWEN_Buffer_GetStart(bbuf),
-                     GWEN_Buffer_GetUsedBytes(bbuf),
+                     GWEN_Buffer_GetStart(keybuf),
+                     GWEN_Buffer_GetUsedBytes(keybuf),
                      hashbuffer,
                      &l)) {
       DBG_ERROR(0, "Could not hash");
       abort();
     }
-    GWEN_Buffer_free(bbuf);
+    GWEN_Buffer_free(keybuf);
 
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {

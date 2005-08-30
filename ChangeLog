@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/08/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- applied a patch by Hendrik Weimer which fixes iniletter creation in 
+  aqhbci-tool (TODO: Need to check whether the wizard creates a valid
+  iniletter!)
+
 
 2005/08/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
