@@ -313,8 +313,9 @@ int iniLetter(AB_BANKING *ab,
       p+=16;
       GWEN_Buffer_AppendString(lbuf, "\n");
     }
-    GWEN_Buffer_FillLeftWithBytes(keybuf, 0, 32);
-    GWEN_Buffer_AppendBytes(keybuf, GWEN_Buffer_GetStart(bbuf), l);
+
+    GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+    GWEN_Buffer_AppendBuffer(keybuf, bbuf);
     GWEN_Buffer_free(bbuf);
 
     /* modulus */
@@ -353,9 +354,8 @@ int iniLetter(AB_BANKING *ab,
       GWEN_Buffer_AppendString(lbuf, "\n");
     }
 
-    GWEN_Buffer_IncrementPos(keybuf, 128);
-    GWEN_Buffer_FillLeftWithBytes(keybuf, 0, 32);
-    GWEN_Buffer_AppendBytes(keybuf, GWEN_Buffer_GetStart(bbuf), l);
+    GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+    GWEN_Buffer_AppendBuffer(keybuf, bbuf);
     GWEN_Buffer_free(bbuf);
 
     GWEN_Buffer_AppendString(lbuf, "\n");
