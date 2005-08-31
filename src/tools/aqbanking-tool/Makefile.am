@@ -29,8 +29,8 @@ aqbanking_tool_SOURCES=\
  joblog.c
 
 aqbanking_tool_LDADD = \
-  -L$(top_builddir)/src/frontends/cbanking $(cbanking_internal_libs) \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(cbanking_internal_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
 sources:

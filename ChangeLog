@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/08/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- tool AqBanking-Tool now links against the newly created libaqbanking.so
+  instead of the system-wide one
+
+
 2005/08/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - applied a patch by Hendrik Weimer which fixes iniletter creation in 
