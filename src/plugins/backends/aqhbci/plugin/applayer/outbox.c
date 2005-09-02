@@ -984,7 +984,8 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
 
 
 void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
-				      AH_JOBQUEUE *jq) {
+                                      AH_JOBQUEUE *jq,
+                                      const char *logStr) {
   AH_JOB *j;
   AH_JOB_LIST *jl;
 
@@ -998,6 +999,8 @@ void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
                "Setting status of job \"%s\" to ERROR",
                AH_Job_GetName(j));
       AH_Job_SetStatus(j, AH_JobStatusError);
+      if (logStr)
+        AH_Job_Log(j, AB_Banking_LogLevelError, logStr);
     }
     AH_Job_List_Add(j, cbox->finishedJobs);
   }
@@ -1123,7 +1126,8 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
     /* jq now contains all jobs to be executed */
     rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jq);
     if (rv) {
-      AH_Outbox__CBox_HandleQueueError(cbox, jq);
+      AH_Outbox__CBox_HandleQueueError(cbox, jq,
+                                       "Error performing queue");
       return rv;
     } /* if error */
   } /* for */
@@ -1161,7 +1165,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
              "Could not begin a dialog for customer \"%s\" (%d)",
              AH_Customer_GetCustomerId(cbox->customer), rv);
     /* finish all queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql);
+    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
+                                         "Could not begin dialog");
     return rv;
   }
   assert(dlg);
@@ -1175,7 +1180,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
     AH_HBCI_EndDialog(cbox->hbci, dlg);
     /* finish all queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql);
+    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
+                                         "Could not open dialog");
     return rv;
   }
 
@@ -1190,7 +1196,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
 
   if (rv) {
     /* finish all remaining queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql);
+    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
+                                         "Could not send ");
     AH_HBCI_EndDialog(cbox->hbci, dlg);
     return rv;
   }
@@ -1233,7 +1240,8 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
              "Could not begin a dialog for customer \"%s\" (%d)",
              AH_Customer_GetCustomerId(cbox->customer), rv);
     /* finish all queues */
-    AH_Outbox__CBox_HandleQueueError(cbox, jq);
+    AH_Outbox__CBox_HandleQueueError(cbox, jq,
+                                    "Could not begin dialog");
     return rv;
   }
   assert(dlg);
@@ -1277,12 +1285,13 @@ void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
 
 
 void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
-					  AH_JOBQUEUE_LIST *jql){
+                                          AH_JOBQUEUE_LIST *jql,
+                                          const char *logStr){
   AH_JOBQUEUE *jq;
 
   while((jq=AH_JobQueue_List_First(jql))) {
     AH_JobQueue_List_Del(jq);
-    AH_Outbox__CBox_HandleQueueError(cbox, jq);
+    AH_Outbox__CBox_HandleQueueError(cbox, jq, logStr);
   } /* while */
   AH_JobQueue_List_free(jql);
 }
@@ -1313,8 +1322,12 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
       if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Error performing queue (%d)", rv);
-	AH_Outbox__CBox_HandleQueueListError(cbox, jqlWanted);
-        AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues);
+        AH_Outbox__CBox_HandleQueueListError(cbox, jqlWanted,
+                                             "Could not perform "
+                                             "dialog queue");
+        AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues,
+                                             "Could not perform "
+                                             "dialog queue");
         cbox->todoQueues=AH_JobQueue_List_new();
 	return rv;
       }
@@ -1347,7 +1360,9 @@ int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error performing queue (%d)", rv);
-      AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues);
+      AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues,
+                                           "Error performing "
+                                           "selected jobs");
       cbox->todoQueues=AH_JobQueue_List_new();
       return rv;
     } /* while */

@@ -38,7 +38,7 @@ AB_JOB *AB_JobEuTransfer_new(AB_ACCOUNT *a){
   AB_JOB *j;
   AB_JOBEUTRANSFER *jd;
 
-  j=AB_Job_new(AB_Job_TypeEuTransfer, a);
+  j=AB_Job_new_l(AB_Job_TypeEuTransfer, a);
   GWEN_NEW_OBJECT(AB_JOBEUTRANSFER, jd);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBEUTRANSFER, j, jd,
                        AB_JobEuTransfer_FreeData);

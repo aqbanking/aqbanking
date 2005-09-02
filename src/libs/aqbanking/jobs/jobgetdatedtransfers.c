@@ -35,7 +35,7 @@ AB_JOB *AB_JobGetDatedTransfers_new(AB_ACCOUNT *a) {
   AB_JOB *j;
   AB_JOB_GETDATEDTRANSFERS *aj;
 
-  j=AB_Job_new(AB_Job_TypeGetDatedTransfers, a);
+  j=AB_Job_new_l(AB_Job_TypeGetDatedTransfers, a);
   GWEN_NEW_OBJECT(AB_JOB_GETDATEDTRANSFERS, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETDATEDTRANSFERS, j, aj,
                        AB_JobGetDatedTransfers_FreeData);

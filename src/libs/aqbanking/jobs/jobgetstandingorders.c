@@ -35,7 +35,7 @@ AB_JOB *AB_JobGetStandingOrders_new(AB_ACCOUNT *a) {
   AB_JOB *j;
   AB_JOB_GETSTANDINGORDERS *aj;
 
-  j=AB_Job_new(AB_Job_TypeGetStandingOrders, a);
+  j=AB_Job_new_l(AB_Job_TypeGetStandingOrders, a);
   GWEN_NEW_OBJECT(AB_JOB_GETSTANDINGORDERS, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETSTANDINGORDERS, j, aj,
                        AB_JobGetStandingOrders_FreeData);

@@ -37,7 +37,7 @@ AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a){
   AB_JOB *j;
   AB_JOBGETBALANCE *aj;
 
-  j=AB_Job_new(AB_Job_TypeGetBalance, a);
+  j=AB_Job_new_l(AB_Job_TypeGetBalance, a);
   GWEN_NEW_OBJECT(AB_JOBGETBALANCE, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBGETBALANCE, j, aj,
                        AB_JobGetBalance_FreeData);

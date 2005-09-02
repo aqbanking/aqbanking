@@ -69,6 +69,36 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
 
 
 
+AB_JOB *AB_Job_new_l(AB_JOB_TYPE jt, AB_ACCOUNT *a){
+  AB_JOB *j;
+  GWEN_BUFFER *lbuf;
+  const char *bankCode;
+  const char *accountNumber;
+
+  j=AB_Job_new(jt, a);
+  assert(j);
+
+  bankCode=AB_Account_GetBankCode(a);
+  if (!bankCode || !*bankCode)
+    bankCode="[no bankcode]";
+  accountNumber=AB_Account_GetAccountNumber(a);
+
+  lbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  GWEN_Buffer_AppendString(lbuf, "Created job for account \"");
+  GWEN_Buffer_AppendString(lbuf, accountNumber);
+  GWEN_Buffer_AppendString(lbuf, "\" at \"");
+  GWEN_Buffer_AppendString(lbuf, bankCode);
+  GWEN_Buffer_AppendString(lbuf, "\"");
+
+  AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+             GWEN_Buffer_GetStart(lbuf));
+  GWEN_Buffer_free(lbuf);
+
+  return j;
+}
+
+
+
 int AB_Job_Update(AB_JOB *j){
   AB_PROVIDER *pro;
 

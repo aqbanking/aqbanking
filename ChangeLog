@@ -9,6 +9,7 @@
 - declared private functions in banking_p.h as "static": nm (1) shows that
   this makes these symbols local (should in the long run reduce loading
   time)
+- when creating new jobs: drop a note into job log
 
 
 2005/08/31: Martin Preuss<martin@libchipcard.de>

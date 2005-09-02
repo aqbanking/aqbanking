@@ -26,6 +26,9 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_JOB)
 
 AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
 
+AB_JOB *AB_Job_new_l(AB_JOB_TYPE jt, AB_ACCOUNT *a);
+
+
 int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
 

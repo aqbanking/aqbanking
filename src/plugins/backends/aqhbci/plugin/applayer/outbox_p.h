@@ -142,9 +142,11 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
                                  AH_JOBQUEUE *jq,
                                  int timeout);
 void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
-                                      AH_JOBQUEUE *jq);
+                                      AH_JOBQUEUE *jq,
+                                      const char *logStr);
 void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
-                                          AH_JOBQUEUE_LIST *jql);
+                                          AH_JOBQUEUE_LIST *jql,
+                                          const char *logStr);
 
 int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
                                      int timeout,
