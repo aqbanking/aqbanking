@@ -3,9 +3,10 @@ EXTRA_DIST=README SICHERHEITSHINWEISE
 idatadir=$(datadir)/doc/aqbanking/aqbanking-tool
 idata_DATA=README SICHERHEITSHINWEISE
 
-INCLUDES = $(gwenhywfar_includes) \
-  -I$(top_srcdir)/src/libs/aqbanking \
+INCLUDES = \
   -I$(top_builddir)/headers \
+  -I$(top_srcdir)/src/libs/aqbanking \
+  $(gwenhywfar_includes) \
   -I$(all_includes)
 bin_PROGRAMS=aqbanking-tool
 
