@@ -2,6 +2,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/09/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Banking_ExecuteJobList()
+- added parts of AqHBCI README to this packages README
+- declared private functions in banking_p.h as "static": nm (1) shows that
+  this makes these symbols local (should in the long run reduce loading
+  time)
+
+
 2005/08/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - tool AqBanking-Tool now links against the newly created libaqbanking.so

@@ -27,6 +27,9 @@
                7.   Environment Variables Used
                7.1.   AQBANKING_LOGLEVEL
                7.2.   AQBANKING_STORE_JOBLOGS
+               7.3. AQHBCI_LOGBOOKED
+               7.4. AQHBCI_DEBUG_JOBS
+               8. Security in PIN/TAN Mode
 
 
 
@@ -51,7 +54,7 @@ and the various Online Banking libraries (e.g. AqHBCI, OpenHBCI etc).
 The real work is done in so-called banking backends. 
 The first backend which is already supported is AqHBCI, a library which 
 implements a client for the German HBCI (Home Banking Computer Interface) 
-protocol. 
+protocol and is included with AqBanking.
 
 The backend AqHBCI currently supports these security media: 
  - RDH keyfile (RSA-DES-Hybrid mode)
@@ -240,7 +243,6 @@ Compilation hints for specific platforms:
   directives from the Makefile.
 
 
-
 5.2. Building from CVS
 ----------------------
 
@@ -362,5 +364,37 @@ If this variable is defined then AqBanking will always store job logs with
 jobs. Otherwise job logs are only stored for jobs with a status other tan
 "finished". Job logs can become quite big.
 
+
+7.3. AQHBCI_LOGBOOKED
+---------------------
+If this environment variable exists then the file "/tmp/booked.mt" is created
+upon reception of transactions via the job GetTransactions. This file then
+contains a SWIFT MT940 document which can be very helpfull in case there is
+a problem in the SWIFT parser.
+
+
+7.4. AQHBCI_DEBUG_JOBS
+----------------------
+If this variable exists then additional debugging data is stored with each
+job.
+
+
+
+8. Security in PIN/TAN Mode
+===========================
+
+In PIN/TAN mode AqHBCI stores certificates of the bank in a special folder:
+      $HOME/.banking/backends/aqhbci/data/banks/280/<BLZ>/certs/.
+(<BLZ> is the routing number of your bank, German "Bankleitzahl")
+
+Authentification of the bank is only possible by checking against the known
+certificates stored in this folder.
+
+For maximum security you could chown this folder to another user and make it
+readable and accessible by the running user after having received and 
+acknowledged the bank's certificate.
+
+This way the running application is able to read and verify the certificates
+but unable to modify it or to add new ones.
 
 

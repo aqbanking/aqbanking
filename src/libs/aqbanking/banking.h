@@ -1197,6 +1197,9 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
 AQBANKING_API 
 int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 
+AQBANKING_API 
+int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
+
 /**
  * <p>
  * Returns a new list which contains the currently enqueued jobs.

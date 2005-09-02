@@ -2080,6 +2080,7 @@ int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
 
 
 
+#if 0 /* FIXME: This function is not used */
 int AB_Banking_UpdateAccountList(AB_BANKING *ab){
   assert(ab);
   if (GWEN_StringList_Count(ab->activeProviders)) {
@@ -2103,6 +2104,7 @@ int AB_Banking_UpdateAccountList(AB_BANKING *ab){
 
   return 0;
 }
+#endif
 
 
 
@@ -2259,7 +2261,7 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly){
 
 
 
-int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
+int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl){
   AB_PROVIDER *pro;
   int succ;
 
@@ -2268,58 +2270,62 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
   succ=0;
 
   while(pro) {
-    AB_JOB *j;
-    int jobs;
+    AB_JOB_LIST2_ITERATOR *jit;
+    int jobs=0;
     int rv;
 
-    j=AB_Job_List_First(jl);
-    jobs=0;
-    while(j) {
-      AB_JOB *jnext;
-      AB_JOB_STATUS jst;
+    jit=AB_Job_List2_First(jl);
+    if (jit) {
+      AB_JOB *j;
 
-      jnext=AB_Job_List_Next(j);
-      jst=AB_Job_GetStatus(j);
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Checking job...");
-      if (jst==AB_Job_StatusEnqueued ||
-	  jst==AB_Job_StatusPending) {
-        AB_ACCOUNT *a;
+      j=AB_Job_List2Iterator_Data(jit);
+      while(j) {
+	AB_JOB_STATUS jst;
 
-        a=AB_Job_GetAccount(j);
-        assert(a);
-	if (AB_Account_GetProvider(a)==pro) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Same provider, adding job");
-          /* same provider, add job */
-          AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
-                     "Adding job to backend");
-          rv=AB_Provider_AddJob(pro, j);
-          if (rv) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
-            AB_Job_SetStatus(j, AB_Job_StatusError);
-            AB_Job_SetResultText(j, "Refused by backend");
-            AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
-                       "Adding job: Refused by backend");
-          }
-          else {
-	    jobs++;
-	    if (AB_Job_GetStatus(j)!=AB_Job_StatusPending) {
-	      AB_Job_SetStatus(j, AB_Job_StatusSent);
-	      AB_Banking__SaveJobAs(ab, j, "sent");
-	      AB_Banking__UnlinkJobAs(ab, j, "todo");
-            }
+	jst=AB_Job_GetStatus(j);
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Checking job...");
+	if (jst==AB_Job_StatusEnqueued ||
+	    jst==AB_Job_StatusPending) {
+	  AB_ACCOUNT *a;
+
+	  a=AB_Job_GetAccount(j);
+	  assert(a);
+	  if (AB_Account_GetProvider(a)==pro) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Same provider, adding job");
+	    /* same provider, add job */
+	    AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+		       "Adding job to backend");
+	    rv=AB_Provider_AddJob(pro, j);
+	    if (rv) {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
+	      AB_Job_SetStatus(j, AB_Job_StatusError);
+	      AB_Job_SetResultText(j, "Refused by backend");
+	      AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+			 "Adding job: Refused by backend");
+	    }
 	    else {
-	      AB_Banking__SaveJobAs(ab, j, "sent");
-	      AB_Banking__UnlinkJobAs(ab, j, "todo");
-            }
-          }
-        }
-      } /* if job enqueued */
-      else {
-	DBG_WARN(AQBANKING_LOGDOMAIN, "Job in queue with status \"%s\"",
-		 AB_Job_Status2Char(AB_Job_GetStatus(j)));
-      }
-      j=jnext;
-    } /* while */
+	      jobs++;
+	      if (AB_Job_GetStatus(j)!=AB_Job_StatusPending) {
+		AB_Job_SetStatus(j, AB_Job_StatusSent);
+		AB_Banking__SaveJobAs(ab, j, "sent");
+		AB_Banking__UnlinkJobAs(ab, j, "todo");
+	      }
+	      else {
+		AB_Banking__SaveJobAs(ab, j, "sent");
+		AB_Banking__UnlinkJobAs(ab, j, "todo");
+	      }
+	    }
+	  }
+	} /* if job enqueued */
+	else {
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "Job in queue with status \"%s\"",
+		   AB_Job_Status2Char(AB_Job_GetStatus(j)));
+	}
+        j=AB_Job_List2Iterator_Next(jit);
+      } /* while */
+      AB_Job_List2Iterator_free(jit);
+    }
+
     if (jobs) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
@@ -2352,8 +2358,6 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
     pro=AB_Provider_List_Next(pro);
   } /* while */
 
-  pro=AB_Provider_List_First(ab->providers);
-
   if (!succ) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
     return AB_ERROR_GENERIC;
@@ -2365,10 +2369,31 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl){
 
 
 int AB_Banking_ExecuteQueue(AB_BANKING *ab){
+  AB_JOB_LIST2 *jl2;
   int rv;
-  AB_JOB *j;
-  AB_PROVIDER *pro;
+
+  jl2=AB_Banking_GetEnqueuedJobs(ab);
+  if (!jl2) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No jobs enqueued");
+    return 0;
+  }
+
+  rv=AB_Banking_ExecuteJobList(ab, jl2);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
+  int rv;
   GWEN_TYPE_UINT32 pid;
+  AB_JOB_LIST2_ITERATOR *jit;
+  AB_PROVIDER *pro;
 
   assert(ab);
 
@@ -2380,61 +2405,63 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
                                I18N("Executing Jobs"),
                                I18N("Now the jobs are send via their "
                                     "backends to the credit institutes."),
-                               AB_Job_List_GetCount(ab->enqueuedJobs));
-  rv=AB_Banking__ExecuteQueue(ab, ab->enqueuedJobs);
+			       AB_Job_List2_GetSize(jl2));
+  rv=AB_Banking__ExecuteQueue(ab, jl2);
   AB_Banking_ProgressEnd(ab, pid);
 
   /* clear temporarily accepted certificates again */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
 
   /* clear queue */
-  j=AB_Job_List_First(ab->enqueuedJobs);
-  while(j) {
-    AB_JOB *nj;
+  jit=AB_Job_List2_First(jl2);
+  if (jit) {
+    AB_JOB *j;
 
-    nj=AB_Job_List_Next(j);
-
-    AB_Job_Attach(j);
-    AB_Job_List_Del(j);
-
-    switch(AB_Job_GetStatus(j)) {
-    case AB_Job_StatusEnqueued:
-      /* job still enqueued, so it has never been sent */
-      AB_Job_SetStatus(j, AB_Job_StatusError);
-      AB_Job_SetResultText(j, "Job has never been sent");
-      AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
-                 "Job has never been sent");
-      if (AB_Banking__SaveJobAs(ab, j, "finished")) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
+    j=AB_Job_List2Iterator_Data(jit);
+    while(j) {
+      AB_Job_Attach(j);
+      AB_Job_List_Del(j);
+  
+      switch(AB_Job_GetStatus(j)) {
+      case AB_Job_StatusEnqueued:
+	/* job still enqueued, so it has never been sent */
+	AB_Job_SetStatus(j, AB_Job_StatusError);
+	AB_Job_SetResultText(j, "Job has never been sent");
+	AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
+		   "Job has never been sent");
+	if (AB_Banking__SaveJobAs(ab, j, "finished")) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
+	}
+	AB_Banking__UnlinkJobAs(ab, j, "sent");
+	break;
+  
+      case AB_Job_StatusPending:
+	AB_Job_Log(j, AB_Banking_LogLevelNotice, "aqbanking",
+		   "Job is still pending");
+	if (AB_Banking__SaveJobAs(ab, j, "pending")) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
+	}
+	AB_Banking__UnlinkJobAs(ab, j, "sent");
+	break;
+  
+      case AB_Job_StatusSent:
+      case AB_Job_StatusFinished:
+      case AB_Job_StatusError:
+      default:
+	AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
+		   "Job finished");
+	if (AB_Banking__SaveJobAs(ab, j, "finished")) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
+	}
+	AB_Banking__UnlinkJobAs(ab, j, "sent");
+	break;
       }
-      AB_Banking__UnlinkJobAs(ab, j, "sent");
-      break;
 
-    case AB_Job_StatusPending:
-      AB_Job_Log(j, AB_Banking_LogLevelNotice, "aqbanking",
-                 "Job is still pending");
-      if (AB_Banking__SaveJobAs(ab, j, "pending")) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"pending\"");
-      }
-      AB_Banking__UnlinkJobAs(ab, j, "sent");
-      break;
-
-    case AB_Job_StatusSent:
-    case AB_Job_StatusFinished:
-    case AB_Job_StatusError:
-    default:
-      AB_Job_Log(j, AB_Banking_LogLevelInfo, "aqbanking",
-                 "Job finished");
-      if (AB_Banking__SaveJobAs(ab, j, "finished")) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save job as \"finished\"");
-      }
-      AB_Banking__UnlinkJobAs(ab, j, "sent");
-      break;
-    }
-    AB_Job_free(j);
-
-    j=nj;
-  } /* while */
+      AB_Job_free(j);
+  
+      j=AB_Job_List2Iterator_Data(jit);
+    } /* while */
+  }
 
   /* reset all provider queues, this makes sure no job remains in any queue */
   pro=AB_Provider_List_First(ab->providers);
@@ -3694,6 +3721,7 @@ AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s){
 
 
 
+#if 0 /* FIXME: This function is not used */
 AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
 			      GWEN_TYPE_UINT32 jid,
                               const char *as){
@@ -3732,6 +3760,7 @@ AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
   }
   return j;
 }
+#endif
 
 
 

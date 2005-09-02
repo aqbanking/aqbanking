@@ -95,107 +95,111 @@ struct AB_BANKING {
 };
 
 
-void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
-                                             const char *dname);
+static void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
+                                                    const char *dname);
 
 
-AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
-int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
+static AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
+static int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 
-AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name);
+static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab,
+                                                const char *name);
 
-void AB_Banking__AddJobDir(const AB_BANKING *ab,
-                           const char *as,
-                           GWEN_BUFFER *buf);
-void AB_Banking__AddJobPath(const AB_BANKING *ab,
-			    const char *as,
-                            GWEN_TYPE_UINT32 jid,
-                            GWEN_BUFFER *buf);
+static void AB_Banking__AddJobDir(const AB_BANKING *ab,
+                                  const char *as,
+                                  GWEN_BUFFER *buf);
+static void AB_Banking__AddJobPath(const AB_BANKING *ab,
+                                   const char *as,
+                                   GWEN_TYPE_UINT32 jid,
+                                   GWEN_BUFFER *buf);
 
-int AB_Banking__OpenFile(const char *s, int wr);
-int AB_Banking__CloseFile(int fd);
-
-
-int AB_Banking__OpenJobAs(AB_BANKING *ab,
-                          GWEN_TYPE_UINT32 jid,
-                          const char *as,
-                          int wr);
-int AB_Banking__CloseJob(const AB_BANKING *ab, int fd);
-
-AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s);
-
-AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
-                              GWEN_TYPE_UINT32 jid,
-                              const char *as);
-int AB_Banking__SaveJobAs(AB_BANKING *ab,
-                          AB_JOB *j,
-			  const char *as);
-
-AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as);
-
-int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
-                            AB_JOB *j,
-                            const char *as);
+static int AB_Banking__OpenFile(const char *s, int wr);
+static int AB_Banking__CloseFile(int fd);
 
 
-int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
-int AB_Banking__LoadAppData(AB_BANKING *ab);
-int AB_Banking__SaveAppData(AB_BANKING *ab);
+static int AB_Banking__OpenJobAs(AB_BANKING *ab,
+                                 GWEN_TYPE_UINT32 jid,
+                                 const char *as,
+                                 int wr);
+static int AB_Banking__CloseJob(const AB_BANKING *ab, int fd);
+
+static AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s);
+
+#if 0 /* FIXME: This function is not used */
+static AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
+                                     GWEN_TYPE_UINT32 jid,
+                                     const char *as);
+#endif
+static int AB_Banking__SaveJobAs(AB_BANKING *ab,
+                                 AB_JOB *j,
+                                 const char *as);
+
+static AB_JOB_LIST2 *AB_Banking__LoadJobsAs(AB_BANKING *ab, const char *as);
+
+static int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
+                                   AB_JOB *j,
+                                   const char *as);
 
 
-int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
-                                       const char *path,
-                                       GWEN_DB_NODE *db);
+static int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
+static int AB_Banking__LoadAppData(AB_BANKING *ab);
+static int AB_Banking__SaveAppData(AB_BANKING *ab);
 
 
-int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
-                                          const char *name,
-                                          GWEN_BUFFER *buf);
-int AB_Banking__LoadProviderData(AB_BANKING *ab,
-                                 const char *name);
+static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
+                                              const char *path,
+                                              GWEN_DB_NODE *db);
 
 
-int AB_Banking__SaveProviderData(AB_BANKING *ab,
-                                 const char *name,
-                                 int del);
-
-int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
-int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
-
-int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST *jl);
+static int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
+                                                 const char *name,
+                                                 GWEN_BUFFER *buf);
+static int AB_Banking__LoadProviderData(AB_BANKING *ab,
+                                        const char *name);
 
 
-AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
-                                   const char *accountId);
+static int AB_Banking__SaveProviderData(AB_BANKING *ab,
+                                        const char *name,
+                                        int del);
 
-int AB_Banking__HashPin(AB_PIN *p);
-int AB_Banking__SaveBadPins(AB_BANKING *ab);
-int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p);
+static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
+static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
-int AB_Banking__GetPin(AB_BANKING *ab,
-                       GWEN_TYPE_UINT32 flags,
-                       const char *token,
-                       const char *title,
-                       const char *text,
-                       char *buffer,
-                       int minLen,
-                       int maxLen);
+static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
 
-int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
-                                const char *backend,
-                                GWEN_BUFFER *pbuf);
-int AB_Banking__GetWizardPath(AB_BANKING *ab,
-                              const char *backend,
-                              GWEN_BUFFER *pbuf);
 
-int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
-void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
+static AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
+                                          const char *accountId);
 
-GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+static int AB_Banking__HashPin(AB_PIN *p);
+static int AB_Banking__SaveBadPins(AB_BANKING *ab);
+static int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p);
+
+static int AB_Banking__GetPin(AB_BANKING *ab,
+                              GWEN_TYPE_UINT32 flags,
+                              const char *token,
+                              const char *title,
+                              const char *text,
+                              char *buffer,
+                              int minLen,
+                              int maxLen);
+
+static int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
+                                       const char *backend,
+                                       GWEN_BUFFER *pbuf);
+static int AB_Banking__GetWizardPath(AB_BANKING *ab,
+                                     const char *backend,
+                                     GWEN_BUFFER *pbuf);
+
+static int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
+static void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
+
+static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
   AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
                         GWEN_DB_NODE *cert,
                         void *user_data);
 
+#if 0 /* FIXME: This function is not used */
 /**
  * This function updates the list of accounts. You should call this function
  * especially after setting up a backend (or after activating/deactivating
@@ -204,18 +208,17 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
-AQBANKING_API 
-int AB_Banking_UpdateAccountList(AB_BANKING *ab);
+static int AB_Banking_UpdateAccountList(AB_BANKING *ab);
+#endif
 
-
-int AB_Banking__TransformIban(const char *iban, int len,
-                              char *newIban, int maxLen);
+static int AB_Banking__TransformIban(const char *iban, int len,
+                                     char *newIban, int maxLen);
 
 /* @param jm 0:finished job, 1:pending job */
-int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
-                                      AB_JOB_LIST2 *jl,
-                                      AB_IMEXPORTER_CONTEXT *ctx,
-                                      int jm);
+static int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
+                                             AB_JOB_LIST2 *jl,
+                                             AB_IMEXPORTER_CONTEXT *ctx,
+                                             int jm);
 
 
 #endif /* AQBANKING_BANKING_P_H */
