@@ -2379,6 +2379,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
   }
 
   rv=AB_Banking_ExecuteJobList(ab, jl2);
+  AB_Job_List2_free(jl2);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -2393,9 +2394,25 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
   int rv;
   GWEN_TYPE_UINT32 pid;
   AB_JOB_LIST2_ITERATOR *jit;
-  AB_PROVIDER *pro;
+  AB_PROVIDER *pro=0;
 
   assert(ab);
+
+  DBG_ERROR(0, "Attaching to jobs, dequeing them");
+  jit=AB_Job_List2_First(jl2);
+  if (jit) {
+    AB_JOB *j;
+
+    j=AB_Job_List2Iterator_Data(jit);
+    while(j) {
+      /* attach to job in case the queue is the only owner ow the job
+       * we will free the job later */
+      AB_Job_Attach(j);
+      AB_Job_List_Del(j);
+      j=AB_Job_List2Iterator_Next(jit);
+    } /* while */
+    AB_Job_List2Iterator_free(jit);
+  }
 
   /* clear temporarily accepted certificates */
   GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
@@ -2419,9 +2436,6 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 
     j=AB_Job_List2Iterator_Data(jit);
     while(j) {
-      AB_Job_Attach(j);
-      AB_Job_List_Del(j);
-  
       switch(AB_Job_GetStatus(j)) {
       case AB_Job_StatusEnqueued:
 	/* job still enqueued, so it has never been sent */
@@ -2457,10 +2471,12 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 	break;
       }
 
+      /* we attached some lines ago, so we must now free */
       AB_Job_free(j);
-  
-      j=AB_Job_List2Iterator_Data(jit);
+
+      j=AB_Job_List2Iterator_Next(jit);
     } /* while */
+    AB_Job_List2Iterator_free(jit);
   }
 
   /* reset all provider queues, this makes sure no job remains in any queue */
