@@ -88,6 +88,6 @@ qt4-port:
 DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
-	for d in $(SUBDIRS); do \
+	list='$(SUBDIRS)'; for d in $$list; do \
 	  make -C $$d built_sources; \
 	done ;
