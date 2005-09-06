@@ -97,12 +97,8 @@ void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
     GWEN_Buffer_AppendString(buf, dname);
     GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_CONFIGFILE);
     ab->configFile=strdup(GWEN_Buffer_GetStart(buf));
-    /* setup default data dir */
-    GWEN_Buffer_Reset(buf);
-    GWEN_Buffer_AppendString(buf, home);
-    GWEN_Buffer_AppendString(buf,
-			     DIRSEP AB_BANKING_USERDATADIR);
-    ab->dataDir=strdup(GWEN_Buffer_GetStart(buf));
+    /* setup data dir */
+    ab->dataDir=strdup(dname);
   }
   else {
     GWEN_TYPE_UINT32 pos;
@@ -2618,6 +2614,7 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
     GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_USERDATADIR);
   }
 
+  GWEN_Buffer_AppendString(buf, DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad share name, aborting.");

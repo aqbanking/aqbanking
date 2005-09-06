@@ -1197,6 +1197,41 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
 AQBANKING_API 
 int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 
+/**
+ * <p>
+ * This function sends all enqueued jobs from the given list to their
+ * respective backend.
+ * </p>
+ * <p>
+ * The jobs in the list MUST BE enqueued jobs! It is not allowed to use any
+ * arbitrary jobs.
+ * </p>
+ * <p>
+ * The purpose of this function is to let the application directly
+ * influence the list of jobs to be executed. For instance an application
+ * might decide to only execute it's own jobs, or only jobs for a special
+ * account etc.
+ * </p>
+ * <p>
+ * The way to use this function is to call @ref AB_Banking_GetEnqueuedJobs,
+ * select the jobs out of the list returned (or the whole list) and use this
+ * list.
+ * </p>
+ * <p>
+ * This function calls @ref AB_Job_free on every one of the jobs in the
+ * given list (because there is a central list of enqueued jobs).
+ * So if you are still interested in the jobs in the list after this function
+ * has been called you should call @ref AB_Job_Attach on those jobs you want
+ * to keep.
+ * </p>
+ * <p>
+ * Also, upon return all jobs in this list are removed from the todo queue.
+ * For the rest see info for function @ref AB_Banking_ExecuteQueue.
+ * </p>
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab pointer to the AB_BANKING object
+ * @param jl2 list of enqueued jobs to execute
+ */
 AQBANKING_API 
 int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
 
