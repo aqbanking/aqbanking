@@ -53,11 +53,11 @@
 # define open _open
 # define close _close
 # define mkdir(aa,bb) _mkdir((aa))
-# define S_IRUSR 0
-# define S_IWUSR 0
-# define S_IRWXU 0
-# define S_ISDIR(x) ((x) & _S_IFDIR)
-# define S_ISREG(x) ((x) & _S_IFREG)
+//# define S_IRUSR 0
+//# define S_IWUSR 0
+//# define S_IRWXU 0
+//# define S_ISDIR(x) ((x) & _S_IFDIR) -- mingw-3.4.4 now has that defined.
+//# define S_ISREG(x) ((x) & _S_IFREG)
 #endif
 
 LogAnalyzer::LogFile::LogMessage::LogMessage(GWEN_DB_NODE *header,

@@ -53,7 +53,7 @@
 #ifdef WIN32
 # include <io.h>
 # include <direct.h>
-# define S_ISDIR(x) ((x) & _S_IFDIR)
+//# define S_ISDIR(x) ((x) & _S_IFDIR) -- mingw-3.4.4 now has that defined.
 #endif
 
 LogManager::LogManager(const char *baseDir,
