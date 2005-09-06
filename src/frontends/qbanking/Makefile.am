@@ -6,7 +6,7 @@ INCLUDES = \
   -Idialogs -Iwidgets -Iprg -Iviews \
   $(all_includes)
 
-DEFS += -DDATADIR=\"$(pkgdatadir)\"
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
 lib_LTLIBRARIES=libqbanking.la
 

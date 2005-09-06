@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
   //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
 
-  QString datadir = DATADIR;
+  QString datadir = PKGDATADIR;
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");

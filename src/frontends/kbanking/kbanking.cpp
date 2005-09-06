@@ -114,7 +114,7 @@ int KBanking::init(){
 
   _translator=new QTranslator(0);
   if (_translator->load(QTextCodec::locale()+QString(".qm"),
-			QString(DATADIR "/i18n/"))) {
+			QString(PKGDATADIR "/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");
     qApp->installTranslator(_translator);
   }

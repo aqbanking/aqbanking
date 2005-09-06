@@ -4,7 +4,7 @@ INCLUDES = \
  -I../libs/widgets -I../libs/dialogs -I../libs/logmanager -I../libs \
  $(qt3_includes) $(all_includes)
 
-DEFS += -DDATADIR=\"$(pkgdatadir)\"
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
 EXTRA_DIST=qt_debug.xml.in
 

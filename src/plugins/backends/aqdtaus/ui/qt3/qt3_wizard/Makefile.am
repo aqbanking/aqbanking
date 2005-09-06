@@ -7,7 +7,7 @@ INCLUDES = \
   -I../libs/widgets -I../libs/dialogs -I../libs/views -I../libs \
   $(qt3_includes) $(all_includes)
 
-DEFS += -DDATADIR=\"$(pkgdatadir)\"
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
 EXTRA_DIST = qt_wizard.xml.in
 

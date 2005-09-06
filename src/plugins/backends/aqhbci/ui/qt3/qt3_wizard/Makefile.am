@@ -5,7 +5,7 @@ INCLUDES = \
   -I../libs/widgets -I../libs/dialogs -I../libs \
   $(qt3_includes) $(all_includes)
 
-DEFS += -DDATADIR=\"$(pkgdatadir)\"
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
 EXTRA_DIST = kde_wizard.xml.in aqhbci_qt_wizard.vcproj
 

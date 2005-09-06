@@ -6,7 +6,7 @@ INCLUDES = \
  -I../libs/views \
  -I../libs $(qt3_includes) $(all_includes)
 
-DEFS += -DDATADIR=\"$(pkgdatadir)\"
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
 abs_top_builddir=$(shell (cd $(top_builddir) && pwd) )
 

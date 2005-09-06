@@ -1,3 +1,9 @@
+2005-09-06   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/Makefile.am, qbanking.cpp, other
+	Makefile.am: Rename defined DATADIR constant to PKGDATADIR because
+	DATADIR collides with an existing define in some weird
+	Windows/mingw32 header file.
 
 ===========================================================================
 MARK: released AqBanking - 1.6.0beta (2005/09/02)
