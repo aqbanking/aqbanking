@@ -36,35 +36,42 @@ Name: "doc"; Description: "{cm:DocFiles}"; Types: full
 ; installation
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Files]
-; The main DLL
-Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
+; All main DLLs
+Source: "win32-tmp\windows\*.dll"; DestDir: "{app}\bin"; Flags: sharedfile promptifolder replacesameversion; Components: main
 
-; The lib file for linking against it
-Source: "src\libs\aqbanking\@PACKAGE@32_@AQBANKING_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+; Everything from the lib directory, including all plugins
+Source: "win32-tmp\lib\*.lib"; DestDir: "{app}\lib"; Components: main
+Source: "win32-tmp\lib\aqbanking\*"; DestDir: "{app}\lib\aqbanking"; Flags: recursesubdirs; Components: main
 
-; The c++ DLL; might be removed in the future?
-Source: "src\libs\aqbanking++\@PACKAGE@pp32.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
+; The plugins that belong to gwenhywfar. 
+Source: "win32-tmp\gwen\dbio\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "win32-tmp\gwen\crypttoken\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,plugindir|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}\crypttoken"; Flags: ignoreversion recursesubdirs; Components: main
 
-; The config-script. It is post-processed by the Pascal script below.
-Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
+; The commandline tools
+Source: "win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Components: main
+
+; The config-scripts. They are post-processed by the Pascal script below.
+Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
+Source: "src\plugins\backends\aqhbci\aqhbci-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\aqhbci-config'))
+Source: "src\frontends\qbanking\qbanking-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\qbanking-config'))
 
 ; The headers, and the aclocal macro. 
 Source: "win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
 Source: "win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
 
-; The aqbanking plugins
-Source: "win32-tmp\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
-
-; The plugins that belong to gwenhywfar. 
-Source: "win32-tmp\gwen\dbio\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
-
 
 ; And all the documentation
 Source: "README"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
-Source: "COPYING"; DestDir: "{app}\doc\@PACKAGE@"; Flags: ignoreversion; Components: doc
+Source: "NEWS"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
+Source: "COPYING"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 Source: "AUTHORS"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 Source: "ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Delete automatically created files on uninstall
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[UninstallDelete]
+Type: files; Name: "{app}\bin\*-config"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Define the registry keys Setup should create (HKCU = HKEY_CURRENT_USER)

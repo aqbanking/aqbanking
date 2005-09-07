@@ -1,5 +1,8 @@
 2005-09-07   Christian Stimming <stimming@tuhh.de>
 
+	* aqbanking.iss.in: Update Inno Setup Compiler file for the
+	post-1.3.0 package structure.
+	
 	* aqbanking.pc.in: Add configuration file for pkg-config; let this
 	also be installed.
 

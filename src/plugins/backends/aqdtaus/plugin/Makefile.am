@@ -86,25 +86,20 @@ PLUGIN_DLLEXP_DEF = $(PLUGIN_LIBRARY_NAME).def
 PLUGIN_DLLSRC_LIB = $(plugin_LTLIBRARIES:.la=.a)
 PLUGIN_DLLSRC_LIBLA = $(plugin_LTLIBRARIES)
 
-all-local: dll
-
-install-exec-local: dll-install
-
 DLLTOOL=dlltool
 DLLWRAP=dllwrap
 WINDRES=windres
 
-
-dll: $(DLLNAME) $(PLUGIN_DLLNAME)
-
-dll-install: dll
-	$(INSTALL) -D $(DLLNAME) $(DESTDIR)$(WIN_PATH_WINDOWS_MINGW)/$(DLLNAME)
+# Variables so that the DLL and the LIB are installed correctly
+dlldir = $(WIN_PATH_WINDOWS_MINGW)
+dll_SCRIPTS = $(DLLNAME)
+dlllibdir = $(libdir)
+dlllib_SCRIPTS = $(DLLEXP_LIB) $(PLUGIN_DLLEXP_LIB)
 
 ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@
 
-
-$(DLLNAME): $(DLLSRC_LIBLA) ressource.o
+$(DLLNAME) $(DLLEXP_LIB): $(DLLSRC_LIBLA) ressource.o
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(DLLSRC_LIB); then \
@@ -126,7 +121,7 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	) \
 	&& rm -rf dlldir
 
-$(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
+$(PLUGIN_DLLNAME) $(PLUGIN_DLLEXP_LIB): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(PLUGIN_DLLSRC_LIB); then \

@@ -41,7 +41,7 @@ SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 # This section is for a qt4 environment
 qt4-port:
 	for A in $(libviews_la_SOURCES) $(noinst_HEADERS); do \
-	 yes | $(QT3TO4) $$A; \
+	 $(YES) | $(QT3TO4) $$A; \
 	done
 
 # For qt3 compatibility of qt4

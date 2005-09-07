@@ -48,19 +48,20 @@ DLLEXP_LIB = $(LIBRARY_NAME).lib
 DLLEXP_DEF = $(LIBRARY_NAME).def
 DLLSRC_LIB = $(DLLSRC_LIBLA:.la=.a)
 
-all-local: dll
-
 DLLTOOL=dlltool
 DLLWRAP=dllwrap
 WINDRES=windres
 
-dll: $(DLLNAME)
+# Variables so that the DLL and the LIB are installed correctly
+dlldir = $(WIN_PATH_WINDOWS_MINGW)
+dll_SCRIPTS = $(DLLNAME)
+dlllibdir = $(libdir)
+dlllib_SCRIPTS = $(DLLEXP_LIB)
 
 ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@
 
-
-$(DLLNAME): $(DLLSRC_LIBLA) ressource.o
+$(DLLNAME) $(DLLEXP_LIB): $(DLLSRC_LIBLA) ressource.o
 	mkdir -p dlldir && \
 	( \
 	  if test -r $(DLLSRC_LIB); then \
