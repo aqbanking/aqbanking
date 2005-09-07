@@ -224,7 +224,7 @@ srpm: $(PACKAGE).spec dist
 
 # This section is for a qt4 environment
 qt4-port:
-	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3; do \
+	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3 src/plugins/backends/aqdtaus/ui/qt3; do \
 	  make -C $$d qt4-port; \
 	done
 
