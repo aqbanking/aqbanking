@@ -1,3 +1,16 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  ! QBanking:                                                            !
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+2005/09/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added flag QBANKING_IMPORTER_FLAGS_AS_ORDERS
+- improved QBImporter:
+  - added static method for easier import (QBImporter::import)
+  - now the import flags can be given to the constructor
+
+
 2005-09-07   Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking.iss.in: Update Inno Setup Compiler file for the
@@ -9,9 +22,11 @@
 	* src/frontends/qbanking/Makefile.am: Add DLL rules for
 	qbanking32_1.dll
 
+
 2005/09/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug: Was not using the correct data dir when given
+
 
 2005-09-06   Christian Stimming <stimming@tuhh.de>
 
@@ -19,6 +34,7 @@
 	Makefile.am: Rename defined DATADIR constant to PKGDATADIR because
 	DATADIR collides with an existing define in some weird
 	Windows/mingw32 header file.
+
 
 ===========================================================================
 MARK: released AqBanking - 1.6.0beta (2005/09/02)

@@ -151,6 +151,9 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                               "Error in config file");
         return AB_ERROR_GENERIC;
       }
+      if (strcasecmp(GWEN_DB_GroupName(dbT), "debitnote")==0)
+        AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
       AB_ImExporterContext_AddTransaction(ctx, t);
     }

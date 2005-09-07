@@ -53,6 +53,49 @@ QBImporter::QBImporter(QBanking *kb,
                        bool modal)
 :QBImporterUi(parent, name)
 ,_app(kb)
+,_flags(QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES|
+	QBANKING_IMPORTER_FLAGS_FUZZY)
+,_context(0)
+,_aborted(false)
+,_importerList(0)
+,_importer(0)
+,_profiles(0)
+,_profile(0)
+,_dbData(0)
+,_logLevel(GWEN_LoggerLevelInfo){
+  setModal(modal);
+
+  setBackEnabled(finishPage, false);
+  setFinishEnabled(finishPage, true);
+
+  // connect buttons
+  QObject::connect((QObject*)selectFileButton, SIGNAL(clicked()),
+		   this, SLOT(slotSelectFile()));
+
+  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+                   this, SLOT(slotProfileEdit()));
+
+
+  QObject::connect((QObject*)profileList, SIGNAL(selectionChanged()),
+                   this, SLOT(slotProfileSelected()));
+
+  QObject::connect((QObject*)profileDetailsButton, SIGNAL(clicked()),
+                   this, SLOT(slotProfileDetails()));
+  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+                   this, SLOT(slotProfileEdit()));
+
+}
+
+
+
+QBImporter::QBImporter(QBanking *kb,
+		       GWEN_TYPE_UINT32 flags,
+                       QWidget* parent,
+                       const char* name,
+                       bool modal)
+:QBImporterUi(parent, name)
+,_app(kb)
+,_flags(flags)
 ,_context(0)
 ,_aborted(false)
 ,_importerList(0)
@@ -542,9 +585,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                         QBanking::QStringToUtf8String(qs).c_str());
 
-  res=_app->importContext(ctx,
-                          QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES|
-                          QBANKING_IMPORTER_FLAGS_FUZZY);
+  res=_app->importContext(ctx, _flags);
   if (res) {
     DBG_INFO(0, "Importing files completed.");
   }
@@ -833,6 +874,27 @@ bool QBImporter::_readFile(const QString &fname){
   DBG_NOTICE(0, "Returning to caller.");
   return true;
 }
+
+
+
+bool QBImporter::import(QBanking *qb,
+			GWEN_TYPE_UINT32 flags,
+			QWidget* parent) {
+  QBImporter w(qb, flags, parent, "Importer", true);
+  bool res;
+
+  if (!w.init()) {
+    return false;
+  }
+  res=(w.exec()==QDialog::Accepted);
+  if (res) {
+  }
+  w.fini();
+
+  return res;
+}
+
+
 
 
 

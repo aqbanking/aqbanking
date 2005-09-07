@@ -39,10 +39,21 @@ public:
              QWidget* parent=0,
              const char* name=0,
              bool modal=FALSE);
+  QBImporter(QBanking *kb,
+             GWEN_TYPE_UINT32 flags,
+             QWidget* parent=0,
+             const char* name=0,
+             bool modal=FALSE);
   ~QBImporter();
 
   bool init();
   bool fini();
+
+  static bool import(QBanking *qb,
+                     GWEN_TYPE_UINT32 flags=
+                     QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES |
+                     QBANKING_IMPORTER_FLAGS_FUZZY,
+                     QWidget* parent=0);
 
 public slots:
   void back();
@@ -60,6 +71,7 @@ public slots:
 
 private:
   QBanking *_app;
+  GWEN_TYPE_UINT32 _flags;
   AB_IMEXPORTER_CONTEXT *_context;
   bool _aborted;
   GWEN_PLUGIN_DESCRIPTION_LIST2 *_importerList;

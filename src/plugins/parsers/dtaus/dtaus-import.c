@@ -188,10 +188,14 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   /* check transaction type */
   if (strcasecmp(GWEN_Buffer_GetStart(tmp), "GK")==0) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "This DTAUS record contains transactions");
+    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "type", "transfer");
     GWEN_DB_GroupRename(xa, "transaction");
   }
   else if (strcasecmp(GWEN_Buffer_GetStart(tmp), "LK")==0) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "This DTAUS record contains debit notes");
+    GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "type", "debitnote");
     GWEN_DB_GroupRename(xa, "debitnote");
   }
   else {

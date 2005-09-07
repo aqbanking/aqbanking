@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QBImporterUi</class>
 <widget class="QWizard">
     <property name="name">
@@ -445,7 +445,7 @@ Please click &lt;i&gt;next&lt;/i&gt; to let the determined import module read th
             </property>
             <widget class="QLabel">
                 <property name="name">
-                    <cstring>textLabel2_3</cstring>
+                    <cstring>readLabel</cstring>
                 </property>
                 <property name="text">
                     <string>&lt;qt&gt;
@@ -473,7 +473,7 @@ The next page will allow your application to import the data read from this file
             </property>
             <widget class="QLabel">
                 <property name="name">
-                    <cstring>textLabel3_2</cstring>
+                    <cstring>finishedLabel</cstring>
                 </property>
                 <property name="text">
                     <string>&lt;qt&gt;
