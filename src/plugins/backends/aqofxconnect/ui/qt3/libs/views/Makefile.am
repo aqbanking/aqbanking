@@ -39,20 +39,11 @@ SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 # This section is for a qt4 environment
 qt4-port:
 	for A in $(libviews_la_SOURCES) $(noinst_HEADERS); do \
-	 yes | $(QT3TO4) $$A; \
+	 $(YES) | $(QT3TO4) $$A; \
 	done
-	make workaround-missing-uic3-include
 
-workaround-missing-uic3-include:
-	for A in transactionview.ui; do \
-	 make $$A.h; \
-	 mv $$A.h tmp.h; \
-	 echo -e '#include <qpixmap.h>\n' > $$A.h; \
-	 cat tmp.h >> $$A.h; \
-	 rm tmp.h; \
-	done
 # For qt3 compatibility of qt4
-DEFS += -DQT_COMPAT
+DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
 
