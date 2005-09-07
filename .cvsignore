@@ -31,3 +31,4 @@ qtsources
 *.rpm
 mksymlinks.sh
 sl-headers
+*.pc

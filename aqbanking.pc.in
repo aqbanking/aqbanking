@@ -1,0 +1,48 @@
+# pkg-config configuration for aqbanking
+# For information about the syntax, see pkg-config(1)
+
+# General installation directories
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+pkgincludedir=@includedir@/aqbanking
+datadir=@datadir@
+bindir=@bindir@
+
+# Particular variables of aqbanking
+plugindir=@aqbanking_plugindir@
+pkgdatadir=@aqbanking_pkgdatadir@
+librariespp=@aqbanking_ldflags@ @aqbanking_libspp@
+all_includes=@all_includes@
+
+# ... and particular variables of all included subpackages
+aqbanking_libs=@aqbanking_ldflags@ @aqbanking_libs@
+aqbanking_includes=@aqbanking_includes@
+aqbanking_plugindir=@aqbanking_plugindir@
+aqhbci_includes=@aqhbci_includes@
+aqhbci_libs=@aqhbci_ldflags@ @aqhbci_libs@
+aqhbci_plugindir=@aqhbci_plugindir@
+aqhbci_datadir=@aqhbci_data@
+g2banking_includes=@g2banking_includes@
+g2banking_libs=@g2banking_libs@
+g2banking_datadir=@g2banking_data@
+kbanking_includes=@kbanking_includes@
+kbanking_libs=@kbanking_libs@
+kbanking_datadir=@kbanking_data@
+qbanking_includes=@qbanking_includes@
+qbanking_libs=@qbanking_libs@
+qbanking_datadir=@qbanking_data@
+cbanking_includes=@cbanking_includes@
+cbanking_libs=@cbanking_libs@
+cbanking_datadir=@cbanking_data@
+
+# Human-readable name
+Name: AqBanking
+# Human-readable description
+Description: A library for online banking functions and financial data import/export
+
+Version: @VERSION@
+Libs: @aqbanking_ldflags@ @aqbanking_libs@
+Cflags: @aqbanking_includes@
+

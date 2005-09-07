@@ -1,5 +1,8 @@
 2005-09-07   Christian Stimming <stimming@tuhh.de>
 
+	* aqbanking.pc.in: Add configuration file for pkg-config; let this
+	also be installed.
+
 	* src/frontends/qbanking/Makefile.am: Add DLL rules for
 	qbanking32_1.dll
 

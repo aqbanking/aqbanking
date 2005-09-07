@@ -1620,6 +1620,7 @@ AC_CONFIG_FILES([
   Doxyfile
   Makefile
   aqbanking-config.in
+  aqbanking.pc
   aqbanking.spec
   aqbanking.iss
   version.h

@@ -28,6 +28,9 @@ aqbanking-config: aqbanking-config.in
 	cat aqbanking-config.in >>aqbanking-config && \
 	chmod a+x aqbanking-config
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = aqbanking.pc
+
 listdoc.h:
 	mklistdoc -v `find headers -name '*.h' ` >listdoc.h
 
