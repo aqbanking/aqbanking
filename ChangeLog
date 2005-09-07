@@ -1,8 +1,11 @@
+2005-09-07   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/Makefile.am: Add DLL rules for
+	qbanking32_1.dll
 
 2005/09/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug: Was not using the correct data dir when given
-
 
 2005-09-06   Christian Stimming <stimming@tuhh.de>
 

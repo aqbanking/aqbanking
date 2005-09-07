@@ -6,3 +6,7 @@ version.h
 *.ui.cpp
 i18nsources
 *-config
+*.dll
+*.lib
+*.def
+portinglog.txt
