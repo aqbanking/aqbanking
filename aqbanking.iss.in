@@ -110,7 +110,7 @@ end;
 
 procedure MyAfterInstallConfig(FileName: String);
 var
-  FileString, appdir, windir, includedir, plugindir, datadir, pkgdatadir: String;
+  FileString, appdir, windir, bindir, includedir, plugindir, datadir, pkgdatadir: String;
   Res: Boolean;
 begin
 
@@ -126,6 +126,7 @@ begin
   windir := MingwBacksl(ExpandConstant('{win}'));
   appdir := MingwBacksl(ExpandConstant('{app}'));
   includedir := appdir + '/include';
+  bindir := appdir + '/bin';
   plugindir := appdir + '/lib/@PACKAGE@/plugins/@AQBANKING_SO_EFFECTIVE@';
   datadir := appdir + '/share';
   pkgdatadir := datadir + '/@PACKAGE@';
@@ -136,7 +137,7 @@ begin
   StringChange(FileString, '@'+'libdir@', windir);
   StringChange(FileString, '@'+'all_includes@', '@all_includes@');
   StringChange(FileString, '@'+'aqbanking_includes@', '-I'+includedir);
-  StringChange(FileString, '@'+'aqbanking_ldflags@', '-L'+windir);
+  StringChange(FileString, '@'+'aqbanking_ldflags@', '-L'+bindir);
   StringChange(FileString, '@'+'aqbanking_libs@', '@aqbanking_libs@');
   StringChange(FileString, '@'+'aqbanking_libspp@', '@aqbanking_libspp@');
   StringChange(FileString, '@'+'aqbanking_plugindir@', plugindir);
@@ -147,16 +148,16 @@ begin
   StringChange(FileString, '@'+'AQBANKING_VERSION_BUILD@', '@AQBANKING_VERSION_BUILD@');
   StringChange(FileString, '@'+'AQBANKING_VERSION_TAG@', '@AQBANKING_VERSION_TAG@');
 
-  StringChange(FileString, '@'+'cbanking_libs@', '@cbanking_libs@');
+  StringChange(FileString, '@'+'cbanking_libs@', '-L' + bindir + ' @cbanking_libs@');
   StringChange(FileString, '@'+'cbanking_includes@', '-I'+includedir);
-  StringChange(FileString, '@'+'qbanking_libs@', '@qbanking_libs@');
+  StringChange(FileString, '@'+'qbanking_libs@', '-L' + bindir + ' @qbanking_libs@');
   StringChange(FileString, '@'+'qbanking_includes@', '-I'+includedir);
   StringChange(FileString, '@'+'qbanking_data@', datadir + '/qbanking');
   StringChange(FileString, '@'+'QBANKING_VERSION_MAJOR@', '@QBANKING_VERSION_MAJOR@');
   StringChange(FileString, '@'+'QBANKING_VERSION_MINOR@', '@QBANKING_VERSION_MINOR@');
   StringChange(FileString, '@'+'QBANKING_VERSION_PATCHLEVEL@', '@QBANKING_VERSION_PATCHLEVEL@');
   StringChange(FileString, '@'+'QBANKING_VERSION_BUILD@', '@QBANKING_VERSION_BUILD@');
-  StringChange(FileString, '@'+'kbanking_libs@', '@kbanking_libs@');
+  StringChange(FileString, '@'+'kbanking_libs@', '-L' + bindir + ' @kbanking_libs@');
   StringChange(FileString, '@'+'kbanking_includes@', '-I'+includedir);
 
   { Save the final file }
