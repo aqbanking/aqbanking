@@ -13,13 +13,14 @@ AppPublisher=AqBanking Development Team
 AppPublisherURL=http://sourceforge.net/projects/aqbanking
 AppSupportURL=http://sourceforge.net/support/getsupport.php?group_id=115695
 AppUpdatesURL=http://sourceforge.net/project/showfiles.php?group_id=115695
-DefaultDirName={pf}\@PACKAGE@
-LicenseFile=COPYING
 Compression=lzma
-OutputDir=.
-OutputBaseFilename=@PACKAGE@-@VERSION@-setup
-UninstallFilesDir={app}\uninstall\@PACKAGE@
+DefaultDirName={pf}\@PACKAGE@
+DirExistsWarning=no
 InfoAfterFile=README
+LicenseFile=COPYING
+OutputBaseFilename=@PACKAGE@-@VERSION@-setup
+OutputDir=.
+UninstallFilesDir={app}\uninstall\@PACKAGE@
 
 [Types]
 Name: "full"; Description: "{cm:FullInstall}"
@@ -85,6 +86,7 @@ Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "p
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -108,7 +110,7 @@ end;
 
 procedure MyAfterInstallConfig(FileName: String);
 var
-  FileString, appdir, windir, includedir, plugindir, pkgdatadir: String;
+  FileString, appdir, windir, includedir, plugindir, datadir, pkgdatadir: String;
   Res: Boolean;
 begin
 
@@ -125,7 +127,8 @@ begin
   appdir := MingwBacksl(ExpandConstant('{app}'));
   includedir := appdir + '/include';
   plugindir := appdir + '/lib/@PACKAGE@/plugins/@AQBANKING_SO_EFFECTIVE@';
-  pkgdatadir := appdir + '/share/@PACKAGE@';
+  datadir := appdir + '/share';
+  pkgdatadir := datadir + '/@PACKAGE@';
 
   { Now make all the replacements }
   { Explanation: StringChange(S,FromStr,ToStr): Change all occurances in S of FromStr to ToStr. }
@@ -143,6 +146,18 @@ begin
   StringChange(FileString, '@'+'AQBANKING_VERSION_PATCHLEVEL@', '@AQBANKING_VERSION_PATCHLEVEL@');
   StringChange(FileString, '@'+'AQBANKING_VERSION_BUILD@', '@AQBANKING_VERSION_BUILD@');
   StringChange(FileString, '@'+'AQBANKING_VERSION_TAG@', '@AQBANKING_VERSION_TAG@');
+
+  StringChange(FileString, '@'+'cbanking_libs@', '@cbanking_libs@');
+  StringChange(FileString, '@'+'cbanking_includes@', '-I'+includedir);
+  StringChange(FileString, '@'+'qbanking_libs@', '@qbanking_libs@');
+  StringChange(FileString, '@'+'qbanking_includes@', '-I'+includedir);
+  StringChange(FileString, '@'+'qbanking_data@', datadir + '/qbanking');
+  StringChange(FileString, '@'+'QBANKING_VERSION_MAJOR@', '@QBANKING_VERSION_MAJOR@');
+  StringChange(FileString, '@'+'QBANKING_VERSION_MINOR@', '@QBANKING_VERSION_MINOR@');
+  StringChange(FileString, '@'+'QBANKING_VERSION_PATCHLEVEL@', '@QBANKING_VERSION_PATCHLEVEL@');
+  StringChange(FileString, '@'+'QBANKING_VERSION_BUILD@', '@QBANKING_VERSION_BUILD@');
+  StringChange(FileString, '@'+'kbanking_libs@', '@kbanking_libs@');
+  StringChange(FileString, '@'+'kbanking_includes@', '-I'+includedir);
 
   { Save the final file }
   Res := SaveStringToFile(FileName, FileString, False);
