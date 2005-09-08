@@ -1357,7 +1357,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         qbanking_internal_libs="-L${abs_top_builddir}/src/frontends/qbanking -lqbanking32_${QBANKING_SO_EFFECTIVE}"
-        qbanking_libs="-L\$libdir} -lqbanking32_${QBANKING_SO_EFFECTIVE}"
+        qbanking_libs="-L\${libdir} -lqbanking32_${QBANKING_SO_EFFECTIVE}"
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
 	all_includes="$all_includes -mms-bitfields"
