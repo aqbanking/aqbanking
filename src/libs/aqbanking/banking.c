@@ -1104,6 +1104,24 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 
 
 
+static GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId) {
+  GWEN_TYPE_UINT64 res=0;
+  const char *s;
+
+  s=accountId;
+  while(*s) {
+    if (*s<'0' || *s>'9')
+      return 0;
+    res*=10;
+    res+=(*s-'0');
+    s++;
+  }
+
+  return res;
+}
+
+
+
 AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
                                                  const char *bankCode,
                                                  const char *accountId){
@@ -1130,6 +1148,33 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
     }
     a=AB_Account_List_Next(a);
   } /* while */
+
+  if (!a) {
+    GWEN_TYPE_UINT64 an;
+
+    an=AB_Banking__char2uint64(accountId);
+    if (an) {
+      a=AB_Account_List_First(ab->accounts);
+      assert(a);
+      while(a) {
+        GWEN_TYPE_UINT64 lan;
+    
+        lan=AB_Banking__char2uint64(AB_Account_GetAccountNumber(a));
+        if (lan) {
+          if (bankCode) {
+            if (strcasecmp(AB_Account_GetBankCode(a), bankCode)==0 &&
+                an==lan)
+              break;
+          }
+          else {
+            if (an==lan)
+              break;
+          }
+        }
+        a=AB_Account_List_Next(a);
+      } /* while */
+    }
+  }
 
   return a;
 }

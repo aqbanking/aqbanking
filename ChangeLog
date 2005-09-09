@@ -8,6 +8,9 @@
 - implemented job HKUMB (InternalTransfer)
 - fixed a bug in aqbanking-tool command "request": was not correctly
   reading fromDate and toDate
+- AB_Banking_GetAccountByCodeAndNumber() now checks for numeric
+  account id as well (rules out problems when there are accounts with
+  leading zeroes)
 
 
 2005/09/07: Martin Preuss<martin@libchipcard.de>

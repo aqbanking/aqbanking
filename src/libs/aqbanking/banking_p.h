@@ -221,4 +221,7 @@ static int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
                                              int jm);
 
 
+static GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId);
+
+
 #endif /* AQBANKING_BANKING_P_H */

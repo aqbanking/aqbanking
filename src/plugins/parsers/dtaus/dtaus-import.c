@@ -421,11 +421,16 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     return -1;
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Text key: %s", GWEN_Buffer_GetStart(tmp));
+    const char *x;
+
+    x=GWEN_Buffer_GetStart(tmp);
+    if (*x=='0')
+      x++;
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Text key: %s", x);
     AHB_DTAUS__SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "textkey",
-                         GWEN_Buffer_GetStart(tmp));
+                            "textkey",
+                            x);
   }
   else {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "No text key");
@@ -932,15 +937,15 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                            "value/currency",
                            GWEN_DB_GetCharValue(dcfg, "currency", 0, "EUR"));
-      p=GWEN_DB_GetCharValue(cfg, "bankCode", 0, 0);
+      p=GWEN_DB_GetCharValue(dcfg, "localBankCode", 0, 0);
       if (!p)
-	p=GWEN_DB_GetCharValue(dcfg, "localBankCode", 0, 0);
+        p=GWEN_DB_GetCharValue(cfg, "bankCode", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                              "localBankCode", p);
-      p=GWEN_DB_GetCharValue(cfg, "acccountId", 0, 0);
+      p=GWEN_DB_GetCharValue(dcfg, "localAccountNumber", 0, 0);
       if (!p)
-	p=GWEN_DB_GetCharValue(dcfg, "localAccountNumber", 0, 0);
+        p=GWEN_DB_GetCharValue(cfg, "acccountId", 0, 0);
       if (p)
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT,
                              "localAccountNumber", p);
