@@ -2394,7 +2394,7 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 
   assert(ab);
 
-  DBG_ERROR(0, "Attaching to jobs, dequeing them");
+  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Attaching to jobs, dequeing them");
   jit=AB_Job_List2_First(jl2);
   if (jit) {
     AB_JOB *j;
