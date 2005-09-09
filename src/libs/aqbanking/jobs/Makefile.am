@@ -46,6 +46,8 @@ iheader_HEADERS= \
  jobmodifydatedtransfer_be.h \
  jobdeletedatedtransfer.h \
  jobdeletedatedtransfer_be.h \
+ jobinternaltransfer.h \
+ jobinternaltransfer_be.h \
  jobeutransfer.h \
  jobeutransfer_l.h \
  jobeutransfer_be.h
@@ -64,6 +66,7 @@ libjobs_la_SOURCES=\
  jobcreatedatedtransfer.c \
  jobmodifydatedtransfer.c \
  jobdeletedatedtransfer.c \
+ jobinternaltransfer.c \
  jobeutransfer.c
 
 

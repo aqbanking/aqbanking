@@ -49,6 +49,9 @@ AH_JOB *AH_Job_ModifyDatedTransfer_new(AH_CUSTOMER *cu,
 AH_JOB *AH_Job_DeleteDatedTransfer_new(AH_CUSTOMER *cu,
                                        AH_ACCOUNT *account);
 
+AH_JOB *AH_Job_InternalTransfer_new(AH_CUSTOMER *cu,
+                                    AH_ACCOUNT *account);
+
 
 const char *AH_Job_SingleTransfer_GetFiid(AH_JOB *j);
 

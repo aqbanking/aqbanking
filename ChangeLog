@@ -1,7 +1,12 @@
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  ! QBanking:                                                            !
+  ! AqBanking, QBanking:                                                 !
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
+
+2005/09/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented job HKUMB (InternalTransfer)
+
 
 2005/09/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

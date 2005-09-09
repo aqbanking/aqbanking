@@ -29,6 +29,7 @@
 #include <aqbanking/jobsingletransfer.h>
 #include <aqbanking/jobsingletransfer_be.h>
 #include <aqbanking/jobsingledebitnote_be.h>
+#include <aqbanking/jobinternaltransfer_be.h>
 #include <aqbanking/jobcreatesto_be.h>
 #include <aqbanking/jobmodifysto_be.h>
 #include <aqbanking/jobdeletesto_be.h>
@@ -119,6 +120,15 @@ AH_JOB *AH_Job_DeleteDatedTransfer_new(AH_CUSTOMER *cu,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+AH_JOB *AH_Job_InternalTransfer_new(AH_CUSTOMER *cu,
+                                    AH_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(cu, account,
+                                       AB_Job_TypeInternalTransfer);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SingleTransferBase_new(AH_CUSTOMER *cu,
                                       AH_ACCOUNT *account,
                                       AB_JOB_TYPE jobType) {
@@ -150,6 +160,9 @@ AH_JOB *AH_Job_SingleTransferBase_new(AH_CUSTOMER *cu,
     break;
   case AB_Job_TypeDeleteDatedTransfer:
     j=AH_AccountJob_new("JobDeleteDatedTransfer", cu, account);
+    break;
+  case AB_Job_TypeInternalTransfer:
+    j=AH_AccountJob_new("JobInternalTransfer", cu, account);
     break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", jobType);
@@ -235,6 +248,7 @@ int AH_Job_SingleTransfer_Process(AH_JOB *j){
   case AB_Job_TypeDebitNote:
   case AB_Job_TypeDeleteStandingOrder:
   case AB_Job_TypeDeleteDatedTransfer:
+  case AB_Job_TypeInternalTransfer:
     dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
     while(dbCurr) {
       int rv;
@@ -457,6 +471,9 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   case AB_Job_TypeDeleteDatedTransfer:
     lim=AB_JobDeleteDatedTransfer_GetFieldLimits(bj);
     break;
+  case AB_Job_TypeInternalTransfer:
+    lim=AB_JobInternalTransfer_GetFieldLimits(bj);
+    break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Unhandled job type %d", aj->jobType);
@@ -660,6 +677,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         case AB_Job_TypeCreateStandingOrder:
         case AB_Job_TypeModifyStandingOrder:
         case AB_Job_TypeDeleteStandingOrder:
+        case AB_Job_TypeInternalTransfer:
         default:
           n=51; /* "Ueberweisung" */
           break;
@@ -1107,6 +1125,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     case AB_Job_TypeDeleteDatedTransfer:
       AB_JobDeleteDatedTransfer_SetFieldLimits(bj, lim);
       break;
+    case AB_Job_TypeInternalTransfer:
+      AB_JobInternalTransfer_SetFieldLimits(bj, lim);
+      break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN,
                 "Unhandled job type %d", aj->jobType);
@@ -1147,6 +1168,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
     case AB_Job_TypeDeleteDatedTransfer:
       ot=AB_JobDeleteDatedTransfer_GetTransaction(bj);
+      break;
+    case AB_Job_TypeInternalTransfer:
+      ot=AB_JobInternalTransfer_GetTransaction(bj);
       break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -1195,6 +1219,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         break;
       case AB_Job_TypeDeleteDatedTransfer:
         AB_JobDeleteDatedTransfer_SetTransaction(bj, t);
+        break;
+      case AB_Job_TypeInternalTransfer:
+        AB_JobInternalTransfer_SetTransaction(bj, t);
         break;
       default:
         DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -1501,6 +1528,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       switch(aj->jobType) {
       case AB_Job_TypeTransfer:
       case AB_Job_TypeDebitNote:
+      case AB_Job_TypeInternalTransfer:
 	AB_Job_SetStatus(bj, AB_Job_StatusPending);
 	DBG_INFO(AQHBCI_LOGDOMAIN, "Job pending");
 	break;
@@ -1527,6 +1555,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     switch(aj->jobType) {
     case AB_Job_TypeTransfer:
     case AB_Job_TypeDebitNote:
+    case AB_Job_TypeInternalTransfer:
       break;
 
     case AB_Job_TypeCreateStandingOrder:

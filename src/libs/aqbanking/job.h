@@ -103,7 +103,9 @@ typedef enum {
   /* modifies an existing dated transfer */
   AB_Job_TypeModifyDatedTransfer,
   /* deletes an existing dated transfer */
-  AB_Job_TypeDeleteDatedTransfer
+  AB_Job_TypeDeleteDatedTransfer,
+  /* internal transfer between two accounts at the same bank */
+  AB_Job_TypeInternalTransfer
 } AB_JOB_TYPE;
 
 

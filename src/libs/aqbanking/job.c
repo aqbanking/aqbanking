@@ -33,6 +33,7 @@
 #include "jobs/jobcreatedatedtransfer_be.h"
 #include "jobs/jobmodifydatedtransfer_be.h"
 #include "jobs/jobdeletedatedtransfer_be.h"
+#include "jobs/jobinternaltransfer_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -256,6 +257,7 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeCreateDatedTransfer: s="createdatedtransfer"; break;
   case AB_Job_TypeModifyDatedTransfer: s="modifydatedtransfer"; break;
   case AB_Job_TypeDeleteDatedTransfer: s="deletedatedtransfer"; break;
+  case AB_Job_TypeInternalTransfer:    s="internaltransfer"; break;
   default:
   case AB_Job_TypeUnknown:             s="unknown"; break;
   }
@@ -287,6 +289,8 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
     i=AB_Job_TypeModifyDatedTransfer;
   else if (strcasecmp(s, "deletedatedtransfer")==0)
     i=AB_Job_TypeDeleteDatedTransfer;
+  else if (strcasecmp(s, "internaltransfer")==0)
+    i=AB_Job_TypeInternalTransfer;
 
   else i=AB_Job_TypeUnknown;
 
@@ -412,6 +416,13 @@ int AB_Job_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
 
   case AB_Job_TypeDeleteDatedTransfer:
     if (AB_JobDeleteDatedTransfer_toDb(j, db)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      return -1;
+    }
+    break;
+
+  case AB_Job_TypeInternalTransfer:
+    if (AB_JobInternalTransfer_toDb(j, db)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       return -1;
     }
@@ -642,6 +653,11 @@ AB_JOB *AB_Job_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   case AB_Job_TypeDeleteDatedTransfer:
     j=AB_JobDeleteDatedTransfer_fromDb(a, db);
+    assert(j);
+    break;
+
+  case AB_Job_TypeInternalTransfer:
+    j=AB_JobInternalTransfer_fromDb(a, db);
     assert(j);
     break;
 

@@ -100,23 +100,9 @@ void QBJobListViewItem::_populate() {
   case AB_Job_TypeEuTransfer:
     tmp=QWidget::tr("EU-Transfer");
     break;
-#if (AQBANKING_VERSION_MAJOR > 1) || (AQBANKING_VERSION_MINOR > 0) || \
-  ((AQBANKING_VERSION_MINOR == 0) && \
-   ((AQBANKING_VERSION_PATCHLEVEL > 12) || \
-    ((AQBANKING_VERSION_PATCHLEVEL == 12) && (AQBANKING_VERSION_BUILD > 4))))
-    // Added in aqbanking-1.0.12.5. Remove this ifdef as soon as
-    // aqbanking-1.0.13 is out and required by qbankmanager!
   case AB_Job_TypeGetDatedTransfers:
     tmp=QWidget::tr("Get Dated Transfers");
     break;
-
-#endif
-#if (AQBANKING_VERSION_MAJOR > 1) || (AQBANKING_VERSION_MINOR > 0) || \
-  ((AQBANKING_VERSION_MINOR == 0) && \
-   ((AQBANKING_VERSION_PATCHLEVEL > 12) || \
-    ((AQBANKING_VERSION_PATCHLEVEL == 12) && (AQBANKING_VERSION_BUILD > 6))))
-    // Added in aqbanking-1.0.12.7. Remove this ifdef as soon as
-    // aqbanking-1.0.13 is out and required by qbankmanager!
   case AB_Job_TypeCreateStandingOrder:
     tmp=QWidget::tr("Create Standing Order");
     break;
@@ -135,7 +121,9 @@ void QBJobListViewItem::_populate() {
   case AB_Job_TypeDeleteDatedTransfer:
     tmp=QWidget::tr("Delete Dated Transfer");
     break;
-#endif
+  case AB_Job_TypeInternalTransfer:
+    tmp=QWidget::tr("Internal Transfer");
+    break;
 
   case AB_Job_TypeUnknown:
     tmp=QWidget::tr("(unknown)");

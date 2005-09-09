@@ -54,6 +54,7 @@ xmlfiles=\
   $(srcdir)/jobgetstandingorders.xml \
   $(srcdir)/jobsingletransfer.xml \
   $(srcdir)/jobsingledebitnote.xml \
+  $(srcdir)/jobinternaltransfer.xml \
   $(srcdir)/jobeutransfer.xml \
   $(srcdir)/jobmultitransfer.xml \
   $(srcdir)/jobcreatesto.xml \
