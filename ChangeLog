@@ -6,6 +6,8 @@
 2005/09/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - implemented job HKUMB (InternalTransfer)
+- fixed a bug in aqbanking-tool command "request": was not correctly
+  reading fromDate and toDate
 
 
 2005/09/07: Martin Preuss<martin@libchipcard.de>

@@ -194,7 +194,14 @@ int request(AB_BANKING *ab,
   reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
   if (s && *s) {
-    fromTime=GWEN_Time_fromString(s, "YYYYMMDD");
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, s);
+    GWEN_Buffer_AppendString(dbuf, "-12:00");
+    fromTime=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+                                     "YYYYMMDD-hh:mm");
+    GWEN_Buffer_free(dbuf);
     if (fromTime==0) {
       DBG_ERROR(AQT_LOGDOMAIN, "Invalid fromdate value \"%s\"", s);
       return 1;
@@ -202,7 +209,14 @@ int request(AB_BANKING *ab,
   }
   s=GWEN_DB_GetCharValue(db, "toDate", 0, 0);
   if (s && *s) {
-    toTime=GWEN_Time_fromString(s, "YYYYMMDD");
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, s);
+    GWEN_Buffer_AppendString(dbuf, "-12:00");
+    toTime=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+                                   "YYYYMMDD-hh:mm");
+    GWEN_Buffer_free(dbuf);
     if (toTime==0) {
       DBG_ERROR(AQT_LOGDOMAIN, "Invalid todate value \"%s\"", s);
       return 1;
