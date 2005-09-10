@@ -621,7 +621,7 @@ bool QBImporter::_checkFileType(const QString &fname){
   checkFileNameLabel->setText(fname);
   checkFileTypeLabel->setText(tr("-- checking --"));
 
-  qs=tr("Checking for file type ...");
+  qs=tr("Checking for file type...");
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                         QBanking::QStringToUtf8String(qs).c_str());
 

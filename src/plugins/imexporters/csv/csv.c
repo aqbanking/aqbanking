@@ -136,7 +136,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
   /* enter waitcallback context */
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-                                  I18N("Importing transactions ..."),
+                                  I18N("Importing transactions..."),
                                   I18N("transaction(s)"),
                                   GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
   GWEN_WaitCallback_SetProgressTotal(cnt);

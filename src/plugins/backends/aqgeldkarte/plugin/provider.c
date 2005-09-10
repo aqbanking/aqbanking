@@ -828,7 +828,7 @@ int AG_Provider_Execute(AB_PROVIDER *pro){
       if (rv==AB_ERROR_USER_ABORT) {
         AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
                                AB_Banking_LogLevelNotice,
-                               I18N("User aborted."));
+                               I18N("User aborted"));
         AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
         return rv;
       }

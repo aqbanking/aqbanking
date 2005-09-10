@@ -153,7 +153,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
   /* enter waitcallback context */
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
-                                  I18N("Importing transactions ..."),
+                                  I18N("Importing transactions..."),
                                   I18N("transaction(s)"),
                                   GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
   GWEN_WaitCallback_SetProgressTotal(cnt);
