@@ -376,7 +376,7 @@ int QBanking::progressLog(GWEN_TYPE_UINT32 id,
   QString text(QString::fromUtf8(chartext));
 
   // Necessary when passing this QString into the macros
-  const char *latin1text = text.latin1();
+  const char *latin1text = text.local8Bit();
 
   if (level>_logLevel) {
     DBG_NOTICE(0, "Not logging this: %02d: %s (we are at %d)",
