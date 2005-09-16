@@ -179,10 +179,32 @@ public:
                           const QString &bankName="",
                           const QString &location="");
 
+  /** Convenience function to convert a QString into a std::string
+   * that will contain UTF-8 encoded characters, as necessary when
+   * passing strings into aqbanking.
+   *
+   * Watch out with the correct encodings! String passed into and
+   * out of aqbanking are expected in UTF-8, but NOT in Latin-1 or
+   * similar! */
   static std::string QStringToUtf8String(const QString &qs);
 
+  /** Convenience function for extracting the GUI part of the
+   * HTML/cleartext-combi-strings from aqbanking. 
+   * 
+   * If the given string contains a
+   * &lt;html>html-part...&lt;/html> section, then the "html-part"
+   * section will be returned. If the given string does not
+   * contain a section like this, then the string will be returned
+   * unchanged. */
   static std::string guiString(const char *s);
 
+  /** Convenience function that returns true if the given string
+   * consists of pure 7-bit ASCII characters, and false
+   * otherwise. 
+   *
+   * In particular, if the given string contains Umlauts, accents,
+   * or similar, then this will return false. */
+  static bool isPure7BitAscii(const QString &s);
 };
 
 

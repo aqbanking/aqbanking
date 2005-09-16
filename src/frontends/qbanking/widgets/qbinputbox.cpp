@@ -47,19 +47,17 @@ QBInputBox::Validator::~Validator(){
 
 
 QValidator::State
-QBInputBox::Validator::validate(QString &input, int &pos) const{
+QBInputBox::Validator::validate(QString& input, int &pos) const{
   int i;
+  // The input argument "pos" is unused, but due to the abstract
+  // function in the parent class it has to be declared anyway.
 
   if (_flags & AB_BANKING_INPUT_FLAGS_NUMERIC) {
-    const char *p;
-
-    p=input.latin1();
-    if (p) {
-      while(*p) {
-        if (!isdigit(*(p++))) {
-          DBG_DEBUG(0, "Not a digit.\n");
+    unsigned stringlength = input.length();
+    for (unsigned k = 0; k < stringlength; ++k) {
+      if (!(input[k].isDigit())) {
+	  DBG_DEBUG(0, "Not a digit.\n");
           return QValidator::Invalid;
-        }
       }
     } /* if there is input */
   }

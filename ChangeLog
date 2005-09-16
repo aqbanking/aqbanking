@@ -3,6 +3,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-09-16   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/qbanking.cpp: Add static
+	QBanking::isPure7BitAscii() to check QStrings for that. Improve
+	header documentation. Do not yet fix potentially errorneous latin1
+	conversion in QBanking::inputBox but add a huge FIXME comment.
+
+	* src/frontends/qbanking/widgets/qbinputbox.cpp
+	(QBInputBox::Validator::validate): Improve checking for digits by
+	using only Qt methods on the QString.
+
 2005/09/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - implemented job HKUMB (InternalTransfer)

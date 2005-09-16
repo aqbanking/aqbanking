@@ -198,13 +198,21 @@ int QBanking::inputBox(GWEN_TYPE_UINT32 flags,
   GWEN_Buffer_free(buf);
   if (ib.exec()==QDialog::Accepted) {
     QString s;
-    int l;
 
     s=ib.getInput();
-    l=s.length();
-    if (l && l<maxLen-1) {
-      memmove(buffer, s.latin1(), l);
-      buffer[l]=0;
+    int len=s.length();
+    if (len && len<maxLen-1) {
+      // FIXME: QString::latin1() is most probably wrong here!
+      // This means that the entered string will be passed into
+      // AQ_BANKING in latin1 encoding, not in utf8. This should
+      // probably be replaced by s.utf8()! But we need to watch
+      // out for potentially breaking some people's PINs. For
+      // those who had Umlauts in their PIN there should at least
+      // be a commandline-tool available that will accept PINs in
+      // a configurable encoding for reading, and a different PIN
+      // for writing. -- cstim, 2005-09-15
+      memmove(buffer, s.latin1(), len);
+      buffer[len]=0;
     }
     else {
       DBG_ERROR(0, "Bad pin length");
@@ -376,16 +384,16 @@ int QBanking::progressLog(GWEN_TYPE_UINT32 id,
   QString text(QString::fromUtf8(chartext));
 
   // Necessary when passing this QString into the macros
-  const char *latin1text = text.local8Bit();
+  const char *local8Bit = text.local8Bit();
 
   if (level>_logLevel) {
     DBG_NOTICE(0, "Not logging this: %02d: %s (we are at %d)",
-               level, latin1text, _logLevel);
+               level, local8Bit, _logLevel);
     /* don't log this */
     return 0;
   }
 
-  DBG_INFO(0, "%02d: %s", level, latin1text);
+  DBG_INFO(0, "%02d: %s", level, local8Bit);
   pr=_findProgressWidget(id);
   if (pr) {
     return pr->log(level, text);
@@ -938,6 +946,12 @@ std::string QBanking::QStringToUtf8String(const QString &qs) {
   int len;
   int i;
 
+  // FIXME: Is there a specific reason for this extra copying? I
+  // don't see one. The std::string contains "char", not "unsigned
+  // char", so the right side below will be converted back to
+  // "char" when it is appended to the std::char on the left
+  // side. You should simply return the "utfData" and that's
+  // it. -- cstim, 2005-09-15
   len=utfData.length();
   for (i=0; i<len; i++)
     result+=(unsigned char)utfData[i];
@@ -977,6 +991,20 @@ AB_BANKINFO *QBanking::selectBank(QWidget* parent,
                                   bankName, location);
 }
 
+
+bool QBanking::isPure7BitAscii(const QString &input)
+{
+  unsigned stringlength = input.length();
+  for (unsigned k = 0; k < stringlength; ++k) {
+    if (input[k].unicode() > 0x7f) {
+      const char *local8Bit = input.local8Bit();
+      DBG_DEBUG(0, "String \"%s\" is not pure-7bit-ascii at character %d.\n",
+		local8Bit, k);
+      return false;
+    }
+  }
+  return true;
+}
 
 
 
