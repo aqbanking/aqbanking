@@ -258,7 +258,7 @@ void Wizard::slotGetCert() {
                               GWEN_Buffer_GetStart(nbuf),
                               0, 0, 0, 1);
   GWEN_Buffer_Reset(nbuf);
-  GWEN_Buffer_AppendString(nbuf, getServerAddr().latin1());
+  GWEN_Buffer_AppendString(nbuf, getServerAddr().local8Bit());
   p=strchr(GWEN_Buffer_GetStart(nbuf), '/');
   if (p)
     *p=0;
@@ -304,8 +304,8 @@ void Wizard::slotGetCert() {
   AB_Banking_SetAlwaysAskForCert(_app->getCInterface(), 1);
   wid=AB_Banking_ShowBox(_app->getCInterface(),
 			 0,
-			 QWidget::tr("Please Wait").latin1(),
-			 QWidget::tr("Retrieving certificate...").latin1());
+			 QWidget::tr("Please wait").utf8(),
+			 QWidget::tr("Retrieving certificate...").utf8());
   rv=GWEN_NetConnection_Connect_Wait(conn, 15);
   if (wid)
     AB_Banking_HideBox(_app->getCInterface(), wid);

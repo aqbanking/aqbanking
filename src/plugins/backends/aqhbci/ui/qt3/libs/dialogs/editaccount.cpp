@@ -277,11 +277,11 @@ void EditAccount::accept(){
   }
 
   AH_Account_SetBank(_account, _bank);
-  AH_Account_SetBankId(_account, bankCodeEdit->text().latin1());
-  AH_Account_SetAccountId(_account, accountIdEdit->text().latin1());
+  AH_Account_SetBankId(_account, bankCodeEdit->text().utf8());
+  AH_Account_SetAccountId(_account, accountIdEdit->text().utf8());
   if (!accountNameEdit->text().isEmpty())
-    AH_Account_SetAccountName(_account, accountNameEdit->text().latin1());
-  AH_Account_SetOwnerName(_account, ownerNameEdit->text().latin1());
+    AH_Account_SetAccountName(_account, accountNameEdit->text().utf8());
+  AH_Account_SetOwnerName(_account, ownerNameEdit->text().utf8());
   AH_Account_ClearCustomers(_account);
   AH_Account_AddCustomer(_account, AH_Customer_GetCustomerId(_customer));
 

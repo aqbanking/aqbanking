@@ -121,6 +121,17 @@ bool Wizard::doMediumPage(QWidget *p){
     setAppropriate(checkCardPage, false);
 
     _mediumName=fileNameEdit->text().latin1();
+    // FIXME: Err... this is the medium filename. If we are in a
+    // utf8-locale, things will break if aqbanking tries to access
+    // that file. Officially, aqbanking expects this in utf8 so
+    // this should be QString::utf8 here. However, we don't
+    // convert the filename from utf8 to the local8Bit encoding
+    // each time it is used. Therefore the quick solution would be
+    // QString::local8Bit, but this will break if the locale's
+    // encoding changes. That's a hard one. Eventually, at all
+    // fopen()s the aqbanking string needs to be converted from
+    // utf8 into the local8Bit encoding, but that is not yet done
+    // in aqbanking. That's bad.
 
     /* file wanted, check whether it exists */
     if (_importMode) {

@@ -5,6 +5,15 @@
 
 2005-09-16   Christian Stimming <stimming@tuhh.de>
 
+	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.cpp,
+	pagecheckfile.cpp, pageservercert.cpp, pageuserdata.cpp,
+	selectcontext.cpp: Replace errorneous conversions
+	QString::latin1() by QString::utf8() or QString::local8Bit().
+
+	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:
+	Do not yet fix potentially errorneous latin1 conversion in
+	QBanking::inputBox but add a huge FIXME comment.
+
 	* src/frontends/qbanking/dialogs/qbimporter.cpp: Replace
 	errorneous conversions QString::latin1() by QString::utf8() or
 	QString::local8Bit().

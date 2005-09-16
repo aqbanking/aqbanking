@@ -275,23 +275,27 @@ bool Wizard::doUserDataPage(QWidget *p){
   if (i)
     qs.truncate(i);
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  err=GWEN_InetAddr_SetAddress(addr, qs.latin1());
+  err=GWEN_InetAddr_SetAddress(addr, qs.local8Bit());
   if (!GWEN_Error_IsOk(err)) {
     GWEN_TYPE_UINT32 wid;
 
     wid=AB_Banking_ShowBox(_app->getCInterface(),
                            0,
-                           QWidget::tr("Please Wait").latin1(),
-                           QWidget::tr("Resolving host address...").latin1());
+                           QWidget::tr("Please wait").utf8(),
+                           QWidget::tr("Resolving host address...").utf8());
+    // Note: This is not a cast but rather a call of the
+    // conversion operator "QCString::operator const char * ()
+    // const" that will correctly convert the QCString to the
+    // const char*
     DBG_INFO(0, "Resolving hostname \"%s\"",
-             qs.latin1());
-    err=GWEN_InetAddr_SetName(addr, qs.latin1());
+             (const char*)(qs.local8Bit()));
+    err=GWEN_InetAddr_SetName(addr, qs.local8Bit());
     if (wid)
       AB_Banking_HideBox(_app->getCInterface(), wid);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR(0,
                 "Error resolving hostname \"%s\":",
-                qs.latin1());
+                (const char*)(qs.local8Bit()));
       DBG_ERROR_ERR(0, err);
       QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
@@ -306,11 +310,11 @@ bool Wizard::doUserDataPage(QWidget *p){
   GWEN_InetAddr_free(addr);
 
   /* select or create bank */
-  _bank=AH_HBCI_FindBank(_hbci, 280, bankCodeEdit->text().latin1());
+  _bank=AH_HBCI_FindBank(_hbci, 280, bankCodeEdit->text().utf8());
   if (!_bank) {
     /* create bank */
     DBG_INFO(0, "Creating bank");
-    _bank=AH_Bank_new(_hbci, 280, bankCodeEdit->text().latin1());
+    _bank=AH_Bank_new(_hbci, 280, bankCodeEdit->text().utf8());
     AH_HBCI_AddBank(_hbci, _bank);
     _bankCreated=true;
   }
@@ -319,18 +323,18 @@ bool Wizard::doUserDataPage(QWidget *p){
   }
 
   /* select or create user */
-  _user=AH_Bank_FindUser(_bank, userIdEdit->text().latin1());
+  _user=AH_Bank_FindUser(_bank, userIdEdit->text().utf8());
   if (!_user) {
     AH_BPD_ADDR *ba;
 
     DBG_INFO(0, "Creating user");
-    _user=AH_User_new(_bank, userIdEdit->text().latin1(),
+    _user=AH_User_new(_bank, userIdEdit->text().utf8(),
                       cm,
                       _medium);
     assert(_user);
     ba=AH_BpdAddr_new();
     assert(ba);
-    AH_BpdAddr_SetAddr(ba, getServerAddr().latin1());
+    AH_BpdAddr_SetAddr(ba, getServerAddr().utf8());
     if (cm==AH_CryptMode_Pintan) {
       AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeSSL);
       AH_BpdAddr_SetSuffix(ba, "443");
@@ -386,14 +390,14 @@ bool Wizard::doUserDataPage(QWidget *p){
 
   /* select or create customer */
   if (!customerIdEdit->text().isEmpty())
-    cuid=customerIdEdit->text().latin1();
+    cuid=customerIdEdit->text().utf8();
   else
-    cuid=userIdEdit->text().latin1();
+    cuid=userIdEdit->text().utf8();
   /* always create customer since we just created the user which starts with
    * an empty list of customers. So the customer we are about to create
    * *can* not exist. */
   _customer=AH_Customer_new(_user, cuid);
-  AH_Customer_SetFullName(_customer, nameEdit->text().latin1());
+  AH_Customer_SetFullName(_customer, nameEdit->text().utf8());
 
   /* Set a descriptiveName in the medium. */
   if (!descriptionEdit->text().isEmpty())

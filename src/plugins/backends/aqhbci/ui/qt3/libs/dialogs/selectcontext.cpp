@@ -97,9 +97,9 @@ bool SelectContext::selectContext(std::string &instcode,
       DBG_INFO(0, "Found %d context", i);
       item=new QListViewItem(contextList,
                              QString::number(i),
-                             GWEN_Buffer_GetStart(bankId),
-                             GWEN_Buffer_GetStart(userId),
-                             GWEN_Buffer_GetStart(serverAddr));
+                             QString::fromUtf8(GWEN_Buffer_GetStart(bankId)),
+                             QString::fromUtf8(GWEN_Buffer_GetStart(userId)),
+                             QString::fromUtf8(GWEN_Buffer_GetStart(serverAddr)));
     }
   } // for
   GWEN_Buffer_free(bankId);
@@ -128,17 +128,15 @@ bool SelectContext::selectContext(std::string &instcode,
 
 
 void SelectContext::setValues(){
-  QListViewItem *sel;
-
-  sel=contextList->selectedItem();
-  if (!sel) {
+  QListViewItem *item = contextList->selectedItem();
+  if (!item) {
     // nothing selected
     return;
   }
-  _index=sel->text(0).toInt();
-  _instCode=std::string(sel->text(1).latin1());
-  _userId=std::string(sel->text(2).latin1());
-  _server=std::string(sel->text(3).latin1());
+  _index=item->text(0).toInt();
+  _instCode=std::string(item->text(1).utf8());
+  _userId=std::string(item->text(2).utf8());
+  _server=std::string(item->text(3).utf8());
   emit accept();
 }
 

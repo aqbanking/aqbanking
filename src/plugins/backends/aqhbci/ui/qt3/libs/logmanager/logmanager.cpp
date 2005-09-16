@@ -370,7 +370,8 @@ void LogManager::bankActivated(const QString &qs){
   fileList->clear();
   _logFiles.clear();
   if (!qs.isEmpty() && !qs.isNull())
-    s=qs.latin1();
+    s=qs.local8Bit();
+  // The string qs contains the BLZ, which are only digits anyway. 
   _scanBank(s);
   for (sit=_logFiles.begin(); sit!=_logFiles.end(); sit++) {
     QListViewItem *qv;

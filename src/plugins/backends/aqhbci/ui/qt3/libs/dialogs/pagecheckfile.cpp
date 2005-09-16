@@ -59,7 +59,7 @@ void Wizard::slotCheckFile(){
   typeBuf=GWEN_Buffer_new(0, 64, 0, 1);
   subtypeBuf=GWEN_Buffer_new(0, 64, 0, 1);
   nameBuf=GWEN_Buffer_new(0, fname.length(), 0, 1);
-  GWEN_Buffer_AppendString(nameBuf, fname.latin1());
+  GWEN_Buffer_AppendString(nameBuf, fname.local8Bit());
 
   if (AH_HBCI_CheckMedium(_hbci,
                           GWEN_CryptToken_Device_File,
