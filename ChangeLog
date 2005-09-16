@@ -5,6 +5,10 @@
 
 2005-09-16   Christian Stimming <stimming@tuhh.de>
 
+	* src/frontends/qbanking/dialogs/qbimporter.cpp: Replace
+	errorneous conversions QString::latin1() by QString::utf8() or
+	QString::local8Bit().
+
 	* src/frontends/qbanking/qbanking.cpp: Add static
 	QBanking::isPure7BitAscii() to check QStrings for that. Improve
 	header documentation. Do not yet fix potentially errorneous latin1

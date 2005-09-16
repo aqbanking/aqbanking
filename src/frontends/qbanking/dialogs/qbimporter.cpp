@@ -160,7 +160,7 @@ void QBImporter::save() {
     s=GWEN_DB_GetCharValue(_profile, "name", 0, 0);
     if (s) {
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   _importerName.latin1(),
+			   _importerName.utf8(),
 			   s);
     }
   }
@@ -417,7 +417,7 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
   GWEN_DB_Group_free(_profiles);
 
   _profiles=AB_Banking_GetImExporterProfiles(_app->getCInterface(),
-					     _importerName.latin1());
+					     _importerName.utf8());
   if (_profiles) {
     GWEN_DB_NODE *dbT;
     int count;
@@ -429,7 +429,7 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
     assert(db);
     db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "importers");
     assert(db);
-    lastProfile=GWEN_DB_GetCharValue(db, _importerName.latin1(), 0, 0);
+    lastProfile=GWEN_DB_GetCharValue(db, _importerName.utf8(), 0, 0);
 
     count=0;
     dbT=GWEN_DB_GetFirstGroup(_profiles);
@@ -510,7 +510,7 @@ bool QBImporter::doSelectProfilePage(QWidget *p){
   }
 
   _profile=GWEN_DB_GetGroup(_profiles, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                            qs.latin1());
+                            qs.utf8());
   if (!_profile) {
     QMessageBox::critical(this,
                           tr("Internal Error"),
@@ -653,7 +653,7 @@ bool QBImporter::_checkFileType(const QString &fname){
 	  int rv;
     
 	  // let the importer check the file
-	  rv=AB_ImExporter_CheckFile(importer, fname.latin1());
+	  rv=AB_ImExporter_CheckFile(importer, fname.utf8());
           if (rv==0) {
             qs=QString(tr("File type is \"%1\""))
               .arg(GWEN_PluginDescription_GetName(pd));
@@ -780,12 +780,12 @@ bool QBImporter::_checkFileType(const QString &fname){
         // only one candidate, no need to ask the user here
         s=sl.front();
         importer=AB_Banking_GetImExporter(_app->getCInterface(),
-                                          s.latin1());
+                                          s.utf8());
         assert(importer);
         checkFileTypeLabel->setText(s);
         _importerName=s;
         _importer=AB_Banking_GetImExporter(_app->getCInterface(),
-                                           s.latin1());
+                                           s.utf8());
         assert(_importer);
         GWEN_WaitCallback_Leave();
         return true;
@@ -815,7 +815,7 @@ bool QBImporter::_readFile(const QString &fname){
 
   if (!f.exists()) {
     DBG_NOTICE(0, "File \"%s\" does not exist",
-	       fname.latin1());
+	       (const char*)(fname.local8Bit()));
     qs=QString(tr("File \"%s\" does not exist"))
       .arg(fname);
     QMessageBox::critical(this,
@@ -827,8 +827,12 @@ bool QBImporter::_readFile(const QString &fname){
   else {
     int fd;
 
-    DBG_INFO(0, "Importing file \"%s\"", fname.latin1());
-    fd=open(fname.latin1(), O_RDONLY);
+    DBG_INFO(0, "Importing file \"%s\"", (const char*)(fname.local8Bit()));
+    // Note: This is not a cast but rather a call of the
+    // conversion operator "QCString::operator const char * ()
+    // const" that will correctly convert the QCString to the
+    // const char*
+    fd=open((const char*)(fname.local8Bit()), O_RDONLY);
     if (fd==-1) {
       qs=QString(tr("Could not open file \"%1\": %2"))
 	.arg(fname)
@@ -856,7 +860,7 @@ bool QBImporter::_readFile(const QString &fname){
       GWEN_BufferedIO_free(bio);
       if (rv) {
 	DBG_NOTICE(0, "Error importing file \"%s\"",
-		   fname.latin1());
+		   (const char*)(fname.local8Bit()));
         qs=QString(tr("Error importing file \"%1\"")).arg(fname);
 	QMessageBox::critical(this,
 			      tr("Error"),
@@ -865,7 +869,7 @@ bool QBImporter::_readFile(const QString &fname){
 	return false;
       }
       DBG_NOTICE(0, "File \"%s\" imported",
-		 fname.latin1());
+		 (const char*)(fname.local8Bit()));
     } // if open succeeded
   } // if file exists
 
