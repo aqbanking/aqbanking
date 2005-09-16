@@ -191,8 +191,7 @@ void QBSelectBank::slotUpdate() {
               if (onl.isEmpty())
                 onl=qs;
               else if (-1==onl.find(qs)) {
-                onl+=",";
-                onl+=qs;
+                onl += "," + qs;
               }
             }
             sv=AB_BankInfoService_List_Next(sv);
@@ -350,7 +349,7 @@ void QBSelectBank::accept() {
     QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No Bank Selected."),
-                          tr("Dismiss"),0,0,0);
+			  QMessageBox::Retry,QMessageBox::NoButton);
   }
 }
 

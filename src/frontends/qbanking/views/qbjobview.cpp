@@ -131,7 +131,7 @@ void QBJobView::slotExecute(){
     QMessageBox::warning(this,
                          tr("No Jobs"),
                          tr("There are no jobs in the queue."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
@@ -165,7 +165,7 @@ void QBJobView::slotDequeue(){
     QMessageBox::warning(this,
 			 tr("No Selection"),
                          tr("Please select a job first."),
-			 tr("Dismiss"), 0, 0, 0);
+			 QMessageBox::Retry,QMessageBox::NoButton);
     return;
   }
 
@@ -173,7 +173,7 @@ void QBJobView::slotDequeue(){
 			   tr("Delete job"),
 			   tr("Do you really want to delete the "
 			      "selected job(s)?"),
-			   tr("Yes"), tr("No"), 0, 0)!=0)
+			   QMessageBox::Yes,QMessageBox::No)!=0)
     return;
 
   for (jit=jl.begin(); jit!=jl.end(); jit++) {

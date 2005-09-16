@@ -203,14 +203,14 @@ void QBankingSettings::slotBackendEnable(){
       QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not activate this backend.\n"),
-                            tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
     }
     else {
       QMessageBox::information(this,
                                tr("Backend Activated"),
                                tr("This backend has successfully been "
                                   "activated.\n"),
-                               tr("Ok"),0,0,0);
+                               QMessageBox::Ok);
     }
   }
 }
@@ -238,7 +238,7 @@ void QBankingSettings::slotBackendDisable(){
                                 "supported by that backend.\n"
                                 "\n"
                                 "Do you still want me to disable it?"),
-                             tr("Yes"),tr("No"),0,0)!=0)
+			     QMessageBox::Yes,QMessageBox::No)!=0)
       return;
 
     rv=_banking->deactivateProvider(GWEN_PluginDescription_GetName(pd));
@@ -248,7 +248,7 @@ void QBankingSettings::slotBackendDisable(){
       QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not deactivate this backend.\n"),
-                            tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
     }
   }
 }
@@ -287,7 +287,7 @@ void QBankingSettings::slotBackendSetup(){
                                "not installed."
                                "</p>"
                                "</qt>"),
-                            tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_Buffer_free(pbuf);
       return;
     }
@@ -314,7 +314,7 @@ void QBankingSettings::slotBackendSetup(){
                                  "overwritten upon shutdown of the program."
                                  "</p>"
                                  "</qt>"),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
@@ -330,7 +330,7 @@ void QBankingSettings::slotBackendSetup(){
                                "not be started."
                                "</p>"
                                "</qt>"),
-                            tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       if (wasActive)
         // resume provider if we suspended it
         AB_Banking_ResumeProvider(_banking->getCInterface(),
@@ -366,7 +366,7 @@ void QBankingSettings::slotBackendSetup(){
                                  "Could not resume the backend."
                                  "</p>"
                                  "</qt>"),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
@@ -384,7 +384,7 @@ void QBankingSettings::slotAccountMap(){
     QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No account selected.\n"),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Retry,QMessageBox::NoButton);
   }
   a=al.front();
   _banking->mapAccount(a);

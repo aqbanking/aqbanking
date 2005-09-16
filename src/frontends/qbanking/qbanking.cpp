@@ -528,7 +528,7 @@ AB_ACCOUNT *QBanking::_getAccount(const char *accountId){
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QWidget::tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return 0;
   }
 
@@ -567,7 +567,7 @@ bool QBanking::requestBalance(const char *accountId){
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QWidget::tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -606,7 +606,7 @@ bool QBanking::requestTransactions(const char *accountId,
 				      "with\n"
 				      "the backend which handles "
 				      "this account.\n"),
-			  QWidget::tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -699,7 +699,7 @@ bool QBanking::requestTransactions(const char *accountId,
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QWidget::tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
   else {
@@ -838,7 +838,7 @@ int QBanking::init(){
                                       "</p>"
                                       "</qt>"
                                      ),
-                          QWidget::tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     delete _simpleCallback;
     _simpleCallback=0;
     return false;
@@ -859,7 +859,7 @@ int QBanking::init(){
                                       "</p>"
                                       "</qt>"
                                      ),
-                          QWidget::tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     delete _fastCallback;
     _fastCallback=0;
     return false;

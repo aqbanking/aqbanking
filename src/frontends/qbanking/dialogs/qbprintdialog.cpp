@@ -504,7 +504,7 @@ void QBPrintDialog::slotPrint(){
     QMessageBox::critical(this,
                           tr("Print"),
                           tr("Printing aborted."),
-                          tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
@@ -530,7 +530,7 @@ void QBPrintDialog::slotPrint(){
                               tr("Print"),
                               tr("Text does not fit on the page.\n"
                                  "Do you want to print it anyway?"),
-                              tr("Yes"),tr("Abort"),0,0)!=0)
+			      QMessageBox::Yes,QMessageBox::Abort)!=0)
       return;
   }
 
@@ -560,7 +560,7 @@ void QBPrintDialog::slotPrint(){
       if (QMessageBox::critical(this,
                                 tr("Aborted"),
                                 tr("Do you really want to abort?"),
-                                tr("Yes"),tr("No"),0,0)!=0) {
+				QMessageBox::Yes,QMessageBox::No)!=0) {
         GWEN_WaitCallback_Leave();
         return;
       }

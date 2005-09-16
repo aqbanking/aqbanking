@@ -175,7 +175,7 @@ bool QBProgress::_handleTime(){
       mins=dt/60;
       secs=dt%60;
       QString label = QString("%1:%2%3 min").arg(mins).	
-	  arg(secs<10?"0":"").arg(secs);
+	  arg(secs<10?QString("0"):QString("")).arg(secs);
       // Replacement for: 
       // snprintf(buf, sizeof(buf), "%d:%02d min", mins, secs);
       timeLabel->setText(label);
@@ -203,7 +203,7 @@ int QBProgress::advance(GWEN_TYPE_UINT32 progress){
   
           qs=QString::number(progress);
           if (!_units.isEmpty()) {
-            qs+=" ";
+            qs+=QString(" ");
             qs+=_units;
           }
           progressUnitsLabel->setText(qs);
@@ -238,24 +238,18 @@ int QBProgress::log(AB_BANKING_LOGLEVEL level,
 
   _handleTime();
   tmp+=_logtext;
-  tmp+="<tr><td>";
+  tmp+=QString("<tr><td>");
   d=QTime::currentTime();
   tmp+=d.toString();
-  tmp+="</td><td>";
+  tmp+=QString("</td><td>");
   if (level<=AB_Banking_LogLevelError) {
-    tmp+="<font color=\"red\">";
-    tmp+=text;
-    tmp+="</font>";
+    tmp+=QString("<font color=\"red\">%1</font>").arg(text);
   }
   else if (level==AB_Banking_LogLevelWarn) {
-    tmp+="<font color=\"blue\">";
-    tmp+=text;
-    tmp+="</font>";
+    tmp+=QString("<font color=\"blue\">%1</font>").arg(text);
   }
   else if (level==AB_Banking_LogLevelInfo) {
-    tmp+="<font color=\"green\">";
-    tmp+=text;
-    tmp+="</font>";
+    tmp+=QString("<font color=\"green\">%1</font>").arg(text);
   }
   else if (level>=AB_Banking_LogLevelDebug) {
     if (_aborted)
@@ -282,7 +276,7 @@ int QBProgress::log(AB_BANKING_LOGLEVEL level,
 	(Qt::WDestructiveClose);
   }
 
-  tmp+="</td></tr>";
+  tmp+=QString("</td></tr>");
   _logtext=tmp;
   tmp="<qt><table>"+_logtext+"</table></qt>";
   logWidget->setText(tmp);
@@ -329,7 +323,7 @@ void QBProgress::abort() {
   abortButton->setEnabled(false);
   //closeButton->setEnabled(true);
   closeButton->setFocus();
-  log(AB_Banking_LogLevelWarn, "User aborted");
+  log(AB_Banking_LogLevelWarn, tr("User aborted"));
 }
 
 

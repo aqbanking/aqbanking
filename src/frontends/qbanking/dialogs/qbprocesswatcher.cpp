@@ -92,7 +92,7 @@ void QBProcessWatcher::slotProcessFinished() {
                                      "</p>"
                                      "</qt>"))
                           .arg(rv),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     QDialog::reject();
   }
   else

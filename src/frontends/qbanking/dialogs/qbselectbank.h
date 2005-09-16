@@ -47,12 +47,12 @@ public:
 
   static AB_BANKINFO *selectBank(QBanking *kb,
                                  QWidget* parent=0,
-                                 const QString &title="",
-                                 const QString &country="de",
-                                 const QString &bankCode="",
-                                 const QString &swiftCode="",
-                                 const QString &bankName="",
-                                 const QString &location="");
+                                 const QString &title=QString(""),
+                                 const QString &country=QString("de"),
+                                 const QString &bankCode=QString(""),
+                                 const QString &swiftCode=QString(""),
+                                 const QString &bankName=QString(""),
+                                 const QString &location=QString(""));
 
 
 public slots:

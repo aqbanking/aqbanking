@@ -195,7 +195,7 @@ bool QBImporter::_updateImporterList() {
 			     "</p>"
 			     "</qt>"
 			    ),
-			  tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
   return true;
@@ -203,11 +203,11 @@ bool QBImporter::_updateImporterList() {
 
 
 void QBImporter::slotSelectFile(){
-  QString s=QFileDialog::getOpenFileName(QString::null,
-                                         "All files (*.*)",
-                                         this,
-                                         "OpenFile",
-                                         "Choose a file");
+  QString s = QFileDialog::getOpenFileName(QString::null,
+					   tr("All files (*.*)"),
+					   this,
+					   "OpenFile",
+					   tr("Choose a file"));
   if (!s.isEmpty())
     selectFileEdit->setText(s);
 }
@@ -440,8 +440,8 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
 
       n=GWEN_DB_GetCharValue(dbT, "name", 0, 0);
       d=GWEN_DB_GetCharValue(dbT, "shortDescr", 0, "");
-      qv->setText(0, n);
-      qv->setText(1, d);
+      qv->setText(0, QString::fromUtf8(n));
+      qv->setText(1, QString::fromUtf8(d));
       count++;
       if (lastProfile) {
 	if (strcasecmp(lastProfile, n)==0)
@@ -467,7 +467,7 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
                            "Please select another one or abort."
                            "</qt>"
                           ),
-                        tr("Dismiss"), 0, 0, 0);
+			QMessageBox::Retry,QMessageBox::NoButton);
   return false;
 }
 
@@ -505,7 +505,7 @@ bool QBImporter::doSelectProfilePage(QWidget *p){
     QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("Please select the profile you want to use."),
-                          tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Retry,QMessageBox::NoButton);
     return false;
   }
 
@@ -524,7 +524,7 @@ bool QBImporter::doSelectProfilePage(QWidget *p){
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -593,7 +593,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
     QMessageBox::critical(this,
                           tr("Error"),
                           tr("Error importing data into the application."),
-			  tr("Dismiss"), 0, 0, 0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
 
     qs=tr("Error importing files.");
@@ -638,14 +638,14 @@ bool QBImporter::_checkFileType(const QString &fname){
     if (pdtype) {
       if (strcasecmp(pdtype, "imexporter")==0) {
         qs=QString(tr("Trying type \"%1\""))
-          .arg(GWEN_PluginDescription_GetName(pd));
+          .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
         GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                               QBanking::QStringToUtf8String(qs).c_str());
         importer=AB_Banking_GetImExporter(_app->getCInterface(),
 					  GWEN_PluginDescription_GetName(pd));
         if (!importer) {
           qs=QString(tr("Type \"%1\" is not available"))
-            .arg(GWEN_PluginDescription_GetName(pd));
+            .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
           GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                                 QBanking::QStringToUtf8String(qs).c_str());
 	}
@@ -656,21 +656,21 @@ bool QBImporter::_checkFileType(const QString &fname){
 	  rv=AB_ImExporter_CheckFile(importer, fname.utf8());
           if (rv==0) {
             qs=QString(tr("File type is \"%1\""))
-              .arg(GWEN_PluginDescription_GetName(pd));
+              .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                                   QBanking::QStringToUtf8String(qs).c_str());
             break;
           }
           else if (rv==AB_ERROR_UNKNOWN) {
             qs=QString(tr("File type might be \"%1\", checking further"))
-              .arg(GWEN_PluginDescription_GetName(pd));
+              .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                                   QBanking::QStringToUtf8String(qs).c_str());
             possibles.push_back(GWEN_PluginDescription_GetName(pd));
           }
           else {
             qs=QString(tr("File is not of type \"%1\""))
-              .arg(GWEN_PluginDescription_GetName(pd));
+              .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelDebug,
                                   QBanking::QStringToUtf8String(qs).c_str());
 	  }
@@ -693,7 +693,7 @@ bool QBImporter::_checkFileType(const QString &fname){
                                "</p>"
                                "</qt>"
                               ),
-                            tr("Dismiss"), 0, 0, 0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_WaitCallback_Leave();
       return false;
     }
@@ -706,7 +706,7 @@ bool QBImporter::_checkFileType(const QString &fname){
       _importer=AB_Banking_GetImExporter(_app->getCInterface(),
                                          s.c_str());
       assert(_importer);
-      checkFileTypeLabel->setText(s.c_str());
+      checkFileTypeLabel->setText(QString::fromUtf8(s.c_str()));
       _importerName=s.c_str();
       GWEN_WaitCallback_Leave();
       return true;
@@ -794,7 +794,7 @@ bool QBImporter::_checkFileType(const QString &fname){
   } // if no direct hit
 
   GWEN_WaitCallback_Leave();
-  checkFileTypeLabel->setText(GWEN_PluginDescription_GetName(pd));
+  checkFileTypeLabel->setText(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
   _importerName=GWEN_PluginDescription_GetName(pd);
   _importer=importer;
   return true;
@@ -816,12 +816,12 @@ bool QBImporter::_readFile(const QString &fname){
   if (!f.exists()) {
     DBG_NOTICE(0, "File \"%s\" does not exist",
 	       (const char*)(fname.local8Bit()));
-    qs=QString(tr("File \"%s\" does not exist"))
+    qs=QString(tr("File \"%1\" does not exist"))
       .arg(fname);
     QMessageBox::critical(this,
-			  tr("Error"),
+			  tr("File not found"),
 			  qs,
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
   else {
@@ -836,11 +836,11 @@ bool QBImporter::_readFile(const QString &fname){
     if (fd==-1) {
       qs=QString(tr("Could not open file \"%1\": %2"))
 	.arg(fname)
-	.arg(strerror(errno));
+	.arg(QString(strerror(errno)));
       QMessageBox::critical(this,
 			    tr("Error"),
 			    qs,
-			    tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       return false;
     }
     else {
@@ -865,7 +865,7 @@ bool QBImporter::_readFile(const QString &fname){
 	QMessageBox::critical(this,
 			      tr("Error"),
 			      qs,
-			      tr("Dismiss"),0,0,0);
+			      QMessageBox::Ok,QMessageBox::NoButton);
 	return false;
       }
       DBG_NOTICE(0, "File \"%s\" imported",

@@ -85,13 +85,13 @@ bool QBProgressCallback::_checkStart(bool force) {
       _progressWidget=new QBProgress(0,
                                      _progressType,
                                      QWidget::tr("Waiting..."),
-                                     getText(),
-                                     getUnits(),
+                                     QString::fromUtf8(getText()),
+                                     QString::fromUtf8(getUnits()),
                                      0,
                                      "ProgressWidget",
                                      Qt::WType_Dialog | Qt::WShowModal);
-      _progressWidget->setProgressText(getText());
-      _progressWidget->setProgressUnits(getUnits());
+      _progressWidget->setProgressText(QString::fromUtf8(getText()));
+      _progressWidget->setProgressUnits(QString::fromUtf8(getUnits()));
       _progressWidget->start(total32);
       _progressWidget->show();
       _started=true;
@@ -147,7 +147,7 @@ void QBProgressCallback::log(unsigned int level,
       break;
     }
 
-    _progressWidget->log(nl, s);
+    _progressWidget->log(nl, QString::fromUtf8(s));
   }
 }
 

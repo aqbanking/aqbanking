@@ -5,6 +5,16 @@
 
 2005-09-16   Christian Stimming <stimming@tuhh.de>
 
+	* src/frontends/qbanking/qbanking.{h,cpp} and many more in
+	qbanking: Replace implicit conversions of const char* into QString
+	by explicit conversions, using QString::fromUtf8() where
+	appropriate, because the implicit conversions are always using
+	QString::fromLatin1 which is not correct for strings that are
+	retrieved from aqbanking. These problems can be identified by
+	defining QT_NO_CAST_ASCII in config.h (not to be confused with the
+	much more important QT_NO_ASCII_CAST) -- maybe we should do that
+	sometime in the future.
+
 	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.cpp,
 	pagecheckfile.cpp, pageservercert.cpp, pageuserdata.cpp,
 	selectcontext.cpp: Replace errorneous conversions

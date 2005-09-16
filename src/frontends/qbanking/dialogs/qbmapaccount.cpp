@@ -52,11 +52,11 @@ QBMapAccount::QBMapAccount(QBanking *kb,
   _accountList->setAllColumnsShowFocus(true);
 
   if (bankCode)
-    bankCodeEdit->setText(bankCode);
+    bankCodeEdit->setText(QString::fromUtf8(bankCode));
   else
     bankCodeEdit->setEnabled(false);
   if (accountId)
-    accountIdEdit->setText(accountId);
+    accountIdEdit->setText(QString::fromUtf8(accountId));
   else
     accountIdEdit->setEnabled(false);
 
