@@ -467,7 +467,8 @@ void LogManager::saveFile() {
                                    "</p>"
                                    "</qt>"
                                   ).arg(filename),
-                                tr("Yes"),tr("No"),tr("Abort"),0);
+                                QMessageBox::Yes,QMessageBox::No,
+				QMessageBox::Abort);
         if (rv==2)
           return;
         else if (rv==1)

@@ -238,7 +238,7 @@ bool Wizard::doUserDataPage(QWidget *p){
                                  "<p>"
                                  "Do you want to use it anyway?"
                                  "</p>"),
-                              tr("Yes"),tr("No, let me edit"),0,0)!=0)
+                              tr("Yes"),tr("No, let me edit"))!=0)
       return false;
   }
 
@@ -260,8 +260,7 @@ bool Wizard::doUserDataPage(QWidget *p){
                                 "</p>"
                                 "</qt>"
                                ),
-                             tr("Yes"),
-                             tr("No"),0,0)!=0) {
+                             QMessageBox::Yes,QMessageBox::No)!=0) {
       customerIdEdit->setFocus();
       return false;
     }

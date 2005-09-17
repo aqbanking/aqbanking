@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-09-10 11:08+0200\n"
-"PO-Revision-Date: 2005-09-10 11:13+0200\n"
+"POT-Creation-Date: 2005-09-17 09:45+0200\n"
+"PO-Revision-Date: 2005-09-17 09:47+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,9 +22,8 @@ msgstr ""
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1343
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:594
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:686
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:822
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:837
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:862
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:841
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:866
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:246
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:398
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:444
@@ -60,14 +59,12 @@ msgstr "Fortsetzen"
 #: src/plugins/backends/aqgeldkarte/plugin/provider.c:984
 #: src/plugins/backends/aqgeldkarte/plugin/provider.c:1060
 #: src/frontends/qbanking/widgets/qbprogress.ui.cpp:94
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:533
 #: src/frontends/qbanking/dialogs/qbmapaccount.ui.cpp:108
 #: src/frontends/qbanking/dialogs/qbprintdialog.ui.cpp:100
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagecreatekeys.cpp:87
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:81
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:160
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:90
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:469
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.ui.cpp:369
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:167
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/editaccount.ui.cpp:185
@@ -113,33 +110,6 @@ msgstr ""
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1301
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1336
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1352
-#: src/frontends/qbanking/qbanking.cpp:523
-#: src/frontends/qbanking/qbanking.cpp:562
-#: src/frontends/qbanking/qbanking.cpp:601
-#: src/frontends/qbanking/qbanking.cpp:694
-#: src/frontends/qbanking/qbanking.cpp:833
-#: src/frontends/qbanking/qbanking.cpp:854
-#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:95
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:206
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:251
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:290
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:317
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:333
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:369
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:387
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:198
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:470
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:508
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:527
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:596
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:696
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:824
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:839
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:864
-#: src/frontends/qbanking/dialogs/qbselectbank.cpp:353
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:507
-#: src/frontends/qbanking/views/qbjobview.cpp:134
-#: src/frontends/qbanking/views/qbjobview.cpp:168
 #: src/frontends/kbanking/dialogs/settings.cpp:206
 #: src/frontends/kbanking/dialogs/settings.cpp:251
 #: src/frontends/kbanking/dialogs/settings.cpp:290
@@ -175,15 +145,15 @@ msgstr ""
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageimport.cpp:110
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageiniletter.cpp:88
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageiniletter.cpp:198
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:138
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:149
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageselectfile.cpp:117
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageselectfile.cpp:134
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageselectfile.cpp:142
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagesendkeys.cpp:86
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:148
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:203
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:301
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:365
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:304
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:368
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:281
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:321
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:351
@@ -195,8 +165,8 @@ msgstr ""
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.cpp:114
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:87
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:355
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:486
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:505
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:488
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:507
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/editaccount.cpp:188
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:194
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:217
@@ -215,8 +185,8 @@ msgstr "Schließen"
 
 #: src/libs/aqbanking/banking.c:4415 src/libs/aqbanking/banking.c:4482
 #: src/libs/aqbanking/banking.c:4543 src/libs/aqbanking/banking.c:4603
-#: src/frontends/qbanking/qbanking.cpp:555
-#: src/frontends/qbanking/qbanking.cpp:687
+#: src/frontends/qbanking/qbanking.cpp:563
+#: src/frontends/qbanking/qbanking.cpp:695
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
@@ -338,21 +308,12 @@ msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
 #: src/libs/aqbanking/banking.c:5689 src/frontends/cbanking/cbanking.c:429
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:241
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:533
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:563
-#: src/frontends/qbanking/views/qbjobview.cpp:176
-#: src/frontends/kbanking/dialogs/settings.cpp:241
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:275
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:394
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:84
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:506
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagecreatekeys.cpp:87
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:157
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:241
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:263
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:202
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4554
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:469
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:224
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:224
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:229
@@ -360,19 +321,11 @@ msgid "Yes"
 msgstr "Ja"
 
 #: src/libs/aqbanking/banking.c:5689 src/frontends/cbanking/cbanking.c:430
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:241
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:563
-#: src/frontends/qbanking/views/qbjobview.cpp:176
-#: src/frontends/kbanking/dialogs/settings.cpp:241
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:275
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:394
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:86
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.cpp:506
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagecreatekeys.cpp:87
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:157
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:264
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:203
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard.ui.cpp:4556
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:469
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:224
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:224
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:229
@@ -2767,8 +2720,6 @@ msgstr "Diskette einlegen"
 
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1162
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1226
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:213
-#: src/frontends/kbanking/dialogs/settings.cpp:213
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:80
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.ui.cpp:159
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/versionpicker.ui.cpp:89
@@ -2782,6 +2733,7 @@ msgstr "Ok"
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1169
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1237
 #: src/plugins/backends/aqgeldkarte/plugin/provider.c:831
+#: src/frontends/qbanking/widgets/qbprogress.cpp:326
 msgid "User aborted"
 msgstr "Abbruch durch den Benutzer."
 
@@ -2806,7 +2758,7 @@ msgstr "Prüfe ob die Diskette leer ist"
 
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1213
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1321
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:459
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:460
 msgid "Warning"
 msgstr "Warnung"
 
@@ -3097,11 +3049,11 @@ msgstr ""
 msgid "Adding account %s to bank %s"
 msgstr "Füge Konto %s zur Bank %s hinzu"
 
-#: src/frontends/qbanking/qbanking.cpp:515
+#: src/frontends/qbanking/qbanking.cpp:523
 msgid "Account Not Mapped"
 msgstr "Konto nicht zugewiesen"
 
-#: src/frontends/qbanking/qbanking.cpp:516
+#: src/frontends/qbanking/qbanking.cpp:524
 msgid ""
 "<qt><p>The given application account has not been mapped to banking accounts."
 "</p></qt>"
@@ -3109,17 +3061,17 @@ msgstr ""
 "<qt><p>Das angegebene Anwendungskonto wurde noch keinem Onlinekonto "
 "zugeordnet.</p></qt>"
 
-#: src/frontends/qbanking/qbanking.cpp:556
-#: src/frontends/qbanking/qbanking.cpp:688
+#: src/frontends/qbanking/qbanking.cpp:564
+#: src/frontends/qbanking/qbanking.cpp:696
 msgid "<qt><p>Unable to enqueue your request.</p></qt>"
 msgstr ""
 "<qt><p>Ihr Auftrag konnte nicht in den Ausgangskorb gestellt werden.</p></qt>"
 
-#: src/frontends/qbanking/qbanking.cpp:596
+#: src/frontends/qbanking/qbanking.cpp:604
 msgid "Job Not Available"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/frontends/qbanking/qbanking.cpp:597
+#: src/frontends/qbanking/qbanking.cpp:605
 msgid ""
 "The job you requested is not availablewith\n"
 "the backend which handles this account.\n"
@@ -3127,17 +3079,17 @@ msgstr ""
 "Der angeforderte Auftrag ist mit dem für\n"
 "dieses Konto zuständigen Modul nicht verfügbar.\n"
 
-#: src/frontends/qbanking/qbanking.cpp:715
+#: src/frontends/qbanking/qbanking.cpp:723
 msgid "Jobs added to outbox"
 msgstr "Aufträge in den Ausgangskorb gestellt"
 
-#: src/frontends/qbanking/qbanking.cpp:821
-#: src/frontends/qbanking/qbanking.cpp:842
+#: src/frontends/qbanking/qbanking.cpp:829
+#: src/frontends/qbanking/qbanking.cpp:850
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:516
 msgid "Internal Error"
 msgstr "Interner Fehler"
 
-#: src/frontends/qbanking/qbanking.cpp:822
+#: src/frontends/qbanking/qbanking.cpp:830
 msgid ""
 "<qt><p>Could not register SimpleCallback.</p><p>This is an internal error, "
 "please report it to <b>martin@libchipcard.de</b></p></qt>"
@@ -3145,7 +3097,7 @@ msgstr ""
 "<qt><p>Could not register SimpleCallback.</p><p>This is an internal\n"
 "error, please report it to <b>martin@libchipcard.de</b></p></qt>"
 
-#: src/frontends/qbanking/qbanking.cpp:843
+#: src/frontends/qbanking/qbanking.cpp:851
 msgid ""
 "<qt><p>Could not register FastCallback.</p><p>This is an internal error, "
 "please report it to <b>martin@libchipcard.de</b></p></qt>"
@@ -3267,6 +3219,8 @@ msgstr "Interne Umbuchung"
 #: src/frontends/qbanking/widgets/qbjoblist.cpp:139
 #: src/frontends/qbanking/widgets/qbjoblist.cpp:147
 #: src/frontends/qbanking/widgets/qbjoblist.cpp:174
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:80
+#: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:94
 #: src/frontends/kbanking/widgets/kbjoblist.cpp:99
 #: src/frontends/kbanking/widgets/kbjoblist.cpp:109
 #: src/frontends/kbanking/widgets/kbjoblist.cpp:117
@@ -3352,22 +3306,22 @@ msgstr "Status"
 msgid "Application"
 msgstr "Anwendung"
 
-#: src/frontends/qbanking/widgets/qbinputbox.cpp:143
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:141
 msgid "&Input"
 msgstr "Eingabe"
 
 #. add label
-#: src/frontends/qbanking/widgets/qbinputbox.cpp:161
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:159
 msgid "&Confirm"
 msgstr "Wiederholung"
 
-#: src/frontends/qbanking/widgets/qbinputbox.cpp:174
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:172
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:148
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:185
 msgid "&Ok"
 msgstr "Ok"
 
-#: src/frontends/qbanking/widgets/qbinputbox.cpp:175
+#: src/frontends/qbanking/widgets/qbinputbox.cpp:173
 msgid "&Abort"
 msgstr "Abbruch"
 
@@ -3410,7 +3364,7 @@ msgstr "Autor"
 msgid "Description"
 msgstr "Beschreibung"
 
-#: src/frontends/qbanking/widgets/qbprogress.cpp:306
+#: src/frontends/qbanking/widgets/qbprogress.cpp:300
 msgid "Finished. You may close this window."
 msgstr "Abgeschlossen. Sie können dieses Fenster nun schließen."
 
@@ -3560,7 +3514,7 @@ msgstr "<qt><p>Das Backend konnte nicht wieder aktiviert werden.</p></qt>"
 
 #: src/frontends/qbanking/dialogs/qbsettings.cpp:385
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:506
-#: src/frontends/qbanking/dialogs/qbselectbank.cpp:351
+#: src/frontends/qbanking/dialogs/qbselectbank.cpp:350
 #: src/frontends/kbanking/dialogs/settings.cpp:385
 msgid "Selection Error"
 msgstr "Auswahl-Fehler"
@@ -3577,6 +3531,10 @@ msgstr "Keine Importer"
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:192
 msgid "<qt><p>There are currently no importers installed.</p></qt>"
 msgstr "<qt><p>Derzeit sind keine Import-Module installiert.</p></qt>"
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:210
+msgid "Choose a file to import"
+msgstr "Wählen Sie eine Datei zum importieren"
 
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:459
 msgid "No Profiles"
@@ -3671,23 +3629,26 @@ msgid "Possible Importers"
 msgstr "Mögliche Import-Module"
 
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:819
-#, c-format
-msgid "File \"%s\" does not exist"
-msgstr "Die Datei \"%s\" existiert nicht"
+msgid "File \"%1\" does not exist"
+msgstr "Die Datei \"%1\" existiert nicht"
 
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:833
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:822
+msgid "File not found"
+msgstr "Datei nicht gefunden"
+
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:837
 msgid "Could not open file \"%1\": %2"
 msgstr "Die Datei \"%1\" konnte nicht geöffnet werden: %2"
 
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:860
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:864
 msgid "Error importing file \"%1\""
 msgstr "Fehler beim Importieren der Datei \"%1\""
 
-#: src/frontends/qbanking/dialogs/qbimporter.cpp:873
+#: src/frontends/qbanking/dialogs/qbimporter.cpp:877
 msgid "Reading files completed."
 msgstr "Alle Dateien eingelesen."
 
-#: src/frontends/qbanking/dialogs/qbselectbank.cpp:352
+#: src/frontends/qbanking/dialogs/qbselectbank.cpp:351
 msgid "No Bank Selected."
 msgstr "Keine Bank ausgewählt"
 
@@ -4290,7 +4251,7 @@ msgstr ""
 "hinzu und kommen dann an diesen Punkt zurück.</p></qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editaccount.cpp:213
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:555
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:558
 #: src/plugins/backends/aqhbci/ui/qt3/qt3_wizard/qt3_wizard.cpp:74
 msgid "Select a bank"
 msgstr "Wählen Sie eine Bank"
@@ -4709,11 +4670,11 @@ msgstr "Der Ini-Brief passt nicht auf eine Seite."
 msgid "Enter existing or new medium file name"
 msgstr "Dateinamen für existierende oder neue Schlüsseldatei"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:130
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:141
 msgid "Medium not found"
 msgstr "Medium nicht gefunden"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:131
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:142
 msgid ""
 "<qt><p>The specified file does not exist. </p><p>If you want to import a "
 "file, the file needs to exist. Please go back to the page \"Import or Create"
@@ -4724,11 +4685,11 @@ msgstr ""
 "zur Seite \"Importieren oder Erstellen\" und wählen Sie \"Neu erstellen\", "
 "wenn Sie ein neues Medium erstellen wollen.</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:151
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:162
 msgid "File already exists"
 msgstr "Datei existiert bereits"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:152
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pagemedium.cpp:163
 msgid ""
 "<qt><p>The specified file already exists. However, you chose to create a new "
 "medium. In that case the existing file will be overwritten and all old data "
@@ -4811,22 +4772,22 @@ msgstr ""
 "angegeben hat oder nicht.</p><p>Sind Sie sicher, daß keine Kundennummer "
 "angegeben werden soll?</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:284
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:283
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:307
-msgid "Please Wait"
+msgid "Please wait"
 msgstr "Bitte warten"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:285
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:284
 msgid "Resolving host address..."
 msgstr "Server-Adresse wird gesucht..."
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:297
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:300
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:277
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageservercert.cpp:316
 msgid "Network Error"
 msgstr "Netzwerkfehler"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:298
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:301
 msgid ""
 "Could not resolve the address %1.\n"
 "Maybe there is a typo?"
@@ -4834,11 +4795,11 @@ msgstr ""
 "Server-Adresse %1 konnte nicht gefunden werden.\n"
 "Liegt vielleicht ein Tippfehler vor?"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:350
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:353
 msgid "User Exists"
 msgstr "Benutzer existiert bereits"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:351
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/pageuserdata.cpp:354
 msgid ""
 "<qt><p>The user already exists.</p><p>This setup is not necessary for users "
 "which have already been set up.</p><p>Please press <i>cancel</i> after "
@@ -6557,11 +6518,11 @@ msgstr ""
 "liegt ein Fehler in der Installation von AqHBCI vor. Bitte kontrollieren Sie "
 "die Installation des AqHBCI-Pakets.</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:442
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:443
 msgid "Enter file name"
 msgstr "Dateinamen eingeben"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:460
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:461
 msgid ""
 "<qt><p>File \"%1\" already exists. </p><p>Do you want me to overwrite it?</"
 "p></qt>"
@@ -6569,16 +6530,16 @@ msgstr ""
 "<qt><p>Die Datei \"%1\" existiert bereits. </p><p>Soll sie überschrieben "
 "werden?</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:479
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:498
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:481
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:500
 msgid "File Error"
 msgstr "Dateifehler"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:480
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:482
 msgid "<qt><p>Could not create file \"%1\"</p></qt>"
 msgstr "<qt>Konnte Datei \"%1\" nicht erstellen.</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:499
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:501
 msgid "<qt><p>Could not write to file \"%1\"</p></qt>"
 msgstr "<qt>Konnte in Datei \"%1\" nicht schreiben.</qt>"
 

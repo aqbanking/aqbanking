@@ -81,9 +81,9 @@ void QBPluginDescrListViewItem::_populate() {
   setText(i++,tmp);
 
   if (GWEN_PluginDescription_IsActive(_descr))
-    setText(i++, QWidget::tr("yes"));
+    setText(i++, QWidget::tr("Yes"));
   else
-    setText(i++, QWidget::tr("no"));
+    setText(i++, QWidget::tr("No"));
 
   // author
   setText(i++,QString::fromUtf8(GWEN_PluginDescription_GetAuthor(_descr)));

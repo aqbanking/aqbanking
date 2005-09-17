@@ -272,7 +272,7 @@ void HBCISettings::slotDelUser(){
       if (QMessageBox::question(this,
                                 tr("Delete User"),
                                 "<qt>"+tr("Are you sure you want to delete the selected user?")+"</qt>",
-                                tr("Yes"),tr("No"), 0, 0)==0) {
+                                QMessageBox::Yes,QMessageBox::No)==0) {
 	AH_Bank_RemoveUser(AH_User_GetBank(u), u);
 	updateLists();
       }
@@ -391,7 +391,7 @@ void HBCISettings::slotDelAccount(){
                                    "this account?"
                                    "</qt>"
                                   ),
-                                tr("Yes"),tr("No"), 0, 0)!=0)
+                                QMessageBox::Yes,QMessageBox::No)!=0)
         return;
       if (AH_Bank_RemoveAccount(AH_Account_GetBank(a), a)) {
         QMessageBox::critical(this,

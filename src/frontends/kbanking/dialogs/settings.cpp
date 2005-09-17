@@ -210,7 +210,7 @@ void KBankingSettings::slotBackendEnable(){
                                tr("Backend Activated"),
                                tr("This backend has successfully been "
                                   "activated.\n"),
-                               tr("Ok"),0,0,0);
+                               QMessageBox::Ok);
     }
   }
 }
@@ -238,7 +238,7 @@ void KBankingSettings::slotBackendDisable(){
                                 "supported by that backend.\n"
                                 "\n"
                                 "Do you still want me to disable it?"),
-                             tr("Yes"),tr("No"),0,0)!=0)
+                             QMessageBox::Yes,QMessageBox::No)!=0)
       return;
 
     rv=_banking->deactivateProvider(GWEN_PluginDescription_GetName(pd));

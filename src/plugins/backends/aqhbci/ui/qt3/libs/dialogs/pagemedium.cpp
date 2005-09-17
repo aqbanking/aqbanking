@@ -165,7 +165,7 @@ bool Wizard::doMediumPage(QWidget *p){
 				    "all old data in that file will be lost.</p><p>Do you want to "
 				    "overwrite the existing file?</p></qt>"
 				    ),
-				 tr("Yes"),tr("No"),0,0)!= 0)
+				 QMessageBox::Yes,QMessageBox::No)!= 0)
 	  return false;
       }
       setAppropriate(selectFilePage, true);

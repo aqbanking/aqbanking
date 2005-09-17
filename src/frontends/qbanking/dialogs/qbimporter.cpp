@@ -204,10 +204,10 @@ bool QBImporter::_updateImporterList() {
 
 void QBImporter::slotSelectFile(){
   QString s = QFileDialog::getOpenFileName(QString::null,
-					   tr("All files (*.*)"),
+					   QString::null,
 					   this,
 					   "OpenFile",
-					   tr("Choose a file"));
+					   tr("Choose a file to import"));
   if (!s.isEmpty())
     selectFileEdit->setText(s);
 }
