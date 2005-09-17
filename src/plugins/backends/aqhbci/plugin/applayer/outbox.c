@@ -2003,7 +2003,7 @@ AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
   assert(jl);
   j=AH_Job_List_First(jl);
   while(j) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
               AH_Job_GetName(j));
     if (strcasecmp(AH_Job_GetName(j),
                    isTransfer?"JobMultiTransfer":"JobMultiDebitNote")
@@ -2013,11 +2013,11 @@ AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
           AH_Job_MultiTransferBase_GetMaxTransfers(j))
         break;
       else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job's already full");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job's already full");
       }
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job doesn't match");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job doesn't match");
     }
 
     j=AH_Job_List_Next(j);
@@ -2039,7 +2039,7 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
   assert(cu);
   assert(a);
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Searching for %s job",
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job",
             isTransfer?"transfer":"debitnote");
   cbox=AH_Outbox__CBox_List_First(ob->customerBoxes);
   while(cbox) {
@@ -2067,7 +2067,7 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
       } /* while */
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Customer doesn't match");
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
     }
 
     cbox=AH_Outbox__CBox_List_Next(cbox);
