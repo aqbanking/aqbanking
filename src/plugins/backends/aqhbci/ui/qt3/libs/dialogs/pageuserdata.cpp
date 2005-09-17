@@ -182,7 +182,6 @@ AH_CRYPT_MODE Wizard::_getCryptMode(AH_MEDIUM *m, int idx) {
 
 
 bool Wizard::doUserDataPage(QWidget *p){
-  const char *cuid;
   GWEN_INETADDRESS *addr;
   GWEN_ERRORCODE err;
   QString qs;
@@ -388,10 +387,9 @@ bool Wizard::doUserDataPage(QWidget *p){
   }
 
   /* select or create customer */
-  if (!customerIdEdit->text().isEmpty())
-    cuid=customerIdEdit->text().utf8();
-  else
-    cuid=userIdEdit->text().utf8();
+  QCString cuid = (customerIdEdit->text().isEmpty() ? 
+		   userIdEdit->text().utf8() :
+		   cuid=customerIdEdit->text().utf8() );
   /* always create customer since we just created the user which starts with
    * an empty list of customers. So the customer we are about to create
    * *can* not exist. */

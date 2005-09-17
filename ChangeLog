@@ -3,6 +3,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-09-17  Christian Stimming  <stimming@tuhh.de>
+
+	* src/frontends/qbanking/qbanking.cpp,
+	src/plugins/backends/aqhbci/ui/qt3/libs/*: Eventually really fix
+	the QString -> const char* conversions by taking care that
+	temporary objects are kept correctly.
+
 2005-09-16   Christian Stimming <stimming@tuhh.de>
 
 	* src/frontends/qbanking/qbanking.{h,cpp} and many more in

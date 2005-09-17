@@ -384,16 +384,16 @@ int QBanking::progressLog(GWEN_TYPE_UINT32 id,
   QString text(QString::fromUtf8(chartext));
 
   // Necessary when passing this QString into the macros
-  const char *local8Bit = text.local8Bit();
+  QCString local8Bit = text.local8Bit();
 
   if (level>_logLevel) {
     DBG_NOTICE(0, "Not logging this: %02d: %s (we are at %d)",
-               level, local8Bit, _logLevel);
+               level, (const char*)(local8Bit), _logLevel);
     /* don't log this */
     return 0;
   }
 
-  DBG_INFO(0, "%02d: %s", level, local8Bit);
+  DBG_INFO(0, "%02d: %s", level, (const char*)(local8Bit));
   pr=_findProgressWidget(id);
   if (pr) {
     return pr->log(level, text);
@@ -997,9 +997,8 @@ bool QBanking::isPure7BitAscii(const QString &input)
   unsigned stringlength = input.length();
   for (unsigned k = 0; k < stringlength; ++k) {
     if (input[k].unicode() > 0x7f) {
-      const char *local8Bit = input.local8Bit();
       DBG_DEBUG(0, "String \"%s\" is not pure-7bit-ascii at character %d.\n",
-		local8Bit, k);
+		(const char*)(input.local8Bit()), k);
       return false;
     }
   }

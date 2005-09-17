@@ -19,8 +19,8 @@
 #include <qlistview.h>
 #include <qmessagebox.h>
 
+#include <qbanking/qbanking.h>
 #include <gwenhywfar/debug.h>
-
 
 
 SelectContext::SelectContext(AH_HBCI *hbci, AH_MEDIUM *medium)
@@ -134,9 +134,9 @@ void SelectContext::setValues(){
     return;
   }
   _index=item->text(0).toInt();
-  _instCode=std::string(item->text(1).utf8());
-  _userId=std::string(item->text(2).utf8());
-  _server=std::string(item->text(3).utf8());
+  _instCode=QBanking::QStringToUtf8String(item->text(1));
+  _userId=QBanking::QStringToUtf8String(item->text(2));
+  _server=QBanking::QStringToUtf8String(item->text(3));
   emit accept();
 }
 

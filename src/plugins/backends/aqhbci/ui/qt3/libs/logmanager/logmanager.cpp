@@ -44,6 +44,8 @@
 #include <qfiledialog.h>
 #include <qdir.h>
 
+#include <qbanking/qbanking.h>
+
 #ifdef WIN32
 # define AH_PATH_SEP "\\"
 #else
@@ -276,7 +278,7 @@ string LogManager::_anonymize(const string &bankCode,
       DBG_ERROR(0, "Could not read message");
       GWEN_Text_DumpString(lstr.data(), lstr.length(), stderr, 2);
       GWEN_Buffer_free(mbuf);
-      return std::string(QWidget::tr("Error: Could not read logfile.").utf8());
+      return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not read logfile."));
     }
     GWEN_Buffer_free(mbuf);
 
@@ -287,7 +289,7 @@ string LogManager::_anonymize(const string &bankCode,
       if (GWEN_MsgEngine_TrustedData_CreateReplacements(trustedData)) {
         fprintf(stderr, "Could not anonymize log (createReplacements)\n");
         GWEN_MsgEngine_TrustedData_free(trustedData);
-        return std::string(QWidget::tr("Error: Could not anonymize logfile.").utf8());
+        return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not anonymize logfile."));
       }
     }
 
@@ -353,7 +355,7 @@ string LogManager::_anonymize(const string &bankCode,
                                "</qt>"
                               ).arg(lfname.c_str()),
                             tr("Dismiss"),0,0,0);
-      return std::string(QWidget::tr("Error: Could not anonymize logfile.").utf8());
+      return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not anonymize logfile."));
     }
     result+=string(tstr.c_str());
   }
