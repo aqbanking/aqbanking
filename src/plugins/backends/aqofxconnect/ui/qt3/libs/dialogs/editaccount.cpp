@@ -215,21 +215,22 @@ void EditAccount::accountToGui(AB_ACCOUNT *a) {
 
 
 void EditAccount::guiToAccount(AB_ACCOUNT *a) {
-  std::string s;
 
-  s=QBanking::QStringToUtf8String(bankCodeEdit->text());
-  AB_Account_SetBankCode(a, s.c_str());
+  AB_Account_SetBankCode(a, bankCodeEdit->text().utf8());
 
-  s=QBanking::QStringToUtf8String(bankNameEdit->text());
-  if (s.empty()) AB_Account_SetBankName(a, 0);
-  else AB_Account_SetBankName(a, s.c_str());
+  QString s = bankNameEdit->text();
+  if (s.isEmpty()) 
+      AB_Account_SetBankName(a, 0);
+  else 
+      AB_Account_SetBankName(a, s.utf8());
 
-  s=QBanking::QStringToUtf8String(accountIdEdit->text());
-  AB_Account_SetAccountNumber(a, s.c_str());
+  AB_Account_SetAccountNumber(a, accountIdEdit->text().utf8());
 
-  s=QBanking::QStringToUtf8String(accountNameEdit->text());
-  if (s.empty()) AB_Account_SetAccountName(a, 0);
-  else AB_Account_SetAccountName(a, s.c_str());
+  s = accountNameEdit->text();
+  if (s.isEmpty()) 
+      AB_Account_SetAccountName(a, 0);
+  else
+      AB_Account_SetAccountName(a, s.utf8());
 
 }
 
@@ -250,7 +251,7 @@ void EditAccount::accept(){
 			     "</p>"
 			     "</qt>"
 			    ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 

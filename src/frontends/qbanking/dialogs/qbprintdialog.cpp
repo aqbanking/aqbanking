@@ -331,7 +331,6 @@ void QBPrintDialog::savePrinterSetup() {
   GWEN_BUFFER *dbuf;
   const char *s;
   uint top, left, bottom, right;
-  std::string fname;
 
   db=_banking->getAppData();
   assert(db);
@@ -355,7 +354,7 @@ void QBPrintDialog::savePrinterSetup() {
   if (!_fontFamily.isEmpty())
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "FontFamily",
-                         QBanking::QStringToUtf8String(_fontFamily).c_str());
+                         _fontFamily.utf8());
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "FontSize",
                       _fontSize);
   switch(_fontWeight) {
@@ -452,10 +451,10 @@ void QBPrintDialog::savePrinterSetup() {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "outputToFile",
                       (_printer->outputToFile())?1:0);
-  fname=QBanking::QStringToUtf8String(_printer->outputFileName());
-  if (!fname.empty())
+  QString fname = _printer->outputFileName();
+  if (!fname.isEmpty())
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "outputFileName", fname.c_str());
+                         "outputFileName", fname.utf8());
 
 }
 
@@ -497,8 +496,6 @@ void QBPrintDialog::slotPrint(){
   QFont fnt(_fontFamily, _fontSize, _fontWeight);
   int XMargin;
   int YMargin;
-  std::string swText;
-  std::string swUnits;
 
   if (!p.begin(_printer)) {
     QMessageBox::critical(this,
@@ -534,11 +531,9 @@ void QBPrintDialog::slotPrint(){
       return;
   }
 
-  swText=QBanking::QStringToUtf8String(tr("Printing, please wait..."));
-  swUnits=QBanking::QStringToUtf8String(tr("page(s)"));
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-                                  swText.c_str(),
-                                  swUnits.c_str(),
+                                  tr("Printing, please wait...").utf8(),
+                                  tr("page(s)").utf8(),
                                   0);
   GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
 

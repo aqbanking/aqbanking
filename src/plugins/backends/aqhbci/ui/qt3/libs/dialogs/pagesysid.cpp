@@ -129,7 +129,7 @@ void Wizard::slotGetSysId(){
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
 			    ),
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     AH_HBCI_UnmountCurrentMedium(_hbci);
     AB_Banking_ProgressEnd(_app->getCInterface(), 0);
     AH_Outbox_free(ob);

@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   GWEN_Logger_SetLevel("aqofxconnect", GWEN_LoggerLevelDebug);
   //GWEN_Logger_SetLevel("aqbanking", GWEN_LoggerLevelInfo);
 
-  QString datadir = PKGDATADIR;
+  QString datadir(PKGDATADIR);
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");

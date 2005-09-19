@@ -43,7 +43,7 @@
 
 
 bool Wizard::initUserDataPage() {
-  slotSettingsChanged("");
+  slotSettingsChanged(QString::null);
   QObject::connect((QObject*)(userIdEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
@@ -108,11 +108,11 @@ void Wizard::slotFromMedium(){
     return;
 
   // otherwise set the text
-  bankCodeEdit->setText(instcode.c_str());
-  userIdEdit->setText(userid.c_str());
-  serverEdit->setText(server.c_str());
+  bankCodeEdit->setText(QString::fromUtf8(instcode.c_str()));
+  userIdEdit->setText(QString::fromUtf8(userid.c_str()));
+  serverEdit->setText(QString::fromUtf8(server.c_str()));
   _index=idx;
-  slotSettingsChanged("");
+  slotSettingsChanged(QString::null);
 }
 
 
@@ -121,7 +121,7 @@ QString Wizard::getServerAddr() const {
   QString entered = serverEdit->text();
   const char * stripthis[] = { "http://", "https://", 0 };
   for (const char **a = stripthis ; *a != 0; a++) {
-    if (entered.startsWith(*a))
+    if (entered.startsWith(QString::fromUtf8(*a)))
       return entered.mid(strlen(*a));
   }
   serverEdit->setText(entered);
@@ -145,7 +145,7 @@ AH_CRYPT_MODE Wizard::_getCryptMode(AH_MEDIUM *m, int idx) {
       QMessageBox::critical(this,
                             tr("Mount Medium"),
                             tr("Could not mount medium"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
     }
     return AH_CryptMode_Unknown;
   }
@@ -199,7 +199,7 @@ bool Wizard::doUserDataPage(QWidget *p){
                              "<p>"
                              "Please correct your entry."
                              "</p>"),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -281,26 +281,24 @@ bool Wizard::doUserDataPage(QWidget *p){
                            0,
                            QWidget::tr("Please wait").utf8(),
                            QWidget::tr("Resolving host address...").utf8());
-    // Note: This is not a cast but rather a call of the
-    // conversion operator "QCString::operator const char * ()
-    // const" that will correctly convert the QCString to the
-    // const char*
+    // Note: The QCString::data() is the conversion that will
+    // correctly convert the QCString to the char* pointer.
     DBG_INFO(0, "Resolving hostname \"%s\"",
-             (const char*)(qs.local8Bit()));
+             qs.local8Bit().data());
     err=GWEN_InetAddr_SetName(addr, qs.local8Bit());
     if (wid)
       AB_Banking_HideBox(_app->getCInterface(), wid);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR(0,
                 "Error resolving hostname \"%s\":",
-                (const char*)(qs.local8Bit()));
+                qs.local8Bit().data());
       DBG_ERROR_ERR(0, err);
       QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
 			    QWidget::tr("Could not resolve the address %1.\n"
                                         "Maybe there is a typo?")
                             .arg(qs),
-			    QWidget::tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_InetAddr_free(addr);
       return false;
     }
@@ -364,7 +362,7 @@ bool Wizard::doUserDataPage(QWidget *p){
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     _user=0;
     _userCreated=false;
     return false;

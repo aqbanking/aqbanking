@@ -89,13 +89,13 @@ void UserListViewItem::_populate() {
     s=AH_Bank_GetBankId(b);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   // user name/id
   s=AH_User_GetUserId(_user);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   // status
   ust=AH_User_GetStatus(_user);

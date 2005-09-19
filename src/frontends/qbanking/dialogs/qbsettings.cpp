@@ -314,14 +314,14 @@ void QBankingSettings::slotBackendSetup(){
                                  "overwritten upon shutdown of the program."
                                  "</p>"
                                  "</qt>"),
-                              QMessageBox::Ok,QMessageBox::NoButton);
+                              QMessageBox::Abort,QMessageBox::NoButton);
         return;
       }
     }
 
     QProcess wp(qs);
 
-    if (!wp.launch(QString(""))) {
+    if (!wp.launch(QString::null)) {
       QMessageBox::critical(this,
                             tr("Wizard Not Started"),
                             tr("<qt>"

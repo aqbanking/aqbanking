@@ -175,7 +175,7 @@ bool QBProgress::_handleTime(){
       mins=dt/60;
       secs=dt%60;
       QString label = QString("%1:%2%3 min").arg(mins).	
-	  arg(secs<10?QString("0"):QString("")).arg(secs);
+	  arg(secs<10 ? QString("0") : QString::null).arg(secs);
       // Replacement for: 
       // snprintf(buf, sizeof(buf), "%d:%02d min", mins, secs);
       timeLabel->setText(label);
@@ -203,8 +203,7 @@ int QBProgress::advance(GWEN_TYPE_UINT32 progress){
   
           qs=QString::number(progress);
           if (!_units.isEmpty()) {
-            qs+=QString(" ");
-            qs+=_units;
+            qs+= " " + _units;
           }
           progressUnitsLabel->setText(qs);
           _lastProgress=progress;
@@ -233,15 +232,13 @@ int QBProgress::advance(GWEN_TYPE_UINT32 progress){
 
 int QBProgress::log(AB_BANKING_LOGLEVEL level,
                     const QString& text){
-  QTime d;
   QString tmp;
 
   _handleTime();
   tmp+=_logtext;
-  tmp+=QString("<tr><td>");
-  d=QTime::currentTime();
-  tmp+=d.toString();
-  tmp+=QString("</td><td>");
+  tmp+="<tr><td>" + 
+      QTime::currentTime().toString() +
+      "</td><td>";
   if (level<=AB_Banking_LogLevelError) {
     tmp+=QString("<font color=\"red\">%1</font>").arg(text);
   }

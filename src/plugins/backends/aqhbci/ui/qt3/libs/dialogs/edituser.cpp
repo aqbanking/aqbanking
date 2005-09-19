@@ -123,7 +123,7 @@ void EditUser::updateLists() {
         if (!fn)
           fn="";
 
-        lvi=new QListViewItem(customerList, cid, fn);
+        lvi=new QListViewItem(customerList, QString::fromUtf8(cid), QString::fromUtf8(fn));
       }
       cu=AH_Customer_List2Iterator_Next(cit);
     }
@@ -154,8 +154,6 @@ void EditUser::slotStatusChanged(int i) {
 
 
 void EditUser::accept() {
-  std::string s;
-  QString qs;
   AH_USER_STATUS ust;
   const AH_BPD_ADDR *oldBa;
   AH_BPD_ADDR *newBa;
@@ -172,12 +170,11 @@ void EditUser::accept() {
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
-  s=QBanking::QStringToUtf8String(userIdEdit->text());
-  AH_User_SetUserId(_user, s.c_str());
+  AH_User_SetUserId(_user, userIdEdit->text().utf8());
 
   switch(userStatusCombo->currentItem()) {
   case 0:  ust=AH_UserStatusNew; break;
@@ -188,18 +185,18 @@ void EditUser::accept() {
   }
   AH_User_SetStatus(_user, ust);
 
-  qs=serverEdit->text();
+  QString qs=serverEdit->text();
   oldBa=AH_User_GetAddress(_user);
   assert(oldBa);
   newBa=AH_BpdAddr_dup(oldBa);
-  s=QBanking::QStringToUtf8String(qs);
-  AH_BpdAddr_SetAddr(newBa, s.c_str());
+  AH_BpdAddr_SetAddr(newBa, qs.utf8());
+  // FIXME: We need to store the new address, dont we?
+  AH_User_SetAddress(_user, newBa);
 
   m=AH_User_GetMedium(_user);
   assert(m);
 
-  s=QBanking::QStringToUtf8String(descriptiveEdit->text());
-  AH_Medium_SetDescriptiveName(m, s.c_str());
+  AH_Medium_SetDescriptiveName(m, descriptiveEdit->text().utf8());
 
   EditUserUi::accept();
 }
@@ -222,13 +219,11 @@ void EditUser::_setComboTextIfPossible(QComboBox *qb,
 
 void EditUser::slotEditCustomer() {
   QListViewItem *lvi=customerList->currentItem();
-  std::string s;
   AH_CUSTOMER *cu;
 
   if (lvi==0) {
   }
-  s=QBanking::QStringToUtf8String(lvi->text(0));
-  cu=AH_User_FindCustomer(_user, s.c_str());
+  cu=AH_User_FindCustomer(_user, lvi->text(0).utf8());
   assert(cu);
 
   EditCustomer w(_hbci, cu, this, "EditCustomer", true);

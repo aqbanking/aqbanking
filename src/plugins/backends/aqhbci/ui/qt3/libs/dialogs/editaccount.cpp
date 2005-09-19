@@ -97,7 +97,7 @@ void EditAccount::slotBankChanged(int i){
   }
   _bank=b;
   AH_Bank_List2Iterator_free(it);
-  bankCodeEdit->setText(AH_Bank_GetBankId(b));
+  bankCodeEdit->setText(QString::fromUtf8(AH_Bank_GetBankId(b)));
 
   AH_Customer_List2_free(_customers);
   _customers=AH_Bank_GetCustomers(b, "*", "*");
@@ -133,7 +133,7 @@ void EditAccount::slotBankChanged(int i){
     else
       if (!*s)
         s=ccid;
-    customerIdCombo->insertItem(s, -1);
+    customerIdCombo->insertItem(QString::fromUtf8(s), -1);
     if (cid)
       if (strcasecmp(cid, ccid)==0) {
         found=i;
@@ -202,7 +202,7 @@ bool EditAccount::init() {
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -218,7 +218,7 @@ bool EditAccount::init() {
     s=AH_Bank_GetBankName(b);
     if (!s)
       s=AH_Bank_GetBankId(b);
-    bankCombo->insertItem(s, -1);
+    bankCombo->insertItem(QString::fromUtf8(s), -1);
     if (b==AH_Account_GetBank(_account))
       found=i;
     b=AH_Bank_List2Iterator_Next(it);
@@ -232,19 +232,19 @@ bool EditAccount::init() {
 
   s=AH_Account_GetBankId(_account);
   if (s)
-    bankCodeEdit->setText(s);
+    bankCodeEdit->setText(QString::fromUtf8(s));
 
   s=AH_Account_GetAccountId(_account);
   if (s)
-    accountIdEdit->setText(s);
+    accountIdEdit->setText(QString::fromUtf8(s));
 
   s=AH_Account_GetOwnerName(_account);
   if (s)
-    ownerNameEdit->setText(s);
+    ownerNameEdit->setText(QString::fromUtf8(s));
 
   s=AH_Account_GetAccountName(_account);
   if (s)
-    accountNameEdit->setText(s);
+    accountNameEdit->setText(QString::fromUtf8(s));
 
   return true;
 }
@@ -272,7 +272,7 @@ void EditAccount::accept(){
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 

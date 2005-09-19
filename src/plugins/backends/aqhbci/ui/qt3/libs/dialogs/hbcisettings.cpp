@@ -251,7 +251,7 @@ void HBCISettings::slotIniLetter(){
                                  "</p>"
                                  "</qt>"
                                 ),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
@@ -323,7 +323,7 @@ void HBCISettings::slotNewAccount(){
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
   a=AH_Account_new(b, AH_Bank_GetBankId(b), "0");
@@ -402,7 +402,7 @@ void HBCISettings::slotDelAccount(){
                                  "</p>"
                                  "</qt>"
                                 ),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
       }
       else {
         updateLists();
@@ -451,7 +451,7 @@ void HBCISettings::slotChangeVersion(){
 				 "</p>"
 				 "</qt>"
 				),
-			      tr("Dismiss"),0,0,0);
+			      QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
 
@@ -480,7 +480,7 @@ void HBCISettings::slotChangeVersion(){
 				     "</p>"
 				     "</qt>"
 				    ),
-				  tr("Dismiss"),0,0,0);
+				  QMessageBox::Ok,QMessageBox::NoButton);
 	    return;
 	  }
           vl=AH_Bpd_GetHbciVersions(bpd);
@@ -503,7 +503,7 @@ void HBCISettings::slotChangeVersion(){
 					 "</p>"
 					 "</qt>"
 					),
-				      tr("Yes"), tr("No"),0,0)!=0) {
+				      QMessageBox::Yes,QMessageBox::No)!=0) {
 	      return;
 	    }
 	  }
@@ -548,7 +548,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
                              "</p>"
                              "</qt>"
                             ),
-			      tr("Dismiss"),0,0,0);
+			      QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
   AH_Job_AddSigner(j, AH_User_GetUserId(u));
@@ -566,7 +566,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     AH_Outbox_free(ob);
     AH_Job_free(j);
     return false;
@@ -582,7 +582,7 @@ bool HBCISettings::_updateBPD(AH_CUSTOMER *cu){
                                "</p>"
                                "</qt>"
                               ),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       AH_Outbox_free(ob);
       AH_Job_free(j);
       return false;
@@ -621,7 +621,7 @@ void HBCISettings::slotUpdateBPD(){
 				 "</p>"
 				 "</qt>"
 				),
-			      tr("Dismiss"),0,0,0);
+			      QMessageBox::Ok,QMessageBox::NoButton);
 	return;
       }
       _updateBPD(cu);

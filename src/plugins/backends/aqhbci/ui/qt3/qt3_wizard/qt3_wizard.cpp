@@ -46,7 +46,7 @@ int debug(int argc, char **argv) {
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqbanking", GWEN_LoggerLevelInfo);
 
-  QString datadir = PKGDATADIR;
+  QString datadir(PKGDATADIR);
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");
@@ -72,10 +72,10 @@ int debug(int argc, char **argv) {
   bi=QBSelectBank::selectBank(ab,
                               0,
                               app.tr("Select a bank"),
-                              "282",
-                              "",
-                              "Spar",
-                              "Wilh");
+                              QString("282"),
+                              QString::null,
+                              QString("Spar"),
+                              QString("Wilh"));
   if (ab->fini()) {
     fprintf(stderr, "Error on fini.\n");
   }
@@ -110,7 +110,7 @@ int wizard(int argc, char **argv) {
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqbanking", GWEN_LoggerLevelInfo);
 
-  QString datadir = PKGDATADIR;
+  QString datadir(PKGDATADIR);
   if (translator.load(QTextCodec::locale()+QString(".qm"),
 		      datadir + QString("/i18n/"))) {
     DBG_INFO(0, "I18N available for your language");

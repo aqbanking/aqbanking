@@ -69,44 +69,44 @@ bool Wizard::enterSummary1Page(QWidget *p){
   QString s;
 
   setNextEnabled(summary1Page, true);
-  s="<qt><table>";
-  s+="<tr><td>";
-  s+=tr("Bank Code ");
-  s+="</td><td>";
-  s+=bankCodeEdit->text();
-  s+="</td></tr>";
+  s="<qt><table>"
+      "<tr><td>" +
+      tr("Bank Code ") +
+      "</td><td>" +
+      bankCodeEdit->text() +
+      "</td></tr>"
 
-  s+="<tr><td>";
-  s+=tr("Server ");
-  s+="</td><td>";
-  s+=getServerAddr();
-  s+="</td></tr>";
+      "<tr><td>" +
+      tr("Server ") +
+      "</td><td>" +
+      getServerAddr() +
+      "</td></tr>"
 
-  s+="<tr><td>"+tr("HBCI Version")+"</td><td>";
-  s+=UserListView::hbciVersionToString(AH_Customer_GetHbciVersion(_customer));
-  s+="</td></tr>";
+      "<tr><td>"+tr("HBCI Version")+"</td><td>" +
+      UserListView::hbciVersionToString(AH_Customer_GetHbciVersion(_customer)) +
+      "</td></tr>"
 
-  s+="<tr><td>";
-  s+=tr("User Id");
-  s+="</td><td>";
-  s+=userIdEdit->text();
-  s+="</td></tr>";
+      "<tr><td>" +
+      tr("User Id") +
+      "</td><td>" +
+      userIdEdit->text() +
+      "</td></tr>"
 
-  s+="<tr><td>";
-  s+=tr("Customer Id");
-  s+="</td><td>";
-  s+=(customerIdEdit->text().isEmpty() ? 
-      userIdEdit->text() :
-      customerIdEdit->text());
-  s+="</td></tr>";
+      "<tr><td>" +
+      tr("Customer Id") +
+      "</td><td>" +
+      (customerIdEdit->text().isEmpty() ? 
+       userIdEdit->text() :
+       customerIdEdit->text()) +
+      "</td></tr>"
 
-  s+="<tr><td>";
-  s+=tr("Description");
-  s+="</td><td>";
-  s+=descriptionEdit->text();
-  s+="</td></tr>";
+      "<tr><td>" +
+      tr("Description") +
+      "</td><td>" +
+      descriptionEdit->text() +
+      "</td></tr>"
 
-  s+="</table></qt>";
+      "</table></qt>";
   summaryBrowser->setText(s);
 
   _adjustToUser(_user);

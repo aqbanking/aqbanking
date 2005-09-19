@@ -67,84 +67,89 @@ bool Wizard::undoServerCertPage(QWidget *p) {
   return true;
 }
 
-
-
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
 Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
                     GWEN_DB_NODE *cert){
+    return _askAddCertParented(0, tr, cert);
+}
+
+GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+Wizard::_askAddCertParented(QWidget *parent,
+			    GWEN_NETTRANSPORT *tr,
+			    GWEN_DB_NODE *cert){
   QString t;
   const char *s;
   GWEN_TYPE_UINT32 ti;
   int rv;
 
-  t="<qt><p>";
-  t+=QWidget::tr("Received an unknown certificate:");
-  t+="</p>";
-  t+="<table>";
+  t="<qt><p>" +
+      QWidget::tr("Received an unknown certificate:") +
+      "</p>"
+      "<table>";
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Name");
-  t+="</td><td>";
+  t+="<tr><td>" +
+      QWidget::tr("Name") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "commonName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Organization");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("Organization") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "organizationName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Department");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("Department") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "organizationalUnitName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Country");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("Country") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "countryName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("City");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("City") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "localityName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("State");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("State") +
+      "</td><td>";
   s=GWEN_DB_GetCharValue(cert, "stateOrProvinceName", 0, 0);
   if (s)
-    t+=s;
+    t+=QString::fromUtf8(s);
   else
-    t+="(unknown)";
-  t+="</td></tr>";
+    t+=QWidget::tr("(unknown)");
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Valid after");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("Valid after") +
+      "</td><td>";
   ti=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(cert, "notBefore", 0, 0);
   if (ti) {
     GWEN_TIME *gt;
@@ -157,7 +162,7 @@ Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
 
       t+=d.toString();
     }
-    t+=" ";
+    t+=QString(" ");
     if (!GWEN_Time_GetBrokenDownTime(gt, &hour, &min, &sec)) {
       QTime d(hour, min, sec);
 
@@ -165,11 +170,11 @@ Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
     }
     GWEN_Time_free(gt);
   }
-  t+="</td></tr>";
+  t+="</td></tr>"
 
-  t+="<tr><td>";
-  t+=QWidget::tr("Valid until");
-  t+="</td><td>";
+      "<tr><td>" +
+      QWidget::tr("Valid until") +
+      "</td><td>";
   ti=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(cert, "notAfter", 0, 0);
   if (ti) {
     GWEN_TIME *gt;
@@ -182,7 +187,7 @@ Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
 
       t+=d.toString();
     }
-    t+=" ";
+    t+=QString(" ");
     if (GWEN_Time_GetBrokenDownTime(gt, &hour, &min, &sec)) {
       QTime d(hour, min, sec);
 
@@ -190,24 +195,22 @@ Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
     }
     GWEN_Time_free(gt);
   }
-  t+="</td></tr></table>";
+  t+="</td></tr></table>"
 
 
-  t+="<br><tr><td colspan=\"2\"><p>";
-  t+=QWidget::tr("Do you accept this certificate?");
-  t+="</p></qt>";
+      "<br><tr><td colspan=\"2\"><p>" +
+      QWidget::tr("Do you accept this certificate?") +
+      "</p></qt>";
 
-  rv=QMessageBox::warning(0, QWidget::tr("New Certificate"),
+  rv=QMessageBox::warning(parent, QWidget::tr("New Certificate"),
                           t,
-                          QWidget::tr("Yes"),
-                          QWidget::tr("No"));
+                          QMessageBox::Yes,QMessageBox::No);
   if (rv!=0) {
     DBG_NOTICE(0, "User rejected certificate");
     return GWEN_NetTransportSSL_AskAddCertResultNo;
   }
 
-  rv=QMessageBox::warning(0,
-                          QWidget::tr("New Certificate"),
+  rv=QMessageBox::warning(parent, QWidget::tr("New Certificate"),
                           QWidget::tr("Do you accept this certificate "
                                       "permanently\n"
                                       "or for this session only (temporarily)?"
@@ -278,7 +281,7 @@ void Wizard::slotGetCert() {
 			    QWidget::tr("Could not resolve the given "
 					"address.\n"
 					"May there is a typo?"),
-			    QWidget::tr("Dismiss"),0,0,0);
+			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_NetTransport_free(tr);
       GWEN_InetAddr_free(addr);
       GWEN_Buffer_free(nbuf);
@@ -318,7 +321,7 @@ void Wizard::slotGetCert() {
                                       "server.\n"
                                       "Please check the logs."
                                      ),
-                          QWidget::tr("Dismiss"),0,0,0);
+                          QMessageBox::Abort,QMessageBox::NoButton);
     GWEN_NetConnection_StartDisconnect(conn);
     GWEN_NetConnection_free(conn);
     return;
@@ -348,7 +351,7 @@ void Wizard::slotGetCert() {
 				      "</p>"
     "</qt>"
 				     ),
-                          QWidget::tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
 
   }
   else {
@@ -359,7 +362,7 @@ void Wizard::slotGetCert() {
                                          "In either case a usable "
                                          "certificate is present."
                                         ),
-                             QWidget::tr("Dismiss"),0,0,0);
+                             QMessageBox::Ok);
   }
 }
 

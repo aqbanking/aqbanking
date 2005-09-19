@@ -70,9 +70,8 @@ EditCustomer::EditCustomer(AH_HBCI *h,
     _withHttp=true;
     httpVersionCombo->insertItem(tr("1.0"));
     httpVersionCombo->insertItem(tr("1.1"));
-    qs=QString::number(AH_Customer_GetHttpVMajor(c));
-    qs+=".";
-    qs+=QString::number(AH_Customer_GetHttpVMinor(c));
+    qs = QString::number(AH_Customer_GetHttpVMajor(c))
+	+ "." + QString::number(AH_Customer_GetHttpVMinor(c));
     _setComboTextIfPossible(httpVersionCombo, qs);
 
     s=AH_Customer_GetHttpUserAgent(c);
@@ -321,7 +320,7 @@ void EditCustomer::slotGetSysId() {
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
 			    ),
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     AH_HBCI_UnmountCurrentMedium(_hbci);
     AB_Banking_ProgressEnd(AH_HBCI_GetBankingApi(_hbci), 0);
     AH_Outbox_free(ob);

@@ -72,26 +72,26 @@ void KBPluginDescrListViewItem::_populate() {
   fprintf(stderr, "Populating...\n");
 
   // name
-  setText(i++, GWEN_PluginDescription_GetName(_descr));
+  setText(i++, QString::fromUtf8(GWEN_PluginDescription_GetName(_descr)));
 
   // version
-  tmp=GWEN_PluginDescription_GetVersion(_descr);
+  tmp=QString::fromUtf8(GWEN_PluginDescription_GetVersion(_descr));
   if (tmp.isEmpty())
-    tmp="(unknown)";
+    tmp=QWidget::tr("(unknown)");
   setText(i++,tmp);
 
   if (GWEN_PluginDescription_IsActive(_descr))
-    setText(i++, "yes");
+    setText(i++, QWidget::tr("Yes"));
   else
-    setText(i++, "no");
+    setText(i++, QWidget::tr("No"));
 
   // author
-  setText(i++,GWEN_PluginDescription_GetAuthor(_descr));
+  setText(i++,QString::fromUtf8(GWEN_PluginDescription_GetAuthor(_descr)));
 
   // description
-  tmp=GWEN_PluginDescription_GetShortDescr(_descr);
+  tmp=QString::fromUtf8(GWEN_PluginDescription_GetShortDescr(_descr));
   if (tmp.isEmpty())
-    tmp="(unknown)";
+    tmp=QWidget::tr("(unknown)");
   setText(i++, tmp);
 }
 

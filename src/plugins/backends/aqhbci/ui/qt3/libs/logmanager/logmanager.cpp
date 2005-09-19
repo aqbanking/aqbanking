@@ -85,8 +85,8 @@ LogManager::LogManager(const char *baseDir,
                           tr("<qt>"
                              "The HBCI XML file \"%1\" could not be parsed."
                              "</qt>"
-                            ).arg(xmlfilename),
-                          tr("Dismiss"),0,0,0);
+                            ).arg(QString::fromLocal8Bit(xmlfilename)),
+                          QMessageBox::Ok,QMessageBox::NoButton);
     GWEN_XMLNode_free(defs);
   }
   else {
@@ -96,7 +96,7 @@ LogManager::LogManager(const char *baseDir,
 
   _scanBanks();
   for (sit=_banks.begin(); sit!=_banks.end(); sit++)
-    bankSelector->insertItem((*sit).c_str());
+    bankSelector->insertItem(QString::fromUtf8((*sit).c_str()));
 
   QObject::connect((QObject*)(bankSelector),
                    SIGNAL(activated(const QString&)),
@@ -353,8 +353,8 @@ string LogManager::_anonymize(const string &bankCode,
                                "AqHBCI is properly installed."
                                "</p>"
                                "</qt>"
-                              ).arg(lfname.c_str()),
-                            tr("Dismiss"),0,0,0);
+                              ).arg(QString::fromLocal8Bit(lfname.c_str())),
+                            QMessageBox::Ok,QMessageBox::NoButton);
       return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not anonymize logfile."));
     }
     result+=string(tstr.c_str());
@@ -378,7 +378,7 @@ void LogManager::bankActivated(const QString &qs){
   for (sit=_logFiles.begin(); sit!=_logFiles.end(); sit++) {
     QListViewItem *qv;
 
-    qv=new QListViewItem(fileList, (*sit).c_str());
+    qv=new QListViewItem(fileList, QString::fromUtf8((*sit).c_str()));
   }
 
 }
@@ -391,7 +391,7 @@ void LogManager::trustActivated(int idx){
     if (!_currentFile.isEmpty()) {
       string s;
 
-      fileView->setText("");
+      fileView->setText(QString::null);
       s=_anonymize(bankSelector->currentText().ascii(),
                    _currentFile.ascii(),
                    _trustLevel);
@@ -428,7 +428,7 @@ void LogManager::fileSelected(QListViewItem *qv) {
   string s;
 
   _currentFile=qv->text(0);
-  fileView->setText("");
+  fileView->setText(QString::null);
   s=_anonymize(bankSelector->currentText().ascii(),
                _currentFile.ascii(),
                _trustLevel);
@@ -487,7 +487,7 @@ void LogManager::saveFile() {
                                  "</p>"
                                  "</qt>"
                                 ).arg(filename),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
       s=_currentLog;
@@ -506,7 +506,7 @@ void LogManager::saveFile() {
                                    "</p>"
                                    "</qt>"
                                   ).arg(filename),
-                                tr("Dismiss"),0,0,0);
+                                QMessageBox::Ok,QMessageBox::NoButton);
           f.close();
           return;
         }

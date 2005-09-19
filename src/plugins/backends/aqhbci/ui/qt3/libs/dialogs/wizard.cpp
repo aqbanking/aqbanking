@@ -299,7 +299,7 @@ bool Wizard::enterPage(QWidget *p, bool bk){
 	  p=GWEN_PluginDescription_GetShortDescr(pd);
 	  if (!p)
 	    p=GWEN_PluginDescription_GetName(pd);
-	  fileTypeCombo->insertItem(p);
+	  fileTypeCombo->insertItem(QString::fromUtf8(p));
 	  if (!_mediumTypeName.empty()) {
 	    p=GWEN_PluginDescription_GetName(pd);
 	    assert(p);
@@ -343,7 +343,7 @@ bool Wizard::enterPage(QWidget *p, bool bk){
   else if (p==createKeysPage) {
     setNextEnabled(createKeysPage, false);
     createKeysButton->setEnabled(true);
-    createKeysLabel->setText("");
+    createKeysLabel->setText(QString::null);
   }
 
   else if (p==iniLetterPage) {
@@ -508,7 +508,7 @@ void Wizard::accept() {
                               tr("Could not unmount the medium.\n"
                                  "Please check the logs."
                                 ),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
@@ -766,7 +766,7 @@ bool Wizard::_adjustToUser(AH_USER *u) {
     QMessageBox::critical(this,
 			  tr("Medium Error"),
 			  tr("Unsupported medium type."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   } // switch
 
@@ -796,13 +796,13 @@ bool Wizard::completeUser(AH_USER *u) {
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
-  userIdEdit->setText(AH_User_GetUserId(_user));
-  customerIdEdit->setText(AH_Customer_GetCustomerId(_customer));
-  bankCodeEdit->setText(AH_Bank_GetBankId(_bank));
+  userIdEdit->setText(QString::fromUtf8(AH_User_GetUserId(_user)));
+  customerIdEdit->setText(QString::fromUtf8(AH_Customer_GetCustomerId(_customer)));
+  bankCodeEdit->setText(QString::fromUtf8(AH_Bank_GetBankId(_bank)));
 
   showPage(systemIdPage);
   if (exec()!=QDialog::Accepted)
@@ -833,7 +833,7 @@ bool Wizard::showIniLetter(AH_USER *u) {
                              "</p>"
                              "</qt>"
                             ),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 

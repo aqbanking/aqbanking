@@ -99,7 +99,7 @@ bool Wizard::doImportPage(QWidget *p) {
                             tr("Medium Error"),
                             tr("Plugin for PIN/TAN does not exist.\n"
                                "Please check the console logs."),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       return false;
     }
     if (AH_Medium_Create(_medium)) {
@@ -107,7 +107,7 @@ bool Wizard::doImportPage(QWidget *p) {
                             tr("Medium Error"),
                             tr("Could not create the medium.\n"
                                "Please check the console logs."),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       AH_Medium_free(_medium);
       _medium=0;
       return false;

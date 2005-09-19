@@ -73,31 +73,31 @@ void KBAccountListViewItem::_populate() {
   fprintf(stderr, "Populating...\n");
 
   // bank code
-  setText(i++, AB_Account_GetBankCode(_account));
+  setText(i++, QString::fromUtf8(AB_Account_GetBankCode(_account)));
 
   // bank name
-  tmp=AB_Account_GetBankName(_account);
+  tmp=QString::fromUtf8(AB_Account_GetBankName(_account));
   if (tmp.isEmpty())
-    tmp="(unnamed)";
+    tmp=QWidget::tr("(unnamed)");
   setText(i++,tmp);
 
   // account id
-  setText(i++,AB_Account_GetAccountNumber(_account));
+  setText(i++, QString::fromUtf8(AB_Account_GetAccountNumber(_account)));
 
   // account name
-  tmp=AB_Account_GetAccountName(_account);
+  tmp=QString::fromUtf8(AB_Account_GetAccountName(_account));
   if (tmp.isEmpty())
-    tmp="(unnamed)";
+    tmp=QWidget::tr("(unnamed)");
   setText(i++, tmp);
 
-  tmp=AB_Account_GetOwnerName(_account);
+  tmp=QString::fromUtf8(AB_Account_GetOwnerName(_account));
   if (tmp.isEmpty())
     tmp="";
   setText(i++, tmp);
 
-  tmp=AB_Provider_GetName(AB_Account_GetProvider(_account));
+  tmp=QString::fromUtf8(AB_Provider_GetName(AB_Account_GetProvider(_account)));
   if (tmp.isEmpty())
-    tmp="(unknown)";
+    tmp=QWidget::tr("(unknown)");
   setText(i++, tmp);
 
 }

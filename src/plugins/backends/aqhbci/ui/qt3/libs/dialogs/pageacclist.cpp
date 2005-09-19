@@ -133,7 +133,7 @@ void Wizard::slotGetAccList(){
                                 "</p>"
                                 "</qt>"
                                ),
-                             tr("Dismiss"),0,0,0);
+                             QMessageBox::Ok,QMessageBox::NoButton);
   }
   else {
     getAccListLabel->setText(_ResultMsg_Success);

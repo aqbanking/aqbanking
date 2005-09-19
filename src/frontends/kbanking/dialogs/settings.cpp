@@ -203,7 +203,7 @@ void KBankingSettings::slotBackendEnable(){
       QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not activate this backend.\n"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
     }
     else {
       QMessageBox::information(this,
@@ -248,7 +248,7 @@ void KBankingSettings::slotBackendDisable(){
       QMessageBox::critical(this,
                             tr("Backend Error"),
                             tr("Could not deactivate this backend.\n"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
     }
   }
 }
@@ -287,7 +287,7 @@ void KBankingSettings::slotBackendSetup(){
                                "not installed."
                                "</p>"
                                "</qt>"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_Buffer_free(pbuf);
       return;
     }
@@ -314,14 +314,14 @@ void KBankingSettings::slotBackendSetup(){
                                  "overwritten upon shutdown of the program."
                                  "</p>"
                                  "</qt>"),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
 
     QProcess wp(qs);
 
-    if (!wp.launch("")) {
+    if (!wp.launch(QString::null)) {
       QMessageBox::critical(this,
                             tr("Wizard Not Started"),
                             tr("<qt>"
@@ -330,7 +330,7 @@ void KBankingSettings::slotBackendSetup(){
                                "not be started."
                                "</p>"
                                "</qt>"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       if (wasActive)
         // resume provider if we suspended it
         AB_Banking_ResumeProvider(_banking->getCInterface(),
@@ -366,7 +366,7 @@ void KBankingSettings::slotBackendSetup(){
                                  "Could not resume the backend."
                                  "</p>"
                                  "</qt>"),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return;
       }
     }
@@ -384,7 +384,7 @@ void KBankingSettings::slotAccountMap(){
     QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No account selected.\n"),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
   }
   a=al.front();
   _banking->mapAccount(a);

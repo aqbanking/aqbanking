@@ -69,7 +69,7 @@ bool SelectContext::selectContext(std::string &instcode,
       QMessageBox::critical(this,
                             tr("Select Context"),
                             tr("Could not mount medium"),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
     }
   }
 
@@ -111,7 +111,7 @@ bool SelectContext::selectContext(std::string &instcode,
     QMessageBox::critical(this,
                           tr("Select Context"),
                           tr("No user found on this medium"),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 

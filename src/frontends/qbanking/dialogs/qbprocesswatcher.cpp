@@ -38,7 +38,7 @@ QBProcessWatcher::QBProcessWatcher(QProcess* process,
 ,_startTime((time_t)0)
 ,_duration(0){
   _startTime=time(0);
-  if (text==QString::null)
+  if (text.isEmpty())
     textLabel->setText(tr("Process running..."));
   else
     textLabel->setText(text);
@@ -86,12 +86,11 @@ void QBProcessWatcher::slotProcessFinished() {
   if (rv) {
     QMessageBox::critical(this,
                           tr("Process Error"),
-                          QString(tr("<qt>"
-                                     "<p>"
-                                     "Process exited with status %1"
-                                     "</p>"
-                                     "</qt>"))
-                          .arg(rv),
+                          QWidget::tr("<qt>"
+				      "<p>"
+				      "Process exited with status %1"
+				      "</p>"
+				      "</qt>").arg(rv),
                           QMessageBox::Ok,QMessageBox::NoButton);
     QDialog::reject();
   }

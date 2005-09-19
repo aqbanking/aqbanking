@@ -83,7 +83,7 @@ void Wizard::slotSendKeys(){
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
 			    ),
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     createKeysLabel->setText(_ResultMsg_Failed);
     return;
   }

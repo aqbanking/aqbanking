@@ -82,14 +82,14 @@ void Wizard::slotFiletypeChanged(int i){
           if (GWEN_PluginDescription_GetLongDescrByFormat(pd, "html", tbuf)){
             p=GWEN_PluginDescription_GetLongDescr(pd);
             if (p) {
-              fileTypeBrowser->setText(p);
+              fileTypeBrowser->setText(QString::fromUtf8(p));
             }
             else
               fileTypeBrowser->setText(tr("no description available"));
           }
           else {
             GWEN_Buffer_AppendString(tbuf, "</qt>");
-            fileTypeBrowser->setText(GWEN_Buffer_GetStart(tbuf));
+            fileTypeBrowser->setText(QString::fromUtf8(GWEN_Buffer_GetStart(tbuf)));
           }
           GWEN_Buffer_free(tbuf);
         }
@@ -114,7 +114,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
                           tr("Medium Error"),
                           tr("The medium already exists.\n"
                              "Please select another name."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     _medium=0;
     return false;
   }
@@ -131,7 +131,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
                           tr("Medium Error"),
                           tr("Could not create the medium.\n"
                              "Please check the console logs."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
   if (AH_Medium_Create(_medium)) {
@@ -139,7 +139,7 @@ bool Wizard::doSelectFilePage(QWidget *p){
                           tr("Medium Error"),
                           tr("Could not create the medium.\n"
                              "Please check the console logs."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     AH_Medium_free(_medium);
     if (_createFile)
       QFile::remove(fileNameEdit->text());

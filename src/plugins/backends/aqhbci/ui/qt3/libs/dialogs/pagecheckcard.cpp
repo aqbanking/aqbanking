@@ -100,7 +100,7 @@ bool Wizard::doCheckCardPage(QWidget *p){
                           tr("Medium Error"),
                           tr("Medium does not exist.\n"
                              "Please check the console logs."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -117,7 +117,7 @@ bool Wizard::doCheckCardPage(QWidget *p){
                             tr("Medium Error"),
                             tr("Could not mount the medium.\n"
                                "Please check the console logs."),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       _medium=0;
       AB_Banking_ProgressEnd(_app->getCInterface(), pid);
       return false;

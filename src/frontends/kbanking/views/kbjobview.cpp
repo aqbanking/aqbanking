@@ -129,7 +129,7 @@ void KBJobView::slotExecute(){
     QMessageBox::warning(this,
                          tr("No Jobs"),
                          tr("There are no jobs in the queue."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 

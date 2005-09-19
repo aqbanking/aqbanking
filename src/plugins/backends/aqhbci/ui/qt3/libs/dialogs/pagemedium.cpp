@@ -146,7 +146,7 @@ bool Wizard::doMediumPage(QWidget *p){
 				 "and choose \"Create\" if you want to "
 				 "create a new medium.</p></qt>"
                                 ),
-                              tr("Dismiss"),0,0,0);
+                              QMessageBox::Ok,QMessageBox::NoButton);
         return false;
       }
       fromMediumButton->setEnabled(true);

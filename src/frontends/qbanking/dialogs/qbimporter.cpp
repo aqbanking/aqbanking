@@ -583,7 +583,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
   }
   qs=tr("Letting application import data");
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        QBanking::QStringToUtf8String(qs).c_str());
+                        qs.utf8());
 
   res=_app->importContext(ctx, _flags);
   if (res) {
@@ -598,7 +598,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
 
     qs=tr("Error importing files.");
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          QBanking::QStringToUtf8String(qs).c_str());
+                          qs.utf8());
   }
 
   return res;
@@ -623,7 +623,7 @@ bool QBImporter::_checkFileType(const QString &fname){
 
   qs=tr("Checking for file type...");
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        QBanking::QStringToUtf8String(qs).c_str());
+                        qs.utf8());
 
   // check for type
   it=GWEN_PluginDescription_List2_First(_importerList);
@@ -637,17 +637,17 @@ bool QBImporter::_checkFileType(const QString &fname){
     pdtype=GWEN_PluginDescription_GetType(pd);
     if (pdtype) {
       if (strcasecmp(pdtype, "imexporter")==0) {
-        qs=QString(tr("Trying type \"%1\""))
+        qs=QWidget::tr("Trying type \"%1\"")
           .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
         GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                              QBanking::QStringToUtf8String(qs).c_str());
+                              qs.utf8());
         importer=AB_Banking_GetImExporter(_app->getCInterface(),
 					  GWEN_PluginDescription_GetName(pd));
         if (!importer) {
-          qs=QString(tr("Type \"%1\" is not available"))
+          qs=QWidget::tr("Type \"%1\" is not available")
             .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
           GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                QBanking::QStringToUtf8String(qs).c_str());
+                                qs.utf8());
 	}
 	else {
 	  int rv;
@@ -655,24 +655,24 @@ bool QBImporter::_checkFileType(const QString &fname){
 	  // let the importer check the file
 	  rv=AB_ImExporter_CheckFile(importer, fname.utf8());
           if (rv==0) {
-            qs=QString(tr("File type is \"%1\""))
+            qs=QWidget::tr("File type is \"%1\"")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                  QBanking::QStringToUtf8String(qs).c_str());
+                                  qs.utf8());
             break;
           }
           else if (rv==AB_ERROR_UNKNOWN) {
-            qs=QString(tr("File type might be \"%1\", checking further"))
+            qs=QWidget::tr("File type might be \"%1\", checking further")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                  QBanking::QStringToUtf8String(qs).c_str());
+                                  qs.utf8());
             possibles.push_back(GWEN_PluginDescription_GetName(pd));
           }
           else {
-            qs=QString(tr("File is not of type \"%1\""))
+            qs=QWidget::tr("File is not of type \"%1\"")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
             GWEN_WaitCallback_Log(GWEN_LoggerLevelDebug,
-                                  QBanking::QStringToUtf8String(qs).c_str());
+                                  qs.utf8());
 	  }
 	}
       }
@@ -815,8 +815,8 @@ bool QBImporter::_readFile(const QString &fname){
 
   if (!f.exists()) {
     DBG_NOTICE(0, "File \"%s\" does not exist",
-	       (const char*)(fname.local8Bit()));
-    qs=QString(tr("File \"%1\" does not exist"))
+	       fname.local8Bit().data());
+    qs=QWidget::tr("File \"%1\" does not exist")
       .arg(fname);
     QMessageBox::critical(this,
 			  tr("File not found"),
@@ -827,14 +827,14 @@ bool QBImporter::_readFile(const QString &fname){
   else {
     int fd;
 
-    DBG_INFO(0, "Importing file \"%s\"", (const char*)(fname.local8Bit()));
+    DBG_INFO(0, "Importing file \"%s\"", fname.local8Bit().data());
     // Note: This is not a cast but rather a call of the
     // conversion operator "QCString::operator const char * ()
     // const" that will correctly convert the QCString to the
     // const char*
-    fd=open((const char*)(fname.local8Bit()), O_RDONLY);
+    fd=open(fname.local8Bit().data(), O_RDONLY);
     if (fd==-1) {
-      qs=QString(tr("Could not open file \"%1\": %2"))
+      qs=QWidget::tr("Could not open file \"%1\": %2")
 	.arg(fname)
 	.arg(QString(strerror(errno)));
       QMessageBox::critical(this,
@@ -860,8 +860,8 @@ bool QBImporter::_readFile(const QString &fname){
       GWEN_BufferedIO_free(bio);
       if (rv) {
 	DBG_NOTICE(0, "Error importing file \"%s\"",
-		   (const char*)(fname.local8Bit()));
-        qs=QString(tr("Error importing file \"%1\"")).arg(fname);
+		   fname.local8Bit().data());
+        qs=QWidget::tr("Error importing file \"%1\"").arg(fname);
 	QMessageBox::critical(this,
 			      tr("Error"),
 			      qs,
@@ -869,7 +869,7 @@ bool QBImporter::_readFile(const QString &fname){
 	return false;
       }
       DBG_NOTICE(0, "File \"%s\" imported",
-		 (const char*)(fname.local8Bit()));
+		 fname.local8Bit().data());
     } // if open succeeded
   } // if file exists
 

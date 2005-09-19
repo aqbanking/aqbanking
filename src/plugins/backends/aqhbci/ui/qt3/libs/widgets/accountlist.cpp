@@ -78,7 +78,7 @@ void AccountListViewItem::_populate() {
     s=AH_Account_GetBankId(_account);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   // account name/id
   //   s=AH_Account_GetAccountName(_account); -- dont use it, it is useless
@@ -86,12 +86,12 @@ void AccountListViewItem::_populate() {
   s=AH_Account_GetAccountId(_account);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   s=AH_Account_GetOwnerName(_account);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 }
 
 

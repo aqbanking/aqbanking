@@ -85,7 +85,7 @@ bool Wizard::enterVerifyKeysPage(QWidget *p){
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
 			    ),
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -107,35 +107,35 @@ bool Wizard::enterVerifyKeysPage(QWidget *p){
 
   GWEN_CryptKey_free(key);
 
-  result+="<qt>";
-  result+="<h2>"+tr("Exponent")+"</h2>";
+  result+="<qt>"
+      "<h2>"+tr("Exponent")+"</h2>";
   if (exponent.length()<192) {
     DBG_ERROR(0, "Bad exponent");
     return false;
   }
-  result+="<font face=fixed>";
-  result+=_dumpHexString(exponent).c_str();
-  result+="</font>";
-  result+="<br>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(exponent).c_str()) +
+      "</font>"
+      "<br>";
 
   result+="<h2>"+tr("Modulus")+"</h2>";
   if (exponent.length()<192) {
     DBG_ERROR(0, "Bad modulus");
     return false;
   }
-  result+="<font face=fixed>";
-  result+=_dumpHexString(modulus).c_str();
-  result+="</font>";
-  result+="<br>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(modulus).c_str()) +
+      "</font>"
+      "<br>";
 
   result+="<h2>"+tr("Hash")+"</h2>";
-  result+="<font face=fixed>";
-  result+=_dumpHexString(hash, 40).c_str();
-  result+="</font>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(hash, 40).c_str()) +
+      "</font>"
 
-  result+="<br>";
+      "<br>"
 
-  result+="</qt>";
+      "</qt>";
 
   serverIniBrowser->setText(result);
   return true;
@@ -171,7 +171,7 @@ void Wizard::slotKeysNotOk(){
   QMessageBox::critical(this,
 			tr("Wrong Server Keys"),
 			tr("You said the fingerprint of the server's cryptographic keys are wrong. In this case, you need to contact your bank and ask whether their server keys have changed. You should take some notes of the key fingerprint that is displayed right now. Then you need to abort this user setup for now."),
-			tr("Dismiss"),0,0,0);
+			QMessageBox::Ok,QMessageBox::NoButton);
 }
 
 

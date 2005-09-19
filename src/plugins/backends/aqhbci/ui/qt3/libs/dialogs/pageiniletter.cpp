@@ -62,7 +62,6 @@ bool Wizard::enterIniLetterPage(QWidget *p) {
   std::string exponent;
   QString result;
   GWEN_CRYPTKEY *key;
-  const char *s;
   int keyNum;
   int keyVer;
 
@@ -85,7 +84,7 @@ bool Wizard::enterIniLetterPage(QWidget *p) {
 			  tr("Could not select user context on medium.\n"
 			     "Please check the logs."
 			    ),
-			  tr("Dismiss"),0,0,0);
+			  QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -108,37 +107,41 @@ bool Wizard::enterIniLetterPage(QWidget *p) {
       "<table>"
       "<tr><td>" + QWidget::tr("User Name") + "</td><td>";
   if (nameEdit->text().isEmpty())
-    result += AH_Customer_GetFullName(_customer);
+    result += QString::fromUtf8(AH_Customer_GetFullName(_customer));
   else
     result += nameEdit->text();
   result+="</td></tr>"
+
       "<tr><td>" + QWidget::tr("Date") + "</td><td>";
   result+=QDate::currentDate().toString();
   result+="</td></tr>"
+
       "<tr><td>"+QWidget::tr("Time")+"</td><td>";
   result+=QTime::currentTime().toString();
   result+="</td></tr>"
+
       "<tr><td>" + QWidget::tr("User Id")+"</td><td>";
   if (userIdEdit->text().isEmpty())
-    result += AH_User_GetUserId(_user);
+    result += QString::fromUtf8(AH_User_GetUserId(_user));
   else
     result += userIdEdit->text();
-  result+="</td></tr>";
-  result+="<tr><td>"+QWidget::tr("Key Number")+"</td><td>";
+  result+="</td></tr>"
 
+      "<tr><td>"+QWidget::tr("Key Number")+"</td><td>";
   result+=QString::number(keyNum);
-  result+="</td></tr>";
-  result+="<tr><td>"+QWidget::tr("Key Version")+"</td><td>";
+  result+="</td></tr>"
+
+      "<tr><td>"+QWidget::tr("Key Version")+"</td><td>";
   result+=QString::number(keyVer);
-  result+="</td></tr>";
-  result+="<tr><td>"+QWidget::tr("Application Name")+"</td><td>";
-  s=AH_HBCI_GetProductName(_hbci);
+  result+="</td></tr>"
+
+      "<tr><td>"+QWidget::tr("Application Name")+"</td><td>";
+  const char *s=AH_HBCI_GetProductName(_hbci);
   if (s) {
-    result+=s;
-    result+=" ";
+    result+=QString::fromUtf8(s) + " ";
   }
-  result+="</td></tr>";
-  result+="</table>\n";
+  result+=QString("</td></tr>"
+		  "</table>\n");
 
   result+="<h3>"+QWidget::tr("Public Key for Electronic Signature")+"</h3>";
   result+="<h4>"+QWidget::tr("Exponent")+"</h4>";
@@ -146,30 +149,30 @@ bool Wizard::enterIniLetterPage(QWidget *p) {
     DBG_ERROR(0, "Bad exponent");
     return false;
   }
-  result+="<font face=fixed>";
-  result+=_dumpHexString(exponent).c_str();
-  result+="</font>";
-  result+="<br>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(exponent).c_str()) +
+      "</font>"
+      "<br>";
 
-  result+="<h4>"+tr("Modulus")+"</h4>";
+  result+="<h4>"+QWidget::tr("Modulus")+"</h4>";
   if (exponent.length()<192) {
     DBG_ERROR(0, "Bad modulus");
     return false;
   }
-  result+="<font face=fixed>";
-  result+=_dumpHexString(modulus).c_str();
-  result+="</font>";
-  result+="<br>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(modulus).c_str()) +
+      "</font>"
+      "<br>";
 
-  result+="<h4>"+tr("Hash")+"</h4>";
-  result+="<font face=fixed>";
-  result+=_dumpHexString(hash, 40).c_str();
-  result+="</font>";
+  result+="<h4>"+QWidget::tr("Hash")+"</h4>";
+  result+="<font face=fixed>" +
+      QString::fromUtf8(_dumpHexString(hash, 40).c_str()) +
+      "</font>";
 
-  result+="<br><br><br>";
-  result+="<hr>";
-  result+=QWidget::tr("Location/Date/Signature");
-  result+="</qt>";
+  result+="<br><br><br>"
+      "<hr>" +
+      QWidget::tr("Location/Date/Signature") +
+      "</qt>";
 
   iniBrowser->setText(result);
 
@@ -185,7 +188,7 @@ void Wizard::slotPrintIniLetter(){
 
   if (printer.setup(this)) {
     QPainter p;
-    QFont fnt("times", 12);
+    QFont fnt(QString("times"), 12);
 
     if (!p.begin(&printer))
       return;
@@ -195,7 +198,7 @@ void Wizard::slotPrintIniLetter(){
       QMessageBox::critical(this,
                             tr("Print Ini letter"),
                             tr("Ini letter does not fit on the page."),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Abort,QMessageBox::NoButton);
       return;
     }
     txt.draw(&p,XMargin,YMargin,

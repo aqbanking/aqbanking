@@ -99,7 +99,7 @@ bool Wizard::doCheckFilePage(QWidget *p){
                           tr("Medium Error"),
                           tr("Medium does not exist.\n"
                              "Please check the console logs."),
-                          tr("Dismiss"),0,0,0);
+                          QMessageBox::Ok,QMessageBox::NoButton);
     return false;
   }
 
@@ -109,7 +109,7 @@ bool Wizard::doCheckFilePage(QWidget *p){
                             tr("Medium Error"),
                             tr("Could not mount the medium.\n"
                                "Please check the console logs."),
-                            tr("Dismiss"),0,0,0);
+                            QMessageBox::Ok,QMessageBox::NoButton);
       _medium=0;
       return false;
     }

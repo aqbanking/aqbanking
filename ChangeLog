@@ -3,6 +3,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-09-19   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/*,
+	src/plugins/backends/aqhbci/ui/qt3/libs/*: Replace implicit
+	conversions of const char* into QString by explicit conversions
+	everywhere. This means that aqbanking-strings are now always
+	converted by QString::fromUtf8 and correctly backwards. This can
+	be checked by defining QT_NO_CAST_ASCII.
+
 2005-09-17  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/qbanking.cpp,
