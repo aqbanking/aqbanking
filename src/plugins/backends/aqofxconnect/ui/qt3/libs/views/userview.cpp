@@ -185,7 +185,7 @@ void UserView::slotEdit(){
     QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select user first."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
@@ -217,7 +217,7 @@ void UserView::slotGetAccounts() {
     QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select user first."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
@@ -231,7 +231,7 @@ void UserView::slotGetAccounts() {
     QMessageBox::warning(this,
                          tr("Bad Selection"),
                          tr("The selected user has an incomplete setup."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
   AO_Provider_RequestAccounts(_provider, country, bankId, userId);

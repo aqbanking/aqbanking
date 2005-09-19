@@ -92,7 +92,7 @@ void UserListViewItem::_populate() {
     s=AB_Country_GetLocalName(ci);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   // bank name/code
   s=AO_Bank_GetBankName(b);
@@ -100,13 +100,13 @@ void UserListViewItem::_populate() {
     s=AO_Bank_GetBankId(b);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 
   // user name/id
   s=AO_User_GetUserId(_user);
   if (!s)
     s="";
-  setText(i++, s);
+  setText(i++, QString::fromUtf8(s));
 }
 
 

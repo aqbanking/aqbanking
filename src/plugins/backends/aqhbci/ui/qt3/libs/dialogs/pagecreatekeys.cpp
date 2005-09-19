@@ -84,7 +84,7 @@ void Wizard::slotCreateKeys(){
                                "</p>"
                                "</qt>"
                               ),
-                            tr("Yes"), tr("No"),tr("Abort"),0);
+                            QMessageBox::Yes,QMessageBox::No,QMessageBox::Abort);
     if (rv!=0) {
       return;
     }

@@ -227,12 +227,12 @@ void EditUser::guiToUser(AO_USER *u) {
     QString entered = urlEdit->text();
     QString qs;
 
-    if (entered.startsWith("http://")) {
+    if (entered.startsWith(QString("http://"))) {
       qs=entered.mid(7);
       AO_Bank_SetServerType(b, AO_Bank_ServerTypeHTTP);
 
     }
-    else if (entered.startsWith("https://")) {
+    else if (entered.startsWith(QString("https://"))) {
       qs=entered.mid(8);
       AO_Bank_SetServerType(b, AO_Bank_ServerTypeHTTPS);
     }
@@ -340,9 +340,9 @@ void EditUser::slotBankCodeClicked() {
                               tr("Select a Bank"),
                               QString::fromUtf8(country.c_str()),
                               bankCodeEdit->text(),
-                              "", // no BIC
+                              QString::null, // no BIC
                               bankNameEdit->text(),
-                              ""); // no location
+                              QString::null); // no location
   if (bi) {
     const char *s;
     AB_BANKINFO_SERVICE *sv;
@@ -370,8 +370,8 @@ void EditUser::slotBankCodeClicked() {
 	s=AB_BankInfoService_GetAddress(sv);
 	if (s) {
 	  qs=QString::fromUtf8(s);
-	  if (!qs.startsWith("http://") &&
-	      !qs.startsWith("https://"))
+	  if (!qs.startsWith(QString("http://")) &&
+	      !qs.startsWith(QString("https://")))
 	    qs="https://"+qs;
 	}
 	else

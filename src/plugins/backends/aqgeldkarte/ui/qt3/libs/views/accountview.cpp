@@ -164,7 +164,7 @@ void AccountView::slotNew(){
                                   tr("New Account"),
                                   tr("This account already exists.\n"
                                      "Please check your input."),
-                                  tr("Edit"), tr("Abort"), 0, 0)!=0) {
+                                  QMessageBox::Retry,QMessageBox::Abort)!=0) {
           AB_Account_free(a);
           return;
         }
@@ -191,7 +191,7 @@ void AccountView::slotEdit(){
     QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select an account first."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
 
@@ -214,14 +214,14 @@ void AccountView::slotRemove(){
     QMessageBox::warning(this,
                          tr("No Selection"),
                          tr("Please select an account first."),
-                         tr("Dismiss"), 0, 0, 0);
+                         QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
   if (QMessageBox::warning(this,
                            tr("Remove Account"),
                            tr("Are you sure you want to remove "
                               "the selcted account?"),
-                           tr("Yes"), tr("No"), 0, 0)!=0)
+                           QMessageBox::Yes,QMessageBox::No)!=0)
     return;
 
   AG_Provider_RemoveAccount(_provider, a);

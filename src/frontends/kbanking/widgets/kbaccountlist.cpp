@@ -78,7 +78,7 @@ void KBAccountListViewItem::_populate() {
   // bank name
   tmp=QString::fromUtf8(AB_Account_GetBankName(_account));
   if (tmp.isEmpty())
-    tmp=QWidget::tr("(unnamed)");
+    tmp=QWidget::tr("(unknown)");
   setText(i++,tmp);
 
   // account id
@@ -87,7 +87,7 @@ void KBAccountListViewItem::_populate() {
   // account name
   tmp=QString::fromUtf8(AB_Account_GetAccountName(_account));
   if (tmp.isEmpty())
-    tmp=QWidget::tr("(unnamed)");
+    tmp=QWidget::tr("(unknown)");
   setText(i++, tmp);
 
   tmp=QString::fromUtf8(AB_Account_GetOwnerName(_account));
