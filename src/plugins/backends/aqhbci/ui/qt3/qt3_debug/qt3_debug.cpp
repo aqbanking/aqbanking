@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  hdir=QDir::homeDirPath().local8Bit();
+  hdir=QDir::homeDirPath().local8Bit().data();
   hdir+="/";
   hdir+=".banking";
 
