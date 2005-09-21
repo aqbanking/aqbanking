@@ -18,11 +18,11 @@
 
 
 struct AB_COUNTRY {
-  char *name;
-  char *code;
+  const char *name;
+  const char *code;
   int numericCode;
-  char *currencyName;
-  char *currencyCode;
+  const char *currencyName;
+  const char *currencyCode;
 };
 
 

@@ -3,6 +3,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-09-21   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/country.c: Fix missing ending marker of the
+	static list ab_country_list. Pointed out by qbankmanager segfault
+	of Ronny Steiner.
+
 2005-09-19   Christian Stimming <stimming@tuhh.de>
 
 	* src/frontends/qbanking/*,

@@ -237,7 +237,11 @@ static AB_COUNTRY ab_country_list[]= {
 { I18N_NOOP("Western Sahara"), "EH", 732, I18N_NOOP("Moroccan Dirham and Mauritanian Ouguiya"),  "MAD" },
 { I18N_NOOP("Yugoslavia"), "YU", 0, I18N_NOOP("New Dinar"),  "YUD" },
 { I18N_NOOP("Zambia"), "ZM", 894, I18N_NOOP("Zambian Kwacha"),  "ZMK" },
-{ I18N_NOOP("Zimbabwe"), "ZW", 716, I18N_NOOP("Zimbabwe Dollar"),  "ZWD" }
+{ I18N_NOOP("Zimbabwe"), "ZW", 716, I18N_NOOP("Zimbabwe Dollar"),  "ZWD" },
+  /* Watch out: The last element *has* to be this all-zero
+     element, or else the iterations will not find the end of this
+     list. */
+{ 0, 0, 0, 0, 0 }
 };
 
 
