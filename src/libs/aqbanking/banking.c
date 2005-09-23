@@ -1960,7 +1960,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
-                                                           const char *pn){
+							  const char *pname){
   GWEN_BUFFER *pbuf;
   GWEN_PLUGIN_DESCRIPTION_LIST2 *wdl;
 
@@ -1970,7 +1970,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
                            DIRSEP
                            AB_PROVIDER_WIZARD_FOLDER
                            DIRSEP);
-  GWEN_Buffer_AppendString(pbuf, pn);
+  GWEN_Buffer_AppendString(pbuf, pname);
 
   wdl=GWEN_LoadPluginDescrs(GWEN_Buffer_GetStart(pbuf));
 
@@ -3363,7 +3363,7 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here");
 	  return rv;
 	}
-	GWEN_Buffer_AppendByte(pbuf, '/');
+	GWEN_Buffer_AppendString(pbuf, DIRSEP);
 	GWEN_Buffer_AppendString(pbuf, name);
 	GWEN_PluginDescription_List2Iterator_free(pit);
 	GWEN_PluginDescription_List2_freeAll(pl);
@@ -3416,7 +3416,7 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
 	    return rv;
 	  }
-	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
 	  GWEN_Buffer_AppendString(pbuf, name);
           free(s);
 	  GWEN_PluginDescription_List2Iterator_free(pit);
@@ -3447,12 +3447,15 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 			  GWEN_BUFFER *pbuf){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
   char *s;
-  char *p;
+  char *pfront;
+  assert(ab);
+  assert(backend);
+  assert(pbuf);
 
   pl=AB_Banking_GetWizardDescrs(ab, backend);
   if (!pl) {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "No debuggers available for backend \"%s\"", backend);
+	     "No wizards available for backend \"%s\"", backend);
     return -1;
   }
 
@@ -3468,18 +3471,18 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
       name=GWEN_PluginDescription_GetName(pd);
       if (!name) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Found a plugin description with no name");
+		 "Found a plugin description with no name for backend \"%s\"", backend);
       }
       else {
 	int rv;
 
 	rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
 	if (rv) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "GetWizardPath failed for backend \"%s\"", backend);
 	  return rv;
 	}
-	GWEN_Buffer_AppendByte(pbuf, '/');
-	GWEN_Buffer_AppendString(pbuf, name);
+	GWEN_Buffer_AppendString(pbuf, DIRSEP);
+       	GWEN_Buffer_AppendString(pbuf, name);
 	GWEN_PluginDescription_List2Iterator_free(pit);
 	GWEN_PluginDescription_List2_freeAll(pl);
 	return 0;
@@ -3492,17 +3495,17 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
   /* check for every given frontend */
   s=strdup(frontends);
 
-  p=s;
-  while(*p) {
+  pfront=s;
+  while(*pfront) {
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
     GWEN_PLUGIN_DESCRIPTION *pd;
     char *t;
 
-    t=strchr(p, ';');
+    t=strchr(pfront, ';');
     if (t)
       *(t++)=0;
 
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Trying frontend \"%s\"", p);
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Trying frontend \"%s\"", pfront);
 
     pit=GWEN_PluginDescription_List2_First(pl);
     assert(pit);
@@ -3515,7 +3518,7 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
       n=GWEN_PluginDescription_GetXmlNode(pd);
       assert(n);
       fr=GWEN_XMLNode_GetProperty(n, "frontend", "");
-      if (-1!=GWEN_Text_ComparePattern(fr, p, 0)) {
+      if (-1!=GWEN_Text_ComparePattern(fr, pfront, 0)) {
 	const char *name;
 
 	name=GWEN_PluginDescription_GetName(pd);
@@ -3528,10 +3531,10 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 
 	  rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
 	  if (rv) {
-	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "GetWizardPath failed for backend \"%s\" and frontend \"%s\"", backend, pfront);
 	    return rv;
 	  }
-	  GWEN_Buffer_AppendByte(pbuf, '/');
+	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
 	  GWEN_Buffer_AppendString(pbuf, name);
           free(s);
 	  GWEN_PluginDescription_List2Iterator_free(pit);
@@ -3545,12 +3548,12 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 
     if (!t)
       break;
-    p=t;
+    pfront=t;
   } /* while */
 
   free(s);
   GWEN_PluginDescription_List2_freeAll(pl);
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No matching debugger found");
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "No matching wizard found");
   return -1;
 }
 
