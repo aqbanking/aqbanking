@@ -1392,7 +1392,7 @@ int AH_Medium_CreateKeys(AH_MEDIUM *m){
   const GWEN_CRYPTTOKEN_CONTEXT *tctx;
   const GWEN_CRYPTTOKEN_KEYINFO *kiS;
   const GWEN_CRYPTTOKEN_KEYINFO *kiC;
-  GWEN_CRYPTKEY *key;
+  GWEN_CRYPTKEY *key=0;
   int rv;
 
   assert(m);
@@ -1401,8 +1401,6 @@ int AH_Medium_CreateKeys(AH_MEDIUM *m){
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Medium is not mounted");
     return -1;
   }
-
-  assert(key);
 
   if (m->selected==-1 || !m->currentContext) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No context selected");

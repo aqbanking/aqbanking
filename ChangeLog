@@ -3,6 +3,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/09/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug (bad assert)
+
+
 2005-09-23   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Fix errornous debugging
@@ -64,6 +69,7 @@
 	* src/frontends/qbanking/widgets/qbinputbox.cpp
 	(QBInputBox::Validator::validate): Improve checking for digits by
 	using only Qt methods on the QString.
+
 
 2005/09/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

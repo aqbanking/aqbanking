@@ -1008,7 +1008,7 @@ int AO_Provider_ExtractHttpResponse(AB_PROVIDER *pro,
     const unsigned char *d;
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Got chunked data");
-    d=GWEN_Buffer_GetStart(mbuf)+pos;
+    d=(unsigned char*)GWEN_Buffer_GetStart(mbuf)+pos;
     while(*d) {
       GWEN_TYPE_UINT32 len=0;
       GWEN_TYPE_UINT32 cpos;
@@ -1053,8 +1053,8 @@ int AO_Provider_ExtractHttpResponse(AB_PROVIDER *pro,
       }
       DBG_VERBOUS(AQOFXCONNECT_LOGDOMAIN, "Chunksize is %d (%x):", len, len);
       if (GWEN_Logger_GetLevel(AQOFXCONNECT_LOGDOMAIN)>=GWEN_LoggerLevelVerbous)
-        GWEN_Text_DumpString(d, len, stderr, 4);
-      GWEN_Buffer_AppendBytes(dbuf, d, len);
+        GWEN_Text_DumpString((char*)d, len, stderr, 4);
+      GWEN_Buffer_AppendBytes(dbuf, (char*)d, len);
       d+=len;
       /* skip trailing CR/LF */
       if (*d==10 || *d==13)
