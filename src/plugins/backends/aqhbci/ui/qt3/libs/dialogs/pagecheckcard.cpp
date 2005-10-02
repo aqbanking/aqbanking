@@ -42,7 +42,7 @@
 
 
 bool Wizard::initCheckCardPage() {
-  QObject::connect((QObject*)(checkCardButton),
+  QObject::connect((checkCardButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotCheckCard()));

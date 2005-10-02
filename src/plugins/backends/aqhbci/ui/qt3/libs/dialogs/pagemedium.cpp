@@ -48,20 +48,20 @@ bool Wizard::initMediumPage() {
   setAppropriate(checkCardPage,!on);
 
   // page 1
-  QObject::connect((QObject*)(cardRadio),
+  QObject::connect((cardRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotDDVToggled(bool)));
-  QObject::connect((QObject*)(fileRadio),
+  QObject::connect((fileRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotRDHToggled(bool)));
 
-  QObject::connect((QObject*)(fileNameButton),
+  QObject::connect((fileNameButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotPathClicked()));
-  QObject::connect((QObject*)(fileNameEdit),
+  QObject::connect((fileNameEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotPathChanged(const QString &)));

@@ -46,14 +46,14 @@ KBJobView::KBJobView(KBanking *kb,
   QBoxLayout *jobBoxLayout = new QHBoxLayout( jobBox->layout() );
   jobBoxLayout->setAlignment( Qt::AlignTop );
 
-  _jobList=new KBJobListView((QWidget*)jobBox, name);
+  _jobList=new KBJobListView(jobBox, name);
   jobBoxLayout->addWidget(_jobList);
 
-  QObject::connect((QObject*)_app->flagStaff(), SIGNAL(signalQueueUpdated()),
+  QObject::connect(_app->flagStaff(), SIGNAL(signalQueueUpdated()),
                    this, SLOT(slotQueueUpdated()));
-  QObject::connect((QObject*)executeButton, SIGNAL(clicked()),
+  QObject::connect(executeButton, SIGNAL(clicked()),
                    this, SLOT(slotExecute()));
-  QObject::connect((QObject*)dequeueButton, SIGNAL(clicked()),
+  QObject::connect(dequeueButton, SIGNAL(clicked()),
                    this, SLOT(slotDequeue()));
 
 }

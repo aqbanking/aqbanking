@@ -43,17 +43,17 @@ EditAccount::EditAccount(QBanking *app,
   bankCodeEdit->setEnabled(isNew);
   accountIdEdit->setEnabled(isNew);
 
-  QObject::connect((QObject*)useFloppyCheck, SIGNAL(toggled(bool)),
+  QObject::connect(useFloppyCheck, SIGNAL(toggled(bool)),
                    this, SLOT(slotFloppyToggled(bool)));
-  QObject::connect((QObject*)mountCheck, SIGNAL(toggled(bool)),
+  QObject::connect(mountCheck, SIGNAL(toggled(bool)),
                    this, SLOT(slotMountToggled(bool)));
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotBankCodeLostFocus()));
-  QObject::connect((QObject*)folderEdit, SIGNAL(lostFocus()),
+  QObject::connect(folderEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotFolderLostFocus()));
-  QObject::connect((QObject*)whatsThisButton, SIGNAL(clicked()),
+  QObject::connect(whatsThisButton, SIGNAL(clicked()),
                    this, SLOT(slotWhatsThis()));
-  QObject::connect((QObject*)folderButton, SIGNAL(clicked()),
+  QObject::connect(folderButton, SIGNAL(clicked()),
                    this, SLOT(slotFolder()));
 
 }

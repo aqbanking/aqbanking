@@ -43,11 +43,11 @@ QBProcessWatcher::QBProcessWatcher(QProcess* process,
   else
     textLabel->setText(text);
 
-  QObject::connect((QObject*)process, SIGNAL(processExited()),
+  QObject::connect(process, SIGNAL(processExited()),
                    this, SLOT(slotProcessFinished()));
-  QObject::connect((QObject*)terminateButton, SIGNAL(clicked()),
+  QObject::connect(terminateButton, SIGNAL(clicked()),
                    this, SLOT(slotTerminate()));
-  QObject::connect((QObject*)killButton, SIGNAL(clicked()),
+  QObject::connect(killButton, SIGNAL(clicked()),
                    this, SLOT(slotKill()));
 }
 

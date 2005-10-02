@@ -47,7 +47,7 @@
 
 
 bool Wizard::initServerCertPage() {
-  QObject::connect((QObject*)(getCertButton),
+  QObject::connect((getCertButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotGetCert()));

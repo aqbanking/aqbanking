@@ -98,22 +98,22 @@ LogManager::LogManager(const char *baseDir,
   for (sit=_banks.begin(); sit!=_banks.end(); sit++)
     bankSelector->insertItem(QString::fromUtf8((*sit).c_str()));
 
-  QObject::connect((QObject*)(bankSelector),
+  QObject::connect((bankSelector),
                    SIGNAL(activated(const QString&)),
                    this,
                    SLOT(bankActivated(const QString&)));
-  QObject::connect((QObject*)(trustSelector),
+  QObject::connect((trustSelector),
                    SIGNAL(activated(int)),
                    this,
                    SLOT(trustActivated(int)));
   bankSelector->setCurrentItem(0);
   bankActivated(bankSelector->currentText());
 
-  QObject::connect((QObject*)(fileList),
+  QObject::connect((fileList),
                    SIGNAL(selectionChanged(QListViewItem*)),
                    this,
                    SLOT(fileSelected(QListViewItem*)));
-  QObject::connect((QObject*)(saveButton),
+  QObject::connect((saveButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(saveFile()));

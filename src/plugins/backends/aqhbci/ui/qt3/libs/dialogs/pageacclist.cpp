@@ -44,7 +44,7 @@
 
 
 bool Wizard::initAccListPage() {
-  QObject::connect((QObject*)(getAccListButton),
+  QObject::connect((getAccListButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotGetAccList()));

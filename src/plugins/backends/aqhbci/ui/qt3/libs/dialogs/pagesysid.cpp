@@ -44,7 +44,7 @@
 
 
 bool Wizard::initSystemIdPage() {
-  QObject::connect((QObject*)(getSysIdButton),
+  QObject::connect((getSysIdButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotGetSysId()));

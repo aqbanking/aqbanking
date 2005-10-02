@@ -44,7 +44,7 @@
 
 
 bool Wizard::initServerKeysPage() {
-  QObject::connect((QObject*)(getKeysButton),
+  QObject::connect((getKeysButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotGetKeys()));

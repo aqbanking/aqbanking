@@ -46,11 +46,11 @@ EditAccount::EditAccount(QBanking *app,
   accountIdEdit->setEnabled(isNew);
   fromCardButton->setEnabled(isNew);
 
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotBankCodeLostFocus()));
-  QObject::connect((QObject*)whatsThisButton, SIGNAL(clicked()),
+  QObject::connect(whatsThisButton, SIGNAL(clicked()),
                    this, SLOT(slotWhatsThis()));
-  QObject::connect((QObject*)fromCardButton, SIGNAL(clicked()),
+  QObject::connect(fromCardButton, SIGNAL(clicked()),
                    this, SLOT(slotFromCard()));
 
 }

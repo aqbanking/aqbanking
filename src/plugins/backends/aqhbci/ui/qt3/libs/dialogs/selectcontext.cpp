@@ -18,6 +18,7 @@
 #include "selectcontext.h"
 #include <qlistview.h>
 #include <qmessagebox.h>
+#include <qpushbutton.h>
 
 #include <qbanking/qbanking.h>
 #include <gwenhywfar/debug.h>
@@ -33,9 +34,9 @@ SelectContext::SelectContext(AH_HBCI *hbci, AH_MEDIUM *medium)
 ,_userId("")
 ,_server(""){
 
-  QObject::connect((QObject*)okButton, SIGNAL(clicked()),
+  QObject::connect(okButton, SIGNAL(clicked()),
                    this,SLOT(setValues()));
-  QObject::connect((QObject*)abortButton,SIGNAL(clicked()),
+  QObject::connect(abortButton,SIGNAL(clicked()),
                    this, SLOT(reject()));
   contextList->setAllColumnsShowFocus(true);
 }

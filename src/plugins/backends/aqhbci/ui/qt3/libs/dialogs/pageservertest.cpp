@@ -45,7 +45,7 @@
 
 
 bool Wizard::initServerTestPage() {
-  QObject::connect((QObject*)(serverTestButton),
+  QObject::connect((serverTestButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotServerTest()));

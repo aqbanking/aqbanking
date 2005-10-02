@@ -42,7 +42,7 @@
 
 bool Wizard::initSelectFilePage() {
   setNextEnabled(selectFilePage, false);
-  QObject::connect((QObject*)(fileTypeCombo),
+  QObject::connect((fileTypeCombo),
                    SIGNAL(activated(int)),
                    this,
                    SLOT(slotFiletypeChanged(int)));

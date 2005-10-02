@@ -83,7 +83,7 @@ EditUser::EditUser(AH_HBCI *h,
 
   updateLists();
 
-  QObject::connect((QObject*)(editButton),
+  QObject::connect((editButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotEditCustomer()));

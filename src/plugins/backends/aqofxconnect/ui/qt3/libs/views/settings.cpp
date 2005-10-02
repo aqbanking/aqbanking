@@ -20,6 +20,7 @@
 
 #include <qtabdialog.h>
 #include <qtabwidget.h>
+#include <qpushbutton.h>
 
 
 OfxSettings::OfxSettings(QBanking *app,
@@ -32,7 +33,7 @@ OfxSettings::OfxSettings(QBanking *app,
   tabWidget->addTab(_userView, tr("Users"));
   _accountView=new AccountView(app, this);
   tabWidget->addTab(_accountView, tr("Accounts"));
-  QObject::connect((QObject*)closeButton, SIGNAL(clicked()),
+  QObject::connect(closeButton, SIGNAL(clicked()),
                    this, SLOT(close()));
 }
 

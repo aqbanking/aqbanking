@@ -46,7 +46,7 @@ QBMapAccount::QBMapAccount(QBanking *kb,
   accountBox->setColumnLayout(0, Qt::Vertical );
   QBoxLayout *accountBoxLayout = new QHBoxLayout(accountBox->layout() );
   accountBoxLayout->setAlignment(Qt::AlignTop);
-  _accountList=new QBAccountListView((QWidget*)accountBox, "AccountList");
+  _accountList=new QBAccountListView(accountBox, "AccountList");
   accountBoxLayout->addWidget(_accountList);
   _accountList->setSelectionMode(QListView::Single);
   _accountList->setAllColumnsShowFocus(true);
@@ -60,7 +60,7 @@ QBMapAccount::QBMapAccount(QBanking *kb,
   else
     accountIdEdit->setEnabled(false);
 
-  QObject::connect((QObject*)_accountList, SIGNAL(selectionChanged()),
+  QObject::connect(_accountList, SIGNAL(selectionChanged()),
                    this, SLOT(slotSelectionChanged()));
 
   _accountList->addAccounts(_banking->getAccounts());

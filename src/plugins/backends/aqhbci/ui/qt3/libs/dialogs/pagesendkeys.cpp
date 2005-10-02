@@ -44,7 +44,7 @@
 
 
 bool Wizard::initSendKeysPage() {
-  QObject::connect((QObject*)(sendKeysButton),
+  QObject::connect((sendKeysButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotSendKeys()));

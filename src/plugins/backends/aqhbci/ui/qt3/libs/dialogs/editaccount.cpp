@@ -42,11 +42,11 @@ EditAccount::EditAccount(AH_HBCI *h,
 ,_banks(0)
 ,_customers(0) {
 
-  QObject::connect((QObject*)(bankCombo),
+  QObject::connect((bankCombo),
                    SIGNAL(activated(int)),
                    this,
                    SLOT(slotBankChanged(int)));
-  QObject::connect((QObject*)(customerIdCombo),
+  QObject::connect((customerIdCombo),
                    SIGNAL(activated(int)),
                    this,
                    SLOT(slotCustomerChanged(int)));

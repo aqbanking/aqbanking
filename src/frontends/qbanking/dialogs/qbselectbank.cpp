@@ -42,28 +42,28 @@ QBSelectBank::QBSelectBank(QBanking *kb,
 
   bankListView->setAllColumnsShowFocus(TRUE);
   bankListView->setSelectionMode(QListView::Single);
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotUpdate()));
-  QObject::connect((QObject*)swiftCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(swiftCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotUpdate()));
-  QObject::connect((QObject*)bankNameEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankNameEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotUpdate()));
-  QObject::connect((QObject*)locationEdit, SIGNAL(lostFocus()),
+  QObject::connect(locationEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotUpdate()));
-  QObject::connect((QObject*)onlineCheckBox, SIGNAL(toggled(bool)),
+  QObject::connect(onlineCheckBox, SIGNAL(toggled(bool)),
                    this, SLOT(slotOnlineToggled(bool)));
 
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(textChanged(const QString&)),
+  QObject::connect(bankCodeEdit, SIGNAL(textChanged(const QString&)),
                    this, SLOT(slotChanged(const QString&)));
-  QObject::connect((QObject*)swiftCodeEdit, SIGNAL(textChanged(const QString&)),
+  QObject::connect(swiftCodeEdit, SIGNAL(textChanged(const QString&)),
                    this, SLOT(slotChanged(const QString&)));
-  QObject::connect((QObject*)bankNameEdit, SIGNAL(textChanged(const QString&)),
+  QObject::connect(bankNameEdit, SIGNAL(textChanged(const QString&)),
                    this, SLOT(slotChanged(const QString&)));
-  QObject::connect((QObject*)locationEdit, SIGNAL(textChanged(const QString&)),
+  QObject::connect(locationEdit, SIGNAL(textChanged(const QString&)),
                    this, SLOT(slotChanged(const QString&)));
-  QObject::connect((QObject*)bankListView, SIGNAL(selectionChanged()),
+  QObject::connect(bankListView, SIGNAL(selectionChanged()),
                    this, SLOT(slotSelectionChanged()));
-  QObject::connect((QObject*)bankListView,
+  QObject::connect(bankListView,
                    SIGNAL(doubleClicked(QListViewItem *,
                                         const QPoint &,
                                         int)),

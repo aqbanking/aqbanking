@@ -48,13 +48,13 @@ UserView::UserView(QBanking *app,
 ,_settings(settings){
   _provider=AB_Banking_GetProvider(_app->getCInterface(), "aqofxconnect");
   assert(_provider);
-  QObject::connect((QObject*)newButton, SIGNAL(clicked()),
+  QObject::connect(newButton, SIGNAL(clicked()),
                    this, SLOT(slotNew()));
-  QObject::connect((QObject*)editButton, SIGNAL(clicked()),
+  QObject::connect(editButton, SIGNAL(clicked()),
                    this, SLOT(slotEdit()));
-  QObject::connect((QObject*)removeButton, SIGNAL(clicked()),
+  QObject::connect(removeButton, SIGNAL(clicked()),
                    this, SLOT(slotRemove()));
-  QObject::connect((QObject*)getAccountListButton, SIGNAL(clicked()),
+  QObject::connect(getAccountListButton, SIGNAL(clicked()),
                    this, SLOT(slotGetAccounts()));
 }
 

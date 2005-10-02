@@ -69,19 +69,19 @@ QBImporter::QBImporter(QBanking *kb,
   setFinishEnabled(finishPage, true);
 
   // connect buttons
-  QObject::connect((QObject*)selectFileButton, SIGNAL(clicked()),
+  QObject::connect(selectFileButton, SIGNAL(clicked()),
 		   this, SLOT(slotSelectFile()));
 
-  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+  QObject::connect(profileEditButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileEdit()));
 
 
-  QObject::connect((QObject*)profileList, SIGNAL(selectionChanged()),
+  QObject::connect(profileList, SIGNAL(selectionChanged()),
                    this, SLOT(slotProfileSelected()));
 
-  QObject::connect((QObject*)profileDetailsButton, SIGNAL(clicked()),
+  QObject::connect(profileDetailsButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileDetails()));
-  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+  QObject::connect(profileEditButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileEdit()));
 
 }
@@ -110,19 +110,19 @@ QBImporter::QBImporter(QBanking *kb,
   setFinishEnabled(finishPage, true);
 
   // connect buttons
-  QObject::connect((QObject*)selectFileButton, SIGNAL(clicked()),
+  QObject::connect(selectFileButton, SIGNAL(clicked()),
 		   this, SLOT(slotSelectFile()));
 
-  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+  QObject::connect(profileEditButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileEdit()));
 
 
-  QObject::connect((QObject*)profileList, SIGNAL(selectionChanged()),
+  QObject::connect(profileList, SIGNAL(selectionChanged()),
                    this, SLOT(slotProfileSelected()));
 
-  QObject::connect((QObject*)profileDetailsButton, SIGNAL(clicked()),
+  QObject::connect(profileDetailsButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileDetails()));
-  QObject::connect((QObject*)profileEditButton, SIGNAL(clicked()),
+  QObject::connect(profileEditButton, SIGNAL(clicked()),
                    this, SLOT(slotProfileEdit()));
 
 }

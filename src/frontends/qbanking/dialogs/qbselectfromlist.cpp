@@ -46,7 +46,7 @@ QBSelectFromList::QBSelectFromList(QBanking *kb,
     listView->setSelectionMode(QListView::Single);
   listView->setAllColumnsShowFocus(true);
 
-  QObject::connect((QObject*)listView,
+  QObject::connect(listView,
                    SIGNAL(selectionChanged()),
                    this, SLOT(slotSelectionChanged()));
 

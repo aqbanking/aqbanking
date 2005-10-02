@@ -73,10 +73,10 @@ QBProgress::QBProgress(GWEN_TYPE_UINT32 id,
     logWidget->setMinimumHeight(350);
   }
 
-  QObject::connect((QObject*)abortButton, SIGNAL(clicked()),
+  QObject::connect(abortButton, SIGNAL(clicked()),
                    this, SLOT(abort()));
 
-  QObject::connect((QObject*)closeButton, SIGNAL(clicked()),
+  QObject::connect(closeButton, SIGNAL(clicked()),
                    this, SLOT(close()));
 
 }

@@ -43,12 +43,12 @@
 
 
 bool Wizard::initVerifyKeysPage() {
-  QObject::connect((QObject*)(serverKeysOkButton),
+  QObject::connect((serverKeysOkButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotKeysOk()));
 
-  QObject::connect((QObject*)(serverKeysBadButton),
+  QObject::connect((serverKeysBadButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotKeysNotOk()));

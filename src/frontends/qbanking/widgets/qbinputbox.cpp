@@ -128,9 +128,9 @@ QBInputBox::QBInputBox(const QString& title,
   QGridLayout *gridlayout = new QGridLayout( layout, 1, 2, 6, "gridlayout" );
   _edit1=new QLineEdit(this, "EditBox1");
   _edit1->setValidator(_validator);
-  QObject::connect((QObject*)_edit1, SIGNAL(returnPressed()),
+  QObject::connect(_edit1, SIGNAL(returnPressed()),
                    this, SLOT(returnPressedOn1()));
-  QObject::connect((QObject*)_edit1, SIGNAL(textChanged(const QString&)),
+  QObject::connect(_edit1, SIGNAL(textChanged(const QString&)),
                    this, SLOT(textChanged(const QString&)));
   if (flags & AB_BANKING_INPUT_FLAGS_SHOW)
     _edit1->setEchoMode(QLineEdit::Normal);
@@ -145,9 +145,9 @@ QBInputBox::QBInputBox(const QString& title,
     /* add QLineEdit */
     _edit2=new QLineEdit(this, "EditBox2");
     _edit2->setValidator(_validator);
-    QObject::connect((QObject*)_edit2, SIGNAL(returnPressed()),
+    QObject::connect(_edit2, SIGNAL(returnPressed()),
                      this, SLOT(returnPressedOn2()));
-    QObject::connect((QObject*)_edit2, SIGNAL(textChanged(const QString&)),
+    QObject::connect(_edit2, SIGNAL(textChanged(const QString&)),
                      this, SLOT(textChanged(const QString&)));
     if (flags & AB_BANKING_INPUT_FLAGS_SHOW)
       _edit2->setEchoMode(QLineEdit::Normal);
@@ -180,9 +180,9 @@ QBInputBox::QBInputBox(const QString& title,
   buttonlayout->addWidget(_okButton);
   buttonlayout->addWidget(_abortButton);
 
-  QObject::connect((QObject*)_okButton, SIGNAL(clicked()),
+  QObject::connect(_okButton, SIGNAL(clicked()),
                    this, SLOT(accept()));
-  QObject::connect((QObject*)_abortButton, SIGNAL(clicked()),
+  QObject::connect(_abortButton, SIGNAL(clicked()),
                    this, SLOT(reject()));
 
   _edit1->setFocus();

@@ -24,6 +24,7 @@
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qprocess.h>
+#include <qpushbutton.h>
 
 
 #include <aqbanking/provider.h>
@@ -60,7 +61,7 @@ QBankingSettings::QBankingSettings(QBanking *ab,
   QBoxLayout *accountsBoxLayout = new QHBoxLayout( accountsBox->layout() );
   accountsBoxLayout->setAlignment( Qt::AlignTop );
 
-  _accListView=new QBAccountListView((QWidget*)accountsBox, "AccountList");
+  _accListView=new QBAccountListView(accountsBox, "AccountList");
   accountsBoxLayout->addWidget(_accListView);
 
   _accListView->setResizeMode(QListView::NoColumn);
@@ -83,7 +84,7 @@ QBankingSettings::QBankingSettings(QBanking *ab,
   QBoxLayout *backendsBoxLayout = new QHBoxLayout( backendsBox->layout() );
   backendsBoxLayout->setAlignment( Qt::AlignTop );
 
-  _providerListView=new QBPluginDescrListView((QWidget*)backendsBox,
+  _providerListView=new QBPluginDescrListView(backendsBox,
                                               "BackendList");
   backendsBoxLayout->addWidget(_providerListView);
 
@@ -99,18 +100,18 @@ QBankingSettings::QBankingSettings(QBanking *ab,
   _providerListView->show();
 
   /* connect buttons to actions */
-  QObject::connect((QObject*)closeButton, SIGNAL(clicked()),
+  QObject::connect(closeButton, SIGNAL(clicked()),
                    this, SLOT(accept()));
 
-  QObject::connect((QObject*)backendEnableButton, SIGNAL(clicked()),
+  QObject::connect(backendEnableButton, SIGNAL(clicked()),
                    this, SLOT(slotBackendEnable()));
-  QObject::connect((QObject*)backendDisableButton, SIGNAL(clicked()),
+  QObject::connect(backendDisableButton, SIGNAL(clicked()),
                    this, SLOT(slotBackendDisable()));
 
-  QObject::connect((QObject*)backendSetupButton, SIGNAL(clicked()),
+  QObject::connect(backendSetupButton, SIGNAL(clicked()),
                    this, SLOT(slotBackendSetup()));
 
-  QObject::connect((QObject*)accountMapButton, SIGNAL(clicked()),
+  QObject::connect(accountMapButton, SIGNAL(clicked()),
                    this, SLOT(slotAccountMap()));
 
 

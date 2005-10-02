@@ -44,7 +44,7 @@
 
 
 bool Wizard::initCreateKeysPage() {
-  QObject::connect((QObject*)(createKeysButton),
+  QObject::connect((createKeysButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotCreateKeys()));

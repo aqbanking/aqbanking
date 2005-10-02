@@ -43,13 +43,13 @@ AccountView::AccountView(QBanking *app,
                          WFlags fl)
 :AccountViewUi(parent, name, fl), _app(app), _provider(pro) {
   assert(pro);
-  QObject::connect((QObject*)newButton, SIGNAL(clicked()),
+  QObject::connect(newButton, SIGNAL(clicked()),
                    this, SLOT(slotNew()));
-  QObject::connect((QObject*)editButton, SIGNAL(clicked()),
+  QObject::connect(editButton, SIGNAL(clicked()),
                    this, SLOT(slotEdit()));
-  QObject::connect((QObject*)removeButton, SIGNAL(clicked()),
+  QObject::connect(removeButton, SIGNAL(clicked()),
                    this, SLOT(slotRemove()));
-  QObject::connect((QObject*)closeButton, SIGNAL(clicked()),
+  QObject::connect(closeButton, SIGNAL(clicked()),
                    this, SLOT(close()));
 }
 

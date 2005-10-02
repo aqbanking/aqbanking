@@ -40,7 +40,7 @@
 
 
 bool Wizard::initInitModePage() {
-  QObject::connect((QObject*)(firstInitRadio),
+  QObject::connect((firstInitRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotFirstInitToggled(bool)));

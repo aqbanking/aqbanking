@@ -48,9 +48,9 @@ EditAccount::EditAccount(QBanking *app,
   accountIdEdit->setEnabled(isNew);
   countryCombo->setEnabled(isNew);
 
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotBankCodeLostFocus()));
-  QObject::connect((QObject*)whatsThisButton, SIGNAL(clicked()),
+  QObject::connect(whatsThisButton, SIGNAL(clicked()),
                    this, SLOT(slotWhatsThis()));
 }
 

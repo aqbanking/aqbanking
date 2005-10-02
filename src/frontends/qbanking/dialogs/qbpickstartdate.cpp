@@ -33,13 +33,13 @@ QBPickStartDate::QBPickStartDate(const QDate &firstPossible,
 ,_firstPossible(firstPossible)
 ,_lastUpdate(lastUpdate){
 
-  QObject::connect((QObject*)noDateButton, SIGNAL(toggled(bool)),
+  QObject::connect(noDateButton, SIGNAL(toggled(bool)),
                    this, SLOT(slotNoDateToggled(bool)));
-  QObject::connect((QObject*)lastUpdateButton, SIGNAL(toggled(bool)),
+  QObject::connect(lastUpdateButton, SIGNAL(toggled(bool)),
                    this, SLOT(slotLastUpdateToggled(bool)));
-  QObject::connect((QObject*)firstDateButton, SIGNAL(toggled(bool)),
+  QObject::connect(firstDateButton, SIGNAL(toggled(bool)),
                    this, SLOT(slotFirstDateToggled(bool)));
-  QObject::connect((QObject*)pickDateButton, SIGNAL(toggled(bool)),
+  QObject::connect(pickDateButton, SIGNAL(toggled(bool)),
                    this, SLOT(slotPickDateToggled(bool)));
 
   if (_lastUpdate.isValid()) {

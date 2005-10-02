@@ -42,7 +42,7 @@ HBCISettings::HBCISettings(AH_HBCI *hbci,
                            bool modal, WFlags fl)
 :HBCISettingsUi(parent, name, modal, fl)
 ,_hbci(hbci), _app(kb) {
-  QObject::connect((QObject*)(helpButton),
+  QObject::connect((helpButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotHelp()));
@@ -52,34 +52,34 @@ HBCISettings::HBCISettings(AH_HBCI *hbci,
   accountBox->setColumnLayout(0, Qt::Vertical );
   QBoxLayout *accountBoxLayout = new QHBoxLayout( accountBox->layout() );
 
-  _accList=new AccountListView((QWidget*)accountBox, "Accounts");
+  _accList=new AccountListView(accountBox, "Accounts");
   accountBoxLayout->addWidget(_accList);
 
-  QObject::connect((QObject*)(newUserButton),
+  QObject::connect((newUserButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotNewUser()));
-  QObject::connect((QObject*)(editUserButton),
+  QObject::connect((editUserButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotEditUser()));
-  QObject::connect((QObject*)(delUserButton),
+  QObject::connect((delUserButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotDelUser()));
-  QObject::connect((QObject*)(completeUserButton),
+  QObject::connect((completeUserButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotCompleteUser()));
-  QObject::connect((QObject*)(changeVersionButton),
+  QObject::connect((changeVersionButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotChangeVersion()));
-  QObject::connect((QObject*)(updateBPDButton),
+  QObject::connect((updateBPDButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotUpdateBPD()));
-  QObject::connect((QObject*)(iniLetterButton),
+  QObject::connect((iniLetterButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotIniLetter()));
@@ -89,23 +89,23 @@ HBCISettings::HBCISettings(AH_HBCI *hbci,
   userBox->setColumnLayout(0, Qt::Vertical );
   QBoxLayout *userBoxLayout = new QHBoxLayout( userBox->layout() );
 
-  _userList=new UserListView((QWidget*)userBox, "Users");
+  _userList=new UserListView(userBox, "Users");
   userBoxLayout->addWidget(_userList);
 
-  QObject::connect((QObject*)(newAccountButton),
+  QObject::connect((newAccountButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotNewAccount()));
-  QObject::connect((QObject*)(editAccountButton),
+  QObject::connect((editAccountButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotEditAccount()));
-  QObject::connect((QObject*)(delAccountButton),
+  QObject::connect((delAccountButton),
                    SIGNAL(clicked()),
                    this,
 		   SLOT(slotDelAccount()));
 
-  QObject::connect((QObject*)(_userList),
+  QObject::connect((_userList),
                    SIGNAL(selectionChanged()),
                    this,
 		   SLOT(slotUserSelectionChanged()));

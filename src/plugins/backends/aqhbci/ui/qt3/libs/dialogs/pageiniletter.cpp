@@ -47,7 +47,7 @@
 
 
 bool Wizard::initIniLetterPage() {
-  QObject::connect((QObject*)(printButton),
+  QObject::connect((printButton),
 		   SIGNAL(clicked()),
 		   this,
 		   SLOT(slotPrintIniLetter()));

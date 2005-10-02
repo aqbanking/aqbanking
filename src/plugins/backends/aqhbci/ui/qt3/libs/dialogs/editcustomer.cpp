@@ -97,11 +97,11 @@ EditCustomer::EditCustomer(AH_HBCI *h,
   bankSignCheck->setChecked(AH_Customer_GetBankSigns(c));
   bankCounterCheck->setChecked(AH_Customer_GetBankUsesSignSeq(c));
 
-  QObject::connect((QObject*)(getServerKeysButton),
+  QObject::connect((getServerKeysButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotGetServerKeys()));
-  QObject::connect((QObject*)(getSysIdButton),
+  QObject::connect((getSysIdButton),
 		   SIGNAL(clicked()),
                    this,
                    SLOT(slotGetSysId()));

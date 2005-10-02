@@ -49,11 +49,11 @@ EditUser::EditUser(QBanking *app,
                    bool modal, WFlags fl)
 :EditUserUi(parent, name, modal, fl)
 ,_app(app), _user(u), _isNew(isNew){
-  QObject::connect((QObject*)bankCodeEdit, SIGNAL(lostFocus()),
+  QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotBankCodeLostFocus()));
-  QObject::connect((QObject*)bankCodeButton, SIGNAL(clicked()),
+  QObject::connect(bankCodeButton, SIGNAL(clicked()),
                    this, SLOT(slotBankCodeClicked()));
-  QObject::connect((QObject*)whatsThisButton, SIGNAL(clicked()),
+  QObject::connect(whatsThisButton, SIGNAL(clicked()),
                    this, SLOT(slotWhatsThis()));
 }
 

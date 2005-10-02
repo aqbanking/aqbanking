@@ -44,43 +44,43 @@
 
 bool Wizard::initUserDataPage() {
   slotSettingsChanged(QString::null);
-  QObject::connect((QObject*)(userIdEdit),
+  QObject::connect((userIdEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(customerIdEdit),
+  QObject::connect((customerIdEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(bankCodeEdit),
+  QObject::connect((bankCodeEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(serverEdit),
+  QObject::connect((serverEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(nameEdit),
+  QObject::connect((nameEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(descriptionEdit),
+  QObject::connect((descriptionEdit),
                    SIGNAL(textChanged(const QString &)),
                    this,
                    SLOT(slotSettingsChanged(const QString &)));
-  QObject::connect((QObject*)(fromMediumButton),
+  QObject::connect((fromMediumButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotFromMedium()));
-  QObject::connect((QObject*)(bankCodeButton),
+  QObject::connect((bankCodeButton),
 		   SIGNAL(clicked()),
                    this,
 		   SLOT(slotUserDataBankCodeClicked()));
-  QObject::connect((QObject*)(bankCodeEdit),
+  QObject::connect((bankCodeEdit),
 		   SIGNAL(lostFocus()),
 		   this,
 		   SLOT(slotUserDataBankCodeLostFocus()));
-  QObject::connect((QObject*)(bankCodeEdit),
+  QObject::connect((bankCodeEdit),
                    SIGNAL(textChanged(const QString&)),
                    this,
 		   SLOT(slotUserDataBankCodeChanged(const QString&)));

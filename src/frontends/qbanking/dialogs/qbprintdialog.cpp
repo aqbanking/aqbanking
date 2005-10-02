@@ -57,15 +57,15 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
   setCaption(QString::fromUtf8(docTitle));
   descrLabel->setText(QString::fromUtf8(descr));
 
-  QObject::connect((QObject*)printButton, SIGNAL(clicked()),
+  QObject::connect(printButton, SIGNAL(clicked()),
                    this, SLOT(slotPrint()));
-  QObject::connect((QObject*)setupButton, SIGNAL(clicked()),
+  QObject::connect(setupButton, SIGNAL(clicked()),
                    this, SLOT(slotSetup()));
-  QObject::connect((QObject*)fontButton, SIGNAL(clicked()),
+  QObject::connect(fontButton, SIGNAL(clicked()),
                    this, SLOT(slotFont()));
-  QObject::connect((QObject*)closeButton, SIGNAL(clicked()),
+  QObject::connect(closeButton, SIGNAL(clicked()),
                    this, SLOT(accept()));
-  QObject::connect((QObject*)abortButton, SIGNAL(clicked()),
+  QObject::connect(abortButton, SIGNAL(clicked()),
                    this, SLOT(reject()));
 
   loadGuiSetup();

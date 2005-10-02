@@ -50,15 +50,15 @@ bool Wizard::initImportPage() {
   slotImportToggled(on);
 
   // page 1
-  QObject::connect((QObject*)(importRadio),
+  QObject::connect((importRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotImportToggled(bool)));
-  QObject::connect((QObject*)(createRadio),
+  QObject::connect((createRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotNewToggled(bool)));
-  QObject::connect((QObject*)(pinTanRadio),
+  QObject::connect((pinTanRadio),
                    SIGNAL(toggled(bool)),
                    this,
                    SLOT(slotPinTanToggled(bool)));

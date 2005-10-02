@@ -40,7 +40,7 @@
 
 
 bool Wizard::initCheckFilePage() {
-  QObject::connect((QObject*)(checkFileButton),
+  QObject::connect((checkFileButton),
                    SIGNAL(clicked()),
                    this,
                    SLOT(slotCheckFile()));

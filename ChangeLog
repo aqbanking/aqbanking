@@ -3,6 +3,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-10-02  Christian Stimming  <stimming@tuhh.de>
+
+	* src/*.cpp: Remove unneeded casts to (QObject*) and QWidget.
+
 2005/09/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (bad assert)
