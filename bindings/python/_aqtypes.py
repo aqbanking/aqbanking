@@ -577,11 +577,10 @@ class Transaction(c_void_p):
         def _check_retval_(i):
             return Period(i)
         _check_retval_ = staticmethod(_check_retval_)
-    def from_param(cls, e):
-        check_enum(e, Period, 'argument')
-        return int(e)
-    PeriodAdapter.from_param = classmethod(from_param)
-
+        def from_param(cls, e):
+            check_enum(e, Period, 'argument')
+            return int(e)
+        from_param = classmethod(from_param)
 
     modified = property(
         aqb.AB_Transaction_IsModified,

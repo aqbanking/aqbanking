@@ -25,10 +25,10 @@ enumadapter = u"""
 %(i)s    def _check_retval_(i):
 %(i)s        return %(name)s(i)
 %(i)s    _check_retval_ = staticmethod(_check_retval_)
-%(i)sdef from_param(cls, e):
-%(i)s    check_enum(e, %(name)s, 'argument')
-%(i)s    return int(e)
-%(i)s%(name)sAdapter.from_param = classmethod(from_param)
+%(i)s    def from_param(cls, e):
+%(i)s        check_enum(e, %(name)s, 'argument')
+%(i)s        return int(e)
+%(i)s    from_param = classmethod(from_param)
 """
 
 classheader = u"""

@@ -5,6 +5,11 @@
 
 2005-10-05   Christian Stimming <stimming@tuhh.de>
 
+	* bindings/python/aqcodegen, _aqtypes.py: Fix the accidental
+	overriding of the from_param method by defining the class method
+	in the class itself. In python2.4 this can be replaced by function
+	decorators, see http://www.python.org/doc/2.4/whatsnew/node6.html
+
 	* configure.ac: Loosen the requirements on an installed python
 	ctypes; instead, only python is considered sufficient for
 	installing the python wrappers. I propose to enable python by
