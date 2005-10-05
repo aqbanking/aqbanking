@@ -499,18 +499,25 @@ typedef int (*AB_BANKING_SETTANSTATUS_FN)(AB_BANKING *ab,
  * function.
  * </p>
  * @return new instance of AB_BANKING
+ *
  * @param appName name of the application which wants to use AqBanking.
  * This allows AqBanking to separate settings and data for multiple
  * applications.
- * @param dname path for the user data of AqBanking. You should
- * in most cases present a NULL for this parameter (which let's AqBanking
- * choose the default user data folder which is $HOME/.banking).
- * The configuration (aqbanking.conf) file is searched for in this folder.
- * Versions of AqBanking before 1.2.0.16 used this argument to specify the
- * path and name of the configuration file. The default configuration file
- * was $HOME/.aqbanking.conf. This file is now also searched for, but if
- * it exsited it will be moved to the new default path and name upon
- * AB_Banking_Fini (new path is $HOME/.banking/settings.conf).
+ *
+ * @param dname Path for the directory containing the user data of
+ * AqBanking. You should in most cases present a NULL for this
+ * parameter, which means AqBanking will choose the default user
+ * data folder which is "$HOME/.banking".  The configuration file
+ * "settings.conf" file is searched for in this folder. NOTE:
+ * Versions of AqBanking before 1.2.0.16 used this argument to
+ * specify the path and name (!) of the configuration file,
+ * whereas now this specifies only the path. It is now impossible
+ * to specify the name; aqbanking will always use its default name
+ * "settings.conf". For AqBanking < 1.2.0.16, the default
+ * configuration file was "$HOME/.aqbanking.conf". This file is
+ * now also searched for, but if it exists it will be moved to the
+ * new default path and name upon AB_Banking_Fini. The new path
+ * will be "$HOME/.banking/settings.conf".
  */
 AQBANKING_API
 AB_BANKING *AB_Banking_new(const char *appName, const char *dname);
