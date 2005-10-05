@@ -10,8 +10,8 @@ def gtk_main():
 
 class BankingGtk(aqbanking.BankingBase):
 
-    def __init__(self, name, config=None):
-        aqbanking.BankingBase.__init__(self, name, config)
+    def __init__(self, name, configdir=None):
+        aqbanking.BankingBase.__init__(self, name, configdir)
         self.cancel_flag = False
         self.textbuffer = self.progwin = self.logwin = None
 

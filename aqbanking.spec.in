@@ -157,7 +157,7 @@ Necessary for Geldkarte access.
 %setup -q
 
 %build
-%{configure} --with-backends=%{backendlist}
+%{configure} --with-backends=%{backendlist} --enable-python
 make
 
 %install
@@ -203,6 +203,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/%{name}/imexporters/ofx
 %{_datadir}/%{name}/imexporters/openhbci1
 %{_datadir}/%{name}/imexporters/swift
+%{py_sitedir}/*.py*
 ### The aqhbci files
 %{_datadir}/aqhbci
 %{_bindir}/aqhbci-tool

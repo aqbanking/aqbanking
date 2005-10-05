@@ -713,7 +713,6 @@ AC_SUBST(LIBOFX_LIBS)
 # Python
 #
 
-AC_MSG_CHECKING(whether to install python-bindings)
 AC_ARG_ENABLE(python,
   [  --enable-python         install python bindings (default=no)],
   [ case "${enableval}" in
@@ -724,14 +723,18 @@ AC_ARG_ENABLE(python,
   ],
   enable_python="no")
 
+# Check for python interpreter unless it is explicitly disabled
 if test "x$enable_python" = "xyes"; then
-  AC_MSG_RESULT(yes)
   # Make sure at least version 2.3 is available (otherwise ctypes
   # won't work)
-  AM_PATH_PYTHON( [2.3] )
+  AM_PATH_PYTHON( [2.3], [enable_python="yes"], [enable_python="no"] )
+fi
 
+AC_MSG_CHECKING(whether to install python-bindings)
+if test "x$enable_python" = "xyes"; then
+  AC_MSG_RESULT(yes)
   # Check for python ctypes module, otherwise terminate
-  AC_PYTHON_MODULE( [ctypes], [required] )
+  #AC_PYTHON_MODULE( [ctypes], [required] )
 else
   AC_MSG_RESULT(no)
 fi

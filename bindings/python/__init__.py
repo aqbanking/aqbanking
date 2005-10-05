@@ -145,7 +145,8 @@ class AB_Error(Enum):
      bad_data,
      unknown,
      aborted,
-     ) = range(0,-19,-1)
+     default_value,
+     ) = range(0,-20,-1)
     (user1,
      user2,
      user3,
@@ -1202,9 +1203,9 @@ class BankingBase(c_void_p):
         c_int, c_void_p, c_char_p, c_char_p, c_int)),
         )
 
-    def __init__(self, name, config=None):
+    def __init__(self, name, configdir=None):
         global aqb
-	c_void_p.__init__(self, aqb.AB_Banking_new(name, config))
+	c_void_p.__init__(self, aqb.AB_Banking_new(name, configdir))
         self.inited = False
         self.bankingFree = aqb.AB_Banking_free
         l = []

@@ -3,6 +3,18 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-10-05   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Loosen the requirements on an installed python
+	ctypes; instead, only python is considered sufficient for
+	installing the python wrappers. I propose to enable python by
+	default (and did so in the rpm spec file), although currently it
+	is still disabled by default.
+
+	* bindings/python/__init__.py: Update AB_Error to latest
+	additions. Clarify argument change of AB_Banking_new >= 1.3.0 by
+	renaming the second argument to configdir (vs. config file).
+
 2005-10-02  Christian Stimming  <stimming@tuhh.de>
 
 	* src/*.cpp: Remove unneeded casts to (QObject*) and QWidget.

@@ -175,9 +175,10 @@ the account number checking will not be compiled.
 required for the aqgeldkarte backend, otherwise the geldkarte
 parts cannot be compiled
 
-- The python module "ctypes" http://sf.net/projects/ctypes is required
-for the python wrappers of aqbanking. Otherwise you cannot enable
-python support (--enable-python), which is disabled by default.
+- The python module "ctypes" http://sf.net/projects/ctypes is
+required for the python wrappers of aqbanking. The python wrappers
+are installed by default (to disable it, use --disable-python),
+but they cannot be used unless "ctypes" is installed.
 
 In aqbanking versions earlier than 1.3.0, the backends (e.g.
 "aqhbci") were available in separate packages, but since 1.3.0
