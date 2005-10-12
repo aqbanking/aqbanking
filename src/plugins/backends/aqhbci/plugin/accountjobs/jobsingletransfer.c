@@ -581,7 +581,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         AB_ImExporter_Utf8ToDta(p, -1, tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
 	if (l>maxs) {
-	  DBG_WARN(AQHBCI_LOGDOMAIN,
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		   "Too many chars in remote name line %d (%d>%d)",
 		   n, l, maxs);
           GWEN_StringList_free(nsl);
