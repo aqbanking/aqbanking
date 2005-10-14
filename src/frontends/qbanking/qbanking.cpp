@@ -814,11 +814,11 @@ int QBanking::init(){
   _translator=new QTranslator(0);
   if (_translator->load(QTextCodec::locale()+QString(".qm"),
 			QString(PKGDATADIR "/i18n/"))) {
-    DBG_INFO(0, "I18N available for your language");
+    DBG_DEBUG(0, "I18N available for your language");
     qApp->installTranslator(_translator);
   }
   else {
-    DBG_WARN(0, "Internationalisation is not available for your language");
+    DBG_INFO(0, "Internationalisation is not available for your language");
     delete _translator;
     _translator=0;
   }
