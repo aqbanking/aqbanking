@@ -599,8 +599,28 @@ AC_ARG_WITH(frontends,
   [aqbanking_frontends="$withval"],
   [aqbanking_frontends="cbanking g2banking qbanking kbanking"]
 )
+# The ordering is important due to linker dependencies, so force
+# the correct ordering here:
+case "$aqbanking_frontends" in *cbanking*)
+  tmp_frontends="cbanking"
+  ;;
+esac
+case "$aqbanking_frontends" in *g2banking*)
+  tmp_frontends="${tmp_frontends} g2banking"
+  ;;
+esac
+case "$aqbanking_frontends" in *qbanking*)
+  tmp_frontends="${tmp_frontends} qbanking"
+  ;;
+esac
+case "$aqbanking_frontends" in *kbanking*)
+  tmp_frontends="${tmp_frontends} kbanking"
+  ;;
+esac
+aqbanking_frontends="${tmp_frontends}"
 AC_SUBST(aqbanking_frontends)
 
+# Backends. Those do not have a required ordering.
 AC_ARG_WITH(backends, 
   [  --with-backends=list      space separated list of backends (default:all)],
   [aqbanking_backends="$withval"],
