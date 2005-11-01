@@ -14,6 +14,7 @@
 #ifndef GWHBCI_DIALOG_P_H
 #define GWHBCI_DIALOG_P_H
 
+#include <gwenhywfar/inetaddr.h>
 #include <aqhbci/dialog.h>
 
 
@@ -29,7 +30,7 @@ struct AH_DIALOG {
 
   GWEN_MSGENGINE *msgEngine;
 
-  GWEN_NETCONNECTION *connection;
+  GWEN_NETLAYER *netLayer;
 
   GWEN_TYPE_UINT32 flags;
 
@@ -41,12 +42,11 @@ struct AH_DIALOG {
 
 
 
-int AH_Dialog__SendMessageSSL(AH_DIALOG *dlg, AH_MSG *msg);
-int AH_Dialog__SendMessageHBCI(AH_DIALOG *dlg, AH_MSG *msg);
+int AH_Dialog__SetAddress(AH_DIALOG *dlg,
+                          GWEN_INETADDRESS *addr,
+                          const char *bankAddr);
+int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg);
 
-AH_MSG *AH_Dialog__MsgFromNetMsg_SSL(AH_DIALOG *dlg, GWEN_NETMSG *netmsg);
-AH_MSG *AH_Dialog__MsgFromNetMsg_HBCI(AH_DIALOG *dlg, GWEN_NETMSG *netmsg);
-AH_MSG *AH_Dialog__MsgFromNetMsg(AH_DIALOG *dlg, GWEN_NETMSG *netmsg);
 
 
 

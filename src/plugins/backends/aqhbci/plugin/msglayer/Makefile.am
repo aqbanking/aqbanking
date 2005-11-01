@@ -14,8 +14,6 @@ noinst_HEADERS=\
  bank_l.h \
  bank_p.h \
  bpd_p.h \
- connection_p.h \
- connectionhbci_p.h \
  customer_l.h \
  customer_p.h \
  dialog_p.h \
@@ -40,8 +38,6 @@ iheader_HEADERS=\
  account.h \
  bank.h \
  bpd.h \
- connection.h \
- connectionhbci.h \
  customer.h \
  dialog.h \
  hbci.h \
@@ -57,8 +53,6 @@ libhbcimsg_la_SOURCES=\
  account.c \
  bank.c \
  bpd.c \
- connection.c \
- connectionhbci.c \
  customer.c \
  dialog.c \
  hbci.c \

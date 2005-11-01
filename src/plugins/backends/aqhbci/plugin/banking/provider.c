@@ -16,7 +16,6 @@
 
 #include "provider_p.h"
 #include "aqhbci_l.h"
-#include "wcb_l.h"
 #include "hbci_l.h"
 #include "outbox_l.h"
 #include <aqbanking/account_be.h>

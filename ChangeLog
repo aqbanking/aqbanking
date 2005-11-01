@@ -3,6 +3,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/10/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted AqHBCI to latest changes in Gwenhywfar: 
+  - now uses GWEN_NetLayer instead of GWEN_NetConnection
+  - cleaned up network stuff of AqHBCI
+  - all remaining network code is now in msglayer/dialog*.{c,h}
+  - network code is now completely synchronous (no need for asynchronous
+    code since AqHBCI is only a client, not a server)
+
+
 2005-10-05   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/aqcodegen, _aqtypes.py: Fix the accidental
@@ -20,9 +30,11 @@
 	additions. Clarify argument change of AB_Banking_new >= 1.3.0 by
 	renaming the second argument to configdir (vs. config file).
 
+
 2005-10-02  Christian Stimming  <stimming@tuhh.de>
 
 	* src/*.cpp: Remove unneeded casts to (QObject*) and QWidget.
+
 
 2005/09/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -36,11 +48,13 @@
 	messages. Replace more '/' with the DIRSEP macro for win32
 	compatibility.
 
+
 2005-09-21   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/country.c: Fix missing ending marker of the
 	static list ab_country_list. Pointed out by qbankmanager segfault
 	of Ronny Steiner.
+
 
 2005-09-19   Christian Stimming <stimming@tuhh.de>
 
@@ -51,12 +65,14 @@
 	converted by QString::fromUtf8 and correctly backwards. This can
 	be checked by defining QT_NO_CAST_ASCII.
 
+
 2005-09-17  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/qbanking.cpp,
 	src/plugins/backends/aqhbci/ui/qt3/libs/*: Eventually really fix
 	the QString -> const char* conversions by taking care that
 	temporary objects are kept correctly.
+
 
 2005-09-16   Christian Stimming <stimming@tuhh.de>
 

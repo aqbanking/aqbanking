@@ -10,9 +10,7 @@ noinst_LTLIBRARIES=libhbcibanking.la
 
 noinst_HEADERS=\
  jobplugin_p.h \
- provider_p.h \
- wcb_l.h \
- wcb_p.h
+ provider_p.h
 
 
 iheaderdir=${includedir}/aqhbci
@@ -22,8 +20,7 @@ iheader_HEADERS=\
 
 libhbcibanking_la_SOURCES=\
  jobplugin.c \
- provider.c \
- wcb.c
+ provider.c
 
 sources:
 	for f in $(libhbcibanking_la_SOURCES); do \

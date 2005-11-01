@@ -685,10 +685,7 @@ int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
 			 0,
 			 AB_Banking_LogLevelInfo,
                          I18N("Sending queue"));
-  if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE)
-    rv=AH_Dialog_SendMessage(dlg, msg);
-  else
-    rv=AH_Dialog_SendMessage_Wait(dlg, msg, timeout);
+  rv=AH_Dialog_SendMessage_Wait(dlg, msg, timeout);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
     AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
@@ -708,8 +705,6 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
 			      AH_DIALOG *dlg,
 			      AH_JOBQUEUE *jq){
   AH_MSG *msg;
-  time_t startt;
-  int distance;
   AH_USER *u;
   AH_BANK *b;
   GWEN_DB_NODE *rsp;
@@ -720,20 +715,6 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   assert(u);
   b=AH_User_GetBank(u);
   assert(b);
-
-  startt=time(0);
-  if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE)
-    distance=GWEN_NETCONNECTION_TIMEOUT_NONE;
-  else if (timeout==GWEN_NETCONNECTION_TIMEOUT_FOREVER)
-    distance=GWEN_NETCONNECTION_TIMEOUT_FOREVER;
-  else {
-    distance=AH_OUTBOX_TIME_DISTANCE;
-    if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
-    if (!distance)
-      distance=750;
-  }
 
   AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
 			 0,
@@ -1159,7 +1140,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     return 0;
   }
 
-  rv=AH_HBCI_BeginDialog(cbox->hbci, cbox->customer, &dlg);
+  dlg=AH_Dialog_new(cbox->customer);
+  rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not begin a dialog for customer \"%s\" (%d)",
@@ -1167,6 +1149,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     /* finish all queues */
     AH_Outbox__CBox_HandleQueueListError(cbox, jql,
                                          "Could not begin dialog");
+    AH_Dialog_free(dlg);
     return rv;
   }
   assert(dlg);
@@ -1178,10 +1161,11 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   rv=AH_Outbox__CBox_OpenDialog(cbox, timeout, dlg, jqflags);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
-    AH_HBCI_EndDialog(cbox->hbci, dlg);
+    AH_Dialog_Disconnect(dlg, 2);
     /* finish all queues */
     AH_Outbox__CBox_HandleQueueListError(cbox, jql,
                                          "Could not open dialog");
+    AH_Dialog_free(dlg);
     return rv;
   }
 
@@ -1198,7 +1182,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     /* finish all remaining queues */
     AH_Outbox__CBox_HandleQueueListError(cbox, jql,
                                          "Could not send ");
-    AH_HBCI_EndDialog(cbox->hbci, dlg);
+    AH_Dialog_Disconnect(dlg, 2);
+    AH_Dialog_free(dlg);
     return rv;
   }
 
@@ -1212,7 +1197,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Closing connection");
-  AH_HBCI_EndDialog(cbox->hbci, dlg);
+  AH_Dialog_Disconnect(dlg, 2);
+  AH_Dialog_free(dlg);
 
   AH_JobQueue_List_free(jql);
   return 0;
@@ -1234,14 +1220,16 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   assert(b);
 
   /* open connection */
-  rv=AH_HBCI_BeginDialog(cbox->hbci, cbox->customer, &dlg);
+  dlg=AH_Dialog_new(cbox->customer);
+  rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not begin a dialog for customer \"%s\" (%d)",
              AH_Customer_GetCustomerId(cbox->customer), rv);
     /* finish all queues */
     AH_Outbox__CBox_HandleQueueError(cbox, jq,
-                                    "Could not begin dialog");
+                                     "Could not begin dialog");
+    AH_Dialog_free(dlg);
     return rv;
   }
   assert(dlg);
@@ -1249,13 +1237,15 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   /* handle queue */
   rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout);
   if (rv) {
-    AH_HBCI_EndDialog(cbox->hbci, dlg);
+    AH_Dialog_Disconnect(dlg, 2);
+    AH_Dialog_free(dlg);
     return rv;
   }
 
   /* close connection */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Closing connection");
-  AH_HBCI_EndDialog(cbox->hbci, dlg);
+  AH_Dialog_Disconnect(dlg, 2);
+  AH_Dialog_free(dlg);
 
   return 0;
 }

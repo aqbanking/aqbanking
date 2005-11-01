@@ -43,11 +43,6 @@ struct AH_HBCI {
 
   AH_BANK_LIST *banks;
 
-  AH_DIALOG_LIST *dialogs;
-
-  AH_HBCI_DIALOGUPFN dialogUpFn;
-  AH_HBCI_DIALOGDOWNFN dialogDownFn;
-
   GWEN_TYPE_UINT32 libId;
 
   GWEN_TYPE_UINT32 counter;
@@ -82,12 +77,6 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
 
 int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node);
 GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci);
-
-
-AH_DIALOG *AH_HBCI_FindDialog(const AH_HBCI *hbci, const AH_CUSTOMER *cu);
-AH_DIALOG *AH_HBCI_FindDialogByConnection(const AH_HBCI *hbci,
-                                          const GWEN_NETCONNECTION *conn);
-
 
 int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
 int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);

@@ -18,6 +18,7 @@
 #ifndef AQBANKING_BANKING_BE_H
 #define AQBANKING_BANKING_BE_H
 
+#include <gwenhywfar/nl_ssl.h>
 #include <aqbanking/banking.h>
 
 
@@ -56,6 +57,12 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs();
 
 /*@}*/
 
+
+AQBANKING_API
+GWEN_NL_SSL_ASKADDCERT_RESULT
+  AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
+                        const GWEN_SSLCERTDESCR *cd,
+                        void *user_data);
 
 
 

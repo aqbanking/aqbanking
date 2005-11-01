@@ -1,8 +1,7 @@
 
-=============================== WARNING =====================================
-AqHBCI is currently in a transitional state. Do not use this CVS version it 
-with production systems !!
-=============================================================================
+============================================================================
+AqHBCI is now part of AqBanking, please see ChangeLog of that project now.
+============================================================================
 
 
 2005/08/05: Martin Preuss<martin@libchipcard.de>

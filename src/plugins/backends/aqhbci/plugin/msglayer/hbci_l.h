@@ -16,15 +16,6 @@
 
 #include <aqhbci/hbci.h>
 
-typedef void (*AH_HBCI_DIALOGUPFN)(AH_HBCI *hbci, AH_DIALOG *dlg);
-typedef void (*AH_HBCI_DIALOGDOWNFN)(AH_HBCI *hbci, AH_DIALOG *dlg);
-
-
-void AH_HBCI_EmitDialogUp(AH_HBCI *hbci, AH_DIALOG *dlg);
-void AH_HBCI_EmitDialogDown(AH_HBCI *hbci, AH_DIALOG *dlg);
-
-
-
 /** @name Virtual Functions
  *
  */
@@ -49,18 +40,7 @@ int AH_HBCI_AddObjectPath(const AH_HBCI *hbci,
                           const char *customerId,
                           GWEN_BUFFER *nbuf);
 
-
-
-void AH_HBCI_AddConnection(AH_HBCI *hbci, GWEN_NETCONNECTION *conn);
-void AH_HBCI_CheckConnections(AH_HBCI *hbci);
-
-void AH_HBCI_AddDialog(AH_HBCI *hbci, AH_DIALOG *dlg);
-
-void AH_HBCI_EndDialog(AH_HBCI *hbci, AH_DIALOG *dlg);
-
 GWEN_TYPE_UINT32 AH_HBCI_GetLibraryMark(const AH_HBCI *hbci);
-
-void AH_HBCI_CloseAllConnections(AH_HBCI *hbci);
 
 GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
 int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db);
@@ -88,20 +68,6 @@ int AH_HBCI_AddAccountPath(const AH_HBCI *hbci,
                            GWEN_BUFFER *nbuf);
 
 void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf);
-
-
-/** @name Getters And Setters For Virtual Functions
- *
- */
-/*@{*/
-void AH_HBCI_SetDialogUpFn(AH_HBCI *hbci, AH_HBCI_DIALOGUPFN fn);
-void AH_HBCI_SetDialogDownFn(AH_HBCI *hbci, AH_HBCI_DIALOGUPFN fn);
-/*@}*/
-
-int AH_HBCI_BeginDialog(AH_HBCI *hbci,
-                        AH_CUSTOMER *cu,
-                        AH_DIALOG **pdlg);
-
 
 
 GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci);

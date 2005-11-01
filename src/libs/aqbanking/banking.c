@@ -196,7 +196,7 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
 
   ab->dbTempConfig=GWEN_DB_Group_new("tmpConfig");
 
-  GWEN_NetTransportSSL_SetAskAddCertFn2(AB_Banking_AskAddCert, ab);
+  GWEN_NetTransportSSL_SetAskAddCertFn2(AB_Banking_AskAddCertConn, ab);
 
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering callbacks");
   ab->waitCallback=AB_WaitCallback_new(ab, AB_BANKING_WCB_GENERIC);
@@ -5476,11 +5476,10 @@ int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p) {
 
 
 
-
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
-                      GWEN_DB_NODE *cert,
-                      void *user_data){
+AB_Banking_AskAddCertConn(GWEN_NETTRANSPORT *tr,
+                          GWEN_DB_NODE *cert,
+                          void *user_data){
   int rv;
   AB_BANKING *ab;
   GWEN_DB_NODE *pd;
@@ -5731,6 +5730,287 @@ AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
     GWEN_DB_DeleteVar(ab->dbTempConfig, varName);
     return GWEN_NetTransportSSL_AskAddCertResultNo;
   }
+}
+
+
+
+GWEN_NL_SSL_ASKADDCERT_RESULT
+AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
+                      const GWEN_SSLCERTDESCR *cd,
+                      void *user_data) {
+  int rv;
+  AB_BANKING *ab;
+  GWEN_DB_NODE *pd;
+  int isNew;
+  int isError;
+  int isWarning;
+  const char *hash;
+  const char *status;
+  const char *ipAddr;
+  const char *statusOn;
+  const char *statusOff;
+  char varName[128];
+  char dbuffer1[32];
+  char dbuffer2[32];
+  char buffer[8192];
+  const GWEN_TIME *ti;
+  const char *unknown;
+  const char *commonName;
+  const char *organizationName;
+  const char *organizationalUnitName;
+  const char *countryName;
+  const char *localityName;
+  const char *stateOrProvinceName;
+
+  char *msg=I18N_NOOP(
+    "The following certificate has been received:\n"
+    "Name        : %s\n"
+    "Organisation: %s\n"
+    "Department  : %s\n"
+    "Country     : %s\n"
+    "City        : %s\n"
+    "State       : %s\n"
+    "Valid after : %s\n"
+    "Valid until : %s\n"
+    "Hash        : %s\n"
+    "Status      : %s\n"
+    "Do you wish to accept this certificate?"
+
+    "<html>"
+    " <p>"
+    "  The following certificate has been received:"
+    " </p>"
+    " <table>"
+    "  <tr><td>Name</td><td>%s</td></tr>"
+    "  <tr><td>Organisation</td><td>%s</td></tr>"
+    "  <tr><td>Department</td><td>%s</td></tr>"
+    "  <tr><td>Country</td><td>%s</td></tr>"
+    "  <tr><td>City</td><td>%s</td></tr>"
+    "  <tr><td>State</td><td>%s</td></tr>"
+    "  <tr><td>Valid after</td><td>%s</td></tr>"
+    "  <tr><td>Valid until</td><td>%s</td></tr>"
+    "  <tr><td>Hash</td><td>%s</td></tr>"
+    "  <tr><td>Status</td><td>%s%s%s</td></tr>"
+    " </table>"
+    " <p>"
+    "  Do you wish to accept this certificate?"
+    " </p>"
+    "</html>"
+    );
+
+  assert(user_data);
+  ab=(AB_BANKING*)user_data;
+
+  pd=ab->data;
+  assert(pd);
+  pd=GWEN_DB_GetGroup(pd, GWEN_DB_FLAGS_DEFAULT, "static");
+  assert(pd);
+
+  memset(dbuffer1, 0, sizeof(dbuffer1));
+  memset(dbuffer2, 0, sizeof(dbuffer2));
+  memset(varName, 0, sizeof(varName));
+
+  isNew=GWEN_SslCertDescr_GetIsNew(cd);
+  isError=GWEN_SslCertDescr_GetIsError(cd);
+  isWarning=GWEN_SslCertDescr_GetIsWarning(cd);
+
+  hash=GWEN_SslCertDescr_GetFingerPrint(cd);
+  assert(hash);
+  status=GWEN_SslCertDescr_GetStatusText(cd);
+  ipAddr=GWEN_SslCertDescr_GetIpAddress(cd);
+  if (!ab->alwaysAskForCert && !isNew && hash && status && ipAddr) {
+    GWEN_BUFFER *dbuf;
+    const char *result;
+    char msgHash[64];
+    unsigned int bsize;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, "certificates/");
+    GWEN_Buffer_AppendString(dbuf, ipAddr);
+    GWEN_Buffer_AppendString(dbuf, "/");
+    GWEN_Buffer_AppendString(dbuf, hash);
+    GWEN_Buffer_AppendString(dbuf, "/");
+    bsize=sizeof(msgHash);
+    if (GWEN_MD_Hash("rmd160", status, strlen(status),
+		     msgHash, &bsize)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Hash algo RMD160 not found");
+      abort();
+    }
+    GWEN_Text_ToHexBuffer(msgHash, bsize, dbuf, 0, 0, 0);
+    if (strlen(GWEN_Buffer_GetStart(dbuf))>=sizeof(varName)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Uuups, varname buffer is too small (%d needed)",
+		strlen(GWEN_Buffer_GetStart(dbuf)));
+      abort();
+    }
+    strncpy(varName, GWEN_Buffer_GetStart(dbuf),
+	    sizeof(varName)-1);
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+             "Certificate path: %s", varName);
+    result=GWEN_DB_GetCharValue(pd, GWEN_Buffer_GetStart(dbuf), 0,
+                                0);
+    if (!result)
+      /* check temporary config */
+      result=GWEN_DB_GetCharValue(ab->dbTempConfig,
+				  GWEN_Buffer_GetStart(dbuf), 0,
+				  0);
+    if (result) {
+      if (strcasecmp(result, "accept")==0) {
+	DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		   "Automatically accepting certificate \"%s\"", hash);
+        return GWEN_NetLayerSsl_AskAddCertResult_Perm;
+      }
+      else if (strcasecmp(result, "temp")==0) {
+	DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		   "Automatically accepting certificate \"%s\"", hash);
+        return GWEN_NetLayerSsl_AskAddCertResult_Tmp;
+      }
+    }
+    else
+      isNew=1;
+  }
+
+  ti=GWEN_SslCertDescr_GetNotBefore(cd);
+  if (ti) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    /* TRANSLATORS: This string is used as a template string to
+       convert a given time into your local translated timeformat. The
+       following characters are accepted in the template string: Y -
+       digit of the year, M - digit of the month, D - digit of the day
+       of month, h - digit of the hour, m - digit of the minute, s-
+       digit of the second. All other characters are left unchanged. */
+    if (GWEN_Time_toString(ti, I18N("YYYY/MM/DD hh:mm:ss"), tbuf)) {
+      DBG_ERROR(0, "Could not convert beforeDate to string");
+      abort();
+    }
+    strncpy(dbuffer1, GWEN_Buffer_GetStart(tbuf), sizeof(dbuffer1)-1);
+    GWEN_Buffer_free(tbuf);
+  }
+
+  ti=GWEN_SslCertDescr_GetNotAfter(cd);
+  if (ti) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    if (GWEN_Time_toString(ti, I18N("YYYY/MM/DD hh:mm:ss"), tbuf)) {
+      DBG_ERROR(0, "Could not convert untilDate to string");
+      abort();
+    }
+    strncpy(dbuffer2, GWEN_Buffer_GetStart(tbuf), sizeof(dbuffer2)-1);
+    GWEN_Buffer_free(tbuf);
+  }
+
+  if (isError) {
+    statusOn="<font color=red>";
+    statusOff="</font>";
+  }
+  else if (isWarning) {
+    statusOn="<font color=blue>";
+    statusOff="</font>";
+  }
+  else {
+    statusOn="<font color=green>";
+    statusOff="</font>";
+  }
+
+  unknown=I18N("unknown");
+  commonName=GWEN_SslCertDescr_GetCommonName(cd);
+  if (!commonName)
+    commonName=unknown;
+  organizationName=GWEN_SslCertDescr_GetOrganizationName(cd);
+  if (!organizationName)
+    organizationName=unknown;
+  organizationalUnitName=GWEN_SslCertDescr_GetOrganizationalUnitName(cd);
+  if (!organizationalUnitName)
+    organizationalUnitName=unknown;
+  countryName=GWEN_SslCertDescr_GetCountryName(cd);
+  if (!countryName)
+    countryName=unknown;
+  localityName=GWEN_SslCertDescr_GetLocalityName(cd);
+  if (!localityName)
+    localityName=unknown;
+  stateOrProvinceName=GWEN_SslCertDescr_GetStateOrProvinceName(cd);
+  if (!stateOrProvinceName)
+    stateOrProvinceName=unknown;
+  if (!status)
+    status=unknown;
+
+  snprintf(buffer, sizeof(buffer)-1,
+           I18N(msg),
+           commonName,
+           organizationName,
+           organizationalUnitName,
+           countryName,
+           localityName,
+           stateOrProvinceName,
+           dbuffer1, dbuffer2,
+           hash,
+           status,
+           /* the same again for HTML */
+           commonName,
+           organizationName,
+           organizationalUnitName,
+           countryName,
+           localityName,
+           stateOrProvinceName,
+           dbuffer1, dbuffer2,
+           hash,
+           statusOn,
+           status,
+           statusOff
+          );
+
+  rv=AB_Banking_MessageBox(ab,
+			   AB_BANKING_MSG_FLAGS_TYPE_WARN |
+			   AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+			   AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
+			   I18N("Certificate Received"),
+			   buffer,
+			   I18N("Yes"), I18N("No"), 0);
+  if (rv==1) {
+    rv=AB_Banking_MessageBox(ab,
+			     AB_BANKING_MSG_FLAGS_TYPE_WARN |
+			     AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
+			     AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
+			     I18N("Certificate"),
+			     I18N(
+    "Do you want to accept this certificate permanently?"
+    "<html>Do you want to accept this certificate permanently?</html>"),
+			     I18N("Permanently"),
+			     I18N("This session only"),
+			     I18N("Abort"));
+    if (rv==1) {
+      DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		 "User accepted certificate permanently");
+      assert(varName);
+      GWEN_DB_SetCharValue(pd, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   varName, "accept");
+      return GWEN_NetTransportSSL_AskAddCertResultPerm;
+    }
+    else if (rv==2) {
+      DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		 "User accepted certificate temporarily");
+      GWEN_DB_SetCharValue(ab->dbTempConfig,
+			   GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   varName, "temp");
+      return GWEN_NetTransportSSL_AskAddCertResultTmp;
+    }
+    else {
+      DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		 "User aborted");
+      return GWEN_NetTransportSSL_AskAddCertResultNo;
+    }
+  }
+  else {
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+	       "User rejected certificate");
+    GWEN_DB_DeleteVar(pd, varName);
+    GWEN_DB_DeleteVar(ab->dbTempConfig, varName);
+    return GWEN_NetTransportSSL_AskAddCertResultNo;
+  }
+
 }
 
 

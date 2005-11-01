@@ -18,7 +18,6 @@
 
 #include "jobplugin_p.h"
 #include "aqhbci_l.h"
-#include "wcb_l.h"
 #include "hbci_l.h"
 #include <aqbanking/job_be.h>
 #include <gwenhywfar/misc.h>

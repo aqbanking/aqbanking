@@ -34,7 +34,7 @@ typedef struct AH_DIALOG AH_DIALOG;
 #include <aqhbci/customer.h>
 #include <aqhbci/bank.h>
 #include <aqhbci/message.h>
-#include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/netlayer.h>
 #include <gwenhywfar/msgengine.h>
 #include <aqbanking/banking.h>
 
@@ -47,8 +47,7 @@ GWEN_LIST_FUNCTION_DEFS(AH_DIALOG, AH_Dialog);
 GWEN_INHERIT_FUNCTION_DEFS(AH_DIALOG);
 
 
-AH_DIALOG *AH_Dialog_new(AH_CUSTOMER *owner,
-                         GWEN_NETCONNECTION *conn);
+AH_DIALOG *AH_Dialog_new(AH_CUSTOMER *owner);
 void AH_Dialog_free(AH_DIALOG *dlg);
 
 void AH_Dialog_Attach(AH_DIALOG *dlg);
@@ -76,7 +75,7 @@ void AH_Dialog_SetDialogId(AH_DIALOG *dlg,
 
 AH_CUSTOMER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg);
 
-GWEN_NETCONNECTION *AH_Dialog_GetConnection(const AH_DIALOG *dlg);
+GWEN_NETLAYER *AH_Dialog_GetNetLayer(const AH_DIALOG *dlg);
 GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg);
 void AH_Dialog_SetMsgEngine(AH_DIALOG *dlg, GWEN_MSGENGINE *e);
 
@@ -84,19 +83,14 @@ GWEN_DB_NODE *AH_Dialog_GetGlobalValues(const AH_DIALOG *dlg);
 
 int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg, GWEN_TYPE_UINT32 msgnum);
 
+int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout);
+int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout);
+
 AH_MSG *AH_Dialog_RecvMessage(AH_DIALOG *dlg);
 AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout);
 
-/**
- * The ownership of the message will be taken over in any case.
- */
 int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg);
-
-/**
- * The ownership of the message will be taken over in any case.
- */
 int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout);
-int AH_Dialog_Work(AH_DIALOG *dlg);
 
 
 #ifdef __cplusplus

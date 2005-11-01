@@ -125,6 +125,11 @@ static int AB_Banking__CloseJob(const AB_BANKING *ab, int fd);
 
 static AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s);
 
+static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+  AB_Banking_AskAddCertConn(GWEN_NETTRANSPORT *tr,
+                            GWEN_DB_NODE *cert,
+                            void *user_data);
+
 #if 0 /* FIXME: This function is not used */
 static AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,
                                      GWEN_TYPE_UINT32 jid,
@@ -193,11 +198,6 @@ static int AB_Banking__GetWizardPath(AB_BANKING *ab,
 
 static int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
 static void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
-
-static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-  AB_Banking_AskAddCert(GWEN_NETTRANSPORT *tr,
-                        GWEN_DB_NODE *cert,
-                        void *user_data);
 
 #if 0 /* FIXME: This function is not used */
 /**
