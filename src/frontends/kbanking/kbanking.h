@@ -17,8 +17,6 @@
 #include <aqbanking/banking.h>
 #include <aqbanking/accstatus.h>
 
-#include <gwenhywfar/nettransportssl.h>
-
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qstring.h>

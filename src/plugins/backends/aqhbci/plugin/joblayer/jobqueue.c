@@ -652,7 +652,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "dialogId", p);
 
   /* get all signers */
-  ks=AH_Msg_GetSigners(msg);
+  ks=GWEN_KeySpec_List_First(AH_Msg_GetSigners(msg));
   while(ks) {
     const char *p;
 
@@ -664,7 +664,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
       GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "signer", p);
     }
-    ks=GWEN_KeySpec_ConstNext(ks);
+    ks=GWEN_KeySpec_List_Next(ks);
   } /* while */
 
   /* set crypter */

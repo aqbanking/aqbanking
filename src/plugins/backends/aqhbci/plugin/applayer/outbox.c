@@ -27,7 +27,6 @@
 #include <aqbanking/job_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/net.h>
 #include <gwenhywfar/waitcallback.h>
 
 #include <stdlib.h>

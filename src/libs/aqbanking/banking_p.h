@@ -33,7 +33,6 @@
 #include "bankinfoplugin_l.h"
 
 #include <gwenhywfar/plugin.h>
-#include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/waitcallback.h>
 
 
@@ -125,10 +124,6 @@ static int AB_Banking__CloseJob(const AB_BANKING *ab, int fd);
 
 static AB_JOB *AB_Banking__LoadJobFile(AB_BANKING *ab, const char *s);
 
-static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-  AB_Banking_AskAddCertConn(GWEN_NETTRANSPORT *tr,
-                            GWEN_DB_NODE *cert,
-                            void *user_data);
 
 #if 0 /* FIXME: This function is not used */
 static AB_JOB *AB_Banking__LoadJobAs(AB_BANKING *ab,

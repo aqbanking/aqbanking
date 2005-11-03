@@ -29,20 +29,15 @@
 
 #include <aqbanking/banking_be.h>
 
-#include <aqhbci/connection.h>
 #include <aqhbci/msgengine.h>
-#include <aqhbci/connectionhbci.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/libloader.h>
-#include <gwenhywfar/nettransportsock.h>
-#include <gwenhywfar/net.h>
+#include <gwenhywfar/net2.h>
 #include <gwenhywfar/waitcallback.h>
-#include <gwenhywfar/nettransportssl.h>
-#include <gwenhywfar/netconnectionhttp.h>
 #include <gwenhywfar/pathmanager.h>
 
 #include <stdlib.h>
@@ -109,7 +104,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   hbci->banking=AB_Provider_GetBanking(pro);
   hbci->activeMedia=AH_Medium_List_new();
   hbci->banks=AH_Bank_List_new();
-  hbci->libId=GWEN_Net_GetLibraryId();
   hbci->productName=strdup("AQHBCI");
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
               AQHBCI_VERSION_MAJOR, AQHBCI_VERSION_MINOR);
@@ -512,13 +506,6 @@ int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node) {
   } /* while */
 
   return 0;
-}
-
-
-
-GWEN_TYPE_UINT32 AH_HBCI_GetLibraryMark(const AH_HBCI *hbci){
-  assert(hbci);
-  return hbci->libId;
 }
 
 

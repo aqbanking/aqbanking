@@ -47,7 +47,6 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AH_BANK, AQHBCI_API);
 #endif
 
 
-#include <gwenhywfar/netconnection.h>
 #include <aqhbci/hbci.h>
 #include <aqhbci/medium.h>
 #include <aqhbci/message.h>

@@ -24,7 +24,6 @@
 #include <aqhbci/job.h>
 #include <aqhbci/outbox.h>
 #include <aqhbci/jobplugin.h>
-#include <gwenhywfar/nettransportssl.h>
 
 
 

@@ -48,14 +48,12 @@ void AH_Msg_free(AH_MSG *hmsg);
  *
  */
 /*@{*/
-GWEN_KEYSPEC *AH_Msg_GetSigners(const AH_MSG *hmsg);
-int AH_Msg_AddSigner(AH_MSG *hmsg,
-                          const GWEN_KEYSPEC *ks);
+GWEN_KEYSPEC_LIST *AH_Msg_GetSigners(const AH_MSG *hmsg);
+int AH_Msg_AddSigner(AH_MSG *hmsg, const GWEN_KEYSPEC *ks);
 unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg);
 int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s);
 const GWEN_KEYSPEC *AH_Msg_GetCrypter(const AH_MSG *hmsg);
-void AH_Msg_SetCrypter(AH_MSG *hmsg,
-                            const GWEN_KEYSPEC *ks);
+void AH_Msg_SetCrypter(AH_MSG *hmsg, const GWEN_KEYSPEC *ks);
 /*@}*/
 
 
@@ -65,8 +63,7 @@ void AH_Msg_SetCrypter(AH_MSG *hmsg,
 /*@{*/
 GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg);
 GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg);
-void AH_Msg_SetBuffer(AH_MSG *hmsg,
-                           GWEN_BUFFER *bf);
+void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf);
 
 unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg);
 

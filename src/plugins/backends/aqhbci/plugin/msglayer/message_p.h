@@ -31,7 +31,7 @@ struct AH_MSG {
   GWEN_BUFFER *origbuffer;
 
   GWEN_KEYSPEC *crypter;
-  GWEN_KEYSPEC *signers;
+  GWEN_KEYSPEC_LIST *signers;
   unsigned int nSigners;
 
   char *expectedSigner;

@@ -19,7 +19,6 @@
 
 #include <qguardedptr.h>
 #include <aqhbci/hbci.h>
-#include <gwenhywfar/nettransportssl.h>
 #include <string>
 #include <list>
 
@@ -71,23 +70,6 @@ private:
   std::string _dumpHexString(const std::string &s, int size=32);
 
   AH_CRYPT_MODE _getCryptMode(AH_MEDIUM *m, int idx);
-
-  /** Ask for certificate. However, this function seems to be
-      unused? And anyway, it would be better to use the parented
-      version of this function because otherwise the QMessageBox
-      might be hidden underneath the parenting window, which is
-      very confusing. */
-  static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-    _askAddCert(GWEN_NETTRANSPORT *tr,
-                GWEN_DB_NODE *cert);
-  /** Ask for certificate. However, this function seems to be
-      unused? Please use this parented version of this function
-      because otherwise the QMessageBox might be hidden underneath
-      the parenting window, which is very confusing. */
-  static GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-    _askAddCertParented(QWidget *parent,
-			GWEN_NETTRANSPORT *tr,
-			GWEN_DB_NODE *cert);
 
   bool _adjustToUser(AH_USER *u);
 

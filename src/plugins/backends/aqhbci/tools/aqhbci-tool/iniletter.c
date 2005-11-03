@@ -216,7 +216,7 @@ int iniLetter(AB_BANKING *ab,
     }
 
     dbKey=GWEN_DB_Group_new("keydata");
-    if (GWEN_CryptKey_ToDb(key, dbKey, 1)) {
+    if (GWEN_CryptKey_toDb(key, dbKey, 1)) {
       GWEN_DB_Group_free(dbKey);
       DBG_ERROR(0, "Bad key.");
       AB_Banking_Fini(ab);

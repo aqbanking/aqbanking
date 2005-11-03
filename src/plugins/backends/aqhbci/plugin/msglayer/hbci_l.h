@@ -40,8 +40,6 @@ int AH_HBCI_AddObjectPath(const AH_HBCI *hbci,
                           const char *customerId,
                           GWEN_BUFFER *nbuf);
 
-GWEN_TYPE_UINT32 AH_HBCI_GetLibraryMark(const AH_HBCI *hbci);
-
 GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
 int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db);
 

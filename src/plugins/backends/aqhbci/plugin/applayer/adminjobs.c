@@ -22,7 +22,7 @@
 #include "jobqueue_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/net.h>
+#include <gwenhywfar/net2.h>
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/inherit.h>
 #include <aqhbci/hbci.h>
@@ -196,7 +196,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j){
 
       /* now dbKey contains the key */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating key");
-      key=GWEN_CryptKey_FromDb(dbKey);
+      key=GWEN_CryptKey_fromDb(dbKey);
       GWEN_DB_Group_free(dbKey);
       if (!key) {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -461,7 +461,7 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
                       "key/expname", 13);
 
   dbTmp=GWEN_DB_Group_new("keydata");
-  err=GWEN_CryptKey_ToDb(key, dbTmp, 1);
+  err=GWEN_CryptKey_toDb(key, dbTmp, 1);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key to DB");
     GWEN_DB_Group_free(dbTmp);

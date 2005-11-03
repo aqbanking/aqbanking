@@ -586,7 +586,7 @@ std::string Wizard::_getModulusData(const GWEN_CRYPTKEY *key) const {
   std::string result;
 
   n=GWEN_DB_Group_new("keydata");
-  if (GWEN_CryptKey_ToDb(key, n, 1)) {
+  if (GWEN_CryptKey_toDb(key, n, 1)) {
     GWEN_DB_Group_free(n);
     return "";
   }
@@ -614,7 +614,7 @@ std::string Wizard::_getExpData(const GWEN_CRYPTKEY *key) const {
   std::string result;
 
   n=GWEN_DB_Group_new("keydata");
-  if (GWEN_CryptKey_ToDb(key, n, 1)) {
+  if (GWEN_CryptKey_toDb(key, n, 1)) {
     GWEN_DB_Group_free(n);
     return "";
   }

@@ -51,7 +51,7 @@ GWEN_LIST_FUNCTIONS(AH_MSG, AH_Msg);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_KEYSPEC *AH_Msg_GetSigners(const AH_MSG *hmsg){
+GWEN_KEYSPEC_LIST *AH_Msg_GetSigners(const AH_MSG *hmsg){
   assert(hmsg);
   return hmsg->signers;
 }
@@ -67,7 +67,7 @@ int AH_Msg_AddSigner(AH_MSG *hmsg, const GWEN_KEYSPEC *ks){
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Signers must be added before nodes !");
     return -1;
   }
-  GWEN_KeySpec_Add(GWEN_KeySpec_dup(ks), &(hmsg->signers));
+  GWEN_KeySpec_List_Add(GWEN_KeySpec_dup(ks), hmsg->signers);
   hmsg->nSigners++;
   return 0;
 }
@@ -173,7 +173,7 @@ AH_MSG *AH_Msg_new(AH_DIALOG *dlg){
   hmsg->buffer=GWEN_Buffer_new(0, AH_MSG_DEFAULTSIZE, 0, 1);
   GWEN_Buffer_ReserveBytes(hmsg->buffer, AH_MSG_DEFAULTRESERVE);
   GWEN_Buffer_SetStep(hmsg->buffer, AH_MSG_DEFAULTSTEP);
-
+  hmsg->signers=GWEN_KeySpec_List_new();
   return hmsg;
 }
 
@@ -184,7 +184,7 @@ void AH_Msg_free(AH_MSG *hmsg){
   if (hmsg) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_MSG");
     GWEN_LIST_FINI(AH_MSG, hmsg);
-    GWEN_KeySpec_Clear(&(hmsg->signers));
+    GWEN_KeySpec_List_free(hmsg->signers);
     GWEN_KeySpec_free(hmsg->crypter);
     GWEN_Buffer_free(hmsg->buffer);
     GWEN_Buffer_free(hmsg->origbuffer);
@@ -521,7 +521,7 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
     const GWEN_KEYSPEC *ks;
 
     rawBuf=GWEN_Buffer_dup(hmsg->buffer);
-    ks=hmsg->signers;
+    ks=GWEN_KeySpec_List_First(hmsg->signers);
     while (ks) {
       /*DBG_INFO(AQHBCI_LOGDOMAIN, "Signing with this key:");
        GWEN_KeySpec_Dump(ks, stderr, 1);*/
@@ -530,7 +530,7 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here");
         return -1;
       }
-      ks=GWEN_KeySpec_ConstNext(ks);
+      ks=GWEN_KeySpec_List_Next(ks);
     } /* while */
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
@@ -538,17 +538,6 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
 
   /* log unencrypted message */
   AH_Msg_LogMessage(hmsg, hmsg->buffer, 0, 0);
-
-#if 0
-  /* get medium */
-  m=AH_HBCI_GetMedium(AH_Medium_GetHBCI(m), cu);
-  if (!m) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Medium for customer \"%s\" is not available",
-              AH_Customer_GetCustomerId(cu));
-    return -1;
-  }
-#endif
 
   /* encrypt message */
   if (hmsg->crypter) {
@@ -1137,10 +1126,10 @@ void AH_Msg__Dump(const AH_MSG *hmsg,
   }
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "Signers (%d):\n", hmsg->nSigners);
-  ks=hmsg->signers;
+  ks=GWEN_KeySpec_List_First(hmsg->signers);
   while(ks) {
     GWEN_KeySpec_Dump(ks, f, indent+2);
-    ks=GWEN_KeySpec_ConstNext(ks);
+    ks=GWEN_KeySpec_List_Next(ks);
   } /* while */
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "Nodes                : %d\n", hmsg->nodes);
@@ -1170,11 +1159,11 @@ AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg){
 int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s){
   GWEN_KEYSPEC *ks;
 
-  ks=AH_Msg_GetSigners(hmsg);
+  ks=GWEN_KeySpec_List_First(AH_Msg_GetSigners(hmsg));
   while(ks) {
     if (strcasecmp(GWEN_KeySpec_GetOwner(ks), s)==0)
       break;
-    ks=GWEN_KeySpec_Next(ks);
+    ks=GWEN_KeySpec_List_Next(ks);
   } /* while */
   if (ks) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message signed by \"%s\"", s);

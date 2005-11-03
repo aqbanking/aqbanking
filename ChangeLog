@@ -3,6 +3,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/11/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to Gwenhywfar2 (needs the latest CVS version of Gwenhywfar)
+- temporarily disabled AqHBCI-QT3-Wizard (it is too broken and it still used
+  the old buggy network code of Gwen, I will have to write a new wizard in the
+  next days)
+
+
 2005/10/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - adapted AqHBCI to latest changes in Gwenhywfar: 

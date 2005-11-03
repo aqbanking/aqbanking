@@ -576,7 +576,7 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
     GWEN_NetLayer_AddFlags(nl, GWEN_NL_HBCI_FLAGS_BASE64);
   dlg->netLayer=nl;
 
-  GWEN_Net2_AddConnectionToPool(nl);
+  GWEN_Net_AddConnectionToPool(nl);
 
   GWEN_Url_free(url);
   return 0;

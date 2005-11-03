@@ -24,7 +24,7 @@
 #include <aqofxconnect/bank.h>
 #include <aqbanking/transaction.h>
 #include <gwenhywfar/buffer.h>
-#include <gwenhywfar/netconnectionhttp.h>
+#include <gwenhywfar/netlayer.h>
 
 
 
@@ -39,8 +39,6 @@ struct AO_PROVIDER {
 
   AO_BANKQUEUE_LIST *bankQueues;
   AB_JOB_LIST2 *bankingJobs;
-
-  GWEN_TYPE_UINT32 libId;
 };
 
 void AO_Provider_FreeData(void *bp, void *p);
@@ -61,18 +59,13 @@ int AO_Provider_EncodeJob(AB_PROVIDER *pro,
                           AO_CONTEXT *ctx,
                           char **pData);
 
-int AO_Provider_ExtractHttpResponse(AB_PROVIDER *pro,
-                                    GWEN_NETMSG *netmsg,
-                                    GWEN_BUFFER *dbuf);
 void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
                                    const AO_BANK *b,
                                    GWEN_BUFFER *nbuf);
 
-GWEN_NETCONNECTION *AO_Provider_CreateConnection(AB_PROVIDER *pro,
-                                                 AO_USER *u);
 int AO_Provider_SendMessage(AB_PROVIDER *pro,
                             AO_USER *u,
-                            GWEN_NETCONNECTION *conn,
+                            GWEN_NETLAYER *nl,
                             const char *p,
                             unsigned int plen);
 
@@ -80,7 +73,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
                                AO_USER *u,
                                const char *p,
                                unsigned int plen,
-                               GWEN_BUFFER *rbuf);
+                               GWEN_BUFFER **rbuf);
 
 int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
                                   AB_IMEXPORTER_CONTEXT *ictx);

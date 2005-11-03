@@ -43,8 +43,6 @@ struct AH_HBCI {
 
   AH_BANK_LIST *banks;
 
-  GWEN_TYPE_UINT32 libId;
-
   GWEN_TYPE_UINT32 counter;
   AH_MEDIUM *currentMedium;
 

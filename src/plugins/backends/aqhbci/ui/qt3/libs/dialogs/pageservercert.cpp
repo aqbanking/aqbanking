@@ -41,8 +41,6 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/nettransportssl.h>
-#include <gwenhywfar/netconnectionhttp.h>
 
 
 
@@ -67,169 +65,6 @@ bool Wizard::undoServerCertPage(QWidget *p) {
   return true;
 }
 
-GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-Wizard::_askAddCert(GWEN_NETTRANSPORT *tr,
-                    GWEN_DB_NODE *cert){
-    return _askAddCertParented(0, tr, cert);
-}
-
-GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
-Wizard::_askAddCertParented(QWidget *parent,
-			    GWEN_NETTRANSPORT *tr,
-			    GWEN_DB_NODE *cert){
-  QString t;
-  const char *s;
-  GWEN_TYPE_UINT32 ti;
-  int rv;
-
-  t="<qt><p>" +
-      QWidget::tr("Received an unknown certificate:") +
-      "</p>"
-      "<table>";
-
-  t+="<tr><td>" +
-      QWidget::tr("Name") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "commonName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("Organization") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "organizationName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("Department") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "organizationalUnitName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("Country") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "countryName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("City") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "localityName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("State") +
-      "</td><td>";
-  s=GWEN_DB_GetCharValue(cert, "stateOrProvinceName", 0, 0);
-  if (s)
-    t+=QString::fromUtf8(s);
-  else
-    t+=QWidget::tr("(unknown)");
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("Valid after") +
-      "</td><td>";
-  ti=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(cert, "notBefore", 0, 0);
-  if (ti) {
-    GWEN_TIME *gt;
-    int year, month, day;
-    int hour, min, sec;
-
-    gt=GWEN_Time_fromSeconds(ti);
-    if (!GWEN_Time_GetBrokenDownDate(gt, &day, &month, &year)) {
-      QDate d(year, month+1, day);
-
-      t+=d.toString();
-    }
-    t+=QString(" ");
-    if (!GWEN_Time_GetBrokenDownTime(gt, &hour, &min, &sec)) {
-      QTime d(hour, min, sec);
-
-      t+=d.toString();
-    }
-    GWEN_Time_free(gt);
-  }
-  t+="</td></tr>"
-
-      "<tr><td>" +
-      QWidget::tr("Valid until") +
-      "</td><td>";
-  ti=(GWEN_TYPE_UINT32)GWEN_DB_GetIntValue(cert, "notAfter", 0, 0);
-  if (ti) {
-    GWEN_TIME *gt;
-    int year, month, day;
-    int hour, min, sec;
-
-    gt=GWEN_Time_fromSeconds(ti);
-    if (GWEN_Time_GetBrokenDownDate(gt, &day, &month, &year)) {
-      QDate d(year, month+1, day);
-
-      t+=d.toString();
-    }
-    t+=QString(" ");
-    if (GWEN_Time_GetBrokenDownTime(gt, &hour, &min, &sec)) {
-      QTime d(hour, min, sec);
-
-      t+=d.toString();
-    }
-    GWEN_Time_free(gt);
-  }
-  t+="</td></tr></table>"
-
-
-      "<br><tr><td colspan=\"2\"><p>" +
-      QWidget::tr("Do you accept this certificate?") +
-      "</p></qt>";
-
-  rv=QMessageBox::warning(parent, QWidget::tr("New Certificate"),
-                          t,
-                          QMessageBox::Yes,QMessageBox::No);
-  if (rv!=0) {
-    DBG_NOTICE(0, "User rejected certificate");
-    return GWEN_NetTransportSSL_AskAddCertResultNo;
-  }
-
-  rv=QMessageBox::warning(parent, QWidget::tr("New Certificate"),
-                          QWidget::tr("Do you accept this certificate "
-                                      "permanently\n"
-                                      "or for this session only (temporarily)?"
-                                     ),
-                          QWidget::tr("Permanently"),
-                          QWidget::tr("Temporarily"));
-  if (rv==0) {
-    DBG_NOTICE(0, "Trusting permanently");
-    return GWEN_NetTransportSSL_AskAddCertResultPerm;
-  }
-  else {
-    DBG_NOTICE(0, "Trusting temporarily");
-    return GWEN_NetTransportSSL_AskAddCertResultTmp;
-  }
-}
-
-
-
-
 
 
 void Wizard::slotGetCert() {
@@ -237,8 +72,6 @@ void Wizard::slotGetCert() {
   const char *bankId;
   GWEN_BUFFER *nbuf;
   char *p;
-  GWEN_NETTRANSPORT *tr;
-  GWEN_NETCONNECTION *conn;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
   GWEN_DB_NODE *dbCert;
@@ -254,6 +87,8 @@ void Wizard::slotGetCert() {
   AH_HBCI_AddBankCertFolder(_hbci, _bank, nbuf);
 
   AH_HBCI_RemoveAllBankCerts(_hbci, _bank);
+
+
 
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
   tr=GWEN_NetTransportSSL_new(sk,
