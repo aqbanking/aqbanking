@@ -16,6 +16,7 @@
 #include "a_getcert.h"
 #include "a_getsysid.h"
 #include "a_finished.h"
+#include "a_getaccounts.h"
 
 
 
@@ -38,6 +39,9 @@ WizardPinTanNew::WizardPinTanNew(QBanking *qb,
   addAction(wa);
 
   wa=new ActionGetSysId(this);
+  addAction(wa);
+
+  wa=new ActionGetAccounts(this);
   addAction(wa);
 
   wa=new ActionFinished(this);
