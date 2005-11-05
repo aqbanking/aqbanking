@@ -1,3 +1,5 @@
+SUBDIRS=wizard
+
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
@@ -37,7 +39,6 @@ noinst_HEADERS=\
 
 
 nodist_libdialogs_la_SOURCES=\
- wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp \
  selectcontext.ui.cpp selectcontext.ui.moc.cpp selectcontext.moc.cpp \
  hbcisettings.ui.cpp hbcisettings.ui.moc.cpp hbcisettings.moc.cpp \
  editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp \
@@ -50,27 +51,10 @@ libdialogs_la_SOURCES=\
   edituser.cpp \
   editcustomer.cpp \
   hbcisettings.cpp \
-  wizard.cpp \
-  pageacclist.cpp \
-  pagecheckcard.cpp \
-  pagecheckfile.cpp \
-  pagecreatekeys.cpp \
-  pageimport.cpp \
-  pageiniletter.cpp \
-  pagemedium.cpp \
-  pageselectfile.cpp \
-  pagesendkeys.cpp \
-  pageuserdata.cpp \
-  pageservercert.cpp \
-  pageserverkeys.cpp \
-  pageservertest.cpp \
-  pagesummary1.cpp \
-  pageinitmode.cpp \
-  pagesysid.cpp \
-  pageverifykeys.cpp \
   selectcontext.cpp \
   versionpicker.cpp
 
+libdialogs_la_LIBADD=wizard/libwizard.la
 
 BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES)
 CLEANFILES = $(nodist_libdialogs_la_SOURCES) $(nodist_noinst_HEADERS)

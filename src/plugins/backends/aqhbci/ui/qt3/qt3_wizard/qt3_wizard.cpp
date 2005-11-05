@@ -29,7 +29,7 @@
 #include <qbanking/qbanking.h>
 #include "hbcisettings.h"
 
-#include <qbanking/qbselectbank.h> // DEBUG
+#include "w_pintan_new.h"
 
 
 
@@ -39,7 +39,11 @@ int debug(int argc, char **argv) {
   AH_HBCI *hbci;
   AB_PROVIDER *pro;
   QTranslator translator(0);
-  AB_BANKINFO *bi;
+
+  WizardPinTanNew *w;
+  WizardInfo *wInfo;
+  AH_MEDIUM *m;
+  int rv;
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
   //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
@@ -69,28 +73,45 @@ int debug(int argc, char **argv) {
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  bi=QBSelectBank::selectBank(ab,
-                              0,
-                              app.tr("Select a bank"),
-                              QString("282"),
-                              QString::null,
-                              QString("Spar"),
-                              QString("Wilh"));
-  if (ab->fini()) {
-    fprintf(stderr, "Error on fini.\n");
-  }
-  fprintf(stderr, "FINI done.\n");
+  wInfo=new WizardInfo(hbci);
 
-  delete ab;
+  if (1) {
+    GWEN_TIME *ti;
+    GWEN_BUFFER *bufName;
 
-  if (bi) {
-    fprintf(stdout, "Selected account:\n");
-    fprintf(stdout, "%8s %s %s\n",
-            AB_BankInfo_GetBankId(bi),
-            AB_BankInfo_GetBankName(bi),
-            AB_BankInfo_GetLocation(bi));
-    return 0;
+    bufName=GWEN_Buffer_new(0, 128, 0, 1);
+    GWEN_Buffer_AppendString(bufName, "PINTAN-");
+    ti=GWEN_CurrentTime();
+    assert(ti);
+    GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", bufName);
+    GWEN_Time_free(ti);
+    m=AH_HBCI_MediumFactory(hbci,
+                            "pintan", 0,
+                            GWEN_Buffer_GetStart(bufName));
+    GWEN_Buffer_free(bufName);
   }
+
+  rv=AH_Medium_Mount(m);
+  if (rv) {
+    DBG_ERROR(0, "Could not mount medium (%d)", rv);
+    return 3;
+  }
+  wInfo->setMedium(m);
+
+  w=new WizardPinTanNew(ab, wInfo, 0, "WizardPinTanNew", TRUE);
+  if (w->exec()==QDialog::Accepted) {
+    DBG_NOTICE(0, "Accepted");
+  }
+  else {
+    DBG_NOTICE(0, "Rejected");
+  }
+
+  rv=AH_Medium_Unmount(m, 1);
+  if (rv) {
+    DBG_ERROR(0, "Could not unmount medium (%d)", rv);
+    return 3;
+  }
+
   return 2;
 }
 

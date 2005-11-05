@@ -5557,9 +5557,9 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
   assert(hash);
   status=GWEN_SslCertDescr_GetStatusText(cd);
   ipAddr=GWEN_SslCertDescr_GetIpAddress(cd);
-  if (!ab->alwaysAskForCert && !isNew && hash && status && ipAddr) {
+
+  if (hash && status && ipAddr) {
     GWEN_BUFFER *dbuf;
-    const char *result;
     char msgHash[64];
     unsigned int bsize;
 
@@ -5585,14 +5585,17 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
     strncpy(varName, GWEN_Buffer_GetStart(dbuf),
 	    sizeof(varName)-1);
     DBG_INFO(AQBANKING_LOGDOMAIN,
-             "Certificate path: %s", varName);
-    result=GWEN_DB_GetCharValue(pd, GWEN_Buffer_GetStart(dbuf), 0,
-                                0);
+	     "Certificate path: %s", varName);
+    GWEN_Buffer_free(dbuf);
+  }
+
+  if (!ab->alwaysAskForCert && !isNew && varName[0]) {
+    const char *result;
+
+    result=GWEN_DB_GetCharValue(pd, varName, 0, 0);
     if (!result)
       /* check temporary config */
-      result=GWEN_DB_GetCharValue(ab->dbTempConfig,
-				  GWEN_Buffer_GetStart(dbuf), 0,
-				  0);
+      result=GWEN_DB_GetCharValue(ab->dbTempConfig, varName, 0, 0);
     if (result) {
       if (strcasecmp(result, "accept")==0) {
 	DBG_NOTICE(AQBANKING_LOGDOMAIN,
@@ -5723,17 +5726,20 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
     if (rv==1) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
 		 "User accepted certificate permanently");
-      assert(varName);
-      GWEN_DB_SetCharValue(pd, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   varName, "accept");
+      if (*varName) {
+	GWEN_DB_SetCharValue(pd, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     varName, "accept");
+      }
       return GWEN_NetLayerSsl_AskAddCertResult_Perm;
     }
     else if (rv==2) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
 		 "User accepted certificate temporarily");
-      GWEN_DB_SetCharValue(ab->dbTempConfig,
-			   GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   varName, "temp");
+      if (*varName) {
+	GWEN_DB_SetCharValue(ab->dbTempConfig,
+			     GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     varName, "temp");
+      }
       return GWEN_NetLayerSsl_AskAddCertResult_Tmp;
     }
     else {
@@ -5745,8 +5751,10 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
   else {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
 	       "User rejected certificate");
-    GWEN_DB_DeleteVar(pd, varName);
-    GWEN_DB_DeleteVar(ab->dbTempConfig, varName);
+    if (*varName) {
+      GWEN_DB_DeleteVar(pd, varName);
+      GWEN_DB_DeleteVar(ab->dbTempConfig, varName);
+    }
     return GWEN_NetLayerSsl_AskAddCertResult_No;
   }
 

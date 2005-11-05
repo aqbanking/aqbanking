@@ -18,7 +18,6 @@
 #include "hbcisettings.h"
 #include "editaccount.h"
 #include "edituser.h"
-#include "wizard.h"
 #include "versionpicker.h"
 
 #include <qgroupbox.h>
@@ -190,6 +189,7 @@ void HBCISettings::slotUserSelectionChanged(){
 
 
 void HBCISettings::slotNewUser(){
+#if 0
   Wizard *w;
 
   w=new Wizard(_hbci, _app, this, "New User Wizard", true);
@@ -199,6 +199,7 @@ void HBCISettings::slotNewUser(){
   w->exec();
   updateLists();
   //w->show();
+#endif
 }
 
 
@@ -224,6 +225,7 @@ void HBCISettings::slotEditUser(){
 
 
 void HBCISettings::slotIniLetter(){
+#if 0
   AH_USER_LIST2 *ul;
 
   ul=_userList->getSelectedUsers();
@@ -256,6 +258,7 @@ void HBCISettings::slotIniLetter(){
       }
     }
   }
+#endif
 }
 
 
@@ -283,6 +286,7 @@ void HBCISettings::slotDelUser(){
 
 
 void HBCISettings::slotCompleteUser(){
+#if 0
   AH_USER_LIST2 *ul;
 
   ul=_userList->getSelectedUsers();
@@ -301,6 +305,7 @@ void HBCISettings::slotCompleteUser(){
       delete w;
     }
   }
+#endif
 }
 
 

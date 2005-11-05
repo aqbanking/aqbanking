@@ -1,0 +1,71 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Mon Mar 01 2004
+ copyright   : (C) 2004 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AQHBCI_WIZARD_H
+#define AQHBCI_WIZARD_H
+
+class QBanking;
+class Wizard;
+class WizardAction;
+class WizardInfo;
+
+#include "wizard.ui.h"
+#include "waction.h"
+#include "winfo.h"
+
+#include <qstring.h>
+#include <qwizard.h>
+#include <aqbanking/banking.h>
+
+#include <list>
+
+
+class Wizard: protected WizardUi {
+  Q_OBJECT
+private:
+  QBanking *_app;
+  WizardInfo *_wInfo;
+  QWidget *_lastActionWidget;
+  QString _logtext;
+
+public:
+  Wizard(QBanking *qb,
+         WizardInfo *wInfo,
+         const QString &caption=QString::null,
+         QWidget* parent=0, const char* name=0,
+         bool modal=FALSE, WFlags fl=0);
+  virtual ~Wizard();
+
+  QBanking *getBanking();
+
+  void addAction(WizardAction *a);
+  WizardInfo *getWizardInfo();
+
+  void log(AB_BANKING_LOGLEVEL level, const QString &s);
+  void setDescription(const QString &s);
+
+  QWidget *getWidgetAsParent();
+
+  int exec();
+
+  void releaseInfoData();
+
+protected slots:
+  virtual void back();
+  virtual void next();
+};
+
+
+
+#endif
+

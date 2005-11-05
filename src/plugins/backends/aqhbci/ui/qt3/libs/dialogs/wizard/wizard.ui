@@ -1,0 +1,41 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>WizardUi</class>
+<widget class="QWizard">
+    <property name="name">
+        <cstring>WizardUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string></string>
+    </property>
+    <widget class="QWidget">
+        <property name="name">
+            <cstring>startPage</cstring>
+        </property>
+        <attribute name="title">
+            <string>Start</string>
+        </attribute>
+        <vbox>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLabel">
+                <property name="name">
+                    <cstring>textLabel</cstring>
+                </property>
+                <property name="text">
+                    <string></string>
+                </property>
+            </widget>
+        </vbox>
+    </widget>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

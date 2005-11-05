@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=7
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1590,6 +1590,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
   src/plugins/backends/aqhbci/ui/qt3/libs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
+  src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/widgets/Makefile
   src/plugins/backends/aqhbci/ui/qt3/po/Makefile
