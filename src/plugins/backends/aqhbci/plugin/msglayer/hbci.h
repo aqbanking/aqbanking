@@ -290,6 +290,8 @@ void AH_HBCI_HbciToUtf8(const char *p,
                         int size,
                         GWEN_BUFFER *buf);
 
+int AH_HBCI_CheckStringSanity(const char *s);
+
 
 #ifdef __cplusplus
 }

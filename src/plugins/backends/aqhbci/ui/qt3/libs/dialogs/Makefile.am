@@ -2,13 +2,14 @@ SUBDIRS=wizard
 
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  -I$(srcdir)/../widgets -I$(srcdir)/.. -Iwizard \
   $(all_includes)
 
 
 UI_FILES= \
   wizard.ui \
   selectcontext.ui \
+  selectmode.ui \
   hbcisettings.ui \
   editaccount.ui \
   edituser.ui \
@@ -22,6 +23,7 @@ noinst_LTLIBRARIES=libdialogs.la
 nodist_noinst_HEADERS=\
   wizard.ui.h \
   selectcontext.ui.h \
+  selectmode.ui.h \
   hbcisettings.ui.h \
   editaccount.ui.h \
   edituser.ui.h \
@@ -31,15 +33,18 @@ nodist_noinst_HEADERS=\
 noinst_HEADERS=\
   wizard.h \
   selectcontext.h \
+  selectmode.h \
   hbcisettings.h \
   editaccount.h \
   edituser.h \
   editcustomer.h \
-  versionpicker.h
+  versionpicker.h \
+  userwizard.h
 
 
 nodist_libdialogs_la_SOURCES=\
  selectcontext.ui.cpp selectcontext.ui.moc.cpp selectcontext.moc.cpp \
+ selectmode.ui.cpp selectmode.ui.moc.cpp \
  hbcisettings.ui.cpp hbcisettings.ui.moc.cpp hbcisettings.moc.cpp \
  editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp \
  edituser.ui.cpp edituser.ui.moc.cpp edituser.moc.cpp \
@@ -52,7 +57,9 @@ libdialogs_la_SOURCES=\
   editcustomer.cpp \
   hbcisettings.cpp \
   selectcontext.cpp \
-  versionpicker.cpp
+  selectmode.cpp \
+  versionpicker.cpp \
+  userwizard.cpp
 
 libdialogs_la_LIBADD=wizard/libwizard.la
 

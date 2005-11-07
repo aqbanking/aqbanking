@@ -169,9 +169,30 @@ bool EditCtUser::apply(){
   AH_USER *u;
   AH_CUSTOMER *cu;
   int idx;
+  QCString cuid;
 
   /* do user data page, we have to create the medium etc */
   m=_wInfo->getMedium();
+
+  cuid=(customerIdEdit->text().isEmpty() ?
+        userIdEdit->text().utf8() :
+        cuid=customerIdEdit->text().utf8() );
+  /* always create customer since we just created the user which starts with
+   * an empty list of customers. So the customer we are about to create
+   * *can* not exist. */
+  if (AH_HBCI_CheckStringSanity(cuid)) {
+    QMessageBox::critical(this,
+                          tr("Invalid Input"),
+                          tr("<qt>"
+                             "<p>"
+                             "The customer id contains invalid characters."
+                             "</p>"
+                             "<p>"
+                             "Please correct your entry."
+                             "</p>"),
+                          QMessageBox::Ok,QMessageBox::NoButton);
+    return false;
+  }
 
   if (bankCodeEdit->text().length()<8) {
     QMessageBox::critical(this,
@@ -358,12 +379,6 @@ bool EditCtUser::apply(){
   AH_User_SetContextIdx(u, idx);
 
   /* select or create customer */
-  QCString cuid=(customerIdEdit->text().isEmpty() ?
-                 userIdEdit->text().utf8() :
-                 cuid=customerIdEdit->text().utf8() );
-  /* always create customer since we just created the user which starts with
-   * an empty list of customers. So the customer we are about to create
-   * *can* not exist. */
   cu=AH_Customer_new(u, cuid);
   AH_Customer_SetFullName(cu, nameEdit->text().utf8());
 

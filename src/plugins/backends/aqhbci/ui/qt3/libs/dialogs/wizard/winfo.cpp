@@ -17,6 +17,8 @@
 
 #include "winfo.h"
 
+#include <gwenhywfar/debug.h>
+
 
 
 
@@ -215,6 +217,54 @@ void WizardInfo::subFlags(GWEN_TYPE_UINT32 fl) {
 
 
 
+void WizardInfo::releaseData() {
+  // handle bank, user, customer
+  if (_bank) {
+    if (_flags & WIZARDINFO_FLAGS_BANK_CREATED) {
+      /* bank created, so by removing the bank we also remove all other
+       * objects below it */
+      DBG_INFO(0, "Removing bank and all subordinate objects");
+      AH_HBCI_RemoveBank(_hbci, _bank);
+      _flags&=~WIZARDINFO_FLAGS_BANK_CREATED;
+      AH_Bank_free(_bank);
+      _bank=0;
+    } // if bank created
+    else {
+      if (_user) {
+        if (_flags & WIZARDINFO_FLAGS_USER_CREATED) {
+          /* user created, so by removing the user we also remove all other
+           * objects below it */
+          DBG_INFO(0, "Removing user and all subordinate objects");
+          AH_Bank_RemoveUser(_bank, _user);
+          _flags&=~WIZARDINFO_FLAGS_USER_CREATED;
+          AH_User_free(_user);
+          _user=0;
+        } // if _userCreated
+        else {
+          if (_customer) {
+            if (_flags & WIZARDINFO_FLAGS_CUST_CREATED) {
+              DBG_INFO(0, "Removing customer");
+              AH_User_RemoveCustomer(_user, _customer);
+              _flags&=~WIZARDINFO_FLAGS_CUST_CREATED;
+              AH_Customer_free(_customer);
+              _customer=0;
+            } // if customer created
+          } // if customer
+        } // if user not created
+      } // if user
+    } // if bank not created
+  } // if bank
+
+  if (_medium && (_flags & WIZARDINFO_FLAGS_MEDIUM_CREATED)) {
+    if (_flags & WIZARDINFO_FLAGS_MEDIUM_ADDED) {
+      AH_HBCI_RemoveMedium(_hbci, _medium);
+      _flags&=~WIZARDINFO_FLAGS_MEDIUM_ADDED;
+    }
+    AH_Medium_free(_medium);
+    _flags&=~WIZARDINFO_FLAGS_MEDIUM_CREATED;
+    _medium=0;
+  }
+}
 
 
 

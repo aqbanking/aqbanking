@@ -29,7 +29,8 @@
 #include <qbanking/qbanking.h>
 #include "hbcisettings.h"
 
-#include "w_pintan_new.h"
+#include "userwizard.h"
+
 
 
 
@@ -40,10 +41,7 @@ int debug(int argc, char **argv) {
   AB_PROVIDER *pro;
   QTranslator translator(0);
 
-  WizardPinTanNew *w;
-  WizardInfo *wInfo;
-  AH_MEDIUM *m;
-  int rv;
+  UserWizard *uw;
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
   //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
@@ -73,46 +71,19 @@ int debug(int argc, char **argv) {
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  wInfo=new WizardInfo(hbci);
-
-  if (1) {
-    GWEN_TIME *ti;
-    GWEN_BUFFER *bufName;
-
-    bufName=GWEN_Buffer_new(0, 128, 0, 1);
-    GWEN_Buffer_AppendString(bufName, "PINTAN-");
-    ti=GWEN_CurrentTime();
-    assert(ti);
-    GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", bufName);
-    GWEN_Time_free(ti);
-    m=AH_HBCI_MediumFactory(hbci,
-                            "pintan", 0,
-                            GWEN_Buffer_GetStart(bufName));
-    GWEN_Buffer_free(bufName);
-  }
-
-  rv=AH_Medium_Mount(m);
-  if (rv) {
-    DBG_ERROR(0, "Could not mount medium (%d)", rv);
-    return 3;
-  }
-  wInfo->setMedium(m);
-
-  w=new WizardPinTanNew(ab, wInfo, 0, "WizardPinTanNew", TRUE);
-  if (w->exec()==QDialog::Accepted) {
-    DBG_NOTICE(0, "Accepted");
+  uw=new UserWizard(ab, hbci);
+  if (uw->exec()) {
+    fprintf(stderr, "Ok :-)\n");
+    delete uw;
+    return 0;
   }
   else {
-    DBG_NOTICE(0, "Rejected");
+    fprintf(stderr, "Whoops...\n");
   }
 
-  rv=AH_Medium_Unmount(m, 1);
-  if (rv) {
-    DBG_ERROR(0, "Could not unmount medium (%d)", rv);
-    return 3;
-  }
+  delete uw;
 
-  return 2;
+  return 0;
 }
 
 

@@ -27,7 +27,8 @@ noinst_HEADERS=\
   a_getsysid.h \
   a_finished.h \
   a_getaccounts.h \
-  w_pintan_new.h
+  w_pintan_new.h \
+  w_ddv_import.h
 
 
 nodist_libwizard_la_SOURCES=\
@@ -44,7 +45,8 @@ libwizard_la_SOURCES=\
   a_getsysid.cpp \
   a_finished.cpp \
   a_getaccounts.cpp \
-  w_pintan_new.cpp
+  w_pintan_new.cpp \
+  w_ddv_import.cpp
 
 
 BUILT_SOURCES = $(nodist_libwizard_la_SOURCES)

@@ -1,0 +1,229 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>SelectModeUi</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>SelectModeUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>511</width>
+            <height>348</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Create or Import User</string>
+    </property>
+    <property name="sizeGripEnabled">
+        <bool>true</bool>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <spacer>
+            <property name="name">
+                <cstring>spacer2_2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;qt&gt;&lt;p&gt;You can now setup a new online banking user.&lt;/p&gt;
+&lt;p&gt;Please note that AqHBCI/ABanking can only import keyfiles which have been created with OpenHBCI- or AqBanking-based applications.&lt;/p&gt;
+&lt;p&gt;Keyfiles of proprietary software - like Moneyplex, Starmoney etc - can not be used, since the manufacturers of those programs do not publish their file formats.&lt;/p&gt;
+&lt;p&gt;Keyfiles created by Gnucash, KMymoney, AqMoney, KOpenHBCI, GOpenHBCI, LxBank, AqHBCI-Tool and QBankManager can be used.&lt;/p&gt;
+&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QButtonGroup">
+            <property name="name">
+                <cstring>buttonGroup1</cstring>
+            </property>
+            <property name="title">
+                <string>Create or Import User</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QRadioButton" row="0" column="1" rowspan="2" colspan="1">
+                    <property name="name">
+                        <cstring>importFileRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>import keyfile</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>import an existing keyfile</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="2" column="1">
+                    <property name="name">
+                        <cstring>createFileRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>create keyfile</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>create a new keyfile</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="0" column="0">
+                    <property name="name">
+                        <cstring>importCardRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>import chipcard</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use with DDV cards or personalized RSA cards</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="3" column="0">
+                    <property name="name">
+                        <cstring>pinTanRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>setup PIN/TAN</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="1" column="0" rowspan="2" colspan="1">
+                    <property name="name">
+                        <cstring>initCardRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>init chipcard</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use with completely new RSA cards</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>Layout1</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>Horizontal Spacing2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonOk</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonCancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>SelectModeUi</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>SelectModeUi</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>importCardRadio</tabstop>
+    <tabstop>importFileRadio</tabstop>
+    <tabstop>initCardRadio</tabstop>
+    <tabstop>createFileRadio</tabstop>
+    <tabstop>pinTanRadio</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

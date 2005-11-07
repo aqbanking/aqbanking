@@ -1,4 +1,10 @@
 
+2005/11/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs in AqHBCI setup wizard (in many cases the return value
+  of QMessageBox functions was misinterpreted)
+
+
 2005/11/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was always asking for acceptance of certificate and never

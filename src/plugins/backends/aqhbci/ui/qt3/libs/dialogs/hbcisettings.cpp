@@ -19,6 +19,7 @@
 #include "editaccount.h"
 #include "edituser.h"
 #include "versionpicker.h"
+#include "userwizard.h"
 
 #include <qgroupbox.h>
 #include <qpushbutton.h>
@@ -189,17 +190,15 @@ void HBCISettings::slotUserSelectionChanged(){
 
 
 void HBCISettings::slotNewUser(){
-#if 0
-  Wizard *w;
+  UserWizard uw(_app, _hbci);
 
-  w=new Wizard(_hbci, _app, this, "New User Wizard", true);
-  //connect(w, SIGNAL(accepted()), this, SLOT(updateLists()));
-  //connect(w, SIGNAL(rejected()), this, SLOT(updateLists()));
-  w->show(); // necessary for qt4
-  w->exec();
-  updateLists();
-  //w->show();
-#endif
+  if (uw.exec()) {
+    fprintf(stderr, "Ok :-)\n");
+    updateLists();
+  }
+  else {
+    fprintf(stderr, "No new user added\n");
+  }
 }
 
 
@@ -275,9 +274,10 @@ void HBCISettings::slotDelUser(){
       if (QMessageBox::question(this,
                                 tr("Delete User"),
                                 "<qt>"+tr("Are you sure you want to delete the selected user?")+"</qt>",
-                                QMessageBox::Yes,QMessageBox::No)==0) {
-	AH_Bank_RemoveUser(AH_User_GetBank(u), u);
-	updateLists();
+                                QMessageBox::Yes,QMessageBox::No)==
+          QMessageBox::Yes) {
+        AH_Bank_RemoveUser(AH_User_GetBank(u), u);
+        updateLists();
       }
     }
   }
@@ -396,7 +396,8 @@ void HBCISettings::slotDelAccount(){
                                    "this account?"
                                    "</qt>"
                                   ),
-                                QMessageBox::Yes,QMessageBox::No)!=0)
+                                QMessageBox::Yes,QMessageBox::No)!=
+          QMessageBox::Yes)
         return;
       if (AH_Bank_RemoveAccount(AH_Account_GetBank(a), a)) {
         QMessageBox::critical(this,
@@ -508,7 +509,8 @@ void HBCISettings::slotChangeVersion(){
 					 "</p>"
 					 "</qt>"
 					),
-				      QMessageBox::Yes,QMessageBox::No)!=0) {
+                                      QMessageBox::Yes,QMessageBox::No)!=
+                QMessageBox::Yes) {
 	      return;
 	    }
 	  }

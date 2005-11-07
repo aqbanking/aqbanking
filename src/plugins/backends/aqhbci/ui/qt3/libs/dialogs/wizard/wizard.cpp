@@ -120,55 +120,6 @@ int Wizard::exec() {
 
 
 
-void Wizard::releaseInfoData() {
-  AH_BANK *b;
-
-  // handle bank, user, customer
-  b=_wInfo->getBank();
-  if (b) {
-    if (_wInfo->getFlags() & WIZARDINFO_FLAGS_BANK_CREATED) {
-      /* bank created, so by removing the bank we also remove all other
-       * objects below it */
-      DBG_INFO(0, "Removing bank and all subordinate objects");
-      AH_HBCI_RemoveBank(_wInfo->getHbci(), b);
-      _wInfo->setBank(0);
-      _wInfo->subFlags(WIZARDINFO_FLAGS_BANK_CREATED);
-      AH_Bank_free(b);
-    } // if bank created
-    else {
-      AH_USER *u;
-
-      u=_wInfo->getUser();
-      if (u) {
-        if (_wInfo->getFlags() & WIZARDINFO_FLAGS_USER_CREATED) {
-          /* user created, so by removing the user we also remove all other
-           * objects below it */
-          DBG_INFO(0, "Removing user and all subordinate objects");
-          AH_Bank_RemoveUser(b, u);
-          _wInfo->setUser(0);
-          _wInfo->subFlags(WIZARDINFO_FLAGS_USER_CREATED);
-          AH_User_free(u);
-        } // if _userCreated
-        else {
-          AH_CUSTOMER *cu;
-
-          cu=_wInfo->getCustomer();
-          if (cu) {
-            if (_wInfo->getFlags() & WIZARDINFO_FLAGS_CUST_CREATED) {
-              DBG_INFO(0, "Removing customer");
-              AH_User_RemoveCustomer(u, cu);
-              _wInfo->setCustomer(0);
-              _wInfo->subFlags(WIZARDINFO_FLAGS_CUST_CREATED);
-              AH_Customer_free(cu);
-            } // if customer created
-          } // if customer
-        } // if user not created
-      } // if user
-    } // if bank not created
-  } // if bank
-}
-
-
 
 void Wizard::back() {
   QWidget *w;

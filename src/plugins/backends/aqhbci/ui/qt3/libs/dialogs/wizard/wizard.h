@@ -58,8 +58,6 @@ public:
 
   int exec();
 
-  void releaseInfoData();
-
 protected slots:
   virtual void back();
   virtual void next();

@@ -71,8 +71,6 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf);
 GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci);
 
 
-int AH_HBCI_CheckStringSanity(const char *s);
-
 
 #endif /* GWHBCI_HBCI_L_H */
 
