@@ -244,7 +244,7 @@ bool Wizard::doUserDataPage(QWidget *p){
 
   _hasAllKeys=false;
   if (customerIdEdit->text().isEmpty()) {
-    if (QMessageBox::warning(this,
+    int r = QMessageBox::warning(this,
                              tr("No customer id found"),
                              tr("<qt>"
                                 "<p>"
@@ -259,7 +259,8 @@ bool Wizard::doUserDataPage(QWidget *p){
                                 "</p>"
                                 "</qt>"
                                ),
-                             QMessageBox::Yes,QMessageBox::No)!=0) {
+                             QMessageBox::Yes,QMessageBox::No);
+    if (r != 0 && r != QMessageBox::Yes) {
       customerIdEdit->setFocus();
       return false;
     }

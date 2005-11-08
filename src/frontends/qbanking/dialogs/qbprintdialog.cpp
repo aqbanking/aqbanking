@@ -523,11 +523,12 @@ void QBPrintDialog::slotPrint(){
   txt.setWidth(&p, body.width());
 
   if (txt.widthUsed()>body.width()) {
-    if (QMessageBox::critical(this,
+    int r = QMessageBox::critical(this,
                               tr("Print"),
                               tr("Text does not fit on the page.\n"
                                  "Do you want to print it anyway?"),
-			      QMessageBox::Yes,QMessageBox::Abort)!=0)
+			      QMessageBox::Yes,QMessageBox::Abort);
+    if (r !=0 && r != QMessageBox::Yes)
       return;
   }
 
@@ -552,10 +553,11 @@ void QBPrintDialog::slotPrint(){
     _printer->newPage();
     if (GWEN_WaitCallbackProgress(page)==
         GWEN_WaitCallbackResult_Abort) {
-      if (QMessageBox::critical(this,
+      int r = QMessageBox::critical(this,
                                 tr("Aborted"),
                                 tr("Do you really want to abort?"),
-				QMessageBox::Yes,QMessageBox::No)!=0) {
+				QMessageBox::Yes,QMessageBox::No);
+      if (r !=0 && r != QMessageBox::Yes) {
         GWEN_WaitCallback_Leave();
         return;
       }

@@ -271,11 +271,11 @@ void HBCISettings::slotDelUser(){
     u=AH_User_List2_GetFront(ul);
     AH_User_List2_free(ul);
     if (u) {
-      if (QMessageBox::question(this,
+      int r = QMessageBox::question(this,
                                 tr("Delete User"),
                                 "<qt>"+tr("Are you sure you want to delete the selected user?")+"</qt>",
-                                QMessageBox::Yes,QMessageBox::No)==
-          QMessageBox::Yes) {
+                                QMessageBox::Yes,QMessageBox::No);
+      if (r == 0 || r == QMessageBox::Yes) {
         AH_Bank_RemoveUser(AH_User_GetBank(u), u);
         updateLists();
       }
@@ -389,15 +389,15 @@ void HBCISettings::slotDelAccount(){
     a=AH_Account_List2_GetFront(al);
     AH_Account_List2_free(al);
     if (a) {
-      if (QMessageBox::question(this,
+      int r = QMessageBox::question(this,
                                 tr("Delete Account"),
                                 tr("<qt>"
                                    "Are you sure you want to delete "
                                    "this account?"
                                    "</qt>"
                                   ),
-                                QMessageBox::Yes,QMessageBox::No)!=
-          QMessageBox::Yes)
+                                QMessageBox::Yes,QMessageBox::No);
+      if (r != 0 && r != QMessageBox::Yes)
         return;
       if (AH_Bank_RemoveAccount(AH_Account_GetBank(a), a)) {
         QMessageBox::critical(this,
@@ -497,7 +497,7 @@ void HBCISettings::slotChangeVersion(){
             vl++;
 	  } // while
 	  if (!*vl) {
-	    if (QMessageBox::critical(this,
+	    int r = QMessageBox::critical(this,
 				      tr("Version Not Supported"),
 				      tr("<qt>"
 					 "<p>"
@@ -509,8 +509,8 @@ void HBCISettings::slotChangeVersion(){
 					 "</p>"
 					 "</qt>"
 					),
-                                      QMessageBox::Yes,QMessageBox::No)!=
-                QMessageBox::Yes) {
+                                      QMessageBox::Yes,QMessageBox::No);
+	    if (r != 0 && r != QMessageBox::Yes) {
 	      return;
 	    }
 	  }

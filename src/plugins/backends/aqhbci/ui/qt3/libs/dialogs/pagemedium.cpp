@@ -158,14 +158,15 @@ bool Wizard::doMediumPage(QWidget *p){
     else {
       DBG_NOTICE(0, "Create mode");
       if (QFile::exists(fileNameEdit->text())) {
-	if (QMessageBox::warning(this,
+	int r = QMessageBox::warning(this,
 				 tr("File already exists"),
 				 tr("<qt><p>The specified file already exists. However, you chose to create "
 				    "a new medium. In that case the existing file will be overwritten and "
 				    "all old data in that file will be lost.</p><p>Do you want to "
 				    "overwrite the existing file?</p></qt>"
 				    ),
-				 QMessageBox::Yes,QMessageBox::No)!= 0)
+				 QMessageBox::Yes,QMessageBox::No);
+	if (r != 0 && r != QMessageBox::Yes)
 	  return false;
       }
       setAppropriate(selectFilePage, true);

@@ -249,7 +249,7 @@ bool EditCtUser::apply(){
 
 
   if (customerIdEdit->text().isEmpty()) {
-    if (QMessageBox::warning(this,
+    int r = QMessageBox::warning(this,
                              tr("No customer id found"),
                              tr("<qt>"
                                 "<p>"
@@ -264,8 +264,8 @@ bool EditCtUser::apply(){
                                 "</p>"
                                 "</qt>"
                                ),
-                             QMessageBox::Yes,QMessageBox::No)!=
-        QMessageBox::Yes) {
+                             QMessageBox::Yes,QMessageBox::No);
+    if (r != 0 && r != QMessageBox::Yes) {
       customerIdEdit->setFocus();
       return false;
     }

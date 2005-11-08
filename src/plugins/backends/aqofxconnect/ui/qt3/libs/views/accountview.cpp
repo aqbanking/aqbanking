@@ -165,11 +165,12 @@ void AccountView::slotNew(){
                                  AB_Account_GetCountry(a),
                                  AB_Account_GetBankCode(a),
                                  AB_Account_GetAccountNumber(a))){
-        if (QMessageBox::critical(this,
+        int r = QMessageBox::critical(this,
                                   tr("New Account"),
                                   tr("This account already exists.\n"
                                      "Please check your input."),
-                                  QMessageBox::Retry,QMessageBox::Abort)!=0) {
+                                  QMessageBox::Retry,QMessageBox::Abort);
+	if (r !=0 && r != QMessageBox::Retry) {
           AB_Account_free(a);
           return;
         }
@@ -222,11 +223,12 @@ void AccountView::slotRemove(){
                          QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
-  if (QMessageBox::warning(this,
+  int r = QMessageBox::warning(this,
                            tr("Remove Account"),
                            tr("Are you sure you want to remove "
                               "the selcted account?"),
-                           QMessageBox::Yes,QMessageBox::No)!=0)
+                           QMessageBox::Yes,QMessageBox::No);
+  if (r !=0 && r != QMessageBox::Yes)
     return;
 
   AO_Provider_RemoveAccount(_provider, a);

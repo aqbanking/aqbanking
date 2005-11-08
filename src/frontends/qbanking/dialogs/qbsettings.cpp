@@ -233,13 +233,14 @@ void QBankingSettings::slotBackendDisable(){
       return;
     }
 
-    if (QMessageBox::warning(this,
+    int r = QMessageBox::warning(this,
                              tr("Disable Backend"),
                              tr("This would remove all accounts currently "
                                 "supported by that backend.\n"
                                 "\n"
                                 "Do you still want me to disable it?"),
-			     QMessageBox::Yes,QMessageBox::No)!=0)
+			     QMessageBox::Yes,QMessageBox::No);
+    if (r !=0 && r != QMessageBox::Yes)
       return;
 
     rv=_banking->deactivateProvider(GWEN_PluginDescription_GetName(pd));

@@ -69,11 +69,10 @@ bool Wizard::undoCreateKeysPage(QWidget *p){
 
 void Wizard::slotCreateKeys(){
   GWEN_TYPE_UINT32 bid;
-  int rv;
 
   setNextEnabled(createKeysPage, _hasAllKeys);
   if (_hasAllKeys) {
-    rv=QMessageBox::warning(this,
+    int rv=QMessageBox::warning(this,
                             tr("Keys already exist"),
                             tr("<qt>"
                                "<p>"
@@ -85,7 +84,7 @@ void Wizard::slotCreateKeys(){
                                "</qt>"
                               ),
                             QMessageBox::Yes,QMessageBox::No,QMessageBox::Abort);
-    if (rv!=0) {
+    if (rv != 0 && rv != QMessageBox::Yes) {
       return;
     }
   }

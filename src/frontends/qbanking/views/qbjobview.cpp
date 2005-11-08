@@ -169,11 +169,12 @@ void QBJobView::slotDequeue(){
     return;
   }
 
-  if (QMessageBox::warning(this,
+  int r = QMessageBox::warning(this,
 			   tr("Delete job"),
 			   tr("Do you really want to delete the "
 			      "selected job(s)?"),
-			   QMessageBox::Yes,QMessageBox::No)!=0)
+			   QMessageBox::Yes,QMessageBox::No);
+  if (r !=0 && r != QMessageBox::Yes)
     return;
 
   for (jit=jl.begin(); jit!=jl.end(); jit++) {

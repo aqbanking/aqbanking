@@ -455,9 +455,7 @@ void LogManager::saveFile() {
 
       _lastDir=fd.dirPath();
       if (f.exists()) {
-        int rv;
-
-        rv=QMessageBox::warning(this,
+        int rv=QMessageBox::warning(this,
                                 tr("Warning"),
                                 tr("<qt>"
                                    "<p>"
@@ -470,9 +468,9 @@ void LogManager::saveFile() {
                                   ).arg(filename),
                                 QMessageBox::Yes,QMessageBox::No,
 				QMessageBox::Abort);
-        if (rv==2)
+        if (rv == 2 || rv == QMessageBox::Abort)
           return;
-        else if (rv==1)
+        else if (rv == 1 || rv == QMessageBox::No)
           continue;
       }
 

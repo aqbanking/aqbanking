@@ -1,3 +1,9 @@
+2005-11-08   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/*.cpp,
+	src/frontends/qbanking/...: Finally fix return value problem of
+	QMessageBox everywhere, because qt3-3.3.4 of suse9.3 returns a
+	different value as described in the documentation.
 
 2005/11/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
