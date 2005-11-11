@@ -56,3 +56,20 @@ WizardPinTanNew::~WizardPinTanNew() {
 
 
 
+int WizardPinTanNew::exec() {
+  int rv;
+
+  rv=Wizard::exec();
+  if (rv==QDialog::Accepted) {
+    AH_USER *u;
+
+    u=getWizardInfo()->getUser();
+    assert(u);
+    /* import, so always activate the user */
+    AH_User_SetStatus(u, AH_UserStatusEnabled);
+  }
+  return rv;
+}
+
+
+

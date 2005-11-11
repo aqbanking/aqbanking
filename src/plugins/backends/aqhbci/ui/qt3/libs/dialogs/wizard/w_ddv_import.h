@@ -27,6 +27,8 @@ public:
                   bool modal=FALSE, WFlags fl=0);
   virtual ~WizardDdvImport();
 
+  virtual int exec();
+
 };
 
 

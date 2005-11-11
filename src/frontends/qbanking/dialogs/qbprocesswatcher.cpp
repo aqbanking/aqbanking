@@ -15,6 +15,8 @@
 #endif
 
 
+#include <gwenhywfar/debug.h>
+
 #include "qbprocesswatcher.h"
 
 #include <qprocess.h>
@@ -26,11 +28,11 @@
 
 
 QBProcessWatcher::QBProcessWatcher(QProcess* process,
-                               const QString &text,
-                               QWidget* parent,
-                               const char* name,
-                               bool modal,
-                               WFlags fl)
+                                   const QString &txt,
+                                   QWidget* parent,
+                                   const char* name,
+                                   bool modal,
+                                   WFlags fl)
 :QBProcessWatcherUi(parent, name, modal, fl)
 ,_process(process)
 ,_result(-1)
@@ -38,10 +40,10 @@ QBProcessWatcher::QBProcessWatcher(QProcess* process,
 ,_startTime((time_t)0)
 ,_duration(0){
   _startTime=time(0);
-  if (text.isEmpty())
-    textLabel->setText(tr("Process running..."));
+  if (txt.isEmpty())
+    tLabel->setText(tr("Process running..."));
   else
-    textLabel->setText(text);
+    tLabel->setText(txt);
 
   QObject::connect(process, SIGNAL(processExited()),
                    this, SLOT(slotProcessFinished()));
@@ -115,6 +117,14 @@ int QBProcessWatcher::getStatus() const{
 
 int QBProcessWatcher::getDuration() const{
   return _duration;
+}
+
+
+
+void QBProcessWatcher::languageChange(){
+  QString txt=tLabel->text();
+  QBProcessWatcherUi::languageChange();
+  tLabel->setText(txt);
 }
 
 

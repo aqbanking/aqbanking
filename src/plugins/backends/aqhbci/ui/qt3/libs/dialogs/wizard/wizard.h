@@ -56,7 +56,7 @@ public:
 
   QWidget *getWidgetAsParent();
 
-  int exec();
+  virtual int exec();
 
 protected slots:
   virtual void back();

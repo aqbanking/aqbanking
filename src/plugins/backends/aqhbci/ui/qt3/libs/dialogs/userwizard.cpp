@@ -19,6 +19,7 @@
 #include "selectmode.h"
 #include "w_pintan_new.h"
 #include "w_ddv_import.h"
+#include "w_rdh_import.h"
 
 #include <aqhbci/hbci.h>
 #include <aqhbci/medium.h>
@@ -163,10 +164,11 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo,
 
 
 bool UserWizard::_handleModeImportCard() {
-  WizardDdvImport *w;
+  Wizard *w;
   WizardInfo wInfo(_hbci);
   AH_MEDIUM *m;
   int rv;
+  const char *s;
 
   /* create medium */
   if (!_checkAndCreateMedium(&wInfo, GWEN_CryptToken_Device_Card))
@@ -184,8 +186,14 @@ bool UserWizard::_handleModeImportCard() {
   wInfo.setMedium(m);
   wInfo.addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
 
+  s=AH_Medium_GetMediumTypeName(m);
+  assert(s);
+  if (strcasecmp(s, "ddvcard")==0)
+    w=new WizardDdvImport(_app, &wInfo, 0, "WizardDdvImport", TRUE);
+  else
+    w=new WizardRdhImport(_app, &wInfo, 0, "WizardRdhImport", TRUE);
+
   /* setup user */
-  w=new WizardDdvImport(_app, &wInfo, 0, "WizardDdvImport", TRUE);
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
@@ -196,6 +204,7 @@ bool UserWizard::_handleModeImportCard() {
       return false;
     }
 
+    DBG_INFO(0, "Adding medium");
     AH_HBCI_AddMedium(_hbci, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
@@ -206,10 +215,58 @@ bool UserWizard::_handleModeImportCard() {
     return false;
   }
 
-  wInfo.releaseData();
   return true;
+}
 
 
+
+bool UserWizard::_handleModeImportFile() {
+  Wizard *w;
+  WizardInfo wInfo(_hbci);
+  AH_MEDIUM *m;
+  int rv;
+
+  /* create medium */
+  if (!_checkAndCreateMedium(&wInfo, GWEN_CryptToken_Device_File))
+    return false;
+
+  m=wInfo.getMedium();
+  assert(m);
+
+  /* mount medium */
+  rv=AH_Medium_Mount(m);
+  if (rv) {
+    DBG_ERROR(0, "Could not mount medium (%d)", rv);
+    return false;
+  }
+  wInfo.setMedium(m);
+  wInfo.addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+
+  w=new WizardRdhImport(_app, &wInfo, 0, "WizardRdhImport", TRUE);
+
+  /* setup user */
+  if (w->exec()==QDialog::Accepted) {
+    DBG_NOTICE(0, "Accepted");
+    /* unmount medium */
+    rv=AH_Medium_Unmount(m, 1);
+    if (rv) {
+      DBG_ERROR(0, "Could not unmount medium (%d)", rv);
+      wInfo.releaseData();
+      return false;
+    }
+
+    DBG_INFO(0, "Adding medium");
+    AH_HBCI_AddMedium(_hbci, m);
+    wInfo.setMedium(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+  }
+  else {
+    DBG_NOTICE(0, "Rejected");
+    wInfo.releaseData();
+    return false;
+  }
+
+  return true;
 }
 
 
@@ -223,6 +280,9 @@ bool UserWizard::exec() {
   }
   else if (mode==SelectMode::ModeImportCard) {
     return _handleModeImportCard();
+  }
+  else if (mode==SelectMode::ModeImportFile) {
+    return _handleModeImportFile();
   }
 
   return false;

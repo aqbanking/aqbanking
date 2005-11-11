@@ -340,7 +340,7 @@ msgstr ""
 #: dialogs/qbsettings.cpp:342
 msgid ""
 "<qt><p>Running KDE wizard, this window will close automatically when the "
-"wizard finishes.</p><p>Please wait...</p></qt"
+"wizard finishes.</p><p>Please wait...</p></qt>"
 msgstr ""
 
 #: dialogs/qbsettings.cpp:364

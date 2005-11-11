@@ -7,7 +7,6 @@ INCLUDES = \
 
 
 UI_FILES= \
-  wizard.ui \
   selectcontext.ui \
   selectmode.ui \
   hbcisettings.ui \

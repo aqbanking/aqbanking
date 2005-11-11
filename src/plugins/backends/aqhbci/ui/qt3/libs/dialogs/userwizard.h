@@ -32,6 +32,7 @@ private:
                              GWEN_CRYPTTOKEN_DEVICE dev);
   bool _handleModePinTan();
   bool _handleModeImportCard();
+  bool _handleModeImportFile();
 
 public:
   UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent=0);

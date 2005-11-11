@@ -6,8 +6,7 @@ INCLUDES = \
 
 UI_FILES= \
   editctuser.ui \
-  wizard.ui \
-  wizard2.ui
+  wizard.ui
 
 EXTRA_DIST= $(UI_FILES)
 
@@ -28,7 +27,8 @@ noinst_HEADERS=\
   a_finished.h \
   a_getaccounts.h \
   w_pintan_new.h \
-  w_ddv_import.h
+  w_ddv_import.h \
+  w_rdh_import.h
 
 
 nodist_libwizard_la_SOURCES=\
@@ -46,7 +46,8 @@ libwizard_la_SOURCES=\
   a_finished.cpp \
   a_getaccounts.cpp \
   w_pintan_new.cpp \
-  w_ddv_import.cpp
+  w_ddv_import.cpp \
+  w_rdh_import.cpp
 
 
 BUILT_SOURCES = $(nodist_libwizard_la_SOURCES)

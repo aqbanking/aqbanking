@@ -11,28 +11,32 @@
  ***************************************************************************/
 
 
-#include "w_ddv_import.h"
+#include "w_rdh_import.h"
 #include "a_edituser.h"
 #include "a_getcert.h"
 #include "a_getsysid.h"
 #include "a_finished.h"
+#include "a_getsysid.h"
 #include "a_getaccounts.h"
 
 
 
-WizardDdvImport::WizardDdvImport(QBanking *qb,
+WizardRdhImport::WizardRdhImport(QBanking *qb,
                                  WizardInfo *wInfo,
                                  QWidget* parent, const char* name,
                                  bool modal, WFlags fl)
 :Wizard(qb, wInfo,
-        tr("Create a new DDV card user"),
+        tr("Create a new RDH user"),
         parent, name, modal, fl) {
   WizardAction *wa;
 
   setDescription(tr("<qt>"
-                    "This wizard imports users from a <b>DDV</b> card."
+                    "This wizard imports users from a <b>RDH</b> medium."
                     "</qt>"));
   wa=new ActionEditUser(this);
+  addAction(wa);
+
+  wa=new ActionGetSysId(this);
   addAction(wa);
 
   wa=new ActionGetAccounts(this);
@@ -44,12 +48,13 @@ WizardDdvImport::WizardDdvImport(QBanking *qb,
 
 
 
-WizardDdvImport::~WizardDdvImport() {
+WizardRdhImport::~WizardRdhImport() {
 
 }
 
 
-int WizardDdvImport::exec() {
+
+int WizardRdhImport::exec() {
   int rv;
 
   rv=Wizard::exec();
@@ -61,10 +66,9 @@ int WizardDdvImport::exec() {
     /* import, so always activate the user */
     AH_User_SetStatus(u, AH_UserStatusEnabled);
   }
+
   return rv;
 }
-
-
 
 
 

@@ -11,21 +11,21 @@
  ***************************************************************************/
 
 
-#ifndef AQHBCI_W_PINTAN_NEW_H
-#define AQHBCI_W_PINTAN_NEW_H
+#ifndef AQHBCI_W_RDH_IMPORT_H
+#define AQHBCI_W_RDH_IMPORT_H
 
 #include "wizard.h"
 
 
-class WizardPinTanNew: public Wizard {
+class WizardRdhImport: public Wizard {
 private:
 
 public:
-  WizardPinTanNew(QBanking *qb,
+  WizardRdhImport(QBanking *qb,
                   WizardInfo *wInfo,
                   QWidget* parent=0, const char* name=0,
                   bool modal=FALSE, WFlags fl=0);
-  virtual ~WizardPinTanNew();
+  virtual ~WizardRdhImport();
 
   virtual int exec();
 

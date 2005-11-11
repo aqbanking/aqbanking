@@ -5,6 +5,17 @@
 	QMessageBox everywhere, because qt3-3.3.4 of suse9.3 returns a
 	different value as described in the documentation.
 
+2005/11/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added wizard which imports RDH media (keyfile, chipcard)
+- aqhbci-qt3-wizard: fixed abug (was not adjusting the status of an imported
+  user)
+- fixed a long frustrating - even if minor - bug: The progress watcher
+  was not accepting the text I assigned to it, because for some unknown
+  reason the function languageChange() is called after creation and this
+  function always resets the label's text to it's initial value.
+
+
 2005/11/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed some bugs in AqHBCI setup wizard (in many cases the return value

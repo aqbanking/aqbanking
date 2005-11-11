@@ -349,7 +349,7 @@ void QBankingSettings::slotBackendSetup(){
                                  "<p>"
                                  "Please wait..."
                                  "</p>"
-                                 "</qt"
+                                 "</qt>"
                                 ),
                               this,
                               "ProcessWatcher",

@@ -44,6 +44,8 @@ public slots:
   void slotKill();
   void slotProcessFinished();
 
+  virtual void languageChange();
+
 private:
   QProcess *_process;
   int _result;

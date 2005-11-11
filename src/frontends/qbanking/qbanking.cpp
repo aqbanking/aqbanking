@@ -812,6 +812,7 @@ int QBanking::init(){
     return rv;
 
   _translator=new QTranslator(0);
+  DBG_ERROR(0, "PKGDATADIR="PKGDATADIR);
   if (_translator->load(QTextCodec::locale()+QString(".qm"),
 			QString(PKGDATADIR "/i18n/"))) {
     DBG_DEBUG(0, "I18N available for your language");
