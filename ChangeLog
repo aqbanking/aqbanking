@@ -11,7 +11,7 @@
 2005/11/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added wizard which imports RDH media (keyfile, chipcard)
-- aqhbci-qt3-wizard: fixed abug (was not adjusting the status of an imported
+- aqhbci-qt3-wizard: fixed a bug (was not adjusting the status of an imported
   user)
 - fixed a long frustrating - even if minor - bug: The progress watcher
   was not accepting the text I assigned to it, because for some unknown
