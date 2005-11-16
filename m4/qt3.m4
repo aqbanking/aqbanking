@@ -127,20 +127,31 @@ AC_ARG_WITH(qt3-libs,
   ]
 )
 
-if test "$enable_qt3_threads" != "no"; then
-	if test -z "$qt3_libs"; then
-		AQ_SEARCH_FOR_PATH([libqt-mt.so.3],[$local_qt3_libs])
-       		if test -n "$found_dir" ; then
-       			qt3_libs="-L$found_dir -lqt-mt"
-                        test "$OSYSTEM" = "freebsd" && \
-                          qt3_libs="$qt3_libs -lc_r"
-       		fi
-	fi
+# Determine the extension of a shared library; the variable
+# std_shrext comes from the AC_PROG_LIBTOOL macro. Copied from
+# libtool.
+
+# Shared library suffix. On linux this was set as
+# shrext_cmds='.so'; but on darwin it is actually a text command.
+eval std_shrext=\"$shrext_cmds\"
+if test -n "${std_shrext}"; then
+   std_strext='.so'
 fi
+
+# Choose library name of qt
+if test "$enable_qt3_threads" != "no"; then
+   qt_libname="qt-mt"
+else
+   qt_libname="qt"
+fi
+
+# This is the name of the qt library to search for.
+qt_searchname="lib${qt_libname}${std_shrext}.3"
+
 if test -z "$qt3_libs"; then
-   AQ_SEARCH_FOR_PATH([libqt.so.3],[$local_qt3_libs])
+   AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_qt3_libs])
    if test -n "$found_dir" ; then
-     qt3_libs="-L$found_dir -lqt"
+     qt3_libs="-L$found_dir -l${qt_libname}"
        test "$OSYSTEM" = "freebsd" && \
           qt3_libs="$qt3_libs -lc_r"
    fi

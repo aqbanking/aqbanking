@@ -243,6 +243,14 @@ Compilation hints for specific platforms:
   variable manually. This should remove all potentially incompatible
   directives from the Makefile.
 
+- (especially on Mac/Darwin): If your configure run does not
+  detect the QT libraries and it says "checking for qt3
+  libraries... not found", then you need to specify the linker
+  flags for qt3 manually in the env variable qt3_libs. I.e. if
+  your qt3 library files are in /opt/qt/lib and is called
+  libqt-mt, then you need to specify 
+  ./configure qt3_libs="-L/opt/qt/lib -lqt-mt"
+
 
 5.2. Building from CVS
 ----------------------

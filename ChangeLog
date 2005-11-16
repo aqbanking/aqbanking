@@ -1,5 +1,8 @@
 2005-11-16   Christian Stimming <stimming@tuhh.de>
 
+	* m4/qt3.m4: Make qt3 detection independent of the shared library
+	extension of the current OS.
+
 	* aqbanking.spec.in: Move lib*.so into -devel rpm package; the
 	binary packages will only contain "lib*.so.MAJOR".
 
