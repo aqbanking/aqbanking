@@ -1,4 +1,7 @@
+2005-11-16   Christian Stimming <stimming@tuhh.de>
 
+	* aqbanking.spec.in: Move lib*.so into -devel rpm package; the
+	binary packages will only contain "lib*.so.MAJOR".
 
 2005/11/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

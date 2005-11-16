@@ -180,7 +180,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %defattr(-,root,root)
 %doc AUTHORS README COPYING ChangeLog
 ### The original aqbanking files
-%{_libdir}/libaqbanking*
+%{_libdir}/libaqbanking.so.*
+%{_libdir}/libaqbankingpp.so.*
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}/bankinfo
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
@@ -207,16 +208,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 ### The aqhbci files
 %{_datadir}/aqhbci
 %{_bindir}/aqhbci-tool
-%{_libdir}/libaqhbci*
+%{_libdir}/libaqhbci.so.*
 %{plugindir}/providers/aqhbci.*
 ### The dtaus files
-%{_libdir}/libaqdtaus*
+%{_libdir}/libaqdtaus.so.*
 %{plugindir}/providers/aqdtaus.*
 ### The cbanking files
-%{_libdir}/libcbanking*
+%{_libdir}/libcbanking.so.*
 
 %files qt3
-%{_libdir}/libqbanking*
+%{_libdir}/libqbanking.so.*
 %{plugindir}/wizards/aqhbci
 %{plugindir}/debugger/aqhbci
 %{plugindir}/wizards/aqdtaus
@@ -229,7 +230,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{plugindir}/imexporters/ofx.*
 %{_datadir}/%{name}/imexporters/ofx
 %{_bindir}/aqofxconnect-config
-%{_libdir}/libaqofxconnect*
+%{_libdir}/libaqofxconnect.so.*
 %files ofx-qt3
 %{plugindir}/wizards/aqofxconnect
 %endif
@@ -239,16 +240,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{plugindir}/providers/aqgeldkarte.*
 %{_includedir}/aqgeldkarte
 %{_bindir}/aqgeldkarte-config
-%{_libdir}/libaqgeldkarte*
+%{_libdir}/libaqgeldkarte.so.*
 %files geldkarte-qt3
 %{plugindir}/wizards/aqgeldkarte
 %endif
 
 %files gtk2
-%{_libdir}/libg2banking*
+%{_libdir}/libg2banking.so.*
 
 %files kde3
-%{_libdir}/libkbanking*
+%{_libdir}/libkbanking.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -256,6 +257,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_includedir}/aqbanking
 %{_includedir}/aqbanking++
 %{_bindir}/aqbanking-config
+%{_libdir}/*.so
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/aqbanking.pc
 %{_datadir}/aclocal
