@@ -20,7 +20,6 @@ EXTRA_DIST= $(UI_FILES)
 noinst_LTLIBRARIES=libdialogs.la
 
 nodist_noinst_HEADERS=\
-  wizard.ui.h \
   selectcontext.ui.h \
   selectmode.ui.h \
   hbcisettings.ui.h \
@@ -30,7 +29,6 @@ nodist_noinst_HEADERS=\
   versionpicker.ui.h
 
 noinst_HEADERS=\
-  wizard.h \
   selectcontext.h \
   selectmode.h \
   hbcisettings.h \
