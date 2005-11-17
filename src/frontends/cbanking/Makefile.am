@@ -3,6 +3,17 @@ INCLUDES = -I$(top_srcdir)/src/libs/aqbanking \
   -I$(top_builddir)/headers $(all_includes)
 #EXTRA_DIST=README
 
+bin_SCRIPTS=cbanking-config
+M4dir = $(datadir)/aclocal
+dist_M4_DATA=cbanking.m4
+
+cbanking-config: cbanking-config.in
+	echo "#! /bin/sh" >cbanking-config && \
+	cat cbanking-config.in >>cbanking-config && \
+	chmod a+x cbanking-config
+
+CLEANFILES=cbanking-config cbanking-config.in
+
 lib_LTLIBRARIES=libcbanking.la
 
 iheaderdir=${includedir}/cbanking
@@ -83,7 +94,7 @@ $(DLLNAME) $(DLLEXP_LIB): $(DLLSRC_LIBLA) ressource.o
 	) \
 	&& rm -rf dlldir
 
-CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
+CLEANFILES += $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 
 endif
 # IS_WINDOWS

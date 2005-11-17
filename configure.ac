@@ -635,7 +635,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,19,1,1)
+AC_GWENHYWFAR(1,98,1,1)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -1468,6 +1468,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking++/ressource.rc
   src/frontends/Makefile
   src/frontends/cbanking/Makefile
+  src/frontends/cbanking/cbanking-config.in
   src/frontends/cbanking/ressource.rc
   src/frontends/g2banking/Makefile
   src/frontends/g2banking/g2banking-config.in

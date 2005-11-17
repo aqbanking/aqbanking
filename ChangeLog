@@ -1,3 +1,11 @@
+
+
+2005/11/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added m4 and configure scripts for cbanking (thus making CBanking available
+  outside of AqBanking)
+
+
 2005-11-16   Christian Stimming <stimming@tuhh.de>
 
 	* m4/qt3.m4: Make qt3 detection independent of the shared library
@@ -5,6 +13,7 @@
 
 	* aqbanking.spec.in: Move lib*.so into -devel rpm package; the
 	binary packages will only contain "lib*.so.MAJOR".
+
 
 2005/11/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
