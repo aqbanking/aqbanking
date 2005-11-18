@@ -2,3 +2,5 @@
 *.def
 *.lib
 *.rc
+*-config
+*-config.in
