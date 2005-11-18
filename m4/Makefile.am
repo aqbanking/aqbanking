@@ -1,7 +1,10 @@
 EXTRA_DIST=\
- as-scrub-include.m4 \
- os.m4 \
+ ac_python_module.m4 \
  acx_compile_warn.m4 \
  acx_windows_paths.m4 \
- ac_python_module.m4 \
- az_python.m4
+ as-scrub-include.m4 \
+ chipcard2-client.m4 \
+ kde3.m4 \
+ os.m4 \
+ qt3.m4 \
+ searchfiles.m4
