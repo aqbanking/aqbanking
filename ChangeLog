@@ -1,4 +1,7 @@
+2005-11-18   Christian Stimming <stimming@tuhh.de>
 
+	* src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui
+	(also geldkarte and ofxconnect): Remove obsolete includehint.
 
 2005/11/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

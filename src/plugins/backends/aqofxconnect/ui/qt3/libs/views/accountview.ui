@@ -131,6 +131,5 @@ However, if the bank does not send a list you can add your accounts manually.
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>accountlistview.h</includehint>
 </includehints>
 </UI>
