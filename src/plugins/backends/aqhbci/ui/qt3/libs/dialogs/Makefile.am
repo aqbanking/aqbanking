@@ -2,7 +2,8 @@ SUBDIRS=wizard
 
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/../widgets -I$(srcdir)/.. -Iwizard \
+  -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  -Iwizard -I$(srcdir)/wizard \
   $(all_includes)
 
 
