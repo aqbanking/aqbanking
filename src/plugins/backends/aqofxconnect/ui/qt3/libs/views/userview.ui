@@ -164,6 +164,5 @@ click on &lt;b&gt;Get Account List&lt;/b&gt;. This will contact the bank and ask
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>userlistview.h</includehint>
 </includehints>
 </UI>
