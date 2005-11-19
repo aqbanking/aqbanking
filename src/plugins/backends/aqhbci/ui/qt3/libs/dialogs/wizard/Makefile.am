@@ -1,6 +1,7 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  -I../widgets -I.. \
   $(all_includes)
 
 
