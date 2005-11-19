@@ -97,6 +97,12 @@ sources:
 	done
 
 
+# Build and link a test program to verify the linker flags
+noinst_PROGRAMS = testlib
+testlib_SOURCES = testlib.c
+testlib_LDADD = libg2banking.la
+
+
 # dll stuff
 if IS_WINDOWS
 

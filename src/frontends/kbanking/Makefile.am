@@ -58,6 +58,12 @@ sources:
 	done ;
 
 
+# Build and link a test program to verify the linker flags
+noinst_PROGRAMS = testlib
+testlib_SOURCES = testlib.cpp
+testlib_LDADD = libkbanking.la
+
+
 %.moc.cpp: %.h
 	@qt3_moc@ -o $@ $<
 

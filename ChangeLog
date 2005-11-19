@@ -1,3 +1,10 @@
+2005-11-19  Christian Stimming  <stimming@tuhh.de>
+
+	* src/frontends/qbanking/testlib.cpp, src/libs/aqbanking/testlib.c
+	(also in g2banking, cbanking, kbanking): Add small test program
+	that is linked on built so that the linker flags are checked for
+	correctness.
+
 2005-11-18   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui

@@ -4,3 +4,4 @@
 *.rc
 *-config
 *-config.in
+testlib

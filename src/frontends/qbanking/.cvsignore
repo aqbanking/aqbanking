@@ -10,3 +10,4 @@ i18nsources
 *.lib
 *.def
 portinglog.txt
+testlib

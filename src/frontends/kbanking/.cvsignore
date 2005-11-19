@@ -6,3 +6,4 @@ version.h
 *.ui.cpp
 *-config
 i18nsources
+testlib

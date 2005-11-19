@@ -67,8 +67,12 @@ sources:
 	done ;
 
 %.moc.cpp: %.h
-	@qt3_moc@ -o $@ $<
+	$(qt3_moc) -o $@ $<
 
+# Build and link a test program to verify the linker flags
+noinst_PROGRAMS = testlib
+testlib_SOURCES = testlib.cpp
+testlib_LDADD = libqbanking.la
 
 ###------------------------------------------------------------------------
 # DLL build rules for Windows/mingw32
