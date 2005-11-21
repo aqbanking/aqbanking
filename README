@@ -300,7 +300,6 @@ An example for ./configure is this, where $QTDIR has been set to
 /my/qt4/dir beforehand:
 
   ./configure 
-     --enable-maintainer-mode 
      --enable-debug 
      --prefix=/my/prefix QTDIR=$QTDIR 
      qt3_libs="-L$QTDIR/lib -lQtCore -lQtGui -lQt3Support" 
@@ -309,7 +308,6 @@ An example for ./configure is this, where $QTDIR has been set to
 or on Windows/mingw32
 
   ./configure -C 
-    --enable-maintainer-mode 
     --enable-debug QTDIR=$QTDIR 
     qt3_libs="-L$QTDIR/bin -lQtCore4 -lQtGui4 -lQt3Support4" 
     qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support" 
