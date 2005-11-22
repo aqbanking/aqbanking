@@ -109,8 +109,8 @@ AH_JOB *AH_Job_MultiTransferBase_new(AH_CUSTOMER *cu,
 
   dbParams=AH_Job_GetParams(j);
   aj->maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
-  if (aj->maxTransfers==0)
-    aj->maxTransfers=10;
+  if (aj->maxTransfers==0 || aj->maxTransfers>AH_JOBMULTITRANSFER_MAXTRANS)
+    aj->maxTransfers=AH_JOBMULTITRANSFER_MAXTRANS;
 
   return j;
 }

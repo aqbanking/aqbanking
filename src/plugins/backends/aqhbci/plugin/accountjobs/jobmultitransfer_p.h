@@ -14,6 +14,7 @@
 #ifndef AH_JOBMULTITRANSFER_P_H
 #define AH_JOBMULTITRANSFER_P_H
 
+#define AH_JOBMULTITRANSFER_MAXTRANS 16
 
 #include "jobmultitransfer_l.h"
 #include <gwenhywfar/db.h>

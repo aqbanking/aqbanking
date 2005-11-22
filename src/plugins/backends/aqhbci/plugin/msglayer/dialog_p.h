@@ -48,6 +48,8 @@ int AH_Dialog__SetAddress(AH_DIALOG *dlg,
 int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg);
 
 
+int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
+                          int timeout);
 
 
 

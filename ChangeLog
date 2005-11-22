@@ -1,3 +1,10 @@
+
+
+2005/11/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- aqhbci: introduced a hardlimit for transactions per multi-transfers
+
+
 2005-11-19  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/testlib.cpp, src/libs/aqbanking/testlib.c
@@ -5,15 +12,20 @@
 	that is linked on built so that the linker flags are checked for
 	correctness.
 
+
 2005-11-18   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui
 	(also geldkarte and ofxconnect): Remove obsolete includehint.
 
+
 2005/11/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added m4 and configure scripts for cbanking (thus making CBanking available
   outside of AqBanking)
+- qbanking.{cpp,h}: Added QString-versions of progressStart() and
+  progressLog()
+- started working on Rdh user creation wizard
 
 
 2005-11-16   Christian Stimming <stimming@tuhh.de>

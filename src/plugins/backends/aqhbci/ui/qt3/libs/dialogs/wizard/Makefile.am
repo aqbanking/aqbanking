@@ -7,7 +7,8 @@ INCLUDES = \
 
 UI_FILES= \
   editctuser.ui \
-  wizard.ui
+  wizard.ui \
+  getkeys.ui
 
 EXTRA_DIST= $(UI_FILES)
 
@@ -15,40 +16,50 @@ noinst_LTLIBRARIES=libwizard.la
 
 nodist_noinst_HEADERS=\
   editctuser.ui.h \
-  wizard.ui.h
+  wizard.ui.h \
+  getkeys.ui.h
 
 noinst_HEADERS=\
   editctuser.h \
+  getkeys.h \
   waction.h \
   winfo.h \
   wizard.h \
   a_edituser.h \
   a_getcert.h \
+  a_getkeys.h \
   a_getsysid.h \
+  a_wait.h \
   a_finished.h \
   a_getaccounts.h \
   w_pintan_new.h \
   w_ddv_import.h \
-  w_rdh_import.h
+  w_rdh_import.h \
+  w_rdh_new.h
 
 
 nodist_libwizard_la_SOURCES=\
  editctuser.ui.cpp editctuser.ui.moc.cpp editctuser.moc.cpp \
- wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp
+ wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp \
+ getkeys.ui.cpp getkeys.ui.moc.cpp getkeys.moc.cpp
 
 libwizard_la_SOURCES=\
   waction.cpp \
   winfo.cpp \
   wizard.cpp \
   editctuser.cpp \
+  getkeys.cpp \
   a_edituser.cpp \
   a_getcert.cpp \
+  a_getkeys.cpp \
   a_getsysid.cpp \
+  a_wait.cpp \
   a_finished.cpp \
   a_getaccounts.cpp \
   w_pintan_new.cpp \
   w_ddv_import.cpp \
-  w_rdh_import.cpp
+  w_rdh_import.cpp \
+  w_rdh_new.cpp
 
 
 BUILT_SOURCES = $(nodist_libwizard_la_SOURCES)

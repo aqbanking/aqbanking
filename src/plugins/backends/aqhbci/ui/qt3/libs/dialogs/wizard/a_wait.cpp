@@ -15,7 +15,7 @@
 #endif
 
 
-#include "a_finished.h"
+#include "a_wait.h"
 #include "wizard.h"
 #include <qbanking/qbanking.h>
 
@@ -28,20 +28,31 @@
 
 
 
-ActionFinished::ActionFinished(Wizard *w)
-:WizardAction(w, "Finished", QWidget::tr("Finished")) {
+ActionWait::ActionWait(Wizard *w)
+:WizardAction(w, "Wait", QWidget::tr("Wait")) {
   QLabel *tl;
 
-  tl=new QLabel(this, "FinishedText");
+  tl=new QLabel(this, "WaitText");
   tl->setText("<qt>"
-              "The new user has now been setup. Have fun."
+              "<p>"
+              "The new user has now been setup partly."
+              "</p>"
+              "<p>"
+              "You will now have to wait for the bank to acknowledge "
+              "the registration and to complete your application."
+              "</p>"
+              "<p>"
+              "In the next days your bank will inform you about the success "
+              "of the application. You can then finish the setup of this "
+              "user."
+              "</p>"
               "</qt>");
   addWidget(tl);
 }
 
 
 
-ActionFinished::~ActionFinished() {
+ActionWait::~ActionWait() {
 }
 
 

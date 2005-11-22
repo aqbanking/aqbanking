@@ -25,8 +25,8 @@
 
 ActionEditUser::ActionEditUser(Wizard *w)
 :WizardAction(w, "EditUser", QWidget::tr("Edit user settings")) {
-  _editUserDialog=new EditCtUser(getWizard()->getBanking(),
-                                 getWizard()->getWizardInfo(),
+  _editUserDialog=new EditCtUser(w->getBanking(),
+                                 w->getWizardInfo(),
                                  this,
                                  "EditCtUser");
   addWidget(_editUserDialog);

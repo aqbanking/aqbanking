@@ -15,34 +15,43 @@
 #endif
 
 
-#include "a_finished.h"
+#include "a_getkeys.h"
 #include "wizard.h"
+#include "getkeys.h"
+
 #include <qbanking/qbanking.h>
 
-#include <aqhbci/dialog.h>
+#include <aqhbci/outbox.h>
+#include <aqhbci/adminjobs.h>
+
 #include <gwenhywfar/debug.h>
+
+#include <qmessagebox.h>
 
 #include <assert.h>
 
-#include <qlabel.h>
 
 
-
-ActionFinished::ActionFinished(Wizard *w)
-:WizardAction(w, "Finished", QWidget::tr("Finished")) {
-  QLabel *tl;
-
-  tl=new QLabel(this, "FinishedText");
-  tl->setText("<qt>"
-              "The new user has now been setup. Have fun."
-              "</qt>");
-  addWidget(tl);
+ActionGetKeys::ActionGetKeys(Wizard *w)
+:WizardAction(w, "GetKeys", QWidget::tr("Retrieve server keys")) {
+  _getKeysDialog=new GetKeys(w, this, "GetKeys");
+  addWidget(_getKeysDialog);
+  _getKeysDialog->show();
 }
 
 
 
-ActionFinished::~ActionFinished() {
+ActionGetKeys::~ActionGetKeys() {
 }
+
+
+
+bool ActionGetKeys::apply() {
+  return _getKeysDialog->getResult();
+}
+
+
+
 
 
 

@@ -324,6 +324,56 @@ AH_MSG *AH_Dialog_RecvMessage(AH_DIALOG *dlg) {
 
 
 
+int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
+			  int timeout) {
+  AH_HBCI *hbci;
+  int rv;
+
+  assert(dlg);
+  hbci=AH_Dialog_GetHbci(dlg);
+  assert(hbci);
+  rv=GWEN_NetLayer_SendPacket(dlg->netLayer,
+			      buf, blen,
+			      timeout);
+  if (rv) {
+    if (rv==GWEN_ERROR_NOT_CONNECTED) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                 "Reconnecting dialog");
+      if (GWEN_NetLayer_FindBaseLayer(dlg->netLayer, GWEN_NL_HTTP_NAME)) {
+	/* this is a http connection, so try to reconnect */
+	rv=GWEN_NetLayer_Connect_Wait(dlg->netLayer,
+				      AH_HBCI_GetConnectTimeout(hbci));
+	if (rv) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+		    "Could not connect to bank (%d)", rv);
+	  return AB_ERROR_NETWORK;
+	}
+        /* retry to send the packet */
+	rv=GWEN_NetLayer_SendPacket(dlg->netLayer,
+				    buf, blen,
+				    timeout);
+	if (rv) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+		    "Could not send packet, giving up");
+	  return AB_ERROR_NETWORK;
+	}
+      }
+      else {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Connection down, dialog aborted");
+	return AB_ERROR_NETWORK;
+      }
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog");
+      return AB_ERROR_NETWORK;
+    }
+  }
+
+  return 0;
+}
+
+
+
 int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout) {
   int rv;
   GWEN_BUFFER *mbuf;
@@ -343,10 +393,10 @@ int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout) {
                                   I18N("second(s)"),
                                   0);
   GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
-  rv=GWEN_NetLayer_SendPacket(dlg->netLayer,
-			      GWEN_Buffer_GetStart(mbuf),
-			      GWEN_Buffer_GetUsedBytes(mbuf),
-			      timeout);
+  rv=AH_Dialog__SendPacket(dlg,
+			   GWEN_Buffer_GetStart(mbuf),
+			   GWEN_Buffer_GetUsedBytes(mbuf),
+			   timeout);
   GWEN_WaitCallback_Leave();
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog");

@@ -999,9 +999,9 @@ AB_BANKINFO *QBanking::selectBank(QWidget* parent,
 }
 
 
-bool QBanking::isPure7BitAscii(const QString &input)
-{
+bool QBanking::isPure7BitAscii(const QString &input){
   unsigned stringlength = input.length();
+
   for (unsigned k = 0; k < stringlength; ++k) {
     if (input[k].unicode() > 0x7f) {
       DBG_DEBUG(0, "String \"%s\" is not pure-7bit-ascii at character %d.\n",
@@ -1011,6 +1011,34 @@ bool QBanking::isPure7BitAscii(const QString &input)
   }
   return true;
 }
+
+
+
+GWEN_TYPE_UINT32 QBanking::progressStart(const QString &title,
+					 const QString &text,
+					 GWEN_TYPE_UINT32 total) {
+  std::string s1;
+  std::string s2;
+
+  s1=QStringToUtf8String(title);
+  s2=QStringToUtf8String(text);
+
+  return Banking::progressStart(s1.c_str(), s2.c_str(), total);
+}
+
+
+
+int QBanking::progressLog(GWEN_TYPE_UINT32 id,
+			  AB_BANKING_LOGLEVEL level,
+			  const QString &text) {
+  std::string s1;
+
+  s1=QStringToUtf8String(text);
+  return Banking::progressLog(id, level, s1.c_str());
+}
+
+
+
 
 
 

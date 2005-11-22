@@ -148,6 +148,13 @@ public:
 
   virtual bool interactiveImport();
 
+  virtual GWEN_TYPE_UINT32 progressStart(const QString &title,
+                                         const QString &text,
+                                         GWEN_TYPE_UINT32 total);
+  virtual int progressLog(GWEN_TYPE_UINT32 id,
+                          AB_BANKING_LOGLEVEL level,
+                          const QString &text);
+
   /**
    * Opens a dialog which asks the user for a bank. This bank can be selected
    * using the bank code (also called <i>sort code</i> in some countries),
@@ -203,6 +210,7 @@ public:
    * In particular, if the given string contains Umlauts, accents,
    * or similar, then this will return false. */
   static bool isPure7BitAscii(const QString &s);
+
 };
 
 
