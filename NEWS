@@ -1,4 +1,13 @@
 ===========================================================================
+               Released AqBanking - 1.8.0beta (2005-11-22)
+===========================================================================
+
+This version fixes many bugs, adapts to Gwenhywfar2 (1.99.0) and fixes
+many problems encountered in HBCI-PIN/TAN mode. The user setup wizard for
+HBCI has been rewritten (but it can only import existing media for now).
+
+
+===========================================================================
                Released AqBanking - 1.6.0beta (2005/09/02)
 ===========================================================================
 
