@@ -1,0 +1,391 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>MakeKeysUi</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>MakeKeysUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Create User Keys</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_5_2_2_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>11</y>
+                <width>518</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&lt;qt&gt;
+We will now retrieve the public keys of the bank server.&lt;br&gt;
+&lt;/qt&gt;</string>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox19_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>37</y>
+                <width>518</width>
+                <height>436</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>5</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="title">
+            <string>Get Server's Keys</string>
+        </property>
+        <vbox>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QTextView">
+                <property name="name">
+                    <cstring>TextView1_3</cstring>
+                </property>
+                <property name="text">
+                    <string>&lt;qt&gt;
+There are two key pairs to be created:
+&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;Signature keys:&lt;/b&gt; These keys are used to sign all messages to the server.&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Crypt keys:&lt;/b&gt; These keys are used by the server to encrypt
+data prior to sending it to to us. This way you are the only one who can decrypt the server's messages.
+&lt;/ul&gt;
+&lt;p&gt;
+When you press the button below your private and public keys will be created. 
+Depending on the speed of your computer this may take some time (up to a few 
+seconds). If there already are keys on the security medium you will be asked whether you want to overwrite them.
+&lt;/p&gt;
+&lt;p&gt;
+However, if the keys already exist you may simply go on with the next page.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                </property>
+            </widget>
+            <widget class="QLayoutWidget">
+                <property name="name">
+                    <cstring>layout16</cstring>
+                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>makeKeysButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Create Keys</string>
+                        </property>
+                        <property name="toolTip" stdset="0">
+                            <string>Get the public keys of the bank server now.</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>TextLabel1_2_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Result:</string>
+                        </property>
+                        <property name="alignment">
+                            <set>AlignVCenter|AlignRight</set>
+                        </property>
+                        <property name="hAlign" stdset="0">
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>makeKeysLabel</cstring>
+                        </property>
+                        <property name="palette">
+                            <palette>
+                                <active>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>223</green>
+                                        <blue>224</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>237</red>
+                                        <green>239</green>
+                                        <blue>239</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>111</green>
+                                        <blue>112</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>148</green>
+                                        <blue>149</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                </active>
+                                <disabled>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>223</green>
+                                        <blue>224</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>252</red>
+                                        <green>254</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>111</green>
+                                        <blue>112</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>148</green>
+                                        <blue>149</blue>
+                                    </color>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                </disabled>
+                                <inactive>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>223</green>
+                                        <blue>224</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>252</red>
+                                        <green>254</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>111</green>
+                                        <blue>112</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>148</green>
+                                        <blue>149</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                </inactive>
+                            </palette>
+                        </property>
+                        <property name="frameShape">
+                            <enum>StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                            <enum>Sunken</enum>
+                        </property>
+                        <property name="text">
+                            <string></string>
+                        </property>
+                        <property name="toolTip" stdset="0">
+                            <string>Result of retrieving the public keys.</string>
+                        </property>
+                    </widget>
+                </hbox>
+            </widget>
+        </vbox>
+    </widget>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
