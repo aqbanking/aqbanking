@@ -59,7 +59,7 @@ $(GLADE_SOURCES) $(GLADE_HDRS): g2banking.glade
 	rm -Rf tmp.glade >/dev/null
 	mkdir tmp.glade
 	cp $< tmp.glade
-	( cd tmp.glade && glade-2 -w g2banking.glade ) 
+	( cd tmp.glade && $(GLADE2) -w g2banking.glade ) 
 	for f in $(GLADE_SOURCES) $(GLADE_HDRS); do \
 	      cp tmp.glade/src/$$f . ; \
 	done

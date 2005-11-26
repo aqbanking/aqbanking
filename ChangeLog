@@ -1,3 +1,9 @@
+2005-11-26  Christian Stimming  <stimming@tuhh.de>
+
+	* src/frontends/g2banking/Makefile.am: Call glade-2 via the
+	AC_PROG_PATH variable GLADE2, which can be overriden by a user by
+	GLADE2=/my/prefix/bin/glade-2. Workaround until we finally use
+	libglade.
 
 2005/11/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

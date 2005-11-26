@@ -775,6 +775,7 @@ case "$aqbanking_frontends" in *g2banking*)
 esac
 AC_SUBST(GTK2_CFLAGS)
 AC_SUBST(GTK2_LIBS)
+AC_PATH_PROG([GLADE2], [glade-2], [GLADE2-NOT-FOUND])
 
 
 
