@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-11-10 20:21+0100\n"
-"PO-Revision-Date: 2005-09-17 09:47+0200\n"
+"POT-Creation-Date: 2005-11-26 15:13+0100\n"
+"PO-Revision-Date: 2005-11-26 15:30+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:2383 src/libs/aqbanking/banking.c:5125
+#: src/libs/aqbanking/banking.c:2389 src/libs/aqbanking/banking.c:5131
 #: src/libs/aqbanking/cryptmanager.c:320 src/libs/aqbanking/cryptmanager.c:385
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1186
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1247
@@ -36,7 +36,7 @@ msgstr ""
 msgid "Error"
 msgstr "Fehler"
 
-#: src/libs/aqbanking/banking.c:2384
+#: src/libs/aqbanking/banking.c:2390
 msgid ""
 "Error executing backend's queue.\n"
 "What shall we do?"
@@ -44,12 +44,12 @@ msgstr ""
 "Es gab einen Fehler bei der Verarbeitung des Ausgangskorbs im\n"
 "zuständigen Modul.  Was möchten Sie tun?"
 
-#: src/libs/aqbanking/banking.c:2386
+#: src/libs/aqbanking/banking.c:2392
 #: src/plugins/backends/aqhbci/plugin/msglayer/hbci-updates.c:202
 msgid "Continue"
 msgstr "Fortsetzen"
 
-#: src/libs/aqbanking/banking.c:2386 src/libs/aqbanking/banking.c:5725
+#: src/libs/aqbanking/banking.c:2392 src/libs/aqbanking/banking.c:5731
 #: src/libs/aqbanking/cryptmanager.c:303 src/libs/aqbanking/cryptmanager.c:368
 #: src/frontends/cbanking/cbanking.c:431
 #: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:944
@@ -71,34 +71,34 @@ msgstr "Fortsetzen"
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/libs/aqbanking/banking.c:2460
+#: src/libs/aqbanking/banking.c:2466
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1965
 msgid "Executing Jobs"
 msgstr "Aufträge werden ausgeführt"
 
-#: src/libs/aqbanking/banking.c:2461
+#: src/libs/aqbanking/banking.c:2467
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1966
 msgid "Now the jobs are send via their backends to the credit institutes."
 msgstr ""
 "Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
 "gesendet."
 
-#: src/libs/aqbanking/banking.c:4399 src/libs/aqbanking/banking.c:4461
-#: src/libs/aqbanking/banking.c:4527 src/libs/aqbanking/banking.c:4587
+#: src/libs/aqbanking/banking.c:4405 src/libs/aqbanking/banking.c:4467
+#: src/libs/aqbanking/banking.c:4533 src/libs/aqbanking/banking.c:4593
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:4400 src/libs/aqbanking/banking.c:4462
-#: src/libs/aqbanking/banking.c:4528 src/libs/aqbanking/banking.c:4588
+#: src/libs/aqbanking/banking.c:4406 src/libs/aqbanking/banking.c:4468
+#: src/libs/aqbanking/banking.c:4534 src/libs/aqbanking/banking.c:4594
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:4402 src/libs/aqbanking/banking.c:4417
-#: src/libs/aqbanking/banking.c:4464 src/libs/aqbanking/banking.c:4484
-#: src/libs/aqbanking/banking.c:4530 src/libs/aqbanking/banking.c:4545
-#: src/libs/aqbanking/banking.c:4590 src/libs/aqbanking/banking.c:4605
-#: src/libs/aqbanking/banking.c:5128 src/libs/aqbanking/cryptmanager.c:312
+#: src/libs/aqbanking/banking.c:4408 src/libs/aqbanking/banking.c:4423
+#: src/libs/aqbanking/banking.c:4470 src/libs/aqbanking/banking.c:4490
+#: src/libs/aqbanking/banking.c:4536 src/libs/aqbanking/banking.c:4551
+#: src/libs/aqbanking/banking.c:4596 src/libs/aqbanking/banking.c:4611
+#: src/libs/aqbanking/banking.c:5134 src/libs/aqbanking/cryptmanager.c:312
 #: src/libs/aqbanking/cryptmanager.c:322 src/libs/aqbanking/cryptmanager.c:377
 #: src/libs/aqbanking/cryptmanager.c:387 src/libs/aqbanking/cryptmanager.c:412
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1195
@@ -109,19 +109,19 @@ msgstr ""
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:4415 src/libs/aqbanking/banking.c:4482
-#: src/libs/aqbanking/banking.c:4543 src/libs/aqbanking/banking.c:4603
+#: src/libs/aqbanking/banking.c:4421 src/libs/aqbanking/banking.c:4488
+#: src/libs/aqbanking/banking.c:4549 src/libs/aqbanking/banking.c:4609
 #: src/frontends/qbanking/qbanking.cpp:563
 #: src/frontends/qbanking/qbanking.cpp:695
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:4416 src/libs/aqbanking/banking.c:4483
-#: src/libs/aqbanking/banking.c:4544 src/libs/aqbanking/banking.c:4604
+#: src/libs/aqbanking/banking.c:4422 src/libs/aqbanking/banking.c:4489
+#: src/libs/aqbanking/banking.c:4550 src/libs/aqbanking/banking.c:4610
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:5126
+#: src/libs/aqbanking/banking.c:5132
 msgid ""
 "No valid PIN (tried too often).\n"
 "Aborting."
@@ -129,11 +129,11 @@ msgstr ""
 "Keine gültige PIN (zu oft versucht).\n"
 "Aktion wird abgebrochen."
 
-#: src/libs/aqbanking/banking.c:5175
+#: src/libs/aqbanking/banking.c:5181
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:5177
+#: src/libs/aqbanking/banking.c:5183
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
@@ -146,15 +146,15 @@ msgstr ""
 "PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
 "b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:5189
+#: src/libs/aqbanking/banking.c:5195
 msgid "Use this"
 msgstr "Trotzdem verwenden"
 
-#: src/libs/aqbanking/banking.c:5190
+#: src/libs/aqbanking/banking.c:5196
 msgid "Re-enter"
 msgstr "Neu eingeben"
 
-#: src/libs/aqbanking/banking.c:5505
+#: src/libs/aqbanking/banking.c:5511
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -203,11 +203,11 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/libs/aqbanking/banking.c:5626 src/libs/aqbanking/banking.c:5639
+#: src/libs/aqbanking/banking.c:5632 src/libs/aqbanking/banking.c:5645
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
-#: src/libs/aqbanking/banking.c:5660
+#: src/libs/aqbanking/banking.c:5666
 #: src/plugins/backends/aqdtaus/plugin/provider.c:880
 #: src/plugins/backends/aqdtaus/plugin/provider.c:882
 #: src/plugins/backends/aqdtaus/plugin/provider.c:884
@@ -222,28 +222,30 @@ msgstr "DD.MM.YYYY hh:mm:ss"
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/libs/aqbanking/banking.c:5711
+#: src/libs/aqbanking/banking.c:5717
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:5713 src/frontends/cbanking/cbanking.c:429
+#: src/libs/aqbanking/banking.c:5719 src/frontends/cbanking/cbanking.c:429
 #: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:84
 #: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:84
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:246
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:94
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:5713 src/frontends/cbanking/cbanking.c:430
+#: src/libs/aqbanking/banking.c:5719 src/frontends/cbanking/cbanking.c:430
 #: src/frontends/qbanking/widgets/qbplugindescrlist.cpp:86
 #: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:86
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:96
 msgid "No"
 msgstr "Nein"
 
-#: src/libs/aqbanking/banking.c:5719
+#: src/libs/aqbanking/banking.c:5725
 msgid "Certificate"
 msgstr "Zertifikat"
 
-#: src/libs/aqbanking/banking.c:5721
+#: src/libs/aqbanking/banking.c:5727
 msgid ""
 "Do you want to accept this certificate permanently?<html>Do you want to "
 "accept this certificate permanently?</html>"
@@ -251,11 +253,11 @@ msgstr ""
 "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie dieses "
 "Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
 
-#: src/libs/aqbanking/banking.c:5723
+#: src/libs/aqbanking/banking.c:5729
 msgid "Permanently"
 msgstr "Dauerhaft"
 
-#: src/libs/aqbanking/banking.c:5724
+#: src/libs/aqbanking/banking.c:5730
 msgid "This session only"
 msgstr "Nur für diese Sitzung"
 
@@ -2041,51 +2043,47 @@ msgid "Waiting for incoming message..."
 msgstr "Warte auf eingehende Nachricht..."
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:285
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:343
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:393
 msgid "second(s)"
 msgstr "Sekunde(n)"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:342
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:392
 msgid "Sending message..."
 msgstr "Sende Nachricht..."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:377
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:427
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:997
 #, c-format
 msgid "Resolving hostname \"%s\" ..."
 msgstr "Ermittle Adresse von \"%s\" ..."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:388
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:438
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:1008
 #, c-format
 msgid "Unknown hostname \"%s\""
 msgstr "Unbekannter Rechner \"%s\""
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:411
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:461
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:1033
 #, c-format
 msgid "IP address is %s"
 msgstr "Ermittelte IP Adresse ist %s"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:594
-#, fuzzy
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:644
 msgid "Connecting to bank..."
-msgstr "Verbinde..."
+msgstr "Mit Bank verbinden..."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:613
-#, fuzzy
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:663
 msgid "Connected."
-msgstr "Verbinde..."
+msgstr "Verbunden."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:626
-#, fuzzy
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:676
 msgid "Disconnecting from bank..."
-msgstr "Trenne Verbindung..."
+msgstr "Verbindung von Bank trennen..."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:640
-#, fuzzy
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:690
 msgid "Disconnected."
-msgstr "Trenne Verbindung..."
+msgstr "Getrennt."
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/hbci-updates.c:161
 msgid "AqHBCI-Notice"
@@ -2275,7 +2273,7 @@ msgstr "Benutzer akzeptiert dauerhaft Antworten mit ungültigem Signaturzähler"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt.c:964
 #: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1847
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:556
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:557
 msgid "Aborted"
 msgstr "Abgebrochen"
 
@@ -2634,7 +2632,7 @@ msgstr "Prüfe ob die Diskette leer ist"
 
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1213
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1321
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:461
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:459
 msgid "Warning"
 msgstr "Warnung"
 
@@ -2955,13 +2953,13 @@ msgstr ""
 msgid "Jobs added to outbox"
 msgstr "Aufträge in den Ausgangskorb gestellt"
 
-#: src/frontends/qbanking/qbanking.cpp:829
-#: src/frontends/qbanking/qbanking.cpp:850
+#: src/frontends/qbanking/qbanking.cpp:830
+#: src/frontends/qbanking/qbanking.cpp:851
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:516
 msgid "Internal Error"
 msgstr "Interner Fehler"
 
-#: src/frontends/qbanking/qbanking.cpp:830
+#: src/frontends/qbanking/qbanking.cpp:831
 msgid ""
 "<qt><p>Could not register SimpleCallback.</p><p>This is an internal error, "
 "please report it to <b>martin@libchipcard.de</b></p></qt>"
@@ -2969,7 +2967,7 @@ msgstr ""
 "<qt><p>Could not register SimpleCallback.</p><p>This is an internal\n"
 "error, please report it to <b>martin@libchipcard.de</b></p></qt>"
 
-#: src/frontends/qbanking/qbanking.cpp:851
+#: src/frontends/qbanking/qbanking.cpp:852
 msgid ""
 "<qt><p>Could not register FastCallback.</p><p>This is an internal error, "
 "please report it to <b>martin@libchipcard.de</b></p></qt>"
@@ -3263,8 +3261,8 @@ msgstr "(c) 2004 M. Preuss"
 #: src/frontends/qbanking/dialogs/qbprintdialog.ui.cpp:99
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:172
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.ui.cpp:151
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:87
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:87
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:88
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:88
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.ui.cpp:115
 msgid "Close"
 msgstr "Schließen"
@@ -3277,26 +3275,26 @@ msgstr "Einfacher Kasten"
 msgid "TextLabel1"
 msgstr "TextLabel1"
 
-#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:46
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:44
 msgid "Process running..."
 msgstr "Programm gestartet..."
 
-#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:92
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:90
 msgid "Process Error"
 msgstr "Programmfehler"
 
-#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:93
+#: src/frontends/qbanking/dialogs/qbprocesswatcher.cpp:91
 msgid "<qt><p>Process exited with status %1</p></qt>"
 msgstr "<qt><p>Das Programm endete mit dem Status %1</p></qt>"
 
 #: src/frontends/qbanking/dialogs/qbsettings.cpp:205
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:250
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:306
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:364
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:251
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:307
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:365
 #: src/frontends/kbanking/dialogs/settings.cpp:205
-#: src/frontends/kbanking/dialogs/settings.cpp:250
-#: src/frontends/kbanking/dialogs/settings.cpp:306
-#: src/frontends/kbanking/dialogs/settings.cpp:364
+#: src/frontends/kbanking/dialogs/settings.cpp:251
+#: src/frontends/kbanking/dialogs/settings.cpp:307
+#: src/frontends/kbanking/dialogs/settings.cpp:365
 msgid "Backend Error"
 msgstr "Backend-Fehler"
 
@@ -3332,24 +3330,24 @@ msgstr ""
 "\n"
 "Wollen Sie das Modul dennoch deaktivieren?"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:251
-#: src/frontends/kbanking/dialogs/settings.cpp:251
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:252
+#: src/frontends/kbanking/dialogs/settings.cpp:252
 msgid "Could not deactivate this backend.\n"
 msgstr "Dieses Modul konnte nicht deaktiviert werden.\n"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:284
-#: src/frontends/kbanking/dialogs/settings.cpp:284
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:285
+#: src/frontends/kbanking/dialogs/settings.cpp:285
 msgid "Wizard Not Installed"
 msgstr "Wizard Nicht Installiert"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:285
-#: src/frontends/kbanking/dialogs/settings.cpp:285
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:286
+#: src/frontends/kbanking/dialogs/settings.cpp:286
 msgid "<qt><p>The KDE wizard for this backend is not installed.</p></qt>"
 msgstr ""
 "<qt><p>Der KDE Wizard für dieses Backend ist nicht installiert.</p></qt> "
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:307
-#: src/frontends/kbanking/dialogs/settings.cpp:307
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:308
+#: src/frontends/kbanking/dialogs/settings.cpp:308
 msgid ""
 "<qt><p>Error suspending the backend.</p><p>To edit the settings of a backend "
 "we need to temporarily suspend it, otherwise your new settings would be "
@@ -3360,19 +3358,19 @@ msgstr ""
 "Ihre Einstellungen beim Beenden des Einrichtungs-Assistenten überschrieben.</"
 "p></qt>"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:327
-#: src/frontends/kbanking/dialogs/settings.cpp:327
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:328
+#: src/frontends/kbanking/dialogs/settings.cpp:328
 msgid "Wizard Not Started"
 msgstr "Wizard nicht gestartet"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:328
-#: src/frontends/kbanking/dialogs/settings.cpp:328
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:329
+#: src/frontends/kbanking/dialogs/settings.cpp:329
 msgid "<qt><p>The KDE wizard for this backend could not be started.</p></qt>"
 msgstr ""
 "<qt><p>Der KDE-Assisten für dieses Backend konnte nicht gestartet werden.</"
 "p></qt>"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:343
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:344
 msgid ""
 "<qt><p>Running KDE wizard, this window will close automatically when the "
 "wizard finishes.</p><p>Please wait...</p></qt>"
@@ -3380,20 +3378,20 @@ msgstr ""
 "<qt><p>Der KDE-Assistent läuft, dieses Fenster schließt automatisch nach "
 "dessen Beendigung.</p> <p>Bitte warten Sie...</p></qt>"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:365
-#: src/frontends/kbanking/dialogs/settings.cpp:365
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:366
+#: src/frontends/kbanking/dialogs/settings.cpp:366
 msgid "<qt><p>Could not resume the backend.</p></qt>"
 msgstr "<qt><p>Das Backend konnte nicht wieder aktiviert werden.</p></qt>"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:386
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:387
 #: src/frontends/qbanking/dialogs/qbimporter.cpp:506
 #: src/frontends/qbanking/dialogs/qbselectbank.cpp:350
-#: src/frontends/kbanking/dialogs/settings.cpp:386
+#: src/frontends/kbanking/dialogs/settings.cpp:387
 msgid "Selection Error"
 msgstr "Auswahl-Fehler"
 
-#: src/frontends/qbanking/dialogs/qbsettings.cpp:387
-#: src/frontends/kbanking/dialogs/settings.cpp:387
+#: src/frontends/qbanking/dialogs/qbsettings.cpp:388
+#: src/frontends/kbanking/dialogs/settings.cpp:388
 msgid "No account selected.\n"
 msgstr "Kein Konto ausgewählt.\n"
 
@@ -3528,6 +3526,7 @@ msgstr "Keine Bank ausgewählt"
 #: src/frontends/qbanking/dialogs/qbprintdialog.cpp:502
 #: src/frontends/qbanking/dialogs/qbprintdialog.cpp:527
 #: src/frontends/qbanking/dialogs/qbprintdialog.ui.cpp:96
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:90
 msgid "Print"
 msgstr "Drucken"
 
@@ -3543,15 +3542,15 @@ msgstr ""
 "Der Text paßt nicht auf die Seite.\n"
 "Wollen Sie ihn trotzdem ausdrucken?"
 
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:535
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:536
 msgid "Printing, please wait..."
 msgstr "Dokument wird gedruckt. Bitte warten..."
 
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:536
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:537
 msgid "page(s)"
 msgstr "Seite(n)"
 
-#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:557
+#: src/frontends/qbanking/dialogs/qbprintdialog.cpp:558
 msgid "Do you really want to abort?"
 msgstr "Wollen Sie wirklich abbrechen?"
 
@@ -3603,6 +3602,25 @@ msgid ""
 "\n"
 "</qt>"
 msgstr ""
+"<qt>\n"
+"<h2><font color=\"blue\">AqBanking Einstellungen</font> </h2>\n"
+"<p>\n"
+"Dieses Programm lässt Sie die Einstellungen zum <b>Aquamaniac Banking Interface</b> bearbeiten.\n"
+"</p>\n"
+"\n"
+"<br>\n"
+"<h3>Konten</h3>\n"
+"<p>\n"
+"Diese Karteikarte zeigt die Konten, die bereits in <b>AqBanking</b> eingerichtet sind. Sie können diese Konten in Ihrer Finanzanwendung zuordnen.\n"
+"</p>\n"
+"\n"
+"<br>\n"
+"<h3>Backends</h3>\n"
+"<p>\n"
+"<i>AqBanking</i> benutzt unterschiedliche Backends (Module), um jeweils unterschiedliche Online Banking Protokolle zu unterstützen. Auf dieser Karteikarte können Sie Backends/Module aktivieren, einrichten oder deaktivieren.\n"
+"</p>\n"
+"\n"
+"</qt>"
 
 #: src/frontends/qbanking/dialogs/qbsettings.ui.cpp:155
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:155
@@ -3637,10 +3655,10 @@ msgstr ""
 #: src/frontends/kbanking/dialogs/settings.ui.cpp:165
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:284
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:288
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:83
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:83
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:84
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:84
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.cpp:35
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:88
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:89
 msgid "Accounts"
 msgstr "Konten"
 
@@ -3831,10 +3849,10 @@ msgstr "Profile"
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:282
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:286
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:145
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:85
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:85
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:90
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:96
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:86
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:86
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:91
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:97
 msgid "Edit"
 msgstr "Ändern"
 
@@ -4061,12 +4079,12 @@ msgid "There are no jobs in the queue."
 msgstr "Der Ausgangskorb ist leer."
 
 #: src/frontends/qbanking/views/qbjobview.cpp:166
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:192
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:215
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:192
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:215
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:197
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:220
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:193
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:216
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:193
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:216
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:198
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:221
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.cpp:186
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.cpp:218
 msgid "No Selection"
@@ -4101,8 +4119,7 @@ msgstr "Löschen"
 msgid "Execute"
 msgstr "Ausführen"
 
-#: src/frontends/kbanking/dialogs/settings.cpp:343
-#, fuzzy
+#: src/frontends/kbanking/dialogs/settings.cpp:344
 msgid ""
 "<qt><p>Running KDE wizard, this window will close automatically when the "
 "wizard finishes.</p><p>Please wait...</p></qt"
@@ -4150,10 +4167,10 @@ msgstr ""
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:230
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:285
 #: src/plugins/backends/aqhbci/ui/qt3/libs/widgets/userlist.cpp:104
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:84
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:84
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:89
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:95
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:85
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:85
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:90
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:96
 msgid "New"
 msgstr "Neu"
 
@@ -4201,6 +4218,7 @@ msgid "Saving keys, please wait"
 msgstr "Schlüssel werden gespeichert. Bitte warten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.cpp:239
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:182
 msgid "Keys saved."
 msgstr "Schüssel gespeichert."
 
@@ -4331,9 +4349,9 @@ msgstr "Medium kann nicht eingehängt werden"
 msgid "No user found on this medium"
 msgstr "Kein Benutzer auf diesem Medium gefunden"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:119
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:118
 msgid "<qt>Checking type of the security medium, please wait...</qt>"
-msgstr ""
+msgstr "<qt>Medientyp des Sicherheitsmedium wird überprüft. Bitte warten...</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:35
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:76
@@ -4343,6 +4361,7 @@ msgstr "Nummer"
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:37
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectcontext.ui.cpp:78
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:139
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:154
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:176
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:227
 msgid "User Id"
@@ -4356,9 +4375,8 @@ msgstr "Server"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:117
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:123
-#, fuzzy
 msgid "Create or Import User"
-msgstr "Benutzer erstellen"
+msgstr "Benutzer erstellen oder importieren"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:118
 msgid ""
@@ -4372,48 +4390,47 @@ msgid ""
 "LxBank, AqHBCI-Tool and QBankManager can be used.</p>\n"
 "</qt>"
 msgstr ""
+"<qt><p>Sie können nun einen neuen Online Banking Benutzer einrichten.</p>\n"
+"<p>Bitte beachten Sie, dass AqHBCI/AqBanking nur jene Schlüsseldateien importieren kann, die von OpenHBCI oder AqBanking erstellt worden sind.</p>\n"
+"<p>Schlüsseldateien von propritärer, kommerzieller Software wie Moneyplex oder Starmoney können dagegen <b>nicht</b> benutzt werden, da jene Hersteller die Dateiformate geheim halten.</p>\n"
+"<p>Schlüsseldateien von Gnucash, KMymoney, AqMoney, KOpenHBCI, GOpenHBCI, LxBank, AqHBCI-Tool und QBankManger können benutzt werden.</p>\n"
+"</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:124
-#, fuzzy
-msgid "import keyfile"
-msgstr "Fehler beim Import."
+msgid "Import Keyfile"
+msgstr "Schlüsseldatei importieren"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:125
-msgid "import an existing keyfile"
-msgstr ""
+msgid "Import an existing keyfile"
+msgstr "Existierende Schlüsseldatei importieren"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:126
-#, fuzzy
-msgid "create keyfile"
-msgstr "Schlüssel erstellen"
+msgid "Create Keyfile"
+msgstr "Schlüsseldatei erstellen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:127
-#, fuzzy
-msgid "create a new keyfile"
-msgstr "Neues Medium erstellen"
+msgid "Create a new keyfile"
+msgstr "Neue Schlüsseldatei erstellen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:128
-#, fuzzy
-msgid "import chipcard"
-msgstr "Import-Assistent"
+msgid "Import Chipcard"
+msgstr "Chipkarte importieren"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:129
 msgid "Use with DDV cards or personalized RSA cards"
-msgstr ""
+msgstr "Mit DDV-Chipkarten oder mit RSA-Chipkarten verwenden"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:130
-#, fuzzy
-msgid "setup PIN/TAN"
-msgstr "PIN/TAN-Modus benutzen"
+msgid "Setup PIN/TAN"
+msgstr "PIN/TAN einrichten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:131
-#, fuzzy
-msgid "init chipcard"
-msgstr "Chipkarte prüfen"
+msgid "Init Chipcard"
+msgstr "Chipkarte initialisieren"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/selectmode.ui.cpp:132
 msgid "Use with completely new RSA cards"
-msgstr ""
+msgstr "Mit fabrikneuen RSA-Chipkarten verwenden"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:174
 msgid "AqHBCI Settings"
@@ -4545,7 +4562,7 @@ msgstr ""
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:229
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:283
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.cpp:33
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:94
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:95
 msgid "Users"
 msgstr "Benutzer"
 
@@ -4567,10 +4584,10 @@ msgstr ""
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:236
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:287
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:86
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:86
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:91
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:97
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:87
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:87
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:92
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:98
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -4606,6 +4623,7 @@ msgstr ""
 "</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/hbcisettings.ui.cpp:251
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:88
 msgid "Ini-Letter"
 msgstr "Ini-Brief"
 
@@ -4813,6 +4831,8 @@ msgid "Bank uses signature counter"
 msgstr "Bank verwendet Signaturzähler"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/editcustomer.ui.cpp:181
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:133
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:147
 msgid "Get Server Keys"
 msgstr "Server-Schlüssel abrufen"
 
@@ -4860,13 +4880,12 @@ msgid "Invalid Input"
 msgstr "Ungültige Eingabe"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:186
-#, fuzzy
 msgid ""
 "<qt><p>The customer id contains invalid characters.</p><p>Please correct "
 "your entry.</p>"
 msgstr ""
-"<qt>Die Bankleitzahl (BLZ) muß mindestens 8 Zahlen lang sein. Bitte "
-"korrigieren Sie Ihre Eingabe.</qt>"
+"<qt>Die Kundennummer (Kunden-ID) enthält unzulässige Zeichen. Bitte "
+"korrigieren Sie die Eingabe.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:200
 msgid ""
@@ -4944,32 +4963,181 @@ msgstr ""
 "notwendig für bereits existierende Benutzer.</p><p>Bitte klicken Sie "
 "\"Abbrechen\" nach dem Schließen dieser Nachricht.</p></qt>"
 
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:67
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.cpp:65
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:69
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.cpp:67
+msgid "Success"
+msgstr "Erfolgreich"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:71
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.cpp:69
+msgid "Checking..."
+msgstr "Prüfen..."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:93
+msgid "Job not supported, should not happen."
+msgstr "Auftrag nicht unterstützt. Dieser interne Fehler sollte nicht vorkommen."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:105
+msgid "Could not execute outbox."
+msgstr "Der Ausgangskorb konnte nicht ausgeführt werden."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:114
+msgid "No crypt key received."
+msgstr "Kein Chiffrierschlüssel empfangen."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:116
+msgid "No Crypt Key"
+msgstr "Kein Chiffrierschlüssel"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:117
+msgid "<qt><p>The server did not send a crypt key.</p></qt>"
+msgstr "<qt><p>Der Bank-Server hat keinen Chiffrierschlüssel gesendet.</p></qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:132
+msgid "Jobs contains errors."
+msgstr "Auftrag enthält Fehler."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:143
+msgid "Could not commit result."
+msgstr "Das Ergebnis der Aufträge konnte nicht verarbeitet werden."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:154
+msgid "No sign key received."
+msgstr "Kein Signaturschlüssel erhalten."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:156
+msgid "No Sign Key"
+msgstr "Kein Signaturschlüssel"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.cpp:157
+msgid ""
+"<qt><p>The server did not send a crypt key.</p><p>Some banks do not sign "
+"their messages.While this is a quite unfair behaviour it is allowed by the "
+"HBCI specs.</p><p>We call this unfair because the bank needs you to sign "
+"your messages (which makes sure that you are the originator of a message) "
+"while not granting this assurance to you. </p><p>So without the bank signing "
+"its messages we can never be sure that a message really was sent by the bank."
+"</p></qt>"
+msgstr ""
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:139
+msgid "User Data (Ini Letter)"
+msgstr "Benutzerdaten (Ini-Brief)"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:142
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:226
+msgid "User Name"
+msgstr "Benutzername"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:146
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:210
+msgid "Date"
+msgstr "Datum"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:150
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:214
+msgid "Time"
+msgstr "Uhrzeit"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:158
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:222
+msgid "Key Number"
+msgstr "Nummer"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:162
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:226
+msgid "Key Version"
+msgstr "Version"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:166
+msgid "Application Name"
+msgstr "Anwendung Name"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:172
+msgid "Public Key for Electronic Signature"
+msgstr "Öffentlicher Schlüssel für die elektronische Signatur"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:173
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:233
+msgid "Exponent"
+msgstr "Exponent"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:176
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:235
+msgid "Bad exponent"
+msgstr "Fehlerhafter Exponent"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:184
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:243
+msgid "Modulus"
+msgstr "Modulus"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:186
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:245
+msgid "Bad modulus"
+msgstr "Fehlerhafter Modulus"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:194
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:253
+msgid "Hash"
+msgstr "Hash"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:201
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:260
+msgid "Location/Date/Signature"
+msgstr "Ort/Datum/Unterschrift"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:206
+msgid "Ini Letter of Server Key"
+msgstr "Ini-Brief des Server-Schlüssels"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:218
+msgid "Server Id"
+msgstr "Server-Kennung"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:232
+msgid "Public Key"
+msgstr "Öffentlicher Schlüssel"
+
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_edituser.cpp:27
-#, fuzzy
 msgid "Edit user settings"
 msgstr "Benutzer-Einstellungen bearbeiten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getcert.cpp:32
-#, fuzzy
-msgid "Retrieve server certificate"
+msgid "Retrieve Server Certificate"
 msgstr "Server-Zertifikat abrufen"
 
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getkeys.cpp:36
+msgid "Retrieve Server Keys"
+msgstr "Server-Schlüssel abrufen"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_mkkeys.cpp:36
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:133
+msgid "Create User Keys"
+msgstr "Benutzerschlüssel erstellen"
+
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getsysid.cpp:35
-#, fuzzy
-msgid "Retrieve system id"
-msgstr "Systemkennung jetzt abrufen"
+msgid "Retrieve System Id"
+msgstr "Systemkennung abrufen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getsysid.cpp:116
-#, fuzzy
 msgid "Job Error"
-msgstr "Fehler"
+msgstr "Fehler im Auftrag"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getsysid.cpp:117
 msgid "An empty system id has been received."
-msgstr ""
+msgstr "Leere Systemkennung wurde empfangen."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_wait.cpp:32
+msgid "Wait"
+msgstr "Warten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getaccounts.cpp:35
-#, fuzzy
 msgid "Retrieve list of accounts"
 msgstr "Kontenliste abrufen"
 
@@ -4989,49 +5157,48 @@ msgstr ""
 "klicken Sie \"Weiter\", um dieses auf der nächsten Seite zu tun.</p></qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_pintan_new.cpp:28
-#, fuzzy
 msgid "Create a new PIN/TAN user"
-msgstr "Terminierte Überweisung erstellen"
+msgstr "Neuen PIN/TAN-Benutzer erstellen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_pintan_new.cpp:32
 msgid "<qt>This wizard creates a new <b>PIN/TAN</b> user.</qt>"
-msgstr ""
+msgstr "<qt>Dieser Assistent erstellt einen neuen PIN/TAN-Benutzer.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_ddv_import.cpp:28
-#, fuzzy
 msgid "Create a new DDV card user"
-msgstr "Neues Medium erstellen"
+msgstr "Neuen DDV-Chipkarten-Benutzer erstellen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_ddv_import.cpp:32
 msgid "<qt>This wizard imports users from a <b>DDV</b> card.</qt>"
-msgstr ""
+msgstr "<qt>Dieser Assistent importiert Benutzer von einer DDV-Chipkarte.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_rdh_import.cpp:29
-#, fuzzy
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_rdh_new.cpp:27
 msgid "Create a new RDH user"
-msgstr "Neues Medium erstellen"
+msgstr "Neuer RDH-Benutzer erstellen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_rdh_import.cpp:33
 msgid "<qt>This wizard imports users from a <b>RDH</b> medium.</qt>"
-msgstr ""
+msgstr "<qt>Dieser Assistent importiert Benutzer von einem RDH-Medium.</qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/w_rdh_new.cpp:31
+msgid "<qt>This wizard creates an user on a <b>RDH</b> medium.</qt>"
+msgstr "<qt>Dieser Assistent erstellt einen Benutzer auf einem RDH-Medium.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:161
-#, fuzzy
 msgid "Edit Crypt Token User"
-msgstr "Benutzer bearbeiten"
+msgstr "Crypttoken-Benutzer bearbeiten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:162
-#, fuzzy
 msgid ""
 "<qt>\n"
 "<p>Please enter the bank and user data.</p>\n"
 "</qt>"
-msgstr "<qt><p>Das Backend konnte nicht wieder aktiviert werden.</p></qt>"
+msgstr "<qt><p>Bitte Bank- und Benutzerdaten eingeben.</p></qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:165
-#, fuzzy
 msgid "User on medium"
-msgstr "Medium einlegen"
+msgstr "Benutzer auf Medium"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:167
 msgid ""
@@ -5085,6 +5252,153 @@ msgstr ""
 msgid "Description (optional)"
 msgstr "Beschreibung (optional)"
 
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:134
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:134
+msgid ""
+"<qt>\n"
+"We will now retrieve the public keys of the bank server.<br>\n"
+"</qt>"
+msgstr ""
+"<qt>Die öffentlichen Schlüssel des Bank-Servers werden nun abgerufen.</qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:137
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:137
+msgid "Get Server's Keys"
+msgstr "Server-Schlüssel abrufen"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:138
+msgid ""
+"<qt>\n"
+"There are two keys to be retrieved:\n"
+"<ul>\n"
+"<li><b>Signature key:</b> This key is used by the server to sign all "
+"messages sent to us. Please note that some institutes do not use a signature "
+"key. If they do not use a signature key, there is \n"
+"no proof of whether a received message was sent to us by the bank as opposed "
+"to someone else.</li>\n"
+"<li><b>Crypt key:</b> This key is used by this program to encrypt data prior "
+"to sending it to the server. This way the server is the only subject able to "
+"decrypt our messages.\n"
+"</ul>\n"
+"When you press the button below the procedure starts. That will open a "
+"window showing the progress in communication with the server.\n"
+"</qt>"
+msgstr ""
+"<qt>Zwei Arten von öffentlichen Schlüssel müssen nun abgerufen werden:\n"
+"<ul>\n"
+"<li><b>Signaturschlüssel:</b> Dieser Schlüssel dient dazu, alle Nachrichten "
+"des Bank-Servers zu signieren. Manche Banken verwenden keinen "
+"Signaturschlüssel. Wenn eine Bank keinen Signaturschlüssel verwendet, kann "
+"nicht geprüft werden, ob eine empfangene Nachricht wirklich von der Bank "
+"stammt. Kontaktieren Sie Ihre Bank, wenn Sie mit dieser eingeschränkten "
+"Sicherheit nicht einverstanden sind.</li>\n"
+"<li><b>Chiffrier-Schlüssel:</b> Mit diesem Schlüssel werden alle Daten "
+"chiffriert, die von diesem Programm an den Bank-Server gesendet werden. Dies "
+"bewirkt, daß niemand außer dem Bank-Server die gesendeten Nachrichten lesen "
+"kann.</li>\n"
+"</ul>\n"
+"Wenn Sie den Knopf unten drücken, wird der Sendevorgang gestartet. Dann wird "
+"ein Fenster geöffnet, wo Sie den Fortschritt und das Protokoll der "
+"Kommunikation mit dem Bank-Server beobachten können.\n"
+"</qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:148
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:155
+msgid "Get the public keys of the bank server now."
+msgstr "Die öffentlichen Schlüssel jetzt abrufen."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:149
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:156
+msgid "Result:"
+msgstr "Ergebnis:"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/getkeys.ui.cpp:151
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:158
+msgid "Result of retrieving the public keys."
+msgstr "Ergebnis des Abrufs der öffentlichen Schlüssel."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:138
+msgid ""
+"<qt>\n"
+"There are two key pairs to be created:\n"
+"<ul>\n"
+"<li><b>Signature keys:</b> These keys are used to sign all messages to the "
+"server.</li>\n"
+"<li><b>Crypt keys:</b> These keys are used by the server to encrypt\n"
+"data prior to sending it to to us. This way you are the only one who can "
+"decrypt the server's messages.\n"
+"</ul>\n"
+"<p>\n"
+"When you press the button below your private and public keys will be "
+"created. \n"
+"Depending on the speed of your computer this may take some time (up to a "
+"few \n"
+"seconds). If there already are keys on the security medium you will be asked "
+"whether you want to overwrite them.\n"
+"</p>\n"
+"<p>\n"
+"However, if the keys already exist you may simply go on with the next page.\n"
+"</p>\n"
+"</qt>"
+msgstr ""
+"<qt>Nun müssen zwei Schlüsselpaare für Ihre elektronischen Schlüssel erstellt werden:\n"
+"<ul>\n"
+"<li><b>Signaturschlüssel:</b> Diese Schlüssel dienen dazu, alle Nachrichten an den Bank-Server zu signieren.</li>\n"
+"<li><b>Chiffier-Schlüssel:</b> Diese Schlüssel werden vom Bank-Server verwendet, um alle Nachrichten an dieses Programm zu chiffrieren. Dadurch ist sichergestellt, daß niemand außer diesem Programm die Nachrichten des Bank-Servers lesen kann.</li>\n"
+"</ul>\n"
+"<p>Wenn Sie den Knopf unten klicken, werden Ihre Schlüssel erstellt. Je nachdem wie leistungsfähig Ihr Computer ist, kann dies einige Sekunden dauern.</p>\n"
+"<p>Falls Sie allerdings schon vorher Schlüssel erzeugt hatten, werden Sie gefragt, ob Sie diese überschreiben wollen. Alternativ können Sie in diesem Fall gleich mit \"Weiter\" zur nächsten Seite gehen.</p>\n"
+"</qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/mkkeys.ui.cpp:154
+msgid "Create Keys"
+msgstr "Schlüssel erstellen"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:83
+msgid "Ini Letter"
+msgstr "Ini-Brief"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:84
+msgid ""
+"<qt>\n"
+"You must now verify the servers public keys.<br>\n"
+"You can do this by comparing the hash value given below to the one in the "
+"letter from your bank.\n"
+"</qt>"
+msgstr ""
+"<qt>Sie müssen nun die öffentlichen Schlüssel des Bank-Servers überprüfen. "
+"Vergleichen Sie dazu den hier gezeigten elektronischen Fingerabdruck (\"Hash"
+"\") mit dem auf Papier abgedruckten, den Sie von Ihrer Bank erhalten haben.</"
+"qt>"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:89
+msgid "The Ini-Letter of the bank server"
+msgstr "Ini-Brief des Bank-Servers"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:91
+msgid ""
+"<qt>\n"
+"Is the hash value above identical to the one in the letter from your bank?\n"
+"</qt>"
+msgstr ""
+"<qt>Stimmt dieser elektronische Fingerabdruck (\"Hash\") mit demjenigen aus "
+"dem Brief der Bank überein?"
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:95
+msgid ""
+"Click yes if the Ini-Letter is identical to the paper letter from your bank."
+msgstr ""
+"Klicken Sie Ja, wenn der gezeigte Ini-Brief mit dem Papier-Brief von Ihrer "
+"Bank übereinstimmt."
+
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:97
+msgid ""
+"Click No if the Ini-Letter is not identical with the paper letter from your "
+"bank (and contact your bank)"
+msgstr ""
+"Klicken Sie Nein, wenn der gezeigte Ini-Brief nicht mit dem Papier-Brief "
+"übereinstimmt (und kontaktieren Sie Ihre Bank)"
+
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:84
 msgid "Could not parse HBCI XML file"
 msgstr "HBCI XML-Datei konnte nicht gelesen werden"
@@ -5117,7 +5431,7 @@ msgstr ""
 msgid "Enter file name"
 msgstr "Dateinamen eingeben"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:462
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:460
 msgid ""
 "<qt><p>File \"%1\" already exists. </p><p>Do you want me to overwrite it?</"
 "p></qt>"
@@ -5125,16 +5439,16 @@ msgstr ""
 "<qt><p>Die Datei \"%1\" existiert bereits. </p><p>Soll sie überschrieben "
 "werden?</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:482
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:501
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:480
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:499
 msgid "File Error"
 msgstr "Dateifehler"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:483
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:481
 msgid "<qt><p>Could not create file \"%1\"</p></qt>"
 msgstr "<qt>Konnte Datei \"%1\" nicht erstellen.</p></qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:502
+#: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:500
 msgid "<qt><p>Could not write to file \"%1\"</p></qt>"
 msgstr "<qt>Konnte in Datei \"%1\" nicht schreiben.</qt>"
 
@@ -5477,28 +5791,28 @@ msgstr ""
 "Dieses Konto existiert bereits.\n"
 "Bitte korrigieren Sie Ihre Eingaben."
 
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:193
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:216
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:193
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:216
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:198
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:221
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:194
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:217
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:194
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:217
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:199
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:222
 msgid "Please select an account first."
 msgstr "Bitte wählen Sie erst ein Konto."
-
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:221
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:221
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:226
-msgid "Remove Account"
-msgstr "Konto entfernen"
 
 #: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:222
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:222
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:227
+msgid "Remove Account"
+msgstr "Konto entfernen"
+
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.cpp:223
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.cpp:223
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.cpp:228
 msgid "Are you sure you want to remove the selcted account?"
 msgstr "Wollen Sie das ausgewählte Konto wirklich entfernen?"
 
-#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:82
+#: src/plugins/backends/aqdtaus/ui/qt3/libs/views/accountview.ui.cpp:83
 msgid "AqDTAUS Settings"
 msgstr "DTAUS Einstellungen"
 
@@ -5516,7 +5830,7 @@ msgstr ""
 msgid "Read From Chipcard"
 msgstr "Von Chipkarte einlesen"
 
-#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:82
+#: src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/accountview.ui.cpp:83
 msgid "AqGeldKarte Settings"
 msgstr "Einstellungen"
 
@@ -5577,10 +5891,6 @@ msgstr "ORG"
 msgid "User Settings"
 msgstr "Benutzer-Einstellungen"
 
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/edituser.ui.cpp:226
-msgid "User Name"
-msgstr "Benutzername"
-
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.cpp:167
 msgid "Create User"
 msgstr "Benutzer erstellen"
@@ -5598,12 +5908,12 @@ msgstr "Auswahl kann nicht verwendet werden"
 msgid "The selected user has an incomplete setup."
 msgstr "Der gewählte User ist nicht vollständig eingerichtet."
 
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:78
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:84
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:79
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:85
 msgid "OFX Account Settings"
 msgstr "OFX Konto-Einstellungen"
 
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:79
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/accountview.ui.cpp:80
 msgid ""
 "<qt>\n"
 "<p>\n"
@@ -5617,8 +5927,12 @@ msgid ""
 "</p>\n"
 "</qt>"
 msgstr ""
+"<qt><p>Normalerweise müssen Sie diese Liste nicht bearbeiten. Gehen\n"
+"Sie einfach zur <b>Benutzer</b>-Karteikarte, wählen einen Benutzer und\n"
+"klicken <b>Kontenliste abrufen</b>.  </p>\n"
+"<p>Falls Ihre Bank allerdings keine Kontenliste sendet, können Sie hier die Konten manuell hinzufügen.</p></qt>"
 
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:85
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:86
 msgid ""
 "<qt>\n"
 "<p>\n"
@@ -5634,7 +5948,7 @@ msgid ""
 "</qt>"
 msgstr ""
 
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:98
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/userview.ui.cpp:99
 msgid "Get Account List"
 msgstr "Kontenliste abrufen"
 
@@ -5676,1218 +5990,3 @@ msgstr "Einführung"
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/views/settings.ui.cpp:114
 msgid "(c) 2005 M. Preuss"
 msgstr "(c) 2005 M. Preuss"
-
-#~ msgid "Connection established with %s (port %d)"
-#~ msgstr "Verbindung mit %s (Port %d) hergestellt"
-
-#~ msgid "Connection established"
-#~ msgstr "Verbindung hergestellt"
-
-#~ msgid "Connection closed to %s (port %d)"
-#~ msgstr "Verbindung mit %s (Port %d) beendet"
-
-#~ msgid "Connection closed"
-#~ msgstr "Verbindung beendet"
-
-#~ msgid "No status, bad HTTP response, assuming HTTP 0.9 response"
-#~ msgstr "Kein Status, fehlerhafte HTTP-Antwort, vermute HTTP 0.9 Antwort"
-
-#~ msgid "HTTP-Error: %d %s"
-#~ msgstr "HTTP-Fehler: %d %s"
-
-#~ msgid "HTTP-Status: %d %s"
-#~ msgstr "HTTP-Status: %d %s"
-
-#~ msgid "Answer too small to be a HBCI message"
-#~ msgstr "Antwort ist zu klein für eine HBCI-Nachricht"
-
-#~ msgid "Answer does not contain a HBCI message"
-#~ msgstr "Antwort enthält keine HBCI-Nachricht"
-
-#~ msgid "Restarting connection"
-#~ msgstr "Verbinde erneut"
-
-#~ msgid "Creating HTTP connection"
-#~ msgstr "Erzeuge HTTP-Verbindung"
-
-#~ msgid "Success"
-#~ msgstr "Erfolgreich"
-
-#~ msgid "Failed"
-#~ msgstr "Fehlgeschlagen"
-
-#~ msgid "Supported"
-#~ msgstr "Unterstützt"
-
-#~ msgid "Not supported"
-#~ msgstr "Nicht unterstützt"
-
-#~ msgid "&Next >"
-#~ msgstr "&Weiter >"
-
-#~ msgid "< &Back"
-#~ msgstr "< &Zurück"
-
-#~ msgid "&Finish"
-#~ msgstr "&Fertig"
-
-#~ msgid "Select File Type"
-#~ msgstr "Wählen Sie einen Dateityp"
-
-#~ msgid ""
-#~ "Could not unmount the medium.\n"
-#~ "Please check the logs."
-#~ msgstr ""
-#~ "Das Medium konnte nicht ausgehängt werden.\n"
-#~ "Bitte prüfen Sie das Protokoll."
-
-#~ msgid "Unsupported medium type."
-#~ msgstr "Mediumtyp wird nicht unterstützt."
-
-#~ msgid "Invalid Setup"
-#~ msgstr "Ungültige Einrichtung"
-
-#~ msgid "<qt><p>No customer found. You should remove this user.</p></qt>"
-#~ msgstr ""
-#~ "<qt><p>Es wurde keine Kundennummer gefunden. Diese Benutzerkennung sollte "
-#~ "gelöscht werden.</p></qt>"
-
-#~ msgid "Success, but no list"
-#~ msgstr "Erfolgreich, aber keine Kontenliste"
-
-#~ msgid ""
-#~ "Medium does not exist.\n"
-#~ "Please check the console logs."
-#~ msgstr ""
-#~ "Das Medium existiert nicht.\n"
-#~ "Bitte prüfen Sie das Konsolen-Protokoll für mehr Informationen."
-
-#~ msgid ""
-#~ "Could not mount the medium.\n"
-#~ "Please check the console logs."
-#~ msgstr ""
-#~ "Das Medium konnte nicht eingehängt werden.\n"
-#~ "Bitte prüfen Sie das Konsolen-Protokoll für mehr Informationen."
-
-#~ msgid "Keys already exist"
-#~ msgstr "Schlüssel existieren bereits"
-
-#~ msgid ""
-#~ "<qt><p>The necessary keys already exist.</p><p>Do you want to overwrite "
-#~ "them?</p></qt>"
-#~ msgstr ""
-#~ "<qt><p>Die notwendigen Schlüssel existieren bereits.</p><p>Wollen Sie "
-#~ "diese überschreiben?</p></qt>"
-
-#~ msgid "Creating Keys"
-#~ msgstr "Schlüssel erstellen"
-
-#~ msgid "Creating keys, please wait..."
-#~ msgstr "Schlüssel werden erstellt. Bitte warten..."
-
-#~ msgid ""
-#~ "Plugin for PIN/TAN does not exist.\n"
-#~ "Please check the console logs."
-#~ msgstr ""
-#~ "Plugin für PIN/TAN wurde nicht gefunden. Bitte prüfen Sie die Konsole-"
-#~ "Ausgaben."
-
-#~ msgid ""
-#~ "Could not create the medium.\n"
-#~ "Please check the console logs."
-#~ msgstr ""
-#~ "Das Medium konnte nicht erstellt werden.\n"
-#~ "Bitte prüfen Sie das Konsole-Protokoll für mehr Informationen."
-
-#~ msgid "User Data (Ini Letter)"
-#~ msgstr "Benutzerdaten (Ini-Brief)"
-
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgid "Time"
-#~ msgstr "Uhrzeit"
-
-#~ msgid "Key Number"
-#~ msgstr "Nummer"
-
-#~ msgid "Key Version"
-#~ msgstr "Version"
-
-#~ msgid "Application Name"
-#~ msgstr "Anwendung Name"
-
-#~ msgid "Public Key for Electronic Signature"
-#~ msgstr "Öffentlicher Schlüssel für die elektronische Signatur"
-
-#~ msgid "Exponent"
-#~ msgstr "Exponent"
-
-#~ msgid "Modulus"
-#~ msgstr "Modulus"
-
-#~ msgid "Hash"
-#~ msgstr "Hash"
-
-#~ msgid "Location/Date/Signature"
-#~ msgstr "Ort/Datum/Unterschrift"
-
-#~ msgid "Print Ini letter"
-#~ msgstr "Ini-Brief drucken"
-
-#~ msgid "Ini letter does not fit on the page."
-#~ msgstr "Der Ini-Brief passt nicht auf eine Seite."
-
-#~ msgid "Enter existing or new medium file name"
-#~ msgstr "Dateinamen für existierende oder neue Schlüsseldatei"
-
-#~ msgid "Medium not found"
-#~ msgstr "Medium nicht gefunden"
-
-#~ msgid ""
-#~ "<qt><p>The specified file does not exist. </p><p>If you want to import a "
-#~ "file, the file needs to exist. Please go back to the page \"Import or "
-#~ "Create\" and choose \"Create\" if you want to create a new medium.</p></"
-#~ "qt>"
-#~ msgstr ""
-#~ "<qt><p>Die gewählte Datei existiert nicht.</p><p>Wenn Sie eine Datei "
-#~ "importieren wollen, muß die Datei vorher existieren. Bitte gehen Sie "
-#~ "zurück zur Seite \"Importieren oder Erstellen\" und wählen Sie \"Neu "
-#~ "erstellen\", wenn Sie ein neues Medium erstellen wollen.</p></qt>"
-
-#~ msgid "File already exists"
-#~ msgstr "Datei existiert bereits"
-
-#~ msgid ""
-#~ "<qt><p>The specified file already exists. However, you chose to create a "
-#~ "new medium. In that case the existing file will be overwritten and all "
-#~ "old data in that file will be lost.</p><p>Do you want to overwrite the "
-#~ "existing file?</p></qt>"
-#~ msgstr ""
-#~ "<qt><p>Unter dem angegebenen Dateinamen existiert bereits eine Datei. Sie "
-#~ "haben allerdings angegeben, ein neues Medium erstellen zu wollen. In "
-#~ "diesem Fall wird die existierende Datei überschrieben und alle Daten in "
-#~ "jener Datei werden gelöscht.</p><p>Wollen Sie die existierende Datei "
-#~ "überschreiben?</p></qt>"
-
-#~ msgid "Please select a file type"
-#~ msgstr "Wählen Sie einen Dateityp"
-
-#~ msgid "no description available"
-#~ msgstr "Keine Beschreibung verfügbar"
-
-#~ msgid ""
-#~ "The medium already exists.\n"
-#~ "Please select another name."
-#~ msgstr "Das Medium existiert bereits. Bitte wählen Sie einen anderen Namen."
-
-#~ msgid "Received an unknown certificate:"
-#~ msgstr "Unbekanntes Zertifikat empfangen:"
-
-#~ msgid "Organization"
-#~ msgstr "Organisation"
-
-#~ msgid "Department"
-#~ msgstr "Abteilung"
-
-#~ msgid "City"
-#~ msgstr "Stadt"
-
-#~ msgid "State"
-#~ msgstr "Bundesland"
-
-#~ msgid "Valid after"
-#~ msgstr "Gültig ab"
-
-#~ msgid "Valid until"
-#~ msgstr "Gültig bis"
-
-#~ msgid "Do you accept this certificate?"
-#~ msgstr "Wollen Sie dieses Zertifikat akzeptieren?"
-
-#~ msgid "New Certificate"
-#~ msgstr "Neues Zertifikat"
-
-#~ msgid ""
-#~ "Do you accept this certificate permanently\n"
-#~ "or for this session only (temporarily)?"
-#~ msgstr ""
-#~ "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie "
-#~ "dieses Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
-
-#~ msgid "Temporarily"
-#~ msgstr "Nur diese Sitzung"
-
-#~ msgid ""
-#~ "Could not resolve the given address.\n"
-#~ "May there is a typo?"
-#~ msgstr ""
-#~ "Gegebene Server-Adresse konnte nicht aufgelöst werden.\n"
-#~ "Liegt vielleicht ein Tippfehler vor?"
-
-#~ msgid "Retrieving certificate..."
-#~ msgstr "Zertifikat wird geholt..."
-
-#~ msgid ""
-#~ "Could not connect to the bank's server.\n"
-#~ "Please check the logs."
-#~ msgstr ""
-#~ "Es konnte keine Verbindung mit der Bank hergestellt werden.\n"
-#~ "Bitte prüfen Sie das Fehlerfenster."
-
-#~ msgid "No Certificate"
-#~ msgstr "Kein Zertifikat erhalten"
-
-#~ msgid ""
-#~ "<qt><p>The server does not seem to use valid SSL certificates.</"
-#~ "p><p><font color=red>We strongly suggest not using PIN/TAN mode with this "
-#~ "server, because without a valid SSL certificate you can never be sure "
-#~ "about to whom you are talking.</font></p><p>However, you may continue "
-#~ "using this bank server at your own risk, but you have been <b>warned</b>!"
-#~ "</p></qt>"
-#~ msgstr ""
-#~ "<qt><p>Der Bank-Server benutzt anscheinend kein gültiges SSL-Zertifikat.</"
-#~ "p>\n"
-#~ "<p><font color=red>Es wird Ihnen geraten, mit diesem Bank-Server keinen "
-#~ "PIN/TAN-Zugang zu benutzen, denn ohne ein gültiges Zertifikat kann die "
-#~ "Identität des Bank-Servers nicht sicher festgestellt werden. Ein "
-#~ "Angreifer könnte dies dazu benutzen, um von Ihnen PIN und TAN zu erhalten "
-#~ "und auf Ihr Konto zuzugreifen.</font></p><p>Sie können zwar trotzdem "
-#~ "fortfahren, aber Sie müssen sich des Risikos bewußt sein.</p></qt>"
-
-#~ msgid "Certificate Accepted"
-#~ msgstr "Zertifikat akzeptiert"
-
-#~ msgid ""
-#~ "Either the certificate is ok or you accepted it anyway.\n"
-#~ "In either case a usable certificate is present."
-#~ msgstr ""
-#~ "Entweder das Zertifikat ist vertrauenswürdig oder Sie haben es manuell "
-#~ "akzeptiert.\n"
-#~ "Beidesmal ist jetzt ein benutzbares Zertifikat vorhanden."
-
-#~ msgid "<qt>Checking...</qt>"
-#~ msgstr "<qt>Prüfen...</qt>"
-
-#~ msgid "Maybe supported"
-#~ msgstr "Eventuell unterstützt"
-
-#~ msgid "Bank Code "
-#~ msgstr "Bank "
-
-#~ msgid "Server "
-#~ msgstr "Server "
-
-#~ msgid "Wrong Server Keys"
-#~ msgstr "Falsche Server-Schlüssel"
-
-#~ msgid ""
-#~ "You said the fingerprint of the server's cryptographic keys are wrong. In "
-#~ "this case, you need to contact your bank and ask whether their server "
-#~ "keys have changed. You should take some notes of the key fingerprint that "
-#~ "is displayed right now. Then you need to abort this user setup for now."
-#~ msgstr ""
-#~ "Sie haben angegeben, daß der Fingerabdruck der Schlüssel des Servers "
-#~ "nicht korrekt ist. In diesem Fall sollten Sie Ihre Bank fragen, ob "
-#~ "inzwischen die Schlüssel ausgetauscht wurden. Sie sollten den angegebenen "
-#~ "Fingerabdruck notieren. Die Einrichtung dieses Benutzers müssen Sie nun "
-#~ "abbrechen."
-
-#~ msgid "AqHBCI User Wizard"
-#~ msgstr "AqHBCI Benutzer Wizard"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>This wizard helps you to create a HBCI user. You need this user in "
-#~ "order to access your accounts by means of the HBCI online banking "
-#~ "technology.</p>\n"
-#~ "<p>First you need to apply for HBCI access at your bank. If this "
-#~ "application is approved, your bank will send you a letter containing the "
-#~ "following:</p>\n"
-#~ "<ul>\n"
-#~ "<li>Bank code</li>\n"
-#~ "<li>User Id</li>\n"
-#~ "<li>Optional: Customer Id (many banks do not need this)</li>\n"
-#~ "<li>Fingerprint (\"hash\") of the cryptographic key of the bank</li>\n"
-#~ "</ul>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "Dieser Wizard erlaubt das Einrichten von HBCI-Benutzern. Solche Benutzer "
-#~ "werden für den Zugriff auf Online-Konten mit HBCI benötigt.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Sie müssen zunächst einen HBCI-Zugang bei Ihrer Bank beantragen. Wenn die "
-#~ "Bank Ihren Antrag bearbeitet hat, sendet die Bank Ihnen einen Brief mit "
-#~ "den folgenden Zugangsdaten:\n"
-#~ "</p>\n"
-#~ "<ul>\n"
-#~ "<li>Bankleitzahl (BLZ)</li>\n"
-#~ "<li>Benutzer-Kennung</li>\n"
-#~ "<li>Optional: Kundennummer (wird nur von manchen Banken benutzt)</li>\n"
-#~ "<li>Fingerabdruck (\"Hash\") der elektronischen Schlüssel der Bank</li>\n"
-#~ "</ul>\n"
-#~ "</qt>"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "This wizard can either \n"
-#~ "<ul>\n"
-#~ "<li><b>import</b> an existing security medium (chip card, key file), \n"
-#~ "or </li>\n"
-#~ "<li><b>create</b> a new security medium for you.</li>\n"
-#~ "<li>For <b>PIN/TAN</b> mode, the wizard will not create a separate "
-#~ "security medium.</li>\n"
-#~ "</ul>\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "<i>Please note</i>: If you want to use a chipcard, you need to select "
-#~ "<b>import</b>.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Please choose the mode below.\n"
-#~ "</p>\n"
-#~ " </qt>"
-#~ msgstr ""
-#~ "<qt><p>Dieser Assistent kann Ihr Sicherheitsmedium entweder\n"
-#~ "<ul>\n"
-#~ "<li><b>importieren</b>, sofern Sie bereits ein existierendes "
-#~ "Sicherheitsmedium haben (Chipkarte, Schlüsseldatei), oder </li>\n"
-#~ "<li><b>neu erstellen</b>.</li>\n"
-#~ "<li>Für <b>PIN/TAN</b> dagegen wird kein separates Sicherheitsmedium "
-#~ "erstellt.</li>\n"
-#~ "</ul>\n"
-#~ "<p><i>Hinweis</i>: Wenn Sie eine Chipkarte benutzen, müssen Sie "
-#~ "<b>importieren</b> wählen.</p>\n"
-#~ "<p>Bitte wählen Sie nun eine Vorgehensweise.</p>\n"
-#~ "</qt>"
-
-#~ msgid "Mode"
-#~ msgstr "Vorgehensweise"
-
-#~ msgid "Import existing medium (especially chipcards)"
-#~ msgstr "Existierendes Medium importieren (besonders Chipkarten)"
-
-#~ msgid "Import or Create?"
-#~ msgstr "Importieren oder neu erstellen?"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>Please select the medium type mode to use.</p>\n"
-#~ "<p>AqHBCI currently supports these medium types:</p>\n"
-#~ "<ul>\n"
-#~ "<li>\n"
-#~ "<p><b>Key files</b> (<i>Note:</i> Only key files created with other \n"
-#~ "AqHBCI or OpenHBCI based programs can be used.\n"
-#~ "Key files created by proprietary programs, such as <i>Quicken</i> or \n"
-#~ "<i>Moneyplex</i>, are not supported, because the\n"
-#~ "manufacturers of those programs do not publish their \n"
-#~ "key file format for Open Source developers).\n"
-#~ "</p></li>\n"
-#~ "<li><p>\n"
-#~ "<b>Chip cards</b> (DDV or RSA cards. The next page of this\n"
-#~ "wizard will check your card type if <i>Chip Card</i> is selected)\n"
-#~ "</p></li>\n"
-#~ "</ul>\n"
-#~ " </qt>"
-#~ msgstr ""
-#~ "<qt><p>Bitte wählen Sie den Mediumtyp, der benutzt werden soll.</p>\n"
-#~ "<p>AqHBCI unterstützt momentan folgende Medientypen:</p>\n"
-#~ "<ul><li><p><b>Schlüsseldateien</b> (<i>Hinweis</i>: Es können nur "
-#~ "Schlüsseldateien verwendet werden, die von anderen auf AqHBCI oder "
-#~ "OpenHBCI basierenden Programmen erstellt wurden. Schlüsseldateien, die "
-#~ "von kommerziellen Programmen wie <i>Quicken</i> oder <i>Moneyplex</i> "
-#~ "stammen, können nicht unterstützt werden, da sich deren Hersteller "
-#~ "weigern, ihre Dateiformate für Open-Source-Programmierer zu "
-#~ "veröffentlichen.)</p></li>\n"
-#~ "<li><p><b>Chipkarten</b> (DDV- oder RSA-Karten. Auf der nächsten Seite "
-#~ "wird geprüft, ob Ihre Chipkarte unterstützt wird.)</p></li>\n"
-#~ "</ul></qt>"
-
-#~ msgid "Medium Type"
-#~ msgstr "Mediumtyp"
-
-#~ msgid "Key file (RDH mode)"
-#~ msgstr "Schlüsseldatei (RDH-Modus)"
-
-#~ msgid "Path"
-#~ msgstr "Pfad"
-
-#~ msgid "Chip card"
-#~ msgstr "Chipkarte"
-
-#~ msgid "Security Medium"
-#~ msgstr "Sicherheitsmedium"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "We will now check the type of the chip card.</qt>"
-#~ msgstr "<qt>Der Typ der Chipkarte wird nun geprüft.</qt>"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "Only the following card types are supported:\n"
-#~ "<ul>\n"
-#~ "<li>\n"
-#~ "  <b>DDV type 0:</b> old version of DDV cards, but still in use.\n"
-#~ "</li>\n"
-#~ "<li>\n"
-#~ "  <b>DDV type 1:</b> newer cards, issued by some banks this year.\n"
-#~ "</li>\n"
-#~ "<li>\n"
-#~ "<b>RSA-Cards:</b> RSA cards used for other homebanking programs\n"
-#~ "can now be used with AqHBCI.\n"
-#~ "<p>\n"
-#~ "<font color=\"red\">This is currently highly experimental!!</font>\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "All cards listed on our LinuxWiki are generally supported \n"
-#~ "(Matrica, Hypo-Vereinsbank). However, this code needs more testing!!\n"
-#~ "</p>\n"
-#~ "</li>\n"
-#~ "</ul>\n"
-#~ "\n"
-#~ "<p>\n"
-#~ "Please press the button below to check whether your card works.</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Nur die folgenden Typen von Chipkarten werden unterstützt:</p>\n"
-#~ "<ul>\n"
-#~ "<li><b>DDV Typ 0:</b> Alter Typ von DDV-Chipkarten, aber immer noch in "
-#~ "Benutzung.</li>\n"
-#~ "<li><b>DDV Typ 1:</b> Neuere DDV-Chipkarten, seit 2004 im Umlauf.</li>\n"
-#~ "<li><b>RSA-Karten:</b> RSA-Karten, die auch in anderen Homebanking-"
-#~ "Programmen verwendet werden, können seit Neuestem von AqHBCI verwendet "
-#~ "werden. <font color=\"red\">Diese Unterstützung ist noch immer "
-#~ "experimentell!</font></li>\n"
-#~ "</ul>\n"
-#~ "<p>Bitte klicken Sie den Knopf unten, um die Prüfung durchzuführen.</p></"
-#~ "qt>"
-
-#~ msgid "Check Now"
-#~ msgstr "Jetzt prüfen"
-
-#~ msgid "Check the type of chip card now"
-#~ msgstr "Die Chipkarte jetzt prüfen"
-
-#~ msgid "Result:"
-#~ msgstr "Ergebnis:"
-
-#~ msgid "Check Card"
-#~ msgstr "Karte prüfen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ " Below you can choose the file type from those already known to AqHBCI (i."
-#~ "e. those for\n"
-#~ "which plugins have been installed on your system).\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Please select a file type and proceed to the next page.\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Unten können Sie die Dateitypen auswählen, die von AqHBCI "
-#~ "unterstützt werden (d.h. alle Dateitypen, für die ein Plugin installiert "
-#~ "wurde).</p>\n"
-#~ "<p>Bitte wählen Sie einen Dateityp und gehen dann weiter zur nächsten "
-#~ "Seite.</p></qt>"
-
-#~ msgid "Type"
-#~ msgstr "Dateityp"
-
-#~ msgid "Select a file type for the key file here"
-#~ msgstr "Wählen Sie einen Dateityp für die Schlüsseldatei"
-
-#~ msgid "Explanation of the chosen file type"
-#~ msgstr "Erklärung des ausgewählten Dateityps"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "We will now check the key file.<br>\n"
-#~ "</qt>"
-#~ msgstr "<qt>Die Schlüsseldatei wird nun geprüft.</qt>"
-
-#~ msgid "Check Key File"
-#~ msgstr "Schlüsseldatei prüfen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>You have chosen an already existing medium file.\n"
-#~ "I will now check whether that file really is a medium file \n"
-#~ "and whether it is accessible. </p>\n"
-#~ "<p>Please press the button below, which will perform the check. Be "
-#~ "prepared to enter your <b>PIN</b> during this operation.</p>\n"
-#~ "<p><b>Note:</b> This program only supports key files created by \n"
-#~ "programes based on AqHBCI or OpenHBCI. Key files created \n"
-#~ "by proprietary programs, such as Quicken, StarMoney, or \n"
-#~ "Moneyplex, are not supported, because the\n"
-#~ "manufacturers of those programs do not publish their \n"
-#~ "key file format for Open Source developers.</p>\n"
-#~ "The keyfiles of the following programs are known to be useable:\n"
-#~ "<ul>\n"
-#~ "<li><b>AqMoney</b> (<a href=\"http://aqmoney.sf.net/\">aqmoney.sf.net</a>)"
-#~ "</li>\n"
-#~ "<li><b>GNUCash</b> (<a href=\"http://www.gnucash.org\">gnucash.org</a>)</"
-#~ "li>\n"
-#~ "<li><b>KOpenHBCI</b> (kopenhbci.sf.net)</li>\n"
-#~ "<li><b>GOpenHBCI</b> (gopenhbci.sf.net)</li>\n"
-#~ "<li><b>LxBank</b> (lxbank.sf.net)</li>\n"
-#~ "</ul>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Sie haben eine bereits existierende Schlüsseldatei als "
-#~ "Sicherheitsmedium ausgewählt. Es wird nun geprüft, ob diese Datei "
-#~ "tatsächlich als Sicherheitsmedium unterstützt wird.</p>\n"
-#~ "<p>Bitte klicken Sie den Knopf unten, um diese Prüfung durchzuführen. "
-#~ "Eventuell werden Sie dann nach Ihrer PIN gefragt.</p>\n"
-#~ "<p><b>Hinweis:</b> Dieses Programm unterstützt nur Schlüsseldateien, die "
-#~ "von anderen Programmen erstellt wurden, die auf AqHBCI oder OpenHBCI "
-#~ "basieren. Schlüsseldateien, die von kommerziellen Programmen wie Quicken, "
-#~ "StarMoney oder Moneyplex erstellt wurden, werden nicht unterstützt, da "
-#~ "deren Herstellen ihr Dateiformat nicht für Entwickler von Open-Source-"
-#~ "Software veröffentlichen.</p>\n"
-#~ "Die Schlüsseldateien von folgenden Programmen werden auf jedem Fall "
-#~ "unterstützt:\n"
-#~ "<ul>\n"
-#~ "<li><b>AqMoney</b> (<a href=\"http://aqmoney.sf.net/\">aqmoney.sf.net</a>)"
-#~ "</li>\n"
-#~ "<li><b>GNUCash</b> (<a href=\"http://www.gnucash.org\">gnucash.org</a>)</"
-#~ "li>\n"
-#~ "<li><b>KOpenHBCI</b> (kopenhbci.sf.net)</li>\n"
-#~ "<li><b>GOpenHBCI</b> (gopenhbci.sf.net)</li>\n"
-#~ "<li><b>LxBank</b> (lxbank.sf.net)</li>\n"
-#~ "</ul>\n"
-#~ "</qt>"
-
-#~ msgid "Check the key file now"
-#~ msgstr "Schlüsseldatei jetzt prüfen"
-
-#~ msgid "Result of the key file check"
-#~ msgstr "Ergebnis der Prüfung der Schlüsseldatei"
-
-#~ msgid "Check File"
-#~ msgstr "Datei prüfen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>Please enter the bank and user data.</p>\n"
-#~ "<p>You can also choose to import this data from the medium.</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Bitte geben Sie die Zugangsdaten zur Bank und die Benutzerdaten an."
-#~ "</p>\n"
-#~ "<p>Falls möglich, können Sie diese Daten auch vom Sicherheitsmedium "
-#~ "importieren.</p>\n"
-#~ "</qt>"
-
-#~ msgid "Import from medium"
-#~ msgstr "Vom Medium importieren"
-
-#~ msgid "Click to import all available data from an existing medium."
-#~ msgstr "Benutzerdaten vom existierenden Medium importieren."
-
-#~ msgid "Enter User Data"
-#~ msgstr "Benutzerdaten eingeben"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "There are two initialisation modes:\n"
-#~ "<ul>\n"
-#~ "<li><b>First Initialisation</b>\n"
-#~ "<p>\n"
-#~ "In this mode keys are created and exchanged with the bank server.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "If any other application <i>already</i> performed this step before \n"
-#~ "(i.e. you did use this medium with any other application before) you "
-#~ "should not use\n"
-#~ "this mode.\n"
-#~ "</p>\n"
-#~ "</li>\n"
-#~ "<li><b>already used by other programs</b>\n"
-#~ "<p>\n"
-#~ "This mode should be used if you already used this medium with any\n"
-#~ "<font color=\"red\">other application</font>.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "This mode must also be used with <b>pre-personalized</b> RSA cards \n"
-#~ "(i.e. RSA cards which have already been setup by your bank).\n"
-#~ "</p>\n"
-#~ "</li>\n"
-#~ "</ul>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Es gibt zwei Arten von Initialisierungen:</p>\n"
-#~ "<dl>\n"
-#~ "<dt><b>Erstinitialisierung</b></dt>\n"
-#~ "<dd>Bei dieser Art werden die elektronischen Schlüssel neu erstellt und "
-#~ "zum Bank-Server geschickt. Wenn Sie diesen Schritt bereits mit "
-#~ "irgendeiner anderen Homebanking-Software getan haben, sollten Sie nicht "
-#~ "diese Initialisierung wählen.</dd>\n"
-#~ "<dt><b>Bereits in Benutzung</b><dt>\n"
-#~ "<dd>Diese Initialisierung sollten Sie wählen, wenn sie das Medium bereits "
-#~ "mit anderen Hombanking-Anwendungen verwendet haben. Diese Initialisierung "
-#~ "muß auch gewählt werden, wenn Sie eine sogenannte \"vorpersonalisierte "
-#~ "RSA-Chipkarte\" besitzen, d.h. eine RSA-Chipkarte, die bereits von Ihrer "
-#~ "Bank für Sie eingerichtet worden ist.</dd>\n"
-#~ "</dl>\n"
-#~ "</qt>"
-
-#~ msgid "Initialisation Mode"
-#~ msgstr "Art der Einrichtung"
-
-#~ msgid "First Initialisation"
-#~ msgstr "Allererste Einrichtung"
-
-#~ msgid "Already used by other programs"
-#~ msgstr "Bereits von anderen Programmen benutzt"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "You can now choose the HBCI protocol version to be used.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "When you press \"Test\", a window will open which shows \n"
-#~ "the progress of the communication with the bank server.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "The progress window may show some error messages,\n"
-#~ "but these can be ignored because in this step\n"
-#~ " only the communication itself is being tested.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "You should only press \"Next\" if the test succeeded. \n"
-#~ "Otherwise the following connections are very likely to fail as well.\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Sie können nun die HBCI-Version auswählen, die mit Ihrer Bank "
-#~ "benutzt werden soll.</p>\n"
-#~ "<p>Wenn Sie \"Test\" klicken, wird ein Fenster geöffnet, wo Sie den "
-#~ "Fortschritt und das Protokoll der Kommunikation mit dem Bank-Server "
-#~ "beobachten können.</p>\n"
-#~ "<p>Im Protokoll könnten Fehlermeldungen auftreten, die aber in diesem "
-#~ "Schritt ignoriert werden können, da nur die Kommunikation als solches "
-#~ "geprüft wird.</p>\n"
-#~ "<p>Wenn der Test erfolgreich verlaufen ist, klicken Sie \"Weiter\". Falls "
-#~ "der Test allerdings nicht erfolgreich ist, werden wahrscheinlich auch die "
-#~ "nächsten Schritte fehlschlagen.</p></qt>"
-
-#~ msgid "2.01"
-#~ msgstr "2.01"
-
-#~ msgid "2.1"
-#~ msgstr "2.1"
-
-#~ msgid "2.2"
-#~ msgstr "2.2"
-
-#~ msgid "Choose the HBCI protocol version"
-#~ msgstr "Wählen Sie die HBCI Protokoll-Version"
-
-#~ msgid ""
-#~ "Test the HBCI protocol version by communicating with the bank server."
-#~ msgstr ""
-#~ "Die HBCI Prokotoll-Version testen, die vom Bank-Server unterstützt wird."
-
-#~ msgid "Result of the communication test with the bank server"
-#~ msgstr "Ergebnis des Kommunikationstests mit dem Bank-Server"
-
-#~ msgid "HBCI Protocol Version"
-#~ msgstr "HBCI Protokoll-Version"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>This is the summary of the new HBCI user. </p>\n"
-#~ "<p>When you click <b>next</b>, the user and the \n"
-#~ "medium will be created. This step cannot be undone, so \n"
-#~ "please check the settings below before proceeding.</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Dies ist die Zusammenfassung der Angaben für den neuen HBCI-"
-#~ "Benutzer.</p>\n"
-#~ "<p>Wenn Sie \"Weiter\" klicken, wird der Benutzer und das "
-#~ "Sicherheitsmedium erstellt. Dieser Schritt kann nicht rückgängig gemacht "
-#~ "werden. Bitte prüfen Sie daher alle Angaben nochmals. Wenn alles richtig "
-#~ "ist, klicken Sie \"Weiter\".</p></qt>"
-
-#~ msgid "Your Settings"
-#~ msgstr "Ihre Einstellungen"
-
-#~ msgid "Summary of the new HBCI User"
-#~ msgstr "Zusammenfassung für den neuen HBCI Benutzer"
-
-#~ msgid "Summary"
-#~ msgstr "Zusammenfassung"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "We will now retrieve the public keys of the bank server.<br>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Die öffentlichen Schlüssel des Bank-Servers werden nun abgerufen.</qt>"
-
-#~ msgid "Get Server's Keys"
-#~ msgstr "Server-Schlüssel abrufen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "There are two keys to be retrieved:\n"
-#~ "<ul>\n"
-#~ "<li><b>Signature key:</b> This key is used by the server to sign all "
-#~ "messages sent to us. Please note that some institutes do not use a "
-#~ "signature key. If they do not use a signature key, there is \n"
-#~ "no proof of whether a received message was sent to us by the bank as "
-#~ "opposed to someone else.</li>\n"
-#~ "<li><b>Crypt key:</b> This key is used by this program to encrypt data "
-#~ "prior to sending it to the server. This way the server is the only "
-#~ "subject able to decrypt our messages.\n"
-#~ "</ul>\n"
-#~ "When you press the button below the procedure starts. That will open a "
-#~ "window showing the progress in communication with the server.\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Zwei Arten von öffentlichen Schlüssel müssen nun abgerufen werden:\n"
-#~ "<ul>\n"
-#~ "<li><b>Signaturschlüssel:</b> Dieser Schlüssel dient dazu, alle "
-#~ "Nachrichten des Bank-Servers zu signieren. Manche Banken verwenden keinen "
-#~ "Signaturschlüssel. Wenn eine Bank keinen Signaturschlüssel verwendet, "
-#~ "kann nicht geprüft werden, ob eine empfangene Nachricht wirklich von der "
-#~ "Bank stammt. Kontaktieren Sie Ihre Bank, wenn Sie mit dieser "
-#~ "eingeschränkten Sicherheit nicht einverstanden sind.</li>\n"
-#~ "<li><b>Chiffrier-Schlüssel:</b> Mit diesem Schlüssel werden alle Daten "
-#~ "chiffriert, die von diesem Programm an den Bank-Server gesendet werden. "
-#~ "Dies bewirkt, daß niemand außer dem Bank-Server die gesendeten "
-#~ "Nachrichten lesen kann.</li>\n"
-#~ "</ul>\n"
-#~ "Wenn Sie den Knopf unten drücken, wird der Sendevorgang gestartet. Dann "
-#~ "wird ein Fenster geöffnet, wo Sie den Fortschritt und das Protokoll der "
-#~ "Kommunikation mit dem Bank-Server beobachten können.\n"
-#~ "</qt>"
-
-#~ msgid "Get the public keys of the bank server now."
-#~ msgstr "Die öffentlichen Schlüssel jetzt abrufen."
-
-#~ msgid "Result of retrieving the public keys."
-#~ msgstr "Ergebnis des Abrufs der öffentlichen Schlüssel."
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "You must now verify the servers public keys.<br>\n"
-#~ "You can do this by comparing the hash value given below to the one in the "
-#~ "letter from your bank.\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Sie müssen nun die öffentlichen Schlüssel des Bank-Servers "
-#~ "überprüfen. Vergleichen Sie dazu den hier gezeigten elektronischen "
-#~ "Fingerabdruck (\"Hash\") mit dem auf Papier abgedruckten, den Sie von "
-#~ "Ihrer Bank erhalten haben.</qt>"
-
-#~ msgid "Server's Ini-Letter"
-#~ msgstr "Ini-Brief des Bank-Servers"
-
-#~ msgid "The Ini-Letter of the bank server"
-#~ msgstr "Ini-Brief des Bank-Servers"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "Is the hash value above identical to the one in the letter from your "
-#~ "bank?\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Stimmt dieser elektronische Fingerabdruck (\"Hash\") mit demjenigen "
-#~ "aus dem Brief der Bank überein?"
-
-#~ msgid ""
-#~ "Click yes if the Ini-Letter is identical to the paper letter from your "
-#~ "bank."
-#~ msgstr ""
-#~ "Klicken Sie Ja, wenn der gezeigte Ini-Brief mit dem Papier-Brief von "
-#~ "Ihrer Bank übereinstimmt."
-
-#~ msgid ""
-#~ "Click No if the Ini-Letter is not identical with the paper letter from "
-#~ "your bank (and contact your bank)"
-#~ msgstr ""
-#~ "Klicken Sie Nein, wenn der gezeigte Ini-Brief nicht mit dem Papier-Brief "
-#~ "übereinstimmt (und kontaktieren Sie Ihre Bank)"
-
-#~ msgid "Verify Server Keys"
-#~ msgstr "Öffentliche Schlüssel überprüfen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "I will now create your public keys.<br>\n"
-#~ "</qt>"
-#~ msgstr "<qt>Ihre öffentlichen Schlüssel werden nun erstellt.</qt>"
-
-#~ msgid "Create Your Keys"
-#~ msgstr "Ihre Schlüssel erstellen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "There are two key pairs to be created:\n"
-#~ "<ul>\n"
-#~ "<li><b>Signature keys:</b> These keys are used to sign all messages to "
-#~ "the server.</li>\n"
-#~ "<li><b>Crypt keys:</b> These keys are used by the server to encrypt\n"
-#~ "data prior to sending it to to us. This way you are the only one who can "
-#~ "decrypt the server's messages.\n"
-#~ "</ul>\n"
-#~ "<p>\n"
-#~ "When you press the button below I will create your private and public "
-#~ "keys. Depending on the speed of your computer this may take some time (up "
-#~ "to a few seconds). If there already are keys on the security medium\n"
-#~ "you will be asked whether you want to overwrite them.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "However, if the keys already exist you may simply go on with the next\n"
-#~ "page.\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Nun müssen zwei Schlüsselpaare für Ihre elektronischen Schlüssel "
-#~ "erstellt werden:\n"
-#~ "<ul>\n"
-#~ "<li><b>Signaturschlüssel:</b> Diese Schlüssel dienen dazu, alle "
-#~ "Nachrichten an den Bank-Server zu signieren.</li>\n"
-#~ "<li><b>Chiffier-Schlüssel:</b> Diese Schlüssel werden vom Bank-Server "
-#~ "verwendet, um alle Nachrichten an dieses Programm zu chiffrieren. Dadurch "
-#~ "ist sichergestellt, daß niemand außer diesem Programm die Nachrichten des "
-#~ "Bank-Servers lesen kann.</li>\n"
-#~ "</ul>\n"
-#~ "<p>Wenn Sie den Knopf unten klicken, werden Ihre Schlüssel erstellt. Je "
-#~ "nachdem wie leistungsfähig Ihr Computer ist, kann dies einige Sekunden "
-#~ "dauern.</p>\n"
-#~ "<p>Falls Sie allerdings schon vorher Schlüssel erzeugt hatten, dann "
-#~ "überspringen Sie diesen Schritt und gehen mit \"Weiter\" zur nächsten "
-#~ "Seite.</p>\n"
-#~ "</qt>"
-
-#~ msgid "Create your public keys now"
-#~ msgstr "Öffentliche Schlüssel jetzt erstellen"
-
-#~ msgid "Result of creating the public keys"
-#~ msgstr "Ergebnis des Erstellens der öffentlichen Schlüssel"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "I will now send your public keys to the bank server.<br>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt>Ihre öffentlichen Schlüssel werden nun an den Bank-Server geschickt.</"
-#~ "qt>"
-
-#~ msgid "Send Your Keys"
-#~ msgstr "Ihre Schlüssel senden"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "Now your <b>public</b> keys will be sent to the bank server.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "(Your private keys will never be sent to anyone. Nobody but you should\n"
-#~ "have access to your private keys, which are stored in the keyfile given\n"
-#~ "in the previous steps. Anyone who had access to your private keys would\n"
-#~ "be able to manage your accounts.)\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "When you press the button below the communication will start. A window "
-#~ "will open showing the progress in communication with the server.\n"
-#~ "</p>\n"
-#~ "<b>Please note:</b> \n"
-#~ "<font color=\"red\">\n"
-#~ "<p>\n"
-#~ "You <b>must not</b> execute this procedure if there already are keys\n"
-#~ "at your bank (e.g. you previously sent your keys using this or any other\n"
-#~ "AqBanking-based program).\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "You should do this procedure <b>only once</b>!  You may retry if and\n"
-#~ "only if the server is unreachable. You <b>must not repeat</b> this step\n"
-#~ "in any other case, especially if you see a message in the log indicating\n"
-#~ "that the keys have been received by the server. Repeating this step will\n"
-#~ "most likely result in a failed HBCI setup, and you will have to ask\n"
-#~ "your bank to reset your HBCI account.\n"
-#~ "</p>\n"
-#~ "</font>\n"
-#~ "<p>\n"
-#~ "After this step has been performed successfully, you can use this\n"
-#~ "particular account and user id combination only with a program based\n"
-#~ "on the <b>AqBanking</b> library.  AqBanking is an Open Source\n"
-#~ "project, which means all data format specifications can be used by\n"
-#~ "everyone interested so that interoperability is possible. \n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "However, other programs (namely proprietary software) do not offer\n"
-#~ "this feature.  So please don't blame the AqBanking developers for this\n"
-#~ "exclusive usage - it is basically not our fault.\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Nun müssen Ihre öffentlichen Schlüssel an den Bank-Server gesendet "
-#~ "werden.</p>\n"
-#~ "<p>(Ihre privaten Schlüssel werden niemals an irgend jemanden gesendet. "
-#~ "Niemand außer Ihnen selbst sollte jemand Zugang zu Ihren privaten "
-#~ "Schlüsseln haben, die in der Schlüsseldatei gespeichert sind. Falls "
-#~ "jemals eine Person Zugang zu Ihren privaten Schlüsseln erlangen sollte "
-#~ "und außerdem Ihre PIN kennen würde, wäre diese Person in der Lage, "
-#~ "unbemerkt auf Ihre Konten zuzugreifen.)</p>\n"
-#~ "<p>Wenn Sie den Knopf unten klicken, beginnt der Sendevorgang. Ein "
-#~ "Fenster wird sich öffnen, in dem Sie den Fortschritt und das Protokoll "
-#~ "der Kommunikation mit dem Bank-Server beobachten können.</p>\n"
-#~ "<p><b>Achtung!</b> Diesen Schritt dürfen Sie <b>nur einmal</b> ausführen! "
-#~ "Als einzige Ausnahme darf dieser Schritt dann und nur dann wiederholt "
-#~ "werden, wenn es keinen Kontakt zum Bank-Server gab. In jedem anderen Fall "
-#~ "darf dieser Schritt <b>nicht wiederholt</b> werden. Dies gilt ganz "
-#~ "besonders, wenn Sie im Protokoll-Fenster lesen, daß der Bank-Server Ihre "
-#~ "Schlüssel empfangen hat. Das Resultat einer mehrmaligen Ausführung dieses "
-#~ "Schrittes wird höchst wahrscheinlich eine fehlerhafte HBCI-Einrichtung "
-#~ "sein, so daß Sie schließlich Ihre Bank bitten müssten, Ihren HBCI-Zugang "
-#~ "zurückzusetzen.</p>\n"
-#~ "<p>Wenn Sie diesen Schritt erfolgreich durchgeführt haben, können Sie "
-#~ "diese Benutzerkennung mit jenen Programmen verwenden, die auf der "
-#~ "AqBanking-Bibliothek basieren. </p>\n"
-#~ "</qt>"
-
-#~ msgid "Send Keys"
-#~ msgstr "Schlüssel senden"
-
-#~ msgid "Send your public keys to the bank server now"
-#~ msgstr "Öffentliche Schlüssel jetzt an den Bank-Server schicken"
-
-#~ msgid "Result of sending the public keys to the bank server"
-#~ msgstr "Ergebnis des Sendens der öffentlichen Schlüssel"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>The box below shows your Ini-Letter.  You must print it on\n"
-#~ "paper, sign it, and send it to your bank by paper mail. A few days\n"
-#~ "later the bank will activate your account. The bank may or may not\n"
-#~ "notify you when they have activated your account.</p>\n"
-#~ "\n"
-#~ "<p>Please press \"Print\" to print your Ini-Letter.\n"
-#~ "Then you can go on with getting the list of manageable accounts.</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Im untenstehenden Kasten sehen Sie Ihren Ini-Brief. Sie müssen "
-#~ "diesen ausdrucken, unterschreiben und auf dem Postweg an Ihre Bank "
-#~ "schicken. Einige Tage später wird die Bank dann Ihren Zugang "
-#~ "freischalten. Manche Banken werden Ihnen Bescheid geben, wenn die "
-#~ "Freischaltung schließlich erfolgt ist, aber die meisten Banken tun dies "
-#~ "nicht.</p>\n"
-#~ "<p>Bitte klicken Sie \"Drucken\", um Ihren Ini-Brief auszudrucken. "
-#~ "Klicken Sie dann \"Weiter\".</p>\n"
-#~ "</qt>"
-
-#~ msgid "Your Ini-Letter"
-#~ msgstr "Ihr Ini-Brief"
-
-#~ msgid "Print your Ini-Letter now"
-#~ msgstr "Ihren Ini-Brief jetzt drucken"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "PIN/TAN mode uses SSL to protect the communication between you and your "
-#~ "server.\n"
-#~ "</p>\n"
-#~ "<p> To make it as safe as possible you can now retrieve SSL\n"
-#~ "certificate from the bank server. If you accept that certificate, then\n"
-#~ "only <b>this</b> certificate will be accepted by AqHBCI.\n"
-#~ "This protects against man-in-the-middle attacks.  \n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "However, if there already <i>were</i> someone between us\n"
-#~ "and the server <i>right now</i>, then he might now send\n"
-#~ "back his own certificate and compromise the safety of your data.  This\n"
-#~ "is an extremely unlikely event, but it is still possible.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "So please have a very close look at the certificate presented to you\n"
-#~ "when you press the button below.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Credit institutes which are concerned about the safety of your data\n"
-#~ "will not use self-signed certificates. They will more likely be using\n"
-#~ "a certificate which has been signed by a known Certificate Authority.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Please ask your bank if in doubt.\n"
-#~ "</p>\n"
-#~ "\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Die Sicherheitsmethode PIN/TAN verwendet die Technik SSL "
-#~ "(<i>Secure Socket Layer</i>), um die Kommunikation zwischen diesem "
-#~ "Programm und dem Bank-Server zu sichern.</p>\n"
-#~ "<p>Um SSL mit größter Sicherheitsstufe zu verwenden, sollten zuerst die "
-#~ "Zertifikate des Bank-Servers abgerufen werden. Wenn Sie das Zertifikat "
-#~ "überprüfen und akzeptieren, wird im Zukunft nur dieses Zertifikat "
-#~ "akzeptiert. Dies ist ein wirksamer Schutz gegen sogenannte <i>man-in-the-"
-#~ "middle</i>-Attacken. Lediglich in dem extrem unwahrscheinlichen Fall, daß "
-#~ "jetzt gerade eine solche Attacke stattfindet, könnte eine unauthorisierte "
-#~ "Person ein gefälschtes Zertifikat zurücksenden. Bitte prüfen Sie daher "
-#~ "die Angaben im Zertifikat genau.</p>\n"
-#~ "<p>Banken, die die Sicherheit Ihrer Daten ernst nehmen, werden "
-#~ "Zertifikate verwenden, die von einer anerkannten Zertifizierungsinstanz "
-#~ "(<i>Certificat Authority</i>) signiert ist und die nicht Selbst-Signiert "
-#~ "(<i>self-signed</i>) sind. Bitte fragen Sie Ihre Bank, wenn Sie von der "
-#~ "Echtheit des erhaltenen Zertifikats nicht überzeugt sind.</p>\n"
-#~ "</qt>"
-
-#~ msgid "Get Server Certificate"
-#~ msgstr "Server-Zertifikat abrufen"
-
-#~ msgid "Server Certificate"
-#~ msgstr "Server-Zertifikat"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>The new user setup is now completed.</p>\n"
-#~ "<p>\n"
-#~ "You will have to wait for your bank to activate your HBCI access to\n"
-#~ "the server. When the bank has activated the HBCI access (which takes a\n"
-#~ "few days usually), you need to start this wizard again and retrieve\n"
-#~ "the list of available accounts.</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Die Einrichtung des neuen Benutzers ist nun vollständig.</p>\n"
-#~ "<p>Sie müssen nun ein paar Tage abwarten, bis die Bank Ihren HBCI-Zugang "
-#~ "freigeschaltet hat. Wenn die Freischaltung erfolgt ist, müssen Sie diesen "
-#~ "Einrichtungs-Assistent erneut starten, um die Liste der verfügbaren "
-#~ "Konten abzurufen und einzurichten. Erst danach können Sie auch "
-#~ "tatsächlich auf Ihre Konten online zugreifen.</p></qt>"
-
-#~ msgid "Finished."
-#~ msgstr "Abgeschlossen."
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "I will now try to acquire a system id.<br>\n"
-#~ "</qt>"
-#~ msgstr "<qt>Eine Systemkennung wird nun abgerufen.</qt>"
-
-#~ msgid "Acquire System Id"
-#~ msgstr "Systemkennung abrufen"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "We now need to acquire a system id.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "This id is used by the server in conjunction with the signature counter "
-#~ "to check against double entry of commands (like transfer etc).\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "When you press the button below the procedure starts. That will open a "
-#~ "window showing the progress in communication with the server.<br>\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Nun muß eine Systemkennung abgerufen werden.</p>\n"
-#~ "<p>Diese Kennung wird vom Bank-Server zusammen mit dem Signaturzähler "
-#~ "benutzt, um eine doppelte Auftragseinreichung auszuschließen (damit "
-#~ "Überweisungen nicht aus Versehen mehrmals ausgeführt werden könnten).</"
-#~ "p>\n"
-#~ "<p>Wenn Sie den Knopf unten klicken, beginnt der Abruf. Ein Fenster wird "
-#~ "sich öffnen, in dem Sie den Fortschritt und das Protokoll der "
-#~ "Kommunikation mit dem Bank-Server beobachten können.</p>\n"
-#~ "</qt>"
-
-#~ msgid "Result of getting the system id"
-#~ msgstr "Ergebnis des Abrufs der Systemkennung"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "I will now try to get the list of accounts from the bank.<br>\n"
-#~ "</qt>"
-#~ msgstr "<qt>Die Kontenliste wird nun abgerufen.</qt>"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "We now need to retrieve the list of accounts we are allowed to manage via "
-#~ "HBCI.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Some banks do not provide us with such a list. In that case you need\n"
-#~ "to manually add your account on the next page.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "When you press the button below the procedure starts. That will open a "
-#~ "window showing the progress in communication with the server.<br>\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Nun wird die Liste der verfübaren Konten abgerufen, auf die Sie "
-#~ "über HBCI zugreifen dürfen.</p>\n"
-#~ "<p>Manche Banken stellen keine solche Kontenliste zum Abruf bereit. In "
-#~ "diesem Fall müssen Sie die Konten auf der nächsten Seite manuell eingeben."
-#~ "</p>\n"
-#~ "<p>Wenn Sie den Knopf unten klicken, beginnt der Abruf. Ein Fenster wird "
-#~ "sich öffnen, in dem Sie den Fortschritt und das Protokoll der "
-#~ "Kommunikation mit dem Bank-Server beobachten können.\n"
-#~ "</p></qt>"
-
-#~ msgid "Get account list"
-#~ msgstr "Kontenliste abrufen"
-
-#~ msgid "Get account list from bank server now"
-#~ msgstr "Kontenliste jetzt vom Bank-Server abrufen"
-
-#~ msgid "Result of account list retrieval"
-#~ msgstr "Ergebnis des Abrufs der Kontenliste"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "<p>\n"
-#~ "I was unable to retrieve the list of accounts. This is perfectly normal "
-#~ "for some German\n"
-#~ "banks. You need to add your accounts manually after this wizard has "
-#~ "finished. \n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Please be very accurate about the account number and bank code.\n"
-#~ "Especially if there are any leading or trailing zeroes in the account\n"
-#~ "number, you need to make sure to enter these in exactly the same way\n"
-#~ "as your bank uses them.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Just enter the account number as it is in the information your bank\n"
-#~ "sent to you about your HBCI account.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "<b>Please note:</b> Some banks use different bank codes \n"
-#~ "for the server and for the accounts. In any case you need to enter \n"
-#~ "the information exactly the same way as your bank has told you to.\n"
-#~ "</p>\n"
-#~ "</qt>"
-#~ msgstr ""
-#~ "<qt><p>Es konnte keine Kontenliste abgerufen werden. Wie bereits erwähnt, "
-#~ "ist dieses Verhalten von manchen deutschen Banken auch so vorgesehen. Sie "
-#~ "müssen daher Ihre Konten manuell hinzufügen, nachdem dieser Einrichtungs-"
-#~ "Assistent abgeschlossen ist.</p>\n"
-#~ "<p>Bitte achten Sie bei der manuellen Eingabe der Kontonummer sehr auf "
-#~ "die genaue Schreibweise. Auch führende oder angehängte Nullen müssen "
-#~ "unbedingt genauso eingegeben werden, wie sie von Ihrer Bank in den "
-#~ "Unterlagen zum HBCI-Zugang aufgeführt sind.</p>\n"
-#~ "<p>Manche Banken benutzen außerdem unterschiedliche Bankleitzahlen (BLZ) "
-#~ "für den Bank-Server einerseits und die Konten andererseits. Auch in "
-#~ "diesem Fall müssen Sie darauf achten, alle Kontenangaben unbedingt "
-#~ "genauso einzugeben, wie sie von Ihrer Bank in den Unterlagen zum HBCI-"
-#~ "Zugang aufgeführt sind.</p>\n"
-#~ "</qt>"
-
-#~ msgid ""
-#~ "<qt>\n"
-#~ "The new user is now configured.<br>\n"
-#~ "</qt>"
-#~ msgstr "<qt>Der neue Benutzer ist nun erfolgreich eingerichtet.</qt>"

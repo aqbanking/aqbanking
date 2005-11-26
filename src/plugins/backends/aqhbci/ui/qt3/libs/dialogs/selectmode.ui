@@ -84,10 +84,10 @@
                         <cstring>importFileRadio</cstring>
                     </property>
                     <property name="text">
-                        <string>import keyfile</string>
+                        <string>Import Keyfile</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>import an existing keyfile</string>
+                        <string>Import an existing keyfile</string>
                     </property>
                 </widget>
                 <widget class="QRadioButton" row="2" column="1">
@@ -95,10 +95,10 @@
                         <cstring>createFileRadio</cstring>
                     </property>
                     <property name="text">
-                        <string>create keyfile</string>
+                        <string>Create Keyfile</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>create a new keyfile</string>
+                        <string>Create a new keyfile</string>
                     </property>
                 </widget>
                 <widget class="QRadioButton" row="0" column="0">
@@ -106,7 +106,7 @@
                         <cstring>importCardRadio</cstring>
                     </property>
                     <property name="text">
-                        <string>import chipcard</string>
+                        <string>Import Chipcard</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Use with DDV cards or personalized RSA cards</string>
@@ -117,7 +117,7 @@
                         <cstring>pinTanRadio</cstring>
                     </property>
                     <property name="text">
-                        <string>setup PIN/TAN</string>
+                        <string>Setup PIN/TAN</string>
                     </property>
                     <property name="checked">
                         <bool>true</bool>
@@ -128,7 +128,7 @@
                         <cstring>initCardRadio</cstring>
                     </property>
                     <property name="text">
-                        <string>init chipcard</string>
+                        <string>Init Chipcard</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Use with completely new RSA cards</string>

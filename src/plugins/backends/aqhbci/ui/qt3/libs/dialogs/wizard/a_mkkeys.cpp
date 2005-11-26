@@ -33,7 +33,7 @@
 
 
 ActionMakeKeys::ActionMakeKeys(Wizard *w)
-:WizardAction(w, "MakeKeys", QWidget::tr("Create User keys")) {
+:WizardAction(w, "MakeKeys", QWidget::tr("Create User Keys")) {
   _makeKeysDialog=new MakeKeys(w, this, "MakeKeys");
   addWidget(_makeKeysDialog);
   _makeKeysDialog->show();

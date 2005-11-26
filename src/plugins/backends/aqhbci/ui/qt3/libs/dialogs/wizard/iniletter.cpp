@@ -203,7 +203,7 @@ void IniLetter::_createIniLetter() {
   }
   else {
     result+="<qt>";
-    result+="<h3>"+tr("Ini Letter of Server Key)")+"</h3>";
+    result+="<h3>"+tr("Ini Letter of Server Key")+"</h3>";
 
     result+="<table>";
 

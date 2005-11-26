@@ -33,7 +33,7 @@
 
 
 ActionGetKeys::ActionGetKeys(Wizard *w)
-:WizardAction(w, "GetKeys", QWidget::tr("Retrieve server keys")) {
+:WizardAction(w, "GetKeys", QWidget::tr("Retrieve Server Keys")) {
   _getKeysDialog=new GetKeys(w, this, "GetKeys");
   addWidget(_getKeysDialog);
   _getKeysDialog->show();

@@ -32,7 +32,7 @@
 
 
 ActionGetSysId::ActionGetSysId(Wizard *w)
-:WizardAction(w, "GetSysId", QWidget::tr("Retrieve system id")) {
+:WizardAction(w, "GetSysId", QWidget::tr("Retrieve System Id")) {
   QLabel *tl;
 
   tl=new QLabel(this, "GetSysIdText");

@@ -29,7 +29,7 @@
 
 
 ActionGetCert::ActionGetCert(Wizard *w)
-:WizardAction(w, "GetCert", QWidget::tr("Retrieve server certificate")) {
+:WizardAction(w, "GetCert", QWidget::tr("Retrieve Server Certificate")) {
   QLabel *tl;
 
   tl=new QLabel(this, "GetCertText");
