@@ -31,6 +31,7 @@ noinst_HEADERS=\
   waction.h \
   winfo.h \
   wizard.h \
+  a_bank_iniletter.h \
   a_edituser.h \
   a_getcert.h \
   a_getkeys.h \
