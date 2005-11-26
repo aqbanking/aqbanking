@@ -8,7 +8,9 @@ INCLUDES = \
 UI_FILES= \
   editctuser.ui \
   wizard.ui \
-  getkeys.ui
+  getkeys.ui \
+  mkkeys.ui \
+  iniletter.ui
 
 EXTRA_DIST= $(UI_FILES)
 
@@ -17,17 +19,22 @@ noinst_LTLIBRARIES=libwizard.la
 nodist_noinst_HEADERS=\
   editctuser.ui.h \
   wizard.ui.h \
-  getkeys.ui.h
+  getkeys.ui.h \
+  mkkeys.ui.h \
+  iniletter.ui.h
 
 noinst_HEADERS=\
   editctuser.h \
   getkeys.h \
+  mkkeys.h \
+  iniletter.h \
   waction.h \
   winfo.h \
   wizard.h \
   a_edituser.h \
   a_getcert.h \
   a_getkeys.h \
+  a_mkkeys.h \
   a_getsysid.h \
   a_wait.h \
   a_finished.h \
@@ -41,7 +48,9 @@ noinst_HEADERS=\
 nodist_libwizard_la_SOURCES=\
  editctuser.ui.cpp editctuser.ui.moc.cpp editctuser.moc.cpp \
  wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp \
- getkeys.ui.cpp getkeys.ui.moc.cpp getkeys.moc.cpp
+ getkeys.ui.cpp getkeys.ui.moc.cpp getkeys.moc.cpp \
+ mkkeys.ui.cpp mkkeys.ui.moc.cpp mkkeys.moc.cpp \
+ iniletter.ui.cpp iniletter.ui.moc.cpp iniletter.moc.cpp
 
 libwizard_la_SOURCES=\
   waction.cpp \
@@ -49,9 +58,12 @@ libwizard_la_SOURCES=\
   wizard.cpp \
   editctuser.cpp \
   getkeys.cpp \
+  mkkeys.cpp \
+  iniletter.cpp \
   a_edituser.cpp \
   a_getcert.cpp \
   a_getkeys.cpp \
+  a_mkkeys.cpp \
   a_getsysid.cpp \
   a_wait.cpp \
   a_finished.cpp \

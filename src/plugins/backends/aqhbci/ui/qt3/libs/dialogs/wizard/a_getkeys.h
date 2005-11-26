@@ -11,8 +11,8 @@
  ***************************************************************************/
 
 
-#ifndef AQHBCI_A_GETACCOUNTS_H
-#define AQHBCI_A_GETACCOUNTS_H
+#ifndef AQHBCI_A_GETKEYS_H
+#define AQHBCI_A_GETKEYS_H
 
 #include "waction.h"
 #include "winfo.h"

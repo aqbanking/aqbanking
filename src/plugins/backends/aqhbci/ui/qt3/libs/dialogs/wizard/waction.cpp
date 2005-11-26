@@ -76,6 +76,11 @@ bool WizardAction::undo() {
 
 
 
+void WizardAction::enter() {
+}
+
+
+
 
 
 

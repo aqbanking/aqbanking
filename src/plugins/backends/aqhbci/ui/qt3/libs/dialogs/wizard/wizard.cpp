@@ -153,6 +153,9 @@ void Wizard::next() {
     if (p->apply()) {
       QWizard::next();
       w=currentPage();
+      p=dynamic_cast<WizardAction*>(w);
+      assert(p);
+      p->enter();
       if (w==_lastActionWidget)
         setFinishEnabled(w, TRUE);
       else

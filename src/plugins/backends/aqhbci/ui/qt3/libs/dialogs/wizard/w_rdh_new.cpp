@@ -14,6 +14,7 @@
 #include "w_rdh_new.h"
 #include "a_edituser.h"
 #include "a_getkeys.h"
+#include "a_bank_iniletter.h"
 #include "a_wait.h"
 
 
@@ -34,6 +35,9 @@ WizardRdhNew::WizardRdhNew(QBanking *qb,
   addAction(wa);
 
   wa=new ActionGetKeys(this);
+  addAction(wa);
+
+  wa=new ActionBankIniLetter(this);
   addAction(wa);
 
   wa=new ActionWait(this);

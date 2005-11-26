@@ -40,6 +40,7 @@ public:
 
   void addWidget(QWidget *w);
 
+  virtual void enter();
   virtual bool apply();
   virtual bool undo();
 

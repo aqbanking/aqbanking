@@ -1,4 +1,10 @@
 
+2005/11/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in Pin/Tan-setup code of AqHBCI wizard (was removing newly
+  created bank/user/accounts)
+
+
 ===========================================================================
 MARK: released AqBanking - 1.8.0beta (2005-11-22)
 ===========================================================================

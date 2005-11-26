@@ -97,7 +97,6 @@ bool UserWizard::_handleModePinTan() {
     return false;
   }
 
-  wInfo.releaseData();
   return true;
 }
 
