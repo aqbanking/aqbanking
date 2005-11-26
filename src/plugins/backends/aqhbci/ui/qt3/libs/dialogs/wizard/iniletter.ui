@@ -1,0 +1,140 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>IniLetterUi</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>IniLetterUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>507</width>
+            <height>380</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Ini Letter</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;qt&gt;
+You must now verify the servers public keys.&lt;br&gt;
+You can do this by comparing the hash value given below to the one in the letter from your bank.
+&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>GroupBox26</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="title">
+                <string>Ini-Letter</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QTextView">
+                    <property name="name">
+                        <cstring>iniBrowser</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The Ini-Letter of the bank server</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout40</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>printButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Print</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer27</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>50</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>serverLabel</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>&lt;qt&gt;
+Is the hash value above identical to the one in the letter from your bank?
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>goodHashButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Yes</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Click yes if the Ini-Letter is identical to the paper letter from your bank.</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>badHashButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>No</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Click No if the Ini-Letter is not identical with the paper letter from your bank (and contact your bank)</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
