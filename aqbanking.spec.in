@@ -269,6 +269,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 #%{_datadir}/aclocal/aqhbci.m4
 ### The cbanking files
 %{_includedir}/cbanking
+%{_bindir}/cbanking-config
 ### The g2banking files
 %{_includedir}/g2banking
 %{_bindir}/g2banking-config
