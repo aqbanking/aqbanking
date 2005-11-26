@@ -151,9 +151,14 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
   AB_BANKING *ab;
   GWEN_BUFFER *nbuf;
   char buffer[256];
+  GWEN_ERRORCODE err;
 
   assert(appName);
-
+  err=GWEN_Init();
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+    abort();
+  }
   DBG_INFO(AQBANKING_LOGDOMAIN,
            "Application \"%s\" compiled with extensions %08x",
            appName, extensions);
@@ -268,6 +273,7 @@ void AB_Banking_free(AB_BANKING *ab){
     free(ab->configFile);
     free(ab->dataDir);
     GWEN_FREE_OBJECT(ab);
+    GWEN_Fini();
   }
 }
 

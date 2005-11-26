@@ -1,3 +1,4 @@
+
 2005-11-26  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/g2banking/Makefile.am: Call glade-2 via the
@@ -5,10 +6,13 @@
 	GLADE2=/my/prefix/bin/glade-2. Workaround until we finally use
 	libglade.
 
+
 2005/11/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in Pin/Tan-setup code of AqHBCI wizard (was removing newly
   created bank/user/accounts)
+- added calls to GWEN_Init() and GWEN_Fini() to AqBanking's constructor/
+  destructor
 
 
 ===========================================================================
