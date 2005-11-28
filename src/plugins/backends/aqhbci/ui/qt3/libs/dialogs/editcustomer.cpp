@@ -58,7 +58,8 @@ EditCustomer::EditCustomer(AH_HBCI *h,
   if (s)
     fullNameEdit->setText(QString::fromUtf8(s));
 
-  preferSingleCheck->setChecked(AH_Customer_GetPreferSingleTransfer(c));
+  preferSingleTransferCheck->setChecked(AH_Customer_GetPreferSingleTransfer(c));
+  preferSingleDebitNoteCheck->setChecked(AH_Customer_GetPreferSingleDebitNote(c));
 
   m=AH_User_GetMedium(u);
   assert(m);
@@ -77,10 +78,6 @@ EditCustomer::EditCustomer(AH_HBCI *h,
     s=AH_Customer_GetHttpUserAgent(c);
     if (s)
       userAgentEdit->setText(QString::fromUtf8(s));
-
-    s=AH_Customer_GetHttpHost(c);
-    if (s)
-      hostEdit->setText(QString::fromUtf8(s));
 
     getSysIdButton->setEnabled(true);
   }
@@ -140,7 +137,9 @@ void EditCustomer::accept() {
     AH_Customer_SetFullName(_customer, s.c_str());
 
   AH_Customer_SetPreferSingleTransfer(_customer,
-				      preferSingleCheck->isChecked());
+				      preferSingleTransferCheck->isChecked());
+  AH_Customer_SetPreferSingleDebitNote(_customer,
+                                       preferSingleDebitNoteCheck->isChecked());
 
   if (_withHttp) {
     s=QBanking::QStringToUtf8String(httpVersionCombo->currentText());
@@ -159,11 +158,6 @@ void EditCustomer::accept() {
     else
       AH_Customer_SetHttpUserAgent(_customer, s.c_str());
 
-    s=QBanking::QStringToUtf8String(hostEdit->text());
-    if (s.empty())
-      AH_Customer_SetHttpHost(_customer, 0);
-    else
-      AH_Customer_SetHttpHost(_customer, s.c_str());
   }
 
   AH_Customer_SetBankSigns(_customer,

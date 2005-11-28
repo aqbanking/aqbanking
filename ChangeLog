@@ -1,4 +1,17 @@
 
+
+2005/11/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI and QT-Tools:
+  - added customer property "keepAlive" (defaults to "0" which means a PIN/TAN
+    connection is not kept alive but instead reopened for every message
+    exchange)
+  - added customer property "preferSingleDebitNote" (no longer uses
+    "preferSingleTransfer" for debit notes)
+  - removed customer property "httpHost" (no longer used for HTTP connections,
+    so it is better to remove it)
+
+
 2005-11-26  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/g2banking/Makefile.am: Call glade-2 via the

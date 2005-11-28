@@ -111,10 +111,11 @@ AH_CUSTOMER *AH_Customer_fromDb(AH_USER *u, GWEN_DB_NODE *db) {
   cu->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, 1);
   cu->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, 0);
   cu->preferSingleTransfer=GWEN_DB_GetIntValue(db,"preferSingleTransfer",0,0);
+  cu->preferSingleDebitNote=GWEN_DB_GetIntValue(db,"preferSingleDebitNote",0,
+                                                /* correct! */
+                                                cu->preferSingleTransfer);
+  cu->keepAlive=GWEN_DB_GetIntValue(db,"keepAlive",0,0);
 
-  p=GWEN_DB_GetCharValue(db, "httpHost", 0, 0);
-  if (p)
-    cu->httpHost=strdup(p);
   p=GWEN_DB_GetCharValue(db, "httpUserAgent", 0, 0);
   if (p)
     cu->httpUserAgent=strdup(p);
@@ -200,14 +201,18 @@ int AH_Customer_toDb(const AH_CUSTOMER *cu, GWEN_DB_NODE *db) {
 
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "preferSingleDebitNote", cu->preferSingleDebitNote);
+
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "keepAlive", cu->keepAlive);
+
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "httpVMajor", cu->httpVMajor);
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "httpVMinor", cu->httpVMinor);
-  if (cu->httpHost)
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "httpHost", cu->httpHost);
   if (cu->httpUserAgent)
     GWEN_DB_SetCharValue(db,
                          GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -255,7 +260,6 @@ void AH_Customer_free(AH_CUSTOMER *cu){
       AH_Bpd_free(cu->bpd);
       GWEN_DB_Group_free(cu->upd);
       free(cu->httpUserAgent);
-      free(cu->httpHost);
       free(cu->customerId);
       free(cu->systemId);
       free(cu->fullName);
@@ -474,25 +478,6 @@ void AH_Customer_SetHttpVMinor(AH_CUSTOMER *cu, int i){
 
 
 
-const char *AH_Customer_GetHttpHost(const AH_CUSTOMER *cu){
-  assert(cu);
-  return cu->httpHost;
-}
-
-
-
-void AH_Customer_SetHttpHost(AH_CUSTOMER *cu,
-                             const char *s){
-  assert(cu);
-  free(cu->httpHost);
-  if (s)
-    cu->httpHost=strdup(s);
-  else
-    cu->httpHost=0;
-}
-
-
-
 const char *AH_Customer_GetHttpUserAgent(const AH_CUSTOMER *cu){
   assert(cu);
   return cu->httpUserAgent;
@@ -521,6 +506,34 @@ int AH_Customer_GetPreferSingleTransfer(const AH_CUSTOMER *cu) {
 void AH_Customer_SetPreferSingleTransfer(AH_CUSTOMER *cu, int i) {
   assert(cu);
   cu->preferSingleTransfer=i;
+}
+
+
+
+int AH_Customer_GetPreferSingleDebitNote(const AH_CUSTOMER *cu) {
+  assert(cu);
+  return cu->preferSingleDebitNote;
+}
+
+
+
+void AH_Customer_SetPreferSingleDebitNote(AH_CUSTOMER *cu, int i) {
+  assert(cu);
+  cu->preferSingleDebitNote=i;
+}
+
+
+
+int AH_Customer_GetKeepAlive(const AH_CUSTOMER *cu) {
+  assert(cu);
+  return cu->keepAlive;
+}
+
+
+
+void AH_Customer_SetKeepAlive(AH_CUSTOMER *cu, int i) {
+  assert(cu);
+  cu->keepAlive=i;
 }
 
 

@@ -300,6 +300,13 @@ AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout) {
     return 0;
   }
 
+  /* close connection if wanted */
+  if (AH_Customer_GetKeepAlive(dlg->dialogOwner)==0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+               "Closing connection after reception");
+    GWEN_NetLayer_Disconnect(dlg->netLayer);
+  }
+
   /* cut off trailing zeroes */
   i=GWEN_Buffer_GetUsedBytes(tbuf);
   p=GWEN_Buffer_GetStart(tbuf);
@@ -591,10 +598,11 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
 			 "Cache-control", "no cache");
     GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "Content-type",
-			 "application/x-www-form-urlencoded");
+                         "application/x-www-form-urlencoded");
     GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "Connection",
-			 "keep-alive" /*"close"*/);
+                         "Connection",
+                         (AH_Customer_GetKeepAlive(dlg->dialogOwner))?
+                         "keep-alive":"close");
     s=AH_Customer_GetHttpUserAgent(dlg->dialogOwner);
     if (s)
       GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,

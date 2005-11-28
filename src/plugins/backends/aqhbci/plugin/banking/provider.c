@@ -386,7 +386,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeDebitNote:
     mj=0;
-    if (!AH_Customer_GetPreferSingleTransfer(mcu)) {
+    if (!AH_Customer_GetPreferSingleDebitNote(mcu)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
       /* create new job */
       mj=AH_Job_MultiDebitNote_new(mcu, ma);
@@ -671,7 +671,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeDebitNote:
     mj=0;
-    if (!AH_Customer_GetPreferSingleTransfer(mcu)) {
+    if (!AH_Customer_GetPreferSingleDebitNote(mcu)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
       mj=AH_Outbox_FindTransferJob(hp->outbox, mcu, ma, 0);
       if (mj) {

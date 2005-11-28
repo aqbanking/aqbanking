@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>EditCustomerUi</class>
 <widget class="QDialog">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>521</width>
-            <height>420</height>
+            <height>414</height>
         </rect>
     </property>
     <property name="caption">
@@ -64,10 +64,18 @@
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>preferSingleCheck</cstring>
+                        <cstring>preferSingleTransferCheck</cstring>
                     </property>
                     <property name="text">
                         <string>Prefer single transfers over multi transfers</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>preferSingleDebitNoteCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Prefer single debit notes over multi debit notes</string>
                     </property>
                 </widget>
             </vbox>
@@ -104,22 +112,9 @@
                         <string>HTTP User Agent</string>
                     </property>
                 </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel3_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>HTTP Host</string>
-                    </property>
-                </widget>
                 <widget class="QLineEdit" row="1" column="1">
                     <property name="name">
                         <cstring>userAgentEdit</cstring>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="2" column="1">
-                    <property name="name">
-                        <cstring>hostEdit</cstring>
                     </property>
                 </widget>
             </grid>
@@ -306,10 +301,10 @@
 </connections>
 <tabstops>
     <tabstop>fullNameEdit</tabstop>
-    <tabstop>preferSingleCheck</tabstop>
+    <tabstop>preferSingleTransferCheck</tabstop>
+    <tabstop>preferSingleDebitNoteCheck</tabstop>
     <tabstop>httpVersionCombo</tabstop>
     <tabstop>userAgentEdit</tabstop>
-    <tabstop>hostEdit</tabstop>
     <tabstop>bankSignCheck</tabstop>
     <tabstop>bankCounterCheck</tabstop>
     <tabstop>getServerKeysButton</tabstop>

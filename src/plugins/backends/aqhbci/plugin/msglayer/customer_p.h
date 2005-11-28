@@ -20,7 +20,6 @@
 struct AH_CUSTOMER {
   GWEN_LIST_ELEMENT(AH_CUSTOMER);
 
-
   AH_USER *user;
 
   int ignoreUPD;
@@ -48,10 +47,10 @@ struct AH_CUSTOMER {
 
   int httpVMajor;
   int httpVMinor;
-  char *httpHost;
   char *httpUserAgent;
   int preferSingleTransfer;
-
+  int preferSingleDebitNote;
+  int keepAlive;
 
 };
 

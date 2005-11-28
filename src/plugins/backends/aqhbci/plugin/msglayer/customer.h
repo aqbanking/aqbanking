@@ -134,12 +134,6 @@ void AH_Customer_SetHttpVMinor(AH_CUSTOMER *cu, int i);
 
 
 AQHBCI_API
-const char *AH_Customer_GetHttpHost(const AH_CUSTOMER *cu);
-AQHBCI_API
-void AH_Customer_SetHttpHost(AH_CUSTOMER *cu, const char *s);
-
-
-AQHBCI_API
 const char *AH_Customer_GetHttpUserAgent(const AH_CUSTOMER *cu);
 AQHBCI_API
 void AH_Customer_SetHttpUserAgent(AH_CUSTOMER *cu, const char *s);
@@ -186,6 +180,20 @@ AQHBCI_API
 int AH_Customer_GetPreferSingleTransfer(const AH_CUSTOMER *cu);
 AQHBCI_API
 void AH_Customer_SetPreferSingleTransfer(AH_CUSTOMER *cu, int i);
+
+
+AQHBCI_API
+int AH_Customer_GetPreferSingleDebitNote(const AH_CUSTOMER *cu);
+
+AQHBCI_API
+void AH_Customer_SetPreferSingleDebitNote(AH_CUSTOMER *cu, int i);
+
+
+AQHBCI_API
+int AH_Customer_GetKeepAlive(const AH_CUSTOMER *cu);
+
+AQHBCI_API
+void AH_Customer_SetKeepAlive(AH_CUSTOMER *cu, int i);
 
 
 AQHBCI_API
