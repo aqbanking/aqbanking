@@ -1282,6 +1282,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   GWEN_Buffer_Crop(buf, 0, pos);
 
   /* add local plugin paths */
+  /* Watch out: need to use "lib64" on x64 */
   GWEN_Buffer_AppendString(buf, "lib" DIRSEP "aqbanking" DIRSEP
                            "plugins" DIRSEP
                            AQBANKING_SO_EFFECTIVE_STR DIRSEP);
@@ -1377,6 +1378,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     GWEN_Buffer_AppendString(buf, ab->startFolder);
     GWEN_Buffer_AppendString(buf, DIRSEP);
   }
+  /* Watch out: need to use "lib64" on x64 */
   GWEN_Buffer_AppendString(buf, "lib" DIRSEP "gwenhywfar" DIRSEP
                            "plugin" DIRSEP
                            GWENHYWFAR_SO_EFFECTIVE_STR DIRSEP);
