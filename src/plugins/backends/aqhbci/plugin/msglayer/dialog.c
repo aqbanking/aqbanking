@@ -301,10 +301,12 @@ AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout) {
   }
 
   /* close connection if wanted */
-  if (AH_Customer_GetKeepAlive(dlg->dialogOwner)==0) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Closing connection after reception");
-    GWEN_NetLayer_Disconnect(dlg->netLayer);
+  if (GWEN_NetLayer_FindBaseLayer(dlg->netLayer, GWEN_NL_HTTP_NAME)) {
+    if (AH_Customer_GetKeepAlive(dlg->dialogOwner)==0) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		 "Closing connection after reception");
+      GWEN_NetLayer_Disconnect(dlg->netLayer);
+    }
   }
 
   /* cut off trailing zeroes */
