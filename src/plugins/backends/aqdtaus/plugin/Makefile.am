@@ -45,7 +45,7 @@ aqdtaus_la_LIBADD= \
   libaqdtaus.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-libaqdtaus_la_LDFLAGS = -no-undefined -module \
+libaqdtaus_la_LDFLAGS = -no-undefined \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 aqdtaus_la_LDFLAGS = -no-undefined -module \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
