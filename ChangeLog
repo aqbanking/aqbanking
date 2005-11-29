@@ -1,4 +1,8 @@
+2005-11-29   Christian Stimming <stimming@tuhh.de>
 
+	* */Makefile.am: Add -no-undefined to all library object
+	LDFLAGS. Required for cygwin/mingw, and doesn't harm for
+	everything else.
 
 2005/11/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -19,7 +19,7 @@ openhbci1_la_SOURCES=\
  openhbci1.c
 
 openhbci1_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-openhbci1_la_LDFLAGS=@STRIPALL@ -module -omit-version
+openhbci1_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 
 sources:

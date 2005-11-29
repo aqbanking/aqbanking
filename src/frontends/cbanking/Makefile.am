@@ -31,7 +31,7 @@ libcbanking_la_SOURCES=\
 
 libcbanking_la_LIBADD = \
   $(aqbanking_internal_libs) $(gwenhywfar_libs)
-libcbanking_la_LDFLAGS = $(STRIPALL) \
+libcbanking_la_LDFLAGS = -no-undefined $(STRIPALL) \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 

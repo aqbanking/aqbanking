@@ -49,7 +49,7 @@ libg2banking_la_LIBADD = \
  $(gwenhywfar_libs) \
  $(all_libraries)
 
-libg2banking_la_LDFLAGS =\
+libg2banking_la_LDFLAGS = -no-undefined \
   -version-info @G2BANKING_SO_CURRENT@:@G2BANKING_SO_REVISION@:@G2BANKING_SO_AGE@
 
 

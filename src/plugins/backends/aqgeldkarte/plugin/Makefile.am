@@ -46,7 +46,7 @@ libaqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) @chipcard_client_libs@
 aqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
    $(gwenhywfar_libs) @chipcard_client_libs@
-aqgeldkarte_la_LDFLAGS=-module \
+aqgeldkarte_la_LDFLAGS = -no-undefined -module \
   -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
 
 

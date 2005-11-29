@@ -45,7 +45,7 @@ libkbanking_la_LIBADD=\
  $(aqbanking_internal_libs) \
  $(kde3_libs) -lkdeui -lkdecore -lkio $(gwenhywfar_libs)
 
-libkbanking_la_LDFLAGS=\
+libkbanking_la_LDFLAGS = -no-undefined \
  -version-info @KBANKING_SO_CURRENT@:@KBANKING_SO_REVISION@:@KBANKING_SO_AGE@
 
 

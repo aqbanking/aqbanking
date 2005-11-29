@@ -13,7 +13,7 @@ us_la_SOURCES=\
  us.c
 
 us_la_LIBADD= $(aqbanking_internal_libs) ../generic/libbankinfo.la $(gwenhywfar_libs)
-us_la_LDFLAGS=@STRIPALL@ -module -omit-version
+us_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 
 sources:

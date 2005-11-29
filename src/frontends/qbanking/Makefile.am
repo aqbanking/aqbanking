@@ -54,7 +54,7 @@ libqbanking_la_LIBADD=\
  views/libviews.la \
  $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
 
-libqbanking_la_LDFLAGS=\
+libqbanking_la_LDFLAGS = -no-undefined \
  -version-info @QBANKING_SO_CURRENT@:@QBANKING_SO_REVISION@:@QBANKING_SO_AGE@
 
 

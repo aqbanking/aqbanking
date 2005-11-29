@@ -12,7 +12,7 @@ else
 plugin_DATA=pintan.xml
 endif
 
-pintan_la_LDFLAGS=-module -avoid-version
+pintan_la_LDFLAGS = -no-undefined -module -avoid-version
 pintan_la_LIBADD = $(gwenhywfar_libs)
 pintan_la_SOURCES=pintan.c
 

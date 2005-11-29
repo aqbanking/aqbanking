@@ -13,7 +13,7 @@ de_la_SOURCES=\
  de.c
 
 de_la_LIBADD= $(aqbanking_internal_libs) ../generic/libbankinfo.la @ktoblzcheck_libs@ $(gwenhywfar_libs)
-de_la_LDFLAGS=@STRIPALL@ -module -omit-version
+de_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 
 sources:

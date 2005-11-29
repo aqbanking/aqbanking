@@ -19,7 +19,7 @@ dtaus_la_SOURCES=\
  dtaus.c
 
 dtaus_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-dtaus_la_LDFLAGS=@STRIPALL@ -module -omit-version
+dtaus_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 
 sources:

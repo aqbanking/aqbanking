@@ -20,7 +20,7 @@ swift_la_SOURCES=\
  swift.c
 
 swift_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-swift_la_LDFLAGS=@STRIPALL@ -module -omit-version
+swift_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 
 sources:

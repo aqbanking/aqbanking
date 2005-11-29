@@ -24,7 +24,7 @@ ofx_la_SOURCES=\
  ofx.c
 
 ofx_la_LIBADD=$(aqbanking_internal_libs) -lofx $(gwenhywfar_libs) 
-ofx_la_LDFLAGS=@STRIPALL@ \
+ofx_la_LDFLAGS = -no-undefined @STRIPALL@ \
   -module -omit-version
 
 sources:

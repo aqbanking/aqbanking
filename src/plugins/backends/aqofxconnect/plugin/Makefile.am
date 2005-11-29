@@ -57,7 +57,7 @@ libaqofxconnect_la_LIBADD= $(aqbanking_internal_libs) \
   @LIBOFX_LIBS@ $(gwenhywfar_libs)
 aqofxconnect_la_LIBADD=$(aqbanking_internal_libs) \
   @LIBOFX_LIBS@ $(gwenhywfar_libs)
-aqofxconnect_la_LDFLAGS=-module \
+aqofxconnect_la_LDFLAGS = -no-undefined -module \
   -version-info @AQOFXCONNECT_SO_CURRENT@:@AQOFXCONNECT_SO_REVISION@:@AQOFXCONNECT_SO_AGE@
 
 

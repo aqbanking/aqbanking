@@ -21,7 +21,7 @@ eri_la_SOURCES=\
  eri.c
 
 eri_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-eri_la_LDFLAGS=@STRIPALL@ -module -omit-version
+eri_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 sources:
 	for f in $(eri_la_SOURCES); do \

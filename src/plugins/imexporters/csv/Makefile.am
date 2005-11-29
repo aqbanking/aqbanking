@@ -22,7 +22,7 @@ csv_la_SOURCES=\
  csv.c
 
 csv_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-csv_la_LDFLAGS=@STRIPALL@ -module -omit-version
+csv_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
 
 sources:
 	for f in $(csv_la_SOURCES); do \

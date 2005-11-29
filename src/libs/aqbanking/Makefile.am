@@ -73,7 +73,7 @@ libaqbanking_la_LIBADD= $(gwenhywfar_libs) \
  jobs/libjobs.la \
  types/libtypes.la
 
-libaqbanking_la_LDFLAGS=\
+libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 

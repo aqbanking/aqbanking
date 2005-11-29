@@ -51,7 +51,7 @@ libaqhbci_la_LIBADD = \
   $(gwenhywfar_libs)
 
 
-libaqhbci_la_LDFLAGS=\
+libaqhbci_la_LDFLAGS = -no-undefined \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
@@ -61,7 +61,7 @@ aqhbci_la_LIBADD = \
   $(aqhbci_internal_libs) \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-aqhbci_la_LDFLAGS=-module \
+aqhbci_la_LDFLAGS = -no-undefined -module \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
