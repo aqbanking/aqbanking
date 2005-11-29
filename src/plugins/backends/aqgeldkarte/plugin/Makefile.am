@@ -37,15 +37,18 @@ libaqgeldkarte_la_SOURCES= \
  provider.c
 
 aqgeldkarte_la_SOURCES= \
- account.c \
- card.c \
- provider.c \
  aqgeldkarte-plugin.c
 
 libaqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) @chipcard_client_libs@
-aqgeldkarte_la_LIBADD= $(aqbanking_internal_libs) \
-   $(gwenhywfar_libs) @chipcard_client_libs@
+  $(chipcard_client_libs) \
+  $(gwenhywfar_libs)
+aqgeldkarte_la_LIBADD= \
+  libaqgeldkarte.la \
+  $(aqbanking_internal_libs) \
+  $(chipcard_client_libs) \
+  $(gwenhywfar_libs)
+libaqgeldkarte_la_LDFLAGS = -no-undefined -module \
+  -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
 aqgeldkarte_la_LDFLAGS = -no-undefined -module \
   -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
 

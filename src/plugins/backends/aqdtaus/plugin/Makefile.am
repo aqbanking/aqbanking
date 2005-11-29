@@ -38,13 +38,15 @@ libaqdtaus_la_SOURCES= \
  provider.c
 
 aqdtaus_la_SOURCES= \
- account.c \
- job.c \
- provider.c \
  aqdtaus-plugin.c
 
 libaqdtaus_la_LIBADD= $(aqbanking_internal_libs) $(gwenhywfar_libs)
-aqdtaus_la_LIBADD= $(aqbanking_internal_libs) $(gwenhywfar_libs)
+aqdtaus_la_LIBADD= \
+  libaqdtaus.la \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+libaqdtaus_la_LDFLAGS = -no-undefined -module \
+  -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 aqdtaus_la_LDFLAGS = -no-undefined -module \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
 

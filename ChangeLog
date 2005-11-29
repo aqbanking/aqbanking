@@ -1,3 +1,10 @@
+2005-11-29   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqgeldkarte/plugin/Makefile.am,
+	src/plugins/backends/aqdtaus/plugin/Makefile.am: Include source
+	objects only into libbla.so; link the plugin bla.so against that
+	lib.
+
 2005/11/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was closing connections even for real HBCI)
