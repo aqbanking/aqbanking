@@ -1,10 +1,13 @@
-
 2005/11/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was closing connections even for real HBCI)
 
 
 2005-11-29   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqofxconnect/plugin/Makefile.am: Include
+	source objects only into libaqofxconnect; link the plugin
+	aqofxconnect.so against that libaqofxconnect.so.
 
 	* */Makefile.am: Add -no-undefined to all library object
 	LDFLAGS. Required for cygwin/mingw, and doesn't harm for
