@@ -18,7 +18,7 @@
 #include <aqbanking/jobmodifysto.h>
 
 
-void AB_JobModifyStandingOrder_SetFieldLimits(AB_JOB *j,
+AQBANKING_API void AB_JobModifyStandingOrder_SetFieldLimits(AB_JOB *j,
                                               AB_TRANSACTION_LIMITS *limits);
 AB_JOB *AB_JobModifyStandingOrder_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_JobModifyStandingOrder_toDb(const AB_JOB *j, GWEN_DB_NODE *db);

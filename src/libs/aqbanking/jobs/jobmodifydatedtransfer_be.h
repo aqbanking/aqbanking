@@ -18,7 +18,7 @@
 #include <aqbanking/jobmodifydatedtransfer.h>
 
 
-void AB_JobModifyDatedTransfer_SetFieldLimits(AB_JOB *j,
+AQBANKING_API void AB_JobModifyDatedTransfer_SetFieldLimits(AB_JOB *j,
                                               AB_TRANSACTION_LIMITS *limits);
 AB_JOB *AB_JobModifyDatedTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_JobModifyDatedTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
