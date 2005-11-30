@@ -9,7 +9,6 @@ BUILT_SOURCES = version.h
 
 CLEANFILES = $(BUILT_SOURCES) hbci.xml
 
-
 plugindir= $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqhbci.la
 if IS_WINDOWS
@@ -47,123 +46,40 @@ libaqhbci_la_LIBADD = \
   accountjobs/libhbciaccjobs.la \
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
-  -L$(top_builddir)/src/libs/aqbanking $(aqbanking_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-
 
 libaqhbci_la_LDFLAGS = -no-undefined \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
 aqhbci_la_SOURCES=aqhbci-plugin.c
-#aqhbci_la_SOURCES=dummy.c
 aqhbci_la_LIBADD = \
-  $(aqhbci_internal_libs) \
+  libaqhbci.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
+
 aqhbci_la_LDFLAGS = -no-undefined -module \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
-# dll stuff
+# Add the linker flags for windows resource file
+libaqhbci_la_DEPENDENCIES = msglayer/libhbcimsg.la \
+  joblayer/libhbcijob.la accountjobs/libhbciaccjobs.la \
+  applayer/libhbciapp.la banking/libhbcibanking.la \
+  $(aqbanking_internal_libs)
+aqhbci_la_DEPENDENCIES = libaqhbci.la $(aqbanking_internal_libs)
+# if IS_WINDOWS
 if IS_WINDOWS
-
-# you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = aqhbci32_$(AQHBCI_SO_EFFECTIVE)
-DLLLDLIBS = \
-  $(aqbanking_internal_libs) \
-  -L/mingw/lib $(gwenhywfar_libs)
-DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
-
-PLUGIN_LIBRARY_NAME = aqhbci
-
-###------------------------------------------------------------------------
-# You should not have to make any modifications below this point
-#
-
-DLLNAME = $(LIBRARY_NAME).dll
-DLLEXP_LIB = $(LIBRARY_NAME).lib
-DLLEXP_DEF = $(LIBRARY_NAME).def
-DLLSRC_LIB = $(lib_LTLIBRARIES:.la=.a)
-DLLSRC_LIBLA = $(lib_LTLIBRARIES)
-
-PLUGIN_DLLNAME = $(PLUGIN_LIBRARY_NAME).dll
-PLUGIN_DLLEXP_LIB = $(PLUGIN_LIBRARY_NAME).lib
-PLUGIN_DLLEXP_DEF = $(PLUGIN_LIBRARY_NAME).def
-PLUGIN_DLLSRC_LIB = $(plugin_LTLIBRARIES:.la=.a)
-PLUGIN_DLLSRC_LIBLA = $(plugin_LTLIBRARIES)
-
-DLLTOOL=dlltool
-DLLWRAP=dllwrap
-WINDRES=windres
-
-# Variables so that the DLL and the LIB are installed correctly
-dlldir = $(WIN_PATH_WINDOWS_MINGW)
-dll_SCRIPTS = $(DLLNAME)
-dlllibdir = $(libdir)
-dlllib_SCRIPTS = $(DLLEXP_LIB) $(PLUGIN_DLLEXP_LIB)
-# The PLUGIN_DLLNAME is already installed by plugin_DATA above.
-
+libaqhbci_la_DEPENDENCIES += ressource.o
+aqhbci_la_DEPENDENCIES += ressource.o
+libaqhbci_la_LDFLAGS += -Wl,ressource.o
+aqhbci_la_LDFLAGS += -Wl,ressource.o
 ressource.o: ressource.rc
-	$(WINDRES) -i $< -o $@
-
-
-# This target contains an ugly hack: Unfortunately the *.a files don't 
-# include object files from the current level. so we have to copy them
-# manually. However, the object file aqhbci-plugin.o must not be copied
-# for the library dll but only for the plugin dll. So for now we just
-# delete the file aqhbci-plugin.o from dlldir...
-$(DLLNAME): $(DLLSRC_LIBLA) ressource.o
-	if test -d dlldir; then rm -rf dlldir; fi
-	mkdir -p dlldir && \
-	( \
-	  if test -r $(DLLSRC_LIB); then \
-	    SRCLIB=$(DLLSRC_LIB); \
-	  else \
-	    SRCLIB=.libs/$(DLLSRC_LIB); \
-	  fi; \
-	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
-	  rm -f dlldir/aqhbci-plugin.o 2>/dev/null; \
-	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 $(DLLTOOL) -e ../exports.o *.o && \
-	 $(DLLWRAP) \
-	   --export-all \
-	   --output-def ../$(DLLEXP_DEF) \
-	   --implib ../$(DLLEXP_LIB) \
-	   --driver-name $(CC) \
-	   -o ../$(DLLNAME) \
-	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) $(DLLLDLIBS) \
-	) \
-	&& rm -rf dlldir
-
-$(PLUGIN_DLLNAME): $(PLUGIN_DLLSRC_LIBLA) ressource.o $(DLLNAME)
-	if test -d dlldir; then rm -rf dlldir; fi
-	mkdir -p dlldir && \
-	( \
-	  if test -r $(PLUGIN_DLLSRC_LIB); then \
-	    SRCLIB=$(PLUGIN_DLLSRC_LIB); \
-	  else \
-	    SRCLIB=.libs/$(PLUGIN_DLLSRC_LIB); \
-	  fi; \
-	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
-	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 $(DLLTOOL) -e ../exports.o *.o && \
-	 $(DLLWRAP) \
-	   --export-all \
-	   --output-def ../$(PLUGIN_DLLEXP_DEF) \
-	   --implib ../$(PLUGIN_DLLEXP_LIB) \
-	   --driver-name $(CC) \
-	   -o ../$(PLUGIN_DLLNAME) \
-	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) $(aqhbci_internal_libs) $(DLLLDLIBS) \
-	) \
-	&& rm -rf dlldir
-
-CLEANFILES += $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
-
+	$(RC) -o $@ $<
 endif
 # IS_WINDOWS
+# End of linker flags for windows resource file
 
 built_sources: $(BUILT_SOURCES)
 

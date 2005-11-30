@@ -62,6 +62,21 @@ aqofxconnect_la_LIBADD = \
 aqofxconnect_la_LDFLAGS = -no-undefined -module \
   -version-info $(AQOFXCONNECT_SO_CURRENT):$(AQOFXCONNECT_SO_REVISION):$(AQOFXCONNECT_SO_AGE)
 
+# Add the linker flags for windows resource file
+libaqofxconnect_la_DEPENDENCIES = $(aqbanking_internal_libs)
+aqofxconnect_la_DEPENDENCIES = libaqofxconnect.la $(aqbanking_internal_libs)
+# if IS_WINDOWS
+if IS_WINDOWS
+libaqofxconnect_la_DEPENDENCIES += ressource.o
+aqofxconnect_la_DEPENDENCIES += ressource.o
+libaqofxconnect_la_LDFLAGS += -Wl,ressource.o
+aqofxconnect_la_LDFLAGS += -Wl,ressource.o
+ressource.o: ressource.rc
+	$(RC) -o $@ $<
+endif
+# IS_WINDOWS
+# End of linker flags for windows resource file
+
 
 sources:
 	for f in $(libaqofxconnect_la_SOURCES) $(aqofxconnect_la_SOURCES); do \

@@ -94,9 +94,15 @@ dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
 
 CLEANFILES = $(at_files) $(ch_files) $(de_files) $(us_files)
 
+if IS_WINDOWS
+# Doesn't link on windows; too lazy to fix this for now.
+noinst_PROGRAMS=
+else
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c
 mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
+endif
+# IS_WINDOWS
 
 sources:
 	for f in $(libbankinfo_la_SOURCES); do \

@@ -87,6 +87,21 @@ dist-hook:
 	  done \
 	fi
 
+# Add the linker flags for windows resource file
+libg2banking_la_DEPENDENCIES = \
+ views/libviews.la \
+ widgets/libwidgets.la \
+ dialogs/libdialogs.la \
+ $(aqbanking_internal_libs)
+# if IS_WINDOWS
+if IS_WINDOWS
+libg2banking_la_DEPENDENCIES += ressource.o
+libg2banking_la_LDFLAGS += -Wl,ressource.o
+ressource.o: ressource.rc
+	$(RC) -o $@ $<
+endif
+# IS_WINDOWS
+# End of linker flags for windows resource file
 
 sources:
 	for f in $(libg2banking_la_SOURCES); do \
@@ -101,69 +116,6 @@ sources:
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
 testlib_LDADD = libg2banking.la
-
-
-# dll stuff
-if IS_WINDOWS
-
-# you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = g2banking32_$(G2BANKING_SO_EFFECTIVE)
-DLLLDLIBS = $(aqbanking_internal_libs) -L/mingw/lib $(gwenhywfar_libs)
-
-DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
-
-
-###------------------------------------------------------------------------
-# You should not have to make any modifications below this point
-#
-
-DLLNAME = $(LIBRARY_NAME).dll
-DLLEXP_LIB = $(LIBRARY_NAME).lib
-DLLEXP_DEF = $(LIBRARY_NAME).def
-DLLSRC_LIB = $(lib_LTLIBRARIES:.la=.a)
-DLLSRC_LIBLA = $(lib_LTLIBRARIES)
-
-DLLTOOL=dlltool
-DLLWRAP=dllwrap
-WINDRES=windres
-
-# Variables so that the DLL and the LIB are installed correctly
-dlldir = $(WIN_PATH_WINDOWS_MINGW)
-dll_SCRIPTS = $(DLLNAME)
-dlllibdir = $(libdir)
-dlllib_SCRIPTS = $(DLLEXP_LIB)
-
-ressource.o: ressource.rc
-	$(WINDRES) -i $< -o $@
-
-
-$(DLLNAME) $(DLLEXP_LIB): $(DLLSRC_LIBLA) ressource.o
-	mkdir -p dlldir && \
-	( \
-	  if test -r $(DLLSRC_LIB); then \
-	    SRCLIB=$(DLLSRC_LIB); \
-	  else \
-	    SRCLIB=.libs/$(DLLSRC_LIB); \
-	  fi; \
-	  if ls .libs/*.o 2>/dev/null; then cp .libs/*.o dlldir; fi ; \
-	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 $(DLLTOOL) -e ../exports.o *.o && \
-	 $(DLLWRAP) \
-	   --export-all \
-	   --output-def ../$(DLLEXP_DEF) \
-	   --implib ../$(DLLEXP_LIB) \
-	   --driver-name $(CC) \
-	   -o ../$(DLLNAME) \
-	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) $(DLLLDLIBS) \
-	) \
-	&& rm -rf dlldir
-
-CLEANFILES += $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF) $(BUILT_SOURCES)
-
-endif
-# IS_WINDOWS
-
 
 CLEANFILES += $(BUILT_SOURCES)
 
