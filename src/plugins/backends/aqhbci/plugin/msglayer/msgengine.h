@@ -28,6 +28,7 @@ typedef struct AH_MSGENGINE AH_MSGENGINE;
 extern "C" {
 #endif
 
+AQHBCI_API
 GWEN_MSGENGINE *AH_MsgEngine_new();
 
 

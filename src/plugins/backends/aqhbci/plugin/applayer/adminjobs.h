@@ -32,8 +32,11 @@ extern "C" {
  */
 
 
+AQHBCI_API
 AH_JOB *AH_Job_GetKeys_new(AH_CUSTOMER *cu);
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Job_GetKeys_GetSignKey(const AH_JOB *j);
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
 
 
@@ -47,6 +50,7 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
  */
 
 
+AQHBCI_API
 AH_JOB *AH_Job_SendKeys_new(AH_CUSTOMER *cu,
                             const GWEN_CRYPTKEY *cryptKey,
                             const GWEN_CRYPTKEY *signKey);
@@ -62,8 +66,10 @@ AH_JOB *AH_Job_SendKeys_new(AH_CUSTOMER *cu,
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
+AQHBCI_API
 AH_JOB *AH_Job_GetSysId_new(AH_CUSTOMER *cu);
 
+AQHBCI_API
 const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
 
 
@@ -77,6 +83,7 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
+AQHBCI_API
 AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu);
 
 /**
@@ -87,6 +94,7 @@ AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu);
  * inspected by the application (most likely the setup wizard).
  * You can not use any of these accounts directly for account jobs !
  */
+AQHBCI_API
 AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
 
 /**
@@ -99,6 +107,7 @@ AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
  * inspected by the application (most likely the setup wizard).
  * You can not use any of these accounts directly for account jobs !
  */
+AQHBCI_API
 AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j);
 
 
@@ -121,7 +130,9 @@ typedef enum {
 } AH_JOB_TESTVERSION_RESULT;
 
 
+AQHBCI_API
 AH_JOB *AH_Job_TestVersion_new(AH_CUSTOMER *cu, int anon);
+AQHBCI_API
 AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
 
 
@@ -132,9 +143,11 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
+AQHBCI_API
 AH_JOB *AH_Job_GetStatus_new(AH_CUSTOMER *cu,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate);
+AQHBCI_API
 AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
 
 

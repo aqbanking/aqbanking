@@ -46,18 +46,25 @@ extern "C" {
 #endif
 
 
+AQHBCI_API
 AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci);
+AQHBCI_API
 void AH_Outbox_free(AH_OUTBOX *ob);
+AQHBCI_API
 void AH_Outbox_Attach(AH_OUTBOX *ob);
 
+AQHBCI_API
 void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
+AQHBCI_API
 void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj);
 
 /* makes all jobs commit their data */
+AQHBCI_API
 void AH_Outbox_Commit(AH_OUTBOX *ob);
 
 
 /* makes all jobs process their data */
+AQHBCI_API
 void AH_Outbox_Process(AH_OUTBOX *ob);
 
 /* makes all jobs commit their system data (only calls
@@ -65,16 +72,21 @@ void AH_Outbox_Process(AH_OUTBOX *ob);
  * like account data, bank parameter data etc according to the flags in
  * @ref AH_HBCIClient).
  */
+AQHBCI_API
 void AH_Outbox_CommitSystemData(AH_OUTBOX *ob);
 
 
+AQHBCI_API
 unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob);
+AQHBCI_API
 unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob);
 
 
+AQHBCI_API
 int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount);
 
 
+AQHBCI_API
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
                                   AH_CUSTOMER *cu,
                                   AH_ACCOUNT *a,

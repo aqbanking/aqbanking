@@ -180,6 +180,7 @@ int AH_Medium_GetTokenIdData(AH_MEDIUM *m, GWEN_BUFFER *buf);
 AQHBCI_API
 int AH_Medium_SelectContext(AH_MEDIUM *m, int idx);
 
+AQHBCI_API
 AH_MEDIUM_CTX *AH_Medium_GetCurrentContext(AH_MEDIUM *m);
 
 AQHBCI_API
@@ -383,16 +384,25 @@ int AH_Medium_SetTanStatus(AH_MEDIUM *m,
 /*@}*/ /* defgroup */
 
 
+AQHBCI_API
 int AH_Medium_CreateKeys(AH_MEDIUM *m);
 
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Medium_GetLocalPubSignKey(AH_MEDIUM *m);
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Medium_GetLocalPubCryptKey(AH_MEDIUM *m);
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Medium_GetPubSignKey(AH_MEDIUM *m);
+AQHBCI_API
 GWEN_CRYPTKEY *AH_Medium_GetPubCryptKey(AH_MEDIUM *m);
+AQHBCI_API
 int AH_Medium_SetPubSignKey(AH_MEDIUM *m, const GWEN_CRYPTKEY *key);
+AQHBCI_API
 int AH_Medium_SetPubCryptKey(AH_MEDIUM *m, const GWEN_CRYPTKEY *key);
 
+AQHBCI_API
 int AH_Medium_ResetServerKeys(AH_MEDIUM *m);
+AQHBCI_API
 int AH_Medium_ResetUserKeys(AH_MEDIUM *m);
 
 

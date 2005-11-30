@@ -48,89 +48,138 @@ GWEN_LIST_FUNCTION_LIB_DEFS(AH_BPD_ADDR, AH_BpdAddr, AQHBCI_API);
 GWEN_LIST2_FUNCTION_LIB_DEFS(AH_BPD_ADDR, AH_BpdAddr, AQHBCI_API);
 
 
+AQHBCI_API
 AH_BPD *AH_Bpd_new();
+AQHBCI_API
 void AH_Bpd_free(AH_BPD *bpd);
+AQHBCI_API
 AH_BPD *AH_Bpd_dup(const AH_BPD *oldBpd);
 
+AQHBCI_API
 AH_BPD *AH_Bpd_FromDb(GWEN_DB_NODE *db);
+AQHBCI_API
 int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db);
 
 
+AQHBCI_API
 int AH_Bpd_GetBpdVersion(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetBpdVersion(AH_BPD *bpd, int i);
+AQHBCI_API
 GWEN_DB_NODE *AH_Bpd_GetBpdJobs(const AH_BPD *bpd, int hbciVersion);
+AQHBCI_API
 void AH_Bpd_SetBpdJobs(AH_BPD *bpd,
                        GWEN_DB_NODE *n);
+AQHBCI_API
 void AH_Bpd_ClearBpdJobs(AH_BPD *bpd);
 
+AQHBCI_API
 int AH_Bpd_GetJobTypesPerMsg(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetJobTypesPerMsg(AH_BPD *bpd, int i);
 
+AQHBCI_API
 int AH_Bpd_GetMaxMsgSize(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetMaxMsgSize(AH_BPD *bpd, int i);
 
 /**
  * Returns a NULL terminated list of HBCI versions supported by the server.
  */
+AQHBCI_API
 const int *AH_Bpd_GetHbciVersions(const AH_BPD *bpd);
+AQHBCI_API
 int AH_Bpd_AddHbciVersion(AH_BPD *bpd, int i);
+AQHBCI_API
 void AH_Bpd_ClearHbciVersions(AH_BPD *bpd);
 
 /**
  * Returns a NULL terminated list of languages supported by the server.
  */
+AQHBCI_API
 const int *AH_Bpd_GetLanguages(const AH_BPD *bpd);
+AQHBCI_API
 int AH_Bpd_AddLanguage(AH_BPD *bpd, int i);
+AQHBCI_API
 void AH_Bpd_ClearLanguages(AH_BPD *bpd);
 
 
+AQHBCI_API
 const char *AH_Bpd_GetBankAddr(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetBankAddr(AH_BPD *bpd, const char *addr);
 
+AQHBCI_API
 int AH_Bpd_GetBankPort(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetBankPort(AH_BPD *bpd, int p);
 
+AQHBCI_API
 AH_BPD_ADDR_TYPE AH_Bpd_GetAddrType(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetAddrType(AH_BPD *bpd, AH_BPD_ADDR_TYPE i);
 
+AQHBCI_API
 const char *AH_Bpd_GetBankName(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetBankName(AH_BPD *bpd, const char *s);
 
 
+AQHBCI_API
 int AH_Bpd_IsDirty(const AH_BPD *bpd);
+AQHBCI_API
 void AH_Bpd_SetIsDirty(AH_BPD *bpd,
                        int dirty);
 
+AQHBCI_API
 void AH_Bpd_Dump(const AH_BPD *bpd, FILE *f, int insert);
 
+AQHBCI_API
 void AH_Bpd_ClearAddr(AH_BPD *bpd);
 /** takes over ownership of the given BPD address */
+AQHBCI_API
 void AH_Bpd_AddAddr(AH_BPD *bpd, AH_BPD_ADDR *ba);
 
+AQHBCI_API
 AH_BPD_ADDR_LIST *AH_Bpd_GetAddrList(const AH_BPD *bpd);
 
 
 
+AQHBCI_API
 AH_BPD_ADDR *AH_BpdAddr_new();
+AQHBCI_API
 void AH_BpdAddr_free(AH_BPD_ADDR *ba);
+AQHBCI_API
 AH_BPD_ADDR *AH_BpdAddr_dup(const AH_BPD_ADDR *ba);
 
+AQHBCI_API
 AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db);
+AQHBCI_API
 int AH_BpdAddr_ToDb(const AH_BPD_ADDR *ba, GWEN_DB_NODE *db);
 
+AQHBCI_API
 AH_BPD_ADDR_TYPE AH_BpdAddr_GetType(const AH_BPD_ADDR *ba);
+AQHBCI_API
 void AH_BpdAddr_SetType(AH_BPD_ADDR *ba, AH_BPD_ADDR_TYPE t);
 
+AQHBCI_API
 const char *AH_BpdAddr_GetAddr(const AH_BPD_ADDR *ba);
+AQHBCI_API
 void AH_BpdAddr_SetAddr(AH_BPD_ADDR *ba, const char *s);
 
+AQHBCI_API
 const char *AH_BpdAddr_GetSuffix(const AH_BPD_ADDR *ba);
+AQHBCI_API
 void AH_BpdAddr_SetSuffix(AH_BPD_ADDR *ba, const char *s);
 
+AQHBCI_API
 AH_BPD_FILTER_TYPE AH_BpdAddr_GetFType(const AH_BPD_ADDR *ba);
+AQHBCI_API
 void AH_BpdAddr_SetFType(AH_BPD_ADDR *ba, AH_BPD_FILTER_TYPE t);
 
+AQHBCI_API
 int AH_BpdAddr_GetFVersion(const AH_BPD_ADDR *ba);
+AQHBCI_API
 void AH_BpdAddr_SetFVersion(AH_BPD_ADDR *ba, int i);
 
 

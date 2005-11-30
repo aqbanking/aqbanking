@@ -92,7 +92,9 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
  *
  */
 /*@{*/
+AQHBCI_API
 void AH_Job_free(AH_JOB *j);
+AQHBCI_API
 void AH_Job_Attach(AH_JOB *j);
 
 /*@}*/
@@ -102,31 +104,49 @@ void AH_Job_Attach(AH_JOB *j);
  *
  */
 /*@{*/
+AQHBCI_API
 const char *AH_Job_GetName(const AH_JOB *j);
+AQHBCI_API
 const char *AH_Job_GetAccountId(const AH_JOB *j);
+AQHBCI_API
 const char *AH_Job_GetDescription(const AH_JOB *j);
 
+AQHBCI_API
 int AH_Job_GetMinSignatures(const AH_JOB *j);
+AQHBCI_API
 int AH_Job_GetJobsPerMsg(const AH_JOB *j);
 
+AQHBCI_API
 AH_CUSTOMER *AH_Job_GetCustomer(const AH_JOB *j);
 
+AQHBCI_API
 GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j);
+AQHBCI_API
 GWEN_DB_NODE *AH_Job_GetArguments(const AH_JOB *j);
+AQHBCI_API
 GWEN_DB_NODE *AH_Job_GetResponses(const AH_JOB *j);
 
+AQHBCI_API
 unsigned int AH_Job_GetMsgNum(const AH_JOB *j);
+AQHBCI_API
 const char *AH_Job_GetDialogId(const AH_JOB *j);
 
+AQHBCI_API
 AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j);
+AQHBCI_API
 const char *AH_Job_StatusName(AH_JOB_STATUS st);
 
+AQHBCI_API
 void AH_Job_AddSigner(AH_JOB *j, const char *s);
 
+AQHBCI_API
 int AH_Job_HasWarnings(const AH_JOB *j);
+AQHBCI_API
 int AH_Job_HasErrors(const AH_JOB *j);
 
+AQHBCI_API
 AH_RESULT_LIST *AH_Job_GetSegResults(const AH_JOB *j);
+AQHBCI_API
 AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
 
 /*@}*/
@@ -136,10 +156,13 @@ AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
  *
  */
 /*@{*/
+AQHBCI_API
 int AH_Job_Process(AH_JOB *j);
+AQHBCI_API
 int AH_Job_Commit(AH_JOB *j);
 /** exchanges data between the HBCI job and the banking job
  */
+AQHBCI_API
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj, AH_JOB_EXCHANGE_MODE m);
 
 
@@ -148,6 +171,7 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj, AH_JOB_EXCHANGE_MODE m);
  * additionally let the job do some basic stuff (like saving UPD, BPD,
  * messages etc).
  */
+AQHBCI_API
 int AH_Job_CommitSystemData(AH_JOB *j);
 
 
@@ -156,12 +180,14 @@ int AH_Job_CommitSystemData(AH_JOB *j);
  * additionally let the job do some basic stuff (like catching UPD, BPD,
  * messages etc).
  */
+AQHBCI_API
 int AH_Job_DefaultProcessHandler(AH_JOB *j);
 
 /**
  * You can use this from the Commit function of the inheriting class.
  * It calls @ref AH_Job_CommitSystemData.
  */
+AQHBCI_API
 int AH_Job_DefaultCommitHandler(AH_JOB *j);
 /*@}*/
 
@@ -171,15 +197,21 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j);
  *
  */
 /*@{*/
+AQHBCI_API
 void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f);
+AQHBCI_API
 void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f);
+AQHBCI_API
 void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f);
+AQHBCI_API
 void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
 /*@}*/
 
 
+AQHBCI_API
 void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert);
 
+AQHBCI_API
 const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j);
 
 
