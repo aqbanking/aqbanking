@@ -67,8 +67,11 @@ typedef AB_BANKINFO_CHECKRESULT
  *
  */
 /*@{*/
+AQBANKING_API
 AB_BANKINFO_PLUGIN *AB_BankInfoPlugin_new(const char *country);
+AQBANKING_API
 void AB_BankInfoPlugin_free(AB_BANKINFO_PLUGIN *bip);
+AQBANKING_API
 void AB_BankInfoPlugin_Attach(AB_BANKINFO_PLUGIN *bip);
 /*@}*/
 
@@ -79,6 +82,7 @@ void AB_BankInfoPlugin_Attach(AB_BANKINFO_PLUGIN *bip);
  */
 /*@{*/
 
+AQBANKING_API
 const char *AB_BankInfoPlugin_GetCountry(const AB_BANKINFO_PLUGIN *bip);
 /*@}*/
 
@@ -88,14 +92,17 @@ const char *AB_BankInfoPlugin_GetCountry(const AB_BANKINFO_PLUGIN *bip);
  *
  */
 /*@{*/
+AQBANKING_API
 AB_BANKINFO *AB_BankInfoPlugin_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
                                            const char *branchId,
                                            const char *bankId);
 
+AQBANKING_API
 int AB_BankInfoPlugin_GetBankInfoByTemplate(AB_BANKINFO_PLUGIN *bip,
                                             AB_BANKINFO *tbi,
                                             AB_BANKINFO_LIST2 *bl);
 
+AQBANKING_API
 AB_BANKINFO_CHECKRESULT
   AB_BankInfoPlugin_CheckAccount(AB_BANKINFO_PLUGIN *bip,
                                  const char *branchId,
@@ -108,10 +115,13 @@ AB_BANKINFO_CHECKRESULT
  *
  */
 /*@{*/
+AQBANKING_API
 void AB_BankInfoPlugin_SetGetBankInfoFn(AB_BANKINFO_PLUGIN *bip,
                                         AB_BANKINFOPLUGIN_GETBANKINFO_FN f);
+AQBANKING_API
 void AB_BankInfoPlugin_SetGetBankInfoByTemplateFn(AB_BANKINFO_PLUGIN *bip,
                                                   AB_BANKINFOPLUGIN_GETBANKINFOBYTMPLATE_FN f);
+AQBANKING_API
 void AB_BankInfoPlugin_SetCheckAccountFn(AB_BANKINFO_PLUGIN *bip,
                                          AB_BANKINFOPLUGIN_CHECKACCOUNT_FN f);
 /*@}*/
