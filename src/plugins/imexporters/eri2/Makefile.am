@@ -7,7 +7,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=eri2.la
 if IS_WINDOWS
-imexporterplugin_DATA=eri2.xml eri2.dll
+imexporterplugin_DATA=eri2.xml 
 else
 imexporterplugin_DATA=eri2.xml
 endif

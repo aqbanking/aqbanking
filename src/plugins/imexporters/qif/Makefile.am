@@ -7,7 +7,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=qif.la
 if IS_WINDOWS
-imexporterplugin_DATA=qif.xml qif.dll
+imexporterplugin_DATA=qif.xml 
 else
 imexporterplugin_DATA=qif.xml
 endif

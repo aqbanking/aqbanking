@@ -7,7 +7,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=dtaus.la
 if IS_WINDOWS
-imexporterplugin_DATA=dtaus.xml dtaus.dll
+imexporterplugin_DATA=dtaus.xml 
 else
 imexporterplugin_DATA=dtaus.xml
 endif

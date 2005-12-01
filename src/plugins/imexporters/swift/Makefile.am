@@ -8,7 +8,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=swift.la
 if IS_WINDOWS
-imexporterplugin_DATA=swift.xml swift.dll
+imexporterplugin_DATA=swift.xml 
 else
 imexporterplugin_DATA=swift.xml
 endif

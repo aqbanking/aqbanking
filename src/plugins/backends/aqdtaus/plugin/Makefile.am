@@ -10,7 +10,7 @@ EXTRA_DIST=aqdtaus.xml.in
 plugindir=@aqbanking_plugindir@/providers
 plugin_LTLIBRARIES=aqdtaus.la
 if IS_WINDOWS
-plugin_DATA = aqdtaus.xml aqdtaus.dll
+plugin_DATA = aqdtaus.xml 
 else
 plugin_DATA=aqdtaus.xml
 endif

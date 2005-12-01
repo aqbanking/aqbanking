@@ -7,7 +7,7 @@ noinst_HEADERS=pintan_p.h
 plugindir = $(gwenhywfar_plugins)/crypttoken
 plugin_LTLIBRARIES=pintan.la
 if IS_WINDOWS
-plugin_DATA=pintan.xml pintan.dll
+plugin_DATA=pintan.xml 
 else
 plugin_DATA=pintan.xml
 endif

@@ -3,7 +3,7 @@ EXTRA_DIST=README
 
 dbioplugindir = $(gwenhywfar_plugins)/dbio
 if IS_WINDOWS
-dbioplugin_DATA=swift.xml swift.dll
+dbioplugin_DATA=swift.xml 
 else
 dbioplugin_DATA=swift.xml
 endif

@@ -7,7 +7,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=openhbci1.la
 if IS_WINDOWS
-imexporterplugin_DATA=openhbci1.xml openhbci1.dll
+imexporterplugin_DATA=openhbci1.xml 
 else
 imexporterplugin_DATA=openhbci1.xml
 endif

@@ -5,7 +5,7 @@ dbioplugindir = $(gwenhywfar_plugins)/dbio
 
 dbioplugin_LTLIBRARIES=dtaus.la
 if IS_WINDOWS
-dbioplugin_DATA=dtaus.xml dtaus.dll
+dbioplugin_DATA=dtaus.xml 
 else
 dbioplugin_DATA=dtaus.xml
 endif

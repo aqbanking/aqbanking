@@ -9,7 +9,7 @@ EXTRA_DIST=aqgeldkarte.xml.in
 plugindir=@aqbanking_plugindir@/providers
 plugin_LTLIBRARIES=aqgeldkarte.la
 if IS_WINDOWS
-plugin_DATA = aqgeldkarte.xml aqgeldkarte.dll
+plugin_DATA = aqgeldkarte.xml 
 else
 plugin_DATA=aqgeldkarte.xml
 endif

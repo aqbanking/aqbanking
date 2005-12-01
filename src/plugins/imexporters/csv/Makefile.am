@@ -10,7 +10,7 @@ imexporterplugindir = $(aqbanking_plugindir)/imexporters
 
 imexporterplugin_LTLIBRARIES=csv.la
 if IS_WINDOWS
-imexporterplugin_DATA=csv.xml csv.dll
+imexporterplugin_DATA=csv.xml 
 else
 imexporterplugin_DATA=csv.xml
 endif

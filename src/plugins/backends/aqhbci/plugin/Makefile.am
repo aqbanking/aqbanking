@@ -12,7 +12,7 @@ CLEANFILES = $(BUILT_SOURCES) hbci.xml
 plugindir= $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqhbci.la
 if IS_WINDOWS
-plugin_DATA = aqhbci.xml aqhbci.dll
+plugin_DATA = aqhbci.xml 
 else
 plugin_DATA=aqhbci.xml
 endif

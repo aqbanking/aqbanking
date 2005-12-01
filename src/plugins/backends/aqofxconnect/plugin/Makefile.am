@@ -8,7 +8,7 @@ EXTRA_DIST=aqofxconnect.xml.in
 plugindir = $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES = aqofxconnect.la
 if IS_WINDOWS
-plugin_DATA = aqofxconnect.xml aqofxconnect.dll
+plugin_DATA = aqofxconnect.xml 
 else
 plugin_DATA = aqofxconnect.xml
 endif
