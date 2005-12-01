@@ -23,10 +23,10 @@
 WizardDdvImport::WizardDdvImport(QBanking *qb,
                                  WizardInfo *wInfo,
                                  QWidget* parent, const char* name,
-                                 bool modal, WFlags fl)
+                                 bool modal)
 :Wizard(qb, wInfo,
         tr("Create a new DDV card user"),
-        parent, name, modal, fl) {
+        parent, name, modal) {
   WizardAction *wa;
 
   setDescription(tr("<qt>"

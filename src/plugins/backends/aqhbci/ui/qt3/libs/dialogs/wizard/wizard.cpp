@@ -32,11 +32,12 @@ Wizard::Wizard(QBanking *qb,
                WizardInfo *wInfo,
                const QString &title,
                QWidget* parent,
-               const char* name, bool modal, WFlags fl)
-:WizardUi(parent, name, modal, fl)
+               const char* name, bool modal)
+:WizardUi(parent, name)
 ,_app(qb)
 ,_wInfo(wInfo)
 ,_lastActionWidget(0){
+  setModal(modal);
   if (!title.isEmpty())
     setCaption(title);
 }

@@ -24,7 +24,7 @@ public:
   WizardRdhNew(QBanking *qb,
                WizardInfo *wInfo,
                QWidget* parent=0, const char* name=0,
-               bool modal=FALSE, WFlags fl=0);
+               bool modal=FALSE);
   virtual ~WizardRdhNew();
 
   virtual int exec();

@@ -43,7 +43,7 @@ public:
          WizardInfo *wInfo,
          const QString &caption=QString::null,
          QWidget* parent=0, const char* name=0,
-         bool modal=FALSE, WFlags fl=0);
+         bool modal=FALSE);
   virtual ~Wizard();
 
   QBanking *getBanking();
