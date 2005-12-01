@@ -188,6 +188,7 @@ AB_ImExporterContext_GetNextAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
  * returned.
  * The context remains the owner of the returned object.
  */
+AQBANKING_API 
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 				     const char *bankCode,

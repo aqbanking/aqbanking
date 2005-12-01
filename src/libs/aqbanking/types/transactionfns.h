@@ -25,6 +25,7 @@ extern "C" {
 /**
  * @return 0 if both transactions are equal, 1 otherwise (and -1 on error)
  */
+AQBANKING_API 
 int AB_Transaction_Compare(const AB_TRANSACTION *t1,
                            const AB_TRANSACTION *t0);
 
