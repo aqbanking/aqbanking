@@ -38,18 +38,18 @@ Name: "doc"; Description: "{cm:DocFiles}"; Types: full
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Files]
 ; All main DLLs
-Source: "win32-tmp\windows\*.dll"; DestDir: "{app}\bin"; Flags: sharedfile promptifolder replacesameversion; Components: main
+Source: "win32-tmp\usr\bin\*.dll"; DestDir: "{app}\bin"; Flags: sharedfile promptifolder replacesameversion; Components: main
 
 ; Everything from the lib directory, including all plugins
-Source: "win32-tmp\lib\*.lib"; DestDir: "{app}\lib"; Components: main
-Source: "win32-tmp\lib\aqbanking\*"; DestDir: "{app}\lib\aqbanking"; Flags: recursesubdirs; Components: main
+Source: "win32-tmp\usr\lib\lib*a"; DestDir: "{app}\lib"; Components: main
+Source: "win32-tmp\usr\lib\aqbanking\*"; DestDir: "{app}\lib\aqbanking"; Flags: recursesubdirs; Components: main
 
 ; The plugins that belong to gwenhywfar. 
-Source: "win32-tmp\gwen\dbio\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
-Source: "win32-tmp\gwen\crypttoken\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,plugindir|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}\crypttoken"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "win32-tmp\usr\gwen\dbio\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "win32-tmp\usr\gwen\crypttoken\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,plugindir|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}\crypttoken"; Flags: ignoreversion recursesubdirs; Components: main
 
 ; The commandline tools
-Source: "win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Components: main
+Source: "win32-tmp\usr\bin\*.exe"; DestDir: "{app}\bin"; Components: main
 
 ; The config-scripts. They are post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
@@ -57,8 +57,8 @@ Source: "src\plugins\backends\aqhbci\aqhbci-config.in.in"; DestDir: "{app}\bin";
 Source: "src\frontends\qbanking\qbanking-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\qbanking-config'))
 
 ; The headers, and the aclocal macro. 
-Source: "win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
-Source: "win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
+Source: "win32-tmp\usr\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
+Source: "win32-tmp\usr\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
 
 
 ; And all the documentation
