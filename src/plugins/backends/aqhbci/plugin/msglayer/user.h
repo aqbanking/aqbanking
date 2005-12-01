@@ -76,7 +76,9 @@ AH_USER_STATUS AH_User_GetStatus(const AH_USER *u);
 AQHBCI_API
 void AH_User_SetStatus(AH_USER *u, AH_USER_STATUS i);
 
+AQHBCI_API
 const char *AH_User_StatusName(AH_USER_STATUS st);
+AQHBCI_API
 AH_USER_STATUS AH_User_StatusFromName(const char *s);
 
 
@@ -107,7 +109,9 @@ AQHBCI_API
 void AH_User_SetContextIdx(AH_USER *u, int idx);
 
 
+AQHBCI_API
 AH_CRYPT_MODE AH_User_GetCryptMode(const AH_USER *u);
+AQHBCI_API
 void AH_User_SetCryptMode(AH_USER *u, AH_CRYPT_MODE m);
 
 

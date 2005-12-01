@@ -64,7 +64,9 @@ typedef enum {
   /** RSA-DES-Hybridverfahren  */
   AH_CryptMode_Rdh
 } AH_CRYPT_MODE;
+AQHBCI_API
 AH_CRYPT_MODE AH_CryptMode_fromString(const char *s);
+AQHBCI_API
 const char *AH_CryptMode_toString(AH_CRYPT_MODE v);
 
 #ifdef __cplusplus
@@ -117,7 +119,9 @@ AB_PROVIDER *AH_HBCI_GetProvider(const AH_HBCI *hbci);
 
 
 
+AQHBCI_API
 int AH_HBCI_Init(AH_HBCI *hbci);
+AQHBCI_API
 int AH_HBCI_Fini(AH_HBCI *hbci);
 
 
@@ -249,47 +253,61 @@ AH_USER_LIST2 *AH_HBCI_GetUsers(AH_HBCI *hbci,
 
 
 
+AQHBCI_API
 int AH_HBCI_AddBankPath(const AH_HBCI *hbci,
                         const AH_BANK *b,
                         GWEN_BUFFER *nbuf);
+AQHBCI_API
 int AH_HBCI_AddUserPath(const AH_HBCI *hbci,
                         const AH_USER *u,
                         GWEN_BUFFER *nbuf);
+AQHBCI_API
 int AH_HBCI_AddCustomerPath(const AH_HBCI *hbci,
                             const AH_CUSTOMER *cu,
                             GWEN_BUFFER *nbuf);
 
+AQHBCI_API
 int AH_HBCI_AddAccountPath(const AH_HBCI *hbci,
                            const AH_ACCOUNT *a,
                            GWEN_BUFFER *nbuf);
 
 
 
+AQHBCI_API
 int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
                               AH_BANK *b,
                               GWEN_BUFFER *nbuf);
+AQHBCI_API
 int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, AH_BANK *b);
 
 
+AQHBCI_API
 int AH_HBCI_SaveMessage(AH_HBCI *hbci,
                         const AH_CUSTOMER *cu,
                         GWEN_DB_NODE *dbMsg);
 
 
+AQHBCI_API
 GWEN_DB_NODE *AH_HBCI_GetSharedRuntimeData(const AH_HBCI *hbci);
 
+AQHBCI_API
 int AH_HBCI_GetTransferTimeout(const AH_HBCI *hbci);
+AQHBCI_API
 void AH_HBCI_SetTransferTimeout(AH_HBCI *hbci, int i);
 
 
+AQHBCI_API
 int AH_HBCI_GetConnectTimeout(const AH_HBCI *hbci);
+AQHBCI_API
 void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i);
 
 
+AQHBCI_API
 void AH_HBCI_HbciToUtf8(const char *p,
                         int size,
                         GWEN_BUFFER *buf);
 
+AQHBCI_API
 int AH_HBCI_CheckStringSanity(const char *s);
 
 
