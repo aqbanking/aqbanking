@@ -1378,7 +1378,7 @@ case "$OS_TYPE" in
         qbanking_data="\${datadir}/qbanking"
     	;;
     windows)
-        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
         qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/libqbanking.la"
         qbanking_libs="-L\${libdir} -lqbanking-${QBANKING_SO_EFFECTIVE}"
         qbanking_includes="-I\${prefix}/include"
@@ -1407,7 +1407,7 @@ case "$OS_TYPE" in
         cbanking_data="\${datadir}/cbanking"
     	;;
     windows)
-        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        AC_DEFINE_UNQUOTED(BUILDING_CBANKING_DLL,1, [Define if DLL is built])
         cbanking_internal_libs="${abs_top_builddir}/src/frontends/cbanking/libcbanking.la"
         cbanking_libs="-L\${libdir} -lcbanking-${CBANKING_SO_EFFECTIVE}"
         cbanking_includes="-I\${prefix}/include"
