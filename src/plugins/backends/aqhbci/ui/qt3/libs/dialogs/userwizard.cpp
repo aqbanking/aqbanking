@@ -27,7 +27,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
 
-
+#include <qmessagebox.h>
 
 
 UserWizard::UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent)
@@ -274,14 +274,22 @@ bool UserWizard::exec() {
   int mode;
 
   mode=SelectMode::selectMode(_parent);
-  if (mode==SelectMode::ModePinTan) {
-    return _handleModePinTan();
-  }
-  else if (mode==SelectMode::ModeImportCard) {
+  switch(mode) {
+  case SelectMode::ModeUnknown:
+    DBG_INFO(0, "Mode selection dialog was aborted");
+    break;
+  case SelectMode::ModeImportCard:
     return _handleModeImportCard();
-  }
-  else if (mode==SelectMode::ModeImportFile) {
+  case SelectMode::ModeInitCard:
+    QMessageBox::information(_parent, "Not yet implemented", "Sorry, this mode is not yet implemented", QMessageBox::Abort);
+    break;
+  case SelectMode::ModeImportFile:
     return _handleModeImportFile();
+  case SelectMode::ModeCreateFile:
+    QMessageBox::information(_parent, "Not yet implemented", "Sorry, this mode is not yet implemented", QMessageBox::Abort);
+    break;
+  case SelectMode::ModePinTan:
+    return _handleModePinTan();
   }
 
   return false;
