@@ -1705,10 +1705,12 @@ int AB_Banking_Fini(AB_BANKING *ab) {
               "Could not delete old file \"%s\": %s",
 	      GWEN_Buffer_GetStart(rpbuf1),
 	      strerror(errno));
-    GWEN_Buffer_free(rpbuf2);
+    /* Don't abort here; this error will also occur if the old
+       file didn't exist. */
+    /*GWEN_Buffer_free(rpbuf2);
     GWEN_Buffer_free(rpbuf1);
     GWEN_DB_Group_free(db);
-    return AB_ERROR_GENERIC;
+    return AB_ERROR_GENERIC;*/
   }
 #endif
   if (rename(GWEN_Buffer_GetStart(rpbuf2),
