@@ -74,6 +74,9 @@ setup: aqbanking.iss
 	     gwenhywfar_plugins="/gwen" \
 	     WIN_PATH_WINDOWS_MINGW="/windows" \
 	     install \
+	 && for A in `find $(wintmpdir) -name '*.exe'`; do \
+		strip $${A}; \
+	    done \
 	 && $(ISCC) aqbanking.iss \
 	 && rm -rf $(wintmpdir)
 
