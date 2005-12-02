@@ -71,7 +71,7 @@ int debug(int argc, char **argv) {
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  uw=new UserWizard(ab, hbci);
+  uw=new UserWizard(ab, hbci, 0);
   if (uw->exec()) {
     fprintf(stderr, "Ok :-)\n");
     delete uw;

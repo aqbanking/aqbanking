@@ -35,7 +35,7 @@ private:
   bool _handleModeImportFile();
 
 public:
-  UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent=0);
+  UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent);
   ~UserWizard();
 
   bool exec();

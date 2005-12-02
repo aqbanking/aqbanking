@@ -190,7 +190,7 @@ void HBCISettings::slotUserSelectionChanged(){
 
 
 void HBCISettings::slotNewUser(){
-  UserWizard uw(_app, _hbci);
+  UserWizard uw(_app, _hbci, this);
 
   if (uw.exec()) {
     fprintf(stderr, "Ok :-)\n");
