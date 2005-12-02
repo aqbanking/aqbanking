@@ -238,8 +238,8 @@ If this field is checked then the paper which accompanies the DTAUS discs will s
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>131</width>
-                            <height>21</height>
+                            <width>20</width>
+                            <height>20</height>
                         </size>
                     </property>
                 </spacer>
@@ -374,8 +374,8 @@ commando into the next fields.
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>170</width>
-                                    <height>21</height>
+                                    <width>20</width>
+                                    <height>20</height>
                                 </size>
                             </property>
                         </spacer>
@@ -477,7 +477,7 @@ same argument:
             <property name="sizeHint">
                 <size>
                     <width>20</width>
-                    <height>40</height>
+                    <height>20</height>
                 </size>
             </property>
         </spacer>
@@ -509,8 +509,8 @@ same argument:
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>51</width>
-                            <height>21</height>
+                            <width>20</width>
+                            <height>20</height>
                         </size>
                     </property>
                 </spacer>
@@ -537,8 +537,8 @@ same argument:
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>31</width>
-                            <height>31</height>
+                            <width>20</width>
+                            <height>20</height>
                         </size>
                     </property>
                 </spacer>
