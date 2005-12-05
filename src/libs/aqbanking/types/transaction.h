@@ -517,8 +517,8 @@ typedef enum {
   AB_Transaction_PeriodWeekly
 } AB_TRANSACTION_PERIOD;
 
-AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s);
-const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v);
+AQBANKING_API AB_TRANSACTION_PERIOD AB_Transaction_Period_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v);
 
 typedef enum {
   AB_Transaction_TypeUnknown=-1,
@@ -532,8 +532,8 @@ typedef enum {
   AB_Transaction_TypeEuTransfer
 } AB_TRANSACTION_TYPE;
 
-AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);
-const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v);
+AQBANKING_API AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v);
 
 typedef enum {
   AB_Transaction_SubTypeUnknown=-1,
@@ -557,8 +557,8 @@ typedef enum {
   AB_Transaction_SubTypeEuASAP
 } AB_TRANSACTION_SUBTYPE;
 
-AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s);
-const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE v);
+AQBANKING_API AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE v);
 
 typedef enum {
   AB_Transaction_StatusUnknown=-1,
@@ -572,8 +572,8 @@ typedef enum {
   AB_Transaction_StatusPending
 } AB_TRANSACTION_STATUS;
 
-AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
-const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v);
+AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v);
 
 typedef enum {
   AB_Transaction_ChargeUnknown=-1,
@@ -587,8 +587,9 @@ typedef enum {
   AB_Transaction_ChargeShare
 } AB_TRANSACTION_CHARGE;
 
-AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s);
-const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v);
+AQBANKING_API AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v);
+
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_TRANSACTION, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
