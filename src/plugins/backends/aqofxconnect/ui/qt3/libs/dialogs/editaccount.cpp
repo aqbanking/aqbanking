@@ -121,6 +121,25 @@ void EditAccount::countriesToCombo(QComboBox *qc, const char *c) {
   } // if _countries
 }
 
+#define DEFAULT_COUNTRY "us"
+
+std::string EditAccount::comboToCountry(QComboBox *qc)
+{
+  AB_PROVIDER *pro=AB_Banking_GetProvider(_app->getCInterface(), "aqofxconnect");
+  assert(pro);
+  AB_BANKING *ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  std::string country;
+  if (qc->currentItem()!=0) {
+    country = QBanking::QStringToUtf8String(qc->currentText());
+    const AB_COUNTRY *cnt = 
+      AB_Banking_FindCountryByLocalName(ab, country.c_str());
+    assert(cnt);
+    country = AB_Country_GetCode(cnt);
+  }
+  return (country.empty() ? std::string(DEFAULT_COUNTRY) : country);
+}
 
 
 void EditAccount::usersToCombo(QComboBox *qc,
@@ -133,10 +152,12 @@ void EditAccount::usersToCombo(QComboBox *qc,
   AB_PROVIDER *pro;
 
   qc->clear();
-  if (!country || !(*country) || !bankCode || !(*bankCode))
+  if (!bankCode || !(*bankCode))
     return;
   pro=AB_Banking_GetProvider(_app->getCInterface(), "aqofxconnect");
   assert(pro);
+  if (!country || !(*country))
+    country = DEFAULT_COUNTRY;
   b=AO_Provider_FindMyBank(pro, country, bankCode);
   if (!b)
     return;
@@ -192,7 +213,7 @@ void EditAccount::accountToGui(AB_ACCOUNT *a) {
 
   country=AB_Account_GetCountry(a);
   if (!country || !*country)
-    country="us";
+    country=DEFAULT_COUNTRY;
   countriesToCombo(countryCombo, country);
 
   bankId=AB_Account_GetBankCode(a);
@@ -217,6 +238,9 @@ void EditAccount::accountToGui(AB_ACCOUNT *a) {
 void EditAccount::guiToAccount(AB_ACCOUNT *a) {
 
   AB_Account_SetBankCode(a, bankCodeEdit->text().utf8());
+
+  // FIXME: The country is ignored here anyway for now
+  //std::string country = comboToCountry(countryCombo);
 
   QString s = bankNameEdit->text();
   if (s.isEmpty()) 
@@ -270,13 +294,18 @@ void EditAccount::slotBankCodeLostFocus() {
     AB_BANKINFO *bi;
 
     bi=AB_Banking_GetBankInfo(_app->getCInterface(),
-                              "de", 0, s.c_str());
+                              comboToCountry(countryCombo).c_str(),
+                              0, s.c_str());
     if (bi) {
       const char *p;
 
       p=AB_BankInfo_GetBankName(bi);
       if (p)
         bankNameEdit->setText(QString::fromUtf8(p));
+
+      usersToCombo(userCombo, AB_BankInfo_GetCountry(bi),
+ 		   AB_BankInfo_GetBankId(bi), 0);
+
       AB_BankInfo_free(bi);
     }
   }

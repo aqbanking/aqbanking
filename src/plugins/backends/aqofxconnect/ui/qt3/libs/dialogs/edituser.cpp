@@ -170,6 +170,23 @@ void EditUser::userToGui(AO_USER *u) {
 }
 
 
+std::string EditUser::comboToCountry(QComboBox *qc)
+{
+  AB_PROVIDER *pro=AB_Banking_GetProvider(_app->getCInterface(), "aqofxconnect");
+  assert(pro);
+  AB_BANKING *ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  std::string country;
+  if (qc->currentItem()!=0) {
+    country = QBanking::QStringToUtf8String(qc->currentText());
+    const AB_COUNTRY *cnt = 
+      AB_Banking_FindCountryByLocalName(ab, country.c_str());
+    assert(cnt);
+    country = AB_Country_GetCode(cnt);
+  }
+  return (country.empty() ? std::string("us") : country);
+}
 
 void EditUser::guiToUser(AO_USER *u) {
   std::string s;
@@ -185,14 +202,7 @@ void EditUser::guiToUser(AO_USER *u) {
   ab=AB_Provider_GetBanking(pro);
   assert(ab);
 
-  if (countryCombo->currentItem()!=0) {
-    const AB_COUNTRY *cnt;
-
-    country=QBanking::QStringToUtf8String(countryCombo->currentText());
-    cnt=AB_Banking_FindCountryByLocalName(ab, country.c_str());
-    assert(cnt);
-    country=AB_Country_GetCode(cnt);
-  }
+  country = comboToCountry(countryCombo);
   bankId=QBanking::QStringToUtf8String(bankCodeEdit->text());
   userId=QBanking::QStringToUtf8String(userIdEdit->text());
 
@@ -298,13 +308,15 @@ void EditUser::slotBankCodeLostFocus() {
     AB_BANKINFO *bi;
 
     bi=AB_Banking_GetBankInfo(_app->getCInterface(),
-                              "de", 0, s.c_str());
+                              comboToCountry(countryCombo).c_str(),
+			      0, s.c_str());
     if (bi) {
       const char *p;
 
       p=AB_BankInfo_GetBankName(bi);
       if (p)
         bankNameEdit->setText(QString::fromUtf8(p));
+
       AB_BankInfo_free(bi);
     }
   }

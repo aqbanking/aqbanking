@@ -33,6 +33,7 @@ private:
   void guiToUser(AO_USER *u);
 
   void countriesToCombo(QComboBox *qc, const char *c);
+  std::string comboToCountry(QComboBox *qc);
 
 public:
   EditUser(QBanking *app,

@@ -33,6 +33,7 @@ private:
   void guiToAccount(AB_ACCOUNT *a);
 
   void countriesToCombo(QComboBox *qc, const char *c);
+  std::string comboToCountry(QComboBox *qc);
   void usersToCombo(QComboBox *qc,
                     const char *country,
                     const char *bankCode,
