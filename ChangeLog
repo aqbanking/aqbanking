@@ -1,4 +1,11 @@
-2005-12-02    Christian Stimming <stimming@tuhh.de>
+2005-12-05   Christian Stimming <stimming@tuhh.de>
+
+	*
+	src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/editaccount.cpp:
+	Improve OFX account creation dialog -- still relatively
+	unfinished.
+
+2005-12-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:
 	Show clear error message for currently unimplemented media.
