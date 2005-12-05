@@ -5,15 +5,18 @@
 	Improve OFX account creation dialog -- still relatively
 	unfinished.
 
+
 2005-12-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:
 	Show clear error message for currently unimplemented media.
 
+
 2005-11-30   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, src/*/Makefile.am: Switch mingw DLL creation
 	everywhere to automatic libtool DLLs. Requires libtool >= 1.5.14.
+
 
 2005-11-29   Christian Stimming <stimming@tuhh.de>
 
