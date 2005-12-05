@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 
+AQBANKING_API
 AB_JOB *AB_JobCreateStandingOrder_new(AB_ACCOUNT *a);
 
 
