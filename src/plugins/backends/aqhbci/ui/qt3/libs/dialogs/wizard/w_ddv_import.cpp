@@ -10,6 +10,9 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include "w_ddv_import.h"
 #include "a_edituser.h"
