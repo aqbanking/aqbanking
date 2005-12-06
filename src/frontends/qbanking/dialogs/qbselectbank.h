@@ -19,6 +19,7 @@ class QBanking;
 
 #include "qbselectbank.ui.h"
 #include <aqbanking/bankinfo.h>
+#include <qbanking/banking.h> /* For QBANKING_API */
 #include <string>
 
 
@@ -45,7 +46,7 @@ public:
 
   void accept();
 
-  static AB_BANKINFO *selectBank(QBanking *kb,
+  QBANKING_API static AB_BANKINFO *selectBank(QBanking *kb,
                                  QWidget* parent=0,
                                  const QString &title=QString::null,
                                  const QString &country=QString("de"),

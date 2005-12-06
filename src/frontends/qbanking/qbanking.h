@@ -37,7 +37,7 @@ class QBSimpleBox;
 class QBWaitCallback;
 
 
-class QBanking: public Banking {
+class QBANKING_API QBanking: public Banking {
   friend class QBanking_Linker;
 private:
   QGuardedPtr<QWidget> _parentWidget;

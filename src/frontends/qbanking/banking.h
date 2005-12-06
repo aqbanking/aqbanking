@@ -23,6 +23,17 @@
 #include <string>
 
 
+#ifdef __declspec
+# if BUILDING_QBANKING_DLL
+#  define QBANKING_API __declspec (dllexport)
+# else /* Not BUILDING_AQBANKING_DLL */
+#  define QBANKING_API __declspec (dllimport)
+# endif /* Not BUILDING_AQBANKING_DLL */
+#else
+# define QBANKING_API
+#endif
+
+
 #define QBANKING_IMPORTER_FLAGS_COMPLETE_DAYS  0x00000001
 #define QBANKING_IMPORTER_FLAGS_OVERWRITE_DAYS 0x00000002
 #define QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES  0x00000004
@@ -42,7 +53,7 @@
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class Banking {
+class QBANKING_API Banking {
   friend class Banking_Linker;
 
 private:
