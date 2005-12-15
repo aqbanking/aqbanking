@@ -1,3 +1,13 @@
+
+===========================================================================
+               Released AqBanking - 1.8.1beta (2005-12-15)
+===========================================================================
+
+This version fixes some network problems and cleans up the build system.
+It now allows to choose the transfer mode independantly for transfer orders
+and debit notes.
+
+
 ===========================================================================
                Released AqBanking - 1.8.0beta (2005-11-22)
 ===========================================================================

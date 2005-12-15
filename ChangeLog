@@ -1,7 +1,14 @@
+
+===========================================================================
+MARK: released AqBanking - 1.8.1beta (2005-12-15)
+===========================================================================
+
+
 2005-12-06   Christian Stimming <stimming@tuhh.de>
 
 	* src/frontends/qbanking/banking.h: Add QBANKING_API to exported
 	qbanking classes. Necessary for windows/mingw32 and DLLs.
+
 
 2005-12-05   Christian Stimming <stimming@tuhh.de>
 
@@ -10,10 +17,12 @@
 	Improve OFX account creation dialog -- still relatively
 	unfinished.
 
+
 2005-12-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:
 	Show clear error message for currently unimplemented media.
+
 
 2005-11-30   Christian Stimming <stimming@tuhh.de>
 

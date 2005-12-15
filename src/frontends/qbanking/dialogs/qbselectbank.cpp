@@ -30,10 +30,10 @@
 
 
 QBSelectBank::QBSelectBank(QBanking *kb,
-                       QWidget* parent,
-                       const char* name,
-                       bool modal,
-                       WFlags fl)
+                           QWidget* parent,
+                           const char* name,
+                           bool modal,
+                           WFlags fl)
 :QBSelectBankUi(parent, name, modal, fl)
 ,_app(kb)
 ,_bankInfo(0)
@@ -375,7 +375,7 @@ AB_BANKINFO *QBSelectBank::selectBank(QBanking *kb,
                                     const QString &swiftCode,
                                     const QString &bankName,
                                     const QString &location) {
-  QBSelectBank sb(kb, 0, 0, false);
+  QBSelectBank sb(kb, parent, 0, false);
 
   if (!title.isEmpty())
     sb.setCaption(title);
