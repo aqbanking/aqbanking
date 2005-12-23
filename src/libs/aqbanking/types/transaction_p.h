@@ -6,6 +6,7 @@
 
 #include "transaction_l.h"
 
+
 struct AB_TRANSACTION {
   GWEN_INHERIT_ELEMENT(AB_TRANSACTION)
   GWEN_LIST_ELEMENT(AB_TRANSACTION)

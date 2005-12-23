@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(AB_PIN, AB_Pin)
 GWEN_LIST2_FUNCTIONS(AB_PIN, AB_Pin)
 
@@ -108,12 +109,14 @@ void AB_Pin_SetToken(AB_PIN *st, const char *d) {
   assert(st);
   if (st->token)
     free(st->token);
-  if (d)
+  if (d && *d)
     st->token=strdup(d);
   else
     st->token=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Pin_GetValue(const AB_PIN *st) {
@@ -126,12 +129,14 @@ void AB_Pin_SetValue(AB_PIN *st, const char *d) {
   assert(st);
   if (st->value)
     free(st->value);
-  if (d)
+  if (d && *d)
     st->value=strdup(d);
   else
     st->value=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Pin_GetHash(const AB_PIN *st) {
@@ -144,12 +149,14 @@ void AB_Pin_SetHash(AB_PIN *st, const char *d) {
   assert(st);
   if (st->hash)
     free(st->hash);
-  if (d)
+  if (d && *d)
     st->hash=strdup(d);
   else
     st->hash=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Pin_GetStatus(const AB_PIN *st) {
@@ -162,12 +169,14 @@ void AB_Pin_SetStatus(AB_PIN *st, const char *d) {
   assert(st);
   if (st->status)
     free(st->status);
-  if (d)
+  if (d && *d)
     st->status=strdup(d);
   else
     st->status=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_Pin_IsModified(const AB_PIN *st) {

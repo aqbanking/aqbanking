@@ -1,4 +1,21 @@
 
+2005/12/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now all calls to GWEN_NEW_OBJECT and GWEN_FREE_OBJECT do match (as required
+  by gwen)
+- introduced environment variable "AQBANKING_HOME" which is consulted in
+  case there is no config directory path (which is the default for most
+  programs)
+- included a check for ktoblzcheck v1.8.x: The version shipped with Debian
+  unstable introduces a mismatched free/delete/delete[].
+- updated German bankinfo files (Bundesbank, HBCI file)
+
+
+2005/12/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added CSV importer profile for Sparkasse Aachen
+
+
 ===========================================================================
 MARK: released AqBanking - 1.8.1beta (2005-12-15)
 ===========================================================================

@@ -78,7 +78,7 @@ void AH_User_free(AH_USER *u){
       free(u->userId);
       AH_Medium_free(u->medium);
       AH_BpdAddr_free(u->serverAddress);
-      free(u);
+      GWEN_FREE_OBJECT(u);
     }
   }
 }

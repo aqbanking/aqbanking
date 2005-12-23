@@ -356,7 +356,7 @@ void AH_Job_free(AH_JOB *j) {
 
       GWEN_LIST_FINI(AH_JOB, j);
       GWEN_INHERIT_FINI(AH_JOB, j);
-      free(j);
+      GWEN_FREE_OBJECT(j);
     }
   }
 }

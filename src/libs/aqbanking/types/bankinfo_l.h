@@ -15,6 +15,7 @@ This page describes the properties of AB_BANKINFO
 extern "C" {
 #endif
 
+
 GWEN_LIST_FUNCTION_DEFS(AB_BANKINFO, AB_BankInfo)
 AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl);
 

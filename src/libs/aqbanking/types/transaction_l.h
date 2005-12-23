@@ -46,6 +46,7 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 extern "C" {
 #endif
 
+
 GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
 AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
 

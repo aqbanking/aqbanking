@@ -76,7 +76,7 @@ void AH_Medium_free(AH_MEDIUM *m){
       free(m->subTypeName);
       free(m->typeName);
       free(m->mediumName);
-      free(m);
+      GWEN_FREE_OBJECT(m);
     }
   }
 }

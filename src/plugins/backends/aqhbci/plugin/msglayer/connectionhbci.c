@@ -65,7 +65,7 @@ void AH_ConnectionHBCI_FreeData(void *bp, void *p){
   assert(hconn);
   GWEN_NetMsg_free(hconn->currentInMsg);
   GWEN_NetMsg_free(hconn->currentOutMsg);
-  free(hconn);
+  GWEN_FREE_OBJECT(hconn);
 }
 
 

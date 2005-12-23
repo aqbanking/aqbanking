@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)
 GWEN_LIST2_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)
 
@@ -420,6 +421,8 @@ void AB_TransactionLimits_SetMaxLenLocalName(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenLocalName(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenLocalName;
@@ -431,6 +434,8 @@ void AB_TransactionLimits_SetMinLenLocalName(AB_TRANSACTION_LIMITS *st, int d) {
   st->minLenLocalName=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenRemoteName(const AB_TRANSACTION_LIMITS *st) {
@@ -446,6 +451,8 @@ void AB_TransactionLimits_SetMaxLenRemoteName(AB_TRANSACTION_LIMITS *st, int d) 
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenRemoteName(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenRemoteName;
@@ -457,6 +464,8 @@ void AB_TransactionLimits_SetMinLenRemoteName(AB_TRANSACTION_LIMITS *st, int d) 
   st->minLenRemoteName=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLinesRemoteName(const AB_TRANSACTION_LIMITS *st) {
@@ -472,6 +481,8 @@ void AB_TransactionLimits_SetMaxLinesRemoteName(AB_TRANSACTION_LIMITS *st, int d
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLinesRemoteName(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLinesRemoteName;
@@ -483,6 +494,8 @@ void AB_TransactionLimits_SetMinLinesRemoteName(AB_TRANSACTION_LIMITS *st, int d
   st->minLinesRemoteName=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenLocalBankCode(const AB_TRANSACTION_LIMITS *st) {
@@ -498,6 +511,8 @@ void AB_TransactionLimits_SetMaxLenLocalBankCode(AB_TRANSACTION_LIMITS *st, int 
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenLocalBankCode(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenLocalBankCode;
@@ -509,6 +524,8 @@ void AB_TransactionLimits_SetMinLenLocalBankCode(AB_TRANSACTION_LIMITS *st, int 
   st->minLenLocalBankCode=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenLocalAccountNumber(const AB_TRANSACTION_LIMITS *st) {
@@ -524,6 +541,8 @@ void AB_TransactionLimits_SetMaxLenLocalAccountNumber(AB_TRANSACTION_LIMITS *st,
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenLocalAccountNumber(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenLocalAccountNumber;
@@ -535,6 +554,8 @@ void AB_TransactionLimits_SetMinLenLocalAccountNumber(AB_TRANSACTION_LIMITS *st,
   st->minLenLocalAccountNumber=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenLocalSuffix(const AB_TRANSACTION_LIMITS *st) {
@@ -550,6 +571,8 @@ void AB_TransactionLimits_SetMaxLenLocalSuffix(AB_TRANSACTION_LIMITS *st, int d)
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenLocalSuffix(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenLocalSuffix;
@@ -561,6 +584,8 @@ void AB_TransactionLimits_SetMinLenLocalSuffix(AB_TRANSACTION_LIMITS *st, int d)
   st->minLenLocalSuffix=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenRemoteBankCode(const AB_TRANSACTION_LIMITS *st) {
@@ -576,6 +601,8 @@ void AB_TransactionLimits_SetMaxLenRemoteBankCode(AB_TRANSACTION_LIMITS *st, int
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenRemoteBankCode(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenRemoteBankCode;
@@ -587,6 +614,8 @@ void AB_TransactionLimits_SetMinLenRemoteBankCode(AB_TRANSACTION_LIMITS *st, int
   st->minLenRemoteBankCode=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenRemoteAccountNumber(const AB_TRANSACTION_LIMITS *st) {
@@ -602,6 +631,8 @@ void AB_TransactionLimits_SetMaxLenRemoteAccountNumber(AB_TRANSACTION_LIMITS *st
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenRemoteAccountNumber(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenRemoteAccountNumber;
@@ -613,6 +644,8 @@ void AB_TransactionLimits_SetMinLenRemoteAccountNumber(AB_TRANSACTION_LIMITS *st
   st->minLenRemoteAccountNumber=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenRemoteSuffix(const AB_TRANSACTION_LIMITS *st) {
@@ -628,6 +661,8 @@ void AB_TransactionLimits_SetMaxLenRemoteSuffix(AB_TRANSACTION_LIMITS *st, int d
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenRemoteSuffix(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenRemoteSuffix;
@@ -639,6 +674,8 @@ void AB_TransactionLimits_SetMinLenRemoteSuffix(AB_TRANSACTION_LIMITS *st, int d
   st->minLenRemoteSuffix=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenRemoteIban(const AB_TRANSACTION_LIMITS *st) {
@@ -654,6 +691,8 @@ void AB_TransactionLimits_SetMaxLenRemoteIban(AB_TRANSACTION_LIMITS *st, int d) 
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenRemoteIban(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenRemoteIban;
@@ -665,6 +704,8 @@ void AB_TransactionLimits_SetMinLenRemoteIban(AB_TRANSACTION_LIMITS *st, int d) 
   st->minLenRemoteIban=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenTextKey(const AB_TRANSACTION_LIMITS *st) {
@@ -680,6 +721,8 @@ void AB_TransactionLimits_SetMaxLenTextKey(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
+
+
 int AB_TransactionLimits_GetMinLenTextKey(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minLenTextKey;
@@ -691,6 +734,8 @@ void AB_TransactionLimits_SetMinLenTextKey(AB_TRANSACTION_LIMITS *st, int d) {
   st->minLenTextKey=d;
   st->_modified=1;
 }
+
+
 
 
 GWEN_STRINGLIST *AB_TransactionLimits_GetValuesTextKey(const AB_TRANSACTION_LIMITS *st) {
@@ -709,6 +754,8 @@ void AB_TransactionLimits_SetValuesTextKey(AB_TRANSACTION_LIMITS *st, GWEN_STRIN
     st->valuesTextKey=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_TransactionLimits_AddValuesTextKey(AB_TRANSACTION_LIMITS *st, const char *d, int chk){
@@ -738,6 +785,8 @@ int AB_TransactionLimits_HasValuesTextKey(const AB_TRANSACTION_LIMITS *st, const
 }
 
 
+
+
 int AB_TransactionLimits_GetMaxLenCustomerReference(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->maxLenCustomerReference;
@@ -749,6 +798,8 @@ void AB_TransactionLimits_SetMaxLenCustomerReference(AB_TRANSACTION_LIMITS *st, 
   st->maxLenCustomerReference=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMinLenCustomerReference(const AB_TRANSACTION_LIMITS *st) {
@@ -764,6 +815,8 @@ void AB_TransactionLimits_SetMinLenCustomerReference(AB_TRANSACTION_LIMITS *st, 
 }
 
 
+
+
 int AB_TransactionLimits_GetMaxLenBankReference(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->maxLenBankReference;
@@ -775,6 +828,8 @@ void AB_TransactionLimits_SetMaxLenBankReference(AB_TRANSACTION_LIMITS *st, int 
   st->maxLenBankReference=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMinLenBankReference(const AB_TRANSACTION_LIMITS *st) {
@@ -790,6 +845,8 @@ void AB_TransactionLimits_SetMinLenBankReference(AB_TRANSACTION_LIMITS *st, int 
 }
 
 
+
+
 int AB_TransactionLimits_GetMaxLenPurpose(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->maxLenPurpose;
@@ -801,6 +858,8 @@ void AB_TransactionLimits_SetMaxLenPurpose(AB_TRANSACTION_LIMITS *st, int d) {
   st->maxLenPurpose=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMinLenPurpose(const AB_TRANSACTION_LIMITS *st) {
@@ -816,6 +875,8 @@ void AB_TransactionLimits_SetMinLenPurpose(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
+
+
 int AB_TransactionLimits_GetMaxLinesPurpose(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->maxLinesPurpose;
@@ -827,6 +888,8 @@ void AB_TransactionLimits_SetMaxLinesPurpose(AB_TRANSACTION_LIMITS *st, int d) {
   st->maxLinesPurpose=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetMinLinesPurpose(const AB_TRANSACTION_LIMITS *st) {
@@ -842,6 +905,8 @@ void AB_TransactionLimits_SetMinLinesPurpose(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
+
+
 int AB_TransactionLimits_GetMinValueSetupTime(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->minValueSetupTime;
@@ -855,6 +920,8 @@ void AB_TransactionLimits_SetMinValueSetupTime(AB_TRANSACTION_LIMITS *st, int d)
 }
 
 
+
+
 int AB_TransactionLimits_GetMaxValueSetupTime(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->maxValueSetupTime;
@@ -866,6 +933,8 @@ void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMITS *st, int d)
   st->maxValueSetupTime=d;
   st->_modified=1;
 }
+
+
 
 
 GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleWeek(const AB_TRANSACTION_LIMITS *st) {
@@ -884,6 +953,8 @@ void AB_TransactionLimits_SetValuesCycleWeek(AB_TRANSACTION_LIMITS *st, GWEN_STR
     st->valuesCycleWeek=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_TransactionLimits_AddValuesCycleWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk){
@@ -913,6 +984,8 @@ int AB_TransactionLimits_HasValuesCycleWeek(const AB_TRANSACTION_LIMITS *st, con
 }
 
 
+
+
 GWEN_STRINGLIST *AB_TransactionLimits_GetValuesCycleMonth(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesCycleMonth;
@@ -929,6 +1002,8 @@ void AB_TransactionLimits_SetValuesCycleMonth(AB_TRANSACTION_LIMITS *st, GWEN_ST
     st->valuesCycleMonth=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_TransactionLimits_AddValuesCycleMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk){
@@ -958,6 +1033,8 @@ int AB_TransactionLimits_HasValuesCycleMonth(const AB_TRANSACTION_LIMITS *st, co
 }
 
 
+
+
 GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesExecutionDayWeek;
@@ -974,6 +1051,8 @@ void AB_TransactionLimits_SetValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, G
     st->valuesExecutionDayWeek=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_TransactionLimits_AddValuesExecutionDayWeek(AB_TRANSACTION_LIMITS *st, const char *d, int chk){
@@ -1003,6 +1082,8 @@ int AB_TransactionLimits_HasValuesExecutionDayWeek(const AB_TRANSACTION_LIMITS *
 }
 
 
+
+
 GWEN_STRINGLIST *AB_TransactionLimits_GetValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->valuesExecutionDayMonth;
@@ -1019,6 +1100,8 @@ void AB_TransactionLimits_SetValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, 
     st->valuesExecutionDayMonth=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_TransactionLimits_AddValuesExecutionDayMonth(AB_TRANSACTION_LIMITS *st, const char *d, int chk){
@@ -1048,6 +1131,8 @@ int AB_TransactionLimits_HasValuesExecutionDayMonth(const AB_TRANSACTION_LIMITS 
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowMonthly(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowMonthly;
@@ -1059,6 +1144,8 @@ void AB_TransactionLimits_SetAllowMonthly(AB_TRANSACTION_LIMITS *st, int d) {
   st->allowMonthly=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetAllowWeekly(const AB_TRANSACTION_LIMITS *st) {
@@ -1074,6 +1161,8 @@ void AB_TransactionLimits_SetAllowWeekly(AB_TRANSACTION_LIMITS *st, int d) {
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangeRecipientAccount(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangeRecipientAccount;
@@ -1085,6 +1174,8 @@ void AB_TransactionLimits_SetAllowChangeRecipientAccount(AB_TRANSACTION_LIMITS *
   st->allowChangeRecipientAccount=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetAllowChangeRecipientName(const AB_TRANSACTION_LIMITS *st) {
@@ -1100,6 +1191,8 @@ void AB_TransactionLimits_SetAllowChangeRecipientName(AB_TRANSACTION_LIMITS *st,
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangeValue(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangeValue;
@@ -1111,6 +1204,8 @@ void AB_TransactionLimits_SetAllowChangeValue(AB_TRANSACTION_LIMITS *st, int d) 
   st->allowChangeValue=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetAllowChangeTextKey(const AB_TRANSACTION_LIMITS *st) {
@@ -1126,6 +1221,8 @@ void AB_TransactionLimits_SetAllowChangeTextKey(AB_TRANSACTION_LIMITS *st, int d
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangePurpose(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangePurpose;
@@ -1137,6 +1234,8 @@ void AB_TransactionLimits_SetAllowChangePurpose(AB_TRANSACTION_LIMITS *st, int d
   st->allowChangePurpose=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetAllowChangeFirstExecutionDate(const AB_TRANSACTION_LIMITS *st) {
@@ -1152,6 +1251,8 @@ void AB_TransactionLimits_SetAllowChangeFirstExecutionDate(AB_TRANSACTION_LIMITS
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangeLastExecutionDate(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangeLastExecutionDate;
@@ -1163,6 +1264,8 @@ void AB_TransactionLimits_SetAllowChangeLastExecutionDate(AB_TRANSACTION_LIMITS 
   st->allowChangeLastExecutionDate=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_GetAllowChangeCycle(const AB_TRANSACTION_LIMITS *st) {
@@ -1178,6 +1281,8 @@ void AB_TransactionLimits_SetAllowChangeCycle(AB_TRANSACTION_LIMITS *st, int d) 
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangePeriod(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangePeriod;
@@ -1191,6 +1296,8 @@ void AB_TransactionLimits_SetAllowChangePeriod(AB_TRANSACTION_LIMITS *st, int d)
 }
 
 
+
+
 int AB_TransactionLimits_GetAllowChangeExecutionDay(const AB_TRANSACTION_LIMITS *st) {
   assert(st);
   return st->allowChangeExecutionDay;
@@ -1202,6 +1309,8 @@ void AB_TransactionLimits_SetAllowChangeExecutionDay(AB_TRANSACTION_LIMITS *st, 
   st->allowChangeExecutionDay=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_TransactionLimits_IsModified(const AB_TRANSACTION_LIMITS *st) {

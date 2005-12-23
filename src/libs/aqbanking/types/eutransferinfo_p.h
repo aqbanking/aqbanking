@@ -6,6 +6,7 @@
 
 #include "eutransferinfo_l.h"
 
+
 struct AB_EUTRANSFER_INFO {
   GWEN_LIST_ELEMENT(AB_EUTRANSFER_INFO)
   int _usage;

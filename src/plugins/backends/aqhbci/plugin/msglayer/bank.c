@@ -74,7 +74,7 @@ void AH_Bank_free(AH_BANK *b){
       AH_User_List_free(b->users);
 
       GWEN_LIST_FINI(AH_BANK, b);
-      free(b);
+      GWEN_FREE_OBJECT(b);
     }
   }
 }

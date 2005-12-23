@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(AB_BANKINFO_SERVICE, AB_BankInfoService)
 GWEN_LIST2_FUNCTIONS(AB_BANKINFO_SERVICE, AB_BankInfoService)
 
@@ -132,12 +133,14 @@ void AB_BankInfoService_SetType(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->type)
     free(st->type);
-  if (d)
+  if (d && *d)
     st->type=strdup(d);
   else
     st->type=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetAddress(const AB_BANKINFO_SERVICE *st) {
@@ -150,12 +153,14 @@ void AB_BankInfoService_SetAddress(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->address)
     free(st->address);
-  if (d)
+  if (d && *d)
     st->address=strdup(d);
   else
     st->address=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetSuffix(const AB_BANKINFO_SERVICE *st) {
@@ -168,12 +173,14 @@ void AB_BankInfoService_SetSuffix(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->suffix)
     free(st->suffix);
-  if (d)
+  if (d && *d)
     st->suffix=strdup(d);
   else
     st->suffix=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetPversion(const AB_BANKINFO_SERVICE *st) {
@@ -186,12 +193,14 @@ void AB_BankInfoService_SetPversion(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->pversion)
     free(st->pversion);
-  if (d)
+  if (d && *d)
     st->pversion=strdup(d);
   else
     st->pversion=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetMode(const AB_BANKINFO_SERVICE *st) {
@@ -204,12 +213,14 @@ void AB_BankInfoService_SetMode(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->mode)
     free(st->mode);
-  if (d)
+  if (d && *d)
     st->mode=strdup(d);
   else
     st->mode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetAux1(const AB_BANKINFO_SERVICE *st) {
@@ -222,12 +233,14 @@ void AB_BankInfoService_SetAux1(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->aux1)
     free(st->aux1);
-  if (d)
+  if (d && *d)
     st->aux1=strdup(d);
   else
     st->aux1=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfoService_GetAux2(const AB_BANKINFO_SERVICE *st) {
@@ -240,12 +253,14 @@ void AB_BankInfoService_SetAux2(AB_BANKINFO_SERVICE *st, const char *d) {
   assert(st);
   if (st->aux2)
     free(st->aux2);
-  if (d)
+  if (d && *d)
     st->aux2=strdup(d);
   else
     st->aux2=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_BankInfoService_IsModified(const AB_BANKINFO_SERVICE *st) {

@@ -94,7 +94,20 @@ int chkAcc(AB_BANKING *ab,
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
+    fprintf(stderr,
+            I18N("This command checks the given combination of account id\n"
+                 "and bank code for validity.\n"
+                 "\n"
+                 "Return codes:\n"
+                 " 1: missing/bad arguments\n"
+                 " 2: error while initializing AqBanking\n"
+                 " 3: given combination is definately invalid\n"
+                 " 4: either bank code or check result are unknown\n"
+                 " 5: error while deinitializing AqBanking\n"
+                 "\n"
+                 "Arguments:\n"
+                 "%s\n"),
+            GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return 0;
   }

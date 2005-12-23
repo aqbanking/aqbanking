@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(AB_BANKINFO, AB_BankInfo)
 GWEN_LIST2_FUNCTIONS(AB_BANKINFO, AB_BankInfo)
 
@@ -230,12 +231,14 @@ void AB_BankInfo_SetCountry(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->country)
     free(st->country);
-  if (d)
+  if (d && *d)
     st->country=strdup(d);
   else
     st->country=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetBranchId(const AB_BANKINFO *st) {
@@ -248,12 +251,14 @@ void AB_BankInfo_SetBranchId(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->branchId)
     free(st->branchId);
-  if (d)
+  if (d && *d)
     st->branchId=strdup(d);
   else
     st->branchId=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetBankId(const AB_BANKINFO *st) {
@@ -266,12 +271,14 @@ void AB_BankInfo_SetBankId(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->bankId)
     free(st->bankId);
-  if (d)
+  if (d && *d)
     st->bankId=strdup(d);
   else
     st->bankId=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetBic(const AB_BANKINFO *st) {
@@ -284,12 +291,14 @@ void AB_BankInfo_SetBic(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->bic)
     free(st->bic);
-  if (d)
+  if (d && *d)
     st->bic=strdup(d);
   else
     st->bic=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetBankName(const AB_BANKINFO *st) {
@@ -302,12 +311,14 @@ void AB_BankInfo_SetBankName(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->bankName)
     free(st->bankName);
-  if (d)
+  if (d && *d)
     st->bankName=strdup(d);
   else
     st->bankName=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetLocation(const AB_BANKINFO *st) {
@@ -320,12 +331,14 @@ void AB_BankInfo_SetLocation(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->location)
     free(st->location);
-  if (d)
+  if (d && *d)
     st->location=strdup(d);
   else
     st->location=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetStreet(const AB_BANKINFO *st) {
@@ -338,12 +351,14 @@ void AB_BankInfo_SetStreet(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->street)
     free(st->street);
-  if (d)
+  if (d && *d)
     st->street=strdup(d);
   else
     st->street=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetZipcode(const AB_BANKINFO *st) {
@@ -356,12 +371,14 @@ void AB_BankInfo_SetZipcode(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->zipcode)
     free(st->zipcode);
-  if (d)
+  if (d && *d)
     st->zipcode=strdup(d);
   else
     st->zipcode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetCity(const AB_BANKINFO *st) {
@@ -374,12 +391,14 @@ void AB_BankInfo_SetCity(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->city)
     free(st->city);
-  if (d)
+  if (d && *d)
     st->city=strdup(d);
   else
     st->city=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetRegion(const AB_BANKINFO *st) {
@@ -392,12 +411,14 @@ void AB_BankInfo_SetRegion(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->region)
     free(st->region);
-  if (d)
+  if (d && *d)
     st->region=strdup(d);
   else
     st->region=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetPhone(const AB_BANKINFO *st) {
@@ -410,12 +431,14 @@ void AB_BankInfo_SetPhone(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->phone)
     free(st->phone);
-  if (d)
+  if (d && *d)
     st->phone=strdup(d);
   else
     st->phone=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetFax(const AB_BANKINFO *st) {
@@ -428,12 +451,14 @@ void AB_BankInfo_SetFax(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->fax)
     free(st->fax);
-  if (d)
+  if (d && *d)
     st->fax=strdup(d);
   else
     st->fax=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetEmail(const AB_BANKINFO *st) {
@@ -446,12 +471,14 @@ void AB_BankInfo_SetEmail(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->email)
     free(st->email);
-  if (d)
+  if (d && *d)
     st->email=strdup(d);
   else
     st->email=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_BankInfo_GetWebsite(const AB_BANKINFO *st) {
@@ -464,12 +491,14 @@ void AB_BankInfo_SetWebsite(AB_BANKINFO *st, const char *d) {
   assert(st);
   if (st->website)
     free(st->website);
-  if (d)
+  if (d && *d)
     st->website=strdup(d);
   else
     st->website=0;
   st->_modified=1;
 }
+
+
 
 
 AB_BANKINFO_SERVICE_LIST *AB_BankInfo_GetServices(const AB_BANKINFO *st) {
@@ -500,6 +529,8 @@ void AB_BankInfo_SetServices(AB_BANKINFO *st, AB_BANKINFO_SERVICE_LIST *d) {
     st->services=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_BankInfo_IsModified(const AB_BANKINFO *st) {

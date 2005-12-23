@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_INHERIT_FUNCTIONS(AB_SPLIT)
 GWEN_LIST_FUNCTIONS(AB_SPLIT, AB_Split)
 GWEN_LIST2_FUNCTIONS(AB_SPLIT, AB_Split)
@@ -169,7 +170,7 @@ AB_SPLIT *st;
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-    if (dbT)  AB_Split_SetValue(st, AB_Value_fromDb(dbT));
+    if (dbT) st->value=AB_Value_fromDb(dbT);
   }
   if (1) {
     int i;
@@ -198,12 +199,14 @@ void AB_Split_SetCountry(AB_SPLIT *st, const char *d) {
   assert(st);
   if (st->country)
     free(st->country);
-  if (d)
+  if (d && *d)
     st->country=strdup(d);
   else
     st->country=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Split_GetBankCode(const AB_SPLIT *st) {
@@ -216,12 +219,14 @@ void AB_Split_SetBankCode(AB_SPLIT *st, const char *d) {
   assert(st);
   if (st->bankCode)
     free(st->bankCode);
-  if (d)
+  if (d && *d)
     st->bankCode=strdup(d);
   else
     st->bankCode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Split_GetBranchId(const AB_SPLIT *st) {
@@ -234,12 +239,14 @@ void AB_Split_SetBranchId(AB_SPLIT *st, const char *d) {
   assert(st);
   if (st->branchId)
     free(st->branchId);
-  if (d)
+  if (d && *d)
     st->branchId=strdup(d);
   else
     st->branchId=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Split_GetAccountNumber(const AB_SPLIT *st) {
@@ -252,12 +259,14 @@ void AB_Split_SetAccountNumber(AB_SPLIT *st, const char *d) {
   assert(st);
   if (st->accountNumber)
     free(st->accountNumber);
-  if (d)
+  if (d && *d)
     st->accountNumber=strdup(d);
   else
     st->accountNumber=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Split_GetSuffix(const AB_SPLIT *st) {
@@ -270,12 +279,14 @@ void AB_Split_SetSuffix(AB_SPLIT *st, const char *d) {
   assert(st);
   if (st->suffix)
     free(st->suffix);
-  if (d)
+  if (d && *d)
     st->suffix=strdup(d);
   else
     st->suffix=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_STRINGLIST *AB_Split_GetName(const AB_SPLIT *st) {
@@ -294,6 +305,8 @@ void AB_Split_SetName(AB_SPLIT *st, const GWEN_STRINGLIST *d) {
     st->name=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_Split_AddName(AB_SPLIT *st, const char *d, int chk){
@@ -323,6 +336,8 @@ int AB_Split_HasName(const AB_SPLIT *st, const char *d) {
 }
 
 
+
+
 const AB_VALUE *AB_Split_GetValue(const AB_SPLIT *st) {
   assert(st);
   return st->value;
@@ -341,6 +356,8 @@ void AB_Split_SetValue(AB_SPLIT *st, const AB_VALUE *d) {
 }
 
 
+
+
 const GWEN_STRINGLIST *AB_Split_GetPurpose(const AB_SPLIT *st) {
   assert(st);
   return st->purpose;
@@ -357,6 +374,8 @@ void AB_Split_SetPurpose(AB_SPLIT *st, const GWEN_STRINGLIST *d) {
     st->purpose=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_Split_AddPurpose(AB_SPLIT *st, const char *d, int chk){
@@ -384,6 +403,8 @@ void AB_Split_ClearPurpose(AB_SPLIT *st) {
 int AB_Split_HasPurpose(const AB_SPLIT *st, const char *d) {
   return GWEN_StringList_HasString(st->purpose, d);
 }
+
+
 
 
 int AB_Split_IsModified(const AB_SPLIT *st) {

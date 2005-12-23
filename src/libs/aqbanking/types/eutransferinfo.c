@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(AB_EUTRANSFER_INFO, AB_EuTransferInfo)
 GWEN_LIST2_FUNCTIONS(AB_EUTRANSFER_INFO, AB_EuTransferInfo)
 
@@ -94,19 +95,19 @@ AB_EUTRANSFER_INFO *st;
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "fieldLimits");
-    if (dbT)  AB_EuTransferInfo_SetFieldLimits(st, AB_TransactionLimits_fromDb(dbT));
+    if (dbT) st->fieldLimits=AB_TransactionLimits_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "limitLocalValue");
-    if (dbT)  AB_EuTransferInfo_SetLimitLocalValue(st, AB_Value_fromDb(dbT));
+    if (dbT) st->limitLocalValue=AB_Value_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "limitForeignValue");
-    if (dbT)  AB_EuTransferInfo_SetLimitForeignValue(st, AB_Value_fromDb(dbT));
+    if (dbT) st->limitForeignValue=AB_Value_fromDb(dbT);
   }
   st->_modified=0;
   return st;
@@ -123,12 +124,14 @@ void AB_EuTransferInfo_SetCountryCode(AB_EUTRANSFER_INFO *st, const char *d) {
   assert(st);
   if (st->countryCode)
     free(st->countryCode);
-  if (d)
+  if (d && *d)
     st->countryCode=strdup(d);
   else
     st->countryCode=0;
   st->_modified=1;
 }
+
+
 
 
 const AB_TRANSACTION_LIMITS *AB_EuTransferInfo_GetFieldLimits(const AB_EUTRANSFER_INFO *st) {
@@ -149,6 +152,8 @@ void AB_EuTransferInfo_SetFieldLimits(AB_EUTRANSFER_INFO *st, const AB_TRANSACTI
 }
 
 
+
+
 const AB_VALUE *AB_EuTransferInfo_GetLimitLocalValue(const AB_EUTRANSFER_INFO *st) {
   assert(st);
   return st->limitLocalValue;
@@ -167,6 +172,8 @@ void AB_EuTransferInfo_SetLimitLocalValue(AB_EUTRANSFER_INFO *st, const AB_VALUE
 }
 
 
+
+
 const AB_VALUE *AB_EuTransferInfo_GetLimitForeignValue(const AB_EUTRANSFER_INFO *st) {
   assert(st);
   return st->limitForeignValue;
@@ -183,6 +190,8 @@ void AB_EuTransferInfo_SetLimitForeignValue(AB_EUTRANSFER_INFO *st, const AB_VAL
     st->limitForeignValue=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_EuTransferInfo_IsModified(const AB_EUTRANSFER_INFO *st) {

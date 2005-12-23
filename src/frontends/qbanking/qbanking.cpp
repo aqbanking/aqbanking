@@ -942,28 +942,32 @@ int QBanking::print(const char *docTitle,
 
 
 std::string QBanking::QStringToUtf8String(const QString &qs) {
-  QCString utfData=qs.utf8();
-
-  // Note: This commented-out code below introduced an extra
-  // char-by-char copying that I don't consider necessary. The
-  // std::string contains "char", not "unsigned char", so the
-  // right side below ("unsigned char") will be converted back to
-  // "char" when it is appended to the std::string on the left
-  // side. This is unnecessary. The only necessary thing is that
-  // the "const char*" buffer of the QCString is copied into a
-  // std::string, and exactly that happens when the std::string
-  // return value is created, so there is really nothing more to
-  // do.  -- cstim, 2005-09-19
-
-//   std::string result;
-//   int len;
-//   int i;
-//   len=utfData.length();
-//   for (i=0; i<len; i++)
-//     result+=(unsigned char)utfData[i];
-//   return result;
-
-  return utfData.data();
+  if (qs.isEmpty())
+    return "";
+  else {
+    QCString utfData=qs.utf8();
+  
+    // Note: This commented-out code below introduced an extra
+    // char-by-char copying that I don't consider necessary. The
+    // std::string contains "char", not "unsigned char", so the
+    // right side below ("unsigned char") will be converted back to
+    // "char" when it is appended to the std::string on the left
+    // side. This is unnecessary. The only necessary thing is that
+    // the "const char*" buffer of the QCString is copied into a
+    // std::string, and exactly that happens when the std::string
+    // return value is created, so there is really nothing more to
+    // do.  -- cstim, 2005-09-19
+  
+     //std::string result;
+     //int len;
+     //int i;
+     //len=utfData.length();
+     //for (i=0; i<len; i++)
+     //  result+=(unsigned char)utfData[i];
+     //return result;
+  
+    return utfData.data();
+  }
 }
 
 

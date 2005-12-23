@@ -102,9 +102,16 @@ void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
   else {
     GWEN_TYPE_UINT32 pos;
     FILE *f;
+    const char *s;
 
-    /* determine config file name */
-    GWEN_Buffer_AppendString(buf, home);
+    /* determine config directory */
+    s=getenv("AQBANKING_HOME");
+    if (s && !*s)
+      s=0;
+    if (s)
+      GWEN_Buffer_AppendString(buf, s);
+    else
+      GWEN_Buffer_AppendString(buf, home);
     GWEN_Buffer_AppendString(buf, DIRSEP);
     pos=GWEN_Buffer_GetPos(buf);
     GWEN_Buffer_AppendString(buf, AB_BANKING_USERDATADIR);

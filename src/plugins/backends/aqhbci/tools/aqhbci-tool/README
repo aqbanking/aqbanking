@@ -122,14 +122,23 @@ to activate the AqHBCI backend of AqBanking.
 2.1. Setup using a blank RSA card
 ---------------------------------
  1) gct-tool create -t starcoscard
-    This is only needed if the card does not already have a pin !!!
-    This is the case with completely new and empty cards. In this case
-    the pin must be changed from the preset value (the serial number of
-    the card in bcd encoding) in order to make the card available for use.
+     This is only needed if the card does not already have a pin !!!
+     This is the case with completely new and empty cards. In this case
+     the pin must be changed from the preset value (the serial number of
+     the card in bcd encoding) in order to make the card available for use.
 
  2) aqhbci-tool addmedium -t card
+
  3) aqhbci-tool listmedia
- 4) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
+
+ 4) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
+
  5) aqhbci-tool getkeys [-c CUSTOMER_ID]
      You will be asked three times to enter a pin:
      a) normal cardholder pin
@@ -178,13 +187,23 @@ to activate the AqHBCI backend of AqBanking.
 ----------------------------------
 
  1) gct-tool create -t ohbci -n ABSOLUTE_PATH_TO_NEW_FILE
-    This creates an empty keyfile. This file can not be used with older
-    version of AqHBCI/AqBanking or OpenHBCI!
+     This creates an empty keyfile. This file can not be used with older
+     version of AqHBCI/AqBanking or OpenHBCI!
  
  2) aqhbci-tool addmedium -t file -m ABSOLUTE_PATH_TO_FILE
+
  3) aqhbci-tool listmedia
- 4) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
+
+ 4) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
+
  5) aqhbci-tool getkeys [-c CUSTOMER_ID]
+
  6) aqhbci-tool iniletter -B [-c CUSTOMER_ID]
      This prints the iniletter of your bank. Please compare the data to the
      one on the letter from your bank.
@@ -214,8 +233,14 @@ to activate the AqHBCI backend of AqBanking.
  1) aqhbci-tool addmedium -t card
 
  2) aqhbci-tool listmedia
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
 
- 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 3) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
 
  4) aqhbci-tool getaccounts [-c CUSTOMER_ID]
 
@@ -229,19 +254,25 @@ to activate the AqHBCI backend of AqBanking.
  1) aqhbci-tool addmedium -t pintan
 
  2) aqhbci-tool listmedia
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
 
- 3) aqhbci-tool adduser -m 0 
+ 3) aqhbci-tool adduser -m X
                         -u USER_ID [-c CUSTOMER_ID] 
                         -b BANKLEITZAHL 
                         [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
 
  4) aqhbci-tool getsysid [-c CUSTOMER_ID]
-   This is the first contact with the bank server, so you will most
-   probably be presented a dialog which contains the servers SSL
-   certificate. Please check the line "Status : xyz".
-   If this line looks suspect to you or the given finger print does not
-   match a known fingerprint of the servers SSL certificate you should
-   abort the connection and contact your bank.
+    This is the first contact with the bank server, so you will most
+    probably be presented a dialog which contains the servers SSL
+    certificate. Please check the line "Status : xyz".
+    If this line looks suspect to you or the given finger print does not
+    match a known fingerprint of the servers SSL certificate you should
+    abort the connection and contact your bank.
 
  5) aqhbci-tool getaccounts [-c CUSTOMER_ID]
 
@@ -260,8 +291,14 @@ to activate the AqHBCI backend of AqBanking.
  1) aqhbci-tool addmedium -t file -m ABSOLUTE_PATH_TO_FILE
  
  2) aqhbci-tool listmedia
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
  
- 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 3) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
  
  4) aqhbci-tool getsysid [-c CUSTOMER_ID]
 
@@ -280,8 +317,14 @@ to activate the AqHBCI backend of AqBanking.
  1) aqhbci-tool addmedium -t card
  
  2) aqhbci-tool listmedia
+     This shows a list of already known media keyfiles, chipcards etc).
+     Each entry of the list begins with "Medium X: ...". 
+     "X" is the index number of the medium in the list, this number is needed
+     as argument to "-m" in the next step.
  
- 3) aqhbci-tool adduser -m 0 [-s SERVER-ADDRESS]
+ 3) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+     "X" is now the medium index number as retrieved via the command 
+     "listmedia" from the previous step.
  
  4) aqhbci-tool getsysid [-c CUSTOMER_ID]
 

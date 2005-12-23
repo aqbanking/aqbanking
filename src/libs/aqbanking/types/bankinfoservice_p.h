@@ -6,6 +6,7 @@
 
 #include "bankinfoservice_l.h"
 
+
 struct AB_BANKINFO_SERVICE {
   GWEN_LIST_ELEMENT(AB_BANKINFO_SERVICE)
   int _usage;

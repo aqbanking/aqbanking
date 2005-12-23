@@ -460,7 +460,7 @@ AH_MSGENGINE *AH_MsgEngine_Data_new() {
 void AH_MsgEngine_Data_free(AH_MSGENGINE *x) {
   assert(x);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Destroying AH_MSGENGINE");
-  free(x);
+  GWEN_FREE_OBJECT(x);
 }
 
 

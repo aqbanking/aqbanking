@@ -152,7 +152,7 @@ void AH_HBCI_free(AH_HBCI *hbci){
 
     GWEN_XMLNode_free(hbci->defs);
 
-    free(hbci);
+    GWEN_FREE_OBJECT(hbci);
     GWEN_Logger_Close(AQHBCI_LOGDOMAIN);
   }
 }

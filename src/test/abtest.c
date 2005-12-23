@@ -976,6 +976,7 @@ int test11(int argc, char **argv) {
     AB_BankInfo_List2Iterator_free(bit);
   }
   AB_BankInfo_List2_free(bl);
+  AB_BankInfo_free(tbi);
 
   fprintf(stderr, "Deinitializing AB_Banking...\n");
   rv=AB_Banking_Fini(ab);
@@ -1046,6 +1047,7 @@ int test12(int argc, char **argv) {
     AB_BankInfo_List2Iterator_free(bit);
   }
   AB_BankInfo_List2_free(bl);
+  AB_BankInfo_free(tbi);
 
   fprintf(stderr, "Deinitializing AB_Banking...\n");
   rv=AB_Banking_Fini(ab);

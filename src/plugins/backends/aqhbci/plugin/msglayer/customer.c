@@ -265,7 +265,7 @@ void AH_Customer_free(AH_CUSTOMER *cu){
       free(cu->fullName);
       GWEN_MsgEngine_free(cu->msgEngine);
       /* AH_User_free(cu->user); */
-      free(cu);
+      GWEN_FREE_OBJECT(cu);
     }
   }
 }

@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_INHERIT_FUNCTIONS(AB_TRANSACTION)
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
 GWEN_LIST2_FUNCTIONS(AB_TRANSACTION, AB_Transaction)
@@ -612,19 +613,19 @@ AB_TRANSACTION *st;
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
-    if (dbT)  AB_Transaction_SetValutaDate(st, GWEN_Time_fromDb(dbT));
+    if (dbT) st->valutaDate=GWEN_Time_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-    if (dbT)  AB_Transaction_SetDate(st, GWEN_Time_fromDb(dbT));
+    if (dbT) st->date=GWEN_Time_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-    if (dbT)  AB_Transaction_SetValue(st, AB_Value_fromDb(dbT));
+    if (dbT) st->value=AB_Value_fromDb(dbT);
   }
   st->splits=AB_Split_List_new();
   if (1) {
@@ -688,19 +689,19 @@ AB_TRANSACTION *st;
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "firstExecutionDate");
-    if (dbT)  AB_Transaction_SetFirstExecutionDate(st, GWEN_Time_fromDb(dbT));
+    if (dbT) st->firstExecutionDate=GWEN_Time_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastExecutionDate");
-    if (dbT)  AB_Transaction_SetLastExecutionDate(st, GWEN_Time_fromDb(dbT));
+    if (dbT) st->lastExecutionDate=GWEN_Time_fromDb(dbT);
   }
   if (1) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "nextExecutionDate");
-    if (dbT)  AB_Transaction_SetNextExecutionDate(st, GWEN_Time_fromDb(dbT));
+    if (dbT) st->nextExecutionDate=GWEN_Time_fromDb(dbT);
   }
   AB_Transaction_SetType(st, AB_Transaction_Type_fromString(GWEN_DB_GetCharValue(db, "type", 0, 0)));
   AB_Transaction_SetSubType(st, AB_Transaction_SubType_fromString(GWEN_DB_GetCharValue(db, "subType", 0, 0)));
@@ -725,12 +726,14 @@ void AB_Transaction_SetLocalCountry(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localCountry)
     free(st->localCountry);
-  if (d)
+  if (d && *d)
     st->localCountry=strdup(d);
   else
     st->localCountry=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalBankCode(const AB_TRANSACTION *st) {
@@ -743,12 +746,14 @@ void AB_Transaction_SetLocalBankCode(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localBankCode)
     free(st->localBankCode);
-  if (d)
+  if (d && *d)
     st->localBankCode=strdup(d);
   else
     st->localBankCode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalBranchId(const AB_TRANSACTION *st) {
@@ -761,12 +766,14 @@ void AB_Transaction_SetLocalBranchId(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localBranchId)
     free(st->localBranchId);
-  if (d)
+  if (d && *d)
     st->localBranchId=strdup(d);
   else
     st->localBranchId=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalAccountNumber(const AB_TRANSACTION *st) {
@@ -779,12 +786,14 @@ void AB_Transaction_SetLocalAccountNumber(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localAccountNumber)
     free(st->localAccountNumber);
-  if (d)
+  if (d && *d)
     st->localAccountNumber=strdup(d);
   else
     st->localAccountNumber=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *st) {
@@ -797,12 +806,14 @@ void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localSuffix)
     free(st->localSuffix);
-  if (d)
+  if (d && *d)
     st->localSuffix=strdup(d);
   else
     st->localSuffix=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *st) {
@@ -815,12 +826,14 @@ void AB_Transaction_SetLocalName(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->localName)
     free(st->localName);
-  if (d)
+  if (d && *d)
     st->localName=strdup(d);
   else
     st->localName=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *st) {
@@ -833,12 +846,14 @@ void AB_Transaction_SetRemoteCountry(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteCountry)
     free(st->remoteCountry);
-  if (d)
+  if (d && *d)
     st->remoteCountry=strdup(d);
   else
     st->remoteCountry=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteBankName(const AB_TRANSACTION *st) {
@@ -851,12 +866,14 @@ void AB_Transaction_SetRemoteBankName(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteBankName)
     free(st->remoteBankName);
-  if (d)
+  if (d && *d)
     st->remoteBankName=strdup(d);
   else
     st->remoteBankName=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteBankLocation(const AB_TRANSACTION *st) {
@@ -869,12 +886,14 @@ void AB_Transaction_SetRemoteBankLocation(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteBankLocation)
     free(st->remoteBankLocation);
-  if (d)
+  if (d && *d)
     st->remoteBankLocation=strdup(d);
   else
     st->remoteBankLocation=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteBankCode(const AB_TRANSACTION *st) {
@@ -887,12 +906,14 @@ void AB_Transaction_SetRemoteBankCode(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteBankCode)
     free(st->remoteBankCode);
-  if (d)
+  if (d && *d)
     st->remoteBankCode=strdup(d);
   else
     st->remoteBankCode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteBranchId(const AB_TRANSACTION *st) {
@@ -905,12 +926,14 @@ void AB_Transaction_SetRemoteBranchId(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteBranchId)
     free(st->remoteBranchId);
-  if (d)
+  if (d && *d)
     st->remoteBranchId=strdup(d);
   else
     st->remoteBranchId=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteAccountNumber(const AB_TRANSACTION *st) {
@@ -923,12 +946,14 @@ void AB_Transaction_SetRemoteAccountNumber(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteAccountNumber)
     free(st->remoteAccountNumber);
-  if (d)
+  if (d && *d)
     st->remoteAccountNumber=strdup(d);
   else
     st->remoteAccountNumber=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteSuffix(const AB_TRANSACTION *st) {
@@ -941,12 +966,14 @@ void AB_Transaction_SetRemoteSuffix(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteSuffix)
     free(st->remoteSuffix);
-  if (d)
+  if (d && *d)
     st->remoteSuffix=strdup(d);
   else
     st->remoteSuffix=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteIban(const AB_TRANSACTION *st) {
@@ -959,12 +986,14 @@ void AB_Transaction_SetRemoteIban(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteIban)
     free(st->remoteIban);
-  if (d)
+  if (d && *d)
     st->remoteIban=strdup(d);
   else
     st->remoteIban=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_STRINGLIST *AB_Transaction_GetRemoteName(const AB_TRANSACTION *st) {
@@ -983,6 +1012,8 @@ void AB_Transaction_SetRemoteName(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) 
     st->remoteName=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *d, int chk){
@@ -1012,6 +1043,8 @@ int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d) {
 }
 
 
+
+
 GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
   assert(st);
   return st->uniqueId;
@@ -1023,6 +1056,8 @@ void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, GWEN_TYPE_UINT32 d) {
   st->uniqueId=d;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_TIME *AB_Transaction_GetValutaDate(const AB_TRANSACTION *st) {
@@ -1043,6 +1078,8 @@ void AB_Transaction_SetValutaDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
 }
 
 
+
+
 const GWEN_TIME *AB_Transaction_GetDate(const AB_TRANSACTION *st) {
   assert(st);
   return st->date;
@@ -1061,6 +1098,8 @@ void AB_Transaction_SetDate(AB_TRANSACTION *st, const GWEN_TIME *d) {
 }
 
 
+
+
 const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *st) {
   assert(st);
   return st->value;
@@ -1077,6 +1116,8 @@ void AB_Transaction_SetValue(AB_TRANSACTION *st, const AB_VALUE *d) {
     st->value=0;
   st->_modified=1;
 }
+
+
 
 
 AB_SPLIT_LIST *AB_Transaction_GetSplits(const AB_TRANSACTION *st) {
@@ -1109,6 +1150,8 @@ void AB_Transaction_SetSplits(AB_TRANSACTION *st, AB_SPLIT_LIST *d) {
 }
 
 
+
+
 int AB_Transaction_GetTextKey(const AB_TRANSACTION *st) {
   assert(st);
   return st->textKey;
@@ -1122,6 +1165,8 @@ void AB_Transaction_SetTextKey(AB_TRANSACTION *st, int d) {
 }
 
 
+
+
 const char *AB_Transaction_GetTransactionKey(const AB_TRANSACTION *st) {
   assert(st);
   return st->transactionKey;
@@ -1132,12 +1177,14 @@ void AB_Transaction_SetTransactionKey(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->transactionKey)
     free(st->transactionKey);
-  if (d)
+  if (d && *d)
     st->transactionKey=strdup(d);
   else
     st->transactionKey=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetCustomerReference(const AB_TRANSACTION *st) {
@@ -1150,12 +1197,14 @@ void AB_Transaction_SetCustomerReference(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->customerReference)
     free(st->customerReference);
-  if (d)
+  if (d && *d)
     st->customerReference=strdup(d);
   else
     st->customerReference=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *st) {
@@ -1168,12 +1217,14 @@ void AB_Transaction_SetBankReference(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->bankReference)
     free(st->bankReference);
-  if (d)
+  if (d && *d)
     st->bankReference=strdup(d);
   else
     st->bankReference=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_Transaction_GetTransactionCode(const AB_TRANSACTION *st) {
@@ -1189,6 +1240,8 @@ void AB_Transaction_SetTransactionCode(AB_TRANSACTION *st, int d) {
 }
 
 
+
+
 const char *AB_Transaction_GetTransactionText(const AB_TRANSACTION *st) {
   assert(st);
   return st->transactionText;
@@ -1199,12 +1252,14 @@ void AB_Transaction_SetTransactionText(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->transactionText)
     free(st->transactionText);
-  if (d)
+  if (d && *d)
     st->transactionText=strdup(d);
   else
     st->transactionText=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetPrimanota(const AB_TRANSACTION *st) {
@@ -1217,12 +1272,14 @@ void AB_Transaction_SetPrimanota(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->primanota)
     free(st->primanota);
-  if (d)
+  if (d && *d)
     st->primanota=strdup(d);
   else
     st->primanota=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetFiId(const AB_TRANSACTION *st) {
@@ -1235,12 +1292,14 @@ void AB_Transaction_SetFiId(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->fiId)
     free(st->fiId);
-  if (d)
+  if (d && *d)
     st->fiId=strdup(d);
   else
     st->fiId=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_STRINGLIST *AB_Transaction_GetPurpose(const AB_TRANSACTION *st) {
@@ -1259,6 +1318,8 @@ void AB_Transaction_SetPurpose(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) {
     st->purpose=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_Transaction_AddPurpose(AB_TRANSACTION *st, const char *d, int chk){
@@ -1288,6 +1349,8 @@ int AB_Transaction_HasPurpose(const AB_TRANSACTION *st, const char *d) {
 }
 
 
+
+
 const GWEN_STRINGLIST *AB_Transaction_GetCategory(const AB_TRANSACTION *st) {
   assert(st);
   return st->category;
@@ -1304,6 +1367,8 @@ void AB_Transaction_SetCategory(AB_TRANSACTION *st, const GWEN_STRINGLIST *d) {
     st->category=0;
   st->_modified=1;
 }
+
+
 
 
 void AB_Transaction_AddCategory(AB_TRANSACTION *st, const char *d, int chk){
@@ -1333,6 +1398,8 @@ int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const char *d) {
 }
 
 
+
+
 AB_TRANSACTION_PERIOD AB_Transaction_GetPeriod(const AB_TRANSACTION *st) {
   assert(st);
   return st->period;
@@ -1344,6 +1411,8 @@ void AB_Transaction_SetPeriod(AB_TRANSACTION *st, AB_TRANSACTION_PERIOD d) {
   st->period=d;
   st->_modified=1;
 }
+
+
 
 
 int AB_Transaction_GetCycle(const AB_TRANSACTION *st) {
@@ -1359,6 +1428,8 @@ void AB_Transaction_SetCycle(AB_TRANSACTION *st, int d) {
 }
 
 
+
+
 int AB_Transaction_GetExecutionDay(const AB_TRANSACTION *st) {
   assert(st);
   return st->executionDay;
@@ -1370,6 +1441,8 @@ void AB_Transaction_SetExecutionDay(AB_TRANSACTION *st, int d) {
   st->executionDay=d;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_TIME *AB_Transaction_GetFirstExecutionDate(const AB_TRANSACTION *st) {
@@ -1390,6 +1463,8 @@ void AB_Transaction_SetFirstExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d
 }
 
 
+
+
 const GWEN_TIME *AB_Transaction_GetLastExecutionDate(const AB_TRANSACTION *st) {
   assert(st);
   return st->lastExecutionDate;
@@ -1406,6 +1481,8 @@ void AB_Transaction_SetLastExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d)
     st->lastExecutionDate=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_TIME *AB_Transaction_GetNextExecutionDate(const AB_TRANSACTION *st) {
@@ -1426,6 +1503,8 @@ void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *st, const GWEN_TIME *d)
 }
 
 
+
+
 AB_TRANSACTION_TYPE AB_Transaction_GetType(const AB_TRANSACTION *st) {
   assert(st);
   return st->type;
@@ -1437,6 +1516,8 @@ void AB_Transaction_SetType(AB_TRANSACTION *st, AB_TRANSACTION_TYPE d) {
   st->type=d;
   st->_modified=1;
 }
+
+
 
 
 AB_TRANSACTION_SUBTYPE AB_Transaction_GetSubType(const AB_TRANSACTION *st) {
@@ -1452,6 +1533,8 @@ void AB_Transaction_SetSubType(AB_TRANSACTION *st, AB_TRANSACTION_SUBTYPE d) {
 }
 
 
+
+
 AB_TRANSACTION_STATUS AB_Transaction_GetStatus(const AB_TRANSACTION *st) {
   assert(st);
   return st->status;
@@ -1463,6 +1546,8 @@ void AB_Transaction_SetStatus(AB_TRANSACTION *st, AB_TRANSACTION_STATUS d) {
   st->status=d;
   st->_modified=1;
 }
+
+
 
 
 AB_TRANSACTION_CHARGE AB_Transaction_GetCharge(const AB_TRANSACTION *st) {
@@ -1478,6 +1563,8 @@ void AB_Transaction_SetCharge(AB_TRANSACTION *st, AB_TRANSACTION_CHARGE d) {
 }
 
 
+
+
 const char *AB_Transaction_GetRemoteAddrStreet(const AB_TRANSACTION *st) {
   assert(st);
   return st->remoteAddrStreet;
@@ -1488,12 +1575,14 @@ void AB_Transaction_SetRemoteAddrStreet(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteAddrStreet)
     free(st->remoteAddrStreet);
-  if (d)
+  if (d && *d)
     st->remoteAddrStreet=strdup(d);
   else
     st->remoteAddrStreet=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteAddrZipcode(const AB_TRANSACTION *st) {
@@ -1506,12 +1595,14 @@ void AB_Transaction_SetRemoteAddrZipcode(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteAddrZipcode)
     free(st->remoteAddrZipcode);
-  if (d)
+  if (d && *d)
     st->remoteAddrZipcode=strdup(d);
   else
     st->remoteAddrZipcode=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemoteAddrCity(const AB_TRANSACTION *st) {
@@ -1524,12 +1615,14 @@ void AB_Transaction_SetRemoteAddrCity(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remoteAddrCity)
     free(st->remoteAddrCity);
-  if (d)
+  if (d && *d)
     st->remoteAddrCity=strdup(d);
   else
     st->remoteAddrCity=0;
   st->_modified=1;
 }
+
+
 
 
 const char *AB_Transaction_GetRemotePhone(const AB_TRANSACTION *st) {
@@ -1542,12 +1635,14 @@ void AB_Transaction_SetRemotePhone(AB_TRANSACTION *st, const char *d) {
   assert(st);
   if (st->remotePhone)
     free(st->remotePhone);
-  if (d)
+  if (d && *d)
     st->remotePhone=strdup(d);
   else
     st->remotePhone=0;
   st->_modified=1;
 }
+
+
 
 
 int AB_Transaction_IsModified(const AB_TRANSACTION *st) {

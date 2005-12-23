@@ -98,12 +98,12 @@ void QBSelectBank::slotUpdate() {
   std::string sBic;
   std::string sName;
   std::string sLoc;
-  AB_BANKINFO_LIST2 *bl;
-  AB_BANKINFO *tbi;
+  AB_BANKINFO_LIST2 *bl=0;
+  AB_BANKINFO *tbi=0;
   int rv;
 
   if (!_changed) {
-    DBG_ERROR(0, "No changed, not updating...");
+    DBG_ERROR(0, "Not changed, not updating...");
     return;
   }
   DBG_ERROR(0, "Updating...");
@@ -135,7 +135,6 @@ void QBSelectBank::slotUpdate() {
                                       _country.c_str(),
                                       tbi,
                                       bl);
-
   if (rv==0) {
     AB_BANKINFO_LIST2_ITERATOR *it;
 
@@ -252,8 +251,9 @@ AB_BANKINFO *QBSelectBank::_getBankInfo() {
   bl=AB_BankInfo_List2_new();
   tbi=AB_BankInfo_new();
 
-  DBG_ERROR(0, "Bankname: %s Location: %s",
-            sName.c_str(), sLoc.c_str());
+  DBG_ERROR(0, "Bankname: %s Location: %s BIC: %s BankCode: %s",
+            sName.c_str(), sLoc.c_str(),
+            sBic.c_str(), sBankCode.c_str());
 
   if (sBankCode.length()>=3) {
     DBG_ERROR(0, "Setting bank id");
@@ -280,7 +280,6 @@ AB_BANKINFO *QBSelectBank::_getBankInfo() {
                                       _country.c_str(),
                                       tbi,
                                       bl);
-
   if (rv==0) {
     AB_BANKINFO_LIST2_ITERATOR *it;
 
@@ -333,6 +332,7 @@ AB_BANKINFO *QBSelectBank::_getBankInfo() {
       AB_BankInfo_List2Iterator_free(it);
     } // if list not empty
   } // if list received
+
   AB_BankInfo_List2_freeAll(bl);
   AB_BankInfo_free(tbi);
   return nbi;
@@ -368,13 +368,14 @@ void QBSelectBank::slotDoubleClicked(QListViewItem *lv,
 
 
 AB_BANKINFO *QBSelectBank::selectBank(QBanking *kb,
-                                    QWidget* parent,
-                                    const QString &title,
-                                    const QString &country,
-                                    const QString &bankCode,
-                                    const QString &swiftCode,
-                                    const QString &bankName,
-                                    const QString &location) {
+				      QWidget *parent,
+				      const QString &title,
+				      const QString &country,
+				      const QString &bankCode,
+				      const QString &swiftCode,
+				      const QString &bankName,
+				      const QString &location) {
+
   QBSelectBank sb(kb, parent, 0, false);
 
   if (!title.isEmpty())
@@ -382,12 +383,17 @@ AB_BANKINFO *QBSelectBank::selectBank(QBanking *kb,
   if (!country.isEmpty()) {
     sb._country=QBanking::QStringToUtf8String(country);
   }
-  sb.bankCodeEdit->setText(bankCode);
-  sb.swiftCodeEdit->setText(swiftCode);
-  sb.bankNameEdit->setText(bankName);
-  sb.locationEdit->setText(location);
+  if (!bankCode.isEmpty())
+    sb.bankCodeEdit->setText(bankCode);
+  if (!swiftCode.isEmpty())
+    sb.swiftCodeEdit->setText(swiftCode);
+  if (!bankName.isEmpty())
+    sb.bankNameEdit->setText(bankName);
+  if (!location.isEmpty())
+    sb.locationEdit->setText(location);
   sb._changed=true;
   sb.slotUpdate();
+
   if (sb.exec()==QDialog::Accepted) {
     const AB_BANKINFO *bi;
 

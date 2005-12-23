@@ -119,7 +119,7 @@ void AH_Dialog_free(AH_DIALOG *dlg){
       GWEN_DB_Group_free(dlg->globalValues);
       AH_Customer_free(dlg->dialogOwner);
 
-      free(dlg);
+      GWEN_FREE_OBJECT(dlg);
     }
   }
 }

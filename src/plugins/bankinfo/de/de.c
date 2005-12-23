@@ -47,6 +47,9 @@ GWEN_PLUGIN *bankinfo_de_factory(GWEN_PLUGIN_MANAGER *pm,
 AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_BANKINFO_PLUGIN *bip;
   AB_BANKINFO_PLUGIN_DE *bde;
+#ifdef HAVE_KTOBLZCHECK
+  const char *s;
+#endif
 
   bip=AB_BankInfoPluginGENERIC_new(ab, db, "de");
   GWEN_NEW_OBJECT(AB_BANKINFO_PLUGIN_DE, bde);
@@ -56,6 +59,16 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
   bde->banking=ab;
   bde->dbData=db;
 #ifdef HAVE_KTOBLZCHECK
+  s=AccountNumberCheck_libraryVersion();
+  if (s && GWEN_Text_ComparePattern(s, "1.8*", 0)!=-1) {
+    DBG_WARN(AQBANKING_LOGDOMAIN,
+             "WARNING:\n"
+             "Bad version of KtoBlzCheck detected, "
+             "please upgrade to 1.9.x or better.\n"
+             " There is at least one known version of the 1.8 branch\n"
+             " which corrupts the heap.\n");
+  }
+
   bde->checker = AccountNumberCheck_new();
   if (!bde->checker) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,

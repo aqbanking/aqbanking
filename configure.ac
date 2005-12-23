@@ -16,9 +16,9 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=8
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
@@ -1543,6 +1543,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
   src/plugins/imexporters/csv/profiles/comdirect.conf
   src/plugins/imexporters/csv/profiles/mijnpostbank.conf
+  src/plugins/imexporters/csv/profiles/spk-aachen.conf
   src/plugins/imexporters/csv/profiles/test.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml

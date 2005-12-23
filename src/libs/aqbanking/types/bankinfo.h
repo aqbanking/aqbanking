@@ -162,6 +162,7 @@ typedef struct AB_BANKINFO AB_BANKINFO;
 extern "C" {
 #endif
 
+
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_BANKINFO, AB_BankInfo, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself

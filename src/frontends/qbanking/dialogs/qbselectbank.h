@@ -36,10 +36,11 @@ private:
 
 public:
   QBSelectBank(QBanking *kb,
-             QWidget* parent = 0,
-             const char* name = 0,
-             bool modal = FALSE,
-             WFlags fl = 0);
+               QWidget* parent = 0,
+               const char* name = 0,
+               bool modal = FALSE,
+               WFlags fl = 0);
+
   ~QBSelectBank();
 
   const AB_BANKINFO *selectedBankInfo() const;

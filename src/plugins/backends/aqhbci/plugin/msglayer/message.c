@@ -200,7 +200,7 @@ void AH_Msg_free(AH_MSG *hmsg){
     }
     GWEN_DB_Group_free(hmsg->decodedMsg);
 
-    free(hmsg);
+    GWEN_FREE_OBJECT(hmsg);
   }
 }
 

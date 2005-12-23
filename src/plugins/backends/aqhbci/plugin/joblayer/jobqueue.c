@@ -65,7 +65,7 @@ void AH_JobQueue_free(AH_JOBQUEUE *jq){
       free(jq->usedPin);
 
       GWEN_LIST_FINI(AH_JOBQUEUE, jq);
-      free(jq);
+      GWEN_FREE_OBJECT(jq);
     }
   }
 }
