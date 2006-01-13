@@ -131,10 +131,10 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
     textBrowser->setSource(home);
 
   QPopupMenu* file = new QPopupMenu( this );
-  file->insertItem( tr("&New Window"), this, SLOT( slotNewWindow() ), CTRL+Key_N );
-  file->insertItem( tr("&Print"), this, SLOT( slotPrint() ), CTRL+Key_P );
+  file->insertItem( tr("&New Window"), this, SLOT( slotNewWindow() ), Qt::CTRL+Qt::Key_N );
+  file->insertItem( tr("&Print"), this, SLOT( slotPrint() ), Qt::CTRL+Qt::Key_P );
   file->insertSeparator();
-  file->insertItem( tr("&Close"), this, SLOT( close() ), CTRL+Key_Q );
+  file->insertItem( tr("&Close"), this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
   // The same three icons are used twice each.
   QIconSet icon_back(QPixmap((const char**)back_xpm));
@@ -146,12 +146,12 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
                              tr("&Backward"),
                              textBrowser,
                              SLOT(backward()),
-                             CTRL+Key_Left);
+                             Qt::CTRL+Qt::Key_Left);
   _forwardId = go->insertItem(icon_forward,
                               tr("&Forward"),
                               textBrowser,
                               SLOT(forward()),
-                              CTRL+Key_Right );
+                              Qt::CTRL+Qt::Key_Right );
   go->insertItem( icon_home, tr("&Home"), textBrowser, SLOT( home() ) );
 
   QPopupMenu* help = new QPopupMenu( this );
