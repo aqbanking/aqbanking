@@ -238,7 +238,7 @@ qt4-port:
 	  make -C $$d qt4-port; \
 	done
 
-BUILT_SOURCES=sl-headers
+BUILT_SOURCES = $(iheader_HEADERS) sl-headers
 CLEANFILES += $(BUILT_SOURCES)
 
 symlinks: mksymlinks.sh
