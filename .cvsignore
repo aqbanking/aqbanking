@@ -32,3 +32,4 @@ qtsources
 mksymlinks.sh
 sl-headers
 *.pc
+system.h
