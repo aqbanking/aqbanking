@@ -1,3 +1,8 @@
+2006-01-13   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Disable -fvisibility gcc option on mingw/windows
+	-- seems to be not implemented there.
+
 ===========================================================================
 MARK: Merged AqBanking2 "branch_2_0" back onto HEAD. (2006-01-13)
 ===========================================================================

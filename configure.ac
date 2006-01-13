@@ -967,6 +967,20 @@ case `basename $CC` in
     visibility_supported="no (needs gcc >=3.4, you use $CC)"
     ;;
 esac
+
+# -fvisibility is at least not available on MinGW/gcc-3.4.4 (will
+# give an "unrecognized cmdline option"). Also, unfortunately I
+# don't know an easy way to ask the compiler here. Maybe
+# http://autoconf-archive.cryp.to/ax_cflags_gcc_option.html
+case "$OS_TYPE" in
+  windows)
+        visibility_supported="no (not yet on MinGW/Windows)"
+        visibility_cflags=""
+	;;
+  *)
+	;;
+esac
+
 AC_MSG_RESULT(${visibility_supported})
 AC_SUBST(visibility_cflags)
 
