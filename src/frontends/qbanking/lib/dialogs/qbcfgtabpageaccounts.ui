@@ -63,42 +63,6 @@
                 </property>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>accountMapButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Map</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Map the selected account to application accounts</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>&lt;qt&gt;
-&lt;p&gt;
-When you press this button you can map online accounts to accounts
-of your application.
-&lt;/p&gt;
-&lt;/qt&gt;</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer22</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Vertical</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Fixed</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>21</width>
-                            <height>16</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
                         <cstring>accountNewButton</cstring>
                     </property>
                     <property name="text">

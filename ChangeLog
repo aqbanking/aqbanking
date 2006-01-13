@@ -1,10 +1,14 @@
+===========================================================================
+MARK: Merged tag branch_2_0_merge2 back onto HEAD. (2006-01-13)
+===========================================================================
+
 2006-01-13   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Disable -fvisibility gcc option on mingw/windows
 	-- seems to be not implemented there.
 
 ===========================================================================
-MARK: Merged AqBanking2 "branch_2_0" back onto HEAD. (2006-01-13)
+MARK: Merged tag branch_2_0_merge1 back onto HEAD. (2006-01-13)
 ===========================================================================
 
 2006/01/13: Martin Preuss<martin@libchipcard.de>
@@ -14,6 +18,16 @@ MARK: Merged AqBanking2 "branch_2_0" back onto HEAD. (2006-01-13)
   lists. This will allow us to get an account status even if a bank does not
   explicitly support the job "getBalance". These account status lists are
   now also sampled upon AB_Banking_GatherJobListResponses().
+- backends no longer call setlocale() (this is done in AqBanking, and all
+  backends provided by AqBanking use the same PACKAGE string)
+- re-enabled backend AqGeldKarte
+- removed some unneeded files and folders from AqGeldKarte QT stuff
+- QBanking's settings dialogs are now able to create new accounts
+- QBanking's settings dialogs are now able to create new users even if the
+  backend configuration module does not provide a user wizard (in this case
+  the user is simply created and edited)
+- AB_Banking_CreateAccount() now assigns a unique id to the newly created
+  account
 
 
 2006/01/12: Martin Preuss<martin@libchipcard.de>

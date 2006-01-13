@@ -13,11 +13,12 @@
 #ifndef AG_ACCOUNT_P_H
 #define AG_ACCOUNT_P_H
 
-#include <aqgeldkarte/account.h>
+#include "account_l.h"
 
 
+typedef struct AG_ACCOUNT AG_ACCOUNT;
 struct AG_ACCOUNT {
-  char *cardId;
+  int dummy;
 };
 
 void AG_Account_FreeData(void *bp, void *p);

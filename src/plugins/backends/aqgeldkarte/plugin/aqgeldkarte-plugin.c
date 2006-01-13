@@ -2,11 +2,9 @@
 # include "config.h"
 #endif
 
-#undef BUILDING_AQGELDKARTE_DLL
-#undef BUILDING_DLL
+#undef BUILDING_AQGELDKARTE
 
 #include "provider.h"
-#include "provider_p.h"
 #include "aqgeldkarte_l.h"
 
 
@@ -15,8 +13,8 @@
 
 /* interface to gwens plugin loader */
 GWEN_PLUGIN *provider_aqgeldkarte_factory(GWEN_PLUGIN_MANAGER *pm,
-                                      const char *name,
-                                      const char *fileName) {
+                                          const char *name,
+                                          const char *fileName) {
   return GWEN_Plugin_new(pm, name, fileName);
 }
 

@@ -159,13 +159,27 @@ void QBCfgTabPageUsers::slotUserNew() {
         }
       }
       else {
-        DBG_ERROR(0, "Backend module can not create users");
+        AB_USER *u;
+
+        DBG_INFO(0, "Backend module does not provide a user wizard");
+        u=AB_Banking_CreateUser(getBanking()->getCInterface(),
+                                s.c_str());
+        assert(u);
+        if (QBEditUser::editUser(getBanking(), u, this)) {
+          DBG_INFO(0, "Accepted, adding user");
+          AB_Banking_AddUser(getBanking()->getCInterface(), u);
+        }
+        else {
+          DBG_INFO(0, "Rejected");
+          AB_User_free(u);
+        }
       }
     }
     else {
       DBG_ERROR(0, "Config module for backend \"%s\" not found",
                 s.c_str());
     }
+    updateView();
   }
 }
 
@@ -189,6 +203,7 @@ void QBCfgTabPageUsers::slotUserEdit() {
   else {
     DBG_INFO(0, "Rejected");
   }
+  updateView();
 }
 
 

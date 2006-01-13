@@ -178,9 +178,6 @@ int AD_Provider_AddDebitNote(AB_PROVIDER *pro,
 
 int AD_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AD_PROVIDER *dp;
-#ifdef HAVE_I18N
-  const char *s;
-#endif
   const char *logLevelName;
 
   if (!GWEN_Logger_IsOpen(AQDTAUS_LOGDOMAIN)) {
@@ -212,18 +209,6 @@ int AD_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AD_PROVIDER, pro);
   assert(dp);
-
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  s=bindtextdomain(PACKAGE,  LOCALEDIR);
-  if (s) {
-    DBG_NOTICE(AQDTAUS_LOGDOMAIN, "Locale bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-  else {
-    DBG_ERROR(AQDTAUS_LOGDOMAIN, "Error binding locale");
-  }
-#endif
 
   dp->dbConfig=dbData;
   dp->lastJobId=GWEN_DB_GetIntValue(dp->dbConfig, "lastJobId", 0, 0);

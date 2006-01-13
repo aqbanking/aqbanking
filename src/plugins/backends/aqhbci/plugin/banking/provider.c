@@ -113,9 +113,6 @@ void AH_Provider_FreeData(void *bp, void *p) {
 int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AH_PROVIDER *hp;
   int rv;
-#ifdef HAVE_I18N
-  const char *s;
-#endif
   const char *logLevelName;
 
   if (!GWEN_Logger_IsOpen(AQHBCI_LOGDOMAIN)) {
@@ -149,18 +146,6 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   assert(hp);
 
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
-
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  s=bindtextdomain(PACKAGE,  LOCALEDIR);
-  if (s) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Locale bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error binding locale");
-  }
-#endif
 
   hp->dbConfig=dbData;
   rv=AH_HBCI_Init(hp->hbci);

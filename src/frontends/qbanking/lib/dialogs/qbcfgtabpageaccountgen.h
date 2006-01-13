@@ -44,6 +44,8 @@ public:
   virtual bool toGui();
   virtual bool checkGui();
 
+  virtual void updateView();
+
 public slots:
   void slotBankIdButtonClicked();
   void slotLeftButtonClicked();

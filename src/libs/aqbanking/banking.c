@@ -1397,6 +1397,7 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
   AB_ACCOUNT *a;
   AB_PROVIDER *pro;
   int rv;
+  GWEN_TYPE_UINT32 uid;
 
   assert(ab);
   pro=AB_Banking_GetProvider(ab, backendName);
@@ -1405,7 +1406,11 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
     return 0;
   }
 
+  uid=AB_Banking_GetUniqueId(ab);
+  assert(uid);
+
   a=AB_Account_new(ab, pro);
+  AB_Account_SetUniqueId(a, uid);
   rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Create);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
@@ -1419,14 +1424,10 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
 
 
 int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
-  GWEN_TYPE_UINT32 uid;
   int rv;
 
   assert(ab);
   assert(a);
-  uid=AB_Banking_GetUniqueId(ab);
-  assert(uid);
-  AB_Account_SetUniqueId(a, uid);
   rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
                                AB_ProviderExtendMode_Add);
   if (rv)

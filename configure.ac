@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -627,7 +627,7 @@ AC_SUBST(aqbanking_frontends)
 AC_ARG_WITH(backends, 
   [  --with-backends=list      space separated list of backends (default:all)],
   [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus"]
+  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte"]
 )
 AC_SUBST(aqbanking_backends)
 
@@ -1670,12 +1670,8 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqgeldkarte/plugin/aqgeldkarte.xml
   src/plugins/backends/aqgeldkarte/ui/Makefile
   src/plugins/backends/aqgeldkarte/ui/qt3/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/qt3_wizard/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/qt3_wizard/qt_wizard.xml
   src/plugins/backends/aqgeldkarte/ui/qt3/libs/Makefile
   src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/libs/views/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/libs/widgets/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/aqofxconnect-config.in

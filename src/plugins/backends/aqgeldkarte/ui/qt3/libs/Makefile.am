@@ -1,22 +1,31 @@
-INCLUDES=-I$(top_builddir)/headers \
-  -I dialogs -I widgets -Iviews @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/logmanager \
+  $(all_includes)
 
-SUBDIRS=widgets dialogs views
+SUBDIRS=dialogs
 
-noinst_LTLIBRARIES=libqt3wizard.la
+qbanking_plugindir=@qbanking_plugindir@/cfgmodules
+qbanking_plugin_LTLIBRARIES=aqgeldkarte.la
 
-libqt3wizard_la_SOURCES=dummy.cpp
+aqgeldkarte_la_SOURCES=cfgmodulegeldkarte.cpp
 
-libqt3wizard_la_LDFLAGS=@STRIPALL@
+noinst_HEADERS=\
+ cfgmodulegeldkarte_p.h
 
-libqt3wizard_la_LIBADD=\
+
+aqgeldkarte_la_LDFLAGS=@STRIPALL@ -module
+
+aqgeldkarte_la_LIBADD=\
   dialogs/libdialogs.la \
-  widgets/libwidgets.la \
-  views/libviews.la
+  $(aqgeldkarte_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(qbanking_internal_libs) \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
-BUILT_SOURCES = $(nodist_libqt3wizard_la_SOURCES)
-CLEANFILES = $(nodist_libqt3wizard_la_SOURCES)
+BUILT_SOURCES = $(nodist_aqgeldkarte_la_SOURCES)
+CLEANFILES = $(nodist_aqgeldkarte_la_SOURCES)
 
 sources:
 	for d in $(SUBDIRS); do \
@@ -34,7 +43,6 @@ qt4-port:
 	done
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
-
 
 built_sources: $(BUILT_SOURCES)
 	for d in $(SUBDIRS); do \

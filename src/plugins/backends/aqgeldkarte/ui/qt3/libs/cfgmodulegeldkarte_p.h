@@ -10,18 +10,29 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AG_CARD_P_H
-#define AG_CARD_P_H
 
-#include "card_l.h"
+#ifndef AQGELDKARTE_CFGMODULEGELDKARTE_H
+#define AQGELDKARTE_CFGMODULEGELDKARTE_H
+
+#include <qbanking/qbcfgmodule.h>
 
 
-struct AG_CARD {
-  GWEN_LIST_ELEMENT(AG_CARD);
-  AB_ACCOUNT *account;
-  AB_JOB_LIST2 *bankingJobs;
+#define CFGMODULEGELDKARTE_NAME "aqgeldkarte"
+
+
+class CfgModuleGeldKarte : public QBCfgModule {
+public:
+  CfgModuleGeldKarte(QBanking *qb, const QString &name);
+  virtual ~CfgModuleGeldKarte();
+
+  virtual QBCfgTabPageAccount *getEditAccountPage(AB_ACCOUNT *a,
+                                                  QWidget *parent=0);
+
 };
 
 
 
-#endif
+#endif // AQGELDKARTE_CFGMODULEGELDKARTE_H
+
+
+

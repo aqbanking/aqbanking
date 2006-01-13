@@ -46,7 +46,6 @@ public slots:
   void slotGetSysId();
   void slotGetAccounts();
   void slotFinishUser();
-  void accept();
 
 private:
   void _setComboTextIfPossible(QComboBox *qb, const QString &s);

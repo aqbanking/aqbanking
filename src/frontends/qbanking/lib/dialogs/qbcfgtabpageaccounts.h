@@ -44,7 +44,6 @@ public:
   virtual void updateView();
 
 public slots:
-  void slotAccountMap();
   void slotAccountNew();
   void slotAccountEdit();
   void slotAccountDel();

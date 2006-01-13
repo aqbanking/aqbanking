@@ -18,8 +18,10 @@ endif
 lib_LTLIBRARIES=libaqgeldkarte.la 
 
 noinst_HEADERS=\
+ account_l.h \
  account_p.h \
  aqgeldkarte_l.h \
+ card_l.h \
  card_p.h \
  provider_p.h
 
@@ -28,7 +30,6 @@ iheaderdir=${includedir}/aqgeldkarte
 iheader_HEADERS=\
  account.h \
  aqgeldkarte.h \
- card.h \
  provider.h
 
 libaqgeldkarte_la_SOURCES= \

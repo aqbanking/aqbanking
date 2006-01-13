@@ -11,37 +11,35 @@
  ***************************************************************************/
 
 
-#ifndef AQHBCI_CFGTABPAGEACCOUNT_H
-#define AQHBCI_CFGTABPAGEACCOUNT_H
+#ifndef AQGELDKARTE_CFGTABPAGEACCOUNT_H
+#define AQGELDKARTE_CFGTABPAGEACCOUNT_H
 
 
 #include <qbanking/qbcfgtabpageaccount.h>
 
 
-class CfgTabPageAccountHbciUi;
+class CfgTabPageAccountGeldKarteUi;
 
 
-class CfgTabPageAccountHbci: public QBCfgTabPageAccount {
+class CfgTabPageAccountGeldKarte: public QBCfgTabPageAccount {
   Q_OBJECT
 private:
-  CfgTabPageAccountHbciUi *_realPage;
+  CfgTabPageAccountGeldKarteUi *_realPage;
 
 public:
-  CfgTabPageAccountHbci(QBanking *qb,
-                         AB_ACCOUNT *a,
-                         QWidget *parent=0, const char *name=0, WFlags f=0);
-  virtual ~CfgTabPageAccountHbci();
+  CfgTabPageAccountGeldKarte(QBanking *qb,
+                             AB_ACCOUNT *a,
+                             QWidget *parent=0, const char *name=0,
+                             WFlags f=0);
+  virtual ~CfgTabPageAccountGeldKarte();
 
   virtual bool fromGui();
   virtual bool toGui();
   virtual bool checkGui();
 
 public slots:
-  void slotFloppyToggled(bool on);
-  void slotMountToggled(bool on);
-  void slotFolderLostFocus();
-  void slotFolder();
+  void slotReadFromCard();
 
 };
 
-#endif // AQHBCI_CFGTABPAGEACCOUNT_H
+#endif // AQGELDKARTE_CFGTABPAGEACCOUNT_H

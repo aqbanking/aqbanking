@@ -15,18 +15,42 @@
 #define AQGELDKARTE_AQGELDKARTE_H
 
 
-#ifdef __declspec
-# if BUILDING_AQGELDKARTE_DLL
-#  define AQGELDKARTE_API __declspec (dllexport)
-# else /* Not BUILDING_AQGELDKARTE_DLL */
-#  define AQGELDKARTE_API __declspec (dllimport)
-# endif /* Not BUILDING_AQGELDKARTE_DLL */
+#include <aqbanking/system.h>
+
+#ifdef BUILDING_AQGELDKARTE
+# /* building AqGELDKARTE */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQGELDKARTE_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define AQGELDKARTE_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define AQGELDKARTE_API __attribute__((visibility("default")))
+#   else
+#     define AQGELDKARTE_API
+#   endif
+# endif
 #else
-# define AQGELDKARTE_API
+# /* not building AqGELDKARTE */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQGELDKARTE_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define AQGELDKARTE_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define AQGELDKARTE_API
+# endif
 #endif
 
-
 #define AQGELDKARTE_LOGDOMAIN "aqgeldkarte"
+#define AG_PROVIDER_NAME "aqgeldkarte"
 
 
 #endif /* AQGELDKARTE_AQGELDKARTE_H */

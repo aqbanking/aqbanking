@@ -1,18 +1,30 @@
-INCLUDES=-I$(top_builddir)/headers -I../widgets -I.. @all_includes@
 
-UI_FILES= editaccount.ui
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  $(all_includes)
+
+
+UI_FILES= \
+ cfgtabpageaccountgeldkarte.ui
 
 EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
-noinst_HEADERS=editaccount.h
-nodist_noinst_HEADERS=editaccount.ui.h
+nodist_noinst_HEADERS=\
+ cfgtabpageaccountgeldkarte.ui.h
+
+noinst_HEADERS=\
+ cfgtabpageaccountgeldkarte.h
+
 
 nodist_libdialogs_la_SOURCES=\
- editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp
+ cfgtabpageaccountgeldkarte.ui.cpp cfgtabpageaccountgeldkarte.ui.moc.cpp cfgtabpageaccountgeldkarte.moc.cpp
 
-libdialogs_la_SOURCES=editaccount.cpp
+
+libdialogs_la_SOURCES=\
+ cfgtabpageaccountgeldkarte.cpp
 
 
 BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES)
@@ -41,6 +53,9 @@ SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
 # This section is for a qt4 environment
 qt4-port:
+	for d in $(SUBDIRS); do \
+	  make -C $$d qt4-port; \
+	done
 	for A in $(libdialogs_la_SOURCES) $(noinst_HEADERS); do \
 	 $(YES) | $(QT3TO4) $$A; \
 	done
@@ -49,4 +64,7 @@ qt4-port:
 DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;
 

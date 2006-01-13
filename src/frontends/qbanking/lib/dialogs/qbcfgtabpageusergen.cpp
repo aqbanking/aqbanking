@@ -91,6 +91,12 @@ QBCfgTabPageUserGeneral::~QBCfgTabPageUserGeneral() {
 
 
 
+void QBCfgTabPageUserGeneral::updateView() {
+  toGui();
+}
+
+
+
 bool QBCfgTabPageUserGeneral::toGui() {
   const char *s;
   const AB_COUNTRY *ci;

@@ -10,18 +10,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AG_CARD_P_H
-#define AG_CARD_P_H
+#ifndef AG_ACCOUNT_L_H
+#define AG_ACCOUNT_L_H
 
-#include "card_l.h"
+#include "account.h"
+#include <aqbanking/account_be.h>
+#include <aqbanking/provider_be.h>
 
 
-struct AG_CARD {
-  GWEN_LIST_ELEMENT(AG_CARD);
-  AB_ACCOUNT *account;
-  AB_JOB_LIST2 *bankingJobs;
-};
-
+void AG_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
+                       AB_PROVIDER_EXTEND_MODE em);
 
 
 #endif

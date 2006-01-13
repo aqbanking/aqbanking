@@ -16,13 +16,15 @@
 
 
 #include "provider_p.h"
-#include "account.h"
+#include "account_l.h"
 #include "aqgeldkarte_l.h"
+
 #include <aqbanking/account_be.h>
 #include <aqbanking/job_be.h>
 #include <aqbanking/jobgetbalance_be.h>
 #include <aqbanking/jobgettransactions_be.h>
 #include <aqbanking/value.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
@@ -70,13 +72,12 @@ AB_PROVIDER *AG_Provider_new(AB_BANKING *ab){
   AB_PROVIDER *pro;
   AG_PROVIDER *dp;
 
-  pro=AB_Provider_new(ab, "aqgeldkarte");
+  pro=AB_Provider_new(ab, AG_PROVIDER_NAME);
   GWEN_NEW_OBJECT(AG_PROVIDER, dp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AG_PROVIDER, pro, dp,
                        AG_Provider_FreeData);
   dp->cards=AG_Card_List_new();
   dp->bankingJobs=AB_Job_List2_new();
-  dp->accounts=AB_Account_List2_new();
 
   AB_Provider_SetInitFn(pro, AG_Provider_Init);
   AB_Provider_SetFiniFn(pro, AG_Provider_Fini);
@@ -84,8 +85,7 @@ AB_PROVIDER *AG_Provider_new(AB_BANKING *ab){
   AB_Provider_SetAddJobFn(pro, AG_Provider_AddJob);
   AB_Provider_SetExecuteFn(pro, AG_Provider_Execute);
   AB_Provider_SetResetQueueFn(pro, AG_Provider_ResetQueue);
-  AB_Provider_SetGetAccountListFn(pro, AG_Provider_GetAccountList);
-  AB_Provider_SetUpdateAccountFn(pro, AG_Provider_UpdateAccount);
+  AB_Provider_SetExtendAccountFn(pro, AG_Provider_ExtendAccount);
 
   /* register callback(s) */
   DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Registering callbacks");
@@ -101,7 +101,6 @@ void AG_Provider_FreeData(void *bp, void *p) {
   dp=(AG_PROVIDER*)p;
   assert(dp);
 
-  AB_Account_List2_free(dp->accounts);
   AG_Card_List_free(dp->cards);
   AB_Job_List2_free(dp->bankingJobs);
 
@@ -112,11 +111,7 @@ void AG_Provider_FreeData(void *bp, void *p) {
 
 int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AG_PROVIDER *dp;
-#ifdef HAVE_I18N
-  const char *s;
-#endif
   const char *logLevelName;
-  GWEN_DB_NODE *dbAccount;
 
   if (!GWEN_Logger_IsOpen(AQGELDKARTE_LOGDOMAIN)) {
     GWEN_Logger_Open(AQGELDKARTE_LOGDOMAIN,
@@ -148,39 +143,7 @@ int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   assert(dp);
 
 
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  s=bindtextdomain(PACKAGE,  LOCALEDIR);
-  if (s) {
-    DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Locale bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-  else {
-    DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error binding locale");
-  }
-#endif
-
   dp->dbConfig=dbData;
-  dbAccount=GWEN_DB_FindFirstGroup(dp->dbConfig, "accounts");
-  if (dbAccount)
-    dbAccount=GWEN_DB_FindFirstGroup(dbAccount, "account");
-  while(dbAccount) {
-    AB_ACCOUNT *da;
-
-    da=AG_Account_fromDb(AB_Provider_GetBanking(pro), dbAccount);
-    if (!da) {
-      DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error loading account");
-    }
-    else {
-      DBG_INFO(AQGELDKARTE_LOGDOMAIN,
-	       "Adding account %s/%s, %s",
-	       AB_Account_GetBankCode(da),
-	       AB_Account_GetAccountNumber(da),
-	       AG_Account_GetCardId(da));
-      AB_Account_List2_PushBack(dp->accounts, da);
-    }
-    dbAccount=GWEN_DB_FindNextGroup(dbAccount, "account");
-  } /* while */
 
   dp->chipcardClient=LC_Client_new(PACKAGE, VERSION, 0);
   if (LC_Client_ReadConfigFile(dp->chipcardClient, 0)) {
@@ -196,7 +159,6 @@ int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   AG_PROVIDER *dp;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
   int errors=0;
 
   assert(pro);
@@ -206,38 +168,10 @@ int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Deinitializing AqGELDKARTE backend");
 
   GWEN_DB_ClearGroup(dp->dbConfig, "accounts");
-  ait=AB_Account_List2_First(dp->accounts);
-  if (ait) {
-    AB_ACCOUNT *da;
-    GWEN_DB_NODE *dbAccounts;
-
-    dbAccounts=GWEN_DB_GetGroup(dp->dbConfig,
-                                GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                "accounts");
-    assert(dbAccounts);
-
-    da=AB_Account_List2Iterator_Data(ait);
-    assert(da);
-    while(da) {
-      int rv;
-      GWEN_DB_NODE *dbAccount;
-
-      dbAccount=GWEN_DB_GetGroup(dbAccounts, GWEN_PATH_FLAGS_CREATE_GROUP,
-                                 "account");
-      rv=AG_Account_toDb(da, dbAccount);
-      if (rv) {
-        DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error saving account");
-        errors++;
-      }
-      da=AB_Account_List2Iterator_Next(ait);
-    }
-    AB_Account_List2Iterator_free(ait);
-  }
 
   dp->dbConfig=0;
   AB_Job_List2_Clear(dp->bankingJobs);
   AG_Card_List_Clear(dp->cards);
-  AB_Account_List2_Clear(dp->accounts);
 
   LC_Client_free(dp->chipcardClient);
   dp->chipcardClient=0;
@@ -250,65 +184,12 @@ int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-AB_ACCOUNT *AG_Provider_FindMyAccount(AB_PROVIDER *pro,
-                                      AB_ACCOUNT *acc) {
-  AG_PROVIDER *dp;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
-  const char *bankCode;
-  const char *accountNumber;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  accountNumber=AB_Account_GetAccountNumber(acc);
-  bankCode=AB_Account_GetBankCode(acc);
-  if (accountNumber==0 || bankCode==0) {
-    DBG_INFO(AQGELDKARTE_LOGDOMAIN, "Invalid banking account");
-    return 0;
-  }
-
-  ait=AB_Account_List2_First(dp->accounts);
-  if (ait) {
-    AB_ACCOUNT *da;
-
-    da=AB_Account_List2Iterator_Data(ait);
-    assert(ait);
-    while(da) {
-      const char *lBankCode;
-      const char *lAccountNumber;
-
-      lAccountNumber=AB_Account_GetAccountNumber(da);
-      lBankCode=AB_Account_GetBankCode(da);
-      if (lAccountNumber==0 || lBankCode==0) {
-        DBG_INFO(AQGELDKARTE_LOGDOMAIN, "Invalid backend account");
-      }
-      else {
-	DBG_NOTICE(AQGELDKARTE_LOGDOMAIN,
-		   "Comparing account %s/%s (%s/%s), cardId=%s",
-		   bankCode, accountNumber,
-		   lBankCode, lAccountNumber,
-		   AG_Account_GetCardId(da));
-        if (strcasecmp(bankCode, lBankCode)==0 &&
-            strcasecmp(accountNumber, lAccountNumber)==0) {
-	  DBG_NOTICE(AQGELDKARTE_LOGDOMAIN,
-		     "Found account %s/%s (%s/%s), cardId=%s",
-		     bankCode, accountNumber,
-		     lBankCode, lAccountNumber,
-		     AG_Account_GetCardId(da));
-	  AB_Account_List2Iterator_free(ait);
-	  return da;
-        }
-      }
-
-      da=AB_Account_List2Iterator_Next(ait);
-    } /* while */
-    AB_Account_List2Iterator_free(ait);
-  } /* if accounts */
-
-  DBG_INFO(AQGELDKARTE_LOGDOMAIN, "Backend account not found");
+int AG_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                              AB_PROVIDER_EXTEND_MODE em){
+  AG_Account_Extend(a, pro, em);
   return 0;
 }
+
 
 
 int AG_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
@@ -319,12 +200,8 @@ int AG_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
-  da=AG_Provider_FindMyAccount(pro, AB_Job_GetAccount(j));
-  if (!da) {
-    DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
-              "Account not managed by this backend");
-    return AB_ERROR_INVALID;
-  }
+  da=AB_Job_GetAccount(j);
+  assert(da);
 
   switch(AB_Job_GetType(j)) {
   case AB_Job_TypeGetBalance:
@@ -352,12 +229,8 @@ int AG_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *bj){
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
-  da=AG_Provider_FindMyAccount(pro, AB_Job_GetAccount(bj));
-  if (!da) {
-    DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
-              "Account not managed by this backend");
-    return AB_ERROR_INVALID;
-  }
+  da=AB_Job_GetAccount(bj);
+  assert(da);
 
   switch(AB_Job_GetType(bj)) {
   case AB_Job_TypeGetBalance:
@@ -406,50 +279,6 @@ int AG_Provider_ResetQueue(AB_PROVIDER *pro){
   AG_Card_List_Clear(dp->cards);
   AB_Job_List2_Clear(dp->bankingJobs);
 
-  return 0;
-}
-
-
-
-AB_ACCOUNT_LIST2 *AG_Provider_GetAccountList(AB_PROVIDER *pro){
-  AG_PROVIDER *dp;
-  AB_ACCOUNT_LIST2 *nl;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  if (AB_Account_List2_GetSize(dp->accounts)==0)
-    return 0;
-
-  nl=AB_Account_List2_new();
-  ait=AB_Account_List2_First(dp->accounts);
-  if (ait) {
-    AB_ACCOUNT *a;
-
-    a=AB_Account_List2Iterator_Data(ait);
-    assert(a);
-    while(a) {
-      AB_Account_List2_PushBack(nl, AB_Account_dup(a));
-      a=AB_Account_List2Iterator_Next(ait);
-    }
-    AB_Account_List2Iterator_free(ait);
-  }
-
-  return nl;
-}
-
-
-
-int AG_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AG_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "TODO: UpdateAccount");
   return 0;
 }
 
@@ -850,91 +679,6 @@ int AG_Provider_Execute(AB_PROVIDER *pro){
   AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
   return 0;
 }
-
-
-
-AB_ACCOUNT_LIST2 *AG_Provider_GetAccounts(AB_PROVIDER *pro){
-  AG_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  return dp->accounts;
-}
-
-
-
-void AG_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AG_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  AB_Account_List2_PushBack(dp->accounts, a);
-}
-
-
-
-void AG_Provider_RemoveAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AG_PROVIDER *dp;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  ait=AB_Account_List2_First(dp->accounts);
-  if (ait) {
-    AB_ACCOUNT *ta;
-
-    ta=AB_Account_List2Iterator_Data(ait);
-    while(ta) {
-      if (ta==a)
-        break;
-      ta=AB_Account_List2Iterator_Next(ait);
-    }
-    if (ta)
-      AB_Account_List2_Erase(dp->accounts, ait);
-    AB_Account_List2Iterator_free(ait);
-  }
-}
-
-
-
-int AG_Provider_HasAccount(AB_PROVIDER *pro,
-                           const char *bankCode,
-                           const char *accountNumber){
-  AG_PROVIDER *dp;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
-  int rv=0;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
-  assert(dp);
-
-  ait=AB_Account_List2_First(dp->accounts);
-  if (ait) {
-    AB_ACCOUNT *ta;
-
-    ta=AB_Account_List2Iterator_Data(ait);
-    while(ta) {
-      if (strcasecmp(bankCode, AB_Account_GetBankCode(ta))==0 &&
-          strcasecmp(accountNumber, AB_Account_GetAccountNumber(ta))==0)
-        break;
-      ta=AB_Account_List2Iterator_Next(ait);
-    }
-    if (ta)
-      rv=1;
-    AB_Account_List2Iterator_free(ait);
-  }
-
-  return rv;
-}
-
-
-
 
 
 

@@ -10,8 +10,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AG_CARD_H
-#define AG_CARD_H
+#ifndef AG_CARD_L_H
+#define AG_CARD_L_H
 
 #include <aqbanking/account_be.h>
 #include <aqbanking/transaction.h>
@@ -19,11 +19,6 @@
 #include <aqgeldkarte/provider.h>
 #include <aqgeldkarte/account.h>
 #include <gwenhywfar/misc.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 typedef struct AG_CARD AG_CARD;
@@ -36,10 +31,6 @@ AB_JOB_LIST2 *AG_Card_GetBankingJobs(const AG_CARD *dj);
 AB_ACCOUNT *AG_Card_GetAccount(const AG_CARD *dj);
 
 void AG_Card_AddJob(AG_CARD *dj, AB_JOB *bj);
-
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif

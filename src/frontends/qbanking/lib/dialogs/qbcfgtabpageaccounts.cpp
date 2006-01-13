@@ -19,6 +19,8 @@
 #include "qbcfgtabpageaccounts.ui.h"
 #include "qbeditaccount.h"
 #include "qbaccountlist.h"
+#include "qbselectbackend.h"
+#include "qbcfgmodule.h"
 
 #include <qbanking/qbanking.h>
 
@@ -27,6 +29,7 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
+#include <qtextcodec.h>
 
 #include <gwenhywfar/debug.h>
 
@@ -44,9 +47,6 @@ QBCfgTabPageAccounts::QBCfgTabPageAccounts(QBanking *qb,
   setHelpSubject("QBCfgTabPageAccounts");
   setDescription(tr("This page allows you to map, create, edit and remove"
                     " accounts from AqBanking."));
-
-  QObject::connect(_realPage->accountMapButton, SIGNAL(clicked()),
-                   this, SLOT(slotAccountMap()));
 
   QObject::connect(_realPage->accountNewButton, SIGNAL(clicked()),
                    this, SLOT(slotAccountNew()));
@@ -119,24 +119,53 @@ bool QBCfgTabPageAccounts::fromGui() {
 
 
 
-void QBCfgTabPageAccounts::slotAccountMap(){
-  std::list<AB_ACCOUNT*> al;
-  AB_ACCOUNT *a;
-
-  al=_realPage->accountList->getSelectedAccounts();
-  if (al.empty()) {
-    QMessageBox::critical(this,
-                          tr("Selection Error"),
-                          tr("No account selected.\n"),
-                          QMessageBox::Retry,QMessageBox::NoButton);
-  }
-  a=al.front();
-  getBanking()->mapAccount(a);
-}
-
-
-
 void QBCfgTabPageAccounts::slotAccountNew() {
+  QString backend;
+  QString preBackend;
+  const char *l;
+
+  l=QTextCodec::locale();
+  if (l) {
+    QString ql;
+
+    ql=QString::fromUtf8(l).lower();
+    if (ql=="de" || ql=="de_de")
+      preBackend="aqhbci";
+  }
+  backend=QBSelectBackend::selectBackend(getBanking(),
+                                         preBackend,
+                                         this);
+  if (backend.isEmpty()) {
+    DBG_INFO(0, "Aborted");
+  }
+  else {
+    QBCfgModule *mod;
+    std::string s;
+
+    s=QBanking::QStringToUtf8String(backend);
+    DBG_ERROR(0, "Selected backend: %s", s.c_str());
+    mod=getBanking()->getConfigModule(s.c_str());
+    if (mod) {
+      AB_ACCOUNT *a;
+
+      a=AB_Banking_CreateAccount(getBanking()->getCInterface(),
+                                 s.c_str());
+      assert(a);
+      if (QBEditAccount::editAccount(getBanking(), a, this)) {
+        DBG_INFO(0, "Accepted, adding account");
+        AB_Banking_AddAccount(getBanking()->getCInterface(), a);
+      }
+      else {
+        DBG_INFO(0, "Rejected");
+        AB_Account_free(a);
+      }
+    }
+    else {
+      DBG_ERROR(0, "Config module for backend \"%s\" not found",
+                s.c_str());
+    }
+    updateView();
+  }
 }
 
 
@@ -159,6 +188,7 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
   else {
     DBG_INFO(0, "Rejected");
   }
+  updateView();
 }
 
 

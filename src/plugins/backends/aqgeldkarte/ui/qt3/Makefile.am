@@ -1,4 +1,4 @@
-SUBDIRS=libs qt3_wizard
+SUBDIRS=libs
 
 sources:
 	for d in $(SUBDIRS); do \

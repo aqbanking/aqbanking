@@ -247,6 +247,12 @@ bool QBCfgTabPageAccountGeneral::checkGui() {
 
 
 
+void QBCfgTabPageAccountGeneral::updateView() {
+  toGui();
+}
+
+
+
 void QBCfgTabPageAccountGeneral::slotBankIdButtonClicked() {
   if (_realPage->countryCombo->currentItem()==0) {
     QMessageBox::critical(0,

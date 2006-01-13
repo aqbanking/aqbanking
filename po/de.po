@@ -4761,7 +4761,7 @@ msgstr "(c) 2004 M. Preuss"
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:143
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:175
 msgid "Customer Id"
-msgstr "Kundennummer"
+msgstr "Kundenkennung"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:84
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/edituser.ui.cpp:144
@@ -4884,7 +4884,7 @@ msgid ""
 "<qt><p>The customer id contains invalid characters.</p><p>Please correct "
 "your entry.</p>"
 msgstr ""
-"<qt>Die Kundennummer (Kunden-ID) enthält unzulässige Zeichen. Bitte "
+"<qt>Die Kundenkennung (Kunden-ID) enthält unzulässige Zeichen. Bitte "
 "korrigieren Sie die Eingabe.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:200
@@ -4913,7 +4913,7 @@ msgstr "Nein, Angaben bearbeiten"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:253
 msgid "No customer id found"
-msgstr "Keine Kundennummer gefunden"
+msgstr "Keine Kundenkennung gefunden"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:254
 msgid ""
@@ -4922,11 +4922,11 @@ msgid ""
 "Please double-check the information provided to you by your bank.</p><p>Are "
 "you sure you want to leave the customer id empty?</p></qt>"
 msgstr ""
-"<qt><p>Sie haben keine Kundennummer angegeben.</p><p>In der Tat verwenden "
-"viele Banken keine Kundennummer. Aber einige Banken erfordern wiederum doch "
-"die Angabe einer Kundennummer. Bitte prüfen Sie erneut, ob Ihre Bank in den "
-"Ihnen zugesandten Informationen eine Kundennummer für den HBCI-Zugang "
-"angegeben hat oder nicht.</p><p>Sind Sie sicher, daß keine Kundennummer "
+"<qt><p>Sie haben keine Kundenkennung angegeben.</p><p>In der Tat verwenden "
+"viele Banken keine Kundenkennung. Aber einige Banken erfordern wiederum doch "
+"die Angabe einer Kundenkennung. Bitte prüfen Sie erneut, ob Ihre Bank in den "
+"Ihnen zugesandten Informationen eine Kundenkennung für den HBCI-Zugang "
+"angegeben hat oder nicht.</p><p>Sind Sie sicher, daß keine Kundenkennung "
 "angegeben werden soll?</p></qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:287
@@ -5236,8 +5236,8 @@ msgid ""
 "Enter the customer id, if the bank has given one to you. If the bank has not "
 "given one to you, then leave this field blank."
 msgstr ""
-"Geben Sie die Kundennummer ein, falls Ihre Bank Ihnen eine mitgeteilt hat. "
-"Wenn Ihre Bank keine HBCI-Kundennummer erwähnt hat, lassen Sie dieses Feld "
+"Geben Sie die Kundenkennung ein, falls Ihre Bank Ihnen eine mitgeteilt hat. "
+"Wenn Ihre Bank keine HBCI-Kundenkennung erwähnt hat, lassen Sie dieses Feld "
 "leer."
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:181
