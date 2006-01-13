@@ -19,8 +19,8 @@ plugin_DATA=qt3_wizard.xml
 
 qt3_wizard_SOURCES = qt3_wizard.cpp
 qt3_wizard_LDADD = \
-  $(aqbanking_internal_libs) \
   $(qbanking_internal_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) $(qt3_libs)
 
 
@@ -28,7 +28,7 @@ CLEANFILES=qt3_wizard.xml
 
 
 sources:
-	for f in $(aqdtaus_qt3_wizard_SOURCES); do \
+	for f in $(qt3_wizard_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -37,7 +37,7 @@ sources:
 
 # This section is for a qt4 environment
 qt4-port:
-	for A in $(aqdtaus_qt3_wizard_SOURCES) $(noinst_HEADERS); do \
+	for A in $(qt3_wizard_SOURCES) $(noinst_HEADERS); do \
 	 $(YES) | $(QT3TO4) $$A; \
 	done
 #	rm $(BUILT_SOURCES)
