@@ -1,7 +1,7 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/../widgets -I$(srcdir)/../dialogs \
-  -I$(srcdir)/../prg -I$(srcdir)/.. \
+  -I$(srcdir)/../widgets -I$(srcdir)/../dialogs -I$(srcdir)/.. \
+  -I../widgets -I../dialogs -I.. \
   $(all_includes)
 
 AM_CFLAGS=-DBUILDING_QBANKING @visibility_cflags@

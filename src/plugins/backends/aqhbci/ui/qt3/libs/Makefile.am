@@ -1,6 +1,7 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/logmanager \
+  -I$(srcdir)/dialogs -I$(srcdir)/logmanager \
+  -Idialogs -Ilogmanager \
   $(all_includes)
 
 SUBDIRS=dialogs logmanager 
