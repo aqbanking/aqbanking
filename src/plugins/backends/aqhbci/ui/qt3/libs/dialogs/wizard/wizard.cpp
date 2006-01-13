@@ -17,6 +17,8 @@
 
 #include "wizard.h"
 
+#include <qbanking/qbanking.h>
+
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlistview.h>
@@ -33,11 +35,10 @@ Wizard::Wizard(QBanking *qb,
                const QString &title,
                QWidget* parent,
                const char* name, bool modal)
-:WizardUi(parent, name)
+:WizardUi(parent, name, modal)
 ,_app(qb)
 ,_wInfo(wInfo)
 ,_lastActionWidget(0){
-  setModal(modal);
   if (!title.isEmpty())
     setCaption(title);
 }
@@ -124,15 +125,20 @@ int Wizard::exec() {
 
 void Wizard::back() {
   QWidget *w;
+  WizardAction *p;
+
+  w=currentPage();
+  if (w!=startPage) {
+    p=dynamic_cast<WizardAction*>(w);
+    assert(p);
+    p->leave(true);
+  }
 
   QWizard::back();
   w=currentPage();
   if (w!=startPage) {
-    WizardAction *p;
-
     p=dynamic_cast<WizardAction*>(w);
     assert(p);
-
     p->undo();
   }
 }
@@ -141,29 +147,50 @@ void Wizard::back() {
 
 void Wizard::next() {
   QWidget *w;
+  WizardAction *p;
 
   w=currentPage();
-  if (w==startPage) {
-    QWizard::next();
-  }
-  else {
-    WizardAction *p;
-
+  if (w!=startPage) {
     p=dynamic_cast<WizardAction*>(w);
     assert(p);
-    if (p->apply()) {
-      QWizard::next();
-      w=currentPage();
-      p=dynamic_cast<WizardAction*>(w);
-      assert(p);
-      p->enter();
-      if (w==_lastActionWidget)
-        setFinishEnabled(w, TRUE);
-      else
-        setFinishEnabled(w, FALSE);
+    if (!(p->apply())) {
+      return;
     }
+    p->leave(false);
   }
+
+  QWizard::next();
+  w=currentPage();
+  p=dynamic_cast<WizardAction*>(w);
+  assert(p);
+  DBG_INFO(0, "Entering \"%s\"",
+           QBanking::QStringToUtf8String(p->getName()).c_str());
+  p->enter();
+  if (w==_lastActionWidget)
+    setFinishEnabled(w, TRUE);
+  else
+    setFinishEnabled(w, FALSE);
+
 }
+
+
+
+void Wizard::setNextEnabled(WizardAction *a, bool b) {
+  DBG_INFO(0, "SetNextEnabled for page \"%s\": %s",
+           QBanking::QStringToUtf8String(a->getName()).c_str(),
+           (b==true)?"Enabled":"Disabled");
+  WizardUi::setNextEnabled(a, b);
+}
+
+
+void Wizard::setBackEnabled(WizardAction *a, bool b) {
+  DBG_INFO(0, "SetBackEnabled for page \"%s\": %s",
+           QBanking::QStringToUtf8String(a->getName()).c_str(),
+           (b==true)?"Enabled":"Disabled");
+  WizardUi::setBackEnabled(a, b);
+}
+
+
 
 
 

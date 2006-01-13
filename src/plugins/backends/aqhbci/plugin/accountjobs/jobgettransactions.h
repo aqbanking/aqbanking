@@ -27,8 +27,8 @@ extern "C" {
 #endif
 
 
-AH_JOB *AH_Job_GetTransactions_new(AH_CUSTOMER *cu,
-                                   AH_ACCOUNT *account);
+AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
+                                   AB_ACCOUNT *account);
 
 
 #ifdef __cplusplus

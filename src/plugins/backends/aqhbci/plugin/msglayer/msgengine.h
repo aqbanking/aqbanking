@@ -21,8 +21,9 @@ typedef struct AH_MSGENGINE AH_MSGENGINE;
 }
 #endif
 
+#include <aqhbci/aqhbci.h>
+#include <aqbanking/user.h>
 #include <gwenhywfar/msgengine.h>
-#include <aqhbci/customer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,15 +33,7 @@ AQHBCI_API
 GWEN_MSGENGINE *AH_MsgEngine_new();
 
 
-
-void *AH_MsgEngine_GetInheritorData(const GWEN_MSGENGINE *e);
-void AH_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d);
-void AH_MsgEngine_SetFreeDataFunction(GWEN_MSGENGINE *e,
-                                           GWEN_MSGENGINE_FREEDATA_PTR p);
-
-AH_CUSTOMER *AH_MsgEngine_GetCustomer(const GWEN_MSGENGINE *e);
-void AH_MsgEngine_SetCustomer(GWEN_MSGENGINE *e,
-                                   AH_CUSTOMER *cu);
+void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u);
 
 #ifdef __cplusplus
 }

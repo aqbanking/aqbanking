@@ -19,8 +19,7 @@
 
 
 struct AO_CONTEXT {
-  AO_BANK *bank;
-  AO_USER *user;
+  AB_USER *user;
   AB_IMEXPORTER_CONTEXT *ictx;
   AB_JOB *job;
 

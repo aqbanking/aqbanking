@@ -42,7 +42,7 @@
         list2="lib" >
     <headers>
       <header type="sys" >gwenhywfar/crypttoken.h</header>
-      <header type="sys" >aqhbci/hbci.h</header>
+      <header type="sys" >aqhbci/aqhbci.h</header>
       <header type="sys" >aqhbci/medium.h</header>
     </headers>
     

@@ -9,11 +9,8 @@ dnl OUT:
 dnl   Variables:
 dnl     OSYSTEM: Short name of your system (subst)
 dnl     OS_TYPE: either "posix" or "windows" (subst)
-dnl     MAKE_DLL_TARGET: under windows this is set to "dll" (subst)
-dnl     INSTALL_DLL_TARGET: under Windows this is set to "dll-install" (subst)
 dnl   Defines:
-dnl     OS_NAME: full name of your system
-dnl     OS_SHORTNAME: short name of your system
+dnl     OSYSTEM: short name of your system ("linux", "freebsd" etc)
 dnl     Depending on your system one of the following is defined in addition:
 dnl      OS_LINUX, OS_OPENBSD, OS_FREEBSD, OS_BEOS, OS_WIN32
 
@@ -50,16 +47,12 @@ case "$target" in
 	AC_DEFINE(OS_WIN32,1,[if WIN32 is used])
 	OS_TYPE="windows"
         AC_DEFINE_UNQUOTED(BUILDING_DLL,1,[if DLL is to be built])
-	MAKE_DLL_TARGET="dll"
-	INSTALL_DLL_TARGET="dll-install"
 	;;
     *-mingw32*)
 	OSYSTEM="windows"
 	AC_DEFINE(OS_WIN32,1,[if WIN32 is used])
 	OS_TYPE="windows"
         AC_DEFINE_UNQUOTED(BUILDING_DLL,1,[if DLL is to be built])
-	MAKE_DLL_TARGET="dll"
-	INSTALL_DLL_TARGET="dll-install"
 	;;
     *)
 	AC_MSG_WARN([Sorry, but target $target is not supported.

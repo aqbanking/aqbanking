@@ -7,15 +7,13 @@ EXTRA_DIST = $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
-nodist_iheader_HEADERS=\
- settings.ui.h
+#nodist_iheader_HEADERS=
 
 iheaderdir=${includedir}/kbanking
 iheader_HEADERS=\
  settings.h 
 
-nodist_libdialogs_la_SOURCES=\
-  settings.moc.cpp settings.ui.cpp settings.ui.moc.cpp
+#nodist_libdialogs_la_SOURCES=
 
 
 BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES) $(nodist_iheader_HEADERS)

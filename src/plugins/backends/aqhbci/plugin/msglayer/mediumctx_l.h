@@ -16,12 +16,13 @@ This page describes the properties of AH_MEDIUM_CTX
 extern "C" {
 #endif
 
+
 GWEN_LIST_FUNCTION_DEFS(AH_MEDIUM_CTX, AH_MediumCtx)
 AH_MEDIUM_CTX_LIST *AH_MediumCtx_List_dup(const AH_MEDIUM_CTX_LIST *stl);
+
 GWEN_LIST2_FUNCTION_DEFS(AH_MEDIUM_CTX, AH_MediumCtx)
 
 void AH_MediumCtx_List2_freeAll(AH_MEDIUM_CTX_LIST2 *stl);
-AH_MEDIUM_CTX_LIST2 *AH_MediumCtx_List2_dup(const AH_MEDIUM_CTX_LIST2 *stl);
 
 
 

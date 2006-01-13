@@ -36,8 +36,8 @@ int createKeys(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
-  AH_CUSTOMER_LIST2 *cl;
-  AH_CUSTOMER *cu=0;
+  AB_USER_LIST2 *ul;
+  AB_USER *u=0;
   int rv;
   const char *bankId;
   const char *userId;
@@ -115,34 +115,32 @@ int createKeys(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
 
-  cl=AH_HBCI_GetCustomers(hbci, 280, bankId, userId, customerId);
-  if (cl) {
-    if (AH_Customer_List2_GetSize(cl)!=1) {
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
+                          "de", bankId, userId, customerId);
+  if (ul) {
+    if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
       AB_Banking_Fini(ab);
       return 3;
     }
     else {
-      AH_CUSTOMER_LIST2_ITERATOR *cit;
+      AB_USER_LIST2_ITERATOR *cit;
 
-      cit=AH_Customer_List2_First(cl);
+      cit=AB_User_List2_First(ul);
       assert(cit);
-      cu=AH_Customer_List2Iterator_Data(cit);
-      AH_Customer_List2Iterator_free(cit);
+      u=AB_User_List2Iterator_Data(cit);
+      AB_User_List2Iterator_free(cit);
     }
-    AH_Customer_List2_free(cl);
+    AB_User_List2_free(ul);
   }
-  if (!cu) {
+  if (!u) {
     DBG_ERROR(0, "No matching customer");
     AB_Banking_Fini(ab);
     return 3;
   }
   else {
-    AH_USER *u;
     AH_MEDIUM *m;
 
-    u=AH_Customer_GetUser(cu);
-    assert(u);
     m=AH_User_GetMedium(u);
     assert(m);
 

@@ -41,23 +41,23 @@ GWEN_INHERIT(AH_JOB, AH_JOB_EUTRANSFER);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_EuTransfer_new(AH_CUSTOMER *cu,
-                              AH_ACCOUNT *account) {
-  return AH_Job_EuTransferBase_new(cu, account, 1);
+AH_JOB *AH_Job_EuTransfer_new(AB_USER *u,
+                              AB_ACCOUNT *account) {
+  return AH_Job_EuTransferBase_new(u, account, 1);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_EuTransferBase_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account,
+AH_JOB *AH_Job_EuTransferBase_new(AB_USER *u,
+                                  AB_ACCOUNT *account,
                                   int isTransfer) {
   AH_JOB *j;
   AH_JOB_EUTRANSFER *aj;
   GWEN_DB_NODE *dbArgs;
 
   j=AH_AccountJob_new("JobEuTransfer",
-                      cu, account);
+                      u, account);
   if (!j)
     return 0;
 
@@ -312,13 +312,13 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local bank code */
   s=AB_Transaction_GetLocalBankCode(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local bank code, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetBankId(a);
+    s=AB_Account_GetBankCode(a);
     assert(s);
     AB_Transaction_SetLocalBankCode(t, s);
   }
@@ -326,13 +326,13 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account number */
   s=AB_Transaction_GetLocalAccountNumber(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local account number, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetAccountId(a);
+    s=AB_Account_GetAccountNumber(a);
     assert(s);
     AB_Transaction_SetLocalAccountNumber(t, s);
   }
@@ -340,7 +340,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account suffix */
   s=AB_Transaction_GetLocalSuffix(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "No local suffix, filling in (if possible)");

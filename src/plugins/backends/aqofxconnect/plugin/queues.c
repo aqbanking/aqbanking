@@ -27,11 +27,10 @@
 
 
 
-GWEN_LIST_FUNCTIONS(AO_BANKQUEUE, AO_BankQueue)
 GWEN_LIST_FUNCTIONS(AO_USERQUEUE, AO_UserQueue)
 
 
-AO_USERQUEUE *AO_UserQueue_new(AO_USER *u) {
+AO_USERQUEUE *AO_UserQueue_new(AB_USER *u) {
   AO_USERQUEUE *uq;
 
   assert(u);
@@ -53,7 +52,7 @@ void AO_UserQueue_free(AO_USERQUEUE *uq) {
 
 
 
-AO_USER *AO_UserQueue_GetUser(const AO_USERQUEUE *uq){
+AB_USER *AO_UserQueue_GetUser(const AO_USERQUEUE *uq){
   assert(uq);
   return uq->user;
 }
@@ -76,89 +75,81 @@ void AO_UserQueue_AddJob(AO_USERQUEUE *uq, AB_JOB *bj){
 
 
 
-AO_BANKQUEUE *AO_BankQueue_new(AO_BANK *b) {
-  AO_BANKQUEUE *bq;
 
-  assert(b);
-  GWEN_NEW_OBJECT(AO_BANKQUEUE, bq);
-  bq->bank=b;
-  bq->userQueues=AO_UserQueue_List_new();
+AO_QUEUE *AO_Queue_new() {
+  AO_QUEUE *q;
 
-  return bq;
+  GWEN_NEW_OBJECT(AO_QUEUE, q);
+  q->userQueues=AO_UserQueue_List_new();
+  return q;
 }
 
 
 
-void AO_BankQueue_free(AO_BANKQUEUE *bq) {
-  if (bq) {
-    AO_UserQueue_List_free(bq->userQueues);
-    GWEN_FREE_OBJECT(bq);
+void AO_Queue_free(AO_QUEUE *q) {
+  if (q) {
+    AO_UserQueue_List_free(q->userQueues);
+    GWEN_FREE_OBJECT(q);
   }
 }
 
 
 
-AO_BANK *AO_BankQueue_GetBank(const AO_BANKQUEUE *bq){
-  assert(bq);
-  return bq->bank;
-}
-
-
-
-AO_USERQUEUE_LIST *AO_BankQueue_GetUserQueues(const AO_BANKQUEUE *bq) {
-  assert(bq);
-  return bq->userQueues;
-}
-
-
-
-AO_USERQUEUE *AO_BankQueue_FindUserQueue(const AO_BANKQUEUE *bq,
-                                         const char *uid){
+AO_USERQUEUE *AO_Queue_FindUserQueue(AO_QUEUE *q, const AB_USER *u) {
   AO_USERQUEUE *uq;
 
-  assert(bq);
-  uq=AO_UserQueue_List_First(bq->userQueues);
+  uq=AO_UserQueue_List_First(q->userQueues);
   while(uq) {
-    const char *s;
-    s=AO_User_GetUserId(AO_UserQueue_GetUser(uq));
-    assert(s);
-    if (strcasecmp(s, uid)==0)
+    if (AO_UserQueue_GetUser(uq)==u)
       break;
     uq=AO_UserQueue_List_Next(uq);
   }
-
   return uq;
 }
 
 
 
-void AO_BankQueue_AddUserQueue(AO_BANKQUEUE *bq, AO_USERQUEUE *uq) {
-  assert(bq);
-  AO_UserQueue_List_Add(uq, bq->userQueues);
+AO_USERQUEUE *AO_Queue_GetUserQueue(AO_QUEUE *q, AB_USER *u) {
+  AO_USERQUEUE *uq;
+
+  assert(q);
+  assert(u);
+
+  uq=AO_Queue_FindUserQueue(q, u);
+  if (!uq) {
+    uq=AO_UserQueue_new(u);
+    AO_UserQueue_List_Add(uq, q->userQueues);
+  }
+  return uq;
 }
 
 
 
-void AO_BankQueue_AddJob(AO_BANKQUEUE *bq, const char *uid, AB_JOB *bj) {
+AO_USERQUEUE *AO_Queue_FirstUserQueue(AO_QUEUE *q) {
+  assert(q);
+  return AO_UserQueue_List_First(q->userQueues);
+}
+
+
+
+void AO_Queue_AddJob(AO_QUEUE *q, AB_USER *u, AB_JOB *bj) {
   AO_USERQUEUE *uq;
 
-  assert(bq);
-  assert(uid);
-  assert(*uid);
+  assert(q);
+  assert(u);
   assert(bj);
 
-  uq=AO_BankQueue_FindUserQueue(bq, uid);
-  if (!uq) {
-    AO_USER *u;
-
-    u=AO_Bank_FindUser(bq->bank, uid);
-    assert(u);
-    uq=AO_UserQueue_new(u);
-    AO_UserQueue_List_Add(uq, bq->userQueues);
-  }
+  uq=AO_Queue_GetUserQueue(q, u);
+  assert(uq);
   AO_UserQueue_AddJob(uq, bj);
 }
 
+
+
+void AO_Queue_Clear(AO_QUEUE *q) {
+  assert(q);
+  AO_UserQueue_List_Clear(q->userQueues);
+}
 
 
 

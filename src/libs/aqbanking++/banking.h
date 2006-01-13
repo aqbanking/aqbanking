@@ -125,7 +125,7 @@ public:
    * You must free the contents of the list after using it via
    * @ref clearPluginDescrs() before deleting the list itself.
    */
-  std::list<GWEN_PLUGIN_DESCRIPTION*> getWizardDescrs(const char *pn);
+  std::list<GWEN_PLUGIN_DESCRIPTION*> getWizardDescrs();
 
   /**
    * Frees all plugin descriptions whose pointers are stored inside
@@ -139,10 +139,7 @@ public:
   int deactivateProvider(const char *pname);
   std::list<std::string> getActiveProviders();
 
-  int suspendProvider(const char *pname);
-  int resumeProvider(const char *pname);
-
-  std::string findWizard(const char *backend, const char *frontends);
+  std::string findWizard(const char *frontends);
 
   /*@}*/
 

@@ -15,7 +15,6 @@
 
 
 #include <aqofxconnect/user.h>
-#include <aqofxconnect/bank.h>
 #include <aqbanking/job.h>
 #include <aqbanking/imexporter.h>
 
@@ -27,12 +26,11 @@
 typedef struct AO_CONTEXT AO_CONTEXT;
 
 
-AO_CONTEXT *AO_Context_new(AO_BANK *bank, AO_USER *user, AB_JOB *job,
+AO_CONTEXT *AO_Context_new(AB_USER *user, AB_JOB *job,
                            AB_IMEXPORTER_CONTEXT *ictx);
 void AO_Context_free(AO_CONTEXT *ctx);
 
-AO_BANK *AO_Context_GetBank(const AO_CONTEXT *ctx);
-AO_USER *AO_Context_GetUser(const AO_CONTEXT *ctx);
+AB_USER *AO_Context_GetUser(const AO_CONTEXT *ctx);
 AB_JOB *AO_Context_GetJob(const AO_CONTEXT *ctx);
 
 AB_IMEXPORTER_CONTEXT *AO_Context_GetImExContext(const AO_CONTEXT *ctx);

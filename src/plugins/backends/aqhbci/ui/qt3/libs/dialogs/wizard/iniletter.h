@@ -67,7 +67,6 @@ public:
 public slots:
   void slotGoodHash();
   void slotBadHash();
-  void slotPrint();
 
 };
 

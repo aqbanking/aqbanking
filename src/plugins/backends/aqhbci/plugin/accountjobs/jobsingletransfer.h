@@ -25,32 +25,32 @@ extern "C" {
 #endif
 
 
-AH_JOB *AH_Job_SingleTransfer_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account);
+AH_JOB *AH_Job_SingleTransfer_new(AB_USER *u,
+                                  AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_SingleDebitNote_new(AH_CUSTOMER *cu,
-                                   AH_ACCOUNT *account);
+AH_JOB *AH_Job_SingleDebitNote_new(AB_USER *u,
+                                   AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_CreateStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_CreateStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_ModifyStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_ModifyStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_DeleteStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_DeleteStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_CreateDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_CreateDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_ModifyDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_ModifyDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_DeleteDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account);
+AH_JOB *AH_Job_DeleteDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_InternalTransfer_new(AH_CUSTOMER *cu,
-                                    AH_ACCOUNT *account);
+AH_JOB *AH_Job_InternalTransfer_new(AB_USER *u,
+                                    AB_ACCOUNT *account);
 
 
 const char *AH_Job_SingleTransfer_GetFiid(AH_JOB *j);

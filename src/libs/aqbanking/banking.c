@@ -22,6 +22,7 @@
 #include "i18n_l.h"
 #include "country_l.h"
 #include "wcb_l.h"
+#include "userfns_l.h"
 
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>
@@ -192,6 +193,7 @@ AB_BANKING *AB_Banking_newExtended(const char *appName,
   ab->providers=AB_Provider_List_new();
   ab->imexporters=AB_ImExporter_List_new();
   ab->bankInfoPlugins=AB_BankInfoPlugin_List_new();
+  ab->users=AB_User_List_new();
   ab->accounts=AB_Account_List_new();
   ab->enqueuedJobs=AB_Job_List_new();
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
@@ -267,6 +269,7 @@ void AB_Banking_free(AB_BANKING *ab){
 
     AB_Job_List_free(ab->enqueuedJobs);
     AB_Account_List_free(ab->accounts);
+    AB_User_List_free(ab->users);
     AB_Provider_List_free(ab->providers);
     AB_BankInfoPlugin_List_free(ab->bankInfoPlugins);
     AB_ImExporter_List_free(ab->imexporters);
@@ -433,37 +436,31 @@ const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab){
 }
 
 
-int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf) {
-  if (AB_Banking_GetUserDataDir(ab, buf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
-    return AB_ERROR_GENERIC;
-  }
-  GWEN_Buffer_AppendString(buf, DIRSEP "apps" DIRSEP);
-  GWEN_Buffer_AppendString(buf, ab->appEscName);
-  GWEN_Buffer_AppendString(buf, DIRSEP "settings.conf");
-  return 0;
-}
-
-
-
-int AB_Banking__LoadAppData(AB_BANKING *ab) {
+int AB_Banking___LoadData(AB_BANKING *ab,
+                          const char *prefix,
+                          const char *name) {
   GWEN_BUFFER *pbuf;
   GWEN_DB_NODE *db;
 
   assert(ab);
-  assert(ab->appEscName);
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Banking__GetAppConfigFileName(ab, pbuf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get config file name");
+  if (AB_Banking_GetUserDataDir(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, prefix);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, name);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "settings.conf");
 
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/apps");
+                      "external");
   assert(db);
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      ab->appEscName);
+  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, prefix);
+  assert(db);
+  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
   assert(db);
   DBG_INFO(AQBANKING_LOGDOMAIN,
              "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
@@ -481,33 +478,42 @@ int AB_Banking__LoadAppData(AB_BANKING *ab) {
 
   /* sucessfully read */
   return 0;
+
 }
 
 
 
-int AB_Banking__SaveAppData(AB_BANKING *ab) {
+int AB_Banking___SaveData(AB_BANKING *ab,
+                          const char *prefix,
+                          const char *name) {
   GWEN_BUFFER *pbuf;
   GWEN_BUFFER *rpbuf;
   GWEN_DB_NODE *db;
 
   assert(ab);
-  assert(ab->appEscName);
-
   db=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-		      "static/apps");
+                      "external");
   if (!db)
     return 0;
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-		      ab->appEscName);
+  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, prefix);
+  if (!db)
+    return 0;
+  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (!db)
     return 0;
 
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Banking__GetAppConfigFileName(ab, pbuf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get config file name");
+  if (AB_Banking_GetUserDataDir(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
     GWEN_Buffer_free(pbuf);
     return AB_ERROR_GENERIC;
   }
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, prefix);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, name);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "settings.conf");
+
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
              "Writing file \"%s\"", GWEN_Buffer_GetStart(pbuf));
@@ -562,6 +568,95 @@ int AB_Banking__SaveAppData(AB_BANKING *ab) {
 
 
 
+int AB_Banking__LoadData(AB_BANKING *ab,
+                         const char *prefix,
+                         const char *name) {
+  GWEN_BUFFER *pbuf;
+  int rv;
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Text_EscapeToBuffer(name, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error escaping string, aborting (%s).", name);
+    GWEN_Buffer_free(pbuf);
+    abort();
+  }
+
+  rv=AB_Banking___LoadData(ab, prefix, GWEN_Buffer_GetStart(pbuf));
+  GWEN_Buffer_free(pbuf);
+  return rv;
+}
+
+
+
+int AB_Banking__SaveData(AB_BANKING *ab,
+                         const char *prefix,
+                         const char *name) {
+  GWEN_BUFFER *pbuf;
+  int rv;
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Text_EscapeToBuffer(name, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error escaping string, aborting (%s).", name);
+    GWEN_Buffer_free(pbuf);
+    abort();
+  }
+
+  rv=AB_Banking___SaveData(ab, prefix, GWEN_Buffer_GetStart(pbuf));
+  GWEN_Buffer_free(pbuf);
+  return rv;
+}
+
+
+
+int AB_Banking__SaveExternalData(AB_BANKING *ab) {
+  GWEN_DB_NODE *db;
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "external");
+  if (!db)
+    return 0;
+  db=GWEN_DB_GetFirstGroup(db);
+  while(db) {
+    const char *prefix;
+    GWEN_DB_NODE *dbName;
+
+    prefix=GWEN_DB_GroupName(db);
+    dbName=GWEN_DB_GetFirstGroup(db);
+    while(dbName) {
+      int rv;
+
+      rv=AB_Banking__SaveData(ab, prefix, GWEN_DB_GroupName(dbName));
+      if (rv)
+        return rv;
+      dbName=GWEN_DB_GetNextGroup(dbName);
+    }
+    db=GWEN_DB_GetNextGroup(db);
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking__LoadAppData(AB_BANKING *ab) {
+  return AB_Banking__LoadData(ab, "apps", ab->appEscName);
+}
+
+
+
+int AB_Banking__LoadSharedData(AB_BANKING *ab, const char *name) {
+  return AB_Banking__LoadData(ab, "shared", name);
+}
+
+
+
+int AB_Banking__SaveSharedData(AB_BANKING *ab, const char *name) {
+  return AB_Banking__SaveData(ab, "shared", name);
+}
+
+
+
 GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbT;
@@ -569,7 +664,7 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
   assert(ab);
   assert(ab->appEscName);
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/apps");
+                      "external/apps");
   assert(db);
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -589,160 +684,59 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab) {
 
 
 
-int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
-					  const char *name,
-					  GWEN_BUFFER *buf) {
-  if (AB_Banking_GetUserDataDir(ab, buf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
-    return AB_ERROR_GENERIC;
-  }
-  GWEN_Buffer_AppendString(buf, DIRSEP "backends" DIRSEP);
-  GWEN_Buffer_AppendString(buf, name);
-  GWEN_Buffer_AppendString(buf, DIRSEP "settings.conf");
-  return 0;
-}
-
-
-
-int AB_Banking__LoadProviderData(AB_BANKING *ab,
-				 const char *name){
-  GWEN_BUFFER *pbuf;
-  GWEN_DB_NODE *db;
-
-  assert(ab);
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Banking__GetProviderConfigFileName(ab, name, pbuf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get config file name");
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-		      "static/providers");
-  assert(db);
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
-  assert(db);
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-           "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
-  if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
-                       GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP |
-                       GWEN_DB_FLAGS_LOCKFILE)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not load config file \"%s\", creating it later",
-	     GWEN_Buffer_GetStart(pbuf));
-    GWEN_Buffer_free(pbuf);
-    return 0;
-  }
-  GWEN_Buffer_free(pbuf);
-
-  /* sucessfully read */
-  return 0;
-}
-
-
-
-int AB_Banking__SaveProviderData(AB_BANKING *ab,
-                                 const char *name,
-				 int del){
-  GWEN_BUFFER *pbuf;
-  GWEN_BUFFER *rpbuf;
-  GWEN_DB_NODE *db;
-  GWEN_DB_NODE *dbBackends;
-
-  assert(ab);
-
-  dbBackends=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			      "static/providers");
-  if (!dbBackends)
-    return 0;
-  db=GWEN_DB_GetGroup(dbBackends, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
-  if (!db)
-    return 0;
-
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Banking__GetProviderConfigFileName(ab, name, pbuf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get config file name");
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-
-  DBG_DEBUG(AQBANKING_LOGDOMAIN,
-            "Saving file \"%s\"", GWEN_Buffer_GetStart(pbuf));
-  if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pbuf),
-			     GWEN_PATH_FLAGS_VARIABLE)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Path \"%s\" is not available",
-              GWEN_Buffer_GetStart(pbuf));
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-
-  rpbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(pbuf)+4, 0, 1);
-  GWEN_Buffer_AppendBuffer(rpbuf, pbuf);
-  GWEN_Buffer_AppendString(pbuf, ".tmp");
-  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(pbuf),
-                        GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not save backend config file \"%s\"",
-	     GWEN_Buffer_GetStart(pbuf));
-    GWEN_Buffer_free(rpbuf);
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-#ifdef OS_WIN32
-  if (unlink(GWEN_Buffer_GetStart(rpbuf))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not delete old file \"%s\": %s",
-              GWEN_Buffer_GetStart(rpbuf),
-              strerror(errno));
-    GWEN_Buffer_free(rpbuf);
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-#endif
-  if (rename(GWEN_Buffer_GetStart(pbuf),
-             GWEN_Buffer_GetStart(rpbuf))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not rename file to \"%s\": %s",
-              GWEN_Buffer_GetStart(rpbuf),
-              strerror(errno));
-    GWEN_Buffer_free(rpbuf);
-    GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
-  }
-  GWEN_Buffer_free(rpbuf);
-  GWEN_Buffer_free(pbuf);
-
-  if (del)
-    GWEN_DB_DeleteGroup(dbBackends, name);
-
-  /* sucessfully written */
-  return 0;
-}
-
-
-
-GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
-					 const char *name) {
+GWEN_DB_NODE *AB_Banking_GetSharedData(AB_BANKING *ab, const char *name) {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbT;
 
   assert(ab);
-  assert(name);
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-		      "static/providers");
+                      "external/shared");
   assert(db);
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (!dbT) {
-    if (AB_Banking__LoadProviderData(ab, name)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider data file");
+    if (AB_Banking__LoadSharedData(ab, name)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load app data file");
       return 0;
     }
   }
 
   dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
+  assert(dbT);
+  return dbT;
+}
+
+
+
+
+GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
+                                         AB_PROVIDER *pro) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbT;
+
+  assert(ab);
+  assert(pro);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "banking/backends");
+  assert(db);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       AB_Provider_GetEscapedName(pro));
+  if (!dbT && ab->lastVersion < ((1<<24) | (8<<16) | (1<<8) | 3)) {
+    int rv;
+
+    /* load separate file for older releases */
+    rv=AB_Banking__LoadOldProviderData(ab, AB_Provider_GetEscapedName(pro));
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not load settings for backend \"%s\"",
+                AB_Provider_GetName(pro));
+      abort();
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+                       AB_Provider_GetEscapedName(pro));
   assert(dbT);
   return dbT;
 }
@@ -1011,21 +1005,13 @@ int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
 
 
 int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
-  int rv1;
-  int rv2;
+  int rv;
 
-  rv1=AB_Provider_Fini(pro);
-  rv2=AB_Banking__SaveProviderData(ab,
-				   AB_Provider_GetEscapedName(pro),
-				   (rv1==0));
-  if (rv2) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving backend data (%d)", rv2);
-    return rv2;
+  rv=AB_Provider_Fini(pro);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv);
   }
-  if (rv1) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv1);
-  }
-  return rv1;
+  return rv;
 }
 
 
@@ -1055,7 +1041,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
   pro=AB_Banking_FindProvider(ab, name);
   if (pro)
     return pro;
-  pro=AB_Banking_LoadProviderPlugin(ab, name);
+  pro=AB_Banking__LoadProviderPlugin(ab, name);
   if (pro) {
     if (AB_Banking_InitProvider(ab, pro)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not init provider \"%s\"", name);
@@ -1114,7 +1100,344 @@ AB_ACCOUNT *AB_Banking_GetAccount(const AB_BANKING *ab,
 
 
 
-static GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId) {
+AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
+                                   const char *backendName,
+                                   const char *country,
+                                   const char *bankId,
+                                   const char *accountId) {
+  AB_ACCOUNT *a;
+
+  assert(ab);
+  if (AB_Account_List_GetCount(ab->accounts)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+    return 0;
+  }
+  a=AB_Account_List_First(ab->accounts);
+  assert(a);
+
+  if (!backendName) backendName="*";
+  if (!country) country="*";
+  if (!bankId) bankId="*";
+  if (!accountId) accountId="*";
+
+  while(a) {
+    const char *lbackendName;
+    /*const char *lcountry;
+    const char *lbankId;
+    const char *laccountId;*/
+
+    lbackendName=AB_Account_GetBackendName(a);
+    if (!lbackendName) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Account: %s/%s/%s: No backend\n",
+                AB_Account_GetCountry(a),
+                AB_Account_GetBankCode(a),
+                AB_Account_GetAccountNumber(a));
+      abort();
+    }
+
+    if ((-1!=GWEN_Text_ComparePattern(lbackendName,
+                                      backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetCountry(a),
+                                      country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetBankCode(a),
+                                      bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetAccountNumber(a),
+                                      accountId, 0)))
+      break;
+    a=AB_Account_List_Next(a);
+  } /* while */
+
+  return a;
+}
+
+
+
+AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
+                                          const char *backendName,
+                                          const char *country,
+                                          const char *bankId,
+                                          const char *accountId) {
+  AB_ACCOUNT_LIST2 *al;
+  AB_ACCOUNT *a;
+
+  assert(ab);
+  if (AB_Account_List_GetCount(ab->accounts)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+    return 0;
+  }
+  al=AB_Account_List2_new();
+  a=AB_Account_List_First(ab->accounts);
+  assert(a);
+
+  if (!backendName) backendName="*";
+  if (!country) country="*";
+  if (!bankId) bankId="*";
+  if (!accountId) accountId="*";
+
+  while(a) {
+    const char *lbackendName;
+    /*const char *lcountry;
+    const char *lbankId;
+    const char *laccountId;*/
+
+    lbackendName=AB_Account_GetBackendName(a);
+    if (!lbackendName) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Account: %s/%s/%s: No backend\n",
+                AB_Account_GetCountry(a),
+                AB_Account_GetBankCode(a),
+                AB_Account_GetAccountNumber(a));
+      abort();
+    }
+
+    if ((-1!=GWEN_Text_ComparePattern(AB_Account_GetBackendName(a),
+                                      backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetCountry(a),
+                                      country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetBankCode(a),
+                                      bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_Account_GetAccountNumber(a),
+                                      accountId, 0)))
+      AB_Account_List2_PushBack(al, a);
+    a=AB_Account_List_Next(a);
+  } /* while */
+
+  if (AB_Account_List2_GetSize(al)==0) {
+    AB_Account_List2_free(al);
+    return 0;
+  }
+
+  return al;
+}
+
+
+
+AB_USER_LIST2 *AB_Banking_GetUsers(const AB_BANKING *ab){
+  AB_USER_LIST2 *ul;
+  AB_USER *u;
+
+  assert(ab);
+  if (AB_User_List_GetCount(ab->users)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No users");
+    return 0;
+  }
+  ul=AB_User_List2_new();
+  u=AB_User_List_First(ab->users);
+  assert(u);
+  while(u) {
+    AB_User_List2_PushBack(ul, u);
+    u=AB_User_List_Next(u);
+  } /* while */
+
+  return ul;
+}
+
+
+
+AB_USER *AB_Banking_GetUser(const AB_BANKING *ab, GWEN_TYPE_UINT32 uniqueId){
+  AB_USER *u;
+
+  assert(ab);
+  if (AB_User_List_GetCount(ab->users)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No users");
+    return 0;
+  }
+  u=AB_User_List_First(ab->users);
+  assert(u);
+  while(u) {
+    if (AB_User_GetUniqueId(u)==uniqueId)
+      break;
+    u=AB_User_List_Next(u);
+  } /* while */
+
+  return u;
+}
+
+
+
+AB_USER *AB_Banking_FindUser(const AB_BANKING *ab,
+                             const char *backendName,
+                             const char *country,
+                             const char *bankId,
+                             const char *userId,
+                             const char *customerId) {
+  AB_USER *u;
+
+  assert(ab);
+  if (AB_User_List_GetCount(ab->users)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No users");
+    return 0;
+  }
+  u=AB_User_List_First(ab->users);
+  assert(u);
+
+  if (!backendName) backendName="*";
+  if (!country) country="*";
+  if (!bankId) bankId="*";
+  if (!userId) userId="*";
+  if (!customerId) customerId="*";
+
+  while(u) {
+    if ((-1!=GWEN_Text_ComparePattern(AB_User_GetBackendName(u),
+                                      backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetCountry(u),
+                                      country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetBankCode(u),
+                                      bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetUserId(u),
+                                      userId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetCustomerId(u),
+                                      customerId, 0)))
+      break;
+    u=AB_User_List_Next(u);
+  } /* while */
+
+  return u;
+}
+
+
+
+AB_USER_LIST2 *AB_Banking_FindUsers(const AB_BANKING *ab,
+                                    const char *backendName,
+                                    const char *country,
+				    const char *bankId,
+				    const char *userId,
+				    const char *customerId) {
+  AB_USER_LIST2 *ul;
+  AB_USER *u;
+
+  assert(ab);
+  if (AB_User_List_GetCount(ab->users)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No users");
+    return 0;
+  }
+  ul=AB_User_List2_new();
+  u=AB_User_List_First(ab->users);
+  assert(u);
+
+  if (!backendName) backendName="*";
+  if (!country) country="*";
+  if (!bankId) bankId="*";
+  if (!userId) userId="*";
+  if (!customerId) customerId="*";
+
+  while(u) {
+    if ((-1!=GWEN_Text_ComparePattern(AB_User_GetBackendName(u),
+                                      backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetCountry(u),
+                                      country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetBankCode(u),
+                                      bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetUserId(u),
+                                      userId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(AB_User_GetCustomerId(u),
+                                      customerId, 0))) {
+      AB_User_List2_PushBack(ul, u);
+    }
+    u=AB_User_List_Next(u);
+  } /* while */
+
+  if (AB_User_List2_GetSize(ul)==0) {
+    AB_User_List2_free(ul);
+    return 0;
+  }
+
+  return ul;
+}
+
+
+
+AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName) {
+  AB_USER *u;
+  AB_PROVIDER *pro;
+  GWEN_TYPE_UINT32 uid;
+  int rv;
+
+  assert(ab);
+  pro=AB_Banking_GetProvider(ab, backendName);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backendName);
+    return 0;
+  }
+
+  u=AB_User_new(ab);
+  AB_User_SetBackendName(u, AB_Provider_GetName(pro));
+  uid=AB_Banking_GetUniqueId(ab);
+  assert(uid);
+  AB_User_SetUniqueId(u, uid);
+  rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Create);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error extending user (%d)", rv);
+    AB_User_free(u);
+    return 0;
+  }
+
+  return u;
+}
+
+
+
+int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
+  int rv;
+
+  assert(ab);
+  assert(u);
+  rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
+                            AB_ProviderExtendMode_Add);
+  if (rv)
+    return rv;
+  AB_User_List_Add(u, ab->users);
+  return 0;
+}
+
+
+
+AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
+  AB_ACCOUNT *a;
+  AB_PROVIDER *pro;
+  int rv;
+
+  assert(ab);
+  pro=AB_Banking_GetProvider(ab, backendName);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backendName);
+    return 0;
+  }
+
+  a=AB_Account_new(ab, pro);
+  rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Create);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
+    AB_Account_free(a);
+    return 0;
+  }
+
+  return a;
+}
+
+
+
+int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
+  GWEN_TYPE_UINT32 uid;
+  int rv;
+
+  assert(ab);
+  assert(a);
+  uid=AB_Banking_GetUniqueId(ab);
+  assert(uid);
+  AB_Account_SetUniqueId(a, uid);
+  rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+                               AB_ProviderExtendMode_Add);
+  if (rv)
+    return rv;
+  AB_Account_List_Add(a, ab->accounts);
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId) {
   GWEN_TYPE_UINT64 res=0;
   const char *s;
 
@@ -1448,7 +1771,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     return 0;
   }
 
-  dbT=GWEN_DB_Group_new("config");
+  dbT=GWEN_DB_Group_new("banking");
   assert(dbT);
   if (GWEN_DB_ReadFile(dbT, ab->configFile,
                        GWEN_DB_FLAGS_DEFAULT |
@@ -1458,27 +1781,25 @@ int AB_Banking_Init(AB_BANKING *ab) {
     return AB_ERROR_BAD_CONFIG_FILE;
   }
 
+  ab->lastVersion=GWEN_DB_GetIntValue(dbT, "lastVersion", 0, 0);
+
+  /* store data as new "banking" group within global configuration DB */
+  GWEN_DB_DeleteGroup(ab->data, "banking");
+  GWEN_DB_AddGroup(ab->data, dbT);
+
   /* read active providers */
   for (i=0; ; i++) {
     const char *p;
 
-    p=GWEN_DB_GetCharValue(dbT, "activeProviders", i, 0);
+    p=GWEN_DB_GetCharValue(ab->data, "banking/activeProviders", i, 0);
     if (!p)
       break;
     GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
   }
 
-  /* read data */
-  dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banking");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbTdst;
-
-    dbTdst=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, "static");
-    GWEN_DB_AddGroupChildren(dbTdst, dbTsrc);
-  }
 
   ab->alwaysAskForCert=GWEN_DB_GetIntValue(ab->data,
-                                           "static/alwaysAskForCert", 0, 0);
+                                           "banking/alwaysAskForCert", 0, 0);
   ab->pinCacheEnabled=0;
 
   /* init active providers */
@@ -1503,6 +1824,45 @@ int AB_Banking_Init(AB_BANKING *ab) {
     } /* while */
   }
 
+  /* read users */
+  dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "users");
+  if (dbTsrc) {
+    GWEN_DB_NODE *dbU;
+
+    dbU=GWEN_DB_FindFirstGroup(dbTsrc, "user");
+    while(dbU) {
+      AB_USER *u;
+
+      u=AB_User_fromDb(ab, dbU);
+      if (u) {
+        const char *s;
+        AB_PROVIDER *pro;
+
+        s=AB_User_GetBackendName(u);
+        assert(s && *s);
+        pro=AB_Banking_GetProvider(ab, s);
+        if (!pro) {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", s);
+        }
+        else {
+          int rv;
+
+          rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Extend);
+          if (rv) {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+            AB_User_free(u);
+          }
+          else {
+            DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding user");
+            AB_User_List_Add(u, ab->users);
+          }
+        }
+      }
+      dbU=GWEN_DB_FindNextGroup(dbU, "user");
+    } /* while */
+  } /* if users */
+
+
   /* read accounts */
   dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "accounts");
   if (dbTsrc) {
@@ -1512,11 +1872,12 @@ int AB_Banking_Init(AB_BANKING *ab) {
     while(dbA) {
       AB_ACCOUNT *a;
 
-      a=AB_Account_fromDbWithProvider(ab, dbA);
+      a=AB_Account_fromDb(ab, dbA);
       if (a) {
         int rv;
 
-        rv=AB_Account_Update(a);
+        rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+                                     AB_ProviderExtendMode_Extend);
         if (rv) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         }
@@ -1527,27 +1888,38 @@ int AB_Banking_Init(AB_BANKING *ab) {
       }
       dbA=GWEN_DB_FindNextGroup(dbA, "account");
     } /* while */
-  }
+  } /* if accounts */
 
-  /* ask active providers for account lists */
-  if (GWEN_StringList_Count(ab->activeProviders)) {
-    GWEN_STRINGLISTENTRY *se;
 
-    se=GWEN_StringList_FirstEntry(ab->activeProviders);
-    assert(se);
-    while(se) {
-      const char *p;
+  /* update active providers if necessary */
+  if (AB_Provider_List_GetCount(ab->providers) &&
+      ab->lastVersion <
+      ((AQBANKING_VERSION_MAJOR<<24) |
+       (AQBANKING_VERSION_MINOR<<16) |
+       (AQBANKING_VERSION_PATCHLEVEL<<8) |
+       AQBANKING_VERSION_BUILD)) {
+    AB_PROVIDER *pro;
+
+    pro=AB_Provider_List_First(ab->providers);
+    while(pro) {
       int rv;
 
-      p=GWEN_StringListEntry_Data(se);
-      assert(p);
-      rv=AB_Banking_ImportProviderAccounts(ab, p);
+      rv=AB_Provider_Update(pro, ab->lastVersion,
+                            ((AQBANKING_VERSION_MAJOR<<24) |
+                             (AQBANKING_VERSION_MINOR<<16) |
+                             (AQBANKING_VERSION_PATCHLEVEL<<8) |
+                             AQBANKING_VERSION_BUILD));
       if (rv) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Error importing accounts from backend \"%s\"", p);
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Could not update provider \"%s\"",
+                  AB_Provider_GetName(pro));
+        return rv;
       }
-      se=GWEN_StringListEntry_Next(se);
+
+      pro=AB_Provider_List_Next(pro);
     } /* while */
   }
+
 
   /* read jobs */
   jl=AB_Banking__LoadJobsAs(ab, "todo");
@@ -1573,7 +1945,6 @@ int AB_Banking_Init(AB_BANKING *ab) {
     AB_Job_List2Iterator_free(it);
     AB_Job_List2_free(jl);
   }
-  GWEN_DB_Group_free(dbT);
 
   return 0;
 }
@@ -1582,14 +1953,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
 
 int AB_Banking_Fini(AB_BANKING *ab) {
-  GWEN_DB_NODE *db;
-  GWEN_DB_NODE *dbT;
-  AB_ACCOUNT *a;
-  AB_JOB *j;
   int rv;
   AB_PROVIDER *pro;
-  GWEN_BUFFER *rpbuf1;
-  GWEN_BUFFER *rpbuf2;
 
   assert(ab);
 
@@ -1608,136 +1973,15 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     pro=AB_Provider_List_Next(pro);
   } /* while */
 
-  GWEN_DB_SetIntValue(ab->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "static/alwaysAskForCert",
-                      ab->alwaysAskForCert);
-
-  db=GWEN_DB_Group_new("config");
-  assert(db);
-
-  /* save accounts */
-  a=AB_Account_List_First(ab->accounts);
-  while(a) {
-    GWEN_DB_NODE *dbTdst;
-    int rv;
-
-    dbTdst=GWEN_DB_GetGroup(db,
-                            GWEN_DB_FLAGS_DEFAULT |
-                            GWEN_PATH_FLAGS_CREATE_GROUP,
-                            "accounts/account");
-    assert(dbTdst);
-    rv=AB_Account_toDb(a, dbTdst);
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
-                AB_Account_GetUniqueId(a));
-      GWEN_DB_Group_free(db);
-      GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
-      return rv;
-    }
-    a=AB_Account_List_Next(a);
-  } /* while */
-
-  /* save enqueued jobs */
-  j=AB_Job_List_First(ab->enqueuedJobs);
-  while(j) {
-    if (AB_Banking__SaveJobAs(ab, j, "todo")) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving job, ignoring");
-    }
-    j=AB_Job_List_Next(j);
-  } /* while */
-
-  /* save list of active backends */
-  if (GWEN_StringList_Count(ab->activeProviders)) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(ab->activeProviders);
-    assert(se);
-    while(se) {
-      const char *p;
-
-      p=GWEN_StringListEntry_Data(se);
-      assert(p);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
-                           "activeProviders", p);
-
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-  }
-
-  /* store appplication specific data */
-  rv=AB_Banking__SaveAppData(ab);
+  rv=AB_Banking_Save(ab);
   if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
-    GWEN_DB_Group_free(db);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  GWEN_DB_DeleteGroup(ab->data, "static/apps");
-
-  /* save bad pins */
-  rv=AB_Banking__SaveBadPins(ab);
-  if (rv) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not save bad pins");
-  }
-
-  /* store static config data as "banking" */
-  dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
-  if (dbT) {
-    GWEN_DB_NODE *dbTdst;
-
-    dbTdst=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "banking");
-    assert(dbTdst);
-    GWEN_DB_AddGroupChildren(dbTdst, dbT);
-  }
-
-  /* write config file. TODO: make backups */
-  rpbuf1=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(rpbuf1, ab->dataDir);
-  GWEN_Buffer_AppendString(rpbuf1, DIRSEP AB_BANKING_CONFIGFILE);
-  rpbuf2=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(rpbuf1)+4, 0, 1);
-  GWEN_Buffer_AppendBuffer(rpbuf2, rpbuf1);
-  GWEN_Buffer_AppendString(rpbuf2, ".tmp");
-  if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(rpbuf2),
-			GWEN_DB_FLAGS_DEFAULT|GWEN_DB_FLAGS_LOCKFILE)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not save app config file \"%s\"",
-	     GWEN_Buffer_GetStart(rpbuf2));
-    GWEN_Buffer_free(rpbuf2);
-    GWEN_Buffer_free(rpbuf1);
-    GWEN_DB_Group_free(db);
-    return AB_ERROR_BAD_CONFIG_FILE;
-  }
-#ifdef OS_WIN32
-  if (unlink(GWEN_Buffer_GetStart(rpbuf1))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not delete old file \"%s\": %s",
-	      GWEN_Buffer_GetStart(rpbuf1),
-	      strerror(errno));
-    /* Don't abort here; this error will also occur if the old
-       file didn't exist. */
-    /*GWEN_Buffer_free(rpbuf2);
-    GWEN_Buffer_free(rpbuf1);
-    GWEN_DB_Group_free(db);
-    return AB_ERROR_GENERIC;*/
-  }
-#endif
-  if (rename(GWEN_Buffer_GetStart(rpbuf2),
-	     GWEN_Buffer_GetStart(rpbuf1))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not rename file to \"%s\": %s",
-              GWEN_Buffer_GetStart(rpbuf1),
-	      strerror(errno));
-    GWEN_Buffer_free(rpbuf2);
-    GWEN_Buffer_free(rpbuf1);
-    GWEN_DB_Group_free(db);
-    return AB_ERROR_GENERIC;
-  }
-  GWEN_Buffer_free(rpbuf2);
-  GWEN_Buffer_free(rpbuf1);
-
-  GWEN_DB_Group_free(db);
 
   AB_Job_List_Clear(ab->enqueuedJobs);
   AB_Account_List_Clear(ab->accounts);
+  AB_User_List_Clear(ab->users);
   AB_Provider_List_Clear(ab->providers);
 
   /* unregister and unload crypt token plugin manager */
@@ -1805,9 +2049,10 @@ int AB_Banking_Save(AB_BANKING *ab) {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbT;
   AB_ACCOUNT *a;
+  AB_USER *u;
   AB_JOB *j;
   int rv;
-  AB_PROVIDER *pro;
+  int rvExternal;
   GWEN_BUFFER *rpbuf;
 
   assert(ab);
@@ -1815,35 +2060,18 @@ int AB_Banking_Save(AB_BANKING *ab) {
   db=GWEN_DB_Group_new("config");
   assert(db);
 
-  /* save accounts */
-  a=AB_Account_List_First(ab->accounts);
-  while(a) {
-    GWEN_DB_NODE *dbTdst;
-    int rv;
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "lastVersion",
+                      (AQBANKING_VERSION_MAJOR<<24) |
+                      (AQBANKING_VERSION_MINOR<<16) |
+                      (AQBANKING_VERSION_PATCHLEVEL<<8) |
+                      AQBANKING_VERSION_BUILD);
 
-    dbTdst=GWEN_DB_GetGroup(db,
-                            GWEN_DB_FLAGS_DEFAULT |
-                            GWEN_PATH_FLAGS_CREATE_GROUP,
-                            "accounts/account");
-    assert(dbTdst);
-    rv=AB_Account_toDb(a, dbTdst);
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
-                AB_Account_GetUniqueId(a));
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
-    a=AB_Account_List_Next(a);
-  } /* while */
-
-  /* save enqueued jobs */
-  j=AB_Job_List_First(ab->enqueuedJobs);
-  while(j) {
-    if (AB_Banking__SaveJobAs(ab, j, "todo")) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving job, ignoring");
-    }
-    j=AB_Job_List_Next(j);
-  } /* while */
+  /* save bad pins */
+  rv=AB_Banking__SaveBadPins(ab);
+  if (rv) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not save bad pins");
+  }
 
   /* save list of active backends */
   if (GWEN_StringList_Count(ab->activeProviders)) {
@@ -1863,44 +2091,128 @@ int AB_Banking_Save(AB_BANKING *ab) {
     } /* while */
   }
 
-  /* save all providers */
-  pro=AB_Provider_List_First(ab->providers);
-  while(pro) {
-    rv=AB_Banking__SaveProviderData(ab,
-				    AB_Provider_GetEscapedName(pro),
-				    0);
-    if (rv) {
-      DBG_WARN(AQBANKING_LOGDOMAIN,
-	       "Error saving backend \"%s\"",
-	       AB_Provider_GetName(pro));
-      break;
+  /* store some vars */
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "alwaysAskForCert",
+                      ab->alwaysAskForCert);
+
+  /* save users */
+  u=AB_User_List_First(ab->users);
+  while(u) {
+    GWEN_DB_NODE *dbTdst;
+    int rv;
+    AB_PROVIDER *pro;
+
+    /* let provider store not yet stored data */
+    pro=AB_User_GetProvider(u);
+    if (pro) {
+      rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Save);
+      if (rv) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error extending user (%d)", rv);
+      }
     }
-    pro=AB_Provider_List_Next(pro);
+    else {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "No provider for user \"%08x\"",
+               AB_User_GetUniqueId(u));
+    }
+
+    /* store user data */
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_PATH_FLAGS_CREATE_GROUP,
+                            "users/user");
+    assert(dbTdst);
+    rv=AB_User_toDb(u, dbTdst);
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving user \"%08x\"",
+                AB_User_GetUniqueId(u));
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+    u=AB_User_List_Next(u);
   } /* while */
 
-  /* store appplication specific data */
-  rv=AB_Banking__SaveAppData(ab);
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save configuration");
-    GWEN_DB_Group_free(db);
-    return rv;
-  }
+  /* save accounts */
+  a=AB_Account_List_First(ab->accounts);
+  while(a) {
+    GWEN_DB_NODE *dbTdst;
+    int rv;
+    AB_PROVIDER *pro;
 
-  /* save bad pins */
-  rv=AB_Banking__SaveBadPins(ab);
-  if (rv) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not save bad pins");
-  }
+    /* let provider store not yet stored data */
+    pro=AB_Account_GetProvider(a);
+    if (pro) {
+      rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Save);
+      if (rv) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
+      }
+    }
 
-  /* store static config data as "banking" */
-  dbT=GWEN_DB_GetGroup(ab->data, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "static");
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_PATH_FLAGS_CREATE_GROUP,
+                            "accounts/account");
+    assert(dbTdst);
+    rv=AB_Account_toDb(a, dbTdst);
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
+                AB_Account_GetUniqueId(a));
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+    a=AB_Account_List_Next(a);
+  } /* while */
+
+  /* store bad pins */
+  dbT=GWEN_DB_GetGroup(ab->data,
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "banking/pins");
   if (dbT) {
     GWEN_DB_NODE *dbTdst;
 
-    dbTdst=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "banking");
-    assert(dbTdst);
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT,
+                            "pins");
     GWEN_DB_AddGroupChildren(dbTdst, dbT);
   }
+
+  /* store certificates */
+  dbT=GWEN_DB_GetGroup(ab->data,
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "banking/certificates");
+  if (dbT) {
+    GWEN_DB_NODE *dbTdst;
+
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT,
+                            "certificates");
+    GWEN_DB_AddGroupChildren(dbTdst, dbT);
+  }
+
+  /* store backends */
+  dbT=GWEN_DB_GetGroup(ab->data,
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "banking/backends");
+  if (dbT) {
+    GWEN_DB_NODE *dbTdst;
+
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT,
+                            "backends");
+    GWEN_DB_AddGroupChildren(dbTdst, dbT);
+  }
+
+  /* save enqueued jobs */
+  j=AB_Job_List_First(ab->enqueuedJobs);
+  while(j) {
+    if (AB_Banking__SaveJobAs(ab, j, "todo")) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error saving job, ignoring");
+    }
+    j=AB_Job_List_Next(j);
+  } /* while */
+
+  /* store external data */
+  rvExternal=AB_Banking__SaveExternalData(ab);
 
   /* write config file. TODO: make backups */
   rpbuf=GWEN_Buffer_new(0, strlen(ab->configFile)+4, 0, 1);
@@ -1938,6 +2250,11 @@ int AB_Banking_Save(AB_BANKING *ab) {
   GWEN_Buffer_free(rpbuf);
   GWEN_DB_Group_free(db);
 
+  if (rvExternal) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save external configuration");
+    return rvExternal;
+  }
+
   return 0;
 }
 
@@ -1973,22 +2290,12 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
 
 
 
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
-							  const char *pname){
-  GWEN_BUFFER *pbuf;
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *wdl;
 
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(pbuf,
-                           AQBANKING_PLUGINS
-                           DIRSEP
-                           AB_PROVIDER_WIZARD_FOLDER
-                           DIRSEP);
-  GWEN_Buffer_AppendString(pbuf, pname);
-
-  wdl=GWEN_LoadPluginDescrs(GWEN_Buffer_GetStart(pbuf));
-
-  GWEN_Buffer_free(pbuf);
+  wdl=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS
+                            DIRSEP
+                            AB_WIZARD_FOLDER);
   return wdl;
 }
 
@@ -2021,145 +2328,6 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
   l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP "imexporters");
   return l;
 }
-
-
-
-int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
-  AB_ACCOUNT *ta;
-  const char *accountId;
-  const char *bankCode;
-  GWEN_DB_NODE *dbNew;
-  GWEN_DB_NODE *dbOld;
-  const char *p;
-
-  accountId=AB_Account_GetAccountNumber(a);
-  assert(accountId);
-  bankCode=AB_Account_GetBankCode(a);
-  assert(bankCode);
-
-  ta=AB_Account_List_First(ab->accounts);
-  if (!ta) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts.");
-  }
-  while(ta) {
-    if (AB_Account_GetProvider(a)==AB_Account_GetProvider(ta)) {
-      const char *caccountId;
-      const char *cbankCode;
-
-      caccountId=AB_Account_GetAccountNumber(ta);
-      assert(caccountId);
-      cbankCode=AB_Account_GetBankCode(ta);
-      assert(cbankCode);
-
-      if ((strcasecmp(accountId, caccountId)==0) &&
-          (strcasecmp(bankCode, cbankCode)==0)) {
-        break;
-      }
-    }
-    ta=AB_Account_List_Next(ta);
-  } /* while */
-
-  if (!ta) {
-    /* account is new, simply add it */
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account");
-    AB_Account_SetUniqueId(a, AB_Banking_GetUniqueId(ab));
-    AB_Account_List_Add(a, ab->accounts);
-    return 0;
-  }
-
-  /* copy new provider data over old data */
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating account");
-  dbNew=AB_Account_GetProviderData(ta);
-  assert(dbNew);
-  dbOld=AB_Account_GetProviderData(a);
-  assert(dbOld);
-  GWEN_DB_ClearGroup(dbOld, 0);
-  GWEN_DB_AddGroupChildren(dbOld, dbNew);
-
-  /* copy new data over old one */
-  p=AB_Account_GetAccountName(a);
-  if (p)
-    AB_Account_SetAccountName(ta, p);
-  p=AB_Account_GetOwnerName(a);
-  if (p)
-    AB_Account_SetOwnerName(ta, p);
-
-  AB_Account_free(a);
-  return 0;
-}
-
-
-
-int AB_Banking_ImportProviderAccounts(AB_BANKING *ab, const char *backend){
-  AB_ACCOUNT_LIST2 *al;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
-  AB_ACCOUNT *a;
-  AB_PROVIDER *pro;
-  int successful;
-
-  pro=AB_Banking_GetProvider(ab, backend);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backend);
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  al=AB_Provider_GetAccountList(pro);
-  if (!al) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" has no accounts", backend);
-    return AB_ERROR_EMPTY;
-  }
-
-  ait=AB_Account_List2_First(al);
-  assert(ait);
-  a=AB_Account_List2Iterator_Data(ait);
-  successful=0;
-  assert(a);
-  while(a) {
-    AB_Account_SetProvider(a, pro);
-    if (AB_Banking__MergeInAccount(ab, a)) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Could not merge in account");
-    }
-    else
-      successful++;
-    a=AB_Account_List2Iterator_Next(ait);
-  }
-  AB_Account_List2Iterator_free(ait);
-  AB_Account_List2_free(al);
-
-  if (!successful) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No account imported");
-    return AB_ERROR_EMPTY;
-  }
-  return 0;
-}
-
-
-
-#if 0 /* FIXME: This function is not used */
-int AB_Banking_UpdateAccountList(AB_BANKING *ab){
-  assert(ab);
-  if (GWEN_StringList_Count(ab->activeProviders)) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(ab->activeProviders);
-    assert(se);
-    while(se) {
-      const char *p;
-      int rv;
-
-      p=GWEN_StringListEntry_Data(se);
-      assert(p);
-      rv=AB_Banking_ImportProviderAccounts(ab, p);
-      if (rv) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Error importing accounts from backend \"%s\"", p);
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-  }
-
-  return 0;
-}
-#endif
 
 
 
@@ -2205,8 +2373,6 @@ int AB_Banking_EnqueueJob(AB_BANKING *ab, AB_JOB *j){
   switch(jst) {
   case AB_Job_StatusPending:
     AB_Banking__UnlinkJobAs(ab, j, "pending"); break;
-  case AB_Job_StatusDeferred:
-    AB_Banking__UnlinkJobAs(ab, j, "deferred"); break;
   default:
     break;
   }
@@ -2228,38 +2394,6 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j){
     AB_Job_SetStatus(j, AB_Job_StatusNew);
     AB_Job_List_Del(j);
   }
-  rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
-  AB_Job_free(j);
-  return rv;
-}
-
-
-
-int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j){
-  int rv;
-  AB_JOB_STATUS jst;
-
-  assert(ab);
-  assert(j);
-  jst=AB_Job_GetStatus(j);
-  if (jst!=AB_Job_StatusEnqueued) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "I can only defer jobs which haven't been executed.");
-    AB_Job_Log(j, AB_Banking_LogLevelError, "aqbanking",
-               "Job is not enqueued, cannot be deferred");
-    return AB_ERROR_INVALID;
-  }
-
-  AB_Job_SetStatus(j, AB_Job_StatusDeferred);
-  rv=AB_Banking__SaveJobAs(ab, j, "deferred");
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not save job as \"deferred\", not dequeueing it");
-    AB_Job_SetStatus(j, jst);
-    return rv;
-  }
-
-  AB_Job_List_Del(j);
   rv=AB_Banking__UnlinkJobAs(ab, j, "todo");
   AB_Job_free(j);
   return rv;
@@ -2559,7 +2693,6 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 
 
 int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
-  int rv;
   AB_PROVIDER *pro;
 
   if (GWEN_StringList_HasString(ab->activeProviders, pname)) {
@@ -2574,15 +2707,6 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
     return AB_ERROR_NOT_FOUND;
   }
 
-  rv=AB_Banking_ImportProviderAccounts(ab, pname);
-  if (rv) {
-    DBG_WARN(AQBANKING_LOGDOMAIN,
-             "Could not import accounts from backend \"%s\"",
-             pname);
-    AB_Banking_FiniProvider(ab, pro);
-    return rv;
-  }
-
   GWEN_StringList_AppendString(ab->activeProviders, pname, 0, 1);
   return 0;
 }
@@ -2591,6 +2715,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
 
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
   AB_ACCOUNT *a;
+  AB_USER *u;
   AB_PROVIDER *pro;
 
   if (!GWEN_StringList_HasString(ab->activeProviders, pname)) {
@@ -2617,6 +2742,22 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
       AB_Account_free(a);
     }
     a=na;
+  }
+
+  /* delete users which use this backend */
+  u=AB_User_List_First(ab->users);
+  while(u) {
+    AB_USER *nu;
+    const char *s;
+
+    nu=AB_User_List_Next(u);
+    s=AB_User_GetBackendName(u);
+    assert(s && *s);
+    if (strcasecmp(s, pname)==0) {
+      AB_User_List_Del(u);
+      AB_User_free(u);
+    }
+    u=nu;
   }
 
   return 0;
@@ -2673,7 +2814,7 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
     GWEN_Buffer_AppendString(buf, DIRSEP AB_BANKING_USERDATADIR);
   }
 
-  GWEN_Buffer_AppendString(buf, DIRSEP);
+  GWEN_Buffer_AppendString(buf, DIRSEP "shared" DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad share name, aborting.");
@@ -2690,16 +2831,6 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
   }
 
   return 0;
-}
-
-
-
-void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s){
-  assert(ab);
-
-  free(ab->dataDir);
-  if (s) ab->dataDir=strdup(s);
-  else ab->dataDir=0;
 }
 
 
@@ -2922,77 +3053,8 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 
 
 
-AB_PROVIDER *AB_Banking_LoadProviderPluginFile(AB_BANKING *ab,
-                                               const char *modname,
-                                               const char *fname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER *pro;
-  AB_PROVIDER_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_DB_NODE *db;
-  GWEN_PLUGIN *pl;
-  GWEN_PLUGIN_MANAGER *pm;
-
-  pm=GWEN_PluginManager_FindPluginManager("provider");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "provider");
-    return 0;
-  }
-  pl=GWEN_PluginManager_LoadPluginFile(pm, modname, fname);
-  if (!pl) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load %s plugin for \"%s\" (file %s)",
-              "provider", modname, fname);
-    return 0;
-  }
-  ll=GWEN_Plugin_GetLibLoader(pl);
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/providers");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
-  assert(db);
-
-  fn=(AB_PROVIDER_FACTORY_FN)p;
-  assert(fn);
-  pro=fn(ab, db);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_Provider_SetPlugin(pro, pl);
-
-  return pro;
-}
-
-
-
-AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
-                                           const char *modname){
+AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
+                                            const char *modname){
   GWEN_LIBLOADER *ll;
   AB_PROVIDER *pro;
   AB_PROVIDER_FACTORY_FN fn;
@@ -3000,7 +3062,6 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   const char *s;
   GWEN_ERRORCODE err;
   GWEN_BUFFER *mbuf;
-  GWEN_DB_NODE *db;
   GWEN_PLUGIN *pl;
   GWEN_PLUGIN_MANAGER *pm;
 
@@ -3037,16 +3098,9 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
   }
   GWEN_Buffer_free(mbuf);
 
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/providers");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      modname);
-  assert(db);
-
   fn=(AB_PROVIDER_FACTORY_FN)p;
   assert(fn);
-  pro=fn(ab, db);
+  pro=fn(ab);
   if (!pro) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
     GWEN_Plugin_free(pl);
@@ -3061,78 +3115,8 @@ AB_PROVIDER *AB_Banking_LoadProviderPlugin(AB_BANKING *ab,
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPluginFile(AB_BANKING *ab,
-                                                      const char *modname,
-                                                      const char *fname){
-  GWEN_LIBLOADER *ll;
-  AB_BANKINFO_PLUGIN *bip;
-  AB_BANKINFO_PLUGIN_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_DB_NODE *db;
-  GWEN_PLUGIN *pl;
-  GWEN_PLUGIN_MANAGER *pm;
-
-  pm=GWEN_PluginManager_FindPluginManager("bankinfo");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "bankinfo");
-    return 0;
-  }
-  pl=GWEN_PluginManager_LoadPluginFile(pm, modname, fname);
-  if (!pl) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load %s plugin for \"%s\" (file %s)",
-              "bankinfo", modname, fname);
-    return 0;
-  }
-  ll=GWEN_Plugin_GetLibLoader(pl);
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/bankinfoplugins");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
-  assert(db);
-
-  fn=(AB_BANKINFO_PLUGIN_FACTORY_FN)p;
-  assert(fn);
-  bip=fn(ab, db);
-  if (!bip) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error in plugin: No bankinfoplugin created");
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_BankInfoPlugin_SetPlugin(bip, pl);
-
-  return bip;
-}
-
-
-
-AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
-                                                  const char *modname){
+AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab,
+                                                   const char *modname){
   GWEN_LIBLOADER *ll;
   AB_BANKINFO_PLUGIN *bip;
   AB_BANKINFO_PLUGIN_FACTORY_FN fn;
@@ -3178,7 +3162,7 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
   GWEN_Buffer_free(mbuf);
 
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/bankinfoplugins");
+                      "banking/bankinfoplugins");
   assert(db);
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
                       modname);
@@ -3202,8 +3186,8 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab,
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab,
-                                                 const char *country) {
+AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab,
+                                                  const char *country) {
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
@@ -3216,7 +3200,7 @@ AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab,
     bip=AB_BankInfoPlugin_List_Next(bip);
   }
 
-  bip=AB_Banking_LoadBankInfoPlugin(ab, country);
+  bip=AB_Banking__LoadBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "BankInfo plugin for country \"%s\" not found",
@@ -3237,7 +3221,7 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  bip=AB_Banking__GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "BankInfo plugin for country \"%s\" not found",
@@ -3258,7 +3242,7 @@ int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  bip=AB_Banking__GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "BankInfo plugin for country \"%s\" not found",
@@ -3281,7 +3265,7 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking_GetBankInfoPlugin(ab, country);
+  bip=AB_Banking__GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "BankInfo plugin for country \"%s\" not found",
@@ -3290,34 +3274,6 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
   }
 
   return AB_BankInfoPlugin_CheckAccount(bip, branchId, bankId, accountId);
-}
-
-
-
-int AB_Banking__GetWizardPath(AB_BANKING *ab,
-                              const char *backend,
-                              GWEN_BUFFER *pbuf){
-  const char *s;
-
-  GWEN_Buffer_AppendString(pbuf,
-                           AQBANKING_PLUGINS
-                           DIRSEP
-                           AB_PROVIDER_WIZARD_FOLDER
-                           DIRSEP);
-  s=backend;
-  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
-
-  return 0;
-}
-
-
-
-int AB_Banking_GetWizardPath(AB_BANKING *ab,
-                             const char *backend,
-                             GWEN_BUFFER *pbuf){
-  DBG_WARN(AQBANKING_LOGDOMAIN,
-            "AB_Banking_GetWizardPath() is deprecated!");
-  return AB_Banking__GetWizardPath(ab, backend, pbuf);
 }
 
 
@@ -3456,7 +3412,7 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 
 
 int AB_Banking_FindWizard(AB_BANKING *ab,
-			  const char *backend,
+                          const char *backend,
 			  const char *frontends,
 			  GWEN_BUFFER *pbuf){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
@@ -3466,10 +3422,10 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
   assert(backend);
   assert(pbuf);
 
-  pl=AB_Banking_GetWizardDescrs(ab, backend);
+  pl=AB_Banking_GetWizardDescrs(ab);
   if (!pl) {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "No wizards available for backend \"%s\"", backend);
+	     "No wizards available.");
     return -1;
   }
 
@@ -3485,18 +3441,15 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
       name=GWEN_PluginDescription_GetName(pd);
       if (!name) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Found a plugin description with no name for backend \"%s\"", backend);
+		 "Found a plugin description with no name.");
       }
       else {
-	int rv;
-
-	rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
-	if (rv) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "GetWizardPath failed for backend \"%s\"", backend);
-	  return rv;
-	}
-	GWEN_Buffer_AppendString(pbuf, DIRSEP);
-       	GWEN_Buffer_AppendString(pbuf, name);
+        GWEN_Buffer_AppendString(pbuf,
+                                 AQBANKING_PLUGINS
+                                 DIRSEP
+                                 AB_WIZARD_FOLDER
+                                 DIRSEP);
+        GWEN_Buffer_AppendString(pbuf, name);
 	GWEN_PluginDescription_List2Iterator_free(pit);
 	GWEN_PluginDescription_List2_freeAll(pl);
 	return 0;
@@ -3541,15 +3494,12 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 		   "Found a plugin description with no name");
 	}
 	else {
-	  int rv;
-
-	  rv=AB_Banking__GetWizardPath(ab, backend, pbuf);
-	  if (rv) {
-	    DBG_WARN(AQBANKING_LOGDOMAIN, "GetWizardPath failed for backend \"%s\" and frontend \"%s\"", backend, pfront);
-	    return rv;
-	  }
-	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
-	  GWEN_Buffer_AppendString(pbuf, name);
+          GWEN_Buffer_AppendString(pbuf,
+                                   AQBANKING_PLUGINS
+                                   DIRSEP
+                                   AB_WIZARD_FOLDER
+                                   DIRSEP);
+          GWEN_Buffer_AppendString(pbuf, name);
           free(s);
 	  GWEN_PluginDescription_List2Iterator_free(pit);
 	  GWEN_PluginDescription_List2_freeAll(pl);
@@ -3569,34 +3519,6 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
   GWEN_PluginDescription_List2_freeAll(pl);
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No matching wizard found");
   return -1;
-}
-
-
-
-int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend){
-  AB_PROVIDER *pro;
-
-  pro=AB_Banking_FindProvider(ab, backend);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  return AB_Banking_FiniProvider(ab, pro);
-}
-
-
-
-int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend){
-  AB_PROVIDER *pro;
-
-  pro=AB_Banking_FindProvider(ab, backend);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  return AB_Banking_InitProvider(ab, pro);
 }
 
 
@@ -4086,38 +4008,6 @@ int AB_Banking_DelPendingJob(AB_BANKING *ab, AB_JOB *j){
 
 
 
-AB_JOB_LIST2 *AB_Banking_GetDeferredJobs(AB_BANKING *ab) {
-  return AB_Banking__LoadJobsAs(ab, "deferred");
-}
-
-
-
-int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j){
-  int rv=AB_ERROR_INVALID;
-
-  assert(ab);
-  assert(j);
-  /* First check whether this job actually has sane data */
-  if (ab->appName && AB_Job_GetCreatedBy(j)) {
-    if (strcasecmp(ab->appName, AB_Job_GetCreatedBy(j))==0) {
-      rv=AB_Banking__SaveJobAs(ab, j, "archived");
-      if (rv) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Could not store job in archive (%d)", rv);
-	return rv;
-      }
-      rv=AB_Banking__UnlinkJobAs(ab, j, "deferred");
-    }
-    else {
-      DBG_WARN(AQBANKING_LOGDOMAIN,
-		"Job can only be removed by its creator application");
-    }
-  }
-  return rv;
-}
-
-
-
 void *AB_Banking_GetUserData(AB_BANKING *ab) {
   assert(ab);
   return ab->user_data;
@@ -4157,7 +4047,7 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
   ie=AB_Banking_FindImExporter(ab, name);
   if (ie)
     return ie;
-  ie=AB_Banking_LoadImExporterPlugin(ab, name);
+  ie=AB_Banking__LoadImExporterPlugin(ab, name);
   if (ie) {
     AB_ImExporter_List_Add(ie, ab->imexporters);
   }
@@ -4167,70 +4057,8 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
 
 
 
-AB_IMEXPORTER *AB_Banking_LoadImExporterPluginFile(AB_BANKING *ab,
-                                                   const char *modname,
-                                                   const char *fname){
-  GWEN_LIBLOADER *ll;
-  AB_IMEXPORTER *ie;
-  AB_IMEXPORTER_FACTORY_FN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_DB_NODE *db;
-
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load provider plugin \"%s\" (%s)",
-              modname, fname);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/imexporters");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
-  assert(db);
-
-  fn=(AB_IMEXPORTER_FACTORY_FN)p;
-  assert(fn);
-  ie=fn(ab, db);
-  if (!ie) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No im/exporter created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_ImExporter_SetLibLoader(ie, ll);
-
-  return ie;
-}
-
-
-
-AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
-                                               const char *modname){
+AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
+                                                const char *modname){
   GWEN_LIBLOADER *ll;
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_FACTORY_FN fn;
@@ -4295,7 +4123,7 @@ AB_IMEXPORTER *AB_Banking_LoadImExporterPlugin(AB_BANKING *ab,
   GWEN_Buffer_free(mbuf);
 
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "static/imexporters");
+                      "banking/imexporters");
   assert(db);
   db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
   assert(db);
@@ -4767,6 +4595,7 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
     }
     else if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
       AB_TRANSACTION_LIST2 *tl;
+      AB_ACCOUNT_STATUS_LIST2 *asl;
 
       tl=AB_JobGetTransactions_GetTransactions(j);
       if (tl) {
@@ -4790,6 +4619,27 @@ int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
 	  t=AB_Transaction_List2Iterator_Next(it);
 	} /* while */
         AB_Transaction_List2Iterator_free(it);
+      }
+
+      asl=AB_JobGetTransactions_GetAccountStatusList(j);
+      if (asl) {
+        AB_ACCOUNT_STATUS_LIST2_ITERATOR *it;
+        AB_ACCOUNT_STATUS *as;
+
+        it=AB_AccountStatus_List2_First(asl);
+        assert(it);
+        as=AB_AccountStatus_List2Iterator_Data(it);
+        assert(as);
+        while(as) {
+	  AB_ACCOUNT_STATUS *nas;
+
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got an account status");
+	  nas=AB_AccountStatus_dup(as);
+
+	  AB_ImExporterAccountInfo_AddAccountStatus(ai, nas);
+	  as=AB_AccountStatus_List2Iterator_Next(it);
+	} /* while */
+        AB_AccountStatus_List2Iterator_free(it);
       }
 
       tryRemove=1;
@@ -5402,7 +5252,7 @@ int AB_Banking__SaveBadPins(AB_BANKING *ab) {
 
   dbPins=GWEN_DB_GetGroup(ab->data,
                           GWEN_DB_FLAGS_DEFAULT,
-                          "static/pins");
+                          "banking/pins");
   assert(dbPins);
   p=AB_Pin_List_First(ab->pinList);
   while(p) {
@@ -5460,7 +5310,7 @@ int AB_Banking__CheckBadPin(AB_BANKING *ab, AB_PIN *p) {
   }
   dbPins=GWEN_DB_GetGroup(ab->data,
                           GWEN_DB_FLAGS_DEFAULT,
-                          "static/pins");
+                          "banking/pins");
   assert(dbPins);
 
   hash=AB_Pin_GetHash(p);
@@ -5558,8 +5408,6 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
   ab=(AB_BANKING*)user_data;
 
   pd=ab->data;
-  assert(pd);
-  pd=GWEN_DB_GetGroup(pd, GWEN_DB_FLAGS_DEFAULT, "static");
   assert(pd);
 
   memset(dbuffer1, 0, sizeof(dbuffer1));
@@ -5970,7 +5818,44 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs() {
 
 
 
+int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name){
+  GWEN_BUFFER *pbuf;
+  GWEN_DB_NODE *db;
 
+  assert(ab);
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (AB_Banking_GetUserDataDir(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
+    GWEN_Buffer_free(pbuf);
+    return AB_ERROR_GENERIC;
+  }
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "backends" DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, name);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "settings.conf");
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "banking/backends");
+  assert(db);
+  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
+  assert(db);
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_CREATE_GROUP |
+                       GWEN_DB_FLAGS_LOCKFILE)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Could not load config file \"%s\", creating it later",
+	     GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_free(pbuf);
+    return 0;
+  }
+  GWEN_Buffer_free(pbuf);
+
+  /* sucessfully read */
+  return 0;
+}
 
 
 

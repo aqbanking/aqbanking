@@ -46,7 +46,6 @@ IniLetter::IniLetter(bool isUser,
     serverLabel->hide();
     goodHashButton->hide();
     badHashButton->hide();
-    connect(printButton, SIGNAL(clicked()), this, SLOT(slotPrint()));
   }
   else {
     goodHashButton->setEnabled(true);
@@ -111,11 +110,17 @@ bool IniLetter::getResult() const {
 
 
 void IniLetter::slotGoodHash() {
+  _result=true;
+  goodHashButton->setEnabled(false);
+  badHashButton->setEnabled(false);
 }
 
 
 
 void IniLetter::slotBadHash() {
+  _result=false;
+  goodHashButton->setEnabled(false);
+  badHashButton->setEnabled(false);
 }
 
 
@@ -262,7 +267,6 @@ void IniLetter::_createIniLetter() {
 
   }
   iniBrowser->setText(result);
-
 }
 
 

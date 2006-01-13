@@ -25,7 +25,7 @@
 #include "hbci_p.h"
 #include "aqhbci_l.h"
 #include "hbci-updates_l.h"
-#include "bank_l.h"
+#include "medium_l.h"
 
 #include <aqbanking/banking_be.h>
 
@@ -103,7 +103,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   hbci->provider=pro;
   hbci->banking=AB_Provider_GetBanking(pro);
   hbci->activeMedia=AH_Medium_List_new();
-  hbci->banks=AH_Bank_List_new();
   hbci->productName=strdup("AQHBCI");
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
               AQHBCI_VERSION_MAJOR, AQHBCI_VERSION_MINOR);
@@ -138,9 +137,6 @@ void AH_HBCI_free(AH_HBCI *hbci){
       AH_Medium_free(hbci->currentMedium);
       hbci->currentMedium=0;
     }
-
-    /* free active banks */
-    AH_Bank_List_free(hbci->banks);
 
     /* free active media */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "%d active media",
@@ -191,7 +187,7 @@ int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       assert(m);
       DBG_INFO(AQHBCI_LOGDOMAIN,
                "Loaded medium \"%s\"", name);
-      AH_HBCI_AddMedium(hbci, m);
+      AH_HBCI__AddMedium(hbci, m);
   
       dbT=GWEN_DB_FindNextGroup(dbT, "medium");
     }
@@ -236,7 +232,6 @@ int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 int AH_HBCI_Init(AH_HBCI *hbci) {
   GWEN_XMLNODE *node;
-  GWEN_DB_NODE *gr;
   GWEN_DB_NODE *db;
   int rv;
 
@@ -283,27 +278,11 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 					    AH_HBCI_DEFAULT_TRANSFER_TIMEOUT);
   hbci->connectTimeout=GWEN_DB_GetIntValue(db, "connectTimeout", 0,
 					   AH_HBCI_DEFAULT_CONNECT_TIMEOUT);
+  hbci->lastMediumId=GWEN_DB_GetIntValue(db, "lastMediumId", 0, 0);
 
 
   /* load media */
   AH_HBCI__LoadMedia(hbci, db);
-
-  /* load banks */
-  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banks");
-  if (gr) {
-    gr=GWEN_DB_FindFirstGroup(gr, "bank");
-    while(gr) {
-      AH_BANK *b;
-
-      b=AH_Bank_fromDb(hbci, gr);
-      if (!b) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Error loading bank");
-	return AB_ERROR_BAD_CONFIG_FILE;
-      }
-      AH_Bank_List_Add(b, hbci->banks);
-      gr=GWEN_DB_FindNextGroup(gr, "bank");
-    } /* while */
-  } /* if "banks" */
 
   return 0;
 }
@@ -311,7 +290,6 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 
 
 int AH_HBCI_Fini(AH_HBCI *hbci) {
-  AH_BANK *b;
   GWEN_DB_NODE *db;
   GWEN_TYPE_UINT32 currentVersion;
 
@@ -342,6 +320,9 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "lastVersion", currentVersion);
 
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "lastMediumId", hbci->lastMediumId);
+
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "transferTimeout",
@@ -351,29 +332,6 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "connectTimeout",
                       hbci->connectTimeout);
-
-  b=AH_Bank_List_First(hbci->banks);
-  if (b) {
-    GWEN_DB_NODE *gr;
-
-    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "banks");
-    assert(gr);
-    while(b) {
-      GWEN_DB_NODE *dbB;
-      int rv;
-
-      dbB=GWEN_DB_GetGroup(gr, GWEN_PATH_FLAGS_CREATE_GROUP, "bank");
-      assert(dbB);
-      rv=AH_Bank_toDb(b, dbB);
-      if (rv) {
-        return rv;
-      }
-      b=AH_Bank_List_Next(b);
-    } /* while */
-  }
-
-  /* clear active banks */
-  AH_Bank_List_Clear(hbci->banks);
 
   /* save all active media */
   AH_HBCI__SaveMedia(hbci, db);
@@ -394,6 +352,23 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
   return 0;
 }
 
+
+int AH_HBCI_Update(AH_HBCI *hbci,
+                   GWEN_TYPE_UINT32 lastVersion,
+                   GWEN_TYPE_UINT32 currentVersion) {
+  GWEN_DB_NODE *db;
+  int rv;
+
+  db=AB_Provider_GetData(hbci->provider);
+  assert(db);
+  rv=AH_HBCI_Update2(hbci, db, lastVersion, currentVersion);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
 
 
 
@@ -536,311 +511,11 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf) {
 
 
 
-AH_CUSTOMER *AH_HBCI_FindCustomer(AH_HBCI *hbci,
-                                  int country,
-                                  const char *bankId,
-                                  const char *userId,
-				  const char *customerId) {
-  AH_BANK *b;
-
-  assert(hbci);
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_CUSTOMER *cu;
-
-      cu=AH_Bank_FindCustomer(b, userId, customerId);
-      if (cu)
-        return cu;
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Customer not found");
-  return 0;
-}
-
-
-
-
-AH_CUSTOMER_LIST2 *AH_HBCI_GetCustomers(AH_HBCI *hbci,
-                                        int country,
-                                        const char *bankId,
-                                        const char *userId,
-                                        const char *customerId){
-  AH_BANK *b;
-  AH_CUSTOMER_LIST2 *cl;
-
-  assert(hbci);
-  cl=AH_Customer_List2_new();
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_CUSTOMER_LIST2 *tcl;
-
-      tcl=AH_Bank_GetCustomers(b, userId, customerId);
-      if (tcl) {
-	AH_CUSTOMER_LIST2_ITERATOR *it;
-        AH_CUSTOMER *cu;
-
-	it=AH_Customer_List2_First(tcl);
-	assert(it);
-	cu=AH_Customer_List2Iterator_Data(it);
-	while(cu) {
-          AH_Customer_List2_PushBack(cl, cu);
-	  cu=AH_Customer_List2Iterator_Next(it);
-	}
-        AH_Customer_List2Iterator_free(it);
-	AH_Customer_List2_free(tcl);
-      }
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  if (AH_Customer_List2_GetSize(cl)==0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No customers found");
-    AH_Customer_List2_free(cl);
-    return 0;
-  }
-
-  return cl;
-}
-
-
-
-
-AH_ACCOUNT *AH_HBCI_FindAccount(AH_HBCI *hbci,
-                                int country,
-                                const char *bankId,
-                                const char *accountId){
-  AH_BANK *b;
-
-  assert(hbci);
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_ACCOUNT *a;
-
-      a=AH_Bank_FindAccount(b, accountId);
-      if (a)
-        return a;
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Account not found");
-  return 0;
-}
-
-
-
-AH_ACCOUNT_LIST2 *AH_HBCI_GetAccounts(AH_HBCI *hbci,
-                                      int country,
-                                      const char *bankId,
-                                      const char *accountId){
-  AH_BANK *b;
-  AH_ACCOUNT_LIST2 *al;
-
-  assert(hbci);
-  al=AH_Account_List2_new();
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_ACCOUNT_LIST2 *tal;
-
-      tal=AH_Bank_GetAccounts(b, accountId);
-      if (tal) {
-	AH_ACCOUNT_LIST2_ITERATOR *it;
-        AH_ACCOUNT *a;
-
-	it=AH_Account_List2_First(tal);
-	assert(it);
-	a=AH_Account_List2Iterator_Data(it);
-	while(a) {
-          AH_Account_List2_PushBack(al, a);
-	  a=AH_Account_List2Iterator_Next(it);
-	}
-        AH_Account_List2Iterator_free(it);
-	AH_Account_List2_free(tal);
-      }
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  if (AH_Account_List2_GetSize(al)==0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No account found");
-    AH_Account_List2_free(al);
-    return 0;
-  }
-
-  return al;
-}
-
-
-
-AH_USER *AH_HBCI_FindUser(AH_HBCI *hbci,
-                          int country,
-                          const char *bankId,
-                          const char *userId){
-  AH_BANK *b;
-
-  assert(hbci);
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_USER *u;
-
-      u=AH_Bank_FindUser(b, userId);
-      if (u)
-        return u;
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "User not found");
-  return 0;
-}
-
-
-
-AH_USER_LIST2 *AH_HBCI_GetUsers(AH_HBCI *hbci,
-                                int country,
-                                const char *bankId,
-                                const char *userId){
-  AH_BANK *b;
-  AH_USER_LIST2 *ul;
-
-  assert(hbci);
-  ul=AH_User_List2_new();
-  b=AH_Bank_List_First(hbci->banks);
-  while(b) {
-    if (-1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0)) {
-      AH_USER_LIST2 *tul;
-
-      tul=AH_Bank_GetUsers(b, userId);
-      if (tul) {
-	AH_USER_LIST2_ITERATOR *it;
-        AH_USER *u;
-
-	it=AH_User_List2_First(tul);
-	assert(it);
-	u=AH_User_List2Iterator_Data(it);
-	while(u) {
-          AH_User_List2_PushBack(ul, u);
-	  u=AH_User_List2Iterator_Next(it);
-	}
-        AH_User_List2Iterator_free(it);
-	AH_User_List2_free(tul);
-      }
-    }
-
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  if (AH_User_List2_GetSize(ul)==0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No user found");
-    AH_User_List2_free(ul);
-    return 0;
-  }
-
-  return ul;
-}
-
-
-
-AH_BANK *AH_HBCI_FindBank(const AH_HBCI *hbci,
-                          int country,
-                          const char *bankId){
-  AH_BANK *b;
-
-  assert(hbci);
-  assert(bankId);
-
-  b=AH_Bank_List_First(hbci->banks);
-
-  while(b) {
-    if ((!country || AH_Bank_GetCountry(b)==country) &&
-        -1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0))
-      return b;
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Bank \"%d:%s\" not found", country, bankId);
-  return 0;
-}
-
-
-
-AH_BANK_LIST2 *AH_HBCI_GetBanks(const AH_HBCI *hbci,
-                                int country,
-                                const char *bankId){
-  AH_BANK *b;
-  AH_BANK_LIST2 *bl;
-
-  assert(hbci);
-  assert(bankId);
-
-  bl=AH_Bank_List2_new();
-  b=AH_Bank_List_First(hbci->banks);
-
-  while(b) {
-    if ((!country || AH_Bank_GetCountry(b)==country) &&
-        -1!=GWEN_Text_ComparePattern(AH_Bank_GetBankId(b), bankId, 0))
-      AH_Bank_List2_PushBack(bl, b);
-    b=AH_Bank_List_Next(b);
-  } /* while */
-
-  if (AH_Bank_List2_GetSize(bl)==0) {
-    AH_Bank_List2_free(bl);
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Bank \"%d:%s\" not found", country, bankId);
-    return 0;
-  }
-
-  return bl;
-}
-
-
-
-
-int AH_HBCI_AddBank(AH_HBCI *hbci, AH_BANK *b){
-  if (AH_HBCI_FindBank(hbci,
-                       AH_Bank_GetCountry(b),
-                       AH_Bank_GetBankId(b))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank \"%d:%s\" already enlisted",
-              AH_Bank_GetCountry(b),
-              AH_Bank_GetBankId(b));
-    return -1;
-  }
-  AH_Bank_List_Add(b, hbci->banks);
-  return 0;
-}
-
-
-
-int AH_HBCI_RemoveBank(AH_HBCI *hbci, AH_BANK *b) {
-  assert(hbci);
-  assert(b);
-  AH_Bank_List_Del(b);
-  return 0;
-}
-
-
-
-
-
-AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_USER *u){
+AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u){
   AH_MEDIUM *m;
-  AH_BANK *b;
 
   assert(hbci);
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
 
   if (hbci->currentMedium==AH_User_GetMedium(u)) {
     /* return current medium if it is the wanted one, release it otherwise */
@@ -876,11 +551,11 @@ AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AH_USER *u){
   if (AH_Medium_SelectContext(hbci->currentMedium,
                               AH_User_GetContextIdx(u))){
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Error selecting context %d for \"%d:%s/%s\"",
+              "Error selecting context %d for \"%s:%s/%s\"",
               AH_User_GetContextIdx(u),
-              AH_Bank_GetCountry(b),
-              AH_Bank_GetBankId(b),
-              AH_User_GetUserId(u));
+              AB_User_GetCountry(u),
+              AB_User_GetBankCode(u),
+              AB_User_GetUserId(u));
     return 0;
   }
 
@@ -987,6 +662,23 @@ AH_MEDIUM *AH_HBCI_FindMedium(const AH_HBCI *hbci,
 
 
 
+AH_MEDIUM *AH_HBCI_FindMediumById(const AH_HBCI *hbci, GWEN_TYPE_UINT32 id){
+  AH_MEDIUM *m;
+
+  assert(hbci);
+  m=AH_Medium_List_First(hbci->activeMedia);
+  while(m) {
+    if (id==AH_Medium_GetUniqueId(m))
+      return m;
+    m=AH_Medium_List_Next(m);
+  } /* while */
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Medium \"%08x\" not found", id);
+  return 0;
+}
+
+
+
 AH_MEDIUM *AH_HBCI_SelectMedium(AH_HBCI *hbci,
                                 const char *typeName,
 				const char *subTypeName,
@@ -1041,13 +733,12 @@ AH_MEDIUM *AH_HBCI_SelectMediumDb(AH_HBCI *hbci,
 
 
 
-int AH_HBCI_AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
+int AH_HBCI__AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
   assert(hbci);
   assert(m);
 
-  if (AH_HBCI_FindMedium(hbci,
-                         AH_Medium_GetMediumTypeName(m),
-                         AH_Medium_GetMediumName(m))) {
+  if (AH_HBCI_FindMediumById(hbci,
+                             AH_Medium_GetUniqueId(m))) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Medium already listed");
     return -1;
@@ -1055,6 +746,21 @@ int AH_HBCI_AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
 
   AH_Medium_List_Add(m, hbci->activeMedia);
   return 0;
+}
+
+
+
+int AH_HBCI_AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
+  GWEN_TYPE_UINT32 uid;
+
+  assert(hbci);
+  assert(m);
+
+  uid=AH_Medium_GetUniqueId(m);
+  if (uid==0)
+    AH_Medium_SetUniqueId(m, ++(hbci->lastMediumId));
+
+  return AH_HBCI__AddMedium(hbci, m);
 }
 
 
@@ -1102,11 +808,11 @@ AH_HBCI_GetMediumPluginDescrs(AH_HBCI *hbci,
 
 
 int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
-                              AH_BANK *b,
+                              const AB_USER *u,
                               GWEN_BUFFER *nbuf) {
   AH_HBCI_AddObjectPath(hbci,
-                        AH_Bank_GetCountry(b),
-                        AH_Bank_GetBankId(b),
+                        AB_User_GetCountry(u),
+                        AB_User_GetBankCode(u),
                         0, 0, 0, nbuf);
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "certs");
   return 0;
@@ -1114,7 +820,7 @@ int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
 
 
 
-int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, AH_BANK *b) {
+int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
   GWEN_DIRECTORYDATA *d;
   GWEN_BUFFER *nbuf;
   char nbuffer[64];
@@ -1124,7 +830,7 @@ int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, AH_BANK *b) {
 
   /* create path */
   nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_HBCI_AddBankCertFolder(hbci, b, nbuf);
+  AH_HBCI_AddBankCertFolder(hbci, u, nbuf);
   pathLen=GWEN_Buffer_GetUsedBytes(nbuf);
 
   d=GWEN_Directory_new();
@@ -1198,7 +904,7 @@ int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
     return -1;
   }
 
-  /* file exists, load it */
+  /* write file */
   if (GWEN_DB_WriteFile(db,
                         GWEN_Buffer_GetStart(nbuf),
                         GWEN_DB_FLAGS_DEFAULT)) {
@@ -1241,7 +947,7 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
   }
 
   /* file exists, load it */
-  db=GWEN_DB_Group_new("bank");
+  db=GWEN_DB_Group_new("cfg");
   if (GWEN_DB_ReadFile(db,
                        GWEN_Buffer_GetStart(nbuf),
                        GWEN_DB_FLAGS_DEFAULT |
@@ -1261,17 +967,17 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
 
 
 int AH_HBCI_SaveMessage(AH_HBCI *hbci,
-                        const AH_CUSTOMER *cu,
+                        const AB_USER *u,
                         GWEN_DB_NODE *dbMsg) {
   GWEN_BUFFER *nbuf;
   int rv;
 
   assert(hbci);
-  assert(cu);
+  assert(u);
 
   /* create path */
   nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  AH_HBCI_AddCustomerPath(hbci, cu, nbuf);
+  AH_HBCI_AddCustomerPath(hbci, u, nbuf);
 
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "messages" 
 			   AH_PATH_SEP "in" AH_PATH_SEP);
@@ -1292,23 +998,23 @@ int AH_HBCI_SaveMessage(AH_HBCI *hbci,
 
 
 int AH_HBCI_AddBankPath(const AH_HBCI *hbci,
-                        const AH_BANK *b,
+                        const AB_USER *u,
                         GWEN_BUFFER *nbuf) {
-  int country;
+  const char *country;
   const char *bankId;
-  char numbuf[16];
 
   assert(hbci);
-  assert(b);
   assert(nbuf);
-  country=AH_Bank_GetCountry(b);
-  bankId=AH_Bank_GetBankId(b);
+  country=AB_User_GetCountry(u);
+  if (!country)
+    country="de";
+  bankId=AB_User_GetBankCode(u);
+  assert(bankId);
 
   AB_Provider_GetUserDataDir(hbci->provider, nbuf);
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "banks" AH_PATH_SEP);
-
-  snprintf(numbuf, sizeof(numbuf), "%d", country);
-  GWEN_Buffer_AppendString(nbuf, numbuf);
+  while(*country)
+    GWEN_Buffer_AppendByte(nbuf, tolower(*(country++)));
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP);
   GWEN_Buffer_AppendString(nbuf, bankId);
   return 0;
@@ -1317,19 +1023,16 @@ int AH_HBCI_AddBankPath(const AH_HBCI *hbci,
 
 
 int AH_HBCI_AddUserPath(const AH_HBCI *hbci,
-                        const AH_USER *u,
+                        const AB_USER *u,
                         GWEN_BUFFER *nbuf) {
-  AH_BANK *b;
   const char *userId;
 
   assert(hbci);
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
-  if (AH_HBCI_AddBankPath(hbci, b, nbuf))
+  if (AH_HBCI_AddBankPath(hbci, u, nbuf))
     return -1;
 
-  userId=AH_User_GetUserId(u);
+  userId=AB_User_GetUserId(u);
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "users" AH_PATH_SEP);
 
   /* escape and append user name */
@@ -1345,21 +1048,18 @@ int AH_HBCI_AddUserPath(const AH_HBCI *hbci,
 
 
 int AH_HBCI_AddCustomerPath(const AH_HBCI *hbci,
-                            const AH_CUSTOMER *cu,
+                            const AB_USER *u,
                             GWEN_BUFFER *nbuf) {
-  AH_USER *u;
   const char *customerId;
 
   assert(hbci);
-  assert(cu);
-  u=AH_Customer_GetUser(cu);
   assert(u);
   if (AH_HBCI_AddUserPath(hbci, u, nbuf))
     return -1;
   GWEN_Buffer_AppendByte(nbuf, '/');
 
   /* escape and append customer name */
-  customerId=AH_Customer_GetCustomerId(cu);
+  customerId=AB_User_GetCustomerId(u);
   if (GWEN_Path_Convert(customerId,
                         nbuf,
                         GWEN_PATH_FLAGS_ESCAPE |
@@ -1371,57 +1071,25 @@ int AH_HBCI_AddCustomerPath(const AH_HBCI *hbci,
 
 
 
-int AH_HBCI_AddAccountPath(const AH_HBCI *hbci,
-                           const AH_ACCOUNT *a,
-                           GWEN_BUFFER *nbuf) {
-  AH_BANK *b;
-  const char *accountId;
-
-  assert(hbci);
-  assert(a);
-  b=AH_Account_GetBank(a);
-  assert(b);
-  if (AH_HBCI_AddBankPath(hbci, b, nbuf))
-    return -1;
-
-  accountId=AH_Account_GetAccountId(a);
-  GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "accounts" AH_PATH_SEP);
-
-  /* escape and append account id */
-  if (GWEN_Path_Convert(accountId,
-                        nbuf,
-                        GWEN_PATH_FLAGS_ESCAPE |
-                        GWEN_PATH_FLAGS_TOLERANT_ESCAPE)) {
-    return -1;
-  }
-  return 0;
-}
-
-
-
-
 int AH_HBCI_AddObjectPath(const AH_HBCI *hbci,
-                          int country,
+                          const char *country,
                           const char *bankId,
                           const char *accountId,
                           const char *userId,
                           const char *customerId,
                           GWEN_BUFFER *nbuf) {
-  char numbuf[16];
-
   assert(hbci);
 
   AB_Provider_GetUserDataDir(hbci->provider, nbuf);
   GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "banks" AH_PATH_SEP);
 
-  if (!country)
+  if (country==0)
     return 0;
-  snprintf(numbuf, sizeof(numbuf), "%d", country);
-  GWEN_Buffer_AppendString(nbuf, numbuf);
+  GWEN_Buffer_AppendString(nbuf, country);
 
   if (!bankId)
     return 0;
-  GWEN_Buffer_AppendByte(nbuf, '/');
+  GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP);
   GWEN_Buffer_AppendString(nbuf, bankId);
 
   if (accountId) {
@@ -1687,6 +1355,16 @@ void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i){
   assert(hbci);
   hbci->connectTimeout=i;
 }
+
+
+
+GWEN_TYPE_UINT32 AH_HBCI_GetNextMediumId(AH_HBCI *hbci) {
+  assert(hbci);
+  return ++(hbci->lastMediumId);
+}
+
+
+
 
 
 

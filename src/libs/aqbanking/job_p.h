@@ -37,7 +37,7 @@ struct AB_JOB {
   GWEN_TIME *lastStatusChange;
   char *usedTan;
 };
-AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData);
+static AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData);
 
 
 

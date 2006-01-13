@@ -38,6 +38,8 @@ int import(AB_BANKING *ab,
   const char *importerName;
   const char *profileName;
   const char *profileFile;
+  const char *bankId;
+  const char *accountId;
   AB_IMEXPORTER *importer;
   GWEN_DB_NODE *dbProfiles;
   GWEN_DB_NODE *dbProfile;
@@ -101,6 +103,28 @@ int import(AB_BANKING *ab,
     "Specify the file to load the export profile from" /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "bankId",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "b",                          /* short option */
+    "bank",                       /* long option */
+    "overwrite the bank code",      /* short description */
+    "overwrite the bank code"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "accountId",                  /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "a",                          /* short option */
+    "account",                    /* long option */
+    "overwrite the account number",     /* short description */
+    "overwrite the account number"      /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsTypeInt,             /* type */
     "help",                       /* name */
@@ -135,6 +159,8 @@ int import(AB_BANKING *ab,
     return 0;
   }
 
+  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
+  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   importerName=GWEN_DB_GetCharValue(db, "importerName", 0, "csv");
   profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "default");
   profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, 0);
@@ -233,6 +259,18 @@ int import(AB_BANKING *ab,
   }
   GWEN_DB_Group_free(dbProfiles);
 
+  if (bankId || accountId) {
+    AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+    iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+    while(iea) {
+      if (bankId)
+        AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
+      if (accountId)
+        AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
+      iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    } /* while */
+  }
 
   /* write context */
   dbCtx=GWEN_DB_Group_new("context");

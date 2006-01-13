@@ -50,11 +50,11 @@ typedef enum {
 GWEN_LIST_FUNCTION_DEFS(AH_JOBQUEUE, AH_JobQueue);
 
 
-AH_JOBQUEUE *AH_JobQueue_new(AH_CUSTOMER *cu);
+AH_JOBQUEUE *AH_JobQueue_new(AB_USER *u);
 void AH_JobQueue_free(AH_JOBQUEUE *jq);
 void AH_JobQueue_Attach(AH_JOBQUEUE *jq);
 
-AH_CUSTOMER *AH_JobQueue_GetCustomer(const AH_JOBQUEUE *jq);
+AB_USER *AH_JobQueue_GetUser(const AH_JOBQUEUE *jq);
 
 AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,
                                          AH_JOB *j);

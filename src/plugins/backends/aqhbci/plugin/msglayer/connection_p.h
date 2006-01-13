@@ -24,10 +24,10 @@ struct AH_CONNECTION {
 };
 
 
-void AH_Connection_FreeData(void *bp, void *p);
+static void AH_Connection_FreeData(void *bp, void *p);
 
-void AH_Connection_Up(GWEN_NETCONNECTION *conn);
-void AH_Connection_Down(GWEN_NETCONNECTION *conn);
+static void AH_Connection_Up(GWEN_NETCONNECTION *conn);
+static void AH_Connection_Down(GWEN_NETCONNECTION *conn);
 
 
 #endif /* AH_CONNECTION_P_H */

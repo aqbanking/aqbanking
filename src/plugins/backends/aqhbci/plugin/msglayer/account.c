@@ -17,7 +17,8 @@
 
 #include "account_p.h"
 #include "aqhbci_l.h"
-#include "hbci_l.h"
+#include <aqhbci/provider.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
@@ -26,308 +27,165 @@
 #include <string.h>
 
 
-
-GWEN_LIST_FUNCTIONS(AH_ACCOUNT, AH_Account);
-GWEN_INHERIT_FUNCTIONS(AH_ACCOUNT);
-GWEN_LIST2_FUNCTIONS(AH_ACCOUNT, AH_Account);
+GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
-AH_ACCOUNT *AH_Account_new(AH_BANK *b,
-                           const char *bankId,
-                           const char *accountId) {
-  AH_ACCOUNT *a;
+void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
+                       AB_PROVIDER_EXTEND_MODE em) {
+  AH_ACCOUNT *ae;
+  GWEN_DB_NODE *db;
 
-  assert(b);
-  assert(bankId);
-  assert(accountId);
-  GWEN_NEW_OBJECT(AH_ACCOUNT, a);
-  GWEN_LIST_INIT(AH_ACCOUNT, a);
-  GWEN_INHERIT_INIT(AH_ACCOUNT, a);
-
-  a->bank=b;
-  assert(!AH_HBCI_CheckStringSanity(bankId));
-  assert(!AH_HBCI_CheckStringSanity(accountId));
-  a->bankId=strdup(bankId);
-  a->accountId=strdup(accountId);
-  a->customers=GWEN_StringList_new();
-
-  a->usage=1;
-  return a;
-}
-
-
-
-void AH_Account_free(AH_ACCOUNT *a) {
-  if (a) {
-    assert(a->usage);
-    if (--(a->usage)==0) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_Account");
-      GWEN_INHERIT_FINI(AH_ACCOUNT, a);
-
-      free(a->bankId);
-      free(a->accountId);
-      free(a->accountName);
-      free(a->ownerName);
-      free(a->suffix);
-      GWEN_StringList_free(a->customers);
-
-      GWEN_LIST_FINI(AH_ACCOUNT, a);
-      GWEN_FREE_OBJECT(a);
-    }
-  }
-}
-
-
-
-void AH_Account_Attach(AH_ACCOUNT *a){
-  assert(a);
-  a->usage++;
-}
-
-
-
-AH_BANK *AH_Account_GetBank(const AH_ACCOUNT *a){
-  assert(a);
-  return a->bank;
-}
-
-
-
-void AH_Account_SetBank(AH_ACCOUNT *a, AH_BANK *b){
-  assert(a);
-  assert(b);
-  if (b!=a->bank) {
-    a->bank=b;
-  }
-}
-
-
-
-const char *AH_Account_GetBankId(const AH_ACCOUNT *a){
-  assert(a);
-  return a->bankId;
-}
-
-
-
-void AH_Account_SetBankId(AH_ACCOUNT *a, const char *s){
-  assert(a);
-  free(a->bankId);
-  if (s) a->bankId=strdup(s);
-  else a->bankId=0;
-}
-
-
-
-const char *AH_Account_GetAccountId(const AH_ACCOUNT *a){
-  assert(a);
-  return a->accountId;
-}
-
-
-
-void AH_Account_SetAccountId(AH_ACCOUNT *a, const char *s){
-  assert(a);
-  free(a->accountId);
-  if (s) a->accountId=strdup(s);
-  else a->accountId=0;
-}
-
-
-
-const char *AH_Account_GetAccountName(const AH_ACCOUNT *a){
-  assert(a);
-  return a->accountName;
-}
-
-
-
-void AH_Account_SetAccountName(AH_ACCOUNT *a,
-                               const char *s){
-  assert(a);
-  assert(s);
-  free(a->accountName);
-  a->accountName=strdup(s);
-}
-
-
-
-const char *AH_Account_GetOwnerName(const AH_ACCOUNT *a){
-  assert(a);
-  return a->ownerName;
-}
-
-
-
-void AH_Account_SetOwnerName(AH_ACCOUNT *a,
-                             const char *s){
-  assert(a);
-  assert(s);
-  free(a->ownerName);
-  a->ownerName=strdup(s);
-}
-
-
-
-const GWEN_STRINGLIST *AH_Account_GetCustomers(const AH_ACCOUNT *a){
-  assert(a);
-  return a->customers;
-}
-
-
-
-void AH_Account_AddCustomer(AH_ACCOUNT *a, const char *cid) {
-
-  assert(a);
-  assert(cid);
-
-  GWEN_StringList_AppendString(a->customers, cid, 0, 1);
-}
-
-
-
-void AH_Account_ClearCustomers(AH_ACCOUNT *a) {
-  assert(a);
-
-  GWEN_StringList_Clear(a->customers);
-}
-
-
-
-AH_ACCOUNT *AH_Account_fromDb(AH_BANK *b, GWEN_DB_NODE *db) {
-  AH_ACCOUNT *a;
-  const char *p;
-  unsigned int i;
-
-  assert(b);
+  db=AB_Account_GetProviderData(a);
   assert(db);
-  GWEN_NEW_OBJECT(AH_ACCOUNT, a);
-  GWEN_LIST_INIT(AH_ACCOUNT, a);
-  GWEN_INHERIT_INIT(AH_ACCOUNT, a);
 
-  a->bank=b;
+  if (em==AB_ProviderExtendMode_Create ||
+      em==AB_ProviderExtendMode_Extend) {
+    GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
+    GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae,
+                         AH_Account_freeData);
+    ae->hbci=AH_Provider_GetHbci(pro);
 
-  /* read variables */
-  p=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  free(a->bankId);
-  if (p) a->bankId=strdup(p);
-  else a->bankId=strdup("");;
+    ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
+  }
+}
 
-  p=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-  free(a->accountId);
-  if (p) a->accountId=strdup(p);
-  else a->accountId=strdup("");;
 
-  p=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
-  free(a->accountName);
-  if (p) a->accountName=strdup(p);
-  else a->accountName=strdup("");;
 
-  p=GWEN_DB_GetCharValue(db, "ownerName", 0, 0);
-  free(a->ownerName);
-  if (p) a->ownerName=strdup(p);
-  else a->ownerName=strdup("");;
+void AH_Account_freeData(void *bp, void *p) {
+  AH_ACCOUNT *ae;
 
-  GWEN_StringList_free(a->customers);
-  a->customers=GWEN_StringList_new();
+  ae=(AH_ACCOUNT*) p;
+  GWEN_FREE_OBJECT(ae);
+}
+
+
+
+AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a) {
+  AH_ACCOUNT *ae;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+  return ae->hbci;
+}
+
+
+
+const char *AH_Account_GetSuffix(const AB_ACCOUNT *a){
+  GWEN_DB_NODE *db;
+
+  db=AB_Account_GetProviderData(a);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "suffix", 0, 0);
+}
+
+
+
+void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s){
+  GWEN_DB_NODE *db;
+
+  db=AB_Account_GetProviderData(a);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "suffix", s);
+  else
+    GWEN_DB_DeleteVar(db, "suffix");
+}
+
+
+
+void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
+                           GWEN_TYPE_UINT32 flags) {
+  GWEN_DB_DeleteVar(db, name);
+  if (flags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "preferSingleTransfer");
+  if (flags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "preferSingleDebitNote");
+}
+
+
+
+GWEN_TYPE_UINT32 AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+  GWEN_TYPE_UINT32 fl=0;
+  int i;
+
   for (i=0; ; i++) {
-    p=GWEN_DB_GetCharValue(db, "customer", i, 0);
-    if (p) {
-      GWEN_StringList_AppendString(a->customers, p, 0, 1);
-    }
-    else
-      break;
-  } /* for */
+    const char *s;
 
-  a->usage=1;
-  return a;
+    s=GWEN_DB_GetCharValue(db, name, i, 0);
+    if (!s)
+      break;
+    if (strcasecmp(s, "preferSingleTransfer")==0)
+      fl|=AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER;
+    else if (strcasecmp(s, "preferSingleDebitNote")==0)
+      fl|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown account flag \"%s\"", s);
+    }
+  }
+
+  return fl;
 }
 
 
 
-int AH_Account_toDb(const AH_ACCOUNT *a, GWEN_DB_NODE *db) {
-  GWEN_STRINGLISTENTRY *se;
+GWEN_TYPE_UINT32 AH_Account_GetFlags(const AB_ACCOUNT *a) {
+  AH_ACCOUNT *ae;
+  GWEN_DB_NODE *db;
 
   assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  db=AB_Account_GetProviderData(a);
   assert(db);
 
-  /* write variables */
-  if (a->bankId)
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "bankId", a->bankId);
-
-  if (a->accountId)
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "accountId", a->accountId);
-
-  if (a->accountName)
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "accountName", a->accountName);
-
-  if (a->ownerName)
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "ownerName", a->ownerName);
-
-  GWEN_DB_DeleteVar(db, "customer");
-  se=GWEN_StringList_FirstEntry(a->customers);
-  while(se) {
-    GWEN_DB_SetCharValue(db,
-                         GWEN_DB_FLAGS_DEFAULT,
-                         "customer",
-                         GWEN_StringListEntry_Data(se));
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
-
-  return 0;
+  ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
+  return ae->flags;
 }
 
 
 
-void AH_Account_CleanUp(AH_ACCOUNT *a) {
+void AH_Account_SetFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+  AH_ACCOUNT *ae;
+  GWEN_DB_NODE *db;
+
   assert(a);
-  if (a->usage==1)
-    AH_Account_free(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  db=AB_Account_GetProviderData(a);
+  assert(db);
+
+  ae->flags=flags;
+  AH_Account_Flags_toDb(db, "accountFlags", ae->flags);
 }
 
 
 
-AH_ACCOUNT *AH_Account__freeAll_cb(AH_ACCOUNT *a, void *userData) {
-  AH_Account_free(a);
-  return 0;
-}
+void AH_Account_AddFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+  AH_ACCOUNT *ae;
 
-
-
-void AH_Account_List2_freeAll(AH_ACCOUNT_LIST2 *al){
-  AH_Account_List2_ForEach(al, AH_Account__freeAll_cb, 0);
-  AH_Account_List2_free(al);
-}
-
-
-
-const char *AH_Account_GetSuffix(const AH_ACCOUNT *a){
   assert(a);
-  return a->suffix;
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  AH_Account_SetFlags(a, ae->flags | flags);
 }
 
 
 
-void AH_Account_SetSuffix(AH_ACCOUNT *a, const char *s){
+void AH_Account_SubFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+  AH_ACCOUNT *ae;
+
   assert(a);
-  free(a->suffix);
-  if (s) a->suffix=strdup(s);
-  else a->suffix=0;
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  AH_Account_SetFlags(a, ae->flags & ~flags);
 }
-
-
-
-
-
-
 
 
 

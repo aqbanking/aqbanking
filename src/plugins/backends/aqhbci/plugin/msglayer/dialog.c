@@ -20,6 +20,7 @@
 #include "dialog_p.h"
 #include "aqhbci_l.h"
 #include "hbci_l.h"
+#include "user_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/base64.h>
@@ -34,6 +35,7 @@
 #include <gwenhywfar/net2.h>
 
 #include <aqhbci/msgengine.h>
+#include <aqhbci/user.h>
 
 #include <aqbanking/banking_be.h>
 
@@ -42,9 +44,6 @@
 #include <errno.h>
 
 
-GWEN_LIST_FUNCTIONS(AH_DIALOG, AH_Dialog);
-GWEN_INHERIT_FUNCTIONS(AH_DIALOG);
-
 #ifdef OS_WIN32
 # define AH_PATH_SEP "\\"
 #else
@@ -52,35 +51,28 @@ GWEN_INHERIT_FUNCTIONS(AH_DIALOG);
 #endif
 
 
-AH_DIALOG *AH_Dialog_new(AH_CUSTOMER *cu) {
+AH_DIALOG *AH_Dialog_new(AB_USER *u) {
   AH_DIALOG *dlg;
   AH_HBCI *h;
-  AH_BANK *b;
   GWEN_BUFFER *pbuf;
 
-  assert(cu);
-  b=AH_User_GetBank(AH_Customer_GetUser(cu));
-  h=AH_Bank_GetHbci(b);
+  assert(u);
+  h=AH_User_GetHbci(u);
 
   GWEN_NEW_OBJECT(AH_DIALOG, dlg);
   dlg->usage=1;
-  GWEN_LIST_INIT(AH_DIALOG, dlg);
-  GWEN_INHERIT_INIT(AH_DIALOG, dlg);
-  dlg->bank=b;
-  dlg->globalValues=GWEN_DB_Group_new("globalValues");
 
-  AH_Bank_Attach(b);
+  dlg->globalValues=GWEN_DB_Group_new("globalValues");
   dlg->dialogId=strdup("0");
 
-  dlg->msgEngine=AH_Customer_GetMsgEngine(cu);
+  dlg->msgEngine=AH_User_GetMsgEngine(u);
   GWEN_MsgEngine_Attach(dlg->msgEngine);
-  dlg->dialogOwner=cu;
-  AH_Customer_Attach(cu);
-  AH_MsgEngine_SetCustomer(dlg->msgEngine, cu);
+
+  dlg->dialogOwner=u;
 
   /* create path */
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AH_HBCI_AddBankPath(h, b, pbuf)) {
+  if (AH_HBCI_AddBankPath(h, u, pbuf)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Could not add bank path, cannot log");
     GWEN_Buffer_free(pbuf);
@@ -104,20 +96,17 @@ void AH_Dialog_Attach(AH_DIALOG *dlg){
 }
 
 
+
 void AH_Dialog_free(AH_DIALOG *dlg){
   if (dlg) {
     assert(dlg->usage);
     if (--(dlg->usage)==0) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_DIALOG");
-      GWEN_LIST_FINI(AH_DIALOG, dlg);
-      GWEN_INHERIT_FINI(AH_DIALOG, dlg);
       GWEN_NetLayer_free(dlg->netLayer);
-      AH_Bank_free(dlg->bank);
       free(dlg->dialogId);
       free(dlg->logName);
       GWEN_MsgEngine_free(dlg->msgEngine);
       GWEN_DB_Group_free(dlg->globalValues);
-      AH_Customer_free(dlg->dialogOwner);
 
       GWEN_FREE_OBJECT(dlg);
     }
@@ -129,13 +118,6 @@ void AH_Dialog_free(AH_DIALOG *dlg){
 const char *AH_Dialog_GetLogFile(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->logName;
-}
-
-
-
-AH_BANK *AH_Dialog_GetBank(const AH_DIALOG *dlg){
-  assert(dlg);
-  return dlg->bank;
 }
 
 
@@ -171,7 +153,7 @@ void AH_Dialog_SetDialogId(AH_DIALOG *dlg, const char *s){
 
 
 
-AH_CUSTOMER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg){
+AB_USER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->dialogOwner;
 }
@@ -247,13 +229,13 @@ void AH_Dialog_SubFlags(AH_DIALOG *dlg, GWEN_TYPE_UINT32 f){
 
 AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg) {
   assert(dlg);
-  return AH_Bank_GetHbci(dlg->bank);
+  return AH_User_GetHbci(dlg->dialogOwner);
 }
 
 
 
 AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg) {
-  return AH_HBCI_GetBankingApi(AH_Bank_GetHbci(dlg->bank));
+  return AH_HBCI_GetBankingApi(AH_Dialog_GetHbci(dlg));
 }
 
 
@@ -302,9 +284,9 @@ AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout) {
 
   /* close connection if wanted */
   if (GWEN_NetLayer_FindBaseLayer(dlg->netLayer, GWEN_NL_HTTP_NAME)) {
-    if (AH_Customer_GetKeepAlive(dlg->dialogOwner)==0) {
+    if (!(AH_User_GetFlags(dlg->dialogOwner) & AH_USER_FLAGS_KEEPALIVE)) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "Closing connection after reception");
+                 "Closing connection after reception");
       GWEN_NetLayer_Disconnect(dlg->netLayer);
     }
   }
@@ -487,8 +469,6 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
   GWEN_NETLAYER *nl;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
-  AH_BANK *b;
-  AH_USER *u;
   const char *bankAddr;
   int bankPort;
   AH_BPD_ADDR_TYPE addrType;
@@ -497,15 +477,14 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
   int rv;
   GWEN_URL *url;
   int useHttp;
+  GWEN_TYPE_UINT32 uFlags;
 
   assert(dlg);
-  u=AH_Customer_GetUser(dlg->dialogOwner);
-  assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
+
+  uFlags=AH_User_GetFlags(dlg->dialogOwner);
 
   /* take bank addr from user */
-  bpdAddr=AH_User_GetAddress(u);
+  bpdAddr=AH_User_GetAddress(dlg->dialogOwner);
   if (!bpdAddr) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User has no address settings");
     return AB_ERROR_INVALID;
@@ -566,7 +545,7 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
 
     nbuf=GWEN_Buffer_new(0, 64, 0, 1);
     AH_HBCI_AddBankCertFolder(AH_Dialog_GetHbci(dlg),
-			      b, nbuf);
+                              dlg->dialogOwner, nbuf);
 
     nl=GWEN_NetLayerSsl_new(nlBase,
 			    GWEN_Buffer_GetStart(nbuf),
@@ -603,13 +582,13 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
                          "application/x-www-form-urlencoded");
     GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "Connection",
-                         (AH_Customer_GetKeepAlive(dlg->dialogOwner))?
+                         (uFlags & AH_USER_FLAGS_KEEPALIVE)?
                          "keep-alive":"close");
-    s=AH_Customer_GetHttpUserAgent(dlg->dialogOwner);
+    s=AH_User_GetHttpUserAgent(dlg->dialogOwner);
     if (s)
       GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "User-Agent", s);
-  
+                           "User-Agent", s);
+
     GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
     GWEN_Buffer_free(nbuf);
     useHttp=1;

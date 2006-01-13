@@ -13,8 +13,7 @@
 #ifndef AH_JOB_H
 #define AH_JOB_H
 
-#include <gwenhywfar/inherit.h>
-#include <aqhbci/result.h>
+#include <aqhbci/aqhbci.h>
 
 #include <stdio.h>
 
@@ -37,9 +36,12 @@ void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 
 
 
-#include <gwenhywfar/db.h>
-#include <aqhbci/customer.h>
+#include <aqhbci/aqhbci.h>
+#include <aqhbci/hbci.h>
+#include <aqhbci/result.h>
+#include <aqbanking/user.h>
 #include <aqbanking/job.h>
+#include <gwenhywfar/db.h>
 
 
 #ifdef __cplusplus
@@ -117,7 +119,7 @@ AQHBCI_API
 int AH_Job_GetJobsPerMsg(const AH_JOB *j);
 
 AQHBCI_API
-AH_CUSTOMER *AH_Job_GetCustomer(const AH_JOB *j);
+AB_USER *AH_Job_GetUser(const AH_JOB *j);
 
 AQHBCI_API
 GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j);

@@ -300,6 +300,7 @@ typedef enum {
 #include <aqbanking/bankinfoplugin.h>
 #include <aqbanking/bankinfo.h>
 #include <aqbanking/country.h>
+#include <aqbanking/user.h>
 
 
 #ifdef __cplusplus
@@ -658,23 +659,8 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
 
 /**
  * <p>
- * This function temporarily disables a backend. This status is not preserved
- * across shutdown.
- * </p>
- * <p>
- * You <b>should</b> call this function directly before running a wizard on
- * that backend, otherwise changes in the settings made by the wizard
- * will most likely be silently overwritten.
- * </p>
- */
-AQBANKING_API 
-int AB_Banking_SuspendProvider(AB_BANKING *ab, const char *backend);
-
-
-/**
- * <p>
  * This function checks whether the given backend is currently active.
- * It returns 0 if the backend is either suspended or inactive.
+ * It returns 0 if the backend is inactive.
  *
  */
 AQBANKING_API 
@@ -682,26 +668,10 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
 
 
 /**
- * <p>
- * This function reverts @ref AB_Banking_SuspendProvider.
- * </p>
- * <p>
- * You <b>should</b> call this function directly after running a wizard on
- * that backend to reenable it.
- * </p>
- */
-AQBANKING_API 
-int AB_Banking_ResumeProvider(AB_BANKING *ab, const char *backend);
-
-/**
  * This function simpifies wizard handling. It searches for a wizard for
- * the given backend and the given frontends.
+ * the given frontends.
  * @param ab pointer to the AB_BANKING object
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
+ * @param backend no longer used
  * @param frontends This is a semicolon separated list of acceptable frontends
  * The following lists merely are suggestions:
  * <table>
@@ -730,15 +700,6 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
                           const char *backend,
                           const char *frontends,
                           GWEN_BUFFER *pbuf);
-
-/** @deprecated
- *
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_GetWizardPath(AB_BANKING *ab,
-                             const char *backend,
-                             GWEN_BUFFER *pbuf);
-
 
 /**
  * This function simpifies debugger handling. It searches for a debugger for
@@ -816,6 +777,18 @@ AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
 
 /**
+ * Returns a GWEN_DB_NODE which can be used to store/retrieve data shared
+ * across multiple applications.
+ * @param ab pointer to the AB_BANKING object
+ * @param name name of the share. Special names are those of frontends and
+ * backends, so these names MUST NOT be used for applications (but they may be
+ * used by the corresponding frontends, e.g. the QT frontend QBanking used
+ * "qbanking" to store some frontend specific settings).
+ */
+AQBANKING_API 
+GWEN_DB_NODE *AB_Banking_GetSharedData(AB_BANKING *ab, const char *name);
+
+/**
  * Returns the name of the user folder for AqBanking's data.
  * Normally this is something like "/home/me/.banking".
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
@@ -824,15 +797,6 @@ GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
  */
 AQBANKING_API 
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
-
-/**
- * Set the user data dir. You should only use this on very special
- * occasions. Clearly: You should normally not use this function, the default
- * which AqBanking uses for the user data folder is quite suitable.
- */
-AQBANKING_API 
-void AB_Banking_SetUserDataDir(AB_BANKING *ab, const char *s);
-
 
 /**
  * Returns the name of the user folder for application data.
@@ -888,9 +852,73 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /*@}*/
 
+/** @name User Management Functions
+ *
+ * AqBanking controls a list of users. You can ask it for the full list
+ * (@ref AB_Banking_GetUserss) or directly request a specific account
+ * (@ref AB_Banking_GetUser).
+ * AB_USERs contain all information needed to identify a user to the bank's
+ * server.
+ */
+/*@{*/
+
+AQBANKING_API
+AB_USER_LIST2 *AB_Banking_GetUsers(const AB_BANKING *ab);
+
+/**
+ * Returns the user with the given unique id.
+ */
+AQBANKING_API
+AB_USER *AB_Banking_GetUser(const AB_BANKING *ab, GWEN_TYPE_UINT32 uniqueId);
 
 
-/** @name Working With Accounts
+/**
+ * This function returns the first user which matches the given parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ */
+AQBANKING_API
+AB_USER *AB_Banking_FindUser(const AB_BANKING *ab,
+                             const char *backendName,
+                             const char *country,
+                             const char *bankId,
+                             const char *userId,
+                             const char *customerId);
+
+/**
+ * This function returns the a list of users which match the given parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ * If no user matches (or there simply are no users) then NULL is returned.
+ * The caller is responsible for freeing the list returned (ifany) by calling
+ * @ref AB_User_List2_free.
+ * AqBanking still remains the owner of every user reported via this
+ * function, so you MUST NOT call @ref AB_User_List2_freeAll.
+ */
+AQBANKING_API
+AB_USER_LIST2 *AB_Banking_FindUsers(const AB_BANKING *ab,
+				    const char *backendName,
+                                    const char *country,
+                                    const char *bankId,
+				    const char *userId,
+				    const char *customerId);
+
+/**
+ * Creates a user and presents it to the backend (which might want to extend
+ * the newly created user in order to associate some data with it).
+ */
+AQBANKING_API
+AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName);
+
+/**
+ * Enqueues the given user with AqBanking.
+ */
+AQBANKING_API
+int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u);
+
+
+/*@}*/
+
+
+/** @name Account Management Functions
  *
  * AqBanking controls a list of accounts. You can ask it for the full list
  * (@ref AB_Banking_GetAccounts) or directly request a specific account
@@ -914,7 +942,8 @@ AB_ACCOUNT_LIST2 *AB_Banking_GetAccounts(const AB_BANKING *ab);
 
 /**
  * This function does an account lookup based on the given unique id.
- * This id is assigned by AqBanking when an account is created.
+ * This id is assigned by AqBanking when an account is added to AqBanking
+ * via @ref AB_Banking_AddAccount.
  *
  * AqBanking remains the owner of the object returned (if any), so you must
  * not free it.
@@ -952,6 +981,56 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
                                                  const char *bankCode,
                                                  const char *accountId);
 
+/**
+ * This function returns the first account which matches the given parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ */
+AQBANKING_API
+AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
+                                   const char *backendName,
+                                   const char *country,
+                                   const char *bankId,
+                                   const char *accountId);
+
+/**
+ * This function returns the a list of accounts which match the given
+ * parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ * If no account matches (or there simply are no accounts) then NULL is
+ * returned.
+ * The caller is responsible for freeing the list returned (ifany) by calling
+ * @ref AB_Account_List2_free.
+ * AqBanking still remains the owner of every account reported via this
+ * function, so you MUST NOT call @ref AB_Account_List2_FreeAll.
+ */
+AQBANKING_API
+AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
+                                          const char *backendName,
+                                          const char *country,
+                                          const char *bankId,
+                                          const char *accountId);
+
+/**
+ * Creates an account and shows it to the backend (which might want to extend
+ * the newly created account in order to associate some data with it).
+ * The newly created account does not have a unique id yet. This id is
+ * assigned upon @ref AB_Banking_AddAccount. The caller becomes the owner
+ * of the object returned, so you must either call @ref AB_Banking_AddAccount
+ * or @ref AB_Account_free on it.
+ */
+AQBANKING_API 
+AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName);
+
+/**
+ * Adds the given account to the internal list of accounts. Only now it gets a
+ * unique id assigned to it.
+ * AqBanking takes over the ownership of the given account, so you MUST NOT
+ * call @ref AB_Account_free on it!
+ */
+AQBANKING_API 
+int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a);
+
+
 /*@}*/
 
 
@@ -973,22 +1052,16 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
 /**
- * Returns a list2 of wizard descriptions for the given backend.
+ * Returns a list2 of wizard descriptions.
  * You must free this list after using it via
  * @ref GWEN_PluginDescription_List2_freeAll.
  * Please note that a simple @ref GWEN_PluginDescription_List2_free would
  * not suffice, since that would only free the list but not the objects
  * stored within the list !
  * @param ab pointer to the AB_BANKING object
- * @param pn name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
 AQBANKING_API 
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab,
-                                                          const char *pn);
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab);
 
 
 /**
@@ -1082,7 +1155,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
  *  <li>archived jobs</li>
  * </ul>
  * <p>
- * Enqued jobs are a different from all the other jobs, because AqBanking
+ * Enqued jobs are different from all the other jobs, because AqBanking
  * holds a unique list of those enqueued jobs.
  * </p>
  * <p>
@@ -1101,7 +1174,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
  * However, if you enqueue a job, execute the queue and later call
  * @ref AB_Banking_GetFinishedJobs you will again have multiple
  * representations of the jobs you once had in the enqueued list, because
- * <b>after</b> @ref AB_Banking_GetFinishedJobs always creates a new
+ * @ref AB_Banking_GetFinishedJobs always creates a new
  * representation of a job.
  * </p>
  * <p>
@@ -1138,18 +1211,6 @@ int AB_Banking_DequeueJob(AB_BANKING *ab, AB_JOB *j);
 
 
 /**
- * Removes a job from the queue but keeps it for later re-enqueuing.
- * This function does not free the given job, the caller still is the owner.
- * Deferred jobs are preserved across shutdowns. You can later re-enqueue
- * such a job using @ref AB_Banking_EnqueueJob.
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab pointer to the AB_BANKING object
- * @param j job to be dequeued
- */
-AQBANKING_API 
-int AB_Banking_DeferJob(AB_BANKING *ab, AB_JOB *j);
-
-/**
  * This function enqueues all pending jobs so that they will be send the
  * next time @ref AB_Banking_ExecuteQueue is called.
  * You should call this function directly before calling
@@ -1172,13 +1233,13 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
 /**
  * <p>
  * This function sends all jobs in the queue to their corresponding backends
- * and allows those backends to process it.
+ * and allows those backends to process them.
  * </p>
  * <p>
  * The queue is always empty upon return.
  * </p>
  * <p>
- * Jobs which have been finished (even errornous jobs) are move from the
+ * Jobs which have been finished (even errornous jobs) are moved from the
  * queue to the list of finished jobs. Those jobs are preserved across
  * shutdowns.
  * </p>
@@ -1312,44 +1373,6 @@ AB_JOB_LIST2 *AB_Banking_GetFinishedJobs(AB_BANKING *ab);
  */
 AQBANKING_API 
 int AB_Banking_DelFinishedJob(AB_BANKING *ab, AB_JOB *j);
-
-/*@}*/
-
-
-
-/** @name Handling Deferred Jobs
- *
- * <p>
- * Deferred jobs are those which have been enqueued at some point and later
- * deferred so that @ref AB_Banking_ExecuteQueue won't include them.
- * </p>
- * <p>
- * You can re-enqueue this job at any time using @ref AB_Banking_EnqueueJob.
- * </p>
- */
-/*@{*/
-
-/**
- * <p>
- * Loads all deferred jobs from their folder. The caller is responsible for
- * freeing the jobs returned (as opposed to @ref AB_Banking_GetEnqueuedJobs).
- * </p>
- * <p>
- * Please note that since this function loads all jobs from their folder
- * the returned list might contain another representation of jobs you once
- * created and enqueued into the execution queue.
- * </p>
- */
-AQBANKING_API 
-AB_JOB_LIST2 *AB_Banking_GetDeferredJobs(AB_BANKING *ab);
-
-/**
- * Removes a deferred job from its folder. You can use either a job returned
- * via @ref AB_Banking_GetFinishedJobs or a job you previously added to
- * the execution queue after the queue has been executed.
- */
-AQBANKING_API 
-int AB_Banking_DelDeferredJob(AB_BANKING *ab, AB_JOB *j);
 
 /*@}*/
 

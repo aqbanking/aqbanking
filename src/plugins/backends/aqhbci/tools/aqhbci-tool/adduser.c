@@ -242,10 +242,8 @@ int addUser(AB_BANKING *ab,
     GWEN_BUFFER *bufServer;
     int port;
     int rv;
-    AH_BANK *bank;
-    AH_USER *user;
+    AB_USER *user;
     AH_CRYPT_MODE cm;
-    AH_CUSTOMER *customer;
     AH_BPD_ADDR *ba;
     AH_MEDIUM_CTX *mctx;
     const char *lbankId;
@@ -279,12 +277,6 @@ int addUser(AB_BANKING *ab,
       GWEN_Buffer_free(bufBankId);
       return 3;
     }
-    bank=AH_HBCI_FindBank(hbci, 280, lbankId);
-    if (!bank) {
-      bank=AH_Bank_new(hbci, 280, lbankId);
-      assert(bank);
-      AH_HBCI_AddBank(hbci, bank);
-    }
 
     luserId=userId?userId:GWEN_Buffer_GetStart(bufUserId);
     if (!luserId || !*luserId) {
@@ -295,7 +287,11 @@ int addUser(AB_BANKING *ab,
       return 3;
     }
 
-    user=AH_Bank_FindUser(bank, luserId);
+    lcustomerId=customerId?customerId:luserId;
+
+    user=AB_Banking_FindUser(ab, AH_PROVIDER_NAME,
+                             "de",
+                             lbankId, luserId, lcustomerId);
     if (user) {
       DBG_ERROR(0, "User %s already exists", luserId);
       GWEN_Buffer_free(bufServer);
@@ -336,28 +332,20 @@ int addUser(AB_BANKING *ab,
       return 3;
     }
 
-    user=AH_User_new(bank, luserId, cm, medium);
+    user=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);
     assert(user);
-    AH_Bank_AddUser(bank, user);
+
+    AB_User_SetCountry(user, "de");
+    AB_User_SetBankCode(user, lbankId);
+    AB_User_SetUserId(user, luserId);
+    AB_User_SetCustomerId(user, lcustomerId);
     AH_User_SetContextIdx(user, idx);
+    AB_Banking_AddUser(ab, user);
 
-    lcustomerId=customerId?customerId:luserId;
-    customer=AH_User_FindCustomer(user, lcustomerId);
-    if (customer) {
-      DBG_ERROR(0, "Customer %s already exists", lcustomerId);
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
-      return 3;
-    }
-
-    customer=AH_Customer_new(user, lcustomerId);
-    assert(customer);
-    AH_User_AddCustomer(user, customer);
     if (cm==AH_CryptMode_Pintan)
-      AH_Customer_SetHbciVersion(customer, 220);
+      AH_User_SetHbciVersion(user, 220);
     else
-      AH_Customer_SetHbciVersion(customer, 210);
+      AH_User_SetHbciVersion(user, 210);
 
     /* try to get server address from database if still unknown */
     if (!server && GWEN_Buffer_GetUsedBytes(bufServer)==0) {

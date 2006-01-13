@@ -17,17 +17,22 @@
 #include "waction.h"
 #include "winfo.h"
 
-class GetKeys;
+class ActionWidget;
 
 
 class ActionGetKeys: public WizardAction {
+  Q_OBJECT
 private:
-  GetKeys *_getKeysDialog;
+  ActionWidget *_realDialog;
 public:
   ActionGetKeys(Wizard *w);
   virtual ~ActionGetKeys();
 
+  virtual void enter();
   virtual bool apply();
+
+public slots:
+  void slotButtonClicked();
 
 };
 

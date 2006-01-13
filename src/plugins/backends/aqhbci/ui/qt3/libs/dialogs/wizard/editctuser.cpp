@@ -18,7 +18,7 @@
 #include "editctuser.h"
 #include <qbanking/qbanking.h>
 #include <qbanking/qbselectbank.h>
-#include "selectcontext.h"
+//#include "selectcontext.h"
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qwizard.h>
@@ -37,7 +37,6 @@
 #include <qsimplerichtext.h>
 #include <qtextview.h>
 
-
 #include <gwenhywfar/debug.h>
 
 
@@ -53,10 +52,6 @@ EditCtUser::EditCtUser(QBanking *qb,
 ,_wInfo(wi)
 ,_bankInfo(0)
 ,_dataIsOk(false) {
-  int i;
-
-  assert(_wInfo->getMedium());
-
   connect(bankCodeButton, SIGNAL(clicked()),
           this, SLOT(slotBankCodeClicked()));
   connect(bankCodeEdit, SIGNAL(lostFocus()),
@@ -66,6 +61,21 @@ EditCtUser::EditCtUser(QBanking *qb,
   connect(userCombo, SIGNAL(activated(int)),
           this, SLOT(slotContextActivated(int)));
 
+}
+
+
+
+EditCtUser::~EditCtUser() {
+}
+
+
+
+void EditCtUser::init() {
+  int i;
+
+  assert(_wInfo->getMedium());
+
+  userCombo->clear();
   for (i=0; i<5; i++) {
     GWEN_BUFFER *bufUserId;
     char numbuf[16];
@@ -85,11 +95,24 @@ EditCtUser::EditCtUser(QBanking *qb,
 
   userCombo->setCurrentItem(_wInfo->getContext());
   _fromContext(_wInfo->getContext());
-}
 
-
-
-EditCtUser::~EditCtUser() {
+  if (_wInfo->getCryptMode()==AH_CryptMode_Pintan) {
+    i=2;
+    hbciVersionCombo->setEnabled(false);
+  }
+  else {
+    if (_wInfo->getUser()) {
+      switch(AH_User_GetHbciVersion(_wInfo->getUser())) {
+      case 201: i=0; break;
+      case 220: i=2; break;
+      case 210:
+      default:  i=1; break;
+      }
+    }
+    else
+      i=1;
+  }
+  hbciVersionCombo->setCurrentItem(i);
 }
 
 
@@ -115,6 +138,8 @@ AH_CRYPT_MODE EditCtUser::_getCryptMode(AH_MEDIUM *m, int idx) {
   AH_CRYPT_MODE cm;
   int rv;
 
+  DBG_ERROR(0, "Checking context %d", idx);
+
   if (!AH_Medium_IsMounted(m)) {
     rv=AH_Medium_Mount(m);
     if (rv) {
@@ -123,8 +148,8 @@ AH_CRYPT_MODE EditCtUser::_getCryptMode(AH_MEDIUM *m, int idx) {
                             tr("Mount Medium"),
                             tr("Could not mount medium"),
                             QMessageBox::Ok,QMessageBox::NoButton);
+      return AH_CryptMode_Unknown;
     }
-    return AH_CryptMode_Unknown;
   }
 
   rv=AH_Medium_SelectContext(m, idx);
@@ -165,36 +190,59 @@ bool EditCtUser::apply(){
   int i;
   AH_CRYPT_MODE cm;
   AH_MEDIUM *m;
-  AH_BANK *b;
-  AH_USER *u;
-  AH_CUSTOMER *cu;
+  AB_USER *u;
   int idx;
-  QCString cuid;
+  std::string bankId;
+  std::string userId;
+  std::string custId;
+  std::string userName;
+  std::string fullServerAddr;
+  std::string serverAddr;
+  std::string mediumDescr;
+  int hbciVersion;
 
   /* do user data page, we have to create the medium etc */
   m=_wInfo->getMedium();
+  assert(m);
 
-  cuid=(customerIdEdit->text().isEmpty() ?
-        userIdEdit->text().utf8() :
-        cuid=customerIdEdit->text().utf8() );
-  /* always create customer since we just created the user which starts with
-   * an empty list of customers. So the customer we are about to create
-   * *can* not exist. */
-  if (AH_HBCI_CheckStringSanity(cuid)) {
+  switch(hbciVersionCombo->currentItem()) {
+  case 0:  hbciVersion=201; break;
+  case 2:  hbciVersion=220; break;
+  case 1: 
+  default: hbciVersion=210; break;
+  }
+
+  /* read ids */
+  bankId=QBanking::QStringToUtf8String(bankCodeEdit->text());
+  userId=QBanking::QStringToUtf8String(userIdEdit->text());
+  userName=QBanking::QStringToUtf8String(nameEdit->text());
+  custId=QBanking::QStringToUtf8String(customerIdEdit->text());
+  mediumDescr=QBanking::QStringToUtf8String(descriptionEdit->text());
+  qs=_getServerAddr();
+  fullServerAddr=QBanking::QStringToUtf8String(qs);
+  i=qs.find('/');
+  if (i)
+    qs.truncate(i);
+  serverAddr=QBanking::QStringToUtf8String(qs);
+  idx=userCombo->currentItem();
+
+  /* some sanitiy checks */
+  if (AH_HBCI_CheckStringSanity(userId.c_str())) {
     QMessageBox::critical(this,
                           tr("Invalid Input"),
                           tr("<qt>"
                              "<p>"
-                             "The customer id contains invalid characters."
+                             "The user id contains invalid characters."
                              "</p>"
                              "<p>"
                              "Please correct your entry."
                              "</p>"),
                           QMessageBox::Ok,QMessageBox::NoButton);
+    userIdEdit->setFocus();
     return false;
   }
 
-  if (bankCodeEdit->text().length()<8) {
+  if (bankId.length()<8) {
     QMessageBox::critical(this,
                           tr("Invalid Input"),
                           tr("<qt>"
@@ -203,18 +251,78 @@ bool EditCtUser::apply(){
                              "</p>"
                              "<p>"
                              "Please correct your entry."
-                             "</p>"),
+                             "</p>"
+                             "</qt>"),
                           QMessageBox::Ok,QMessageBox::NoButton);
+    bankCodeEdit->setFocus();
     return false;
   }
 
-  cm=_getCryptMode(_wInfo->getMedium(),
-                   _wInfo->getContext());
+  if (userId.length()<1) {
+    QMessageBox::critical(this,
+                          tr("Invalid Input"),
+                          tr("<qt>"
+                             "<p>"
+                             "The user id needs at least one character."
+                             "</p>"
+                             "<p>"
+                             "Please correct your entry."
+                             "</p>"),
+                          QMessageBox::Ok,QMessageBox::NoButton);
+    userIdEdit->setFocus();
+    return false;
+  }
+
+  if (userName.empty()) {
+    QMessageBox::critical(this,
+			  tr("Invalid Input"),
+			  tr("<qt>"
+			     "<p>"
+			     "The user name must not be empty."
+			     "</p>"
+			     "<p>"
+			     "Please correct your entry."
+			     "</p>"),
+			  QMessageBox::Ok,QMessageBox::NoButton);
+    nameEdit->setFocus();
+    return false;
+  }
+
+  if (custId.empty()) {
+    int r=QMessageBox::warning(this,
+			       tr("No Customer Id Given"),
+			       tr("<qt>"
+				  "<p>"
+				  "You did not enter a customer id."
+				  "</p>"
+				  "<p>Many banks do not need an explicit "
+				  "customer id. But some other "
+				  "banks absolutey require a customer id. "
+				  "Please double-check the "
+				  "information provided to you by your bank."
+				  "</p>"
+				  "<p>"
+				  "Are you sure you want to leave the "
+				  "customer id empty?"
+				  "</p>"
+				  "</qt>"
+				 ),
+			       QMessageBox::Yes,QMessageBox::No);
+    if (r != 0 && r != QMessageBox::Yes) {
+      customerIdEdit->setFocus();
+      return false;
+    }
+    custId=userId;
+  }
+
+  /* get crypt mode */
+  cm=_getCryptMode(m, _wInfo->getContext());
   if (cm==AH_CryptMode_Unknown) {
     DBG_ERROR(0, "Unknown crypt mode/mount error");
     return false;
   }
 
+  /* get bank info */
   if (!_bankInfo) {
     std::string s;
 
@@ -248,61 +356,32 @@ bool EditCtUser::apply(){
   }
 
 
-  if (customerIdEdit->text().isEmpty()) {
-    int r = QMessageBox::warning(this,
-                             tr("No customer id found"),
-                             tr("<qt>"
-                                "<p>"
-                                "You did not enter a customer id."
-                                "</p>"
-                                "<p>Many banks do not need an explicit customer id. But some other "
-				"banks absolutey require a customer id. Please double-check the "
-				"information provided to you by your bank.</p>"
-                                "<p>"
-                                "Are you sure you want to leave the customer "
-                                "id empty?"
-                                "</p>"
-                                "</qt>"
-                               ),
-                             QMessageBox::Yes,QMessageBox::No);
-    if (r != 0 && r != QMessageBox::Yes) {
-      customerIdEdit->setFocus();
-      return false;
-    }
-  }
-
   // TODO: Select context !!
 
-  qs=_getServerAddr();
-  i=qs.find('/');
-  if (i)
-    qs.truncate(i);
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  err=GWEN_InetAddr_SetAddress(addr, qs.local8Bit());
+  err=GWEN_InetAddr_SetAddress(addr, serverAddr.c_str());
   if (!GWEN_Error_IsOk(err)) {
     GWEN_TYPE_UINT32 wid;
 
-    wid=AB_Banking_ShowBox(_app->getCInterface(),
-                           0,
-                           QWidget::tr("Please wait").utf8(),
-                           QWidget::tr("Resolving host address...").utf8());
+    wid=_app->showBox(0, QWidget::tr("Please wait"),
+		      QWidget::tr("Resolving host address..."));
     // Note: The QCString::data() is the conversion that will
     // correctly convert the QCString to the char* pointer.
     DBG_INFO(0, "Resolving hostname \"%s\"",
-             qs.local8Bit().data());
-    err=GWEN_InetAddr_SetName(addr, qs.local8Bit());
+	     qs.local8Bit().data());
+    err=GWEN_InetAddr_SetName(addr, serverAddr.c_str());
     if (wid)
       AB_Banking_HideBox(_app->getCInterface(), wid);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR(0,
                 "Error resolving hostname \"%s\":",
-                qs.local8Bit().data());
+		serverAddr.c_str());
       DBG_ERROR_ERR(0, err);
       QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
 			    QWidget::tr("Could not resolve the address %1.\n"
                                         "Maybe there is a typo?")
-                            .arg(qs),
+			    .arg(QString::fromUtf8(serverAddr.c_str())),
 			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_InetAddr_free(addr);
       return false;
@@ -310,32 +389,32 @@ bool EditCtUser::apply(){
   }
   GWEN_InetAddr_free(addr);
 
-  /* select or create bank */
-  b=AH_HBCI_FindBank(_wInfo->getHbci(), 280, bankCodeEdit->text().utf8());
-  if (!b) {
-    /* create bank */
-    DBG_INFO(0, "Creating bank");
-    b=AH_Bank_new(_wInfo->getHbci(), 280, bankCodeEdit->text().utf8());
-    _wInfo->setBank(b);
-    AH_HBCI_AddBank(_wInfo->getHbci(), b);
-    _wInfo->addFlags(WIZARDINFO_FLAGS_BANK_CREATED);
-  }
-  else {
-    _wInfo->setBank(b);
-    _wInfo->subFlags(WIZARDINFO_FLAGS_BANK_CREATED);
-  }
 
   /* select or create user */
-  u=AH_Bank_FindUser(b, userIdEdit->text().utf8());
+  u=AB_Banking_FindUser(_app->getCInterface(),
+			AH_PROVIDER_NAME,
+			"de",
+			bankId.c_str(),
+			userId.c_str(),
+			custId.c_str());
   if (!u) {
     AH_BPD_ADDR *ba;
 
     DBG_INFO(0, "Creating user");
-    u=AH_User_new(b, userIdEdit->text().utf8(), cm, m);
+    u=AB_Banking_CreateUser(_app->getCInterface(), AH_PROVIDER_NAME);
     assert(u);
+    AB_User_SetCountry(u, "de");
+    AB_User_SetBankCode(u, bankId.c_str());
+    AB_User_SetUserId(u, userId.c_str());
+    AB_User_SetCustomerId(u, custId.c_str());
+    AB_User_SetUserName(u, userName.c_str());
+    AH_User_SetMedium(u, m);
+    AH_User_SetCryptMode(u, cm);
+    AH_User_SetHbciVersion(u, hbciVersion);
+
     ba=AH_BpdAddr_new();
     assert(ba);
-    AH_BpdAddr_SetAddr(ba, _getServerAddr().utf8());
+    AH_BpdAddr_SetAddr(ba, fullServerAddr.c_str());
     if (cm==AH_CryptMode_Pintan) {
       AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeSSL);
       AH_BpdAddr_SetSuffix(ba, "443");
@@ -347,7 +426,6 @@ bool EditCtUser::apply(){
     AH_User_SetAddress(u, ba);
     AH_BpdAddr_free(ba);
 
-    AH_Bank_AddUser(b, u);
     _wInfo->setUser(u);
     _wInfo->addFlags(WIZARDINFO_FLAGS_USER_CREATED);
   }
@@ -374,59 +452,18 @@ bool EditCtUser::apply(){
     return false;
   }
 
-  idx=userCombo->currentItem();
   _wInfo->setContext(idx);
   AH_User_SetContextIdx(u, idx);
 
-  /* select or create customer */
-  cu=AH_Customer_new(u, cuid);
-  AH_Customer_SetFullName(cu, nameEdit->text().utf8());
-
   /* Set a descriptiveName in the medium. */
-  if (!descriptionEdit->text().isEmpty())
-    AH_Medium_SetDescriptiveName(m, descriptionEdit->text().utf8());
+  if (!mediumDescr.empty())
+    AH_Medium_SetDescriptiveName(m, mediumDescr.c_str());
 
   if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
     /* PIN/TAN only works with HBCI version 2.20. It might work with
      * other versions as well but this is not defined in the specs. */
-    AH_Customer_SetHbciVersion(cu, 220);
+    AH_User_SetHbciVersion(u, 220);
   }
-  else {
-    if (_bankInfo) {
-      AB_BANKINFO_SERVICE *sv;
-
-      sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(_bankInfo));
-      while (sv) {
-        const char *s;
-
-        s=AB_BankInfoService_GetType(sv);
-        if (s && strcasecmp(s, "HBCI")==0) {
-          s=AB_BankInfoService_GetMode(sv);
-          if (s && strcasecmp(s, "PINTAN")!=0) {
-            s=AB_BankInfoService_GetPversion(sv);
-            if (s) {
-              int set=1;
-
-              if (strcmp(s, "2.01")==0)
-                AH_Customer_SetHbciVersion(cu, 201);
-              else if (strcmp(s, "2.10")==0)
-                AH_Customer_SetHbciVersion(cu, 210);
-              else if (strcmp(s, "2.20")==0)
-                AH_Customer_SetHbciVersion(cu, 220);
-              else
-                set=0;
-            }
-          }
-
-        }
-        sv=AB_BankInfoService_List_Next(sv);
-      }
-    }
-  }
-
-  AH_User_AddCustomer(u, cu);
-  _wInfo->setCustomer(cu);
-  _wInfo->addFlags(WIZARDINFO_FLAGS_CUST_CREATED);
 
   return true;
 }
@@ -434,51 +471,17 @@ bool EditCtUser::apply(){
 
 
 bool EditCtUser::undo(){
-  AH_BANK *b;
+  AB_USER *u;
 
-  // handle bank, user, customer
-  b=_wInfo->getBank();
-  if (b) {
-    if (_wInfo->getFlags() & WIZARDINFO_FLAGS_BANK_CREATED) {
-      /* bank created, so by removing the bank we also remove all other
-       * objects below it */
-      DBG_INFO(0, "Removing bank and all subordinate objects");
-      AH_HBCI_RemoveBank(_wInfo->getHbci(), b);
-      _wInfo->setBank(0);
-      _wInfo->subFlags(WIZARDINFO_FLAGS_BANK_CREATED);
-      AH_Bank_free(b);
-    } // if bank created
-    else {
-      AH_USER *u;
-
-      u=_wInfo->getUser();
-      if (u) {
-        if (_wInfo->getFlags() & WIZARDINFO_FLAGS_USER_CREATED) {
-          /* user created, so by removing the user we also remove all other
-           * objects below it */
-          DBG_INFO(0, "Removing user and all subordinate objects");
-          AH_Bank_RemoveUser(b, u);
-          _wInfo->setUser(0);
-          _wInfo->subFlags(WIZARDINFO_FLAGS_USER_CREATED);
-          AH_User_free(u);
-        } // if _userCreated
-        else {
-          AH_CUSTOMER *cu;
-
-          cu=_wInfo->getCustomer();
-          if (cu) {
-            if (_wInfo->getFlags() & WIZARDINFO_FLAGS_CUST_CREATED) {
-              DBG_INFO(0, "Removing customer");
-              AH_User_RemoveCustomer(u, cu);
-              _wInfo->setCustomer(0);
-              _wInfo->subFlags(WIZARDINFO_FLAGS_CUST_CREATED);
-              AH_Customer_free(cu);
-            } // if customer created
-          } // if customer
-        } // if user not created
-      } // if user
-    } // if bank not created
-  } // if bank
+  u=_wInfo->getUser();
+  if (u) {
+    if (_wInfo->getFlags() & WIZARDINFO_FLAGS_USER_CREATED) {
+      DBG_INFO(0, "Removing user and all subordinate objects");
+      _wInfo->setUser(0);
+      _wInfo->subFlags(WIZARDINFO_FLAGS_USER_CREATED);
+      AB_User_free(u);
+    } // if _userCreated
+  } // if user
 
   return true;
 }

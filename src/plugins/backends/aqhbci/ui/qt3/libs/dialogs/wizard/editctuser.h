@@ -42,7 +42,7 @@ public:
              WFlags fl=0);
   ~EditCtUser();
 
-  int exec();
+  void init();
 
   bool apply();
   bool undo();

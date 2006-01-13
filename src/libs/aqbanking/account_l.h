@@ -19,16 +19,18 @@
 #include <gwenhywfar/inherit.h>
 #include <aqbanking/account_be.h>
 
-
+AB_ACCOUNT *AB_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
 void AB_Account_Attach(AB_ACCOUNT *acc);
 
 
 int AB_Account_Update(AB_ACCOUNT *a);
 
-AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
-                                          GWEN_DB_NODE *db);
-
 void AB_Account_SetProvider(AB_ACCOUNT *a, AB_PROVIDER *pro);
+
+
+AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc);
+AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
+int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 #endif /* AQBANKING_ACCOUNT_L_H */

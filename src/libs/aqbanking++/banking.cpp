@@ -387,11 +387,11 @@ void Banking::clearPluginDescrs(std::list<GWEN_PLUGIN_DESCRIPTION*> &l){
 
 
 std::list<GWEN_PLUGIN_DESCRIPTION*>
-Banking::getWizardDescrs(const char *pn){
+Banking::getWizardDescrs(){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *ll;
   std::list<GWEN_PLUGIN_DESCRIPTION*> rl;
 
-  ll=AB_Banking_GetWizardDescrs(_banking, pn);
+  ll=AB_Banking_GetWizardDescrs(_banking);
   if (ll) {
     GWEN_PLUGIN_DESCRIPTION *d;
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
@@ -466,17 +466,6 @@ int Banking::deactivateProvider(const char *pname){
 }
 
 
-int Banking::suspendProvider(const char *pname){
-  return AB_Banking_SuspendProvider(_banking, pname);
-}
-
-
-
-int Banking::resumeProvider(const char *pname){
-  return AB_Banking_ResumeProvider(_banking, pname);
-}
-
-
 
 std::list<std::string> Banking::getActiveProviders(){
   const GWEN_STRINGLIST *sl;
@@ -502,14 +491,13 @@ std::list<std::string> Banking::getActiveProviders(){
 
 
 
-std::string Banking::findWizard(const char *backend,
-                                const char *frontends){
+std::string Banking::findWizard(const char *frontends){
   GWEN_BUFFER *buf;
   int rv;
   std::string result;
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AB_Banking_FindWizard(_banking, backend, frontends, buf);
+  rv=AB_Banking_FindWizard(_banking, 0, frontends, buf);
   if (!rv)
     result=GWEN_Buffer_GetStart(buf);
   GWEN_Buffer_free(buf);

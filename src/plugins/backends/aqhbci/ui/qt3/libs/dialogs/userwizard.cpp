@@ -20,6 +20,8 @@
 #include "w_pintan_new.h"
 #include "w_ddv_import.h"
 #include "w_rdh_import.h"
+#include "w_rdh_new.h"
+#include "w_rdh_new2.h"
 
 #include <aqhbci/hbci.h>
 #include <aqhbci/medium.h>
@@ -54,6 +56,7 @@ bool UserWizard::_handleModePinTan() {
   GWEN_BUFFER *bufName;
 
   /* create medium */
+  wInfo.setCryptMode(AH_CryptMode_Pintan);
   bufName=GWEN_Buffer_new(0, 128, 0, 1);
   GWEN_Buffer_AppendString(bufName, "PINTAN-");
   ti=GWEN_CurrentTime();
@@ -72,11 +75,14 @@ bool UserWizard::_handleModePinTan() {
     DBG_ERROR(0, "Could not mount medium (%d)", rv);
     return false;
   }
+
   wInfo.setMedium(m);
   wInfo.addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
 
+
   /* setup user */
-  w=new WizardPinTanNew(_app, &wInfo, 0, "WizardPinTanNew", TRUE);
+  w=new WizardPinTanNew(_app, &wInfo, _parent, "WizardPinTanNew", TRUE);
+
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
@@ -90,6 +96,9 @@ bool UserWizard::_handleModePinTan() {
     AH_HBCI_AddMedium(_hbci, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+    AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
+    wInfo.setUser(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_USER_CREATED);
   }
   else {
     DBG_NOTICE(0, "Rejected");
@@ -102,8 +111,7 @@ bool UserWizard::_handleModePinTan() {
 
 
 
-bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo,
-                                       GWEN_CRYPTTOKEN_DEVICE dev) {
+bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *msubTypeName;
@@ -121,7 +129,7 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo,
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
                                   QBanking::QStringToUtf8String(txt).c_str(),
                                   0, GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY);
-  rv=AH_HBCI_CheckMedium(_hbci, dev,
+  rv=AH_HBCI_CheckMedium(_hbci, GWEN_CryptToken_Device_Card,
                          mtypeName, msubTypeName, mediumName);
   GWEN_WaitCallback_Leave();
   if (rv) {
@@ -170,7 +178,7 @@ bool UserWizard::_handleModeImportCard() {
   const char *s;
 
   /* create medium */
-  if (!_checkAndCreateMedium(&wInfo, GWEN_CryptToken_Device_Card))
+  if (!_checkAndCreateMedium(&wInfo))
     return false;
 
   m=wInfo.getMedium();
@@ -187,10 +195,14 @@ bool UserWizard::_handleModeImportCard() {
 
   s=AH_Medium_GetMediumTypeName(m);
   assert(s);
-  if (strcasecmp(s, "ddvcard")==0)
-    w=new WizardDdvImport(_app, &wInfo, 0, "WizardDdvImport", TRUE);
-  else
-    w=new WizardRdhImport(_app, &wInfo, 0, "WizardRdhImport", TRUE);
+  if (strcasecmp(s, "ddvcard")==0) {
+    wInfo.setCryptMode(AH_CryptMode_Ddv);
+    w=new WizardDdvImport(_app, &wInfo, _parent, "WizardDdvImport", TRUE);
+  }
+  else {
+    wInfo.setCryptMode(AH_CryptMode_Rdh);
+    w=new WizardRdhImport(_app, &wInfo, _parent, "WizardRdhImport", TRUE);
+  }
 
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
@@ -207,6 +219,9 @@ bool UserWizard::_handleModeImportCard() {
     AH_HBCI_AddMedium(_hbci, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+    AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
+    wInfo.setUser(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_USER_CREATED);
   }
   else {
     DBG_NOTICE(0, "Rejected");
@@ -222,30 +237,19 @@ bool UserWizard::_handleModeImportCard() {
 bool UserWizard::_handleModeImportFile() {
   Wizard *w;
   WizardInfo wInfo(_hbci);
-  AH_MEDIUM *m;
   int rv;
 
-  /* create medium */
-  if (!_checkAndCreateMedium(&wInfo, GWEN_CryptToken_Device_File))
-    return false;
-
-  m=wInfo.getMedium();
-  assert(m);
-
-  /* mount medium */
-  rv=AH_Medium_Mount(m);
-  if (rv) {
-    DBG_ERROR(0, "Could not mount medium (%d)", rv);
-    return false;
-  }
-  wInfo.setMedium(m);
-  wInfo.addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
-
-  w=new WizardRdhImport(_app, &wInfo, 0, "WizardRdhImport", TRUE);
+  wInfo.setCryptMode(AH_CryptMode_Rdh);
+  w=new WizardRdhImport(_app, &wInfo, _parent, "WizardRdhImport", TRUE);
 
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
+    AH_MEDIUM *m;
+
     DBG_NOTICE(0, "Accepted");
+    m=wInfo.getMedium();
+    assert(m);
+
     /* unmount medium */
     rv=AH_Medium_Unmount(m, 1);
     if (rv) {
@@ -258,6 +262,52 @@ bool UserWizard::_handleModeImportFile() {
     AH_HBCI_AddMedium(_hbci, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+    AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
+    wInfo.setUser(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_USER_CREATED);
+  }
+  else {
+    DBG_NOTICE(0, "Rejected");
+    wInfo.releaseData();
+    return false;
+  }
+
+  return true;
+}
+
+
+
+bool UserWizard::_handleModeCreateFile() {
+  Wizard *w;
+  WizardInfo wInfo(_hbci);
+  int rv;
+
+  wInfo.setCryptMode(AH_CryptMode_Rdh);
+  w=new WizardRdhNew(_app, &wInfo, _parent, "WizardRdhImport", TRUE);
+
+  /* setup user */
+  if (w->exec()==QDialog::Accepted) {
+    AH_MEDIUM *m;
+
+    DBG_NOTICE(0, "Accepted");
+    m=wInfo.getMedium();
+    assert(m);
+
+    /* unmount medium */
+    rv=AH_Medium_Unmount(m, 1);
+    if (rv) {
+      DBG_ERROR(0, "Could not unmount medium (%d)", rv);
+      wInfo.releaseData();
+      return false;
+    }
+
+    DBG_INFO(0, "Adding medium");
+    AH_HBCI_AddMedium(_hbci, m);
+    wInfo.setMedium(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
+    AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
+    wInfo.setUser(0);
+    wInfo.subFlags(WIZARDINFO_FLAGS_USER_CREATED);
   }
   else {
     DBG_NOTICE(0, "Rejected");
@@ -286,13 +336,52 @@ bool UserWizard::exec() {
   case SelectMode::ModeImportFile:
     return _handleModeImportFile();
   case SelectMode::ModeCreateFile:
-    QMessageBox::information(_parent, "Not yet implemented", "Sorry, this mode is not yet implemented", QMessageBox::Abort);
+    return _handleModeCreateFile();
     break;
   case SelectMode::ModePinTan:
     return _handleModePinTan();
   }
 
   return false;
+}
+
+
+
+bool UserWizard::finishUser(QBanking *qb,
+                            AH_HBCI *hbci,
+                            AB_USER *u,
+                            QWidget *parent) {
+  WizardRdhNew2 *w;
+  WizardInfo wInfo(hbci);
+  AH_MEDIUM *m;
+  int rv;
+
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  wInfo.setUser(u);
+  wInfo.setMedium(m);
+
+  /* setup user */
+  w=new WizardRdhNew2(qb, &wInfo, parent, "WizardRdhNew2", TRUE);
+  if (w->exec()==QDialog::Accepted) {
+    DBG_NOTICE(0, "Accepted");
+    /* unmount medium */
+    rv=AH_Medium_Unmount(m, 1);
+    if (rv) {
+      DBG_ERROR(0, "Could not unmount medium (%d)", rv);
+      wInfo.releaseData();
+      return false;
+    }
+  }
+  else {
+    DBG_NOTICE(0, "Rejected");
+    wInfo.releaseData();
+    return false;
+  }
+
+  return true;
+
 }
 
 

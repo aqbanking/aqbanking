@@ -69,7 +69,7 @@ public:
 
 private:
   string _baseDir;
-  unsigned int _country;
+  string _country;
   string _bankCode;
   list<string> _logFiles;
   list<string>::iterator _lfit;
@@ -81,7 +81,7 @@ private:
 
 public:
   LogAnalyzer(const string &baseDir,
-              unsigned int country,
+              const string &country,
               const string &bank);
   ~LogAnalyzer();
 

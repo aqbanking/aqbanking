@@ -20,19 +20,16 @@
 #include <string>
 
 
-#define WIZARDINFO_FLAGS_BANK_CREATED   0x00000001
-#define WIZARDINFO_FLAGS_USER_CREATED   0x00000002
-#define WIZARDINFO_FLAGS_CUST_CREATED   0x00000004
-#define WIZARDINFO_FLAGS_MEDIUM_CREATED 0x00000008
-#define WIZARDINFO_FLAGS_MEDIUM_ADDED   0x00000010
+#define WIZARDINFO_FLAGS_USER_CREATED         0x00000001
+#define WIZARDINFO_FLAGS_MEDIUM_CREATED       0x00000002
+#define WIZARDINFO_FLAGS_MEDIUM_ADDED         0x00000004
+#define WIZARDINFO_FLAGS_MEDIUM_FILE_CREATED  0x00000008
 
 
 class WizardInfo {
 private:
   AH_HBCI *_hbci;
-  AH_BANK *_bank;
-  AH_USER *_user;
-  AH_CUSTOMER *_customer;
+  AB_USER *_user;
   AH_MEDIUM *_medium;
 
   int _context;
@@ -43,6 +40,8 @@ private:
   std::string _userName;
   std::string _customerId;
   std::string _server;
+  std::string _mediumName;
+  AH_CRYPT_MODE _cryptMode;
   int _port;
 
   GWEN_TYPE_UINT32 _flags;
@@ -56,18 +55,14 @@ public:
   AH_MEDIUM *getMedium() const;
   void setMedium(AH_MEDIUM *m);
 
+  AH_CRYPT_MODE getCryptMode() const;
+  void setCryptMode(AH_CRYPT_MODE cm);
+
   int getContext() const;
   void setContext(int i);
 
-  AH_BANK *getBank() const;
-  void setBank(AH_BANK *b);
-
-  AH_USER *getUser() const;
-  void setUser(AH_USER *u);
-
-  AH_CUSTOMER *getCustomer() const;
-  void setCustomer(AH_CUSTOMER *cu);
-
+  AB_USER *getUser() const;
+  void setUser(AB_USER *u);
 
   int getCountry() const;
   void setCountry(int i);
@@ -89,6 +84,9 @@ public:
 
   int getPort() const;
   void setPort(int i);
+
+  const std::string &getMediumName() const;
+  void setMediumName(const std::string &s);
 
   GWEN_TYPE_UINT32 getFlags() const;
   void setFlags(GWEN_TYPE_UINT32 fl);

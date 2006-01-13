@@ -2,62 +2,43 @@ SUBDIRS=wizard
 
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(srcdir)/../widgets -I$(srcdir)/.. \
-  -Iwizard -I$(srcdir)/wizard \
+  -I$(srcdir)/../widgets -I$(srcdir)/.. -Iwizard \
   $(all_includes)
 
 
 UI_FILES= \
-  selectcontext.ui \
-  selectmode.ui \
-  hbcisettings.ui \
-  editaccount.ui \
-  edituser.ui \
-  editcustomer.ui \
-  versionpicker.ui
+ cfgtabpageuserhbci.ui \
+ cfgtabpageaccounthbci.ui \
+ selectmode.ui
 
 EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
 nodist_noinst_HEADERS=\
-  selectcontext.ui.h \
-  selectmode.ui.h \
-  hbcisettings.ui.h \
-  editaccount.ui.h \
-  edituser.ui.h \
-  editcustomer.ui.h \
-  versionpicker.ui.h
+ cfgtabpageuserhbci.ui.h \
+ cfgtabpageaccounthbci.ui.h \
+ selectmode.ui.h
 
 noinst_HEADERS=\
-  selectcontext.h \
-  selectmode.h \
-  hbcisettings.h \
-  editaccount.h \
-  edituser.h \
-  editcustomer.h \
-  versionpicker.h \
-  userwizard.h
+ cfgtabpageuserhbci.h \
+ cfgtabpageaccounthbci.h \
+ selectmode.h \
+ userwizard.h
 
 
 nodist_libdialogs_la_SOURCES=\
- selectcontext.ui.cpp selectcontext.ui.moc.cpp selectcontext.moc.cpp \
- selectmode.ui.cpp selectmode.ui.moc.cpp \
- hbcisettings.ui.cpp hbcisettings.ui.moc.cpp hbcisettings.moc.cpp \
- editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp \
- edituser.ui.cpp edituser.ui.moc.cpp edituser.moc.cpp \
- editcustomer.ui.cpp editcustomer.ui.moc.cpp editcustomer.moc.cpp \
- versionpicker.ui.cpp versionpicker.ui.moc.cpp versionpicker.moc.cpp
+ cfgtabpageuserhbci.ui.cpp cfgtabpageuserhbci.ui.moc.cpp cfgtabpageuserhbci.moc.cpp \
+ cfgtabpageaccounthbci.ui.cpp cfgtabpageaccounthbci.ui.moc.cpp cfgtabpageaccounthbci.moc.cpp \
+ selectmode.ui.cpp selectmode.ui.moc.cpp
+
 
 libdialogs_la_SOURCES=\
-  editaccount.cpp \
-  edituser.cpp \
-  editcustomer.cpp \
-  hbcisettings.cpp \
-  selectcontext.cpp \
-  selectmode.cpp \
-  versionpicker.cpp \
-  userwizard.cpp
+ cfgtabpageuserhbci.cpp \
+ cfgtabpageaccounthbci.cpp \
+ selectmode.cpp \
+ userwizard.cpp
+
 
 libdialogs_la_LIBADD=wizard/libwizard.la
 

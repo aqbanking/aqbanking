@@ -1,4 +1,4 @@
-SUBDIRS=libs qt3_wizard qt3_debug po
+SUBDIRS=libs qt3_debug
 
 qt4-port:
 	for d in $(SUBDIRS); do \

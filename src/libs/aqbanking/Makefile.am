@@ -1,8 +1,11 @@
-SUBDIRS=jobs types
+SUBDIRS=types jobs
 
 INCLUDES = -I$(top_builddir)/headers -I$(srcdir)/types -I$(srcdir)/jobs $(all_includes)
 
 lib_LTLIBRARIES=libaqbanking.la
+
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+
 
 # We define those here because within the configure script the variables 
 # $(datadir) et al are not available.

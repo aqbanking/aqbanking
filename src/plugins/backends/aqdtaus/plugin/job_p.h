@@ -13,7 +13,7 @@
 #ifndef AD_JOB_P_H
 #define AD_JOB_P_H
 
-#include <aqdtaus/job.h>
+#include "job_l.h"
 
 
 struct AD_JOB {

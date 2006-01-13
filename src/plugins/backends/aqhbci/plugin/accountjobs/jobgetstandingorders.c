@@ -42,12 +42,12 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETSTANDINGORDERS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetStandingOrders_new(AH_CUSTOMER *cu, AH_ACCOUNT *account) {
+AH_JOB *AH_Job_GetStandingOrders_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETSTANDINGORDERS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobGetStandingOrders", cu, account);
+  j=AH_AccountJob_new("JobGetStandingOrders", u, account);
   if (!j)
     return 0;
 

@@ -21,6 +21,8 @@
 #include "a_finished.h"
 #include "a_getaccounts.h"
 
+#include <qtimer.h>
+
 
 
 WizardPinTanNew::WizardPinTanNew(QBanking *qb,
@@ -49,6 +51,8 @@ WizardPinTanNew::WizardPinTanNew(QBanking *qb,
 
   wa=new ActionFinished(this);
   addAction(wa);
+
+  QTimer::singleShot(0, this, SLOT(adjustSize()));
 }
 
 
@@ -64,7 +68,7 @@ int WizardPinTanNew::exec() {
 
   rv=Wizard::exec();
   if (rv==QDialog::Accepted) {
-    AH_USER *u;
+    AB_USER *u;
 
     u=getWizardInfo()->getUser();
     assert(u);

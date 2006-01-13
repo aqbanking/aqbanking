@@ -17,14 +17,22 @@
 #include "waction.h"
 #include "winfo.h"
 
+class ActionWidget;
 
 
 class ActionGetSysId: public WizardAction {
+  Q_OBJECT
+private:
+  ActionWidget *_realDialog;
 public:
   ActionGetSysId(Wizard *w);
   virtual ~ActionGetSysId();
 
+  virtual void enter();
   virtual bool apply();
+
+public slots:
+  void slotButtonClicked();
 
 };
 

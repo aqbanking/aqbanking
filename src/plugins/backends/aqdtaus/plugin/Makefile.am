@@ -1,5 +1,7 @@
 INCLUDES=-I$(top_builddir)/headers @all_includes@
 
+AM_CFLAGS=-DBUILDING_AQDTAUS @visibility_cflags@
+
 localedir=$(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\"
 
@@ -19,9 +21,12 @@ endif
 lib_LTLIBRARIES=libaqdtaus.la 
 
 noinst_HEADERS=\
+ account_l.h \
  account_p.h \
  aqdtaus_l.h \
+ job_l.h \
  job_p.h \
+ provider_l.h \
  provider_p.h
 
 

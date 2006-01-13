@@ -1,19 +1,21 @@
 INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. -I../widgets -I.. @all_includes@
 
-UI_FILES= editaccount.ui
+UI_FILES= cfgtabpageaccountdtaus.ui
 
 EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
-nodist_noinst_HEADERS=editaccount.ui.h
+nodist_noinst_HEADERS=cfgtabpageaccountdtaus.ui.h
 
-noinst_HEADERS = editaccount.h
+noinst_HEADERS = cfgtabpageaccountdtaus.h
 
 nodist_libdialogs_la_SOURCES=\
- editaccount.ui.cpp editaccount.ui.moc.cpp editaccount.moc.cpp
+ cfgtabpageaccountdtaus.ui.cpp \
+ cfgtabpageaccountdtaus.ui.moc.cpp \
+ cfgtabpageaccountdtaus.moc.cpp
 
-libdialogs_la_SOURCES=editaccount.cpp
+libdialogs_la_SOURCES=cfgtabpageaccountdtaus.cpp
 
 
 BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES)

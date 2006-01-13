@@ -99,7 +99,7 @@
         class="BankInfo"
         access="public"
         filename="bankinfo"
-        list="lib"
+        list="public"
         list2="public" >
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>

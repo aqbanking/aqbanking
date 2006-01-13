@@ -25,6 +25,7 @@ struct AH_MEDIUM {
   GWEN_INHERIT_ELEMENT(AH_MEDIUM);
 
   AH_HBCI *hbci;
+  GWEN_TYPE_UINT32 uniqueId;
   char *mediumName;
   char *typeName;
   char *subTypeName;
@@ -43,14 +44,16 @@ struct AH_MEDIUM {
 };
 
 
-int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct);
-int AH_Medium__MountCt(AH_MEDIUM *m);
-int AH_Medium__ReadKeySpec(AH_MEDIUM *m,
-                           GWEN_TYPE_UINT32 kid,
-                           GWEN_KEYSPEC **ks);
-int AH_Medium__ReadKeySpecs(AH_MEDIUM *m);
+static int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m,
+                                            GWEN_CRYPTTOKEN *ct);
+static int AH_Medium__MountCt(AH_MEDIUM *m);
+static int AH_Medium__ReadKeySpec(AH_MEDIUM *m,
+                                  GWEN_TYPE_UINT32 kid,
+                                  GWEN_KEYSPEC **ks);
+static int AH_Medium__ReadKeySpecs(AH_MEDIUM *m);
 
-int AH_Medium__ResetKey(AH_MEDIUM *m, int kid);
+static int AH_Medium__SetKeyStatus(AH_MEDIUM *m, int kid,
+                                   GWEN_TYPE_UINT32 kstatus);
 
 
 #endif /* AH_MEDIUM_P_H */

@@ -37,8 +37,8 @@ int iniLetter(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
-  AH_CUSTOMER_LIST2 *cl;
-  AH_CUSTOMER *cu=0;
+  AB_USER_LIST2 *ul;
+  AB_USER *u=0;
   int rv;
   const char *bankId;
   const char *userId;
@@ -129,32 +129,31 @@ int iniLetter(AB_BANKING *ab,
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
   bankKey=GWEN_DB_VariableExists(db, "bankKey");
 
-  cl=AH_HBCI_GetCustomers(hbci, 280, bankId, userId, customerId);
-  if (cl) {
-    if (AH_Customer_List2_GetSize(cl)!=1) {
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
+                          "de", bankId, userId, customerId);
+  if (ul) {
+    if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
       AB_Banking_Fini(ab);
       return 3;
     }
     else {
-      AH_CUSTOMER_LIST2_ITERATOR *cit;
+      AB_USER_LIST2_ITERATOR *cit;
 
-      cit=AH_Customer_List2_First(cl);
+      cit=AB_User_List2_First(ul);
       assert(cit);
-      cu=AH_Customer_List2Iterator_Data(cit);
-      AH_Customer_List2Iterator_free(cit);
+      u=AB_User_List2Iterator_Data(cit);
+      AB_User_List2Iterator_free(cit);
     }
-    AH_Customer_List2_free(cl);
+    AB_User_List2_free(ul);
   }
-  if (!cu) {
+  if (!u) {
     DBG_ERROR(0, "No matching customer");
     AB_Banking_Fini(ab);
     return 3;
   }
   else {
-    AH_USER *u;
     AH_MEDIUM *m;
-    AH_BANK *b;
     GWEN_CRYPTKEY *key;
     GWEN_DB_NODE *dbKey;
     const void *p;
@@ -167,12 +166,8 @@ int iniLetter(AB_BANKING *ab,
     char numbuf[32];
     char hashbuffer[21];
 
-    u=AH_Customer_GetUser(cu);
-    assert(u);
     m=AH_User_GetMedium(u);
     assert(m);
-    b=AH_User_GetBank(u);
-    assert(b);
 
     rv=AH_Medium_Mount(m);
     if (rv) {
@@ -243,12 +238,12 @@ int iniLetter(AB_BANKING *ab,
     if (bankKey) {
       GWEN_Buffer_AppendString(lbuf,
                                I18N("Bank           : "));
-      GWEN_Buffer_AppendString(lbuf, AH_Bank_GetBankId(b));
+      GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
     }
     else {
       GWEN_Buffer_AppendString(lbuf,
                                I18N("User           : "));
-      GWEN_Buffer_AppendString(lbuf, AH_User_GetUserId(u));
+      GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
     }
 
     GWEN_Buffer_AppendString(lbuf, "\n");

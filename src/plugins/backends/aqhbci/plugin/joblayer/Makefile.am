@@ -1,3 +1,6 @@
+
+AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/..
 

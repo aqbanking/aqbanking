@@ -42,13 +42,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetTransactions_new(AH_CUSTOMER *cu,
-				   AH_ACCOUNT *account) {
+AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
+                                   AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobGetTransactions", cu, account);
+  j=AH_AccountJob_new("JobGetTransactions", u, account);
   if (!j)
     return 0;
 
@@ -76,6 +76,7 @@ void AH_Job_GetTransactions_FreeData(void *bp, void *p){
   aj=(AH_JOB_GETTRANSACTIONS*)p;
   AB_Transaction_List2_free(aj->bookedTransactions);
   AB_Transaction_List2_free(aj->notedTransactions);
+  AB_AccountStatus_List2_free(aj->notedBalances);
   GWEN_FREE_OBJECT(aj);
 }
 
@@ -85,7 +86,8 @@ void AH_Job_GetTransactions_FreeData(void *bp, void *p){
 int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              const char *docType,
 					     GWEN_BUFFER *buf,
-					     AB_TRANSACTION_LIST2 *tl){
+                                             AB_TRANSACTION_LIST2 *tl,
+                                             AB_ACCOUNT_STATUS_LIST2 *asl){
   GWEN_BUFFEREDIO *bio;
   GWEN_DBIO *dbio;
   GWEN_ERRORCODE err;
@@ -93,15 +95,15 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbDay;
   GWEN_DB_NODE *dbParams;
-  AH_ACCOUNT *a;
-  AH_BANK *b;
+  AB_ACCOUNT *a;
+  AB_USER *u;
   GWEN_TYPE_UINT64 cnt=0;
   GWEN_TYPE_UINT64 done = 0;
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  b=AH_Account_GetBank(a);
-  assert(b);
+  u=AH_Job_GetUser(j);
+  assert(u);
 
   dbio=GWEN_DBIO_GetPlugin("swift");
   if (!dbio) {
@@ -175,9 +177,10 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
       }
       else {
         if (AB_Transaction_GetLocalBankCode(t)==0)
-          AB_Transaction_SetLocalBankCode(t, AH_Bank_GetBankId(b));
+          AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         if (AB_Transaction_GetLocalAccountNumber(t)==0)
-          AB_Transaction_SetLocalAccountNumber(t, AH_Account_GetAccountId(a));
+          AB_Transaction_SetLocalAccountNumber
+            (t, AB_Account_GetAccountNumber(a));
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
         AB_Transaction_List2_PushBack(tl, t);
       }
@@ -189,6 +192,42 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
       GWEN_WaitCallback_SetProgressPos(done);
       dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
     } /* while */
+
+    /* read all endsaldos */
+    if (asl) {
+      dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
+      while (dbT) {
+        GWEN_DB_NODE *dbX;
+        GWEN_TIME *ti=0;
+  
+        dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+        if (dbX)
+          ti=GWEN_Time_fromDb(dbX);
+        dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+        if (dbX) {
+          AB_VALUE *v;
+  
+          v=AB_Value_fromDb(dbX);
+          if (v) {
+            AB_BALANCE *bal;
+            AB_ACCOUNT_STATUS *as;
+  
+            bal=AB_Balance_new(v, ti);
+            AB_Value_free(v);
+            as=AB_AccountStatus_new();
+            if (ti)
+              AB_AccountStatus_SetTime(as, ti);
+            AB_AccountStatus_SetNotedBalance(as, bal);
+            AB_Balance_free(bal);
+            AB_AccountStatus_List2_PushBack(asl, as);
+          }
+        }
+        GWEN_Time_free(ti);
+  
+        dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
+      } /* while */
+    }
+
     dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
   } /* while */
 
@@ -269,6 +308,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j){
   /* read booked transactions */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {
     AB_TRANSACTION_LIST2 *tl;
+    AB_ACCOUNT_STATUS_LIST2 *asl;
 
     if (getenv("AQHBCI_LOGBOOKED")) {
       FILE *f;
@@ -286,7 +326,10 @@ int AH_Job_GetTransactions_Process(AH_JOB *j){
     }
 
     tl=AB_Transaction_List2_new();
-    if (AH_Job_GetTransactions__ReadTransactions(j, "mt940", tbooked, tl)) {
+    asl=AB_AccountStatus_List2_new();
+    if (AH_Job_GetTransactions__ReadTransactions(j, "mt940", tbooked,
+                                                 tl, asl)) {
+      AB_AccountStatus_List2_free(asl);
       AB_Transaction_List2_free(tl);
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
@@ -297,14 +340,21 @@ int AH_Job_GetTransactions_Process(AH_JOB *j){
     if (aj->bookedTransactions)
       AB_Transaction_List2_free(aj->bookedTransactions);
     aj->bookedTransactions=tl;
+    if (aj->notedBalances)
+      AB_AccountStatus_List2_free(aj->notedBalances);
+    aj->notedBalances=asl;
   }
 
   /* read noted transactions */
   if (GWEN_Buffer_GetUsedBytes(tnoted)) {
     AB_TRANSACTION_LIST2 *tl;
+    AB_ACCOUNT_STATUS_LIST2 *asl;
 
     tl=AB_Transaction_List2_new();
-    if (AH_Job_GetTransactions__ReadTransactions(j, "mt942", tnoted, tl)) {
+    asl=AB_AccountStatus_List2_new();
+    if (AH_Job_GetTransactions__ReadTransactions(j, "mt942", tnoted,
+                                                 tl, asl)) {
+      AB_AccountStatus_List2_free(asl);
       AB_Transaction_List2_free(tl);
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
@@ -315,6 +365,9 @@ int AH_Job_GetTransactions_Process(AH_JOB *j){
     if (aj->notedTransactions)
       AB_Transaction_List2_free(aj->notedTransactions);
     aj->notedTransactions=tl;
+    if (aj->notedBalances)
+      AB_AccountStatus_List2_free(aj->notedBalances);
+    aj->notedBalances=asl;
   }
 
   GWEN_Buffer_free(tbooked);
@@ -395,6 +448,8 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
     if (aj->bookedTransactions) {
       AB_JobGetTransactions_SetTransactions(bj, aj->bookedTransactions);
       aj->bookedTransactions=0;
+      AB_JobGetTransactions_SetAccountStatusList(bj, aj->notedBalances);
+      aj->notedBalances=0;
     }
     return 0;
 

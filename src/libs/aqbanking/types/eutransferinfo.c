@@ -13,10 +13,15 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <aqbanking/value.h>
+#include <aqbanking/transactionlimits.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_EUTRANSFER_INFO, AB_EuTransferInfo)
 GWEN_LIST2_FUNCTIONS(AB_EUTRANSFER_INFO, AB_EuTransferInfo)
+
+
 
 
 AB_EUTRANSFER_INFO *AB_EuTransferInfo_new() {
@@ -85,33 +90,55 @@ int AB_EuTransferInfo_toDb(const AB_EUTRANSFER_INFO *st, GWEN_DB_NODE *db) {
 }
 
 
-AB_EUTRANSFER_INFO *AB_EuTransferInfo_fromDb(GWEN_DB_NODE *db) {
-AB_EUTRANSFER_INFO *st;
-
+int AB_EuTransferInfo_ReadDb(AB_EUTRANSFER_INFO *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_EuTransferInfo_new();
   AB_EuTransferInfo_SetCountryCode(st, GWEN_DB_GetCharValue(db, "countryCode", 0, 0));
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "fieldLimits");
-    if (dbT) st->fieldLimits=AB_TransactionLimits_fromDb(dbT);
+    if (dbT) {
+  if (st->fieldLimits)
+    AB_TransactionLimits_free(st->fieldLimits);
+  st->fieldLimits=AB_TransactionLimits_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "limitLocalValue");
-    if (dbT) st->limitLocalValue=AB_Value_fromDb(dbT);
+    if (dbT) {
+  if (st->limitLocalValue)
+    AB_Value_free(st->limitLocalValue);
+  st->limitLocalValue=AB_Value_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "limitForeignValue");
-    if (dbT) st->limitForeignValue=AB_Value_fromDb(dbT);
+    if (dbT) {
+  if (st->limitForeignValue)
+    AB_Value_free(st->limitForeignValue);
+  st->limitForeignValue=AB_Value_fromDb(dbT);
+}
   }
+  return 0;
+}
+
+
+AB_EUTRANSFER_INFO *AB_EuTransferInfo_fromDb(GWEN_DB_NODE *db) {
+  AB_EUTRANSFER_INFO *st;
+
+  assert(db);
+  st=AB_EuTransferInfo_new();
+  AB_EuTransferInfo_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_EuTransferInfo_GetCountryCode(const AB_EUTRANSFER_INFO *st) {
@@ -224,8 +251,6 @@ void AB_EuTransferInfo_List2_freeAll(AB_EUTRANSFER_INFO_LIST2 *stl) {
 }
 
 
-
-
 AB_EUTRANSFER_INFO_LIST *AB_EuTransferInfo_List_dup(const AB_EUTRANSFER_INFO_LIST *stl) {
   if (stl) {
     AB_EUTRANSFER_INFO_LIST *nl;
@@ -246,6 +271,7 @@ AB_EUTRANSFER_INFO_LIST *AB_EuTransferInfo_List_dup(const AB_EUTRANSFER_INFO_LIS
   else
     return 0;
 }
+
 
 
 

@@ -25,11 +25,11 @@ extern "C" {
 #endif
 
 
-AH_JOB *AH_Job_MultiTransfer_new(AH_CUSTOMER *cu,
-                                 AH_ACCOUNT *account);
+AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
+                                 AB_ACCOUNT *account);
 
-AH_JOB *AH_Job_MultiDebitNote_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account);
+AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *cu,
+                                  AB_ACCOUNT *account);
 
 
 int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);

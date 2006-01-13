@@ -45,7 +45,7 @@ struct AH_OUTBOX__CBOX {
   GWEN_LIST_ELEMENT(AH_OUTBOX__CBOX);
   AH_OUTBOX *outbox;
   AH_HBCI *hbci;
-  AH_CUSTOMER *customer;
+  AB_USER *user;
   AH_JOBQUEUE_LIST *todoQueues;
   AH_JOBQUEUE_LIST *finishedQueues;
 
@@ -57,44 +57,29 @@ struct AH_OUTBOX__CBOX {
 };
 
 
-AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
-                                     AH_CUSTOMER *cu,
-                                     AH_OUTBOX *ob);
-void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox);
-void AH_Outbox__CBox_Attach(AH_OUTBOX__CBOX *cbox);
+static AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
+                                            AB_USER *u,
+                                            AH_OUTBOX *ob);
+static void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox);
 
-void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox);
+static void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox);
 
-void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j);
-void AH_Outbox__CBox_AddPendingJob(AH_OUTBOX__CBOX *cbox, AB_JOB *bj);
+static void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j);
+static void AH_Outbox__CBox_AddPendingJob(AH_OUTBOX__CBOX *cbox, AB_JOB *bj);
 
-AB_JOB_LIST2 *AH_Outbox__CBox_GetPendingJobs(const AH_OUTBOX__CBOX *cbox);
+static AB_USER*
+  AH_Outbox__CBox_GetUser(const AH_OUTBOX__CBOX *cbox);
 
-AH_CUSTOMER*
-  AH_Outbox__CBox_GetCustomer(const AH_OUTBOX__CBOX *cbox);
-
-AH_JOB_LIST*
+static AH_JOB_LIST*
   AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox);
 
-int AH_Outbox__CBox__Dispatch(AH_OUTBOX__CBOX *cbox,
-                                   AH_MSG *msg);
 
-/**
- * Does not take over ownership of msg
- */
-int AH_Outbox__CBox_Dispatch(AH_OUTBOX__CBOX *cbox,
-                                  AH_MSG *msg);
-
-GWEN_TIME *AH_Outbox__CBox_GetEarliestPendingDate(AH_OUTBOX__CBOX *cbox);
-GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox);
+static GWEN_TIME*
+  AH_Outbox__CBox_GetEarliestPendingDate(AH_OUTBOX__CBOX *cbox);
+static GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox);
 
 
-int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
-
-AH_OUTBOX_SENDRESULT
-  AH_Outbox__CBox_SendNextQueue(AH_OUTBOX__CBOX *cbox,
-                                     int timeout);
-
+static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
 
 
 
@@ -102,7 +87,7 @@ AH_OUTBOX_SENDRESULT
 struct AH_OUTBOX {
   GWEN_INHERIT_ELEMENT(AH_OUTBOX);
   AH_HBCI *hbci;
-  AH_OUTBOX__CBOX_LIST *customerBoxes;
+  AH_OUTBOX__CBOX_LIST *userBoxes;
   AH_JOB_LIST *finishedJobs;
 
   GWEN_TYPE_UINT32 usage;
@@ -110,85 +95,77 @@ struct AH_OUTBOX {
 
 
 
-AH_OUTBOX__CBOX *AH_OutBox__FindCBox(const AH_OUTBOX *ob,
-                                               const AH_CUSTOMER *cu);
-int AH_Outbox_Prepare(AH_OUTBOX *ob);
+static int AH_Outbox_Prepare(AH_OUTBOX *ob);
 
-void AH_Outbox__FinishCBox(AH_OUTBOX *ob,
-                                AH_OUTBOX__CBOX *cbox);
-void AH_Outbox__FinishOutBox(AH_OUTBOX *ob);
+static void AH_Outbox__FinishCBox(AH_OUTBOX *ob,
+                                  AH_OUTBOX__CBOX *cbox);
 
-int AH_Outbox__Execute(AH_OUTBOX *ob);
+static int AH_Outbox__Execute(AH_OUTBOX *ob);
 
 
-int AH_Outbox_StartSending(AH_OUTBOX *ob);
-AH_OUTBOX_SENDRESULT AH_Outbox_Send(AH_OUTBOX *ob, int timeout);
-int AH_Outbox_Receive(AH_OUTBOX *ob, int timeout);
+static int AH_Outbox_StartSending(AH_OUTBOX *ob);
 
-unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl);
-
-AH_JOB_LIST *AH_Outbox_TakeFinishedJobs(AH_OUTBOX *ob);
+static unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl);
 
 
-
-int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq);
-int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox, int timeout,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq);
-int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
-                                 AH_DIALOG *dlg,
-                                 AH_JOBQUEUE *jq,
-                                 int timeout);
-void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
-                                      AH_JOBQUEUE *jq,
-                                      const char *logStr);
-void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
-                                          AH_JOBQUEUE_LIST *jql,
-                                          const char *logStr);
-
-int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
-                                     int timeout,
+static int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
                                      AH_DIALOG *dlg,
                                      AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox, int timeout,
+                                     AH_DIALOG *dlg,
+                                     AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
+                                        AH_DIALOG *dlg,
+                                        AH_JOBQUEUE *jq,
+                                        int timeout);
+static void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
+                                             AH_JOBQUEUE *jq,
+                                             const char *logStr);
+static void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
+                                                 AH_JOBQUEUE_LIST *jql,
+                                                 const char *logStr);
 
-int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
-                               AH_DIALOG *dlg,
-                               GWEN_TYPE_UINT32 jqFlags);
-int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, int timeout,
-                                AH_DIALOG *dlg,
-                                GWEN_TYPE_UINT32 jqFlags);
+static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
+                                            int timeout,
+                                            AH_DIALOG *dlg,
+                                            AH_JOBQUEUE *jq);
 
-int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
-                                           int timeout,
-                                           AH_JOBQUEUE_LIST *jql);
+static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
+                                      AH_DIALOG *dlg,
+                                      GWEN_TYPE_UINT32 jqFlags);
+static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, int timeout,
+                                       AH_DIALOG *dlg,
+                                       GWEN_TYPE_UINT32 jqFlags);
 
-int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
-				       int timeout,
-                                       AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
+                                                  int timeout,
+                                                  AH_JOBQUEUE_LIST *jql);
 
-void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
-                                           AH_JOBQUEUE_LIST *jqlWanted,
-                                           AH_JOBQUEUE_LIST *jqlRest,
-                                           GWEN_TYPE_UINT32 jqflags,
-                                           GWEN_TYPE_UINT32 jqmask);
-int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
-                                        int timeout,
-                                        GWEN_TYPE_UINT32 jqflags,
-                                        GWEN_TYPE_UINT32 jqmask);
+static int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
+                                              int timeout,
+                                              AH_JOBQUEUE *jq);
 
-int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
-                                            int timeout);
+static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
+                                                  AH_JOBQUEUE_LIST *jqlWanted,
+                                                  AH_JOBQUEUE_LIST *jqlRest,
+                                                  GWEN_TYPE_UINT32 jqflags,
+                                                  GWEN_TYPE_UINT32 jqmask);
+static int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
+                                               int timeout,
+                                               GWEN_TYPE_UINT32 jqflags,
+                                               GWEN_TYPE_UINT32 jqmask);
 
-int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout);
+static int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
+                                                   int timeout);
 
-int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout);
+static int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout);
 
-AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
-                                                 AH_CUSTOMER *cu,
-                                                 AH_ACCOUNT *a,
-                                                 int isTransfer);
+static int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout);
+
+static AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
+                                                        AB_USER *u,
+                                                        AB_ACCOUNT *a,
+                                                        int isTransfer);
 
 #endif /* AH_OUTBOX_P_H */
 

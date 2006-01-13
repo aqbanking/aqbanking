@@ -32,7 +32,7 @@ struct AH_JOB {
 
   char *usedTan;
 
-  AH_CUSTOMER *customer;
+  AB_USER *user;
 
   unsigned int msgNum;
   char *dialogId;
@@ -72,8 +72,8 @@ struct AH_JOB {
 };
 
 
-void AH_Job_SampleResults(AH_JOB *j);
-AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData);
+static void AH_Job_SampleResults(AH_JOB *j);
+static AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData);
 
 
 #endif /* AH_JOB_P_H */

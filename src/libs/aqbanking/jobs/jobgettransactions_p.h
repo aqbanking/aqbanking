@@ -35,10 +35,10 @@ struct AB_JOB_GETTRANSACTIONS {
 
   /* responses */
   AB_TRANSACTION_LIST2 *transactions;
-
+  AB_ACCOUNT_STATUS_LIST2 *accountStatusList;
 };
 
-void AB_JobGetTransactions_FreeData(void *bp, void *p);
+static void AB_JobGetTransactions_FreeData(void *bp, void *p);
 
 
 

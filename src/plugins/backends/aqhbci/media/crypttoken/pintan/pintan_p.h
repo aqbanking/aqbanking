@@ -18,11 +18,6 @@
 #include <gwenhywfar/crypttoken.h>
 
 
-GWEN_PLUGIN *AH_CryptTokenPinTan_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
-                                            const char *modName,
-                                            const char *fileName);
-
-
 typedef struct AH_CT_PINTAN AH_CT_PINTAN;
 
 struct AH_CT_PINTAN {
@@ -30,42 +25,45 @@ struct AH_CT_PINTAN {
   unsigned int localSignSeq;
 };
 
-GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_new(GWEN_PLUGIN_MANAGER *pm,
+static GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_new(GWEN_PLUGIN_MANAGER *pm,
+                                                const char *name);
+
+static void AH_CryptTokenPinTan_FreeData(void *bp, void *p);
+
+
+static int AH_CryptTokenPinTan_Open(GWEN_CRYPTTOKEN *ct, int manage);
+static int AH_CryptTokenPinTan_Create(GWEN_CRYPTTOKEN *ct);
+static int AH_CryptTokenPinTan_Close(GWEN_CRYPTTOKEN *ct);
+
+
+static int AH_CryptTokenPinTan_GetSignSeq(GWEN_CRYPTTOKEN *ct,
+                                          GWEN_TYPE_UINT32 kid,
+                                          GWEN_TYPE_UINT32 *signSeq);
+
+static int AH_CryptTokenPinTan_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
+                                           GWEN_TYPE_UINT32 kid,
+                                           GWEN_KEYSPEC **ks);
+
+static int AH_CryptTokenPinTan_FillUserList(GWEN_CRYPTTOKEN *ct,
+                                            GWEN_CRYPTTOKEN_USER_LIST *ul);
+
+
+
+
+static GWEN_CRYPTTOKEN*
+  AH_CryptTokenPinTan_Plugin_CreateToken(GWEN_PLUGIN *pl,
+                                         const char *subTypeName,
                                          const char *name);
 
-void AH_CryptTokenPinTan_FreeData(void *bp, void *p);
+static GWEN_PLUGIN*
+  AH_CryptTokenPinTan_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
+                                 const char *modName,
+                                 const char *fileName);
 
-
-int AH_CryptTokenPinTan_Open(GWEN_CRYPTTOKEN *ct, int manage);
-int AH_CryptTokenPinTan_Create(GWEN_CRYPTTOKEN *ct);
-int AH_CryptTokenPinTan_Close(GWEN_CRYPTTOKEN *ct);
-
-
-int AH_CryptTokenPinTan_GetSignSeq(GWEN_CRYPTTOKEN *ct,
-                                GWEN_TYPE_UINT32 kid,
-                                GWEN_TYPE_UINT32 *signSeq);
-
-int AH_CryptTokenPinTan_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
-                                 GWEN_TYPE_UINT32 kid,
-                                 GWEN_KEYSPEC **ks);
-
-int AH_CryptTokenPinTan_FillUserList(GWEN_CRYPTTOKEN *ct,
-                                     GWEN_CRYPTTOKEN_USER_LIST *ul);
-
-
-
-
-GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_Plugin_CreateToken(GWEN_PLUGIN *pl,
-                                                     const char *subTypeName,
-                                                     const char *name);
-
-GWEN_PLUGIN *AH_CryptTokenPinTan_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
-                                            const char *modName,
-                                            const char *fileName);
-
-GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_Plugin_CreateToken(GWEN_PLUGIN *pl,
-                                                        const char *subTypeName,
-                                                        const char *name);
+static GWEN_CRYPTTOKEN*
+  AH_CryptTokenPinTan_Plugin_CreateToken(GWEN_PLUGIN *pl,
+                                         const char *subTypeName,
+                                         const char *name);
 
 
 

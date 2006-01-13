@@ -105,7 +105,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
     int rv;
     GWEN_DB_NODE *dbData;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro->escName);
+    dbData=AB_Banking_GetProviderData(pro->banking, pro);
     assert(dbData);
 
     rv=pro->initFn(pro, dbData);
@@ -128,7 +128,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
   if (pro->finiFn) {
     GWEN_DB_NODE *dbData;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro->escName);
+    dbData=AB_Banking_GetProviderData(pro->banking, pro);
     assert(dbData);
 
     pro->isInit=0;
@@ -206,28 +206,26 @@ void AB_Provider_SetResetQueueFn(AB_PROVIDER *pro, AB_PROVIDER_RESETQUEUE_FN f){
 
 
 
-void AB_Provider_SetGetAccountListFn(AB_PROVIDER *pro,
-                                     AB_PROVIDER_GETACCOUNTLIST_FN f){
+void AB_Provider_SetExtendUserFn(AB_PROVIDER *pro,
+                                 AB_PROVIDER_EXTEND_USER_FN f){
   assert(pro);
-  pro->getAccountListFn=f;
+  pro->extendUserFn=f;
 }
 
 
 
-void AB_Provider_SetUpdateAccountFn(AB_PROVIDER *pro,
-                                    AB_PROVIDER_UPDATEACCOUNT_FN f){
+void AB_Provider_SetExtendAccountFn(AB_PROVIDER *pro,
+                                    AB_PROVIDER_EXTEND_ACCOUNT_FN f){
   assert(pro);
-  pro->updateAccountFn=f;
+  pro->extendAccountFn=f;
 }
 
 
 
-void AB_Provider_SetAddAccountFn(AB_PROVIDER *pro,
-                                 AB_PROVIDER_ADDACCOUNT_FN f){
+void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f) {
   assert(pro);
-  pro->addAccountFn=f;
+  pro->updateFn=f;
 }
-
 
 
 
@@ -291,47 +289,55 @@ int AB_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 
-AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro){
+int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                           AB_PROVIDER_EXTEND_MODE em) {
   assert(pro);
-  if (pro->isInit==0) {
+  assert(u);
+  if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return 0;
+    return AB_ERROR_NOT_INIT;
   }
-  if (pro->getAccountListFn) {
-    return pro->getAccountListFn(pro);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No getAccountList function set");
+
+  if (pro->extendUserFn)
+    return pro->extendUserFn(pro, u, em);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No extendUser function set");
   return 0;
 }
 
 
 
-int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
+int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                              AB_PROVIDER_EXTEND_MODE em) {
   assert(pro);
-  if (pro->isInit==0) {
+  assert(a);
+  if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return AB_ERROR_NOT_INIT;
   }
-  if (pro->updateAccountFn) {
-    return pro->updateAccountFn(pro,a );
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateAccount function set");
-  return AB_ERROR_NOFN;
+
+  if (pro->extendAccountFn)
+    return pro->extendAccountFn(pro, a, em);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No extendAccount function set");
+  return 0;
 }
 
 
 
-int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
+int AB_Provider_Update(AB_PROVIDER *pro,
+                       GWEN_TYPE_UINT32 lastVersion,
+                       GWEN_TYPE_UINT32 currentVersion) {
   assert(pro);
   if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Provider \"%s\" is not initialized",
+              AB_Provider_GetName(pro));
+    return AB_ERROR_NOT_INIT;
   }
-  if (pro->addAccountFn) {
-    return pro->addAccountFn(pro, a);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No addAccount function set");
-  return AB_ERROR_NOFN;
+
+  if (pro->updateFn)
+    return pro->updateFn(pro, lastVersion, currentVersion);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "No update function set");
+  return 0;
 }
 
 
@@ -368,8 +374,7 @@ GWEN_DB_NODE *AB_Provider_GetData(AB_PROVIDER *pro) {
   assert(pro->banking);
   assert(pro->escName);
 
-  return AB_Banking_GetProviderData(pro->banking,
-                                    pro->escName);
+  return AB_Banking_GetProviderData(pro->banking, pro);
 }
 
 

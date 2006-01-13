@@ -65,5 +65,15 @@ mp:
 	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS)
 	make sources
 
+mp2:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
+	automake --add-missing
+	autoconf
+	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus"
+	make sources
+
 mp-win:
 	CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local

@@ -21,8 +21,11 @@
 #include "aqhbci_l.h"
 #include "hbci_l.h"
 #include "mediumctx_l.h"
+#include "medium_l.h"
+#include "dialog_l.h"
 
 #include <aqhbci/msgengine.h>
+#include <aqhbci/provider.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
@@ -47,6 +50,7 @@
 
 
 GWEN_LIST_FUNCTIONS(AH_MSG, AH_Msg);
+
 
 
 
@@ -396,9 +400,17 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                                           hmsg->buffer,
                                           data);
   if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_Crop(hmsg->buffer, 0, usedBefore);
     GWEN_Buffer_SetPos(hmsg->buffer, usedBefore);
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer:");
+    GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "XML:");
+    GWEN_XMLNode_Dump(node, stderr, 2);
+    DBG_ERROR(0, "MsgEngine - mode: %s version:%d",
+              GWEN_MsgEngine_GetMode(e),
+              GWEN_MsgEngine_GetProtocolVersion(e));
     return 0;
   }
   hmsg->lastSegment=GWEN_MsgEngine_GetIntValue(e,
@@ -475,24 +487,10 @@ unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
   GWEN_MSGENGINE *e;
-#if 0
-  AH_CUSTOMER *cu;
-  AH_USER *u;
-  AH_BANK *b;
-  AH_MEDIUM *m;
-#endif
   assert(hmsg);
 
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
-#if 0
-  cu=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(cu);
-  u=AH_Customer_GetUser(cu);
-  assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
-#endif
   GWEN_MsgEngine_SetProtocolVersion(e, hmsg->hbciVersion);
 
   if (hmsg->firstSegment==0) {
@@ -891,8 +889,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   GWEN_MSGENGINE *e;
   int rv;
   GWEN_DB_NODE *n, *n2;
-  AH_CUSTOMER *cu;
-  AH_USER *u;
+  AB_USER *u;
   AH_MEDIUM *m;
   const char *mode;
   GWEN_TYPE_UINT32 expMsgNum;
@@ -901,9 +898,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   assert(e);
 
   /* set mode */
-  cu=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(cu);
-  u=AH_Customer_GetUser(cu);
+  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
   m=AH_User_GetMedium(u);
   assert(m);
@@ -1379,10 +1374,8 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        int rec,
                        int crypt) {
   GWEN_DB_NODE *db;
-  AH_CUSTOMER *cu;
-  AH_USER *u;
+  AB_USER *u;
   AH_MEDIUM *m;
-  AH_BANK *b;
   AH_HBCI *h;
   GWEN_BUFFEREDIO *bio;
   int fd;
@@ -1403,9 +1396,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   }
 
   db=GWEN_DB_Group_new("header");
-  cu=AH_Dialog_GetDialogOwner(msg->dialog);
-  u=AH_Customer_GetUser(cu);
-  b=AH_User_GetBank(u);
+  u=AH_Dialog_GetDialogOwner(msg->dialog);
   m=AH_User_GetMedium(u);
   assert(m);
   h=AH_Medium_GetHBCI(m);
@@ -1647,6 +1638,7 @@ const char *AH_Msg_GetPin(const AH_MSG *msg){
 
 
 
+#include "msgcrypt.inc"
 
 
 

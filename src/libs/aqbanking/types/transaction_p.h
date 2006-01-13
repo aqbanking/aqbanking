@@ -32,6 +32,7 @@ struct AB_TRANSACTION {
   GWEN_TIME *valutaDate;
   GWEN_TIME *date;
   AB_VALUE *value;
+  AB_VALUE *fees;
   AB_SPLIT_LIST *splits;
   int textKey;
   char *transactionKey;
@@ -57,6 +58,8 @@ struct AB_TRANSACTION {
   char *remoteAddrZipcode;
   char *remoteAddrCity;
   char *remotePhone;
+  int units;
+  AB_VALUE *unitPrice;
 };
 
 
@@ -106,6 +109,7 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 
 /*@}*/
+
 
 
 /** @name Info Which Is Not Supported by All Backends
@@ -158,6 +162,15 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 /*@{*/
 
 
+
+
+
+/*@}*/
+
+/** @name Additional Information for Investment Transfers
+ *
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
 
 
 

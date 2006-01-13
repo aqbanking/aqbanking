@@ -25,12 +25,22 @@
 #define AB_BANKING_REGKEY_IMPORTERDIR "importerdir"
 #define AB_BANKING_REGKEY_SYSCONFDIR  "sysconfdir"
 
+#define AB_BANKING_USERDATADIR ".banking"
+#define AB_WIZARD_FOLDER "wizard"
+
+/**
+ * Name of the default configuration file within the users home folder.
+ */
+#define AB_BANKING_CONFIGFILE "settings.conf"
+#define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
+
 #include "banking_l.h"
 #include "account_l.h"
 #include "job_l.h"
 #include "imexporter_l.h"
 #include "pin_l.h"
 #include "bankinfoplugin_l.h"
+#include "user_l.h"
 
 #include <gwenhywfar/plugin.h>
 #include <gwenhywfar/waitcallback.h>
@@ -41,10 +51,12 @@ struct AB_BANKING {
   char *appName;
   char *appEscName;
   int appExtensions;
+  GWEN_TYPE_UINT32 lastVersion;
 
   char *dataDir;
 
   AB_JOB_LIST *enqueuedJobs;
+  AB_USER_LIST *users;
   AB_ACCOUNT_LIST *accounts;
 
   GWEN_STRINGLIST *activeProviders;
@@ -99,7 +111,6 @@ static void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
 
 
 static AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
-static int AB_Banking__MergeInAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 
 static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab,
                                                 const char *name);
@@ -140,27 +151,39 @@ static int AB_Banking__UnlinkJobAs(AB_BANKING *ab,
                                    AB_JOB *j,
                                    const char *as);
 
+static AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
+                                                   const char *modname);
+static AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
+                                                       const char *modname);
+static AB_BANKINFO_PLUGIN*
+  AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab,
+                                 const char *modname);
+static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab,
+                                                         const char *country);
 
-static int AB_Banking__GetAppConfigFileName(AB_BANKING *ab, GWEN_BUFFER *buf);
+
+static int AB_Banking___LoadData(AB_BANKING *ab,
+                                 const char *prefix,
+                                 const char *name);
+static int AB_Banking__LoadData(AB_BANKING *ab,
+                                const char *prefix,
+                                const char *name);
+static int AB_Banking___SaveData(AB_BANKING *ab,
+                                 const char *prefix,
+                                 const char *name);
+static int AB_Banking__SaveData(AB_BANKING *ab,
+                                const char *prefix,
+                                const char *name);
 static int AB_Banking__LoadAppData(AB_BANKING *ab);
-static int AB_Banking__SaveAppData(AB_BANKING *ab);
+static int AB_Banking__LoadSharedData(AB_BANKING *ab, const char *name);
+static int AB_Banking__SaveExternalData(AB_BANKING *ab);
+
 
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                                               const char *path,
                                               GWEN_DB_NODE *db);
 
-
-static int AB_Banking__GetProviderConfigFileName(AB_BANKING *ab,
-                                                 const char *name,
-                                                 GWEN_BUFFER *buf);
-static int AB_Banking__LoadProviderData(AB_BANKING *ab,
-                                        const char *name);
-
-
-static int AB_Banking__SaveProviderData(AB_BANKING *ab,
-                                        const char *name,
-                                        int del);
 
 static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
@@ -187,24 +210,9 @@ static int AB_Banking__GetPin(AB_BANKING *ab,
 static int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
                                        const char *backend,
                                        GWEN_BUFFER *pbuf);
-static int AB_Banking__GetWizardPath(AB_BANKING *ab,
-                                     const char *backend,
-                                     GWEN_BUFFER *pbuf);
 
 static int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
 static void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
-
-#if 0 /* FIXME: This function is not used */
-/**
- * This function updates the list of accounts. You should call this function
- * especially after setting up a backend (or after activating/deactivating
- * a backend because those actions most likely change the number of
- * managed accounts).
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab pointer to the AB_BANKING object
- */
-static int AB_Banking_UpdateAccountList(AB_BANKING *ab);
-#endif
 
 static int AB_Banking__TransformIban(const char *iban, int len,
                                      char *newIban, int maxLen);
@@ -218,5 +226,10 @@ static int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
 
 static GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId);
 
+static int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name);
+
+static int AB_Banking__LoadData(AB_BANKING *ab,
+                                const char *prefix,
+                                const char *name);
 
 #endif /* AQBANKING_BANKING_P_H */

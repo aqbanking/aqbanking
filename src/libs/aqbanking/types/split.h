@@ -84,6 +84,15 @@ Set this property with @ref AB_Split_SetPurpose,
 get it with @ref AB_Split_GetPurpose
 </p>
 
+@anchor AB_SPLIT_Category
+<h3>Category</h3>
+<p>
+<p>This string list contains the categories this split belongs to. This element is not used by AqBanking itself but some im/exporter plugins may choose to use these.</p></p>
+<p>
+Set this property with @ref AB_Split_SetCategory, 
+get it with @ref AB_Split_GetCategory
+</p>
+
 */
 #ifdef __cplusplus
 extern "C" {
@@ -99,6 +108,7 @@ typedef struct AB_SPLIT AB_SPLIT;
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/stringlist.h>
@@ -111,32 +121,32 @@ extern "C" {
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_SPLIT, AQBANKING_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_SPLIT, AB_Split, AQBANKING_API)
-AB_SPLIT_LIST *AB_Split_List_dup(const AB_SPLIT_LIST *stl);
+AQBANKING_API AB_SPLIT_LIST *AB_Split_List_dup(const AB_SPLIT_LIST *stl);
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_SPLIT, AB_Split, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 AQBANKING_API void AB_Split_List2_freeAll(AB_SPLIT_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-AQBANKING_API AB_SPLIT_LIST2 *AB_Split_List2_dup(const AB_SPLIT_LIST2 *stl);
 
 /** Creates a new object.
 */
 AQBANKING_API AB_SPLIT *AB_Split_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_SPLIT *AB_Split_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_SPLIT *AB_Split_dup(const AB_SPLIT*st);
 /** Destroys the given object.
 */
 AQBANKING_API void AB_Split_free(AB_SPLIT *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQBANKING_API void AB_Split_Attach(AB_SPLIT *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQBANKING_API AB_SPLIT *AB_Split_dup(const AB_SPLIT*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQBANKING_API AB_SPLIT *AB_Split_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API int AB_Split_ReadDb(AB_SPLIT *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQBANKING_API int AB_Split_toDb(const AB_SPLIT*st, GWEN_DB_NODE *db);
@@ -239,6 +249,19 @@ AQBANKING_API void AB_Split_AddPurpose(AB_SPLIT *st, const char *d, int chk);
 AQBANKING_API void AB_Split_RemovePurpose(AB_SPLIT *st, const char *d);
 AQBANKING_API void AB_Split_ClearPurpose(AB_SPLIT *st);
 AQBANKING_API int AB_Split_HasPurpose(const AB_SPLIT *st, const char *d);
+
+/**
+* Returns the property @ref AB_SPLIT_Category
+*/
+AQBANKING_API const GWEN_STRINGLIST *AB_Split_GetCategory(const AB_SPLIT *el);
+/**
+* Set the property @ref AB_SPLIT_Category
+*/
+AQBANKING_API void AB_Split_SetCategory(AB_SPLIT *el, const GWEN_STRINGLIST *d);
+AQBANKING_API void AB_Split_AddCategory(AB_SPLIT *st, const char *d, int chk);
+AQBANKING_API void AB_Split_RemoveCategory(AB_SPLIT *st, const char *d);
+AQBANKING_API void AB_Split_ClearCategory(AB_SPLIT *st);
+AQBANKING_API int AB_Split_HasCategory(const AB_SPLIT *st, const char *d);
 
 
 #ifdef __cplusplus

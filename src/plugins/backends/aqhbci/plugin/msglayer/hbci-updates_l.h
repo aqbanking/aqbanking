@@ -15,9 +15,15 @@
 #define AH_HBCI_UPDATES_L_H
 
 #include "hbci_l.h"
+#include <gwenhywfar/types.h>
 
 
 int AH_HBCI_UpdateDb(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
+int AH_HBCI_Update2(AH_HBCI *hbci,
+                    GWEN_DB_NODE *db,
+                    GWEN_TYPE_UINT32 oldVersion,
+                    GWEN_TYPE_UINT32 currentVersion);
 
 
 

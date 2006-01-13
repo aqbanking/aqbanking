@@ -6,73 +6,94 @@ INCLUDES = \
 
 
 UI_FILES= \
-  editctuser.ui \
-  wizard.ui \
-  getkeys.ui \
-  mkkeys.ui \
-  iniletter.ui
+ editctuser.ui \
+ wizard.ui \
+ iniletter.ui \
+ actionwidget.ui \
+ selectfile.ui
+
 
 EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libwizard.la
 
 nodist_noinst_HEADERS=\
-  editctuser.ui.h \
-  wizard.ui.h \
-  getkeys.ui.h \
-  mkkeys.ui.h \
-  iniletter.ui.h
+ editctuser.ui.h \
+ wizard.ui.h \
+ iniletter.ui.h \
+ actionwidget.ui.h \
+ selectfile.ui.h
 
 noinst_HEADERS=\
-  editctuser.h \
-  getkeys.h \
-  mkkeys.h \
-  iniletter.h \
-  waction.h \
-  winfo.h \
-  wizard.h \
-  a_bank_iniletter.h \
-  a_edituser.h \
-  a_getcert.h \
-  a_getkeys.h \
-  a_mkkeys.h \
-  a_getsysid.h \
-  a_wait.h \
-  a_finished.h \
-  a_getaccounts.h \
-  w_pintan_new.h \
-  w_ddv_import.h \
-  w_rdh_import.h \
-  w_rdh_new.h
+ actionwidget.h \
+ editctuser.h \
+ iniletter.h \
+ waction.h \
+ winfo.h \
+ wizard.h \
+ a_selectfile.h \
+ a_createfile.h \
+ a_checkfile.h \
+ a_edituser.h \
+ a_getcert.h \
+ a_getkeys.h \
+ a_getsysid.h \
+ a_bankiniletter.h \
+ a_mkkeys.h \
+ a_sendkeys.h \
+ a_useriniletter.h \
+ a_wait.h \
+ a_finished.h \
+ a_getaccounts.h \
+ w_pintan_new.h \
+ w_ddv_import.h \
+ w_rdh_import.h \
+ w_rdh_new.h \
+ w_rdh_new2.h
 
 
 nodist_libwizard_la_SOURCES=\
  editctuser.ui.cpp editctuser.ui.moc.cpp editctuser.moc.cpp \
  wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp \
- getkeys.ui.cpp getkeys.ui.moc.cpp getkeys.moc.cpp \
- mkkeys.ui.cpp mkkeys.ui.moc.cpp mkkeys.moc.cpp \
- iniletter.ui.cpp iniletter.ui.moc.cpp iniletter.moc.cpp
+ actionwidget.ui.cpp actionwidget.ui.moc.cpp \
+ iniletter.ui.cpp iniletter.ui.moc.cpp iniletter.moc.cpp \
+ selectfile.ui.cpp selectfile.ui.moc.cpp \
+ a_selectfile.moc.cpp \
+ a_checkfile.moc.cpp \
+ a_getkeys.moc.cpp \
+ a_mkkeys.moc.cpp \
+ a_getaccounts.moc.cpp \
+ a_getsysid.moc.cpp \
+ a_bankiniletter.moc.cpp \
+ a_useriniletter.moc.cpp \
+ a_sendkeys.moc.cpp
 
 libwizard_la_SOURCES=\
-  waction.cpp \
-  winfo.cpp \
-  wizard.cpp \
-  editctuser.cpp \
-  getkeys.cpp \
-  mkkeys.cpp \
-  iniletter.cpp \
-  a_edituser.cpp \
-  a_getcert.cpp \
-  a_getkeys.cpp \
-  a_mkkeys.cpp \
-  a_getsysid.cpp \
-  a_wait.cpp \
-  a_finished.cpp \
-  a_getaccounts.cpp \
-  w_pintan_new.cpp \
-  w_ddv_import.cpp \
-  w_rdh_import.cpp \
-  w_rdh_new.cpp
+ waction.cpp \
+ winfo.cpp \
+ wizard.cpp \
+ actionwidget.cpp \
+ editctuser.cpp \
+ iniletter.cpp \
+ a_selectfile.cpp \
+ a_createfile.cpp \
+ a_checkfile.cpp \
+ a_edituser.cpp \
+ a_getcert.cpp \
+ a_getkeys.cpp \
+ a_bankiniletter.cpp \
+ a_mkkeys.cpp \
+ a_sendkeys.cpp \
+ a_useriniletter.cpp \
+ a_getsysid.cpp \
+ a_wait.cpp \
+ a_finished.cpp \
+ a_getaccounts.cpp \
+ w_pintan_new.cpp \
+ w_ddv_import.cpp \
+ w_rdh_import.cpp \
+ w_rdh_new.cpp \
+ w_rdh_new2.cpp
 
 
 BUILT_SOURCES = $(nodist_libwizard_la_SOURCES)

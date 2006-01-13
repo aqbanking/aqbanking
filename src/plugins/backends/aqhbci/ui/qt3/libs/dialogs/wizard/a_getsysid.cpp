@@ -17,15 +17,14 @@
 
 #include "a_getsysid.h"
 #include "wizard.h"
+#include "actionwidget.h"
+
 #include <qbanking/qbanking.h>
-
-#include <aqhbci/outbox.h>
-#include <aqhbci/adminjobs.h>
-
+#include <aqhbci/provider.h>
 #include <gwenhywfar/debug.h>
 
+#include <qpushbutton.h>
 #include <qmessagebox.h>
-#include <qlabel.h>
 
 #include <assert.h>
 
@@ -33,14 +32,28 @@
 
 ActionGetSysId::ActionGetSysId(Wizard *w)
 :WizardAction(w, "GetSysId", QWidget::tr("Retrieve System Id")) {
-  QLabel *tl;
+  _realDialog=new ActionWidget
+    (tr("<qt>"
+        "We will now let the bank assign a system id to AqBanking."
+        "</qt>"),
+     tr("<qt>"
+        "<p>"
+        "The system id is assigned to each library/application system "
+        "(like AqBanking). This id is used by the bank to distinguish "
+        "between signature counters used by different programs."
+        "</p>"
+        "<p>"
+        "This allows for real multi-application access to your accounts."
+        "</p>"
+        "</qt>"),
+     tr("Get System Id"),
+     this, "GetSysId");
+  _realDialog->setStatus(ActionWidget::StatusNone);
+  connect(_realDialog->getButton(), SIGNAL(clicked()),
+          this, SLOT(slotButtonClicked()));
 
-  tl=new QLabel(this, "GetSysIdText");
-  tl->setText("<tr>"
-              "When you click <i>next</i> below we will attempt to "
-              "retrieve a system id from the server"
-              "</tr>");
-  addWidget(tl);
+  addWidget(_realDialog);
+  _realDialog->show();
 }
 
 
@@ -50,98 +63,58 @@ ActionGetSysId::~ActionGetSysId() {
 
 
 
+void ActionGetSysId::enter() {
+  setNextEnabled(false);
+  _realDialog->setStatus(ActionWidget::StatusNone);
+}
+
+
+
 bool ActionGetSysId::apply() {
-  WizardInfo *wInfo;
-  QBanking *qb;
-  AH_BANK *b;
-  AH_USER *u;
-  AH_CUSTOMER *cu;
-  AH_MEDIUM *m;
-  AH_JOB *job;
-  AH_OUTBOX *ob;
-  const char *s;
-
-  wInfo=getWizard()->getWizardInfo();
-  assert(wInfo);
-  b=wInfo->getBank();
-  assert(b);
-  u=wInfo->getUser();
-  assert(u);
-  cu=wInfo->getCustomer();
-  assert(cu);
-  m=wInfo->getMedium();
-  assert(m);
-
-  qb=getWizard()->getBanking();
-  assert(qb);
-
-  job=AH_Job_GetSysId_new(cu);
-  if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
-    return false;
-  }
-  AH_Job_AddSigner(job, AH_User_GetUserId(u));
-
-  ob=AH_Outbox_new(wInfo->getHbci());
-  AH_Outbox_AddJob(ob, job);
-
-  if (AH_Outbox_Execute(ob, 1, 1)) {
-    DBG_ERROR(0, "Could not execute outbox.\n");
-    AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-    return false;
-  }
-
-  if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(0, "Job has errors");
-    // TODO: show errors
-    AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-    AH_Outbox_free(ob);
-    return false;
-  }
-  else {
-    if (AH_Job_Commit(job)) {
-      DBG_ERROR(0, "Could not commit result.\n");
-      AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-      AH_Outbox_free(ob);
-      return false;
-    }
-  }
-
-  s=AH_Job_GetSysId_GetSysId(job);
-  if (!s) {
-    AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-    AH_Outbox_free(ob);
-    DBG_ERROR(0, "No system Id");
-    QMessageBox::critical(getWizard()->getWidgetAsParent(),
-			  QWidget::tr("Job Error"),
-			  QWidget::tr("An empty system id "
-				      "has been received."),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
-  }
-
-  if (AH_Medium_SelectContext(m, AH_User_GetContextIdx(u))) {
-    DBG_ERROR(0, "Could not select user");
-    QMessageBox::critical(getWizard()->getWidgetAsParent(),
-			  QWidget::tr("Medium Error"),
-			  QWidget::tr("Could not select user context "
-				      "on medium.\n"
-				      "Please check the logs."
-				     ),
-                          QMessageBox::Ok,QMessageBox::NoButton);
-    AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-    AH_Outbox_free(ob);
-    return false;
-  }
-
-  AH_Customer_SetSystemId(cu, s);
-
-  AB_Banking_ProgressEnd(qb->getCInterface(), 0);
-  AH_Outbox_free(ob);
-
   return true;
 }
 
+
+
+void ActionGetSysId::slotButtonClicked() {
+  WizardInfo *wInfo;
+  QBanking *qb;
+  AB_USER *u;
+  AB_PROVIDER *pro;
+  GWEN_TYPE_UINT32 pid;
+  int rv;
+
+  wInfo=getWizard()->getWizardInfo();
+  assert(wInfo);
+  u=wInfo->getUser();
+  assert(u);
+  qb=getWizard()->getBanking();
+  assert(qb);
+  pro=AH_HBCI_GetProvider(wInfo->getHbci());
+  assert(pro);
+
+  _realDialog->setStatus(ActionWidget::StatusChecking);
+
+  DBG_ERROR(0, "Retrieving system id");
+  pid=qb->progressStart(tr("Retrieving System Id"),
+                        tr("<qt>"
+                           "Retrieving a system id from the "
+                           "bank server."
+                           "</qt>"),
+                        1);
+  rv=AH_Provider_GetSysId(pro, u, 1);
+  if (rv) {
+    DBG_ERROR(0, "Error getting sysid (%d)", rv);
+    _realDialog->setStatus(ActionWidget::StatusFailed);
+    qb->progressEnd(pid);
+    return;
+  }
+
+  qb->progressEnd(pid);
+
+  _realDialog->setStatus(ActionWidget::StatusSuccess);
+  setNextEnabled(true);
+}
 
 
 

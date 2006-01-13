@@ -30,10 +30,10 @@ typedef struct AH_JOBPLUGIN AH_JOBPLUGIN;
 
 #include <aqbanking/banking.h>
 #include <aqbanking/job.h>
+#include <aqhbci/aqhbci.h>
 #include <aqhbci/hbci.h>
 #include <aqhbci/job.h>
 #include <aqhbci/provider.h>
-#include <aqhbci/objectref.h> /* for AQHBCI_API */
 
 
 
@@ -61,8 +61,8 @@ typedef AH_JOBPLUGIN* (*AH_JOBPLUGIN_NEWFN)(AH_PROVIDER *pro);
 typedef AH_JOB*
   (*AH_JOBPLUGIN_FACTORYFN)(AH_JOBPLUGIN *jp,
                             AB_JOB_TYPE jt,
-                            AH_CUSTOMER *cu,
-                            AH_ACCOUNT *a);
+                            AB_USER *u,
+                            AB_ACCOUNT *a);
 
 typedef int
   (*AH_JOBPLUGIN_CHECKFN)(AH_JOBPLUGIN *jp,
@@ -93,8 +93,8 @@ AQHBCI_API AH_PROVIDER *AH_JobPlugin_GetProvider(const AH_JOBPLUGIN *jp);
 /*@{*/
 AQHBCI_API AH_JOB *AH_JobPlugin_Factory(AH_JOBPLUGIN *jp,
                                         AB_JOB_TYPE jt,
-                                        AH_CUSTOMER *cu,
-                                        AH_ACCOUNT *a);
+                                        AB_USER *u,
+                                        AB_ACCOUNT *a);
 
 AQHBCI_API int AH_JobPlugin_CheckType(AH_JOBPLUGIN *jp,
                                       AB_JOB_TYPE jt);

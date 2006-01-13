@@ -42,12 +42,12 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETDATEDTRANSFERS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetDatedTransfers_new(AH_CUSTOMER *cu, AH_ACCOUNT *account) {
+AH_JOB *AH_Job_GetDatedTransfers_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETDATEDTRANSFERS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobGetDatedTransfers", cu, account);
+  j=AH_AccountJob_new("JobGetDatedTransfers", u, account);
   if (!j)
     return 0;
 

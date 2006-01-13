@@ -13,9 +13,15 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/crypttoken.h>
+#include <aqhbci/aqhbci.h>
+#include <aqhbci/medium.h>
+
 
 GWEN_LIST_FUNCTIONS(AH_MEDIUM_CTX, AH_MediumCtx)
 GWEN_LIST2_FUNCTIONS(AH_MEDIUM_CTX, AH_MediumCtx)
+
+
 
 
 AH_MEDIUM_CTX *AH_MediumCtx_new() {
@@ -98,50 +104,84 @@ int AH_MediumCtx_toDb(const AH_MEDIUM_CTX *st, GWEN_DB_NODE *db) {
 }
 
 
-AH_MEDIUM_CTX *AH_MediumCtx_fromDb(GWEN_DB_NODE *db) {
-AH_MEDIUM_CTX *st;
-
+int AH_MediumCtx_ReadDb(AH_MEDIUM_CTX *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AH_MediumCtx_new();
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "user");
-    if (dbT)  AH_MediumCtx_SetUser(st, GWEN_CryptToken_User_fromDb(dbT));
+    if (dbT) {
+  if (st->user)
+    GWEN_CryptToken_User_free(st->user);
+  st->user=GWEN_CryptToken_User_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "tokenContext");
-    if (dbT)  AH_MediumCtx_SetTokenContext(st, GWEN_CryptToken_Context_fromDb(dbT));
+    if (dbT) {
+  if (st->tokenContext)
+    GWEN_CryptToken_Context_free(st->tokenContext);
+  st->tokenContext=GWEN_CryptToken_Context_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localSignKeySpec");
-    if (dbT)  AH_MediumCtx_SetLocalSignKeySpec(st, GWEN_KeySpec_fromDb(dbT));
+    if (dbT) {
+  if (st->localSignKeySpec)
+    GWEN_KeySpec_free(st->localSignKeySpec);
+  st->localSignKeySpec=GWEN_KeySpec_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localCryptKeySpec");
-    if (dbT)  AH_MediumCtx_SetLocalCryptKeySpec(st, GWEN_KeySpec_fromDb(dbT));
+    if (dbT) {
+  if (st->localCryptKeySpec)
+    GWEN_KeySpec_free(st->localCryptKeySpec);
+  st->localCryptKeySpec=GWEN_KeySpec_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteSignKeySpec");
-    if (dbT)  AH_MediumCtx_SetRemoteSignKeySpec(st, GWEN_KeySpec_fromDb(dbT));
+    if (dbT) {
+  if (st->remoteSignKeySpec)
+    GWEN_KeySpec_free(st->remoteSignKeySpec);
+  st->remoteSignKeySpec=GWEN_KeySpec_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteCryptKeySpec");
-    if (dbT)  AH_MediumCtx_SetRemoteCryptKeySpec(st, GWEN_KeySpec_fromDb(dbT));
+    if (dbT) {
+  if (st->remoteCryptKeySpec)
+    GWEN_KeySpec_free(st->remoteCryptKeySpec);
+  st->remoteCryptKeySpec=GWEN_KeySpec_fromDb(dbT);
+}
   }
+  return 0;
+}
+
+
+AH_MEDIUM_CTX *AH_MediumCtx_fromDb(GWEN_DB_NODE *db) {
+  AH_MEDIUM_CTX *st;
+
+  assert(db);
+  st=AH_MediumCtx_new();
+  AH_MediumCtx_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 GWEN_CRYPTTOKEN_USER *AH_MediumCtx_GetUser(const AH_MEDIUM_CTX *st) {
@@ -162,6 +202,8 @@ void AH_MediumCtx_SetUser(AH_MEDIUM_CTX *st, GWEN_CRYPTTOKEN_USER *d) {
 }
 
 
+
+
 GWEN_CRYPTTOKEN_CONTEXT *AH_MediumCtx_GetTokenContext(const AH_MEDIUM_CTX *st) {
   assert(st);
   return st->tokenContext;
@@ -178,6 +220,8 @@ void AH_MediumCtx_SetTokenContext(AH_MEDIUM_CTX *st, GWEN_CRYPTTOKEN_CONTEXT *d)
     st->tokenContext=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_KEYSPEC *AH_MediumCtx_GetLocalSignKeySpec(const AH_MEDIUM_CTX *st) {
@@ -198,6 +242,8 @@ void AH_MediumCtx_SetLocalSignKeySpec(AH_MEDIUM_CTX *st, const GWEN_KEYSPEC *d) 
 }
 
 
+
+
 const GWEN_KEYSPEC *AH_MediumCtx_GetLocalCryptKeySpec(const AH_MEDIUM_CTX *st) {
   assert(st);
   return st->localCryptKeySpec;
@@ -214,6 +260,8 @@ void AH_MediumCtx_SetLocalCryptKeySpec(AH_MEDIUM_CTX *st, const GWEN_KEYSPEC *d)
     st->localCryptKeySpec=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_KEYSPEC *AH_MediumCtx_GetRemoteSignKeySpec(const AH_MEDIUM_CTX *st) {
@@ -234,6 +282,8 @@ void AH_MediumCtx_SetRemoteSignKeySpec(AH_MEDIUM_CTX *st, const GWEN_KEYSPEC *d)
 }
 
 
+
+
 const GWEN_KEYSPEC *AH_MediumCtx_GetRemoteCryptKeySpec(const AH_MEDIUM_CTX *st) {
   assert(st);
   return st->remoteCryptKeySpec;
@@ -250,6 +300,8 @@ void AH_MediumCtx_SetRemoteCryptKeySpec(AH_MEDIUM_CTX *st, const GWEN_KEYSPEC *d
     st->remoteCryptKeySpec=0;
   st->_modified=1;
 }
+
+
 
 
 int AH_MediumCtx_IsModified(const AH_MEDIUM_CTX *st) {
@@ -282,8 +334,6 @@ void AH_MediumCtx_List2_freeAll(AH_MEDIUM_CTX_LIST2 *stl) {
 }
 
 
-
-
 AH_MEDIUM_CTX_LIST *AH_MediumCtx_List_dup(const AH_MEDIUM_CTX_LIST *stl) {
   if (stl) {
     AH_MEDIUM_CTX_LIST *nl;
@@ -304,6 +354,7 @@ AH_MEDIUM_CTX_LIST *AH_MediumCtx_List_dup(const AH_MEDIUM_CTX_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

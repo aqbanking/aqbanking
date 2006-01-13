@@ -261,12 +261,10 @@ string LogAnalyzer::_getPath() {
   string dname;
   char buffer[256];
   void *p;
-  char numbuf[16];
 
   dname=_baseDir;
   dname+="/backends/aqhbci/data/banks/";
-  snprintf(numbuf, sizeof(numbuf), "%d", _country);
-  dname+=numbuf;
+  dname+=_country;
   dname+="/";
   dname+=_bankCode;
   dname+="/logs/";
@@ -373,7 +371,7 @@ void *LogAnalyzer::_handlePathElement(const char *entry,
 
 
 LogAnalyzer::LogAnalyzer(const string &baseDir,
-                         unsigned int country,
+                         const string &country,
                          const string &bank)
 :_baseDir(baseDir)
 ,_country(country)

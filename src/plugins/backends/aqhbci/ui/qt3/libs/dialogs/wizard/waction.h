@@ -41,10 +41,14 @@ public:
   void addWidget(QWidget *w);
 
   virtual void enter();
+  virtual void leave(bool backward);
   virtual bool apply();
   virtual bool undo();
 
   Wizard *getWizard();
+
+  void setNextEnabled(bool b);
+  void setBackEnabled(bool b);
 
   const QString &getName() const;
   const QString &getDescription() const;

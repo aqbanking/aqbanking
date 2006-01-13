@@ -131,7 +131,7 @@ int LogManager::_scanBanks() {
   string dname;
 
   dname=_baseDir;
-  dname+="/backends/aqhbci/data/banks/280/";
+  dname+="/backends/aqhbci/data/banks/de/";
   if (!dname.empty()) {
     dlogs=GWEN_Directory_new();
     if (!GWEN_Directory_Open(dlogs, dname.c_str())) {
@@ -175,7 +175,7 @@ int LogManager::_scanBank(const string &bankCode) {
   string dname;
 
   dname=_baseDir;
-  dname+="/backends/aqhbci/data/banks/280/";
+  dname+="/backends/aqhbci/data/banks/de/";
   dname+=bankCode;
   dname+="/logs";
   DBG_NOTICE(0, "Scanning folder \"%s\"", dname.c_str());
@@ -227,7 +227,7 @@ string LogManager::_anonymize(const string &bankCode,
   string result;
 
   lfname=_baseDir;
-  lfname+="/backends/aqhbci/data/banks/280/";
+  lfname+="/backends/aqhbci/data/banks/de/";
   lfname+=bankCode;
   lfname+="/logs/";
   lfname+=fname;

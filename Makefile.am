@@ -3,7 +3,7 @@ SUBDIRS=doc m4 src bindings po
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
  aqbanking.iss.in aqbanking.iss \
- Doxyfile.in version.h.in \
+ Doxyfile.in version.h.in system.h.in \
  i18nsources qtsources \
  mksymlinks.sh.in mksymlinks.sh
 
@@ -18,7 +18,7 @@ ACLOCAL_AMFLAGS = $(ADD_ACLOCAL_FLAGS) -I m4
 
 iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
-  version.h
+  version.h system.h
 
 CLEANFILES = aqbanking-config aqbanking-config.in
 
@@ -223,7 +223,7 @@ endif # if USE_I18N
 # Extra rule instead of "all" which creates the auto-generated headers
 # *first* and only then starts "make all". This avoids duplicate
 # compilation.
-quick: config.h version.h
+quick: config.h version.h system.h
 	make
 
 # Rule for only building the source rpm
@@ -240,6 +240,9 @@ qt4-port:
 
 BUILT_SOURCES=sl-headers
 CLEANFILES += $(BUILT_SOURCES)
+
+symlinks: mksymlinks.sh
+	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 sl-headers:
 	make -C src built_sources

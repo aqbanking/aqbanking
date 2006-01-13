@@ -15,24 +15,13 @@
 
 
 
-#include "settings.ui.h"
-#include "kbaccountlist.h"
-#include "kbplugindescrlist.h"
-
-#include "kbanking.h"
+#include <kbanking/kbanking.h>
+#include <qbanking/qbcfgtabsettings.h>
 
 
 
-class KBankingSettings: public KBankingSettingsUi {
-  Q_OBJECT
+class KBankingSettings: public QBCfgTabSettings {
 private:
-  KBanking *_banking;
-  KBAccountListView *_accListView;
-  KBPluginDescrListView *_providerListView;
-
-  void _accountRescan();
-  void _backendRescan();
-
 public:
   KBankingSettings(KBanking *ab,
                    QWidget* parent = 0,
@@ -41,12 +30,6 @@ public:
 
   int init();
   int fini();
-
-public slots:
-  void slotAccountMap();
-  void slotBackendEnable();
-  void slotBackendDisable();
-  void slotBackendSetup();
 };
 
 

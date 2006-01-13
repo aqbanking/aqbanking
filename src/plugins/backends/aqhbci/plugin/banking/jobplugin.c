@@ -84,11 +84,11 @@ AH_PROVIDER *AH_JobPlugin_GetProvider(const AH_JOBPLUGIN *jp){
 
 AH_JOB *AH_JobPlugin_Factory(AH_JOBPLUGIN *jp,
                              AB_JOB_TYPE jt,
-                             AH_CUSTOMER *cu,
-                             AH_ACCOUNT *a){
+                             AB_USER *u,
+                             AB_ACCOUNT *a){
   assert(jp);
   assert(jp->factoryFn);
-  return jp->factoryFn(jp, jt, cu, a);
+  return jp->factoryFn(jp, jt, u, a);
 }
 
 

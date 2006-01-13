@@ -13,6 +13,13 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/stringlist.h>
+#include <aqbanking/value.h>
+#include <aqbanking/split.h>
+#include <aqbanking/transactionlimits.h>
+#include <aqbanking/transactionfns.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_TRANSACTION)
@@ -105,6 +112,14 @@ AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s) {
       return AB_Transaction_SubTypeEuStandard;
     else if (strcasecmp(s, "euASAP")==0)
       return AB_Transaction_SubTypeEuASAP;
+    else if (strcasecmp(s, "buy")==0)
+      return AB_Transaction_SubTypeBuy;
+    else if (strcasecmp(s, "sell")==0)
+      return AB_Transaction_SubTypeSell;
+    else if (strcasecmp(s, "reinvest")==0)
+      return AB_Transaction_SubTypeReinvest;
+    else if (strcasecmp(s, "dividend")==0)
+      return AB_Transaction_SubTypeDividend;
   }
   return AB_Transaction_SubTypeUnknown;
 }
@@ -138,6 +153,18 @@ const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE v) {
 
     case AB_Transaction_SubTypeEuASAP:
       return "euASAP";
+
+    case AB_Transaction_SubTypeBuy:
+      return "buy";
+
+    case AB_Transaction_SubTypeSell:
+      return "sell";
+
+    case AB_Transaction_SubTypeReinvest:
+      return "reinvest";
+
+    case AB_Transaction_SubTypeDividend:
+      return "dividend";
 
     default:
       return "unknown";
@@ -215,6 +242,8 @@ const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v) {
 } 
 
 
+
+
 AB_TRANSACTION *AB_Transaction_new() {
   AB_TRANSACTION *st;
 
@@ -271,6 +300,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     GWEN_Time_free(st->date);
   if (st->value)
     AB_Value_free(st->value);
+  if (st->fees)
+    AB_Value_free(st->fees);
   if (st->splits)
     AB_Split_List_free(st->splits);
   if (st->transactionKey)
@@ -303,6 +334,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->remoteAddrCity);
   if (st->remotePhone)
     free(st->remotePhone);
+  if (st->unitPrice)
+    AB_Value_free(st->unitPrice);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -353,6 +386,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->date=GWEN_Time_dup(d->date);
   if (d->value)
     st->value=AB_Value_dup(d->value);
+  if (d->fees)
+    st->fees=AB_Value_dup(d->fees);
   if (d->splits)
     st->splits=AB_Split_List_dup(d->splits);
   st->textKey=d->textKey;
@@ -394,6 +429,9 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteAddrCity=strdup(d->remoteAddrCity);
   if (d->remotePhone)
     st->remotePhone=strdup(d->remotePhone);
+  st->units=d->units;
+  if (d->unitPrice)
+    st->unitPrice=AB_Value_dup(d->unitPrice);
   return st;
 }
 
@@ -469,6 +507,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->value)
     if (AB_Value_toDb(st->value, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "value")))
+      return -1;
+  if (st->fees)
+    if (AB_Value_toDb(st->fees, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "fees")))
       return -1;
   if (st->splits)
   if (1) {
@@ -573,15 +614,18 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->remotePhone)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remotePhone", st->remotePhone))
       return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "units", st->units))
+    return -1;
+  if (st->unitPrice)
+    if (AB_Value_toDb(st->unitPrice, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "unitPrice")))
+      return -1;
   return 0;
 }
 
 
-AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
-AB_TRANSACTION *st;
-
+int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_Transaction_new();
   AB_Transaction_SetLocalCountry(st, GWEN_DB_GetCharValue(db, "localCountry", 0, 0));
   AB_Transaction_SetLocalBankCode(st, GWEN_DB_GetCharValue(db, "localBankCode", 0, 0));
   AB_Transaction_SetLocalBranchId(st, GWEN_DB_GetCharValue(db, "localBranchId", 0, 0));
@@ -609,26 +653,48 @@ AB_TRANSACTION *st;
     } /* for */
   }
   AB_Transaction_SetUniqueId(st, GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valutaDate");
-    if (dbT) st->valutaDate=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->valutaDate)
+    GWEN_Time_free(st->valutaDate);
+  st->valutaDate=GWEN_Time_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-    if (dbT) st->date=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->date)
+    GWEN_Time_free(st->date);
+  st->date=GWEN_Time_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-    if (dbT) st->value=AB_Value_fromDb(dbT);
+    if (dbT) {
+  if (st->value)
+    AB_Value_free(st->value);
+  st->value=AB_Value_fromDb(dbT);
+}
+  }
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "fees");
+    if (dbT) {
+  if (st->fees)
+    AB_Value_free(st->fees);
+  st->fees=AB_Value_fromDb(dbT);
+}
   }
   st->splits=AB_Split_List_new();
-  if (1) {
+  if (1) {/* just for local vars */
     GWEN_DB_NODE *dbT;
     AB_SPLIT *e;
 
@@ -685,23 +751,35 @@ AB_TRANSACTION *st;
   AB_Transaction_SetPeriod(st, AB_Transaction_Period_fromString(GWEN_DB_GetCharValue(db, "period", 0, 0)));
   AB_Transaction_SetCycle(st, GWEN_DB_GetIntValue(db, "cycle", 0, 0));
   AB_Transaction_SetExecutionDay(st, GWEN_DB_GetIntValue(db, "executionDay", 0, 0));
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "firstExecutionDate");
-    if (dbT) st->firstExecutionDate=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->firstExecutionDate)
+    GWEN_Time_free(st->firstExecutionDate);
+  st->firstExecutionDate=GWEN_Time_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastExecutionDate");
-    if (dbT) st->lastExecutionDate=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->lastExecutionDate)
+    GWEN_Time_free(st->lastExecutionDate);
+  st->lastExecutionDate=GWEN_Time_fromDb(dbT);
+}
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "nextExecutionDate");
-    if (dbT) st->nextExecutionDate=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->nextExecutionDate)
+    GWEN_Time_free(st->nextExecutionDate);
+  st->nextExecutionDate=GWEN_Time_fromDb(dbT);
+}
   }
   AB_Transaction_SetType(st, AB_Transaction_Type_fromString(GWEN_DB_GetCharValue(db, "type", 0, 0)));
   AB_Transaction_SetSubType(st, AB_Transaction_SubType_fromString(GWEN_DB_GetCharValue(db, "subType", 0, 0)));
@@ -711,9 +789,32 @@ AB_TRANSACTION *st;
   AB_Transaction_SetRemoteAddrZipcode(st, GWEN_DB_GetCharValue(db, "remoteAddrZipcode", 0, 0));
   AB_Transaction_SetRemoteAddrCity(st, GWEN_DB_GetCharValue(db, "remoteAddrCity", 0, 0));
   AB_Transaction_SetRemotePhone(st, GWEN_DB_GetCharValue(db, "remotePhone", 0, 0));
+  AB_Transaction_SetUnits(st, GWEN_DB_GetIntValue(db, "units", 0, 0));
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "unitPrice");
+    if (dbT) {
+  if (st->unitPrice)
+    AB_Value_free(st->unitPrice);
+  st->unitPrice=AB_Value_fromDb(dbT);
+}
+  }
+  return 0;
+}
+
+
+AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db) {
+  AB_TRANSACTION *st;
+
+  assert(db);
+  st=AB_Transaction_new();
+  AB_Transaction_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_Transaction_GetLocalCountry(const AB_TRANSACTION *st) {
@@ -1114,6 +1215,26 @@ void AB_Transaction_SetValue(AB_TRANSACTION *st, const AB_VALUE *d) {
     st->value=AB_Value_dup(d);
   else
     st->value=0;
+  st->_modified=1;
+}
+
+
+
+
+const AB_VALUE *AB_Transaction_GetFees(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->fees;
+}
+
+
+void AB_Transaction_SetFees(AB_TRANSACTION *st, const AB_VALUE *d) {
+  assert(st);
+  if (st->fees)
+    AB_Value_free(st->fees);
+  if (d)
+    st->fees=AB_Value_dup(d);
+  else
+    st->fees=0;
   st->_modified=1;
 }
 
@@ -1645,6 +1766,41 @@ void AB_Transaction_SetRemotePhone(AB_TRANSACTION *st, const char *d) {
 
 
 
+int AB_Transaction_GetUnits(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->units;
+}
+
+
+void AB_Transaction_SetUnits(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->units=d;
+  st->_modified=1;
+}
+
+
+
+
+const AB_VALUE *AB_Transaction_GetUnitPrice(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->unitPrice;
+}
+
+
+void AB_Transaction_SetUnitPrice(AB_TRANSACTION *st, const AB_VALUE *d) {
+  assert(st);
+  if (st->unitPrice)
+    AB_Value_free(st->unitPrice);
+  if (d)
+    st->unitPrice=AB_Value_dup(d);
+  else
+    st->unitPrice=0;
+  st->_modified=1;
+}
+
+
+
+
 int AB_Transaction_IsModified(const AB_TRANSACTION *st) {
   assert(st);
   return st->_modified;
@@ -1675,8 +1831,6 @@ void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl) {
 }
 
 
-
-
 AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl) {
   if (stl) {
     AB_TRANSACTION_LIST *nl;
@@ -1697,6 +1851,7 @@ AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

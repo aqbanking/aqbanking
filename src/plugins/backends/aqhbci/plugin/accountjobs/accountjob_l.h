@@ -20,8 +20,8 @@
 
 
 AH_JOB *AH_AccountJob_new(const char *name,
-                          AH_CUSTOMER *cu,
-                          AH_ACCOUNT *account);
+                          AB_USER *u,
+                          AB_ACCOUNT *account);
 
 
 int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf);

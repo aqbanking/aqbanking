@@ -14,15 +14,21 @@
 #ifndef AQBANKING_ACCSTATUS_H
 #define AQBANKING_ACCSTATUS_H
 
-#include <gwenhywfar/gwentime.h>
 #include <aqbanking/value.h>
 #include <aqbanking/balance.h>
+
+#include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/list2.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct AB_ACCOUNT_STATUS AB_ACCOUNT_STATUS;
+
+GWEN_LIST2_FUNCTION_LIB_DEFS(AB_ACCOUNT_STATUS, AB_AccountStatus,
+                             AQBANKING_API)
 
 
 AQBANKING_API 
@@ -78,6 +84,10 @@ const AB_BALANCE*
 AQBANKING_API 
 void AB_AccountStatus_SetNotedBalance(AB_ACCOUNT_STATUS *as,
                                       const AB_BALANCE *b);
+
+
+AQBANKING_API 
+void AB_AccountStatus_List2_freeAll(AB_ACCOUNT_STATUS_LIST2 *asl);
 
 
 #ifdef __cplusplus

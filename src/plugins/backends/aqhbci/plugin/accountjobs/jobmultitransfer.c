@@ -41,24 +41,24 @@ GWEN_INHERIT(AH_JOB, AH_JOB_MULTITRANSFER);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_MultiTransfer_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account) {
-  return AH_Job_MultiTransferBase_new(cu, account, 1);
+AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
+                                 AB_ACCOUNT *account) {
+  return AH_Job_MultiTransferBase_new(u, account, 1);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_MultiDebitNote_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account) {
-  return AH_Job_MultiTransferBase_new(cu, account, 0);
+AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *u,
+                                  AB_ACCOUNT *account) {
+  return AH_Job_MultiTransferBase_new(u, account, 0);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_MultiTransferBase_new(AH_CUSTOMER *cu,
-                                     AH_ACCOUNT *account,
+AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
+                                     AB_ACCOUNT *account,
                                      int isTransfer) {
   AH_JOB *j;
   AH_JOB_MULTITRANSFER *aj;
@@ -68,7 +68,7 @@ AH_JOB *AH_Job_MultiTransferBase_new(AH_CUSTOMER *cu,
   const char *s;
 
   j=AH_AccountJob_new(isTransfer?"JobMultiTransfer":"JobMultiDebitNote",
-                      cu, account);
+                      u, account);
   if (!j)
     return 0;
 
@@ -89,13 +89,13 @@ AH_JOB *AH_Job_MultiTransferBase_new(AH_CUSTOMER *cu,
   assert(dbT);
   GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "bankCode",
-		       AH_Account_GetBankId(account));
+		       AB_Account_GetBankCode(account));
   GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "accountId",
-		       AH_Account_GetAccountId(account));
+		       AB_Account_GetAccountNumber(account));
   GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "currency", "EUR");
-  s=AH_Account_GetOwnerName(account);
+  s=AB_Account_GetOwnerName(account);
   if (s)
     GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "name", s);
@@ -331,13 +331,13 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local bank code */
   s=AB_Transaction_GetLocalBankCode(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local bank code, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetBankId(a);
+    s=AB_Account_GetBankCode(a);
     assert(s);
     AB_Transaction_SetLocalBankCode(t, s);
   }
@@ -345,13 +345,13 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account number */
   s=AB_Transaction_GetLocalAccountNumber(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local account number, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetAccountId(a);
+    s=AB_Account_GetAccountNumber(a);
     assert(s);
     AB_Transaction_SetLocalAccountNumber(t, s);
   }
@@ -359,7 +359,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account suffix */
   s=AB_Transaction_GetLocalSuffix(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "No local suffix, filling in (if possible)");

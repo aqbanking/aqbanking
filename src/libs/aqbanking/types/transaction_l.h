@@ -37,6 +37,9 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 <h3>Additional Information for Foreign Transfers</h3>
 <p>
 <p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p></p>
+<h3>Additional Information for Investment Transfers</h3>
+<p>
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p></p>
 */
 #include <gwenhywfar/misc.h>
 #include "transaction.h"
@@ -49,6 +52,7 @@ extern "C" {
 
 GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
 AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
+
 
 
 
@@ -96,6 +100,7 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 
 
 /*@}*/
+
 
 
 /** @name Info Which Is Not Supported by All Backends
@@ -148,6 +153,15 @@ Functions of this group are also available in AB_SPLIT, please make your applica
 /*@{*/
 
 
+
+
+
+/*@}*/
+
+/** @name Additional Information for Investment Transfers
+ *
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
 
 
 

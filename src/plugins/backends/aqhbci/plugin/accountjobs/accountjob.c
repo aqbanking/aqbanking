@@ -35,39 +35,34 @@ GWEN_INHERIT(AH_JOB, AH_ACCOUNTJOB);
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_AccountJob_new(const char *name,
-                          AH_CUSTOMER *cu,
-                          AH_ACCOUNT *account){
+                          AB_USER *u,
+                          AB_ACCOUNT *account){
   AH_ACCOUNTJOB *aj;
-  AH_BANK *b;
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
   assert(name);
-  assert(cu);
+  assert(u);
   assert(account);
-  j=AH_Job_new(name, cu, AH_Account_GetAccountId(account));
+  j=AH_Job_new(name, u, AB_Account_GetAccountNumber(account));
   if (!j)
     return 0;
 
   GWEN_NEW_OBJECT(AH_ACCOUNTJOB, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_ACCOUNTJOB, j, aj, AH_AccountJob_FreeData);
   aj->account=account;
-  AH_Account_Attach(aj->account);
 
   /* set some known arguments */
-  b=AH_Account_GetBank(account);
-  assert(b);
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                        "accountId",
-                       AH_Account_GetAccountId(account));
+                       AB_Account_GetAccountNumber(account));
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                        "bankCode",
-                       AH_Account_GetBankId(account));
+                       AB_Account_GetBankCode(account));
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                      "country",
-                      AH_Bank_GetCountry(b));
+                      "country", 280);
 
   return j;
 }
@@ -75,7 +70,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j){
+AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j){
   AH_ACCOUNTJOB *aj;
 
   assert(j);
@@ -92,7 +87,6 @@ void AH_AccountJob_FreeData(void *bp, void *p) {
   AH_ACCOUNTJOB *aj;
 
   aj=(AH_ACCOUNTJOB*)p;
-  AH_Account_free(aj->account);
   GWEN_FREE_OBJECT(aj);
 }
 

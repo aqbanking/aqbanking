@@ -16,11 +16,15 @@
 
 #include "provider_p.h"
 #include "aqhbci_l.h"
+#include "account_l.h"
 #include "hbci_l.h"
 #include "outbox_l.h"
+#include "user_l.h"
+#include "medium_l.h"
 #include <aqbanking/account_be.h>
 #include <aqbanking/provider_be.h>
 #include <aqbanking/job_be.h>
+#include <aqhbci/user.h>
 #include <aqhbci/jobgetbalance.h>
 #include <aqhbci/jobgettransactions.h>
 #include <aqhbci/jobgetstandingorders.h>
@@ -28,6 +32,7 @@
 #include <aqhbci/jobsingletransfer.h>
 #include <aqhbci/jobmultitransfer.h>
 #include <aqhbci/jobeutransfer.h>
+#include <aqhbci/adminjobs.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/directory.h>
@@ -65,9 +70,9 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetAddJobFn(pro, AH_Provider_AddJob);
   AB_Provider_SetExecuteFn(pro, AH_Provider_Execute);
   AB_Provider_SetResetQueueFn(pro, AH_Provider_ResetQueue);
-  AB_Provider_SetGetAccountListFn(pro, AH_Provider_GetAccountList);
-  AB_Provider_SetUpdateAccountFn(pro, AH_Provider_UpdateAccount);
-  AB_Provider_SetAddAccountFn(pro, AH_Provider_AddAccount);
+  AB_Provider_SetExtendUserFn(pro, AH_Provider_ExtendUser);
+  AB_Provider_SetExtendAccountFn(pro, AH_Provider_ExtendAccount);
+  AB_Provider_SetUpdateFn(pro, AH_Provider_Update);
 
   GWEN_NEW_OBJECT(AH_PROVIDER, hp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AH_PROVIDER, pro, hp,
@@ -139,6 +144,7 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Initializing AqHBCI backend");
   assert(pro);
+
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
@@ -193,52 +199,35 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-AH_ACCOUNT *AH_Provider__FindMyAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
-  AH_PROVIDER *hp;
-  AH_ACCOUNT *ma;
-  AH_BANK *mb;
-  GWEN_DB_NODE *db;
-  int country;
-  const char *accountId;
-  const char *bankCode;
+const char *AH_Provider_GetProductName(const AB_PROVIDER *pro) {
+  AH_HBCI *h;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+  return AH_HBCI_GetProductName(h);
+}
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
-  country=GWEN_DB_GetIntValue(db, "country", 0, 280);
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0,
-                                 AB_Account_GetAccountNumber(a));
-  assert(accountId);
-  bankCode=GWEN_DB_GetCharValue(db, "serverBankCode", 0,
-                                AB_Account_GetBankCode(a));
-  assert(bankCode);
 
-  mb=AH_HBCI_FindBank(hp->hbci, country, bankCode);
-  if (!mb) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Bank not found");
-    return 0;
-  }
 
-  ma=AH_Bank_FindAccount(mb, accountId);
-  if (!ma) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Account not found");
-    return 0;
-  }
+const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro) {
+  AH_HBCI *h;
 
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "country",
-                      AH_Bank_GetCountry(mb));
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "serverBankCode",
-                       AH_Bank_GetBankId(mb));
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "accountId",
-                       AH_Account_GetAccountId(ma));
+  assert(pro);
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+  return AH_HBCI_GetProductVersion(h);
+}
 
-  return ma;
+
+
+const AH_MEDIUM_LIST *AH_Provider_GetMediaList(AB_PROVIDER *pro){
+  AH_HBCI *h;
+
+  assert(pro);
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+  return AH_HBCI_GetMediaList(h);
 }
 
 
@@ -248,11 +237,10 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   GWEN_DB_NODE *dbAccount;
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
-  AH_ACCOUNT *ma;
-  AH_BANK *mb;
-  AH_CUSTOMER *mcu;
-  const GWEN_STRINGLIST *custs;
+  AB_USER *mu;
+  AB_ACCOUNT *ma;
   int rv;
+  GWEN_TYPE_UINT32 uFlags;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -264,68 +252,23 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   dbJob=AB_Job_GetProviderData(j, pro);
   assert(dbJob);
 
-  ma=AH_Provider__FindMyAccount(pro, AB_Job_GetAccount(j));
-  if (!ma) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account for this job not found");
-    return AB_ERROR_INVALID;
-  }
-
-
-  mb=AH_Account_GetBank(ma);
-  assert(mb);
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
 
   /* determine customer to use */
-  custs=AH_Account_GetCustomers(ma);
-  if (!custs) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customers noted for account \"%d/%s/%s\"",
-              AH_Bank_GetCountry(mb),
-              AH_Account_GetBankId(ma),
-              AH_Account_GetAccountId(ma));
-    mcu = 0;
-  }
-  else {
-    const char *lcustid;
-
-    lcustid=GWEN_DB_GetCharValue(dbAccount, "customer", 0, 0);
-    if (!lcustid) {
-      GWEN_STRINGLISTENTRY *se;
-
-      se=GWEN_StringList_FirstEntry(custs);
-      if (se)
-        lcustid=GWEN_StringListEntry_Data(se);
-    }
-    if (!lcustid) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No customers noted for account \"%d/%s/%s\"",
-                AH_Bank_GetCountry(mb),
-                AH_Account_GetBankId(ma),
-                AH_Account_GetAccountId(ma));
-      mcu = 0;
-    }
-    else {
-      mcu=AH_HBCI_FindCustomer(hp->hbci,
-                               AH_Bank_GetCountry(mb),
-                               AH_Bank_GetBankId(mb),
-                               "*",
-                               lcustid);
-      if (!mcu) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Customer \"%d/%s/%s\" not found",
-                  AH_Bank_GetCountry(mb),
-                  AH_Bank_GetBankId(mb),
-                  lcustid);
-        return AB_ERROR_NOT_AVAILABLE;
-      }
-    }
-  }
-  if (!mcu) {
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
     return AB_ERROR_NOT_AVAILABLE;
   }
+
+  uFlags=AH_User_GetFlags(mu);
 
   mj=0;
   switch(AB_Job_GetType(j)) {
 
   case AB_Job_TypeGetBalance:
-    mj=AH_Job_GetBalance_new(mcu, ma);
+    mj=AH_Job_GetBalance_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -333,7 +276,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetTransactions:
-    mj=AH_Job_GetTransactions_new(mcu, ma);
+    mj=AH_Job_GetTransactions_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -341,7 +284,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetStandingOrders:
-    mj=AH_Job_GetStandingOrders_new(mcu, ma);
+    mj=AH_Job_GetStandingOrders_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -349,7 +292,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetDatedTransfers:
-    mj=AH_Job_GetDatedTransfers_new(mcu, ma);
+    mj=AH_Job_GetDatedTransfers_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -358,10 +301,10 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeTransfer:
     mj=0;
-    if (!AH_Customer_GetPreferSingleTransfer(mcu)) {
+    if (!(uFlags & AH_USER_FLAGS_PREFER_SINGLE_TRANSFER)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
       /* create new job */
-      mj=AH_Job_MultiTransfer_new(mcu, ma);
+      mj=AH_Job_MultiTransfer_new(mu, ma);
       if (!mj) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "Multi-job not supported with this account, "
@@ -376,7 +319,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     else {
       GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "isMultiJob", 0);
-      mj=AH_Job_SingleTransfer_new(mcu, ma);
+      mj=AH_Job_SingleTransfer_new(mu, ma);
       if (!mj) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
 	return AB_ERROR_NOT_AVAILABLE;
@@ -386,10 +329,10 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeDebitNote:
     mj=0;
-    if (!AH_Customer_GetPreferSingleDebitNote(mcu)) {
+    if (!(uFlags & AH_USER_FLAGS_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
       /* create new job */
-      mj=AH_Job_MultiDebitNote_new(mcu, ma);
+      mj=AH_Job_MultiDebitNote_new(mu, ma);
       if (!mj) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "Multi-job not supported with this account, "
@@ -403,7 +346,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     else {
       GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "isMultiJob", 0);
-      mj=AH_Job_SingleDebitNote_new(mcu, ma);
+      mj=AH_Job_SingleDebitNote_new(mu, ma);
       if (!mj) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
 	return AB_ERROR_NOT_AVAILABLE;
@@ -412,7 +355,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeEuTransfer:
-    mj=AH_Job_EuTransfer_new(mcu, ma);
+    mj=AH_Job_EuTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -420,7 +363,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeCreateStandingOrder:
-    mj=AH_Job_CreateStandingOrder_new(mcu, ma);
+    mj=AH_Job_CreateStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -428,7 +371,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeModifyStandingOrder:
-    mj=AH_Job_ModifyStandingOrder_new(mcu, ma);
+    mj=AH_Job_ModifyStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -436,7 +379,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeDeleteStandingOrder:
-    mj=AH_Job_DeleteStandingOrder_new(mcu, ma);
+    mj=AH_Job_DeleteStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -444,7 +387,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeCreateDatedTransfer:
-    mj=AH_Job_CreateDatedTransfer_new(mcu, ma);
+    mj=AH_Job_CreateDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -452,7 +395,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeModifyDatedTransfer:
-    mj=AH_Job_ModifyDatedTransfer_new(mcu, ma);
+    mj=AH_Job_ModifyDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -460,7 +403,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeDeleteDatedTransfer:
-    mj=AH_Job_DeleteDatedTransfer_new(mcu, ma);
+    mj=AH_Job_DeleteDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -494,14 +437,13 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
   GWEN_TYPE_UINT32 jid;
-  AH_ACCOUNT *ma;
-  AH_BANK *mb;
-  AH_CUSTOMER *mcu;
-  const GWEN_STRINGLIST *custs;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
   int rv;
   int sigs;
   int jobIsNew=1;
   AB_JOB_STATUS jst;
+  GWEN_TYPE_UINT32 uFlags;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -532,84 +474,26 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   dbAccount=AB_Account_GetProviderData(AB_Job_GetAccount(j));
   assert(dbAccount);
 
-  ma=AH_Provider__FindMyAccount(pro, AB_Job_GetAccount(j));
-  if (!ma) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account for this job not found");
-    return AB_ERROR_INVALID;
-  }
-
-  mb=AH_Account_GetBank(ma);
-  assert(mb);
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
 
   /* determine customer to use */
-  custs=AH_Account_GetCustomers(ma);
-  if (!custs) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customers noted for account \"%d/%s/%s\"",
-              AH_Bank_GetCountry(mb),
-              AH_Account_GetBankId(ma),
-              AH_Account_GetAccountId(ma));
-    mcu=0;
-  }
-  else {
-    const char *lcustid;
-
-    lcustid=GWEN_DB_GetCharValue(dbAccount, "customer", 0, 0);
-    if (!lcustid) {
-      GWEN_STRINGLISTENTRY *se;
-
-      /* find a customer from the account's list */
-      se=GWEN_StringList_FirstEntry(custs);
-      while(se) {
-        const char *s;
-
-        s=GWEN_StringListEntry_Data(se);
-        mcu=AH_HBCI_FindCustomer(hp->hbci,
-                                 AH_Bank_GetCountry(mb),
-                                 AH_Bank_GetBankId(mb),
-                                 "*",
-                                 s);
-        if (mcu) {
-          lcustid=s;
-          break;
-        }
-        se=GWEN_StringListEntry_Next(se);
-      } /* while */
-    }
-
-    if (!lcustid) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "No customers noted for account \"%d/%s/%s\"",
-                AH_Bank_GetCountry(mb),
-                AH_Account_GetBankId(ma),
-                AH_Account_GetAccountId(ma));
-      mcu=0;
-    }
-    else {
-      mcu=AH_HBCI_FindCustomer(hp->hbci,
-                               AH_Bank_GetCountry(mb),
-                               AH_Bank_GetBankId(mb),
-                               "*",
-                               lcustid);
-      if (!mcu) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Customer \"%d/%s/%s\" not found",
-                  AH_Bank_GetCountry(mb),
-                  AH_Bank_GetBankId(mb),
-                  lcustid);
-        return AB_ERROR_NOT_AVAILABLE;
-      }
-    }
-  }
-
-  if (!mcu) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No customers noted for account \"%s/%s\"",
+              AB_Account_GetBankCode(ma),
+              AB_Account_GetAccountNumber(ma));
     return AB_ERROR_NOT_AVAILABLE;
   }
+
+  uFlags=AH_User_GetFlags(mu);
 
   mj=0;
   switch(AB_Job_GetType(j)) {
 
   case AB_Job_TypeGetBalance:
-    mj=AH_Job_GetBalance_new(mcu, ma);
+    mj=AH_Job_GetBalance_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -617,7 +501,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetTransactions:
-    mj=AH_Job_GetTransactions_new(mcu, ma);
+    mj=AH_Job_GetTransactions_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -625,7 +509,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetStandingOrders:
-    mj=AH_Job_GetStandingOrders_new(mcu, ma);
+    mj=AH_Job_GetStandingOrders_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -633,7 +517,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeGetDatedTransfers:
-    mj=AH_Job_GetDatedTransfers_new(mcu, ma);
+    mj=AH_Job_GetDatedTransfers_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -642,9 +526,9 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeTransfer:
     mj=0;
-    if (!AH_Customer_GetPreferSingleTransfer(mcu)) {
+    if (!(uFlags & AH_USER_FLAGS_PREFER_SINGLE_TRANSFER)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
-      mj=AH_Outbox_FindTransferJob(hp->outbox, mcu, ma, 1);
+      mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 1);
       if (mj) {
 	/* simply add transfer to existing job */
         jobIsNew=0;
@@ -652,7 +536,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       }
       else {
 	/* create new job */
-	mj=AH_Job_MultiTransfer_new(mcu, ma);
+	mj=AH_Job_MultiTransfer_new(mu, ma);
 	if (!mj) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Multi-job not supported with this account, "
@@ -661,7 +545,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       }
     }
     if (!mj) {
-      mj=AH_Job_SingleTransfer_new(mcu, ma);
+      mj=AH_Job_SingleTransfer_new(mu, ma);
       if (!mj) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
 	return AB_ERROR_NOT_AVAILABLE;
@@ -671,9 +555,9 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeDebitNote:
     mj=0;
-    if (!AH_Customer_GetPreferSingleDebitNote(mcu)) {
+    if (!(uFlags & AH_USER_FLAGS_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
-      mj=AH_Outbox_FindTransferJob(hp->outbox, mcu, ma, 0);
+      mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 0);
       if (mj) {
 	/* simply add transfer to existing job */
         jobIsNew=0;
@@ -681,7 +565,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       }
       else {
 	/* create new job */
-	mj=AH_Job_MultiDebitNote_new(mcu, ma);
+	mj=AH_Job_MultiDebitNote_new(mu, ma);
 	if (!mj) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Multi-job not supported with this account, "
@@ -690,7 +574,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       }
     }
     if (!mj) {
-      mj=AH_Job_SingleDebitNote_new(mcu, ma);
+      mj=AH_Job_SingleDebitNote_new(mu, ma);
       if (!mj) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
 	return AB_ERROR_NOT_AVAILABLE;
@@ -699,7 +583,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeEuTransfer:
-    mj=AH_Job_EuTransfer_new(mcu, ma);
+    mj=AH_Job_EuTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -707,7 +591,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeCreateStandingOrder:
-    mj=AH_Job_CreateStandingOrder_new(mcu, ma);
+    mj=AH_Job_CreateStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -715,7 +599,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeModifyStandingOrder:
-    mj=AH_Job_ModifyStandingOrder_new(mcu, ma);
+    mj=AH_Job_ModifyStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -723,7 +607,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeDeleteStandingOrder:
-    mj=AH_Job_DeleteStandingOrder_new(mcu, ma);
+    mj=AH_Job_DeleteStandingOrder_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -731,7 +615,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeCreateDatedTransfer:
-    mj=AH_Job_CreateDatedTransfer_new(mcu, ma);
+    mj=AH_Job_CreateDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -739,7 +623,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeModifyDatedTransfer:
-    mj=AH_Job_ModifyDatedTransfer_new(mcu, ma);
+    mj=AH_Job_ModifyDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -747,7 +631,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeDeleteDatedTransfer:
-    mj=AH_Job_DeleteDatedTransfer_new(mcu, ma);
+    mj=AH_Job_DeleteDatedTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -755,7 +639,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   default:
-    mj=AH_Provider__GetPluginJob(hp, AB_Job_GetType(j), mcu, ma);
+    mj=AH_Provider__GetPluginJob(hp, AB_Job_GetType(j), mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return AB_ERROR_NOT_AVAILABLE;
@@ -775,8 +659,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 			       "ERROR: Multiple signatures not yet supported");
 	return AB_ERROR_GENERIC;
       }
-      AH_Job_AddSigner(mj, /* AH_Customer_GetCustomerId(mcu)); */
-                       AH_User_GetUserId(AH_Customer_GetUser(mcu)));
+      AH_Job_AddSigner(mj, AB_User_GetUserId(mu));
     }
   }
 
@@ -994,129 +877,38 @@ int AH_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 
-AB_ACCOUNT_LIST2 *AH_Provider_GetAccountList(AB_PROVIDER *pro){
-  AH_PROVIDER *hp;
-  AB_ACCOUNT_LIST2 *lba;
-  AH_ACCOUNT_LIST2 *lma;
-  AH_ACCOUNT_LIST2_ITERATOR *ait;
-  AB_ACCOUNT *ba;
-  AH_ACCOUNT *ma;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  lma=AH_HBCI_GetAccounts(hp->hbci, 0, "*", "*");
-  if (!lma) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No accounts");
-    return 0;
-  }
-
-  lba=AB_Account_List2_new();
-  ait=AH_Account_List2_First(lma);
-  assert(ait);
-  ma=AH_Account_List2Iterator_Data(ait);
-  assert(ma);
-  while(ma) {
-    int rv;
-
-    ba=AB_Account_new(AB_Provider_GetBanking(pro),
-                      pro, 0);
-    rv=AH_Provider__FillAccount(pro, ba, ma);
-    if (rv) {
-      AB_Account_free(ba);
-    }
-    else {
-      /* add job */
-      AB_Account_List2_PushBack(lba, ba);
-    }
-    ma=AH_Account_List2Iterator_Next(ait);
-  } /* while */
-  AH_Account_List2Iterator_free(ait);
-  AH_Account_List2_free(lma);
-
-  return lba;
-}
-
-
-
-int AH_Provider__FillAccount(AB_PROVIDER *pro,
-                             AB_ACCOUNT *a,
-                             AH_ACCOUNT *ma){
-  AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbAccount;
-  AH_BANK *mb;
-  const char *p;
-
-  assert(pro);
-  assert(ma);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  dbAccount=AB_Account_GetProviderData(a);
-  assert(dbAccount);
-
-  mb=AH_Account_GetBank(ma);
-  assert(mb);
-
-  AB_Account_SetAccountNumber(a, AH_Account_GetAccountId(ma));
-  AB_Account_SetBankCode(a, AH_Account_GetBankId(ma));
-  p=AH_Account_GetAccountName(ma);
-  if (p)
-    AB_Account_SetAccountName(a, p);
-  p=AH_Bank_GetBankName(mb);
-  if (p)
-    AB_Account_SetBankName(a, p);
-
-  p=AH_Account_GetOwnerName(ma);
-  if (p)
-    AB_Account_SetOwnerName(a, p);
-
-  p=AH_Bank_GetBankId(mb);
-  GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "serverBankCode", p);
-
+int AH_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                           AB_PROVIDER_EXTEND_MODE em) {
+  AH_User_Extend(u, pro, em);
   return 0;
 }
 
 
 
-int AH_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbAccount;
-  AH_ACCOUNT *ma;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  dbAccount=AB_Account_GetProviderData(a);
-  assert(dbAccount);
-
-  ma=AH_Provider__FindMyAccount(pro, a);
-  if (!ma) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account not found");
-    return AB_ERROR_NOT_AVAILABLE;
-  }
-
-  return AH_Provider__FillAccount(pro, a, ma);
+int AH_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                              AB_PROVIDER_EXTEND_MODE em){
+  AH_Account_Extend(a, pro, em);
+  return 0;
 }
 
 
 
-int AH_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
+int AH_Provider_Update(AB_PROVIDER *pro,
+                       GWEN_TYPE_UINT32 lastVersion,
+                       GWEN_TYPE_UINT32 currentVersion) {
   AH_PROVIDER *hp;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  return AB_ERROR_NOT_SUPPORTED;
+  return AH_HBCI_Update(hp->hbci, lastVersion, currentVersion);
 }
 
 
 
-AH_HBCI *AH_Provider_GetHbci(AB_PROVIDER *pro){
+
+AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro){
   AH_PROVIDER *hp;
 
   assert(pro);
@@ -1130,8 +922,8 @@ AH_HBCI *AH_Provider_GetHbci(AB_PROVIDER *pro){
 
 AH_JOB *AH_Provider__GetPluginJob(AH_PROVIDER *hp,
                                   AB_JOB_TYPE jt,
-                                  AH_CUSTOMER *mcu,
-                                  AH_ACCOUNT *ma){
+                                  AB_USER *mcu,
+                                  AB_ACCOUNT *ma){
   AH_JOBPLUGIN *jp;
   AH_JOB *j;
 
@@ -1310,6 +1102,976 @@ int AH_Provider_LoadAllJobPlugins(AB_PROVIDER *pro){
 
   return 0;
 }
+
+
+
+int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
+                            int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  AH_JOB *job;
+  AH_OUTBOX *ob;
+  AB_ACCOUNT_LIST2 *accs;
+  int rv;
+  AH_PROVIDER *hp;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  job=AH_Job_UpdateBank_new(u);
+  if (!job) {
+    DBG_ERROR(0, "Job not supported, should not happen");
+    return AB_ERROR_GENERIC;
+  }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+
+  ob=AH_Outbox_new(h);
+  AH_Outbox_AddJob(ob, job);
+
+  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  if (rv) {
+    DBG_ERROR(0, "Could not execute outbox.\n");
+    return rv;
+  }
+
+  if (AH_Job_HasErrors(job)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
+    // TODO: show errors
+    AH_Outbox_free(ob);
+    return AB_ERROR_GENERIC;
+  }
+  else {
+    rv=AH_Job_Commit(job);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+      AH_Outbox_free(ob);
+      return rv;
+    }
+  }
+
+  /* check whether we got some accounts */
+  accs=AH_Job_UpdateBank_GetAccountList(job);
+  assert(accs);
+  if (AB_Account_List2_GetSize(accs)==0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No accounts found");
+    return AB_ERROR_NO_DATA;
+  }
+
+  AH_Outbox_free(ob);
+
+  return 0;
+}
+
+
+
+int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
+                         int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  AH_JOB *job;
+  AH_OUTBOX *ob;
+  int rv;
+  AH_PROVIDER *hp;
+  const char *s;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  job=AH_Job_GetSysId_new(u);
+  if (!job) {
+    DBG_ERROR(0, "Job not supported, should not happen");
+    return AB_ERROR_GENERIC;
+  }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+
+  ob=AH_Outbox_new(h);
+  AH_Outbox_AddJob(ob, job);
+
+  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  if (rv) {
+    DBG_ERROR(0, "Could not execute outbox.\n");
+    return rv;
+  }
+
+  if (AH_Job_HasErrors(job)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
+    // TODO: show errors
+    AH_Outbox_free(ob);
+    return AB_ERROR_GENERIC;
+  }
+  else {
+    rv=AH_Job_Commit(job);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+      AH_Outbox_free(ob);
+      return rv;
+    }
+  }
+
+  s=AH_Job_GetSysId_GetSysId(job);
+  if (!s) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id");
+    AH_Outbox_free(ob);
+    return AB_ERROR_NO_DATA;
+  }
+
+  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
+  if (rv) {
+    DBG_ERROR(0, "Could not select user");
+    AH_Outbox_free(ob);
+    return rv;
+  }
+
+  AH_User_SetSystemId(u, s);
+
+  AH_Outbox_free(ob);
+
+  return 0;
+}
+
+
+
+int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  AH_JOB *job;
+  AH_OUTBOX *ob;
+  int rv;
+  AH_PROVIDER *hp;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  job=AH_Job_GetKeys_new(u);
+  if (!job) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
+    return AB_ERROR_GENERIC;
+  }
+
+  ob=AH_Outbox_new(h);
+  AH_Outbox_AddJob(ob, job);
+
+  rv=AH_Outbox_Execute(ob, 0, 1);
+  if (rv) {
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not execute outbox."));
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return rv;
+  }
+
+  if (AH_Job_GetKeys_GetCryptKey(job)==0) {
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("No crypt key received."));
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_GENERIC;
+  }
+
+  if (AH_Job_HasErrors(job)) {
+    DBG_ERROR(0, "Job has errors");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Job contains errors."));
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_GENERIC;
+  }
+  else {
+    rv=AH_Job_Commit(job);
+    if (rv) {
+      DBG_ERROR(0, "Could not commit result.\n");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Could not commit result"));
+      AH_Outbox_free(ob);
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      return rv;
+    }
+  }
+
+  if (AH_Job_GetKeys_GetSignKey(job)==0) {
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelNotice,
+                           I18N("Bank does not use a sign key."));
+  }
+
+  AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelNotice,
+                         I18N("Keys saved"));
+
+  AH_Outbox_free(ob);
+
+  if (!nounmount)
+    AH_Medium_Unmount(m, 1);
+
+  return 0;
+}
+
+
+
+int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  AH_JOB *job;
+  AH_OUTBOX *ob;
+  int rv;
+  AH_PROVIDER *hp;
+  GWEN_CRYPTKEY *signKey;
+  GWEN_CRYPTKEY *cryptKey;
+  int mounted=0;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  /* mount medium if necessary */
+  if (!AH_Medium_IsMounted(m)) {
+    rv=AH_Medium_Mount(m);
+    if (rv) {
+      DBG_ERROR(0, "Could not mount medium");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Could not mount medium"));
+      return rv;
+    }
+    mounted=1;
+  }
+
+  /* select user's context */
+  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
+  if (rv) {
+    DBG_ERROR(0, "Could not select user");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not select context"));
+    if (!nounmount && mounted)
+      AH_Medium_Unmount(m, 1);
+    return rv;
+  }
+
+  /* get keys */
+  signKey=AH_Medium_GetLocalPubSignKey(m);
+  cryptKey=AH_Medium_GetLocalPubCryptKey(m);
+  if (!signKey || !cryptKey) {
+    DBG_ERROR(0, "Either sign- or crypt key missing");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Either sign- or crypt key missing"));
+    GWEN_CryptKey_free(signKey);
+    GWEN_CryptKey_free(cryptKey);
+    if (!nounmount && mounted)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_NOT_FOUND;
+  }
+
+  /* create job */
+  job=AH_Job_SendKeys_new(u, cryptKey, signKey);
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+  GWEN_CryptKey_free(signKey);
+  GWEN_CryptKey_free(cryptKey);
+  if (!job) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Job not supported, should not happen"));
+    if (!nounmount && mounted)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_GENERIC;
+  }
+
+  /* enqueue job */
+  ob=AH_Outbox_new(h);
+  AH_Outbox_AddJob(ob, job);
+
+  /* execute queue */
+  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  if (rv) {
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not execute outbox."));
+    AH_Outbox_free(ob);
+    if (!nounmount && mounted)
+      AH_Medium_Unmount(m, 1);
+    return rv;
+  }
+
+  /* check result */
+  if (AH_Job_HasErrors(job)) {
+    DBG_ERROR(0, "Job has errors");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Job contains errors."));
+    AH_Outbox_free(ob);
+    if (!nounmount && mounted)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_GENERIC;
+  }
+  else {
+    rv=AH_Job_Commit(job);
+    if (rv) {
+      DBG_ERROR(0, "Could not commit result.\n");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Could not commit result"));
+      AH_Outbox_free(ob);
+      if (!nounmount && mounted)
+        AH_Medium_Unmount(m, 1);
+      return rv;
+    }
+  }
+
+  AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelNotice,
+                         I18N("Keys sent"));
+
+  AH_Outbox_free(ob);
+  if (!nounmount && mounted)
+    AH_Medium_Unmount(m, 1);
+
+  return 0;
+}
+
+
+
+int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  int rv;
+  AH_PROVIDER *hp;
+  int alwaysAskForCert;
+  AH_DIALOG *dialog;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  dialog=AH_Dialog_new(u);
+  assert(dialog);
+
+  AH_HBCI_RemoveAllBankCerts(h, u);
+  alwaysAskForCert=AB_Banking_GetAlwaysAskForCert(ab);
+  AB_Banking_SetAlwaysAskForCert(ab, 1);
+
+  rv=AH_Dialog_Connect(dialog, 30);
+  AH_Dialog_Disconnect(dialog, 2);
+  AH_Dialog_free(dialog);
+  AB_Banking_SetAlwaysAskForCert(ab, alwaysAskForCert);
+  if (rv) {
+    DBG_ERROR(0, "Could not connect to server (%d)", rv);
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not connect to server"));
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
+                                AB_USER *u,
+                                int useBankKey,
+                                GWEN_BUFFER *lbuf,
+                                int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  GWEN_CRYPTKEY *key;
+  GWEN_DB_NODE *dbKey;
+  const void *p;
+  unsigned int l;
+  GWEN_BUFFER *bbuf;
+  GWEN_BUFFER *keybuf;
+  int i;
+  GWEN_TIME *ti;
+  char numbuf[32];
+  char hashbuffer[21];
+  int rv;
+  AH_PROVIDER *hp;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  rv=AH_Medium_Mount(m);
+  if (rv) {
+    DBG_ERROR(0, "Could not mount medium (%d)", rv);
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not mount medium"));
+    return rv;
+  }
+
+  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
+  if (rv) {
+    DBG_ERROR(0, "Could not select context %d (%d)",
+              AH_User_GetContextIdx(u), rv);
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not select context"));
+  }
+
+  if (useBankKey) {
+    key=AH_Medium_GetPubSignKey(m);
+    if (!key)
+      key=AH_Medium_GetPubCryptKey(m);
+    if (!key) {
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      DBG_ERROR(0, "Server keys missing, please get them first");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Server keys missing, "
+                                  "please get them first"));
+      return AB_ERROR_NOT_FOUND;
+    }
+  }
+  else {
+    GWEN_CRYPTKEY *cryptKey;
+    GWEN_CRYPTKEY *signKey;
+
+    signKey=AH_Medium_GetLocalPubSignKey(m);
+    cryptKey=AH_Medium_GetLocalPubCryptKey(m);
+    if (!signKey || !cryptKey) {
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      DBG_ERROR(0, "Keys missing, please create them first");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Keys missing, please create them first"));
+      return AB_ERROR_NOT_FOUND;
+    }
+    key=signKey;
+    GWEN_CryptKey_free(cryptKey);
+  }
+
+  dbKey=GWEN_DB_Group_new("keydata");
+  if (GWEN_CryptKey_toDb(key, dbKey, 1)) {
+    GWEN_DB_Group_free(dbKey);
+    GWEN_CryptKey_free(key);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+  GWEN_CryptKey_free(key); key=0;
+
+  keybuf=GWEN_Buffer_new(0, 257, 0, 1);
+
+  /* prelude */
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("\n\n\nINI-Letter\n\n"));
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Date           : "));
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Time           : "));
+  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, "\n");
+
+  if (useBankKey) {
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("Bank           : "));
+    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
+  }
+  else {
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("User           : "));
+    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Key number     : "));
+  snprintf(numbuf, sizeof(numbuf), "%d",
+           GWEN_DB_GetIntValue(dbKey, "number", 0, 0));
+  GWEN_Buffer_AppendString(lbuf, numbuf);
+  GWEN_Buffer_AppendString(lbuf, "\n");
+
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Key version    : "));
+  snprintf(numbuf, sizeof(numbuf), "%d",
+           GWEN_DB_GetIntValue(dbKey, "version", 0, 0));
+  GWEN_Buffer_AppendString(lbuf, numbuf);
+  GWEN_Buffer_AppendString(lbuf, "\n");
+
+  if (!useBankKey) {
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("Customer system: "));
+    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
+    GWEN_Buffer_AppendString(lbuf, "\n");
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Public key for electronic signature"));
+  GWEN_Buffer_AppendString(lbuf, "\n\n");
+
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Exponent"));
+  GWEN_Buffer_AppendString(lbuf, "\n\n");
+
+  /* exponent */
+  p=GWEN_DB_GetBinValue(dbKey,
+                        "data/e",
+                        0,
+                        0,0,
+                        &l);
+  if (!p || !l) {
+    GWEN_DB_Group_free(dbKey);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+
+  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
+  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_Rewind(bbuf);
+  if (l<96)
+    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
+  p=GWEN_Buffer_GetStart(bbuf);
+  l=GWEN_Buffer_GetUsedBytes(bbuf);
+  for (i=0; i<6; i++) {
+    GWEN_Buffer_AppendString(lbuf, "  ");
+    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+      DBG_ERROR(0, "Error converting to hex??");
+      abort();
+    }
+    p+=16;
+    GWEN_Buffer_AppendString(lbuf, "\n");
+  }
+
+  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
+  GWEN_Buffer_free(bbuf);
+
+  /* modulus */
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Modulus"));
+  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  p=GWEN_DB_GetBinValue(dbKey,
+                        "data/n",
+                        0,
+                        0,0,
+                        &l);
+  if (!p || !l) {
+    GWEN_DB_Group_free(dbKey);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+
+  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
+  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_Rewind(bbuf);
+  if (l<96)
+    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
+  p=GWEN_Buffer_GetStart(bbuf);
+  l=GWEN_Buffer_GetUsedBytes(bbuf);
+  for (i=0; i<6; i++) {
+    GWEN_Buffer_AppendString(lbuf, "  ");
+    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+      DBG_ERROR(0, "Error converting to hex??");
+      abort();
+    }
+    p+=16;
+    GWEN_Buffer_AppendString(lbuf, "\n");
+  }
+
+  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
+  GWEN_Buffer_free(bbuf);
+
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Hash"));
+  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  l=20;
+  if (GWEN_MD_Hash("RMD160",
+                   GWEN_Buffer_GetStart(keybuf),
+                   GWEN_Buffer_GetUsedBytes(keybuf),
+                   hashbuffer,
+                   &l)) {
+    DBG_ERROR(0, "Could not hash");
+    abort();
+  }
+  GWEN_Buffer_free(keybuf);
+
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "\n");
+
+  if (!useBankKey) {
+    GWEN_Buffer_AppendString(lbuf, "\n\n");
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("I confirm that I found the above key "
+                                  "for my electronic signature.\n"));
+    GWEN_Buffer_AppendString(lbuf, "\n\n");
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("____________________________  "
+                                  "____________________________\n"
+                                  "Place, date                   "
+                                  "Signature\n"));
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  GWEN_CRYPTKEY *key;
+  GWEN_DB_NODE *dbKey;
+  const void *p;
+  unsigned int l;
+  GWEN_BUFFER *bbuf;
+  GWEN_BUFFER *keybuf;
+  int i;
+  GWEN_TIME *ti;
+  char numbuf[32];
+  char hashbuffer[21];
+  int rv;
+  AH_PROVIDER *hp;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  rv=AH_Medium_Mount(m);
+  if (rv) {
+    DBG_ERROR(0, "Could not mount medium (%d)", rv);
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not mount medium"));
+    return rv;
+  }
+
+  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
+  if (rv) {
+    DBG_ERROR(0, "Could not select context %d (%d)",
+              AH_User_GetContextIdx(u), rv);
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Could not select context"));
+  }
+
+  if (useBankKey) {
+    key=AH_Medium_GetPubSignKey(m);
+    if (!key)
+      key=AH_Medium_GetPubCryptKey(m);
+    if (!key) {
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      DBG_ERROR(0, "Server keys missing, please get them first");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Server keys missing, "
+                                  "please get them first"));
+      return AB_ERROR_NOT_FOUND;
+    }
+  }
+  else {
+    GWEN_CRYPTKEY *cryptKey;
+    GWEN_CRYPTKEY *signKey;
+
+    signKey=AH_Medium_GetLocalPubSignKey(m);
+    cryptKey=AH_Medium_GetLocalPubCryptKey(m);
+    if (!signKey || !cryptKey) {
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      DBG_ERROR(0, "Keys missing, please create them first");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Keys missing, please create them first"));
+      return AB_ERROR_NOT_FOUND;
+    }
+    key=signKey;
+    GWEN_CryptKey_free(cryptKey);
+  }
+
+  dbKey=GWEN_DB_Group_new("keydata");
+  if (GWEN_CryptKey_toDb(key, dbKey, 1)) {
+    GWEN_DB_Group_free(dbKey);
+    GWEN_CryptKey_free(key);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+  GWEN_CryptKey_free(key); key=0;
+
+  keybuf=GWEN_Buffer_new(0, 257, 0, 1);
+
+  /* prelude */
+  GWEN_Buffer_AppendString(lbuf, "<h3>");
+  GWEN_Buffer_AppendString(lbuf, I18N("INI-Letter"));
+  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
+  GWEN_Buffer_AppendString(lbuf, "<table>\n");
+  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+  GWEN_Buffer_AppendString(lbuf, I18N("Date"));
+  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, I18N("Time"));
+  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+
+  if (useBankKey) {
+    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("Bank"));
+    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
+    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  }
+  else {
+    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("User"));
+    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+  GWEN_Buffer_AppendString(lbuf, I18N("Key number"));
+  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+  snprintf(numbuf, sizeof(numbuf), "%d",
+           GWEN_DB_GetIntValue(dbKey, "number", 0, 0));
+  GWEN_Buffer_AppendString(lbuf, numbuf);
+  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+  GWEN_Buffer_AppendString(lbuf, I18N("Key version"));
+  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+  snprintf(numbuf, sizeof(numbuf), "%d",
+           GWEN_DB_GetIntValue(dbKey, "version", 0, 0));
+  GWEN_Buffer_AppendString(lbuf, numbuf);
+  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+
+  if (!useBankKey) {
+    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("Customer system"));
+    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
+    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  }
+  GWEN_Buffer_AppendString(lbuf, "</table>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<h3>");
+  GWEN_Buffer_AppendString(lbuf, I18N("Public key for electronic signature"));
+  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<h4>");
+  GWEN_Buffer_AppendString(lbuf, I18N("Exponent"));
+  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
+
+  /* exponent */
+  p=GWEN_DB_GetBinValue(dbKey,
+                        "data/e",
+                        0,
+                        0,0,
+                        &l);
+  if (!p || !l) {
+    GWEN_DB_Group_free(dbKey);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
+  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
+  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_Rewind(bbuf);
+  if (l<96)
+    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
+  p=GWEN_Buffer_GetStart(bbuf);
+  l=GWEN_Buffer_GetUsedBytes(bbuf);
+  for (i=0; i<6; i++) {
+    GWEN_Buffer_AppendString(lbuf, "  ");
+    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+      DBG_ERROR(0, "Error converting to hex??");
+      abort();
+    }
+    p+=16;
+    GWEN_Buffer_AppendString(lbuf, "\n");
+  }
+
+  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
+  GWEN_Buffer_free(bbuf);
+  GWEN_Buffer_AppendString(lbuf, "</font>\n");
+  GWEN_Buffer_AppendString(lbuf, "<br>\n");
+
+  /* modulus */
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf, "<h4>");
+  GWEN_Buffer_AppendString(lbuf, I18N("Modulus"));
+  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
+  p=GWEN_DB_GetBinValue(dbKey,
+                        "data/n",
+                        0,
+                        0,0,
+                        &l);
+  if (!p || !l) {
+    GWEN_DB_Group_free(dbKey);
+    DBG_ERROR(0, "Bad key.");
+    AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                           I18N("Bad key"));
+    return AB_ERROR_BAD_DATA;
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
+  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
+  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_Rewind(bbuf);
+  if (l<96)
+    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
+  p=GWEN_Buffer_GetStart(bbuf);
+  l=GWEN_Buffer_GetUsedBytes(bbuf);
+  for (i=0; i<6; i++) {
+    GWEN_Buffer_AppendString(lbuf, "  ");
+    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+      DBG_ERROR(0, "Error converting to hex??");
+      abort();
+    }
+    p+=16;
+    GWEN_Buffer_AppendString(lbuf, "\n");
+  }
+
+  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
+  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
+  GWEN_Buffer_free(bbuf);
+  GWEN_Buffer_AppendString(lbuf, "</font>\n");
+  GWEN_Buffer_AppendString(lbuf, "<br>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<h4>");
+  GWEN_Buffer_AppendString(lbuf, I18N("Hash"));
+  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
+  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
+  l=20;
+  if (GWEN_MD_Hash("RMD160",
+                   GWEN_Buffer_GetStart(keybuf),
+                   GWEN_Buffer_GetUsedBytes(keybuf),
+                   hashbuffer,
+                   &l)) {
+    DBG_ERROR(0, "Could not hash");
+    abort();
+  }
+  GWEN_Buffer_free(keybuf);
+
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "</font>\n");
+  GWEN_Buffer_AppendString(lbuf, "<br>\n");
+
+  if (!useBankKey) {
+    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
+    GWEN_Buffer_AppendString(lbuf,
+                             I18N("I confirm that I found the above key "
+                                  "for my electronic signature.\n"));
+    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
+    GWEN_Buffer_AppendString(lbuf, "<table>\n");
+    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
+    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
+    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
+    GWEN_Buffer_AppendString(lbuf, "</td></tr><tr><td>\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("Place, date"));
+    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("Signature"));
+    GWEN_Buffer_AppendString(lbuf, "</td></tr></table>\n");
+    GWEN_Buffer_AppendString(lbuf, "<br>\n");
+  }
+
+  return 0;
+}
+
+
+
+
 
 
 

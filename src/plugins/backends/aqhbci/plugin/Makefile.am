@@ -1,5 +1,7 @@
 SUBDIRS=msglayer joblayer accountjobs applayer banking
 
+AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+
 EXTRA_DIST=aqhbci.xml.in header.xml.in
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \

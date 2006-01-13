@@ -3,6 +3,8 @@ INCLUDES = -I$(top_builddir)/headers \
   -I$(srcdir)/.. \
   -I$(srcdir)/../types
 
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+
 noinst_LTLIBRARIES=libjobs.la
 
 noinst_HEADERS=\

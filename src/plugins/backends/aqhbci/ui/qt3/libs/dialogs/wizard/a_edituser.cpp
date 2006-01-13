@@ -40,6 +40,12 @@ ActionEditUser::~ActionEditUser() {
 
 
 
+void ActionEditUser::enter() {
+  _editUserDialog->init();
+}
+
+
+
 bool ActionEditUser::apply() {
   return _editUserDialog->apply();
 }

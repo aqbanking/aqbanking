@@ -28,6 +28,11 @@ struct AB_ACCOUNT_STATUS {
 };
 
 
+static AB_ACCOUNT_STATUS*
+AB_AccountStatus_List2__freeAll_cb(AB_ACCOUNT_STATUS *as,
+                                   void *user_data);
+
+
 
 #endif /* AQBANKING_ACCSTATUS_P_H */
 

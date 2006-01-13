@@ -15,11 +15,16 @@
 #endif
 
 #include "w_rdh_new.h"
+#include "a_createfile.h"
 #include "a_edituser.h"
 #include "a_getkeys.h"
-#include "a_bank_iniletter.h"
+#include "a_bankiniletter.h"
+#include "a_mkkeys.h"
+#include "a_sendkeys.h"
+#include "a_useriniletter.h"
 #include "a_wait.h"
 
+#include <qtimer.h>
 
 
 WizardRdhNew::WizardRdhNew(QBanking *qb,
@@ -34,6 +39,10 @@ WizardRdhNew::WizardRdhNew(QBanking *qb,
   setDescription(tr("<qt>"
                     "This wizard creates an user on a <b>RDH</b> medium."
                     "</qt>"));
+
+  wa=new ActionCreateFile(this);
+  addAction(wa);
+
   wa=new ActionEditUser(this);
   addAction(wa);
 
@@ -43,8 +52,19 @@ WizardRdhNew::WizardRdhNew(QBanking *qb,
   wa=new ActionBankIniLetter(this);
   addAction(wa);
 
+  wa=new ActionCreateKeys(this);
+  addAction(wa);
+
+  wa=new ActionSendKeys(this);
+  addAction(wa);
+
+  wa=new ActionUserIniLetter(this);
+  addAction(wa);
+
   wa=new ActionWait(this);
   addAction(wa);
+
+  QTimer::singleShot(0, this, SLOT(adjustSize()));
 }
 
 
@@ -60,7 +80,7 @@ int WizardRdhNew::exec() {
 
   rv=Wizard::exec();
   if (rv==QDialog::Accepted) {
-    AH_USER *u;
+    AB_USER *u;
 
     u=getWizardInfo()->getUser();
     assert(u);

@@ -13,21 +13,11 @@
 #ifndef AH_ACCOUNT_P_H
 #define AH_ACCOUNT_P_H
 
-#include <aqdtaus/account.h>
+#include "account_l.h"
 
-
+typedef struct AD_ACCOUNT AD_ACCOUNT;
 struct AD_ACCOUNT {
-  int maxTransfersPerJob;
-  int maxPurposeLines;
-  int debitAllowed;
-  int useDisc;
-  int mountAllowed;
-  int printAllTransactions;
-  char *folder;
-  char *mountCommand;
-  char *unmountCommand;
-  char *filePath;
-  GWEN_TYPE_UINT32 lastVol;
+  int dummy;
 };
 
 void AD_Account_FreeData(void *bp, void *p);

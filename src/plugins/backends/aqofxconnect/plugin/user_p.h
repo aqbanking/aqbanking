@@ -16,13 +16,5 @@
 #include <aqofxconnect/user.h>
 
 
-struct AO_USER {
-  GWEN_LIST_ELEMENT(AO_USER)
-  AO_BANK *bank;
-  char *userId;
-  char *userName;
-};
-
-
 
 #endif

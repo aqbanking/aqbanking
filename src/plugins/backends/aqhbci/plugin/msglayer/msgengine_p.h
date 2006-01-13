@@ -18,47 +18,38 @@
 
 
 struct AH_MSGENGINE {
-  AH_DIALOG *dialog;
-  AH_CUSTOMER *customer;
+  AB_USER *user;
 };
 
 
-int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
-                               GWEN_BUFFER *msgbuf,
-                               GWEN_XMLNODE *node,
-                               GWEN_BUFFER *vbuf,
-                               char escapeChar,
-                               const char *delimiters);
-int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
-                                GWEN_BUFFER *gbuf,
-                                GWEN_BUFFER *data,
-                                GWEN_XMLNODE *node);
-GWEN_DB_VALUETYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-                                              const char *tname);
+static int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
+                                 GWEN_BUFFER *msgbuf,
+                                 GWEN_XMLNODE *node,
+                                 GWEN_BUFFER *vbuf,
+                                 char escapeChar,
+                                 const char *delimiters);
+static int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
+                                  GWEN_BUFFER *gbuf,
+                                  GWEN_BUFFER *data,
+                                  GWEN_XMLNODE *node);
+static GWEN_DB_VALUETYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
+                                                const char *tname);
 
-int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
-                              GWEN_XMLNODE *node,
-                              GWEN_DB_NODE *gr,
-                              GWEN_BUFFER *dbuf);
+static int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
+                                     GWEN_XMLNODE *node,
+                                     GWEN_DB_NODE *gr,
+                                     GWEN_BUFFER *dbuf);
 
-const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
-                                           const char *name,
-                                           const char *defValue);
-int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
-                                  const char *name,
-                                  int defValue);
-AH_MSGENGINE *AH_MsgEngine_Data_new();
-void AH_MsgEngine_Data_free(AH_MSGENGINE *x);
+static const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
+                                             const char *name,
+                                             const char *defValue);
+static int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
+                                    const char *name,
+                                    int defValue);
+static AH_MSGENGINE *AH_MsgEngine_Data_new();
+static void AH_MsgEngine_Data_free(AH_MSGENGINE *x);
 
-void AH_MsgEngine_FreeData(void *bp, void *p);
-
-
-
-
-
-
-
-
+static void AH_MsgEngine_FreeData(void *bp, void *p);
 
 
 

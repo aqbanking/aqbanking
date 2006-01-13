@@ -53,6 +53,8 @@ void AB_JobGetTransactions_FreeData(void *bp, void *p){
   GWEN_Time_free(aj->toTime);
   if (aj->transactions)
     AB_Transaction_List2_freeAll(aj->transactions);
+  if (aj->accountStatusList)
+    AB_AccountStatus_List2_freeAll(aj->accountStatusList);
   GWEN_FREE_OBJECT(aj);
 }
 
@@ -87,6 +89,39 @@ void AB_JobGetTransactions_SetTransactions(AB_JOB *j,
   if (aj->transactions)
     AB_Transaction_List2_freeAll(aj->transactions);
   aj->transactions=tl;
+}
+
+
+
+AB_ACCOUNT_STATUS_LIST2*
+AB_JobGetTransactions_GetAccountStatusList(const AB_JOB *j){
+  AB_JOB_GETTRANSACTIONS *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
+  assert(aj);
+
+  if (aj->accountStatusList) {
+    if (AB_AccountStatus_List2_GetSize(aj->accountStatusList)==0)
+      return 0;
+  }
+  return aj->accountStatusList;
+}
+
+
+
+void AB_JobGetTransactions_SetAccountStatusList(AB_JOB *j,
+                                                AB_ACCOUNT_STATUS_LIST2 *tl){
+  AB_JOB_GETTRANSACTIONS *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
+  assert(aj);
+
+  assert(tl);
+  if (aj->accountStatusList)
+    AB_AccountStatus_List2_freeAll(aj->accountStatusList);
+  aj->accountStatusList=tl;
 }
 
 
@@ -201,6 +236,25 @@ AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
     } /* while */
   } /* if transactions */
 
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "result/accountStatusList");
+  if (dbT) {
+    GWEN_DB_NODE *dbT2;
+
+    aj->accountStatusList=AB_AccountStatus_List2_new();
+
+    /* read transactions */
+    dbT2=GWEN_DB_FindFirstGroup(dbT, "accountStatus");
+    while(dbT2) {
+      AB_ACCOUNT_STATUS *as;
+
+      as=AB_AccountStatus_fromDb(dbT2);
+      if (as)
+        AB_AccountStatus_List2_PushBack(aj->accountStatusList, as);
+      dbT2=GWEN_DB_FindNextGroup(dbT2, "accountStatus");
+    } /* while */
+  } /* if accountStatusList */
+
   return j;
 }
 
@@ -253,6 +307,35 @@ int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
       AB_Transaction_List2Iterator_free(it);
     } /* if it */
   } /* if transactions */
+
+  if (aj->accountStatusList) {
+    AB_ACCOUNT_STATUS_LIST2_ITERATOR *it;
+    GWEN_DB_NODE *dbT2;
+
+    dbT2=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                          "accountStatusList");
+    assert(dbT2);
+    it=AB_AccountStatus_List2_First(aj->accountStatusList);
+    if (it) {
+      AB_ACCOUNT_STATUS *as;
+
+      as=AB_AccountStatus_List2Iterator_Data(it);
+      assert(as);
+      while(as) {
+        GWEN_DB_NODE *dbT3;
+
+        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_PATH_FLAGS_CREATE_GROUP,
+                              "accountStatus");
+        assert(dbT3);
+        if (AB_AccountStatus_toDb(as, dbT3)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving accountStatus");
+          errors++;
+        }
+        as=AB_AccountStatus_List2Iterator_Next(it);
+      } /* while */
+      AB_AccountStatus_List2Iterator_free(it);
+    } /* if it */
+  } /* if accountStatusList */
 
 
   return 0;

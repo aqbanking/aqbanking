@@ -62,13 +62,11 @@ typedef enum {
       has been sucessfully executed. These jobs are stored in the
       "finished" directory. */
   AB_Job_StatusFinished,
-  /** There was an error in jobs' execution. FIXME: Does this mean the
-      job is enqueued, sent, pending, or none of these? How can the
-      App be sure that the job isn't accidentally enqueued again? */
+  /** There was an error in jobs' execution. These jobs are stored in the
+   * "finished" directory. Jobs are never enqueued twice for execution,
+   * so if it has this status it will never be sent again.
+   */
   AB_Job_StatusError,
-  /** Jobs was enqueued but then deferred i.e. removed from the queue,
-      and nothing will happen anymore with this job. */
-  AB_Job_StatusDeferred,
   /** Unknown status */
   AB_Job_StatusUnknown=999
 } AB_JOB_STATUS;

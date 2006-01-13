@@ -218,6 +218,15 @@ Set this property with @ref AB_Transaction_SetValue,
 get it with @ref AB_Transaction_GetValue
 </p>
 
+@anchor AB_TRANSACTION_Fees
+<h3>Fees</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetFees, 
+get it with @ref AB_Transaction_GetFees
+</p>
+
 @anchor AB_TRANSACTION_Splits
 <h3>Splits</h3>
 <p>
@@ -481,6 +490,27 @@ Set this property with @ref AB_Transaction_SetRemotePhone,
 get it with @ref AB_Transaction_GetRemotePhone
 </p>
 
+<h3>Additional Information for Investment Transfers</h3>
+<p>
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p></p>
+@anchor AB_TRANSACTION_Units
+<h4>Units</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetUnits, 
+get it with @ref AB_Transaction_GetUnits
+</p>
+
+@anchor AB_TRANSACTION_UnitPrice
+<h4>UnitPrice</h4>
+<p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetUnitPrice, 
+get it with @ref AB_Transaction_GetUnitPrice
+</p>
+
 */
 #ifdef __cplusplus
 extern "C" {
@@ -495,6 +525,7 @@ typedef struct AB_TRANSACTION AB_TRANSACTION;
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/stringlist.h>
@@ -554,7 +585,15 @@ typedef enum {
   /** EU standard transfer.  */
   AB_Transaction_SubTypeEuStandard,
   /** Eu transfer which is to be executed the same day.  */
-  AB_Transaction_SubTypeEuASAP
+  AB_Transaction_SubTypeEuASAP,
+  /** Buy stocks and alike  */
+  AB_Transaction_SubTypeBuy,
+  /** Sell stocks and alike  */
+  AB_Transaction_SubTypeSell,
+  /** Reinvestment.  */
+  AB_Transaction_SubTypeReinvest,
+  /** Dividend.  */
+  AB_Transaction_SubTypeDividend
 } AB_TRANSACTION_SUBTYPE;
 
 AQBANKING_API AB_TRANSACTION_SUBTYPE AB_Transaction_SubType_fromString(const char *s);
@@ -597,25 +636,25 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 AQBANKING_API void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-AQBANKING_API AB_TRANSACTION_LIST2 *AB_Transaction_List2_dup(const AB_TRANSACTION_LIST2 *stl);
 
 /** Creates a new object.
 */
 AQBANKING_API AB_TRANSACTION *AB_Transaction_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);
 /** Destroys the given object.
 */
 AQBANKING_API void AB_Transaction_free(AB_TRANSACTION *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQBANKING_API void AB_Transaction_Attach(AB_TRANSACTION *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQBANKING_API AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQBANKING_API AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQBANKING_API int AB_Transaction_toDb(const AB_TRANSACTION*st, GWEN_DB_NODE *db);
@@ -828,6 +867,15 @@ AQBANKING_API const AB_VALUE *AB_Transaction_GetValue(const AB_TRANSACTION *el);
 AQBANKING_API void AB_Transaction_SetValue(AB_TRANSACTION *el, const AB_VALUE *d);
 
 /*@}*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_Fees
+*/
+AQBANKING_API const AB_VALUE *AB_Transaction_GetFees(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Fees
+*/
+AQBANKING_API void AB_Transaction_SetFees(AB_TRANSACTION *el, const AB_VALUE *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_Splits
@@ -1090,6 +1138,31 @@ AQBANKING_API const char *AB_Transaction_GetRemotePhone(const AB_TRANSACTION *el
 * Set the property @ref AB_TRANSACTION_RemotePhone
 */
 AQBANKING_API void AB_Transaction_SetRemotePhone(AB_TRANSACTION *el, const char *d);
+
+/*@}*/
+
+/** @name Additional Information for Investment Transfers
+ *
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_Units
+*/
+AQBANKING_API int AB_Transaction_GetUnits(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_Units
+*/
+AQBANKING_API void AB_Transaction_SetUnits(AB_TRANSACTION *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_UnitPrice
+*/
+AQBANKING_API const AB_VALUE *AB_Transaction_GetUnitPrice(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_UnitPrice
+*/
+AQBANKING_API void AB_Transaction_SetUnitPrice(AB_TRANSACTION *el, const AB_VALUE *d);
 
 /*@}*/
 

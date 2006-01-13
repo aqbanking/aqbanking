@@ -50,87 +50,87 @@ GWEN_INHERIT(AH_JOB, AH_JOB_SINGLETRANSFER);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SingleTransfer_new(AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account, AB_Job_TypeTransfer);
+AH_JOB *AH_Job_SingleTransfer_new(AB_USER *u,
+                                  AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeTransfer);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SingleDebitNote_new(AH_CUSTOMER *cu,
-                                   AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account, AB_Job_TypeDebitNote);
+AH_JOB *AH_Job_SingleDebitNote_new(AB_USER *u,
+                                   AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeDebitNote);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_CreateStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_CreateStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeCreateStandingOrder);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_ModifyStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_ModifyStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeModifyStandingOrder);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_DeleteStandingOrder_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_DeleteStandingOrder_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeDeleteStandingOrder);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_CreateDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_CreateDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeCreateDatedTransfer);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_ModifyDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_ModifyDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeModifyDatedTransfer);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_DeleteDatedTransfer_new(AH_CUSTOMER *cu,
-                                       AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_DeleteDatedTransfer_new(AB_USER *u,
+                                       AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeDeleteDatedTransfer);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_InternalTransfer_new(AH_CUSTOMER *cu,
-                                    AH_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(cu, account,
+AH_JOB *AH_Job_InternalTransfer_new(AB_USER *u,
+                                    AB_ACCOUNT *account) {
+  return AH_Job_SingleTransferBase_new(u, account,
                                        AB_Job_TypeInternalTransfer);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SingleTransferBase_new(AH_CUSTOMER *cu,
-                                      AH_ACCOUNT *account,
+AH_JOB *AH_Job_SingleTransferBase_new(AB_USER *u,
+                                      AB_ACCOUNT *account,
                                       AB_JOB_TYPE jobType) {
   AH_JOB *j;
   AH_JOB_SINGLETRANSFER *aj;
@@ -138,31 +138,31 @@ AH_JOB *AH_Job_SingleTransferBase_new(AH_CUSTOMER *cu,
 
   switch(jobType) {
   case AB_Job_TypeTransfer:
-    j=AH_AccountJob_new("JobSingleTransfer", cu, account);
+    j=AH_AccountJob_new("JobSingleTransfer", u, account);
     break;
   case AB_Job_TypeDebitNote:
-    j=AH_AccountJob_new("JobSingleDebitNote", cu, account);
+    j=AH_AccountJob_new("JobSingleDebitNote", u, account);
     break;
   case AB_Job_TypeCreateStandingOrder:
-    j=AH_AccountJob_new("JobCreateStandingOrder", cu, account);
+    j=AH_AccountJob_new("JobCreateStandingOrder", u, account);
     break;
   case AB_Job_TypeModifyStandingOrder:
-    j=AH_AccountJob_new("JobModifyStandingOrder", cu, account);
+    j=AH_AccountJob_new("JobModifyStandingOrder", u, account);
     break;
   case AB_Job_TypeDeleteStandingOrder:
-    j=AH_AccountJob_new("JobDeleteStandingOrder", cu, account);
+    j=AH_AccountJob_new("JobDeleteStandingOrder", u, account);
     break;
   case AB_Job_TypeCreateDatedTransfer:
-    j=AH_AccountJob_new("JobCreateDatedTransfer", cu, account);
+    j=AH_AccountJob_new("JobCreateDatedTransfer", u, account);
     break;
   case AB_Job_TypeModifyDatedTransfer:
-    j=AH_AccountJob_new("JobModifyDatedTransfer", cu, account);
+    j=AH_AccountJob_new("JobModifyDatedTransfer", u, account);
     break;
   case AB_Job_TypeDeleteDatedTransfer:
-    j=AH_AccountJob_new("JobDeleteDatedTransfer", cu, account);
+    j=AH_AccountJob_new("JobDeleteDatedTransfer", u, account);
     break;
   case AB_Job_TypeInternalTransfer:
-    j=AH_AccountJob_new("JobInternalTransfer", cu, account);
+    j=AH_AccountJob_new("JobInternalTransfer", u, account);
     break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", jobType);
@@ -623,13 +623,13 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local bank code */
   s=AB_Transaction_GetLocalBankCode(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local bank code, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetBankId(a);
+    s=AB_Account_GetBankCode(a);
     assert(s);
     AB_Transaction_SetLocalBankCode(t, s);
   }
@@ -637,13 +637,13 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account number */
   s=AB_Transaction_GetLocalAccountNumber(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
 	     "No local account number, filling in");
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
-    s=AH_Account_GetAccountId(a);
+    s=AB_Account_GetAccountNumber(a);
     assert(s);
     AB_Transaction_SetLocalAccountNumber(t, s);
   }
@@ -651,7 +651,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   /* check local account suffix */
   s=AB_Transaction_GetLocalSuffix(t);
   if (!s) {
-    AH_ACCOUNT *a;
+    AB_ACCOUNT *a;
 
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "No local suffix, filling in (if possible)");

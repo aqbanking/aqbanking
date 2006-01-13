@@ -32,8 +32,7 @@ GWEN_LIST2_FUNCTIONS(AB_ACCOUNT, AB_Account)
 
 
 AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
-                           AB_PROVIDER *pro,
-                           const char *idForProvider){
+                           AB_PROVIDER *pro){
   AB_ACCOUNT *a;
 
   assert(ab);
@@ -44,51 +43,15 @@ AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
   GWEN_LIST_INIT(AB_ACCOUNT, a);
   a->banking=ab;
   a->provider=pro;
+  a->backendName=strdup(AB_Provider_GetName(pro));
   a->data=GWEN_DB_Group_new("Data");
-  if (idForProvider)
-    GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "static/idForProvider", idForProvider);
 
   return a;
 }
 
 
 
-AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab,
-                              GWEN_DB_NODE *db){
-  AB_ACCOUNT *a;
-  GWEN_DB_NODE *dbT;
-  const char *pname;
-
-  assert(ab);
-  pname=GWEN_DB_GetCharValue(db, "provider", 0, 0);
-  assert(pname);
-
-  GWEN_NEW_OBJECT(AB_ACCOUNT, a);
-  a->usage=1;
-  GWEN_INHERIT_INIT(AB_ACCOUNT, a);
-  GWEN_LIST_INIT(AB_ACCOUNT, a);
-  a->banking=ab;
-  a->providerName=strdup(pname);
-  a->data=GWEN_DB_Group_new("Data");
-  dbT=GWEN_DB_GetGroup(a->data, GWEN_DB_FLAGS_DEFAULT, "static");
-  assert(dbT);
-  GWEN_DB_AddGroupChildren(dbT, db);
-
-  /* preset */
-  if (AB_Account_GetCountry(a)==0)
-    AB_Account_SetCountry(a, "de");
-
-  /* mark DB not-dirty */
-  GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
-
-  return a;
-}
-
-
-
-AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
-                                          GWEN_DB_NODE *db){
+AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_ACCOUNT *a;
   GWEN_DB_NODE *dbT;
   const char *pname;
@@ -111,10 +74,15 @@ AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
   GWEN_LIST_INIT(AB_ACCOUNT, a);
   a->banking=ab;
   a->provider=pro;
+  a->backendName=strdup(pname);
   a->data=GWEN_DB_Group_new("Data");
   dbT=GWEN_DB_GetGroup(a->data, GWEN_DB_FLAGS_DEFAULT, "static");
   assert(dbT);
   GWEN_DB_AddGroupChildren(dbT, db);
+
+  /* preset */
+  if (AB_Account_GetCountry(a)==0)
+    AB_Account_SetCountry(a, "de");
 
   /* mark DB not-dirty */
   GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
@@ -124,19 +92,195 @@ AB_ACCOUNT *AB_Account_fromDbWithProvider(AB_BANKING *ab,
 
 
 
-int AB_Account_Update(AB_ACCOUNT *a){
+const char *AB_Account_GetBackendName(const AB_ACCOUNT *a) {
+  assert(a);
+  assert(a->usage);
+  return a->backendName;
+}
+
+
+
+AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *a) {
+  AB_USER_LIST2 *ul;
+  int i;
 
   assert(a);
   assert(a->usage);
 
-  /* let provider update account data */
-  a->availability=AB_Provider_UpdateAccount(a->provider, a);
-  if (a->availability) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Error updating account by backend");
-    return a->availability;
+  ul=AB_User_List2_new();
+  for (i=0; ; i++) {
+    GWEN_TYPE_UINT32 id;
+    AB_USER *u;
+
+    id=GWEN_DB_GetIntValue(a->data, "static/user", i, 0);
+    if (id==0)
+      break;
+    u=AB_Banking_GetUser(a->banking, id);
+    if (u) {
+      AB_User_List2_PushBack(ul, u);
+    }
+    else {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "User with id \"%08x\" not found", id);
+    }
   }
 
+  if (AB_User_List2_GetSize(ul)==0) {
+    AB_User_List2_free(ul);
+    return 0;
+  }
+
+  return ul;
+}
+
+
+
+AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *a) {
+  GWEN_TYPE_UINT32 id;
+  AB_USER *u;
+
+  assert(a);
+  assert(a->usage);
+
+  id=GWEN_DB_GetIntValue(a->data, "static/user", 0, 0);
+  if (id==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No user");
+    return 0;
+  }
+  u=AB_Banking_GetUser(a->banking, id);
+  if (u)
+    return u;
+  DBG_WARN(AQBANKING_LOGDOMAIN, "User with id \"%08x\" not found", id);
   return 0;
+}
+
+
+
+void AB_Account_SetUsers(AB_ACCOUNT *a, const AB_USER_LIST2 *ul) {
+  assert(a);
+  assert(a->usage);
+
+  GWEN_DB_DeleteVar(a->data, "static/user");
+  if (ul) {
+    AB_USER_LIST2_ITERATOR *it;
+
+    it=AB_User_List2_First(ul);
+    if (it) {
+      AB_USER *u;
+
+      u=AB_User_List2Iterator_Data(it);
+      while(u) {
+        GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_DEFAULT,
+                            "static/user", AB_User_GetUniqueId(u));
+        u=AB_User_List2Iterator_Next(it);
+      }
+      AB_User_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void AB_Account_SetUser(AB_ACCOUNT *a, const AB_USER *u) {
+  assert(a);
+  assert(a->usage);
+
+  GWEN_DB_DeleteVar(a->data, "static/user");
+  if (u)
+    GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_DEFAULT,
+                        "static/user", AB_User_GetUniqueId(u));
+}
+
+
+
+AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *a) {
+  AB_USER_LIST2 *ul;
+  int i;
+
+  assert(a);
+  assert(a->usage);
+
+  ul=AB_User_List2_new();
+  for (i=0; ; i++) {
+    GWEN_TYPE_UINT32 id;
+    AB_USER *u;
+
+    id=GWEN_DB_GetIntValue(a->data, "static/selectedUser", i, 0);
+    if (id==0)
+      break;
+    u=AB_Banking_GetUser(a->banking, id);
+    if (u) {
+      AB_User_List2_PushBack(ul, u);
+    }
+    else {
+      DBG_WARN(AQBANKING_LOGDOMAIN,
+               "User with id \"%08x\" not found", id);
+    }
+  }
+
+  if (AB_User_List2_GetSize(ul)==0) {
+    AB_User_List2_free(ul);
+    return 0;
+  }
+
+  return ul;
+}
+
+
+
+AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *a) {
+  GWEN_TYPE_UINT32 id;
+  AB_USER *u;
+
+  assert(a);
+  assert(a->usage);
+
+  id=GWEN_DB_GetIntValue(a->data, "static/selectedUser", 0, 0);
+  if (id==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No user");
+    return 0;
+  }
+  u=AB_Banking_GetUser(a->banking, id);
+  if (u)
+    return u;
+  DBG_WARN(AQBANKING_LOGDOMAIN, "User with id \"%08x\" not found", id);
+  return 0;
+}
+
+
+
+void AB_Account_SetSelectedUsers(AB_ACCOUNT *a, const AB_USER_LIST2 *ul) {
+  assert(a);
+  assert(a->usage);
+
+  GWEN_DB_DeleteVar(a->data, "static/selectedUser");
+  if (ul) {
+    AB_USER_LIST2_ITERATOR *it;
+
+    it=AB_User_List2_First(ul);
+    if (it) {
+      AB_USER *u;
+
+      u=AB_User_List2Iterator_Data(it);
+      while(u) {
+        GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_DEFAULT,
+                            "static/selectedUser", AB_User_GetUniqueId(u));
+        u=AB_User_List2Iterator_Next(it);
+      }
+      AB_User_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u) {
+  assert(a);
+  assert(a->usage);
+
+  GWEN_DB_DeleteVar(a->data, "static/selectedUser");
+  if (u)
+    GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_DEFAULT,
+                        "static/selectedUser", AB_User_GetUniqueId(u));
 }
 
 
@@ -164,7 +308,7 @@ void AB_Account_free(AB_ACCOUNT *a){
       DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Destroying AB_ACCOUNT");
       GWEN_INHERIT_FINI(AB_ACCOUNT, a);
       GWEN_LIST_FINI(AB_ACCOUNT, a);
-      free(a->providerName);
+      free(a->backendName);
       GWEN_DB_Group_free(a->data);
       GWEN_FREE_OBJECT(a);
     }
@@ -176,14 +320,6 @@ void AB_Account_free(AB_ACCOUNT *a){
 void AB_Account_Attach(AB_ACCOUNT *a){
   assert(a);
   a->usage++;
-}
-
-
-
-int AB_Account_CheckAvailability(AB_ACCOUNT *a){
-  assert(a);
-  assert(a->usage);
-  return a->availability;
 }
 
 
@@ -236,7 +372,7 @@ GWEN_DB_NODE *AB_Account_GetAppData(const AB_ACCOUNT *a){
 
   assert(a);
   assert(a->usage);
-  appName=AB_Banking_GetAppName(a->banking);
+  appName=AB_Banking_GetEscapedAppName(a->banking);
   assert(appName);
   n=GWEN_DB_GetGroup(a->data, GWEN_DB_FLAGS_DEFAULT, "static/apps");
   assert(n);
@@ -423,10 +559,9 @@ AB_ACCOUNT *AB_Account_dup(AB_ACCOUNT *acc){
   GWEN_LIST_INIT(AB_ACCOUNT, a);
   a->banking=acc->banking;
   a->provider=acc->provider;
-  if (acc->providerName)
-    a->providerName=strdup(acc->providerName);
+  if (acc->backendName)
+    a->backendName=strdup(acc->backendName);
   a->data=GWEN_DB_Group_dup(acc->data);
-  a->availability=acc->availability;
   return a;
 }
 

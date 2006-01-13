@@ -64,9 +64,9 @@
      <SEG type="getKey" name="signKey" />
      <VALUES>
        <VALUE path="ident/customerId">9999999999</VALUE>
-       <VALUE path="ident/systemId">0</VALUE>
        <!-- No system id is needed in this special case -->
        <VALUE path="ident/status">0</VALUE>
+       <VALUE path="ident/systemId">0</VALUE>
        <VALUE path="cryptkey/key/keytype">V</VALUE>
        <VALUE path="cryptkey/key/keynum">999</VALUE>
        <VALUE path="cryptkey/key/keyversion">999</VALUE>

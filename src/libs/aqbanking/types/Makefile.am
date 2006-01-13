@@ -1,8 +1,10 @@
 INCLUDES=-I$(top_builddir)/headers @all_includes@
 
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+
 noinst_LTLIBRARIES=libtypes.la
 
-typefiles=transaction.xml pin.xml bankinfo.xml eutransferinfo.xml
+typefiles=transaction.xml pin.xml bankinfo.xml eutransferinfo.xml user.xml
 
 EXTRA_DIST=$(typefiles)
 
@@ -24,6 +26,9 @@ noinst_HEADERS=\
   transaction_p.h \
   transactionlimits_l.h \
   transactionlimits_p.h \
+  user_l.h \
+  user_p.h \
+  userfns_l.h \
   value_p.h
 
 
@@ -38,6 +43,8 @@ iheader_HEADERS=\
   transactionfns.h \
   transactionlimits.h \
   eutransferinfo.h \
+  user.h \
+  userfns.h \
   value.h
 
 libtypes_la_SOURCES=\
@@ -51,6 +58,8 @@ libtypes_la_SOURCES=\
   transaction.c \
   transactionfns.c \
   transactionlimits.c \
+  user.c \
+  userfns.c \
   value.c
 
 

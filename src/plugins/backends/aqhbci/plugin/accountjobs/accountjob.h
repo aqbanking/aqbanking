@@ -16,15 +16,14 @@
 
 
 #include <aqhbci/job.h>
-#include <aqhbci/account.h>
-#include <aqhbci/customer.h>
+#include <aqbanking/account.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-AH_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j);
+AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j);
 
 
 

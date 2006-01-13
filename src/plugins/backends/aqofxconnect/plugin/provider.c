@@ -20,6 +20,7 @@
 #include "account.h"
 #include "queues_l.h"
 #include "context_l.h"
+#include "user.h"
 
 #include <aqbanking/account_be.h>
 #include <aqbanking/job_be.h>
@@ -82,8 +83,7 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AO_PROVIDER, pro, dp,
                        AO_Provider_FreeData);
   dp->bankingJobs=AB_Job_List2_new();
-  dp->banks=AO_Bank_List_new();
-  dp->bankQueues=AO_BankQueue_List_new();
+  dp->queue=AO_Queue_new();
 
   AB_Provider_SetInitFn(pro, AO_Provider_Init);
   AB_Provider_SetFiniFn(pro, AO_Provider_Fini);
@@ -91,8 +91,6 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   AB_Provider_SetAddJobFn(pro, AO_Provider_AddJob);
   AB_Provider_SetExecuteFn(pro, AO_Provider_Execute);
   AB_Provider_SetResetQueueFn(pro, AO_Provider_ResetQueue);
-  AB_Provider_SetGetAccountListFn(pro, AO_Provider_GetAccountList);
-  AB_Provider_SetUpdateAccountFn(pro, AO_Provider_UpdateAccount);
 
   return pro;
 }
@@ -105,8 +103,7 @@ void AO_Provider_FreeData(void *bp, void *p) {
   dp=(AO_PROVIDER*)p;
   assert(dp);
 
-  AO_BankQueue_List_free(dp->bankQueues);
-  AO_Bank_List_free(dp->banks);
+  AO_Queue_free(dp->queue);
   AB_Job_List2_free(dp->bankingJobs);
 
   GWEN_FREE_OBJECT(dp);
@@ -120,7 +117,6 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   const char *s;
 #endif
   const char *logLevelName;
-  GWEN_DB_NODE *dbT;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
@@ -165,19 +161,6 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   dp->recvTimeout=GWEN_DB_GetIntValue(dp->dbConfig, "recvTimeout", 0,
                                       AO_PROVIDER_RECV_TIMEOUT);
 
-  dbT=GWEN_DB_GetGroup(dbData, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banks");
-  if (dbT) {
-    dbT=GWEN_DB_FindFirstGroup(dbT, "bank");
-    while(dbT) {
-      AO_BANK *b;
-
-      b=AO_Bank_fromDb(pro, dbT);
-      assert(b);
-      AO_Bank_List_Add(b, dp->banks);
-      dbT=GWEN_DB_FindNextGroup(dbT, "bank");
-    }
-  }
-
   return 0;
 }
 
@@ -202,34 +185,9 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "recvTimeout", dp->recvTimeout);
 
-  GWEN_DB_ClearGroup(dbData, "banks");
-  if (AO_Bank_List_GetCount(dp->banks)) {
-    AO_BANK *b;
-    GWEN_DB_NODE *dbG;
-
-    dbG=GWEN_DB_GetGroup(dbData, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "banks");
-    assert(dbG);
-    b=AO_Bank_List_First(dp->banks);
-    assert(b);
-    while(b) {
-      GWEN_DB_NODE *dbT;
-
-      dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP, "bank");
-      if (AO_Bank_toDb(b, dbT)) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-                  "Could not store bank \"%s\"",
-                  AO_Bank_GetBankId(b));
-        abort();
-      }
-      b=AO_Bank_List_Next(b);
-    }
-  }
-
   dp->dbConfig=0;
-  AO_BankQueue_List_Clear(dp->bankQueues);
+  AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
-  AO_Bank_List_Clear(dp->banks);
 
   DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Deinit done");
 
@@ -241,118 +199,12 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-AO_BANK *AO_Provider_FindMyBank(AB_PROVIDER *pro,
-                                const char *country,
-                                const char *bid) {
-  AO_PROVIDER *dp;
-  AO_BANK *b;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  b=AO_Bank_List_First(dp->banks);
-  while(b) {
-    const char *s;
-
-    s=AO_Bank_GetCountry(b);
-    if (s && strcasecmp(s, country)==0) {
-      s=AO_Bank_GetBankId(b);
-      if (s && strcasecmp(s, bid)==0) {
-        /* bank has a bank id, compare it */
-        break;
-      }
-      else {
-        AB_ACCOUNT *a;
-
-        /* bank has no bank id or it doesn't match the requested one.
-         * Scan all accounts of this bank for the given bank id */
-        a=AB_Account_List_First(AO_Bank_GetAccounts(b));
-        while(a) {
-          s=AB_Account_GetBankCode(a);
-          if (s && strcasecmp(s, bid)==0)
-            /* account's bank id matches the wanted one */
-            break;
-          a=AB_Account_List_Next(a);
-        }
-        if (a)
-          break;
-      }
-    }
-    b=AO_Bank_List_Next(b);
-  }
-
-  return b;
-}
-
-
-
-AB_ACCOUNT *AO_Provider_FindMyAccount(AB_PROVIDER *pro,
-                                      const char *country,
-                                      const char *bankCode,
-                                      const char *accountNumber) {
-  AO_PROVIDER *dp;
-  AB_ACCOUNT *a;
-  AO_BANK *b;
-
-  assert(bankCode);
-  assert(accountNumber);
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  if (!country || !(*country))
-    country="us";
-
-  b=AO_Provider_FindMyBank(pro, country, bankCode);
-  if (!b) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Bank \"%s/%s\" not found",
-             country, bankCode);
-    return 0;
-  }
-
-  a=AO_Bank_FindAccount(b, accountNumber);
-  if (!a) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Backend account not found");
-    return 0;
-  }
-
-  return a;
-}
-
-
-
-AB_ACCOUNT *AO_Provider_FindMyAccountByAccount(AB_PROVIDER *pro,
-                                               AB_ACCOUNT *ba) {
-  const char *country;
-  const char *bankCode;
-  const char *accountId;
-
-  country=AB_Account_GetCountry(ba);
-  if (!country || !*country)
-    country="us";
-  bankCode=AB_Account_GetBankCode(ba);
-  assert(bankCode);
-  accountId=AB_Account_GetAccountNumber(ba);
-  assert(accountId);
-  return AO_Provider_FindMyAccount(pro, country, bankCode, accountId);
-}
-
-
-
 int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   AO_PROVIDER *dp;
-  AB_ACCOUNT *da;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
-
-  da=AO_Provider_FindMyAccountByAccount(pro, AB_Job_GetAccount(j));
-  if (!da) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Account not managed by this backend");
-    return AB_ERROR_INVALID;
-  }
 
   switch(AB_Job_GetType(j)) {
   case AB_Job_TypeGetBalance:
@@ -374,37 +226,10 @@ int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
 
 
-AO_BANKQUEUE *AO_Provider_FindBankQueue(AB_PROVIDER *pro,
-                                        const char *country,
-                                        const char *bankId) {
-  AO_PROVIDER *dp;
-  AO_BANK *b;
-  AO_BANKQUEUE *bq;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  b=AO_Provider_FindMyBank(pro, country, bankId);
-  if (!b)
-    return 0;
-  bq=AO_BankQueue_List_First(dp->bankQueues);
-  while(bq) {
-    if (AO_BankQueue_GetBank(bq)==b)
-      break;
-    bq=AO_BankQueue_List_Next(bq);
-  }
-
-  return bq;
-}
-
-
-
 int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   AO_PROVIDER *dp;
-  AB_ACCOUNT *da;
-  const char *s;
-  AO_BANKQUEUE *bq;
+  AB_ACCOUNT *a;
+  AB_USER *u;
   AO_USERQUEUE *uq;
   int doAdd=1;
   GWEN_DB_NODE *dbJob;
@@ -413,11 +238,11 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  da=AO_Provider_FindMyAccountByAccount(pro, AB_Job_GetAccount(j));
-  if (!da) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Account not managed by this backend");
-    return AB_ERROR_INVALID;
-  }
+  a=AB_Job_GetAccount(j);
+  assert(a);
+
+  u=AB_Account_GetFirstUser(a);
+  assert(u);
 
   dbJob=AB_Job_GetProviderData(j, pro);
   assert(dbJob);
@@ -436,40 +261,9 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     return AB_ERROR_NOT_SUPPORTED;
   } /* switch */
 
-  bq=AO_Provider_FindBankQueue(pro,
-                               AB_Account_GetCountry(da),
-                               AB_Account_GetBankCode(da));
-  if (!bq) {
-    AO_BANK *b;
 
-    b=AO_Provider_FindMyBank(pro,
-                             AB_Account_GetCountry(da),
-                             AB_Account_GetBankCode(da));
-    if (!b) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bank not found");
-      return AB_ERROR_INVALID;
-    }
-    bq=AO_BankQueue_new(b);
-    AO_BankQueue_List_Add(bq, dp->bankQueues);
-  }
-
-  s=AO_Account_GetUserId(da);
-  assert(s);
-  uq=AO_BankQueue_FindUserQueue(bq, s);
-  if (!uq) {
-    AO_USER *u;
-    AO_BANK *b;
-
-    b=AO_BankQueue_GetBank(bq);
-    assert(b);
-    u=AO_Bank_FindUser(b, s);
-    if (!u) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User \"%s\" not found", s);
-      return AB_ERROR_INVALID;
-    }
-    uq=AO_UserQueue_new(u);
-    AO_BankQueue_AddUserQueue(bq, uq);
-  }
+  uq=AO_Queue_GetUserQueue(dp->queue, u);
+  assert(uq);
 
   if (AB_Job_GetType(j)==AB_Job_TypeGetBalance) {
     AB_JOB_LIST2_ITERATOR *jit;
@@ -594,60 +388,9 @@ int AO_Provider_ResetQueue(AB_PROVIDER *pro){
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  AO_BankQueue_List_Clear(dp->bankQueues);
+  AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
 
-  return 0;
-}
-
-
-
-AB_ACCOUNT_LIST2 *AO_Provider_GetAccountList(AB_PROVIDER *pro){
-  AO_PROVIDER *dp;
-  AB_ACCOUNT_LIST2 *nl;
-  AO_BANK *b;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  if (AO_Bank_List_GetCount(dp->banks)==0)
-    return 0;
-
-  nl=AB_Account_List2_new();
-  b=AO_Bank_List_First(dp->banks);
-  while(b) {
-    AB_ACCOUNT *a;
-
-    a=AB_Account_List_First(AO_Bank_GetAccounts(b));
-    while(a) {
-      AB_ACCOUNT *na;
-
-      na=AB_Account_dup(a);
-      AB_Account_List2_PushBack(nl, na);
-      a=AB_Account_List_Next(a);
-    }
-    b=AO_Bank_List_Next(b);
-  }
-
-  if (AB_Account_List2_GetSize(nl)==0) {
-    AB_Account_List2_free(nl);
-    return 0;
-  }
-
-  return nl;
-}
-
-
-
-int AO_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AO_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "TODO: UpdateAccount");
   return 0;
 }
 
@@ -706,11 +449,11 @@ AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid) {
 
 int AO_Provider_Execute(AB_PROVIDER *pro){
   AO_PROVIDER *dp;
-  AO_BANKQUEUE *bq;
   int oks=0;
   int errors=0;
   AB_JOB_LIST2_ITERATOR *jit;
   GWEN_TYPE_UINT32 pid;
+  int rv;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
@@ -726,25 +469,21 @@ int AO_Provider_Execute(AB_PROVIDER *pro){
 				    "</html>"),
 			       AB_Job_List2_GetSize(dp->bankingJobs));
 
-  bq=AO_BankQueue_List_First(dp->bankQueues);
-  while(bq) {
-    int rv;
 
-    rv=AO_Provider_ExecBankQueue(pro, bq);
-    if (!rv)
-      oks++;
-    else
-      errors++;
+  rv=AO_Provider_ExecQueue(pro);
+  if (!rv)
+    oks++;
+  else {
+    errors++;
     if (rv==AB_ERROR_USER_ABORT) {
-      AO_BankQueue_List_Clear(dp->bankQueues);
+      AO_Queue_Clear(dp->queue);
       AB_Job_List2_Clear(dp->bankingJobs);
       AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
       return rv;
     }
-
-    bq=AO_BankQueue_List_Next(bq);
   }
 
+  /* set results in referencing jobs, too */
   jit=AB_Job_List2_First(dp->bankingJobs);
   if (jit) {
     AB_JOB *uj;
@@ -788,7 +527,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro){
 			     0,
 			     AO_Provider_CountDoneJobs(dp->bankingJobs));
 
-  AO_BankQueue_List_Clear(dp->bankQueues);
+  AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
   AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
 
@@ -799,59 +538,6 @@ int AO_Provider_Execute(AB_PROVIDER *pro){
 
   return 0;
 }
-
-
-
-int AO_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AO_PROVIDER *dp;
-  AO_BANK *b;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  b=AO_Provider_FindMyBank(pro,
-                           AB_Account_GetCountry(a),
-                           AB_Account_GetBankCode(a));
-  if(!b) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bank \"%s/%s\" not found",
-              AB_Account_GetCountry(a),
-              AB_Account_GetBankCode(a));
-    return -1;
-  }
-  AO_Bank_AddAccount(b, a);
-  return 0;
-}
-
-
-
-int AO_Provider_RemoveAccount(AB_PROVIDER *pro, AB_ACCOUNT *a){
-  AO_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  AB_Account_List_Del(a);
-  return 0;
-}
-
-
-
-int AO_Provider_HasAccount(AB_PROVIDER *pro,
-                           const char *country,
-                           const char *bankCode,
-                           const char *accountNumber){
-  AO_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  return (AO_Provider_FindMyAccount(pro, country, bankCode, accountNumber)!=
-          0);
-}
-
 
 
 
@@ -903,17 +589,18 @@ int AO_Provider_EncodeJob(AB_PROVIDER *pro,
 
 
 void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
-                                   const AO_BANK *b,
+                                   const AB_USER *u,
                                    GWEN_BUFFER *nbuf) {
   const char *s;
 
   AB_Provider_GetUserDataDir(pro, nbuf);
   GWEN_Buffer_AppendString(nbuf, "/banks/");
-  s=AO_Bank_GetCountry(b);
-  assert(s);
+  s=AB_User_GetCountry(u);
+  if (!s || !*s)
+    s="us";
   GWEN_Buffer_AppendString(nbuf, s);
   GWEN_Buffer_AppendByte(nbuf, '/');
-  s=AO_Bank_GetBankId(b);
+  s=AB_User_GetBankCode(u);
   assert(s);
   GWEN_Buffer_AppendString(nbuf, s);
   GWEN_Buffer_AppendByte(nbuf, '/');
@@ -924,16 +611,15 @@ void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
 
 
 GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
-                                            AO_USER *u) {
+                                            AB_USER *u) {
   AO_PROVIDER *dp;
   GWEN_NETLAYER *nlBase;
   GWEN_NETLAYER *nl;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
-  AO_BANK *b;
   const char *bankAddr;
   int bankPort;
-  AO_BANK_SERVERTYPE addrType;
+  AO_USER_SERVERTYPE addrType;
   GWEN_ERRORCODE err;
   GWEN_BUFFER *nbuf;
   GWEN_URL *url;
@@ -943,31 +629,28 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  b=AO_User_GetBank(u);
-  assert(b);
-
   /* create socket */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
 
   /* create transport layer */
   nlBase=GWEN_NetLayerSocket_new(sk, 1);
 
-  addrType=AO_Bank_GetServerType(b);
+  addrType=AO_User_GetServerType(u);
 
   /* get address */
-  bankAddr=AO_Bank_GetServerAddr(b);
+  bankAddr=AO_User_GetServerAddr(u);
   if (!bankAddr) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User has no valid address settings");
     GWEN_NetLayer_free(nlBase);
     return 0;
   }
 
-  bankPort=AO_Bank_GetServerPort(b);
+  bankPort=AO_User_GetServerPort(u);
   if (bankPort<1) {
     /* set default port if none given */
     switch(addrType) {
-    case AO_Bank_ServerTypeHTTP:  bankPort=80; break;
-    case AO_Bank_ServerTypeHTTPS: bankPort=443; break;
+    case AO_User_ServerTypeHTTP:  bankPort=80; break;
+    case AO_User_ServerTypeHTTPS: bankPort=443; break;
     default:
       DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
                "Unknown address type (%d), assuming HTTPS",
@@ -1047,13 +730,13 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
   GWEN_InetAddr_free(addr);
 
   switch(addrType) {
-  case AO_Bank_ServerTypeHTTP:
+  case AO_User_ServerTypeHTTP:
     nl=nlBase;
     break;
 
-  case AO_Bank_ServerTypeHTTPS:
+  case AO_User_ServerTypeHTTPS:
     nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AO_Provider_AddBankCertFolder(pro, b, nbuf);
+    AO_Provider_AddBankCertFolder(pro, u, nbuf);
 
     AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
                            AB_Banking_LogLevelNotice,
@@ -1106,19 +789,16 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
 
 int AO_Provider_SendMessage(AB_PROVIDER *pro,
-                            AO_USER *u,
+                            AB_USER *u,
 			    GWEN_NETLAYER *nl,
                             const char *p,
                             unsigned int plen) {
   GWEN_BUFFER *nbuf;
   GWEN_NETLAYER_STATUS nst;
-  AO_BANK *b;
   GWEN_NL_PACKET *pk;
   int rv;
 
   assert(u);
-  b=AO_User_GetBank(u);
-  assert(b);
 
   nst=GWEN_NetLayer_GetStatus(nl);
   if (nst==GWEN_NetLayerStatus_Disconnected) {
@@ -1150,7 +830,7 @@ int AO_Provider_SendMessage(AB_PROVIDER *pro,
 
 
 int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
-                               AO_USER *u,
+                               AB_USER *u,
                                const char *p,
                                unsigned int plen,
                                GWEN_BUFFER **rbuf) {
@@ -1220,7 +900,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
     return rv;
   }
 
-  /* make sure message gets send */
+  /* make sure message gets sent */
   rv=GWEN_NetLayerPackets_Flush(nl, dp->sendTimeout);
   if (rv) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
@@ -1303,8 +983,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   char *msg;
   GWEN_BUFFER *rbuf;
   int rv;
-  AO_BANK *b;
-  AO_USER *u;
+  AB_USER *u;
   GWEN_TYPE_UINT32 pid;
   AB_IMEXPORTER_CONTEXT *ictx;
 
@@ -1312,12 +991,9 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  b=AO_Provider_FindMyBank(pro, country, bankId);
-  if (!b) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bank \"%s\" not found", bankId);
-    return AB_ERROR_INVALID;
-  }
-  u=AO_Bank_FindUser(b, userId);
+  u=AB_Banking_FindUser(AB_Provider_GetBanking(pro),
+                        AQOFXCONNECT_BACKENDNAME,
+                        country, bankId, userId, "*");
   if (!u) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User \"%s\" not found", userId);
     return AB_ERROR_INVALID;
@@ -1335,7 +1011,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
                                     "</html>"),
 			       1);
   ictx=AB_ImExporterContext_new();
-  ctx=AO_Context_new(AO_User_GetBank(u), u, 0, ictx);
+  ctx=AO_Context_new(u, 0, ictx);
   assert(ctx);
   rv=AO_Context_Update(ctx);
   if (rv) {
@@ -1413,14 +1089,8 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   char *msg;
   GWEN_BUFFER *rbuf;
   int rv;
-  AO_BANK *b;
-  AO_USER *u;
-  AB_ACCOUNT *ba;
+  AB_USER *u;
   AB_ACCOUNT *a;
-  const char *country;
-  const char *bankId;
-  const char *accountId;
-  const char *userId;
   time_t t=0;
 
   assert(pro);
@@ -1428,34 +1098,10 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   assert(dp);
 
   /* get all data for the context */
-  ba=AB_Job_GetAccount(j);
-  assert(ba);
-  country=AB_Account_GetCountry(ba);
-  bankId=AB_Account_GetBankCode(ba);
-  accountId=AB_Account_GetAccountNumber(ba);
-  b=AO_Provider_FindMyBank(pro, country, bankId);
-  if (!b) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bank \"%s\" not found", bankId);
-    return AB_ERROR_INVALID;
-  }
-  a=AO_Bank_FindAccount(b, accountId);
-  if (!a) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Account \"%s/%s\" not found", bankId, accountId);
-    return AB_ERROR_INVALID;
-  }
-  userId=AO_Account_GetUserId(a);
-  if (!userId || !*userId) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "No user id in account \"%s/%s\"", bankId, accountId);
-    return AB_ERROR_INVALID;
-  }
-  u=AO_Bank_FindUser(b, userId);
-  if (!u) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "User \"%s\" not found", userId);
-    return AB_ERROR_INVALID;
-  }
+  a=AB_Job_GetAccount(j);
+  assert(a);
+  u=AB_Account_GetFirstUser(a);
+  assert(u);
 
   /* get from time */
   if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
@@ -1467,7 +1113,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   }
 
   /* create and setup context */
-  ctx=AO_Context_new(b, u, j, ictx);
+  ctx=AO_Context_new(u, j, ictx);
   assert(ctx);
   rv=AO_Context_Update(ctx);
   if (rv) {
@@ -1704,7 +1350,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq){
 
 
 
-int AO_Provider_ExecBankQueue(AB_PROVIDER *pro, AO_BANKQUEUE *bq) {
+int AO_Provider_ExecQueue(AB_PROVIDER *pro) {
   AO_USERQUEUE *uq;
   AO_PROVIDER *dp;
   int errors=0;
@@ -1715,7 +1361,7 @@ int AO_Provider_ExecBankQueue(AB_PROVIDER *pro, AO_BANKQUEUE *bq) {
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  uq=AO_UserQueue_List_First(AO_BankQueue_GetUserQueues(bq));
+  uq=AO_Queue_FirstUserQueue(dp->queue);
   while(uq) {
     rv=AO_Provider_ExecUserQueue(pro, uq);
     if (rv)
@@ -1736,68 +1382,6 @@ int AO_Provider_ExecBankQueue(AB_PROVIDER *pro, AO_BANKQUEUE *bq) {
 
   return 0;
 }
-
-
-
-AB_ACCOUNT_LIST2 *AO_Provider_GetAccounts(AB_PROVIDER *pro) {
-  AO_PROVIDER *dp;
-  AB_ACCOUNT_LIST2 *nl;
-  AO_BANK *b;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  if (AO_Bank_List_GetCount(dp->banks)==0)
-    return 0;
-
-  nl=AB_Account_List2_new();
-  b=AO_Bank_List_First(dp->banks);
-  while(b) {
-    AB_ACCOUNT *a;
-
-    a=AB_Account_List_First(AO_Bank_GetAccounts(b));
-    while(a) {
-      AB_Account_List2_PushBack(nl, a);
-      a=AB_Account_List_Next(a);
-    }
-    b=AO_Bank_List_Next(b);
-  }
-
-  if (AB_Account_List2_GetSize(nl)==0) {
-    AB_Account_List2_free(nl);
-    return 0;
-  }
-
-  return nl;
-}
-
-
-
-int AO_Provider_AddBank(AB_PROVIDER *pro, AO_BANK *b) {
-  AO_PROVIDER *dp;
-
-  assert(b);
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  AO_Bank_List_Add(b, dp->banks);
-  return 0;
-}
-
-
-
-AO_BANK_LIST *AO_Provider_GetBanks(const AB_PROVIDER *pro) {
-  AO_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  return dp->banks;
-}
-
 
 
 

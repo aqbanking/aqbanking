@@ -19,6 +19,7 @@
 #define AQBANKING_PROVIDER_BE_H
 
 #include <aqbanking/provider.h>
+#include <aqbanking/user.h>
 
 
 #ifdef __cplusplus
@@ -43,12 +44,31 @@ extern "C" {
  * letters. For AqHBCI this function is called "aqhbci_factory".
  * </p>
  * @param ab AqBanking main object
- * @param dbData GWEN_DB group for the data of the backend (as returned by
- *   @ref AB_Provider_GetData). This group MUST NOT be freed or unlinked, it
- *   is a group inside AqBankings config database.
  */
-typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab,
-                                               GWEN_DB_NODE *db);
+typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab);
+
+
+typedef enum {
+  /** Object to be extended has just been created. For some backends this
+   * means that some settings are allowed to be missing at this point.*/
+  AB_ProviderExtendMode_Create=0,
+  /** Object to be extended has been read from the configuration file */
+  AB_ProviderExtendMode_Extend,
+  /** Object to be extended has just been added to internal lists.
+   * For the backend this might mean that the object should be completely
+   * setup at this point. */
+  AB_ProviderExtendMode_Add,
+  /** Object to be extended is just about to be removed from the internal
+   * list. */
+  AB_ProviderExtendMode_Remove,
+  /** This extend mode just lets the backend store data which has not yet
+   * been stored into the users/accounts DB.
+   * Please note that in this mode the backend might no longer be
+   * initialized, so you should not call any other provider function (or call
+   * @ref AB_Provider_IsInit to see whether the backend still is initialized).
+   */
+  AB_ProviderExtendMode_Save
+} AB_PROVIDER_EXTEND_MODE;
 
 
 /** @name Prototypes For Virtual Functions
@@ -86,20 +106,26 @@ typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro);
  */
 typedef int (*AB_PROVIDER_RESETQUEUE_FN)(AB_PROVIDER *pro);
 
-/**
- * See @ref AB_Provider_GetAccountList.
- */
-typedef AB_ACCOUNT_LIST2* (*AB_PROVIDER_GETACCOUNTLIST_FN)(AB_PROVIDER *pro);
 
 /**
- * See @ref AB_Provider_UpdateAccount.
+ * See @ref AB_Provider_ExtendUser.
  */
-typedef int (*AB_PROVIDER_UPDATEACCOUNT_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
+typedef int (*AB_PROVIDER_EXTEND_USER_FN)(AB_PROVIDER *pro, AB_USER *u,
+                                          AB_PROVIDER_EXTEND_MODE um);
+
 
 /**
- * See @ref AB_Provider_AddAccount.
+ * See @ref AB_Provider_ExtendAccount.
  */
-typedef int (*AB_PROVIDER_ADDACCOUNT_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
+typedef int (*AB_PROVIDER_EXTEND_ACCOUNT_FN)(AB_PROVIDER *pro,
+                                             AB_ACCOUNT *a,
+                                             AB_PROVIDER_EXTEND_MODE um);
+
+typedef int (*AB_PROVIDER_UPDATE_FN)(AB_PROVIDER *pro,
+                                     GWEN_TYPE_UINT32 lastVersion,
+                                     GWEN_TYPE_UINT32 currentVersion);
+
+
 /*@}*/
 
 
@@ -195,33 +221,37 @@ int AB_Provider_Execute(AB_PROVIDER *pro);
 AQBANKING_API
 int AB_Provider_ResetQueue(AB_PROVIDER *pro);
 
-/**
- * Returns a list of accounts managed by this backend. This is called by
- * AqBanking directly after activating a backend (upon every
- * @ref AB_Banking_Init).
- * AqBanking becomes the new owner of the list returned.
- * @param pro backend object
- */
-AQBANKING_API
-AB_ACCOUNT_LIST2 *AB_Provider_GetAccountList(AB_PROVIDER *pro);
 
 /**
- * Gives the backend the opportunity to update account information (such as
- * account name etc).
- * @param pro backend object
- * @param a account to be updated (AqBanking still remains its owner)
+ * Allows the backend to extend the given user (e.g. load backend-specific
+ * data for the given user).
  */
 AQBANKING_API
-int AB_Provider_UpdateAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                           AB_PROVIDER_EXTEND_MODE em);
+
 
 /**
- * This function is currently unused. It may later be used to add an account
- * to the backend which has been prepared by an application.
- * @param pro backend object
- * @param a account to be added (AqBanking still remains its owner)
+ * Allows the backend to extend the given account (e.g. load backend-specific
+ * data for the given account).
  */
 AQBANKING_API
-int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                              AB_PROVIDER_EXTEND_MODE em);
+
+
+/**
+ * Allows the backend to update AqBanking data.
+ * This function is called for each active provider after all backends, users
+ * and accounts have been loaded and initialised but before loading the
+ * outbox jobs.
+ */
+AQBANKING_API
+int AB_Provider_Update(AB_PROVIDER *pro,
+                       GWEN_TYPE_UINT32 lastVersion,
+                       GWEN_TYPE_UINT32 currentVersion);
+
+
 /*@}*/
 
 
@@ -243,15 +273,19 @@ AQBANKING_API
 void AB_Provider_SetExecuteFn(AB_PROVIDER *pro, AB_PROVIDER_EXECUTE_FN f);
 AQBANKING_API
 void AB_Provider_SetResetQueueFn(AB_PROVIDER *pro, AB_PROVIDER_RESETQUEUE_FN f);
+
 AQBANKING_API
-void AB_Provider_SetGetAccountListFn(AB_PROVIDER *pro,
-                                     AB_PROVIDER_GETACCOUNTLIST_FN f);
+void AB_Provider_SetExtendUserFn(AB_PROVIDER *pro,
+                                 AB_PROVIDER_EXTEND_USER_FN f);
+
 AQBANKING_API
-void AB_Provider_SetUpdateAccountFn(AB_PROVIDER *pro,
-                                    AB_PROVIDER_UPDATEACCOUNT_FN f);
+void AB_Provider_SetExtendAccountFn(AB_PROVIDER *pro,
+                                    AB_PROVIDER_EXTEND_ACCOUNT_FN f);
+
 AQBANKING_API
-void AB_Provider_SetAddAccountFn(AB_PROVIDER *pro,
-                                 AB_PROVIDER_ADDACCOUNT_FN f);
+void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f);
+
+
 /*@}*/
 
 

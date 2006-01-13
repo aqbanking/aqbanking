@@ -33,7 +33,7 @@ extern "C" {
 
 
 AQHBCI_API
-AH_JOB *AH_Job_GetKeys_new(AH_CUSTOMER *cu);
+AH_JOB *AH_Job_GetKeys_new(AB_USER *u);
 AQHBCI_API
 GWEN_CRYPTKEY *AH_Job_GetKeys_GetSignKey(const AH_JOB *j);
 AQHBCI_API
@@ -51,7 +51,7 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
 
 
 AQHBCI_API
-AH_JOB *AH_Job_SendKeys_new(AH_CUSTOMER *cu,
+AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
                             const GWEN_CRYPTKEY *cryptKey,
                             const GWEN_CRYPTKEY *signKey);
 
@@ -67,7 +67,7 @@ AH_JOB *AH_Job_SendKeys_new(AH_CUSTOMER *cu,
  */
 
 AQHBCI_API
-AH_JOB *AH_Job_GetSysId_new(AH_CUSTOMER *cu);
+AH_JOB *AH_Job_GetSysId_new(AB_USER *u);
 
 AQHBCI_API
 const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
@@ -84,7 +84,7 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
  */
 
 AQHBCI_API
-AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu);
+AH_JOB *AH_Job_UpdateBank_new(AB_USER *u);
 
 /**
  * Returns a list of accounts found by this job. This list might be empty
@@ -95,7 +95,7 @@ AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu);
  * You can not use any of these accounts directly for account jobs !
  */
 AQHBCI_API
-AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
+AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
 
 /**
  * Returns a list of accounts found by this job. This list might be empty
@@ -108,7 +108,7 @@ AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
  * You can not use any of these accounts directly for account jobs !
  */
 AQHBCI_API
-AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j);
+AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j);
 
 
 
@@ -131,7 +131,7 @@ typedef enum {
 
 
 AQHBCI_API
-AH_JOB *AH_Job_TestVersion_new(AH_CUSTOMER *cu, int anon);
+AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon);
 AQHBCI_API
 AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
 
@@ -144,7 +144,7 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
  */
 
 AQHBCI_API
-AH_JOB *AH_Job_GetStatus_new(AH_CUSTOMER *cu,
+AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate);
 AQHBCI_API

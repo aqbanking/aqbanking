@@ -36,8 +36,8 @@ int getAccounts(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
-  AH_CUSTOMER_LIST2 *cl;
-  AH_CUSTOMER *cu=0;
+  AB_USER_LIST2 *ul;
+  AB_USER *u=0;
   int rv;
   const char *bankId;
   const char *userId;
@@ -115,37 +115,40 @@ int getAccounts(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
 
-  cl=AH_HBCI_GetCustomers(hbci, 280, bankId, userId, customerId);
-  if (cl) {
-    if (AH_Customer_List2_GetSize(cl)!=1) {
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
+                          "de", bankId, userId, customerId);
+  if (ul) {
+    if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
+      AB_Banking_Fini(ab);
       return 3;
     }
     else {
-      AH_CUSTOMER_LIST2_ITERATOR *cit;
+      AB_USER_LIST2_ITERATOR *cit;
 
-      cit=AH_Customer_List2_First(cl);
+      cit=AB_User_List2_First(ul);
       assert(cit);
-      cu=AH_Customer_List2Iterator_Data(cit);
-      AH_Customer_List2Iterator_free(cit);
+      u=AB_User_List2Iterator_Data(cit);
+      AB_User_List2Iterator_free(cit);
     }
-    AH_Customer_List2_free(cl);
+    AB_User_List2_free(ul);
   }
-  if (!cu) {
+  if (!u) {
     DBG_ERROR(0, "No matching customer");
+    AB_Banking_Fini(ab);
     return 3;
   }
   else {
     AH_JOB *job;
     AH_OUTBOX *ob;
-    AH_ACCOUNT_LIST2 *accs;
+    AB_ACCOUNT_LIST2 *accs;
 
-    job=AH_Job_UpdateBank_new(cu);
+    job=AH_Job_UpdateBank_new(u);
     if (!job) {
       DBG_ERROR(0, "Job not supported, should not happen");
       return 3;
     }
-    AH_Job_AddSigner(job, AH_User_GetUserId(AH_Customer_GetUser(cu)));
+    AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
     ob=AH_Outbox_new(hbci);
     AH_Outbox_AddJob(ob, job);
@@ -176,7 +179,7 @@ int getAccounts(AB_BANKING *ab,
     /* check whether we got some accounts */
     accs=AH_Job_UpdateBank_GetAccountList(job);
     assert(accs);
-    if (AH_Account_List2_GetSize(accs)==0) {
+    if (AB_Account_List2_GetSize(accs)==0) {
       DBG_ERROR(0, "No account list received");
       return 3;
     }

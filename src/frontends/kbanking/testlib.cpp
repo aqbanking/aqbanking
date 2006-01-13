@@ -1,8 +1,7 @@
 #include "kbanking.h"
 
-int main(int argc, char *argv[])
-{
-    KBanking testobject("testlib");
+int main(int argc, char *argv[]){
+  KBanking testobject("testlib");
 
-    return 0;
+  return 0;
 }

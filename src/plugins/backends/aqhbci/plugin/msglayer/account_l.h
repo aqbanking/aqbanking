@@ -15,14 +15,15 @@
 #define AH_ACCOUNT_L_H
 
 
-#include <aqhbci/account.h>
+#include "account.h"
+#include <aqhbci/hbci.h>
+#include <aqbanking/provider_be.h>
 
-GWEN_LIST_FUNCTION_DEFS(AH_ACCOUNT, AH_Account);
-GWEN_INHERIT_FUNCTION_DEFS(AH_ACCOUNT);
 
-AH_ACCOUNT *AH_Account_fromDb(AH_BANK *b, GWEN_DB_NODE *db);
-int AH_Account_toDb(const AH_ACCOUNT *a, GWEN_DB_NODE *db);
+void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
+                       AB_PROVIDER_EXTEND_MODE um);
 
+AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);
 
 
 #endif /* AH_ACCOUNT_L_H */

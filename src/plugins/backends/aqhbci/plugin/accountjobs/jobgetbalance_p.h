@@ -23,12 +23,12 @@ typedef struct AH_JOB_GETBALANCE AH_JOB_GETBALANCE;
 struct AH_JOB_GETBALANCE {
   AB_ACCOUNT_STATUS *accountStatus;
 };
-void AH_Job_GetBalance_FreeData(void *bp, void *p);
-int AH_Job_GetBalance_Process(AH_JOB *j);
-int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
-                               AH_JOB_EXCHANGE_MODE m);
+static void AH_Job_GetBalance_FreeData(void *bp, void *p);
+static int AH_Job_GetBalance_Process(AH_JOB *j);
+static int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
+                                      AH_JOB_EXCHANGE_MODE m);
 
-AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT);
+static AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT);
 
 
 

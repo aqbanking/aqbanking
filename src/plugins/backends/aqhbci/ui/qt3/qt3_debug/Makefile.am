@@ -16,7 +16,7 @@ plugin_DATA = qt_debug.xml
 
 aqhbci_qt3_debug_SOURCES = qt3_debug.cpp
 aqhbci_qt3_debug_LDADD = \
-  ../libs/libqt3wizard.la \
+  ../libs/logmanager/liblogmanager.la \
   $(aqbanking_internal_libs) \
   $(qbanking_internal_libs) \
   $(aqhbci_internal_libs) \

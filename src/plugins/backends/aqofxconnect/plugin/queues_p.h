@@ -17,16 +17,14 @@
 #include "queues_l.h"
 
 
-struct AO_BANKQUEUE {
-  GWEN_LIST_ELEMENT(AO_BANKQUEUE)
-  AO_BANK *bank;
+struct AO_QUEUE {
   AO_USERQUEUE_LIST *userQueues;
 };
 
 
 struct AO_USERQUEUE {
   GWEN_LIST_ELEMENT(AO_USERQUEUE)
-  AO_USER *user;
+  AB_USER *user;
   AB_JOB_LIST2 *jobs;
 };
 

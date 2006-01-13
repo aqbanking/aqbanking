@@ -21,8 +21,9 @@ typedef struct AH_MSG AH_MSG;
 }
 #endif
 
-#include <gwenhywfar/misc.h>
 #include <aqhbci/dialog.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/keyspec.h>
 #include <gwenhywfar/xml.h>
 #include <stdio.h>
 
@@ -61,6 +62,7 @@ void AH_Msg_SetCrypter(AH_MSG *hmsg, const GWEN_KEYSPEC *ks);
  *
  */
 /*@{*/
+
 GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg);
 GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg);
 void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf);

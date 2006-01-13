@@ -15,18 +15,14 @@
 #define GWHBCI_DIALOG_P_H
 
 #include <gwenhywfar/inetaddr.h>
-#include <aqhbci/dialog.h>
+#include "dialog_l.h"
 
 
 struct AH_DIALOG {
-  GWEN_LIST_ELEMENT(AH_DIALOG);
-  GWEN_INHERIT_ELEMENT(AH_DIALOG);
-
-  AH_BANK *bank;
   GWEN_TYPE_UINT32 lastMsgNum;
   GWEN_TYPE_UINT32 lastReceivedMsgNum;
   char *dialogId;
-  AH_CUSTOMER *dialogOwner;
+  AB_USER *dialogOwner;
 
   GWEN_MSGENGINE *msgEngine;
 
@@ -42,14 +38,14 @@ struct AH_DIALOG {
 
 
 
-int AH_Dialog__SetAddress(AH_DIALOG *dlg,
-                          GWEN_INETADDRESS *addr,
-                          const char *bankAddr);
-int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg);
+static int AH_Dialog__SetAddress(AH_DIALOG *dlg,
+                                 GWEN_INETADDRESS *addr,
+                                 const char *bankAddr);
+static int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg);
 
 
-int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
-                          int timeout);
+static int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
+                                 int timeout);
 
 
 

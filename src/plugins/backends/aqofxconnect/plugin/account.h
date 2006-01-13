@@ -22,29 +22,14 @@ extern "C" {
 #endif
 
 
-typedef struct AO_ACCOUNT AO_ACCOUNT;
+AQOFXCONNECT_API void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
+                                        AB_PROVIDER_EXTEND_MODE em);
 
+AQOFXCONNECT_API int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a);
+AQOFXCONNECT_API void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i);
 
-AB_ACCOUNT *AO_Account_new(AB_BANKING *ab,
-                           AB_PROVIDER *pro,
-                           const char *idForProvider);
-
-
-AB_ACCOUNT *AO_Account_fromDb(AB_BANKING *ab,
-                              GWEN_DB_NODE *db);
-
-int AO_Account_toDb(const AB_ACCOUNT *acc, GWEN_DB_NODE *db);
-
-
-int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *acc);
-void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *acc, int i);
-
-int AO_Account_GetDebitAllowed(const AB_ACCOUNT *acc);
-void AO_Account_SetDebitAllowed(AB_ACCOUNT *acc, int i);
-
-const char *AO_Account_GetUserId(const AB_ACCOUNT *acc);
-void AO_Account_SetUserId(AB_ACCOUNT *acc, const char *s);
-
+AQOFXCONNECT_API int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a);
+AQOFXCONNECT_API void AO_Account_SetDebitAllowed(AB_ACCOUNT *a, int i);
 
 
 

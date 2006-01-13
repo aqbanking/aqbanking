@@ -14,19 +14,53 @@
 #ifndef AQBANKING_ERROR_H
 #define AQBANKING_ERROR_H
 
-/** @FIXME: disabled until next release of GnuCash */
-#define AQBANKING_NOWARN_DEPRECATED
+#include <aqbanking/system.h>
 
 
-#ifdef __declspec
-# if BUILDING_AQBANKING_DLL
-#  define AQBANKING_API __declspec (dllexport)
-# else /* Not BUILDING_AQBANKING_DLL */
-#  define AQBANKING_API __declspec (dllimport)
-# endif /* Not BUILDING_AQBANKING_DLL */
+/* @FIXME: disabled until next release of GnuCash */
+/*#define AQBANKING_NOWARN_DEPRECATED*/
+
+
+#ifdef BUILDING_AQBANKING
+# /* building AqBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQBANKING_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define AQBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define AQBANKING_API __attribute__((visibility("default")))
+#   else
+#     define AQBANKING_API
+#   endif
+# endif
 #else
-# define AQBANKING_API
+# /* not building AqBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQBANKING_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define AQBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define AQBANKING_API
+# endif
 #endif
+
+#ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+# define AQBANKING_EXPORT __attribute__((visibility("default")))
+# define AQBANKING_NOEXPORT __attribute__((visibility("hidden")))
+#else
+# define AQBANKING_EXPORT
+# define AQBANKING_NOEXPORT
+#endif
+
 
 #ifndef AQBANKING_NOWARN_DEPRECATED
 # ifdef __GNUC__

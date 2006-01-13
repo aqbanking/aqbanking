@@ -19,6 +19,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/stringlist.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
@@ -31,6 +32,7 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
+void AB_Account_List2_FreeAll(AB_ACCOUNT_LIST2 *al);
 
 typedef enum {
   AB_AccountType_Unknown=0,
@@ -50,6 +52,7 @@ typedef enum {
 #include <aqbanking/banking.h>
 #include <aqbanking/provider.h>
 #include <aqbanking/job.h>
+#include <aqbanking/user.h>
 
 
 #ifdef __cplusplus
@@ -73,17 +76,19 @@ AQBANKING_API
 AB_BANKING *AB_Account_GetBanking(const AB_ACCOUNT *acc);
 
 AQBANKING_API 
-int AB_Account_CheckAvailability(AB_ACCOUNT *a);
-
-AQBANKING_API 
 AB_ACCOUNT_TYPE AB_Account_GetAccountType(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetAccountType(AB_ACCOUNT *acc, AB_ACCOUNT_TYPE t);
 
 AQBANKING_API 
 GWEN_TYPE_UINT32 AB_Account_GetUniqueId(const AB_ACCOUNT *acc);
-AQBANKING_API 
+
+AQBANKING_API
 void AB_Account_SetUniqueId(AB_ACCOUNT *acc, GWEN_TYPE_UINT32 id);
+
+AQBANKING_API 
+const char *AB_Account_GetBackendName(const AB_ACCOUNT *acc);
+
 
 AQBANKING_API 
 AB_PROVIDER *AB_Account_GetProvider(const AB_ACCOUNT *acc);
@@ -137,6 +142,37 @@ const char *AB_Account_GetCountry(const AB_ACCOUNT *acc);
 
 AQBANKING_API
 void AB_Account_SetCountry(AB_ACCOUNT *acc, const char *s);
+
+/**
+ * Returns a stringlist containing the unique ids of the users assigned to
+ * this account. The caller is responsible for freeing the list returned
+ * (if any).
+ */
+AQBANKING_API
+AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+void AB_Account_SetUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
+
+AQBANKING_API
+void AB_Account_SetUser(AB_ACCOUNT *acc, const AB_USER *u);
+
+
+AQBANKING_API
+AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+void AB_Account_SetSelectedUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
+
+AQBANKING_API
+void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u);
+
 
 /*@}*/
 

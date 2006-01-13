@@ -16,17 +16,20 @@
 #endif
 
 #include "aqhbci_l.h"
+#include "medium_l.h"
 
 #include "adminjobs_p.h"
 #include "job_l.h"
 #include "jobqueue_l.h"
+#include <aqhbci/hbci.h>
+#include <aqhbci/job.h>
+#include <aqhbci/provider.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/net2.h>
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/inherit.h>
-#include <aqhbci/hbci.h>
-#include <aqhbci/job.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -47,13 +50,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETKEYS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetKeys_new(AH_CUSTOMER *cu){
+AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
   AH_JOB *j;
   AH_JOB_GETKEYS *jd;
   GWEN_DB_NODE *args;
 
-  assert(cu);
-  j=AH_Job_new("JobGetKeys", cu, 0);
+  assert(u);
+  j=AH_Job_new("JobGetKeys", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetKeys not supported, should not happen");
@@ -235,8 +238,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j){
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetKeys_Commit(AH_JOB *j){
   AH_JOB_GETKEYS *jd;
-  AH_BANK *b;
-  AH_USER *u;
+  AB_USER *u;
   AH_MEDIUM *m;
   AH_MEDIUM_CTX *mctx;
   int rv;
@@ -254,11 +256,8 @@ int AH_Job_GetKeys_Commit(AH_JOB *j){
     return -1;
   }
 
-  u=AH_Customer_GetUser(AH_Job_GetCustomer(j));
+  u=AH_Job_GetUser(j);
   assert(u);
-
-  b=AH_User_GetBank(u);
-  assert(b);
 
   m=AH_User_GetMedium(u);
   assert(m);
@@ -270,10 +269,10 @@ int AH_Job_GetKeys_Commit(AH_JOB *j){
 
   rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
   if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not select user %d/%s/%s (%d)",
-	      AH_Bank_GetCountry(b),
-	      AH_Bank_GetBankId(b),
-	      AH_User_GetUserId(u),
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not select user %s/%s/%s (%d)",
+              AB_User_GetCountry(u),
+              AB_User_GetBankCode(u),
+              AB_User_GetUserId(u),
               rv);
     AH_Medium_Unmount(m, 0);
     return rv;
@@ -351,14 +350,14 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SendKeys_new(AH_CUSTOMER *cu,
+AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
                             const GWEN_CRYPTKEY *cryptKey,
                             const GWEN_CRYPTKEY *signKey){
   AH_JOB *j;
   GWEN_DB_NODE *dbKey;
 
-  assert(cu);
-  j=AH_Job_new("JobSendKeys", cu, 0);
+  assert(u);
+  j=AH_Job_new("JobSendKeys", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
     return 0;
@@ -399,21 +398,20 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   GWEN_DB_NODE *dbTmp;
   unsigned int bsize;
   const void *p;
-  AH_USER *u;
-  AH_BANK *b;
+  AB_USER *u;
   GWEN_ERRORCODE err;
   const char *userId;
+  const AB_COUNTRY *pcountry;
+  int country;
 
   assert(j);
   assert(dbKey);
   assert(key);
 
-  u=AH_Customer_GetUser(AH_Job_GetCustomer(j));
+  u=AH_Job_GetUser(j);
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
 
-  userId=AH_User_GetUserId(u);
+  userId=AB_User_GetUserId(u);
   assert(userId);
   assert(*userId);
 
@@ -427,10 +425,17 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   }
 
   /* set keyname */
+  pcountry=AB_Banking_FindCountryByName(AH_Job_GetBankingApi(j),
+                                        AB_User_GetCountry(u));
+  if (pcountry)
+    country=AB_Country_GetNumericCode(pcountry);
+  else
+    country=280;
+
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "keyName/country", AH_Bank_GetCountry(b));
+                      "keyName/country", country);
   GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "keyName/bankCode", AH_Bank_GetBankId(b));
+                       "keyName/bankCode", AB_User_GetBankCode(u));
 
   GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "keyName/userid", userId);
@@ -508,13 +513,13 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
 GWEN_INHERIT(AH_JOB, AH_JOB_UPDATEBANK)
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu) {
+AH_JOB *AH_Job_UpdateBank_new(AB_USER *u) {
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_UPDATEBANK *jd;
 
-  assert(cu);
-  j=AH_Job_new("JobUpdateBankInfo", cu, 0);
+  assert(u);
+  j=AH_Job_new("JobUpdateBankInfo", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobUpdateBankInfo not supported, should not happen");
     return 0;
@@ -525,7 +530,7 @@ AH_JOB *AH_Job_UpdateBank_new(AH_CUSTOMER *cu) {
                        AH_Job_UpdateBank_FreeData)
   AH_Job_SetProcessFn(j, AH_Job_UpdateBank_Process);
 
-  jd->accountList=AH_Account_List2_new();
+  jd->accountList=AB_Account_List2_new();
 
   /* set arguments */
   args=AH_Job_GetArguments(j);
@@ -545,7 +550,7 @@ void AH_Job_UpdateBank_FreeData(void *bp, void *p){
   AH_JOB_UPDATEBANK *jd;
 
   jd=(AH_JOB_UPDATEBANK*)p;
-  AH_Account_List2_freeAll(jd->accountList);
+  AB_Account_List2_FreeAll(jd->accountList);
 }
 
 
@@ -555,8 +560,8 @@ int AH_Job_UpdateBank_Process(AH_JOB *j){
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   GWEN_DB_NODE *dbAccountData;
-  AH_USER *u;
-  AH_BANK *b;
+  AB_USER *u;
+  AB_BANKING *ab;
   int accs;
 
   assert(j);
@@ -571,10 +576,11 @@ int AH_Job_UpdateBank_Process(AH_JOB *j){
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  u=AH_Customer_GetUser(AH_Job_GetCustomer(j));
+  u=AH_Job_GetUser(j);
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
 
   /* search for "AccountData" */
   accs=0;
@@ -587,8 +593,7 @@ int AH_Job_UpdateBank_Process(AH_JOB *j){
       const char *userName;
       const char *accountName;
       const char *bankCode;
-      const char *custId;
-      AH_ACCOUNT *acc;
+      AB_ACCOUNT *acc;
   
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
       accs++;
@@ -600,19 +605,35 @@ int AH_Job_UpdateBank_Process(AH_JOB *j){
       userName=GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0);
       bankCode=GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0);
       assert(bankCode);
-      custId=GWEN_DB_GetCharValue(dbAccountData, "customer", 0, 0);
-      assert(custId);
 
-      acc=AH_Account_new(b, bankCode, accountId);
-      AH_Account_AddCustomer(acc, custId);
-      AH_Account_List2_PushBack(jd->accountList, acc);
+      acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+      assert(acc);
+      AB_Account_SetBankCode(acc, bankCode);
+      AB_Account_SetAccountNumber(acc, accountId);
+
+      if (accountName) {
+        GWEN_BUFFER *xbuf;
+
+        xbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        AH_HBCI_HbciToUtf8(accountName, 0, xbuf);
+        AB_Account_SetAccountName(acc, GWEN_Buffer_GetStart(xbuf));
+        GWEN_Buffer_free(xbuf);
+      }
+      if (userName) {
+        GWEN_BUFFER *xbuf;
+
+        xbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        AH_HBCI_HbciToUtf8(userName, 0, xbuf);
+        AB_Account_SetOwnerName(acc, GWEN_Buffer_GetStart(xbuf));
+        GWEN_Buffer_free(xbuf);
+      }
+
+      AB_Account_List2_PushBack(jd->accountList, acc);
     }
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
   if (!accs) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "No accounts found");
-    /*AH_Job_SetStatus(j, AH_JobStatusError);
-    return -1;*/
   }
 
   return 0;
@@ -620,7 +641,7 @@ int AH_Job_UpdateBank_Process(AH_JOB *j){
 
 
 
-AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j){
+AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j){
   AH_JOB_UPDATEBANK *jd;
 
   assert(j);
@@ -632,9 +653,9 @@ AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j){
 
 
 
-AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j){
+AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j){
   AH_JOB_UPDATEBANK *jd;
-  AH_ACCOUNT_LIST2 *tal;
+  AB_ACCOUNT_LIST2 *tal;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_UPDATEBANK, j);
@@ -658,19 +679,13 @@ AH_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j){
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETSYSID)
 
-AH_JOB *AH_Job_GetSysId_new(AH_CUSTOMER *cu){
+AH_JOB *AH_Job_GetSysId_new(AB_USER *u){
   AH_JOB *j;
   GWEN_DB_NODE *args;
-  AH_BANK *b;
-  AH_USER *u;
   AH_JOB_GETSYSID *jd;
 
-  assert(cu);
-  u=AH_Customer_GetUser(cu);
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
-  j=AH_Job_new("JobSync", cu, 0);
+  j=AH_Job_new("JobSync", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSync not supported, should not happen");
     return 0;
@@ -686,14 +701,13 @@ AH_JOB *AH_Job_GetSysId_new(AH_CUSTOMER *cu){
   args=AH_Job_GetArguments(j);
   assert(args);
   GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "open/ident/country",
-		      AH_Bank_GetCountry(b));
+                      "open/ident/country", 280);
   GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "open/ident/bankCode",
-		       AH_Bank_GetBankId(b));
+                       AB_User_GetBankCode(u));
   GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "open/ident/customerId",
-		       AH_Customer_GetCustomerId(cu));
+                       AB_User_GetCustomerId(u));
 
   GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "open/sync/mode", 0);
@@ -818,16 +832,16 @@ int AH_Job_GetSysId_NextMsg(AH_JOB *j) {
 GWEN_INHERIT(AH_JOB, AH_JOB_TESTVERSION);
 
 
-AH_JOB *AH_Job_TestVersion_new(AH_CUSTOMER *cu, int anon){
+AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon){
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_TESTVERSION *jd;
 
-  assert(cu);
+  assert(u);
   if (anon)
-    j=AH_Job_new("JobDialogInitAnon", cu, 0);
+    j=AH_Job_new("JobDialogInitAnon", u, 0);
   else
-    j=AH_Job_new("JobDialogInit", cu, 0);
+    j=AH_Job_new("JobDialogInit", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobTestVersion not supported, should not happen");
@@ -970,14 +984,14 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j){
 GWEN_INHERIT(AH_JOB, AH_JOB_GETSTATUS);
 
 
-AH_JOB *AH_Job_GetStatus_new(AH_CUSTOMER *cu,
+AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate) {
   AH_JOB *j;
   AH_JOB_GETSTATUS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_Job_new("JobGetStatus", cu, 0);
+  j=AH_Job_new("JobGetStatus", u, 0);
   if (!j)
     return 0;
 

@@ -14,8 +14,8 @@ AC_CONFIG_HEADER([config.h])
 # AqBanking versions
 #
 AQBANKING_VERSION_MAJOR=1
-AQBANKING_VERSION_MINOR=8
-AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_MINOR=9
+AQBANKING_VERSION_PATCHLEVEL=0
 AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
@@ -32,22 +32,22 @@ AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQB
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=13
-AQBANKING_SO_AGE=13
-AQBANKING_SO_REVISION=2
+AQBANKING_SO_CURRENT=14
+AQBANKING_SO_AGE=0
+AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
 # backends
 #
 
-AQHBCI_SO_CURRENT=8
+AQHBCI_SO_CURRENT=9
 AQHBCI_SO_AGE=0
 AQHBCI_SO_REVISION=1
 AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
 
-AQDTAUS_SO_CURRENT=1
-AQDTAUS_SO_REVISION=3
+AQDTAUS_SO_CURRENT=2
+AQDTAUS_SO_REVISION=0
 AQDTAUS_SO_AGE=0
 AQDTAUS_SO_EFFECTIVE="`echo \$(($AQDTAUS_SO_CURRENT-$AQDTAUS_SO_AGE))`"
 
@@ -75,9 +75,9 @@ KBANKING_SO_AGE=2
 KBANKING_SO_REVISION=1
 KBANKING_SO_EFFECTIVE="`echo \$(($KBANKING_SO_CURRENT-$KBANKING_SO_AGE))`"
 
-QBANKING_SO_CURRENT=2
+QBANKING_SO_CURRENT=3
 QBANKING_SO_REVISION=0
-QBANKING_SO_AGE=1
+QBANKING_SO_AGE=2
 QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
 
 CBANKING_SO_CURRENT=1
@@ -627,10 +627,11 @@ AC_SUBST(aqbanking_frontends)
 AC_ARG_WITH(backends, 
   [  --with-backends=list      space separated list of backends (default:all)],
   [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
+  [aqbanking_backends="aqhbci aqdtaus"]
 )
 AC_SUBST(aqbanking_backends)
 
+# later add to default backends: aqgeldkarte aqofxconnect
 
 
 ###-------------------------------------------------------------------------
@@ -719,6 +720,13 @@ if test "$enable_libofx" = "yes"; then
     if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
        AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
     fi
+    AC_CHECK_MEMBERS([struct OfxTransactionInfo.fees_valid], 
+                     [HAVE_OFX_0_8_PLUS="yes"], [],
+                     [#include <libofx/libofx.h>])
+    if test "$HAVE_OFX_0_8_PLUS" = "yes"; then
+       AC_DEFINE_UNQUOTED(HAVE_OFX_0_8_PLUS, 1, [whether LibOFX>0.8 is available])
+    fi
+
     LIBOFX_INCLUDES=""
     LIBOFX_LIBS="-lofx"
   fi
@@ -842,6 +850,7 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
+        aqbanking_sys_is_windows=0
         aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 	aqbanking_ldflags="-L\${libdir}"
         aqbanking_libs="-laqbanking"
@@ -852,6 +861,7 @@ case "$OS_TYPE" in
 
     	;;
     windows)
+        aqbanking_sys_is_windows=1
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
         aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
@@ -933,11 +943,41 @@ AC_MSG_RESULT($enable_release)
 ACX_COMPILE_WARN()
 
 
+
+###-------------------------------------------------------------------------
+#
+# GCC version (check for usability)
+#
+AC_MSG_CHECKING(if symbol visibility is supported)
+case `basename $CC` in 
+  gcc*)
+     gccversion=`$CC --version | { read x1 x2 x3; echo $x3; }`
+     case $gccversion in
+       0.* | 1.* | 2.* | 3.1.* | 3.2.* | 3.3.*)
+         visibility_supported="no (needs gcc >=3.4, you have $gccversion)"
+         ;;
+       *)
+         visibility_supported="yes"
+         AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
+         visibility_cflags="-fvisibility=hidden"
+         ;;
+      esac
+      ;;
+  *)
+    visibility_supported="no (needs gcc >=3.4, you use $CC)"
+    ;;
+esac
+AC_MSG_RESULT(${visibility_supported})
+AC_SUBST(visibility_cflags)
+
+
+
 ###-------------------------------------------------------------------------
 #
 # Subst
 #
 AS_SCRUB_INCLUDE(aqbanking_includes)
+AC_SUBST(aqbanking_sys_is_windows)
 AC_SUBST(aqbanking_includes)
 AC_SUBST(aqbanking_internal_libs)
 AC_SUBST(aqbanking_ldflags)
@@ -1373,9 +1413,10 @@ AC_SUBST(kbanking_data)
 case "$OS_TYPE" in
     posix)
         qbanking_libs="-L\${libdir} -lqbanking"
-        qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/libqbanking.la"
+        qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
+        qbanking_plugindir="\${libdir}/qbanking/plugins/${QBANKING_SO_EFFECTIVE}"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
@@ -1384,6 +1425,7 @@ case "$OS_TYPE" in
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
 	all_includes="$all_includes -mms-bitfields"
+        qbanking_plugindir="\${libdir}/qbanking/plugins/${QBANKING_SO_EFFECTIVE}"
     	;;
 esac
 
@@ -1391,6 +1433,7 @@ AC_SUBST(qbanking_includes)
 AC_SUBST(qbanking_internal_libs)
 AC_SUBST(qbanking_libs)
 AC_SUBST(qbanking_data)
+AC_SUBST(qbanking_plugindir)
 
 
 
@@ -1486,13 +1529,16 @@ AC_CONFIG_FILES([
   src/frontends/kbanking/kbanking-config.in
   src/frontends/kbanking/ressource.rc
   src/frontends/qbanking/Makefile
-  src/frontends/qbanking/dialogs/Makefile
-  src/frontends/qbanking/prg/Makefile
-  src/frontends/qbanking/views/Makefile
-  src/frontends/qbanking/widgets/Makefile
-  src/frontends/qbanking/version.h
-  src/frontends/qbanking/qbanking-config.in
-  src/frontends/qbanking/ressource.rc
+  src/frontends/qbanking/lib/Makefile
+  src/frontends/qbanking/lib/dialogs/Makefile
+  src/frontends/qbanking/lib/views/Makefile
+  src/frontends/qbanking/lib/widgets/Makefile
+  src/frontends/qbanking/lib/version.h
+  src/frontends/qbanking/lib/qbanking-config.in
+  src/frontends/qbanking/lib/ressource.rc
+  src/frontends/qbanking/bin/Makefile
+  src/frontends/qbanking/bin/wizard/Makefile
+  src/frontends/qbanking/bin/wizard/qt3_wizard.xml
   src/frontends/qbanking/po/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
@@ -1544,6 +1590,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/comdirect.conf
   src/plugins/imexporters/csv/profiles/mijnpostbank.conf
   src/plugins/imexporters/csv/profiles/spk-aachen.conf
+  src/plugins/imexporters/csv/profiles/tonline-banking.conf
   src/plugins/imexporters/csv/profiles/test.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
@@ -1586,16 +1633,12 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/aqhbci-config.in
   src/plugins/backends/aqhbci/ui/Makefile
   src/plugins/backends/aqhbci/ui/qt3/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/qt3_wizard/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/qt3_wizard/kde_wizard.xml
   src/plugins/backends/aqhbci/ui/qt3/qt3_debug/Makefile
   src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
   src/plugins/backends/aqhbci/ui/qt3/libs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/libs/widgets/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/po/Makefile
   src/plugins/backends/aqdtaus/Makefile
   src/plugins/backends/aqdtaus/version.h
   src/plugins/backends/aqdtaus/aqdtaus-config.in
@@ -1604,13 +1647,8 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqdtaus/plugin/ressource.rc
   src/plugins/backends/aqdtaus/ui/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/qt3_wizard/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/qt3_wizard/qt_wizard.xml
   src/plugins/backends/aqdtaus/ui/qt3/libs/Makefile
   src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/libs/views/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/libs/widgets/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/po/Makefile
   src/plugins/backends/aqgeldkarte/Makefile
   src/plugins/backends/aqgeldkarte/version.h
   src/plugins/backends/aqgeldkarte/aqgeldkarte-config.in
@@ -1650,6 +1688,7 @@ AC_CONFIG_FILES([
   aqbanking.spec
   aqbanking.iss
   version.h
+  system.h
 ])
 AC_OUTPUT
 

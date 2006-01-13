@@ -1,4 +1,140 @@
 
+2006/01/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- declared list2 functions for AB_ACCOUNT_STATUS
+- job "getTransactions" is now additionally able to receive account status
+  lists. This will allow us to get an account status even if a bank does not
+  explicitly support the job "getBalance". These account status lists are
+  now also sampled upon AB_Banking_GatherJobListResponses().
+
+
+2006/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added CSV im-/export profile for T-Online banking module
+- remove job status "DEFERRED" and function to defer a job: Replaced by
+  AB_Banking_ExecuteJobList()
+- cfg module for AqHBCI: added wizard pages to complete the new RDH user
+  part of the wizard
+- AH_HBCI: AH_HBCI_AddBankPath() now always adds the lowercased country
+  code
+- AqHBCI's Qt stuff
+  - fixed some bugs
+  - removed some unneeded files (from old wizard)
+  - wizard is now able to create new keyfiles
+  - wizard's special user edit dialog now contains the HBCI version
+
+
+===========================================================================
+MARK: released AqBanking - 1.9.0beta (2006-01-11)
+===========================================================================
+
+
+2006/01/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- QBanking: 
+  - unload and free config modules upon fini()
+  - fixed a bug in QBPickStartDate: Was not disabling date input when needed
+- aqbanking-tool: 
+  - added arguments "--bank=x" and "--account=y" to command
+    "import": This overwrites (non-)existing values in imported files (like
+    when importing SWIFT)
+  - relaxed accountid/bankcode selection in command "listtrans": Now the
+    account no longer needs to exist
+
+
+2006/01/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- frontend QBanking:
+  - added dialog to select a backend (used for "new user" and "new account")
+- cfg module for AqHBCI:
+  - now it is possible again to setup a PinTan user (not finished yet, it
+    does not automatically assign users, so created accounts cannot be used
+    right now)
+- added "AB_ProviderExtendMode_Save": This mode is now used to let the
+  backends store not yet saved data before writing the user/account data
+  to the DB upon AB_Banking_Save()
+- no setting up a user and loading account lists works!
+
+
+2006/01/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI-QT3:
+  - added generic ActionWidget which is used by actions like GetKeys,
+    GetAccounts etc.
+  - adapted new-user-wizard to latest changes
+
+
+2006/01/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added AB_Banking_GetSharedData() (used by the QT frontend "QBanking")
+- prepared help function framework
+- removed files which are no longer needed
+- remove backend argument from AB_Banking_GetWizardDescrs() (it is not used
+  by GnuCash so we can make this change)
+- removed functions:
+  - AB_Banking_SuspendProvider()
+  - AB_Banking_ResumeProvider()
+  - AB_Banking_GetWizardPath()
+  - AB_Banking_SetUserDataDir()
+- started working on QBHelpBrowser
+
+
+2006/01/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqBanking now stores its version in the configuration file. If a newer
+  version is started than before then all backends are given the opportunity
+  to update AqBanking's data via the new callback AB_Provider_Update(). 
+  This will be used by the current backends to create users (which are new to
+  AqBanking2).
+- implemented backend-specific account configuration pages for AqHBCI and
+  AqDTAUS
+- AqHBCI is now able to update AqBanking (it now creates missing users)
+
+
+2005/12/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- very much work on new settings wizard infrastructure: 
+  - implemented as announced on OpenHBCI-General
+  - created cfg module for HBCI (not finished yet)
+  - created edit user page for HBCI users
+- started creating basic HBCI functions which are going to be needed for
+  basic HBCI setup (future versions of AqHBCI will only allow core access
+  via these functions)
+
+
+2005/12/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on transaction.xml:
+  - added transaction subtypes "buy" and "sell"
+  - added fields for investment transactions:
+    - unit
+    - unitPrice
+    - fees
+  - added category field to splits
+- added check for latest LibOfx (has some additional fields, which are now
+  optionally used)
+- started working on AqBanking2:
+  - added class AB_User
+  - backend configuration is now stored within the AqBanking config file
+  - removed unneeded functions from banking.c
+  - made some functions private in banking.c
+  - adapted backends:
+    - aqhbci:
+      - removed AH_BANK, AH_CUSTOMER
+      - modified AH_USER to be just an extension of the new class AB_USER
+      - no longer store user/account settings in backend specific 
+        configuration, this is now rather stored with AqBanking itself
+- make use of GCC's new visibility features: Now we only export symbols which
+  are part of the API (so marked by AQBANKING_API. Gladly we had to add this
+  macro for WIN32 long ago, so we just redefine this macro for GCC)
+- AqHBCI: only export symbols which are defined via AQHBCI_API
+
+
+===========================================================================
+MARK: started working on AqBanking2 (2005-12-30)
+===========================================================================
+
+
 2005/12/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - now all calls to GWEN_NEW_OBJECT and GWEN_FREE_OBJECT do match (as required

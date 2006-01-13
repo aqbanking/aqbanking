@@ -214,7 +214,6 @@ const char *AB_Job_Status2Char(AB_JOB_STATUS i) {
   case AB_Job_StatusPending:  s="pending"; break;
   case AB_Job_StatusFinished: s="finished"; break;
   case AB_Job_StatusError:    s="error"; break;
-  case AB_Job_StatusDeferred: s="deferred"; break;
   default:                    s="unknown"; break;
   }
   return s;
@@ -232,7 +231,6 @@ AB_JOB_STATUS AB_Job_Char2Status(const char *s) {
   else if (strcasecmp(s, "pending")==0) i=AB_Job_StatusPending;
   else if (strcasecmp(s, "finished")==0) i=AB_Job_StatusFinished;
   else if (strcasecmp(s, "error")==0) i=AB_Job_StatusError;
-  else if (strcasecmp(s, "deferred")==0) i=AB_Job_StatusDeferred;
   else i=AB_Job_StatusUnknown;
 
   return i;

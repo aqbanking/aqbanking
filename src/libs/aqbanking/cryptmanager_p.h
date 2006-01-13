@@ -23,35 +23,35 @@ struct AB_CRYPTMANAGER {
   AB_BANKING *banking;
   GWEN_TYPE_UINT32 showBoxId;
 };
-void AB_CryptManager_FreeData(void *bp, void *p);
+static void AB_CryptManager_FreeData(void *bp, void *p);
 
 
-int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
-                           GWEN_CRYPTTOKEN *token,
-                           GWEN_CRYPTTOKEN_PINTYPE pt,
-                           GWEN_CRYPTTOKEN_PINENCODING pe,
-                           GWEN_TYPE_UINT32 flags,
-                           unsigned char *buffer,
-                           unsigned int minLength,
-                           unsigned int maxLength,
-                           unsigned int *pinLength);
-
-int AB_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
+static int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                                   GWEN_CRYPTTOKEN *token,
-                                  GWEN_CRYPTTOKEN_PINTYPE pt);
-int AB_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
-                                GWEN_CRYPTTOKEN *token,
-                                GWEN_CRYPTTOKEN_PINTYPE pt,
-                                int ok);
-int AB_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
-                                GWEN_CRYPTTOKEN *token);
-int AB_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
-                                       GWEN_CRYPTTOKEN *token);
+                                  GWEN_CRYPTTOKEN_PINTYPE pt,
+                                  GWEN_CRYPTTOKEN_PINENCODING pe,
+                                  GWEN_TYPE_UINT32 flags,
+                                  unsigned char *buffer,
+                                  unsigned int minLength,
+                                  unsigned int maxLength,
+                                  unsigned int *pinLength);
 
-int AB_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
-                                GWEN_CRYPTTOKEN *token,
-				const char *title,
-                                const char *msg);
+static int AB_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
+                                         GWEN_CRYPTTOKEN *token,
+                                         GWEN_CRYPTTOKEN_PINTYPE pt);
+static int AB_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
+                                       GWEN_CRYPTTOKEN *token,
+                                       GWEN_CRYPTTOKEN_PINTYPE pt,
+                                       int ok);
+static int AB_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
+                                       GWEN_CRYPTTOKEN *token);
+static int AB_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
+                                              GWEN_CRYPTTOKEN *token);
+
+static int AB_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
+                                       GWEN_CRYPTTOKEN *token,
+                                       const char *title,
+                                       const char *msg);
 
 
 

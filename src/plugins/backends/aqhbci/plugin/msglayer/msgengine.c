@@ -17,6 +17,8 @@
 
 #include "msgengine_p.h"
 #include "aqhbci_l.h"
+#include "hbci_l.h"
+#include "user_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -229,7 +231,6 @@ int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
   x=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AH_MSGENGINE, e);
   assert(x);
 
-
   type=GWEN_XMLNode_GetProperty(node, "type","");
   if (strcasecmp(type, "date")==0) {
     char buffer[9];
@@ -367,8 +368,7 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
                                       const char *name,
                                       const char *defValue){
   AH_MSGENGINE *x;
-  AH_USER *u;
-  AH_BANK *b;
+  AH_HBCI *h;
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "AH_MsgEngine_GetCharValue");
   assert(e);
@@ -377,36 +377,34 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Mode is: \"%s\"", GWEN_MsgEngine_GetMode(e));
   DBG_INFO(AQHBCI_LOGDOMAIN, "Variable is: \"%s\"", name);
-  assert(x->customer);
-
-  u=AH_Customer_GetUser(x->customer);
-  assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
+  assert(x->user);
+  h=AH_User_GetHbci(x->user);
+  assert(h);
 
   if (strcasecmp(name, "product")==0)
-    return AH_HBCI_GetProductName(AH_Bank_GetHbci(b));
+    return AH_HBCI_GetProductName(h);
   else if (strcasecmp(name, "productversion")==0)
-    return AH_HBCI_GetProductVersion(AH_Bank_GetHbci(b));
+    return AH_HBCI_GetProductVersion(h);
 
   if (strcasecmp(name, "customerid")==0)
-    return AH_Customer_GetCustomerId(x->customer);
+    return AB_User_GetCustomerId(x->user);
   else if (strcasecmp(name, "userid")==0)
-    return AH_User_GetUserId(u);
+    return AB_User_GetUserId(x->user);
   else if (strcasecmp(name, "bankcode")==0)
-    return AH_Bank_GetBankId(b);
+    return AB_User_GetBankCode(x->user);
   else if (strcasecmp(name, "systemId")==0){
     const char *p;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
               "SystemId requested (deprecated)");
-    p=AH_Customer_GetSystemId(x->customer);
+    p=AH_User_GetSystemId(x->user);
     if (p)
       return p;
     return "0";
   }
   else {
-    DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Unknown char variable \"%s\", returning default value",
+    DBG_VERBOUS(AQHBCI_LOGDOMAIN,
+                "Unknown char variable \"%s\", returning default value",
 		name);
     return defValue;
   }
@@ -418,26 +416,30 @@ int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
                              const char *name,
                              int defValue){
   AH_MSGENGINE *x;
-  AH_USER *u;
-  AH_BANK *b;
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "AH_MsgEngine_GetIntValue");
   assert(e);
   x=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AH_MSGENGINE, e);
   assert(x);
 
-  assert(x->customer);
-  u=AH_Customer_GetUser(x->customer);
-  assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
+  assert(x->user);
 
-  if (strcasecmp(name, "country")==0)
-    return AH_Bank_GetCountry(b);
+  if (strcasecmp(name, "country")==0) {
+    const char *s;
+    const AB_COUNTRY *cnt;
+
+    s=AB_User_GetCountry(x->user);
+    if (!s || !*s)
+      return defValue;
+    cnt=AB_Banking_FindCountryByName(AB_User_GetBanking(x->user), s);
+    if (cnt)
+      return AB_Country_GetNumericCode(cnt);
+    return defValue;
+  }
   else if (strcasecmp(name, "updversion")==0)
-    return AH_Customer_GetUpdVersion(x->customer);
+    return AH_User_GetUpdVersion(x->user);
   else if (strcasecmp(name, "bpdversion")==0)
-    return AH_Customer_GetBpdVersion(x->customer);
+    return AH_User_GetBpdVersion(x->user);
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Unknown int variable \"%s\", returning default value",
 		name);
@@ -474,25 +476,13 @@ void AH_MsgEngine_FreeData(void *bp, void *p) {
 
 
 
-AH_CUSTOMER *AH_MsgEngine_GetCustomer(const GWEN_MSGENGINE *e){
+void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u){
   AH_MSGENGINE *x;
 
   assert(e);
   x=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AH_MSGENGINE, e);
   assert(x);
-  return x->customer;
-}
-
-
-
-void AH_MsgEngine_SetCustomer(GWEN_MSGENGINE *e,
-                              AH_CUSTOMER *cu){
-  AH_MSGENGINE *x;
-
-  assert(e);
-  x=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AH_MSGENGINE, e);
-  assert(x);
-  x->customer=cu;
+  x->user=u;
 }
 
 

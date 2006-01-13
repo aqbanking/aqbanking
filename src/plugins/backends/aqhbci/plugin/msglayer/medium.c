@@ -995,6 +995,9 @@ int AH_Medium_ToDB(const AH_MEDIUM *m, GWEN_DB_NODE *db){
   AH_MEDIUM_CTX *ctx;
   GWEN_DB_NODE *dbX;
 
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "uniqueId", m->uniqueId);
   GWEN_DB_SetCharValue(db,
                        GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "mediumTypeName", m->typeName);
@@ -1035,6 +1038,9 @@ int AH_Medium_ToDB(const AH_MEDIUM *m, GWEN_DB_NODE *db){
 int AH_Medium_FromDB(AH_MEDIUM *m, GWEN_DB_NODE *db){
   const char *p;
   GWEN_DB_NODE *dbT;
+
+  m->uniqueId=GWEN_DB_GetIntValue(db, "uniqueId", 0, 0);
+  assert(m->uniqueId);
 
   /* mediumName */
   p=GWEN_DB_GetCharValue(db, "mediumName", 0, 0);
@@ -1432,7 +1438,31 @@ int AH_Medium_CreateKeys(AH_MEDIUM *m){
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error generating local sign key (%d)", rv);
     return rv;
   }
-  GWEN_CryptKey_free(key);
+  else {
+    GWEN_KEYSPEC *ks=0;
+    GWEN_TYPE_UINT32 kid;
+    int rv;
+
+    GWEN_CryptKey_free(key);
+    kid=GWEN_CryptToken_KeyInfo_GetKeyId(kiS);
+    /* get keyspec */
+    rv=GWEN_CryptToken_ReadKeySpec(m->cryptToken, kid, &ks);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read key spec (%d)", rv);
+      return rv;
+    }
+    assert(ks);
+    GWEN_KeySpec_SetStatus(ks, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
+    GWEN_KeySpec_SetKeyName(ks, "S");
+    rv=GWEN_CryptToken_WriteKeySpec(m->cryptToken, kid, ks);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key spec (%d)", rv);
+      GWEN_KeySpec_free(ks);
+      return rv;
+    }
+    AH_MediumCtx_SetLocalSignKeySpec(m->currentContext, ks);
+    GWEN_KeySpec_free(ks);
+  }
 
   /* create local crypt key */
   key=0;
@@ -1441,11 +1471,33 @@ int AH_Medium_CreateKeys(AH_MEDIUM *m){
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error generating local crypt key (%d)", rv);
     return rv;
   }
+  else {
+    GWEN_KEYSPEC *ks=0;
+    GWEN_TYPE_UINT32 kid;
+    int rv;
 
-  GWEN_CryptKey_free(key);
+    GWEN_CryptKey_free(key);
+    kid=GWEN_CryptToken_KeyInfo_GetKeyId(kiC);
+    /* get keyspec */
+    rv=GWEN_CryptToken_ReadKeySpec(m->cryptToken, kid, &ks);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read key spec (%d)", rv);
+      return rv;
+    }
+    assert(ks);
+    GWEN_KeySpec_SetStatus(ks, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
+    GWEN_KeySpec_SetKeyName(ks, "V");
+    rv=GWEN_CryptToken_WriteKeySpec(m->cryptToken, kid, ks);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key spec (%d)", rv);
+      GWEN_KeySpec_free(ks);
+      return rv;
+    }
+    AH_MediumCtx_SetLocalCryptKeySpec(m->currentContext, ks);
+    GWEN_KeySpec_free(ks);
+  }
 
   return 0;
-
 }
 
 
@@ -1657,13 +1709,6 @@ GWEN_CRYPTKEY *AH_Medium_GetLocalPubSignKey(AH_MEDIUM *m){
   }
   assert(key);
 
-  if (GWEN_CryptKey_GetStatus(key)!=GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Key is not active (%d)",
-             GWEN_CryptKey_GetStatus(key));
-    GWEN_CryptKey_free(key);
-    return 0;
-  }
-
   return key;
 }
 
@@ -1699,12 +1744,6 @@ GWEN_CRYPTKEY *AH_Medium_GetLocalPubCryptKey(AH_MEDIUM *m){
     return 0;
   }
   assert(key);
-  if (GWEN_CryptKey_GetStatus(key)!=GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Key is not active (%d)",
-             GWEN_CryptKey_GetStatus(key));
-    GWEN_CryptKey_free(key);
-    return 0;
-  }
 
   return key;
 }
@@ -1920,7 +1959,8 @@ int AH_Medium_ResetServerKeys(AH_MEDIUM *m){
 
 
 
-int AH_Medium__ResetKey(AH_MEDIUM *m, int kid){
+int AH_Medium__SetKeyStatus(AH_MEDIUM *m, int kid,
+                            GWEN_TYPE_UINT32 kstatus){
   GWEN_KEYSPEC *ks=0;
   int rv;
 
@@ -1937,7 +1977,7 @@ int AH_Medium__ResetKey(AH_MEDIUM *m, int kid){
     }
   }
   assert(ks);
-  GWEN_KeySpec_SetStatus(ks, GWEN_CRYPTTOKEN_KEYSTATUS_FREE);
+  GWEN_KeySpec_SetStatus(ks, kstatus);
   rv=GWEN_CryptToken_WriteKeySpec(m->cryptToken, kid, ks);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key spec (%d)", rv);
@@ -1969,7 +2009,8 @@ int AH_Medium_ResetUserKeys(AH_MEDIUM *m){
   /* sign key */
   ki=GWEN_CryptToken_Context_GetSignKeyInfo(tctx);
   if (ki) {
-    rv=AH_Medium__ResetKey(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki));
+    rv=AH_Medium__SetKeyStatus(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki),
+                               GWEN_CRYPTTOKEN_KEYSTATUS_FREE);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error resetting sign key (%d)", rv);
       return rv;
@@ -1980,7 +2021,8 @@ int AH_Medium_ResetUserKeys(AH_MEDIUM *m){
   /* crypt key */
   ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(tctx);
   if (ki) {
-    rv=AH_Medium__ResetKey(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki));
+    rv=AH_Medium__SetKeyStatus(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki),
+                               GWEN_CRYPTTOKEN_KEYSTATUS_FREE);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error resetting crypt spec (%d)", rv);
       return rv;
@@ -1990,6 +2032,21 @@ int AH_Medium_ResetUserKeys(AH_MEDIUM *m){
 
   return 0;
 }
+
+
+
+GWEN_TYPE_UINT32 AH_Medium_GetUniqueId(const AH_MEDIUM *m) {
+  return m->uniqueId;
+}
+
+
+
+void AH_Medium_SetUniqueId(AH_MEDIUM *m, GWEN_TYPE_UINT32 id) {
+  m->uniqueId=id;
+}
+
+
+
 
 
 

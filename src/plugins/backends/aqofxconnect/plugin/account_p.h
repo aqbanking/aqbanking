@@ -16,14 +16,4 @@
 #include <aqofxconnect/account.h>
 
 
-struct AO_ACCOUNT {
-  int maxPurposeLines;
-  int debitAllowed;
-  char *userId;
-};
-
-void AO_Account_FreeData(void *bp, void *p);
-
-
-
 #endif

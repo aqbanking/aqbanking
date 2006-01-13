@@ -289,46 +289,35 @@ int listTrans(AB_BANKING *ab,
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(iea) {
     int matches=1;
-    AB_ACCOUNT *a;
     const char *s;
-    const char *s1, *s2;
 
-    s1=AB_ImExporterAccountInfo_GetBankCode(iea);
-    s2=AB_ImExporterAccountInfo_GetAccountNumber(iea);
-    a=AB_Banking_GetAccountByCodeAndNumber(ab, s1, s2);
-    if (!a) {
-      DBG_ERROR(AQT_LOGDOMAIN, "Account %s/%s not found, ignoring",
-                s1, s2);
-      matches=0;
+    if (matches && bankId) {
+      s=AB_ImExporterAccountInfo_GetBankCode(iea);
+      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
+        matches=0;
     }
-    else {
-      if (matches && bankId) {
-        s=AB_Account_GetBankCode(a);
-        if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
-          matches=0;
-      }
 
-      if (matches && bankName) {
-        s=AB_Account_GetBankName(a);
-        if (!s || !*s)
-          s=AB_ImExporterAccountInfo_GetBankName(iea);
-        if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
-          matches=0;
-      }
-
-      if (matches && accountId) {
-        s=AB_Account_GetAccountNumber(a);
-        if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
-          matches=0;
-      }
-      if (matches && accountName) {
-        s=AB_Account_GetAccountName(a);
-        if (!s || !*s)
-          s=AB_ImExporterAccountInfo_GetAccountName(iea);
-        if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
-          matches=0;
-      }
+    if (matches && bankName) {
+      s=AB_ImExporterAccountInfo_GetBankName(iea);
+      if (!s || !*s)
+        s=AB_ImExporterAccountInfo_GetBankName(iea);
+      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
+        matches=0;
     }
+
+    if (matches && accountId) {
+      s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
+        matches=0;
+    }
+    if (matches && accountName) {
+      s=AB_ImExporterAccountInfo_GetAccountName(iea);
+      if (!s || !*s)
+        s=AB_ImExporterAccountInfo_GetAccountName(iea);
+      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
+        matches=0;
+    }
+
     if (matches) {
       AB_IMEXPORTER_ACCOUNTINFO *nai;
 

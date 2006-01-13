@@ -25,45 +25,45 @@ struct AB_MSGENGINE {
 
 
 
-void AB_MsgEngine_FreeData(void *bp, void *p);
+static void AB_MsgEngine_FreeData(void *bp, void *p);
 
-int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
-                          GWEN_BUFFER *msgbuf,
-                          GWEN_XMLNODE *node,
-                          GWEN_BUFFER *vbuf,
-                          char escapeChar,
-                          const char *delimiters);
+static int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
+                                 GWEN_BUFFER *msgbuf,
+                                 GWEN_XMLNODE *node,
+                                 GWEN_BUFFER *vbuf,
+                                 char escapeChar,
+                                 const char *delimiters);
 
-int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
-                           GWEN_BUFFER *gbuf,
-                           GWEN_BUFFER *data,
-                           GWEN_XMLNODE *node);
+static int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
+                                  GWEN_BUFFER *gbuf,
+                                  GWEN_BUFFER *data,
+                                  GWEN_XMLNODE *node);
 
-GWEN_DB_VALUETYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-                                         const char *tname);
+static GWEN_DB_VALUETYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
+                                                const char *tname);
 
-const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
-                                      const char *name,
-                                      const char *defValue);
+static const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
+                                             const char *name,
+                                             const char *defValue);
 
-int AB_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
-                             const char *name,
-                             int defValue);
-
-
-int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
-                             GWEN_XMLNODE *node,
-                             GWEN_DB_NODE *gr,
-                             GWEN_BUFFER *vbuf);
-
-int AB_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
-                              GWEN_XMLNODE *node,
-                              GWEN_DB_NODE *gr,
-                              GWEN_BUFFER *dbuf);
+static int AB_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
+                                    const char *name,
+                                    int defValue);
 
 
-GWEN_TYPE_UINT32 AB_MsgEngine__FromBCD(GWEN_TYPE_UINT32 value);
-GWEN_TYPE_UINT32 AB_MsgEngine__ToBCD(GWEN_TYPE_UINT32 value);
+static int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
+                                    GWEN_XMLNODE *node,
+                                    GWEN_DB_NODE *gr,
+                                    GWEN_BUFFER *vbuf);
+
+static int AB_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
+                                     GWEN_XMLNODE *node,
+                                     GWEN_DB_NODE *gr,
+                                     GWEN_BUFFER *dbuf);
+
+
+static GWEN_TYPE_UINT32 AB_MsgEngine__FromBCD(GWEN_TYPE_UINT32 value);
+static GWEN_TYPE_UINT32 AB_MsgEngine__ToBCD(GWEN_TYPE_UINT32 value);
 
 
 

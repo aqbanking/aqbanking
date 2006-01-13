@@ -17,6 +17,8 @@
 
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/accstatus.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,6 +40,16 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a);
 AQBANKING_API 
 AB_TRANSACTION_LIST2*
   AB_JobGetTransactions_GetTransactions(const AB_JOB *j);
+
+
+/**
+ * Returns the list of account status' received.
+ * The job remains the owner of the list and all elements in it.
+ */
+AQBANKING_API 
+AB_ACCOUNT_STATUS_LIST2*
+  AB_JobGetTransactions_GetAccountStatusList(const AB_JOB *j);
+
 
 /**
  * Returns the maximum number of days the bank stores your transaction

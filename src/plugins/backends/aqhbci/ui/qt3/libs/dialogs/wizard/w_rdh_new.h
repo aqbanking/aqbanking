@@ -11,8 +11,8 @@
  ***************************************************************************/
 
 
-#ifndef AQHBCI_W_RDH_IMPORT_H
-#define AQHBCI_W_RDH_IMPORT_H
+#ifndef AQHBCI_W_RDH_NEW_H
+#define AQHBCI_W_RDH_NEW_H
 
 #include "wizard.h"
 

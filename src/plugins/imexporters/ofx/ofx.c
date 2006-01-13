@@ -334,6 +334,9 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
         if (data.account_ptr->currency_valid)
           cur=data.account_ptr->currency;
       val=AB_Value_new(data.amount, cur);
+      if (data.invtransactiontype_valid)
+        /* negate for investment transaction type (hack, see KMyMoney) */
+	AB_Value_Negate(val);
       AB_Transaction_SetValue(t, val);
       AB_Value_free(val);
     }
@@ -402,8 +405,99 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
         AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
         break;
       }
-
     } /* if transaction type is valid */
+    else if (data.invtransactiontype_valid) {
+      switch (data.invtransactiontype){
+      case OFX_BUYDEBT:
+      case OFX_BUYMF:
+      case OFX_BUYOPT:
+      case OFX_BUYOTHER:
+      case OFX_BUYSTOCK:
+        AB_Transaction_SetTransactionKey(t, "BUY");
+        AB_Transaction_SetTransactionText(t, "Buy stocks or alike");
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeBuy);
+        break;
+      case OFX_REINVEST:
+        AB_Transaction_SetTransactionKey(t, "REINV");
+        AB_Transaction_SetTransactionText(t, "Reinvestment");
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeReinvest);
+        break;
+      case OFX_SELLDEBT:
+      case OFX_SELLMF:
+      case OFX_SELLOPT:
+      case OFX_SELLOTHER:
+      case OFX_SELLSTOCK:
+        AB_Transaction_SetTransactionKey(t, "BUY");
+        AB_Transaction_SetTransactionText(t, "Buy stocks or alike");
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeSell);
+        break;
+      case OFX_INCOME:
+        AB_Transaction_SetTransactionKey(t, "DIV");
+        AB_Transaction_SetTransactionText(t, "Dividend");
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeDividend);
+        break;
+        /* rest is unhandled */
+      case OFX_CLOSUREOPT:
+        AB_Transaction_SetTransactionText(t, "XCLOSUREOPT");
+        break;
+      case OFX_INVEXPENSE:
+        AB_Transaction_SetTransactionText(t, "XINVEXPENSE");
+        break;
+      case OFX_JRNLFUND:
+        AB_Transaction_SetTransactionText(t, "XJRNLFUND");
+        break;
+      case OFX_MARGININTEREST:
+        AB_Transaction_SetTransactionText(t, "XMARGININTEREST");
+        break;
+      case OFX_RETOFCAP:
+        AB_Transaction_SetTransactionText(t, "XRETOFCAP");
+        break;
+      case OFX_SPLIT:
+        AB_Transaction_SetTransactionText(t, "XSPLIT");
+        break;
+      case OFX_TRANSFER:
+        AB_Transaction_SetTransactionText(t, "XTRANSFER");
+        break;
+      default:
+        break;
+      }
+
+#ifdef HAVE_OFX_0_8_PLUS
+      if (data.fees_valid || data.commission_valid) {
+        AB_VALUE *vFees;
+
+        vFees=AB_Value_new(0, 0);
+        if (data.fees_valid) {
+          AB_VALUE *v;
+
+          v=AB_Value_new(data.fees, 0);
+          AB_Value_AddValue(vFees, v);
+          AB_Value_free(v);
+        }
+        if (data.commission_valid) {
+          AB_VALUE *v;
+
+          v=AB_Value_new(data.commission, 0);
+          AB_Value_AddValue(vFees, v);
+          AB_Value_free(v);
+        }
+        AB_Transaction_SetFees(t, vFees);
+        AB_Value_free(vFees);
+      }
+#endif
+
+      if (data.units_valid)
+        AB_Transaction_SetUnits(t, data.units);
+#ifdef HAVE_OFX_0_8_PLUS
+      if (data.unitprice_valid && data.fees_valid) {
+        AB_VALUE *v;
+
+        v=AB_Value_new(data.fees, 0); /* TODO: add currency */
+        AB_Transaction_SetUnitPrice(t, v);
+        AB_Value_free(v);
+      }
+#endif
+    }
     else {
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "No transaction type");
     }

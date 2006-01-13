@@ -13,11 +13,17 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/stringlist.h>
+#include <aqbanking/value.h>
 
 
 GWEN_INHERIT_FUNCTIONS(AB_SPLIT)
 GWEN_LIST_FUNCTIONS(AB_SPLIT, AB_Split)
 GWEN_LIST2_FUNCTIONS(AB_SPLIT, AB_Split)
+
+
 
 
 AB_SPLIT *AB_Split_new() {
@@ -29,6 +35,7 @@ AB_SPLIT *AB_Split_new() {
   GWEN_LIST_INIT(AB_SPLIT, st)
   st->name=GWEN_StringList_new();
   st->purpose=GWEN_StringList_new();
+  st->category=GWEN_StringList_new();
   return st;
 }
 
@@ -54,6 +61,8 @@ void AB_Split_free(AB_SPLIT *st) {
     AB_Value_free(st->value);
   if (st->purpose)
     GWEN_StringList_free(st->purpose);
+  if (st->category)
+    GWEN_StringList_free(st->category);
   GWEN_LIST_FINI(AB_SPLIT, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -83,6 +92,8 @@ AB_SPLIT *AB_Split_dup(const AB_SPLIT *d) {
     st->value=AB_Value_dup(d->value);
   if (d->purpose)
     st->purpose=GWEN_StringList_dup(d->purpose);
+  if (d->category)
+    st->category=GWEN_StringList_dup(d->category);
   return st;
 }
 
@@ -140,15 +151,29 @@ int AB_Split_toDb(const AB_SPLIT *st, GWEN_DB_NODE *db) {
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (st->category)
+    {
+      GWEN_STRINGLISTENTRY *se;
+
+      GWEN_DB_DeleteVar(db, "category");
+      se=GWEN_StringList_FirstEntry(st->category);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "category", s))
+          return -1;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
   return 0;
 }
 
 
-AB_SPLIT *AB_Split_fromDb(GWEN_DB_NODE *db) {
-AB_SPLIT *st;
-
+int AB_Split_ReadDb(AB_SPLIT *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_Split_new();
   AB_Split_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, 0));
   AB_Split_SetBankCode(st, GWEN_DB_GetCharValue(db, "bankCode", 0, 0));
   AB_Split_SetBranchId(st, GWEN_DB_GetCharValue(db, "branchId", 0, 0));
@@ -166,11 +191,15 @@ AB_SPLIT *st;
       AB_Split_AddName(st, s, 0);
     } /* for */
   }
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-    if (dbT) st->value=AB_Value_fromDb(dbT);
+    if (dbT) {
+  if (st->value)
+    AB_Value_free(st->value);
+  st->value=AB_Value_fromDb(dbT);
+}
   }
   if (1) {
     int i;
@@ -184,9 +213,33 @@ AB_SPLIT *st;
       AB_Split_AddPurpose(st, s, 0);
     } /* for */
   }
+  if (1) {
+    int i;
+
+    for (i=0; ; i++) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(db, "category", i, 0);
+      if (!s)
+        break;
+      AB_Split_AddCategory(st, s, 0);
+    } /* for */
+  }
+  return 0;
+}
+
+
+AB_SPLIT *AB_Split_fromDb(GWEN_DB_NODE *db) {
+  AB_SPLIT *st;
+
+  assert(db);
+  st=AB_Split_new();
+  AB_Split_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_Split_GetCountry(const AB_SPLIT *st) {
@@ -407,6 +460,55 @@ int AB_Split_HasPurpose(const AB_SPLIT *st, const char *d) {
 
 
 
+const GWEN_STRINGLIST *AB_Split_GetCategory(const AB_SPLIT *st) {
+  assert(st);
+  return st->category;
+}
+
+
+void AB_Split_SetCategory(AB_SPLIT *st, const GWEN_STRINGLIST *d) {
+  assert(st);
+  if (st->category)
+    GWEN_StringList_free(st->category);
+  if (d)
+    st->category=GWEN_StringList_dup(d);
+  else
+    st->category=0;
+  st->_modified=1;
+}
+
+
+
+
+void AB_Split_AddCategory(AB_SPLIT *st, const char *d, int chk){
+  assert(st);
+  assert(d);
+  if (GWEN_StringList_AppendString(st->category, d, 0, chk))
+    st->_modified=1;
+}
+
+
+void AB_Split_RemoveCategory(AB_SPLIT *st, const char *d) {
+  if (GWEN_StringList_RemoveString(st->category, d))
+    st->_modified=1;
+}
+
+
+void AB_Split_ClearCategory(AB_SPLIT *st) {
+  if (GWEN_StringList_Count(st->category)) {
+    GWEN_StringList_Clear(st->category);
+    st->_modified=1;
+  }
+}
+
+
+int AB_Split_HasCategory(const AB_SPLIT *st, const char *d) {
+  return GWEN_StringList_HasString(st->category, d);
+}
+
+
+
+
 int AB_Split_IsModified(const AB_SPLIT *st) {
   assert(st);
   return st->_modified;
@@ -437,8 +539,6 @@ void AB_Split_List2_freeAll(AB_SPLIT_LIST2 *stl) {
 }
 
 
-
-
 AB_SPLIT_LIST *AB_Split_List_dup(const AB_SPLIT_LIST *stl) {
   if (stl) {
     AB_SPLIT_LIST *nl;
@@ -459,6 +559,7 @@ AB_SPLIT_LIST *AB_Split_List_dup(const AB_SPLIT_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

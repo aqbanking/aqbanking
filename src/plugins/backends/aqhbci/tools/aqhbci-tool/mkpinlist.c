@@ -109,7 +109,7 @@ int mkPinList(AB_BANKING *ab,
   else {
     GWEN_BUFFEREDIO *bio;
     GWEN_ERRORCODE err;
-    AH_USER_LIST2 *ul;
+    AB_USER_LIST2 *ul;
 
     bio=GWEN_BufferedIO_File_new(fd);
     if (!outFile)
@@ -123,35 +123,29 @@ int mkPinList(AB_BANKING *ab,
                               "# Please insert the PINs/passwords "
                               "for the users below");
 
-    ul=AH_HBCI_GetUsers(hbci, 0, "*", "*");
+    ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
     if (ul) {
-      AH_USER_LIST2_ITERATOR *uit;
+      AB_USER_LIST2_ITERATOR *uit;
   
-      uit=AH_User_List2_First(ul);
+      uit=AB_User_List2_First(ul);
       if (uit) {
-        AH_USER *u;
+	AB_USER *u;
   
-        u=AH_User_List2Iterator_Data(uit);
+        u=AB_User_List2Iterator_Data(uit);
         assert(u);
   
         while(u) {
           AH_MEDIUM *m;
-          AH_BANK *b;
           const char *s;
           const char *name;
 
-          b=AH_User_GetBank(u);
-          assert(b);
-
           GWEN_BufferedIO_WriteLine(bio, "");
           GWEN_BufferedIO_Write(bio, "# User \"");
-          s=AH_User_GetUserId(u);
+          s=AB_User_GetUserId(u);
           assert(s);
           GWEN_BufferedIO_Write(bio, s);
           GWEN_BufferedIO_Write(bio, "\" at \"");
-          s=AH_Bank_GetBankName(b);
-          if (!s || !*s)
-            s=AH_Bank_GetBankId(b);
+          s=AB_User_GetBankCode(u);
           GWEN_BufferedIO_Write(bio, s);
           GWEN_BufferedIO_WriteLine(bio, "\"");
 
@@ -180,10 +174,11 @@ int mkPinList(AB_BANKING *ab,
             GWEN_Buffer_free(nbuf);
           }
 
-          u=AH_User_List2Iterator_Next(uit);
+          u=AB_User_List2Iterator_Next(uit);
         }
-        AH_User_List2Iterator_free(uit);
+        AB_User_List2Iterator_free(uit);
       }
+      AB_User_List2_free(ul);
     }
 
     err=GWEN_BufferedIO_Close(bio);

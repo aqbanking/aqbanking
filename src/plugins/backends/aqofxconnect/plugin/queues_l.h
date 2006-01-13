@@ -15,31 +15,29 @@
 
 #include <gwenhywfar/misc.h>
 #include <aqofxconnect/user.h>
-#include <aqofxconnect/bank.h>
 
 
-typedef struct AO_BANKQUEUE AO_BANKQUEUE;
+typedef struct AO_QUEUE AO_QUEUE;
 typedef struct AO_USERQUEUE AO_USERQUEUE;
 
-GWEN_LIST_FUNCTION_DEFS(AO_BANKQUEUE, AO_BankQueue)
 GWEN_LIST_FUNCTION_DEFS(AO_USERQUEUE, AO_UserQueue)
 
 
-AO_USERQUEUE *AO_UserQueue_new(AO_USER *u);
+AO_USERQUEUE *AO_UserQueue_new(AB_USER *u);
 void AO_UserQueue_free(AO_USERQUEUE *uq);
-AO_USER *AO_UserQueue_GetUser(const AO_USERQUEUE *uq);
+AB_USER *AO_UserQueue_GetUser(const AO_USERQUEUE *uq);
 void AO_UserQueue_AddJob(AO_USERQUEUE *uq, AB_JOB *bj);
 AB_JOB_LIST2 *AO_UserQueue_GetJobs(const AO_USERQUEUE *uq);
 
-AO_BANKQUEUE *AO_BankQueue_new(AO_BANK *b);
-void AO_BankQueue_free(AO_BANKQUEUE *bq);
-AO_BANK *AO_BankQueue_GetBank(const AO_BANKQUEUE *bq);
+AO_QUEUE *AO_Queue_new();
+void AO_Queue_free(AO_QUEUE *q);
 
-AO_USERQUEUE_LIST *AO_BankQueue_GetUserQueues(const AO_BANKQUEUE *bq);
-AO_USERQUEUE *AO_BankQueue_FindUserQueue(const AO_BANKQUEUE *bq,
-                                         const char *uid);
-void AO_BankQueue_AddUserQueue(AO_BANKQUEUE *bq, AO_USERQUEUE *uq);
-void AO_BankQueue_AddJob(AO_BANKQUEUE *bq, const char *uid, AB_JOB *bj);
+AO_USERQUEUE *AO_Queue_FindUserQueue(AO_QUEUE *q, const AB_USER *u);
+AO_USERQUEUE *AO_Queue_GetUserQueue(AO_QUEUE *q, AB_USER *u);
+AO_USERQUEUE *AO_Queue_FirstUserQueue(AO_QUEUE *q);
+void AO_Queue_AddJob(AO_QUEUE *q, AB_USER *u, AB_JOB *bj);
+void AO_Queue_Clear(AO_QUEUE *q);
+
 
 
 #endif

@@ -23,7 +23,7 @@
 struct AH_JOBQUEUE {
   GWEN_LIST_ELEMENT(AH_JOBQUEUE);
 
-  AH_CUSTOMER *customer;
+  AB_USER *user;
   GWEN_STRINGLIST *signers;
   GWEN_TYPE_UINT32 usage;
   AH_JOB_LIST *jobs;
@@ -35,11 +35,11 @@ struct AH_JOBQUEUE {
 };
 
 
-void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s);
-void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s);
-int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq);
+static void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s);
+static void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s);
+static int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq);
 
-void AH_JobQueue__AddAsUtf8(GWEN_BUFFER *buf, const char *txt);
+static void AH_JobQueue__AddAsUtf8(GWEN_BUFFER *buf, const char *txt);
 
 
 #endif /* AH_JOBQUEUE_P_H */

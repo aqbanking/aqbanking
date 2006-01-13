@@ -16,11 +16,15 @@
 
 #include "swift_p.h"
 #include "i18n_l.h"
+
 #include <aqbanking/banking.h>
+#include <aqbanking/accstatus.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/inherit.h>
+
 
 
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SWIFT);
@@ -60,9 +64,9 @@ void AH_ImExporterSWIFT_FreeData(void *bp, void *p){
 
 
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_BUFFEREDIO *bio,
-                             GWEN_DB_NODE *params){
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              GWEN_BUFFEREDIO *bio,
+                              GWEN_DB_NODE *params){
   AH_IMEXPORTER_SWIFT *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -173,6 +177,46 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 			    I18N("Adding transaction"));
       AB_ImExporterContext_AddTransaction(ctx, t);
       GWEN_WaitCallback_SetProgressPos(GWEN_WAITCALLBACK_PROGRESS_ONE);
+    }
+    else if (strcasecmp(GWEN_DB_GroupName(dbT), "startSaldo")==0) {
+      /* ignore start saldo, but since the existence of this group shows
+       * that we in fact are within a swift DB group we don't need recursions.
+       */
+    }
+    else if (strcasecmp(GWEN_DB_GroupName(dbT), "endSaldo")==0) {
+      GWEN_DB_NODE *dbX;
+      GWEN_TIME *ti=0;
+
+      dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+      if (dbX)
+        ti=GWEN_Time_fromDb(dbX);
+      dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+      if (dbX) {
+        AB_VALUE *v;
+
+        v=AB_Value_fromDb(dbX);
+        if (v) {
+          AB_BALANCE *bal;
+          AB_IMEXPORTER_ACCOUNTINFO *iea;
+          AB_ACCOUNT_STATUS *as;
+
+          bal=AB_Balance_new(v, ti);
+          AB_Value_free(v);
+          as=AB_AccountStatus_new();
+          if (ti)
+            AB_AccountStatus_SetTime(as, ti);
+          AB_AccountStatus_SetNotedBalance(as, bal);
+          AB_Balance_free(bal);
+          /* CAVE: We use bankCode=0 and accountNumber=0 here, because
+           * the SWIFT parser never sets the transaction fields
+           * localBankCode and localAccountNumber, so all data will go to
+           * the AccountInfo with empty bankCode and accountNumber.
+           */
+          iea=AB_ImExporterContext_GetAccountInfo(ctx, 0, 0);
+          AB_ImExporterAccountInfo_AddAccountStatus(iea, as);
+        }
+      }
+      GWEN_Time_free(ti);
     }
     else {
       int rv;

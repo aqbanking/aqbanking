@@ -25,7 +25,7 @@ typedef struct AB_JOBGETBALANCE AB_JOBGETBALANCE;
 struct AB_JOBGETBALANCE {
   AB_ACCOUNT_STATUS *accountStatus;
 };
-void AB_JobGetBalance_FreeData(void *bp, void *p);
+static void AB_JobGetBalance_FreeData(void *bp, void *p);
 
 
 #ifdef __cplusplus

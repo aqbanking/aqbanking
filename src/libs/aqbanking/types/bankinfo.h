@@ -153,7 +153,9 @@ typedef struct AB_BANKINFO AB_BANKINFO;
 #endif
 
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <aqbanking/error.h>
 #include <aqbanking/bankinfoservice.h>
@@ -163,30 +165,33 @@ extern "C" {
 #endif
 
 
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_BANKINFO, AB_BankInfo, AQBANKING_API)
+AQBANKING_API AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl);
+
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_BANKINFO, AB_BankInfo, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 AQBANKING_API void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-AQBANKING_API AB_BANKINFO_LIST2 *AB_BankInfo_List2_dup(const AB_BANKINFO_LIST2 *stl);
 
 /** Creates a new object.
 */
 AQBANKING_API AB_BANKINFO *AB_BankInfo_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO*st);
 /** Destroys the given object.
 */
 AQBANKING_API void AB_BankInfo_free(AB_BANKINFO *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQBANKING_API void AB_BankInfo_Attach(AB_BANKINFO *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQBANKING_API AB_BANKINFO *AB_BankInfo_dup(const AB_BANKINFO*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQBANKING_API AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API int AB_BankInfo_ReadDb(AB_BANKINFO *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQBANKING_API int AB_BankInfo_toDb(const AB_BANKINFO*st, GWEN_DB_NODE *db);

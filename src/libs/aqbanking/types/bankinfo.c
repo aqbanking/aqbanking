@@ -13,10 +13,15 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <aqbanking/error.h>
+#include <aqbanking/bankinfoservice.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_BANKINFO, AB_BankInfo)
 GWEN_LIST2_FUNCTIONS(AB_BANKINFO, AB_BankInfo)
+
+
 
 
 AB_BANKINFO *AB_BankInfo_new() {
@@ -174,11 +179,9 @@ int AB_BankInfo_toDb(const AB_BANKINFO *st, GWEN_DB_NODE *db) {
 }
 
 
-AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db) {
-AB_BANKINFO *st;
-
+int AB_BankInfo_ReadDb(AB_BANKINFO *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_BankInfo_new();
   AB_BankInfo_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, 0));
   AB_BankInfo_SetBranchId(st, GWEN_DB_GetCharValue(db, "branchId", 0, 0));
   AB_BankInfo_SetBankId(st, GWEN_DB_GetCharValue(db, "bankId", 0, 0));
@@ -194,7 +197,7 @@ AB_BANKINFO *st;
   AB_BankInfo_SetEmail(st, GWEN_DB_GetCharValue(db, "email", 0, 0));
   AB_BankInfo_SetWebsite(st, GWEN_DB_GetCharValue(db, "website", 0, 0));
   st->services=AB_BankInfoService_List_new();
-  if (1) {
+  if (1) {/* just for local vars */
     GWEN_DB_NODE *dbT;
     AB_BANKINFO_SERVICE *e;
 
@@ -216,9 +219,21 @@ AB_BANKINFO *st;
       } /* while */
     } /* if (dbT) */
   } /* if (1) */
+  return 0;
+}
+
+
+AB_BANKINFO *AB_BankInfo_fromDb(GWEN_DB_NODE *db) {
+  AB_BANKINFO *st;
+
+  assert(db);
+  st=AB_BankInfo_new();
+  AB_BankInfo_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_BankInfo_GetCountry(const AB_BANKINFO *st) {
@@ -563,8 +578,6 @@ void AB_BankInfo_List2_freeAll(AB_BANKINFO_LIST2 *stl) {
 }
 
 
-
-
 AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl) {
   if (stl) {
     AB_BANKINFO_LIST *nl;
@@ -585,6 +598,7 @@ AB_BANKINFO_LIST *AB_BankInfo_List_dup(const AB_BANKINFO_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

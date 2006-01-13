@@ -1,5 +1,10 @@
+
+AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+
 INCLUDES = -I$(top_builddir)/headers -I$(top_srcdir)/src/libs/aqbanking \
   $(all_includes) -I$(srcdir)/..
+
+EXTRA_DIST=msgcrypt.inc
 
 DEFS += -DAH_XMLDATADIR=\"@aqhbci_data@/xml\"
 
@@ -9,13 +14,10 @@ typefiles=mediumctx.xml
 noinst_LTLIBRARIES=libhbcimsg.la
 
 noinst_HEADERS=\
- account_l.h \
  account_p.h \
- bank_l.h \
- bank_p.h \
+ account_l.h \
  bpd_p.h \
- customer_l.h \
- customer_p.h \
+ dialog_l.h \
  dialog_p.h \
  hbci_l.h \
  hbci_p.h \
@@ -29,16 +31,13 @@ noinst_HEADERS=\
  message_l.h \
  message_p.h \
  msgengine_p.h \
- objectref_p.h \
  user_p.h \
  user_l.h
 
 iheaderdir=${includedir}/aqhbci
 iheader_HEADERS=\
  account.h \
- bank.h \
  bpd.h \
- customer.h \
  dialog.h \
  hbci.h \
  medium.h \
@@ -46,14 +45,11 @@ iheader_HEADERS=\
  mediumheader.h \
  message.h \
  msgengine.h \
- objectref.h \
  user.h
 
 libhbcimsg_la_SOURCES=\
  account.c \
- bank.c \
  bpd.c \
- customer.c \
  dialog.c \
  hbci.c \
  hbci-updates.c \
@@ -61,9 +57,7 @@ libhbcimsg_la_SOURCES=\
  mediumheader.c \
  mediumctx.c \
  message.c \
- msgcrypt.c \
  msgengine.c \
- objectref.c \
  user.c
 
 sources:

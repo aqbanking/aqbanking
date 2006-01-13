@@ -1,24 +1,33 @@
-INCLUDES=-I$(top_builddir)/headers \
-  -I dialogs -I widgets -Iviews @all_includes@
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/logmanager \
+  $(all_includes)
 
-SUBDIRS=widgets dialogs views
+SUBDIRS=dialogs
+#widgets
 
-abs_top_builddir=$(shell (cd $(top_builddir) && pwd) )
+qbanking_plugindir=@qbanking_plugindir@/cfgmodules
+qbanking_plugin_LTLIBRARIES=aqdtaus.la
 
-noinst_LTLIBRARIES=libqt3wizard.la
+aqdtaus_la_SOURCES=cfgmoduledtaus.cpp
 
-libqt3wizard_la_SOURCES=dummy.cpp
+noinst_HEADERS=\
+ cfgmoduledtaus_p.h
 
-libqt3wizard_la_LDFLAGS=@STRIPALL@
 
-libqt3wizard_la_LIBADD=\
+aqdtaus_la_LDFLAGS=@STRIPALL@ -module
+
+aqdtaus_la_LIBADD=\
   dialogs/libdialogs.la \
-  widgets/libwidgets.la \
-  views/libviews.la
+  $(aqdtaus_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(qbanking_internal_libs) \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
-BUILT_SOURCES = $(nodist_libqt3wizard_la_SOURCES)
-CLEANFILES = $(nodist_libqt3wizard_la_SOURCES)
+
+BUILT_SOURCES = $(nodist_aqdtaus_la_SOURCES)
+CLEANFILES = $(nodist_aqdtaus_la_SOURCES)
 
 sources:
 	for d in $(SUBDIRS); do \

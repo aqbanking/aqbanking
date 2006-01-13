@@ -37,7 +37,7 @@ typedef struct AH_HBCI AH_HBCI;
 #include <gwenhywfar/plugindescr.h>
 #include <gwenhywfar/crypttoken.h>
 
-#include <aqhbci/objectref.h>
+#include <aqhbci/aqhbci.h>
 
 #include <aqbanking/banking.h>
 
@@ -77,8 +77,6 @@ const char *AH_CryptMode_toString(AH_CRYPT_MODE v);
 #include <aqhbci/user.h>
 #include <aqhbci/account.h>
 #include <aqhbci/message.h>
-#include <aqhbci/customer.h>
-#include <aqhbci/user.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -146,6 +144,10 @@ AH_MEDIUM *AH_HBCI_FindMedium(const AH_HBCI *hbci,
                               const char *mediumName);
 
 AQHBCI_API
+AH_MEDIUM *AH_HBCI_FindMediumById(const AH_HBCI *hbci, GWEN_TYPE_UINT32 id);
+
+
+AQHBCI_API
 AH_MEDIUM *AH_HBCI_SelectMedium(AH_HBCI *hbci,
                                 const char *typeName,
                                 const char *subTypeName,
@@ -193,97 +195,37 @@ int AH_HBCI_CheckMedium(AH_HBCI *hbci,
 
 
 
-
-AQHBCI_API
-AH_BANK *AH_HBCI_FindBank(const AH_HBCI *hbci,
-                          int country,
-                          const char *bankId);
-
-AQHBCI_API
-AH_BANK_LIST2 *AH_HBCI_GetBanks(const AH_HBCI *hbci,
-                                int country,
-                                const char *bankId);
-
-AQHBCI_API
-int AH_HBCI_AddBank(AH_HBCI *hbci, AH_BANK *b);
-AQHBCI_API
-
-AQHBCI_API
-int AH_HBCI_RemoveBank(AH_HBCI *hbci, AH_BANK *b);
-
-
-AQHBCI_API
-AH_CUSTOMER *AH_HBCI_FindCustomer(AH_HBCI *hbci,
-                                  int country,
-                                  const char *bankId,
-                                  const char *userId,
-                                  const char *customerId);
-
-AQHBCI_API
-AH_CUSTOMER_LIST2 *AH_HBCI_GetCustomers(AH_HBCI *hbci,
-                                        int country,
-                                        const char *bankId,
-                                        const char *userId,
-                                        const char *customerId);
-
-AQHBCI_API
-AH_ACCOUNT *AH_HBCI_FindAccount(AH_HBCI *hbci,
-                                int country,
-                                const char *bankId,
-                                const char *accountId);
-
-AQHBCI_API
-AH_ACCOUNT_LIST2 *AH_HBCI_GetAccounts(AH_HBCI *hbci,
-                                      int country,
-                                      const char *bankId,
-                                      const char *accountId);
-
-
-AQHBCI_API
-AH_USER *AH_HBCI_FindUser(AH_HBCI *hbci,
-                          int country,
-                          const char *bankId,
-                          const char *userId);
-
-AQHBCI_API
-AH_USER_LIST2 *AH_HBCI_GetUsers(AH_HBCI *hbci,
-                                int country,
-                                const char *bankId,
-                                const char *userId);
-
-
-
 AQHBCI_API
 int AH_HBCI_AddBankPath(const AH_HBCI *hbci,
-                        const AH_BANK *b,
+                        const AB_USER *u,
                         GWEN_BUFFER *nbuf);
 AQHBCI_API
 int AH_HBCI_AddUserPath(const AH_HBCI *hbci,
-                        const AH_USER *u,
+                        const AB_USER *u,
                         GWEN_BUFFER *nbuf);
 AQHBCI_API
 int AH_HBCI_AddCustomerPath(const AH_HBCI *hbci,
-                            const AH_CUSTOMER *cu,
+                            const AB_USER *u,
                             GWEN_BUFFER *nbuf);
 
 AQHBCI_API
 int AH_HBCI_AddAccountPath(const AH_HBCI *hbci,
-                           const AH_ACCOUNT *a,
+                           const AB_ACCOUNT *a,
                            GWEN_BUFFER *nbuf);
 
 
 
 AQHBCI_API
 int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
-                              AH_BANK *b,
+                              const AB_USER *u,
                               GWEN_BUFFER *nbuf);
 AQHBCI_API
-int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, AH_BANK *b);
+int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u);
 
 
 AQHBCI_API
 int AH_HBCI_SaveMessage(AH_HBCI *hbci,
-                        const AH_CUSTOMER *cu,
+                        const AB_USER *u,
                         GWEN_DB_NODE *dbMsg);
 
 

@@ -14,35 +14,23 @@
 #define AH_USER_P_H
 
 #include "user_l.h"
-#include "customer_l.h"
 #include "bpd.h"
 
 
+typedef struct AH_USER AH_USER;
 struct AH_USER {
-  GWEN_LIST_ELEMENT(AH_USER);
-
-  AH_BANK *bank;
-  char *userId;
+  AH_HBCI *hbci;
+  GWEN_MSGENGINE *msgEngine;
 
   AH_MEDIUM *medium;
-  int contextIdx;
 
-  GWEN_TYPE_UINT32 usage;
-
-  AH_CUSTOMER_LIST *customers;
-
-  /* adjustable vars */
-  AH_USER_STATUS status;
-  /* only from here the server addres is taken !! */
   AH_BPD_ADDR *serverAddress;
+  AH_BPD *bpd;
 
-  AH_CRYPT_MODE cryptMode;
-
-  /* new variables used with CryptTokens */
-  char *peerId;
-
-
+  GWEN_TYPE_UINT32 flags;
 };
+
+static void AH_User_freeData(void *bp, void *p);
 
 
 

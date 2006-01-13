@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.0beta (2006-01-11)
+===========================================================================
+
+This version features a complete redesign of the configuration framework.
+It also removes some deprecated functions and makes use of GCCs visibility
+feature (thus removing several hundred symbols from the libraries export
+table which decreases application loading time).
+
+
+===========================================================================
                Released AqBanking - 1.8.1beta (2005-12-15)
 ===========================================================================
 

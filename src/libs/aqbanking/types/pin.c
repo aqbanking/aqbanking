@@ -13,10 +13,14 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <aqbanking/banking.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_PIN, AB_Pin)
 GWEN_LIST2_FUNCTIONS(AB_PIN, AB_Pin)
+
+
 
 
 AB_PIN *AB_Pin_new() {
@@ -85,18 +89,28 @@ int AB_Pin_toDb(const AB_PIN *st, GWEN_DB_NODE *db) {
 }
 
 
-AB_PIN *AB_Pin_fromDb(GWEN_DB_NODE *db) {
-AB_PIN *st;
-
+int AB_Pin_ReadDb(AB_PIN *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_Pin_new();
   AB_Pin_SetToken(st, GWEN_DB_GetCharValue(db, "token", 0, 0));
   AB_Pin_SetValue(st, GWEN_DB_GetCharValue(db, "value", 0, 0));
   AB_Pin_SetHash(st, GWEN_DB_GetCharValue(db, "hash", 0, 0));
   AB_Pin_SetStatus(st, GWEN_DB_GetCharValue(db, "status", 0, 0));
+  return 0;
+}
+
+
+AB_PIN *AB_Pin_fromDb(GWEN_DB_NODE *db) {
+  AB_PIN *st;
+
+  assert(db);
+  st=AB_Pin_new();
+  AB_Pin_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_Pin_GetToken(const AB_PIN *st) {
@@ -209,8 +223,6 @@ void AB_Pin_List2_freeAll(AB_PIN_LIST2 *stl) {
 }
 
 
-
-
 AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl) {
   if (stl) {
     AB_PIN_LIST *nl;
@@ -231,6 +243,7 @@ AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

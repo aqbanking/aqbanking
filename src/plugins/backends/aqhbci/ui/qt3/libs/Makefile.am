@@ -3,22 +3,31 @@ INCLUDES = \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/logmanager \
   $(all_includes)
 
-SUBDIRS=dialogs logmanager widgets
+SUBDIRS=dialogs logmanager 
+#widgets
 
-noinst_LTLIBRARIES=libqt3wizard.la
+qbanking_plugindir=@qbanking_plugindir@/cfgmodules
+qbanking_plugin_LTLIBRARIES=aqhbci.la
 
-libqt3wizard_la_SOURCES=dummy.cpp
+aqhbci_la_SOURCES=cfgmodulehbci.cpp
 
-libqt3wizard_la_LDFLAGS=@STRIPALL@
+noinst_HEADERS=\
+ cfgmodulehbci_p.h
 
-libqt3wizard_la_LIBADD=\
+
+aqhbci_la_LDFLAGS=@STRIPALL@ -module
+
+aqhbci_la_LIBADD=\
   dialogs/libdialogs.la \
-  widgets/libwidgets.la \
-  logmanager/liblogmanager.la
+  logmanager/liblogmanager.la \
+  $(aqhbci_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(qbanking_internal_libs) \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
-BUILT_SOURCES = $(nodist_libqt3wizard_la_SOURCES)
-CLEANFILES = $(nodist_libqt3wizard_la_SOURCES)
+BUILT_SOURCES = $(nodist_aqhbci_la_SOURCES)
+CLEANFILES = $(nodist_aqhbci_la_SOURCES)
 
 sources:
 	for d in $(SUBDIRS); do \

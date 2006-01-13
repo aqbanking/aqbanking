@@ -64,63 +64,49 @@ struct AH_MSG {
 };
 
 
-void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
-void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
+static void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
+static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
 
-int AH_Msg_AddMsgTail(AH_MSG *hmsg);
-int AH_Msg_AddMsgHead(AH_MSG *hmsg);
+static int AH_Msg_AddMsgTail(AH_MSG *hmsg);
+static int AH_Msg_AddMsgHead(AH_MSG *hmsg);
 
-int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
-                            AH_USER *u,
-                            GWEN_DB_NODE *cfg,
-                            const GWEN_KEYSPEC *ks,
-                            int crypt,
-                            int createCtrlRef);
-int AH_Msg_SignMsg(AH_MSG *hmsg,
-                   GWEN_BUFFER *rawBuf,
-                   const GWEN_KEYSPEC *ks);
-int AH_Msg_EncryptMsg(AH_MSG *hmsg);
+static int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
+                                   AB_USER *u,
+                                   GWEN_DB_NODE *cfg,
+                                   const GWEN_KEYSPEC *ks,
+                                   int crypt,
+                                   int createCtrlRef);
+static int AH_Msg_SignMsg(AH_MSG *hmsg,
+                          GWEN_BUFFER *rawBuf,
+                          const GWEN_KEYSPEC *ks);
+static int AH_Msg_EncryptMsg(AH_MSG *hmsg);
 
-int AH_Msg_ReadSegment(AH_MSG *hmsg,
-                       GWEN_MSGENGINE *e,
-                       const char *gtype,
-                       GWEN_BUFFER *mbuf,
-                       GWEN_DB_NODE *gr,
-                       unsigned int flags);
-int AH_Msg_ReadMessage(AH_MSG *hmsg,
-                       GWEN_MSGENGINE *e,
-                       const char *gtype,
-                       GWEN_BUFFER *mbuf,
-                       GWEN_DB_NODE *gr,
-                       unsigned int flags);
-int AH_Msg_PrepareCryptoSegDec(AH_MSG *hmsg,
-                               GWEN_DB_NODE *n,
-                               int crypt,
-                               GWEN_KEYSPEC **keySpec,
-                               int *signseq,
-                               const char **pSecurityId,
-                               int *lSecurityId,
-                               GWEN_BUFFER *msgkeybuf);
-int AH_Msg_Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr);
-int AH_Msg_Verify(AH_MSG *hmsg,
-                  GWEN_DB_NODE *gr,
-                  unsigned int flags);
+static int AH_Msg_ReadSegment(AH_MSG *hmsg,
+                              GWEN_MSGENGINE *e,
+                              const char *gtype,
+                              GWEN_BUFFER *mbuf,
+                              GWEN_DB_NODE *gr,
+                              unsigned int flags);
+static int AH_Msg_ReadMessage(AH_MSG *hmsg,
+                              GWEN_MSGENGINE *e,
+                              const char *gtype,
+                              GWEN_BUFFER *mbuf,
+                              GWEN_DB_NODE *gr,
+                              unsigned int flags);
+static int AH_Msg_Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr);
+static int AH_Msg_Verify(AH_MSG *hmsg,
+                         GWEN_DB_NODE *gr,
+                         unsigned int flags);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+static int AH_Msg_PrepareCryptoSegDec(AH_MSG *hmsg,
+                                      GWEN_DB_NODE *n,
+                                      int crypt,
+                                      GWEN_KEYSPEC **keySpec,
+                                      int *signseq,
+                                      const char **pSecurityId,
+                                      int *lSecurityId,
+                                      GWEN_BUFFER *msgkeybuf);
 
 
 

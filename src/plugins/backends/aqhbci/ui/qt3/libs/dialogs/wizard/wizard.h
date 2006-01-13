@@ -51,6 +51,9 @@ public:
   void addAction(WizardAction *a);
   WizardInfo *getWizardInfo();
 
+  void setNextEnabled(WizardAction *a, bool b);
+  void setBackEnabled(WizardAction *a, bool b);
+
   void log(AB_BANKING_LOGLEVEL level, const QString &s);
   void setDescription(const QString &s);
 

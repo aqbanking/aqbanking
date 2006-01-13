@@ -34,7 +34,7 @@ int listAccounts(AB_BANKING *ab,
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
   int rv;
-  AH_ACCOUNT_LIST2 *al;
+  AB_ACCOUNT_LIST2 *al;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -82,30 +82,27 @@ int listAccounts(AB_BANKING *ab,
   hbci=AH_Provider_GetHbci(pro);
   assert(hbci);
 
-  al=AH_HBCI_GetAccounts(hbci, 0, "*", "*");
+  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de", "*", "*");
   if (al) {
-    AH_ACCOUNT_LIST2_ITERATOR *ait;
+    AB_ACCOUNT_LIST2_ITERATOR *ait;
 
-    ait=AH_Account_List2_First(al);
+    ait=AB_Account_List2_First(al);
     if (ait) {
-      AH_ACCOUNT *a;
+      AB_ACCOUNT *a;
       int i=0;
 
-      a=AH_Account_List2Iterator_Data(ait);
+      a=AB_Account_List2Iterator_Data(ait);
       assert(a);
       while(a) {
-        AH_BANK *b;
-
-        b=AH_Account_GetBank(a);
-        assert(b);
         fprintf(stdout, "Account %d: Bank: %s Account Number: %s\n",
-                i++, AH_Bank_GetBankId(b),
-                AH_Account_GetAccountId(a));
-        a=AH_Account_List2Iterator_Next(ait);
+                i++,
+                AB_Account_GetBankCode(a),
+                AB_Account_GetAccountNumber(a));
+        a=AB_Account_List2Iterator_Next(ait);
       }
-      AH_Account_List2Iterator_free(ait);
+      AB_Account_List2Iterator_free(ait);
     }
-    AH_Account_List2_free(al);
+    AB_Account_List2_free(al);
   }
 
   rv=AB_Banking_Fini(ab);

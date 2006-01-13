@@ -31,12 +31,11 @@ struct AB_ACCOUNT {
 
   AB_BANKING *banking;
   AB_PROVIDER *provider;
-  char *providerName;
+  char *backendName;
   GWEN_DB_NODE *data;
-  int availability;
 };
 
-AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData);
+static AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData);
 
 
 

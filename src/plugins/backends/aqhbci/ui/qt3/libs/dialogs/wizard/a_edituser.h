@@ -27,6 +27,7 @@ public:
   ActionEditUser(Wizard *w);
   virtual ~ActionEditUser();
 
+  virtual void enter();
   virtual bool apply();
   virtual bool undo();
 

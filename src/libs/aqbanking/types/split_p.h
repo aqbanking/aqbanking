@@ -21,6 +21,7 @@ struct AB_SPLIT {
   GWEN_STRINGLIST *name;
   AB_VALUE *value;
   GWEN_STRINGLIST *purpose;
+  GWEN_STRINGLIST *category;
 };
 
 
@@ -43,6 +44,7 @@ This group contains information about the remote account.*/
 /*@{*/
 
 /*@}*/
+
 
 
 

@@ -37,7 +37,7 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 
 #include <gwenhywfar/inherit.h>
 #include <aqhbci/hbci.h>
-#include <aqhbci/customer.h>
+#include <aqhbci/user.h>
 #include <aqhbci/job.h>
 
 
@@ -88,8 +88,8 @@ int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount);
 
 AQHBCI_API
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
-                                  AH_CUSTOMER *cu,
-                                  AH_ACCOUNT *a,
+                                  AB_USER *u,
+                                  AB_ACCOUNT *a,
                                   int isTransfer);
 
 #ifdef __cplusplus

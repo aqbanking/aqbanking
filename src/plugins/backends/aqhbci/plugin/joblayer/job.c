@@ -19,6 +19,8 @@
 #include "job_p.h"
 #include "aqhbci_l.h"
 #include "hbci_l.h"
+#include "user_l.h"
+#include <aqhbci/provider.h>
 #include <aqbanking/job_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -38,17 +40,14 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 AH_JOB *AH_Job_new(const char *name,
-                   AH_CUSTOMER *cu,
+                   AB_USER *u,
                    const char *accountId) {
   AH_JOB *j;
   GWEN_XMLNODE *node;
   GWEN_XMLNODE *jobNode=0;
   GWEN_XMLNODE *msgNode;
   GWEN_XMLNODE *descrNode;
-  AH_BANK *b;
-  AH_USER *u;
   AH_MEDIUM *m;
-  GWEN_MSGENGINE *e;
   const char *segCode;
   const char *paramName;
   int needsBPD;
@@ -56,42 +55,40 @@ AH_JOB *AH_Job_new(const char *name,
   int noSysId;
   GWEN_DB_NODE *bpdgrp;
   const AH_BPD *bpd;
+  GWEN_MSGENGINE *e;
 
   assert(name);
-  assert(cu);
+  assert(u);
 
   needTAN=0;
   GWEN_NEW_OBJECT(AH_JOB, j);
   j->usage=1;
   GWEN_LIST_INIT(AH_JOB, j);
   GWEN_INHERIT_INIT(AH_JOB, j);
-  AH_Customer_Attach(cu);
   j->name=strdup(name);
   if (accountId)
     j->accountId=strdup(accountId);
-  j->customer=cu;
+  j->user=u;
   j->signers=GWEN_StringList_new();
   j->log=GWEN_StringList_new();
 
   /* get job descriptions */
-  u=AH_Customer_GetUser(cu);
-  assert(u);
   m=AH_User_GetMedium(u);
   assert(m);
-  b=AH_User_GetBank(u);
-  assert(b);
-  e=AH_Customer_GetMsgEngine(cu);
-  assert(e);
 
-  bpd=AH_Customer_GetBpd(cu);
+  e=AH_User_GetMsgEngine(u);
+  assert(e);
+  GWEN_MsgEngine_Attach(e);
+
+  bpd=AH_User_GetBpd(u);
 
   /* just to make sure the XMLNode is not freed before this job is */
   j->msgEngine=e;
   GWEN_MsgEngine_Attach(e);
-  if (AH_Customer_GetHbciVersion(cu)==0)
+  if (AH_User_GetHbciVersion(u)==0)
     GWEN_MsgEngine_SetProtocolVersion(e, 210);
   else
-    GWEN_MsgEngine_SetProtocolVersion(e, AH_Customer_GetHbciVersion(cu));
+    GWEN_MsgEngine_SetProtocolVersion(e, AH_User_GetHbciVersion(u));
 
   GWEN_MsgEngine_SetMode(e, AH_CryptMode_toString(AH_User_GetCryptMode(u)));
 
@@ -120,7 +117,7 @@ AH_JOB *AH_Job_new(const char *name,
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
 
   if (bpd) {
-    bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_Customer_GetHbciVersion(cu));
+    bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(u));
     assert(bpdgrp);
   }
   else
@@ -208,7 +205,7 @@ AH_JOB *AH_Job_new(const char *name,
   if (accountId) {
     GWEN_DB_NODE *updgroup;
 
-    updgroup=AH_Customer_GetUpd(cu);
+    updgroup=AH_User_GetUpd(u);
     assert(updgroup);
     updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                               accountId);
@@ -338,7 +335,6 @@ void AH_Job_free(AH_JOB *j) {
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
-      AH_Customer_free(j->customer);
       GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
       free(j->name);
@@ -680,10 +676,10 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s){
 
 
 
-AH_CUSTOMER *AH_Job_GetCustomer(const AH_JOB *j){
+AB_USER *AH_Job_GetUser(const AH_JOB *j){
   assert(j);
   assert(j->usage);
-  return j->customer;
+  return j->user;
 }
 
 
@@ -819,19 +815,16 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj, AH_JOB_EXCHANGE_MODE m){
 
   switch(m) {
   case AH_Job_ExchangeModeParams: {
-    AH_USER *u;
-    AH_BANK *b;
+    AB_USER *u;
 
-    u=AH_Customer_GetUser(AH_Job_GetCustomer(j));
+    u=AH_Job_GetUser(j);
     assert(u);
-    b=AH_User_GetBank(u);
-    assert(b);
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "customerId",
-                         AH_Customer_GetCustomerId(AH_Job_GetCustomer(j)));
+                         AB_User_GetCustomerId(u));
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "bankId",
-                         AH_Bank_GetBankId(b));
+                         AB_User_GetBankCode(u));
     break;
   }
   case AH_Job_ExchangeModeArgs:
@@ -1104,15 +1097,15 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Owner   : %s\n", AH_Customer_GetCustomerId(j->customer));
+  fprintf(f, "Owner   : %s\n", AB_User_GetCustomerId(j->user));
 }
 
 
 
 int AH_Job_CommitSystemData(AH_JOB *j) {
   GWEN_DB_NODE *dbCurr;
-  AH_USER *u;
-  AH_BANK *b;
+  AB_USER *u;
+  AB_BANKING *ab;
   AH_HBCI *h;
   const char *p;
   int i;
@@ -1129,13 +1122,13 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
   modCust=0;
   bpdDeleted=0;
 
-  u=AH_Customer_GetUser(j->customer);
+  u=j->user;
   assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
-  h=AH_Bank_GetHbci(b);
+  h=AH_Job_GetHbci(j);
   assert(h);
-  e=AH_Customer_GetMsgEngine(j->customer);
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+  e=AH_User_GetMsgEngine(j->user);
   assert(e);
 
   dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
@@ -1154,7 +1147,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         GWEN_DB_NODE *n;
 
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD");
-        bpd=AH_Customer_GetBpd(j->customer);
+        bpd=AH_User_GetBpd(j->user);
 
         AH_Bpd_SetBpdVersion(bpd,
                              GWEN_DB_GetIntValue(dbRd,
@@ -1169,9 +1162,8 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
 	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
 	  AH_HBCI_HbciToUtf8(p, 0, xbuf);
 	  AH_Bpd_SetBankName(bpd, GWEN_Buffer_GetStart(xbuf));
-          AH_Bank_SetBankName(b, GWEN_Buffer_GetStart(xbuf));
-	  GWEN_Buffer_free(xbuf);
-	}
+          GWEN_Buffer_free(xbuf);
+        }
         AH_Bpd_SetJobTypesPerMsg(bpd,
                                  GWEN_DB_GetIntValue(dbRd,
                                                      "jobtypespermsg",
@@ -1237,7 +1229,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
 	AH_BPD *bpd;
 
 	DBG_INFO(AQHBCI_LOGDOMAIN, "Found communication infos");
-	bpd=AH_Customer_GetBpd(j->customer);
+        bpd=AH_User_GetBpd(j->user);
 	assert(bpd);
 
 	if (!bpdDeleted) {
@@ -1267,7 +1259,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         GWEN_DB_NODE *currJob;
         AH_BPD *bpd;
 
-        bpd=AH_Customer_GetBpd(j->customer);
+        bpd=AH_User_GetBpd(j->user);
         assert(bpd);
 	if (!bpdDeleted) {
 	  AH_Bpd_ClearBpdJobs(bpd);
@@ -1329,7 +1321,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
             char numbuffer[32];
 
             DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"", GWEN_DB_GroupName(dbRd));
-            bpd=AH_Customer_GetBpd(j->customer);
+            bpd=AH_User_GetBpd(j->user);
             assert(bpd);
 	    if (!bpdDeleted) {
 	      AH_Bpd_ClearBpdJobs(bpd);
@@ -1373,7 +1365,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
       if (strcasecmp(GWEN_DB_GroupName(dbRd), "UserData")==0){
         /* UserData found */
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found UserData");
-        AH_Customer_SetUpdVersion(j->customer,
+        AH_User_SetUpdVersion(j->user,
                                   GWEN_DB_GetIntValue(dbRd,
                                                       "version",
                                                       0, 0));
@@ -1384,11 +1376,11 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         const char *accountName;
         const char *bankCode;
         const char *custId;
-        AH_ACCOUNT *acc;
+        AB_ACCOUNT *acc;
         GWEN_DB_NODE *gr;
+        AH_BPD *bpd;
         GWEN_DB_NODE *dbUpd;
         int accCreated;
-        const GWEN_STRINGLIST *customers;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Found AccountData");
         AH_Job_Log(j, AB_Banking_LogLevelInfo,
@@ -1421,15 +1413,30 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
           GWEN_Buffer_free(mbuf);
         }
 
-        acc=AH_Bank_FindAccount(b, accountId);
+        acc=AB_Banking_FindAccount(ab, AH_PROVIDER_NAME,
+                                   "de", /* TODO: get country */
+                                   bankCode,
+                                   accountId);
         if (acc) {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Account \"%s\" already exists", accountId);
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "Account \"%s\" already exists",
+                     accountId);
           accCreated=0;
         }
         else {
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\"", accountId);
           accCreated=1;
-          acc=AH_Account_new(b, bankCode, accountId);
+          acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+          assert(acc);
+          AB_Account_SetCountry(acc, "de");
+          AB_Account_SetBankCode(acc, bankCode);
+          AB_Account_SetAccountNumber(acc, accountId);
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "Setting user \"%s\" for account \"%s\"",
+                     AB_User_GetUserId(u),
+                     accountId);
+          AB_Account_SetUser(acc, j->user);
+          AB_Account_SetSelectedUser(acc, j->user);
         }
 
         /* modify account */
@@ -1438,48 +1445,30 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
 
 	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
 	  AH_HBCI_HbciToUtf8(accountName, 0, xbuf);
-	  AH_Account_SetAccountName(acc, GWEN_Buffer_GetStart(xbuf));
+          AB_Account_SetAccountName(acc, GWEN_Buffer_GetStart(xbuf));
           GWEN_Buffer_free(xbuf);
-	}
+        }
 	if (userName) {
 	  GWEN_BUFFER *xbuf;
 
 	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
 	  AH_HBCI_HbciToUtf8(userName, 0, xbuf);
-	  AH_Account_SetOwnerName(acc, GWEN_Buffer_GetStart(xbuf));
-	  GWEN_Buffer_free(xbuf);
-	}
+          AB_Account_SetOwnerName(acc, GWEN_Buffer_GetStart(xbuf));
+          GWEN_Buffer_free(xbuf);
+        }
 
-	AH_Account_AddCustomer(acc, custId);
+        /* set bank name */
+        bpd=AH_User_GetBpd(j->user);
+        if (bpd) {
+          const char *s;
 
-	customers=AH_Account_GetCustomers(acc);
-        if (customers) {
-          int match;
-          AH_USER *u;
-          GWEN_STRINGLISTENTRY *se;
-
-          match=0;
-          u=AH_Customer_GetUser(j->customer);
-          se=GWEN_StringList_FirstEntry(customers);
-          while(se) {
-            if (AH_User_FindCustomer(u, GWEN_StringListEntry_Data(se))) {
-              match=1;
-              break;
-            }
-            se=GWEN_StringListEntry_Next(se);
-          } /* while */
-
-          if (!match) {
-            /* no match, add current customer instead */
-            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Replacing all account customers by current one");
-            AH_Account_ClearCustomers(acc);
-            AH_Account_AddCustomer(acc,
-                                   AH_Customer_GetCustomerId(j->customer));
-          }
+          s=AH_Bpd_GetBankName(bpd);
+          if (s)
+            AB_Account_SetBankName(acc, s);
         }
 
         /* get UPD jobs */
-        dbUpd=AH_Customer_GetUpd(j->customer);
+        dbUpd=AH_User_GetUpd(j->user);
         assert(dbUpd);
         dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                                accountId);
@@ -1495,7 +1484,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         } /* while */
 
         if (accCreated)
-          AH_Bank_AddAccount(b, acc);
+          AB_Banking_AddAccount(ab, acc);
         modCust=1;
       } /* if accountData */
 
@@ -1518,7 +1507,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
                                "subject", subject);
           GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS,
                                "text", text);
-          if (AH_HBCI_SaveMessage(h, j->customer, dbTmp)) {
+          if (AH_HBCI_SaveMessage(h, j->user, dbTmp)) {
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save this message:");
             GWEN_DB_Dump(dbTmp, stderr, 2);
           }
@@ -1584,17 +1573,10 @@ void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl){
 
 
 AH_HBCI *AH_Job_GetHbci(const AH_JOB *j){
-  AH_USER *u;
-  AH_BANK *b;
-
   assert(j);
   assert(j->usage);
 
-  u=AH_Customer_GetUser(j->customer);
-  assert(u);
-  b=AH_User_GetBank(u);
-  assert(b);
-  return AH_Bank_GetHbci(b);
+  return AH_User_GetHbci(j->user);
 }
 
 
@@ -1735,9 +1717,13 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
   GWEN_DB_NODE *dbSecurity;
   int i;
+  GWEN_TYPE_UINT32 uFlags;
 
   assert(j);
   assert(j->usage);
+
+  uFlags=AH_User_GetFlags(j->user);
+
   assert(dbRsp);
   dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                               "security");
@@ -1769,7 +1755,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     }
   } /* for */
 
-  if (j->expectedSigner && AH_Customer_GetBankSigns(AH_Job_GetCustomer(j))){
+  if (j->expectedSigner && !(uFlags & AH_USER_FLAGS_BANK_DOESNT_SIGN)) {
     /* check signer */
     for (i=0; ; i++) {
       const char *s;
@@ -1835,8 +1821,8 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
                                    0,
                                    AB_Banking_LogLevelNotice,
                                    I18N("User accepts all further unsigned "
-                                   "responses"));
-            AH_Customer_SetBankSigns(AH_Job_GetCustomer(j), 0);
+                                        "responses"));
+            AH_User_AddFlags(j->user, AH_USER_FLAGS_BANK_DOESNT_SIGN);
             AH_Job_SetExpectedSigner(j, 0);
             break;
           }
@@ -1914,7 +1900,7 @@ void AH_Job_Log(AH_JOB *j, AB_BANKING_LOGLEVEL ll, const char *txt) {
   assert(ti);
   GWEN_Time_toString(ti, "YYYYMMDD:hhmmss:", lbuf);
   GWEN_Time_free(ti);
-  GWEN_Text_EscapeToBufferTolerant("aqhbci", lbuf);
+  GWEN_Text_EscapeToBufferTolerant(AH_PROVIDER_NAME, lbuf);
   GWEN_Buffer_AppendByte(lbuf, ':');
   GWEN_Text_EscapeToBufferTolerant(txt, lbuf);
   GWEN_StringList_AppendString(j->log,

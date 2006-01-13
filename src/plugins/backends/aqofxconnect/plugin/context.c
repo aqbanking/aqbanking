@@ -16,6 +16,7 @@
 
 #include "context_p.h"
 #include "aqofxconnect_l.h"
+#include <aqofxconnect/provider.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -30,14 +31,12 @@
 
 
 
-AO_CONTEXT *AO_Context_new(AO_BANK *b, AO_USER *u, AB_JOB *job,
+AO_CONTEXT *AO_Context_new(AB_USER *u, AB_JOB *job,
                            AB_IMEXPORTER_CONTEXT *ictx) {
   AO_CONTEXT *ctx;
 
-  assert(b);
   assert(u);
   GWEN_NEW_OBJECT(AO_CONTEXT, ctx);
-  ctx->bank=b;
   ctx->user=u;
   ctx->job=job;
   ctx->ictx=ictx;
@@ -98,36 +97,32 @@ int AO_Context_Update(AO_CONTEXT *ctx){
   memset(ctx->ai, 0, sizeof(struct OfxAccountInfo));
   memset(ctx->fi, 0, sizeof(struct OfxFiLogin));
 
-  if (ctx->bank) {
-    s=AO_Bank_GetBankId(ctx->bank);
+  if (ctx->user) {
+    AB_PROVIDER *pro;
+
+    pro=AB_User_GetProvider(ctx->user);
+    assert(pro);
+
+    s=AB_User_GetBankCode(ctx->user);
     if (s && isdigit(*s))
       /* only copy bank id if it is a number (-> routing number)
        * otherwise it serves only identification purposes for this backend
        * and doesn't represent a routing number */
       strncpy(ctx->ai->bankid, s, OFX_BANKID_LENGTH-1);
 
-    s=AO_Bank_GetBrokerId(ctx->bank);
+    s=AO_User_GetBrokerId(ctx->user);
     if (s)
       strncpy(ctx->ai->brokerid, s, OFX_BROKERID_LENGTH-1);
 
-    s=AO_Bank_GetOrg(ctx->bank);
+    s=AO_User_GetOrg(ctx->user);
     if (s)
       strncpy(ctx->fi->org, s, OFX_ORG_LENGTH-1);
 
-    s=AO_Bank_GetFid(ctx->bank);
+    s=AO_User_GetFid(ctx->user);
     if (s)
       strncpy(ctx->fi->fid, s, OFX_FID_LENGTH-1);
-  }
 
-  if (ctx->user) {
-    AO_BANK *b;
-    AB_PROVIDER *pro;
-
-    b=AO_User_GetBank(ctx->user);
-    assert(b);
-    pro=AO_Bank_GetProvider(b);
-    assert(pro);
-    s=AO_User_GetUserId(ctx->user);
+    s=AB_User_GetUserId(ctx->user);
     if (s) {
       strncpy(ctx->fi->userid, s, OFX_USERID_LENGTH-1);
       while (strlen(ctx->fi->userpass)<4) {
@@ -206,14 +201,7 @@ int AO_Context_Update(AO_CONTEXT *ctx){
 
 
 
-AO_BANK *AO_Context_GetBank(const AO_CONTEXT *ctx){
-  assert(ctx);
-  return ctx->bank;
-}
-
-
-
-AO_USER *AO_Context_GetUser(const AO_CONTEXT *ctx){
+AB_USER *AO_Context_GetUser(const AO_CONTEXT *ctx){
   assert(ctx);
   return ctx->user;
 }
@@ -282,8 +270,7 @@ int AO_Context_StatusCallback(const struct OfxStatusData data,
   GWEN_BUFFER *logbuf;
 
   ctx=(AO_CONTEXT*)user_data;
-  assert(ctx->bank);
-  pro=AO_Bank_GetProvider(ctx->bank);
+  pro=AB_User_GetProvider(ctx->user);
   assert(pro);
 
   DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
@@ -668,9 +655,8 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
   AB_PROVIDER *pro;
 
   assert(ctx);
-  assert(ctx->bank);
   assert(ctx->user);
-  pro=AO_Bank_GetProvider(ctx->bank);
+  pro=AB_User_GetProvider(ctx->user);
   assert(pro);
 
   ai=AB_ImExporterContext_GetFirstAccountInfo(ctx->ictx);
@@ -682,16 +668,20 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
     const char *bankCode;
     const char *accountNumber;
 
-    country=AO_Bank_GetCountry(ctx->bank);
+    country=AB_User_GetCountry(ctx->user);
+    if (!country)
+      country="us";
     bankCode=AB_ImExporterAccountInfo_GetBankCode(ai);
     if (!bankCode || !*bankCode)
-      bankCode=AO_Bank_GetBankId(ctx->bank);
+      bankCode=AB_User_GetBankCode(ctx->user);
     accountNumber=AB_ImExporterAccountInfo_GetAccountNumber(ai);
     if (bankCode && accountNumber) {
       AB_ACCOUNT *a;
       const char *s;
 
-      a=AO_Bank_FindAccount(ctx->bank, accountNumber);
+      a=AB_Banking_FindAccount(AB_Provider_GetBanking(pro),
+                               AQOFXCONNECT_BACKENDNAME,
+                               country, bankCode, accountNumber);
       if (!a) {
         char msg[]=I18N_NOOP("Adding account %s to bank %s");
         char msgbuf[512];
@@ -700,19 +690,17 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
                   accountNumber, bankCode);
 
         /* account does not exist, add it */
-        a=AO_Account_new(AB_Provider_GetBanking(pro),
-                         pro,
-                         accountNumber);
+        a=AB_Banking_CreateAccount(AB_Provider_GetBanking(pro),
+                                   AQOFXCONNECT_BACKENDNAME);
         assert(a);
-        AO_Account_SetUserId(a, AO_User_GetUserId(ctx->user));
-        AB_Account_SetOwnerName(a, AO_User_GetUserName(ctx->user));
         AB_Account_SetCountry(a, country);
         AB_Account_SetBankCode(a, bankCode);
-        s=AO_Bank_GetBankId(ctx->bank);
-        if (!s)
-          s=AB_ImExporterAccountInfo_GetBankName(ai);
-        AB_Account_SetBankName(a, s);
         AB_Account_SetAccountNumber(a, accountNumber);
+        AB_Account_SetUser(a, ctx->user);
+        s=AB_ImExporterAccountInfo_GetBankName(ai);
+        if (!s)
+          s=bankCode;
+        AB_Account_SetBankName(a, s);
         AB_Account_SetAccountType(a, AB_ImExporterAccountInfo_GetType(ai));
 
         snprintf(msgbuf, sizeof(msgbuf), I18N(msg),
@@ -721,7 +709,7 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
                                0,
                                AB_Banking_LogLevelNotice,
                                msgbuf);
-        AO_Bank_AddAccount(ctx->bank, a);
+        AB_Banking_AddAccount(AB_Provider_GetBanking(pro),a );
       }
       else {
         DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
@@ -729,12 +717,9 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
                   accountNumber, bankCode);
       }
       /* update existing account */
-      s=AO_Bank_GetBankId(ctx->bank);
-      if (!s)
-        s=AB_ImExporterAccountInfo_GetBankName(ai);
+      s=AB_ImExporterAccountInfo_GetBankName(ai);
       if (s) {
         AB_Account_SetBankName(a, s);
-        AO_Bank_SetBankName(ctx->bank, s);
       }
       s=AB_ImExporterAccountInfo_GetAccountName(ai);
       if (s)

@@ -1,4 +1,4 @@
-SUBDIRS=@aqofxconnect_ui@
+#SUBDIRS=@aqofxconnect_ui@
 DIST_SUBDIRS = qt3
 
 sources:

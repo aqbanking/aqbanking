@@ -17,9 +17,7 @@
 #include <aqbanking/accstatus.h>
 #include <gwenhywfar/misc.h>
 
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_ACCOUNT_STATUS,
-                            AB_AccountStatus,
-                            AQBANKING_API)
+GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT_STATUS, AB_AccountStatus)
 
 AB_ACCOUNT_STATUS_LIST *AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *asl);
 

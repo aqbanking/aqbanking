@@ -37,7 +37,8 @@
 
 GWEN_LIST_FUNCTION_DEFS(AH_JOB, AH_Job);
 
-AH_JOB *AH_Job_new(const char *name, AH_CUSTOMER *cu,
+AH_JOB *AH_Job_new(const char *name,
+                   AB_USER *u,
                    const char *accountId);
 
 

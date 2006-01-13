@@ -31,15 +31,19 @@ extern "C" {
 
 GWEN_LIST_FUNCTION_DEFS(AB_PIN, AB_Pin)
 AB_PIN_LIST *AB_Pin_List_dup(const AB_PIN_LIST *stl);
+
 GWEN_LIST2_FUNCTION_DEFS(AB_PIN, AB_Pin)
 
 void AB_Pin_List2_freeAll(AB_PIN_LIST2 *stl);
-AB_PIN_LIST2 *AB_Pin_List2_dup(const AB_PIN_LIST2 *stl);
 
 AB_PIN *AB_Pin_new();
+AB_PIN *AB_Pin_fromDb(GWEN_DB_NODE *db);
+AB_PIN *AB_Pin_dup(const AB_PIN*st);
 void AB_Pin_free(AB_PIN *st);
 void AB_Pin_Attach(AB_PIN *st);
-AB_PIN *AB_Pin_dup(const AB_PIN*st);AB_PIN *AB_Pin_fromDb(GWEN_DB_NODE *db);int AB_Pin_toDb(const AB_PIN*st, GWEN_DB_NODE *db);int AB_Pin_IsModified(const AB_PIN *st);
+int AB_Pin_ReadDb(AB_PIN *st, GWEN_DB_NODE *db);
+int AB_Pin_toDb(const AB_PIN*st, GWEN_DB_NODE *db);
+int AB_Pin_IsModified(const AB_PIN *st);
 void AB_Pin_SetModified(AB_PIN *st, int i);
 
 /**

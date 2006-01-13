@@ -15,6 +15,7 @@
 #endif
 
 #include "waction.h"
+#include "wizard.h"
 
 #include <qwidget.h>
 #include <qlayout.h>
@@ -78,6 +79,26 @@ bool WizardAction::undo() {
 
 void WizardAction::enter() {
 }
+
+
+
+void WizardAction::leave(bool backward) {
+}
+
+
+
+void WizardAction::setNextEnabled(bool b) {
+  _wizard->setNextEnabled(this, b);
+}
+
+
+
+void WizardAction::setBackEnabled(bool b) {
+  _wizard->setBackEnabled(this, b);
+}
+
+
+
 
 
 

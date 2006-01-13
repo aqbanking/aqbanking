@@ -13,10 +13,15 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/stringlist.h>
+#include <aqbanking/error.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)
 GWEN_LIST2_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)
+
+
 
 
 AB_TRANSACTION_LIMITS *AB_TransactionLimits_new() {
@@ -294,11 +299,9 @@ int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db)
 }
 
 
-AB_TRANSACTION_LIMITS *AB_TransactionLimits_fromDb(GWEN_DB_NODE *db) {
-AB_TRANSACTION_LIMITS *st;
-
+int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_TransactionLimits_new();
   AB_TransactionLimits_SetMaxLenLocalName(st, GWEN_DB_GetIntValue(db, "maxLenLocalName", 0, 0));
   AB_TransactionLimits_SetMinLenLocalName(st, GWEN_DB_GetIntValue(db, "minLenLocalName", 0, 0));
   AB_TransactionLimits_SetMaxLenRemoteName(st, GWEN_DB_GetIntValue(db, "maxLenRemoteName", 0, 0));
@@ -403,9 +406,21 @@ AB_TRANSACTION_LIMITS *st;
   AB_TransactionLimits_SetAllowChangeCycle(st, GWEN_DB_GetIntValue(db, "allowChangeCycle", 0, 0));
   AB_TransactionLimits_SetAllowChangePeriod(st, GWEN_DB_GetIntValue(db, "allowChangePeriod", 0, 0));
   AB_TransactionLimits_SetAllowChangeExecutionDay(st, GWEN_DB_GetIntValue(db, "allowChangeExecutionDay", 0, 0));
+  return 0;
+}
+
+
+AB_TRANSACTION_LIMITS *AB_TransactionLimits_fromDb(GWEN_DB_NODE *db) {
+  AB_TRANSACTION_LIMITS *st;
+
+  assert(db);
+  st=AB_TransactionLimits_new();
+  AB_TransactionLimits_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 int AB_TransactionLimits_GetMaxLenLocalName(const AB_TRANSACTION_LIMITS *st) {
@@ -1343,8 +1358,6 @@ void AB_TransactionLimits_List2_freeAll(AB_TRANSACTION_LIMITS_LIST2 *stl) {
 }
 
 
-
-
 AB_TRANSACTION_LIMITS_LIST *AB_TransactionLimits_List_dup(const AB_TRANSACTION_LIMITS_LIST *stl) {
   if (stl) {
     AB_TRANSACTION_LIMITS_LIST *nl;
@@ -1365,6 +1378,7 @@ AB_TRANSACTION_LIMITS_LIST *AB_TransactionLimits_List_dup(const AB_TRANSACTION_L
   else
     return 0;
 }
+
 
 
 

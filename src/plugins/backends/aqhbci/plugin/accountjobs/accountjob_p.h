@@ -20,11 +20,11 @@
 
 typedef struct AH_ACCOUNTJOB AH_ACCOUNTJOB;
 struct AH_ACCOUNTJOB {
-  AH_ACCOUNT *account;
+  AB_ACCOUNT *account;
 };
 
 
-void AH_AccountJob_FreeData(void *bp, void *p);
+static void AH_AccountJob_FreeData(void *bp, void *p);
 
 
 

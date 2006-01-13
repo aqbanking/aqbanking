@@ -41,10 +41,9 @@ struct AH_HBCI {
 
   AH_MEDIUM_LIST *activeMedia;
 
-  AH_BANK_LIST *banks;
-
   GWEN_TYPE_UINT32 counter;
   AH_MEDIUM *currentMedium;
+  GWEN_TYPE_UINT32 lastMediumId;
 
   GWEN_DB_NODE *sharedRuntimeData;
 
@@ -55,29 +54,20 @@ struct AH_HBCI {
 
 
 
-AH_MEDIUM *AH_HBCI__FindMedium(AH_HBCI *hbci,
-                               int country,
-                               const char *bankId,
-                               const char *userId);
+static int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db);
+
+#if 0
+static GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
+#endif
 
 
-int AH_HBCI_AddObjectPath(const AH_HBCI *hbci,
-                          int country,
-                          const char *bankId,
-                          const char *accountId,
-                          const char *userId,
-                          const char *customerId,
-                          GWEN_BUFFER *nbuf);
+static int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node);
+static GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci);
 
-int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db);
-GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
+static int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
+static int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
-
-int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node);
-GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci);
-
-int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
-int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
+static int AH_HBCI__AddMedium(AH_HBCI *hbci, AH_MEDIUM *m);
 
 
 #endif /* GWHBCI_HBCI_P_H */

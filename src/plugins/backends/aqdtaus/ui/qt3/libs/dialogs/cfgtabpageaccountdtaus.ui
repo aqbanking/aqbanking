@@ -1,0 +1,356 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>CfgTabPageAccountDtausUi</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>CfgTabPageAccountDtausUi</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>602</width>
+            <height>238</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Account Settings</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox3</cstring>
+            </property>
+            <property name="title">
+                <string>DTAUS Settings</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>textLabel1</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Maximum Purpose Lines</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="0" column="1">
+                    <property name="name">
+                        <cstring>maxPurposeSpin</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+This field contains the maximum number of purpose lines.
+Most banks accept at least &lt;b&gt;two&lt;/b&gt; lines. Please ask your bank if
+unsure.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>debitNoteCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Allow Debit Notes</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+&lt;p&gt;
+Private customers are normally not allowed to issue debit notes.
+&lt;/p&gt;
+&lt;p&gt;
+Business customers however may use this feature after applying for it
+at their bank.
+&lt;/p&gt;
+&lt;p&gt;
+If this box is not checked AqDTAUS refuses to create such debit notes.
+&lt;/p&gt;
+&lt;p&gt;
+However, verification is done at the bank, so if you check this box even
+if you haven't applied for debit notes your bank will most likely reject
+your DTAUS disc.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>printAllCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Print All Transactions</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+&lt;p&gt;
+This influences the behaviour when doing the paper work.
+&lt;/p&gt;
+&lt;p&gt;
+If this field is checked then the paper which accompanies the DTAUS discs will show one line per transaction contained in that file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <spacer row="0" column="2">
+                    <property name="name">
+                        <cstring>spacer5_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </grid>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox4</cstring>
+            </property>
+            <property name="title">
+                <string>Storage Settings</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Data Folder</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>folderEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the folder to be used when storing DTAUS files.
+&lt;/p&gt;
+&lt;h3&gt;Floppy Disc Mode&lt;/h3&gt;
+&lt;p&gt;
+If floppy discs are used then this should be the path to your floppy disc,
+normally something like &lt;i&gt;/floppy&lt;/i&gt; or &lt;i&gt;/media/floppy&lt;/i&gt;. 
+It depends on your system where the floppy discs are usually mounted.
+&lt;/p&gt;
+&lt;p&gt;
+In floppy mode AqDTAUS checks whether this folder is empty when
+creating a new DTAUS disc.
+&lt;/p&gt;
+
+&lt;h3&gt;Non-Floppy Mode&lt;/h3&gt;
+&lt;p&gt;
+If not using floppy discs then this path will be used to store the DTAUS
+files. In this mode this folder does not need to be empty.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>folderButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>useFloppyCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use Floppy Disc</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+If you select &lt;i&gt;Floppy Disc Mode&lt;/i&gt; then AqDTAUS creates real DTAUS
+discs. The DTAUS specs require that a DTAUS disc only contains a
+single file called &lt;i&gt;DTAUS0.TXT&lt;/i&gt;. AqDTAUS tries to make sure that this
+is the case when this box is checked.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>mountCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Allow Mounting</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+Some systems (like Linux, BSD systems etc) need you to &lt;i&gt;mount&lt;/i&gt; a 
+floppy disc before you can access it. After using the disc it must be 
+&lt;i&gt;unmounted&lt;/i&gt; before removal to avoid data loss.
+&lt;/p&gt;
+&lt;p&gt;
+If this box is checked AqDTAUS tries to mount and unmount the discs as
+needed. For this to work you must enter the mount and unmount
+commando into the next fields.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer8</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout4</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Mount Command</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>mountCmdEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the command needed to mount the floppy disc.
+&lt;/p&gt;
+&lt;p&gt;It contains the command itself and its parameters, like in&lt;/p&gt;
+&lt;p align="center"&gt;&lt;b&gt;mount /floppy&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;
+The command above works with Debian systems. For SuSE you might
+need this:&lt;/p&gt;
+&lt;p align="center"&gt;mount /media/floppy&lt;/p&gt;
+&lt;p&gt;
+As you can see in case of the &lt;i&gt;mount&lt;/i&gt; command the path for the
+floppy must be given.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2_2</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Unmount Command</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>unmountCmdEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+&lt;p&gt;
+This is the command and its arguments to unmount a floppy. In case you 
+used the command &lt;b&gt;mount&lt;/b&gt; in the previous field you must now use
+the corresponding &lt;b&gt;unmount&lt;/b&gt; command. This command takes the
+same argument:
+&lt;/p&gt;
+&lt;p align="center"&gt;umount /floppy (for Debian(&lt;/p&gt;
+&lt;p align="center"&gt;umount /media/floppy (for SuSE)&lt;/p&gt;
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer10</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>21</width>
+                    <height>61</height>
+                </size>
+            </property>
+        </spacer>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

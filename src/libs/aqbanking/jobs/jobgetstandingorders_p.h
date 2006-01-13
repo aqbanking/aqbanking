@@ -35,7 +35,7 @@ struct AB_JOB_GETSTANDINGORDERS {
 
 };
 
-void AB_JobGetStandingOrders_FreeData(void *bp, void *p);
+static void AB_JobGetStandingOrders_FreeData(void *bp, void *p);
 
 
 

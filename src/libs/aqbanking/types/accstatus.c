@@ -29,6 +29,7 @@
 
 
 GWEN_LIST_FUNCTIONS(AB_ACCOUNT_STATUS,AB_AccountStatus)
+GWEN_LIST2_FUNCTIONS(AB_ACCOUNT_STATUS,AB_AccountStatus)
 
 
 AB_ACCOUNT_STATUS *AB_AccountStatus_new(){
@@ -261,7 +262,8 @@ void AB_AccountStatus_SetNotedBalance(AB_ACCOUNT_STATUS *as,
 
 
 
-AB_ACCOUNT_STATUS_LIST *AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *asl) {
+AB_ACCOUNT_STATUS_LIST*
+AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *asl) {
   if (asl) {
     AB_ACCOUNT_STATUS_LIST *nl;
     AB_ACCOUNT_STATUS *e;
@@ -284,6 +286,21 @@ AB_ACCOUNT_STATUS_LIST *AB_AccountStatus_List_dup(const AB_ACCOUNT_STATUS_LIST *
 
 
 
+AB_ACCOUNT_STATUS *AB_AccountStatus_List2__freeAll_cb(AB_ACCOUNT_STATUS *as,
+                                                      void *user_data) {
+  AB_AccountStatus_free(as);
+  return 0;
+}
+
+
+
+void AB_AccountStatus_List2_freeAll(AB_ACCOUNT_STATUS_LIST2 *asl) {
+  if (asl) {
+    AB_AccountStatus_List2_ForEach(asl, AB_AccountStatus_List2__freeAll_cb,
+                                   0);
+    AB_AccountStatus_List2_free(asl);
+  }
+}
 
 
 

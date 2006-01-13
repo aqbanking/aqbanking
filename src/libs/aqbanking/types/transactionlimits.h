@@ -514,6 +514,7 @@ typedef struct AB_TRANSACTION_LIMITS AB_TRANSACTION_LIMITS;
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/error.h>
@@ -524,32 +525,32 @@ extern "C" {
 
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_TRANSACTION_LIMITS, AB_TransactionLimits, AQBANKING_API)
-AB_TRANSACTION_LIMITS_LIST *AB_TransactionLimits_List_dup(const AB_TRANSACTION_LIMITS_LIST *stl);
+AQBANKING_API AB_TRANSACTION_LIMITS_LIST *AB_TransactionLimits_List_dup(const AB_TRANSACTION_LIMITS_LIST *stl);
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION_LIMITS, AB_TransactionLimits, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 AQBANKING_API void AB_TransactionLimits_List2_freeAll(AB_TRANSACTION_LIMITS_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-AQBANKING_API AB_TRANSACTION_LIMITS_LIST2 *AB_TransactionLimits_List2_dup(const AB_TRANSACTION_LIMITS_LIST2 *stl);
 
 /** Creates a new object.
 */
 AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS*st);
 /** Destroys the given object.
 */
 AQBANKING_API void AB_TransactionLimits_free(AB_TRANSACTION_LIMITS *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQBANKING_API void AB_TransactionLimits_Attach(AB_TRANSACTION_LIMITS *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQBANKING_API int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS*st, GWEN_DB_NODE *db);

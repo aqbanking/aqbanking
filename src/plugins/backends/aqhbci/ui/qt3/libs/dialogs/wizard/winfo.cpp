@@ -24,12 +24,11 @@
 
 WizardInfo::WizardInfo(AH_HBCI *hbci)
 :_hbci(hbci)
-,_bank(0)
 ,_user(0)
-,_customer(0)
 ,_medium(0)
 ,_context(0)
 ,_country(280)
+,_cryptMode(AH_CryptMode_None)
 ,_port(3000)
 ,_flags(0) {
 
@@ -56,7 +55,27 @@ AH_MEDIUM *WizardInfo::getMedium() const {
 
 
 void WizardInfo::setMedium(AH_MEDIUM *m) {
+  if (_medium) {
+    if (m) {
+      DBG_ERROR(0, "Overwriting existing medium!")
+    }
+    else {
+      DBG_ERROR(0, "Resetting medium")
+    }
+  }
   _medium=m;
+}
+
+
+
+AH_CRYPT_MODE WizardInfo::getCryptMode() const {
+  return _cryptMode;
+}
+
+
+
+void WizardInfo::setCryptMode(AH_CRYPT_MODE cm) {
+  _cryptMode=cm;
 }
 
 
@@ -73,38 +92,14 @@ void WizardInfo::setContext(int i) {
 
 
 
-AH_BANK *WizardInfo::getBank() const {
-  return _bank;
-}
-
-
-
-void WizardInfo::setBank(AH_BANK *b) {
-  _bank=b;
-}
-
-
-
-AH_USER *WizardInfo::getUser() const {
+AB_USER *WizardInfo::getUser() const {
   return _user;
 }
 
 
 
-void WizardInfo::setUser(AH_USER *u) {
+void WizardInfo::setUser(AB_USER *u) {
   _user=u;
-}
-
-
-
-AH_CUSTOMER *WizardInfo::getCustomer() const {
-  return _customer;
-}
-
-
-
-void WizardInfo::setCustomer(AH_CUSTOMER *cu) {
-  _customer=cu;
 }
 
 
@@ -193,6 +188,18 @@ void WizardInfo::setPort(int i) {
 
 
 
+const std::string &WizardInfo::getMediumName() const {
+  return _mediumName;
+}
+
+
+
+void WizardInfo::setMediumName(const std::string &s) {
+  _mediumName=s;
+}
+
+
+
 GWEN_TYPE_UINT32 WizardInfo::getFlags() const {
   return _flags;
 }
@@ -218,52 +225,36 @@ void WizardInfo::subFlags(GWEN_TYPE_UINT32 fl) {
 
 
 void WizardInfo::releaseData() {
-  // handle bank, user, customer
-  if (_bank) {
-    if (_flags & WIZARDINFO_FLAGS_BANK_CREATED) {
-      /* bank created, so by removing the bank we also remove all other
+  // handle user
+  if (_user) {
+    if (_flags & WIZARDINFO_FLAGS_USER_CREATED) {
+      /* user created, so by removing the user we also remove all other
        * objects below it */
-      DBG_INFO(0, "Removing bank and all subordinate objects");
-      AH_HBCI_RemoveBank(_hbci, _bank);
-      _flags&=~WIZARDINFO_FLAGS_BANK_CREATED;
-      AH_Bank_free(_bank);
-      _bank=0;
-    } // if bank created
-    else {
-      if (_user) {
-        if (_flags & WIZARDINFO_FLAGS_USER_CREATED) {
-          /* user created, so by removing the user we also remove all other
-           * objects below it */
-          DBG_INFO(0, "Removing user and all subordinate objects");
-          AH_Bank_RemoveUser(_bank, _user);
-          _flags&=~WIZARDINFO_FLAGS_USER_CREATED;
-          AH_User_free(_user);
-          _user=0;
-        } // if _userCreated
-        else {
-          if (_customer) {
-            if (_flags & WIZARDINFO_FLAGS_CUST_CREATED) {
-              DBG_INFO(0, "Removing customer");
-              AH_User_RemoveCustomer(_user, _customer);
-              _flags&=~WIZARDINFO_FLAGS_CUST_CREATED;
-              AH_Customer_free(_customer);
-              _customer=0;
-            } // if customer created
-          } // if customer
-        } // if user not created
-      } // if user
-    } // if bank not created
-  } // if bank
+      DBG_INFO(0, "Removing user and all subordinate objects");
+      _flags&=~WIZARDINFO_FLAGS_USER_CREATED;
+      AB_User_free(_user);
+      _user=0;
+    } // if _userCreated
+  } // if user
 
   if (_medium && (_flags & WIZARDINFO_FLAGS_MEDIUM_CREATED)) {
     if (_flags & WIZARDINFO_FLAGS_MEDIUM_ADDED) {
+      DBG_INFO(0, "Unlisting medium");
       AH_HBCI_RemoveMedium(_hbci, _medium);
       _flags&=~WIZARDINFO_FLAGS_MEDIUM_ADDED;
     }
+    DBG_INFO(0, "Deleting medium");
     AH_Medium_free(_medium);
     _flags&=~WIZARDINFO_FLAGS_MEDIUM_CREATED;
     _medium=0;
   }
+
+  if (!_mediumName.empty() &&
+      (_flags & WIZARDINFO_FLAGS_MEDIUM_FILE_CREATED)) {
+    DBG_INFO(0, "Deleting medium file");
+    unlink(_mediumName.c_str());
+  }
+
 }
 
 

@@ -25,105 +25,225 @@
 #include <string.h>
 
 
-GWEN_LIST_FUNCTIONS(AO_USER, AO_User)
 
-
-AO_USER *AO_User_new(AO_BANK *b, const char *userId){
-  AO_USER *u;
-
-  GWEN_NEW_OBJECT(AO_USER, u);
-  u->bank=b;
-  if (userId)
-    u->userId=strdup(userId);
-
-  return u;
+AO_USER_SERVERTYPE AO_User_ServerType_fromString(const char *s) {
+  assert(s);
+  if (strcasecmp(s, "http")==0)
+    return AO_User_ServerTypeHTTP;
+  else if (strcasecmp(s, "https")==0)
+    return AO_User_ServerTypeHTTPS;
+  return AO_User_ServerTypeUnknown;
 }
 
 
 
-void AO_User_free(AO_USER *u){
-  if (u) {
-    free(u->userName);
-    free(u->userId);
-    GWEN_FREE_OBJECT(u);
+const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t) {
+  switch(t) {
+  case AO_User_ServerTypeHTTP:  return "http";
+  case AO_User_ServerTypeHTTPS: return "https";
+  default:                      return "unknown";
   }
 }
 
 
 
-AO_BANK *AO_User_GetBank(const AO_USER *u){
-  assert(u);
-  return u->bank;
+void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro) {
 }
 
 
 
-void AO_User_SetBank(AO_USER *u, AO_BANK *b) {
+const char *AO_User_GetBrokerId(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
   assert(u);
-  u->bank=b;
-}
-
-
-
-
-const char *AO_User_GetUserId(const AO_USER *u){
-  assert(u);
-  return u->userId;
-}
-
-
-
-void AO_User_SetUserId(AO_USER *u, const char *s){
-  assert(u);
-  free(u->userId);
-  if (s) u->userId=strdup(s);
-  else u->userId=0;
-}
-
-
-
-const char *AO_User_GetUserName(const AO_USER *u){
-  assert(u);
-  return u->userName;
-}
-
-
-
-void AO_User_SetUserName(AO_USER *u, const char *s){
-  assert(u);
-  free(u->userName);
-  if (s) u->userName=strdup(s);
-  else u->userName=0;
-}
-
-
-
-AO_USER *AO_User_fromDb(AO_BANK *b, GWEN_DB_NODE *db){
-  AO_USER *u;
-  const char *s;
-
-  s=GWEN_DB_GetCharValue(db, "userId", 0, 0);
-  assert(s);
-  u=AO_User_new(b, s);
-  AO_User_SetUserName(u, GWEN_DB_GetCharValue(db, "userName", 0, 0));
-
-  return u;
-}
-
-
-
-int AO_User_toDb(const AO_USER *u, GWEN_DB_NODE *db) {
-  assert(u);
+  db=AB_User_GetProviderData(u);
   assert(db);
-  if (u->userId)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "userId", u->userId);
-  if (u->userName)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "userName", u->userName);
-
-  return 0;
+  return GWEN_DB_GetCharValue(db, "brokerId", 0, 0);
 }
+
+
+
+void AO_User_SetBrokerId(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "brokerId", s);
+  else
+    GWEN_DB_DeleteVar(db, "brokerId");
+}
+
+
+
+const char *AO_User_GetOrg(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "org", 0, 0);
+}
+
+
+
+void AO_User_SetOrg(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "org", s);
+  else
+    GWEN_DB_DeleteVar(db, "org");
+}
+
+
+
+
+const char *AO_User_GetFid(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "fid", 0, 0);
+}
+
+
+
+void AO_User_SetFid(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fid", s);
+  else
+    GWEN_DB_DeleteVar(db, "fid");
+}
+
+
+
+AO_USER_SERVERTYPE AO_User_GetServerType(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return AO_User_ServerType_fromString(GWEN_DB_GetCharValue(db,
+                                                            "serverType", 0,
+                                                            "unknown"));
+}
+
+
+
+void AO_User_SetServerType(AB_USER *u, AO_USER_SERVERTYPE t) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serverType",
+                       AO_User_ServerType_toString(t));
+}
+
+
+
+const char *AO_User_GetServerAddr(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
+}
+
+
+
+void AO_User_SetServerAddr(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serverAddr", s);
+  else
+    GWEN_DB_DeleteVar(db, "serverAddr");
+}
+
+
+
+int AO_User_GetServerPort(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetIntValue(db, "serverPort", 0, 0);
+}
+
+
+
+void AO_User_SetServerPort(AB_USER *u, int i) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serverPort", i);
+}
+
+
+
+int AO_User_GetHttpVMajor(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetIntValue(db, "httpVMajor", 0, 0);
+}
+
+
+
+void AO_User_SetHttpVMajor(AB_USER *u, int i) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMajor", i);
+}
+
+
+
+int AO_User_GetHttpVMinor(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetIntValue(db, "httpVMinor", 0, 0);
+}
+
+
+
+void AO_User_SetHttpVMinor(AB_USER *u, int i) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMinor", i);
+}
+
+
+
 
 
 

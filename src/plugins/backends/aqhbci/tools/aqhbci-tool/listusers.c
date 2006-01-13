@@ -34,7 +34,7 @@ int listUsers(AB_BANKING *ab,
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
   int rv;
-  AH_USER_LIST2 *ul;
+  AB_USER_LIST2 *ul;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -82,29 +82,29 @@ int listUsers(AB_BANKING *ab,
   hbci=AH_Provider_GetHbci(pro);
   assert(hbci);
 
-  ul=AH_HBCI_GetUsers(hbci, 0, "*", "*");
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
   if (ul) {
-    AH_USER_LIST2_ITERATOR *uit;
+    AB_USER_LIST2_ITERATOR *uit;
 
-    uit=AH_User_List2_First(ul);
+    uit=AB_User_List2_First(ul);
     if (uit) {
-      AH_USER *u;
+      AB_USER *u;
       int i=0;
 
-      u=AH_User_List2Iterator_Data(uit);
+      u=AB_User_List2Iterator_Data(uit);
       assert(u);
       while(u) {
-        AH_BANK *b;
-
-        b=AH_User_GetBank(u);
-        assert(b);
-        fprintf(stdout, "User %d: Bank: %s User Id: %s\n",
-                i++, AH_Bank_GetBankId(b), AH_User_GetUserId(u));
-        u=AH_User_List2Iterator_Next(uit);
+        fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s\n",
+                i++,
+                AB_User_GetCountry(u),
+                AB_User_GetBankCode(u),
+                AB_User_GetUserId(u),
+                AB_User_GetCustomerId(u));
+        u=AB_User_List2Iterator_Next(uit);
       }
-      AH_User_List2Iterator_free(uit);
+      AB_User_List2Iterator_free(uit);
     }
-    AH_User_List2_free(ul);
+    AB_User_List2_free(ul);
   }
 
   rv=AB_Banking_Fini(ab);

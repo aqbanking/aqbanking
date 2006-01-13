@@ -56,6 +56,7 @@ typedef struct AB_EUTRANSFER_INFO AB_EUTRANSFER_INFO;
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <aqbanking/value.h>
 #include <aqbanking/transactionlimits.h>
@@ -66,32 +67,32 @@ extern "C" {
 
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_EUTRANSFER_INFO, AB_EuTransferInfo, AQBANKING_API)
-AB_EUTRANSFER_INFO_LIST *AB_EuTransferInfo_List_dup(const AB_EUTRANSFER_INFO_LIST *stl);
+AQBANKING_API AB_EUTRANSFER_INFO_LIST *AB_EuTransferInfo_List_dup(const AB_EUTRANSFER_INFO_LIST *stl);
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_EUTRANSFER_INFO, AB_EuTransferInfo, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 AQBANKING_API void AB_EuTransferInfo_List2_freeAll(AB_EUTRANSFER_INFO_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-AQBANKING_API AB_EUTRANSFER_INFO_LIST2 *AB_EuTransferInfo_List2_dup(const AB_EUTRANSFER_INFO_LIST2 *stl);
 
 /** Creates a new object.
 */
 AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_dup(const AB_EUTRANSFER_INFO*st);
 /** Destroys the given object.
 */
 AQBANKING_API void AB_EuTransferInfo_free(AB_EUTRANSFER_INFO *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQBANKING_API void AB_EuTransferInfo_Attach(AB_EUTRANSFER_INFO *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_dup(const AB_EUTRANSFER_INFO*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API int AB_EuTransferInfo_ReadDb(AB_EUTRANSFER_INFO *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQBANKING_API int AB_EuTransferInfo_toDb(const AB_EUTRANSFER_INFO*st, GWEN_DB_NODE *db);

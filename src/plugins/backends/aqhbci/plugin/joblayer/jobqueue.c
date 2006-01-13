@@ -21,6 +21,8 @@
 #include "job_l.h"
 #include "message_l.h"
 #include "hbci_l.h"
+#include "medium_l.h"
+#include "dialog_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/logger.h>
@@ -36,16 +38,15 @@ GWEN_LIST_FUNCTIONS(AH_JOBQUEUE, AH_JobQueue);
 
 
 
-AH_JOBQUEUE *AH_JobQueue_new(AH_CUSTOMER *cu){
+AH_JOBQUEUE *AH_JobQueue_new(AB_USER *u){
   AH_JOBQUEUE *jq;
 
-  assert(cu);
+  assert(u);
 
   GWEN_NEW_OBJECT(AH_JOBQUEUE, jq);
   GWEN_LIST_INIT(AH_JOBQUEUE, jq);
 
-  jq->customer=cu;
-  AH_Customer_Attach(cu);
+  jq->user=u;
   jq->signers=GWEN_StringList_new();
   jq->jobs=AH_Job_List_new();
   jq->usage=1;
@@ -59,7 +60,6 @@ void AH_JobQueue_free(AH_JOBQUEUE *jq){
     assert(jq->usage);
     if (--(jq->usage)==0) {
       GWEN_StringList_free(jq->signers);
-      AH_Customer_free(jq->customer);
       AH_Job_List_free(jq->jobs);
       free(jq->usedTan);
       free(jq->usedPin);
@@ -117,13 +117,13 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
   assert(jq->usage);
 
   /* job owner must equal queue owner */
-  if (AH_Job_GetCustomer(j)!=jq->customer) {
+  if (AH_Job_GetUser(j)!=jq->user) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Owner of the job doesn't match");
     return AH_JobQueueAddResultJobLimit;
   }
 
   /* sample some variables */
-  bpd=AH_Customer_GetBpd(jq->customer);
+  bpd=AH_User_GetBpd(jq->user);
   jobsPerMsg=AH_Job_GetJobsPerMsg(j);
   maxJobTypes=AH_Bpd_GetJobTypesPerMsg(bpd);
 
@@ -286,7 +286,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
     return 0;
   }
   msg=AH_Msg_new(dlg);
-  AH_Msg_SetHbciVersion(msg, AH_Customer_GetHbciVersion(jq->customer));
+  AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(jq->user));
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
@@ -457,10 +457,10 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
   j=AH_Job_List_First(jq->jobs);
   while(j) {
     const char *tan;
-    AH_USER *u;
+    AB_USER *u;
     AH_MEDIUM *m;
 
-    u=AH_Customer_GetUser(AH_Job_GetCustomer(j));
+    u=AH_Job_GetUser(j);
     assert(u);
     m=AH_User_GetMedium(u);
     assert(m);
@@ -857,15 +857,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
               DBG_ERROR(AQHBCI_LOGDOMAIN,
                         "Found a segresult: %d", rcode);
               if (jq->usedPin) {
-                AH_USER *u;
                 AH_MEDIUM *m;
 
                 DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad signature");
-                u=AH_Customer_GetUser(jq->customer);
-                assert(u);
-                m=AH_User_GetMedium(u);
+                m=AH_User_GetMedium(jq->user);
                 assert(m);
-                if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+                if (AH_User_GetCryptMode(jq->user)==AH_CryptMode_Pintan) {
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Marking pin as bad");
                   AH_Medium_SetPinStatus(m,
                                          jq->usedPin,
@@ -1010,10 +1007,10 @@ void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
 
 
 
-AH_CUSTOMER *AH_JobQueue_GetCustomer(const AH_JOBQUEUE *jq){
+AB_USER *AH_JobQueue_GetUser(const AH_JOBQUEUE *jq){
   assert(jq);
   assert(jq->usage);
-  return jq->customer;
+  return jq->user;
 }
 
 
@@ -1053,7 +1050,7 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Owner   : %s\n", AH_Customer_GetCustomerId(jq->customer));
+  fprintf(f, "Owner   : %s\n", AB_User_GetCustomerId(jq->user));
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");

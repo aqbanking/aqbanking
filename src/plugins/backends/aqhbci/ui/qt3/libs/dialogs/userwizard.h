@@ -28,15 +28,20 @@ private:
   AH_HBCI *_hbci;
   QWidget *_parent;
 
-  bool _checkAndCreateMedium(WizardInfo *wInfo,
-                             GWEN_CRYPTTOKEN_DEVICE dev);
+  bool _checkAndCreateMedium(WizardInfo *wInfo);
   bool _handleModePinTan();
   bool _handleModeImportCard();
   bool _handleModeImportFile();
+  bool _handleModeCreateFile();
 
 public:
   UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent);
   ~UserWizard();
+
+  static bool finishUser(QBanking *qb,
+                         AH_HBCI *hbci,
+                         AB_USER *u,
+                         QWidget *parent);
 
   bool exec();
 

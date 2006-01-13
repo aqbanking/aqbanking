@@ -36,8 +36,8 @@ int getKeys(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AH_HBCI *hbci;
-  AH_CUSTOMER_LIST2 *cl;
-  AH_CUSTOMER *cu=0;
+  AB_USER_LIST2 *ul;
+  AB_USER *u=0;
   int rv;
   const char *bankId;
   const char *userId;
@@ -115,24 +115,25 @@ int getKeys(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
 
-  cl=AH_HBCI_GetCustomers(hbci, 280, bankId, userId, customerId);
-  if (cl) {
-    if (AH_Customer_List2_GetSize(cl)!=1) {
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "de", bankId,
+                          userId, customerId);
+  if (ul) {
+    if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
       AB_Banking_Fini(ab);
       return 3;
     }
     else {
-      AH_CUSTOMER_LIST2_ITERATOR *cit;
+      AB_USER_LIST2_ITERATOR *uit;
 
-      cit=AH_Customer_List2_First(cl);
-      assert(cit);
-      cu=AH_Customer_List2Iterator_Data(cit);
-      AH_Customer_List2Iterator_free(cit);
+      uit=AB_User_List2_First(ul);
+      assert(uit);
+      u=AB_User_List2Iterator_Data(uit);
+      AB_User_List2Iterator_free(uit);
     }
-    AH_Customer_List2_free(cl);
+    AB_User_List2_free(ul);
   }
-  if (!cu) {
+  if (!u) {
     DBG_ERROR(0, "No matching customer");
     AB_Banking_Fini(ab);
     return 3;
@@ -141,7 +142,7 @@ int getKeys(AB_BANKING *ab,
     AH_JOB *job;
     AH_OUTBOX *ob;
 
-    job=AH_Job_GetKeys_new(cu);
+    job=AH_Job_GetKeys_new(u);
     if (!job) {
       DBG_ERROR(0, "Job not supported, should not happen");
       AB_Banking_Fini(ab);
@@ -158,7 +159,7 @@ int getKeys(AB_BANKING *ab,
       return 3;
     }
 
-    if (AH_Job_HasErrors(job) || AH_Job_GetStatus(job)!=AH_JobStatusAnswered) {
+    if (AH_Job_HasErrors(job) || AH_Job_GetStatus(job)!=AH_JobStatusAnswered){
       DBG_ERROR(0, "Job has errors (%s)",
 		AH_Job_StatusName(AH_Job_GetStatus(job)));
       // TODO: show errors

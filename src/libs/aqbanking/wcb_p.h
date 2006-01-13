@@ -21,16 +21,18 @@ struct AB_WAITCALLBACK {
   AB_BANKING *banking;
   GWEN_TYPE_UINT64 lastProgress;
 };
-void AB_WaitCallback_FreeData(void *bp, void *p);
+static void AB_WaitCallback_FreeData(void *bp, void *p);
 
 
-GWEN_WAITCALLBACK_RESULT AB_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
-                                                    unsigned int level);
-GWEN_WAITCALLBACK *AB_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx);
-void AB_WaitCallback_Log(GWEN_WAITCALLBACK *ctx,
-                         unsigned int level,
-                         GWEN_LOGGER_LEVEL loglevel,
-                         const char *s);
+static GWEN_WAITCALLBACK_RESULT
+  AB_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
+                             unsigned int level);
+static GWEN_WAITCALLBACK*
+  AB_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx);
+static void AB_WaitCallback_Log(GWEN_WAITCALLBACK *ctx,
+                                unsigned int level,
+                                GWEN_LOGGER_LEVEL loglevel,
+                                const char *s);
 
 
 

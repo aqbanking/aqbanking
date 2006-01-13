@@ -13,10 +13,14 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <aqbanking/error.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_BANKINFO_SERVICE, AB_BankInfoService)
 GWEN_LIST2_FUNCTIONS(AB_BANKINFO_SERVICE, AB_BankInfoService)
+
+
 
 
 AB_BANKINFO_SERVICE *AB_BankInfoService_new() {
@@ -106,11 +110,9 @@ int AB_BankInfoService_toDb(const AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
 }
 
 
-AB_BANKINFO_SERVICE *AB_BankInfoService_fromDb(GWEN_DB_NODE *db) {
-AB_BANKINFO_SERVICE *st;
-
+int AB_BankInfoService_ReadDb(AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=AB_BankInfoService_new();
   AB_BankInfoService_SetType(st, GWEN_DB_GetCharValue(db, "type", 0, 0));
   AB_BankInfoService_SetAddress(st, GWEN_DB_GetCharValue(db, "address", 0, 0));
   AB_BankInfoService_SetSuffix(st, GWEN_DB_GetCharValue(db, "suffix", 0, 0));
@@ -118,9 +120,21 @@ AB_BANKINFO_SERVICE *st;
   AB_BankInfoService_SetMode(st, GWEN_DB_GetCharValue(db, "mode", 0, 0));
   AB_BankInfoService_SetAux1(st, GWEN_DB_GetCharValue(db, "aux1", 0, 0));
   AB_BankInfoService_SetAux2(st, GWEN_DB_GetCharValue(db, "aux2", 0, 0));
+  return 0;
+}
+
+
+AB_BANKINFO_SERVICE *AB_BankInfoService_fromDb(GWEN_DB_NODE *db) {
+  AB_BANKINFO_SERVICE *st;
+
+  assert(db);
+  st=AB_BankInfoService_new();
+  AB_BankInfoService_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *AB_BankInfoService_GetType(const AB_BANKINFO_SERVICE *st) {
@@ -293,8 +307,6 @@ void AB_BankInfoService_List2_freeAll(AB_BANKINFO_SERVICE_LIST2 *stl) {
 }
 
 
-
-
 AB_BANKINFO_SERVICE_LIST *AB_BankInfoService_List_dup(const AB_BANKINFO_SERVICE_LIST *stl) {
   if (stl) {
     AB_BANKINFO_SERVICE_LIST *nl;
@@ -315,6 +327,7 @@ AB_BANKINFO_SERVICE_LIST *AB_BankInfoService_List_dup(const AB_BANKINFO_SERVICE_
   else
     return 0;
 }
+
 
 
 

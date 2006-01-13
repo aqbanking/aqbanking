@@ -26,20 +26,19 @@ struct AH_JOB_MULTITRANSFER {
   int transferCount;
   int maxTransfers;
 };
-void AH_Job_MultiTransfer_FreeData(void *bp, void *p);
-int AH_Job_MultiTransfer_Process(AH_JOB *j);
-int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-                                  AH_JOB_EXCHANGE_MODE m);
+static void AH_Job_MultiTransfer_FreeData(void *bp, void *p);
+static int AH_Job_MultiTransfer_Process(AH_JOB *j);
+static int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
+                                         AH_JOB_EXCHANGE_MODE m);
 
 
-int AH_Job_MultiTransfer__ToDTA(int c);
-int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
-                                           AH_JOB *mj,
-                                           AB_TRANSACTION *t);
+static int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
+                                                  AH_JOB *mj,
+                                                  AB_TRANSACTION *t);
 
-AH_JOB *AH_Job_MultiTransferBase_new(AH_CUSTOMER *cu,
-                                     AH_ACCOUNT *account,
-                                     int isTransfer);
+static AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
+                                            AB_ACCOUNT *account,
+                                            int isTransfer);
 
 
 #endif /* AH_JOBMULTITRANSFER_P_H */

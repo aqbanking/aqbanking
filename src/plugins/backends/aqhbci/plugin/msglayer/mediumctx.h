@@ -72,29 +72,34 @@ typedef struct AH_MEDIUM_CTX AH_MEDIUM_CTX;
 #endif
 
 #include <gwenhywfar/db.h>
+/* headers */
 #include <gwenhywfar/crypttoken.h>
-#include <aqhbci/hbci.h>
+#include <aqhbci/aqhbci.h>
 #include <aqhbci/medium.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
 /** Creates a new object.
 */
 AQHBCI_API AH_MEDIUM_CTX *AH_MediumCtx_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+AQHBCI_API AH_MEDIUM_CTX *AH_MediumCtx_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+AQHBCI_API AH_MEDIUM_CTX *AH_MediumCtx_dup(const AH_MEDIUM_CTX*st);
 /** Destroys the given object.
 */
 AQHBCI_API void AH_MediumCtx_free(AH_MEDIUM_CTX *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 AQHBCI_API void AH_MediumCtx_Attach(AH_MEDIUM_CTX *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-AQHBCI_API AH_MEDIUM_CTX *AH_MediumCtx_dup(const AH_MEDIUM_CTX*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-AQHBCI_API AH_MEDIUM_CTX *AH_MediumCtx_fromDb(GWEN_DB_NODE *db);
+AQHBCI_API int AH_MediumCtx_ReadDb(AH_MEDIUM_CTX *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 AQHBCI_API int AH_MediumCtx_toDb(const AH_MEDIUM_CTX*st, GWEN_DB_NODE *db);

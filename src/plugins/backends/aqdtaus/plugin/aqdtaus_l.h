@@ -14,7 +14,8 @@
 #ifndef AQDTAUS_AQDTAUS_L_H
 #define AQDTAUS_AQDTAUS_L_H
 
-#include <aqdtaus/aqdtaus.h>
+#include "aqdtaus.h"
+
 
 #ifdef HAVE_I18N
 # ifdef HAVE_LOCALE_H

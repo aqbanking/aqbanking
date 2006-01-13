@@ -50,23 +50,20 @@ ActionGetCert::~ActionGetCert() {
 bool ActionGetCert::apply() {
   WizardInfo *wInfo;
   QBanking *qb;
-  AH_BANK *b;
-  AH_CUSTOMER *cu;
+  AB_USER *u;
   AH_DIALOG *dialog;
   int rv;
   int alwaysAskForCert;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
-  b=wInfo->getBank();
-  assert(b);
-  cu=wInfo->getCustomer();
-  assert(cu);
-  dialog=AH_Dialog_new(cu);
+  u=wInfo->getUser();
+  assert(u);
+  dialog=AH_Dialog_new(u);
   assert(dialog);
 
   qb=getWizard()->getBanking();
-  AH_HBCI_RemoveAllBankCerts(wInfo->getHbci(), b);
+  AH_HBCI_RemoveAllBankCerts(wInfo->getHbci(), u);
   alwaysAskForCert=AB_Banking_GetAlwaysAskForCert(qb->getCInterface());
   AB_Banking_SetAlwaysAskForCert(qb->getCInterface(), 1);
 

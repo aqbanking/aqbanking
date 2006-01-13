@@ -15,31 +15,17 @@
 #define AH_ACCOUNT_P_H
 
 
+#include "hbci_l.h"
 #include "account_l.h"
 
 
-
+typedef struct AH_ACCOUNT AH_ACCOUNT;
 struct AH_ACCOUNT {
-  GWEN_LIST_ELEMENT(AH_ACCOUNT);
-  GWEN_INHERIT_ELEMENT(AH_ACCOUNT);
-
-  GWEN_TYPE_UINT32 usage;
-
-  AH_BANK *bank;
-
-  char *bankId;
-  char *accountId;
-  char *accountName;
-  char *ownerName;
-
-  char *suffix;
-
-  GWEN_STRINGLIST *customers;
-
+  AH_HBCI *hbci;
+  GWEN_TYPE_UINT32 flags;
 };
 
-
-AH_ACCOUNT *AH_Account__freeAll_cb(AH_ACCOUNT *a, void *userData);
+static void AH_Account_freeData(void *bp, void *p);
 
 
 #endif /* AH_ACCOUNT_P_H */

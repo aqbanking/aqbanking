@@ -78,8 +78,8 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
 };
 
 
-int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level);
-int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level);
+static int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level);
+static int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level);
 
 
 

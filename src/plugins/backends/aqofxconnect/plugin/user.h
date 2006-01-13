@@ -13,70 +13,84 @@
 #ifndef AO_USER_H
 #define AO_USER_H
 
+#include <aqofxconnect/aqofxconnect.h>
+#include <aqbanking/provider_be.h>
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/db.h>
-#include <aqofxconnect/aqofxconnect.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct AO_USER AO_USER;
-GWEN_LIST_FUNCTION_LIB_DEFS(AO_USER, AO_User, AQOFXCONNECT_API)
-
-#ifdef __cplusplus
-}
-#endif
-
-#include <aqofxconnect/bank.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-AO_USER *AO_User_new(AO_BANK *b, const char *userId);
-void AO_User_free(AO_USER *u);
-
-const char *AO_User_GetUserId(const AO_USER *u);
-void AO_User_SetUserId(AO_USER *u, const char *s);
-
-const char *AO_User_GetUserName(const AO_USER *u);
-void AO_User_SetUserName(AO_USER *u, const char *s);
-
-AO_BANK *AO_User_GetBank(const AO_USER *u);
-void AO_User_SetBank(AO_USER *u, AO_BANK *b);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-#include <aqofxconnect/bank.h>
-
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-AO_USER *AO_User_new(AO_BANK *b, const char *userId);
-void AO_User_free(AO_USER *u);
-
-AO_BANK *AO_User_GetBank(const AO_USER *u);
-const char *AO_User_GetUserId(const AO_USER *u);
-
-
-const char *AO_User_GetUserName(const AO_USER *u);
-void AO_User_SetUserName(AO_USER *u, const char *s);
+typedef enum {
+  AO_User_ServerTypeUnknown=0,
+  AO_User_ServerTypeHTTP,
+  AO_User_ServerTypeHTTPS
+} AO_USER_SERVERTYPE;
 
 
-AO_USER *AO_User_fromDb(AO_BANK *b, GWEN_DB_NODE *db);
-int AO_User_toDb(const AO_USER *u, GWEN_DB_NODE *db);
+AQOFXCONNECT_API
+AO_USER_SERVERTYPE AO_User_ServerType_fromString(const char *s);
+
+AQOFXCONNECT_API
+const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t);
+
+AQOFXCONNECT_API
+void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro);
+
+AQOFXCONNECT_API
+const char *AO_User_GetBrokerId(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetBrokerId(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+const char *AO_User_GetOrg(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetOrg(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+const char *AO_User_GetFid(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetFid(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+AO_USER_SERVERTYPE AO_User_GetServerType(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetServerType(AB_USER *u, AO_USER_SERVERTYPE t);
+
+AQOFXCONNECT_API
+const char *AO_User_GetServerAddr(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetServerAddr(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+int AO_User_GetServerPort(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetServerPort(AB_USER *u, int i);
+
+AQOFXCONNECT_API
+int AO_User_GetHttpVMajor(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHttpVMajor(AB_USER *u, int i);
+
+AQOFXCONNECT_API
+int AO_User_GetHttpVMinor(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHttpVMinor(AB_USER *u, int i);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 
 #endif

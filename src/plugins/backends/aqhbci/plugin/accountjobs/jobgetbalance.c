@@ -39,13 +39,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETBALANCE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetBalance_new(AH_CUSTOMER *cu,
-                              AH_ACCOUNT *account) {
+AH_JOB *AH_Job_GetBalance_new(AB_USER *u,
+                              AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobGetBalance", cu, account);
+  j=AH_AccountJob_new("JobGetBalance", u, account);
   if (!j)
     return 0;
 

@@ -57,9 +57,7 @@ bool MakeKeys::getResult() const {
 void MakeKeys::slotMakeKeys() {
   WizardInfo *wInfo;
   QBanking *qb;
-  AH_BANK *b;
-  AH_USER *u;
-  AH_CUSTOMER *cu;
+  AB_USER *u;
   AH_MEDIUM *m;
   QString failed=QString("<qt><font colour=\"red\">"
 			 "%1</font></qt>").arg(tr("Failed"));
@@ -70,12 +68,8 @@ void MakeKeys::slotMakeKeys() {
 
   wInfo=_wizard->getWizardInfo();
   assert(wInfo);
-  b=wInfo->getBank();
-  assert(b);
   u=wInfo->getUser();
   assert(u);
-  cu=wInfo->getCustomer();
-  assert(cu);
   m=wInfo->getMedium();
   assert(m);
 
