@@ -326,8 +326,12 @@ class Split(c_void_p):
         aqb.AB_Split_GetPurpose,
         lambda self, v: aqb.AB_Split_SetPurpose(self, makeStringlist(v)))
 
+    category = property(
+        aqb.AB_Split_GetCategory,
+        lambda self, v: aqb.AB_Split_SetCategory(self, makeStringlist(v)))
+
     def __str__(self):
-        return "<class Split:\nmodified=%s\ncountry=%s\nbankCode=%s\nbranchId=%s\naccountNumber=%s\nsuffix=%s\nname=%s\nvalue=%s\npurpose=%s\n/Split>" % (self.modified,self.country,self.bankCode,self.branchId,self.accountNumber,self.suffix,self.name,self.value,self.purpose)
+        return "<class Split:\nmodified=%s\ncountry=%s\nbankCode=%s\nbranchId=%s\naccountNumber=%s\nsuffix=%s\nname=%s\nvalue=%s\npurpose=%s\ncategory=%s\n/Split>" % (self.modified,self.country,self.bankCode,self.branchId,self.accountNumber,self.suffix,self.name,self.value,self.purpose,self.category)
 
 
 class TransactionLimits(c_void_p):
@@ -349,6 +353,9 @@ class TransactionLimits(c_void_p):
     'valuesSOMETHING: A list of allowed values (as string). If this list\n'
     'is empty then there all values are allowed (those lists @b exist in\n'
     'any case, so the appropriate getter function will never return NULL).\n'
+    'allowSOMETHING: If SOMETHING is allowed then the value is "1".\n'
+    'If SOMETHING is NOT allowed then the value is "-1". If it is\n'
+    'unknown whether SOMETHING is allowed or not then this value is "0".\n'
     'So if you want to check whether an given field is at all allowed you\n'
     'must check whether "maxLenSOMETHING" has a value of "-1".'
 
@@ -538,8 +545,114 @@ class TransactionLimits(c_void_p):
         aqb.AB_TransactionLimits_GetMinLinesPurpose,
         aqb.AB_TransactionLimits_SetMinLinesPurpose)
 
+    # Group Standing Orders And Dated Transfer
+    # These limits apply to standing orders and dated transfers only.
+    # Minimum time in days between issueing of a request and its
+    # first execution.
+    # Maximum time in days between issueing of a request and its
+    # first execution.
+    # This string list contains one entry for every supported cycle.
+    # These value are accepted when "period" is "weekly".
+    # The values must be positive integers in decimal form (no leading
+    # zero, no comma or decimal point).
+    # Allowed values are "0" (all cycles possible) and "1"-"52".
+    # This string list contains one entry for every supported cycle.
+    # These value are accepted when "period" is "monthly".
+    # The values must be positive integers in decimal form (no leading
+    # zero, no comma or decimal point).
+    # Allowed values are "0" (all cycles possible) and "1"-"12".
+    # This string list contains one entry for every supported day of the
+    # week.
+    # These value are accepted when "period" is "weekly".
+    # The values must be positive integers in decimal form (no leading
+    # zero, no comma or decimal point).
+    # Allowed values are "0" (all days allowed) and "1"-"7".
+    # This string list contains one entry for every supported monthly
+    # cycle.
+    # These value are accepted when "period" is "monthly".
+    # The values must be positive integers in decimal form (no leading
+    # zero, no comma or decimal point).
+    # Allowed are "0" (all days possible), "1"-"30", "97" (ultimo-2),
+    # "98" (ultimo-1) and "99" (ultimo).
+
+    minValueSetupTime = property(
+        aqb.AB_TransactionLimits_GetMinValueSetupTime,
+        aqb.AB_TransactionLimits_SetMinValueSetupTime,
+        'Minimum time in days between issueing of a request and its\n'
+        'first execution.')
+
+    maxValueSetupTime = property(
+        aqb.AB_TransactionLimits_GetMaxValueSetupTime,
+        aqb.AB_TransactionLimits_SetMaxValueSetupTime,
+        'Maximum time in days between issueing of a request and its\n'
+        'first execution.')
+
+    valuesCycleWeek = property(
+        aqb.AB_TransactionLimits_GetValuesCycleWeek,
+        lambda self, v: aqb.AB_TransactionLimits_SetValuesCycleWeek(self, makeStringlist(v)))
+
+    valuesCycleMonth = property(
+        aqb.AB_TransactionLimits_GetValuesCycleMonth,
+        lambda self, v: aqb.AB_TransactionLimits_SetValuesCycleMonth(self, makeStringlist(v)))
+
+    valuesExecutionDayWeek = property(
+        aqb.AB_TransactionLimits_GetValuesExecutionDayWeek,
+        lambda self, v: aqb.AB_TransactionLimits_SetValuesExecutionDayWeek(self, makeStringlist(v)))
+
+    valuesExecutionDayMonth = property(
+        aqb.AB_TransactionLimits_GetValuesExecutionDayMonth,
+        lambda self, v: aqb.AB_TransactionLimits_SetValuesExecutionDayMonth(self, makeStringlist(v)))
+
+    allowMonthly = property(
+        aqb.AB_TransactionLimits_GetAllowMonthly,
+        aqb.AB_TransactionLimits_SetAllowMonthly)
+
+    allowWeekly = property(
+        aqb.AB_TransactionLimits_GetAllowWeekly,
+        aqb.AB_TransactionLimits_SetAllowWeekly)
+
+    allowChangeRecipientAccount = property(
+        aqb.AB_TransactionLimits_GetAllowChangeRecipientAccount,
+        aqb.AB_TransactionLimits_SetAllowChangeRecipientAccount)
+
+    allowChangeRecipientName = property(
+        aqb.AB_TransactionLimits_GetAllowChangeRecipientName,
+        aqb.AB_TransactionLimits_SetAllowChangeRecipientName)
+
+    allowChangeValue = property(
+        aqb.AB_TransactionLimits_GetAllowChangeValue,
+        aqb.AB_TransactionLimits_SetAllowChangeValue)
+
+    allowChangeTextKey = property(
+        aqb.AB_TransactionLimits_GetAllowChangeTextKey,
+        aqb.AB_TransactionLimits_SetAllowChangeTextKey)
+
+    allowChangePurpose = property(
+        aqb.AB_TransactionLimits_GetAllowChangePurpose,
+        aqb.AB_TransactionLimits_SetAllowChangePurpose)
+
+    allowChangeFirstExecutionDate = property(
+        aqb.AB_TransactionLimits_GetAllowChangeFirstExecutionDate,
+        aqb.AB_TransactionLimits_SetAllowChangeFirstExecutionDate)
+
+    allowChangeLastExecutionDate = property(
+        aqb.AB_TransactionLimits_GetAllowChangeLastExecutionDate,
+        aqb.AB_TransactionLimits_SetAllowChangeLastExecutionDate)
+
+    allowChangeCycle = property(
+        aqb.AB_TransactionLimits_GetAllowChangeCycle,
+        aqb.AB_TransactionLimits_SetAllowChangeCycle)
+
+    allowChangePeriod = property(
+        aqb.AB_TransactionLimits_GetAllowChangePeriod,
+        aqb.AB_TransactionLimits_SetAllowChangePeriod)
+
+    allowChangeExecutionDay = property(
+        aqb.AB_TransactionLimits_GetAllowChangeExecutionDay,
+        aqb.AB_TransactionLimits_SetAllowChangeExecutionDay)
+
     def __str__(self):
-        return "<class TransactionLimits:\nmodified=%s\nmaxLenLocalName=%s\nminLenLocalName=%s\nmaxLenRemoteName=%s\nminLenRemoteName=%s\nmaxLinesRemoteName=%s\nminLinesRemoteName=%s\nmaxLenLocalBankCode=%s\nminLenLocalBankCode=%s\nmaxLenLocalAccountNumber=%s\nminLenLocalAccountNumber=%s\nmaxLenLocalSuffix=%s\nminLenLocalSuffix=%s\nmaxLenRemoteBankCode=%s\nminLenRemoteBankCode=%s\nmaxLenRemoteAccountNumber=%s\nminLenRemoteAccountNumber=%s\nmaxLenRemoteSuffix=%s\nminLenRemoteSuffix=%s\nmaxLenRemoteIban=%s\nminLenRemoteIban=%s\nmaxLenTextKey=%s\nminLenTextKey=%s\nvaluesTextKey=%s\nmaxLenCustomerReference=%s\nminLenCustomerReference=%s\nmaxLenBankReference=%s\nminLenBankReference=%s\nmaxLenPurpose=%s\nminLenPurpose=%s\nmaxLinesPurpose=%s\nminLinesPurpose=%s\n/TransactionLimits>" % (self.modified,self.maxLenLocalName,self.minLenLocalName,self.maxLenRemoteName,self.minLenRemoteName,self.maxLinesRemoteName,self.minLinesRemoteName,self.maxLenLocalBankCode,self.minLenLocalBankCode,self.maxLenLocalAccountNumber,self.minLenLocalAccountNumber,self.maxLenLocalSuffix,self.minLenLocalSuffix,self.maxLenRemoteBankCode,self.minLenRemoteBankCode,self.maxLenRemoteAccountNumber,self.minLenRemoteAccountNumber,self.maxLenRemoteSuffix,self.minLenRemoteSuffix,self.maxLenRemoteIban,self.minLenRemoteIban,self.maxLenTextKey,self.minLenTextKey,self.valuesTextKey,self.maxLenCustomerReference,self.minLenCustomerReference,self.maxLenBankReference,self.minLenBankReference,self.maxLenPurpose,self.minLenPurpose,self.maxLinesPurpose,self.minLinesPurpose)
+        return "<class TransactionLimits:\nmodified=%s\nmaxLenLocalName=%s\nminLenLocalName=%s\nmaxLenRemoteName=%s\nminLenRemoteName=%s\nmaxLinesRemoteName=%s\nminLinesRemoteName=%s\nmaxLenLocalBankCode=%s\nminLenLocalBankCode=%s\nmaxLenLocalAccountNumber=%s\nminLenLocalAccountNumber=%s\nmaxLenLocalSuffix=%s\nminLenLocalSuffix=%s\nmaxLenRemoteBankCode=%s\nminLenRemoteBankCode=%s\nmaxLenRemoteAccountNumber=%s\nminLenRemoteAccountNumber=%s\nmaxLenRemoteSuffix=%s\nminLenRemoteSuffix=%s\nmaxLenRemoteIban=%s\nminLenRemoteIban=%s\nmaxLenTextKey=%s\nminLenTextKey=%s\nvaluesTextKey=%s\nmaxLenCustomerReference=%s\nminLenCustomerReference=%s\nmaxLenBankReference=%s\nminLenBankReference=%s\nmaxLenPurpose=%s\nminLenPurpose=%s\nmaxLinesPurpose=%s\nminLinesPurpose=%s\nminValueSetupTime=%s\nmaxValueSetupTime=%s\nvaluesCycleWeek=%s\nvaluesCycleMonth=%s\nvaluesExecutionDayWeek=%s\nvaluesExecutionDayMonth=%s\nallowMonthly=%s\nallowWeekly=%s\nallowChangeRecipientAccount=%s\nallowChangeRecipientName=%s\nallowChangeValue=%s\nallowChangeTextKey=%s\nallowChangePurpose=%s\nallowChangeFirstExecutionDate=%s\nallowChangeLastExecutionDate=%s\nallowChangeCycle=%s\nallowChangePeriod=%s\nallowChangeExecutionDay=%s\n/TransactionLimits>" % (self.modified,self.maxLenLocalName,self.minLenLocalName,self.maxLenRemoteName,self.minLenRemoteName,self.maxLinesRemoteName,self.minLinesRemoteName,self.maxLenLocalBankCode,self.minLenLocalBankCode,self.maxLenLocalAccountNumber,self.minLenLocalAccountNumber,self.maxLenLocalSuffix,self.minLenLocalSuffix,self.maxLenRemoteBankCode,self.minLenRemoteBankCode,self.maxLenRemoteAccountNumber,self.minLenRemoteAccountNumber,self.maxLenRemoteSuffix,self.minLenRemoteSuffix,self.maxLenRemoteIban,self.minLenRemoteIban,self.maxLenTextKey,self.minLenTextKey,self.valuesTextKey,self.maxLenCustomerReference,self.minLenCustomerReference,self.maxLenBankReference,self.minLenBankReference,self.maxLenPurpose,self.minLenPurpose,self.maxLinesPurpose,self.minLinesPurpose,self.minValueSetupTime,self.maxValueSetupTime,self.valuesCycleWeek,self.valuesCycleMonth,self.valuesExecutionDayWeek,self.valuesExecutionDayMonth,self.allowMonthly,self.allowWeekly,self.allowChangeRecipientAccount,self.allowChangeRecipientName,self.allowChangeValue,self.allowChangeTextKey,self.allowChangePurpose,self.allowChangeFirstExecutionDate,self.allowChangeLastExecutionDate,self.allowChangeCycle,self.allowChangePeriod,self.allowChangeExecutionDay)
 
 
 class Transaction(c_void_p):
@@ -570,8 +683,9 @@ class Transaction(c_void_p):
         aqb.AB_Transaction_free(self)
 
     class Period(Enum):
-        monthly = 0 # The standing order is to be executed every month.
-        weekly = 1 # The standing order is to be executed every week.
+        none = 0 # No period.
+        monthly = 1 # The standing order is to be executed every month.
+        weekly = 2 # The standing order is to be executed every week.
 
     class PeriodAdapter(c_int):
         def _check_retval_(i):
@@ -581,6 +695,80 @@ class Transaction(c_void_p):
             check_enum(e, Period, 'argument')
             return int(e)
         from_param = classmethod(from_param)
+
+
+    class Type(Enum):
+        transaction = 0 # Simple transaction (as in transaction statements)
+        transfer = 1 # Transfer type of transaction (as used with transfer jobs)
+        debitNote = 2 # Debit note type of transaction (as used with debit note jobs)
+        euTransfer = 3 # EU-Transfer type of transaction (as used for with transfer jobs)
+
+    class TypeAdapter(c_int):
+        def _check_retval_(i):
+            return Type(i)
+        _check_retval_ = staticmethod(_check_retval_)
+        def from_param(cls, e):
+            check_enum(e, Type, 'argument')
+            return int(e)
+        from_param = classmethod(from_param)
+
+
+    class SubType(Enum):
+        none = 0 # No transfer sub-type
+        standard = 1 # Standard transfer.
+        check = 2 # Check.
+        bookedDebitNote = 3 # Debit note (Abbuchungsverfahren)
+        drawnDebitNote = 4 # Debit note (Einzugsermaechtigung)
+        standingOrder = 5 # Standing order (Dauerauftrag)
+        loan = 6 # Loan transfer.
+        euStandard = 7 # EU standard transfer.
+        euASAP = 8 # Eu transfer which is to be executed the same day.
+        buy = 9 # Buy stocks and alike
+        sell = 10 # Sell stocks and alike
+        reinvest = 11 # Reinvestment.
+        dividend = 12 # Dividend.
+
+    class SubTypeAdapter(c_int):
+        def _check_retval_(i):
+            return SubType(i)
+        _check_retval_ = staticmethod(_check_retval_)
+        def from_param(cls, e):
+            check_enum(e, SubType, 'argument')
+            return int(e)
+        from_param = classmethod(from_param)
+
+
+    class Status(Enum):
+        none = 0 # No status.
+        accepted = 1 # The transfer has been accepted by the bank
+        rejected = 2 # The transfer has been rejected by the bank (or was errornous)
+        pending = 3 # The transfer is still pending.
+
+    class StatusAdapter(c_int):
+        def _check_retval_(i):
+            return Status(i)
+        _check_retval_ = staticmethod(_check_retval_)
+        def from_param(cls, e):
+            check_enum(e, Status, 'argument')
+            return int(e)
+        from_param = classmethod(from_param)
+
+
+    class Charge(Enum):
+        Nobody = 0 # Nobody is to be charged.
+        local = 1 # Issuer is to be charged.
+        remote = 2 # Peer is to be charged.
+        share = 3 # Issuer and peer share the charges.
+
+    class ChargeAdapter(c_int):
+        def _check_retval_(i):
+            return Charge(i)
+        _check_retval_ = staticmethod(_check_retval_)
+        def from_param(cls, e):
+            check_enum(e, Charge, 'argument')
+            return int(e)
+        from_param = classmethod(from_param)
+
 
     modified = property(
         aqb.AB_Transaction_IsModified,
@@ -731,6 +919,10 @@ class Transaction(c_void_p):
         aqb.AB_Transaction_GetValue,
         aqb.AB_Transaction_SetValue)
 
+    fees = property(
+        aqb.AB_Transaction_GetFees,
+        aqb.AB_Transaction_SetFees)
+
     splits = property(
         aqb.AB_Transaction_GetSplits,
         lambda self, v: aqb.AB_Transaction_SetSplits(self, makeSplitlist(v)))
@@ -739,7 +931,7 @@ class Transaction(c_void_p):
     # This group contains information which differ between backends.
     # Some of this information might not even be supported by every
     # backends.
-    # A 3 digit numerical transaction code, defined for all kinds of
+    # A numerical transaction code, defined for all kinds of
     # different actions. (Textschluessel)
     # For a normal transfer you should set it to 51. For debit notes
     # the values 04 or 05 may be used. For other values please refer to
@@ -766,7 +958,7 @@ class Transaction(c_void_p):
     textKey = property(
         aqb.AB_Transaction_GetTextKey,
         aqb.AB_Transaction_SetTextKey,
-        'A 3 digit numerical transaction code, defined for all kinds of\n'
+        'A numerical transaction code, defined for all kinds of\n'
         'different actions. (Textschluessel)\n'
         'For a normal transfer you should set it to 51. For debit notes\n'
         'the values 04 or 05 may be used. For other values please refer to\n'
@@ -881,8 +1073,78 @@ class Transaction(c_void_p):
         'is only interesting when retrieving the list of currently active\n'
         'standing orders)')
 
+    # Group Additional Information for Transfers
+    # This group contains information which is used with all kinds of
+    # transfers.
+    # It is setup by the function @ref AB_Banking_GatherResponses for
+    # transfers but not used by AqBanking otherwise.
+    # This variable contains the type of transfer (transfer, debit note
+    # etc).
+    # This variable contains the sub-type of transfer.
+    # This variable contains the status of the transfer (accepted,
+    # rejected, pending).
+    # etc).
+    # Specify who is to be charged for the transaction.
+
+    type = property(
+        aqb.AB_Transaction_GetType,
+        aqb.AB_Transaction_SetType,
+        'This variable contains the type of transfer (transfer, debit note\n'
+        'etc).')
+
+    subType = property(
+        aqb.AB_Transaction_GetSubType,
+        aqb.AB_Transaction_SetSubType,
+        'This variable contains the sub-type of transfer.')
+
+    status = property(
+        aqb.AB_Transaction_GetStatus,
+        aqb.AB_Transaction_SetStatus,
+        'This variable contains the status of the transfer (accepted,\n'
+        'rejected, pending).\n'
+        'etc).')
+
+    charge = property(
+        aqb.AB_Transaction_GetCharge,
+        aqb.AB_Transaction_SetCharge,
+        'Specify who is to be charged for the transaction.')
+
+    # Group Additional Information for Foreign Transfers
+    # This group contains information which is used with transfers to
+    # other countries in the world.
+    # It is used by backends and applications but not by AqBanking itself.
+
+    remoteAddrStreet = property(
+        aqb.AB_Transaction_GetRemoteAddrStreet,
+        aqb.AB_Transaction_SetRemoteAddrStreet)
+
+    remoteAddrZipcode = property(
+        aqb.AB_Transaction_GetRemoteAddrZipcode,
+        aqb.AB_Transaction_SetRemoteAddrZipcode)
+
+    remoteAddrCity = property(
+        aqb.AB_Transaction_GetRemoteAddrCity,
+        aqb.AB_Transaction_SetRemoteAddrCity)
+
+    remotePhone = property(
+        aqb.AB_Transaction_GetRemotePhone,
+        aqb.AB_Transaction_SetRemotePhone)
+
+    # Group Additional Information for Investment Transfers
+    # This group contains information which is used with investment/stock
+    # transfers.
+    # It is used by backends and applications but not by AqBanking itself.
+
+    units = property(
+        aqb.AB_Transaction_GetUnits,
+        aqb.AB_Transaction_SetUnits)
+
+    unitPrice = property(
+        aqb.AB_Transaction_GetUnitPrice,
+        aqb.AB_Transaction_SetUnitPrice)
+
     def __str__(self):
-        return "<class Transaction:\nmodified=%s\nlocalCountry=%s\nlocalBankCode=%s\nlocalBranchId=%s\nlocalAccountNumber=%s\nlocalSuffix=%s\nlocalName=%s\nremoteCountry=%s\nremoteBankName=%s\nremoteBankLocation=%s\nremoteBankCode=%s\nremoteBranchId=%s\nremoteAccountNumber=%s\nremoteSuffix=%s\nremoteIban=%s\nremoteName=%s\nuniqueId=%s\nvalutaDate=%s\ndate=%s\nvalue=%s\nsplits=%s\ntextKey=%s\ntransactionKey=%s\ncustomerReference=%s\nbankReference=%s\ntransactionCode=%s\ntransactionText=%s\nprimanota=%s\nfiId=%s\npurpose=%s\ncategory=%s\nperiod=%s\ncycle=%s\nexecutionDay=%s\nfirstExecutionDate=%s\nlastExecutionDate=%s\nnextExecutionDate=%s\n/Transaction>" % (self.modified,self.localCountry,self.localBankCode,self.localBranchId,self.localAccountNumber,self.localSuffix,self.localName,self.remoteCountry,self.remoteBankName,self.remoteBankLocation,self.remoteBankCode,self.remoteBranchId,self.remoteAccountNumber,self.remoteSuffix,self.remoteIban,self.remoteName,self.uniqueId,self.valutaDate,self.date,self.value,self.splits,self.textKey,self.transactionKey,self.customerReference,self.bankReference,self.transactionCode,self.transactionText,self.primanota,self.fiId,self.purpose,self.category,self.period,self.cycle,self.executionDay,self.firstExecutionDate,self.lastExecutionDate,self.nextExecutionDate)
+        return "<class Transaction:\nmodified=%s\nlocalCountry=%s\nlocalBankCode=%s\nlocalBranchId=%s\nlocalAccountNumber=%s\nlocalSuffix=%s\nlocalName=%s\nremoteCountry=%s\nremoteBankName=%s\nremoteBankLocation=%s\nremoteBankCode=%s\nremoteBranchId=%s\nremoteAccountNumber=%s\nremoteSuffix=%s\nremoteIban=%s\nremoteName=%s\nuniqueId=%s\nvalutaDate=%s\ndate=%s\nvalue=%s\nfees=%s\nsplits=%s\ntextKey=%s\ntransactionKey=%s\ncustomerReference=%s\nbankReference=%s\ntransactionCode=%s\ntransactionText=%s\nprimanota=%s\nfiId=%s\npurpose=%s\ncategory=%s\nperiod=%s\ncycle=%s\nexecutionDay=%s\nfirstExecutionDate=%s\nlastExecutionDate=%s\nnextExecutionDate=%s\ntype=%s\nsubType=%s\nstatus=%s\ncharge=%s\nremoteAddrStreet=%s\nremoteAddrZipcode=%s\nremoteAddrCity=%s\nremotePhone=%s\nunits=%s\nunitPrice=%s\n/Transaction>" % (self.modified,self.localCountry,self.localBankCode,self.localBranchId,self.localAccountNumber,self.localSuffix,self.localName,self.remoteCountry,self.remoteBankName,self.remoteBankLocation,self.remoteBankCode,self.remoteBranchId,self.remoteAccountNumber,self.remoteSuffix,self.remoteIban,self.remoteName,self.uniqueId,self.valutaDate,self.date,self.value,self.fees,self.splits,self.textKey,self.transactionKey,self.customerReference,self.bankReference,self.transactionCode,self.transactionText,self.primanota,self.fiId,self.purpose,self.category,self.period,self.cycle,self.executionDay,self.firstExecutionDate,self.lastExecutionDate,self.nextExecutionDate,self.type,self.subType,self.status,self.charge,self.remoteAddrStreet,self.remoteAddrZipcode,self.remoteAddrCity,self.remotePhone,self.units,self.unitPrice)
 
 
 # list helpers
@@ -1066,6 +1328,8 @@ aqb.AB_Transaction_GetDate.restype = GWEN_Time
 aqb.AB_Transaction_SetDate.argtypes = Transaction, GWEN_Time
 aqb.AB_Transaction_GetValue.restype = Value
 aqb.AB_Transaction_SetValue.argtypes = Transaction, Value
+aqb.AB_Transaction_GetFees.restype = Value
+aqb.AB_Transaction_SetFees.argtypes = Transaction, Value
 aqb.AB_Transaction_GetSplits.restype = tupleSplitlist
 aqb.AB_Transaction_GetTextKey.restype = c_int
 aqb.AB_Transaction_SetTextKey.argtypes = Transaction, c_int
@@ -1097,6 +1361,26 @@ aqb.AB_Transaction_GetLastExecutionDate.restype = GWEN_Time
 aqb.AB_Transaction_SetLastExecutionDate.argtypes = Transaction, GWEN_Time
 aqb.AB_Transaction_GetNextExecutionDate.restype = GWEN_Time
 aqb.AB_Transaction_SetNextExecutionDate.argtypes = Transaction, GWEN_Time
+aqb.AB_Transaction_GetType.restype = Transaction.TypeAdapter
+aqb.AB_Transaction_SetType.argtypes = Transaction, Transaction.TypeAdapter
+aqb.AB_Transaction_GetSubType.restype = Transaction.SubTypeAdapter
+aqb.AB_Transaction_SetSubType.argtypes = Transaction, Transaction.SubTypeAdapter
+aqb.AB_Transaction_GetStatus.restype = Transaction.StatusAdapter
+aqb.AB_Transaction_SetStatus.argtypes = Transaction, Transaction.StatusAdapter
+aqb.AB_Transaction_GetCharge.restype = Transaction.ChargeAdapter
+aqb.AB_Transaction_SetCharge.argtypes = Transaction, Transaction.ChargeAdapter
+aqb.AB_Transaction_GetRemoteAddrStreet.restype = c_char_p
+aqb.AB_Transaction_SetRemoteAddrStreet.argtypes = Transaction, c_char_p
+aqb.AB_Transaction_GetRemoteAddrZipcode.restype = c_char_p
+aqb.AB_Transaction_SetRemoteAddrZipcode.argtypes = Transaction, c_char_p
+aqb.AB_Transaction_GetRemoteAddrCity.restype = c_char_p
+aqb.AB_Transaction_SetRemoteAddrCity.argtypes = Transaction, c_char_p
+aqb.AB_Transaction_GetRemotePhone.restype = c_char_p
+aqb.AB_Transaction_SetRemotePhone.argtypes = Transaction, c_char_p
+aqb.AB_Transaction_GetUnits.restype = c_int
+aqb.AB_Transaction_SetUnits.argtypes = Transaction, c_int
+aqb.AB_Transaction_GetUnitPrice.restype = Value
+aqb.AB_Transaction_SetUnitPrice.argtypes = Transaction, Value
 
 # Split
 aqb.AB_Split_IsModified.restype = c_int
@@ -1115,6 +1399,7 @@ aqb.AB_Split_GetName.restype = tupleStringlist
 aqb.AB_Split_GetValue.restype = Value
 aqb.AB_Split_SetValue.argtypes = Split, Value
 aqb.AB_Split_GetPurpose.restype = tupleStringlist
+aqb.AB_Split_GetCategory.restype = tupleStringlist
 
 # BankInfoService
 aqb.AB_BankInfoService_IsModified.restype = c_int
@@ -1198,3 +1483,35 @@ aqb.AB_TransactionLimits_GetMaxLinesPurpose.restype = c_int
 aqb.AB_TransactionLimits_SetMaxLinesPurpose.argtypes = TransactionLimits, c_int
 aqb.AB_TransactionLimits_GetMinLinesPurpose.restype = c_int
 aqb.AB_TransactionLimits_SetMinLinesPurpose.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetMinValueSetupTime.restype = c_int
+aqb.AB_TransactionLimits_SetMinValueSetupTime.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetMaxValueSetupTime.restype = c_int
+aqb.AB_TransactionLimits_SetMaxValueSetupTime.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetValuesCycleWeek.restype = tupleStringlist
+aqb.AB_TransactionLimits_GetValuesCycleMonth.restype = tupleStringlist
+aqb.AB_TransactionLimits_GetValuesExecutionDayWeek.restype = tupleStringlist
+aqb.AB_TransactionLimits_GetValuesExecutionDayMonth.restype = tupleStringlist
+aqb.AB_TransactionLimits_GetAllowMonthly.restype = c_int
+aqb.AB_TransactionLimits_SetAllowMonthly.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowWeekly.restype = c_int
+aqb.AB_TransactionLimits_SetAllowWeekly.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeRecipientAccount.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeRecipientAccount.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeRecipientName.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeRecipientName.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeValue.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeValue.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeTextKey.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeTextKey.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangePurpose.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangePurpose.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeFirstExecutionDate.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeFirstExecutionDate.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeLastExecutionDate.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeLastExecutionDate.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeCycle.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeCycle.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangePeriod.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangePeriod.argtypes = TransactionLimits, c_int
+aqb.AB_TransactionLimits_GetAllowChangeExecutionDay.restype = c_int
+aqb.AB_TransactionLimits_SetAllowChangeExecutionDay.argtypes = TransactionLimits, c_int
