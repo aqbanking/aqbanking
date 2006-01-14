@@ -17,7 +17,7 @@
 
 
 #include "cfgmodulegeldkarte_p.h"
-#include "cfgtabpageaccountgeldkarte.h"
+#include "cfgtabpagk.h"
 
 #include <aqgeldkarte/provider.h>
 
