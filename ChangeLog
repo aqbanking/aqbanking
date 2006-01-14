@@ -1,15 +1,25 @@
+
+2006/01/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- bump up GCC version needed for visibility (use version 4, don't know which
+  version started to support it, but I'm sure 4.0 does)
+
+
 2006-01-14  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: Add check for glade2 if g2banking is enabled.
+
 
 ===========================================================================
 MARK: Merged tag branch_2_0_merge2 back onto HEAD. (2006-01-13)
 ===========================================================================
 
+
 2006-01-13   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Disable -fvisibility gcc option on mingw/windows
 	-- seems to be not implemented there.
+
 
 ===========================================================================
 MARK: Merged tag branch_2_0_merge1 back onto HEAD. (2006-01-13)

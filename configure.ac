@@ -954,8 +954,8 @@ case `basename $CC` in
   gcc*)
      gccversion=`$CC --version | { read x1 x2 x3; echo $x3; }`
      case $gccversion in
-       0.* | 1.* | 2.* | 3.1.* | 3.2.* | 3.3.*)
-         visibility_supported="no (needs gcc >=3.4, you have $gccversion)"
+       0.* | 1.* | 2.* | 3.*)
+         visibility_supported="no (needs gcc >=4.0, you have $gccversion)"
          ;;
        *)
          visibility_supported="yes"
@@ -965,7 +965,7 @@ case `basename $CC` in
       esac
       ;;
   *)
-    visibility_supported="no (needs gcc >=3.4, you use $CC)"
+    visibility_supported="no (needs gcc >=4.0, you use $CC)"
     ;;
 esac
 
@@ -981,6 +981,7 @@ case "$OS_TYPE" in
   *)
 	;;
 esac
+
 
 AC_MSG_RESULT(${visibility_supported})
 AC_SUBST(visibility_cflags)
