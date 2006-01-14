@@ -123,13 +123,8 @@ Necessary for KDE-based banking applications, e.g. KMyMoney.
 BuildRequires: libofx >= 0.8.0
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
+Obsoletes: ofx-qt3
 %description ofx
-Necessary for OFX direct connect access.
-
-%package ofx-qt3
-Summary: Aqbanking tools for Qt3
-Group: System Environment/Libraries
-%description ofx-qt3
 Necessary for OFX direct connect access.
 %endif
 
@@ -141,13 +136,8 @@ BuildRequires: libchipcard2-devel >= 1.9.13
 %package geldkarte
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
+Obsoletes: geldkarte-qt3
 %description geldkarte
-Necessary for Geldkarte access.
-
-%package geldkarte-qt3
-Summary: Aqbanking tools for Qt3
-Group: System Environment/Libraries
-%description geldkarte-qt3
 Necessary for Geldkarte access.
 %endif
 
@@ -218,9 +208,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files qt3
 %{_libdir}/libqbanking.so.*
-%{plugindir}/wizards/aqhbci
 %{plugindir}/debugger/aqhbci
-%{plugindir}/wizards/aqdtaus
 %{_datadir}/%{name}/i18n
 
 %if %have_libofx
@@ -231,8 +219,6 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/%{name}/imexporters/ofx
 %{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
-%files ofx-qt3
-%{plugindir}/wizards/aqofxconnect
 %endif
 
 %if %have_libchipcard
@@ -241,8 +227,6 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_includedir}/aqgeldkarte
 %{_bindir}/aqgeldkarte-config
 %{_libdir}/libaqgeldkarte.so.*
-%files geldkarte-qt3
-%{plugindir}/wizards/aqgeldkarte
 %endif
 
 %files gtk2
