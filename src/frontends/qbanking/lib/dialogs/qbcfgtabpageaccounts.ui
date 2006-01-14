@@ -131,6 +131,6 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbaccountlistview.h</includehint>
+    <includehint>qbaccountlist.h</includehint>
 </includehints>
 </UI>

@@ -123,6 +123,6 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbuserlistview.h</includehint>
+    <includehint>qbuserlist.h</includehint>
 </includehints>
 </UI>

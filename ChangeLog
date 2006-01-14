@@ -3,6 +3,8 @@
 -------------------------------------------------
 - bump up GCC version needed for visibility (use version 4, don't know which
   version started to support it, but I'm sure 4.0 does)
+- qbcfgtabpageusers.ui, qbcfgtabpageaccounts.ui:
+  fixed two bugs in UI files (were referring to files which do not exist)
 
 
 2006-01-14  Christian Stimming  <stimming@tuhh.de>
