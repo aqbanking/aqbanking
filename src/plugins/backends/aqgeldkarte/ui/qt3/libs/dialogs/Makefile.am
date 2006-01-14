@@ -2,29 +2,30 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
+  -I../widgets -I.. \
   $(all_includes)
 
 
 UI_FILES= \
- cfgtabpageaccountgeldkarte.ui
+ cfgtabpagk.ui
 
 EXTRA_DIST= $(UI_FILES)
 
 noinst_LTLIBRARIES=libdialogs.la
 
 nodist_noinst_HEADERS=\
- cfgtabpageaccountgeldkarte.ui.h
+ cfgtabpagk.ui.h
 
 noinst_HEADERS=\
- cfgtabpageaccountgeldkarte.h
+ cfgtabpagk.h
 
 
 nodist_libdialogs_la_SOURCES=\
- cfgtabpageaccountgeldkarte.ui.cpp cfgtabpageaccountgeldkarte.ui.moc.cpp cfgtabpageaccountgeldkarte.moc.cpp
+ cfgtabpagk.ui.cpp cfgtabpagk.ui.moc.cpp cfgtabpagk.moc.cpp
 
 
 libdialogs_la_SOURCES=\
- cfgtabpageaccountgeldkarte.cpp
+ cfgtabpagk.cpp
 
 
 BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES)

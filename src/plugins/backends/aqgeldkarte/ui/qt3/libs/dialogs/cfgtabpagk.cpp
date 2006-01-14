@@ -15,8 +15,8 @@
 #endif
 
 
-#include "cfgtabpageaccountgeldkarte.h"
-#include "cfgtabpageaccountgeldkarte.ui.h"
+#include "cfgtabpagk.h"
+#include "cfgtabpagk.ui.h"
 
 #include <aqgeldkarte/account.h>
 

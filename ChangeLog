@@ -7,6 +7,10 @@
 
 2006-01-14  Christian Stimming  <stimming@tuhh.de>
 
+	* src/plugins/backends/aqgeldkarte/ui/qt3/libs/Makefile.am:
+	Renamed cfgtabpageaccountgeldkarte files into cfgtabpagk because
+	on make dist, tar complains about too long filenames.
+
 	* configure.ac: Add check for glade2 if g2banking is enabled.
 
 
