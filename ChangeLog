@@ -1,3 +1,7 @@
+2006-01-14  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Add check for glade2 if g2banking is enabled.
+
 ===========================================================================
 MARK: Merged tag branch_2_0_merge2 back onto HEAD. (2006-01-13)
 ===========================================================================

@@ -780,8 +780,9 @@ AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 
 case "$aqbanking_frontends" in *g2banking*)
   pkg_modules="gtk+-2.0 >= 2.0.0"
-  PKG_CHECK_MODULES(GTK2, [$pkg_modules])
-  all_includes="$all_includes $GTK2_CFLAGS"
+  dnl $4=true => don't die in case of failure.
+  PKG_CHECK_MODULES(GTK2, [$pkg_modules], [], true)
+  all_includes="$all_includes ${GTK2_CFLAGS}"
   ;;
 esac
 AC_SUBST(GTK2_CFLAGS)
@@ -1171,8 +1172,12 @@ done
 for frontend in $aqbanking_frontends; do
   case "$frontend" in
     g2banking)
-      if test -z "$GTK2_LIBS"; then
+      if test -z "${GTK2_LIBS}"; then
         AC_MSG_NOTICE([*** GTK2 is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
+	dependencies_ok="no"
+      fi
+      if test "${GLADE2}" = "GLADE2-NOT-FOUND"; then
+        AC_MSG_NOTICE([*** The program "glade2" is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
       ;;
