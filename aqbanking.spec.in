@@ -209,6 +209,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %files qt3
 %{_libdir}/libqbanking.so.*
 %{plugindir}/debugger/aqhbci
+%{plugindir}/wizards
+%{_libdir}/qbanking/plugins
 %{_datadir}/%{name}/i18n
 
 %if %have_libofx
