@@ -139,6 +139,6 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbplugindescrlistview.h</includehint>
+    <includehint>qbplugindescrlist.h</includehint>
 </includehints>
 </UI>
