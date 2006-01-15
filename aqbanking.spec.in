@@ -1,6 +1,8 @@
 %define name @PACKAGE@
 %define version @VERSION@
-%define plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
+%define aq_plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
+%define qb_plugindir %{_libdir}/qbanking/plugins/@QBANKING_SO_EFFECTIVE@
+%define qb_cfgmoddir %{qb_plugindir}/cfgmodules
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
 ### rpms should not be released!
@@ -126,6 +128,12 @@ Group: System Environment/Libraries
 Obsoletes: ofx-qt3
 %description ofx
 Necessary for OFX direct connect access.
+
+#%package ofx-qt3
+#Summary: Aqbanking tools for Qt3
+#Group: System Environment/Libraries
+#%description ofx-qt3
+#Necessary for OFX direct connect access.
 %endif
 
 ### Sub-packages for Geldkarte
@@ -136,8 +144,13 @@ BuildRequires: libchipcard2-devel >= 1.9.13
 %package geldkarte
 Summary: Aqbanking tools for Qt3
 Group: System Environment/Libraries
-Obsoletes: geldkarte-qt3
 %description geldkarte
+Necessary for Geldkarte access.
+
+%package geldkarte-qt3
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description geldkarte-qt3
 Necessary for Geldkarte access.
 %endif
 
@@ -178,15 +191,15 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_bindir}/aqbanking-tool
 %{_datadir}/doc/%{name}
 %{_datadir}/doc/aqhbci
-%{plugindir}/bankinfo
-%{plugindir}/imexporters/csv.*
-%{plugindir}/imexporters/dbio.*
-%{plugindir}/imexporters/dtaus.*
-%{plugindir}/imexporters/eri.*
-%{plugindir}/imexporters/eri2.*
-%{plugindir}/imexporters/openhbci1.*
-%{plugindir}/imexporters/qif.*
-%{plugindir}/imexporters/swift.*
+%{aq_plugindir}/bankinfo
+%{aq_plugindir}/imexporters/csv.*
+%{aq_plugindir}/imexporters/dbio.*
+%{aq_plugindir}/imexporters/dtaus.*
+%{aq_plugindir}/imexporters/eri.*
+%{aq_plugindir}/imexporters/eri2.*
+%{aq_plugindir}/imexporters/openhbci1.*
+%{aq_plugindir}/imexporters/qif.*
+%{aq_plugindir}/imexporters/swift.*
 %{_datadir}/%{name}/imexporters/csv
 %{_datadir}/%{name}/imexporters/dtaus
 %{_datadir}/%{name}/imexporters/eri
@@ -199,36 +212,41 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/aqhbci
 %{_bindir}/aqhbci-tool
 %{_libdir}/libaqhbci.so.*
-%{plugindir}/providers/aqhbci.*
+%{aq_plugindir}/providers/aqhbci.*
 ### The dtaus files
 %{_libdir}/libaqdtaus.so.*
-%{plugindir}/providers/aqdtaus.*
+%{aq_plugindir}/providers/aqdtaus.*
 ### The cbanking files
 %{_libdir}/libcbanking.so.*
 
 %files qt3
 %{_libdir}/libqbanking.so.*
-%{plugindir}/debugger/aqhbci
-%{plugindir}/wizards
-%{_libdir}/qbanking/plugins
+%{aq_plugindir}/debugger/aqhbci
+%{aq_plugindir}/wizards
+%{qb_cfgmoddir}/aqhbci*
+%{qb_cfgmoddir}/aqdtaus*
 %{_datadir}/%{name}/i18n
 
 %if %have_libofx
 %files ofx
-%{plugindir}/providers/aqofxconnect.*
+%{aq_plugindir}/providers/aqofxconnect.*
 %{_includedir}/aqofxconnect
-%{plugindir}/imexporters/ofx.*
+%{aq_plugindir}/imexporters/ofx.*
 %{_datadir}/%{name}/imexporters/ofx
 %{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
+#%files ofx-qt3
+#%{qb_cfgmoddir}/aqofxconnect*
 %endif
 
 %if %have_libchipcard
 %files geldkarte
-%{plugindir}/providers/aqgeldkarte.*
+%{aq_plugindir}/providers/aqgeldkarte.*
 %{_includedir}/aqgeldkarte
 %{_bindir}/aqgeldkarte-config
 %{_libdir}/libaqgeldkarte.so.*
+%files geldkarte-qt3
+%{qb_cfgmoddir}/aqgeldkarte*
 %endif
 
 %files gtk2
