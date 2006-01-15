@@ -1,3 +1,6 @@
+2006-01-15  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Check for qt tools from identical qt version.
 
 2006/01/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

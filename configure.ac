@@ -810,23 +810,45 @@ case "$aqbanking_frontends" in *qbanking*)
   AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
   
   dnl Store the bin dir for the windows dlls
-  QT_BINDIR=` echo ${qt3_moc} | sed 's-/moc--' | sed 's-/c/-c:\\\\-' | sed 's-/-\\\\-g' `
+  QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
   ;;
 esac
 
 # Put the AM_CONDITIONAL macros always at top-level, never inside
 # an if-branch.
 dnl Check for Qts lupdate tools
-AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+AC_PATH_PROG([LUPDATE], [lupdate], [NO], [$PATH:"` echo ${qt3_moc} | ${SED} 's-/moc--' `"])
+AC_PATH_PROG([LRELEASE], [lrelease], [NO], [$PATH:"` echo ${qt3_moc} | ${SED} 's-/moc--' `"])
 AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
 AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
 AC_SUBST(QT_BINDIR)
-dnl Check for potential qt4 environment
-AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
-AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | sed 's-/moc--' `"])
+
+dnl Check for potential qt4 environment, but only if moc is from qt4
+dnl (watch out: the outside square parenteses are vitally important here!)
+MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' `"]
+if test "`echo ${MOC_VERSION} | cut -d . -f 1`" = "3"; then
+    UIC3="${qt3_uic}"
+    QT4TO4="NO"
+else
+    AC_PATH_PROGS([UIC3], [uic3 uic], [NO], [$PATH:"` echo ${qt3_moc} | ${SED} 's-/moc--' `"])
+    AC_PATH_PROG([QT3TO4], [qt3to4], [NO], [$PATH:"` echo ${qt3_moc} | ${SED} 's-/moc--' `"])
+fi
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 
+dnl Make sure moc, uic, lupdate, lrelease come from the same Qt version
+dnl (watch out: the outside square parenteses are vitally important here!)
+UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' `"]
+if test "x${MOC_VERSION}" != "x${UIC_VERSION}"; then
+    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by making sure that "moc" and "uic" from the desired qt version appear first in your PATH.])
+fi
+LUPDATE_VERSION=["` ${LUPDATE} -version 2>&1 | ${SED} 's/.*version //' | ${SED} 's/[^0-9.]//g' `"]
+if test "x${MOC_VERSION}" != "x${LUPDATE_VERSION}"; then
+    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${LUPDATE} is from qt-${LUPDATE_VERSION}. Fix this by making sure that "moc" and "lupdate" from the desired qt version appear first in your PATH.])
+fi
+LRELEASE_VERSION=["` ${LRELEASE} -version 2>&1 | ${SED} 's/.*version //' | ${SED} 's/[^0-9.]//g' `"]
+if test "x${MOC_VERSION}" != "x${LRELEASE_VERSION}"; then
+    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${LRELEASE} is from qt-${LRELEASE_VERSION}. Fix this by making sure that "moc" and "lrelease" from the desired qt version appear first in your PATH.])
+fi
 
 ###-------------------------------------------------------------------------
 #
