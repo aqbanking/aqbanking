@@ -71,7 +71,7 @@ static int AD_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AD_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AD_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
 static int AD_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
-static int AD_Provider_Execute(AB_PROVIDER *pro);
+static int AD_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
 static int AD_Provider_ResetQueue(AB_PROVIDER *pro);
 static int AD_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
                                      AB_PROVIDER_EXTEND_MODE em);

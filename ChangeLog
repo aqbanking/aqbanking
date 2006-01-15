@@ -1,6 +1,20 @@
+
+2006/01/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started new approach to get data from a backend to the application:
+  added argument AB_IMEXPORTER_CONTEXT to backends execute() functions.
+  The can be used by backends to report queue-sepcific data (like messages
+  from the bank, or imported data for accounts for which there was no
+  request. Some backends only provide reports for multiple accounts, so we
+  need a way to make that unrequested data available to the application).
+- fixed some more <includehint> related problems in UI files of QBanking
+  (why the heck did we never encounter any problem with them??)
+
+
 2006-01-15  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: Check for qt tools from identical qt version.
+
 
 2006/01/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

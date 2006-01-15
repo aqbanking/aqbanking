@@ -259,14 +259,14 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
 
 
-int AB_Provider_Execute(AB_PROVIDER *pro){
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return AB_ERROR_INVALID;
   }
   if (pro->executeFn) {
-    return pro->executeFn(pro);
+    return pro->executeFn(pro, ctx);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
   return AB_ERROR_NOFN;

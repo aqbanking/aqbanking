@@ -1303,6 +1303,10 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab);
 AQBANKING_API 
 int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
 
+AQBANKING_API 
+int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
+				     AB_IMEXPORTER_CONTEXT *ctx);
+
 /**
  * <p>
  * Returns a new list which contains the currently enqueued jobs.

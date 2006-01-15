@@ -1273,7 +1273,7 @@ int AD_Provider__Execute(AB_PROVIDER *pro){
 
 
 
-int AD_Provider_Execute(AB_PROVIDER *pro){
+int AD_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AD_PROVIDER *dp;
   GWEN_TYPE_UINT32 pid;
   int cnt;

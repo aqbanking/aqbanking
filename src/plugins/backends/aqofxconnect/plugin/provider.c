@@ -447,7 +447,7 @@ AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid) {
 
 
 
-int AO_Provider_Execute(AB_PROVIDER *pro){
+int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AO_PROVIDER *dp;
   int oks=0;
   int errors=0;

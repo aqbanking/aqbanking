@@ -45,7 +45,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
 int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
-int AO_Provider_Execute(AB_PROVIDER *pro);
+int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
 int AO_Provider_ResetQueue(AB_PROVIDER *pro);
 
 

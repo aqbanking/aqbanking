@@ -98,7 +98,8 @@ typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
 /**
  * See @ref AB_Provider_Execute
  */
-typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro);
+typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro,
+                                      AB_IMEXPORTER_CONTEXT *ctx);
 
 
 /**
@@ -210,7 +211,7 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
  * @param pro backend object
  */
 AQBANKING_API
-int AB_Provider_Execute(AB_PROVIDER *pro);
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
 
 /**
  * Resets the queue of the backend.

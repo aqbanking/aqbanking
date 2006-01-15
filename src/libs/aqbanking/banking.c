@@ -2451,7 +2451,8 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly){
 
 
 
-int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl){
+int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
+                             AB_IMEXPORTER_CONTEXT *ctx){
   AB_PROVIDER *pro;
   int succ;
 
@@ -2519,7 +2520,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl){
     if (jobs) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
-      rv=AB_Provider_Execute(pro);
+      rv=AB_Provider_Execute(pro, ctx);
       if (rv) {
         int lrv;
 
@@ -2580,7 +2581,8 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
 
 
 
-int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
+int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
+                                     AB_IMEXPORTER_CONTEXT *ctx){
   int rv;
   GWEN_TYPE_UINT32 pid;
   AB_JOB_LIST2_ITERATOR *jit;
@@ -2613,7 +2615,7 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
                                I18N("Now the jobs are send via their "
                                     "backends to the credit institutes."),
 			       AB_Job_List2_GetSize(jl2));
-  rv=AB_Banking__ExecuteQueue(ab, jl2);
+  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
   AB_Banking_ProgressEnd(ab, pid);
 
   /* clear temporarily accepted certificates again */
@@ -2689,6 +2691,12 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
   }
 
   return rv;
+}
+
+
+
+int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
+  return AB_Banking_ExecuteJobListWithCtx(ab, jl2, 0);
 }
 
 

@@ -188,7 +188,8 @@ static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
 static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
-static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
+static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
+                                    AB_IMEXPORTER_CONTEXT *ctx);
 
 
 static AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,

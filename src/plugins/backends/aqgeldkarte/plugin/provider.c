@@ -623,7 +623,7 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro, AG_CARD *card){
 
 
 
-int AG_Provider_Execute(AB_PROVIDER *pro){
+int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AG_PROVIDER *dp;
   AG_CARD *card;
   int done=0;

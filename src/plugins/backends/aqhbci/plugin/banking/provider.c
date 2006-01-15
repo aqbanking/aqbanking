@@ -701,7 +701,7 @@ AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, GWEN_TYPE_UINT32 jid){
 
 
 
-int AH_Provider_Execute(AB_PROVIDER *pro){
+int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AH_PROVIDER *hp;
   int rv;
   AB_JOB_LIST2_ITERATOR *jit;
