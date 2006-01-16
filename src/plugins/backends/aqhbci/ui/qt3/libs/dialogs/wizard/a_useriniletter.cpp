@@ -124,7 +124,7 @@ void ActionUserIniLetter::slotPrint() {
   int rv;
 
   rv=getWizard()->getBanking()->print(tr("User's Ini Letter"),
-                                      "USER::INILETTER",
+                                      QString("USER::INILETTER"),
                                       tr("This page contains the user's "
                                          "iniletter."),
                                       _iniLetterDialog->iniBrowser->text());
