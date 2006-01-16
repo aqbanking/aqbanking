@@ -837,7 +837,7 @@ AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 
 dnl Make sure moc, uic, lupdate, lrelease come from the same Qt version
 dnl (watch out: the outside square parenteses are vitally important here!)
-UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' `"]
+UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' | ${SED} 's/[^0-9]$//g' `"]
 if test "x${MOC_VERSION}" != "x${UIC_VERSION}"; then
     AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by making sure that "moc" and "uic" from the desired qt version appear first in your PATH.])
 fi
