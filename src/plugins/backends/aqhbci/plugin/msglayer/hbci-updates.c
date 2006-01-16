@@ -33,8 +33,8 @@ int AH_HBCI_UpdateDb(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   if (0==GWEN_DB_Groups_Count(db) &&
       0==GWEN_DB_Variables_Count(db)) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN,
-              "Initial setup, nothing to upgrade");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+	       "Initial setup, nothing to upgrade");
     return 0;
   }
 
@@ -47,12 +47,12 @@ int AH_HBCI_UpdateDb(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     AQHBCI_VERSION_BUILD;
 
   if (currentVersion>oldVersion) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Updating from %d.%d.%d.%d",
-               (oldVersion>>24) & 0xff,
-               (oldVersion>>16) & 0xff,
-               (oldVersion>>8) & 0xff,
-               oldVersion & 0xff);
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Updating from %d.%d.%d.%d",
+             (oldVersion>>24) & 0xff,
+             (oldVersion>>16) & 0xff,
+             (oldVersion>>8) & 0xff,
+             oldVersion & 0xff);
 
     if (oldVersion < ((1<<24) | (0<<16) | (3<<8) | 9)) {
       rv=AH_HBCI_Update_1_0_3_9(hbci, db);
@@ -110,18 +110,18 @@ int AH_HBCI_Update2(AH_HBCI *hbci,
 
   if (0==GWEN_DB_Groups_Count(db) &&
       0==GWEN_DB_Variables_Count(db)) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN,
-              "Initial setup, nothing to upgrade");
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Initial setup, nothing to upgrade");
     return 0;
   }
 
   if (currentVersion>oldVersion) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Updating from %d.%d.%d.%d",
-               (oldVersion>>24) & 0xff,
-               (oldVersion>>16) & 0xff,
-               (oldVersion>>8) & 0xff,
-               oldVersion & 0xff);
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Updating from %d.%d.%d.%d",
+             (oldVersion>>24) & 0xff,
+             (oldVersion>>16) & 0xff,
+             (oldVersion>>8) & 0xff,
+             oldVersion & 0xff);
 
     if (oldVersion < ((1<<24) | (8<<16) | (1<<8) | 3)) {
       rv=AH_HBCI_Update2_1_8_1_3(hbci, db);
@@ -467,11 +467,21 @@ int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
                   u=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);
                   assert(u);
 
-                  /* set basic data */
+		  /* set basic data */
                   AB_User_SetCountry(u, "de");
                   AB_User_SetBankCode(u, bankId);
                   AB_User_SetUserId(u, userId);
                   AB_User_SetCustomerId(u, customerId);
+
+                  /* copy data */
+		  s=GWEN_DB_GetCharValue(dbCustomer,
+					 "fullName",
+					 0, 0);
+		  if (s)
+		    AB_User_SetUserName(u, s);
+		  s=GWEN_DB_GetCharValue(dbUser, "status", 0, 0);
+		  if (s)
+                    AH_User_SetStatus(u, AH_User_Status_fromString(s));
 
                   /* set medium and context idx */
                   mediumTypeName=GWEN_DB_GetCharValue(dbUser,
@@ -501,7 +511,7 @@ int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
                     AH_User_SetSystemId(u, s);
 
                   /* set bpd addr */
-                  dbT=GWEN_DB_GetGroup(dbCustomer,
+		  dbT=GWEN_DB_GetGroup(dbUser,
                                        GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                        "server");
                   if (dbT) {

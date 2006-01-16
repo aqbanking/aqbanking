@@ -1,7 +1,16 @@
+
+2006/01/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed automatic config file update for AqBanking and AqHBCI (now the
+  automatic migration from existing configurations really works), tested
+  with updates from AqBanking 1.4.0 to current and 1.6.0 to current
+
+
 2006-01-16  Christian Stimming  <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.cpp:
 	Fix failed assertion by creating a new object if none existed.
+
 
 2006/01/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
