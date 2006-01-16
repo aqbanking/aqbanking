@@ -35,10 +35,11 @@ Wizard::Wizard(QBanking *qb,
                const QString &title,
                QWidget* parent,
                const char* name, bool modal)
-:WizardUi(parent, name, modal)
+    :WizardUi(parent, name) // qt4 doesn't accept the 'modal' argument anymore
 ,_app(qb)
 ,_wInfo(wInfo)
 ,_lastActionWidget(0){
+  setModal(modal);
   if (!title.isEmpty())
     setCaption(title);
 }
