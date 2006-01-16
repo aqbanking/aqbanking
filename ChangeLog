@@ -1,3 +1,7 @@
+2006-01-16  Christian Stimming  <stimming@tuhh.de>
+
+	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.cpp:
+	Fix failed assertion by creating a new object if none existed.
 
 2006/01/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

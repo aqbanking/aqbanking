@@ -195,8 +195,10 @@ bool CfgTabPageUserHbci::fromGui() {
 
   QString qs=_realPage->serverEdit->text();
   oldBa=AH_User_GetAddress(u);
-  assert(oldBa);
-  newBa=AH_BpdAddr_dup(oldBa);
+  if (oldBa)
+    newBa=AH_BpdAddr_dup(oldBa);
+  else
+    newBa = AH_BpdAddr_new();
   AH_BpdAddr_SetAddr(newBa, qs.utf8());
   AH_User_SetAddress(u, newBa);
 
