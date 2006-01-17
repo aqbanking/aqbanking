@@ -21,6 +21,7 @@
 typedef struct AB_MSGENGINE AB_MSGENGINE;
 
 struct AB_MSGENGINE {
+  int dummy;
 };
 
 

@@ -1,4 +1,9 @@
 
+2006/01/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a showstopper bug (msgEngine malloced 0 bytes)
+
+
 2006/01/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed automatic config file update for AqBanking and AqHBCI (now the
