@@ -3,6 +3,7 @@
 -------------------------------------------------
 - removed unneeded buttons from backend list page of configuration
   dialog
+- no longer write debug file "/tmp/transactions.trans"
 
 
 ===========================================================================

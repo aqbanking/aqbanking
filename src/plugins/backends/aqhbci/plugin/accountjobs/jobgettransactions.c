@@ -133,13 +133,6 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     return -1;
   }
 
-  /* DEBUG */
-  if (GWEN_DB_WriteFile(db,
-                        "/tmp/transactions.trans",
-                        GWEN_DB_FLAGS_DEFAULT)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write transactions");
-  }
-
   /* first count the groups */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
   while(dbDay) {
