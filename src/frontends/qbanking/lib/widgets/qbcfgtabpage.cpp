@@ -20,7 +20,10 @@
 
 #include <qlayout.h>
 #include <qcombobox.h>
-
+#if (QT_VERSION >= 0x040100)
+// qt-4.1.0 errorneously forgets to add this include
+#  include <QComboBox>
+#endif
 
 
 QBCfgTabPage::QBCfgTabPage(QBanking *qb,
