@@ -517,7 +517,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       if (mj) {
 	/* simply add transfer to existing job */
         jobIsNew=0;
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching job found");
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "No matching job found");
       }
       else {
 	/* create new job */
@@ -546,7 +546,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       if (mj) {
 	/* simply add transfer to existing job */
         jobIsNew=0;
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching job found");
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "No matching job found");
       }
       else {
 	/* create new job */

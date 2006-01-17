@@ -45,7 +45,6 @@ public:
 public slots:
   void slotBackendEnable();
   void slotBackendDisable();
-  void slotBackendSetup();
 };
 
 

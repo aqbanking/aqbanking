@@ -481,7 +481,23 @@ int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 		    AB_User_SetUserName(u, s);
 		  s=GWEN_DB_GetCharValue(dbUser, "status", 0, 0);
 		  if (s)
-                    AH_User_SetStatus(u, AH_User_Status_fromString(s));
+		    AH_User_SetStatus(u, AH_User_Status_fromString(s));
+
+		  AH_User_SetHbciVersion(u, GWEN_DB_GetIntValue(dbCustomer,
+								"hbciVersion",
+								0,
+								210));
+		  if (GWEN_DB_GetIntValue(dbCustomer,
+					  "bankDoesntSign", 0, 0))
+		    AH_User_AddFlags(u, AH_USER_FLAGS_BANK_DOESNT_SIGN);
+
+		  if (GWEN_DB_GetIntValue(dbCustomer,
+					  "bankUsesSignSeq", 0, 0))
+		    AH_User_AddFlags(u, AH_USER_FLAGS_BANK_USES_SIGNSEQ);
+
+		  if (GWEN_DB_GetIntValue(dbCustomer,
+					  "ignoreUpd", 0, 0))
+		    AH_User_AddFlags(u, AH_USER_FLAGS_IGNORE_UPD);
 
                   /* set medium and context idx */
                   mediumTypeName=GWEN_DB_GetCharValue(dbUser,

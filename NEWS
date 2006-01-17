@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.1beta (2006-01-17)
+===========================================================================
+
+This release fixes many bugs in the previous version. It is now able to
+completely migrate user configuration data from older versions to the
+current one.
+
+
+===========================================================================
                Released AqBanking - 1.9.0beta (2006-01-11)
 ===========================================================================
 

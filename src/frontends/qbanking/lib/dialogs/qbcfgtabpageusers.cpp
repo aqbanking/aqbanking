@@ -194,7 +194,8 @@ void QBCfgTabPageUsers::slotUserEdit() {
     QMessageBox::critical(this,
                           tr("Selection Error"),
                           tr("No user selected.\n"),
-                          QMessageBox::Retry,QMessageBox::NoButton);
+                          tr("Dismiss"));
+    return;
   }
   u=ul.front();
   if (QBEditUser::editUser(getBanking(), u, this)) {
@@ -209,6 +210,10 @@ void QBCfgTabPageUsers::slotUserEdit() {
 
 
 void QBCfgTabPageUsers::slotUserDel() {
+  QMessageBox::critical(this,
+                        tr("Error"),
+                        tr("Not yet supported.\n"),
+                        tr("Dismiss"));
 }
 
 

@@ -63,22 +63,6 @@
                 </property>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>backendDetailsButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Details</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>backendSetupButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Setup</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
                         <cstring>backendEnableButton</cstring>
                     </property>
                     <property name="text">
@@ -139,6 +123,6 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbplugindescrlist.h</includehint>
+    <includehint>qbplugindescrlistview.h</includehint>
 </includehints>
 </UI>

@@ -49,9 +49,6 @@ QBCfgTabPageBackends::QBCfgTabPageBackends(QBanking *qb,
   QObject::connect(_realPage->backendDisableButton, SIGNAL(clicked()),
                    this, SLOT(slotBackendDisable()));
 
-  QObject::connect(_realPage->backendSetupButton, SIGNAL(clicked()),
-                   this, SLOT(slotBackendSetup()));
-
 }
 
 
@@ -187,11 +184,6 @@ void QBCfgTabPageBackends::slotBackendDisable(){
                             QMessageBox::Ok,QMessageBox::NoButton);
     }
   }
-}
-
-
-
-void QBCfgTabPageBackends::slotBackendSetup(){
 }
 
 

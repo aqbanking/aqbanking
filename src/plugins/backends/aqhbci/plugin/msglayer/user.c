@@ -63,7 +63,7 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                         GWEN_TYPE_UINT32 flags) {
   GWEN_DB_DeleteVar(db, name);
   if (flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesnSign");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
   if (flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "bankUsesSignSeq");
@@ -93,7 +93,7 @@ GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
     s=GWEN_DB_GetCharValue(db, name, i, 0);
     if (!s)
       break;
-    if (strcasecmp(s, "bankDoesnSign")==0)
+    if (strcasecmp(s, "bankDoesntSign")==0)
       fl|=AH_USER_FLAGS_BANK_DOESNT_SIGN;
     else if (strcasecmp(s, "bankUsesSignSeq")==0)
       fl|=AH_USER_FLAGS_BANK_USES_SIGNSEQ;

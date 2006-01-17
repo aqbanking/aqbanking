@@ -1,7 +1,21 @@
 
 2006/01/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
+- removed unneeded buttons from backend list page of configuration
+  dialog
+
+
+===========================================================================
+MARK: released AqBanking - 1.9.1beta (2006-01-17)
+===========================================================================
+
+
+2006/01/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
 - fixed a showstopper bug (msgEngine malloced 0 bytes)
+- more fixes on user migration
+- fixed a bug (was segfaulting when edit user requested while no user was
+  selected in user list)
 
 
 2006/01/16: Martin Preuss<martin@libchipcard.de>
