@@ -167,7 +167,7 @@ fi
 dnl paths for qt3 moc
 AC_MSG_CHECKING(for qt3 moc)
 AC_ARG_WITH(qt3-moc, 
-  [  --with-qt3-moc=DIR      uses given qt3 moc],
+  [  --with-qt3-moc=DIR      uses qt3 moc from given directory],
   [local_qt3_moc="$withval"],
   [local_qt3_moc="\
   	$QTDIR/bin \
@@ -199,7 +199,7 @@ fi
 dnl paths for qt3 uic
 AC_MSG_CHECKING(for qt3 uic)
 AC_ARG_WITH(qt3-uic, 
-  [  --with-qt3-uic=DIR      uses given qt3 uic],
+  [  --with-qt3-uic=DIR      uses qt3 uic from given directory],
   [local_qt3_uic="$withval"],
   [local_qt3_uic="\
   	$QTDIR/bin \
