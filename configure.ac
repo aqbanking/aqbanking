@@ -814,13 +814,7 @@ case "$aqbanking_frontends" in *qbanking*)
   ;;
 esac
 
-# Put the AM_CONDITIONAL macros always at top-level, never inside
-# an if-branch.
-dnl Check for Qts lupdate tools
-AC_PATH_PROG([LUPDATE], [lupdate], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-AC_PATH_PROG([LRELEASE], [lrelease], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-AM_CONDITIONAL([HAVE_LUPDATE], [test "$LUPDATE" != "NO"])
-AM_CONDITIONAL([HAVE_LRELEASE], [test "$LRELEASE" != "NO"])
+dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
 
 dnl Check for potential qt4 environment, but only if moc is from qt4
@@ -835,19 +829,11 @@ else
 fi
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 
-dnl Make sure moc, uic, lupdate, lrelease come from the same Qt version
+dnl Make sure moc, uic come from the same Qt version
 dnl (watch out: the outside square parenteses are vitally important here!)
 UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' | ${SED} 's/[^0-9]$//g' `"]
 if test "x${MOC_VERSION}" != "x${UIC_VERSION}"; then
     AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-fi
-LUPDATE_VERSION=["` ${LUPDATE} -version 2>&1 | ${SED} 's/.*version //' | ${SED} 's/[^0-9.]//g' `"]
-if test "x${MOC_VERSION}" != "x${LUPDATE_VERSION}"; then
-    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${LUPDATE} is from qt-${LUPDATE_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-fi
-LRELEASE_VERSION=["` ${LRELEASE} -version 2>&1 | ${SED} 's/.*version //' | ${SED} 's/[^0-9.]//g' `"]
-if test "x${MOC_VERSION}" != "x${LRELEASE_VERSION}"; then
-    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${LRELEASE} is from qt-${LRELEASE_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
 fi
 
 ###-------------------------------------------------------------------------
