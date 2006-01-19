@@ -1,4 +1,9 @@
 
+2006/01/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug (was not finding the new QT3 wizard)
+
+
 2006/01/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - reenabled OFX DirectConnect

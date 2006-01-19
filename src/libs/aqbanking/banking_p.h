@@ -26,7 +26,7 @@
 #define AB_BANKING_REGKEY_SYSCONFDIR  "sysconfdir"
 
 #define AB_BANKING_USERDATADIR ".banking"
-#define AB_WIZARD_FOLDER "wizard"
+#define AB_WIZARD_FOLDER "wizards"
 
 /**
  * Name of the default configuration file within the users home folder.
