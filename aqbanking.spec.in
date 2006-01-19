@@ -1,7 +1,7 @@
 %define name @PACKAGE@
 %define version @VERSION@
 %define aq_plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
-%define qb_plugindir %{_libdir}/qbanking/plugins/@QBANKING_SO_EFFECTIVE@
+%define qb_plugindir %{aq_plugindir}/frontends/qbanking
 %define qb_cfgmoddir %{qb_plugindir}/cfgmodules
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
