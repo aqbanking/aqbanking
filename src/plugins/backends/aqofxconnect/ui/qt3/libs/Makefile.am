@@ -1,22 +1,29 @@
 INCLUDES=-I$(top_builddir)/headers \
-  -I dialogs -I widgets -Iviews @all_includes@
+  -I dialogs @all_includes@
 
-SUBDIRS=widgets dialogs views
+SUBDIRS=dialogs
 
-noinst_LTLIBRARIES=libqt3wizard.la
+qbanking_plugindir=@qbanking_plugindir@/cfgmodules
 
-libqt3wizard_la_SOURCES=dummy.cpp
+qbanking_plugin_LTLIBRARIES=aqofxconnect.la
 
-libqt3wizard_la_LDFLAGS=@STRIPALL@
+aqofxconnect_la_SOURCES= cfgmoduleofx.cpp
 
-libqt3wizard_la_LIBADD=\
-  dialogs/libdialogs.la \
-  widgets/libwidgets.la \
-  views/libviews.la
+noinst_HEADERS=\
+ cfgmoduleofx_p.h
+
+aqofxconnect_la_LDFLAGS=@STRIPALL@ -module
+
+aqofxconnect_la_LIBADD=\
+  dialogs/libdialogs.la  \
+  $(aqofxconnect_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(qbanking_internal_libs) \
+  $(gwenhywfar_libs) $(qt3_libs)
 
 
-BUILT_SOURCES = $(nodist_libqt3wizard_la_SOURCES)
-CLEANFILES = $(nodist_libqt3wizard_la_SOURCES)
+BUILT_SOURCES = $(nodist_aqofxconnect_la_SOURCES)
+CLEANFILES = $(nodist_aqofxconnect_la_SOURCES)
 
 sources:
 	for d in $(SUBDIRS); do \

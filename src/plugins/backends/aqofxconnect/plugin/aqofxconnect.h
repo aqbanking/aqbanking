@@ -15,14 +15,38 @@
 #define AQOFXCONNECT_AQOFXCONNECT_H
 
 
-#ifdef __declspec
-# if BUILDING_AQOFXCONNECT_DLL
-#  define AQOFXCONNECT_API __declspec (dllexport)
-# else /* Not BUILDING_AQOFXCONNECT_DLL */
-#  define AQOFXCONNECT_API __declspec (dllimport)
-# endif /* Not BUILDING_AQOFXCONNECT_DLL */
+#include <aqbanking/system.h>
+
+#ifdef BUILDING_AQOFXCONNECT
+# /* building AqOFXCONNECT */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQOFXCONNECT_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define AQOFXCONNECT_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define AQOFXCONNECT_API __attribute__((visibility("default")))
+#   else
+#     define AQOFXCONNECT_API
+#   endif
+# endif
 #else
-# define AQOFXCONNECT_API
+# /* not building AqOFXCONNECT */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define AQOFXCONNECT_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define AQOFXCONNECT_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define AQOFXCONNECT_API
+# endif
 #endif
 
 

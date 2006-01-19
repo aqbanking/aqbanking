@@ -16,5 +16,13 @@
 #include <aqofxconnect/user.h>
 
 
+typedef struct AO_USER AO_USER;
+struct AO_USER {
+  GWEN_TYPE_UINT32 flags;
+};
+
+static void AO_User_FreeData(void *bp, void *p);
+
+
 
 #endif

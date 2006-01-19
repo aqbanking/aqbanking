@@ -39,49 +39,57 @@ struct AO_PROVIDER {
   AB_JOB_LIST2 *bankingJobs;
 };
 
-void AO_Provider_FreeData(void *bp, void *p);
+static void AO_Provider_FreeData(void *bp, void *p);
 
-int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
-int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
-int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
-int AO_Provider_ResetQueue(AB_PROVIDER *pro);
-
-
-int AO_Provider_EncodeJob(AB_PROVIDER *pro,
-                          AO_CONTEXT *ctx,
-                          char **pData);
-
-void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
-                                   const AB_USER *u,
-                                   GWEN_BUFFER *nbuf);
-
-int AO_Provider_SendMessage(AB_PROVIDER *pro,
-                            AB_USER *u,
-                            GWEN_NETLAYER *nl,
-                            const char *p,
-                            unsigned int plen);
-
-int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
-                               AB_USER *u,
-                               const char *p,
-                               unsigned int plen,
-                               GWEN_BUFFER **rbuf);
-
-int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
-                                  AB_IMEXPORTER_CONTEXT *ictx);
-
-int AO_Provider_DistributeContext(AB_PROVIDER *pro,
-                                  AB_JOB *refJob,
-                                  AB_IMEXPORTER_CONTEXT *ictx);
+static int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+static int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+static int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
+static int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
+static int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
+static int AO_Provider_ResetQueue(AB_PROVIDER *pro);
 
 
-int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq);
-int AO_Provider_ExecQueue(AB_PROVIDER *pro);
+#if 0
+static int AO_Provider_EncodeJob(AB_PROVIDER *pro,
+                                 AO_CONTEXT *ctx,
+                                 char **pData);
+#endif
 
-int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
-AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid);
+static void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
+                                          const AB_USER *u,
+                                          GWEN_BUFFER *nbuf);
+
+static int AO_Provider_SendMessage(AB_PROVIDER *pro,
+                                   AB_USER *u,
+                                   GWEN_NETLAYER *nl,
+                                   const char *p,
+                                   unsigned int plen);
+
+static int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
+                                      AB_USER *u,
+                                      const char *p,
+                                      unsigned int plen,
+                                      GWEN_BUFFER **rbuf);
+
+static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
+                                         AB_IMEXPORTER_CONTEXT *ictx);
+
+static int AO_Provider_DistributeContext(AB_PROVIDER *pro,
+                                         AB_JOB *refJob,
+                                         AB_IMEXPORTER_CONTEXT *ictx);
+
+
+static int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq);
+static int AO_Provider_ExecQueue(AB_PROVIDER *pro);
+
+static int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
+static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid);
+
+
+static int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                                  AB_PROVIDER_EXTEND_MODE em);
+static int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                                     AB_PROVIDER_EXTEND_MODE em);
 
 
 

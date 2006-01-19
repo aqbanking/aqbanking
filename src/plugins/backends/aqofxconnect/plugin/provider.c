@@ -91,6 +91,8 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   AB_Provider_SetAddJobFn(pro, AO_Provider_AddJob);
   AB_Provider_SetExecuteFn(pro, AO_Provider_Execute);
   AB_Provider_SetResetQueueFn(pro, AO_Provider_ResetQueue);
+  AB_Provider_SetExtendUserFn(pro, AO_Provider_ExtendUser);
+  AB_Provider_SetExtendAccountFn(pro, AO_Provider_ExtendAccount);
 
   return pro;
 }
@@ -540,7 +542,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 }
 
 
-
+#if 0
 int AO_Provider_EncodeJob(AB_PROVIDER *pro,
                           AO_CONTEXT *ctx,
                           char **pData) {
@@ -585,6 +587,7 @@ int AO_Provider_EncodeJob(AB_PROVIDER *pro,
   *pData=res;
   return 0;
 }
+#endif
 
 
 
@@ -614,7 +617,7 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
                                             AB_USER *u) {
   AO_PROVIDER *dp;
   GWEN_NETLAYER *nlBase;
-  GWEN_NETLAYER *nl;
+  GWEN_NETLAYER *nl=0;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
   const char *bankAddr;
@@ -624,6 +627,7 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
   GWEN_BUFFER *nbuf;
   GWEN_URL *url;
   GWEN_DB_NODE *dbHeader;
+  const char *s;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
@@ -731,7 +735,6 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
   switch(addrType) {
   case AO_User_ServerTypeHTTP:
-    nl=nlBase;
     break;
 
   case AO_User_ServerTypeHTTPS:
@@ -761,9 +764,12 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
   nl=GWEN_NetLayerHttp_new(nlBase);
   GWEN_NetLayer_free(nlBase);
   GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
-  GWEN_Url_free(url);
   dbHeader=GWEN_NetLayerHttp_GetOutHeader(nl);
   assert(dbHeader);
+  s=GWEN_Url_GetServer(url);
+  if (s)
+    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "Host", s);
   GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "Pragma", "no-cache");
   GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -777,12 +783,16 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
   GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "Connection",
                        "close");
+  GWEN_Url_free(url);
+  nlBase=nl;
 
   /* add packets protocol to the chain */
   nl=GWEN_NetLayerPackets_new(nlBase);
   GWEN_NetLayer_free(nlBase);
 
-  /* resturn connection */
+  GWEN_Net_AddConnectionToPool(nl);
+
+  /* return connection */
   return nl;
 }
 
@@ -880,8 +890,9 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
                          0,
                          AB_Banking_LogLevelInfo,
                          I18N("Connecting..."));
-  if (GWEN_NetLayer_Connect_Wait(nl, dp->connectTimeout)) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not connect to bank");
+  rv=GWEN_NetLayer_Connect_Wait(nl, dp->connectTimeout);
+  if (rv) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not connect to bank (%d)", rv);
     GWEN_NetLayer_free(nl);
     return AB_ERROR_NETWORK;
   }
@@ -975,29 +986,19 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
 
 
 int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-                                const char *country,
-                                const char *bankId,
-                                const char *userId) {
+                                AB_USER *u) {
   AO_PROVIDER *dp;
   AO_CONTEXT *ctx;
   char *msg;
   GWEN_BUFFER *rbuf;
   int rv;
-  AB_USER *u;
   GWEN_TYPE_UINT32 pid;
   AB_IMEXPORTER_CONTEXT *ictx;
 
+  assert(u);
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
-
-  u=AB_Banking_FindUser(AB_Provider_GetBanking(pro),
-                        AQOFXCONNECT_BACKENDNAME,
-                        country, bankId, userId, "*");
-  if (!u) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User \"%s\" not found", userId);
-    return AB_ERROR_INVALID;
-  }
 
   pid=AB_Banking_ProgressStart(AB_Provider_GetBanking(pro),
                                I18N("Requesting account list"),
@@ -1032,7 +1033,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
     return AB_ERROR_GENERIC;
   }
 
-  //fprintf(stderr, "Sending this: %s\n", msg);
+  fprintf(stderr, "Sending this: %s\n", msg);
   //AO_Context_free(ctx);
   //AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
   //return 0;
@@ -1380,6 +1381,22 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro) {
     return AB_ERROR_GENERIC;
   }
 
+  return 0;
+}
+
+
+
+int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                           AB_PROVIDER_EXTEND_MODE em) {
+  AO_User_Extend(u, pro, em);
+  return 0;
+}
+
+
+
+int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                              AB_PROVIDER_EXTEND_MODE em){
+  AO_Account_Extend(a, pro, em);
   return 0;
 }
 

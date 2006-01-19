@@ -28,12 +28,10 @@ extern "C" {
 typedef struct AO_PROVIDER AO_PROVIDER;
 
 
-AB_PROVIDER *AO_Provider_new(AB_BANKING *ab);
+AQOFXCONNECT_API AB_PROVIDER *AO_Provider_new(AB_BANKING *ab);
 
-int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-                                const char *country,
-                                const char *bankId,
-                                const char *userId);
+AQOFXCONNECT_API int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
+                                                 AB_USER *u);
 
 #ifdef __cplusplus
 }

@@ -10,10 +10,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_ACCOUNT_P_H
-#define AH_ACCOUNT_P_H
+#ifndef AO_ACCOUNT_P_H
+#define AO_ACCOUNT_P_H
 
-#include <aqofxconnect/account.h>
+#include "account.h"
 
 
 #endif

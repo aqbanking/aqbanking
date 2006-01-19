@@ -77,7 +77,7 @@ void QBCfgTab::addPage(QBCfgTabPage *p) {
 QBCfgTabPage *QBCfgTab::getPage(int idx) {
   QWidget *w;
 
-  w=tabWidget->page(idx+1);
+  w=tabWidget->page(idx);
   if (w)
     return dynamic_cast<QBCfgTabPage*>(w);
 

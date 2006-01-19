@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -627,11 +627,10 @@ AC_SUBST(aqbanking_frontends)
 AC_ARG_WITH(backends, 
   [  --with-backends=list      space separated list of backends (default:all)],
   [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte"]
+  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
 )
 AC_SUBST(aqbanking_backends)
 
-# later add to default backends: aqgeldkarte aqofxconnect
 
 
 ###-------------------------------------------------------------------------
@@ -720,7 +719,7 @@ if test "$enable_libofx" = "yes"; then
     if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
        AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
     fi
-    AC_CHECK_MEMBERS([struct OfxTransactionInfo.fees_valid], 
+    AC_CHECK_MEMBERS([struct OfxTransactionData.fees_valid], 
                      [HAVE_OFX_0_8_PLUS="yes"], [],
                      [#include <libofx/libofx.h>])
     if test "$HAVE_OFX_0_8_PLUS" = "yes"; then
@@ -1444,7 +1443,7 @@ case "$OS_TYPE" in
         qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
-        qbanking_plugindir="\${libdir}/qbanking/plugins/${QBANKING_SO_EFFECTIVE}"
+        qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
@@ -1453,7 +1452,7 @@ case "$OS_TYPE" in
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
 	all_includes="$all_includes -mms-bitfields"
-        qbanking_plugindir="\${libdir}/qbanking/plugins/${QBANKING_SO_EFFECTIVE}"
+        qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
     	;;
 esac
 
@@ -1693,12 +1692,8 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
   src/plugins/backends/aqofxconnect/ui/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/qt3_wizard/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/qt3_wizard/qt_wizard.xml
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/libs/views/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/libs/widgets/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile

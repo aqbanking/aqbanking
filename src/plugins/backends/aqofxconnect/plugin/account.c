@@ -16,7 +16,6 @@
 
 #include "account_p.h"
 
-
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 

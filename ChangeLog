@@ -1,4 +1,13 @@
 
+2006/01/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- reenabled OFX DirectConnect
+- created tab pages for OFX DirectConnect
+- changed QBanking's plugin path to be a sub-path of aqbanking's lib dir
+  (now everything is installed below $libdir/aqbanking)
+- fixed a minor bug in QBanking's QBCfgTab (false index number for tab pages)
+
+
 2006/01/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed unneeded buttons from backend list page of configuration

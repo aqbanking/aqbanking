@@ -26,6 +26,10 @@
 
 
 
+GWEN_INHERIT(AB_USER, AO_USER);
+
+
+
 AO_USER_SERVERTYPE AO_User_ServerType_fromString(const char *s) {
   assert(s);
   if (strcasecmp(s, "http")==0)
@@ -47,7 +51,87 @@ const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t) {
 
 
 
-void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro) {
+GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+  int i;
+  GWEN_TYPE_UINT32 f=0;
+
+  for (i=0; ; i++) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, name, i, 0);
+    if (!s)
+      break;
+    if (strcasecmp(s, "account_list")==0)
+      f|=AO_USER_FLAGS_ACCOUNT_LIST;
+    else if (strcasecmp(s, "statements")==0)
+      f|=AO_USER_FLAGS_STATEMENTS;
+    else if (strcasecmp(s, "investment")==0)
+      f|=AO_USER_FLAGS_INVESTMENT;
+    else if (strcasecmp(s, "billpay")==0)
+      f|=AO_USER_FLAGS_BILLPAY;
+    else {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+                "Unknown user flag \"%s\"", s);
+    }
+  }
+  return f;
+}
+
+
+
+void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
+                        GWEN_TYPE_UINT32 f) {
+  if (f & AO_USER_FLAGS_ACCOUNT_LIST)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "account_list");
+  if (f & AO_USER_FLAGS_STATEMENTS)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "statements");
+  if (f & AO_USER_FLAGS_INVESTMENT)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "investment");
+  if (f & AO_USER_FLAGS_BILLPAY)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "billpay");
+}
+
+
+
+
+void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
+                    AB_PROVIDER_EXTEND_MODE em) {
+  GWEN_DB_NODE *db;
+
+  db=AB_User_GetProviderData(u);
+  assert(db);
+
+  if (em==AB_ProviderExtendMode_Create ||
+      em==AB_ProviderExtendMode_Extend) {
+    AO_USER *ue;
+
+    GWEN_NEW_OBJECT(AO_USER, ue);
+    GWEN_INHERIT_SETDATA(AB_USER, AO_USER, u, ue, AO_User_FreeData);
+    ue->flags=AO_User_Flags_fromDb(db, "flags");
+  }
+  else {
+    AO_USER *ue;
+
+    ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+    assert(ue);
+
+    if (em==AB_ProviderExtendMode_Save) {
+      AO_User_Flags_toDb(db, "flags", ue->flags);
+    }
+  }
+}
+
+
+
+void AO_User_FreeData(void *bp, void *p) {
+  AO_USER *ue;
+
+  ue=(AO_USER*)p;
+  GWEN_FREE_OBJECT(ue);
 }
 
 
@@ -206,7 +290,7 @@ int AO_User_GetHttpVMajor(const AB_USER *u) {
   assert(u);
   db=AB_User_GetProviderData(u);
   assert(db);
-  return GWEN_DB_GetIntValue(db, "httpVMajor", 0, 0);
+  return GWEN_DB_GetIntValue(db, "httpVMajor", 0, 1);
 }
 
 
@@ -241,6 +325,53 @@ void AO_User_SetHttpVMinor(AB_USER *u, int i) {
   assert(db);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMinor", i);
 }
+
+
+
+GWEN_TYPE_UINT32 AO_User_GetFlags(const AB_USER *u) {
+  AO_USER *ue;
+
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->flags;
+}
+
+
+
+void AO_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+  AO_USER *ue;
+
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->flags=f;
+}
+
+
+
+void AO_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+  AO_USER *ue;
+
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->flags|=f;
+}
+
+
+
+void AO_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+  AO_USER *ue;
+
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->flags&=~f;
+}
+
+
+
 
 
 

@@ -331,7 +331,10 @@ bool UserWizard::exec() {
   case SelectMode::ModeImportCard:
     return _handleModeImportCard();
   case SelectMode::ModeInitCard:
-    QMessageBox::information(_parent, "Not yet implemented", "Sorry, this mode is not yet implemented", QMessageBox::Abort);
+      QMessageBox::information(_parent,
+                               "Not yet implemented",
+                               "Sorry, this mode is not yet implemented",
+                               QMessageBox::Abort);
     break;
   case SelectMode::ModeImportFile:
     return _handleModeImportFile();

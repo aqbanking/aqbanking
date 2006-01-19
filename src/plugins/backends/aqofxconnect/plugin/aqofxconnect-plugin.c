@@ -6,7 +6,6 @@
 #undef BUILDING_DLL
 
 #include "provider.h"
-#include "provider_p.h"
 #include "aqofxconnect_l.h"
 
 

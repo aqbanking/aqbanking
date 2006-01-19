@@ -20,7 +20,6 @@ noinst_HEADERS=\
  account_p.h \
  aqofxconnect_l.h \
  provider_p.h \
- bank_p.h \
  context_l.h \
  context_p.h \
  user_p.h \
@@ -33,13 +32,11 @@ iheader_HEADERS=\
  account.h \
  aqofxconnect.h \
  provider.h \
- bank.h \
  user.h
 
 libaqofxconnect_la_SOURCES= \
  account.c \
  provider.c \
- bank.c \
  context.c \
  queues.c \
  user.c

@@ -10,39 +10,30 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef QT_OFXSETTINGS_H
-#define QT_OFXSETTINGS_H
+
+#ifndef AQOFX_CFGMODULEOFX_H
+#define AQOFX_CFGMODULEOFX_H
+
+#include <qbanking/qbcfgmodule.h>
+
+#define CFGMODULEOFX_NAME "aqofxconnect"
 
 
-#include "settings.ui.h"
-
-
-class QBanking;
-class AccountView;
-class UserView;
-
-
-class OfxSettings: public OfxSettingsUi {
-  Q_OBJECT
+class CfgModuleOfx : public QBCfgModule {
 private:
-  QBanking *_app;
-  AccountView *_accountView;
-  UserView *_userView;
 public:
-  OfxSettings(QBanking *app,
-              QWidget * parent=0,
-              const char * name=0,
-              bool modal=FALSE,
-              WFlags f=0);
-  ~OfxSettings();
+  CfgModuleOfx(QBanking *qb, const QString &name);
+  virtual ~CfgModuleOfx();
 
-  bool init();
-  bool fini();
-
-  void update();
+  virtual QBCfgTabPageUser *getEditUserPage(AB_USER *u, QWidget *parent=0);
+  virtual QBCfgTabPageAccount *getEditAccountPage(AB_ACCOUNT *a,
+                                                  QWidget *parent=0);
 
 };
 
 
-#endif  // QT_OFXSETTINGS_H
+
+#endif // AQOFX_CFGMODULEOFX_H
+
+
 
