@@ -1447,7 +1447,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
-        qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/libqbanking.la"
+        qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
         qbanking_libs="-L\${libdir} -lqbanking-${QBANKING_SO_EFFECTIVE}"
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
