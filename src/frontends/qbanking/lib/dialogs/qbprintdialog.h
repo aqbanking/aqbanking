@@ -21,7 +21,7 @@
 class QPrinter;
 
 
-class QBPrintDialog : public QBPrintDialogUi {
+class QBANKING_API QBPrintDialog : public QBPrintDialogUi {
   Q_OBJECT
 public:
   QBPrintDialog(QBanking *app,

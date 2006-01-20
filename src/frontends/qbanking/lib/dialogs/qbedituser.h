@@ -19,7 +19,7 @@
 class QBanking;
 
 
-class QBEditUser: public QBCfgTab {
+class QBANKING_API QBEditUser: public QBCfgTab {
 private:
   AB_USER *_user;
 

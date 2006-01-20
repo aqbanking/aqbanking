@@ -238,7 +238,7 @@ public:
    * Watch out with the correct encodings! String passed into and
    * out of aqbanking are expected in UTF-8, but NOT in Latin-1 or
    * similar! */
-  static std::string QStringToUtf8String(const QString &qs);
+  static QBANKING_API std::string QStringToUtf8String(const QString &qs);
 
   /** Convenience function for extracting the GUI part of the
    * HTML/cleartext-combi-strings from aqbanking. 
@@ -248,7 +248,7 @@ public:
    * section will be returned. If the given string does not
    * contain a section like this, then the string will be returned
    * unchanged. */
-  static std::string guiString(const char *s);
+  static QBANKING_API std::string guiString(const char *s);
 
   /** Convenience function that returns true if the given string
    * consists of pure 7-bit ASCII characters, and false
@@ -256,7 +256,7 @@ public:
    *
    * In particular, if the given string contains Umlauts, accents,
    * or similar, then this will return false. */
-  static bool isPure7BitAscii(const QString &s);
+  static QBANKING_API bool isPure7BitAscii(const QString &s);
 
 };
 

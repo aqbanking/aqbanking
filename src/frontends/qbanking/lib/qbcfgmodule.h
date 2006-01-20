@@ -23,6 +23,8 @@
 #define QBCFGMODULE_FLAGS_CAN_CREATE_USER    0x00000001
 #define QBCFGMODULE_FLAGS_CAN_CREATE_ACCOUNT 0x00000002
 
+#include <qbanking/qbanking.h>
+
 
 class QBCfgTabPageUser;
 class QBCfgTabPageAccount;
@@ -36,7 +38,7 @@ class QBCfgModule;
 typedef QBCfgModule* (*QBCFGMODULE_FACTORY_FN)(QBanking *qb);
 
 
-class QBCfgModule {
+class QBANKING_API QBCfgModule {
   friend class QBanking;
 private:
   QBanking *_qbanking;

@@ -14,7 +14,8 @@
 #define QBANKING_PROCWATCHER_H
 
 
-#include "qbprocesswatcher.ui.h"
+#include <qbanking/qbprocesswatcher.ui.h>
+#include <qbanking/qbanking.h>
 
 #include <qstring.h>
 #include <time.h>
@@ -22,7 +23,7 @@
 class QProcess;
 
 
-class QBProcessWatcher : public QBProcessWatcherUi{
+class QBANKING_API QBProcessWatcher : public QBProcessWatcherUi{
   Q_OBJECT
 public:
   QBProcessWatcher(QProcess* process,

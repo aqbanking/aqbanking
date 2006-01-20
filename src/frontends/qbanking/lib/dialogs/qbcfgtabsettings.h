@@ -24,7 +24,7 @@
 class QBCfgTab;
 
 
-class QBCfgTabSettings: public QBCfgTab {
+class QBANKING_API QBCfgTabSettings: public QBCfgTab {
   Q_OBJECT
 private:
 

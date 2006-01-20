@@ -22,7 +22,7 @@ class QBanking;
 #include <string>
 
 
-class QBSelectBackend: public QBSelectBackendUi {
+class QBANKING_API QBSelectBackend: public QBSelectBackendUi {
   Q_OBJECT
 
 private:
@@ -42,9 +42,10 @@ public:
 
   const QString &getSelectedBackend() const;
 
-  static QString selectBackend(QBanking *kb,
-			       const QString &backend=QString::null,
-			       QWidget* parent = 0);
+  static QBANKING_API
+      QString selectBackend(QBanking *kb,
+                            const QString &backend=QString::null,
+                            QWidget* parent = 0);
 
 public slots:
   void slotActivated(int idx);

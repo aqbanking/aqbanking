@@ -21,7 +21,7 @@
 
 
 
-class QBCfgTabPageAccount: public QBCfgTabPage {
+class QBANKING_API QBCfgTabPageAccount: public QBCfgTabPage {
 private:
   AB_ACCOUNT *_account;
 

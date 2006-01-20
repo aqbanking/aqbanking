@@ -17,6 +17,8 @@
 #include <qlistview.h>
 #include <aqbanking/job.h>
 
+#include <qbanking/qbanking.h>
+
 #include <list>
 
 
@@ -24,7 +26,7 @@ class QBJobListView;
 class QBJobListViewItem;
 
 
-class QBJobListViewItem: public QListViewItem {
+class QBANKING_API QBJobListViewItem: public QListViewItem {
 private:
   AB_JOB *_job;
 

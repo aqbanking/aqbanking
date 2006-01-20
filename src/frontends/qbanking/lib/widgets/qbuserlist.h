@@ -16,6 +16,7 @@
 
 #include <qlistview.h>
 #include <aqbanking/user.h>
+#include <qbanking/qbanking.h>
 
 #include <list>
 
@@ -23,7 +24,7 @@ class QBUserListView;
 class QBUserListViewItem;
 
 
-class QBUserListViewItem: public QListViewItem {
+class QBANKING_API QBUserListViewItem: public QListViewItem {
 private:
   AB_USER *_user;
 
@@ -43,7 +44,7 @@ public:
 
 
 
-class QBUserListView: public QListView {
+class QBANKING_API QBUserListView: public QListView {
 private:
 public:
   QBUserListView(QWidget *parent=0, const char *name=0);

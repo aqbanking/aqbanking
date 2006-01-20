@@ -17,13 +17,15 @@
 #include <qlistview.h>
 #include <aqbanking/account.h>
 
+#include <qbanking/qbanking.h>
+
 #include <list>
 
 class QBAccountListView;
 class QBAccountListViewItem;
 
 
-class QBAccountListViewItem: public QListViewItem {
+class QBANKING_API QBAccountListViewItem: public QListViewItem {
 private:
   AB_ACCOUNT *_account;
 
@@ -45,7 +47,7 @@ public:
 
 
 
-class QBAccountListView: public QListView {
+class QBANKING_API QBAccountListView: public QListView {
 private:
 public:
   QBAccountListView(QWidget *parent=0, const char *name=0);

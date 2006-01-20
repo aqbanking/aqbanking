@@ -18,12 +18,13 @@ class QBanking;
 
 #include <qstringlist.h>
 
-#include "qbselectfromlist.ui.h"
+#include <qbanking/qbselectfromlist.ui.h>
+#include <qbanking/qbanking.h>
 
 
 
 
-class QBSelectFromList : public QBSelectFromListUi {
+class QBANKING_API QBSelectFromList : public QBSelectFromListUi {
   Q_OBJECT
 public:
   QBSelectFromList(QBanking *kb,

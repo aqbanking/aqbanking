@@ -13,10 +13,13 @@
 #ifndef QBANKING_FLAGSTAFF_H
 #define QBANKING_FLAGSTAFF_H
 
+class QBFlagStaff;
+
+#include <qbanking/qbanking.h>
 #include <qobject.h>
 
 
-class QBFlagStaff: public QObject {
+class QBANKING_API QBFlagStaff: public QObject {
   Q_OBJECT
 public:
   QBFlagStaff();

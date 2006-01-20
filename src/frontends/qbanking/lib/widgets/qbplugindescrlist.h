@@ -15,6 +15,9 @@
 
 
 #include <qlistview.h>
+
+#include <qbanking/qbanking.h>
+
 #include <gwenhywfar/plugindescr.h>
 
 #include <list>
@@ -23,7 +26,7 @@ class QBPluginDescrListView;
 class QBPluginDescrListViewItem;
 
 
-class QBPluginDescrListViewItem: public QListViewItem {
+class QBANKING_API QBPluginDescrListViewItem: public QListViewItem {
 private:
   GWEN_PLUGIN_DESCRIPTION *_descr;
 

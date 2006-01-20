@@ -13,11 +13,12 @@
 #ifndef QBANKMANAGER_PICKSTARTDATE_H
 #define QBANKMANAGER_PICKSTARTDATE_H
 
-#include "qbpickstartdate.ui.h"
+#include <qbanking/qbpickstartdate.ui.h>
+#include <qbanking/qbanking.h>
 #include <qdatetime.h>
 
 
-class QBPickStartDate: public QBPickStartDateUi {
+class QBANKING_API QBPickStartDate: public QBPickStartDateUi {
   Q_OBJECT
 private:
   const QDate &_firstPossible;

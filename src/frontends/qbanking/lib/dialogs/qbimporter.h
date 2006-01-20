@@ -29,7 +29,7 @@ class QBImporter;
 #include <gwenhywfar/logger.h>
 
 
-class QBImporter: public QBImporterUi {
+class QBANKING_API QBImporter: public QBImporterUi {
   Q_OBJECT
 
 private:
@@ -49,11 +49,11 @@ public:
   bool init();
   bool fini();
 
-  static bool import(QBanking *qb,
-                     GWEN_TYPE_UINT32 flags=
-                     QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES |
-                     QBANKING_IMPORTER_FLAGS_FUZZY,
-                     QWidget* parent=0);
+  static QBANKING_API bool import(QBanking *qb,
+                                  GWEN_TYPE_UINT32 flags=
+                                  QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES |
+                                  QBANKING_IMPORTER_FLAGS_FUZZY,
+                                  QWidget* parent=0);
 
 public slots:
   void back();

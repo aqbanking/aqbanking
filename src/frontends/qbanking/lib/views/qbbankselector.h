@@ -13,13 +13,14 @@
 #ifndef QBANKING_BANKSELECTOR_H
 #define QBANKING_BANKSELECTOR_H
 
-#include "qbbankselector.ui.h"
+#include <qbanking/qbbankselector.ui.h>
+#include <qbanking/qbanking.h>
 
 
 class QBanking;
 
 
-class QBBankSelector : protected QBBankSelectorUi {
+class QBANKING_API QBBankSelector : protected QBBankSelectorUi {
   Q_OBJECT
 
 private:

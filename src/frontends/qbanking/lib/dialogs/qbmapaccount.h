@@ -21,7 +21,7 @@
 class QBanking;
 
 
-class QBMapAccount: public QBMapAccountUi {
+class QBANKING_API QBMapAccount: public QBMapAccountUi {
   Q_OBJECT
 public:
   QBMapAccount(QBanking *kb,

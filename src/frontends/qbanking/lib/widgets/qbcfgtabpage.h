@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
+#include <qbanking/qbanking.h>
 
 #include <qwidget.h>
 #include <qstring.h>
@@ -28,7 +29,7 @@ class QComboBox;
 class QBCfgTab;
 
 
-class QBCfgTabPage: public QWidget {
+class QBANKING_API QBCfgTabPage: public QWidget {
   friend class QBCfgTab;
 private:
   QBanking *_qbanking;

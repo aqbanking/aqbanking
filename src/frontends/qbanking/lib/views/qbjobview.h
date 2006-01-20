@@ -27,7 +27,7 @@ class QBJobView;
 #include "qbanking.h"
 
 
-class QBJobView: public QBJobViewUi {
+class QBANKING_API QBJobView: public QBJobViewUi {
   Q_OBJECT
 public:
   QBJobView(QBanking *kb,

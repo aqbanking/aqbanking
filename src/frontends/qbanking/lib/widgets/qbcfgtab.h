@@ -17,6 +17,8 @@
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
 
+#include <qbanking/qbanking.h>
+
 #include "qbcfgtab.ui.h"
 #include <qstring.h>
 
@@ -25,7 +27,7 @@ class QBanking;
 class QBCfgTabPage;
 
 
-class QBCfgTab: protected QBCfgTabUi {
+class QBANKING_API QBCfgTab: protected QBCfgTabUi {
   Q_OBJECT
 private:
   QBanking *_qbanking;

@@ -23,7 +23,7 @@ class QBanking;
 #include <string>
 
 
-class QBSelectBank: public QBSelectBankUi {
+class QBANKING_API QBSelectBank: public QBSelectBankUi {
   Q_OBJECT
 
 private:
@@ -47,14 +47,15 @@ public:
 
   void accept();
 
-  QBANKING_API static AB_BANKINFO *selectBank(QBanking *kb,
-                                 QWidget* parent=0,
-                                 const QString &title=QString::null,
-                                 const QString &country=QString("de"),
-                                 const QString &bankCode=QString::null,
-                                 const QString &swiftCode=QString::null,
-                                 const QString &bankName=QString::null,
-                                 const QString &location=QString::null);
+  QBANKING_API static
+      AB_BANKINFO *selectBank(QBanking *kb,
+                              QWidget* parent=0,
+                              const QString &title=QString::null,
+                              const QString &country=QString("de"),
+                              const QString &bankCode=QString::null,
+                              const QString &swiftCode=QString::null,
+                              const QString &bankName=QString::null,
+                              const QString &location=QString::null);
 
 
 public slots:
