@@ -39,7 +39,7 @@ public:
                QWidget* parent = 0,
                const char* name = 0,
                bool modal = FALSE,
-               Qt::WFlags fl = 0);
+               WFlags fl = 0);
 
   ~QBSelectBank();
 
@@ -61,7 +61,7 @@ public slots:
   void slotUpdate();
   void slotChanged(const QString &qs);
   void slotSelectionChanged();
-  void slotDoubleClicked(Q3ListViewItem *lv,
+  void slotDoubleClicked(QListViewItem *lv,
                          const QPoint &,
                          int);
   void slotOnlineToggled(bool on);

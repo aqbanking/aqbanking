@@ -26,9 +26,7 @@
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qstring.h>
-#include <qpointer.h>
-//Added by qt3to4:
-#include <QTranslator>
+#include <qguardedptr.h>
 
 #include <list>
 
@@ -51,7 +49,7 @@ class QBCfgModule;
 class QBANKING_API QBanking: public Banking {
   friend class QBanking_Linker;
 private:
-  QPointer<QWidget> _parentWidget;
+  QGuardedPtr<QWidget> _parentWidget;
   GWEN_TYPE_UINT32 _lastWidgetId;
   AB_BANKING_LOGLEVEL _logLevel;
   std::list<QBProgress*> _progressWidgets;

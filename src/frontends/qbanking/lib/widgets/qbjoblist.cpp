@@ -25,7 +25,7 @@
 
 QBJobListViewItem::QBJobListViewItem(QBJobListView *parent,
                                  AB_JOB *j)
-:Q3ListViewItem(parent)
+:QListViewItem(parent)
 ,_job(j){
   assert(j);
   _populate();
@@ -34,7 +34,7 @@ QBJobListViewItem::QBJobListViewItem(QBJobListView *parent,
 
 
 QBJobListViewItem::QBJobListViewItem(const QBJobListViewItem &item)
-:Q3ListViewItem(item)
+:QListViewItem(item)
 ,_job(0){
 
   if (item._job) {
@@ -44,9 +44,9 @@ QBJobListViewItem::QBJobListViewItem(const QBJobListViewItem &item)
 
 
 QBJobListViewItem::QBJobListViewItem(QBJobListView *parent,
-                                 Q3ListViewItem *after,
+                                 QListViewItem *after,
                                  AB_JOB *j)
-:Q3ListViewItem(parent, after)
+:QListViewItem(parent, after)
 ,_job(j){
   assert(j);
   _populate();
@@ -200,7 +200,7 @@ void QBJobListViewItem::_populate() {
 
 
 QBJobListView::QBJobListView(QWidget *parent, const char *name)
-:Q3ListView(parent, name){
+:QListView(parent, name){
   setAllColumnsShowFocus(true);
   setShowSortIndicator(true);
   addColumn(QWidget::tr("Job Id"),-1);
@@ -257,7 +257,7 @@ std::list<AB_JOB*> QBJobListView::getSelectedJobs(){
   QBJobListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  Q3ListViewItemIterator it(this);
+  QListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {

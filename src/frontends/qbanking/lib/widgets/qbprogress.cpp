@@ -16,15 +16,13 @@
 
 
 #include <qlabel.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <qapplication.h>
 #include <qpushbutton.h>
 #include <qdatetime.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 
 #include "qbprogress.h"
-//Added by qt3to4:
-#include <QCloseEvent>
 
 #include <gwenhywfar/debug.h>
 
@@ -38,7 +36,7 @@ QBProgress::QBProgress(GWEN_TYPE_UINT32 id,
                        const QString& title,
                        const QString& text,
                        const QString& units,
-                       QWidget* parent, const char* name, Qt::WFlags fl)
+                       QWidget* parent, const char* name, WFlags fl)
 :QBProgressUI(parent, name, fl)
 ,_id(id)
 ,_progressType(pt)

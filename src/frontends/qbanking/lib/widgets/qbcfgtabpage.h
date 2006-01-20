@@ -19,8 +19,6 @@
 
 #include <qwidget.h>
 #include <qstring.h>
-//Added by qt3to4:
-#include <QVBoxLayout>
 
 
 
@@ -45,7 +43,7 @@ private:
 public:
   QBCfgTabPage(QBanking *qb,
                const QString &title,
-	       QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
+	       QWidget *parent=0, const char *name=0, WFlags f=0);
   virtual ~QBCfgTabPage();
 
   void addWidget(QWidget *w);

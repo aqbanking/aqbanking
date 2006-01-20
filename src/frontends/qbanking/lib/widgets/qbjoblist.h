@@ -14,7 +14,7 @@
 #define QBANKING_JOBLIST_H
 
 
-#include <q3listview.h>
+#include <qlistview.h>
 #include <aqbanking/job.h>
 
 #include <list>
@@ -24,7 +24,7 @@ class QBJobListView;
 class QBJobListViewItem;
 
 
-class QBJobListViewItem: public Q3ListViewItem {
+class QBJobListViewItem: public QListViewItem {
 private:
   AB_JOB *_job;
 
@@ -33,7 +33,7 @@ private:
 public:
   QBJobListViewItem(QBJobListView *parent, AB_JOB *j);
   QBJobListViewItem(QBJobListView *parent,
-                    Q3ListViewItem *after,
+                    QListViewItem *after,
                     AB_JOB *j);
   QBJobListViewItem(const QBJobListViewItem &item);
 
@@ -44,7 +44,7 @@ public:
 
 
 
-class QBJobListView: public Q3ListView {
+class QBJobListView: public QListView {
 private:
 public:
   QBJobListView(QWidget *parent=0, const char *name=0);

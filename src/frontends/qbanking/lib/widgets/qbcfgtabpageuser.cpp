@@ -26,7 +26,7 @@ QBCfgTabPageUser::QBCfgTabPageUser(QBanking *qb,
                                    AB_USER *u,
                                    QWidget *parent,
                                    const char *name,
-                                   Qt::WFlags f)
+                                   WFlags f)
 :QBCfgTabPage(qb, title, parent, name, f)
 ,_user(u) {
   assert(qb);

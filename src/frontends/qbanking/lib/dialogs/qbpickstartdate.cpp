@@ -16,7 +16,7 @@
 
 
 #include "qbpickstartdate.h"
-#include <q3datetimeedit.h>
+#include <qdatetimeedit.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
 
@@ -28,7 +28,7 @@ QBPickStartDate::QBPickStartDate(const QDate &firstPossible,
                                  const QDate &lastUpdate,
                                  int defaultChoice,
                                  QWidget* parent, const char* name,
-                                 bool modal, Qt::WFlags fl)
+                                 bool modal, WFlags fl)
 :QBPickStartDateUi(parent, name, modal, fl)
 ,_firstPossible(firstPossible)
 ,_lastUpdate(lastUpdate){

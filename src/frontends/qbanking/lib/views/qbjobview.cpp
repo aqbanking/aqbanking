@@ -17,15 +17,12 @@
 
 #include "qbjobview.h"
 #include "qbanking.h"
-//Added by qt3to4:
-#include <QHBoxLayout>
-#include <QBoxLayout>
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
 
 #include <qevent.h>
 #include <qpushbutton.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 
@@ -39,7 +36,7 @@
 QBJobView::QBJobView(QBanking *kb,
                  QWidget* parent,
                  const char* name,
-                 Qt::WFlags fl)
+                 WFlags fl)
 :QBJobViewUi(parent, name, fl), _app(kb) {
   assert(kb);
 
@@ -79,7 +76,7 @@ bool QBJobView::init(){
 
     /* found settings */
     for (i=0; i<_jobList->columns(); i++) {
-      _jobList->setColumnWidthMode(i, Q3ListView::Manual);
+      _jobList->setColumnWidthMode(i, QListView::Manual);
       j=GWEN_DB_GetIntValue(db, "columns", i, -1);
       if (j!=-1)
         _jobList->setColumnWidth(i, j);

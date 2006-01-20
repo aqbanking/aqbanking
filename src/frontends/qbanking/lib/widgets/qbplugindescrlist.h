@@ -14,7 +14,7 @@
 #define QBANKING_PLUGINDESCRLIST_H
 
 
-#include <q3listview.h>
+#include <qlistview.h>
 #include <gwenhywfar/plugindescr.h>
 
 #include <list>
@@ -23,7 +23,7 @@ class QBPluginDescrListView;
 class QBPluginDescrListViewItem;
 
 
-class QBPluginDescrListViewItem: public Q3ListViewItem {
+class QBPluginDescrListViewItem: public QListViewItem {
 private:
   GWEN_PLUGIN_DESCRIPTION *_descr;
 
@@ -33,7 +33,7 @@ public:
   QBPluginDescrListViewItem(QBPluginDescrListView *parent,
                           GWEN_PLUGIN_DESCRIPTION *pd);
   QBPluginDescrListViewItem(QBPluginDescrListView *parent,
-                          Q3ListViewItem *after,
+                          QListViewItem *after,
                           GWEN_PLUGIN_DESCRIPTION *pd);
   QBPluginDescrListViewItem(const QBPluginDescrListViewItem &item);
 
@@ -44,7 +44,7 @@ public:
 
 
 
-class QBPluginDescrListView: public Q3ListView {
+class QBPluginDescrListView: public QListView {
 private:
 public:
   QBPluginDescrListView(QWidget *parent=0, const char *name=0);

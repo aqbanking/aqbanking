@@ -18,18 +18,12 @@
 #include <qlabel.h>
 #include <qapplication.h>
 #include <qpushbutton.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 #include <qlineedit.h>
-#include <q3simplerichtext.h>
+#include <qsimplerichtext.h>
 #include <qvalidator.h>
 #include <qlayout.h>
 #include <qtimer.h>
-//Added by qt3to4:
-#include <QGridLayout>
-#include <Q3Frame>
-#include <QHBoxLayout>
-#include <QBoxLayout>
-#include <QVBoxLayout>
 
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
@@ -88,13 +82,13 @@ QBInputBox::QBInputBox(const QString& title,
                        QWidget* parent,
                        const char* name,
                        bool modal,
-                       Qt::WFlags fl)
+                       WFlags fl)
 :QDialog(parent, name, modal, fl)
 ,_flags(flags)
 ,_edit1(0)
 ,_edit2(0)
 {
-  Q3SimpleRichText rt(text, font());
+  QSimpleRichText rt(text, font());
   int width;
   int height;
   int max_textwidth=400;
@@ -111,10 +105,10 @@ QBInputBox::QBInputBox(const QString& title,
   QBoxLayout *layout = new QVBoxLayout( this, 10, 6, "layout" );
 
   if (width > max_textwidth || height > max_textheight) {
-    Q3TextEdit *t;
+    QTextEdit *t;
 
     /* use QTextBrowser instead of QTextLabel */
-    t=new Q3TextEdit(this, "TextBox");
+    t=new QTextEdit(this, "TextBox");
     t->setText(text);
     t->setReadOnly(true);
     t->setPaper(this->backgroundBrush());
@@ -167,9 +161,9 @@ QBInputBox::QBInputBox(const QString& title,
   }
 
   // Separator between input boxes and buttons
-  Q3Frame* line1 = new Q3Frame( this, "line1" );
-  line1->setFrameShape( Q3Frame::HLine );
-  line1->setFrameShadow( Q3Frame::Sunken );
+  QFrame* line1 = new QFrame( this, "line1" );
+  line1->setFrameShape( QFrame::HLine );
+  line1->setFrameShadow( QFrame::Sunken );
   layout->addWidget( line1 );
 
   // Buttons

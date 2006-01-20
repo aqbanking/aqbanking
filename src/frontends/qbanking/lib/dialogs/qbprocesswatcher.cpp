@@ -19,7 +19,7 @@
 
 #include "qbprocesswatcher.h"
 
-#include <q3process.h>
+#include <qprocess.h>
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -27,12 +27,12 @@
 
 
 
-QBProcessWatcher::QBProcessWatcher(Q3Process* process,
+QBProcessWatcher::QBProcessWatcher(QProcess* process,
                                    const QString &txt,
                                    QWidget* parent,
                                    const char* name,
                                    bool modal,
-                                   Qt::WFlags fl)
+                                   WFlags fl)
 :QBProcessWatcherUi(parent, name, modal, fl)
 ,_process(process)
 ,_result(-1)

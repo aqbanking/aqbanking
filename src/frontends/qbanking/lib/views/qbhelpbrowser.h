@@ -11,19 +11,17 @@
 #ifndef HELPWINDOW_H
 #define HELPWINDOW_H
 
-#include <q3mainwindow.h>
-#include <q3textbrowser.h>
+#include <qmainwindow.h>
+#include <qtextbrowser.h>
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qdir.h>
 
 #include <qbanking/qbhelpbrowser.ui.h>
-//Added by qt3to4:
-#include <Q3PopupMenu>
 
 
 class QComboBox;
-class Q3PopupMenu;
+class QPopupMenu;
 
 class QBHelpBrowser : public QBHelpBrowserUi {
   Q_OBJECT
@@ -49,7 +47,7 @@ private:
   int _backwardId, _forwardId;
   QStringList _history, _bookmarks;
   QMap<int, QString> _mHistory, _mBookmarks;
-  Q3PopupMenu *_hist, *_bookm;
+  QPopupMenu *_hist, *_bookm;
 
 };
 

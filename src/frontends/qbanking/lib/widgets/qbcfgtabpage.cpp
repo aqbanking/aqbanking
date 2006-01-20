@@ -24,15 +24,13 @@
 #  include <QComboBox>
 #endif
 #include <qcombobox.h>
-//Added by qt3to4:
-#include <QVBoxLayout>
 
 
 QBCfgTabPage::QBCfgTabPage(QBanking *qb,
                            const QString &title,
 			   QWidget *parent,
 			   const char *name,
-			   Qt::WFlags f)
+			   WFlags f)
 :QWidget(parent, name, f), _qbanking(qb), _title(title), _cfgTab(0) {
   _pageLayout=new QVBoxLayout(this, 11, 6, "pageLayout");
 

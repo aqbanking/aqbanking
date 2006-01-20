@@ -17,7 +17,7 @@
 
 #include "qbselectbank.h"
 #include "qbanking.h"
-#include <q3listview.h>
+#include <qlistview.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
@@ -33,7 +33,7 @@ QBSelectBank::QBSelectBank(QBanking *kb,
                            QWidget* parent,
                            const char* name,
                            bool modal,
-                           Qt::WFlags fl)
+                           WFlags fl)
 :QBSelectBankUi(parent, name, modal, fl)
 ,_app(kb)
 ,_bankInfo(0)
@@ -41,7 +41,7 @@ QBSelectBank::QBSelectBank(QBanking *kb,
 ,_changed(false) {
 
   bankListView->setAllColumnsShowFocus(TRUE);
-  bankListView->setSelectionMode(Q3ListView::Single);
+  bankListView->setSelectionMode(QListView::Single);
   QObject::connect(bankCodeEdit, SIGNAL(lostFocus()),
                    this, SLOT(slotUpdate()));
   QObject::connect(swiftCodeEdit, SIGNAL(lostFocus()),
@@ -64,11 +64,11 @@ QBSelectBank::QBSelectBank(QBanking *kb,
   QObject::connect(bankListView, SIGNAL(selectionChanged()),
                    this, SLOT(slotSelectionChanged()));
   QObject::connect(bankListView,
-                   SIGNAL(doubleClicked(Q3ListViewItem *,
+                   SIGNAL(doubleClicked(QListViewItem *,
                                         const QPoint &,
                                         int)),
                    this,
-                   SLOT(slotDoubleClicked(Q3ListViewItem *,
+                   SLOT(slotDoubleClicked(QListViewItem *,
                                           const QPoint &,
                                           int)));
 }
@@ -196,9 +196,9 @@ void QBSelectBank::slotUpdate() {
             sv=AB_BankInfoService_List_Next(sv);
           }
           if (!onlineCheckBox->isChecked() || !onl.isEmpty()) {
-            Q3ListViewItem *li;
+            QListViewItem *li;
 
-            li=new Q3ListViewItem(bankListView,
+            li=new QListViewItem(bankListView,
                                  QString::fromUtf8(blz),
                                  QString::fromUtf8(name),
                                  QString::fromUtf8(loc),
@@ -218,7 +218,7 @@ void QBSelectBank::slotUpdate() {
 
 
 void QBSelectBank::slotSelectionChanged() {
-  Q3ListViewItemIterator it(bankListView);
+  QListViewItemIterator it(bankListView);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {
@@ -355,7 +355,7 @@ void QBSelectBank::accept() {
 
 
 
-void QBSelectBank::slotDoubleClicked(Q3ListViewItem *lv,
+void QBSelectBank::slotDoubleClicked(QListViewItem *lv,
                                    const QPoint &,
                                    int) {
   bankCodeEdit->setText(lv->text(0));

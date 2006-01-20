@@ -36,7 +36,7 @@ public:
   QBCfgTabPageUsers(QBanking *qb,
                     QWidget *parent=0,
                     const char *name=0,
-                    Qt::WFlags f=0);
+                    WFlags f=0);
   virtual ~QBCfgTabPageUsers();
 
   virtual bool toGui();

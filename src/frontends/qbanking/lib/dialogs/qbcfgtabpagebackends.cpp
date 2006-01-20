@@ -34,7 +34,7 @@
 QBCfgTabPageBackends::QBCfgTabPageBackends(QBanking *qb,
                                            QWidget *parent,
                                            const char *name,
-                                           Qt::WFlags f)
+                                           WFlags f)
 :QBCfgTabPage(qb, tr("Backends"), parent, name, f){
   _realPage=new QBCfgTabPageBackendsUi(this);
   addWidget(_realPage);
@@ -76,14 +76,14 @@ bool QBCfgTabPageBackends::toGui() {
   assert(dbSettings);
 
   /* setup provider list view */
-  _realPage->backendList->setResizeMode(Q3ListView::NoColumn);
+  _realPage->backendList->setResizeMode(QListView::NoColumn);
   for (i=0; i<_realPage->backendList->columns(); i++) {
-    _realPage->backendList->setColumnWidthMode(i, Q3ListView::Manual);
+    _realPage->backendList->setColumnWidthMode(i, QListView::Manual);
     j=GWEN_DB_GetIntValue(dbSettings, "gui/backendList/columns", i, -1);
     if (j!=-1)
       _realPage->backendList->setColumnWidth(i, j);
   } /* for */
-  _realPage->backendList->setSelectionMode(Q3ListView::Single);
+  _realPage->backendList->setSelectionMode(QListView::Single);
 
   _backendRescan();
   return true;

@@ -28,7 +28,7 @@ public:
                 AB_ACCOUNT *a,
                 QWidget* parent=0,
                 const char* name=0,
-                Qt::WFlags fl=0);
+                WFlags fl=0);
   ~QBEditAccount();
 
   static bool editAccount(QBanking *kb, AB_ACCOUNT *a, QWidget* parent=0);

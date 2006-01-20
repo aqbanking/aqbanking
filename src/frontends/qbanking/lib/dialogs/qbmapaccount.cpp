@@ -24,11 +24,8 @@
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qlineedit.h>
-//Added by qt3to4:
-#include <QHBoxLayout>
-#include <QBoxLayout>
 
 
 
@@ -39,7 +36,7 @@ QBMapAccount::QBMapAccount(QBanking *kb,
                        QWidget* parent,
                        const char* name,
                        bool modal,
-                       Qt::WFlags fl)
+                       WFlags fl)
 :QBMapAccountUi(parent, name, modal, fl)
 ,_banking(kb)
 ,_account(0) {
@@ -51,7 +48,7 @@ QBMapAccount::QBMapAccount(QBanking *kb,
   accountBoxLayout->setAlignment(Qt::AlignTop);
   _accountList=new QBAccountListView(accountBox, "AccountList");
   accountBoxLayout->addWidget(_accountList);
-  _accountList->setSelectionMode(Q3ListView::Single);
+  _accountList->setSelectionMode(QListView::Single);
   _accountList->setAllColumnsShowFocus(true);
 
   if (bankCode)

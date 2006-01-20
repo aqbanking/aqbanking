@@ -25,7 +25,7 @@
 QBSimpleBox::QBSimpleBox(GWEN_TYPE_UINT32 id,
                          const QString& title,
                          const QString& text,
-                         QWidget* parent, const char* name, Qt::WFlags fl)
+                         QWidget* parent, const char* name, WFlags fl)
 :QBSimpleBoxUi(parent, name, fl), _id(id) {
   if (!title.isEmpty())
     setCaption(title);

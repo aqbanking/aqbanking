@@ -20,14 +20,14 @@
 #include "qbanking.h"
 #include "qbselectfromlist.h"
 
-#include <q3listview.h>
+#include <qlistview.h>
 #include <qpushbutton.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 #include <qmessagebox.h>
 #include <qapplication.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <qfile.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -201,7 +201,7 @@ bool QBImporter::_updateImporterList() {
 
 
 void QBImporter::slotSelectFile(){
-  QString s = Q3FileDialog::getOpenFileName(QString::null,
+  QString s = QFileDialog::getOpenFileName(QString::null,
 					   QString::null,
 					   this,
 					   "OpenFile",
@@ -237,7 +237,7 @@ void QBImporter::back(){
   p=currentPage();
   if (p)
     leavePage(p, true);
-  Q3Wizard::back();
+  QWizard::back();
   p=currentPage();
   if (p)
     enterPage(p, true);
@@ -252,7 +252,7 @@ void QBImporter::next(){
   if (p)
     if (!leavePage(p, false))
       return;
-  Q3Wizard::next();
+  QWizard::next();
   p=currentPage();
   if (p)
     enterPage(p, false);
@@ -274,14 +274,14 @@ void QBImporter::reject(){
       _pagesDone.pop_front();
   } // while
 
-  Q3Wizard::reject();
+  QWizard::reject();
 }
 
 
 
 void QBImporter::accept(){
   save();
-  Q3Wizard::accept();
+  QWizard::accept();
 }
 
 
@@ -336,7 +336,7 @@ bool QBImporter::_undoPage(QWidget *p){
 
 bool QBImporter::enterPage(QWidget *p, bool bk){
   if (p==selectProfilePage) {
-    Q3ListViewItemIterator it(profileList);
+    QListViewItemIterator it(profileList);
     bool isSelected;
 
     isSelected=false;
@@ -394,7 +394,7 @@ bool QBImporter::initSelectImporterPage(){
 
 
 void QBImporter::slotProfileSelected(){
-  Q3ListViewItemIterator it(profileList);
+  QListViewItemIterator it(profileList);
 
   for (;it.current();++it) {
     if (it.current()->isSelected()) {
@@ -434,7 +434,7 @@ bool QBImporter::doSelectImporterPage(QWidget *p){
     while(dbT) {
       const char *n;
       const char *d;
-      Q3ListViewItem *qv=new Q3ListViewItem(profileList);
+      QListViewItem *qv=new QListViewItem(profileList);
 
       n=GWEN_DB_GetCharValue(dbT, "name", 0, 0);
       d=GWEN_DB_GetCharValue(dbT, "shortDescr", 0, "");
@@ -489,7 +489,7 @@ bool QBImporter::initSelectProfilePage(){
 
 
 bool QBImporter::doSelectProfilePage(QWidget *p){
-  Q3ListViewItemIterator it(profileList);
+  QListViewItemIterator it(profileList);
   QString qs;
 
   for (;it.current();++it) {

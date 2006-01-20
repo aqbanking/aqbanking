@@ -19,7 +19,7 @@
 #include "qbcfgtabpage.h"
 #include "qbanking.h"
 #include <qtabwidget.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 #include <qpushbutton.h>
 
 #include <gwenhywfar/debug.h>
@@ -27,7 +27,7 @@
 
 
 
-QBCfgTab::QBCfgTab(QBanking *qb, QWidget *parent, const char *name, Qt::WFlags f)
+QBCfgTab::QBCfgTab(QBanking *qb, QWidget *parent, const char *name, WFlags f)
 :QBCfgTabUi(parent, name, f)
 ,_qbanking(qb) {
   connect(buttonHelp, SIGNAL(clicked()),

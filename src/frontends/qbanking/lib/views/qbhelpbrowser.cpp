@@ -11,32 +11,30 @@
 #include "qbhelpbrowser.h"
 #include <qstatusbar.h>
 #include <qpixmap.h>
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qmenubar.h>
-#include <q3toolbar.h>
+#include <qtoolbar.h>
 #include <qtoolbutton.h>
-#include <qicon.h>
+#include <qiconset.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <q3stylesheet.h>
+#include <qstylesheet.h>
 #include <qmessagebox.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qapplication.h>
 #include <qcombobox.h>
 #include <qevent.h>
 #include <qlineedit.h>
-#include <qobject.h>
+#include <qobjectlist.h>
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qdatastream.h>
 #include <qprinter.h>
-#include <q3simplerichtext.h>
+#include <qsimplerichtext.h>
 #include <qpainter.h>
-#include <q3paintdevicemetrics.h>
+#include <qpaintdevicemetrics.h>
 
-#include <q3textbrowser.h>
-//Added by qt3to4:
-#include <Q3Frame>
+#include <qtextbrowser.h>
 
 #include <ctype.h>
 
@@ -123,27 +121,27 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
                              const QString& path,
                              QWidget* parent,
                              const char *name)
-:QBHelpBrowserUi(parent, name, Qt::WDestructiveClose){
+:QBHelpBrowserUi(parent, name, WDestructiveClose){
   textBrowser->mimeSourceFactory()->setFilePath(path);
-  textBrowser->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken);
+  textBrowser->setFrameStyle( QFrame::Panel | QFrame::Sunken);
   connect(textBrowser, SIGNAL(sourceChanged(const QString&)),
           this, SLOT(slotSourceChanged(const QString&)));
 
   if (!home.isEmpty() )
     textBrowser->setSource(home);
 
-  Q3PopupMenu* file = new Q3PopupMenu( this );
+  QPopupMenu* file = new QPopupMenu( this );
   file->insertItem( tr("&New Window"), this, SLOT( slotNewWindow() ), Qt::CTRL+Qt::Key_N );
   file->insertItem( tr("&Print"), this, SLOT( slotPrint() ), Qt::CTRL+Qt::Key_P );
   file->insertSeparator();
   file->insertItem( tr("&Close"), this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
   // The same three icons are used twice each.
-  QIcon icon_back(QPixmap((const char**)back_xpm));
-  QIcon icon_forward(QPixmap((const char**)forward_xpm));
-  QIcon icon_home( QPixmap("home.xpm"));
+  QIconSet icon_back(QPixmap((const char**)back_xpm));
+  QIconSet icon_forward(QPixmap((const char**)forward_xpm));
+  QIconSet icon_home( QPixmap("home.xpm"));
 
-  Q3PopupMenu* go = new Q3PopupMenu( this );
+  QPopupMenu* go = new QPopupMenu( this );
   _backwardId=go->insertItem(icon_back,
                              tr("&Backward"),
                              textBrowser,
@@ -156,13 +154,13 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
                               Qt::CTRL+Qt::Key_Right );
   go->insertItem( icon_home, tr("&Home"), textBrowser, SLOT( home() ) );
 
-  Q3PopupMenu* help = new Q3PopupMenu( this );
+  QPopupMenu* help = new QPopupMenu( this );
   help->insertItem( tr("&About"), this, SLOT( slotAbout() ) );
   help->insertItem( tr("About &Qt"), this, SLOT( slotAboutQt() ) );
 
-  _hist = new Q3PopupMenu( this );
+  _hist = new QPopupMenu( this );
 
-  _bookm = new Q3PopupMenu( this );
+  _bookm = new QPopupMenu( this );
   _bookm->insertItem( tr( "Add Bookmark" ), this, SLOT( slotAddBookmark() ) );
   _bookm->insertSeparator();
 
@@ -251,11 +249,11 @@ void QBHelpBrowser::slotPrint(){
     QPainter p( &printer );
     if( !p.isActive() ) // starting printing failed
       return;
-    Q3PaintDeviceMetrics metrics(p.device());
+    QPaintDeviceMetrics metrics(p.device());
     int dpiy = metrics.logicalDpiY();
     int margin = (int) ( (2/2.54)*dpiy ); // 2 cm margins
     QRect body( margin, margin, metrics.width() - 2*margin, metrics.height() - 2*margin );
-    Q3SimpleRichText richText( textBrowser->text(),
+    QSimpleRichText richText( textBrowser->text(),
                              QFont(),
                              textBrowser->context(),
                              textBrowser->styleSheet(),

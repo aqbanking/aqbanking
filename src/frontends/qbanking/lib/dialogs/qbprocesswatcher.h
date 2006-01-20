@@ -19,18 +19,18 @@
 #include <qstring.h>
 #include <time.h>
 
-class Q3Process;
+class QProcess;
 
 
 class QBProcessWatcher : public QBProcessWatcherUi{
   Q_OBJECT
 public:
-  QBProcessWatcher(Q3Process* process,
+  QBProcessWatcher(QProcess* process,
                    const QString &text=QString::null,
                    QWidget* parent=0,
                    const char* name=0,
                    bool modal=FALSE,
-                   Qt::WFlags fl=0 );
+                   WFlags fl=0 );
   ~QBProcessWatcher();
 
   void accept();
@@ -47,7 +47,7 @@ public slots:
   virtual void languageChange();
 
 private:
-  Q3Process *_process;
+  QProcess *_process;
   int _result;
   bool _closeEnabled;
   time_t _startTime;

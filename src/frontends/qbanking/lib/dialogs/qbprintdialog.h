@@ -32,7 +32,7 @@ public:
                 QWidget* parent=0,
                 const char* name=0,
                 bool modal=FALSE,
-                Qt::WFlags fl=0);
+                WFlags fl=0);
   ~QBPrintDialog();
 
   void accept();

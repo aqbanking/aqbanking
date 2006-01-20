@@ -19,7 +19,7 @@
 
 #include <qcombobox.h>
 #include <qpushbutton.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 
 #include <gwenhywfar/debug.h>
 
@@ -30,7 +30,7 @@ QBSelectBackend::QBSelectBackend(QBanking *kb,
                                  QWidget* parent,
                                  const char* name,
                                  bool modal,
-                                 Qt::WFlags fl)
+                                 WFlags fl)
 :QBSelectBackendUi(parent, name, modal, fl)
 ,_app(kb) {
   std::list<GWEN_PLUGIN_DESCRIPTION*>::iterator it;
