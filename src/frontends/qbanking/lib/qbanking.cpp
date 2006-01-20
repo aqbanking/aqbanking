@@ -44,6 +44,7 @@
 #include <qwidget.h>
 #include <qtranslator.h>
 #include <qtextcodec.h>
+#include <qprocess.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/libloader.h>
@@ -502,10 +503,23 @@ void QBanking::accountsUpdated(){
 
 void QBanking::invokeHelp(const QString &context,
                           const QString &subject){
+  QString url;
+  QProcess *p;
+
   DBG_ERROR(0, "Help wanted for \"%s\"/\"%s\"",
             context.latin1(), subject.latin1());
-  fprintf(stderr, "Help wanted for \"%s\"/\"%s\"\n",
-          context.latin1(), subject.latin1());
+
+  url=context.lower()+".html";
+  if (!subject.isEmpty())
+    url+=+"#"+subject;
+
+  p=new QProcess();
+  p->addArgument("qb-help");
+  p->addArgument(url);
+  if (!p->launch(QString::null)) {
+    DBG_ERROR(0, "Could not start process");
+  }
+  delete p;
 }
 
 
@@ -899,7 +913,6 @@ int QBanking::init(){
     return false;
   }
   _pluginManagerCfgModules=pm;
-
 
   return 0;
 }

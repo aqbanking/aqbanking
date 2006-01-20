@@ -26,6 +26,7 @@
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qguardedptr.h>
 
 #include <list>

@@ -27,15 +27,30 @@
 #include <qbanking/qbanking.h>
 
 
+#include "qbhelpbrowser.h"
+
+#include <qapplication.h>
+#include <qstringlist.h>
+#include <qtextcodec.h>
+#include <qtranslator.h>
+#include <qmessagebox.h>
+
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
 
 
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  QBanking *ab;
   QTranslator translator(0);
-
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+  QStringList paths;
+  QString qs;
+  QString shortLoc;
+  const char *s;
+  int i;
 
   QString datadir(PKGDATADIR);
   if (translator.load(QTextCodec::locale()+QString(".qm"),
@@ -47,25 +62,41 @@ int main(int argc, char **argv) {
     DBG_WARN(0, "Internationalisation is not available for your language");
   }
 
-  ab=new QBanking("qt3-wizard", 0);
-  if (ab->init()) {
-    fprintf(stderr, "Error on init.\n");
-    return 2;
-  }
-
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  ab->setupDialog();
-
-  if (ab->fini()) {
-    fprintf(stderr, "Error on fini.\n");
+  if (app.argc()!=2) {
+    QMessageBox::critical(0,
+                          QWidget::tr("Argument Error"),
+                          QWidget::tr("Missing URL"),
+                          QWidget::tr("Dismiss"));
+    return 1;
   }
-  fprintf(stderr, "FINI done.\n");
 
-  delete ab;
+  s=QTextCodec::locale();
+  if (!s)
+    s="de";
+  shortLoc=QString::fromUtf8(s);
+  i=shortLoc.find('_');
+  if (i)
+    shortLoc=shortLoc.left(i);
 
-  return 0;
+  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP)+shortLoc;
+  paths+=qs;
+    
+  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP)+shortLoc+DIRSEP+"images";
+  paths+=qs;
+  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP "C");
+  paths+=qs;
+  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP "C" DIRSEP "images");
+  paths+=qs;
+
+  qs=QString::fromUtf8(app.argv()[1]);
+  QBHelpBrowser *hb=new QBHelpBrowser(qs, paths);
+  hb->resize(800, 600);
+  hb->show();
+  app.setMainWidget(hb);
+  return app.exec();
 }
 
 

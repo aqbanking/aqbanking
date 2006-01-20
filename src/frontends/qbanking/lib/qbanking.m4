@@ -13,6 +13,7 @@ dnl Returns: qbanking_dir
 dnl          qbanking_libs
 dnl          qbanking_data
 dnl          qbanking_includes
+dnl          qbanking_helpdir
 dnl          have_qbanking
 
 if test -z "$1"; then vma="0"; else vma="$1"; fi
@@ -30,6 +31,7 @@ AC_MSG_RESULT($enable_qbanking)
 have_qbanking="no"
 qbanking_dir=""
 qbanking_data=""
+qbanking_helpdir=""
 qbanking_libs=""
 qbanking_includes=""
 if test "$enable_qbanking" != "no"; then
@@ -62,6 +64,9 @@ if test "$enable_qbanking" != "no"; then
       AC_MSG_CHECKING(for qbanking data)
       qbanking_data="`$qbanking_dir/bin/qbanking-config --data`"
       AC_MSG_RESULT($qbanking_data)
+      AC_MSG_CHECKING(for qbanking help dir)
+      qbanking_helpdir="`$qbanking_dir/bin/qbanking-config --helpdir`"
+      AC_MSG_RESULT($qbanking_helpdir)
 
       AC_MSG_CHECKING(if qbanking test desired)
       AC_ARG_ENABLE(qbanking,
@@ -108,5 +113,6 @@ fi
 AC_SUBST(qbanking_dir)
 AC_SUBST(qbanking_libs)
 AC_SUBST(qbanking_data)
+AC_SUBST(qbanking_helpdir)
 AC_SUBST(qbanking_includes)
 ])

@@ -22,6 +22,9 @@ for d in $*; do
 	--data)
 	    result="$result @qbanking_data@"
 	    ;;
+	--helpdir)
+	    result="$result @qbanking_helpdir@"
+	    ;;
 	--vmajor)
 	    result="$result @QBANKING_VERSION_MAJOR@"
 	    ;;

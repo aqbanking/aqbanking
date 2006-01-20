@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1444,6 +1444,7 @@ case "$OS_TYPE" in
         qbanking_includes="-I\${prefix}/include"
         qbanking_data="\${datadir}/qbanking"
         qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
+        qbanking_helpdir="\${datadir}/aqbanking/frontends/qbanking/help"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
@@ -1453,6 +1454,7 @@ case "$OS_TYPE" in
         qbanking_data="\${datadir}/qbanking"
 	all_includes="$all_includes -mms-bitfields"
         qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
+        qbanking_helpdir="\${datadir}/aqbanking/frontends/qbanking/help"
     	;;
 esac
 
@@ -1461,6 +1463,7 @@ AC_SUBST(qbanking_internal_libs)
 AC_SUBST(qbanking_libs)
 AC_SUBST(qbanking_data)
 AC_SUBST(qbanking_plugindir)
+AC_SUBST(qbanking_helpdir)
 
 
 
@@ -1567,7 +1570,10 @@ AC_CONFIG_FILES([
   src/frontends/qbanking/bin/Makefile
   src/frontends/qbanking/bin/wizard/Makefile
   src/frontends/qbanking/bin/wizard/qt3_wizard.xml
-  src/frontends/qbanking/po/Makefile
+  src/frontends/qbanking/bin/helpbrowser/Makefile
+  src/frontends/qbanking/help/Makefile
+  src/frontends/qbanking/help/de/Makefile
+  src/frontends/qbanking/help/de/images/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

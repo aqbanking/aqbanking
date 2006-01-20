@@ -18,6 +18,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qdir.h>
+#include <qstringlist.h>
 
 #include <qbanking/qbhelpbrowser.ui.h>
 #include <qbanking/qbanking.h>
@@ -30,10 +31,12 @@ class QBANKING_API QBHelpBrowser : public QBHelpBrowserUi {
   Q_OBJECT
 public:
   QBHelpBrowser(const QString& home,
-                const QString& path,
+                const QStringList& paths,
                 QWidget* parent = 0,
                 const char *name=0);
   ~QBHelpBrowser();
+
+  void setFilePaths(const QStringList& pathList);
 
 private slots:
   void setBackwardAvailable(bool );

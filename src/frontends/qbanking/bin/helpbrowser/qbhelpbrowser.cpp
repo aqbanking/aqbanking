@@ -124,11 +124,11 @@ static const char * const forward_xpm[] = {
 
 
 QBHelpBrowser::QBHelpBrowser(const QString& home,
-                             const QString& path,
+                             const QStringList& paths,
                              QWidget* parent,
                              const char *name)
 :QBHelpBrowserUi(parent, name, WDestructiveClose){
-  textBrowser->mimeSourceFactory()->setFilePath(path);
+  textBrowser->mimeSourceFactory()->setFilePath(paths);
   textBrowser->setFrameStyle( QFrame::Panel | QFrame::Sunken);
   connect(textBrowser, SIGNAL(sourceChanged(const QString&)),
           this, SLOT(slotSourceChanged(const QString&)));
@@ -200,6 +200,17 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
 
 
 
+QBHelpBrowser::~QBHelpBrowser(){
+}
+
+
+
+void QBHelpBrowser::setFilePaths(const QStringList& pathList) {
+  textBrowser->mimeSourceFactory()->setFilePath(pathList);
+}
+
+
+
 void QBHelpBrowser::setBackwardAvailable(bool b){
   _menuBar->setItemEnabled(_backwardId, b);
 }
@@ -213,16 +224,29 @@ void QBHelpBrowser::setForwardAvailable(bool b){
 
 
 void QBHelpBrowser::slotSourceChanged(const QString& url ){
-  if (textBrowser->documentTitle().isNull() )
-    setCaption( "Qt Example - Helpviewer - " + url );
+  QString fName;
+  int i;
+
+  i=url.find('#');
+  if (i)
+    fName=url.left(i);
   else
-    setCaption( "Qt Example - Helpviewer - " + textBrowser->documentTitle() ) ;
+    fName=url;
 
-}
-
-
-
-QBHelpBrowser::~QBHelpBrowser(){
+  if (textBrowser->mimeSourceFactory()->data(fName)==0) {
+    setCaption( "QBanking Helpviewer - Not found" );
+    textBrowser->setText(tr("<qt>"
+                            "<font color=\"red\"><h2>Not found</h2></font>"
+                            "Sorry - the help chapter <i>%1</i>"
+                            " is not available."
+                            "</qt>").arg(url));
+  }
+  else {
+    if (textBrowser->documentTitle().isNull() )
+      setCaption( "QBanking Helpviewer - " + url );
+    else
+      setCaption( "QBanking Helpviewer - " + textBrowser->documentTitle() ) ;
+  }
 }
 
 
@@ -248,7 +272,6 @@ void QBHelpBrowser::slotNewWindow(){
 
 
 void QBHelpBrowser::slotPrint(){
-#ifndef QT_NO_PRINTER
   QPrinter printer( QPrinter::HighResolution );
   printer.setFullPage(TRUE);
   if ( printer.setup( this ) ) {
@@ -280,7 +303,6 @@ void QBHelpBrowser::slotPrint(){
       page++;
     } while (TRUE);
   }
-#endif
 }
 
 

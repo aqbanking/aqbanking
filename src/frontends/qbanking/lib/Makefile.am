@@ -8,7 +8,8 @@ INCLUDES = \
 
 DEFS += -DBUILDING_QBANKING \
   -DPKGDATADIR=\"$(pkgdatadir)\" \
-  -DQBANKING_PLUGINS=\"@qbanking_plugindir@\"
+  -DQBANKING_PLUGINS=\"@qbanking_plugindir@\" \
+  -DQBANKING_HELPDIR=\"@qbanking_helpdir@\"
 
 AM_CPPFLAGS= @visibility_cflags@
 

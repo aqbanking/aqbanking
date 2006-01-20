@@ -220,6 +220,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/libcbanking.so.*
 
 %files qt3
+%{_bindir}/qb-help
 %{_libdir}/libqbanking.so.*
 %{aq_plugindir}/debugger/aqhbci
 %{aq_plugindir}/wizards

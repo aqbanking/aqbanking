@@ -1,4 +1,10 @@
 
+2006/01/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added Qbanking help viewer tool which is now called by QBanking when
+  a help button is clicked
+
+
 2006/01/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - enabled OFX-QT3 section in specs file

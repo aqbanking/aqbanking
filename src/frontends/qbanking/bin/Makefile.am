@@ -1,4 +1,4 @@
-SUBDIRS=wizard
+SUBDIRS=wizard helpbrowser
 
 sources:
 	for d in $(SUBDIRS); do \

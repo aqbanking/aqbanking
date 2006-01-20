@@ -1,4 +1,4 @@
-SUBDIRS=lib bin po
+SUBDIRS=lib bin help
 
 sources:
 	for d in $(SUBDIRS); do \
