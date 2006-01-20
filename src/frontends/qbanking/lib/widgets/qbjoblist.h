@@ -46,7 +46,7 @@ public:
 
 
 
-class QBJobListView: public QListView {
+class QBANKING_API QBJobListView: public QListView {
 private:
 public:
   QBJobListView(QWidget *parent=0, const char *name=0);

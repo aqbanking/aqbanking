@@ -191,6 +191,7 @@ void QBJobView::slotDequeue(){
 
 
 
+#include "qbjobview.moc"
 
 
 

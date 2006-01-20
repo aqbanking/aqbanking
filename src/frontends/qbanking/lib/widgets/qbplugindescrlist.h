@@ -47,7 +47,7 @@ public:
 
 
 
-class QBPluginDescrListView: public QListView {
+class QBANKING_API QBPluginDescrListView: public QListView {
 private:
 public:
   QBPluginDescrListView(QWidget *parent=0, const char *name=0);

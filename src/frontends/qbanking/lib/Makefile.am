@@ -44,15 +44,17 @@ libqbanking_la_SOURCES=\
  qbcfgmodule.cpp \
  banking.cpp
 
-nodist_libqbanking_la_SOURCES=\
- qbflagstaff.moc.cpp
+MOC_FILES=\
+ qbflagstaff.moc
+
+nodist_libqbanking_la_SOURCES=
 
 qbanking-config: qbanking-config.in
 	echo "#! /bin/sh" >qbanking-config && \
 	cat qbanking-config.in >>qbanking-config && \
 	chmod a+x qbanking-config
 
-BUILT_SOURCES = $(nodist_libqbanking_la_SOURCES) version.h
+BUILT_SOURCES = $(MOC_FILES) $(nodist_libqbanking_la_SOURCES) version.h
 CLEANFILES = $(BUILT_SOURCES) i18nsources qbanking-config qbanking-config.in ressource.rc
 
 libqbanking_la_LIBADD=\
@@ -88,13 +90,8 @@ sources:
 	  make -C $$d sources; \
 	done ;
 
-%.moc.cpp: %.h
-	$(qt3_moc) -o $<.moc.tmp $< && \
-	echo "#ifdef HAVE_CONFIG_H" >$@ && \
-	echo "# include <config.h>" >>$@ && \
-	echo "#endif" >>$@ && \
-	cat $<.moc.tmp >>$@ && \
-	rm $<.moc.tmp
+%.moc: %.h
+	$(qt3_moc) -o $@ $<
 
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib

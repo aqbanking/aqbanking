@@ -62,6 +62,7 @@ void QBBankSelector::slotButtonClicked() {
 }
 
 
+#include "qbbankselector.moc"
 
 
 

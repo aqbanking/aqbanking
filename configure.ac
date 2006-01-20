@@ -1526,6 +1526,7 @@ AC_SUBST(aqbanking_backends)
 
 AC_CONFIG_FILES([
   mksymlinks.sh
+  admin/Makefile
   doc/Makefile
   m4/Makefile
   src/Makefile

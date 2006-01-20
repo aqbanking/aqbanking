@@ -203,3 +203,6 @@ void QBCfgTabPageAccounts::updateView() {
 }
 
 
+
+#include "qbcfgtabpageaccounts.moc"
+

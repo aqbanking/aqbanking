@@ -47,3 +47,6 @@ GWEN_TYPE_UINT32 QBSimpleBox::getId(){
 
 
 
+#include "qbsimplebox.moc"
+
+

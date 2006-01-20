@@ -242,5 +242,6 @@ void QBSelectFromList::slotSelectionChanged(){
 
 
 
+#include "qbselectfromlist.moc"
 
 

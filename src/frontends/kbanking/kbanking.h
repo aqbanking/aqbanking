@@ -14,6 +14,47 @@
 #define AQHBCI_KDE_BANKING_H
 
 
+#ifdef BUILDING_KBANKING
+# /* building KBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define KBANKING_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define KBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define KBANKING_API __attribute__((visibility("default")))
+#   else
+#     define KBANKING_API
+#   endif
+# endif
+#else
+# /* not building KBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define KBANKING_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define KBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define KBANKING_API
+# endif
+#endif
+
+#ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+# define KBANKING_EXPORT __attribute__((visibility("default")))
+# define KBANKING_NOEXPORT __attribute__((visibility("hidden")))
+#else
+# define KBANKING_EXPORT
+# define KBANKING_NOEXPORT
+#endif
+
+
 #include <aqbanking/banking.h>
 #include <aqbanking/accstatus.h>
 

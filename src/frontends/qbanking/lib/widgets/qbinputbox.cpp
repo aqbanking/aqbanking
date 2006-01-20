@@ -251,6 +251,7 @@ void QBInputBox::textChanged(const QString &t) {
 
 
 
+#include "qbinputbox.moc"
 
 
 

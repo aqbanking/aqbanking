@@ -418,6 +418,7 @@ void QBSelectBank::slotOnlineToggled(bool on) {
 
 
 
+#include "qbselectbank.moc"
 
 
 

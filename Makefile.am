@@ -1,4 +1,4 @@
-SUBDIRS=doc m4 src bindings po
+SUBDIRS=admin doc m4 src bindings po
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \

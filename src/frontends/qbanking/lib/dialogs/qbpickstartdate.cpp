@@ -123,4 +123,6 @@ QDate QBPickStartDate::getDate() {
 
 
 
+#include "qbpickstartdate.moc"
+
 

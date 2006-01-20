@@ -338,6 +338,7 @@ bool QBProgress::shouldStay() {
 
 
 
+#include "qbprogress.moc"
 
 
 

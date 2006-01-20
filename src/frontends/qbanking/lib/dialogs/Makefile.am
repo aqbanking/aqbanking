@@ -61,27 +61,43 @@ iheader_HEADERS=\
  qbcfgtabsettings.h \
  qbselectbackend.h
 
+MOC_FILES=\
+ qbprocesswatcher.moc qbprocesswatcher.ui.moc \
+ qbmapaccount.moc qbmapaccount.ui.moc \
+ qbimporter.moc qbimporter.ui.moc \
+ qbpickstartdate.moc qbpickstartdate.ui.moc \
+ qbselectbank.moc qbselectbank.ui.moc \
+ qbselectfromlist.moc qbselectfromlist.ui.moc \
+ qbprintdialog.moc qbprintdialog.ui.moc \
+ qbcfgtabpageusergen.moc qbcfgtabpageusergen.ui.moc \
+ qbcfgtabpageaccountgen.moc qbcfgtabpageaccountgen.ui.moc \
+ qbcfgtabpageaccounts.moc qbcfgtabpageaccounts.ui.moc \
+ qbcfgtabpageusers.moc qbcfgtabpageusers.ui.moc \
+ qbcfgtabpagebackends.moc qbcfgtabpagebackends.ui.moc \
+ qbcfgtabsettings.moc \
+ qbselectbackend.moc qbselectbackend.ui.moc
+
+
 nodist_libdialogs_la_SOURCES=\
-  qbprocesswatcher.moc.cpp qbprocesswatcher.ui.cpp qbprocesswatcher.ui.moc.cpp \
-  qbmapaccount.moc.cpp qbmapaccount.ui.cpp qbmapaccount.ui.moc.cpp \
-  qbimporter.moc.cpp qbimporter.ui.cpp qbimporter.ui.moc.cpp \
-  qbpickstartdate.moc.cpp qbpickstartdate.ui.cpp qbpickstartdate.ui.moc.cpp \
-  qbselectbank.moc.cpp qbselectbank.ui.cpp qbselectbank.ui.moc.cpp \
-  qbselectfromlist.moc.cpp qbselectfromlist.ui.cpp qbselectfromlist.ui.moc.cpp \
-  qbprintdialog.moc.cpp qbprintdialog.ui.cpp qbprintdialog.ui.moc.cpp \
-  qbcfgtabpageusergen.moc.cpp qbcfgtabpageusergen.ui.cpp qbcfgtabpageusergen.ui.moc.cpp \
-  qbcfgtabpageaccountgen.moc.cpp qbcfgtabpageaccountgen.ui.cpp qbcfgtabpageaccountgen.ui.moc.cpp \
-  qbcfgtabpageaccounts.moc.cpp qbcfgtabpageaccounts.ui.cpp qbcfgtabpageaccounts.ui.moc.cpp \
-  qbcfgtabpageusers.moc.cpp qbcfgtabpageusers.ui.cpp qbcfgtabpageusers.ui.moc.cpp \
-  qbcfgtabpagebackends.moc.cpp qbcfgtabpagebackends.ui.cpp qbcfgtabpagebackends.ui.moc.cpp \
-  qbcfgtabsettings.moc.cpp \
-  qbselectbackend.moc.cpp qbselectbackend.ui.cpp qbselectbackend.ui.moc.cpp
+ qbprocesswatcher.ui.cpp \
+ qbmapaccount.ui.cpp \
+ qbimporter.ui.cpp \
+ qbpickstartdate.ui.cpp \
+ qbselectbank.ui.cpp \
+ qbselectfromlist.ui.cpp \
+ qbprintdialog.ui.cpp \
+ qbcfgtabpageusergen.ui.cpp \
+ qbcfgtabpageaccountgen.ui.cpp \
+ qbcfgtabpageaccounts.ui.cpp \
+ qbcfgtabpageusers.ui.cpp \
+ qbcfgtabpagebackends.ui.cpp \
+ qbselectbackend.ui.cpp
 
 
-BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES) $(nodist_iheader_HEADERS)
+BUILT_SOURCES = $(MOC_FILES) $(nodist_libdialogs_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
 
-libdialogs_la_SOURCES=\
+libdialogs_la_SOURCES= \
  qbprocesswatcher.cpp \
  qbmapaccount.cpp \
  qbimporter.cpp \
@@ -106,14 +122,8 @@ sources:
 	done
 
 
-%.moc.cpp: %.h
-	$(qt3_moc) -o $<.moc.tmp $< && \
-	echo "#ifdef HAVE_CONFIG_H" >$@ && \
-	echo "# include <config.h>" >>$@ && \
-	echo "#endif" >>$@ && \
-	cat $<.moc.tmp >>$@ && \
-	rm $<.moc.tmp
-
+%.moc: %.h
+	$(qt3_moc) -o $@ $<
 
 %.ui.cpp: %.ui
 	$(UIC3) $< -impl $<.h -o $<.tmp && \
@@ -121,15 +131,14 @@ sources:
 	echo "# include <config.h>" >>$@ && \
 	echo "#endif" >>$@ && \
 	cat $<.tmp >>$@ && \
-	rm $<.tmp
+	rm $<.tmp && \
+	echo "#include \"$<.moc\"" >>$@
+
 
 %.ui.h: %.ui
-	$(UIC3) $< -o $<.tmp && \
-	echo "#include <qbanking/qbanking.h>" >$@ && \
-	$(top_srcdir)/admin/insert_api.sh QBANKING_API < $<.tmp >>$@ && \
-	rm $<.tmp
+	$(UIC3) $< -o $@
 
-SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
+SUFFIXES = .ui .ui.h .ui.cpp .moc
 
 # This section is for a qt4 environment
 qt4-port:

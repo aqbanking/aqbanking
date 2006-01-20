@@ -34,14 +34,17 @@ iheader_HEADERS=\
  qbcfgtabpageaccount.h \
  qbuserlist.h
 
+MOC_FILES=\
+ qbprogress.moc qbprogress.ui.moc \
+ qbsimplebox.ui.moc \
+ qbinputbox.moc \
+ qbsimplebox.moc \
+ qbcfgtab.moc qbcfgtab.ui.moc
+ 
 
 nodist_libwidgets_la_SOURCES=\
- qbprogress.ui.cpp qbprogress.ui.moc.cpp \
- qbsimplebox.ui.cpp qbsimplebox.ui.moc.cpp \
- qbinputbox.moc.cpp \
- qbprogress.moc.cpp \
- qbsimplebox.moc.cpp \
- qbcfgtab.moc.cpp qbcfgtab.ui.cpp qbcfgtab.ui.moc.cpp
+ qbprogress.ui.cpp \
+ qbsimplebox.ui.cpp
 
 
 libwidgets_la_SOURCES=\
@@ -49,16 +52,17 @@ libwidgets_la_SOURCES=\
  qbjoblist.cpp \
  qbinputbox.cpp \
  qbplugindescrlist.cpp \
- qbprogress.cpp \
+ qbprogress.cpp  \
  qbsimplebox.cpp \
- qbcfgtab.cpp qbcfgtabpage.cpp \
+ qbcfgtab.cpp qbcfgtab.ui.cpp \
+ qbcfgtabpage.cpp \
  qbcfgtabpageuser.cpp \
  qbcfgtabpageaccount.cpp \
  qbuserlist.cpp
 
 
 
-BUILT_SOURCES = $(nodist_libwidgets_la_SOURCES) $(nodist_iheader_HEADERS)
+BUILT_SOURCES = $(MOC_FILES) $(nodist_libwidgets_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
 
 sources:
@@ -66,14 +70,8 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 
-%.moc.cpp: %.h
-	$(qt3_moc) -o $<.moc.tmp $< && \
-	echo "#ifdef HAVE_CONFIG_H" >$@ && \
-	echo "# include <config.h>" >>$@ && \
-	echo "#endif" >>$@ && \
-	cat $<.moc.tmp >>$@ && \
-	rm $<.moc.tmp
-
+%.moc: %.h
+	$(qt3_moc) -o $@ $<
 
 %.ui.cpp: %.ui
 	$(UIC3) $< -impl $<.h -o $<.tmp && \
@@ -81,15 +79,14 @@ sources:
 	echo "# include <config.h>" >>$@ && \
 	echo "#endif" >>$@ && \
 	cat $<.tmp >>$@ && \
-	rm $<.tmp
+	rm $<.tmp && \
+	echo "#include \"$<.moc\"" >>$@
+
 
 %.ui.h: %.ui
-	$(UIC3) $< -o $<.tmp && \
-	echo "#include <qbanking/qbanking.h>" >$@ && \
-	$(top_srcdir)/admin/insert_api.sh QBANKING_API < $<.tmp >>$@ && \
-	rm $<.tmp
+	$(UIC3) $< -o $@
 
-SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
+SUFFIXES = .ui .ui.h .ui.cpp .moc
 
 
 # This section is for a qt4 environment

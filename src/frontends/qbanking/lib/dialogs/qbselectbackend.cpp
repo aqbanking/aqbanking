@@ -142,5 +142,6 @@ QString QBSelectBackend::selectBackend(QBanking *kb,
 
 
 
+#include "qbselectbackend.moc"
 
 

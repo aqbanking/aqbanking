@@ -227,27 +227,3 @@ std::list<AB_ACCOUNT*> QBAccountListView::getSortedAccounts() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

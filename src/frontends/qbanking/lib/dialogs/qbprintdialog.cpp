@@ -571,6 +571,7 @@ void QBPrintDialog::slotPrint(){
 
 
 
+#include "qbprintdialog.moc"
 
 
 

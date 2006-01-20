@@ -56,6 +56,7 @@ void QBFlagStaff::statusMessage(const QString &s){
 
 
 
+#include "qbflagstaff.moc"
 
 
 

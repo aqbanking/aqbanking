@@ -194,4 +194,6 @@ void QBCfgTabPageBackends::updateView() {
 
 
 
+#include "qbcfgtabpagebackends.moc"
+
 

@@ -110,6 +110,7 @@ void QBMapAccount::slotSelectionChanged(){
 
 
 
+#include "qbmapaccount.moc"
 
 
 

@@ -119,5 +119,6 @@ bool QBCfgTabSettings::fromGui() {
 
 
 
+#include "qbcfgtabsettings.moc"
 
 

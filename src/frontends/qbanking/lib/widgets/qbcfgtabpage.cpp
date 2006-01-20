@@ -187,4 +187,3 @@ void QBCfgTabPage::updateView() {
 
 
 
-

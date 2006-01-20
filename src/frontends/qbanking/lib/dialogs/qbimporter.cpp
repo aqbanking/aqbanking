@@ -923,3 +923,7 @@ void QBImporter::help() {
   _app->invokeHelp("QBImporter", s);
 }
 
+
+#include "qbimporter.moc"
+
+

@@ -65,6 +65,9 @@ public:
 
 public slots:
   void slotHelp();
+
+  virtual void languageChange();
+
 };
 
 

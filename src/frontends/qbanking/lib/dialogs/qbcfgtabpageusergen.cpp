@@ -257,6 +257,7 @@ void QBCfgTabPageUserGeneral::slotBankIdButtonClicked() {
 
 
 
+#include "qbcfgtabpageusergen.moc"
 
 
 

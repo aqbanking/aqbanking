@@ -388,7 +388,7 @@ void QBCfgTabPageAccountGeneral::slotRightButtonClicked() {
 
 
 
-
+#include "qbcfgtabpageaccountgen.moc"
 
 
 

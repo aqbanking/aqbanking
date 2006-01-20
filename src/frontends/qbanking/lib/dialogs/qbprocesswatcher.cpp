@@ -130,6 +130,7 @@ void QBProcessWatcher::languageChange(){
 
 
 
+#include "qbprocesswatcher.moc"
 
 
 

@@ -212,6 +212,13 @@ void QBCfgTab::slotHelp() {
 
 
 
+void QBCfgTab::languageChange() {
+  QBCfgTabUi::languageChange();
+}
+
+
+
+#include "qbcfgtab.moc"
 
 
 

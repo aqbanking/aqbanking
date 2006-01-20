@@ -340,7 +340,6 @@ int addUser(AB_BANKING *ab,
     AB_User_SetUserId(user, luserId);
     AB_User_SetCustomerId(user, lcustomerId);
     AH_User_SetContextIdx(user, idx);
-    AB_Banking_AddUser(ab, user);
 
     if (cm==AH_CryptMode_Pintan)
       AH_User_SetHbciVersion(user, 220);
@@ -386,6 +385,9 @@ int addUser(AB_BANKING *ab,
 
     if (cm==AH_CryptMode_Ddv)
       AH_User_SetStatus(user, AH_UserStatusEnabled);
+
+    AH_User_SetMedium(user, medium);
+    AB_Banking_AddUser(ab, user);
   }
   else {
     DBG_ERROR(0, "Invalid context %d", idx);

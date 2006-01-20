@@ -26,11 +26,16 @@ libviews_la_SOURCES=\
  qbbankselector.cpp \
  qbhelpbrowser.cpp
 
+MOC_FILES=\
+ qbjobview.ui.moc \
+ qbjobview.moc \
+ qbbankselector.ui.moc qbbankselector.moc \
+ qbhelpbrowser.moc qbhelpbrowser.ui.moc
+
 nodist_libviews_la_SOURCES=\
- qbjobview.ui.cpp qbjobview.ui.moc.cpp \
- qbjobview.moc.cpp \
- qbbankselector.ui.cpp qbbankselector.ui.moc.cpp qbbankselector.moc.cpp \
- qbhelpbrowser.moc.cpp qbhelpbrowser.ui.cpp qbhelpbrowser.ui.moc.cpp
+ qbjobview.ui.cpp \
+ qbbankselector.ui.cpp \
+ qbhelpbrowser.ui.cpp
 
 UI_FILES = qbjobview.ui qbbankselector.ui qbhelpbrowser.ui
 
@@ -39,7 +44,7 @@ EXTRA_DIST = $(UI_FILES)
 
 # Make sure the generated source files are generated before any
 # further compiling.
-BUILT_SOURCES = $(nodist_libviews_la_SOURCES) $(nodist_iheader_HEADERS)
+BUILT_SOURCES = $(MOC_FILES) $(nodist_libviews_la_SOURCES) $(nodist_iheader_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
 
 sources:
@@ -48,14 +53,8 @@ sources:
 	done
 
 
-%.moc.cpp: %.h
-	$(qt3_moc) -o $<.moc.tmp $< && \
-	echo "#ifdef HAVE_CONFIG_H" >$@ && \
-	echo "# include <config.h>" >>$@ && \
-	echo "#endif" >>$@ && \
-	cat $<.moc.tmp >>$@ && \
-	rm $<.moc.tmp
-
+%.moc: %.h
+	$(qt3_moc) -o $@ $<
 
 %.ui.cpp: %.ui
 	$(UIC3) $< -impl $<.h -o $<.tmp && \
@@ -63,15 +62,14 @@ sources:
 	echo "# include <config.h>" >>$@ && \
 	echo "#endif" >>$@ && \
 	cat $<.tmp >>$@ && \
-	rm $<.tmp
+	rm $<.tmp && \
+	echo "#include \"$<.moc\"" >>$@
+
 
 %.ui.h: %.ui
-	$(UIC3) $< -o $<.tmp && \
-	echo "#include <qbanking/qbanking.h>" >$@ && \
-	$(top_srcdir)/admin/insert_api.sh QBANKING_API < $<.tmp >>$@ && \
-	rm $<.tmp
+	$(UIC3) $< -o $@
 
-SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
+SUFFIXES = .ui .ui.h .ui.cpp .moc
 
 # This section is for a qt4 environment
 qt4-port:

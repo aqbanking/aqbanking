@@ -223,3 +223,8 @@ void QBCfgTabPageUsers::updateView() {
 }
 
 
+
+#include "qbcfgtabpageusers.moc"
+
+
+

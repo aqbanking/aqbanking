@@ -290,6 +290,7 @@ void QBHelpBrowser::slotAddBookmark() {
 
 
 
+#include "qbhelpbrowser.moc"
 
 
 
