@@ -66,6 +66,8 @@ private:
 
   std::list<QBCfgModule*> _cfgModules;
 
+  QString _appHelpPath;
+
   QBProgress *_findProgressWidget(GWEN_TYPE_UINT32 id);
   void _cleanupProgressWidgets();
 
@@ -82,6 +84,8 @@ public:
 
   int init();
   int fini();
+
+  void setAppHelpPath(const QString &s);
 
   virtual int messageBox(GWEN_TYPE_UINT32 flags,
 			 const char *title,

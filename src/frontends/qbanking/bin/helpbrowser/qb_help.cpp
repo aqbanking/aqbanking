@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   QObject::connect(&app,SIGNAL(lastWindowClosed()),
                    &app,SLOT(quit()));
 
-  if (app.argc()!=2) {
+  if (app.argc()<2) {
     QMessageBox::critical(0,
                           QWidget::tr("Argument Error"),
                           QWidget::tr("Missing URL"),
@@ -81,10 +81,20 @@ int main(int argc, char **argv) {
   if (i)
     shortLoc=shortLoc.left(i);
 
+  if (app.argc()>2) {
+    QString appHelpPath;
+
+    // application help path given, insert it into path list
+    appHelpPath=QString::fromUtf8(app.argv()[2]);
+    paths+=appHelpPath+DIRSEP+shortLoc;
+    paths+=appHelpPath+DIRSEP+shortLoc+DIRSEP "images";
+    paths+=appHelpPath+DIRSEP "C";
+    paths+=appHelpPath+DIRSEP "C" DIRSEP "images";
+  }
+
   qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP)+shortLoc;
   paths+=qs;
-    
-  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP)+shortLoc+DIRSEP+"images";
+  qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP)+shortLoc+DIRSEP "images";
   paths+=qs;
   qs=QString::fromUtf8(QBANKING_HELPDIR DIRSEP "C");
   paths+=qs;

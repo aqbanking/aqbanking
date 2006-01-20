@@ -84,6 +84,12 @@ QBanking::~QBanking(){
 
 
 
+void QBanking::setAppHelpPath(const QString &s) {
+  _appHelpPath=s;
+}
+
+
+
 int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
   GWEN_BUFFEREDIO *bio;
   GWEN_XMLNODE *xmlNode;
@@ -516,6 +522,8 @@ void QBanking::invokeHelp(const QString &context,
   p=new QProcess();
   p->addArgument("qb-help");
   p->addArgument(url);
+  if (!_appHelpPath.isEmpty())
+    p->addArgument(_appHelpPath);
   if (!p->launch(QString::null)) {
     DBG_ERROR(0, "Could not start process");
   }
