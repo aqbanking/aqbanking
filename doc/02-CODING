@@ -43,11 +43,43 @@ free to be included by applications and plugins.
 
 
 
+3. QT 3.x, moc, uic
+===================
+
+AqBanking makes use of GCC's visibility features. However, uic and moc of QT3
+are not aware of that feature, so they generate code which does not export all
+needed symbols. Therefore we added a small tool which adds EXPORT macros to
+those generated files.
+In order to use that tool correctly you'll have to use the following rules in
+the makefiles of AqBanking:
+
+%.moc.cpp: %.h
+	$(qt3_moc) -o $<.moc.tmp $< && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $<.moc.tmp >>$@ && \
+	rm $<.moc.tmp
 
 
+%.ui.cpp: %.ui
+	$(UIC3) $< -impl $<.h -o $<.tmp && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $<.tmp >>$@ && \
+	rm $<.tmp
 
+%.ui.h: %.ui
+	$(UIC3) $< -o $<.tmp && \
+	echo "#include <qbanking/qbanking.h>" >$@ && \
+	$(top_srcdir)/admin/insert_api.sh QBANKING_API < $<.tmp >>$@ && \
+	rm $<.tmp
 
-
+The last needs to be adapted for every frontend, e.g. for "QBanking" you would
+need QBANKING_API and the header <qbanking/qbanking.h> as used in
+this example. For "KBanking" you would use KBANKING_API and 
+<kbanking/kbanking.h>.
 
 
 
