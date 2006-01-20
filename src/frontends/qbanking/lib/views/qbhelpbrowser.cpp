@@ -1,12 +1,18 @@
-/****************************************************************************
-** $Id$
-**
-** Copyright (C) 1992-2002 Trolltech AS.  All rights reserved.
-**
-** This file is part of an example program for Qt.  This example
-** program may be used, distributed and modified without limitation.
-**
-*****************************************************************************/
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Mon Mar 01 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include "qbhelpbrowser.h"
 #include <qstatusbar.h>

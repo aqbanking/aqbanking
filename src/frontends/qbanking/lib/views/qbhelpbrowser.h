@@ -1,15 +1,17 @@
-/****************************************************************************
-** $Id$
-**
-** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
-**
-** This file is part of an example program for Qt.  This example
-** program may be used, distributed and modified without limitation.
-**
-*****************************************************************************/
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Mon Mar 01 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
 
-#ifndef HELPWINDOW_H
-#define HELPWINDOW_H
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+#ifndef QBHELPWINDOW_H
+#define QBHELPWINDOW_H
 
 #include <qmainwindow.h>
 #include <qtextbrowser.h>
@@ -18,12 +20,13 @@
 #include <qdir.h>
 
 #include <qbanking/qbhelpbrowser.ui.h>
+#include <qbanking/qbanking.h>
 
 
 class QComboBox;
 class QPopupMenu;
 
-class QBHelpBrowser : public QBHelpBrowserUi {
+class QBANKING_API QBHelpBrowser : public QBHelpBrowserUi {
   Q_OBJECT
 public:
   QBHelpBrowser(const QString& home,
