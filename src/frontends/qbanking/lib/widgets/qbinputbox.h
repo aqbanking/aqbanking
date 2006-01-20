@@ -58,7 +58,7 @@ public:
              QWidget* parent = 0,
              const char* name = 0,
              bool modal = false,
-             WFlags fl = 0);
+             Qt::WFlags fl = 0);
   ~QBInputBox();
 
   bool acceptableInput();

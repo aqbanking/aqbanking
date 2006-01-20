@@ -35,7 +35,7 @@ QBCfgTabPageAccountGeneral::QBCfgTabPageAccountGeneral(QBanking *qb,
                                                        AB_ACCOUNT *a,
                                                        QWidget *parent,
                                                        const char *name,
-                                                       WFlags f)
+                                                       Qt::WFlags f)
 :QBCfgTabPageAccount(qb, tr("General"), a, parent, name, f){
   int i;
 
@@ -51,16 +51,16 @@ QBCfgTabPageAccountGeneral::QBCfgTabPageAccountGeneral(QBanking *qb,
                     "<i>user id</i>, security media etc).</p>"));
 
   _realPage=new QBCfgTabPageAccountGeneralUi(this);
-  _realPage->userList1->setSelectionMode(QListView::Single);
+  _realPage->userList1->setSelectionMode(Q3ListView::Single);
   _realPage->userList1->setAllColumnsShowFocus(true);
   for (i=0; i<_realPage->userList1->columns(); i++)
-    _realPage->userList1->setColumnWidthMode(i, QListView::Manual);
+    _realPage->userList1->setColumnWidthMode(i, Q3ListView::Manual);
   _realPage->userList1->setColumnWidth(3, 0);
 
-  _realPage->userList2->setSelectionMode(QListView::Single);
+  _realPage->userList2->setSelectionMode(Q3ListView::Single);
   _realPage->userList2->setAllColumnsShowFocus(true);
   for (i=0; i<_realPage->userList2->columns(); i++)
-    _realPage->userList2->setColumnWidthMode(i, QListView::Manual);
+    _realPage->userList2->setColumnWidthMode(i, Q3ListView::Manual);
   _realPage->userList2->setColumnWidth(3, 0);
   _realPage->userList2->setSorting(-1);
 

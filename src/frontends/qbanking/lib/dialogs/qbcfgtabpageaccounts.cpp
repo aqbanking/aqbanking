@@ -38,7 +38,7 @@
 QBCfgTabPageAccounts::QBCfgTabPageAccounts(QBanking *qb,
                                            QWidget *parent,
                                            const char *name,
-                                           WFlags f)
+                                           Qt::WFlags f)
 :QBCfgTabPage(qb, tr("Accounts"), parent, name, f){
   _realPage=new QBCfgTabPageAccountsUi(this);
   addWidget(_realPage);
@@ -81,14 +81,14 @@ bool QBCfgTabPageAccounts::toGui() {
   assert(dbSettings);
 
   /* setup account list view */
-  _realPage->accountList->setResizeMode(QListView::NoColumn);
+  _realPage->accountList->setResizeMode(Q3ListView::NoColumn);
   for (i=0; i<_realPage->accountList->columns(); i++) {
-    _realPage->accountList->setColumnWidthMode(i, QListView::Manual);
+    _realPage->accountList->setColumnWidthMode(i, Q3ListView::Manual);
     j=GWEN_DB_GetIntValue(dbSettings, "gui/accountList/columns", i, -1);
     if (j!=-1)
       _realPage->accountList->setColumnWidth(i, j);
   } /* for */
-  _realPage->accountList->setSelectionMode(QListView::Single);
+  _realPage->accountList->setSelectionMode(Q3ListView::Single);
 
   _accountRescan();
   return true;

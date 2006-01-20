@@ -33,7 +33,7 @@
 QBCfgTabSettings::QBCfgTabSettings(QBanking *qb,
                                    QWidget *parent,
                                    const char *name,
-                                   WFlags f)
+                                   Qt::WFlags f)
 :QBCfgTab(qb, parent, name, f) {
   setHelpContext("QBCfgTabSettings");
   setDescription(tr("This dialog allows adjusting the settings of "

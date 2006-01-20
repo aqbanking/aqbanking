@@ -4,7 +4,8 @@ INCLUDES = \
   -I.. -I../dialogs \
   $(all_includes)
 
-AM_CFLAGS=-DBUILDING_QBANKING @visibility_cflags@
+DEFS += -DBUILDING_QBANKING
+AM_CPPFLAGS= @visibility_cflags@
 
 UI_FILES= \
  qbprogress.ui \

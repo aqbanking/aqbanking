@@ -19,12 +19,12 @@
 #include "qbprintdialog.h"
 
 #include <qlabel.h>
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 #include <qpushbutton.h>
 #include <qprinter.h>
 #include <qpainter.h>
-#include <qpaintdevicemetrics.h>
-#include <qsimplerichtext.h>
+#include <q3paintdevicemetrics.h>
+#include <q3simplerichtext.h>
 #include <qmessagebox.h>
 #include <qfontdialog.h>
 
@@ -42,7 +42,7 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
                              QWidget* parent,
                              const char* name,
                              bool modal,
-                             WFlags fl)
+                             Qt::WFlags fl)
 :QBPrintDialogUi(parent, name, modal, fl)
 ,_banking(app)
 ,_docTitle(docTitle)
@@ -507,14 +507,14 @@ void QBPrintDialog::slotPrint(){
 
   p.setFont(fnt);
 
-  QPaintDeviceMetrics metrics(p.device());
+  Q3PaintDeviceMetrics metrics(p.device());
   XMargin = 0; //(int)((2/2.54)*metrics.logicalDpiX()); // 2 cm margins
   YMargin = 0; //(int)((2/2.54)*metrics.logicalDpiY()); // 2 cm margins
 
   QRect body(XMargin, YMargin,
              metrics.width() - 2*XMargin,
              metrics.height() - 2*YMargin);
-  QSimpleRichText txt(textBrowser->text(), fnt,
+  Q3SimpleRichText txt(textBrowser->text(), fnt,
                       QString::null,
                       textBrowser->styleSheet(),
                       textBrowser->mimeSourceFactory(),

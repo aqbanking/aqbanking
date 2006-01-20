@@ -33,7 +33,7 @@ QBCfgTabPageUserGeneral::QBCfgTabPageUserGeneral(QBanking *qb,
                                                  AB_USER *u,
                                                  QWidget *parent,
                                                  const char *name,
-                                                 WFlags f)
+                                                 Qt::WFlags f)
 :QBCfgTabPageUser(qb, tr("General"), u, parent, name, f){
   AB_COUNTRY_CONSTLIST2 *cl;
 

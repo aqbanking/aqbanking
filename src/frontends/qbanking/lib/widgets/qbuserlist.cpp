@@ -25,7 +25,7 @@
 
 QBUserListViewItem::QBUserListViewItem(QBUserListView *parent,
                                    AB_USER *user)
-:QListViewItem(parent)
+:Q3ListViewItem(parent)
 ,_user(user){
   assert(user);
   _populate();
@@ -34,7 +34,7 @@ QBUserListViewItem::QBUserListViewItem(QBUserListView *parent,
 
 
 QBUserListViewItem::QBUserListViewItem(const QBUserListViewItem &item)
-:QListViewItem(item)
+:Q3ListViewItem(item)
 ,_user(0){
 
   if (item._user) {
@@ -44,9 +44,9 @@ QBUserListViewItem::QBUserListViewItem(const QBUserListViewItem &item)
 
 
 QBUserListViewItem::QBUserListViewItem(QBUserListView *parent,
-                                   QListViewItem *after,
+                                   Q3ListViewItem *after,
                                    AB_USER *user)
-:QListViewItem(parent, after)
+:Q3ListViewItem(parent, after)
 ,_user(user){
   assert(user);
   _populate();
@@ -102,7 +102,7 @@ void QBUserListViewItem::_populate() {
 
 
 QBUserListView::QBUserListView(QWidget *parent, const char *name)
-:QListView(parent, name){
+:Q3ListView(parent, name){
   setAllColumnsShowFocus(true);
   setShowSortIndicator(true);
   addColumn(QWidget::tr("Institute"),-1);
@@ -156,7 +156,7 @@ std::list<AB_USER*> QBUserListView::getSelectedUsers(){
   QBUserListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {
@@ -176,7 +176,7 @@ std::list<AB_USER*> QBUserListView::getSortedUsers() {
   QBUserListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     entry=dynamic_cast<QBUserListViewItem*>(it.current());
@@ -195,7 +195,7 @@ AB_USER_LIST2 *QBUserListView::getSortedUsersList2(){
 
   users=AB_User_List2_new();
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     entry=dynamic_cast<QBUserListViewItem*>(it.current());
@@ -214,7 +214,7 @@ AB_USER_LIST2 *QBUserListView::getSortedUsersList2(){
 
 void QBUserListView::removeUser(AB_USER *user) {
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     QBUserListViewItem *entry;

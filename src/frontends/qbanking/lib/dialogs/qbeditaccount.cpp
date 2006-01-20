@@ -29,7 +29,7 @@ QBEditAccount::QBEditAccount(QBanking *kb,
                              AB_ACCOUNT *a,
                              QWidget* parent,
                              const char* name,
-                             WFlags fl)
+                             Qt::WFlags fl)
 :QBCfgTab(kb, parent, name, fl)
 ,_account(a) {
   QBCfgModule *mod;

@@ -28,7 +28,7 @@ public:
              AB_USER *u,
              QWidget* parent=0,
              const char* name=0,
-             WFlags fl=0);
+             Qt::WFlags fl=0);
   ~QBEditUser();
 
   static bool editUser(QBanking *kb, AB_USER *u, QWidget* parent=0);

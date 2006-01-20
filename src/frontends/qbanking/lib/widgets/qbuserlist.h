@@ -14,7 +14,7 @@
 #define QBANKING_USERLIST_H
 
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <aqbanking/user.h>
 
 #include <list>
@@ -23,7 +23,7 @@ class QBUserListView;
 class QBUserListViewItem;
 
 
-class QBUserListViewItem: public QListViewItem {
+class QBUserListViewItem: public Q3ListViewItem {
 private:
   AB_USER *_user;
 
@@ -32,7 +32,7 @@ private:
 public:
   QBUserListViewItem(QBUserListView *parent, AB_USER *user);
   QBUserListViewItem(QBUserListView *parent,
-		      QListViewItem *after,
+		      Q3ListViewItem *after,
 		      AB_USER *user);
   QBUserListViewItem(const QBUserListViewItem &item);
 
@@ -43,7 +43,7 @@ public:
 
 
 
-class QBUserListView: public QListView {
+class QBUserListView: public Q3ListView {
 private:
 public:
   QBUserListView(QWidget *parent=0, const char *name=0);

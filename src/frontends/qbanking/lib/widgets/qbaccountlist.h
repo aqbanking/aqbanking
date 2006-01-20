@@ -14,7 +14,7 @@
 #define QBANKING_ACCOUNTLIST_H
 
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <aqbanking/account.h>
 
 #include <list>
@@ -23,7 +23,7 @@ class QBAccountListView;
 class QBAccountListViewItem;
 
 
-class QBAccountListViewItem: public QListViewItem {
+class QBAccountListViewItem: public Q3ListViewItem {
 private:
   AB_ACCOUNT *_account;
 
@@ -32,7 +32,7 @@ private:
 public:
   QBAccountListViewItem(QBAccountListView *parent, AB_ACCOUNT *acc);
   QBAccountListViewItem(QBAccountListView *parent,
-                        QListViewItem *after,
+                        Q3ListViewItem *after,
                         AB_ACCOUNT *acc);
   QBAccountListViewItem(const QBAccountListViewItem &item);
 
@@ -45,7 +45,7 @@ public:
 
 
 
-class QBAccountListView: public QListView {
+class QBAccountListView: public Q3ListView {
 private:
 public:
   QBAccountListView(QWidget *parent=0, const char *name=0);

@@ -23,7 +23,7 @@
 
 QBAccountListViewItem::QBAccountListViewItem(QBAccountListView *parent,
 					     AB_ACCOUNT *acc)
-:QListViewItem(parent)
+:Q3ListViewItem(parent)
 ,_account(acc){
   assert(acc);
   _populate();
@@ -32,7 +32,7 @@ QBAccountListViewItem::QBAccountListViewItem(QBAccountListView *parent,
 
 
 QBAccountListViewItem::QBAccountListViewItem(const QBAccountListViewItem &item)
-:QListViewItem(item)
+:Q3ListViewItem(item)
 ,_account(0){
 
   if (item._account) {
@@ -42,9 +42,9 @@ QBAccountListViewItem::QBAccountListViewItem(const QBAccountListViewItem &item)
 
 
 QBAccountListViewItem::QBAccountListViewItem(QBAccountListView *parent,
-					     QListViewItem *after,
+					     Q3ListViewItem *after,
 					     AB_ACCOUNT *acc)
-:QListViewItem(parent, after)
+:Q3ListViewItem(parent, after)
 ,_account(acc){
   assert(acc);
   _populate();
@@ -138,7 +138,7 @@ QString QBAccountListViewItem::key(int column, bool ascending) const {
 
 
 QBAccountListView::QBAccountListView(QWidget *parent, const char *name)
-:QListView(parent, name){
+:Q3ListView(parent, name){
   setAllColumnsShowFocus(true);
   setShowSortIndicator(true);
   addColumn(QWidget::tr("Id"),-1);
@@ -194,7 +194,7 @@ std::list<AB_ACCOUNT*> QBAccountListView::getSelectedAccounts(){
   QBAccountListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {
@@ -214,7 +214,7 @@ std::list<AB_ACCOUNT*> QBAccountListView::getSortedAccounts() {
   QBAccountListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     entry=dynamic_cast<QBAccountListViewItem*>(it.current());

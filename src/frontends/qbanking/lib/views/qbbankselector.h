@@ -29,7 +29,7 @@ private:
 public:
   QBBankSelector(QBanking *qb,
                  const QString &country=QString("de"),
-                 QWidget* parent=0, const char* name=0, WFlags fl=0);
+                 QWidget* parent=0, const char* name=0, Qt::WFlags fl=0);
   ~QBBankSelector();
 
   QString getBankCode();

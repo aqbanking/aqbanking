@@ -23,7 +23,7 @@
 
 QBPluginDescrListViewItem::QBPluginDescrListViewItem(QBPluginDescrListView *parent,
                                                  GWEN_PLUGIN_DESCRIPTION *pd)
-:QListViewItem(parent)
+:Q3ListViewItem(parent)
 ,_descr(pd){
   assert(pd);
   _populate();
@@ -32,7 +32,7 @@ QBPluginDescrListViewItem::QBPluginDescrListViewItem(QBPluginDescrListView *pare
 
 
 QBPluginDescrListViewItem::QBPluginDescrListViewItem(const QBPluginDescrListViewItem &item)
-:QListViewItem(item)
+:Q3ListViewItem(item)
 ,_descr(0){
   if (item._descr) {
     _descr=item._descr;
@@ -41,9 +41,9 @@ QBPluginDescrListViewItem::QBPluginDescrListViewItem(const QBPluginDescrListView
 
 
 QBPluginDescrListViewItem::QBPluginDescrListViewItem(QBPluginDescrListView *parent,
-						 QListViewItem *after,
+						 Q3ListViewItem *after,
 						 GWEN_PLUGIN_DESCRIPTION *pd)
-:QListViewItem(parent, after)
+:Q3ListViewItem(parent, after)
 ,_descr(pd){
   assert(pd);
   _populate();
@@ -102,7 +102,7 @@ void QBPluginDescrListViewItem::_populate() {
 
 
 QBPluginDescrListView::QBPluginDescrListView(QWidget *parent, const char *name)
-:QListView(parent, name){
+:Q3ListView(parent, name){
   setAllColumnsShowFocus(true);
   setShowSortIndicator(true);
   addColumn(QWidget::tr("Name"),-1);
@@ -177,7 +177,7 @@ QBPluginDescrListView::getSelectedPluginDescrs(){
   QBPluginDescrListViewItem *entry;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(this);
+  Q3ListViewItemIterator it(this);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {

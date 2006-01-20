@@ -6,9 +6,11 @@ INCLUDES = \
   -Idialogs -Iwidgets -Iviews \
   $(all_includes)
 
-DEFS += -DPKGDATADIR=\"$(pkgdatadir)\" -DQBANKING_PLUGINS=\"@qbanking_plugindir@\"
+DEFS += -DBUILDING_QBANKING \
+  -DPKGDATADIR=\"$(pkgdatadir)\" \
+  -DQBANKING_PLUGINS=\"@qbanking_plugindir@\"
 
-AM_CFLAGS=-DBUILDING_QBANKING @visibility_cflags@
+AM_CPPFLAGS= @visibility_cflags@
 
 
 lib_LTLIBRARIES=libqbanking.la

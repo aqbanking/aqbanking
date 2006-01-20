@@ -19,8 +19,8 @@
 
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <qgroupbox.h>
-#include <qlistview.h>
+#include <q3groupbox.h>
+#include <q3listview.h>
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
@@ -35,7 +35,7 @@ QBSelectFromList::QBSelectFromList(QBanking *kb,
                                    QWidget* parent,
                                    const char* name,
                                    bool modal,
-                                   WFlags fl)
+                                   Qt::WFlags fl)
 :QBSelectFromListUi(parent, name, modal, fl)
 ,_app(kb)
 ,_minSelection(minSelection)
@@ -45,9 +45,9 @@ QBSelectFromList::QBSelectFromList(QBanking *kb,
   choiceBox->setCaption(listTypeName);
 
   if (maxSelection>1)
-    listView->setSelectionMode(QListView::Multi);
+    listView->setSelectionMode(Q3ListView::Multi);
   else
-    listView->setSelectionMode(QListView::Single);
+    listView->setSelectionMode(Q3ListView::Single);
   listView->setAllColumnsShowFocus(true);
 
   QObject::connect(listView,
@@ -107,7 +107,7 @@ void QBSelectFromList::init(){
 
       /* found settings */
       for (i=0; i<listView->columns(); i++) {
-        listView->setColumnWidthMode(i, QListView::Manual);
+        listView->setColumnWidthMode(i, Q3ListView::Manual);
         j=GWEN_DB_GetIntValue(db, "columns", i, -1);
         if (j!=-1)
           listView->setColumnWidth(i, j);
@@ -147,11 +147,11 @@ void QBSelectFromList::fini(){
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
                       "sortColumn", listView->sortColumn());
   switch(listView->sortOrder()) {
-  case Qt::Ascending:
+  case Qt::AscendingOrder:
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
                          "sortOrder", "ascending");
     break;
-  case Qt::Descending:
+  case Qt::DescendingOrder:
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
                          "sortOrder", "descending");
     break;
@@ -170,16 +170,16 @@ void QBSelectFromList::fini(){
 
 
 void QBSelectFromList::addEntry(const QString &name, const QString &descr){
-  QListViewItem *lv;
+  Q3ListViewItem *lv;
 
-  lv=new QListViewItem(listView, name, descr);
+  lv=new Q3ListViewItem(listView, name, descr);
 }
 
 
 
 void QBSelectFromList::selectEntry(const QString &s){
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(listView);
+  Q3ListViewItemIterator it(listView);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (s.lower()==it.current()->text(0).lower()) {
@@ -203,7 +203,7 @@ QStringList QBSelectFromList::selectedEntries(){
   QStringList sl;
 
   // Create an iterator and give the listview as argument
-  QListViewItemIterator it(listView);
+  Q3ListViewItemIterator it(listView);
   // iterate through all items of the listview
   for (;it.current();++it) {
     if (it.current()->isSelected()) {
@@ -220,7 +220,7 @@ void QBSelectFromList::slotSelectionChanged(){
   if (_minSelection<1) {
     int sel=0;
 
-    QListViewItemIterator it(listView);
+    Q3ListViewItemIterator it(listView);
     // iterate through all items of the listview
     for (;it.current();++it) {
       if (it.current()->isSelected()) {

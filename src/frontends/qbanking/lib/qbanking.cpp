@@ -31,6 +31,8 @@
 
 #include "qbwcb_fast.h"
 #include "qbwcb_simple.h"
+//Added by qt3to4:
+#include <Q3CString>
 
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
@@ -395,7 +397,7 @@ int QBanking::progressLog(GWEN_TYPE_UINT32 id,
   QString text(QString::fromUtf8(chartext));
 
   // Necessary when passing this QString into the macros
-  QCString local8Bit = text.local8Bit();
+  Q3CString local8Bit = text.local8Bit();
 
   if (level>_logLevel) {
     DBG_NOTICE(0, "Not logging this: %02d: %s (we are at %d)",
@@ -544,7 +546,7 @@ AB_ACCOUNT *QBanking::_getAccount(const char *accountId){
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     return 0;
   }
 
@@ -583,7 +585,7 @@ bool QBanking::requestBalance(const char *accountId){
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     return false;
   }
 
@@ -622,7 +624,7 @@ bool QBanking::requestTransactions(const char *accountId,
 				      "with\n"
 				      "the backend which handles "
 				      "this account.\n"),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     return false;
   }
 
@@ -715,7 +717,7 @@ bool QBanking::requestTransactions(const char *accountId,
 				      "</p>"
 				      "</qt>"
 				     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     return false;
   }
   else {
@@ -856,7 +858,7 @@ int QBanking::init(){
                                       "</p>"
                                       "</qt>"
                                      ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     delete _simpleCallback;
     _simpleCallback=0;
     return false;
@@ -877,7 +879,7 @@ int QBanking::init(){
                                       "</p>"
                                       "</qt>"
                                      ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
+			  QMessageBox::Ok,Qt::NoButton);
     delete _fastCallback;
     _fastCallback=0;
     return false;
@@ -1001,7 +1003,7 @@ std::string QBanking::QStringToUtf8String(const QString &qs) {
   if (qs.isEmpty())
     return "";
   else {
-    QCString utfData=qs.utf8();
+    Q3CString utfData=qs.utf8();
   
     // Note: This commented-out code below introduced an extra
     // char-by-char copying that I don't consider necessary. The

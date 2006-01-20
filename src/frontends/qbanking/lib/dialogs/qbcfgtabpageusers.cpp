@@ -38,7 +38,7 @@
 QBCfgTabPageUsers::QBCfgTabPageUsers(QBanking *qb,
                                      QWidget *parent,
                                      const char *name,
-                                     WFlags f)
+                                     Qt::WFlags f)
 :QBCfgTabPage(qb, tr("Users"), parent, name, f){
   _realPage=new QBCfgTabPageUsersUi(this);
   addWidget(_realPage);
@@ -81,14 +81,14 @@ bool QBCfgTabPageUsers::toGui() {
   assert(dbSettings);
 
   /* setup user list view */
-  _realPage->userList->setResizeMode(QListView::NoColumn);
+  _realPage->userList->setResizeMode(Q3ListView::NoColumn);
   for (i=0; i<_realPage->userList->columns(); i++) {
-    _realPage->userList->setColumnWidthMode(i, QListView::Manual);
+    _realPage->userList->setColumnWidthMode(i, Q3ListView::Manual);
     j=GWEN_DB_GetIntValue(dbSettings, "gui/userList/columns", i, -1);
     if (j!=-1)
       _realPage->userList->setColumnWidth(i, j);
   } /* for */
-  _realPage->userList->setSelectionMode(QListView::Single);
+  _realPage->userList->setSelectionMode(Q3ListView::Single);
 
   _userRescan();
   return true;

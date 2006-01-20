@@ -15,6 +15,8 @@
 
 
 #include "qbprogress.ui.h"
+//Added by qt3to4:
+#include <QCloseEvent>
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
 
@@ -64,7 +66,7 @@ public:
              const QString& title,
              const QString& text,
              const QString& units,
-             QWidget* parent=0, const char* name=0, WFlags fl=0);
+             QWidget* parent=0, const char* name=0, Qt::WFlags fl=0);
   ~QBProgress();
 
   int setTotalPos(GWEN_TYPE_UINT32 total);

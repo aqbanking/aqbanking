@@ -26,7 +26,7 @@ QBBankSelector::QBBankSelector(QBanking *qb,
                                const QString &country,
                                QWidget* parent,
                                const char* name,
-                               WFlags fl)
+                               Qt::WFlags fl)
 :QBBankSelectorUi(parent, name, fl)
 ,_qbanking(qb)
 ,_country(country) {
