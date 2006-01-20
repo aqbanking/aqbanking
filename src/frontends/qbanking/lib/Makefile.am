@@ -89,7 +89,12 @@ sources:
 	done ;
 
 %.moc.cpp: %.h
-	$(qt3_moc) -o $@ $<
+	$(qt3_moc) -o $<.moc.tmp $< && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $<.moc.tmp >>$@ && \
+	rm $<.moc.tmp
 
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib

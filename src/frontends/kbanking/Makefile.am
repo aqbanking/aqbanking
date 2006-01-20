@@ -41,7 +41,7 @@ libkbanking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- -L../qbanking/lib -lqbanking \
+ ../qbanking/lib/libqbanking.la \
  $(aqbanking_internal_libs) \
  $(kde3_libs) -lkdeui -lkdecore -lkio $(gwenhywfar_libs)
 

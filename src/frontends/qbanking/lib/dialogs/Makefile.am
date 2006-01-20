@@ -107,13 +107,28 @@ sources:
 
 
 %.moc.cpp: %.h
-	@qt3_moc@ -o $@ $<
+	$(qt3_moc) -o $<.moc.tmp $< && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $<.moc.tmp >>$@ && \
+	rm $<.moc.tmp
 
 
 %.ui.cpp: %.ui
-	$(UIC3) $< -impl $<.h -o $@
+	$(UIC3) $< -impl $<.h -o $<.tmp && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $<.tmp >>$@ && \
+	rm $<.tmp
+
 %.ui.h: %.ui
-	$(UIC3) $< -o $@
+	$(UIC3) $< -o $<.tmp && \
+	echo "#include <qbanking/qbanking.h>" >$@ && \
+	$(top_srcdir)/admin/insert_api.sh QBANKING_API < $<.tmp >>$@ && \
+	rm $<.tmp
+
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
 # This section is for a qt4 environment
