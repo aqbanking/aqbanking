@@ -1,5 +1,13 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.2beta (2006-01-19)
+===========================================================================
+
+This relese fixes a bug which made Gnucash unable to find the QT3 wizard.
+It also reintroduces support for OFX DirectConnect (yet untested, though).
+
+
+===========================================================================
                Released AqBanking - 1.9.1beta (2006-01-17)
 ===========================================================================
 

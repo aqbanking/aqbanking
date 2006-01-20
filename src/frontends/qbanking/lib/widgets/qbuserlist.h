@@ -15,7 +15,7 @@
 
 
 #include <qlistview.h>
-#include <aqhbci/user.h>
+#include <aqbanking/user.h>
 
 #include <list>
 

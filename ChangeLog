@@ -1,4 +1,15 @@
 
+2006/01/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- enabled OFX-QT3 section in specs file
+- fixed a bug: qbuserlist.h was including an AqHBCI header
+
+
+===========================================================================
+MARK: released AqBanking - 1.9.2beta (2006-01-19)
+===========================================================================
+
+
 2006/01/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was not finding the new QT3 wizard)

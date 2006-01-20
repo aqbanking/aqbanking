@@ -129,11 +129,11 @@ Obsoletes: ofx-qt3
 %description ofx
 Necessary for OFX direct connect access.
 
-#%package ofx-qt3
-#Summary: Aqbanking tools for Qt3
-#Group: System Environment/Libraries
-#%description ofx-qt3
-#Necessary for OFX direct connect access.
+%package ofx-qt3
+Summary: Aqbanking tools for Qt3
+Group: System Environment/Libraries
+%description ofx-qt3
+Necessary for OFX direct connect access.
 %endif
 
 ### Sub-packages for Geldkarte
@@ -235,8 +235,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/%{name}/imexporters/ofx
 %{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
-#%files ofx-qt3
-#%{qb_cfgmoddir}/aqofxconnect*
+%files ofx-qt3
+%{qb_cfgmoddir}/aqofxconnect*
 %endif
 
 %if %have_libchipcard
