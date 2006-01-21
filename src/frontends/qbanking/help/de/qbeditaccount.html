@@ -17,11 +17,133 @@
 <body>
 
 
-<a name="QBCfgTabPageAccountGeneral">Generelle Konto-Einstellungen</a>
+<h1>Kontoeinstellungen ändern </h1>
 
-Hier steht noch nix.
+<p>
+  Dieser Dialog ermöglicht die Konfiguration eines Kontos.
+</p>
 
-<img src="images/qbcfgtabsettings-1.png" />
+<p>
+  Dieser Dialog enthält verschiedene Seiten:
+  <ul>
+    <li>
+      <b>Einleitung</b> (enthält allgemeine Hinweise zum Dialog)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      <a href="#QBCfgTabPageAccountGeneral">
+        <b>Grundeinstellungen</b>
+      </a>
+      (allgemeine Einstellungen zum Konto)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      eine optionale Anwendungs-Seite (z.B. <b>QBankManager</b>, hier können
+      Sie - falls diese Seite vorhanden ist - Anwendungs-spezifische
+      Einstellungen vornehmen)
+    </li>
+    <li>
+      eine optionale Seite des Banking-Moduls (z.B. <b>HBCI</b>, hier können
+      dann beispielsweise HBCI-spezifische Einstellungen vorgenommen werden)
+    </li>
+  </ul>
+</p>
+
+
+
+<!-- 
+                        Generelle Konto-Einstellungen 
+-->
+
+<a name="QBCfgTabPageAccountGeneral">
+<h2>Generelle Konto-Einstellungen</h2>
+</a>
+
+<p>
+  Hier können Sie generelle Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+<br>
+<img src="images/qbeditaccount-1.png" />
+<br>
+
+
+<h3>Kontoeinstellungen</h3>
+
+<table>
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Kontoname</td>
+    <td>Frei wählbarer Name des Kontos</td>
+  </tr>
+  <tr>
+    <td>Kontonummer</td>
+    <td>Kontonummer wie Sie sie auf Ihren Kontoauszügen finden</td>
+  </tr>
+  <tr>
+    <td>Name des Kontoinhabers</td>
+    <td>
+      Hier sollten Sie Ihren Namen so eintragen wie er bei der Bank hinterlegt
+      ist. Der Eintrag hier wird beispielsweise bei Überweisungen verwendet.
+    </td>
+  </tr>
+</table>
+
+
+<h3>Bank-Einstellungen</h3>
+
+Hier werden Einstellungen bezüglich der Bank vorgenommen.
+
+<table>
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Staat</td>
+    <td>Wählen Sie den Staat, in dem die Bank ihren Sitz hat.</td>
+  </tr>
+  <tr>
+    <td>Bankleitzahl</td>
+    <td>
+     Geben Sie hier für deutsche Banken die Bankleitzahl ein.
+     Für Staaten, in denen keine Bankleitzahlen üblich sind (bzw. falls Sie
+     sie nicht kennen), geben Sie hier <i>00000000</i> ein.
+    </td>
+  </tr>
+  <tr>
+    <td>Bankname</td>
+    <td>
+      Hier können Sie den Namen der Bank eingeben. Dieses Feld dient Ihnen
+      später beispielweise bei Berichten zur besseren Identifizierung der
+      Bank.
+    </td>
+  </tr>
+</table>
+
+
+<h3>Verfügbare Benutzer / ausgewählte Benutzer</h3>
+
+<p>
+  Manche Banking-Module arbeiten Benutzer-orientiert (wie HBCI, OFX etc).
+  Diese Module müssen wissen, unter welchem Benutzer Sie sich bei der Bank
+  anmelden wollen, wenn Sie Aufträge ausführen wollen.
+</p>
+<p>
+  Auf der linken Seite (<i>verfügbare Benutzer</i>) finden Sie die Benutzer,
+  die Sie dem Konto zuordnen können.
+</p>
+
+<p>
+  Auf der rechten Seite finden Sie die Benutzer, die bereits dem Konto
+  zugeordnet wurden (entweder durch Sie oder automatisch durch das
+  Banking-Modul).
+</p>
+
+
 
 
 
