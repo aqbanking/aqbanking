@@ -1,0 +1,4 @@
+*.moc
+qb-help
+*.ui.cpp
+*.ui.h
