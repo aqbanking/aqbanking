@@ -227,6 +227,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{qb_cfgmoddir}/aqhbci*
 %{qb_cfgmoddir}/aqdtaus*
 %{_datadir}/%{name}/i18n
+%{_datadir}/%{name}/frontends/qbanking
 
 %if %have_libofx
 %files ofx
