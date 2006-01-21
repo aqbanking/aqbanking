@@ -36,16 +36,14 @@ iheader_HEADERS=\
 
 MOC_FILES=\
  qbprogress.moc qbprogress.ui.moc \
- qbsimplebox.ui.moc \
- qbinputbox.moc \
- qbsimplebox.moc \
- qbcfgtab.moc qbcfgtab.ui.moc
- 
+ qbsimplebox.moc qbsimplebox.ui.moc \
+ qbcfgtab.moc qbcfgtab.ui.moc \
+ qbinputbox.moc
 
 nodist_libwidgets_la_SOURCES=\
  qbprogress.ui.cpp \
- qbsimplebox.ui.cpp
-
+ qbsimplebox.ui.cpp \
+ qbcfgtab.ui.cpp
 
 libwidgets_la_SOURCES=\
  qbaccountlist.cpp \
@@ -54,7 +52,7 @@ libwidgets_la_SOURCES=\
  qbplugindescrlist.cpp \
  qbprogress.cpp  \
  qbsimplebox.cpp \
- qbcfgtab.cpp qbcfgtab.ui.cpp \
+ qbcfgtab.cpp \
  qbcfgtabpage.cpp \
  qbcfgtabpageuser.cpp \
  qbcfgtabpageaccount.cpp \
