@@ -1,10 +1,5 @@
 INCLUDES=-I$(top_builddir)/headers -I$(srcdir)/../widgets -I$(srcdir)/.. -I$(srcdir)/../prg @all_includes@
 
-UI_FILES=\
-  settings.ui
-
-EXTRA_DIST = $(UI_FILES)
-
 noinst_LTLIBRARIES=libdialogs.la
 
 #nodist_iheader_HEADERS=
