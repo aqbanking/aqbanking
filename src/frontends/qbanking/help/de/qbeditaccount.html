@@ -17,7 +17,9 @@
 <body>
 
 
+<a name="none">
 <h1>Kontoeinstellungen ändern </h1>
+</a>
 
 <p>
   Dieser Dialog ermöglicht die Konfiguration eines Kontos.
@@ -43,8 +45,23 @@
       Einstellungen vornehmen)
     </li>
     <li>
-      eine optionale Seite des Banking-Moduls (z.B. <b>HBCI</b>, hier können
-      dann beispielsweise HBCI-spezifische Einstellungen vorgenommen werden)
+      eine optionale Seite des Banking-Moduls, welches für das bearbeitete
+      Konto zuständig ist, z.B.:
+      <ul>
+        <li>
+          <a href="#QBCfgTabPageAccountHbci">
+          <b>HBCI</b>
+          </a>
+          (HBCI-spezifische Einstellungen)
+        </li>
+        <li>
+          <a href="#CfgTabPageAccountDtaus">
+          <b>DTAUS</b>
+          </a>
+           (Einstellungen zu <i>DTAUS</i>)
+        </li>
+      </ul>
+
     </li>
   </ul>
 </p>
@@ -55,9 +72,12 @@
                         Generelle Konto-Einstellungen 
 -->
 
+<hr>
+
 <a name="QBCfgTabPageAccountGeneral">
 <h2>Generelle Konto-Einstellungen</h2>
 </a>
+<a href="#none">(zum Seitenanfang)</a>
 
 <p>
   Hier können Sie generelle Einstellungen an Ihrem Konto vornehmen.
@@ -144,8 +164,247 @@ Hier werden Einstellungen bezüglich der Bank vorgenommen.
 </p>
 
 
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
 
 
+<!-- 
+                        HBCI-Einstellungen 
+-->
+
+<a name="CfgTabPageAccountHbci">
+<h2>Konto-Einstellungen für HBCI</h2>
+</a>
+
+<br>
+<img src="images/qbeditaccount-2.png" />
+<br>
+
+<p>
+  Hier können Sie HBCI-spezifische Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+
+<h3>Allgemeine Einstellungen</h3>
+
+<table>
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      <i>Einzelüberweisung anstelle Sammelüberweisung bevorzugen</i>
+    </td>
+    <td>
+      <p>
+        Wenn dieses Feld markiert ist, werden bei Überweisungen immer
+        Einzelaufträge erzeugt, andernfalls Sammelaufträge.
+      </p>
+      <p>
+        Sammelaufträge sind bei manchen Banken preiswerter als 
+        Einzelaufträge. Allerdings haben Sammelaufträge den Nachteil, daß
+        man je nach Bank oft nur einen Gesamtposten in seinen Kontoauszügen 
+        findet, wodurch die Zuordnung der Umsätze zu den einzelnen
+        Überweisungen unmöglich wird.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <i>Einzellastschrift anstelle Sammellastschrift bevorzugen</i>
+    </td>
+    <td>
+      Wie das obige Feld, allerdings für Lastschriften.
+    </td>
+  </tr>
+</table>
+
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
+
+
+<!-- 
+                        DTAUS-Einstellungen 
+-->
+
+
+<br>
+<img src="images/qbeditaccount-3.png" />
+<br>
+
+<a name="CfgTabPageAccountDtaus">
+<h2>Konto-Einstellungen für DTAUS</h2>
+</a>
+
+<p>
+  Hier können Sie DTAUS-spezifische Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+
+<h3>DTAUS Einstellungen</h3>
+
+<table>
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      Maximale Anzahl Verwendungszweckzeilen
+    </td>
+    <td>
+      Zulässig sind meistens 2-6.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Lastschriften erlauben
+    </td>
+    <td>
+      Markieren Sie dieses Feld, falls Ihre Bank Ihnen das Einziehen von
+      Lastschriften erlaubt und Sie dies tun möchten.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Alle Umsätze ausdrucken
+    </td>
+    <td>
+      Falls dieses Feld markiert ist, werden auf dem Begleitzettel zur
+      <i>DTAUS-Diskette</i> <b>alle</b> Überweisungen ausgedruckt.
+      Andernfalls wird nur eine Übersicht ausgedruckt.
+    </td>
+  </tr>
+</table>
+
+<h3>Ablage-Einstellungen</h3>
+
+<table>
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      Zielverzeichnis
+    </td>
+    <td>
+      <p>
+        Geben Sie hier das Verzeichnis an, in das Sie die <i>DTAUS-Dateien</i>
+        speichern wollen.
+      </p>
+      <p>
+        Falls Sie direkt DTAUS-Disketten erstellen wollen - statt die
+        Dateien auf der Festplatte abzulegen - sollten Sie hier den
+        Pfad angeben, unter dem das Diskettenlaufwerk zu finden ist.
+        Meist ist dies <i>/floppy</i>, <i>/mnt/floppy</i> oder
+        <i>/media/floppy<i> (je nach System).
+      </p>
+      <p>
+        Klicken Sie auf den Knopf neben dem Eingabefeld um einen Datei-Dialog
+        zu erhalten.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Diskette verwenden
+    </td>
+    <td>
+      Markieren Sie dieses Feld, falls Sie direkt Disketten beschreiben
+      wollen. In diesem Fall stellt das Modul sicher, daß sich in dem 
+      angegebenen Verzeichnis am Ende nur eine einzige Datei befindet, die
+      außerdem den von DTAUS vorgeschriebenen Namen trägt.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Einbinden erlauben
+    </td>
+    <td>
+      <p>
+        Das Modul kann automatisch Disketten im Laufwerk einbinden.
+      </p>
+      <p>
+        Die eingelegt Diskette muß im MS-DOS-Format formatiert und leer sein.
+      </p>
+      <p>
+        Falls dieses Feld markiert ist, müssen Sie die Kommandos zum Einbinden
+        in den nächsten Feldern eingeben.
+      </p>
+      <p>
+        Bitte beachten Sie, daß dieses Feld ausgeschaltet sein muß, falls Ihr
+        System einen <b>automounter</b> verwendet.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Kommando zum Einbinden
+    </td>
+    <td>
+      <p>
+        Hier geben Sie nun das Kommando zum Einbinden einer Diskette im 
+        Laufwerkes an. Die nötige Eingabe hängt von Ihrem System ab.
+      </p>
+      <p>
+        Für Linux müssen Sie hier das folgende Kommando eingeben:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          mount <i>Zielverzeichnis wie oben angegeben</i>
+        </td></tr>
+      </table>
+      <br>
+      </p>
+        Falls Sie also oben <i>/floppy</i> eingegeben haben, lautet das
+        korrekte Kommando:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          mount /floppy
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Lösen der Einbindung
+    </td>
+    <td>
+      <p>
+        Geben Sie hier analog zum vorigen Feld das Kommando zum Lösen der
+        Einbindung der Diskette ein.
+      </p>
+      <p>
+        Für Linux müssen Sie hier das folgende Kommando eingeben:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          umount <i>Zielverzeichnis wie oben angegeben</i>
+        </td></tr>
+      </table>
+      <br>
+      </p>
+        Falls Sie also oben <i>/floppy</i> eingegeben haben, lautet das
+        korrekte Kommando:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          umount /floppy
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+</table>
+
+
+
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
 
 
 

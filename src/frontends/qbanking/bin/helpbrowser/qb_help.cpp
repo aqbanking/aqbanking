@@ -35,6 +35,7 @@
 #include <qtranslator.h>
 #include <qmessagebox.h>
 
+
 #ifdef OS_WIN32
 # define DIRSEP "\\"
 #else

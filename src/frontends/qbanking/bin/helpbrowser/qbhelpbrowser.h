@@ -26,9 +26,15 @@
 
 class QComboBox;
 class QPopupMenu;
+class QToolButton;
+
 
 class QBANKING_API QBHelpBrowser : public QBHelpBrowserUi {
   Q_OBJECT
+private:
+  QToolButton *_backwardButton;
+  QToolButton *_forwardButton;
+
 public:
   QBHelpBrowser(const QString& home,
                 const QStringList& paths,
@@ -39,8 +45,8 @@ public:
   void setFilePaths(const QStringList& pathList);
 
 private slots:
-  void setBackwardAvailable(bool );
-  void setForwardAvailable(bool );
+  void slotBackwardAvailable(bool );
+  void slotForwardAvailable(bool );
 
   void slotSourceChanged(const QString& );
   void slotAbout();

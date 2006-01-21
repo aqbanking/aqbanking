@@ -179,20 +179,28 @@ QBHelpBrowser::QBHelpBrowser(const QString& home,
 
   _menuBar->setItemEnabled( _forwardId, FALSE);
   _menuBar->setItemEnabled( _backwardId, FALSE);
+
+  _backwardButton=new QToolButton( icon_back, tr("Backward"), "",
+                                  textBrowser, SLOT(backward()),
+                                  _toolBar );
+  _backwardButton->setEnabled(FALSE);
+
+  _forwardButton=new QToolButton(icon_forward, tr("Forward"), "",
+                                 textBrowser, SLOT(forward()),
+                                 _toolBar );
+
+  _forwardButton->setEnabled( FALSE );
+
+  QToolButton *button;
+
+  button=new QToolButton( icon_home, tr("Home"), "",
+                         textBrowser, SLOT(home()),
+                         _toolBar );
+
   connect(textBrowser, SIGNAL(backwardAvailable(bool)),
-          this, SLOT(setBackwardAvailable(bool)) );
-  connect( textBrowser, SIGNAL( forwardAvailable( bool ) ),
-          this, SLOT( setForwardAvailable( bool ) ) );
-
-  QToolButton* button;
-
-  button = new QToolButton( icon_back, tr("Backward"), "", textBrowser, SLOT(backward()), _toolBar );
-  connect( textBrowser, SIGNAL( backwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
-  button->setEnabled( FALSE );
-  button = new QToolButton( icon_forward, tr("Forward"), "", textBrowser, SLOT(forward()), _toolBar );
-  connect( textBrowser, SIGNAL( forwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
-  button->setEnabled( FALSE );
-  button = new QToolButton( icon_home, tr("Home"), "", textBrowser, SLOT(home()), _toolBar );
+          this, SLOT(slotBackwardAvailable(bool)));
+  connect(textBrowser, SIGNAL(forwardAvailable(bool) ),
+          this, SLOT(slotForwardAvailable(bool)));
 
   _toolBar->addSeparator();
   textBrowser->setFocus();
@@ -211,14 +219,16 @@ void QBHelpBrowser::setFilePaths(const QStringList& pathList) {
 
 
 
-void QBHelpBrowser::setBackwardAvailable(bool b){
+void QBHelpBrowser::slotBackwardAvailable(bool b){
   _menuBar->setItemEnabled(_backwardId, b);
+  _backwardButton->setEnabled(b);
 }
 
 
 
-void QBHelpBrowser::setForwardAvailable(bool b){
+void QBHelpBrowser::slotForwardAvailable(bool b){
   _menuBar->setItemEnabled(_forwardId, b);
+  _forwardButton->setEnabled(b);
 }
 
 
