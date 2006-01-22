@@ -282,7 +282,8 @@ bool EditCtUser::apply(){
 			     "</p>"
 			     "<p>"
 			     "Please correct your entry."
-			     "</p>"),
+                             "</p>"
+                             "</qt>"),
 			  QMessageBox::Ok,QMessageBox::NoButton);
     nameEdit->setFocus();
     return false;
