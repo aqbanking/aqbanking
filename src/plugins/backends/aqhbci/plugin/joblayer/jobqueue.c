@@ -559,7 +559,8 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   const char *p;
   int tanRecycle;
   int rv;
-  int dialogAborted;
+  int dialogAborted=0;
+  int abortQueue=0;
 
   assert(jq);
   assert(jq->usage);
@@ -571,7 +572,6 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
   /* log all results */
   tanRecycle=0;
-  dialogAborted=0;
   dbCurr=GWEN_DB_GetFirstGroup(db);
   while(dbCurr) {
     if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0 ||
@@ -597,8 +597,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
 		   "Result: Error (%d: %s)", rcode, p);
 	  level=AB_Banking_LogLevelError;
-	  if (isMsgResult && rcode==9800)
-	    dialogAborted=1;
+	  if (isMsgResult) {
+	    if (rcode==9800)
+	      dialogAborted=1;
+	    else if (rcode>9300 && rcode<9400)
+	      abortQueue=1;
+	  }
 	}
         else if (rcode>=3000 && rcode<4000) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -977,6 +981,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   }
   if (dialogAborted) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer");
+    return AB_ERROR_ABORTED;
+  }
+
+  if (abortQueue) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+	       "Aboting queue");
     return AB_ERROR_ABORTED;
   }
 

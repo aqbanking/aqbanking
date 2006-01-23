@@ -4,6 +4,8 @@
 - AB_CryptManager now implements the new function 
   GWEN_CryptManager_SetPinStatus() thus allowing crypt tokens to mark bad
   pins
+- AqHBCI: When we get a response indicating problems with our signature
+  we abort the current queue instead of going on
 
 
 2006/01/22: Martin Preuss<martin@libchipcard.de>
