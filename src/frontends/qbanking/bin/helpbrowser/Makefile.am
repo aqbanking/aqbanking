@@ -24,11 +24,13 @@ libqbhelp_la_SOURCES=qbhelpbrowser.cpp
 
 nodist_libqbhelp_la_SOURCES=\
  qbhelpbrowser.ui.cpp
- 
+
 
 bin_PROGRAMS = qb-help
 qb_help_SOURCES = qb_help.cpp
-qb_help_LDADD= libqbhelp.la $(gwenhywfar_libs) $(qt3_libs)
+qb_help_LDADD= libqbhelp.la \
+  $(qt3_libs) \
+  $(gwenhywfar_libs)
 
 BUILT_SOURCES = $(MOC_FILES) $(nodist_libqbhelp_la_SOURCES) $(nodist_noinst_HEADERS)
 CLEANFILES = $(BUILT_SOURCES)
@@ -53,7 +55,7 @@ EXTRA_DIST = $(UI_FILES)
 SUFFIXES = .ui .ui.h .ui.cpp .moc
 
 sources:
-	for f in $(qt3_wizard_SOURCES); do \
+	for f in $(libqbhelp_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -62,12 +64,12 @@ sources:
 
 # This section is for a qt4 environment
 qt4-port:
-	for A in $(qt3_wizard_SOURCES) $(noinst_HEADERS); do \
+	for A in $(libqbhelp_la_SOURCES) $(noinst_HEADERS); do \
 	 $(YES) | $(QT3TO4) $$A; \
 	done
 #	rm $(BUILT_SOURCES)
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
 
-built_sources:
+built_sources: $(BUILT_SOURCES)
 
