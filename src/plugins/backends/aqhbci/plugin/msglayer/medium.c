@@ -301,6 +301,16 @@ int AH_Medium__MountCt(AH_MEDIUM *m){
 
   assert(m);
 
+  if (m->disableMount) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Refusing to mount medium because there was a pin error");
+    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(m->hbci),
+                           0, AB_Banking_LogLevelError,
+                           I18N("Refusing to mount medium because "
+                                "there was a pin error"));
+    return AB_ERROR_SECURITY;
+  }
+
   /* get crypt token */
   pm=GWEN_PluginManager_FindPluginManager("crypttoken");
   if (pm==0) {
@@ -331,7 +341,21 @@ int AH_Medium__MountCt(AH_MEDIUM *m){
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
     GWEN_CryptToken_free(ct);
-    return AB_ERROR_GENERIC;
+    switch(rv) {
+    case GWEN_ERROR_CT_BAD_PIN:        
+    case GWEN_ERROR_CT_BAD_PIN_0_LEFT:
+    case GWEN_ERROR_CT_BAD_PIN_1_LEFT:
+    case GWEN_ERROR_CT_BAD_PIN_2_LEFT:
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Disabling mount for this session in order to "
+                "protect the medium");
+      m->disableMount=1;
+      return AB_ERROR_BAD_PIN;
+    case GWEN_ERROR_CT_IO_ERROR:
+      return AB_ERROR_IO;
+    default:
+      return AB_ERROR_GENERIC;
+    }
   }
 
   if (m->flags)

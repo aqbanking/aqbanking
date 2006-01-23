@@ -41,6 +41,7 @@ struct AH_MEDIUM {
   AH_MEDIUM_CTX *currentContext;
   int selected;
 
+  int disableMount;
 };
 
 

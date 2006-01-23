@@ -99,6 +99,8 @@
 #define AB_ERROR_UNKNOWN         (-17)
 #define AB_ERROR_ABORTED         (-18)
 #define AB_ERROR_DEFAULT_VALUE   (-19)
+#define AB_ERROR_BAD_PIN         (-20)
+#define AB_ERROR_IO              (-21)
 
 #define AB_ERROR_USER1           (-128)
 #define AB_ERROR_USER2           (-129)

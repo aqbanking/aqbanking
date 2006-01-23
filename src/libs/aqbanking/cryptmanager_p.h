@@ -36,6 +36,15 @@ static int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                                   unsigned int maxLength,
                                   unsigned int *pinLength);
 
+static int AB_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *pm,
+                                        GWEN_CRYPTTOKEN *token,
+                                        GWEN_CRYPTTOKEN_PINTYPE pt,
+                                        GWEN_CRYPTTOKEN_PINENCODING pe,
+                                        GWEN_TYPE_UINT32 flags,
+                                        unsigned char *buffer,
+                                        unsigned int pinLength,
+                                        int isOk);
+
 static int AB_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
                                          GWEN_CRYPTTOKEN *token,
                                          GWEN_CRYPTTOKEN_PINTYPE pt);

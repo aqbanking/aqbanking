@@ -157,12 +157,12 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
 
   /* get medium of signer */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for signing");
-  medium=AH_HBCI_GetMedium(h, su);
-  if (!medium) {
+  rv=AH_HBCI_GetMedium(h, su, &medium);
+  if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not find medium for user \"%s\"",
-             AB_User_GetUserId(su));
-    return -1;
+             "Could not find medium for user \"%s\" (%d)",
+             AB_User_GetUserId(su), rv);
+    return rv;
   }
 
   mctx=AH_Medium_GetCurrentContext(medium);
@@ -508,13 +508,13 @@ int AH_Msg_EncryptMsg(AH_MSG *hmsg) {
 
   /* get medium */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for encrypting");
-  medium=AH_HBCI_GetMedium(AH_Dialog_GetHbci(hmsg->dialog), u);
-  if (!medium) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not find medium for customer \"%s\"",
-             AB_User_GetCustomerId(u));
-    /* GWEN_DB_Group_free(cfg); */
-    return -1;
+  rv=AH_HBCI_GetMedium(AH_Dialog_GetHbci(hmsg->dialog),
+                       u, &medium);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Could not find medium for customer \"%s\" (%d)",
+              AB_User_GetCustomerId(u), rv);
+    return rv;
   }
 
   mctx=AH_Medium_GetCurrentContext(medium);
@@ -1047,14 +1047,14 @@ int AH_Msg_Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* get medium */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for decrypting");
-  medium=AH_HBCI_GetMedium(h, u);
-  if (!medium) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not find medium for user \"%s\"",
-             GWEN_KeySpec_GetOwner(ks));
+  rv=AH_HBCI_GetMedium(h, u, &medium);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Could not find medium for user \"%s\" (%d)",
+              GWEN_KeySpec_GetOwner(ks), rv);
     GWEN_Buffer_free(msgkeybuf);
     GWEN_KeySpec_free(ks);
-    return -1;
+    return rv;
   }
 
   mctx=AH_Medium_GetCurrentContext(medium);
@@ -1264,6 +1264,7 @@ int AH_Msg_Verify(AH_MSG *hmsg,
     AH_MEDIUM *medium=0;
     AH_MEDIUM_CTX *mctx;
     AH_MEDIUM_RESULT mres;
+    int rv;
 
     /* get signature tail */
     sigtail=(GWEN_DB_NODE*)GWEN_List_GetBack(sigtails);
@@ -1343,7 +1344,17 @@ int AH_Msg_Verify(AH_MSG *hmsg,
 
     /* get medium */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Getting medium for verification");
-    medium=AH_HBCI_GetMedium(AH_Dialog_GetHbci(hmsg->dialog), u);
+    rv=AH_HBCI_GetMedium(AH_Dialog_GetHbci(hmsg->dialog), u, &medium);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Could not get medium for signer (%d)", rv);
+      GWEN_Buffer_free(sigbuf);
+      GWEN_Buffer_free(dbuf);
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
+      GWEN_KeySpec_free(ks);
+      return rv;
+    }
     assert(medium);
     mctx=AH_Medium_GetCurrentContext(medium);
     assert(mctx);

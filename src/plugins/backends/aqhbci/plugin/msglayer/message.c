@@ -487,6 +487,8 @@ unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
   GWEN_MSGENGINE *e;
+  int rv;
+
   assert(hmsg);
 
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
@@ -523,10 +525,11 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
     while (ks) {
       /*DBG_INFO(AQHBCI_LOGDOMAIN, "Signing with this key:");
        GWEN_KeySpec_Dump(ks, stderr, 1);*/
-      if (AH_Msg_SignMsg(hmsg, rawBuf, ks)) {
+      rv=AH_Msg_SignMsg(hmsg, rawBuf, ks);
+      if (rv) {
         GWEN_Buffer_free(rawBuf);
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-        return -1;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       ks=GWEN_KeySpec_List_Next(ks);
     } /* while */
@@ -540,9 +543,10 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
   /* encrypt message */
   if (hmsg->crypter) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encrypting message");
-    if (AH_Msg_EncryptMsg(hmsg)) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-      return -1;
+    rv=AH_Msg_EncryptMsg(hmsg);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encrypting message: done");
   }

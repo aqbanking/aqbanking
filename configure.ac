@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=4
+AQBANKING_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -638,7 +638,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(1,99,0,0)
+AC_GWENHYWFAR(1,99,4,1)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -651,7 +651,7 @@ XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 #
 
 case "$aqbanking_backends" in *aqgeldkarte*)
-  AC_CHIPCARD_CLIENT(1,9,17,0)
+  AC_CHIPCARD_CLIENT(1,9,19,2)
   AC_MSG_CHECKING(if chipcard_client is useable)
   if test "x$have_chipcard_client" != "xyes"; then
     AC_MSG_RESULT(yes)

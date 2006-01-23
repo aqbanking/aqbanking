@@ -511,8 +511,9 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf) {
 
 
 
-AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u){
+int AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u, AH_MEDIUM **pm){
   AH_MEDIUM *m;
+  int rv;
 
   assert(hbci);
   assert(u);
@@ -522,12 +523,14 @@ AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u){
     if (AH_Medium_SelectContext(hbci->currentMedium,
                                 AH_User_GetContextIdx(u))==0) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Returning current medium");
-      return hbci->currentMedium;
+      *pm=hbci->currentMedium;
+      return 0;
     }
     if (AH_Medium_IsMounted(hbci->currentMedium)) {
-      if (AH_Medium_Unmount(hbci->currentMedium, 0)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Could not unmount medium");
-        return 0;
+      rv=AH_Medium_Unmount(hbci->currentMedium, 0);
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not unmount medium (%d)", rv);
+        return rv;
       }
     }
     AH_Medium_free(hbci->currentMedium);
@@ -538,9 +541,10 @@ AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u){
   assert(m);
 
   if (!AH_Medium_IsMounted(m)) {
-    if (AH_Medium_Mount(m)) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not mount medium");
-      return 0;
+    rv=AH_Medium_Mount(m);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not mount medium (%d)", rv);
+      return rv;
     }
   }
 
@@ -548,18 +552,21 @@ AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u){
   hbci->currentMedium=m;
   AH_Medium_Attach(m);
 
-  if (AH_Medium_SelectContext(hbci->currentMedium,
-                              AH_User_GetContextIdx(u))){
+  rv=AH_Medium_SelectContext(hbci->currentMedium,
+                             AH_User_GetContextIdx(u));
+  if (rv){
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Error selecting context %d for \"%s:%s/%s\"",
+              "Error selecting context %d for \"%s:%s/%s\" (%d)",
               AH_User_GetContextIdx(u),
               AB_User_GetCountry(u),
               AB_User_GetBankCode(u),
-              AB_User_GetUserId(u));
-    return 0;
+              AB_User_GetUserId(u),
+              rv);
+    return rv;
   }
 
-  return m;
+  *pm=m;
+  return 0;
 }
 
 

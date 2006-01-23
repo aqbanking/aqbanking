@@ -28,7 +28,7 @@
  * and that a medium is only mounted and unmounted at this point in a program.
  * @param cu customer whose medium is needed
  */
-AH_MEDIUM *AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u);
+int AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u, AH_MEDIUM **m);
 /*@}*/
 
 

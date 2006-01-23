@@ -1,4 +1,11 @@
 
+2006/01/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_CryptManager now implements the new function 
+  GWEN_CryptManager_SetPinStatus() thus allowing crypt tokens to mark bad
+  pins
+
+
 2006/01/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - imported German translation by Jens Koerner: Thank your very much!!

@@ -340,6 +340,7 @@ int addUser(AB_BANKING *ab,
     AB_User_SetUserId(user, luserId);
     AB_User_SetCustomerId(user, lcustomerId);
     AH_User_SetContextIdx(user, idx);
+    AH_User_SetCryptMode(user, cm);
 
     if (cm==AH_CryptMode_Pintan)
       AH_User_SetHbciVersion(user, 220);

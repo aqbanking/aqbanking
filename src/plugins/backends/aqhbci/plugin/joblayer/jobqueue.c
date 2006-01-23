@@ -276,6 +276,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
   AH_JOB *j;
   unsigned int encodedJobs;
   GWEN_STRINGLISTENTRY *se;
+  int rv;
 
   assert(jq);
   assert(jq->usage);
@@ -400,8 +401,9 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
     AH_Msg_free(msg);
     return 0;
   }
-  if (AH_Msg_EncodeMsg(msg)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode message");
+  rv=AH_Msg_EncodeMsg(msg);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode message (%d)", rv);
 
     j=AH_Job_List_First(jq->jobs);
     while(j) {
@@ -465,8 +467,16 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
     m=AH_User_GetMedium(u);
     assert(m);
 
-    if (!AH_Medium_IsMounted(m))
-      m=AH_HBCI_GetMedium(AH_Job_GetHbci(j), u);
+    if (!AH_Medium_IsMounted(m)) {
+      int rv;
+
+      rv=AH_HBCI_GetMedium(AH_Job_GetHbci(j), u, &m);
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Could not mount medium (%d)", rv);
+        return rv;
+      }
+    }
 
     tan=AH_Job_GetUsedTan(j);
     if (tan) {

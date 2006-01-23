@@ -44,6 +44,7 @@ GWEN_PLUGIN_MANAGER *AB_CryptManager_new(AB_BANKING *ab) {
 
   /* set virtual functions */
   GWEN_CryptManager_SetGetPinFn(cm, AB_CryptManager_GetPin);
+  GWEN_CryptManager_SetSetPinStatusFn(cm, AB_CryptManager_SetPinStatus);
   GWEN_CryptManager_SetBeginEnterPinFn(cm, AB_CryptManager_BeginEnterPin);
   GWEN_CryptManager_SetEndEnterPinFn(cm, AB_CryptManager_EndEnterPin);
   GWEN_CryptManager_SetInsertTokenFn(cm, AB_CryptManager_InsertToken);
@@ -184,21 +185,21 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   }
 
   *pinLength=strlen(notunsigned_pwbuffer);
-  {
-    /* Copy the resulting password into the original buffer. Copy
+    {
+      /* Copy the resulting password into the original buffer. Copy
        this byte-wise and not by strcpy() because strcpy() does
        not accept an unsigned char pointer but only a char
        pointer. (would give a "pointer differ in signedness"
        warning in gcc4.x) */
-    int k;
-    for (k=0; k < *pinLength; ++k)
-      pwbuffer[k] = notunsigned_pwbuffer[k];
-    /* The returned length of strlen() does not include the
+      int k;
+      for (k=0; k < *pinLength; ++k)
+	pwbuffer[k] = notunsigned_pwbuffer[k];
+      /* The returned length of strlen() does not include the
        trailing \0, so append it extra. */
-    pwbuffer[k] = '\0';
-    /* Clear the temporary buffer. */
-    memset(notunsigned_pwbuffer, '\0', maxLength+1);
-  }
+      pwbuffer[k] = '\0';
+      /* Clear the temporary buffer. */
+      memset(notunsigned_pwbuffer, '\0', maxLength);
+    }
   free(notunsigned_pwbuffer);
 
   if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
@@ -216,6 +217,69 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   return 0;
 }
 
+
+
+int AB_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *cm,
+				 GWEN_CRYPTTOKEN *token,
+				 GWEN_CRYPTTOKEN_PINTYPE pt,
+				 GWEN_CRYPTTOKEN_PINENCODING pe,
+				 GWEN_TYPE_UINT32 flags,
+				 unsigned char *buffer,
+				 unsigned int pinLength,
+				 int isOk){
+  AB_CRYPTMANAGER *bcm;
+  const char *name;
+  AB_BANKING_PINSTATUS pst;
+
+  assert(cm);
+  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
+  assert(bcm);
+
+  pst=isOk?AB_Banking_PinStatusOk:AB_Banking_PinStatusBad;
+
+  name=GWEN_CryptToken_GetTokenName(token);
+  if (name) {
+    GWEN_BUFFER *nbuf;
+    char pinBuffer[64];
+    unsigned int newPinLength;
+
+    nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+    GWEN_Buffer_AppendString(nbuf, "PASSWORD::");
+    GWEN_Buffer_AppendString(nbuf, name);
+
+    assert(pinLength<sizeof(pinBuffer));
+    memset(pinBuffer, 0, sizeof(pinBuffer));
+    memmove(pinBuffer, buffer, pinLength);
+    newPinLength=pinLength;
+    if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
+      int rv;
+
+      /* transfor back to ASCII */
+      rv=GWEN_CryptToken_TransformPin(pe,
+				      GWEN_CryptToken_PinEncoding_ASCII,
+				      (unsigned char*)pinBuffer,
+				      sizeof(pinBuffer),
+                                      &newPinLength);
+      if (rv) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(nbuf);
+	memset(pinBuffer, 0, sizeof(pinBuffer));
+	return rv;
+      }
+    }
+    AB_Banking_SetPinStatus(bcm->banking,
+			    GWEN_Buffer_GetStart(nbuf),
+			    pinBuffer, pst);
+    GWEN_Buffer_free(nbuf);
+    memset(pinBuffer, 0, sizeof(pinBuffer));
+  }
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "CryptToken has no name");
+    return AB_ERROR_INVALID;
+  }
+
+  return 0;
+}
 
 
 
