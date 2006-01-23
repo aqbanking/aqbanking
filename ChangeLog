@@ -4,8 +4,10 @@
 - AB_CryptManager now implements the new function 
   GWEN_CryptManager_SetPinStatus() thus allowing crypt tokens to mark bad
   pins
-- AqHBCI: When we get a response indicating problems with our signature
-  we abort the current queue instead of going on
+- AqHBCI
+  - when we get a response indicating problems with our signature
+    we abort the current queue instead of going on
+  - removed a debug message
 - kbanking: Removed po-folder (uses AqBanking's po files)
 - qbanking:
   - fixed some dialogs 

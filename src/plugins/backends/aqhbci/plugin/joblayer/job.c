@@ -290,7 +290,7 @@ AH_JOB *AH_Job_new(const char *name,
   if (msgNode) {
     /* we have <MESSAGE> nodes, so this is not a simple case */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Multi message job");
-    GWEN_XMLNode_Dump(msgNode, stderr, 2);
+    /* GWEN_XMLNode_Dump(msgNode, stderr, 2); */
     j->flags|=(AH_JOB_FLAGS_MULTIMSG);
     /* a multi message job must be single, too */
     j->flags|=AH_JOB_FLAGS_SINGLE;
