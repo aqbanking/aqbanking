@@ -818,8 +818,8 @@ AC_SUBST(QT_BINDIR)
 
 dnl Check for potential qt4 environment, but only if moc is from qt4
 dnl (watch out: the outside square parenteses are vitally important here!)
-MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' `"]
-if test "`echo ${MOC_VERSION} | cut -d . -f 1`" = "3"; then
+MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
     UIC3="${qt3_uic}"
     QT4TO4="NO"
 else
@@ -828,10 +828,13 @@ else
 fi
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 
-dnl Make sure moc, uic come from the same Qt version
+dnl Make sure moc and uic come from the same Qt version
 dnl (watch out: the outside square parenteses are vitally important here!)
-UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*Qt //' | ${SED} 's/[^0-9.]//g' | ${SED} 's/[^0-9]$//g' `"]
-if test "x${MOC_VERSION}" != "x${UIC_VERSION}"; then
+UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
+        "` echo ${UIC_VERSION} | cut -d. -f1 `" \
+     -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
+        "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
     AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
 fi
 
