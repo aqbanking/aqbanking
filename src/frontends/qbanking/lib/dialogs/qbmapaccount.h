@@ -39,6 +39,7 @@ public:
 
 protected slots:
   void slotSelectionChanged();
+  void slotHelpClicked();
 
 private:
   QBanking *_banking;

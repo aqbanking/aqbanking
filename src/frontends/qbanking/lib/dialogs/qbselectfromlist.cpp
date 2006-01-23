@@ -14,16 +14,20 @@
 # include <config.h>
 #endif
 
+// QBanking includes
 #include "qbselectfromlist.h"
 #include "qbanking.h"
 
+// Gwenhywfar includes
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
 #include <qlistview.h>
 
-#include <gwenhywfar/db.h>
-#include <gwenhywfar/debug.h>
 
 
 QBSelectFromList::QBSelectFromList(QBanking *kb,

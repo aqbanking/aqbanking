@@ -15,17 +15,26 @@
 #endif
 
 
+// QBanking includes
 #include "qbselectbank.h"
 #include "qbanking.h"
+
+// AqBanking includes
+#include <aqbanking/banking.h>
+
+// Gwenhywfar includes
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qlistview.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
+#include <qpushbutton.h>
 
-#include <aqbanking/banking.h>
-#include <gwenhywfar/text.h>
-#include <gwenhywfar/debug.h>
+// C++ includes
 #include <string>
 
 
@@ -71,6 +80,8 @@ QBSelectBank::QBSelectBank(QBanking *kb,
                    SLOT(slotDoubleClicked(QListViewItem *,
                                           const QPoint &,
                                           int)));
+  QObject::connect(helpButton, SIGNAL(clicked()),
+                   this, SLOT(slotHelpClicked()));
 }
 
 
@@ -414,6 +425,12 @@ AB_BANKINFO *QBSelectBank::selectBank(QBanking *kb,
 void QBSelectBank::slotOnlineToggled(bool on) {
   _changed=true;
   slotUpdate();
+}
+
+
+
+void QBSelectBank::slotHelpClicked() {
+  _app->invokeHelp("QBSelectBank", "none");
 }
 
 

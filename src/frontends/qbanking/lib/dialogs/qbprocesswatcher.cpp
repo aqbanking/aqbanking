@@ -15,15 +15,19 @@
 #endif
 
 
-#include <gwenhywfar/debug.h>
-
+// QBanking includes
 #include "qbprocesswatcher.h"
 
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qprocess.h>
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+
 
 
 

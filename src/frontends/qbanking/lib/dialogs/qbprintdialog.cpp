@@ -16,8 +16,15 @@
 #endif
 
 
+// QBanking includes
 #include "qbprintdialog.h"
 
+// Gwenhywfar includes
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/waitcallback.h>
+
+// QT includes
 #include <qlabel.h>
 #include <qtextbrowser.h>
 #include <qpushbutton.h>
@@ -28,9 +35,6 @@
 #include <qmessagebox.h>
 #include <qfontdialog.h>
 
-#include <gwenhywfar/text.h>
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
 
 
 
@@ -67,6 +71,8 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
                    this, SLOT(accept()));
   QObject::connect(abortButton, SIGNAL(clicked()),
                    this, SLOT(reject()));
+  QObject::connect(helpButton, SIGNAL(clicked()),
+                   this, SLOT(slotHelpClicked()));
 
   loadGuiSetup();
   loadPrinterSetup();
@@ -567,6 +573,12 @@ void QBPrintDialog::slotPrint(){
   GWEN_WaitCallback_Leave();
 
   p.end();
+}
+
+
+
+void QBPrintDialog::slotHelpClicked() {
+  _banking->invokeHelp("QBPrintDialog", "none");
 }
 
 

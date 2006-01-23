@@ -66,7 +66,7 @@ public slots:
                          const QPoint &,
                          int);
   void slotOnlineToggled(bool on);
-
+  void slotHelpClicked();
 
 };
 

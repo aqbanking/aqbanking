@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QBPrintDialogUi</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>599</width>
+            <width>623</width>
             <height>483</height>
         </rect>
     </property>
@@ -47,12 +47,23 @@
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout2</cstring>
+                <cstring>layout11</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>helpButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Help</string>
+                    </property>
+                    <property name="accel">
+                        <string>F1, Ctrl+S</string>
+                    </property>
+                </widget>
                 <spacer>
                     <property name="name">
                         <cstring>spacer1</cstring>
@@ -65,7 +76,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>30</width>
                             <height>31</height>
                         </size>
                     </property>
@@ -76,9 +87,6 @@
                     </property>
                     <property name="text">
                         <string>Print</string>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
                     </property>
                 </widget>
                 <spacer>
@@ -139,7 +147,7 @@
                         <string>Close</string>
                     </property>
                     <property name="default">
-                        <bool>false</bool>
+                        <bool>true</bool>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -154,5 +162,14 @@
         </widget>
     </vbox>
 </widget>
+<tabstops>
+    <tabstop>textBrowser</tabstop>
+    <tabstop>helpButton</tabstop>
+    <tabstop>printButton</tabstop>
+    <tabstop>setupButton</tabstop>
+    <tabstop>fontButton</tabstop>
+    <tabstop>closeButton</tabstop>
+    <tabstop>abortButton</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -15,19 +15,22 @@
 #endif
 
 
+// QBanking includes
 #include "qbcfgtabpagebackends.h"
 #include "qbcfgtabpagebackends.ui.h"
 #include "qbplugindescrlist.h"
+#include "qbanking.h"
 
-#include <qbanking/qbanking.h>
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
 
+// QT includes
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 
-#include <gwenhywfar/debug.h>
 
 
 

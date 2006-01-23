@@ -13,12 +13,16 @@
 #ifndef QBANKING_CFGTABPAGEACCOUNTGEN_H
 #define QBANKING_CFGTABPAGEACCOUNTGEN_H
 
+// QBanking includes
+#include "qbcfgtabpageaccount.h"
 
-#include <gwenhywfar/types.h>
+// AqBanking includes
 #include <aqbanking/banking.h>
 #include <aqbanking/account.h>
 
-#include "qbcfgtabpageaccount.h"
+// Gwenhywfar includes
+#include <gwenhywfar/types.h>
+
 
 
 class QBCfgTabPageAccountGeneralUi;

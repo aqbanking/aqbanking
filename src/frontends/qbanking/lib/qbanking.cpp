@@ -697,7 +697,7 @@ bool QBanking::requestTransactions(const char *accountId,
 	qd=QDate(year, month+1, day);
       GWEN_Time_free(ti1);
 
-      QBPickStartDate psd(qd, QDate(), 3, 0, "PickStartDate", true);
+      QBPickStartDate psd(this, qd, QDate(), 3, 0, "PickStartDate", true);
       if (psd.exec()!=QDialog::Accepted) {
 	AB_Job_free(job);
 	return false;

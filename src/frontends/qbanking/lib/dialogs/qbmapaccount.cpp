@@ -16,9 +16,12 @@
 #endif
 
 
+// QBanking includes
 #include "qbmapaccount.h"
 #include "qbanking.h"
+#include "qbaccountlist.h"
 
+// QT includes
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
@@ -31,25 +34,18 @@
 
 
 QBMapAccount::QBMapAccount(QBanking *kb,
-                       const char *bankCode,
-                       const char *accountId,
-                       QWidget* parent,
-                       const char* name,
-                       bool modal,
-                       WFlags fl)
+                           const char *bankCode,
+                           const char *accountId,
+                           QWidget* parent,
+                           const char* name,
+                           bool modal,
+                           WFlags fl)
 :QBMapAccountUi(parent, name, modal, fl)
 ,_banking(kb)
 ,_account(0) {
 
-  // Manually create and add layout here because the .ui-generated
-  // QGroupBox doesn't have one.
-  accountBox->setColumnLayout(0, Qt::Vertical );
-  QBoxLayout *accountBoxLayout = new QHBoxLayout(accountBox->layout() );
-  accountBoxLayout->setAlignment(Qt::AlignTop);
-  _accountList=new QBAccountListView(accountBox, "AccountList");
-  accountBoxLayout->addWidget(_accountList);
-  _accountList->setSelectionMode(QListView::Single);
-  _accountList->setAllColumnsShowFocus(true);
+  accountList->setSelectionMode(QListView::Single);
+  accountList->setAllColumnsShowFocus(true);
 
   if (bankCode)
     bankCodeEdit->setText(QString::fromUtf8(bankCode));
@@ -60,10 +56,12 @@ QBMapAccount::QBMapAccount(QBanking *kb,
   else
     accountIdEdit->setEnabled(false);
 
-  QObject::connect(_accountList, SIGNAL(selectionChanged()),
+  QObject::connect(accountList, SIGNAL(selectionChanged()),
                    this, SLOT(slotSelectionChanged()));
+  QObject::connect(helpButton, SIGNAL(clicked()),
+                   this, SLOT(slotHelpClicked()));
 
-  _accountList->addAccounts(_banking->getAccounts());
+  accountList->addAccounts(_banking->getAccounts());
 }
 
 
@@ -89,7 +87,7 @@ void QBMapAccount::slotSelectionChanged(){
   std::list<AB_ACCOUNT*> al;
   AB_ACCOUNT *a;
 
-  al=_accountList->getSelectedAccounts();
+  al=accountList->getSelectedAccounts();
   if (al.empty()) {
     assignButton->setEnabled(false);
     _account=0;
@@ -102,6 +100,12 @@ void QBMapAccount::slotSelectionChanged(){
   }
   else
     assignButton->setEnabled(false);
+}
+
+
+
+void QBMapAccount::slotHelpClicked() {
+  _banking->invokeHelp("QBMapAccount", "none");
 }
 
 

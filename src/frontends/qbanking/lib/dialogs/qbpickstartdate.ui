@@ -141,18 +141,29 @@ If you specify no date then the bank will choose one.
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>Layout1</cstring>
+                <cstring>layout9</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>helpButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Help</string>
+                    </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
                 <spacer>
                     <property name="name">
                         <cstring>Horizontal Spacing2</cstring>
@@ -165,7 +176,7 @@ If you specify no date then the bank will choose one.
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>20</width>
+                            <width>140</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -219,5 +230,15 @@ If you specify no date then the bank will choose one.
         <slot>reject()</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>noDateButton</tabstop>
+    <tabstop>lastUpdateButton</tabstop>
+    <tabstop>firstDateButton</tabstop>
+    <tabstop>pickDateButton</tabstop>
+    <tabstop>pickDateEdit</tabstop>
+    <tabstop>helpButton</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

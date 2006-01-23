@@ -18,13 +18,18 @@
 #include <qdatetime.h>
 
 
+class QBanking;
+
+
 class QBANKING_API QBPickStartDate: public QBPickStartDateUi {
   Q_OBJECT
 private:
+  QBanking *_banking;
   const QDate &_firstPossible;
   const QDate &_lastUpdate;
 public:
-  QBPickStartDate(const QDate &firstPossible,
+  QBPickStartDate(QBanking *banking,
+                  const QDate &firstPossible,
                   const QDate &lastUpdate,
                   int defaultChoice,
                   QWidget* parent=0, const char* name=0,
@@ -38,6 +43,7 @@ public slots:
   void slotLastUpdateToggled(bool on);
   void slotFirstDateToggled(bool on);
   void slotPickDateToggled(bool on);
+  void slotHelpClicked();
 };
 
 

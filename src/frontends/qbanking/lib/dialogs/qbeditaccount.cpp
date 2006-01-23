@@ -14,12 +14,13 @@
 # include <config.h>
 #endif
 
+// QBanking includes
 #include "qbeditaccount.h"
 #include "qbcfgtabpageaccountgen.h"
 #include "qbcfgmodule.h"
+#include "qbanking.h"
 
-#include <qbanking/qbanking.h>
-
+// Gwenhywfar includes
 #include <gwenhywfar/debug.h>
 
 

@@ -15,39 +15,34 @@
 #endif
 
 
+// QBanking includes
 #include "qbjobview.h"
 #include "qbanking.h"
+
+// AqBanking includes
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
 
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qevent.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 
-#include <gwenhywfar/debug.h>
 
 
-
-#define BUTTON_WIDTH 110
 
 
 QBJobView::QBJobView(QBanking *kb,
-                 QWidget* parent,
-                 const char* name,
-                 WFlags fl)
+                     QWidget* parent,
+                     const char* name,
+                     WFlags fl)
 :QBJobViewUi(parent, name, fl), _app(kb) {
   assert(kb);
-
-  // Manually create and add layout here because the .ui-generated
-  // QGroupBox doesn't have one.
-  jobBox->setColumnLayout(0, Qt::Vertical );
-  QBoxLayout *jobBoxLayout = new QHBoxLayout( jobBox->layout() );
-  jobBoxLayout->setAlignment( Qt::AlignTop );
-
-  _jobList=new QBJobListView(jobBox, name);
-  jobBoxLayout->addWidget(_jobList);
 
   QObject::connect(_app->flagStaff(), SIGNAL(signalQueueUpdated()),
                    this, SLOT(slotQueueUpdated()));
@@ -75,16 +70,16 @@ bool QBJobView::init(){
     int i, j;
 
     /* found settings */
-    for (i=0; i<_jobList->columns(); i++) {
-      _jobList->setColumnWidthMode(i, QListView::Manual);
+    for (i=0; i<jobList->columns(); i++) {
+      jobList->setColumnWidthMode(i, QListView::Manual);
       j=GWEN_DB_GetIntValue(db, "columns", i, -1);
       if (j!=-1)
-        _jobList->setColumnWidth(i, j);
+        jobList->setColumnWidth(i, j);
     } /* for */
   } /* if settings */
 
-  _jobList->addJobs(_app->getEnqueuedJobs());
-  _app->outboxCountChanged(_jobList->childCount());
+  jobList->addJobs(_app->getEnqueuedJobs());
+  _app->outboxCountChanged(jobList->childCount());
 
   return true;
 }
@@ -99,8 +94,8 @@ bool QBJobView::fini(){
   assert(db);
   assert(db);
   GWEN_DB_ClearGroup(db, "gui/views/jobview");
-  for (i=0; i<_jobList->columns(); i++) {
-    j=_jobList->columnWidth(i);
+  for (i=0; i<jobList->columns(); i++) {
+    j=jobList->columnWidth(i);
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
                         "gui/views/jobview/columns", j);
   } /* for */
@@ -111,9 +106,9 @@ bool QBJobView::fini(){
 
 void QBJobView::slotQueueUpdated(){
   DBG_DEBUG(0, "Job queue updated");
-  _jobList->clear();
-  _jobList->addJobs(_app->getEnqueuedJobs());
-  _app->outboxCountChanged(_jobList->childCount());
+  jobList->clear();
+  jobList->addJobs(_app->getEnqueuedJobs());
+  _app->outboxCountChanged(jobList->childCount());
 }
 
 
@@ -159,7 +154,7 @@ void QBJobView::slotDequeue(){
   std::list<AB_JOB*> jl;
   std::list<AB_JOB*>::iterator jit;
 
-  jl=_jobList->getSelectedJobs();
+  jl=jobList->getSelectedJobs();
   if (jl.empty()) {
     DBG_DEBUG(0, "No job selected");
     QMessageBox::warning(this,

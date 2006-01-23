@@ -1,4 +1,4 @@
-SUBDIRS=widgets dialogs views po
+SUBDIRS=widgets dialogs views
 
 SUBPACKAGE=kbanking
 

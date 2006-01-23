@@ -14,22 +14,31 @@
 # include <config.h>
 #endif
 
-
+// QBanking includes
 #include "qbpickstartdate.h"
+#include "qbanking.h"
+
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qdatetimeedit.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
-
-#include <gwenhywfar/debug.h>
-
+#include <qpushbutton.h>
 
 
-QBPickStartDate::QBPickStartDate(const QDate &firstPossible,
+
+
+
+QBPickStartDate::QBPickStartDate(QBanking *qb,
+                                 const QDate &firstPossible,
                                  const QDate &lastUpdate,
                                  int defaultChoice,
                                  QWidget* parent, const char* name,
                                  bool modal, WFlags fl)
-:QBPickStartDateUi(parent, name, modal, fl)
+  :QBPickStartDateUi(parent, name, modal, fl)
+,_banking(qb)
 ,_firstPossible(firstPossible)
 ,_lastUpdate(lastUpdate){
 
@@ -41,6 +50,8 @@ QBPickStartDate::QBPickStartDate(const QDate &firstPossible,
                    this, SLOT(slotFirstDateToggled(bool)));
   QObject::connect(pickDateButton, SIGNAL(toggled(bool)),
                    this, SLOT(slotPickDateToggled(bool)));
+  QObject::connect(helpButton, SIGNAL(clicked()),
+                   this, SLOT(slotHelpClicked()));
 
   if (_lastUpdate.isValid()) {
     lastUpdateLabel->setText(_lastUpdate.toString());
@@ -118,6 +129,12 @@ QDate QBPickStartDate::getDate() {
     DBG_ERROR(0, "Unknown date state");
     return QDate();
   }
+}
+
+
+
+void QBPickStartDate::slotHelpClicked() {
+  _banking->invokeHelp("QBPickStartDate", "none");
 }
 
 

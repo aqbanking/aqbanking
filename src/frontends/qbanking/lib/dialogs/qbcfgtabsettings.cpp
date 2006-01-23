@@ -15,15 +15,18 @@
 #endif
 
 
+// QBanking includes
 #include "qbanking.h"
 #include "qbcfgtabsettings.h"
 #include "qbcfgtabpageusers.h"
 #include "qbcfgtabpageaccounts.h"
 #include "qbcfgtabpagebackends.h"
 
+// AqBanking includes
 #include <aqbanking/banking.h>
 #include <aqbanking/account.h>
 
+// Gwenhywfar includes
 #include <gwenhywfar/types.h>
 
 

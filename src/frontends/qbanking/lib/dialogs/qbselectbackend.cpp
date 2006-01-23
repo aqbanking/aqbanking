@@ -14,14 +14,17 @@
 # include <config.h>
 #endif
 
+// QBanking includes
 #include "qbselectbackend.h"
 #include "qbanking.h"
 
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
+
+// QT includes
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qtextbrowser.h>
-
-#include <gwenhywfar/debug.h>
 
 
 

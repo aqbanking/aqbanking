@@ -41,6 +41,7 @@ public slots:
   void slotPrint();
   void slotSetup();
   void slotFont();
+  void slotHelpClicked();
 
 private:
   QBanking *_banking;

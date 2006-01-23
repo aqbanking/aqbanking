@@ -6,6 +6,17 @@
   pins
 - AqHBCI: When we get a response indicating problems with our signature
   we abort the current queue instead of going on
+- kbanking: Removed po-folder (uses AqBanking's po files)
+- qbanking:
+  - fixed some dialogs 
+    - now include a help button (connected that to a slot
+      which calls the QBanking Help System)
+    - no longer manually add joblists, account lists or user lists to 
+      layout boxes, let uic do it
+  - QBPickStartDate: Changed constructor, now a pointer to a QBanking
+    object is required (this change was necessary in order to let this
+    dialog call the help system)
+  - started to sort and cleanup include directives
 
 
 2006/01/22: Martin Preuss<martin@libchipcard.de>

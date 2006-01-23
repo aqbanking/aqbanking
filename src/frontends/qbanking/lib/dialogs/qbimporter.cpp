@@ -16,10 +16,16 @@
 #endif
 
 
+// QBanking includes
 #include "qbimporter.h"
 #include "qbanking.h"
 #include "qbselectfromlist.h"
 
+// Gwenhywfar includes
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/waitcallback.h>
+
+// QT includes
 #include <qlistview.h>
 #include <qpushbutton.h>
 #include <qtextbrowser.h>
@@ -32,9 +38,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
-
+// C includes
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
