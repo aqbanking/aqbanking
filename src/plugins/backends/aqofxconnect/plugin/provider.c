@@ -752,6 +752,9 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
     GWEN_Buffer_free(nbuf);
     GWEN_NetLayer_free(nlBase);
     nlBase=nl;
+    GWEN_NetLayerSsl_SetAskAddCertFn(nlBase,
+                                     AB_Banking_AskAddCert,
+                                     AB_Provider_GetBanking(pro));
     break;
 
   default:
