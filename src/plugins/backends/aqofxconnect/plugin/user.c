@@ -81,6 +81,7 @@ GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                         GWEN_TYPE_UINT32 f) {
+  GWEN_DB_DeleteVar(db, name);
   if (f & AO_USER_FLAGS_ACCOUNT_LIST)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "account_list");
