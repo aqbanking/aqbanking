@@ -20,7 +20,7 @@
 #include <qdir.h>
 #include <qstringlist.h>
 
-#include <qbanking/qbhelpbrowser.ui.h>
+#include "qbhelpbrowser.ui.h"
 #include <qbanking/qbanking.h>
 
 
