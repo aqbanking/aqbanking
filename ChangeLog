@@ -1,4 +1,10 @@
 
+2006/01/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GTK2 frontend now uses libglade instead of creating source code.
+  This makes it much easier to work with glade files.
+
+
 2006/01/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AB_CryptManager now implements the new function 

@@ -2,10 +2,14 @@
 
 SUBDIRS=widgets dialogs views
 
-LIBDATADIR="$(datadir)/g2banking"
+LIBDATADIR=$(g2banking_data)
+g2_gladedir=$(g2banking_data)/glade2
+dist_g2_glade_DATA=g2banking.glade
+
 DEFS += \
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
-  -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
+  -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\"" \
+  -DPACKAGE_GLADE_DIR=\""$(g2_gladedir)\""
 
 INCLUDES = -I$(srcdir)/widgets -I$(srcdir)/dialogs -I$(srcdir)/views \
   -I$(top_builddir)/headers $(all_includes)
@@ -20,16 +24,11 @@ g2banking-config: g2banking-config.in
 	cat $<  >> g2banking-config && \
 	chmod a+x g2banking-config
 
-EXTRA_DIST = g2banking.glade
-GLADE_SOURCES=support.c interface.c callbacks.c
-GLADE_HDRS=support.h interface.h callbacks.h
-
-BUILT_SOURCES=$(GLADE_SOURCES) $(GLADE_HDRS) version.h
+BUILT_SOURCES=version.h
 
 lib_LTLIBRARIES=libg2banking.la
 
 noinst_HEADERS=gbanking_p.h
-nodist_noinst_HEADERS=$(GLADE_HDRS)
 
 iheaderdir=${includedir}/g2banking
 iheader_HEADERS=\
@@ -38,14 +37,13 @@ iheader_HEADERS=\
 libg2banking_la_SOURCES = \
  gbanking.c
 
-nodist_libg2banking_la_SOURCES=$(GLADE_SOURCES)
-
 libg2banking_la_LIBADD = \
  views/libviews.la \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  $(aqbanking_internal_libs) \
  $(GTK2_LIBS) \
+ $(LIBGLADE2_LIBS) \
  $(gwenhywfar_libs) \
  $(all_libraries)
 
@@ -54,17 +52,6 @@ libg2banking_la_LDFLAGS = -no-undefined \
 
 
 CLEANFILES=g2banking-config g2banking-config.in ressource.rc $(BUILT_SOURCES)
-
-$(GLADE_SOURCES) $(GLADE_HDRS): g2banking.glade
-	rm -Rf tmp.glade >/dev/null
-	mkdir tmp.glade
-	cp $< tmp.glade
-	( cd tmp.glade && $(GLADE2) -w g2banking.glade ) 
-	for f in $(GLADE_SOURCES) $(GLADE_HDRS); do \
-	      cp tmp.glade/src/$$f . ; \
-	done
-	rm -Rf tmp.glade >/dev/null
-
 
 install-data-local:
 	@$(NORMAL_INSTALL)

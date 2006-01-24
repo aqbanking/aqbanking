@@ -15,13 +15,12 @@
 #endif
 
 #include "gmsgbox_p.h"
-#include "gbanking.h"
+#include "gbanking_l.h"
 
-#include "interface.h"
-#include "callbacks.h"
-#include "support.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+
+#include <glade/glade-xml.h>
 
 #include <ctype.h>
 
@@ -36,12 +35,16 @@ GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
                                const char *b3,
                                GtkWidget *parent){
   GBANKING_MSGBOX *wd;
+  GladeXML *xml;
 
   GWEN_NEW_OBJECT(GBANKING_MSGBOX, wd);
   wd->banking=ab;
   wd->flags=flags;
 
-  g_assert((wd->widget=create_GMessageBox()));
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GMessageBox");
+  assert(xml);
+
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GMessageBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
                            GBANKING_MSGBOX_ID,
                            wd,
@@ -49,10 +52,10 @@ GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
   if (parent)
     gtk_widget_reparent(wd->widget, parent);
 
-  g_assert((wd->textLabel=lookup_widget(wd->widget, "textLabel")));
-  g_assert((wd->button1=lookup_widget(wd->widget, "button1")));
-  g_assert((wd->button2=lookup_widget(wd->widget, "button2")));
-  g_assert((wd->button3=lookup_widget(wd->widget, "button3")));
+  g_assert((wd->textLabel=glade_xml_get_widget(xml, "textLabel")));
+  g_assert((wd->button1=glade_xml_get_widget(xml, "button1")));
+  g_assert((wd->button2=glade_xml_get_widget(xml, "button2")));
+  g_assert((wd->button3=glade_xml_get_widget(xml, "button3")));
 
   gtk_window_set_title(GTK_WINDOW(wd->widget), title);
   gtk_window_set_position(GTK_WINDOW(wd->widget), GTK_WIN_POS_CENTER);
@@ -133,9 +136,11 @@ void GBanking_MsgBox_slotButtonClicked(GtkButton *button,
     response=3;
   }
   else {
-    DBG_WARN(0, "Unknown button \"%s\"", name);
+    DBG_ERROR(0, "Unknown button \"%s\"", name);
     response=0;
   }
+
+  DBG_ERROR(0, "Will return response: %d (%s)", response, name);
   gtk_dialog_response(GTK_DIALOG(wd->widget), response);
   /* redraw the child widgets */
   while (g_main_iteration (FALSE));

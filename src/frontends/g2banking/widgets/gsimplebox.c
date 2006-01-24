@@ -17,30 +17,36 @@
 
 
 #include "gsimplebox_p.h"
-#include "interface.h"
-#include "callbacks.h"
-#include "support.h"
+#include "gbanking_l.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+#include <glade/glade-xml.h>
 
-GtkWidget *GBanking_SimpleBox_new(GWEN_TYPE_UINT32 id,
+
+GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
+                                  GWEN_TYPE_UINT32 id,
                                   GWEN_TYPE_UINT32 flags,
                                   const char *title,
                                   const char *text){
   GBANKING_SIMPLEBOX *wd;
+  GladeXML *xml;
 
   GWEN_NEW_OBJECT(GBANKING_SIMPLEBOX, wd);
   wd->id=id;
   wd->flags=flags;
 
-  g_assert((wd->widget=create_GSimpleBox()));
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GSimpleBox");
+  assert(xml);
+
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GSimpleBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
                            GBANKING_SIMPLEBOX_ID,
                            wd,
                            GBanking_SimpleBox_freeData);
 
-  g_assert((wd->msgText=lookup_widget(wd->widget, "textLabel")));
+  g_assert((wd->msgText=glade_xml_get_widget(xml, "textLabel")));
 
   gtk_window_set_title(GTK_WINDOW(wd->widget), title);
   gtk_window_set_position(GTK_WINDOW(wd->widget), GTK_WIN_POS_CENTER);

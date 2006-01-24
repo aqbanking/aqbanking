@@ -19,7 +19,8 @@
 #include <aqbanking/banking.h>
 
 
-GtkWidget *GBanking_SimpleBox_new(GWEN_TYPE_UINT32 id,
+GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
+                                  GWEN_TYPE_UINT32 id,
                                   GWEN_TYPE_UINT32 flags,
                                   const char *title,
                                   const char *text);

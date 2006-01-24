@@ -15,10 +15,8 @@
 #endif
 
 #include "joblist_p.h"
+#include "i18n_l.h"
 
-#include "interface.h"
-#include "callbacks.h"
-#include "support.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
@@ -61,7 +59,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
                            GBanking_JobList_freeData);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Job Id"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Job Id"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_JOBID,
@@ -69,7 +67,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Job Type"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Job Type"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_JOBTYPE,
@@ -77,7 +75,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Bank"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Bank"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_BANK,
@@ -85,7 +83,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Account"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Account"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_ACCOUNT,
@@ -93,7 +91,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Status"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Status"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_STATUS,
@@ -101,7 +99,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Backend"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Backend"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_BACKEND,
@@ -109,7 +107,7 @@ GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
   gtk_tree_view_append_column(GTK_TREE_VIEW(jl->tree), column);
 
   renderer=gtk_cell_renderer_text_new();
-  column=gtk_tree_view_column_new_with_attributes(_("Application"),
+  column=gtk_tree_view_column_new_with_attributes(I18N("Application"),
                                                   renderer,
 						  "text",
 						  GB_JOBLISTCOLUMN_APP,
@@ -171,53 +169,53 @@ void GBanking_JobList__populate(GBANKING_JOBLIST *jl) {
 
     switch(AB_Job_GetType(j)) {
     case AB_Job_TypeGetBalance:
-      jobtype=_("Get Balance");
+      jobtype=I18N("Get Balance");
       break;
     case AB_Job_TypeGetTransactions:
-      jobtype=_("Get Transactions");
+      jobtype=I18N("Get Transactions");
       break;
     case AB_Job_TypeTransfer:
-      jobtype=_("Transfer");
+      jobtype=I18N("Transfer");
       break;
     case AB_Job_TypeDebitNote:
-      jobtype=_("Debit Note");
+      jobtype=I18N("Debit Note");
       break;
     default:
-      jobtype=_("Unknown");
+      jobtype=I18N("Unknown");
       break;
     }
 
 
     switch(AB_Job_GetStatus(j)) {
     case AB_Job_StatusNew:
-      status=_("new");
+      status=I18N("new");
       break;
     case AB_Job_StatusUpdated:
-      status=_("updated");
+      status=I18N("updated");
       break;
     case AB_Job_StatusEnqueued:
-      status=_("enqueued");
+      status=I18N("enqueued");
       break;
     case AB_Job_StatusSent:
-      status=_("sent");
+      status=I18N("sent");
       break;
     case AB_Job_StatusPending:
-      status=_("pending");
+      status=I18N("pending");
       break;
     case AB_Job_StatusFinished:
-      status=_("finished");
+      status=I18N("finished");
       break;
     case AB_Job_StatusError:
-      status=_("error");
+      status=I18N("error");
       break;
     default:
-      status=_("(unknown)");
+      status=I18N("(unknown)");
       break;
     }
 
     app=AB_Job_GetCreatedBy(j);
     if (!app)
-      app=_("(unknown)");
+      app=I18N("(unknown)");
 
     /* really set data */
     gtk_list_store_append(jl->store, &iter);

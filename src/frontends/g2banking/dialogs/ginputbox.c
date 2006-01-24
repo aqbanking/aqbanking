@@ -15,13 +15,12 @@
 #endif
 
 #include "ginputbox_p.h"
-#include "gbanking.h"
+#include "gbanking_l.h"
 
-#include "interface.h"
-#include "callbacks.h"
-#include "support.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+
+#include <glade/glade-xml.h>
 
 #include <ctype.h>
 
@@ -35,20 +34,25 @@ GtkWidget *GBanking_InputBox_new(AB_BANKING *ab,
                                  int maxLen,
                                  GtkWidget *parent){
   GBANKING_INPUTBOX *wd;
+  GladeXML *xml;
 
   GWEN_NEW_OBJECT(GBANKING_INPUTBOX, wd);
   wd->banking=ab;
   wd->flags=flags;
-  g_assert((wd->widget=create_GInputBox()));
+
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GInputBox");
+  assert(xml);
+
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GInputBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
                            GBANKING_INPUTBOX_ID,
                            wd,
                            GBanking_InputBox_freeData);
 
-  g_assert((wd->textLabel=lookup_widget(wd->widget, "textLabel")));
-  g_assert((wd->inputEntry=lookup_widget(wd->widget, "inputEntry")));
-  g_assert((wd->confirmLabel=lookup_widget(wd->widget, "confirmLabel")));
-  g_assert((wd->confirmEntry=lookup_widget(wd->widget, "confirmEntry")));
+  g_assert((wd->textLabel=glade_xml_get_widget(xml, "textLabel")));
+  g_assert((wd->inputEntry=glade_xml_get_widget(xml, "inputEntry")));
+  g_assert((wd->confirmLabel=glade_xml_get_widget(xml, "confirmLabel")));
+  g_assert((wd->confirmEntry=glade_xml_get_widget(xml, "confirmEntry")));
 
   gtk_window_set_title(GTK_WINDOW(wd->widget), title);
   gtk_label_set_text(GTK_LABEL(wd->textLabel), text);

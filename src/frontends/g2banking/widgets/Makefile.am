@@ -1,4 +1,5 @@
 INCLUDES = -I$(srcdir)/.. -I.. \
+  -I$(top_srcdir)/src/libs/aqbanking \
   -I$(top_builddir)/headers $(all_includes)
 
 LIBDATADIR="$(datadir)/g2banking"

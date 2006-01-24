@@ -15,7 +15,7 @@
 #ifndef GBANKING_P_H
 #define GBANKING_P_H
 
-#include "gbanking.h"
+#include "gbanking_l.h"
 #include <gtk/gtk.h>
 #include <glib.h>
 

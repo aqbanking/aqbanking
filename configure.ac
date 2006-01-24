@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=7
+AQBANKING_VERSION_BUILD=9
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -781,12 +781,19 @@ case "$aqbanking_frontends" in *g2banking*)
   pkg_modules="gtk+-2.0 >= 2.0.0"
   dnl $4=true => don't die in case of failure.
   PKG_CHECK_MODULES(GTK2, [$pkg_modules], [], true)
-  all_includes="$all_includes ${GTK2_CFLAGS}"
+
+  pkg_modules="libglade-2.0 >= 2.0.0"
+  dnl $4=true => don't die in case of failure.
+  PKG_CHECK_MODULES(LIBGLADE2, [$pkg_modules], [], true)
+
+  all_includes="$all_includes  ${GTK2_CFLAGS} ${LIBGLADE2_CFLAGS}"
+
   ;;
 esac
 AC_SUBST(GTK2_CFLAGS)
 AC_SUBST(GTK2_LIBS)
-AC_PATH_PROG([GLADE2], [glade-2], [GLADE2-NOT-FOUND])
+AC_SUBST(LIBGLADE2_CFLAGS)
+AC_SUBST(LIBGLADE2_LIBS)
 
 
 
@@ -1187,8 +1194,8 @@ for frontend in $aqbanking_frontends; do
         AC_MSG_NOTICE([*** GTK2 is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
-      if test "${GLADE2}" = "GLADE2-NOT-FOUND"; then
-        AC_MSG_NOTICE([*** The program "glade2" is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
+      if test "x${LIBGLADE2_LIBS}" = "x"; then
+        AC_MSG_NOTICE([*** The library "libglade2" is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
       ;;
@@ -1387,14 +1394,14 @@ case "$OS_TYPE" in
         g2banking_libs="-L\${libdir} -lg2banking"
         g2banking_internal_libs="${abs_top_builddir}/src/frontends/g2banking/libg2banking.la"
         g2banking_includes="-I\${prefix}/include"
-        g2banking_data="\${datadir}/g2banking"
+        g2banking_data="\${datadir}/aqbanking/frontends/g2banking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         g2banking_internal_libs="${abs_top_builddir}/src/frontends/g2banking/libg2banking.la"
         g2banking_libs="-L`eval echo $prefix/lib` -lg2banking-${G2BANKING_SO_EFFECTIVE}"
         g2banking_includes="-I`eval echo $prefix/include`"
-        g2banking_data="\${datadir}/g2banking"
+        g2banking_data="\${datadir}/aqbanking/frontends/g2banking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac

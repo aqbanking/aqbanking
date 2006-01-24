@@ -17,31 +17,40 @@
 
 
 #include "gprogress_p.h"
-#include "interface.h"
-#include "callbacks.h"
-#include "support.h"
+#include "gbanking_l.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+
+#include <glade/glade-xml.h>
+
 #include <time.h>
+
 
 
 GtkWidget *GBanking_Progress_new(AB_BANKING *ab,
                                  GWEN_TYPE_UINT32 id) {
   GBANKING_PROGRESS *wd;
+  GladeXML *xml;
 
   GWEN_NEW_OBJECT(GBANKING_PROGRESS, wd);
   wd->banking=ab;
-  g_assert((wd->dialog=create_GConnectionDialog()));
+
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GConnectionDialog");
+  assert(xml);
+
+  g_assert((wd->dialog=glade_xml_get_widget(xml, "GConnectionDialog")));
+
   gtk_object_set_data_full(GTK_OBJECT(wd->dialog),
                            GBANKING_PROGRESS_ID,
                            wd,
                            GBanking_Progress_freeData);
 
-  g_assert((wd->titleText=lookup_widget(wd->dialog, "titleText")));
-  g_assert((wd->logText=lookup_widget(wd->dialog, "logText")));
-  g_assert((wd->progressBar=lookup_widget(wd->dialog, "progressBar")));
-  g_assert((wd->closeButton=lookup_widget(wd->dialog, "closeButton")));
-  g_assert((wd->abortButton=lookup_widget(wd->dialog, "abortButton")));
+  g_assert((wd->titleText=glade_xml_get_widget(xml, "titleText")));
+  g_assert((wd->logText=glade_xml_get_widget(xml, "logText")));
+  g_assert((wd->progressBar=glade_xml_get_widget(xml, "progressBar")));
+  g_assert((wd->closeButton=glade_xml_get_widget(xml, "closeButton")));
+  g_assert((wd->abortButton=glade_xml_get_widget(xml, "abortButton")));
 
   gtk_widget_set_size_request(GTK_WIDGET(wd->dialog), 500, 400);
 

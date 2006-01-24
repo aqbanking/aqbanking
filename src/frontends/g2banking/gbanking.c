@@ -26,6 +26,18 @@
 #include <gwenhywfar/bio_buffer.h>
 #include <gwenhywfar/xml.h>
 
+#include <glade/glade-xml.h>
+
+#include <errno.h>
+#include <string.h>
+
+
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
+
 
 
 GWEN_INHERIT(AB_BANKING, GBANKING)
@@ -135,7 +147,7 @@ GWEN_TYPE_UINT32 GBanking_ShowBox(AB_BANKING *ab,
   gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
   assert(gb);
   id=++(gb->lastWidgetId);
-  w=GBanking_SimpleBox_new(id, flags, title, text);
+  w=GBanking_SimpleBox_new(ab, id, flags, title, text);
   gb->simpleBoxes=g_slist_prepend(gb->simpleBoxes, w);
 
   return id;
@@ -422,20 +434,37 @@ int GBanking__extractText(const char *text, GWEN_BUFFER *tbuf) {
 
 
 
+GladeXML *GBanking_GladeXml_new(AB_BANKING *ab,
+                                const char *relFname,
+                                const char *wname) {
+  GWEN_BUFFER *fbuf;
+  FILE *f;
 
+  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(fbuf, PACKAGE_GLADE_DIR);
+  GWEN_Buffer_AppendString(fbuf, DIRSEP);
+  GWEN_Buffer_AppendString(fbuf, relFname);
+  f=fopen(GWEN_Buffer_GetStart(fbuf), "r");
+  if (f) {
+    GladeXML *xml;
 
-
-
-
-
-
-
-
-
-
-
-
-
+    fclose(f);
+    xml=glade_xml_new(GWEN_Buffer_GetStart(fbuf), wname, PACKAGE);
+    GWEN_Buffer_free(fbuf);
+    if (!xml) {
+      DBG_ERROR(0, "Error on glade_xml_new, no XML tree");
+      return 0;
+    }
+    return xml;
+  }
+  else {
+    DBG_ERROR(0, "Could not open file \"%s\": %s",
+              GWEN_Buffer_GetStart(fbuf),
+              strerror(errno));
+    GWEN_Buffer_free(fbuf);
+    return 0;
+  }
+}
 
 
 
