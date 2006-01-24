@@ -276,7 +276,7 @@ void QBHelpBrowser::slotAboutQt(){
 
 
 void QBHelpBrowser::slotNewWindow(){
-  ( new QBHelpBrowser(textBrowser->source(), QString("qbrowser")) )->show();
+  ( new QBHelpBrowser(textBrowser->source(), QStringList(QString("qbrowser")), parentWidget()) )->show();
 }
 
 
