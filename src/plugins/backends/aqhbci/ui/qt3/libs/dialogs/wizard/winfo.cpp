@@ -18,6 +18,7 @@
 #include "winfo.h"
 
 #include <gwenhywfar/debug.h>
+#include <unistd.h>
 
 
 
