@@ -2,10 +2,4 @@
 ressource.rc
 version.h
 *-config
-callbacks.c
-callbacks.h
-interface.c
-interface.h
-support.c
-support.h
 testlib
