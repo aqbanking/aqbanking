@@ -238,6 +238,14 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i);
  */
 AQBANKING_API
 AB_JOB_TYPE AB_Job_Char2Type(const char *s);
+
+/**
+ * Transforms the given job type into a localized string which can be
+ * presented to the user.
+ */
+AQBANKING_API
+const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i);
+
 /*@}*/
 
 

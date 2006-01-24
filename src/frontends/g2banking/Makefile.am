@@ -6,7 +6,9 @@ LIBDATADIR=$(g2banking_data)
 g2_gladedir=$(g2banking_data)/glade2
 dist_g2_glade_DATA=g2banking.glade
 
-DEFS += \
+AM_CFLAGS=@visibility_cflags@
+
+DEFS += -DBUILDING_GBANKING \
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
   -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\"" \
   -DPACKAGE_GLADE_DIR=\""$(g2_gladedir)\""

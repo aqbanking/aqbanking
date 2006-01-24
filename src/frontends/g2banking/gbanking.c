@@ -25,11 +25,17 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/bio_buffer.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/text.h> // debug
 
 #include <glade/glade-xml.h>
 
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
+
+#ifdef HAVE_ICONV_H
+# include <iconv.h>
+#endif
 
 
 #ifdef OS_WIN32
@@ -75,7 +81,34 @@ void GBanking_FreeData(void *bp, void *p) {
   DBG_INFO(GBANKING_LOGDOMAIN, "Destroying GBANKING");
   gb=(GBANKING*)p;
 
+  free(gb->charSet);
   GWEN_FREE_OBJECT(gb);
+}
+
+
+
+const char *GBanking_GetCharSet(const AB_BANKING *ab){
+  GBANKING *gb;
+
+  assert(ab);
+  gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
+  assert(gb);
+
+  return gb->charSet;
+}
+
+
+
+void GBanking_SetCharSet(AB_BANKING *ab, const char *s){
+  GBANKING *gb;
+
+  assert(ab);
+  gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
+  assert(gb);
+
+  free(gb->charSet);
+  if (s) gb->charSet=strdup(s);
+  else gb->charSet=0;
 }
 
 
@@ -195,6 +228,216 @@ GtkWidget *GBanking__findProgressWidget(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
       break;
   }
   return w;
+}
+
+
+
+int GBanking__convertFromUtf8(AB_BANKING *ab,
+                              const char *text,
+                              int len,
+                              GWEN_BUFFER *tbuf){
+  GBANKING *gb;
+
+  assert(len);
+  assert(ab);
+  gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
+  assert(gb);
+
+  if (gb->charSet) {
+    if (strcasecmp(gb->charSet, "utf-8")!=0) {
+#ifndef HAVE_ICONV_H
+      DBG_INFO(GBANKING_LOGDOMAIN,
+               "iconv not available, can not convert to \"%s\"",
+               gb->charSet);
+#else
+      iconv_t ic;
+
+      ic=iconv_open(gb->charSet, "UTF-8");
+      if (ic==((iconv_t)-1)) {
+        DBG_ERROR(GBANKING_LOGDOMAIN, "Charset \"%s\" not available",
+                  gb->charSet);
+      }
+      else {
+        char *outbuf;
+        char *pOutbuf;
+        char *pInbuf;
+        size_t inLeft;
+        size_t outLeft;
+        size_t done;
+        size_t space;
+
+        /* convert */
+        pInbuf=(char*)text;
+
+        outLeft=len*2;
+        space=outLeft;
+        outbuf=(char*)malloc(outLeft);
+        assert(outbuf);
+
+        inLeft=len;
+        pInbuf=(char*)text;
+        pOutbuf=outbuf;
+
+        done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
+        if (done==(size_t)-1) {
+          DBG_ERROR(GBANKING_LOGDOMAIN, "Error in conversion: %s (%d)",
+                    strerror(errno), errno);
+          free(outbuf);
+          iconv_close(ic);
+          return -1;
+        }
+
+        GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
+        free(outbuf);
+        DBG_DEBUG(GBANKING_LOGDOMAIN, "Conversion done.");
+        iconv_close(ic);
+        return 0;
+      }
+#endif
+    }
+  }
+
+  GWEN_Buffer_AppendBytes(tbuf, text, len);
+  return 0;
+}
+
+
+
+void GBanking_GetRawText(AB_BANKING *ab,
+                         const char *text,
+                         GWEN_BUFFER *tbuf) {
+  const char *p;
+  int rv;
+
+  assert(text);
+  p=text;
+  while ((p=strchr(p, '<'))) {
+    const char *t;
+
+    t=p;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+            break;
+          }
+        }
+      }
+    }
+    p++;
+  } /* while */
+
+  if (p)
+    rv=GBanking__convertFromUtf8(ab, text, (p-text), tbuf);
+  else
+    rv=GBanking__convertFromUtf8(ab, text, strlen(text), tbuf);
+  if (rv) {
+    DBG_ERROR(GBANKING_LOGDOMAIN, "Error converting text");
+    GWEN_Buffer_Reset(tbuf);
+    if (p)
+      GWEN_Buffer_AppendBytes(tbuf, text, (p-text));
+    else
+      GWEN_Buffer_AppendString(tbuf, text);
+  }
+}
+
+
+
+void GBanking_GetHtmlText(AB_BANKING *ab,
+                          const char *text,
+                          GWEN_BUFFER *tbuf) {
+  const char *p1=0, *p2=0;
+  int rv;
+
+  assert(text);
+  p1=text;
+  while ((p1=strchr(p1, '<'))) {
+    const char *t;
+
+    t=p1;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+            p1=t+1;
+            break;
+          }
+        }
+      }
+    }
+    p1++;
+  } /* while */
+
+  if (p1) {
+    p1++; /* skip ">" */
+
+    p2=p1;
+    while ((p2=strchr(p2, '<'))) {
+      const char *t;
+  
+      t=p2;
+      t++;
+      if (toupper(*t)=='/') {
+        t++;
+        if (toupper(*t)=='H') {
+          t++;
+          if (toupper(*t)=='T') {
+            t++;
+            if (toupper(*t)=='M') {
+              t++;
+              if (toupper(*t)=='L') {
+                DBG_ERROR(0, "Found");
+                break;
+              }
+            }
+          }
+        }
+      }
+      p2++;
+    } /* while */
+  }
+  DBG_ERROR(0, "P1=%p, P2=%p", p1, p2);
+  if (p1 && p2) {
+    DBG_ERROR(0, "Got text: ");
+    GWEN_Text_DumpString(p1, p2-p1, stderr, 2);
+    rv=GBanking__convertFromUtf8(ab, p1, (p2-p1), tbuf);
+    DBG_ERROR(0, "Result of conversion (%d):", rv);
+    GWEN_Buffer_Dump(tbuf, stderr, 2);
+  }
+  else
+    rv=GBanking__convertFromUtf8(ab, text, strlen(text), tbuf);
+  if (rv) {
+    DBG_ERROR(GBANKING_LOGDOMAIN, "Error converting text");
+    GWEN_Buffer_Reset(tbuf);
+    if (p1 && p2)
+      GWEN_Buffer_AppendBytes(tbuf, p1, (p2-p1));
+    else
+      GWEN_Buffer_AppendString(tbuf, text);
+  }
+}
+
+
+
+void GBanking_GetUtf8Text(AB_BANKING *ab,
+                          const char *text,
+                          int len,
+                          GWEN_BUFFER *tbuf) {
+  int rv;
+
+  rv=GBanking__convertFromUtf8(ab, text, len, tbuf);
+  if (rv) {
+    DBG_INFO(GBANKING_LOGDOMAIN, "Error converting text from UTF8 (%d)", rv);
+    GWEN_Buffer_Reset(tbuf);
+    GWEN_Buffer_AppendBytes(tbuf, text, len);
+  }
 }
 
 
@@ -389,48 +632,6 @@ void GBanking_SetImportContextFn(AB_BANKING *ab,
   gb->importContextFn=fn;
 }
 
-
-
-
-int GBanking__extractText(const char *text, GWEN_BUFFER *tbuf) {
-  GWEN_BUFFEREDIO *bio;
-  GWEN_XMLNODE *xmlNode;
-  GWEN_BUFFER *buf;
-  int rv;
-
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(buf, text);
-  GWEN_Buffer_Rewind(buf);
-  bio=GWEN_BufferedIO_Buffer2_new(buf, 1);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "html");
-  rv=GWEN_XML_Parse(xmlNode, bio,
-		    GWEN_XML_FLAGS_DEFAULT |
-		    GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS |
-		    GWEN_XML_FLAGS_NO_CONDENSE |
-		    GWEN_XML_FLAGS_KEEP_CNTRL);
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
-  if (rv) {
-    DBG_NOTICE(0, "here");
-    GWEN_XMLNode_free(xmlNode);
-    return -1;
-  }
-  else {
-    GWEN_XMLNODE *nn;
-
-    nn=GWEN_XMLNode_GetFirstData(xmlNode);
-    if (nn) {
-      GWEN_Buffer_AppendString(tbuf, GWEN_XMLNode_GetData(nn));
-    }
-    else {
-      GWEN_XMLNode_free(xmlNode);
-      return 1;
-    }
-  }
-  GWEN_XMLNode_free(xmlNode);
-  return 0;
-}
 
 
 

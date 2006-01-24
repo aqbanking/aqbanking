@@ -124,15 +124,21 @@ void GBanking_JobView_slotButtonClicked(GtkButton *button,
     if (!rv) {
       rv=GBanking_ImportContext(wd->banking, ctx);
       if (rv) {
-        DBG_WARN(GBANKING_LOGDOMAIN,
-                 "Error processing queue results (%d)", rv);
-        AB_Banking_MessageBox(wd->banking,
-                              AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                              AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                              I18N("Execution Error"),
-                              I18N("Some errors occurred while processing "
-                                "the outbox results."),
-                              I18N("Dismiss"), 0, 0);
+        if (rv==AB_ERROR_NOFN) {
+          DBG_WARN(GBANKING_LOGDOMAIN,
+                   "ImportContext function not implemented by application");
+        }
+        else {
+          DBG_WARN(GBANKING_LOGDOMAIN,
+                   "Error processing queue results (%d)", rv);
+          AB_Banking_MessageBox(wd->banking,
+                                AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                                AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                                I18N("Execution Error"),
+                                I18N("Some errors occurred while processing "
+                                     "the outbox results."),
+                                I18N("Dismiss"), 0, 0);
+        }
       }
     }
     AB_ImExporterContext_free(ctx);

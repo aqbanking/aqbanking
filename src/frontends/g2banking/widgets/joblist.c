@@ -167,24 +167,7 @@ void GBanking_JobList__populate(GBANKING_JOBLIST *jl) {
       accountName=AB_Account_GetAccountNumber(a);
     backend=AB_Provider_GetName(AB_Account_GetProvider(a));
 
-    switch(AB_Job_GetType(j)) {
-    case AB_Job_TypeGetBalance:
-      jobtype=I18N("Get Balance");
-      break;
-    case AB_Job_TypeGetTransactions:
-      jobtype=I18N("Get Transactions");
-      break;
-    case AB_Job_TypeTransfer:
-      jobtype=I18N("Transfer");
-      break;
-    case AB_Job_TypeDebitNote:
-      jobtype=I18N("Debit Note");
-      break;
-    default:
-      jobtype=I18N("Unknown");
-      break;
-    }
-
+    jobtype=AB_Job_Type2LocalChar(AB_Job_GetType(j));
 
     switch(AB_Job_GetStatus(j)) {
     case AB_Job_StatusNew:

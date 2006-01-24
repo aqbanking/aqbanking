@@ -16,6 +16,7 @@
 
 #include "job_p.h"
 #include "job_be.h"
+#include "i18n_l.h"
 #include "account_l.h"
 #include "banking_l.h"
 #include "provider_l.h"
@@ -258,6 +259,33 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeInternalTransfer:    s="internaltransfer"; break;
   default:
   case AB_Job_TypeUnknown:             s="unknown"; break;
+  }
+
+  return s;
+}
+
+
+
+const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i) {
+  const char *s;
+
+  switch(i) {
+  case AB_Job_TypeGetBalance:          s=I18N("Get Balance"); break;
+  case AB_Job_TypeGetTransactions:     s=I18N("Get Transactions"); break;
+  case AB_Job_TypeTransfer:            s=I18N("Transfer"); break;
+  case AB_Job_TypeDebitNote:           s=I18N("Debit Note"); break;
+  case AB_Job_TypeEuTransfer:          s=I18N("EU Transfer"); break;
+  case AB_Job_TypeGetStandingOrders:   s=I18N("Get Standing Orders"); break;
+  case AB_Job_TypeGetDatedTransfers:   s=I18N("Get Dated Transfers"); break;
+  case AB_Job_TypeCreateStandingOrder: s=I18N("Create Standing Order"); break;
+  case AB_Job_TypeModifyStandingOrder: s=I18N("Modify Standing Order"); break;
+  case AB_Job_TypeDeleteStandingOrder: s=I18N("Delete Standing Order"); break;
+  case AB_Job_TypeCreateDatedTransfer: s=I18N("Create Dated Transfer"); break;
+  case AB_Job_TypeModifyDatedTransfer: s=I18N("Modify Dated Transfer"); break;
+  case AB_Job_TypeDeleteDatedTransfer: s=I18N("Delete Dated Transfer"); break;
+  case AB_Job_TypeInternalTransfer:    s=I18N("Internal Transfer"); break;
+  default:
+  case AB_Job_TypeUnknown:             s=I18N("unknown"); break;
   }
 
   return s;

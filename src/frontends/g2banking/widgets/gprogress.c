@@ -149,7 +149,17 @@ int GBanking_Progress_Start(GtkWidget *w,
   wd->finished=0;
   wd->aborted=0;
   gtk_window_set_title(GTK_WINDOW(wd->dialog), title);
-  gtk_label_set_text(GTK_LABEL(wd->titleText), text);
+
+  if (text) {
+    GWEN_BUFFER *txtBuf;
+
+    txtBuf=GWEN_Buffer_new(0, strlen(text), 0, 1);
+    GBanking_GetHtmlText(wd->banking, text, txtBuf);
+    gtk_label_set_markup(GTK_LABEL(wd->titleText),
+                         GWEN_Buffer_GetStart(txtBuf));
+    GWEN_Buffer_free(txtBuf);
+  }
+
   gtk_progress_set_percentage(GTK_PROGRESS(wd->progressBar), 0.0);
   GWEN_Buffer_Reset(wd->logBuffer);
   gtk_text_buffer_set_text
@@ -204,7 +214,16 @@ int GBanking_Progress_Log(GtkWidget *w,
            t->tm_hour, t->tm_min, t->tm_sec);
   GWEN_Buffer_AppendString(wd->logBuffer, tbuf);
 
-  GWEN_Buffer_AppendString(wd->logBuffer, text);
+  if (text) {
+    GWEN_BUFFER *txtBuf;
+
+    txtBuf=GWEN_Buffer_new(0, strlen(text), 0, 1);
+    GBanking_GetHtmlText(wd->banking, text, txtBuf);
+    GWEN_Buffer_AppendString(wd->logBuffer,
+                             GWEN_Buffer_GetStart(txtBuf));
+    GWEN_Buffer_free(txtBuf);
+  }
+
   i=strlen(text);
   if (text[i-1]!='\n')
     GWEN_Buffer_AppendByte(wd->logBuffer, '\n');

@@ -2,91 +2,15 @@
 #  include <config.h>
 #endif
 
+#undef BUILDING_GBANKING
+
 #include <gtk/gtk.h>
 #include <unistd.h>
 
 #include <gwenhywfar/logger.h>
 
 #include "gbanking.h"
-#include "gprogress.h"
 #include "jobview.h"
-#include "ginputbox.h"
-
-
-
-int test1(AB_BANKING *ab) {
-  GtkWidget *w;
-  int i;
-
-  w=GBanking_Progress_new(ab, 1);
-  if (GBanking_Progress_Start(w, "Test-Title",
-                              "This is a little test\n"
-                              "Let's try it ;-)",
-                              15)) {
-    fprintf(stderr, "Could not start progress\n");
-  }
-
-  for (i=0; i<16; i++) {
-    char numbuf[32];
-
-    if (GBanking_Progress_Advance(w, i)) {
-      fprintf(stderr, "User aborted\n");
-      break;
-    }
-    snprintf(numbuf, sizeof(numbuf), "Log line %d", i);
-    if (GBanking_Progress_Log(w, 1, numbuf)) {
-      fprintf(stderr, "User aborted\n");
-      break;
-    }
-    sleep(1);
-  }
-
-  fprintf(stderr, "Will end soon\n");
-  sleep(3);
-  if (GBanking_Progress_End(w)) {
-    fprintf(stderr, "User aborted\n");
-  }
-
-  while (g_main_iteration (FALSE));
-
-  fprintf(stderr, "Finished.\n");
-  sleep(3);
-
-  gtk_widget_destroy(w);
-
-  //gtk_main ();
-  return 0;
-}
-
-
-
-int test2(AB_BANKING *ab) {
-  GtkWidget *w;
-
-  w=GBanking_JobView_new(ab, 0);
-  gtk_widget_show(w);
-  gtk_main ();
-  gtk_widget_destroy(w);
-  return 0;
-}
-
-
-
-int test3(AB_BANKING *ab) {
-  char pwbuf[16];
-
-  if (GBanking_GetInput(ab,
-                        0, //AB_BANKING_INPUT_FLAGS_CONFIRM,
-                        "Test-Title",
-                        "This is a simple test input",
-                        pwbuf,
-                        4, sizeof(pwbuf)-1,
-                        0)) {
-    fprintf(stderr, "Your input: %s\n", pwbuf);
-  }
-  return 0;
-}
-
 
 
 
@@ -94,7 +18,10 @@ int test4(AB_BANKING *ab) {
   int result;
 
   result=AB_Banking_MessageBox(ab, 0, "Test-Title",
-                               "This is a test message",
+                               "This is a test message"
+                               "<html>"
+                               "<b>This</b> is a <i>test</i> message"
+                               "</html>",
                                "1st Button",
                                "2nd Button",
                                "3rd Button");
@@ -234,13 +161,7 @@ int main (int argc, char *argv[]){
     return 2;
   }
 
-  if (strcasecmp(cmd, "test1")==0)
-    rv=test1(ab);
-  else if (strcasecmp(cmd, "test2")==0)
-    rv=test2(ab);
-  else if (strcasecmp(cmd, "test3")==0)
-    rv=test3(ab);
-  else if (strcasecmp(cmd, "test4")==0)
+  if (strcasecmp(cmd, "test4")==0)
     rv=test4(ab);
   else if (strcasecmp(cmd, "test5")==0)
     rv=test5(ab);

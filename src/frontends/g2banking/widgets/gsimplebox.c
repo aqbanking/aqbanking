@@ -51,7 +51,15 @@ GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
   gtk_window_set_title(GTK_WINDOW(wd->widget), title);
   gtk_window_set_position(GTK_WINDOW(wd->widget), GTK_WIN_POS_CENTER);
 
-  gtk_label_set_text(GTK_LABEL(wd->msgText), text);
+  if (text) {
+    GWEN_BUFFER *txtBuf;
+
+    txtBuf=GWEN_Buffer_new(0, strlen(text), 0, 1);
+    GBanking_GetHtmlText(ab, text, txtBuf);
+    gtk_label_set_markup(GTK_LABEL(wd->msgText),
+                         GWEN_Buffer_GetStart(txtBuf));
+    GWEN_Buffer_free(txtBuf);
+  }
 
   gtk_object_ref(GTK_OBJECT(wd->widget));
   gtk_widget_show(wd->widget);

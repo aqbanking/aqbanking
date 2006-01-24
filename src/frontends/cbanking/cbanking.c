@@ -177,7 +177,7 @@ int CBanking__ConvertFromUtf8(AB_BANKING *ab,
     }
   }
 
-  GWEN_Buffer_AppendString(tbuf, text);
+  GWEN_Buffer_AppendBytes(tbuf, text, len);
   return 0;
 }
 

@@ -36,60 +36,66 @@ struct GBANKING {
   GWEN_TYPE_UINT32 _lastQueueUpdate;
 
   GBANKING_IMPORTCONTEXT_FN importContextFn;
+
+  char *charSet;
 };
-void GBanking_FreeData(void *bp, void *p);
+static void GBanking_FreeData(void *bp, void *p);
 
-GtkWidget *GBanking__findSimpleBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
-GtkWidget *GBanking__findProgressWidget(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+static GtkWidget*
+  GBanking__findSimpleBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+static GtkWidget*
+  GBanking__findProgressWidget(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
+static int GBanking_MessageBox(AB_BANKING *ab,
+                               GWEN_TYPE_UINT32 flags,
+                               const char *title,
+                               const char *text,
+                               const char *b1,
+                               const char *b2,
+                               const char *b3);
 
-int GBanking_MessageBox(AB_BANKING *ab,
-                          GWEN_TYPE_UINT32 flags,
-                          const char *title,
-                          const char *text,
-                          const char *b1,
-                          const char *b2,
-                          const char *b3);
+static int GBanking_InputBox(AB_BANKING *ab,
+                             GWEN_TYPE_UINT32 flags,
+                             const char *title,
+                             const char *text,
+                             char *buffer,
+                             int minLen,
+                             int maxLen);
 
-int GBanking_InputBox(AB_BANKING *ab,
-                        GWEN_TYPE_UINT32 flags,
-                        const char *title,
-                        const char *text,
-                        char *buffer,
-                        int minLen,
-                        int maxLen);
-
-GWEN_TYPE_UINT32 GBanking_ShowBox(AB_BANKING *ab,
-                                    GWEN_TYPE_UINT32 flags,
-                                    const char *title,
-                                    const char *text);
-
-
-void GBanking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+static GWEN_TYPE_UINT32 GBanking_ShowBox(AB_BANKING *ab,
+                                         GWEN_TYPE_UINT32 flags,
+                                         const char *title,
+                                         const char *text);
 
 
-GWEN_TYPE_UINT32 GBanking_ProgressStart(AB_BANKING *ab,
-                                          const char *title,
-                                          const char *text,
-                                          GWEN_TYPE_UINT32 total);
+static void GBanking_HideBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 
-int GBanking_ProgressAdvance(AB_BANKING *ab,
-                               GWEN_TYPE_UINT32 id,
-                               GWEN_TYPE_UINT32 progress);
+static GWEN_TYPE_UINT32 GBanking_ProgressStart(AB_BANKING *ab,
+                                               const char *title,
+                                               const char *text,
+                                               GWEN_TYPE_UINT32 total);
+
+
+static int GBanking_ProgressAdvance(AB_BANKING *ab,
+                                    GWEN_TYPE_UINT32 id,
+                                    GWEN_TYPE_UINT32 progress);
 
 
 
-int GBanking_ProgressLog(AB_BANKING *ab,
-                           GWEN_TYPE_UINT32 id,
-                           AB_BANKING_LOGLEVEL level,
-                           const char *text);
+static int GBanking_ProgressLog(AB_BANKING *ab,
+                                GWEN_TYPE_UINT32 id,
+                                AB_BANKING_LOGLEVEL level,
+                                const char *text);
 
 
-int GBanking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+static int GBanking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
 
 
-int GBanking__extractText(const char *text, GWEN_BUFFER *tbuf);
+static int GBanking__convertFromUtf8(AB_BANKING *ab,
+                                     const char *text,
+                                     int len,
+                                     GWEN_BUFFER *tbuf);
 
 
 

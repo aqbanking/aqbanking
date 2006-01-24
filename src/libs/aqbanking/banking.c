@@ -2616,6 +2616,9 @@ int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
                                     "backends to the credit institutes."),
 			       AB_Job_List2_GetSize(jl2));
   rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  }
   AB_Banking_ProgressEnd(ab, pid);
 
   /* clear temporarily accepted certificates again */

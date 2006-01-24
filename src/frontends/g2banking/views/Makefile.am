@@ -3,9 +3,11 @@ INCLUDES = -I$(srcdir)/.. -I.. -I$(srcdir)/../widgets \
   -I$(top_builddir)/headers $(all_includes)
 
 LIBDATADIR="$(datadir)/g2banking"
-DEFS += \
+DEFS += -DBUILDING_GBANKING \
   -DPACKAGE_DATA_DIR=\""$(LIBDATADIR)\"" \
   -DPACKAGE_LOCALE_DIR=\""$(datadir)/locale\""
+
+AM_CFLAGS=@visibility_cflags@
 
 noinst_LTLIBRARIES=libviews.la
 

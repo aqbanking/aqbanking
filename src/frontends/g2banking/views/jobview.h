@@ -16,9 +16,11 @@
 #define GBANKING_JOBVIEW_H
 
 #include <gtk/gtk.h>
+#include <g2banking/gbanking.h>
 #include <aqbanking/banking.h>
 
 
+GBANKING_API 
 GtkWidget *GBanking_JobView_new(AB_BANKING *ab, GtkWidget *parent);
 
 

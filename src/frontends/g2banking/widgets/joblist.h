@@ -15,17 +15,23 @@
 
 #include <gtk/gtk.h>
 
-#include <gwenhywfar/types.h>
+#include <g2banking/gbanking.h>
 #include <aqbanking/banking.h>
 #include <aqbanking/job.h>
 
+#include <gwenhywfar/types.h>
 
 
+
+GBANKING_API 
 GtkWidget *GBanking_JobList_new(AB_BANKING *ab,
                                 GtkWidget *parent,
                                 GtkWidget *tree);
+
+GBANKING_API 
 AB_JOB_LIST2 *GBanking_JobList_GetSelectedJobs(GtkWidget *w);
 
+GBANKING_API 
 void GBanking_JobList_Update(GtkWidget *w);
 
 

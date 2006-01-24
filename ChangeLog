@@ -3,6 +3,17 @@
 -------------------------------------------------
 - GTK2 frontend now uses libglade instead of creating source code.
   This makes it much easier to work with glade files.
+- added function AB_Job_Type2LocalChar() which returns a localized and
+  human readable string representing a job type (e.g. "Get Balance")
+- frontend GBanking:
+  - now uses the visibility feature of GCC4
+  - added some functions to retrieve non-HTML from combined text (as used by
+    AqBankings interactive callbacks)
+  - now extracts HTML parts of GUI messages and converts it if necessary from
+    UTF8 to whatever codepage the application has chosen
+  - figured out that for GTK labels I need to call gtk_label_set_markup()
+    instead of gtk_label_set_text() if I want to get the label to show
+    HTML text... grrr.
 
 
 2006/01/23: Martin Preuss<martin@libchipcard.de>
