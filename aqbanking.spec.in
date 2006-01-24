@@ -1,8 +1,10 @@
 %define name @PACKAGE@
 %define version @VERSION@
+
 %define aq_plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
-%define qb_plugindir %{aq_plugindir}/frontends/qbanking
-%define qb_cfgmoddir %{qb_plugindir}/cfgmodules
+%define fronts_libdir %{aq_plugindir}/frontends
+%define qb_cfgmoddir %{fronts_libdir}/qbanking/cfgmodules
+%define fronts_datadir %{_datadir}/%{name}/frontends
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
 ### rpms should not be released!
@@ -227,7 +229,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{qb_cfgmoddir}/aqhbci*
 %{qb_cfgmoddir}/aqdtaus*
 %{_datadir}/%{name}/i18n
-%{_datadir}/%{name}/frontends/qbanking
+%{fronts_datadir}/qbanking
 
 %if %have_libofx
 %files ofx
@@ -253,6 +255,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files gtk2
 %{_libdir}/libg2banking.so.*
+%{fronts_datadir}/g2banking
 
 %files kde3
 %{_libdir}/libkbanking.so.*
