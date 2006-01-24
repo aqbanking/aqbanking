@@ -17,8 +17,8 @@
 
 
 #include "gbanking_l.h"
-#include "jobview_p.h"
-#include "joblist.h"
+#include "gbjobview_p.h"
+#include "gbjoblist.h"
 
 #include "i18n_l.h"
 
@@ -33,14 +33,13 @@
 GtkWidget *GBanking_JobView_new(AB_BANKING *ab, GtkWidget *parent) {
   GBANKING_JOBVIEW *wd;
   GladeXML *xml;
-  GtkWidget *jobListWidget;
 
   GWEN_NEW_OBJECT(GBANKING_JOBVIEW, wd);
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GJobView");
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBJobView");
   assert(xml);
 
-  g_assert((wd->jobView=glade_xml_get_widget(xml, "GJobView")));
+  g_assert((wd->jobView=glade_xml_get_widget(xml, "GBJobView")));
 
   gtk_object_set_data_full(GTK_OBJECT(wd->jobView),
                            GBANKING_JOBVIEW_ID,
@@ -52,10 +51,9 @@ GtkWidget *GBanking_JobView_new(AB_BANKING *ab, GtkWidget *parent) {
 
   wd->banking=ab;
   g_assert((wd->jobListView=glade_xml_get_widget(xml, "jobListView")));
-  g_assert((jobListWidget=glade_xml_get_widget(xml, "jobListView")));
-  g_assert((wd->jobListView=GBanking_JobList_new(ab,
+  g_assert((wd->jobListView=GB_JobList_new(ab,
                                                  wd->jobView,
-                                                 jobListWidget)));
+                                                 wd->jobListView)));
   g_assert((wd->dequeueButton=glade_xml_get_widget(xml, "dequeueButton")));
   g_assert((wd->execButton=glade_xml_get_widget(xml, "execButton")));
 
@@ -117,7 +115,7 @@ void GBanking_JobView_slotButtonClicked(GtkButton *button,
                               "the outbox."),
                             I18N("Dismiss"), 0, 0);
     }
-    GBanking_JobList_Update(wd->jobListView);
+    GB_JobList_Update(wd->jobListView);
 
     ctx=AB_ImExporterContext_new();
     rv=AB_Banking_GatherResponses(wd->banking, ctx);

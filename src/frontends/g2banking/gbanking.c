@@ -16,10 +16,10 @@
 #endif
 
 #include "gbanking_p.h"
-#include "gsimplebox.h"
-#include "gprogress.h"
-#include "ginputbox.h"
-#include "gmsgbox.h"
+#include "gbsimplebox.h"
+#include "gbprogress.h"
+#include "gbinputbox.h"
+#include "gbmsgbox.h"
 
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
@@ -128,11 +128,11 @@ int GBanking_MessageBox(AB_BANKING *ab,
   gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
   assert(gb);
 
-  w=GBanking_MsgBox_new(ab,
-                        flags,
-                        title,
-                        text,
-                        b1, b2, b3, gb->parentWidget);
+  w=GB_MsgBox_new(ab,
+                  flags,
+                  title,
+                  text,
+                  b1, b2, b3, gb->parentWidget);
   result=gtk_dialog_run(GTK_DIALOG(w));
   gtk_widget_destroy(w);
   if (result<1 || result>3) {
@@ -180,7 +180,7 @@ GWEN_TYPE_UINT32 GBanking_ShowBox(AB_BANKING *ab,
   gb=GWEN_INHERIT_GETDATA(AB_BANKING, GBANKING, ab);
   assert(gb);
   id=++(gb->lastWidgetId);
-  w=GBanking_SimpleBox_new(ab, id, flags, title, text);
+  w=GB_SimpleBox_new(ab, id, flags, title, text);
   gb->simpleBoxes=g_slist_prepend(gb->simpleBoxes, w);
 
   return id;
@@ -202,7 +202,7 @@ GtkWidget *GBanking__findSimpleBox(AB_BANKING *ab, GWEN_TYPE_UINT32 id) {
   w=0;
   for (i=0; i< size; i++) {
     w=g_slist_nth_data(gb->simpleBoxes, i);
-    if (id==0 || GBanking_SimpleBox_GetId(w)==id)
+    if (id==0 || GB_SimpleBox_GetId(w)==id)
       break;
   }
   return w;
@@ -224,7 +224,7 @@ GtkWidget *GBanking__findProgressWidget(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
   w=0;
   for (i=0; i< size; i++) {
     w=g_slist_nth_data(gb->progressWidgets, i);
-    if (id==0 || GBanking_Progress_GetId(w)==id)
+    if (id==0 || GB_Progress_GetId(w)==id)
       break;
   }
   return w;
@@ -404,13 +404,8 @@ void GBanking_GetHtmlText(AB_BANKING *ab,
       p2++;
     } /* while */
   }
-  DBG_ERROR(0, "P1=%p, P2=%p", p1, p2);
   if (p1 && p2) {
-    DBG_ERROR(0, "Got text: ");
-    GWEN_Text_DumpString(p1, p2-p1, stderr, 2);
     rv=GBanking__convertFromUtf8(ab, p1, (p2-p1), tbuf);
-    DBG_ERROR(0, "Result of conversion (%d):", rv);
-    GWEN_Buffer_Dump(tbuf, stderr, 2);
   }
   else
     rv=GBanking__convertFromUtf8(ab, text, strlen(text), tbuf);
@@ -475,9 +470,9 @@ GWEN_TYPE_UINT32 GBanking_ProgressStart(AB_BANKING *ab,
   assert(gb);
 
   id=++(gb->lastWidgetId);
-  w=GBanking_Progress_new(ab, id);
+  w=GB_Progress_new(ab, id);
   gtk_widget_ref(w);
-  GBanking_Progress_Start(w, title, text, total);
+  GB_Progress_Start(w, title, text, total);
   gb->progressWidgets=g_slist_prepend(gb->progressWidgets, w);
 
   return id;
@@ -497,7 +492,7 @@ int GBanking_ProgressAdvance(AB_BANKING *ab,
 
   w=GBanking__findProgressWidget(ab, id);
   if (w) {
-    return GBanking_Progress_Advance(w, progress);
+    return GB_Progress_Advance(w, progress);
   }
   else {
     DBG_ERROR(GBANKING_LOGDOMAIN, "Progress widget %d not found", id);
@@ -521,7 +516,7 @@ int GBanking_ProgressLog(AB_BANKING *ab,
 
   w=GBanking__findProgressWidget(ab, id);
   if (w) {
-    return GBanking_Progress_Log(w, level, text);
+    return GB_Progress_Log(w, level, text);
   }
   else {
     DBG_ERROR(GBANKING_LOGDOMAIN, "Progress widget not found");
@@ -543,7 +538,7 @@ int GBanking_ProgressEnd(AB_BANKING *ab, GWEN_TYPE_UINT32 id){
 
   w=GBanking__findProgressWidget(ab, id);
   if (w) {
-    rv=GBanking_Progress_End(w);
+    rv=GB_Progress_End(w);
     gb->progressWidgets=g_slist_remove(gb->progressWidgets, w);
     gtk_widget_unref(w);
   }

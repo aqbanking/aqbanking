@@ -10,7 +10,8 @@
 #include <gwenhywfar/logger.h>
 
 #include "gbanking.h"
-#include "jobview.h"
+#include "gbjobview.h"
+#include "gbprofileview.h"
 
 
 
@@ -130,6 +131,30 @@ int test7(AB_BANKING *ab) {
 
 
 
+int test8(AB_BANKING *ab){
+  GtkWidget *w;
+  GWEN_DB_NODE *dbProfiles;
+
+  dbProfiles=AB_Banking_GetImExporterProfiles(ab, "swift");
+  w=GB_ProfileView_new(ab, dbProfiles, 0);
+  gtk_widget_set_size_request(GTK_WIDGET(w), 500, 400);
+  gtk_signal_connect(GTK_OBJECT(w), "delete-event",
+                     GTK_SIGNAL_FUNC(_slotDelete),
+                     w);
+
+  gtk_widget_show(w);
+  while (g_main_iteration (FALSE));
+  gtk_main();
+
+  fprintf(stderr, "Finished.\n");
+
+  //gtk_widget_destroy(w);
+
+  //gtk_main ();
+  return 0;
+}
+
+
 
 int main (int argc, char *argv[]){
   AB_BANKING *ab;
@@ -169,6 +194,8 @@ int main (int argc, char *argv[]){
     rv=test6(ab);
   else if (strcasecmp(cmd, "test7")==0)
     rv=test7(ab);
+  else if (strcasecmp(cmd, "test8")==0)
+    rv=test8(ab);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

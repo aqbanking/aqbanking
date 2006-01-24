@@ -10,8 +10,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_SIMPLEBOX_H
-#define GBANKING_SIMPLEBOX_H
+#ifndef GB_MSGBOX_H
+#define GB_MSGBOX_H
 
 #include <gtk/gtk.h>
 
@@ -19,19 +19,19 @@
 #include <aqbanking/banking.h>
 
 
-GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
-                                  GWEN_TYPE_UINT32 id,
-                                  GWEN_TYPE_UINT32 flags,
-                                  const char *title,
-                                  const char *text);
-GWEN_TYPE_UINT32 GBanking_SimpleBox_GetId(GtkWidget *w);
+
+GtkWidget *GB_MsgBox_new(AB_BANKING *ab,
+                         GWEN_TYPE_UINT32 flags,
+                         const char *title,
+                         const char *text,
+                         const char *b1,
+                         const char *b2,
+                         const char *b3,
+                         GtkWidget *parent);
 
 
 
-
-
-
-#endif
+#endif /* GB_MSGBOX_H */
 
 
 

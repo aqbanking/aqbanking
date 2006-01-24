@@ -14,7 +14,7 @@
 # include <config.h>
 #endif
 
-#include "ginputbox_p.h"
+#include "gbinputbox_p.h"
 #include "gbanking_l.h"
 
 #include <gwenhywfar/misc.h>
@@ -33,19 +33,19 @@ GtkWidget *GBanking_InputBox_new(AB_BANKING *ab,
                                  int minLen,
                                  int maxLen,
                                  GtkWidget *parent){
-  GBANKING_INPUTBOX *wd;
+  GB_INPUTBOX *wd;
   GladeXML *xml;
 
-  GWEN_NEW_OBJECT(GBANKING_INPUTBOX, wd);
+  GWEN_NEW_OBJECT(GB_INPUTBOX, wd);
   wd->banking=ab;
   wd->flags=flags;
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GInputBox");
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBInputBox");
   assert(xml);
 
-  g_assert((wd->widget=glade_xml_get_widget(xml, "GInputBox")));
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GBInputBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
-                           GBANKING_INPUTBOX_ID,
+                           GB_INPUTBOX_ID,
                            wd,
                            GBanking_InputBox_freeData);
 
@@ -88,16 +88,16 @@ GtkWidget *GBanking_InputBox_new(AB_BANKING *ab,
 
 
 
-void GBanking_InputBox_free(GBANKING_INPUTBOX *wd){
+void GBanking_InputBox_free(GB_INPUTBOX *wd){
   GWEN_FREE_OBJECT(wd);
 }
 
 
 
 void GBanking_InputBox_freeData(gpointer data){
-  GBANKING_INPUTBOX *wd;
+  GB_INPUTBOX *wd;
 
-  wd=(GBANKING_INPUTBOX*)data;
+  wd=(GB_INPUTBOX*)data;
   g_assert(wd);
 
   GBanking_InputBox_free(wd);
@@ -115,11 +115,11 @@ gboolean GBanking_GetInput(AB_BANKING *ab,
                            GtkWidget *parent){
   GtkWidget *w;
   gint result;
-  GBANKING_INPUTBOX *wd;
+  GB_INPUTBOX *wd;
   gboolean haveNoPassword;
 
   w=GBanking_InputBox_new(ab, flags, title, text, minLen, maxLen, parent);
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_INPUTBOX_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_INPUTBOX_ID);
   g_assert(wd);
 
   haveNoPassword=1;

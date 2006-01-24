@@ -13,13 +13,16 @@ noinst_LTLIBRARIES=libviews.la
 
 iheaderdir=${includedir}/g2banking
 iheader_HEADERS=\
- jobview.h
+ gbjobview.h \
+ gbprofileview.h
 
 noinst_HEADERS=\
- jobview_p.h
+ gbjobview_p.h \
+ gbprofileview_p.h
 
 libviews_la_SOURCES=\
- jobview.c
+ gbjobview.c \
+ gbprofileview.c
 
 
 sources:

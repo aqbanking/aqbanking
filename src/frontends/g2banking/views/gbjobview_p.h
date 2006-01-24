@@ -17,7 +17,7 @@
 
 #define GBANKING_JOBVIEW_ID "GB_JOBVIEW"
 
-#include "jobview.h"
+#include "gbjobview.h"
 
 
 typedef struct GBANKING_JOBVIEW GBANKING_JOBVIEW;

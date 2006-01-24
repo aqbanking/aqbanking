@@ -10,18 +10,18 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_MSGBOX_P_H
-#define GBANKING_MSGBOX_P_H
+#ifndef GB_MSGBOX_P_H
+#define GB_MSGBOX_P_H
 
-#include "gmsgbox.h"
-
-
-#define GBANKING_MSGBOX_ID "GB_MSGBOX"
+#include "gbmsgbox.h"
 
 
+#define GB_MSGBOX_ID "GB_MSGBOX"
 
-typedef struct GBANKING_MSGBOX GBANKING_MSGBOX;
-struct GBANKING_MSGBOX {
+
+
+typedef struct GB_MSGBOX GB_MSGBOX;
+struct GB_MSGBOX {
   AB_BANKING *banking;
   GWEN_TYPE_UINT32 flags;
   GtkWidget *widget;
@@ -31,15 +31,15 @@ struct GBANKING_MSGBOX {
   GtkWidget *button3;
 };
 
-void GBanking_MsgBox_free(GBANKING_MSGBOX *wd);
-void GBanking_MsgBox_freeData(gpointer data);
+void GB_MsgBox_free(GB_MSGBOX *wd);
+void GB_MsgBox_freeData(gpointer data);
 
-void GBanking_MsgBox_slotButtonClicked(GtkButton *button,
-                                       gpointer user_data);
+void GB_MsgBox_slotButtonClicked(GtkButton *button,
+                                 gpointer user_data);
 
 
 
-#endif /* GBANKING_MSGBOX_P_H */
+#endif /* GB_MSGBOX_P_H */
 
 
 

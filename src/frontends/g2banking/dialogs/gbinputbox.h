@@ -10,35 +10,27 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_SIMPLEBOX_P_H
-#define GBANKING_SIMPLEBOX_P_H
-
-#define GBANKING_SIMPLEBOX_ID "GB_SIMPLEBOX"
-
+#ifndef GB_INPUTBOX_H
+#define GB_INPUTBOX_H
 
 #include <gtk/gtk.h>
 
-#include "gsimplebox.h"
+#include <gwenhywfar/types.h>
+#include <aqbanking/banking.h>
 
 
 
-typedef struct GBANKING_SIMPLEBOX GBANKING_SIMPLEBOX;
-struct GBANKING_SIMPLEBOX {
-  GtkWidget *widget;
-  GtkWidget *titleText;
-  GtkWidget *msgText;
-
-  GWEN_TYPE_UINT32 id;
-  GWEN_TYPE_UINT32 flags;
-};
-
-
-void GBanking_SimpleBox_free(GBANKING_SIMPLEBOX *wd);
-void GBanking_SimpleBox_freeData(gpointer data);
+gboolean GBanking_GetInput(AB_BANKING *ab,
+                           GWEN_TYPE_UINT32 flags,
+                           const char *title,
+                           const char *text,
+                           char *buffer,
+                           int minLen,
+                           int maxLen,
+                           GtkWidget *parent);
 
 
-
-#endif
+#endif /* GB_INPUTBOX_H */
 
 
 

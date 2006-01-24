@@ -14,6 +14,9 @@
   - figured out that for GTK labels I need to call gtk_label_set_markup()
     instead of gtk_label_set_text() if I want to get the label to show
     HTML text... grrr.
+  - cleaned up the namespace of this frontend (moved file names and module
+    names to match the scheme used in QBanking)
+  - added GB_ProfileListView (as needed for importers using GTK)
 - frontend QBanking:
   - removed invalid include hints which got back into CVS for unknown reasons
 

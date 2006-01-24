@@ -12,16 +12,16 @@ noinst_LTLIBRARIES=libdialogs.la
 
 iheaderdir=${includedir}/g2banking
 iheader_HEADERS=\
- ginputbox.h \
- gmsgbox.h
+ gbinputbox.h \
+ gbmsgbox.h
 
 noinst_HEADERS=\
- ginputbox_p.h \
- gmsgbox_p.h
+ gbinputbox_p.h \
+ gbmsgbox_p.h
 
 libdialogs_la_SOURCES=\
- ginputbox.c \
- gmsgbox.c
+ gbinputbox.c \
+ gbmsgbox.c
 
 
 sources:

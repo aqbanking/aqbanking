@@ -10,19 +10,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_PROGRESS_P_H
-#define GBANKING_PROGRESS_P_H
+#ifndef GB_PROGRESS_P_H
+#define GB_PROGRESS_P_H
 
 #include <gtk/gtk.h>
 
-#include "gprogress.h"
+#include "gbprogress.h"
 
-#define GBANKING_PROGRESS_ID "GB_PROGRESS"
+#define GB_PROGRESS_ID "GB_PROGRESS"
 
 
 
-typedef struct GBANKING_PROGRESS GBANKING_PROGRESS;
-struct GBANKING_PROGRESS {
+typedef struct GB_PROGRESS GB_PROGRESS;
+struct GB_PROGRESS {
   AB_BANKING *banking;
   GtkWidget *dialog;
   GtkWidget *titleText;
@@ -39,17 +39,17 @@ struct GBANKING_PROGRESS {
   GWEN_BUFFER *logBuffer;
 };
 
-void GBanking_Progress_free(GBANKING_PROGRESS *wd);
-void GBanking_Progress_freeData(gpointer data);
+void GB_Progress_free(GB_PROGRESS *wd);
+void GB_Progress_freeData(gpointer data);
 
 
-static void GBanking_Progress_slotButtonClicked(GtkButton *button,
-                                                gpointer user_data);
+static void GB_Progress_slotButtonClicked(GtkButton *button,
+                                          gpointer user_data);
 
 
-gboolean GBanking_Progress_slotDelete(GtkWidget *w,
-                                      GdkEvent *event,
-                                      gpointer user_data);
+gboolean GB_Progress_slotDelete(GtkWidget *w,
+                                GdkEvent *event,
+                                gpointer user_data);
 
 
 

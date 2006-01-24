@@ -16,7 +16,7 @@
 #endif
 
 
-#include "gprogress_p.h"
+#include "gbprogress_p.h"
 #include "gbanking_l.h"
 
 #include <gwenhywfar/misc.h>
@@ -28,23 +28,23 @@
 
 
 
-GtkWidget *GBanking_Progress_new(AB_BANKING *ab,
-                                 GWEN_TYPE_UINT32 id) {
-  GBANKING_PROGRESS *wd;
+GtkWidget *GB_Progress_new(AB_BANKING *ab,
+                           GWEN_TYPE_UINT32 id) {
+  GB_PROGRESS *wd;
   GladeXML *xml;
 
-  GWEN_NEW_OBJECT(GBANKING_PROGRESS, wd);
+  GWEN_NEW_OBJECT(GB_PROGRESS, wd);
   wd->banking=ab;
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GConnectionDialog");
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBConnectionDialog");
   assert(xml);
 
-  g_assert((wd->dialog=glade_xml_get_widget(xml, "GConnectionDialog")));
+  g_assert((wd->dialog=glade_xml_get_widget(xml, "GBConnectionDialog")));
 
   gtk_object_set_data_full(GTK_OBJECT(wd->dialog),
-                           GBANKING_PROGRESS_ID,
+                           GB_PROGRESS_ID,
                            wd,
-                           GBanking_Progress_freeData);
+                           GB_Progress_freeData);
 
   g_assert((wd->titleText=glade_xml_get_widget(xml, "titleText")));
   g_assert((wd->logText=glade_xml_get_widget(xml, "logText")));
@@ -59,13 +59,13 @@ GtkWidget *GBanking_Progress_new(AB_BANKING *ab,
 
   gtk_signal_connect(GTK_OBJECT (wd->abortButton),
                      "clicked",
-                     GTK_SIGNAL_FUNC(GBanking_Progress_slotButtonClicked),
+                     GTK_SIGNAL_FUNC(GB_Progress_slotButtonClicked),
                      wd);
   gtk_signal_connect(GTK_OBJECT(wd->closeButton), "clicked",
-                     GTK_SIGNAL_FUNC(GBanking_Progress_slotButtonClicked),
+                     GTK_SIGNAL_FUNC(GB_Progress_slotButtonClicked),
                      wd);
   gtk_signal_connect(GTK_OBJECT(wd->dialog), "delete-event",
-                     GTK_SIGNAL_FUNC(GBanking_Progress_slotDelete),
+                     GTK_SIGNAL_FUNC(GB_Progress_slotDelete),
                      wd);
 
   wd->logBuffer=GWEN_Buffer_new(0, 1024, 0, 1);
@@ -75,7 +75,7 @@ GtkWidget *GBanking_Progress_new(AB_BANKING *ab,
 
 
 
-void GBanking_Progress_free(GBANKING_PROGRESS *wd){
+void GB_Progress_free(GB_PROGRESS *wd){
   fprintf(stderr, "deleting progress.\n");
   GWEN_Buffer_free(wd->logBuffer);
   GWEN_FREE_OBJECT(wd);
@@ -83,24 +83,24 @@ void GBanking_Progress_free(GBANKING_PROGRESS *wd){
 
 
 
-void GBanking_Progress_freeData(gpointer data){
-  GBANKING_PROGRESS *wd;
+void GB_Progress_freeData(gpointer data){
+  GB_PROGRESS *wd;
 
-  wd=(GBANKING_PROGRESS*)data;
+  wd=(GB_PROGRESS*)data;
   g_assert(wd);
 
-  GBanking_Progress_free(wd);
+  GB_Progress_free(wd);
 }
 
 
 
-gboolean GBanking_Progress_slotDelete(GtkWidget *w,
+gboolean GB_Progress_slotDelete(GtkWidget *w,
                                       GdkEvent *event,
                                       gpointer user_data) {
-  GBANKING_PROGRESS *wd;
+  GB_PROGRESS *wd;
 
   g_assert(w);
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   return !(wd->allowClose);
@@ -108,9 +108,9 @@ gboolean GBanking_Progress_slotDelete(GtkWidget *w,
 
 
 
-void GBanking_Progress_slotButtonClicked(GtkButton *button,
+void GB_Progress_slotButtonClicked(GtkButton *button,
                                          gpointer user_data){
-  GBANKING_PROGRESS *wd;
+  GB_PROGRESS *wd;
   const gchar *name;
 
   wd=user_data;
@@ -134,13 +134,13 @@ void GBanking_Progress_slotButtonClicked(GtkButton *button,
 
 
 
-int GBanking_Progress_Start(GtkWidget *w,
+int GB_Progress_Start(GtkWidget *w,
                             const char *title,
                             const char *text,
                             GWEN_TYPE_UINT32 total){
-  GBANKING_PROGRESS *wd;
+  GB_PROGRESS *wd;
 
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   wd->totalProgress=total;
@@ -174,11 +174,11 @@ int GBanking_Progress_Start(GtkWidget *w,
 
 
 
-int GBanking_Progress_Advance(GtkWidget *w, GWEN_TYPE_UINT32 progress){
+int GB_Progress_Advance(GtkWidget *w, GWEN_TYPE_UINT32 progress){
   gdouble fract;
-  GBANKING_PROGRESS *wd;
+  GB_PROGRESS *wd;
 
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   if (progress!=AB_BANKING_PROGRESS_NONE) {
@@ -194,18 +194,18 @@ int GBanking_Progress_Advance(GtkWidget *w, GWEN_TYPE_UINT32 progress){
 
 
 
-int GBanking_Progress_Log(GtkWidget *w,
+int GB_Progress_Log(GtkWidget *w,
                           AB_BANKING_LOGLEVEL level,
                           const char *text){
   int i;
   gint pos;
   GtkTextIter end;
-  GBANKING_PROGRESS *wd;
+  GB_PROGRESS *wd;
   struct tm *t;
   time_t tt;
   char tbuf[10];
 
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   tt=time(0);
@@ -247,10 +247,10 @@ int GBanking_Progress_Log(GtkWidget *w,
 
 
 
-int GBanking_Progress_End(GtkWidget *w){
-  GBANKING_PROGRESS *wd;
+int GB_Progress_End(GtkWidget *w){
+  GB_PROGRESS *wd;
 
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   wd->allowClose=1;
@@ -264,10 +264,10 @@ int GBanking_Progress_End(GtkWidget *w){
 
 
 
-GWEN_TYPE_UINT32 GBanking_Progress_GetId(GtkWidget *w){
-  GBANKING_PROGRESS *wd;
+GWEN_TYPE_UINT32 GB_Progress_GetId(GtkWidget *w){
+  GB_PROGRESS *wd;
 
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_PROGRESS_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_PROGRESS_ID);
   g_assert(wd);
 
   return wd->id;

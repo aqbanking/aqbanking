@@ -10,27 +10,40 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_INPUTBOX_H
-#define GBANKING_INPUTBOX_H
+#ifndef GB_PROGRESS_H
+#define GB_PROGRESS_H
 
-#include <gtk/gtk.h>
 
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
 
 
 
-gboolean GBanking_GetInput(AB_BANKING *ab,
-                           GWEN_TYPE_UINT32 flags,
-                           const char *title,
-                           const char *text,
-                           char *buffer,
-                           int minLen,
-                           int maxLen,
-                           GtkWidget *parent);
+GtkWidget *GB_Progress_new(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
+
+int GB_Progress_Start(GtkWidget *w,
+                      const char *title,
+                      const char *text,
+                      GWEN_TYPE_UINT32 total);
+int GB_Progress_Advance(GtkWidget *w, GWEN_TYPE_UINT32 progress);
+int GB_Progress_Log(GtkWidget *w,
+                    AB_BANKING_LOGLEVEL level,
+                    const char *text);
+int GB_Progress_End(GtkWidget *w);
 
 
-#endif /* GBANKING_INPUTBOX_H */
+GWEN_TYPE_UINT32 GB_Progress_GetId(GtkWidget *w);
+
+
+
+
+
+
+
+
+
+
+#endif
 
 
 

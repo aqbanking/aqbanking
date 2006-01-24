@@ -14,7 +14,7 @@
 # include <config.h>
 #endif
 
-#include "gmsgbox_p.h"
+#include "gbmsgbox_p.h"
 #include "gbanking_l.h"
 
 #include <gwenhywfar/misc.h>
@@ -26,7 +26,7 @@
 
 
 
-GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
+GtkWidget *GB_MsgBox_new(AB_BANKING *ab,
                                GWEN_TYPE_UINT32 flags,
                                const char *title,
                                const char *text,
@@ -34,21 +34,21 @@ GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
                                const char *b2,
                                const char *b3,
                                GtkWidget *parent){
-  GBANKING_MSGBOX *wd;
+  GB_MSGBOX *wd;
   GladeXML *xml;
 
-  GWEN_NEW_OBJECT(GBANKING_MSGBOX, wd);
+  GWEN_NEW_OBJECT(GB_MSGBOX, wd);
   wd->banking=ab;
   wd->flags=flags;
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GMessageBox");
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBMessageBox");
   assert(xml);
 
-  g_assert((wd->widget=glade_xml_get_widget(xml, "GMessageBox")));
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GBMessageBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
-                           GBANKING_MSGBOX_ID,
+                           GB_MSGBOX_ID,
                            wd,
-                           GBanking_MsgBox_freeData);
+                           GB_MsgBox_freeData);
   if (parent)
     gtk_widget_reparent(wd->widget, parent);
 
@@ -86,15 +86,15 @@ GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
 
   gtk_signal_connect(GTK_OBJECT (wd->button1),
                      "clicked",
-                     GTK_SIGNAL_FUNC(GBanking_MsgBox_slotButtonClicked),
+                     GTK_SIGNAL_FUNC(GB_MsgBox_slotButtonClicked),
                      wd);
   gtk_signal_connect(GTK_OBJECT (wd->button2),
                      "clicked",
-                     GTK_SIGNAL_FUNC(GBanking_MsgBox_slotButtonClicked),
+                     GTK_SIGNAL_FUNC(GB_MsgBox_slotButtonClicked),
                      wd);
   gtk_signal_connect(GTK_OBJECT (wd->button3),
                      "clicked",
-                     GTK_SIGNAL_FUNC(GBanking_MsgBox_slotButtonClicked),
+                     GTK_SIGNAL_FUNC(GB_MsgBox_slotButtonClicked),
                      wd);
 
   /* handle events */
@@ -106,26 +106,26 @@ GtkWidget *GBanking_MsgBox_new(AB_BANKING *ab,
 
 
 
-void GBanking_MsgBox_free(GBANKING_MSGBOX *wd){
+void GB_MsgBox_free(GB_MSGBOX *wd){
   GWEN_FREE_OBJECT(wd);
 }
 
 
 
-void GBanking_MsgBox_freeData(gpointer data){
-  GBANKING_MSGBOX *wd;
+void GB_MsgBox_freeData(gpointer data){
+  GB_MSGBOX *wd;
 
-  wd=(GBANKING_MSGBOX*)data;
+  wd=(GB_MSGBOX*)data;
   g_assert(wd);
 
-  GBanking_MsgBox_free(wd);
+  GB_MsgBox_free(wd);
 }
 
 
 
-void GBanking_MsgBox_slotButtonClicked(GtkButton *button,
-                                       gpointer user_data){
-  GBANKING_MSGBOX *wd;
+void GB_MsgBox_slotButtonClicked(GtkButton *button,
+                                 gpointer user_data){
+  GB_MSGBOX *wd;
   const gchar *name;
   int response;
 

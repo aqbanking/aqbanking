@@ -16,7 +16,7 @@
 #endif
 
 
-#include "gsimplebox_p.h"
+#include "gbsimplebox_p.h"
 #include "gbanking_l.h"
 
 #include <gwenhywfar/misc.h>
@@ -25,26 +25,26 @@
 #include <glade/glade-xml.h>
 
 
-GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
-                                  GWEN_TYPE_UINT32 id,
-                                  GWEN_TYPE_UINT32 flags,
-                                  const char *title,
-                                  const char *text){
-  GBANKING_SIMPLEBOX *wd;
+GtkWidget *GB_SimpleBox_new(AB_BANKING *ab,
+                            GWEN_TYPE_UINT32 id,
+                            GWEN_TYPE_UINT32 flags,
+                            const char *title,
+                            const char *text){
+  GB_SIMPLEBOX *wd;
   GladeXML *xml;
 
-  GWEN_NEW_OBJECT(GBANKING_SIMPLEBOX, wd);
+  GWEN_NEW_OBJECT(GB_SIMPLEBOX, wd);
   wd->id=id;
   wd->flags=flags;
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GSimpleBox");
+  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBSimpleBox");
   assert(xml);
 
-  g_assert((wd->widget=glade_xml_get_widget(xml, "GSimpleBox")));
+  g_assert((wd->widget=glade_xml_get_widget(xml, "GBSimpleBox")));
   gtk_object_set_data_full(GTK_OBJECT(wd->widget),
-                           GBANKING_SIMPLEBOX_ID,
+                           GB_SIMPLEBOX_ID,
                            wd,
-                           GBanking_SimpleBox_freeData);
+                           GB_SimpleBox_freeData);
 
   g_assert((wd->msgText=glade_xml_get_widget(xml, "textLabel")));
 
@@ -72,28 +72,21 @@ GtkWidget *GBanking_SimpleBox_new(AB_BANKING *ab,
 
 
 
-void GBanking_SimpleBox_free(GBANKING_SIMPLEBOX *wd){
+void GB_SimpleBox_freeData(gpointer data){
+  GB_SIMPLEBOX *wd;
+
+  wd=(GB_SIMPLEBOX*)data;
+  g_assert(wd);
+
   GWEN_FREE_OBJECT(wd);
 }
 
 
 
-void GBanking_SimpleBox_freeData(gpointer data){
-  GBANKING_SIMPLEBOX *wd;
+GWEN_TYPE_UINT32 GB_SimpleBox_GetId(GtkWidget *w){
+  GB_SIMPLEBOX *wd;
 
-  wd=(GBANKING_SIMPLEBOX*)data;
-  g_assert(wd);
-
-  fprintf(stderr, "deleting.\n");
-  GBanking_SimpleBox_free(wd);
-}
-
-
-
-GWEN_TYPE_UINT32 GBanking_SimpleBox_GetId(GtkWidget *w){
-  GBANKING_SIMPLEBOX *wd;
-
-  wd=gtk_object_get_data(GTK_OBJECT(w), GBANKING_SIMPLEBOX_ID);
+  wd=gtk_object_get_data(GTK_OBJECT(w), GB_SIMPLEBOX_ID);
   g_assert(wd);
   return wd->id;
 }

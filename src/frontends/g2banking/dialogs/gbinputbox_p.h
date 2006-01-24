@@ -10,18 +10,18 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_INPUTBOX_P_H
-#define GBANKING_INPUTBOX_P_H
+#ifndef GB_INPUTBOX_P_H
+#define GB_INPUTBOX_P_H
 
-#include "ginputbox.h"
-
-
-#define GBANKING_INPUTBOX_ID "GB_INPUTBOX"
+#include "gbinputbox.h"
 
 
+#define GB_INPUTBOX_ID "GB_INPUTBOX"
 
-typedef struct GBANKING_INPUTBOX GBANKING_INPUTBOX;
-struct GBANKING_INPUTBOX {
+
+
+typedef struct GB_INPUTBOX GB_INPUTBOX;
+struct GB_INPUTBOX {
   AB_BANKING *banking;
   GWEN_TYPE_UINT32 flags;
   GtkWidget *widget;
@@ -32,7 +32,7 @@ struct GBANKING_INPUTBOX {
   int accepted;
 };
 
-void GBanking_InputBox_free(GBANKING_INPUTBOX *wd);
+void GBanking_InputBox_free(GB_INPUTBOX *wd);
 void GBanking_InputBox_freeData(gpointer data);
 
 GtkWidget *GBanking_InputBox_new(AB_BANKING *ab,
@@ -44,7 +44,7 @@ GtkWidget *GBanking_InputBox_new(AB_BANKING *ab,
                                  GtkWidget *parent);
 
 
-#endif /* GBANKING_INPUTBOX_P_H */
+#endif /* GB_INPUTBOX_P_H */
 
 
 

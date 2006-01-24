@@ -10,33 +10,21 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_PROGRESS_H
-#define GBANKING_PROGRESS_H
+#ifndef GB_SIMPLEBOX_H
+#define GB_SIMPLEBOX_H
 
+#include <gtk/gtk.h>
 
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
 
 
-
-GtkWidget *GBanking_Progress_new(AB_BANKING *ab, GWEN_TYPE_UINT32 id);
-
-int GBanking_Progress_Start(GtkWidget *w,
+GtkWidget *GB_SimpleBox_new(AB_BANKING *ab,
+                            GWEN_TYPE_UINT32 id,
+                            GWEN_TYPE_UINT32 flags,
                             const char *title,
-                            const char *text,
-                            GWEN_TYPE_UINT32 total);
-int GBanking_Progress_Advance(GtkWidget *w, GWEN_TYPE_UINT32 progress);
-int GBanking_Progress_Log(GtkWidget *w,
-                          AB_BANKING_LOGLEVEL level,
-                          const char *text);
-int GBanking_Progress_End(GtkWidget *w);
-
-
-GWEN_TYPE_UINT32 GBanking_Progress_GetId(GtkWidget *w);
-
-
-
-
+                            const char *text);
+GWEN_TYPE_UINT32 GB_SimpleBox_GetId(GtkWidget *w);
 
 
 

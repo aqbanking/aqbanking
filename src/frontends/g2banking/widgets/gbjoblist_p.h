@@ -10,16 +10,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GBANKING_JOBLIST_P_H
-#define GBANKING_JOBLIST_P_H
+#ifndef GB_JOBLIST_P_H
+#define GB_JOBLIST_P_H
 
-#define GBANKING_JOBLIST_ID "GB_JOBLIST"
+#define GB_JOBLIST_ID "GB_JOBLIST"
 
 #include <gwenhywfar/types.h>
 #include <aqbanking/banking.h>
 #include <aqbanking/job.h>
 
-#include "joblist.h"
+#include "gbjoblist.h"
 
 #define GB_JOBLISTCOLUMN_JOBID   0
 #define GB_JOBLISTCOLUMN_JOBTYPE 1
@@ -34,26 +34,31 @@
 
 
 
-typedef struct GBANKING_JOBLIST GBANKING_JOBLIST;
-struct GBANKING_JOBLIST {
+typedef struct GB_JOBLIST GB_JOBLIST;
+struct GB_JOBLIST {
   AB_BANKING *banking;
   GtkWidget *tree;
   GtkListStore *store;
   AB_JOB_LIST2 *jobs;
 };
 
-void GBanking_JobList_free(GBANKING_JOBLIST *jl);
-void GBanking_JobList_freeData(gpointer data);
+void GB_JobList_free(GB_JOBLIST *jl);
+void GB_JobList_freeData(gpointer data);
 
 
-void GBanking_JobList__populate(GBANKING_JOBLIST *jl);
+void GB_JobList__populate(GB_JOBLIST *jl);
 
 static void
-GBanking_JobList__selection_changed_cb(GtkTreeSelection *selection,
+GB_JobList__selection_changed_cb(GtkTreeSelection *selection,
                                        gpointer data);
 
-AB_JOB *GBanking_JobList__FindJob(AB_JOB_LIST2 *sjl, GWEN_TYPE_UINT32 id);
+AB_JOB *GB_JobList__FindJob(AB_JOB_LIST2 *sjl, GWEN_TYPE_UINT32 id);
 
+
+void GB_JobList__selected_foreach_func(GtkTreeModel *model,
+                                       GtkTreePath *path,
+                                       GtkTreeIter *iter,
+                                       gpointer userdata);
 
 
 
