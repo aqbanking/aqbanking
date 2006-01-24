@@ -201,6 +201,6 @@ Please choose the &lt;b&gt;online&lt;/b&gt; account you want the
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbaccountlistview.h</includehint>
+    <includehint>qbaccountlist.h</includehint>
 </includehints>
 </UI>

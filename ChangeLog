@@ -14,6 +14,8 @@
   - figured out that for GTK labels I need to call gtk_label_set_markup()
     instead of gtk_label_set_text() if I want to get the label to show
     HTML text... grrr.
+- frontend QBanking:
+  - removed invalid include hints which got back into CVS for unknown reasons
 
 
 2006/01/23: Martin Preuss<martin@libchipcard.de>
