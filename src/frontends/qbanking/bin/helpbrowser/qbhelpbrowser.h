@@ -28,8 +28,8 @@ class QComboBox;
 class QPopupMenu;
 class QToolButton;
 
-
-class QBANKING_API QBHelpBrowser : public QBHelpBrowserUi {
+/* No QBANKING_API here - this is not part of a library */ 
+class QBHelpBrowser : public QBHelpBrowserUi {
   Q_OBJECT
 private:
   QToolButton *_backwardButton;
