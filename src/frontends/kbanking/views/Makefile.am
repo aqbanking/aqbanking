@@ -45,12 +45,12 @@ sources:
 
 
 %.ui.cpp: %.ui
-	$(UIC3) $< -impl $<.h -o $<.tmp && \
+	$(UIC3) $< -impl $(@:.ui.cpp=.ui.h) -o $@.tmp && \
 	echo "#ifdef HAVE_CONFIG_H" >$@ && \
 	echo "# include <config.h>" >>$@ && \
 	echo "#endif" >>$@ && \
-	cat $<.tmp >>$@ && \
-	rm $<.tmp
+	cat $@.tmp >>$@ && \
+	rm $@.tmp
 
 %.ui.h: %.ui
 	$(UIC3) $< -o $<.tmp && \
