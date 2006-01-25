@@ -132,8 +132,10 @@ AB_VALUE *AB_Value_fromString(const char *s){
       else if (c==':')
         break;
       else if (c!='.' && c!='-' && c!='+' && !isdigit(c)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Non-digit character in value at %d (%02x)", i, c);
-        return 0;
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Non-digit character in value at %d (%02x) [%s]",
+		  i, c, origS);
+	return 0;
       }
       assert(i<sizeof(numbuf)-1);
       numbuf[i++]=c;

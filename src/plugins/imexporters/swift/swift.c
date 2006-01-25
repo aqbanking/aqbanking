@@ -186,6 +186,11 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     else if (strcasecmp(GWEN_DB_GroupName(dbT), "endSaldo")==0) {
       GWEN_DB_NODE *dbX;
       GWEN_TIME *ti=0;
+      const char *bankCode;
+      const char *accountNumber;
+
+      bankCode=GWEN_DB_GetCharValue(dbT, "localBankCode", 0, 0);
+      accountNumber=GWEN_DB_GetCharValue(dbT, "localAccountNumber", 0, 0);
 
       dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
       if (dbX)
@@ -207,12 +212,9 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
             AB_AccountStatus_SetTime(as, ti);
           AB_AccountStatus_SetNotedBalance(as, bal);
           AB_Balance_free(bal);
-          /* CAVE: We use bankCode=0 and accountNumber=0 here, because
-           * the SWIFT parser never sets the transaction fields
-           * localBankCode and localAccountNumber, so all data will go to
-           * the AccountInfo with empty bankCode and accountNumber.
-           */
-          iea=AB_ImExporterContext_GetAccountInfo(ctx, 0, 0);
+          iea=AB_ImExporterContext_GetAccountInfo(ctx,
+                                                  bankCode,
+                                                  accountNumber);
           AB_ImExporterAccountInfo_AddAccountStatus(iea, as);
         }
       }

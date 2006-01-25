@@ -47,6 +47,10 @@ static int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
 static int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
 static int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
 static int AO_Provider_ResetQueue(AB_PROVIDER *pro);
+static int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
+                                  AB_PROVIDER_EXTEND_MODE em);
+static int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
+                                     AB_PROVIDER_EXTEND_MODE em);
 
 
 #if 0
@@ -84,12 +88,6 @@ static int AO_Provider_ExecQueue(AB_PROVIDER *pro);
 
 static int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
 static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid);
-
-
-static int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                                  AB_PROVIDER_EXTEND_MODE em);
-static int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                                     AB_PROVIDER_EXTEND_MODE em);
 
 
 

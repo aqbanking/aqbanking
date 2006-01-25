@@ -1279,15 +1279,33 @@ AB_USER *AB_Banking_FindUser(const AB_BANKING *ab,
   if (!customerId) customerId="*";
 
   while(u) {
+    const char *lCountry;
+    const char *lBankCode;
+    const char *lUserId;
+    const char *lCustomerId;
+
+    lCountry=AB_User_GetCountry(u);
+    if (!lCountry)
+      lCountry="";
+    lBankCode=AB_User_GetBankCode(u);
+    if (!lBankCode)
+      lBankCode="";
+    lUserId=AB_User_GetUserId(u);
+    if (!lUserId)
+      lUserId="";
+    lCustomerId=AB_User_GetCustomerId(u);
+    if (!lCustomerId)
+      lCustomerId="";
+
     if ((-1!=GWEN_Text_ComparePattern(AB_User_GetBackendName(u),
                                       backendName, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetCountry(u),
+        (-1!=GWEN_Text_ComparePattern(lCountry,
                                       country, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetBankCode(u),
+        (-1!=GWEN_Text_ComparePattern(lBankCode,
                                       bankId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetUserId(u),
+        (-1!=GWEN_Text_ComparePattern(lUserId,
                                       userId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetCustomerId(u),
+        (-1!=GWEN_Text_ComparePattern(lCustomerId,
                                       customerId, 0)))
       break;
     u=AB_User_List_Next(u);
@@ -1323,16 +1341,34 @@ AB_USER_LIST2 *AB_Banking_FindUsers(const AB_BANKING *ab,
   if (!customerId) customerId="*";
 
   while(u) {
+    const char *lCountry;
+    const char *lBankCode;
+    const char *lUserId;
+    const char *lCustomerId;
+
+    lCountry=AB_User_GetCountry(u);
+    if (!lCountry)
+      lCountry="";
+    lBankCode=AB_User_GetBankCode(u);
+    if (!lBankCode)
+      lBankCode="";
+    lUserId=AB_User_GetUserId(u);
+    if (!lUserId)
+      lUserId="";
+    lCustomerId=AB_User_GetCustomerId(u);
+    if (!lCustomerId)
+      lCustomerId="";
+
     if ((-1!=GWEN_Text_ComparePattern(AB_User_GetBackendName(u),
                                       backendName, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetCountry(u),
+        (-1!=GWEN_Text_ComparePattern(lCountry,
                                       country, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetBankCode(u),
+        (-1!=GWEN_Text_ComparePattern(lBankCode,
                                       bankId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetUserId(u),
+        (-1!=GWEN_Text_ComparePattern(lUserId,
                                       userId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_User_GetCustomerId(u),
-                                      customerId, 0))) {
+        (-1!=GWEN_Text_ComparePattern(lCustomerId,
+				      customerId, 0))) {
       AB_User_List2_PushBack(ul, u);
     }
     u=AB_User_List_Next(u);

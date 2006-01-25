@@ -1,4 +1,12 @@
 
+2006/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a problem in AB_FindUser (was not ignoring empty fields)
+- SWIFT parser:
+  - lightened up parser (will now also read YellowNet MT940)
+  - read tag :25: (local account number/bank code)
+
+
 2006/01/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GTK2 frontend now uses libglade instead of creating source code.

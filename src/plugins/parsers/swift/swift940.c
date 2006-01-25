@@ -47,6 +47,53 @@ int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
 }
 
 
+
+int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
+                          GWEN_TYPE_UINT32 flags,
+                          GWEN_DB_NODE *data,
+                          GWEN_DB_NODE *cfg){
+  const char *p;
+  const char *p2;
+
+  p=AHB_SWIFT_Tag_GetData(tg);
+  assert(p);
+
+  p2=strchr(p, '/');
+  if (p2) {
+    char *s;
+
+    /* "BLZ/Konto" */
+    s=(char*)malloc(p2-p+1);
+    memmove(s, p, p2-p+1);
+    s[p2-p]=0;
+    AHB_SWIFT__SetCharValue(data, flags, "localBankCode", s);
+    free(s);
+    p=p2+1;
+  }
+  if (*p) {
+    p2=p;
+    while(*p2 && isdigit(*p2))
+      p2++;
+    if (p2==p) {
+      DBG_WARN(AQBANKING_LOGDOMAIN,
+               "LocalAccountNumber starts with nondigits (%s)", p);
+      AHB_SWIFT__SetCharValue(data, flags, "localAccountNumber", p);
+    }
+    else {
+      char *s;
+
+      s=(char*)malloc(p2-p+1);
+      memmove(s, p, p2-p+1);
+      s[p2-p]=0;
+      AHB_SWIFT__SetCharValue(data, flags, "localAccountNumber", s);
+      free(s);
+    }
+  }
+  return 0;
+}
+
+
+
 int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
                           GWEN_TYPE_UINT32 flags,
                           GWEN_DB_NODE *data,
@@ -194,6 +241,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   int d1b, d2b, d3b;
   int neg;
   GWEN_TIME *ti;
+  char curr3=0;
 
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -289,16 +337,17 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   }
   if (!isdigit(*p)) {
     /* found third character, skip it */
+    curr3=*p;
     p++;
     bleft--;
   }
 
   /* value (M) */
   p2=p;
-  while(*p2 && *p2!='N')
+  while(*p2 && (isdigit(*p2) || *p2==','))
     p2++;
-  if (p2==p || *p2!='N') {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
+  if (p2==p) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No value (%s)", p);
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                           "SWIFT: Bad value");
     return -1;
@@ -532,7 +581,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 
   /* value (M) */
   p2=p;
-  while(*p2) p2++;
+  while(*p2 && (isdigit(*p2) || *p2==',')) p2++;
   if (p2==p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
@@ -566,12 +615,15 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
                         GWEN_DB_NODE *cfg){
   AHB_SWIFT_TAG *tg;
   GWEN_DB_NODE *dbDay;
+  GWEN_DB_NODE *dbTemplate;
   GWEN_DB_NODE *dbTransaction;
   int tagCount;
 
   dbDay=0;
   dbTransaction=0;
   tagCount=0;
+
+  dbTemplate=GWEN_DB_Group_new("template");
 
   GWEN_WaitCallback_SetProgressTotal(AHB_SWIFT_Tag_List_GetCount(tl));
 
@@ -582,17 +634,27 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
     id=AHB_SWIFT_Tag_GetId(tg);
     assert(id);
 
-    if (strcasecmp(id, "60F")==0) { /* StartSaldo */
+    if (strcasecmp(id, "25")==0) { /* LocalAccount */
+      if (AHB_SWIFT940_Parse_25(tg, flags, dbTemplate, cfg)) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+        GWEN_DB_Group_free(dbTemplate);
+        return -1;
+      }
+    }
+    else if (strcasecmp(id, "60F")==0) { /* StartSaldo */
       GWEN_DB_NODE *dbSaldo;
 
       /* start a new day */
       dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
+
       dbTransaction=0;
       DBG_INFO(AQBANKING_LOGDOMAIN, "Starting new day");
       dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                "StartSaldo");
+      GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+        GWEN_DB_Group_free(dbTemplate);
         return -1;
       }
     }
@@ -607,8 +669,10 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       }
       dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                "EndSaldo");
+      GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+        GWEN_DB_Group_free(dbTemplate);
         return -1;
       }
       dbDay=0;
@@ -622,8 +686,10 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       DBG_INFO(AQBANKING_LOGDOMAIN, "Creating new transaction");
       dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                      "transaction");
+      GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
       if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+        GWEN_DB_Group_free(dbTemplate);
         return -1;
       }
     }
@@ -634,6 +700,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       else {
         if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+          GWEN_DB_Group_free(dbTemplate);
           return -1;
         }
       }
@@ -644,10 +711,12 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
       GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                             "SWIFT: User aborted");
+      GWEN_DB_Group_free(dbTemplate);
       return AB_ERROR_USER_ABORT;
     }
     tg=AHB_SWIFT_Tag_List_Next(tg);
   } /* while */
+  GWEN_DB_Group_free(dbTemplate);
 
   return 0;
 }
