@@ -30,7 +30,7 @@ BUILT_SOURCES=version.h
 
 lib_LTLIBRARIES=libg2banking.la
 
-noinst_HEADERS=gbanking_p.h
+noinst_HEADERS=gbanking_p.h gbanking_l.h
 
 iheaderdir=${includedir}/g2banking
 iheader_HEADERS=\
