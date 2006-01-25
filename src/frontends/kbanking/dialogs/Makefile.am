@@ -42,10 +42,10 @@ sources:
 	rm $@.tmp
 
 %.ui.h: %.ui
-	$(UIC3) $< -o $<.tmp && \
+	$(UIC3) $< -o $@.tmp && \
 	echo "#include <kbanking/kbanking.h>" >$@ && \
-	$(top_srcdir)/admin/insert_api.sh KBANKING_API < $<.tmp >>$@ && \
-	rm $<.tmp
+	$(top_srcdir)/admin/insert_api.sh KBANKING_API < $@.tmp >>$@ && \
+	rm $@.tmp
 
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
 
