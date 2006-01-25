@@ -65,12 +65,12 @@ testlib_LDADD = libkbanking.la
 
 
 %.moc.cpp: %.h
-	$(qt3_moc) -o $<.moc.tmp $< && \
+	$(qt3_moc) -o $@.tmp $< && \
 	echo "#ifdef HAVE_CONFIG_H" >$@ && \
 	echo "# include <config.h>" >>$@ && \
 	echo "#endif" >>$@ && \
-	cat $<.moc.tmp >>$@ && \
-	rm $<.moc.tmp
+	cat $@.tmp >>$@ && \
+	rm $@.tmp
 
 
 clean-local:
