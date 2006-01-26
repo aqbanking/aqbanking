@@ -160,6 +160,15 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 AQBANKING_API 
 AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db);
 
+
+/**
+ * Adds the content of the second context to the first one.
+ * Frees the second context.
+ */
+AQBANKING_API 
+void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
+                                     AB_IMEXPORTER_CONTEXT *toAdd);
+
 /**
  * Takes over ownership of the given account info.
  */

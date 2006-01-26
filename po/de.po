@@ -5241,7 +5241,7 @@ msgstr "OFX-Einstellungen"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/cfgtabpageaccountofx.ui.cpp:79
 msgid "Transfer Settings"
-msgstr "Übertragungs-Einstellungen"
+msgstr "Überweitungs-Einstellungen"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/cfgtabpageaccountofx.ui.cpp:80
 msgid "Number of Purpose Lines"

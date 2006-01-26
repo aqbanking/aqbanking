@@ -18,6 +18,7 @@
 // QBanking includes
 #include "qbcfgtabpageusergen.h"
 #include "qbcfgtabpageusergen.ui.h"
+#include "qbcfgtabuser.h"
 #include "qbanking.h"
 
 // Gwenhywfar includes
@@ -28,6 +29,7 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+#include <qlabel.h>
 
 
 
@@ -103,6 +105,15 @@ void QBCfgTabPageUserGeneral::updateView() {
 bool QBCfgTabPageUserGeneral::toGui() {
   const char *s;
   const AB_COUNTRY *ci;
+  QString qs;
+
+  qs=getUserIdLabel();
+  if (!qs.isEmpty())
+    _realPage->userIdLabel->setText(qs);
+
+  qs=getCustomerIdLabel();
+  if (!qs.isEmpty())
+    _realPage->customerIdLabel->setText(qs);
 
   s=AB_User_GetUserId(getUser());
   if (s)

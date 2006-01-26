@@ -1011,11 +1011,17 @@ AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
   assert(iec);
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   while(iea) {
+    DBG_ERROR(0, "Comparing: [%s]<>[%s] and [%s]<>[%s]",
+              AB_ImExporterAccountInfo_GetBankCode(iea), bankCode,
+              AB_ImExporterAccountInfo_GetAccountNumber(iea),
+              accountNumber);
     if (strcasecmp(AB_ImExporterAccountInfo_GetBankCode(iea),
                    bankCode)==0 &&
         strcasecmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
-                   accountNumber)==0)
+                   accountNumber)==0) {
+      DBG_ERROR(0, "Match");
       return iea;
+    }
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   }
   return 0;
@@ -1399,6 +1405,23 @@ int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
 }
 
 
+
+void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
+                                     AB_IMEXPORTER_CONTEXT *toAdd) {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  assert(iec);
+  iea=AB_ImExporterAccountInfo_List_First(toAdd->accountInfoList);
+  while(iea) {
+    AB_IMEXPORTER_ACCOUNTINFO *nextIea;
+
+    nextIea=AB_ImExporterAccountInfo_List_Next(iea);
+    AB_ImExporterAccountInfo_List_Del(iea);
+    AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+    iea=nextIea;
+  }
+  AB_ImExporterContext_free(toAdd);
+}
 
 
 

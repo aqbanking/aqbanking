@@ -16,12 +16,18 @@
 
 #include <qbanking/qbcfgtab.h>
 
+#include <qstring.h>
+
+
 class QBanking;
 
 
 class QBANKING_API QBEditUser: public QBCfgTab {
 private:
   AB_USER *_user;
+
+  QString _userIdLabel;
+  QString _customerIdLabel;
 
 public:
   QBEditUser(QBanking *kb,

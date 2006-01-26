@@ -30,6 +30,8 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
+#include <qcheckbox.h>
+
 
 
 
@@ -74,6 +76,8 @@ QBCfgTabPageAccountGeneral::QBCfgTabPageAccountGeneral(QBanking *qb,
           SLOT(slotRightButtonClicked()));
   connect(_realPage->leftButton, SIGNAL(clicked()),
           SLOT(slotLeftButtonClicked()));
+  connect(_realPage->allUsersCheck, SIGNAL(toggled(bool)),
+          SLOT(slotAllUsersToggled(bool)));
 
   fillCountryCombo(_realPage->countryCombo);
 }
@@ -180,6 +184,8 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   ul=_realPage->userList2->getSortedUsersList2();
   if (ul) {
     AB_Account_SetSelectedUsers(a, ul);
+    if (AB_Account_GetFirstUser(a)==0)
+      AB_Account_SetUsers(a, ul);
     AB_User_List2_free(ul);
   }
 
@@ -347,6 +353,22 @@ void QBCfgTabPageAccountGeneral::_addUsersToLists(AB_USER_LIST2 *ulAll,
       AB_User_List2Iterator_free(it);
     }
   }
+  else if (ulSel){
+    AB_USER_LIST2_ITERATOR *it;
+
+    it=AB_User_List2_First(ulSel);
+    if (it) {
+      AB_USER *tu;
+
+      tu=AB_User_List2Iterator_Data(it);
+      while(tu) {
+        _realPage->userList2->addUser(tu);
+        tu=AB_User_List2Iterator_Next(it);
+      }
+
+      AB_User_List2Iterator_free(it);
+    }
+  }
 }
 
 
@@ -385,6 +407,34 @@ void QBCfgTabPageAccountGeneral::slotRightButtonClicked() {
   _realPage->userList2->addUser(u);
 }
 
+
+
+void QBCfgTabPageAccountGeneral::slotAllUsersToggled(bool on) {
+  AB_ACCOUNT *a;
+  AB_PROVIDER *pro;
+  AB_USER_LIST2 *ulAll;
+  AB_USER_LIST2 *ulSel;
+
+  a=getAccount();
+  assert(a);
+  pro=AB_Account_GetProvider(a);
+  assert(pro);
+
+  if (on) {
+    ulAll=AB_Banking_FindUsers(getBanking()->getCInterface(),
+                               AB_Provider_GetName(pro),
+                               "*", "*", "*", "*");
+    ulSel=AB_Account_GetSelectedUsers(a);
+    _addUsersToLists(ulAll, ulSel);
+  }
+  else {
+    ulAll=AB_Account_GetUsers(a);
+    ulSel=AB_Account_GetSelectedUsers(a);
+    _addUsersToLists(ulAll, ulSel);
+  }
+  AB_User_List2_free(ulAll);
+  AB_User_List2_free(ulSel);
+}
 
 
 

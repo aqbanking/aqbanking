@@ -5,6 +5,13 @@
 - SWIFT parser:
   - lightened up parser (will now also read YellowNet MT940)
   - read tag :25: (local account number/bank code)
+- added function AB_ImExporterContext_AddContext() to add one context
+  to another one
+- moved QT3 lib stuff for OfxConnect to one level above (tar was
+  complaining about too long names)
+- some minor changes to QBanking to allow backend user configuration
+  pages to modify the user id and customer id label (e.g. "Yellownet" used
+  a "Yellownet number" instead of a user id)
 
 
 2006/01/24: Martin Preuss<martin@libchipcard.de>

@@ -142,32 +142,24 @@ void QBCfgTabPageAccounts::slotAccountNew() {
     DBG_INFO(0, "Aborted");
   }
   else {
-    QBCfgModule *mod;
+    AB_ACCOUNT *a;
     std::string s;
 
     s=QBanking::QStringToUtf8String(backend);
     DBG_ERROR(0, "Selected backend: %s", s.c_str());
-    mod=getBanking()->getConfigModule(s.c_str());
-    if (mod) {
-      AB_ACCOUNT *a;
 
-      a=AB_Banking_CreateAccount(getBanking()->getCInterface(),
-                                 s.c_str());
-      assert(a);
-      if (QBEditAccount::editAccount(getBanking(), a, this)) {
-        DBG_INFO(0, "Accepted, adding account");
-        AB_Banking_AddAccount(getBanking()->getCInterface(), a);
-      }
-      else {
-        DBG_INFO(0, "Rejected");
-        AB_Account_free(a);
-      }
+    a=AB_Banking_CreateAccount(getBanking()->getCInterface(),
+                               s.c_str());
+    assert(a);
+    if (QBEditAccount::editAccount(getBanking(), a, this)) {
+      DBG_INFO(0, "Accepted, adding account");
+      AB_Banking_AddAccount(getBanking()->getCInterface(), a);
+      updateView();
     }
     else {
-      DBG_ERROR(0, "Config module for backend \"%s\" not found",
-                s.c_str());
+      DBG_INFO(0, "Rejected");
+      AB_Account_free(a);
     }
-    updateView();
   }
 }
 

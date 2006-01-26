@@ -45,7 +45,7 @@
                 </widget>
                 <widget class="QLabel" row="1" column="0">
                     <property name="name">
-                        <cstring>textLabel1_3</cstring>
+                        <cstring>userIdLabel</cstring>
                     </property>
                     <property name="text">
                         <string>User Id</string>
@@ -58,7 +58,7 @@
                 </widget>
                 <widget class="QLabel" row="2" column="0">
                     <property name="name">
-                        <cstring>textLabel1</cstring>
+                        <cstring>customerIdLabel</cstring>
                     </property>
                     <property name="text">
                         <string>Customer Id</string>

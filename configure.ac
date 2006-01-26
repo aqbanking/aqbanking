@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=10
+AQBANKING_VERSION_BUILD=11
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1709,7 +1709,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/ui/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/libs/dialogs/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile

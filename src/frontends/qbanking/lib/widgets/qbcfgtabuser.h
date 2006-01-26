@@ -10,37 +10,35 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef QBANKING_CFGTABPAGEUSER_H
-#define QBANKING_CFGTABPAGEUSER_H
+#ifndef QBANKING_CFGTABUSER_H
+#define QBANKING_CFGTABUSER_H
 
 
-#include <gwenhywfar/types.h>
+#include <qbanking/qbanking.h>
+#include <qbanking/qbcfgtab.h>
+
 #include <aqbanking/banking.h>
 
-#include "qbcfgtabpage.h"
+#include <gwenhywfar/types.h>
+
+#include <qstring.h>
 
 
-class QBCfgTabUser;
+class QBanking;
+class QBCfgTabPage;
 
 
-class QBANKING_API QBCfgTabPageUser: public QBCfgTabPage {
-  friend class QBCfgTabUser;
+class QBANKING_API QBCfgTabUser: protected QBCfgTab {
 private:
-  AB_USER *_user;
-
   QString _userIdLabel;
   QString _userIdToolTip;
   QString _customerIdLabel;
   QString _customerIdToolTip;
 
 public:
-  QBCfgTabPageUser(QBanking *qb,
-                   const QString &title,
-                   AB_USER *u,
-                   QWidget *parent=0, const char *name=0, WFlags f=0);
-  virtual ~QBCfgTabPageUser();
-
-  AB_USER *getUser();
+  QBCfgTabUser(QBanking *qb,
+	       QWidget *parent=0, const char *name=0, WFlags f=0);
+  virtual ~QBCfgTabUser();
 
   void setUserIdInfo(const QString &label,
 		     const QString &toolTip);
@@ -51,6 +49,8 @@ public:
 			 const QString &toolTip);
   const QString &getCustomerIdLabel() const;
   const QString &getCustomerIdToolTip() const;
+
+  QBCfgTabUser *getCfgTabUser();
 
 };
 

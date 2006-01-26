@@ -16,8 +16,11 @@
 
 
 #include "qbcfgtabpageuser.h"
+#include "qbcfgtabuser.h"
 
 #include <qbanking/qbanking.h>
+
+#include <gwenhywfar/debug.h>
 
 
 
@@ -46,3 +49,40 @@ AB_USER *QBCfgTabPageUser::getUser() {
 
 
 
+void QBCfgTabPageUser::setUserIdInfo(const QString &label,
+                                     const QString &toolTip) {
+  _userIdLabel=label;
+  _userIdToolTip=toolTip;
+}
+
+
+
+const QString &QBCfgTabPageUser::getUserIdLabel() const {
+  return _userIdLabel;
+}
+
+
+
+const QString &QBCfgTabPageUser::getUserIdToolTip() const {
+  return _userIdToolTip;
+}
+
+
+
+void QBCfgTabPageUser::setCustomerIdInfo(const QString &label,
+                                         const QString &toolTip) {
+  _customerIdLabel=label;
+  _customerIdToolTip=toolTip;
+}
+
+
+
+const QString &QBCfgTabPageUser::getCustomerIdLabel() const {
+  return _customerIdLabel;
+}
+
+
+
+const QString &QBCfgTabPageUser::getCustomerIdToolTip() const {
+  return _customerIdToolTip;
+}

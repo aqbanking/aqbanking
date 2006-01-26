@@ -34,6 +34,7 @@ QBEditUser::QBEditUser(QBanking *kb,
 :QBCfgTab(kb, parent, name, fl)
 ,_user(u) {
   QBCfgModule *mod;
+  QBCfgTabPageUser *generalPage;
   QBCfgTabPageUser *uPage;
   const char *backendName;
 
@@ -45,6 +46,7 @@ QBEditUser::QBEditUser(QBanking *kb,
   uPage=new QBCfgTabPageUserGeneral(kb, u, this, "GeneralUserPage");
   addPage(uPage);
   uPage->show();
+  generalPage=uPage;
 
   /* add application specific page, if any */
   mod=kb->getConfigModule(0);
@@ -63,6 +65,9 @@ QBEditUser::QBEditUser(QBanking *kb,
   if (mod) {
     uPage=mod->getEditUserPage(u, this);
     if (uPage) {
+      generalPage->setUserIdInfo(uPage->getUserIdLabel(), "");
+      generalPage->setCustomerIdInfo(uPage->getCustomerIdLabel(), "");
+
       addPage(uPage);
       uPage->show();
     }

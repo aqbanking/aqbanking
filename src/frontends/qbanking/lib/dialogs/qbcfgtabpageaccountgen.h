@@ -54,6 +54,7 @@ public slots:
   void slotBankIdButtonClicked();
   void slotLeftButtonClicked();
   void slotRightButtonClicked();
+  void slotAllUsersToggled(bool on);
 };
 
 

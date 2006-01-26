@@ -22,6 +22,7 @@ class CfgTabPageAccountOfxUi;
 
 
 class CfgTabPageAccountOfx: public QBCfgTabPageAccount {
+  Q_OBJECT
 private:
   CfgTabPageAccountOfxUi *_realPage;
 

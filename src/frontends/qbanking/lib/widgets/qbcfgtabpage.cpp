@@ -18,6 +18,9 @@
 #include "qbcfgtabpage.h"
 #include "qbanking.h"
 
+#include <gwenhywfar/debug.h>
+
+
 #include <qlayout.h>
 #if (QT_VERSION >= 0x040100)
 // qt-4.1.0 errorneously forgets to add this include
