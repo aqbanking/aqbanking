@@ -18,7 +18,7 @@
 // QBanking includes
 #include "qbcfgtabpageusergen.h"
 #include "qbcfgtabpageusergen.ui.h"
-#include "qbcfgtabuser.h"
+//#include "qbcfgtabuser.h" -- unused, isn't it?
 #include "qbanking.h"
 
 // Gwenhywfar includes

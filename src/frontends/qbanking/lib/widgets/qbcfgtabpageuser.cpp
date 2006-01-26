@@ -16,7 +16,7 @@
 
 
 #include "qbcfgtabpageuser.h"
-#include "qbcfgtabuser.h"
+// #include "qbcfgtabuser.h" -- unused, isn't it?
 
 #include <qbanking/qbanking.h>
 
