@@ -194,18 +194,18 @@ bool QBCfgTabPageUserGeneral::checkGui() {
   if (_realPage->userIdEdit->text().isEmpty() &&
       _realPage->customerIdEdit->text().isEmpty() &&
       _realPage->userNameEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "You must at least provide some kind of user "
-                             "idenitification (user id, customer id or "
+                             "identification (user id, customer id or "
                              "user name)"
                              "</qt>"),
                           tr("Dismiss"));
     return false;
   }
   if (_realPage->bankIdEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "Bank id is missing."
@@ -215,7 +215,7 @@ bool QBCfgTabPageUserGeneral::checkGui() {
   }
 
   if (_realPage->countryCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "Please select a country."
@@ -231,7 +231,7 @@ bool QBCfgTabPageUserGeneral::checkGui() {
 
 void QBCfgTabPageUserGeneral::slotBankIdButtonClicked() {
   if (_realPage->countryCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Country Needed"),
                           tr("<qt>"
                              "Please select a country first."

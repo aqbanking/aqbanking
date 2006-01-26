@@ -197,18 +197,18 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
 bool QBCfgTabPageAccountGeneral::checkGui() {
   if (_realPage->accountIdEdit->text().isEmpty() &&
       _realPage->accountNameEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "You must at least provide some kind of account "
-                             "idenitification (account id, customer id or "
+                             "identification (account id, customer id or "
                              "account name)"
                              "</qt>"),
                           tr("Dismiss"));
     return false;
   }
   if (_realPage->ownerNameEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "Owner name is missing."
@@ -219,18 +219,18 @@ bool QBCfgTabPageAccountGeneral::checkGui() {
 
   if (_realPage->bankIdEdit->text().isEmpty() &&
       _realPage->bankNameEdit->text().isEmpty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "You must at least provide some kind of bank "
-                             "idenitification (bank id or name)."
+                             "identification (bank id or name)."
                              "</qt>"),
                           tr("Dismiss"));
     return false;
   }
 
   if (_realPage->countryCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "Please select a country."
@@ -241,7 +241,7 @@ bool QBCfgTabPageAccountGeneral::checkGui() {
 
   if (!_realPage->userList1->getSortedUsers().empty() &&
       _realPage->userList2->getSortedUsers().empty()) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Input Error"),
                           tr("<qt>"
                              "Please assign users."
@@ -263,7 +263,7 @@ void QBCfgTabPageAccountGeneral::updateView() {
 
 void QBCfgTabPageAccountGeneral::slotBankIdButtonClicked() {
   if (_realPage->countryCombo->currentItem()==0) {
-    QMessageBox::critical(0,
+    QMessageBox::critical(this,
                           tr("Country Needed"),
                           tr("<qt>"
                              "Please select a country first."
