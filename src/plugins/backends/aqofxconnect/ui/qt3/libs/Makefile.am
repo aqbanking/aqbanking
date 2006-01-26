@@ -25,6 +25,8 @@ nodist_aqofxconnect_la_SOURCES=\
 
 noinst_HEADERS=\
  cfgmoduleofx_p.h \
+ cfgtabpageaccountofx.h \
+ cfgtabpageuserofx.h \
  cfgtabpageaccountofx.ui.h \
  cfgtabpageuserofx.ui.h
 

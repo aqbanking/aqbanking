@@ -7,6 +7,11 @@
 	* bindings/python/_basetypes.py: Updated SO_EFFECTIVE numbers of
 	libaqbanking and libgwen.
 
+===========================================================================
+MARK: released AqBanking - 1.9.3beta (2006-01-26)
+===========================================================================
+
+
 2006/01/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a problem in AB_FindUser (was not ignoring empty fields)
