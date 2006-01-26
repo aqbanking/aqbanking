@@ -9,11 +9,11 @@ if sys.modules['ctypes'].__version__ < '0.9.5':
 
 
 if os.name == 'nt':
-    aqb = cdll.aqbanking32_0
-    gwen = cdll.gwenhywfar32_17
+    aqb = cdll.aqbanking32_14
+    gwen = cdll.gwenhywfar32_38
 else:
-    aqb = cdll['libaqbanking.so.0']
-    gwen = cdll['libgwenhywfar.so.17']
+    aqb = cdll['libaqbanking.so.14']
+    gwen = cdll['libgwenhywfar.so.38']
 
 
 _c_char_p = c_char_p

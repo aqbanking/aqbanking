@@ -1,3 +1,11 @@
+2006-01-26   Christian Stimming <stimming@tuhh.de>
+
+	* bindings/python/__init__.py: Commented out removed
+	functions. python wrappers still work fine; all tests of
+	../moneysplash/unittests work without errors.
+
+	* bindings/python/_basetypes.py: Updated SO_EFFECTIVE numbers of
+	libaqbanking and libgwen.
 
 2006/01/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

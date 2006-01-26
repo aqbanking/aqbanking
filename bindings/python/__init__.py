@@ -544,8 +544,8 @@ class Account(c_void_p):
         aqb.AB_Account_GetAccountType,
         aqb.AB_Account_SetAccountType)
 
-    def checkAvailability(self):
-        return aqb.AB_Account_CheckAvailability(self)
+    #def checkAvailability(self):
+    #    return aqb.AB_Account_CheckAvailability(self)
 
     def __eq__(self, other):
         if not isinstance(other, Account):
@@ -566,7 +566,7 @@ aqb.AB_Account_GetProvider.restype = Provider
 aqb.AB_Account_GetOwnerName.restype = c_char_p
 aqb.AB_Account_GetCurrency.restype = c_char_p
 aqb.AB_Account_GetAccountName.restype = c_char_p
-aqb.AB_Account_CheckAvailability.restype = AB_Error
+#aqb.AB_Account_CheckAvailability.restype = AB_Error
 
 
 ################################################################
@@ -1240,11 +1240,11 @@ class BankingBase(c_void_p):
 
     appName = property(aqb.AB_Banking_GetAppName)
 
-    def suspendProvider(self, backend):
-        chk(aqb.AB_Banking_SuspendProvider(self, backend))
-
-    def resumeProvider(self, backend):
-        chk(aqb.AB_Banking_ResumeProvider(self, backend))
+    #def suspendProvider(self, backend):
+    #    chk(aqb.AB_Banking_SuspendProvider(self, backend))
+    #
+    #def resumeProvider(self, backend):
+    #    chk(aqb.AB_Banking_ResumeProvider(self, backend))
 
     def iterActiveProviders(self):
         return aqb.AB_Banking_GetActiveProviders(self)
@@ -1406,8 +1406,8 @@ aqb.AB_Banking_GetAppName.restype = c_char_p
 aqb.AB_Banking_GetAccountByCodeAndNumber.restype = Account
 aqb.AB_Banking_GetAccount.restype = Account
 aqb.AB_Banking_GetAppData.restype = GWEN_DB_Node
-aqb.AB_Banking_SuspendProvider.argtypes = BankingBase, c_char_p
-aqb.AB_Banking_ResumeProvider.argtypes = BankingBase, c_char_p
+#aqb.AB_Banking_SuspendProvider.argtypes = BankingBase, c_char_p
+#aqb.AB_Banking_ResumeProvider.argtypes = BankingBase, c_char_p
 aqb.AB_Banking_GetAccountByAlias.restype = Account
 aqb.AB_Banking_GetAccountByAlias.argtypes = BankingBase, c_char_p
 aqb.AB_Banking_SetAccountAlias.argtypes = BankingBase, Account, c_char_p
