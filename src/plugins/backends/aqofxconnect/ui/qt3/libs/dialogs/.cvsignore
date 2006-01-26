@@ -1,0 +1,4 @@
+*.ui.h
+*.moc
+*.moc.cpp
+*.ui.cpp
