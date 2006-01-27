@@ -852,13 +852,15 @@ int QBanking::init(){
 
   _translator=new QTranslator(0);
   DBG_ERROR(0, "PKGDATADIR="PKGDATADIR);
-  if (_translator->load(QTextCodec::locale()+QString(".qm"),
-			QString(PKGDATADIR "/i18n/"))) {
+  // no need to specify ".qm" suffix; QTranslator tries that itself
+  if (_translator->load(QTextCodec::locale(),
+			QString(PKGDATADIR DIRSEP "i18n"))) {
     DBG_DEBUG(0, "I18N available for your language");
     qApp->installTranslator(_translator);
   }
   else {
-    DBG_INFO(0, "Internationalisation is not available for your language");
+    DBG_INFO(0, "Internationalisation is not available for your language %s", 
+	     QTextCodec::locale());
     delete _translator;
     _translator=0;
   }
