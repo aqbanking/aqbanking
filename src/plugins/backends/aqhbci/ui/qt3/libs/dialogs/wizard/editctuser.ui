@@ -19,23 +19,6 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <spacer>
-            <property name="name">
-                <cstring>spacer29</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel1_5_2_3</cstring>
@@ -46,23 +29,6 @@
 &lt;/qt&gt;</string>
             </property>
         </widget>
-        <spacer>
-            <property name="name">
-                <cstring>spacer60</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout39</cstring>
@@ -76,7 +42,7 @@
                         <cstring>textLabel1</cstring>
                     </property>
                     <property name="text">
-                        <string>User on medium</string>
+                        <string>User number on medium</string>
                     </property>
                 </widget>
                 <widget class="QComboBox">
@@ -90,6 +56,9 @@
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The index number of the current user on the chosen medium, if the medium can contain more than one user.</string>
                     </property>
                 </widget>
                 <spacer>
@@ -361,13 +330,13 @@
 <tabstops>
     <tabstop>userCombo</tabstop>
     <tabstop>bankCodeEdit</tabstop>
-    <tabstop>bankCodeButton</tabstop>
     <tabstop>serverEdit</tabstop>
     <tabstop>hbciVersionCombo</tabstop>
     <tabstop>nameEdit</tabstop>
     <tabstop>userIdEdit</tabstop>
     <tabstop>customerIdEdit</tabstop>
     <tabstop>descriptionEdit</tabstop>
+    <tabstop>bankCodeButton</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

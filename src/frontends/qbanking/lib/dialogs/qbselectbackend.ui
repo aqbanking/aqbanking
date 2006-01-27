@@ -34,28 +34,11 @@ Please select the backend for which you want to create the user or account from 
 drop down list below.
 &lt;/p&gt;
 &lt;p&gt;
-German users will most likely want to select &lt;b&gt;AqHBCI&lt;/b&gt;.
+For online banking with HBCI in Germany you have to select &lt;b&gt;AqHBCI&lt;/b&gt;.
 &lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
-        <spacer>
-            <property name="name">
-                <cstring>spacer2</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Fixed</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>21</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout1</cstring>
@@ -87,23 +70,6 @@ German users will most likely want to select &lt;b&gt;AqHBCI&lt;/b&gt;.
                 </widget>
             </hbox>
         </widget>
-        <spacer>
-            <property name="name">
-                <cstring>spacer2_2</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Fixed</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>21</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QGroupBox">
             <property name="name">
                 <cstring>groupBox1</cstring>
