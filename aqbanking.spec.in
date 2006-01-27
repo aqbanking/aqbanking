@@ -10,6 +10,7 @@
 ### rpms should not be released!
 %define have_libchipcard 1
 %define have_libofx 1
+%define with_yellownet 1
 
 ### Define the distribution-specific name parts
 
@@ -42,17 +43,35 @@
 ### Choose backends to be built
 %if %have_libofx
 %if %have_libchipcard
+%if %with_yellownet
+%define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
+%else
 %define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect"
+%endif
+%else
+%if %with_yellownet
+%define backendlist "aqhbci aqdtaus aqofxconnect aqyellownet"
 %else
 %define backendlist "aqhbci aqdtaus aqofxconnect"
 %endif
+%endif
 %else
 %if %have_libchipcard
+%if %with_yellownet
+%define backendlist "aqhbci aqdtaus aqgeldkarte aqyellownet"
+%else
 %define backendlist "aqhbci aqdtaus aqgeldkarte"
+%endif
+%else
+%if %with_yellownet
+%define backendlist "aqhbci aqdtaus aqyellownet"
 %else
 %define backendlist "aqhbci aqdtaus"
 %endif
 %endif
+%endif
+
+
 
 ### The standard information fields.
 
@@ -63,7 +82,7 @@ Release: %{release}
 Source: http://download.sourceforge.net/aqbanking/%{name}-%{version}.tar.gz
 Group: System Environment/Libraries
 License: GPL
-Packager: Christian Stimming <stimming@tuhh.de>
+Packager: Martin Preuss <martin@aquamaniac.de>
 URL: http://sourceforge.net/projects/aqbanking
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Note: We might add ktoblzcheck here as well
@@ -132,7 +151,7 @@ Obsoletes: ofx-qt3
 Necessary for OFX direct connect access.
 
 %package ofx-qt3
-Summary: Aqbanking tools for Qt3
+Summary: Configuration plugins for Aqbanking with Qt3
 Group: System Environment/Libraries
 %description ofx-qt3
 Necessary for OFX direct connect access.
@@ -144,17 +163,35 @@ Necessary for OFX direct connect access.
 Requires: libchipcard2
 BuildRequires: libchipcard2-devel >= 1.9.13
 %package geldkarte
-Summary: Aqbanking tools for Qt3
+Summary: GeldKarte backend
 Group: System Environment/Libraries
 %description geldkarte
 Necessary for Geldkarte access.
 
 %package geldkarte-qt3
-Summary: Aqbanking tools for Qt3
+Summary: Configuration plugins for Aqbanking with Qt3
 Group: System Environment/Libraries
 %description geldkarte-qt3
 Necessary for Geldkarte access.
 %endif
+
+
+### Sub-packages for Geldkarte
+
+%if %with_yellownet
+%package yellownet
+Summary: YellowNet backend
+Group: System Environment/Libraries
+%description yellownet
+This backend provides support for Suisse YellowNet (Post-Finance)
+
+%package yellownet-qt3
+Summary: Configuration plugins for Aqbanking with Qt3
+Group: System Environment/Libraries
+%description yellownet-qt3
+This backend provides support for Suisse YellowNet (Post-Finance)
+%endif
+
 
 ### The build commands
 
@@ -162,7 +199,7 @@ Necessary for Geldkarte access.
 %setup -q
 
 %build
-%{configure} --with-backends=%{backendlist} --enable-python
+%{configure} --with-backends=%{backendlist} --enable-python --enable-release
 make
 
 %install
@@ -218,6 +255,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 ### The dtaus files
 %{_libdir}/libaqdtaus.so.*
 %{aq_plugindir}/providers/aqdtaus.*
+### The aqnone files
+%{_libdir}/libaqnone.so.*
+%{aq_plugindir}/providers/aqnone.*
 ### The cbanking files
 %{_libdir}/libcbanking.so.*
 
@@ -252,6 +292,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %files geldkarte-qt3
 %{qb_cfgmoddir}/aqgeldkarte*
 %endif
+
+%if %with_yellownet
+%files yellownet
+%{aq_plugindir}/providers/aqyellownet.*
+%{_includedir}/aqyellownet
+%{_bindir}/aqyellownet-config
+%{_libdir}/libaqyellownet.so
+%files yellownet-qt3
+%{qb_cfgmoddir}/aqyellownet*
+%endif
+
 
 %files gtk2
 %{_libdir}/libg2banking.so.*

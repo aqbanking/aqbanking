@@ -5,6 +5,7 @@
   binary only because of a NDA (I would like to publish it under the GPL, but
   this is not yet possible, maybe later).
 - added phony backend "aqnone"; this backend can be used for offline accounts
+- added description of available backends to README
 
 
 2006-01-26   Christian Stimming <stimming@tuhh.de>
@@ -15,6 +16,7 @@
 
 	* bindings/python/_basetypes.py: Updated SO_EFFECTIVE numbers of
 	libaqbanking and libgwen.
+
 
 ===========================================================================
 MARK: released AqBanking - 1.9.3beta (2006-01-26)

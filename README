@@ -1,4 +1,4 @@
-                                                                    2005/08/27
+                                                                    2006/01/27
 
                                 Content
                                 =======
@@ -9,27 +9,33 @@
                1.3.   Bank/Account Information
                2.   Supported Platforms
                3.   Supported Frontends
-               4.   What Do I Need ?
-               4.1.   Required Packages
-               4.2.   Bindings
-               4.3.   Applications
-               5.   Building AqBanking
-               5.1.   Building from the Tar File
-               5.2.   Building from CVS
-               5.3.   Building the API Documentation
-               5.4.   Notes on porting the qt parts to Qt-4: 
-               6.   Windows Registry Keys Used
-               6.1.   Software\\AqBanking\\Paths\\pkgdatadir
-               6.2.   Software\\AqBanking\\Paths\\sysconfdir
-               6.3.   Software\\AqBanking\\Paths\\bankinfodir
-               6.4.   Software\\AqBanking\\Paths\\providerdir
-               6.5.   Software\\AqBanking\\Paths\\importerdir
-               7.   Environment Variables Used
-               7.1.   AQBANKING_LOGLEVEL
-               7.2.   AQBANKING_STORE_JOBLOGS
-               7.3.   AQHBCI_LOGBOOKED
-               7.4.   AQHBCI_DEBUG_JOBS
-               8.   Security in PIN/TAN Mode
+               4.   Supported Backends
+               4.1.   HBCI
+               4.2.   OFX Direct Connect
+               4.3.   YellowNet
+               4.4.   DTAUS
+               4.5.   GeldKarte
+               4.6.   None
+               5.   What Do I Need ?
+               5.1.   Required Packages
+               5.2.   Applications
+               6.   Building AqBanking
+               6.1.   Building from the Tar File
+               6.2.   Building from CVS
+               6.3.   Building the API Documentation
+               6.4.   Notes on porting the qt parts to Qt-4: 
+               7.   Windows Registry Keys Used
+               7.1.   Software\\AqBanking\\Paths\\pkgdatadir
+               7.2.   Software\\AqBanking\\Paths\\sysconfdir
+               7.3.   Software\\AqBanking\\Paths\\bankinfodir
+               7.4.   Software\\AqBanking\\Paths\\providerdir
+               7.5.   Software\\AqBanking\\Paths\\importerdir
+               8.   Environment Variables Used
+               8.1.   AQBANKING_LOGLEVEL
+               8.2.   AQBANKING_STORE_JOBLOGS
+               8.3.   AQHBCI_LOGBOOKED
+               8.4.   AQHBCI_DEBUG_JOBS
+               9.   Security in PIN/TAN Mode
 
 
 
@@ -51,25 +57,9 @@ http://linuxwiki.de/AqBanking )
 The intention of AqBanking is to provide a middle layer between the program
 and the various Online Banking libraries (e.g. AqHBCI, OpenHBCI etc). 
 
-The real work is done in so-called banking backends. 
-The first backend which is already supported is AqHBCI, a library which 
-implements a client for the German HBCI (Home Banking Computer Interface) 
-protocol and is included with AqBanking.
+The real work is done in so-called banking backends. See chapter 4 for a
+list of supported backends.
 
-The backend AqHBCI currently supports these security media: 
- - RDH keyfile (RSA-DES-Hybrid mode)
- - DDV chipcard (DES-DES-Verfahren)
- - RSA chipcard (RSA-DES-Hybrid mode)
- - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use 
-                     with OpenHBCI in parallel) 
- - PIN/TAN (PIN/TAN mode using HTTP over SSL)
-
-The aqbanking package already contains the following backends:
- - AqHBCI (German Online Banking protocol HBCI 2.01, 2.10 and 2.20)
- - AqDTAUS (creates DTAUS discs and prints the necessary documents)
- - AqOfxConnect (OFX Direct Connect), if libofx is available
- - AqGeldKarte (shows account information from a GeldKarte), if 
-   libchipcard is available
 
 
 1.2. Generic Financial Data Importer/Exporter Framework
@@ -152,11 +142,74 @@ This package contains the following frontends:
 
 
 
-4. What Do I Need ?
+4. Supported Backends
+=====================
+
+AqBanking includes all its currently known banking backends.
+
+
+4.1. HBCI
+---------
+
+The backend AqHBCI provides support for the German online banking protocol
+called "Homebanking Computer Interface". It is a national standard provided
+by most German credit institutes.
+
+The following security media are supported:
+ - DDV chipcard (DES-DES-Verfahren)
+ - RSA chipcard (RSA-DES-Hybrid mode)
+ - OpenHBCI keyfile (either OpenHBCI 1 or 2, this medium allows continued use 
+                     with OpenHBCI in parallel)
+ - PIN/TAN (PIN/TAN mode using HTTP over SSL)
+
+This backend supports the HBCI versions 2.01, 2.10 and 2.20.
+
+
+4.2. OFX Direct Connect
+-----------------------
+
+This backend provides support for an online banking protocol used in the 
+United States, Canada and maybe in the United Kingdom.
+
+
+4.3. YellowNet
+--------------
+
+AqYellowNet provides support for the online banking protocol used by the
+Suisse "Post Finance" credit institute.
+This bank required me to sign a nondisclosure agreement so the module is
+available binary-only.
+
+
+4.4. DTAUS
+----------
+
+DTAUS is an offline protocol which uses floppy discs to transfer data between
+customers and a credit institute. The bank expects the disc to contain a file
+of a well defined format which is created by this backend.
+
+
+4.5. GeldKarte
+--------------
+
+A GeldKarte is a kind of cash card used in Germany. Such a card stores a
+balance and a number of transactions. This information is made available to
+accounting programs via this backend.
+
+
+4.6. None
+---------
+
+This is a fallback module which can be used by applications fo accounts which
+are not managed by any other online banking backend.
+
+
+
+5. What Do I Need ?
 ===================
 
 
-4.1. Required Packages
+5.1. Required Packages
 ----------------------
 
 AqBanking has several direct dependencies:
@@ -166,12 +219,14 @@ http://gwenhywfar.sf.net/, is absolutely required
 
 - "LibOFX" >= 0.8.0 from http://sf.net/projects/libofx is required
 for the ofx parts, otherwise the ofx parts will not be compiled.
+For the OFX Direct Connect backend even a newer version of LibOFX is needed
+(at least >=0.8.1)
 
 - "KtoBlzCheck" >= 1.0 from http://sf.net/projects/ktoblzcheck is
 required for the German bank account number checking, otherwise
 the account number checking will not be compiled.
 
-- "libchipcard" >= 1.9.13 from http://www.libchipcard.de is
+- "libchipcard" >= 1.9.20 from http://www.libchipcard.de is
 required for the aqgeldkarte backend, otherwise the geldkarte
 parts cannot be compiled
 
@@ -189,16 +244,7 @@ details, see the NEWS entry of the 1.3.0 release.
 http://linuxwiki.de/AqBanking )
 
 
-4.2. Bindings
--------------
-
-AqBanking also has KDE bindings which allow you to add support for
-AqBanking in very short time. These are included in the "kbanking"
-frontend which in turn is included in this aqbanking package. More
-information can be found in the source code documentation.
-
-
-4.3. Applications
+5.2. Applications
 -----------------
 
 These application fully or partially support AqBanking:
@@ -217,11 +263,11 @@ http://linuxwiki.de/AqBanking )
 
 
 
-5. Building AqBanking
+6. Building AqBanking
 =====================
 
 
-5.1. Building from the Tar File
+6.1. Building from the Tar File
 -------------------------------
 
 #>./configure
@@ -252,7 +298,7 @@ Compilation hints for specific platforms:
   ./configure qt3_libs="-L/opt/qt/lib -lqt-mt"
 
 
-5.2. Building from CVS
+6.2. Building from CVS
 ----------------------
 
 #>make -fMakefile.cvs
@@ -260,7 +306,7 @@ Compilation hints for specific platforms:
 and continue as described in "5.1. Building from the Tar File".
 
 
-5.3. Building the API Documentation
+6.3. Building the API Documentation
 -----------------------------------
 
 #>make srcdoc
@@ -275,7 +321,7 @@ by "--with-docpath=PATH". It defaults to "$HOME/apidoc", which
 means it does *not* obey the --prefix argument.
 
 
-5.4. Notes on porting the qt parts to Qt-4: 
+6.4. Notes on porting the qt parts to Qt-4: 
 ------------------------------------------
 
 The Qt4 library is now available as GPL on Linux *and* Windows,
@@ -318,7 +364,7 @@ or on Windows/mingw32
 
 
 
-6. Windows Registry Keys Used
+7. Windows Registry Keys Used
 =============================
 
 AqBanking uses registry keys below HKEY_CURRENT_USER.  Currently
@@ -326,38 +372,38 @@ the following keys are used. These ekys are created by the setup.exe which
 contains the binary package for WIN32 platforms.
 
 
-6.1. Software\\AqBanking\\Paths\\pkgdatadir
+7.1. Software\\AqBanking\\Paths\\pkgdatadir
 -------------------------------------------
 This is the data folder (i.e. $PREFIX/share on POSIX systems).
 
 
-6.2. Software\\AqBanking\\Paths\\sysconfdir
+7.2. Software\\AqBanking\\Paths\\sysconfdir
 -------------------------------------------
 This is the folder containing system configuration files.
 (i.e. $PREFIX/etc on POSIX systems).
 
 
-6.3. Software\\AqBanking\\Paths\\bankinfodir
+7.3. Software\\AqBanking\\Paths\\bankinfodir
 -------------------------------------------
 This folder is used to store bankinfo plugins.
 
 
-6.4. Software\\AqBanking\\Paths\\providerdir
+7.4. Software\\AqBanking\\Paths\\providerdir
 -------------------------------------------
 This folder is used to store provider (backend) plugins.
 
 
-6.5. Software\\AqBanking\\Paths\\importerdir
+7.5. Software\\AqBanking\\Paths\\importerdir
 -------------------------------------------
 This folder is used to store importer/exporter plugins.
 
 
 
-7. Environment Variables Used
+8. Environment Variables Used
 =============================
 
 
-7.1. AQBANKING_LOGLEVEL
+8.1. AQBANKING_LOGLEVEL
 -----------------------
 
 This variable stores the loglevel to be used for AqBanking.
@@ -365,14 +411,14 @@ Possible values are: emergency, alert, critical, error, warning, notice,
 info, debug and verbous.
 
 
-7.2. AQBANKING_STORE_JOBLOGS
+8.2. AQBANKING_STORE_JOBLOGS
 ----------------------------
 If this variable is defined then AqBanking will always store job logs with 
 jobs. Otherwise job logs are only stored for jobs with a status other tan
 "finished". Job logs can become quite big.
 
 
-7.3. AQHBCI_LOGBOOKED
+8.3. AQHBCI_LOGBOOKED
 ---------------------
 If this environment variable exists then the file "/tmp/booked.mt" is created
 upon reception of transactions via the job GetTransactions. This file then
@@ -380,14 +426,14 @@ contains a SWIFT MT940 document which can be very helpfull in case there is
 a problem in the SWIFT parser.
 
 
-7.4. AQHBCI_DEBUG_JOBS
+8.4. AQHBCI_DEBUG_JOBS
 ----------------------
 If this variable exists then additional debugging data is stored with each
 job.
 
 
 
-8. Security in PIN/TAN Mode
+9. Security in PIN/TAN Mode
 ===========================
 
 In PIN/TAN mode AqHBCI stores certificates of the bank in a special folder:
