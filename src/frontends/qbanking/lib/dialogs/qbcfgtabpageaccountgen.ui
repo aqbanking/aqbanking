@@ -205,7 +205,7 @@ Freely selectable name for your account. This field is not used by AqDTAUS.
                                         <cstring>allUsersCheck</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>all users of this backend</string>
+                                        <string>All users of this backend</string>
                                     </property>
                                 </widget>
                             </vbox>
