@@ -20,7 +20,7 @@ plugin_DATA=aqyellownet.xml
 aqyellownet_la_SOURCES= \
  aqyellownet-plugin.c
 
-aqyellownet_la_LIBADD=libaqyellownet.la @gwenhywfar_libs@ @aqbanking_libs@
+aqyellownet_la_LIBADD=libaqyellownet.la @gwenhywfar_libs@ @aqbanking_internal_libs@
 aqyellownet_la_LDFLAGS=-module
 
 install-exec-local:

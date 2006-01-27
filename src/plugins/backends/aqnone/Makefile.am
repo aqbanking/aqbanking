@@ -23,9 +23,9 @@ noinst_HEADERS=provider_l.h provider_p.h
 libaqnone_la_SOURCES=provider.c
 aqnone_la_SOURCES=aqnone-plugin.c
 
-libaqnone_la_LIBADD=@gwenhywfar_libs@ @aqbanking_libs@
+libaqnone_la_LIBADD=@gwenhywfar_libs@ @aqbanking_internal_libs@
 
-aqnone_la_LIBADD=libaqnone.la @gwenhywfar_libs@ @aqbanking_libs@
+aqnone_la_LIBADD=libaqnone.la @gwenhywfar_libs@ @aqbanking_internal_libs@
 aqnone_la_LDFLAGS=-module -version-info 0:0:0
 
 
