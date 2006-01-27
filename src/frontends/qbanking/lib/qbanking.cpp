@@ -851,7 +851,7 @@ int QBanking::init(){
     return rv;
 
   _translator=new QTranslator(0);
-  DBG_ERROR(0, "PKGDATADIR="PKGDATADIR);
+  DBG_DEBUG(0, "PKGDATADIR="PKGDATADIR);
   // no need to specify ".qm" suffix; QTranslator tries that itself
   if (_translator->load(QTextCodec::locale(),
 			QString(PKGDATADIR DIRSEP "i18n"))) {
