@@ -155,7 +155,7 @@ QBInputBox::QBInputBox(const QString& title,
       _edit2->setEchoMode(QLineEdit::Password);
     gridlayout->addWidget(_edit2, 1, 1);
 
-    /* add label */
+    /* add label for second input box (used as confirmation) */
     l=new QLabel(_edit2, tr("&Confirm")+":", this, "Label2");
     gridlayout->addWidget(l, 1, 0);
   }
