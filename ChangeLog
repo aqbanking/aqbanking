@@ -1,3 +1,12 @@
+
+2006/01/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added backend AqYellowNet (Suisse Postfinance). This backend is currently
+  binary only because of a NDA (I would like to publish it under the GPL, but
+  this is not yet possible, maybe later).
+- added phony backend "aqnone"; this backend can be used for offline accounts
+
+
 2006-01-26   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/__init__.py: Commented out removed

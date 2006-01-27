@@ -1,10 +1,15 @@
-SUBDIRS = $(aqbanking_backends) aqnone
-DIST_SUBDIRS = aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet aqnone
+SUBDIRS=libs
+
+qt4-port:
+	for d in $(SUBDIRS); do \
+	  make -C $$d qt4-port; \
+	done
+
 
 sources:
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
-	done
+	done ;
 
 built_sources:
 	for d in $(SUBDIRS); do \

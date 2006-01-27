@@ -1,17 +1,22 @@
 
-AqBanking is licensed under the GPL (see below). 
+AqBanking is licensed under the GPL (see below).
+
+The banking backend "AqYellowNet" is currently only available binary-only
+because of a nondisclosure agreement.
 
 If you want to use AqBanking in non-GPL software you can get an individual
 license from the author (martin@libchipcard.de).
 
 
 As the copyright holder of AqBanking, Martin Preuss grants the following
-license exception:
+license exceptions:
 
-Martin Preuss explicitly allows the compilation and distribution of
-AqBanking with the OpenSSL Toolkit.
-No developer is required to provide this exception in a derived work.
+1) Martin Preuss explicitly allows the compilation and distribution of
+   AqBanking with the OpenSSL Toolkit.
+   No developer is required to provide this exception in a derived work.
 
+2) Martin Preuss explicitly allows the compilation and distribution of
+   AqBanking with the binary-only backend AqYellowNet.
 
 
 

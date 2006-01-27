@@ -1,0 +1,57 @@
+# $Id$
+# Author of this file: Martin Preuss<martin@libchipcard.de>
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+libdir=@libdir@
+
+result=""
+
+for d in $*; do
+    case $d in
+	--includes)
+	    result="$result @all_includes@ @aqyellownet_includes@"
+	    ;;
+	--libraries)
+	    result="$result @aqyellownet_libs@"
+	    ;;
+	--plugins)
+	    result="$result @aqyellownet_plugins@"
+	    ;;
+	--data)
+	    result="$result @aqyellownet_data@"
+	    ;;
+	--vmajor)
+	    result="$result @AQYELLOWNET_VERSION_MAJOR@"
+	    ;;
+	--vminor)
+	    result="$result @AQYELLOWNET_VERSION_MINOR@"
+	    ;;
+	--vpatchlevel)
+	    result="$result @AQYELLOWNET_VERSION_PATCHLEVEL@"
+	    ;;
+	--vbuild)
+	    result="$result @AQYELLOWNET_VERSION_BUILD@"
+	    ;;
+	--vtag)
+	    result="$result @AQYELLOWNET_VERSION_TAG@"
+	    ;;
+        --vstring)
+	    result="$result @AQYELLOWNET_VERSION_MAJOR@.@AQYELLOWNET_VERSION_MINOR@.@AQYELLOWNET_VERSION_PATCHLEVEL@"
+            ;;
+	*)
+	    echo "Usage:"
+	    echo "$0 --includes gives you the include flags"
+	    echo "$0 --libraries gives you the library flags"
+	    echo "$0 --vmajor gives the major version of AqYellowNet"
+	    echo "$0 --vminor gives the minor version of AqYellowNet"
+	    echo "$0 --vpatchlevel gives the patchlevel of AqYellowNet"
+	    echo "$0 --vbuild gives the build number of AqYellowNet"
+	    echo "$0 --vtag gives the tag of AqYellowNet (cvs, beta or stable)"
+	    echo "$0 --vstring returns a version string"
+	    exit 1
+	    ;;
+    esac
+done
+echo $result

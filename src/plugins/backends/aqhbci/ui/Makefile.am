@@ -1,4 +1,4 @@
-SUBDIRS=@aqhbci_ui@
+SUBDIRS=@qt3_ui@
 DIST_SUBDIRS = qt3
 
 sources:

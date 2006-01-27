@@ -16,9 +16,9 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=3
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
@@ -594,7 +594,7 @@ AC_CHECK_FUNCS([setlocale])
 
 ###-------------------------------------------------------------------------
 #
-# backends and frontends
+# frontends
 #
 
 AC_ARG_WITH(frontends, 
@@ -623,12 +623,39 @@ esac
 aqbanking_frontends="${tmp_frontends}"
 AC_SUBST(aqbanking_frontends)
 
+
+
+###-------------------------------------------------------------------------
+#
 # Backends. Those do not have a required ordering.
+#
+
 AC_ARG_WITH(backends, 
-  [  --with-backends=list      space separated list of backends (default:all)],
+  [  --with-backends=list      space separated list of backends (default:GPL)],
   [aqbanking_backends="$withval"],
-  [aqbanking_backends="aqhbci aqdtaus aqgeldkarte aqofxconnect"]
+  [aqbanking_backends="GPL"]
 )
+
+
+tmp_backends=""
+for f in ${aqbanking_backends}; do
+  if test "x${f}" = "xGPL" -o "x${f}" = "xgpl"; then
+    tmp_backends="${tmp_backends} aqhbci aqdtaus aqgeldkarte aqofxconnect"
+  else
+    tmp_backends="${tmp_backends} ${f}"
+  fi
+done
+aqbanking_backends="${tmp_backends}"
+
+case "${aqbanking_backends}" in *aqyellownet*)
+  AC_MSG_NOTICE([
+  
+    *** The backend aqyellownet is NOT licensed under the GPL. 
+    Please see src/plugins/backends/aqyellownet/COPYING for details.
+    ])
+  ;;
+esac
+
 AC_SUBST(aqbanking_backends)
 
 
@@ -1204,10 +1231,7 @@ for frontend in $aqbanking_frontends; do
         AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="cbanking g2banking" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
-      aqhbci_ui="qt3"
-      aqdtaus_ui="qt3"
-      aqgeldkarte_ui="qt3"
-      aqofxconnect_ui="qt3"
+      qt3_ui="qt3"
       ;;
     kbanking)
       if test "x$have_kde3" != "xyes"; then
@@ -1511,10 +1535,7 @@ AC_SUBST(cbanking_data)
 # subst selected UIs
 #
 
-AC_SUBST(aqhbci_ui)
-AC_SUBST(aqdtaus_ui)
-AC_SUBST(aqgeldkarte_ui)
-AC_SUBST(aqofxconnect_ui)
+AC_SUBST(qt3_ui)
 
 
 
@@ -1709,6 +1730,15 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/ui/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
+  src/plugins/backends/aqnone/Makefile
+  src/plugins/backends/aqnone/aqnone.xml
+  src/plugins/backends/aqyellownet/Makefile
+  src/plugins/backends/aqyellownet/aqyellownet-config.in
+  src/plugins/backends/aqyellownet/plugin/Makefile
+  src/plugins/backends/aqyellownet/plugin/aqyellownet.xml
+  src/plugins/backends/aqyellownet/ui/Makefile
+  src/plugins/backends/aqyellownet/ui/qt3/Makefile
+  src/plugins/backends/aqyellownet/ui/qt3/libs/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-tool/Makefile
@@ -1738,7 +1768,7 @@ echo
 echo "Summary"
 echo "----------------------------------------------------"
 echo "AqBanking version  : $AQBANKING_VERSION_FULL_STRING"
-echo "Supported backends : $aqbanking_backends"
+echo "Supported backends :$aqbanking_backends"
 echo "Supported frontends: $aqbanking_frontends"
 echo
 echo "You can now run \"make\" (or gmake on FreeBSD) to compile."

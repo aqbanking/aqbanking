@@ -1,0 +1,21 @@
+<plugin name="aqnone" type="provider" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Dummy backend</short>
+  <descr>
+    This dummy backend allows using offline accounts.
+  </descr>
+</plugin>
+
+
+<plugin name="aqnone" type="provider" lang="de" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Offline Modul</short>
+  <descr>
+    Diese Erweiterung erlaubt die Verwendung von Konten die nicht ueber eines
+    der Online-Banking Protokolle geführt werden.
+  </descr>
+</plugin>
+
+
