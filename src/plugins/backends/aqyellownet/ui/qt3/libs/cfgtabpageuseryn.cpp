@@ -24,7 +24,7 @@
 
 #include <qbanking/qbanking.h>
 #include <qbanking/qbcfgtab.h>
-#include <qbanking/qbcfgtabuser.h>
+//#include <qbanking/qbcfgtabuser.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/url.h>
