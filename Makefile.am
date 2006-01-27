@@ -248,3 +248,9 @@ sl-headers:
 	make -C src built_sources
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
+# Call aqbanking's testcases plus the unittests from the
+# moneysplash module
+py-check:
+	make check && \
+	  cd ../moneysplash/unittests && \
+	  PYTHONPATH=$(pyexecdir) $(PYTHON) test_1.py
