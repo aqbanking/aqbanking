@@ -11,9 +11,9 @@
 <plugin name="aqofxconnect" type="provider" lang="de" >
   <version>@AQOFXCONNECT_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>OFX-DirectConnect Homebanking Erweiterung</short>
+  <short>OFX-DirectConnect Homebanking Modul</short>
   <descr>
-    Diese Erweiterung erlaubt Homebanking mittels OFX-DirectConnect.
+    Dieses Modul erlaubt Homebanking mittels OFX-DirectConnect.
   </descr>
 </plugin>
 

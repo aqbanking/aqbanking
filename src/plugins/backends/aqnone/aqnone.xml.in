@@ -13,8 +13,8 @@
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>Offline Modul</short>
   <descr>
-    Diese Erweiterung erlaubt die Verwendung von Konten die nicht ueber eines
-    der Online-Banking Protokolle geführt werden.
+    Dieses Modul erlaubt die Verwendung von Konten die nicht ueber eines
+    der Online-Banking Protokolle gefuehrt werden.
   </descr>
 </plugin>
 

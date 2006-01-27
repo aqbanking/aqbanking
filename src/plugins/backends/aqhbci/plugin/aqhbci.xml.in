@@ -11,9 +11,11 @@
 <plugin name="aqhbci" type="provider" lang="de" >
   <version>@AQHBCI_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>HBCI Homebanking Erweiterung</short>
+  <short>HBCI Homebanking Modul</short>
   <descr>
-    Diese Erweiterung erlaubt Homebanking mittels HBCI.
+    Dieses Modul bietet Homebanking mittels HBCI (Home
+  Banking Computer Interface). Dieses Protokoll wird von der Mehrheit
+  der deutschen Banken angeboten.
   </descr>
 </plugin>
 

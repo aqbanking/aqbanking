@@ -11,9 +11,9 @@
 <plugin name="aqyellownet" type="provider" lang="de" >
   <version>@AQYELLOWNET_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>YELLOWNET Homebanking Erweiterung</short>
+  <short>YELLOWNET Homebanking Modul</short>
   <descr>
-    Diese Erweiterung erlaubt Homebanking in der Schweiz mittels YellowNet.
+    Dieses Modul erlaubt Homebanking in der Schweiz mittels YellowNet.
   </descr>
 </plugin>
 

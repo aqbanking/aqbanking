@@ -3,7 +3,7 @@
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>Geldkarte plugin</short>
   <descr>
-    This backend provides support for OFX-DirectConnect.
+    This backend provides support for reading data from the GeldKarte.
   </descr>
 </plugin>
 
@@ -11,9 +11,9 @@
 <plugin name="aqgeldkarte" type="provider" lang="de" >
   <version>@AQGELDKARTE_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>GeldKarte Homebanking Erweiterung</short>
+  <short>GeldKarte Homebanking Modul</short>
   <descr>
-    Diese Erweiterung liest GeldKarten aus.
+    Dieses Modul liest GeldKarten aus.
   </descr>
 </plugin>
 
