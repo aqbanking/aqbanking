@@ -124,6 +124,13 @@ public:
                           const char *text);
   virtual int progressEnd(GWEN_TYPE_UINT32 id);
 
+  /**
+   * This function makes the application print something. This is
+   * the implementation of AB_Banking_Print(); see there for
+   * arguments. 
+   *
+   * Note: all string arguments must be in UTF-8 encoding.
+   */
   virtual int print(const char *docTitle,
                     const char *docType,
                     const char *descr,
@@ -184,6 +191,17 @@ public:
                           AB_BANKING_LOGLEVEL level,
                           const QString &text);
 
+  /**
+   * This function makes the application print something. This is
+   * a wrapper around the print() with "const char*" which is the
+   * implementation of AB_Banking_Print(); see there for
+   * arguments.
+   *
+   * Note: Make sure all arguments passed here are really a
+   * QString! If any argument is a "const char*" (e. g. simply a
+   * string constant), then especially QT-4 will complain about an
+   * ambiguity between the "const char*"-print() and this one.
+   */
   virtual int print(const QString &docTitle,
                     const QString &docType,
                     const QString &descr,
@@ -246,13 +264,15 @@ public:
   static QBANKING_API std::string QStringToUtf8String(const QString &qs);
 
   /** Convenience function for extracting the GUI part of the
-   * HTML/cleartext-combi-strings from aqbanking. 
+   * HTML/cleartext-combi-strings from aqbanking, adapted to
+   * strings for QT gui widgets.
    * 
    * If the given string contains a
    * &lt;html>html-part...&lt;/html> section, then the "html-part"
-   * section will be returned. If the given string does not
-   * contain a section like this, then the string will be returned
-   * unchanged. */
+   * section will be returned with enclosing &lt;qt>...&lt;/qt>
+   * tags plus potentially some whitespace around those. If the
+   * given string does not contain a section like this, then the
+   * string will be returned unchanged. */
   static QBANKING_API std::string guiString(const char *s);
 
   /** Convenience function that returns true if the given string
