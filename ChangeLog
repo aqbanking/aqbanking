@@ -1,10 +1,7 @@
 
-2006/01/27: Martin Preuss<martin@libchipcard.de>
--------------------------------------------------
-- fixed a bug in certificate handling: Was not storing the result of user
-  interaction (was always asking whether the user accepts the cert)
-- fixed a bug in OfxConnect QT3: Was missing a "moc.cpp" file (why the heck
-  did it work on SuSE???)
+===========================================================================
+MARK: released AqBanking - 1.9.4beta (2006-01-27)
+===========================================================================
 
 
 2006-01-27   Christian Stimming <stimming@tuhh.de>
@@ -26,6 +23,14 @@
   this is not yet possible, maybe later).
 - added phony backend "aqnone"; this backend can be used for offline accounts
 - added description of available backends to README
+- fixed a bug in certificate handling: Was not storing the result of user
+  interaction (was always asking whether the user accepts the cert)
+- fixed a bug in OfxConnect QT3: Was missing a "moc.cpp" file (why the heck
+  did it work on SuSE???)
+- changed effective SO version of QBanking (should have done this for previous
+  release due to an API change in QBPickDate)
+- OFX Direct Connect now works again (thanks to David Reiser!!)
+- added a "Thanks" chapter to README
 
 
 2006-01-26   Christian Stimming <stimming@tuhh.de>

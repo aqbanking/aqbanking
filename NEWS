@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.4beta (2006-01-26)
+===========================================================================
+
+This release adds a backend for YellowNet (Suisse Postfinance, binary-only),
+adds a fake-backend to be used for accounts which are not managed via any
+other online banking backend and fixes some bugs. Most importantly, OFX Direct
+Connect now works again (thanks to David Reiser!!)
+
+
+===========================================================================
                Released AqBanking - 1.9.3beta (2006-01-26)
 ===========================================================================
 

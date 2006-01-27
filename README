@@ -36,7 +36,7 @@
                8.3.   AQHBCI_LOGBOOKED
                8.4.   AQHBCI_DEBUG_JOBS
                9.   Security in PIN/TAN Mode
-
+               10.  Thanks
 
 
 
@@ -450,4 +450,19 @@ acknowledged the bank's certificate.
 This way the running application is able to read and verify the certificates
 but unable to modify it or to add new ones.
 
+
+10. Thanks
+==========
+
+I wish to thank the following (amopng other) people for their support in 
+making AqBanking work:
+- Christian Stimming (build-system and tarball cleanup, translations, inputs)
+- Jens Koerner (did some huge jobs to provide German translation)
+- David Reiser (for helping in debugging the OFX DirectConnect code)
+- Christoph Bohl (for helping with the YellowNet backend)
+
+- and of course the many people who submitted bug reports !!
+
+
+Martin Preuss, Hamburg/Germany, 2006/01/27
 

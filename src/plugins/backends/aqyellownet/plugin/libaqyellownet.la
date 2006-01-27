@@ -14,7 +14,7 @@ library_names='libaqyellownet.so.0.0.0 libaqyellownet.so.0 libaqyellownet.so'
 old_library='libaqyellownet.a'
 
 # Libraries that this one depends upon.
-dependency_libs=' -L/usr/lib /usr/lib/libaqbanking.la /usr/lib/libgwenhywfar.la -lssl -lcrypto -ldl'
+dependency_libs=''
 
 # Version information for libaqyellownet.
 current=0
