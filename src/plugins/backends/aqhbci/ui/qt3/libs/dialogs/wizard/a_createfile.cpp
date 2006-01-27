@@ -31,7 +31,7 @@ ActionCreateFile::ActionCreateFile(Wizard *w)
                   QWidget::tr("Create Key File"),
                   QWidget::tr("<qt>"
                               "<p>"
-                              "Please select a name for the keyfile."
+                              "Please select a directory and name for the new keyfile."
                               "</p>"
                               "<p>"
                               "If you click <i>next</i> then the keyfile "

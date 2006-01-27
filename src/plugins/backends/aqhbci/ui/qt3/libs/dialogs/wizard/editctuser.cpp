@@ -380,8 +380,8 @@ bool EditCtUser::apply(){
       DBG_ERROR_ERR(0, err);
       QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
-			    QWidget::tr("Could not resolve the address %1.\n"
-                                        "Maybe there is a typo?")
+			    QWidget::tr("Could not resolve the server address %1.\n"
+                                        "Maybe there is a typo? Please correct the server address.")
 			    .arg(QString::fromUtf8(serverAddr.c_str())),
 			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_InetAddr_free(addr);
