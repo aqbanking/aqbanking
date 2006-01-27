@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/headers @all_includes@
+
 SUBDIRS=plugin ui
 
 EXTRA_DIST=aqyellownet.m4
@@ -18,3 +20,7 @@ sources:
 	  make -C $$d sources; \
 	done
 
+built_sources: $(BUILT_SOURCES)
+	for d in $(SUBDIRS); do \
+	  make -C $$d built_sources; \
+	done ;

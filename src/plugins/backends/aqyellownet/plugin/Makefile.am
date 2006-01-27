@@ -1,3 +1,4 @@
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/headers @all_includes@
 
 libfiles=\
  libaqyellownet.la \
@@ -28,3 +29,4 @@ install-exec-local:
 
 sources:
 
+built_sources: $(BUILT_SOURCES)
