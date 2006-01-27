@@ -95,10 +95,14 @@ sources:
 	$(qt3_moc) -o $@ $<
 
 # Build and link a test program to verify the linker flags
-noinst_PROGRAMS = testlib
+noinst_PROGRAMS = testlib checklib
 testlib_SOURCES = testlib.cpp
 testlib_LDADD = libqbanking.la
-
+checklib_SOURCES = checklib.cpp
+checklib_LDADD = libqbanking.la
+TESTS = checklib
+clean-local:
+	-rm -rf testfolder
 
 # This section is for a qt4 environment
 qt4-port:

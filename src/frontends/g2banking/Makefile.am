@@ -105,6 +105,7 @@ sources:
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
 testlib_LDADD = libg2banking.la
+TESTS = testlib
 
 CLEANFILES += $(BUILT_SOURCES)
 

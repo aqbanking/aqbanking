@@ -57,6 +57,7 @@ sources:
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
 testlib_LDADD = libcbanking.la
+TESTS = testlib
 
 built_sources:
 

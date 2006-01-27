@@ -1,4 +1,14 @@
+2006-01-27   Christian Stimming <stimming@tuhh.de>
 
+	* src/frontends/qbanking/lib/checklib.cpp: Add yet another test
+	program that has test cases but no GUI interaction. To be used by
+	"make check".
+
+	* src/libs/aqbanking/Makefile.am, src/frontends/*: Add TESTS
+	variable in Makefiles that will call the "testlib" executable;
+	this way, "make check" can be used for actual run-time tests for
+	the libraries.
+	
 2006/01/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added backend AqYellowNet (Suisse Postfinance). This backend is currently

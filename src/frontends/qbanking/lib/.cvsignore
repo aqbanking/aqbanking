@@ -8,3 +8,5 @@ i18nsources
 *-config
 testlib
 *.moc
+testfolder
+checklib

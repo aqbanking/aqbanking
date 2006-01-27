@@ -62,7 +62,7 @@ sources:
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.cpp
 testlib_LDADD = libkbanking.la
-
+TESTS = testlib
 
 %.moc.cpp: %.h
 	$(qt3_moc) -o $@.tmp $< && \

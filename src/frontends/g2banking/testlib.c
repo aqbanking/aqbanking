@@ -168,8 +168,8 @@ int main (int argc, char *argv[]){
   //return test6(); // use this for memory leak checks
 
   if (argc<2) {
-    fprintf(stderr, "Command needed.\n");
-    return 1;
+    fprintf(stderr, "Use commands 'test4', 'test5', 'test6', 'test7', 'test8' for testing \nactual GUI elements. Exiting successfully now.\n");
+    return 0;
   }
   cmd=argv[1];
 

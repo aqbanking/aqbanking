@@ -106,3 +106,4 @@ sources:
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
 testlib_LDADD = libaqbanking.la
+TESTS = testlib
