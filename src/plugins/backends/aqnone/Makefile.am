@@ -1,6 +1,6 @@
-INCLUDES=-I$(top_srcdir) @all_includes@
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/headers @all_includes@
 
-DEFS= @DEFS@ -DBUILDING_AQNONE
+DEFS += -DBUILDING_AQNONE
 
 AM_CFLAGS=@visibility_cflags@
 
