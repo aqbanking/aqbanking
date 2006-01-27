@@ -19,6 +19,7 @@ aqofxconnect_la_SOURCES=\
 nodist_aqofxconnect_la_SOURCES=\
  cfgtabpageaccountofx.ui.cpp \
  cfgtabpageaccountofx.ui.moc.cpp \
+ cfgtabpageaccountofx.moc.cpp \
  cfgtabpageuserofx.ui.cpp \
  cfgtabpageuserofx.ui.moc.cpp \
  cfgtabpageuserofx.moc.cpp

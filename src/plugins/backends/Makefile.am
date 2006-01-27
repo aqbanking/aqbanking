@@ -1,4 +1,4 @@
-SUBDIRS = $(aqbanking_backends) aqnone
+SUBDIRS = @aqbanking_backends@ aqnone
 DIST_SUBDIRS = aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet aqnone
 
 sources:

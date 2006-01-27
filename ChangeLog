@@ -1,3 +1,12 @@
+
+2006/01/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in certificate handling: Was not storing the result of user
+  interaction (was always asking whether the user accepts the cert)
+- fixed a bug in OfxConnect QT3: Was missing a "moc.cpp" file (why the heck
+  did it work on SuSE???)
+
+
 2006-01-27   Christian Stimming <stimming@tuhh.de>
 
 	* src/frontends/qbanking/lib/checklib.cpp: Add yet another test
@@ -8,6 +17,7 @@
 	variable in Makefiles that will call the "testlib" executable;
 	this way, "make check" can be used for actual run-time tests for
 	the libraries.
+
 	
 2006/01/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -640,8 +640,15 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
 
   rv=GWEN_NetLayer_Connect_Wait(dlg->netLayer, timeout);
   if (rv) {
+    if (rv==1) {
+      AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
+                             0,
+                             AB_Banking_LogLevelNotice,
+                             I18N("Timeout."));
+
+    }
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Could not connect to bank (%d)", rv);
+              "Could not connect to bank (%d)", rv);
     GWEN_NetLayer_free(dlg->netLayer);
     dlg->netLayer=0;
     return AB_ERROR_NETWORK;

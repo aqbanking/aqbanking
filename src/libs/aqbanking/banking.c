@@ -5455,7 +5455,7 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
   assert(user_data);
   ab=(AB_BANKING*)user_data;
 
-  pd=ab->data;
+  pd=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, "banking");
   assert(pd);
 
   memset(dbuffer1, 0, sizeof(dbuffer1));
@@ -5506,9 +5506,12 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
     const char *result;
 
     result=GWEN_DB_GetCharValue(pd, varName, 0, 0);
-    if (!result)
+    DBG_ERROR(0, "Permanent result: %s", result);
+    if (!result) {
       /* check temporary config */
       result=GWEN_DB_GetCharValue(ab->dbTempConfig, varName, 0, 0);
+      DBG_ERROR(0, "Temporary result: %s", result);
+    }
     if (result) {
       if (strcasecmp(result, "accept")==0) {
 	DBG_NOTICE(AQBANKING_LOGDOMAIN,
@@ -5519,6 +5522,9 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
 	DBG_NOTICE(AQBANKING_LOGDOMAIN,
 		   "Automatically accepting certificate \"%s\"", hash);
         return GWEN_NetLayerSsl_AskAddCertResult_Tmp;
+      }
+      else {
+        DBG_ERROR(0, "No temp value");
       }
     }
     else
