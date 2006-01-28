@@ -2,7 +2,7 @@
 # (c) 2004 Martin Preuss<martin@libchipcard.de>
 # This function checks for AqYellowNet
 
-AC_DEFUN(AC_AQYELLOWNET, [
+AC_DEFUN([AC_AQYELLOWNET], [
 dnl searches for aqyellownet
 dnl Arguments: 
 dnl   $1: major version minimum
