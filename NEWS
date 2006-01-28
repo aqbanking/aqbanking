@@ -1,6 +1,13 @@
 
 ===========================================================================
-               Released AqBanking - 1.9.4beta (2006-01-26)
+               Released AqBanking - 1.9.5beta (2006-01-28)
+===========================================================================
+
+This version fixes some makefiles of the new backends.
+
+
+===========================================================================
+               Released AqBanking - 1.9.4beta (2006-01-27)
 ===========================================================================
 
 This release adds a backend for YellowNet (Suisse Postfinance, binary-only),
