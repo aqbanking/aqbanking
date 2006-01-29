@@ -408,7 +408,7 @@ Freely selectable name for your account. This field is not used by AqDTAUS.
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>qbuserlistview.h</includehint>
-    <includehint>qbuserlistview.h</includehint>
+    <includehint>qbuserlist.h</includehint>
+    <includehint>qbuserlist.h</includehint>
 </includehints>
 </UI>
