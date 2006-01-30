@@ -1444,15 +1444,14 @@ AC_SUBST(g2banking_data)
 
 case "$OS_TYPE" in
     posix)
-        libsuffix="`eval kde-config --libsuffix`"
-        kbanking_libs="-L\${libdir}${libsuffix} -lkbanking"
+        kbanking_libs="-L\${libdir} -lkbanking"
         kbanking_internal_libs="${abs_top_builddir}/src/frontends/kbanking/libkbanking.la"
         kbanking_includes="-I\${prefix}/include"
         kbanking_data="\${datadir}/kbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_KBANKING_DLL,1, [Define if DLL is built])
-        kbanking_libs="-L\${libdir}${libsuffix} -lkbanking-${KBANKING_SO_EFFECTIVE}"
+        kbanking_libs="-L\${libdir} -lkbanking-${KBANKING_SO_EFFECTIVE}"
         kbanking_internal_libs="${abs_top_builddir}/src/frontends/kbanking/libkbanking.la"
         kbanking_includes="-I\${prefix}/include"
         kbanking_data="\${datadir}/kbanking"

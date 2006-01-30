@@ -1,3 +1,9 @@
+2006-01-30  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Remove kde-config --libsuffix since this is now
+	already given from somewhere else (no idea where, actually) as
+	reported by Thomas Baumgart.
+
 
 2006/01/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
