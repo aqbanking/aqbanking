@@ -769,59 +769,71 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       if (j) {
         /* check for attachability */
         if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ATTACHABLE) {
-          /* job is attachable, check whether this is segment result */
-          if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
-            int rcode;
+	  /* job is attachable, check whether this is segment result */
+	  if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
+            GWEN_DB_NODE *dbResult;
 
-            rcode=GWEN_DB_GetIntValue(dbCurr, "result/resultcode", 0, 0);
-            /* it is a segment result, does it contain an attach point ? */
-            if (rcode==3040) {
-              const char *p;
+	    dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
+	    while(dbResult) {
+	      int rcode;
+  
+	      rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+	      /* it is a segment result, does it contain an attach point ? */
+	      if (rcode==3040) {
+		const char *p;
+  
+		/* it should... */
+		p=GWEN_DB_GetCharValue(dbResult, "param", 0, 0);
+		if (!p) {
+		  DBG_ERROR(AQHBCI_LOGDOMAIN,
+			    "Segment result 3040 without attachpoint");
+		}
+		else {
+		  GWEN_DB_NODE *args;
 
-              /* it should... */
-              p=GWEN_DB_GetCharValue(dbCurr, "result/param", 0, 0);
-              if (!p) {
-		DBG_ERROR(AQHBCI_LOGDOMAIN,
-			  "Segment result 3040 without attachpoint");
-              }
-              else {
-                GWEN_DB_NODE *args;
-
-                /* store the attach point */
-                DBG_INFO(AQHBCI_LOGDOMAIN, "Storing attach point");
-                args=AH_Job_GetArguments(j);
-                GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                     "attach", p);
-                AH_Job_AddFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
-              }
-            } /* if code 3040 (means "more data available") */
+		  /* store the attach point */
+		  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing attach point");
+		  args=AH_Job_GetArguments(j);
+		  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+				       "attach", p);
+		  AH_Job_AddFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
+		}
+	      } /* if code 3040 (means "more data available") */
+	      dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+	    } /* while */
           } /* if segresult */
         } /* if attachable */
 
         /* check for segment results */
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
-          int rcode;
-          const char *p;
+	  GWEN_DB_NODE *dbResult;
 
-          rcode=GWEN_DB_GetIntValue(dbCurr, "result/resultcode", 0, 0);
-          p=GWEN_DB_GetCharValue(dbCurr, "result/text", 0, "");
-          if (rcode>=9000 && rcode<10000) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		     "Segment result: Error (%d: %s)", rcode, p);
-            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
-            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
-          }
-          else if (rcode>=3000 && rcode<4000) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		     "Segment result: Warning (%d: %s)", rcode, p);
-            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
-            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
-          }
-          else {
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		     "Segment result: Ok (%d: %s)", rcode, p);
-          }
-        }
+	  dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
+	  while(dbResult) {
+	    int rcode;
+	    const char *p;
+  
+	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+	    p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+	    if (rcode>=9000 && rcode<10000) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN,
+		       "Segment result: Error (%d: %s)", rcode, p);
+	      AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
+	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+	    }
+	    else if (rcode>=3000 && rcode<4000) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN,
+		       "Segment result: Warning (%d: %s)", rcode, p);
+	      AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
+	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+	    }
+	    else {
+	      DBG_INFO(AQHBCI_LOGDOMAIN,
+		       "Segment result: Ok (%d: %s)", rcode, p);
+	    }
+	    dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+	  } /* while */
+	} /* if SegResult */
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"",
                  GWEN_DB_GroupName(dbCurr),

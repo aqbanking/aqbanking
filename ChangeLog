@@ -1,4 +1,14 @@
 
+2006/01/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a problem in AqHBCI: Didn't see attach points when the corresponding
+  segment result contained more than one result and the attach point wasn't
+  the first of them
+- fixed a problem with false includehints in UI files of QBanking (had been
+  fixed before, but reoccurred due to a CVS revert which seems to have 
+  fetched too old revisions
+
+
 ===========================================================================
 MARK: released AqBanking - 1.9.5beta (2006-01-28)
 ===========================================================================
