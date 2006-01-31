@@ -76,8 +76,8 @@
 %endif
 
 # versions of required helper-libraries
-%define _gwenhywfar_version   1.99.5
-%define _libchipcard2_version 1.9.20
+%define _gwenhywfar_version   1.99.4.1
+%define _libchipcard2_version 1.9.19.2
 %define _libofx_version       0.8.1
 
 
@@ -96,17 +96,13 @@ Requires:      gwenhywfar >= %{_gwenhywfar_version}
 Requires:      ktoblzcheck
 BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
 BuildRequires: ktoblzcheck
-BuildRequires: python-ctypes
+#BuildRequires: python-ctypes
 BuildRequires: python >= 2.3
 BuildRequires: pyxml
 BuildRequires: pkgconfig >= 0.9
-BuildRequires: gettext-devel
-BuildRequires: libacl-devel
-BuildRequires: libattr-devel
-%if %have_libofx
-Requires:      libofx >= %{_libofx_version}
-BuildRequires: libofx-devel >= %{_libofx_version}
-%endif
+#BuildRequires: gettext-devel
+#BuildRequires: libacl-devel
+#BuildRequires: libattr-devel
 Prefix:        %{_prefix}
 Obsoletes:     aqdtaus
 Obsoletes:     aqhbci
@@ -142,7 +138,7 @@ Summary:  Aqbanking python-bindings
 Group:    Development/Libraries/Python
 %py_requires
 Requires: %{name} = %{version}
-Requires: python-ctypes
+#Requires: python-ctypes
 Requires: python >= 2.3
 Requires: pyxml
 
@@ -193,7 +189,7 @@ Summary:       Aqbanking tools for Qt3
 Group:         Development/Libraries/C and C++
 Requires:      %{name} = %{version}
 Requires:      libofx >= %{_libofx_version}
-BuildRequires: libofx-devel >= %{_libofx_version}
+#BuildRequires: libofx-devel >= %{_libofx_version}
 Obsoletes:     %{name}-ofx-qt3
 
 %description ofx
@@ -348,7 +344,7 @@ make install-strip \
 %{_libdir}/libaqhbci.so.*
 %{aq_plugindir}/providers/aqhbci.*
 %{_datadir}/aqhbci
-%{_datadir}/doc/aqhbci
+#%{_datadir}/doc/aqhbci
 ### The dtaus files
 %{_libdir}/libaqdtaus.so.*
 %{aq_plugindir}/providers/aqdtaus.*
