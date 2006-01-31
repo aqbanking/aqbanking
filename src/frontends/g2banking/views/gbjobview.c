@@ -30,24 +30,28 @@
 
 
 
-GtkWidget *GBanking_JobView_new(AB_BANKING *ab, GtkWidget *parent) {
+GtkWidget *GBanking_JobView_new(AB_BANKING *ab, int fullWindow) {
   GBANKING_JOBVIEW *wd;
   GladeXML *xml;
 
   GWEN_NEW_OBJECT(GBANKING_JOBVIEW, wd);
+  assert(ab);
 
-  xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBJobView");
-  assert(xml);
-
-  g_assert((wd->jobView=glade_xml_get_widget(xml, "GBJobView")));
+  if (fullWindow) {
+    xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBJobView");
+    assert(xml);
+    g_assert((wd->jobView=glade_xml_get_widget(xml, "GBJobView")));
+  }
+  else {
+    xml=GBanking_GladeXml_new(ab, "g2banking.glade", "GBJobViewContent");
+    assert(xml);
+    g_assert((wd->jobView=glade_xml_get_widget(xml, "GBJobViewContent")));
+  }
 
   gtk_object_set_data_full(GTK_OBJECT(wd->jobView),
                            GBANKING_JOBVIEW_ID,
                            wd,
                            GBanking_JobView_freeData);
-
-  if (parent)
-    gtk_widget_reparent(wd->jobView, parent);
 
   wd->banking=ab;
   g_assert((wd->jobListView=glade_xml_get_widget(xml, "jobListView")));
@@ -138,6 +142,10 @@ void GBanking_JobView_slotButtonClicked(GtkButton *button,
                                 I18N("Dismiss"), 0, 0);
         }
       }
+    }
+    else {
+      DBG_ERROR(GBANKING_LOGDOMAIN,
+                "Error gathering queue results (%d)", rv);
     }
     AB_ImExporterContext_free(ctx);
 

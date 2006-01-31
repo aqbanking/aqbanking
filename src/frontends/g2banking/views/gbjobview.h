@@ -21,7 +21,7 @@
 
 
 GBANKING_API 
-GtkWidget *GBanking_JobView_new(AB_BANKING *ab, GtkWidget *parent);
+GtkWidget *GBanking_JobView_new(AB_BANKING *ab, int fullWindow);
 
 
 

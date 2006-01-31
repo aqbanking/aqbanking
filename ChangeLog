@@ -3,6 +3,7 @@
 -------------------------------------------------
 - added CSV im-/exporter profile for American Express Card
 - added some tutorials which show how to use AqBanking from applications
+- fixed a bug in G2Banking (now works with Grisbi again)
 
 
 2006-01-31  Christian Stimming <stimming@tuhh.de>

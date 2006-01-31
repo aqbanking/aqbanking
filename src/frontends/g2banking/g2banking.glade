@@ -284,7 +284,7 @@
   <property name="urgency_hint">False</property>
 
   <child>
-    <widget class="GtkHBox" id="hbox1">
+    <widget class="GtkHBox" id="GBJobViewContent">
       <property name="visible">True</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>

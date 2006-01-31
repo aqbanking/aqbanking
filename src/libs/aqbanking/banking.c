@@ -1564,6 +1564,10 @@ int AB_Banking_Init(AB_BANKING *ab) {
 #endif
 
   assert(ab);
+  if (ab->isOpen) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking already initialized!");
+    abort();
+  }
 
   if (!GWEN_Logger_IsOpen(AQBANKING_LOGDOMAIN)) {
     GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
@@ -1983,6 +1987,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
     AB_Job_List2_free(jl);
   }
 
+  ab->isOpen=1;
+
   return 0;
 }
 
@@ -1994,6 +2000,11 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   AB_PROVIDER *pro;
 
   assert(ab);
+
+  if (!ab->isOpen) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking not initialized!");
+    abort();
+  }
 
   /* deinit all providers */
   pro=AB_Provider_List_First(ab->providers);
@@ -2077,6 +2088,8 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   GWEN_DB_ClearGroup(ab->data, 0);
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
+
+  ab->isOpen=0;
   return 0;
 }
 
