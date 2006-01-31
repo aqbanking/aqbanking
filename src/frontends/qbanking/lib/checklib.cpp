@@ -47,11 +47,12 @@ int main(int argc, char *argv[]){
     DBG_ERROR(0, "Error on QBanking::isPure7BitAscii");
     return -1;
   }
-  if (QBanking::guiString(QString("bla")) != QString("bla")) {
+  if (QString(QBanking::guiString(QString("bla")).c_str())
+      != QString("bla")) {
     DBG_ERROR(0, "Error on QBanking::guiString");
     return -1;
   }
-  QString guistring = QBanking::guiString(QString("blub<html>bla</html>"));
+  QString guistring(QBanking::guiString(QString("blub<html>bla</html>")).c_str());
   QRegExp rx("^\\s*<qt>\\s*bla\\s*</qt>\\s*$");
   if (rx.search(guistring) == -1) {
     DBG_ERROR(0, "Error on QBanking::guiString: %s", 
