@@ -1,13 +1,14 @@
+
+
 2006-01-31  Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking.spec.in: Update spec file according to proposals by
 	oc2pus <oc2pus@arcor.de>
 
-2006-01-30  Christian Stimming  <stimming@tuhh.de>
 
-	* configure.ac: Remove kde-config --libsuffix since this is now
-	already given from somewhere else (no idea where, actually) as
-	reported by Thomas Baumgart.
+===========================================================================
+MARK: released AqBanking - 1.9.6beta (2006-01-30)
+===========================================================================
 
 
 2006/01/30: Martin Preuss<martin@libchipcard.de>
@@ -18,6 +19,13 @@
 - fixed a problem with false includehints in UI files of QBanking (had been
   fixed before, but reoccurred due to a CVS revert which seems to have 
   fetched too old revisions
+
+
+2006-01-30  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Remove kde-config --libsuffix since this is now
+	already given from somewhere else (no idea where, actually) as
+	reported by Thomas Baumgart.
 
 
 ===========================================================================
