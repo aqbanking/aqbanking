@@ -1,3 +1,8 @@
+2006-01-31  Christian Stimming <stimming@tuhh.de>
+
+	* aqbanking.spec.in: Update spec file according to proposals by
+	oc2pus <oc2pus@arcor.de>
+
 2006-01-30  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: Remove kde-config --libsuffix since this is now

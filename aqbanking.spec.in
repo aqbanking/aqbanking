@@ -1,19 +1,23 @@
+# norootforbuild
+# neededforbuild gwenhywfar gwenhywfar-devel libofx-devel libofx ktoblzcheck python python-ctypes pyyxml libchipcard2-devel libchipcard2 pkgconfig gettext-devel libacl-devel libacl libattr-devel libattr
+
 %define name @PACKAGE@
 %define version @VERSION@
 
-%define aq_plugindir %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
-%define fronts_libdir %{aq_plugindir}/frontends
-%define qb_cfgmoddir %{fronts_libdir}/qbanking/cfgmodules
+%define aq_plugindir   %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
+%define fronts_libdir  %{aq_plugindir}/frontends
+%define imex_plugindir %{aq_plugindir}/imexporters
+%define imex_datadir   %{_datadir}/%{name}/imexporters
 %define fronts_datadir %{_datadir}/%{name}/frontends
+%define qb_cfgmoddir   %{fronts_libdir}/qbanking/cfgmodules
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
 ### rpms should not be released!
 %define have_libchipcard 1
-%define have_libofx 1
-%define with_yellownet 1
+%define have_libofx      1
+%define with_yellownet   1
 
 ### Define the distribution-specific name parts
-
 %define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
 %define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
 %define is_fedora %(test -e /etc/fedora-release && echo 1 || echo 0)
@@ -22,15 +26,15 @@
 %define disttag rh
 
 %if %is_mandrake
-%define dist mandrake
+%define dist    mandrake
 %define disttag mdk
 %endif
 %if %is_suse
-%define dist suse
+%define dist    suse
 %define disttag suse
 %endif
 %if %is_fedora
-%define dist fedora
+%define dist    fedora
 %define disttag rhfc
 %endif
 
@@ -71,26 +75,43 @@
 %endif
 %endif
 
+# versions of required helper-libraries
+%define _gwenhywfar_version   1.99.5
+%define _libchipcard2_version 1.9.20
+%define _libofx_version       0.8.1
 
 
 ### The standard information fields.
-
-Name: %{name}
-Summary: A library for online banking functions and financial data import/export.
-Version: %{version}
-Release: %{release}
-Source: http://download.sourceforge.net/aqbanking/%{name}-%{version}.tar.gz
-Group: System Environment/Libraries
-License: GPL
-Packager: Martin Preuss <martin@aquamaniac.de>
-URL: http://sourceforge.net/projects/aqbanking
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
-# Note: We might add ktoblzcheck here as well
-BuildRequires: gwenhywfar-devel >= 1.15.0
-Obsoletes: aqhbci
-Obsoletes: aqdtaus
-Prereq: /sbin/ldconfig
-Prefix: %{_prefix}
+Name:          %{name}
+Summary:       A library for online banking functions and financial data import/export
+Version:       %{version}
+Release:       %{release}
+Source:        http://download.sourceforge.net/aqbanking/%{name}-%{version}.tar.gz
+Group:         System Environment/Libraries
+License:       GPL
+Packager:      Martin Preuss <martin@aquamaniac.de>
+URL:           http://sourceforge.net/projects/aqbanking
+BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+Requires:      gwenhywfar >= %{_gwenhywfar_version}
+Requires:      ktoblzcheck
+BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
+BuildRequires: ktoblzcheck
+BuildRequires: python-ctypes
+BuildRequires: python >= 2.3
+BuildRequires: pyxml
+BuildRequires: pkgconfig >= 0.9
+BuildRequires: gettext-devel
+BuildRequires: libacl-devel
+BuildRequires: libattr-devel
+%if %have_libofx
+Requires:      libofx >= %{_libofx_version}
+BuildRequires: libofx-devel >= %{_libofx_version}
+%endif
+Prefix:        %{_prefix}
+Obsoletes:     aqdtaus
+Obsoletes:     aqhbci
+Obsoletes:     kbanking
+Obsoletes:     aqofxconnect
 
 %description 
 The intention of AqBanking is to provide a middle layer between
@@ -106,90 +127,145 @@ http://linuxwiki.de/AqBanking
 
 
 %package devel
-Summary: Aqbanking development kit
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+Summary:   Aqbanking development kit
+Group:     Development/Libraries/C and C++
+Requires:  %{name} = %{version}
 Obsoletes: aqhbci-devel
+Obsoletes: aqofxconnect-devel
 Obsoletes: aqdtaus-devel
 %description devel
 This package contains aqbanking-config and header files for writing and
 compiling programs using Aqbanking.
 
-%package qt3
-Summary: Aqbanking tools for Qt3
-Group: System Environment/Libraries
-Obsoletes: aqhbci-qt-tools
-Obsoletes: aqdtaus-qt-tools
+%package -n python-%{name}
+Summary:  Aqbanking python-bindings
+Group:    Development/Libraries/Python
+%py_requires
+Requires: %{name} = %{version}
+Requires: python-ctypes
+Requires: python >= 2.3
+Requires: pyxml
+
+%description -n python-%{name}
+This package contains the python-bindings for aqbanking.
+
+%package    qt3
+Summary:    Aqbanking tools for Qt3
+Group:      Productivity/Office/Finance
+Obsoletes:  aqhbci-qt-tools
+Obsoletes:  aqdtaus-qt-tools
+Requires:   %{name} = %{version}
+Requires:   gwenhywfar >= %{_gwenhywfar_version}
+
 %description qt3
+This package contains the aqbanking-tools for aqbanking.
 Necessary for all banking applications.
 
-%package gtk2
-Summary: Aqbanking tools for Gnome2/Gtk2
-Group: System Environment/Libraries
-Obsoletes: aqbanking-gnome2
-%description gtk2
-Necessary for gtk2-based banking applications, e.g. Grisbi (but
-not gnucash).
+%package       gtk2
+Summary:       Aqbanking tools for Gnome2/Gtk2
+Group:         Development/Libraries/C and C++
+Obsoletes:     aqbanking-gnome2
+Requires:      %{name} = %{version}
+Requires:      glade
+#Requires:      libgail-gnome
+BuildRequires: glade
+BuildRequires: libgail-gnome-devel
 
-%package kde3
-Summary: Aqbanking tools for KDE3
-Group: System Environment/Libraries
-Requires: aqbanking-qt3
+%description gtk2
+This package contains the aqbanking-tools (gnome/gtk2) for aqbanking.
+Necessary for gtk2-based banking applications, e.g. Grisbi (but not gnucash).
+
+%package   kde3
+Summary:   Aqbanking tools for KDE3
+Group:     Development/Libraries/C and C++
+Requires:  aqbanking-qt3
 Obsoletes: aqbanking-kde
+Requires:  %{name} = %{version}
+
 %description kde3
+Aqbanking tools for KDE3.
 Necessary for KDE-based banking applications, e.g. KMyMoney.
 
 ### Sub-packages for OFX
-
 %if %have_libofx
-%package ofx
-BuildRequires: libofx >= 0.8.0
-Summary: Aqbanking tools for Qt3
-Group: System Environment/Libraries
-Obsoletes: ofx-qt3
+%package       ofx
+Summary:       Aqbanking tools for Qt3
+Group:         Development/Libraries/C and C++
+Requires:      %{name} = %{version}
+Requires:      libofx >= %{_libofx_version}
+BuildRequires: libofx-devel >= %{_libofx_version}
+Obsoletes:     %{name}-ofx-qt3
+
 %description ofx
-Necessary for OFX direct connect access.
+Aqbanking tools for Qt3. Necessary for OFX direct connect access.
 
-%package ofx-qt3
-Summary: Configuration plugins for Aqbanking with Qt3
-Group: System Environment/Libraries
+Author: Martin Preuss <martin@libchipcard.de>
+
+%package    ofx-qt3
+Summary:    Aqbanking tools for Qt3
+Group:      Development/Libraries/C and C++
+Requires:   %{name} = %{version}
+Requires:   gwenhywfar >= %{_gwenhywfar_version}
+
 %description ofx-qt3
-Necessary for OFX direct connect access.
+Aqbanking tools for Qt3. Necessary for OFX direct connect access.
+
+Author: Martin Preuss <martin@libchipcard.de>
 %endif
 
 ### Sub-packages for Geldkarte
-
 %if %have_libchipcard
-Requires: libchipcard2
-BuildRequires: libchipcard2-devel >= 1.9.13
-%package geldkarte
-Summary: GeldKarte backend
-Group: System Environment/Libraries
-%description geldkarte
-Necessary for Geldkarte access.
+%package       geldkarte
+Summary:       Aqbanking tools for Qt3
+Group:         Development/Libraries/C and C++
+Requires:      %{name} = %{version}
+Requires:      libchipcard2 >= %{_libchipcard2_version}
+Requires:      gwenhywfar >= %{_gwenhywfar_version}
+BuildRequires: libchipcard2-devel >= %{_libchipcard2_version}
+BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
 
-%package geldkarte-qt3
-Summary: Configuration plugins for Aqbanking with Qt3
-Group: System Environment/Libraries
+%description geldkarte
+Aqbanking tools for Qt3. Necessary for Geldkarte access.
+
+Author: Martin Preuss <martin@libchipcard.de>
+
+%package       geldkarte-qt3
+Summary:       Aqbanking tools for Qt3
+Group:         Development/Libraries/C and C++
+Requires:      %{name} = %{version}
+Requires:      gwenhywfar >= %{_gwenhywfar_version}
+Requires:      libchipcard2 >= %{_libchipcard2_version}
+BuildRequires: libchipcard2-devel >= %{_libchipcard2_version}
+BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
+
 %description geldkarte-qt3
-Necessary for Geldkarte access.
+Aqbanking tools for Qt3. Necessary for Geldkarte access.
+
+Author: Martin Preuss <martin@libchipcard.de>
 %endif
 
 
-### Sub-packages for Geldkarte
-
+### Sub-packages for yellownet
 %if %with_yellownet
-%package yellownet
-Summary: YellowNet backend
-Group: System Environment/Libraries
+%package       yellownet
+Summary:       YellowNet backend
+Group:         Development/Libraries/C and C++
+Requires:      %{name} = %{version}
+
 %description yellownet
 This backend provides support for Suisse YellowNet (Post-Finance)
 
-%package yellownet-qt3
-Summary: Configuration plugins for Aqbanking with Qt3
-Group: System Environment/Libraries
+Author: Martin Preuss <martin@libchipcard.de>
+
+%package       yellownet-qt3
+Summary:       Configuration plugins for Aqbanking with Qt3
+Group:         Development/Libraries/C and C++
+Requires:      %{name} = %{version}
+
 %description yellownet-qt3
 This backend provides support for Suisse YellowNet (Post-Finance)
+
+Author: Martin Preuss <martin@libchipcard.de>
 %endif
 
 
@@ -199,59 +275,80 @@ This backend provides support for Suisse YellowNet (Post-Finance)
 %setup -q
 
 %build
-%{configure} --with-backends=%{backendlist} --enable-python --enable-release
+%{configure} \
+	--enable-release \
+	--with-docpath=%{_docdir} \
+	--enable-python \
+	--with-backends=%{backendlist}
 make
 
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
-make DESTDIR=$RPM_BUILD_ROOT install
+make install-strip \
+	DESTDIR=%{buildroot} \
+	idatadir=%{_docdir}/%{name}
+
+%if %is_suse
+%find_lang %{name}
+%endif
 
 %clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+[ -d %{buildroot} -a "%{buildroot}" != "" ] && rm -rf %{buildroot}
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%post -n %{name}-kde3 -p /sbin/ldconfig
+%postun -n %{name}-kde3 -p /sbin/ldconfig
+
+%post -n %{name}-gtk2 -p/sbin/ldconfig
+%postun -n %{name}-gtk2 -p /sbin/ldconfig
+
+%post -n %{name}-qt3 -p /sbin/ldconfig
+%postun -n %{name}-qt3 -p /sbin/ldconfig
 
 ### The file list for all packages
-
+%if %is_suse
+%files -f %{name}.lang
+%else
 %files
+%endif
 %defattr(-,root,root)
-%doc AUTHORS README COPYING ChangeLog
+%doc AUTHORS COPYING ChangeLog README
 ### The original aqbanking files
-%{_libdir}/libaqbanking.so.*
-%{_libdir}/libaqbankingpp.so.*
+%{_bindir}/%{name}-tool
+%{_libdir}/lib%{name}*.so.*
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}/bankinfo
+%if %is_suse
+# this is done by find_lang-macro
+%else
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
-%{_bindir}/aqbanking-tool
 %{_datadir}/doc/%{name}
-%{_datadir}/doc/aqhbci
+%endif
 %{aq_plugindir}/bankinfo
-%{aq_plugindir}/imexporters/csv.*
-%{aq_plugindir}/imexporters/dbio.*
-%{aq_plugindir}/imexporters/dtaus.*
-%{aq_plugindir}/imexporters/eri.*
-%{aq_plugindir}/imexporters/eri2.*
-%{aq_plugindir}/imexporters/openhbci1.*
-%{aq_plugindir}/imexporters/qif.*
-%{aq_plugindir}/imexporters/swift.*
-%{_datadir}/%{name}/imexporters/csv
-%{_datadir}/%{name}/imexporters/dtaus
-%{_datadir}/%{name}/imexporters/eri
-%{_datadir}/%{name}/imexporters/eri2
-%{_datadir}/%{name}/imexporters/ofx
-%{_datadir}/%{name}/imexporters/openhbci1
-%{_datadir}/%{name}/imexporters/swift
-%{py_sitedir}/%{name}
+%{imex_plugindir}/csv.*
+%{imex_plugindir}/dbio.*
+%{imex_plugindir}/dtaus.*
+%{imex_plugindir}/eri.*
+%{imex_plugindir}/eri2.*
+%{imex_plugindir}/openhbci1.*
+%{imex_plugindir}/qif.*
+%{imex_plugindir}/swift.*
+%{imex_datadir}/csv
+%{imex_datadir}/dtaus
+%{imex_datadir}/eri
+%{imex_datadir}/eri2
+%{imex_datadir}/ofx
+%{imex_datadir}/openhbci1
+%{imex_datadir}/swift
 ### The aqhbci files
-%{_datadir}/aqhbci
 %{_bindir}/aqhbci-tool
 %{_libdir}/libaqhbci.so.*
 %{aq_plugindir}/providers/aqhbci.*
+%{_datadir}/aqhbci
+%{_datadir}/doc/aqhbci
 ### The dtaus files
 %{_libdir}/libaqdtaus.so.*
 %{aq_plugindir}/providers/aqdtaus.*
@@ -261,7 +358,42 @@ make DESTDIR=$RPM_BUILD_ROOT install
 ### The cbanking files
 %{_libdir}/libcbanking.so.*
 
+%files devel
+%defattr(-,root,root)
+### The aqbanking files
+%{_bindir}/%{name}-config
+%{_includedir}/%{name}
+%{_includedir}/%{name}++
+%{_libdir}/*.la
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/%{name}.pc
+%{_datadir}/aclocal
+### The aqhbci files
+%{_bindir}/aqhbci-config
+%{_bindir}/hbcixml2
+%{_includedir}/aqhbci
+### The cbanking files
+%{_bindir}/cbanking-config
+%{_includedir}/cbanking
+### The g2banking files
+%{_bindir}/g2banking-config
+%{_includedir}/g2banking
+### The qbanking files
+%{_bindir}/qbanking-config
+%{_includedir}/qbanking
+### The kbanking files
+%{_bindir}/kbanking-config
+%{_includedir}/kbanking
+### The aqdtaus files
+%{_bindir}/aqdtaus-config
+%{_includedir}/aqdtaus
+
+%files -n python-aqbanking
+%defattr(644,root,root,755)
+%{py_sitedir}/*
+
 %files qt3
+%defattr(-,root,root)
 %{_bindir}/qb-help
 %{_libdir}/libqbanking.so.*
 %{aq_plugindir}/debugger/aqhbci
@@ -271,74 +403,51 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_datadir}/%{name}/i18n
 %{fronts_datadir}/qbanking
 
+%files gtk2
+%defattr(-,root,root)
+%{_libdir}/libg2banking.so.*
+%{fronts_datadir}/g2banking
+
+%files kde3
+%defattr(-,root,root)
+%{_libdir}/libkbanking.so.*
+
 %if %have_libofx
 %files ofx
-%{aq_plugindir}/providers/aqofxconnect.*
-%{_includedir}/aqofxconnect
-%{aq_plugindir}/imexporters/ofx.*
-%{_datadir}/%{name}/imexporters/ofx
+%defattr(-,root,root)
 %{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
+%{_includedir}/aqofxconnect
+%{aq_plugindir}/providers/aqofxconnect.*
+%{imex_plugindir}/ofx.*
+%{imex_datadir}/ofx
+
 %files ofx-qt3
+%defattr(-,root,root)
 %{qb_cfgmoddir}/aqofxconnect*
 %endif
 
 %if %have_libchipcard
 %files geldkarte
-%{aq_plugindir}/providers/aqgeldkarte.*
-%{_includedir}/aqgeldkarte
+%defattr(-,root,root)
 %{_bindir}/aqgeldkarte-config
 %{_libdir}/libaqgeldkarte.so.*
+%{_includedir}/aqgeldkarte
+%{aq_plugindir}/providers/aqgeldkarte.*
+
 %files geldkarte-qt3
+%defattr(-,root,root)
 %{qb_cfgmoddir}/aqgeldkarte*
 %endif
 
 %if %with_yellownet
 %files yellownet
-%{aq_plugindir}/providers/aqyellownet.*
-%{_includedir}/aqyellownet
 %{_bindir}/aqyellownet-config
 %{_libdir}/libaqyellownet.so
+%{_includedir}/aqyellownet
+%{aq_plugindir}/providers/aqyellownet.*
+
 %files yellownet-qt3
 %{qb_cfgmoddir}/aqyellownet*
 %endif
 
-
-%files gtk2
-%{_libdir}/libg2banking.so.*
-%{fronts_datadir}/g2banking
-
-%files kde3
-%{_libdir}/libkbanking.so.*
-
-%files devel
-%defattr(-,root,root)
-### The aqbanking files
-%{_includedir}/aqbanking
-%{_includedir}/aqbanking++
-%{_bindir}/aqbanking-config
-%{_libdir}/*.so
-%{_libdir}/*.la
-%{_libdir}/pkgconfig/aqbanking.pc
-%{_datadir}/aclocal
-#%{_datadir}/aclocal/aqbanking.m4
-### The aqhbci files
-%{_includedir}/aqhbci
-%{_bindir}/aqhbci-config
-%{_bindir}/hbcixml2
-#%{_datadir}/aclocal/aqhbci.m4
-### The cbanking files
-%{_includedir}/cbanking
-%{_bindir}/cbanking-config
-### The g2banking files
-%{_includedir}/g2banking
-%{_bindir}/g2banking-config
-### The qbanking files
-%{_includedir}/qbanking
-%{_bindir}/qbanking-config
-### The kbanking files
-%{_includedir}/kbanking
-%{_bindir}/kbanking-config
-### The aqdtaus files
-%{_includedir}/aqdtaus
-%{_bindir}/aqdtaus-config
