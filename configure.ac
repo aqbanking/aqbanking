@@ -1648,6 +1648,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/ressource.rc
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
+  src/plugins/imexporters/csv/profiles/amex.conf
   src/plugins/imexporters/csv/profiles/aqmoney1.conf
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
   src/plugins/imexporters/csv/profiles/comdirect.conf
