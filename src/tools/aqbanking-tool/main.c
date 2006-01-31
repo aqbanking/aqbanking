@@ -417,6 +417,7 @@ int main(int argc, char **argv) {
     rv=1;
   }
 
+  AB_Banking_free(ab);
   return rv;
 }
 

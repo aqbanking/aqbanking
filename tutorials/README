@@ -1,0 +1,28 @@
+
+This folder contains some simple tutorials which introduce possible
+developers to AqBanking.
+
+
+Tutorial1
+=========
+
+This just creates an instance of AqBanking, initializes and deinitializes
+it.
+Nothing fancy.
+
+
+Tutorial2
+=========
+
+This does the same as tutorial1, but in addition it dumps a list of all
+accounts AqBanking currently knows of.
+It also gives an introduction into the usage of XXX_List2's and list2
+iterators.
+
+
+Tutorial3
+=========
+
+This tutorial shows how to use jobs in AqBanking.
+In this example we retrieve transaction statements for a given account.
+
