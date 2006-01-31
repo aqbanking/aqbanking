@@ -287,7 +287,7 @@ void QBCfgTabPageAccountGeneral::slotBankIdButtonClicked() {
 
 
     bi=getBanking()->selectBank(this,
-                                tr("Select the Bank For This Account"),
+                                tr("Select the Bank for this Account"),
                                 QString::fromUtf8(cs),
                                 _realPage->bankIdEdit->text());
     if (bi) {
