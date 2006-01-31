@@ -1,3 +1,4 @@
+EXTRA_DIST = README
 
 noinst_PROGRAMS=\
   tutorial1 \
