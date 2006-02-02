@@ -1566,7 +1566,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   assert(ab);
   if (ab->isOpen) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking already initialized!");
-    abort();
+    return AB_ERROR_INVALID;
   }
 
   if (!GWEN_Logger_IsOpen(AQBANKING_LOGDOMAIN)) {
@@ -1801,6 +1801,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
     DBG_NOTICE(AQBANKING_LOGDOMAIN,
                "Configuration file \"%s\" does not exist, "
                "will create it later.", ab->configFile);
+    /* Check whether directory for configuration file exists; if
+       it does not exist, it is created here. */
     if (GWEN_Directory_GetPath(ab->dataDir,
                               GWEN_PATH_FLAGS_CHECKROOT)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -1808,184 +1810,185 @@ int AB_Banking_Init(AB_BANKING *ab) {
 		ab->dataDir);
       return AB_ERROR_NOT_FOUND;
     }
+  } else {
 
-    return 0;
-  }
+    /* Configuration file exists, so read it now. */
+    dbT=GWEN_DB_Group_new("banking");
+    assert(dbT);
+    if (GWEN_DB_ReadFile(dbT, ab->configFile,
+			 GWEN_DB_FLAGS_DEFAULT |
+			 GWEN_PATH_FLAGS_CREATE_GROUP |
+			 GWEN_DB_FLAGS_LOCKFILE)) {
+      GWEN_DB_Group_free(dbT);
+      return AB_ERROR_BAD_CONFIG_FILE;
+    }
 
-  dbT=GWEN_DB_Group_new("banking");
-  assert(dbT);
-  if (GWEN_DB_ReadFile(dbT, ab->configFile,
-                       GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP |
-                       GWEN_DB_FLAGS_LOCKFILE)) {
-    GWEN_DB_Group_free(dbT);
-    return AB_ERROR_BAD_CONFIG_FILE;
-  }
+    ab->lastVersion=GWEN_DB_GetIntValue(dbT, "lastVersion", 0, 0);
 
-  ab->lastVersion=GWEN_DB_GetIntValue(dbT, "lastVersion", 0, 0);
+    /* store data as new "banking" group within global configuration DB */
+    GWEN_DB_DeleteGroup(ab->data, "banking");
+    GWEN_DB_AddGroup(ab->data, dbT);
 
-  /* store data as new "banking" group within global configuration DB */
-  GWEN_DB_DeleteGroup(ab->data, "banking");
-  GWEN_DB_AddGroup(ab->data, dbT);
-
-  /* read active providers */
-  for (i=0; ; i++) {
-    const char *p;
-
-    p=GWEN_DB_GetCharValue(ab->data, "banking/activeProviders", i, 0);
-    if (!p)
-      break;
-    GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
-  }
-
-
-  ab->alwaysAskForCert=GWEN_DB_GetIntValue(ab->data,
-                                           "banking/alwaysAskForCert", 0, 0);
-  ab->pinCacheEnabled=0;
-
-  /* init active providers */
-  if (GWEN_StringList_Count(ab->activeProviders)) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(ab->activeProviders);
-    assert(se);
-    while(se) {
+    /* read active providers */
+    for (i=0; ; i++) {
       const char *p;
+
+      p=GWEN_DB_GetCharValue(ab->data, "banking/activeProviders", i, 0);
+      if (!p)
+	break;
+      GWEN_StringList_AppendString(ab->activeProviders, p, 0, 1);
+    }
+
+
+    ab->alwaysAskForCert=GWEN_DB_GetIntValue(ab->data,
+					     "banking/alwaysAskForCert", 0, 0);
+    ab->pinCacheEnabled=0;
+
+    /* init active providers */
+    if (GWEN_StringList_Count(ab->activeProviders)) {
+      GWEN_STRINGLISTENTRY *se;
+
+      se=GWEN_StringList_FirstEntry(ab->activeProviders);
+      assert(se);
+      while(se) {
+	const char *p;
+	AB_PROVIDER *pro;
+
+	p=GWEN_StringListEntry_Data(se);
+	assert(p);
+
+	pro=AB_Banking_GetProvider(ab, p);
+	if (!pro) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Error loading/initializing backend \"%s\"", p);
+	}
+	se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
+
+    /* read users */
+    dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "users");
+    if (dbTsrc) {
+      GWEN_DB_NODE *dbU;
+
+      dbU=GWEN_DB_FindFirstGroup(dbTsrc, "user");
+      while(dbU) {
+	AB_USER *u;
+
+	u=AB_User_fromDb(ab, dbU);
+	if (u) {
+	  const char *s;
+	  AB_PROVIDER *pro;
+
+	  s=AB_User_GetBackendName(u);
+	  assert(s && *s);
+	  pro=AB_Banking_GetProvider(ab, s);
+	  if (!pro) {
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", s);
+	  }
+	  else {
+	    int rv;
+
+	    rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Extend);
+	    if (rv) {
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	      AB_User_free(u);
+	    }
+	    else {
+	      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding user");
+	      AB_User_List_Add(u, ab->users);
+	    }
+	  }
+	}
+	dbU=GWEN_DB_FindNextGroup(dbU, "user");
+      } /* while */
+    } /* if users */
+
+
+    /* read accounts */
+    dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "accounts");
+    if (dbTsrc) {
+      GWEN_DB_NODE *dbA;
+
+      dbA=GWEN_DB_FindFirstGroup(dbTsrc, "account");
+      while(dbA) {
+	AB_ACCOUNT *a;
+
+	a=AB_Account_fromDb(ab, dbA);
+	if (a) {
+	  int rv;
+
+	  rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+				       AB_ProviderExtendMode_Extend);
+	  if (rv) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	  }
+	  else {
+	    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding account");
+	    AB_Account_List_Add(a, ab->accounts);
+	  }
+	}
+	dbA=GWEN_DB_FindNextGroup(dbA, "account");
+      } /* while */
+    } /* if accounts */
+
+
+    /* update active providers if necessary */
+    if (AB_Provider_List_GetCount(ab->providers) &&
+	ab->lastVersion <
+	((AQBANKING_VERSION_MAJOR<<24) |
+	 (AQBANKING_VERSION_MINOR<<16) |
+	 (AQBANKING_VERSION_PATCHLEVEL<<8) |
+	 AQBANKING_VERSION_BUILD)) {
       AB_PROVIDER *pro;
 
-      p=GWEN_StringListEntry_Data(se);
-      assert(p);
+      pro=AB_Provider_List_First(ab->providers);
+      while(pro) {
+	int rv;
 
-      pro=AB_Banking_GetProvider(ab, p);
-      if (!pro) {
-        DBG_WARN(AQBANKING_LOGDOMAIN,
-                 "Error loading/initializing backend \"%s\"", p);
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-  }
+	rv=AB_Provider_Update(pro, ab->lastVersion,
+			      ((AQBANKING_VERSION_MAJOR<<24) |
+			       (AQBANKING_VERSION_MINOR<<16) |
+			       (AQBANKING_VERSION_PATCHLEVEL<<8) |
+			       AQBANKING_VERSION_BUILD));
+	if (rv) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Could not update provider \"%s\"",
+		    AB_Provider_GetName(pro));
+	  return rv;
+	}
 
-  /* read users */
-  dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "users");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbU;
-
-    dbU=GWEN_DB_FindFirstGroup(dbTsrc, "user");
-    while(dbU) {
-      AB_USER *u;
-
-      u=AB_User_fromDb(ab, dbU);
-      if (u) {
-        const char *s;
-        AB_PROVIDER *pro;
-
-        s=AB_User_GetBackendName(u);
-        assert(s && *s);
-        pro=AB_Banking_GetProvider(ab, s);
-        if (!pro) {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", s);
-        }
-        else {
-          int rv;
-
-          rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Extend);
-          if (rv) {
-            DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-            AB_User_free(u);
-          }
-          else {
-            DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding user");
-            AB_User_List_Add(u, ab->users);
-          }
-        }
-      }
-      dbU=GWEN_DB_FindNextGroup(dbU, "user");
-    } /* while */
-  } /* if users */
+	pro=AB_Provider_List_Next(pro);
+      } /* while */
+    }
 
 
-  /* read accounts */
-  dbTsrc=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "accounts");
-  if (dbTsrc) {
-    GWEN_DB_NODE *dbA;
+    /* read jobs */
+    jl=AB_Banking__LoadJobsAs(ab, "todo");
+    if (jl) {
+      AB_JOB_LIST2_ITERATOR *it;
+      AB_JOB *j;
 
-    dbA=GWEN_DB_FindFirstGroup(dbTsrc, "account");
-    while(dbA) {
-      AB_ACCOUNT *a;
+      AB_Job_List_free(ab->enqueuedJobs);
+      ab->enqueuedJobs=AB_Job_List_new();
 
-      a=AB_Account_fromDb(ab, dbA);
-      if (a) {
-        int rv;
+      it=AB_Job_List2_First(jl);
+      assert(it);
+      j=AB_Job_List2Iterator_Data(it);
+      assert(j);
+      while(j) {
+	if (AB_Job_CheckAvailability(j)) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Job not available, ignoring");
+	}
+	else
+	  AB_Job_List_Add(j, ab->enqueuedJobs);
+	j=AB_Job_List2Iterator_Next(it);
+      } /* while */
+      AB_Job_List2Iterator_free(it);
+      AB_Job_List2_free(jl);
+    }
 
-        rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
-                                     AB_ProviderExtendMode_Extend);
-        if (rv) {
-          DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-        }
-        else {
-          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding account");
-          AB_Account_List_Add(a, ab->accounts);
-        }
-      }
-      dbA=GWEN_DB_FindNextGroup(dbA, "account");
-    } /* while */
-  } /* if accounts */
-
-
-  /* update active providers if necessary */
-  if (AB_Provider_List_GetCount(ab->providers) &&
-      ab->lastVersion <
-      ((AQBANKING_VERSION_MAJOR<<24) |
-       (AQBANKING_VERSION_MINOR<<16) |
-       (AQBANKING_VERSION_PATCHLEVEL<<8) |
-       AQBANKING_VERSION_BUILD)) {
-    AB_PROVIDER *pro;
-
-    pro=AB_Provider_List_First(ab->providers);
-    while(pro) {
-      int rv;
-
-      rv=AB_Provider_Update(pro, ab->lastVersion,
-                            ((AQBANKING_VERSION_MAJOR<<24) |
-                             (AQBANKING_VERSION_MINOR<<16) |
-                             (AQBANKING_VERSION_PATCHLEVEL<<8) |
-                             AQBANKING_VERSION_BUILD));
-      if (rv) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Could not update provider \"%s\"",
-                  AB_Provider_GetName(pro));
-        return rv;
-      }
-
-      pro=AB_Provider_List_Next(pro);
-    } /* while */
-  }
-
-
-  /* read jobs */
-  jl=AB_Banking__LoadJobsAs(ab, "todo");
-  if (jl) {
-    AB_JOB_LIST2_ITERATOR *it;
-    AB_JOB *j;
-
-    AB_Job_List_free(ab->enqueuedJobs);
-    ab->enqueuedJobs=AB_Job_List_new();
-
-    it=AB_Job_List2_First(jl);
-    assert(it);
-    j=AB_Job_List2Iterator_Data(it);
-    assert(j);
-    while(j) {
-      if (AB_Job_CheckAvailability(j)) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Job not available, ignoring");
-      }
-      else
-	AB_Job_List_Add(j, ab->enqueuedJobs);
-      j=AB_Job_List2Iterator_Next(it);
-    } /* while */
-    AB_Job_List2Iterator_free(it);
-    AB_Job_List2_free(jl);
-  }
+  } /* if (access(ab->configFile, F_OK)) */
 
   ab->isOpen=1;
 
@@ -2003,7 +2006,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   if (!ab->isOpen) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking not initialized!");
-    abort();
+    return AB_ERROR_INVALID;
   }
 
   /* deinit all providers */
