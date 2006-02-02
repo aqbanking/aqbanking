@@ -9,7 +9,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwenhywfar.h>
 
-
+#include <qdir.h>
 
 
 int main(int argc, char *argv[]){
@@ -24,46 +24,59 @@ int main(int argc, char *argv[]){
     return 2;
   }
 
+  // AB_Banking will create that folder and a file in there
+  const char *testfolder = "testfolder";
+  // AB_BANKING will create this test file
+  const char *settings_conf = "settings.conf";
+
   // create new object
-  qb=new QBanking("testLib", "testfolder");
+  qb=new QBanking("testLib", testfolder);
   rv=qb->init();
   if (rv) {
-    DBG_ERROR(0, "Error on QBanking::init: %d", rv);
-    return 3;
-  }
+    qFatal("Error on QBanking::init: %d", rv);
+  } 
+  // else qDebug("QBanking::init successful.");
 
   // maybe insert QBanking testcases here...
 
   // and delete it again
   if (qb->fini()) {
-    DBG_ERROR(0, "Error on QBanking::fini: %d", rv);
-    delete qb;
-    return 4;
+    qFatal("Error on QBanking::fini: %d", rv);
   }
   delete qb;
 
+  // Remove the test directory again
+  QDir testdir(testfolder);
+  if ( !testdir.exists() )
+    qFatal("Error: Testfolder \"%s\" did not exist", testfolder);
+  // count() returns the number of files, including the
+  // directory entries "." and ".."
+  if ( testdir.count() != 3 )
+    qFatal("Error: Testfolder contains %d files instead of one", 
+	   testdir.count()-2);
+  if ( ! testdir.remove(settings_conf) )
+    qFatal("Error on removing the test file");
+  if ( ! QDir().rmdir( testdir.path() ) )
+    qFatal("Error on removing the test directory");
+
   // Just some more testcases:
   if (!QBanking::isPure7BitAscii(QString("abcABC789"))) {
-    DBG_ERROR(0, "Error on QBanking::isPure7BitAscii");
-    return -1;
+    qFatal("Error on QBanking::isPure7BitAscii");
   }
   if (QString(QBanking::guiString(QString("bla")).c_str())
       != QString("bla")) {
-    DBG_ERROR(0, "Error on QBanking::guiString");
-    return -1;
+    qFatal("Error on QBanking::guiString");
   }
   QString guistring(QBanking::guiString(QString("blub<html>bla</html>")).c_str());
   QRegExp rx("^\\s*<qt>\\s*bla\\s*</qt>\\s*$");
   if (rx.search(guistring) == -1) {
-    DBG_ERROR(0, "Error on QBanking::guiString: %s", 
+    qWarning("Error on QBanking::guiString: %s", 
 	      (const char*)(guistring.local8Bit()));
-    qDebug("returned guistring is: %s", (const char*)(guistring.local8Bit()));
-    return -1;
+    qFatal("returned guistring is: %s", (const char*)(guistring.local8Bit()));
   }
   if (QBanking::QStringToUtf8String(QString("foo bar")) !=
       std::string("foo bar")) {
-    DBG_ERROR(0, "Error on QBanking::QStringToUtf8String");
-    return -1;
+    qFatal("Error on QBanking::QStringToUtf8String");
   }
 
   return 0;
