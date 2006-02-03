@@ -220,6 +220,28 @@ AB_ImExporterContext_GetNextAccountInfo(AB_IMEXPORTER_CONTEXT *iec){
   return 0;
 }
 
+AB_IMEXPORTER_ACCOUNTINFO *
+AB_ImExporterContext_AccountInfoForEach(AB_IMEXPORTER_CONTEXT *iec,
+					AB_IMEXPORTER_ACCOUNTINFO_LIST2_FOREACH func,
+					void* user_data) {
+  /* If the accountInfoList were a LIST2, then we would write: */
+  /* return AB_ImExporterAccountInfo_List2_ForEach(iec->accountInfoList, func, user_data); */
+  
+  AB_IMEXPORTER_ACCOUNTINFO *it;
+  AB_IMEXPORTER_ACCOUNTINFO *retval;
+  assert(iec);
+
+  it = AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  while (it) {
+    retval = func(it, user_data);
+    if (retval) {
+      return retval;
+    }
+    it = AB_ImExporterAccountInfo_List_Next(it);
+  }
+  return 0;
+
+}
 
 
 
@@ -579,6 +601,30 @@ AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   return 0;
 }
 
+const AB_TRANSACTION *
+AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
+					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
+					     void* user_data) {
+  /* In theory, if the transaction list were a LIST2, then we
+     would simply write: */
+  /* return AB_Transaction_List2_ForEach(iea->transactions, func, user_data); */
+  /* well, probably not, because the "const" wouldn't
+     work. Sorry. */
+  
+  const AB_TRANSACTION *it;
+  const AB_TRANSACTION *retval;
+  assert(iea);
+
+  it = AB_Transaction_List_First(iea->transactions);
+  while (it) {
+    retval = func(it, user_data);
+    if (retval) {
+      return retval;
+    }
+    it = AB_Transaction_List_Next(it);
+  }
+  return 0;
+}
 
 
 void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,

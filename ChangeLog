@@ -1,3 +1,9 @@
+2006-02-03   Christian Stimming <stimming@tuhh.de>
+
+	* src/libs/aqbanking/imexporter.h: Add ForEach functions for
+	AccountInfo and Transaction as an additional possibility for
+	accessing the data in the ImExporterContext.
+
 2006-02-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Make sure the end of the Init()

@@ -192,6 +192,41 @@ AQBANKING_API
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_GetNextAccountInfo(AB_IMEXPORTER_CONTEXT *iec);
 
+/** Callback function type for
+ * AB_ImExporterContext_AccountInfoForEach()
+ *
+ * (As soon as a ACCOUNTINFO_LIST2 is declared in this header,
+ * this declaration can be removed.)  */
+typedef AB_IMEXPORTER_ACCOUNTINFO *
+(AB_IMEXPORTER_ACCOUNTINFO_LIST2_FOREACH)(AB_IMEXPORTER_ACCOUNTINFO *element,
+					  void *user_data);
+
+/** Traverses the list of account infos in this context, calling
+ * the callback function 'func' on each list element.  Traversal
+ * will stop when 'func' returns a non-NULL value, and the routine
+ * will return with that value. Otherwise the routine will return
+ * NULL.
+ *
+ * Note: Every list element is still owned by the
+ * IMEXPORTER_CONTEXT object, so it must neither be free'd nor
+ * stored anywhere outside the lifecyle of this
+ * AB_IMEXPORTER_CONTEXT.
+ *
+ * Available since aqbanking-1.9.7.
+ *
+ * @param iec The importer context.
+ * @param func The function to be called with each list element.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ */
+AQBANKING_API
+AB_IMEXPORTER_ACCOUNTINFO *
+AB_ImExporterContext_AccountInfoForEach(AB_IMEXPORTER_CONTEXT *iec,
+					AB_IMEXPORTER_ACCOUNTINFO_LIST2_FOREACH func,
+					void* user_data);
+
 /**
  * Looks for account info for the given account. If it is not found 0 is
  * returned.
@@ -278,6 +313,49 @@ AQBANKING_API
 const AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
+/** Callback function type for
+ * AB_ImExporterAccountInfo_TransactionsForEach()
+ *
+ * (As soon as transaction.h declares this type itself, this
+ * declaration can be removed. Currently transaction.h only
+ * declares the LIST2 but not the CONSTLIST2, so we add this
+ * declaration here. If transaction.h declares the CONSTLIST2 as
+ * well, it wouldn't harm because this typedef is exactly
+ * identical to the one from the GWEN_CONSTLIST2_FUNCTION_LIB_DEFS
+ * macro.)  */
+typedef const AB_TRANSACTION *
+(AB_TRANSACTION_CONSTLIST2_FOREACH)(const AB_TRANSACTION *element,
+				    void *user_data);
+
+/** Traverses the list of Transactions in this AccountInfo,
+ * calling the callback function 'func' on each list element.
+ * Traversal will stop when 'func' returns a non-NULL value, and
+ * the routine will return with that value. Otherwise the routine
+ * will return NULL.
+ *
+ * Note: It is not totally clear to me whether this function might
+ * interfere with AB_ImExporterAccountInfo_GetFirstTransaction() /
+ * AB_ImExporterAccountInfo_GetNextTransaction() . To be on the
+ * safe side, you should probably traverse the transaction list
+ * only *either* by those mentioned two functions *or* by this
+ * ForEach function, but you should probably not mix the access
+ * through this two methods. (This doubt be changed in future
+ * versions.)
+ *
+ * Available since aqbanking-1.9.7.
+ *
+ * @param list The list to traverse.
+ * @param func The function to be called with each list element.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ */
+AQBANKING_API
+const AB_TRANSACTION *
+AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
+					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
+					     void* user_data);
 
 /**
  * Takes over ownership of the given account status.
