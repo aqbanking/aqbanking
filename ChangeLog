@@ -1,8 +1,25 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2006/02/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed cbanking.m4 (was refering to QBanking instead of CBanking)
+- fixed cbanking-config.in.in (same as above)
+- fixed qbanking-config.in.in (was refering to KBanking instead of QBanking)
+- AB_User: added field lastSessionId (used by some backends)
+- added module AB_HttpSession (we have now 3 backends which use HTTPS
+  connections, so it is much easier to have them all use this module
+  instead of copying code from one module to another)
+
+
 2006-02-03   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/imexporter.h: Add ForEach functions for
 	AccountInfo and Transaction as an additional possibility for
 	accessing the data in the ImExporterContext.
+
 
 2006-02-02   Christian Stimming <stimming@tuhh.de>
 
@@ -11,6 +28,7 @@
 
 	* src/libs/aqbanking/banking.c: On erroneous Init/Fini, return an
 	error instead of calling abort().
+
 
 2006/01/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -87,6 +87,8 @@ int AB_User_toDb(const AB_USER *st, GWEN_DB_NODE *db) {
   if (st->bankCode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankCode", st->bankCode))
       return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastSessionId", st->lastSessionId))
+    return -1;
   if (st->data)
     if (AB_User__dbToDb(st->data, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data")))
       return -1;
@@ -104,6 +106,7 @@ int AB_User_ReadDb(AB_USER *st, GWEN_DB_NODE *db) {
   AB_User_SetCustomerId(st, GWEN_DB_GetCharValue(db, "customerId", 0, 0));
   AB_User_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, "de"));
   AB_User_SetBankCode(st, GWEN_DB_GetCharValue(db, "bankCode", 0, 0));
+  AB_User_SetLastSessionId(st, GWEN_DB_GetIntValue(db, "lastSessionId", 0, 0));
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
@@ -251,6 +254,21 @@ void AB_User_SetBankCode(AB_USER *st, const char *d) {
     st->bankCode=strdup(d);
   else
     st->bankCode=0;
+  st->_modified=1;
+}
+
+
+
+
+GWEN_TYPE_UINT32 AB_User_GetLastSessionId(const AB_USER *st) {
+  assert(st);
+  return st->lastSessionId;
+}
+
+
+void AB_User_SetLastSessionId(AB_USER *st, GWEN_TYPE_UINT32 d) {
+  assert(st);
+  st->lastSessionId=d;
   st->_modified=1;
 }
 

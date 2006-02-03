@@ -11,31 +11,31 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @kbanking_includes@"
+	    result="$result @all_includes@ @cbanking_includes@"
 	    ;;
 	--libraries)
-	    result="$result @qbanking_libs@"
+	    result="$result @cbanking_libs@"
 	    ;;
 	--data)
-	    result="$result @qbanking_data@"
+	    result="$result @cbanking_data@"
 	    ;;
 	--vmajor)
-	    result="$result @QBANKING_VERSION_MAJOR@"
+	    result="$result @CBANKING_VERSION_MAJOR@"
 	    ;;
 	--vminor)
-	    result="$result @QBANKING_VERSION_MINOR@"
+	    result="$result @CBANKING_VERSION_MINOR@"
 	    ;;
 	--vpatchlevel)
-	    result="$result @QBANKING_VERSION_PATCHLEVEL@"
+	    result="$result @CBANKING_VERSION_PATCHLEVEL@"
 	    ;;
 	--vbuild)
-	    result="$result @QBANKING_VERSION_BUILD@"
+	    result="$result @CBANKING_VERSION_BUILD@"
 	    ;;
 	--vtag)
-	    result="$result @QBANKING_VERSION_TAG@"
+	    result="$result @CBANKING_VERSION_TAG@"
 	    ;;
         --vstring)
-	    result="$result @QBANKING_VERSION_MAJOR@.@QBANKING_VERSION_MINOR@.@QBANKING_VERSION_PATCHLEVEL@"
+	    result="$result @CBANKING_VERSION_MAJOR@.@CBANKING_VERSION_MINOR@.@CBANKING_VERSION_PATCHLEVEL@"
             ;;
 	*)
 	    echo "Usage:"

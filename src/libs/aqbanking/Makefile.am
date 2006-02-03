@@ -28,6 +28,7 @@ noinst_HEADERS=\
  country_p.h \
  cryptmanager_l.h \
  cryptmanager_p.h \
+ httpsession_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
@@ -50,6 +51,7 @@ iheader_HEADERS=\
  bankinfoplugin_be.h \
  country.h \
  error.h \
+ httpsession.h \
  imexporter.h \
  imexporter_be.h \
  job.h \
@@ -65,6 +67,7 @@ libaqbanking_la_SOURCES=\
  banking.c \
  country.c \
  cryptmanager.c \
+ httpsession.c \
  imexporter.c \
  job.c \
  provider.c \

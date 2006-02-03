@@ -69,6 +69,15 @@ Set this property with @ref AB_User_SetBankCode,
 get it with @ref AB_User_GetBankCode
 </p>
 
+@anchor AB_USER_LastSessionId
+<h3>LastSessionId</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_User_SetLastSessionId, 
+get it with @ref AB_User_GetLastSessionId
+</p>
+
 @anchor AB_USER_Banking
 <h3>Banking</h3>
 <p>
@@ -195,6 +204,15 @@ AQBANKING_API const char *AB_User_GetBankCode(const AB_USER *el);
 * Set the property @ref AB_USER_BankCode
 */
 AQBANKING_API void AB_User_SetBankCode(AB_USER *el, const char *d);
+
+/**
+* Returns the property @ref AB_USER_LastSessionId
+*/
+AQBANKING_API GWEN_TYPE_UINT32 AB_User_GetLastSessionId(const AB_USER *el);
+/**
+* Set the property @ref AB_USER_LastSessionId
+*/
+AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, GWEN_TYPE_UINT32 d);
 
 
 /**

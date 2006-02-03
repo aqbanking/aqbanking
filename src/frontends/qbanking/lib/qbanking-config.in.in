@@ -11,7 +11,7 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @kbanking_includes@"
+	    result="$result @all_includes@ @qbanking_includes@"
 	    ;;
 	--libraries)
 	    result="$result @qbanking_libs@"
