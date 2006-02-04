@@ -257,7 +257,6 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
     baseLayer=GWEN_NetLayerFile_new(fdRead, fdWrite, 1);
 #else
     sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-    baseLayer=GWEN_NetLayerSocket_new(sk, 1);
     addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
     err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
     if (!GWEN_Error_IsOk(err)) {
@@ -286,8 +285,6 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
                   "Error resolving hostname \"%s\":",
                   GWEN_Url_GetServer(url));
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_NetLayer_free(hc->netLayer);
-        hc->netLayer=0;
         return AB_ERROR_NETWORK;
       }
       else {
@@ -298,6 +295,7 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
         addrBuf[sizeof(addrBuf)-1]=0;
         if (!GWEN_Error_IsOk(err)) {
           DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+          return AB_ERROR_NETWORK;
         }
         else {
           snprintf(dbgbuf, sizeof(dbgbuf)-1,
@@ -312,6 +310,7 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
       }
     }
     GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
+    baseLayer=GWEN_NetLayerSocket_new(sk, 1);
     GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
     GWEN_InetAddr_free(addr);
 

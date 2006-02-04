@@ -84,6 +84,12 @@ void AB_HttpSession_SetTransferTimeout(AB_HTTPSESSION *hc, int i);
 
 
 AQBANKING_API 
+int AB_HttpSession_Open(AB_HTTPSESSION *hc);
+
+AQBANKING_API 
+void AB_HttpSession_Close(AB_HTTPSESSION *hc);
+
+AQBANKING_API 
 int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
                                const char *command,
                                const GWEN_URL *url,
