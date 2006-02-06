@@ -68,6 +68,8 @@ void AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p){
 
   bde=(AB_BANKINFO_PLUGIN_GENERIC*)p;
   free(bde->country);
+  if (bde->dataDir) free(bde->dataDir);
+
   GWEN_FREE_OBJECT(bde);
 }
 
@@ -123,6 +125,7 @@ void AB_BankInfoPluginGENERIC__GetDataDir(AB_BANKINFO_PLUGIN *bip,
         GWEN_Buffer_Reset(buf);
         se=GWEN_StringListEntry_Next(se);
       }
+      GWEN_Buffer_free(buf);
     }
     GWEN_StringList_free(sl);
   }
