@@ -1,4 +1,7 @@
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/headers @all_includes@
+INCLUDES = \
+  -I$(top_srcdir) \
+  -I$(top_builddir)/headers \
+  $(all_includes)
 
 libfiles=\
  libaqyellownet.la \
@@ -20,7 +23,10 @@ plugin_DATA=aqyellownet.xml
 aqyellownet_la_SOURCES= \
  aqyellownet-plugin.c
 
-aqyellownet_la_LIBADD=libaqyellownet.la @gwenhywfar_libs@ @aqbanking_internal_libs@
+aqyellownet_la_LIBADD= \
+  $(srcdir)/libaqyellownet.la \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
 aqyellownet_la_LDFLAGS=-module
 
 install-exec-local:

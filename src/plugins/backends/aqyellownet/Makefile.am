@@ -1,4 +1,7 @@
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/headers @all_includes@
+INCLUDES = \
+  -I$(top_srcdir) \
+  -I$(top_builddir)/headers \
+  $(all_includes)
 
 SUBDIRS=plugin ui
 
