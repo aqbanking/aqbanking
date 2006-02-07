@@ -825,15 +825,20 @@ class PluginDescription(c_void_p):
     name = property(gwen.GWEN_PluginDescription_GetName)
     type = property(gwen.GWEN_PluginDescription_GetType)
     version = property(gwen.GWEN_PluginDescription_GetVersion)
+    author = property(gwen.GWEN_PluginDescription_GetAuthor)
+    shortDescr = property(gwen.GWEN_PluginDescription_GetShortDescr)
 
     def __str__(self):
-        return "<%s %s %s / %s>" % (self.__class__.__name__, self.name,
-                                    self.version, self.type)
+        return "<%s %s %s / %s %s %s>" % (self.__class__.__name__, self.name,
+                                          self.version, self.type,
+                                          self.author, self.shortDescr)
 
 PluginDescription.from_param = from_cls_param
 gwen.GWEN_PluginDescription_GetName.restype = c_char_p
 gwen.GWEN_PluginDescription_GetType.restype = c_char_p
 gwen.GWEN_PluginDescription_GetVersion.restype = c_char_p
+gwen.GWEN_PluginDescription_GetAuthor.restype = c_char_p
+gwen.GWEN_PluginDescription_GetShortDescr.restype = c_char_p
 
 
 ################################################################
@@ -1216,7 +1221,7 @@ class BankingBase(c_void_p):
                 if self.__class__ == BankingBase:
                     raise RuntimeError('class BankingBase is abstract!')
                 raise AttributeError(
-                    'callback %s must be defined in class %s' % self.__class__)
+                    'callback %s must be defined in class %s' % (name, self.__class__))
             f = tp(f)
             fn(self, f)
             l.append(f)
@@ -1240,14 +1245,26 @@ class BankingBase(c_void_p):
 
     appName = property(aqb.AB_Banking_GetAppName)
 
-    #def suspendProvider(self, backend):
-    #    chk(aqb.AB_Banking_SuspendProvider(self, backend))
-    #
-    #def resumeProvider(self, backend):
-    #    chk(aqb.AB_Banking_ResumeProvider(self, backend))
+    def getProviderDescrs(self):
+        pl = aqb.AB_Banking_GetProviderDescrs(self)
+        if not pl:
+            return
+        pit = gwen.GWEN_PluginDescription_List2_First(pl)
+        pd = gwen.GWEN_PluginDescription_List2Iterator_Data(pit)
+        while pd:
+            yield PluginDescription._check_retval_(pd)
+            pd = gwen.GWEN_PluginDescription_List2Iterator_Next(pit)
+        gwen.GWEN_PluginDescription_List2Iterator_free(pit)
+        gwen.GWEN_PluginDescription_List2_free(pl)
 
     def iterActiveProviders(self):
         return aqb.AB_Banking_GetActiveProviders(self)
+
+    def activateProvider(self, backend):
+        chk(aqb.AB_Banking_ActivateProvider(self, backend))
+
+    def deactivateProvider(self, backend):
+        chk(aqb.AB_Banking_DeactivateProvider(self, backend))
 
     def getAppUserDataDir(self):
         buf = GWEN_Buffer()
@@ -1272,6 +1289,7 @@ class BankingBase(c_void_p):
 	while pd:
 	    yield PluginDescription._check_retval_(pd)
 	    pd = gwen.GWEN_PluginDescription_List2Iterator_Next(pit)
+        gwen.GWEN_PluginDescription_List2Iterator_free(pit)
         gwen.GWEN_PluginDescription_List2_free(pl)
         
     def getImExporter(self, tp):
@@ -1345,6 +1363,8 @@ class BankingBase(c_void_p):
  	while ap:
  	    yield Account._check_retval_(ap)
  	    ap = aqb.AB_Account_List2Iterator_Next(ait)
+        gwen.GWEN_PluginDescription_List2Iterator_free(ait)
+        gwen.GWEN_PluginDescription_List2_free(al)
 
     def getAccount(self, uniqueId):
 	return aqb.AB_Banking_GetAccount(self, uniqueId)
@@ -1406,8 +1426,8 @@ aqb.AB_Banking_GetAppName.restype = c_char_p
 aqb.AB_Banking_GetAccountByCodeAndNumber.restype = Account
 aqb.AB_Banking_GetAccount.restype = Account
 aqb.AB_Banking_GetAppData.restype = GWEN_DB_Node
-#aqb.AB_Banking_SuspendProvider.argtypes = BankingBase, c_char_p
-#aqb.AB_Banking_ResumeProvider.argtypes = BankingBase, c_char_p
+aqb.AB_Banking_ActivateProvider.argtypes = BankingBase, c_char_p
+aqb.AB_Banking_DeactivateProvider.argtypes = BankingBase, c_char_p
 aqb.AB_Banking_GetAccountByAlias.restype = Account
 aqb.AB_Banking_GetAccountByAlias.argtypes = BankingBase, c_char_p
 aqb.AB_Banking_SetAccountAlias.argtypes = BankingBase, Account, c_char_p
@@ -1425,7 +1445,7 @@ aqb.AB_Banking_GatherResponses.argtypes = BankingBase, ImExporterContext
 
 # FIXME: should not be needed for stable version of aqBanking
 # shut up aqBanking.. too noisy..
-Logger_SetLevel('aqbanking', LoggerLevel.critical)
+Logger_SetLevel('aqbanking', LoggerLevel.error)
 Logger_SetLevel('gwenhywfar', LoggerLevel.error)
 Logger_SetLevel('aqhbci', LoggerLevel.error)
 Logger_SetLevel(None, LoggerLevel.error)

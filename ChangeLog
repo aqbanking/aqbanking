@@ -1,3 +1,7 @@
+2006-02-07   Christian Stimming <stimming@tuhh.de>
+
+	* bindings/python/__init__.py, *.py: Small improvements to python
+	bindings by M. Dietrich <mdt@emdete.de>.
 
 ===========================================================================
 MARK: released AqBanking - 1.9.7beta (2006-02-06)

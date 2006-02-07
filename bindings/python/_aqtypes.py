@@ -235,10 +235,10 @@ class Pin(c_void_p):
     def __del__(self):
         aqb.AB_Pin_free(self)
 
-    modified = property(
-        aqb.AB_Pin_IsModified,
-        aqb.AB_Pin_SetModified)
-
+#    modified = property(
+#        aqb.AB_Pin_IsModified,
+#        aqb.AB_Pin_SetModified)
+#
     token = property(
         aqb.AB_Pin_GetToken,
         aqb.AB_Pin_SetToken)
@@ -683,21 +683,23 @@ class Transaction(c_void_p):
         aqb.AB_Transaction_free(self)
 
     class Period(Enum):
+        unknown = -1 # unknown
         none = 0 # No period.
         monthly = 1 # The standing order is to be executed every month.
         weekly = 2 # The standing order is to be executed every week.
 
     class PeriodAdapter(c_int):
         def _check_retval_(i):
-            return Period(i)
+            return Transaction.Period(i)
         _check_retval_ = staticmethod(_check_retval_)
         def from_param(cls, e):
-            check_enum(e, Period, 'argument')
+            check_enum(e, Transaction.Period, 'argument')
             return int(e)
         from_param = classmethod(from_param)
 
 
     class Type(Enum):
+        unknown = -1 # unknown
         transaction = 0 # Simple transaction (as in transaction statements)
         transfer = 1 # Transfer type of transaction (as used with transfer jobs)
         debitNote = 2 # Debit note type of transaction (as used with debit note jobs)
@@ -705,15 +707,16 @@ class Transaction(c_void_p):
 
     class TypeAdapter(c_int):
         def _check_retval_(i):
-            return Type(i)
+            return Transaction.Type(i)
         _check_retval_ = staticmethod(_check_retval_)
         def from_param(cls, e):
-            check_enum(e, Type, 'argument')
+            check_enum(e, Transaction.Type, 'argument')
             return int(e)
         from_param = classmethod(from_param)
 
 
     class SubType(Enum):
+        unknown = -1 # unknown
         none = 0 # No transfer sub-type
         standard = 1 # Standard transfer.
         check = 2 # Check.
@@ -730,15 +733,16 @@ class Transaction(c_void_p):
 
     class SubTypeAdapter(c_int):
         def _check_retval_(i):
-            return SubType(i)
+            return Transaction.SubType(i)
         _check_retval_ = staticmethod(_check_retval_)
         def from_param(cls, e):
-            check_enum(e, SubType, 'argument')
+            check_enum(e, Transaction.SubType, 'argument')
             return int(e)
         from_param = classmethod(from_param)
 
 
     class Status(Enum):
+        unknown = -1 # unknown
         none = 0 # No status.
         accepted = 1 # The transfer has been accepted by the bank
         rejected = 2 # The transfer has been rejected by the bank (or was errornous)
@@ -746,15 +750,16 @@ class Transaction(c_void_p):
 
     class StatusAdapter(c_int):
         def _check_retval_(i):
-            return Status(i)
+            return Transaction.Status(i)
         _check_retval_ = staticmethod(_check_retval_)
         def from_param(cls, e):
-            check_enum(e, Status, 'argument')
+            check_enum(e, Transaction.Status, 'argument')
             return int(e)
         from_param = classmethod(from_param)
 
 
     class Charge(Enum):
+        unknown = -1 # unknown
         Nobody = 0 # Nobody is to be charged.
         local = 1 # Issuer is to be charged.
         remote = 2 # Peer is to be charged.
@@ -762,10 +767,10 @@ class Transaction(c_void_p):
 
     class ChargeAdapter(c_int):
         def _check_retval_(i):
-            return Charge(i)
+            return Transaction.Charge(i)
         _check_retval_ = staticmethod(_check_retval_)
         def from_param(cls, e):
-            check_enum(e, Charge, 'argument')
+            check_enum(e, Transaction.Charge, 'argument')
             return int(e)
         from_param = classmethod(from_param)
 
@@ -1233,8 +1238,8 @@ aqb.AB_TransactionLimits_List_Add.argtypes = TransactionLimits, c_void_p
 
 
 # Pin
-aqb.AB_Pin_IsModified.restype = c_int
-aqb.AB_Pin_SetModified.argtypes = Pin, c_int
+#aqb.AB_Pin_IsModified.restype = c_int
+#aqb.AB_Pin_SetModified.argtypes = Pin, c_int
 aqb.AB_Pin_GetToken.restype = c_char_p
 aqb.AB_Pin_SetToken.argtypes = Pin, c_char_p
 aqb.AB_Pin_GetValue.restype = c_char_p

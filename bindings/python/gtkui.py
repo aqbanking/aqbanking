@@ -10,10 +10,11 @@ def gtk_main():
 
 class BankingGtk(aqbanking.BankingBase):
 
-    def __init__(self, name, configdir=None):
+    def __init__(self, name, configdir=None, progwin=None):
         aqbanking.BankingBase.__init__(self, name, configdir)
         self.cancel_flag = False
-        self.textbuffer = self.progwin = self.logwin = None
+        self.progwin = progwin
+        self.textbuffer = self.logwin = None
 
     def getPin(self,ab,flags,token,title,text,buffer,minLen,maxLen):
         d = gtk.Dialog(title=title, parent = self.progwin,
@@ -49,12 +50,12 @@ class BankingGtk(aqbanking.BankingBase):
                  aqbanking.MSG_FLAGS_TYPE_WARN: gtk.MESSAGE_WARNING,
                  aqbanking.MSG_FLAGS_TYPE_ERROR: gtk.MESSAGE_ERROR,
                  }
-    def messageBox(self, ab, flags, title, text, b1, b2, b3):
+    def messageBox(self, ab, flags, title, text, *buttons):
         gtktype = self.msgtypes[aqbanking.msg_flags_type(flags)]
         d = gtk.MessageDialog(
             parent=self.progwin, flags=gtk.DIALOG_MODAL, type=gtktype)
         d.set_markup(aqbanking.stripText(text))
-        for i, b in enumerate((b1,b2,b3)):
+        for i, b in enumerate(buttons):
             if b is None:
                 continue
             w = gtk.Button(b)
