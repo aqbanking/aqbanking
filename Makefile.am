@@ -251,6 +251,5 @@ sl-headers:
 # Call aqbanking's testcases plus the unittests from the
 # moneysplash module
 py-check:
-	make check && \
-	  cd ../moneysplash/unittests && \
+	cd ../moneysplash/unittests && \
 	  PYTHONPATH=$(pyexecdir) $(PYTHON) test_1.py

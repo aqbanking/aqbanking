@@ -10,6 +10,7 @@ EXTRA_DIST=aqyellownet.m4
 bin_SCRIPTS=aqyellownet-config
 aclocaldir = $(datadir)/aclocal
 dist_aclocal_DATA = aqyellownet.m4
+CLEANFILES = $(bin_SCRIPTS)
 
 aqyellownet-config: aqyellownet-config.in
 	echo "#! /bin/sh" >aqyellownet-config && \
