@@ -3,11 +3,15 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   $(all_includes)
 
-libfiles=\
+# The directory for the binary-only files (need to define the
+# intermediate directory variable to avoid automake complaints
+# when installing DATA objects into libdir)
+extralibdir = $(libdir)
+dist_extralib_DATA=\
  libaqyellownet.la \
  libaqyellownet.so
 
-EXTRA_DIST=$(libfiles) aqyellownet.xml.in COPYING
+EXTRA_DIST= aqyellownet.xml.in COPYING
 
 iheaderdir=${includedir}/aqyellownet
 iheader_HEADERS=\
@@ -16,7 +20,7 @@ iheader_HEADERS=\
  provider.h \
  user.h
 
-plugindir=@aqbanking_plugindir@/providers
+plugindir=$(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqyellownet.la
 plugin_DATA=aqyellownet.xml
 
@@ -28,10 +32,6 @@ aqyellownet_la_LIBADD= \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 aqyellownet_la_LDFLAGS=-module
-
-install-exec-local:
-	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	cp $(libfiles) $(DESTDIR)$(libdir)
 
 sources:
 
