@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.7beta (2006-02-06)
+===========================================================================
+
+This release fixes some bugs in the build-system, adds a CSV profile for
+American Express cards and some tutorials. An updated RPM specfile is now
+available.
+
+
+===========================================================================
                Released AqBanking - 1.9.6beta (2006-01-30)
 ===========================================================================
 

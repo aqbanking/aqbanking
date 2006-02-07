@@ -19,7 +19,6 @@
 #include "qbwaitcallback.h"
 
 
-
 typedef struct QBANKING_WAITCALLBACK QBANKING_WAITCALLBACK;
 GWEN_INHERIT(GWEN_WAITCALLBACK, QBANKING_WAITCALLBACK)
 
@@ -73,8 +72,12 @@ void QBWaitCallback::_log(GWEN_WAITCALLBACK *ctx,
 
 
 void QBWaitCallback::_freeData(void *bp, void *p) {
+  QBWaitCallback *wcb;
+
   assert(p);
-  delete (QBWaitCallback*)p;
+  wcb=(QBWaitCallback*)p;
+  wcb->_ctx=0;
+  delete wcb;
 }
 
 
@@ -96,6 +99,10 @@ QBWaitCallback::QBWaitCallback(const char *id){
 
 
 QBWaitCallback::~QBWaitCallback(){
+  if (_ctx) {
+    GWEN_INHERIT_UNLINK(GWEN_WAITCALLBACK, QBANKING_WAITCALLBACK, _ctx);
+    GWEN_WaitCallback_free(_ctx);
+  }
 }
 
 

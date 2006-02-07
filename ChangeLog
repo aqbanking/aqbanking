@@ -1,6 +1,12 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released AqBanking - 1.9.7beta (2006-02-06)
+===========================================================================
+
+
+2006/02/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a small memory leak (was not deleting QBWaitCallback-internal data)
 
 
 2006/02/03: Martin Preuss<martin@libchipcard.de>
