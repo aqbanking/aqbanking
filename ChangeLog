@@ -1,3 +1,11 @@
+2006-02-08   Christian Stimming <stimming@tuhh.de>
+
+	* aqbanking-config.in.in,
+	src/frontends/qbanking/qbanking-config.in.in: On --includes, don't
+	return all_includes because that is too general; instead, only
+	return those _includes that are actually used for the respective
+	library.
+
 2006-02-07   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/__init__.py, *.py: Small improvements to python

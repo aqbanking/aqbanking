@@ -10,7 +10,7 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @aqbanking_includes@"
+	    result="$result @aqbanking_includes@ @gwenhywfar_includes@"
 	    ;;
 	--libraries)
 	    result="$result @aqbanking_ldflags@ @aqbanking_libs@"
