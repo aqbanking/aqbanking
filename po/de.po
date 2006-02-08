@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-01-31 13:28+0100\n"
-"PO-Revision-Date: 2006-01-31 13:29+0100\n"
+"POT-Creation-Date: 2006-02-08 12:03+0100\n"
+"PO-Revision-Date: 2006-02-08 12:09+0100\n"
 "Last-Translator: Christian Stimming <stimming@tuhh.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libs/aqbanking/banking.c:2572 src/libs/aqbanking/banking.c:5040
+#: src/libs/aqbanking/banking.c:2588 src/libs/aqbanking/banking.c:5056
 #: src/libs/aqbanking/cryptmanager.c:384 src/libs/aqbanking/cryptmanager.c:449
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1021
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1082
@@ -29,7 +29,7 @@ msgstr ""
 msgid "Error"
 msgstr "Fehler"
 
-#: src/libs/aqbanking/banking.c:2573
+#: src/libs/aqbanking/banking.c:2589
 msgid ""
 "Error executing backend's queue.\n"
 "What shall we do?"
@@ -37,14 +37,14 @@ msgstr ""
 "Es gab einen Fehler bei der Verarbeitung des Ausgangskorbs im\n"
 "zuständigen Modul.  Was möchten Sie tun?"
 
-#: src/libs/aqbanking/banking.c:2575
+#: src/libs/aqbanking/banking.c:2591
 #: src/plugins/backends/aqhbci/plugin/msglayer/hbci-updates.c:255
 msgid "Continue"
 msgstr "Fortsetzen"
 
-#: src/libs/aqbanking/banking.c:2575 src/libs/aqbanking/banking.c:5644
+#: src/libs/aqbanking/banking.c:2591 src/libs/aqbanking/banking.c:5660
 #: src/libs/aqbanking/cryptmanager.c:367 src/libs/aqbanking/cryptmanager.c:432
-#: src/frontends/cbanking/cbanking.c:431
+#: src/libs/aqbanking/httpsession.c:540 src/frontends/cbanking/cbanking.c:431
 #: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1809
 #: src/plugins/backends/aqdtaus/plugin/provider.c:997
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1063
@@ -57,38 +57,38 @@ msgstr "Fortsetzen"
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/libs/aqbanking/banking.c:2650
+#: src/libs/aqbanking/banking.c:2666
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1907
 msgid "Executing Jobs"
 msgstr "Aufträge werden ausgeführt"
 
-#: src/libs/aqbanking/banking.c:2651
+#: src/libs/aqbanking/banking.c:2667
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1908
 msgid "Now the jobs are send via their backends to the credit institutes."
 msgstr ""
 "Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
 "gesendet."
 
-#: src/libs/aqbanking/banking.c:4292 src/libs/aqbanking/banking.c:4354
-#: src/libs/aqbanking/banking.c:4420 src/libs/aqbanking/banking.c:4480
+#: src/libs/aqbanking/banking.c:4308 src/libs/aqbanking/banking.c:4370
+#: src/libs/aqbanking/banking.c:4436 src/libs/aqbanking/banking.c:4496
 msgid "Unsupported Request"
 msgstr "Auftrag nicht verfügbar"
 
-#: src/libs/aqbanking/banking.c:4293 src/libs/aqbanking/banking.c:4355
-#: src/libs/aqbanking/banking.c:4421 src/libs/aqbanking/banking.c:4481
+#: src/libs/aqbanking/banking.c:4309 src/libs/aqbanking/banking.c:4371
+#: src/libs/aqbanking/banking.c:4437 src/libs/aqbanking/banking.c:4497
 msgid "The backend for this banking account does not support your request."
 msgstr ""
 "Das für dieses Konto zuständige Modul unterstützt diesen Auftrag nicht."
 
-#: src/libs/aqbanking/banking.c:4295 src/libs/aqbanking/banking.c:4310
-#: src/libs/aqbanking/banking.c:4357 src/libs/aqbanking/banking.c:4377
-#: src/libs/aqbanking/banking.c:4423 src/libs/aqbanking/banking.c:4438
-#: src/libs/aqbanking/banking.c:4483 src/libs/aqbanking/banking.c:4498
-#: src/libs/aqbanking/banking.c:5043 src/libs/aqbanking/cryptmanager.c:376
+#: src/libs/aqbanking/banking.c:4311 src/libs/aqbanking/banking.c:4326
+#: src/libs/aqbanking/banking.c:4373 src/libs/aqbanking/banking.c:4393
+#: src/libs/aqbanking/banking.c:4439 src/libs/aqbanking/banking.c:4454
+#: src/libs/aqbanking/banking.c:4499 src/libs/aqbanking/banking.c:4514
+#: src/libs/aqbanking/banking.c:5059 src/libs/aqbanking/cryptmanager.c:376
 #: src/libs/aqbanking/cryptmanager.c:386 src/libs/aqbanking/cryptmanager.c:441
 #: src/libs/aqbanking/cryptmanager.c:451 src/libs/aqbanking/cryptmanager.c:476
-#: src/frontends/g2banking/views/gbjobview.c:116
-#: src/frontends/g2banking/views/gbjobview.c:138
+#: src/frontends/g2banking/views/gbjobview.c:120
+#: src/frontends/g2banking/views/gbjobview.c:142
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1030
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1091
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1136
@@ -111,19 +111,19 @@ msgstr ""
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/libs/aqbanking/banking.c:4308 src/libs/aqbanking/banking.c:4375
-#: src/libs/aqbanking/banking.c:4436 src/libs/aqbanking/banking.c:4496
+#: src/libs/aqbanking/banking.c:4324 src/libs/aqbanking/banking.c:4391
+#: src/libs/aqbanking/banking.c:4452 src/libs/aqbanking/banking.c:4512
 #: src/frontends/qbanking/lib/qbanking.cpp:601
 #: src/frontends/qbanking/lib/qbanking.cpp:733
 msgid "Queue Error"
 msgstr "Fehler im Ausgangskorb"
 
-#: src/libs/aqbanking/banking.c:4309 src/libs/aqbanking/banking.c:4376
-#: src/libs/aqbanking/banking.c:4437 src/libs/aqbanking/banking.c:4497
+#: src/libs/aqbanking/banking.c:4325 src/libs/aqbanking/banking.c:4392
+#: src/libs/aqbanking/banking.c:4453 src/libs/aqbanking/banking.c:4513
 msgid "Unable to enqueue your request."
 msgstr "Der Auftrag konnte nicht in den Ausgangskorb gestellt werden."
 
-#: src/libs/aqbanking/banking.c:5041
+#: src/libs/aqbanking/banking.c:5057
 msgid ""
 "No valid PIN (tried too often).\n"
 "Aborting."
@@ -131,11 +131,11 @@ msgstr ""
 "Keine gültige PIN (zu oft versucht).\n"
 "Aktion wird abgebrochen."
 
-#: src/libs/aqbanking/banking.c:5090
+#: src/libs/aqbanking/banking.c:5106
 msgid "Enforce PIN"
 msgstr "PIN erzwingen"
 
-#: src/libs/aqbanking/banking.c:5092
+#: src/libs/aqbanking/banking.c:5108
 msgid ""
 "You entered the same PIN twice.\n"
 "The PIN is marked as bad, do you want\n"
@@ -148,15 +148,15 @@ msgstr ""
 "PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
 "b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
 
-#: src/libs/aqbanking/banking.c:5104
+#: src/libs/aqbanking/banking.c:5120
 msgid "Use this"
 msgstr "Trotzdem verwenden"
 
-#: src/libs/aqbanking/banking.c:5105
+#: src/libs/aqbanking/banking.c:5121
 msgid "Re-enter"
 msgstr "Neu eingeben"
 
-#: src/libs/aqbanking/banking.c:5420
+#: src/libs/aqbanking/banking.c:5436
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -205,11 +205,11 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/libs/aqbanking/banking.c:5545 src/libs/aqbanking/banking.c:5558
+#: src/libs/aqbanking/banking.c:5561 src/libs/aqbanking/banking.c:5574
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
-#: src/libs/aqbanking/banking.c:5579 src/libs/aqbanking/job.c:288
+#: src/libs/aqbanking/banking.c:5595 src/libs/aqbanking/job.c:288
 #: src/plugins/backends/aqdtaus/plugin/provider.c:715
 #: src/plugins/backends/aqdtaus/plugin/provider.c:717
 #: src/plugins/backends/aqdtaus/plugin/provider.c:719
@@ -219,11 +219,12 @@ msgstr "DD.MM.YYYY hh:mm:ss"
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/libs/aqbanking/banking.c:5630
+#: src/libs/aqbanking/banking.c:5646
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/libs/aqbanking/banking.c:5632 src/frontends/cbanking/cbanking.c:429
+#: src/libs/aqbanking/banking.c:5648 src/libs/aqbanking/httpsession.c:540
+#: src/frontends/cbanking/cbanking.c:429
 #: src/frontends/qbanking/lib/widgets/qbplugindescrlist.cpp:82
 #: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:84
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:355
@@ -231,18 +232,18 @@ msgstr "Zertifikat empfangen"
 msgid "Yes"
 msgstr "Ja"
 
-#: src/libs/aqbanking/banking.c:5632 src/frontends/cbanking/cbanking.c:430
+#: src/libs/aqbanking/banking.c:5648 src/frontends/cbanking/cbanking.c:430
 #: src/frontends/qbanking/lib/widgets/qbplugindescrlist.cpp:84
 #: src/frontends/kbanking/widgets/kbplugindescrlist.cpp:86
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.ui.cpp:96
 msgid "No"
 msgstr "Nein"
 
-#: src/libs/aqbanking/banking.c:5638
+#: src/libs/aqbanking/banking.c:5654
 msgid "Certificate"
 msgstr "Zertifikat"
 
-#: src/libs/aqbanking/banking.c:5640
+#: src/libs/aqbanking/banking.c:5656
 msgid ""
 "Do you want to accept this certificate permanently?<html>Do you want to "
 "accept this certificate permanently?</html>"
@@ -250,11 +251,11 @@ msgstr ""
 "Wollen Sie dieses Zertifikat dauerhaft akzeptieren? <html> Wollen Sie dieses "
 "Zertifikat <b>dauerhaft</b> akzeptieren? </html>"
 
-#: src/libs/aqbanking/banking.c:5642
+#: src/libs/aqbanking/banking.c:5658
 msgid "Permanently"
 msgstr "Dauerhaft"
 
-#: src/libs/aqbanking/banking.c:5643
+#: src/libs/aqbanking/banking.c:5659
 msgid "This session only"
 msgstr "Nur für diese Sitzung"
 
@@ -1856,6 +1857,64 @@ msgstr ""
 "<html>Bitte legen Sie die <b>richtige</b> Chipkarte für <i>%s</i> in den "
 "Kartenleser ein.</html>"
 
+#: src/libs/aqbanking/httpsession.c:266
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:418
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:684
+#, c-format
+msgid "Resolving hostname \"%s\" ..."
+msgstr "Ermittle Adresse von \"%s\" ..."
+
+#: src/libs/aqbanking/httpsession.c:278
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:429
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:695
+#, c-format
+msgid "Unknown hostname \"%s\""
+msgstr "Unbekannter Rechner \"%s\""
+
+#: src/libs/aqbanking/httpsession.c:302
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:452
+#: src/plugins/backends/aqofxconnect/plugin/provider.c:720
+#, c-format
+msgid "IP address is %s"
+msgstr "Ermittelte IP Adresse ist %s"
+
+#: src/libs/aqbanking/httpsession.c:378
+msgid "Connecting"
+msgstr "Verbindungsaufbau"
+
+#: src/libs/aqbanking/httpsession.c:457
+msgid "Sending request"
+msgstr "Anfrage senden"
+
+#: src/libs/aqbanking/httpsession.c:482
+#, c-format
+msgid ""
+"The server wants to redirect us from\n"
+"\"%s\"\n"
+"to\n"
+"\"%s\".\n"
+"Do you accept this redirection?<html><p>The server wants to <b>redirect</b> "
+"us from <font color=\"red\">%s</font>to <font color=\"red\">%s</font></"
+"p><p>Do you accept this redirection?</p></html>"
+msgstr ""
+"Der Server will eine Weiterleitung von\n"
+"\"%s\"\n"
+"nach\n"
+"\"%s\"\n"
+"durchführen. Akzeptieren Sie diese Weiterleitung?<html><p>Der Server will eine <b>Weiterleitung</b> von <font color=\"red\">%s</font> nach <font color=\"red\">%s</font> durchführen.</p><p>Akzeptieren Sie diese Weiterleitung?</p></html>"
+
+#: src/libs/aqbanking/httpsession.c:538
+msgid "Redirection Requested"
+msgstr "Weiterleitung angefragt"
+
+#: src/libs/aqbanking/httpsession.c:577
+msgid "Opening session"
+msgstr "Öffne Sitzung"
+
+#: src/libs/aqbanking/httpsession.c:618
+msgid "Closing session"
+msgstr "Beende Sitzung"
+
 #: src/libs/aqbanking/job.c:273
 #: src/frontends/qbanking/lib/widgets/qbjoblist.cpp:86
 #: src/frontends/kbanking/widgets/kbjoblist.cpp:87
@@ -2073,16 +2132,16 @@ msgstr "Version"
 msgid "Short Description"
 msgstr "Kurzbeschreibung"
 
-#: src/frontends/g2banking/views/gbjobview.c:113
-#: src/frontends/g2banking/views/gbjobview.c:135
+#: src/frontends/g2banking/views/gbjobview.c:117
+#: src/frontends/g2banking/views/gbjobview.c:139
 msgid "Execution Error"
 msgstr "Fehler bei Ausführung"
 
-#: src/frontends/g2banking/views/gbjobview.c:114
+#: src/frontends/g2banking/views/gbjobview.c:118
 msgid "Some errors occurred while executing the outbox."
 msgstr "Beim Ausführen des Ausgangskorbs traten Fehler auf."
 
-#: src/frontends/g2banking/views/gbjobview.c:136
+#: src/frontends/g2banking/views/gbjobview.c:140
 msgid "Some errors occurred while processing the outbox results."
 msgstr "Beim Auswerten der Ergebnisse aus dem Ausgangskorb traten Fehler auf."
 
@@ -2265,24 +2324,6 @@ msgstr "Sekunde(n)"
 #: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:383
 msgid "Sending message..."
 msgstr "Sende Nachricht..."
-
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:418
-#: src/plugins/backends/aqofxconnect/plugin/provider.c:684
-#, c-format
-msgid "Resolving hostname \"%s\" ..."
-msgstr "Ermittle Adresse von \"%s\" ..."
-
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:429
-#: src/plugins/backends/aqofxconnect/plugin/provider.c:695
-#, c-format
-msgid "Unknown hostname \"%s\""
-msgstr "Unbekannter Rechner \"%s\""
-
-#: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:452
-#: src/plugins/backends/aqofxconnect/plugin/provider.c:720
-#, c-format
-msgid "IP address is %s"
-msgstr "Ermittelte IP Adresse ist %s"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/dialog.c:633
 msgid "Connecting to bank..."
@@ -5711,70 +5752,6 @@ msgstr ""
 msgid "Read From Chipcard"
 msgstr "Von Chipkarte einlesen"
 
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.cpp:44
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:51
-msgid "<p>This page contains Yellownet-specific settings.</p>"
-msgstr "<p>Diese Seite enthält Yellownet-spezifische Einstellungen.</p>"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:54
-msgid "Yellownet Number"
-msgstr "Yellownet-Nummer"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:55
-msgid "Enter your Yellownet number"
-msgstr "Geben Sie Ihre Yellownet-Nummer ein."
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:57
-msgid ""
-"This is only available for customers with multiple user ids or with business "
-"accounts"
-msgstr ""
-"Dies ist nur für Kunden mit mehreren Benutzerkennungen oder für "
-"Geschäftskunden verfügbar."
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:79
-msgid "Yellownet Settings"
-msgstr "Yellownet Einstellungen"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:80
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:80
-msgid "Transfer Settings"
-msgstr "Überweitungs-Einstellungen"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:81
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:81
-msgid "Number of Purpose Lines"
-msgstr "Anzahl der Verwendungszweckzeilen"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:82
-#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:82
-msgid "Debit Notes Allowed"
-msgstr "Lastschriftverfahren anwenden"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:68
-msgid "Yellownet User Settings"
-msgstr "Yellownet Benutzer-Einstellungen"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:70
-msgid "Language"
-msgstr "Sprache"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:72
-msgid "German"
-msgstr "Deutsch"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:73
-msgid "French"
-msgstr "Französisch"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:74
-msgid "Italian"
-msgstr "Italienisch"
-
-#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:75
-msgid "English"
-msgstr "Englisch"
-
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.cpp:45
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.cpp:50
 msgid "<p>This page contains OFX DirectConnect-specific settings.</p>"
@@ -5796,6 +5773,21 @@ msgstr ""
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:79
 msgid "OfxSettings"
 msgstr "OFX-Einstellungen"
+
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:80
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:80
+msgid "Transfer Settings"
+msgstr "Überweitungs-Einstellungen"
+
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:81
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:81
+msgid "Number of Purpose Lines"
+msgstr "Anzahl der Verwendungszweckzeilen"
+
+#: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageaccountofx.ui.cpp:82
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:82
+msgid "Debit Notes Allowed"
+msgstr "Lastschriftverfahren anwenden"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.ui.cpp:170
 msgid "Ofx User Settings"
@@ -5857,3 +5849,52 @@ msgstr "Unterstützt Investments"
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.ui.cpp:200
 msgid "Supports Bill Pay"
 msgstr "Unterstützt Überweisungen"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.cpp:44
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:51
+msgid "<p>This page contains Yellownet-specific settings.</p>"
+msgstr "<p>Diese Seite enthält Yellownet-spezifische Einstellungen.</p>"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:54
+msgid "Yellownet Number"
+msgstr "Yellownet-Nummer"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:55
+msgid "Enter your Yellownet number"
+msgstr "Geben Sie Ihre Yellownet-Nummer ein."
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:57
+msgid ""
+"This is only available for customers with multiple user ids or with business "
+"accounts"
+msgstr ""
+"Dies ist nur für Kunden mit mehreren Benutzerkennungen oder für "
+"Geschäftskunden verfügbar."
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.ui.cpp:79
+msgid "Yellownet Settings"
+msgstr "Yellownet Einstellungen"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:68
+msgid "Yellownet User Settings"
+msgstr "Yellownet Benutzer-Einstellungen"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:70
+msgid "Language"
+msgstr "Sprache"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:72
+msgid "German"
+msgstr "Deutsch"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:73
+msgid "French"
+msgstr "Französisch"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:74
+msgid "Italian"
+msgstr "Italienisch"
+
+#: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.ui.cpp:75
+msgid "English"
+msgstr "Englisch"
