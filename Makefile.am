@@ -122,7 +122,7 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
-po/$(PACKAGE).pot: $(I18NFILES)
+po/$(PACKAGE).pot: i18nsources qtsources $(I18NFILES)
 	if test -n "$(I18NFILES)"; then \
 	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N \
 	    -kI18N_NOOP -ktranslate -kaliasLocale \
@@ -132,17 +132,16 @@ po/$(PACKAGE).pot: $(I18NFILES)
 	    $(I18NFILES); \
 	fi
 
-# This rule is called automatically at install time. However, it is
-# necessary only for the translators, so maybe it shouldn't be called
-# at install time.
+# This rule is not called automatically. It is necessary only for
+# the translators, so translators only call this manually.
 merge: po/$(PACKAGE).pot
 	@catalogs=$(I18NLINGUAS); \
 	for cat in $$catalogs; do \
 	echo msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
 	msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
 	if test -s $$cat.new; then \
-	  grep -v "\"POT-Creation" $$cat.new > $$cat.new.2 ; \
-	  grep -v "\"POT-Creation" $$cat >> $$cat.new.1; \
+	  grep -v "\"POT-Creation" $$cat.new | grep -v '^#' > $$cat.new.2 ; \
+	  grep -v "\"POT-Creation" $$cat | grep -v '^#' >> $$cat.new.1; \
 	  if diff $$cat.new.1 $$cat.new.2; then \
 		echo "  $$cat unchanged; leaving existing po file untouched."; \
 		rm $$cat.new;  \
