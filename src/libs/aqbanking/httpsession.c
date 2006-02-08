@@ -488,7 +488,7 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
                   "<p>"
                   "The server wants to <b>redirect</b> us from "
                   "<font color=\"red\">%s</font>"
-                  "to "
+                  " to "
                   "<font color=\"red\">%s</font>"
                   "</p>"
                   "<p>"
