@@ -13,7 +13,7 @@ EXTRA_DIST=aqnone.xml.in
 plugindir=@aqbanking_plugindir@/providers
 plugin_LTLIBRARIES=aqnone.la
 if IS_WINDOWS
-plugin_DATA=aqnone.xml aqnone.dll
+plugin_DATA=aqnone.xml
 else
 plugin_DATA=aqnone.xml
 endif
@@ -26,11 +26,26 @@ noinst_HEADERS=provider_l.h provider_p.h
 libaqnone_la_SOURCES=provider.c
 aqnone_la_SOURCES=aqnone-plugin.c
 
-libaqnone_la_LIBADD=@gwenhywfar_libs@ @aqbanking_internal_libs@
+libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
+libaqnone_la_LDFLAGS = -no-undefined
 
-aqnone_la_LIBADD=libaqnone.la @gwenhywfar_libs@ @aqbanking_internal_libs@
-aqnone_la_LDFLAGS=-module -version-info 0:0:0
+aqnone_la_LIBADD = libaqnone.la $(aqbanking_internal_libs) $(gwenhywfar_libs)
+aqnone_la_LDFLAGS = -no-undefined -module -version-info 0:0:0
 
+# Add the linker flags for windows resource file
+libaqnone_la_DEPENDENCIES = $(aqbanking_internal_libs)
+aqnone_la_DEPENDENCIES = libaqnone.la $(aqbanking_internal_libs)
+# if IS_WINDOWS
+if IS_WINDOWS
+libaqnone_la_DEPENDENCIES += ressource.o
+aqnone_la_DEPENDENCIES += ressource.o
+libaqnone_la_LDFLAGS += -Wl,ressource.o
+aqnone_la_LDFLAGS += -Wl,ressource.o
+ressource.o: ressource.rc
+	$(RC) -o $@ $<
+endif
+# IS_WINDOWS
+# End of linker flags for windows resource file
 
 sources:
 	for f in $(libaqnone_la_SOURCES); do \
