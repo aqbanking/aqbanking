@@ -53,8 +53,8 @@ Source: "win32-tmp\usr\bin\*.exe"; DestDir: "{app}\bin"; Components: main
 
 ; The config-scripts. They are post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
-Source: "src\plugins\backends\aqhbci\aqhbci-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\aqhbci-config'))
-Source: "src\frontends\qbanking\qbanking-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\qbanking-config'))
+Source: "src\plugins\backends\aqhbci\plugin\aqhbci-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\aqhbci-config'))
+Source: "src\frontends\qbanking\lib\qbanking-config.in.in"; DestDir: "{app}\bin"; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\qbanking-config'))
 
 ; The headers, and the aclocal macro. 
 Source: "win32-tmp\usr\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
