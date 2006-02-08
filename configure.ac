@@ -1732,6 +1732,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
+  src/plugins/backends/aqnone/ressource.rc
   src/plugins/backends/aqyellownet/Makefile
   src/plugins/backends/aqyellownet/aqyellownet-config.in
   src/plugins/backends/aqyellownet/plugin/Makefile
