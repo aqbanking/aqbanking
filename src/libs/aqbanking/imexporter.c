@@ -1057,15 +1057,10 @@ AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
   assert(iec);
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   while(iea) {
-    DBG_ERROR(0, "Comparing: [%s]<>[%s] and [%s]<>[%s]",
-              AB_ImExporterAccountInfo_GetBankCode(iea), bankCode,
-              AB_ImExporterAccountInfo_GetAccountNumber(iea),
-              accountNumber);
     if (strcasecmp(AB_ImExporterAccountInfo_GetBankCode(iea),
                    bankCode)==0 &&
         strcasecmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
                    accountNumber)==0) {
-      DBG_ERROR(0, "Match");
       return iea;
     }
     iea=AB_ImExporterAccountInfo_List_Next(iea);

@@ -1,3 +1,10 @@
+
+
+2006/02/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed debugging messages from imexporter.c
+
+
 2006-02-08   Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking-config.in.in,
@@ -6,10 +13,12 @@
 	return those _includes that are actually used for the respective
 	library.
 
+
 2006-02-07   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/__init__.py, *.py: Small improvements to python
 	bindings by M. Dietrich <mdt@emdete.de>.
+
 
 ===========================================================================
 MARK: released AqBanking - 1.9.7beta (2006-02-06)
