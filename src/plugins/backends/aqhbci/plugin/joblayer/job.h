@@ -24,7 +24,7 @@ extern "C" {
 typedef struct AH_JOB AH_JOB;
 
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/misc2.h>
+#include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>
 
 GWEN_INHERIT_FUNCTION_DEFS(AH_JOB);

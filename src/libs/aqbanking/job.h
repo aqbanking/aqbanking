@@ -14,7 +14,7 @@
 #ifndef AQBANKING_JOB_H
 #define AQBANKING_JOB_H
 
-#include <gwenhywfar/misc2.h>
+#include <gwenhywfar/list2.h>
 #include <gwenhywfar/gwentime.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
