@@ -82,7 +82,7 @@ void ActionGetAccounts::slotButtonClicked() {
   AB_PROVIDER *pro;
   GWEN_TYPE_UINT32 pid;
   int rv;
-  AB_IMEXPORTER_CONTEXT *ctx;
+  AB_IMEXPORTER_CONTEXT *ctx = AB_ImExporterContext_new();
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
