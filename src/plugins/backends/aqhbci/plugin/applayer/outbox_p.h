@@ -89,7 +89,7 @@ struct AH_OUTBOX {
   AH_HBCI *hbci;
   AH_OUTBOX__CBOX_LIST *userBoxes;
   AH_JOB_LIST *finishedJobs;
-
+  AB_IMEXPORTER_CONTEXT *context;
   GWEN_TYPE_UINT32 usage;
 };
 

@@ -25,6 +25,11 @@ extern "C" {
 AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
+void AB_JobGetTransactions_SetTransactions(AB_JOB *j,
+                                           AB_TRANSACTION_LIST2 *tl);
+void AB_JobGetTransactions_SetAccountStatusList(AB_JOB *j,
+                                                AB_ACCOUNT_STATUS_LIST2 *tl);
+
 #ifdef __cplusplus
 }
 #endif

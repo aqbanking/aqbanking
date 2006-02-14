@@ -21,21 +21,19 @@
 
 typedef struct AH_JOB_GETTRANSACTIONS AH_JOB_GETTRANSACTIONS;
 struct AH_JOB_GETTRANSACTIONS {
-  AB_TRANSACTION_LIST2 *bookedTransactions;
-  AB_TRANSACTION_LIST2 *notedTransactions;
-  AB_ACCOUNT_STATUS_LIST2 *notedBalances;
+  int dummy;
 };
 static void AH_Job_GetTransactions_FreeData(void *bp, void *p);
-static int AH_Job_GetTransactions_Process(AH_JOB *j);
+static int AH_Job_GetTransactions_Process(AH_JOB *j,
+                                          AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
                                            AH_JOB_EXCHANGE_MODE m);
 
 static int
   AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
+                                           AB_IMEXPORTER_ACCOUNTINFO *ai,
                                            const char *docType,
-                                           GWEN_BUFFER *buf,
-                                           AB_TRANSACTION_LIST2 *tl,
-                                           AB_ACCOUNT_STATUS_LIST2 *asl);
+                                           GWEN_BUFFER *buf);
 
 
 

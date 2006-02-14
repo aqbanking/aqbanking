@@ -31,25 +31,34 @@ iheader_HEADERS= \
  jobtransferbase_l.h \
  jobsingletransfer.h \
  jobsingletransfer_be.h \
+ jobsingletransfer_l.h \
  jobsingledebitnote.h \
  jobsingledebitnote_be.h \
+ jobsingledebitnote_l.h \
  jobgetdatedtransfers.h \
  jobgetdatedtransfers_be.h \
  jobgetdatedtransfers_l.h \
  jobcreatesto.h \
  jobcreatesto_be.h \
+ jobcreatesto_l.h \
  jobmodifysto.h \
  jobmodifysto_be.h \
+ jobmodifysto_l.h \
  jobdeletesto.h \
  jobdeletesto_be.h \
+ jobdeletesto_l.h \
  jobcreatedatedtransfer.h \
  jobcreatedatedtransfer_be.h \
+ jobcreatedatedtransfer_l.h \
  jobmodifydatedtransfer.h \
  jobmodifydatedtransfer_be.h \
+ jobmodifydatedtransfer_l.h \
  jobdeletedatedtransfer.h \
  jobdeletedatedtransfer_be.h \
+ jobdeletedatedtransfer_l.h \
  jobinternaltransfer.h \
  jobinternaltransfer_be.h \
+ jobinternaltransfer_l.h \
  jobeutransfer.h \
  jobeutransfer_l.h \
  jobeutransfer_be.h

@@ -139,81 +139,18 @@ int sendKeys(AB_BANKING *ab,
     return 3;
   }
   else {
-    AH_MEDIUM *m;
-    GWEN_CRYPTKEY *cryptKey;
-    GWEN_CRYPTKEY *signKey;
-    AH_JOB *job;
-    AH_OUTBOX *ob;
+    AB_IMEXPORTER_CONTEXT *ctx;
 
-    m=AH_User_GetMedium(u);
-    assert(m);
-
-    rv=AH_Medium_Mount(m);
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_SendUserKeys(pro, u, ctx, 0);
+    AB_ImExporterContext_free(ctx);
     if (rv) {
-      DBG_ERROR(0, "Could not mount medium (%d)", rv);
+      DBG_ERROR(0, "Error sending user keys (%d)", rv);
       AB_Banking_Fini(ab);
       return 3;
     }
-
-    rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
-    if (rv) {
-      DBG_ERROR(0, "Could not select context %d (%d)",
-                AH_User_GetContextIdx(u), rv);
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    signKey=AH_Medium_GetLocalPubSignKey(m);
-    cryptKey=AH_Medium_GetLocalPubCryptKey(m);
-
-    if (!signKey || !cryptKey) {
-      AH_Medium_Unmount(m, 1);
-      DBG_ERROR(0, "Keys missing, please create them first");
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    job=AH_Job_SendKeys_new(u, cryptKey, signKey);
-    if (!job) {
-      DBG_ERROR(0, "Job not supported, should not happen");
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    AH_Job_AddSigner(job, AB_User_GetUserId(u));
-
-    ob=AH_Outbox_new(hbci);
-    AH_Outbox_AddJob(ob, job);
-
-    if (AH_Outbox_Execute(ob, 1, 0)) {
-      DBG_ERROR(0, "Could not execute outbox.\n");
-      AH_Outbox_free(ob);
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    if (AH_Medium_IsMounted(m)) {
-      rv=AH_Medium_Unmount(m, 1);
-      if (rv) {
-        DBG_WARN(0, "Could not unmount medium (%d)", rv);
-      }
-    }
-
-    if (AH_Job_HasErrors(job) || AH_Job_GetStatus(job)!=AH_JobStatusAnswered) {
-      DBG_ERROR(0, "Job has errors (%s)",
-		AH_Job_StatusName(AH_Job_GetStatus(job)));
-      // TODO: show errors
-      AH_Outbox_free(ob);
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    AH_Outbox_free(ob);
-
     fprintf(stderr, "Key(s) sent.\n");
-    AH_Job_free(job);
   }
-
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

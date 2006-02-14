@@ -472,7 +472,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 			       AB_Job_List2_GetSize(dp->bankingJobs));
 
 
-  rv=AO_Provider_ExecQueue(pro);
+  rv=AO_Provider_ExecQueue(pro, ctx);
   if (!rv)
     oks++;
   else {
@@ -525,9 +525,12 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
     AB_Job_List2Iterator_free(jit);
   }
 
-  AB_Banking_ProgressAdvance(AB_Provider_GetBanking(pro),
-			     0,
-			     AO_Provider_CountDoneJobs(dp->bankingJobs));
+  rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(pro), 0);
+  if (rv==AB_ERROR_USER_ABORT) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
+             "User aborted");
+    return rv;
+  }
 
   AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
@@ -1190,90 +1193,9 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 
 
 
-int AO_Provider_DistributeContext(AB_PROVIDER *pro,
-				  AB_JOB *refJob,
-				  AB_IMEXPORTER_CONTEXT *ictx) {
-  AB_JOB_LIST2_ITERATOR *jit;
-  AO_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  jit=AB_Job_List2_First(dp->bankingJobs);
-  if (jit) {
-    AB_JOB *uj;
-
-    uj=AB_Job_List2Iterator_Data(jit);
-    assert(uj);
-    while(uj) {
-      DBG_ERROR(0, "Checking job \"%s\"",
-		AB_Job_Type2Char(AB_Job_GetType(uj)));
-      if (AB_Job_GetAccount(refJob)==AB_Job_GetAccount(uj)) {
-	AB_JOB_TYPE jt;
-
-	jt=AB_Job_GetType(uj);
-	if (jt==AB_Job_TypeGetBalance) {
-	  AB_IMEXPORTER_ACCOUNTINFO *ai;
-
-	  AB_Job_SetStatus(uj, AB_Job_StatusFinished);
-	  ai=AB_ImExporterContext_GetFirstAccountInfo(ictx);
-	  while(ai) {
-	    AB_ACCOUNT_STATUS *ast;
-
-	    /* last account info received wins */
-	    ast=AB_ImExporterAccountInfo_GetFirstAccountStatus(ai);
-	    while(ast) {
-	      /* last received wins */
-	      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-			"Saving account status to job %08x",
-			AB_Job_GetJobId(uj));
-	      AB_JobGetBalance_SetAccountStatus(uj, ast);
-	      ast=AB_ImExporterAccountInfo_GetNextAccountStatus(ai);
-	    }
-	    ai=AB_ImExporterContext_GetNextAccountInfo(ictx);
-	  }
-	}
-	else if (jt==AB_Job_TypeGetTransactions) {
-	  AB_IMEXPORTER_ACCOUNTINFO *ai;
-	  AB_TRANSACTION_LIST2 *tl;
-
-	  tl=AB_Transaction_List2_new();
-	  ai=AB_ImExporterContext_GetFirstAccountInfo(ictx);
-	  while(ai) {
-	    const AB_TRANSACTION *t;
-
-	    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
-	    AB_Job_SetStatus(uj, AB_Job_StatusFinished);
-	    while(t) {
-	      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-			"Adding transaction to job %08x",
-			AB_Job_GetJobId(uj));
-              AB_Transaction_List2_PushBack(tl, AB_Transaction_dup(t));
-	      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
-	    } /* while t */
-	    ai=AB_ImExporterContext_GetNextAccountInfo(ictx);
-	  } /* while ai */
-	  if (AB_Transaction_List2_GetSize(tl)==0)
-	    AB_Transaction_List2_free(tl);
-	  else
-	    AB_JobGetTransactions_SetTransactions(uj, tl);
-	} /* if JobGetTransactions */
-      } /* if same account */
-      else {
-        DBG_ERROR(0, "Account does not match");
-      }
-      uj=AB_Job_List2Iterator_Next(jit);
-    } /* while */
-    AB_Job_List2Iterator_free(jit);
-  }
-
-  return 0;
-}
-
-
-
-int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq){
+int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              AO_USERQUEUE *uq){
   AB_JOB_LIST2_ITERATOR *jit;
   AO_PROVIDER *dp;
   int errors=0;
@@ -1294,34 +1216,20 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq){
 
       jt=AB_Job_GetType(uj);
       if (jt==AB_Job_TypeGetBalance || jt==AB_Job_TypeGetTransactions) {
-	AB_IMEXPORTER_CONTEXT *ictx;
-	int rv;
+        int rv;
 
 	/* start new context */
-	ictx=AB_ImExporterContext_new();
-
-	rv=AO_Provider_RequestStatements(pro, uj, ictx);
+        rv=AO_Provider_RequestStatements(pro, uj, ctx);
 	if (rv==AB_ERROR_USER_ABORT) {
 	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
 	  return rv;
 	}
 	else if (rv==AB_ERROR_ABORTED) {
-	  AB_ImExporterContext_free(ictx);
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Aborted");
-	  break;
-	}
-	if (!rv && AB_Job_GetStatus(uj)!=AB_Job_StatusError) {
-	  /* Store data from context to all matching jobs */
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Distributing context");
-	  rv=AO_Provider_DistributeContext(pro, uj, ictx);
-	}
-	else {
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-		    "Not distributing context (%d)", rv);
-	}
+          DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Aborted");
+          break;
+        }
 
-	AB_ImExporterContext_free(ictx);
 	if (!rv)
 	  oks++;
 	else
@@ -1354,7 +1262,8 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq){
 
 
 
-int AO_Provider_ExecQueue(AB_PROVIDER *pro) {
+int AO_Provider_ExecQueue(AB_PROVIDER *pro,
+                          AB_IMEXPORTER_CONTEXT *ctx) {
   AO_USERQUEUE *uq;
   AO_PROVIDER *dp;
   int errors=0;
@@ -1367,7 +1276,7 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro) {
 
   uq=AO_Queue_FirstUserQueue(dp->queue);
   while(uq) {
-    rv=AO_Provider_ExecUserQueue(pro, uq);
+    rv=AO_Provider_ExecUserQueue(pro, ctx, uq);
     if (rv)
       errors++;
     else

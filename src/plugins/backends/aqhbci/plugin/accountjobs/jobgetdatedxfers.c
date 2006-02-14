@@ -72,18 +72,18 @@ void AH_Job_GetDatedTransfers_FreeData(void *bp, void *p){
   AH_JOB_GETDATEDTRANSFERS *aj;
 
   aj=(AH_JOB_GETDATEDTRANSFERS*)p;
-  AB_Transaction_List2_free(aj->datedTransfers);
   GWEN_FREE_OBJECT(aj);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetDatedTransfers_Process(AH_JOB *j){
+int AH_Job_GetDatedTransfers_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETDATEDTRANSFERS *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
-  AB_TRANSACTION_LIST2 *tl;
+  AB_ACCOUNT *a;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
   int rv;
   int i;
 
@@ -96,7 +96,12 @@ int AH_Job_GetDatedTransfers_Process(AH_JOB *j){
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  tl=AB_Transaction_List2_new();
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
+  ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                         AB_Account_GetBankCode(a),
+                                         AB_Account_GetAccountNumber(a));
+  assert(ai);
 
   /* search for "DatedTransfer" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -107,13 +112,11 @@ int AH_Job_GetDatedTransfers_Process(AH_JOB *j){
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
       AH_Job_SetStatus(j, AH_JobStatusError);
-      AB_Transaction_List2_free(tl);
       return rv;
     }
     rv=AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      AB_Transaction_List2_free(tl);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
@@ -233,20 +236,9 @@ int AH_Job_GetDatedTransfers_Process(AH_JOB *j){
       }
 
       /* add to list */
-      AB_Transaction_List2_PushBack(tl, t);
-
+      AB_ImExporterAccountInfo_AddDatedTransfer(ai, t);
     } /* if "datedTransfer" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  }
-
-  if (AB_Transaction_List2_GetSize(tl)==0) {
-    AB_Transaction_List2_free(tl);
-    tl=0;
-  }
-  else {
-    if (aj->datedTransfers)
-      AB_Transaction_List2_free(aj->datedTransfers);
-    aj->datedTransfers=tl;
   }
 
   return 0;
@@ -278,10 +270,6 @@ int AH_Job_GetDatedTransfers_Exchange(AH_JOB *j, AB_JOB *bj,
     return 0;
 
   case AH_Job_ExchangeModeResults:
-    if (aj->datedTransfers) {
-      AB_JobGetDatedTransfers_SetDatedTransfers(bj, aj->datedTransfers);
-      aj->datedTransfers=0;
-    }
     return 0;
 
   default:

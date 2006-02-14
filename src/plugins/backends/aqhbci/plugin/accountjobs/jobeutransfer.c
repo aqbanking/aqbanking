@@ -91,7 +91,7 @@ void AH_Job_EuTransfer_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_EuTransfer_Process(AH_JOB *j){
+int AH_Job_EuTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_EUTRANSFER *aj;
 
   assert(j);

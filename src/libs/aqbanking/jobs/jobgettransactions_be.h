@@ -24,20 +24,6 @@ extern "C" {
 #endif
 
 
-/**
- * Takes over ownership of the given list
- */
-AQBANKING_API 
-void AB_JobGetTransactions_SetTransactions(AB_JOB *j,
-                                           AB_TRANSACTION_LIST2 *tl);
-
-/**
- * Takes over ownership of the given list
- */
-AQBANKING_API 
-void AB_JobGetTransactions_SetAccountStatusList(AB_JOB *j,
-                                                AB_ACCOUNT_STATUS_LIST2 *tl);
-
 AQBANKING_API 
 void AB_JobGetTransactions_SetMaxStoreDays(AB_JOB *j, int i);
 

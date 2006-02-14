@@ -234,7 +234,7 @@ public:
    * empty upon return. You can verify this by calling
    * @ref AB_Banking_GetEnqueuedJobs.
    */
-  int executeQueue();
+  virtual int executeQueue(AB_IMEXPORTER_CONTEXT *ctx);
 
   /**
    * Returns the list of currently enqueued jobs. If the queue is empty

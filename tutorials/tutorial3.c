@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
                            "*");     /* account number (wildcard) */
   if (a) {
     AB_JOB *j;
+    AB_IMEXPORTER_CONTEXT *ctx;
 
     /* create a job which retrieves transaction statements. */
     j=AB_JobGetTransactions_new(a);
@@ -80,60 +81,55 @@ int main(int argc, char **argv) {
       return 2;
     }
 
+    /* When executing a list of enqueued jobs (as we will do below) all the
+     * data returned by the server will be stored within an ImExporter
+     * context.
+     */
+    ctx=AB_ImExporterContext_new();
+
     /* execute the queue. This effectivly sends all jobs which have been
      * enqueued to the respective backends/banks.
      * It only returns an error code (!=0) if not a single job could be
      * executed successfully. */
-    rv=AB_Banking_ExecuteQueue(ab);
+    rv=AB_Banking_ExecuteQueueWithCtx(ab, ctx);
     if (rv) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
       return 2;
     }
     else {
-      AB_TRANSACTION_LIST2 *tl;
+      AB_IMEXPORTER_ACCOUNTINFO *ai;
 
-      /* upon success the job might have some transactions for us.
-       * Please refer to tutorial2 for an introduction into the usage of
-       * List2's and List2 iterators in AqBanking. */
-      tl=AB_JobGetTransactions_GetTransactions(j);
-      if (tl) {
-        AB_TRANSACTION_LIST2_ITERATOR *it;
+      ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+      while(ai) {
+        const AB_TRANSACTION *t;
 
-        it=AB_Transaction_List2_First(tl);
-        if (it) {
-          AB_TRANSACTION *t;
+        t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+        while(t) {
+          const AB_VALUE *v;
 
-          t=AB_Transaction_List2Iterator_Data(it);
-          while(t) {
-            const AB_VALUE *v;
+          v=AB_Transaction_GetValue(t);
+          if (v) {
+            const GWEN_STRINGLIST *sl;
+            const char *purpose;
 
-            v=AB_Transaction_GetValue(t);
-            if (v) {
-              const GWEN_STRINGLIST *sl;
-              const char *purpose;
+            /* The purpose (memo field) might contain multiple lines.
+             * Therefore AqBanking stores the purpose in a string list
+             * of which the first is used in this tutorial */
+            sl=AB_Transaction_GetPurpose(t);
+            if (sl)
+              purpose=GWEN_StringList_FirstString(sl);
+            else
+              purpose="";
 
-              /* The purpose (memo field) might contain multiple lines.
-               * Therefore AqBanking stores the purpose in a string list
-               * of which the first is used in this tutorial */
-              sl=AB_Transaction_GetPurpose(t);
-              if (sl)
-                purpose=GWEN_StringList_FirstString(sl);
-              else
-                purpose="";
-
-              fprintf(stderr, "Transaction: %s (%.2lf %s)\n",
-                      purpose,
-                      AB_Value_GetValue(v),
-                      AB_Value_GetCurrency(v));
-            }
-            t=AB_Transaction_List2Iterator_Next(it);
+            fprintf(stderr, "Transaction: %s (%.2lf %s)\n",
+                    purpose,
+                    AB_Value_GetValue(v),
+                    AB_Value_GetCurrency(v));
           }
-
-          AB_Transaction_List2Iterator_free(it);
-        } /* if iterator */
-        /* At this point we do NOT free the list because it is owned by
-         * the job */
-      } /* if transaction list */
+          t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+        } /* while transactions */
+        ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+      } /* while ai */
     } /* if executeQueue successfull */
     /* free the job to avoid memory leaks */
     AB_Job_free(j);

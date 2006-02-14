@@ -230,7 +230,7 @@ const char *AH_Job_SingleTransfer_GetOldFiid(AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SingleTransfer_Process(AH_JOB *j){
+int AH_Job_SingleTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_SINGLETRANSFER *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -881,7 +881,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-				   AH_JOB_EXCHANGE_MODE m){
+                                   AH_JOB_EXCHANGE_MODE m){
   AH_JOB_SINGLETRANSFER *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);

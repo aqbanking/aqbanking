@@ -285,6 +285,7 @@ int AG_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 int AG_Provider_GetBalance(AB_PROVIDER *pro,
+                           AB_IMEXPORTER_CONTEXT *ctx,
                            LC_CARD *gc,
                            AB_JOB *bj) {
   AG_PROVIDER *dp;
@@ -310,6 +311,8 @@ int AG_Provider_GetBalance(AB_PROVIDER *pro,
     GWEN_TIME *ti;
     AB_BALANCE *bal;
     AB_VALUE *v;
+    AB_ACCOUNT *a;
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
 
     ast=AB_AccountStatus_new();
     ti=GWEN_CurrentTime();
@@ -324,8 +327,13 @@ int AG_Provider_GetBalance(AB_PROVIDER *pro,
     AB_AccountStatus_SetBookedBalance(ast, bal);
     AB_Balance_free(bal);
 
-    AB_JobGetBalance_SetAccountStatus(bj, ast);
-    AB_AccountStatus_free(ast);
+    a=AB_Job_GetAccount(bj);
+    assert(a);
+    ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                           AB_Account_GetBankCode(a),
+                                           AB_Account_GetAccountNumber(a));
+    assert(ai);
+    AB_ImExporterAccountInfo_AddAccountStatus(ai, ast);
     LC_GeldKarte_Values_free(val);
   }
 
@@ -335,25 +343,33 @@ int AG_Provider_GetBalance(AB_PROVIDER *pro,
 
 
 int AG_Provider_GetTransactions(AB_PROVIDER *pro,
+                                AB_IMEXPORTER_CONTEXT *ctx,
                                 LC_CARD *gc,
                                 AB_JOB *bj) {
   AG_PROVIDER *dp;
   LC_GELDKARTE_BLOG_LIST2 *blogs;
   LC_GELDKARTE_LLOG_LIST2 *llogs;
   LC_CLIENT_RESULT res;
-  AB_TRANSACTION_LIST2 *tl;
   LC_GELDKARTE_BLOG_LIST2_ITERATOR *bit;
   LC_GELDKARTE_LLOG_LIST2_ITERATOR *lit;
+  AB_ACCOUNT *a;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
+  a=AB_Job_GetAccount(bj);
+  assert(a);
+  ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                         AB_Account_GetBankCode(a),
+                                         AB_Account_GetAccountNumber(a));
+  assert(ai);
+
   AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
                          AB_Banking_LogLevelNotice,
                          I18N("Reading business transactions"));
 
-  tl=AB_Transaction_List2_new();
   blogs=LC_GeldKarte_BLog_List2_new();
   res=LC_GeldKarte_ReadBLogs(gc, blogs);
   if (res!=LC_Client_ResultOk) {
@@ -365,7 +381,6 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
     else {
       DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not read BLOGS");
       LC_GeldKarte_BLog_List2_freeAll(blogs);
-      AB_Transaction_List2_freeAll(tl);
       AB_Job_SetStatus(bj, AB_Job_StatusError);
       AB_Job_SetResultText(bj, "Could not read BLOGs");
       AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
@@ -432,7 +447,7 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
       AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
 			     AB_Banking_LogLevelInfo,
 			     I18N("Adding business transaction"));
-      AB_Transaction_List2_PushBack(tl, t);
+      AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
       blog=LC_GeldKarte_BLog_List2Iterator_Next(bit);
     } /* while */
@@ -455,7 +470,6 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
     else {
       DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not read LLOGS");
       LC_GeldKarte_LLog_List2_freeAll(llogs);
-      AB_Transaction_List2_freeAll(tl);
       AB_Job_SetStatus(bj, AB_Job_StatusError);
       AB_Job_SetResultText(bj, "Could not read BLOGs");
       AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
@@ -538,8 +552,8 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
 
       AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
 			     AB_Banking_LogLevelInfo,
-			     I18N("Adding load/unload transaction"));
-      AB_Transaction_List2_PushBack(tl, t);
+                             I18N("Adding load/unload transaction"));
+      AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
       llog=LC_GeldKarte_LLog_List2Iterator_Next(lit);
     } /* while */
@@ -551,7 +565,6 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
   AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
                          AB_Banking_LogLevelNotice,
                          I18N("Job exeuted successfully"));
-  AB_JobGetTransactions_SetTransactions(bj, tl);
   AB_Job_SetStatus(bj, AB_Job_StatusFinished);
 
   return 0;
@@ -559,7 +572,9 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
 
 
 
-int AG_Provider_ProcessCard(AB_PROVIDER *pro, AG_CARD *card){
+int AG_Provider_ProcessCard(AB_PROVIDER *pro,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            AG_CARD *card){
   AG_PROVIDER *dp;
   AB_JOB_LIST2_ITERATOR *ait;
 
@@ -591,10 +606,10 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro, AG_CARD *card){
 
       switch(AB_Job_GetType(bj)) {
       case AB_Job_TypeGetBalance:
-        rv=AG_Provider_GetBalance(pro, gc, bj);
+        rv=AG_Provider_GetBalance(pro, ctx, gc, bj);
         break;
       case AB_Job_TypeGetTransactions:
-        rv=AG_Provider_GetTransactions(pro, gc, bj);
+        rv=AG_Provider_GetTransactions(pro, ctx, gc, bj);
         break;
       default:
         /* not possible, but still ... */
@@ -651,7 +666,7 @@ int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
     AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
                            AB_Banking_LogLevelNotice,
                            I18N("Handling job"));
-    rv=AG_Provider_ProcessCard(pro, card);
+    rv=AG_Provider_ProcessCard(pro, ctx, card);
     if (rv) {
       DBG_INFO(AQGELDKARTE_LOGDOMAIN, "Error processing card (%d)", rv);
       if (rv==AB_ERROR_USER_ABORT) {

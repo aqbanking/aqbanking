@@ -10,7 +10,7 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-/** @file provider.h
+/** @file aqbanking/provider.h
  * @short This file is used by AqBanking and provider backends.
  */
 

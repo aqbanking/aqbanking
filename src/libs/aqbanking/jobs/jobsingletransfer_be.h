@@ -18,11 +18,9 @@
 #include <aqbanking/jobsingletransfer.h>
 
 
-AQBANKING_API void AB_JobSingleTransfer_SetFieldLimits(AB_JOB *j,
+AQBANKING_API
+void AB_JobSingleTransfer_SetFieldLimits(AB_JOB *j,
                                          AB_TRANSACTION_LIMITS *limits);
-AB_JOB *AB_JobSingleTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
-int AB_JobSingleTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
-
 
 #endif
 

@@ -40,16 +40,24 @@ AQHBCI_API
 const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 
 AQHBCI_API
-int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            int nounmount);
 
 AQHBCI_API
-int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
+                         AB_IMEXPORTER_CONTEXT *ctx,
+                         int nounmount);
 
 AQHBCI_API
-int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              int nounmount);
 
 AQHBCI_API
-int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             int nounmount);
 
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount);

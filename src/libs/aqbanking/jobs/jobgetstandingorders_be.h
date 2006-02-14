@@ -24,14 +24,6 @@ extern "C" {
 #endif
 
 
-/**
- * Takes over ownership of the given list
- */
-AQBANKING_API 
-void AB_JobGetStandingOrders_SetStandingOrders(AB_JOB *j,
-                                               AB_TRANSACTION_LIST2 *tl);
-
-
 #ifdef __cplusplus
 }
 #endif

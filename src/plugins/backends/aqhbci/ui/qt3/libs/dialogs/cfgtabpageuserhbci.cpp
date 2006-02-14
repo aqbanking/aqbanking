@@ -278,6 +278,7 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
   AB_PROVIDER *pro;
   int rv;
   GWEN_TYPE_UINT32 pid;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   qb=getBanking();
   assert(qb);
@@ -292,7 +293,9 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
                            "Retrieving the public keys of the server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetServerKeys(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetServerKeys(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error getting server keys");
     qb->progressEnd(pid);
@@ -305,7 +308,9 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
                            "bank server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetSysId(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error getting sysid (%d)", rv);
     qb->progressEnd(pid);
@@ -325,6 +330,7 @@ void CfgTabPageUserHbci::slotGetSysId() {
   AB_PROVIDER *pro;
   int rv;
   GWEN_TYPE_UINT32 pid;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   qb=getBanking();
   assert(qb);
@@ -340,7 +346,9 @@ void CfgTabPageUserHbci::slotGetSysId() {
                            "bank server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetSysId(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error getting sysid (%d)", rv);
     qb->progressEnd(pid);
@@ -357,6 +365,7 @@ void CfgTabPageUserHbci::slotGetAccounts() {
   AB_PROVIDER *pro;
   int rv;
   GWEN_TYPE_UINT32 pid;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   qb=getBanking();
   assert(qb);
@@ -372,7 +381,9 @@ void CfgTabPageUserHbci::slotGetAccounts() {
                            "bank server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetAccounts(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     if (rv==AB_ERROR_NO_DATA) {
       QMessageBox::information(this,

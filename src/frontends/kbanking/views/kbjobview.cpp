@@ -134,17 +134,13 @@ void KBJobView::slotExecute(){
   }
 
   DBG_NOTICE(0, "Executing queue");
-  rv=_app->executeQueue();
-  if (rv) {
-    DBG_NOTICE(0, "Error %d", rv);
-  }
-
-  /* handle results of all jobs */
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_GatherResponses(_app->getCInterface(),
-                                ctx);
+  rv=_app->executeQueue(ctx);
   if (!rv)
     _app->importContext(ctx);
+  else {
+    DBG_ERROR(0, "Error: %d", rv);
+  }
   AB_ImExporterContext_free(ctx);
 
   // let App emit signals to inform account views

@@ -82,6 +82,7 @@ void ActionGetAccounts::slotButtonClicked() {
   AB_PROVIDER *pro;
   GWEN_TYPE_UINT32 pid;
   int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
@@ -101,7 +102,8 @@ void ActionGetAccounts::slotButtonClicked() {
                            "bank server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetAccounts(pro, u, 1);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     if (rv==AB_ERROR_NO_DATA) {
       QMessageBox::information(this,

@@ -104,6 +104,9 @@ struct AB_BANKING {
 
   int progressNestingLevel;
   GWEN_TYPE_UINT32 lastProgressId;
+
+  AB_JOB_LIST2 *currentJobs;
+
 };
 
 
@@ -190,7 +193,8 @@ static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
-                                    AB_IMEXPORTER_CONTEXT *ctx);
+                                    AB_IMEXPORTER_CONTEXT *ctx,
+                                    GWEN_TYPE_UINT32 pid);
 
 
 static AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
@@ -233,5 +237,11 @@ static int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name);
 static int AB_Banking__LoadData(AB_BANKING *ab,
                                 const char *prefix,
                                 const char *name);
+
+/** this function is only used as long as most major applications still
+ * use the old queue execution functions */
+static void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
+                                                AB_JOB_LIST2 *jl2);
+
 
 #endif /* AQBANKING_BANKING_P_H */

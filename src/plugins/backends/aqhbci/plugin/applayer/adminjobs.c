@@ -105,7 +105,7 @@ void AH_Job_GetKeys_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetKeys_Process(AH_JOB *j){
+int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETKEYS *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -555,7 +555,7 @@ void AH_Job_UpdateBank_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_UpdateBank_Process(AH_JOB *j){
+int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_UPDATEBANK *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -778,7 +778,7 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 }
 
 
-int AH_Job_GetSysId_Process(AH_JOB *j){
+int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSYSID *jd;
 
   assert(j);
@@ -878,7 +878,7 @@ void AH_Job_TestVersion_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_TestVersion_Process(AH_JOB *j){
+int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_TESTVERSION *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -1058,7 +1058,7 @@ void AH_Job_GetStatus_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetStatus_Process(AH_JOB *j){
+int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSTATUS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetStatus");

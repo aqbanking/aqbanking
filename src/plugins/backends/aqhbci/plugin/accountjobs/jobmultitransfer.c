@@ -153,7 +153,7 @@ int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_MultiTransfer_Process(AH_JOB *j){
+int AH_Job_MultiTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_MULTITRANSFER *aj;
 
   assert(j);
@@ -400,7 +400,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-				  AH_JOB_EXCHANGE_MODE m){
+                                  AH_JOB_EXCHANGE_MODE m){
   AH_JOB_MULTITRANSFER *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);

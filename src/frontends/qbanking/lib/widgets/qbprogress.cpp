@@ -192,7 +192,7 @@ int QBProgress::advance(GWEN_TYPE_UINT32 progress){
   bool chg;
 
   chg=_handleTime();
-  if (chg) {
+  if (chg || progress!=AB_BANKING_PROGRESS_NONE) {
     if (_total==AB_BANKING_PROGRESS_NONE) {
       if (progress==AB_BANKING_PROGRESS_ONE)
         progress=_lastProgress+1;
@@ -214,7 +214,9 @@ int QBProgress::advance(GWEN_TYPE_UINT32 progress){
       if (progress==AB_BANKING_PROGRESS_NONE) {
       }
       else if (progress==AB_BANKING_PROGRESS_ONE) {
-        progressBar->setProgress(progressBar->progress()+1);
+        progress=_lastProgress+1;
+        progressBar->setProgress(progress);
+        _lastProgress=progress;
       }
       else {
         progressBar->setProgress(progress);

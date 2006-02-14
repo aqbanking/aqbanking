@@ -23,7 +23,7 @@ extern "C" {
 
 
 /**
- * @file msgengine_l.h
+ * @file msgengine.h
  *
  * This message engine implements a few new types:
  * <ul>

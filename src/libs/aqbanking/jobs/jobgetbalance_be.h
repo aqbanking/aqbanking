@@ -24,11 +24,6 @@ extern "C" {
 #endif
 
 
-AQBANKING_API
-void AB_JobGetBalance_SetAccountStatus(AB_JOB *j,
-                                       const AB_ACCOUNT_STATUS *as);
-
-
 #ifdef __cplusplus
 }
 #endif

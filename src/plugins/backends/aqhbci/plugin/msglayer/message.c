@@ -1292,37 +1292,6 @@ void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetDecodedMsg(AH_MSG *msg, GWEN_DB_NODE *db){
-  assert(msg);
-  assert(db);
-
-  GWEN_DB_Group_free(msg->decodedMsg);
-  msg->decodedMsg=db;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_DB_NODE *AH_Msg_GetDecodedMsg(const AH_MSG *msg){
-  assert(msg);
-  return msg->decodedMsg;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_DB_NODE *AH_Msg_TakeDecodedMsg(AH_MSG *msg){
-  GWEN_DB_NODE *db;
-
-  assert(msg);
-  db=msg->decodedMsg;
-  msg->decodedMsg=0;
-  return db;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 void AH_Msg_SetTan(AH_MSG *hmsg, const char *s){
   assert(hmsg);
   free(hmsg->usedTan);

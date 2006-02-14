@@ -137,48 +137,16 @@ int getSysId(AB_BANKING *ab,
     return 3;
   }
   else {
-    AH_JOB *job;
-    AH_OUTBOX *ob;
+    AB_IMEXPORTER_CONTEXT *ctx;
 
-    job=AH_Job_GetSysId_new(u);
-    if (!job) {
-      DBG_ERROR(0, "Job not supported, should not happen");
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetSysId(pro, u, ctx, 0);
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      DBG_ERROR(0, "Error getting system id (%d)", rv);
+      AB_Banking_Fini(ab);
       return 3;
     }
-    AH_Job_AddSigner(job, AB_User_GetUserId(u));
-
-    ob=AH_Outbox_new(hbci);
-    AH_Outbox_AddJob(ob, job);
-
-    if (AH_Outbox_Execute(ob, 1, 0)) {
-      DBG_ERROR(0, "Could not execute outbox.\n");
-      AH_Outbox_free(ob);
-      return 3;
-    }
-
-    if (AH_Job_HasErrors(job) || AH_Job_GetStatus(job)!=AH_JobStatusAnswered){
-      DBG_ERROR(0, "Job has errors (%s)",
-		AH_Job_StatusName(AH_Job_GetStatus(job)));
-      // TODO: show errors
-      AH_Outbox_free(ob);
-      return 3;
-    }
-    else {
-      const char *s;
-
-      s=AH_Job_GetSysId_GetSysId(job);
-      if (!s || !*s) {
-        DBG_ERROR(0, "No system id received.");
-        AH_Outbox_free(ob);
-        return 3;
-      }
-      DBG_INFO(0, "Received system id \"%s\"", s);
-      AH_User_SetSystemId(u, s);
-    }
-
-    AH_Outbox_free(ob);
-
-    AH_Job_free(job);
   }
 
 

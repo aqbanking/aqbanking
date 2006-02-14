@@ -33,20 +33,14 @@ extern "C" {
 AQBANKING_API
 AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a);
 
-/**
- * Returns the list of transactions received.
- * The job remains the owner of the list and all elements in it.
- */
-AQBANKING_API 
+/** @deprecated */
+AQBANKING_API AQBANKING_DEPRECATED
 AB_TRANSACTION_LIST2*
   AB_JobGetTransactions_GetTransactions(const AB_JOB *j);
 
 
-/**
- * Returns the list of account status' received.
- * The job remains the owner of the list and all elements in it.
- */
-AQBANKING_API 
+/** @deprecated */
+AQBANKING_API AQBANKING_DEPRECATED
 AB_ACCOUNT_STATUS_LIST2*
   AB_JobGetTransactions_GetAccountStatusList(const AB_JOB *j);
 

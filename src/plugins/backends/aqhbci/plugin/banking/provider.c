@@ -718,7 +718,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
     return 0;
   }
 
-  rv=AH_Outbox_Execute(hp->outbox, 0, 0);
+  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox.");
     rv=AB_ERROR_GENERIC;
@@ -1091,6 +1091,7 @@ int AH_Provider_LoadAllJobPlugins(AB_PROVIDER *pro){
 
 
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
+                            AB_IMEXPORTER_CONTEXT *ctx,
                             int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -1125,7 +1126,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     return rv;
@@ -1162,6 +1163,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 
 
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
+                         AB_IMEXPORTER_CONTEXT *ctx,
                          int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -1196,7 +1198,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     return rv;
@@ -1240,7 +1242,9 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
+int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_MEDIUM *m;
@@ -1272,7 +1276,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, 0, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
   if (rv) {
     AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
                            I18N("Could not execute outbox."));
@@ -1329,7 +1333,9 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
 
 
 
-int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
+int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_MEDIUM *m;
@@ -1411,7 +1417,7 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
   AH_Outbox_AddJob(ob, job);
 
   /* execute queue */
-  rv=AH_Outbox_Execute(ob, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
   if (rv) {
     AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
                            I18N("Could not execute outbox."));

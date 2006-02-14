@@ -14,6 +14,10 @@
 # include <config.h>
 #endif
 
+/* don't warn about our own deprecated functions */
+#define AQBANKING_NOWARN_DEPRECATED 
+
+
 #include "banking_p.h"
 #include "provider_l.h"
 #include "imexporter_l.h"
@@ -23,6 +27,12 @@
 #include "country_l.h"
 #include "wcb_l.h"
 #include "userfns_l.h"
+
+/* TODO: includes for distrib functions, soon to be removed */
+#include "jobgettransactions_l.h"
+#include "jobgetbalance_l.h"
+#include "jobgetstandingorders_l.h"
+#include "jobgetdatedtransfers_l.h"
 
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>
@@ -63,7 +73,6 @@
 #else
 # define DIRSEP "/"
 #endif
-
 
 #undef AB_Banking_new
 
@@ -2503,14 +2512,48 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly){
 
 
 
-int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
-                             AB_IMEXPORTER_CONTEXT *ctx){
+int AB_Banking_ExecutionProgress(AB_BANKING *ab, GWEN_TYPE_UINT32 pid) {
+  if (!ab->currentJobs)
+    return 0;
+  else {
+    AB_JOB_LIST2_ITERATOR *jit;
+    GWEN_TYPE_UINT32 count=0;
+
+    jit=AB_Job_List2_First(ab->currentJobs);
+    if (jit) {
+      AB_JOB *j;
+
+      j=AB_Job_List2Iterator_Data(jit);
+      while(j) {
+        AB_JOB_STATUS jst;
+
+        jst=AB_Job_GetStatus(j);
+        if (jst==AB_Job_StatusFinished ||
+            jst==AB_Job_StatusPending ||
+            jst==AB_Job_StatusError)
+          count++;
+        j=AB_Job_List2Iterator_Next(jit);
+      } /* while */
+      AB_Job_List2Iterator_free(jit);
+    }
+    return AB_Banking_ProgressAdvance(ab, pid, count);
+  }
+}
+
+
+
+int AB_Banking__ExecuteQueue(AB_BANKING *ab,
+                             AB_JOB_LIST2 *jl,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             GWEN_TYPE_UINT32 pid){
   AB_PROVIDER *pro;
   int succ;
 
   assert(ab);
   pro=AB_Provider_List_First(ab->providers);
   succ=0;
+
+  ab->currentJobs=jl;
 
   while(pro) {
     AB_JOB_LIST2_ITERATOR *jit;
@@ -2561,9 +2604,11 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
 	  }
 	} /* if job enqueued */
 	else {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Job in queue with status \"%s\"",
-		   AB_Job_Status2Char(AB_Job_GetStatus(j)));
-	}
+          DBG_DEBUG(AQBANKING_LOGDOMAIN,
+                    "Job %08x in queue with status \"%s\"",
+                    AB_Job_GetJobId(j),
+                    AB_Job_Status2Char(AB_Job_GetStatus(j)));
+        }
         j=AB_Job_List2Iterator_Next(jit);
       } /* while */
       AB_Job_List2Iterator_free(jit);
@@ -2578,6 +2623,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
 
         if (rv==AB_ERROR_USER_ABORT) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          ab->currentJobs=0;
           return rv;
         }
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
@@ -2591,15 +2637,24 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
                                   I18N("Continue"), I18N("Abort"), 0);
         if (lrv!=1) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          ab->currentJobs=0;
           return AB_ERROR_USER_ABORT;
         }
       }
-      else
+      else {
+        rv=AB_Banking_ExecutionProgress(ab, pid);
+        if (rv==AB_ERROR_USER_ABORT) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          ab->currentJobs=0;
+          return rv;
+        }
         succ++;
+      }
     } /* if jobs in backend's queue */
 
     pro=AB_Provider_List_Next(pro);
   } /* while */
+  ab->currentJobs=0;
 
   if (!succ) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
@@ -2612,6 +2667,19 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl,
 
 
 int AB_Banking_ExecuteQueue(AB_BANKING *ab){
+  AB_IMEXPORTER_CONTEXT *ctx;
+  int rv;
+
+  ctx=AB_ImExporterContext_new();
+  rv=AB_Banking_ExecuteQueueWithCtx(ab, ctx);
+  AB_ImExporterContext_free(ctx);
+  return rv;
+}
+
+
+
+int AB_Banking_ExecuteQueueWithCtx(AB_BANKING *ab,
+                                   AB_IMEXPORTER_CONTEXT *ctx) {
   AB_JOB_LIST2 *jl2;
   int rv;
 
@@ -2621,8 +2689,8 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab){
     return 0;
   }
 
-  rv=AB_Banking_ExecuteJobList(ab, jl2);
-  AB_Job_List2_free(jl2);
+  rv=AB_Banking_ExecuteJobListWithCtx(ab, jl2, ctx);
+  AB_Job_List2_FreeAll(jl2);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -2642,14 +2710,14 @@ int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 
   assert(ab);
 
-  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Attaching to jobs, dequeing them");
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Attaching to jobs, dequeing them");
   jit=AB_Job_List2_First(jl2);
   if (jit) {
     AB_JOB *j;
 
     j=AB_Job_List2Iterator_Data(jit);
     while(j) {
-      /* attach to job in case the queue is the only owner ow the job
+      /* attach to job in case the queue is the only owner of the job
        * we will free the job later */
       AB_Job_Attach(j);
       AB_Job_List_Del(j);
@@ -2666,8 +2734,8 @@ int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
                                I18N("Executing Jobs"),
                                I18N("Now the jobs are send via their "
                                     "backends to the credit institutes."),
-			       AB_Job_List2_GetSize(jl2));
-  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
+                               AB_Job_List2_GetSize(jl2));
+  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx, pid);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
   }
@@ -2751,7 +2819,162 @@ int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 
 
 int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
-  return AB_Banking_ExecuteJobListWithCtx(ab, jl2, 0);
+  AB_IMEXPORTER_CONTEXT *ctx;
+  int rv;
+
+  ctx=AB_ImExporterContext_new();
+  rv=AB_Banking_ExecuteJobListWithCtx(ab, jl2, ctx);
+  /* distribute context accross jobs in list */
+  AB_Banking__DistribContextAmongJobs(ctx, jl2);
+  AB_ImExporterContext_free(ctx);
+  return rv;
+}
+
+
+
+void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
+                                         AB_JOB_LIST2 *jl2){
+  AB_JOB_LIST2_ITERATOR *jit;
+
+  jit=AB_Job_List2_First(jl2);
+  if (jit) {
+    AB_JOB *j;
+
+    j=AB_Job_List2Iterator_Data(jit);
+    assert(j);
+    while(j) {
+      AB_JOB_STATUS jst;
+
+      jst=AB_Job_GetStatus(j);
+      if (jst==AB_Job_StatusFinished ||
+          jst==AB_Job_StatusPending) {
+        switch(AB_Job_GetType(j)) {
+        case AB_Job_TypeGetBalance: {
+          AB_ACCOUNT *a;
+          AB_IMEXPORTER_ACCOUNTINFO *ai;
+  
+          a=AB_Job_GetAccount(j);
+          assert(a);
+          ai=AB_ImExporterContext_FindAccountInfo(ctx,
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a));
+          if (ai) {
+            AB_ACCOUNT_STATUS *ast;
+  
+            ast=AB_ImExporterAccountInfo_GetFirstAccountStatus(ai);
+            if (ast) {
+              while(ast) {
+                AB_JobGetBalance_SetAccountStatus(j, AB_AccountStatus_dup(ast));
+                ast=AB_ImExporterAccountInfo_GetNextAccountStatus(ai);
+              }
+            }
+          } /* if ai */
+          break;
+        }
+        case AB_Job_TypeGetTransactions: {
+          AB_ACCOUNT *a;
+          AB_IMEXPORTER_ACCOUNTINFO *ai;
+  
+          a=AB_Job_GetAccount(j);
+          assert(a);
+          ai=AB_ImExporterContext_FindAccountInfo(ctx,
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a));
+          if (ai) {
+            AB_ACCOUNT_STATUS *ast;
+            const AB_TRANSACTION *t;
+  
+            ast=AB_ImExporterAccountInfo_GetFirstAccountStatus(ai);
+            if (ast) {
+              AB_ACCOUNT_STATUS_LIST2 *asl;
+  
+              asl=AB_AccountStatus_List2_new();
+              while(ast) {
+                AB_AccountStatus_List2_PushBack(asl,
+                                                AB_AccountStatus_dup(ast));
+                ast=AB_ImExporterAccountInfo_GetNextAccountStatus(ai);
+              }
+              AB_JobGetTransactions_SetAccountStatusList(j, asl);
+            }
+  
+            t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+            if (t) {
+              AB_TRANSACTION_LIST2 *tl;
+  
+              tl=AB_Transaction_List2_new();
+              while(t) {
+                AB_Transaction_List2_PushBack(tl,
+                                              AB_Transaction_dup(t));
+                t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+              }
+              AB_JobGetTransactions_SetTransactions(j, tl);
+            }
+          } /* if ai */
+          break;
+        }
+        case AB_Job_TypeGetStandingOrders: {
+          AB_ACCOUNT *a;
+          AB_IMEXPORTER_ACCOUNTINFO *ai;
+  
+          a=AB_Job_GetAccount(j);
+          assert(a);
+          ai=AB_ImExporterContext_FindAccountInfo(ctx,
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a));
+          if (ai) {
+            const AB_TRANSACTION *t;
+  
+            t=AB_ImExporterAccountInfo_GetFirstStandingOrder(ai);
+            if (t) {
+              AB_TRANSACTION_LIST2 *tl;
+  
+              tl=AB_Transaction_List2_new();
+              while(t) {
+                AB_Transaction_List2_PushBack(tl,
+                                              AB_Transaction_dup(t));
+                t=AB_ImExporterAccountInfo_GetNextStandingOrder(ai);
+              }
+              AB_JobGetStandingOrders_SetStandingOrders(j, tl);
+            }
+          } /* if ai */
+          break;
+        }
+        case AB_Job_TypeGetDatedTransfers: {
+          AB_ACCOUNT *a;
+          AB_IMEXPORTER_ACCOUNTINFO *ai;
+  
+          a=AB_Job_GetAccount(j);
+          assert(a);
+          ai=AB_ImExporterContext_FindAccountInfo(ctx,
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a));
+          if (ai) {
+            const AB_TRANSACTION *t;
+  
+            t=AB_ImExporterAccountInfo_GetFirstDatedTransfer(ai);
+            if (t) {
+              AB_TRANSACTION_LIST2 *tl;
+  
+              tl=AB_Transaction_List2_new();
+              while(t) {
+                AB_Transaction_List2_PushBack(tl,
+                                              AB_Transaction_dup(t));
+                t=AB_ImExporterAccountInfo_GetNextDatedTransfer(ai);
+              }
+              AB_JobGetDatedTransfers_SetDatedTransfers(j, tl);
+            }
+          } /* if ai */
+          break;
+        }
+        default:
+          break;
+        }
+      } /* if status ok */
+      j=AB_Job_List2Iterator_Next(jit);
+    }
+
+    AB_Job_List2Iterator_free(jit);
+  }
 }
 
 
@@ -5522,11 +5745,9 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
     const char *result;
 
     result=GWEN_DB_GetCharValue(pd, varName, 0, 0);
-    DBG_ERROR(0, "Permanent result: %s", result);
     if (!result) {
       /* check temporary config */
       result=GWEN_DB_GetCharValue(ab->dbTempConfig, varName, 0, 0);
-      DBG_ERROR(0, "Temporary result: %s", result);
     }
     if (result) {
       if (strcasecmp(result, "accept")==0) {
@@ -5538,9 +5759,6 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
 	DBG_NOTICE(AQBANKING_LOGDOMAIN,
 		   "Automatically accepting certificate \"%s\"", hash);
         return GWEN_NetLayerSsl_AskAddCertResult_Tmp;
-      }
-      else {
-        DBG_ERROR(0, "No temp value");
       }
     }
     else
@@ -5559,7 +5777,8 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
        of month, h - digit of the hour, m - digit of the minute, s-
        digit of the second. All other characters are left unchanged. */
     if (GWEN_Time_toString(ti, I18N("YYYY/MM/DD hh:mm:ss"), tbuf)) {
-      DBG_ERROR(0, "Could not convert beforeDate to string");
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not convert beforeDate to string");
       abort();
     }
     strncpy(dbuffer1, GWEN_Buffer_GetStart(tbuf), sizeof(dbuffer1)-1);
@@ -5572,7 +5791,8 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
 
     tbuf=GWEN_Buffer_new(0, 32, 0, 1);
     if (GWEN_Time_toString(ti, I18N("YYYY/MM/DD hh:mm:ss"), tbuf)) {
-      DBG_ERROR(0, "Could not convert untilDate to string");
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not convert untilDate to string");
       abort();
     }
     strncpy(dbuffer2, GWEN_Buffer_GetStart(tbuf), sizeof(dbuffer2)-1);

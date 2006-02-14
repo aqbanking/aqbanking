@@ -115,7 +115,6 @@ void QBJobView::slotQueueUpdated(){
 
 void QBJobView::slotExecute(){
   std::list<AB_JOB*> jl;
-  //std::list<AB_JOB*>::iterator jit;
   int rv;
   bool updated;
   AB_IMEXPORTER_CONTEXT *ctx;
@@ -131,19 +130,15 @@ void QBJobView::slotExecute(){
   }
 
   DBG_INFO(0, "Executing queue");
-  rv=_app->executeQueue();
-  if (rv) {
-    DBG_NOTICE(0, "Error %d", rv);
-  }
-
-  /* handle results of all jobs */
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_GatherResponses(_app->getCInterface(),
-                                ctx);
+  rv=_app->executeQueue(ctx);
   if (!rv) {
     _app->importContext(ctx,
                         QBANKING_IMPORTER_FLAGS_COMPLETE_DAYS /*|
                         QBANKING_IMPORTER_FLAGS_OVERWRITE_DAYS */);
+  }
+  else {
+    DBG_NOTICE(0, "Error %d", rv);
   }
   AB_ImExporterContext_free(ctx);
 }

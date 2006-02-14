@@ -33,13 +33,17 @@ static void AG_Provider_FreeData(void *bp, void *p);
 
 
 static int AG_Provider_GetBalance(AB_PROVIDER *pro,
+                                  AB_IMEXPORTER_CONTEXT *ctx,
                                   LC_CARD *gc,
                                   AB_JOB *bj);
 static int AG_Provider_GetTransactions(AB_PROVIDER *pro,
+                                       AB_IMEXPORTER_CONTEXT *ctx,
                                        LC_CARD *gc,
                                        AB_JOB *bj);
 
-static int AG_Provider_ProcessCard(AB_PROVIDER *pro, AG_CARD *card);
+static int AG_Provider_ProcessCard(AB_PROVIDER *pro,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   AG_CARD *card);
 
 
 static int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);

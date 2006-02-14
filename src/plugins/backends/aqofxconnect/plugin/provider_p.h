@@ -78,13 +78,11 @@ static int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
 static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
                                          AB_IMEXPORTER_CONTEXT *ictx);
 
-static int AO_Provider_DistributeContext(AB_PROVIDER *pro,
-                                         AB_JOB *refJob,
-                                         AB_IMEXPORTER_CONTEXT *ictx);
-
-
-static int AO_Provider_ExecUserQueue(AB_PROVIDER *pro, AO_USERQUEUE *uq);
-static int AO_Provider_ExecQueue(AB_PROVIDER *pro);
+static int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     AO_USERQUEUE *uq);
+static int AO_Provider_ExecQueue(AB_PROVIDER *pro,
+                                 AB_IMEXPORTER_CONTEXT *ctx);
 
 static int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
 static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid);

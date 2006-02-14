@@ -92,18 +92,12 @@ int qexec(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_ExecuteQueue(ab);
+  ctx=AB_ImExporterContext_new();
+  rv=AB_Banking_ExecuteQueueWithCtx(ab, ctx);
   if (rv) {
     DBG_ERROR(AQT_LOGDOMAIN, "Error executing queue: %d", rv);
-    return 3;
-  }
-
-  ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_GatherResponses(ab, ctx);
-  if (rv) {
-    DBG_ERROR(AQT_LOGDOMAIN, "Error gathering responses: %d", rv);
     AB_ImExporterContext_free(ctx);
-    return 4;
+    return 3;
   }
 
   dbCtx=GWEN_DB_Group_new("context");

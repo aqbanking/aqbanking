@@ -774,7 +774,7 @@ const char *AH_Job_GetAccountId(const AH_JOB *j) {
 
 
 
-int AH_Job_Process(AH_JOB *j){
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   assert(j);
   assert(j->usage);
@@ -782,7 +782,7 @@ int AH_Job_Process(AH_JOB *j){
   AH_Job_SampleResults(j);
 
   if (j->processFn)
-    return j->processFn(j);
+    return j->processFn(j, ctx);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No processFn set");
     return AH_Job_DefaultProcessHandler(j);
@@ -804,7 +804,8 @@ int AH_Job_Commit(AH_JOB *j){
 
 
 
-int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj, AH_JOB_EXCHANGE_MODE m){
+int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
+                    AH_JOB_EXCHANGE_MODE m){
   GWEN_DB_NODE *db;
 
   assert(j);

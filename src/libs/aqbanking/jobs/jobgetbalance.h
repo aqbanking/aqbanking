@@ -25,7 +25,7 @@ extern "C" {
 
 AQBANKING_API
 AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a);
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 const AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j);
 
 #ifdef __cplusplus

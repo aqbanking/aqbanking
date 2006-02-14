@@ -456,8 +456,8 @@ int Banking::dequeueJob(AB_JOB *j){
 
 
 
-int Banking::executeQueue(){
-  return AB_Banking_ExecuteQueue(_banking);
+int Banking::executeQueue(AB_IMEXPORTER_CONTEXT *ctx){
+  return AB_Banking_ExecuteQueueWithCtx(_banking, ctx);
 }
 
 

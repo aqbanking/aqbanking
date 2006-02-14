@@ -25,6 +25,9 @@ extern "C" {
 AB_JOB *AB_JobGetDatedTransfers_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_JobGetDatedTransfers_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
+void AB_JobGetDatedTransfers_SetDatedTransfers(AB_JOB *j,
+                                               AB_TRANSACTION_LIST2 *tl);
+
 #ifdef __cplusplus
 }
 #endif

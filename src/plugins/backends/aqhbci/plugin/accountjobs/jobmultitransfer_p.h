@@ -27,7 +27,8 @@ struct AH_JOB_MULTITRANSFER {
   int maxTransfers;
 };
 static void AH_Job_MultiTransfer_FreeData(void *bp, void *p);
-static int AH_Job_MultiTransfer_Process(AH_JOB *j);
+static int AH_Job_MultiTransfer_Process(AH_JOB *j,
+                                        AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
                                          AH_JOB_EXCHANGE_MODE m);
 

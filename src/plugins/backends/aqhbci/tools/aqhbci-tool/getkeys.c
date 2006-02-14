@@ -139,59 +139,17 @@ int getKeys(AB_BANKING *ab,
     return 3;
   }
   else {
-    AH_JOB *job;
-    AH_OUTBOX *ob;
+    AB_IMEXPORTER_CONTEXT *ctx;
 
-    job=AH_Job_GetKeys_new(u);
-    if (!job) {
-      DBG_ERROR(0, "Job not supported, should not happen");
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetServerKeys(pro, u, ctx, 0);
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      DBG_ERROR(0, "Error getting server keys (%d)", rv);
       AB_Banking_Fini(ab);
       return 3;
     }
-
-    ob=AH_Outbox_new(hbci);
-    AH_Outbox_AddJob(ob, job);
-
-    if (AH_Outbox_Execute(ob, 1, 0)) {
-      DBG_ERROR(0, "Could not execute outbox.\n");
-      AH_Outbox_free(ob);
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-
-    if (AH_Job_HasErrors(job) || AH_Job_GetStatus(job)!=AH_JobStatusAnswered){
-      DBG_ERROR(0, "Job has errors (%s)",
-		AH_Job_StatusName(AH_Job_GetStatus(job)));
-      // TODO: show errors
-      AH_Outbox_free(ob);
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-    else {
-      if (AH_Job_Commit(job)) {
-	DBG_ERROR(0, "Could not commit result.\n");
-	AH_Outbox_free(ob);
-        AB_Banking_Fini(ab);
-	return 3;
-      }
-    }
-
-    AH_Outbox_free(ob);
-
-    /* check whether we got some accounts */
-    if (!AH_Job_GetKeys_GetSignKey(job) &&
-        !AH_Job_GetKeys_GetCryptKey(job)) {
-      DBG_ERROR(0, "No server keys received");
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-    else {
-      fprintf(stderr, "Server key(s) received\n");
-    }
-
-    AH_Job_free(job);
   }
-
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

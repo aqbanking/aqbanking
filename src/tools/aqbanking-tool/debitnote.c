@@ -348,7 +348,15 @@ int debitNote(AB_BANKING *ab,
         DBG_INFO(AQT_LOGDOMAIN, "Job successfully enqueued");
 
         if (doExec) {
-          rv=AB_Banking_ExecuteQueue(ab);
+          AB_JOB_LIST2 *jl;
+          AB_IMEXPORTER_CONTEXT *ctx;
+
+          ctx=AB_ImExporterContext_new();
+          jl=AB_Job_List2_new();
+          AB_Job_List2_PushBack(jl, j);
+          rv=AB_Banking_ExecuteJobListWithCtx(ab, jl, ctx);
+          AB_Job_List2_free(jl);
+          AB_ImExporterContext_free(ctx);
           if (rv) {
             DBG_ERROR(AQT_LOGDOMAIN, "Error executing queue: %d", rv);
             jobOk=-1;

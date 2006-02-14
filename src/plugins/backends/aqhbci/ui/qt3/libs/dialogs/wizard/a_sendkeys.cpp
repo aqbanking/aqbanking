@@ -89,6 +89,7 @@ void ActionSendKeys::slotButtonClicked() {
   AB_PROVIDER *pro;
   GWEN_TYPE_UINT32 pid;
   int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
@@ -106,7 +107,9 @@ void ActionSendKeys::slotButtonClicked() {
                            "Sending your public keys to the server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_SendUserKeys(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_SendUserKeys(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error sending user keys");
     _realDialog->setStatus(ActionWidget::StatusFailed);

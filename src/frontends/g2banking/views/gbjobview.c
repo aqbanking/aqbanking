@@ -109,7 +109,8 @@ void GBanking_JobView_slotButtonClicked(GtkButton *button,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     /* execute */
-    rv=AB_Banking_ExecuteQueue(wd->banking);
+    ctx=AB_ImExporterContext_new();
+    rv=AB_Banking_ExecuteQueueWithCtx(wd->banking, ctx);
     if (rv) {
       AB_Banking_MessageBox(wd->banking,
                             AB_BANKING_MSG_FLAGS_TYPE_ERROR |
@@ -121,34 +122,25 @@ void GBanking_JobView_slotButtonClicked(GtkButton *button,
     }
     GB_JobList_Update(wd->jobListView);
 
-    ctx=AB_ImExporterContext_new();
-    rv=AB_Banking_GatherResponses(wd->banking, ctx);
-    if (!rv) {
-      rv=GBanking_ImportContext(wd->banking, ctx);
-      if (rv) {
-        if (rv==AB_ERROR_NOFN) {
-          DBG_WARN(GBANKING_LOGDOMAIN,
-                   "ImportContext function not implemented by application");
-        }
-        else {
-          DBG_WARN(GBANKING_LOGDOMAIN,
-                   "Error processing queue results (%d)", rv);
-          AB_Banking_MessageBox(wd->banking,
-                                AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                                AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                                I18N("Execution Error"),
-                                I18N("Some errors occurred while processing "
-                                     "the outbox results."),
-                                I18N("Dismiss"), 0, 0);
-        }
+    rv=GBanking_ImportContext(wd->banking, ctx);
+    if (rv) {
+      if (rv==AB_ERROR_NOFN) {
+        DBG_WARN(GBANKING_LOGDOMAIN,
+                 "ImportContext function not implemented by application");
+      }
+      else {
+        DBG_WARN(GBANKING_LOGDOMAIN,
+                 "Error processing queue results (%d)", rv);
+        AB_Banking_MessageBox(wd->banking,
+                              AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                              AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                              I18N("Execution Error"),
+                              I18N("Some errors occurred while processing "
+                                   "the outbox results."),
+                              I18N("Dismiss"), 0, 0);
       }
     }
-    else {
-      DBG_ERROR(GBANKING_LOGDOMAIN,
-                "Error gathering queue results (%d)", rv);
-    }
     AB_ImExporterContext_free(ctx);
-
   }
   else {
     DBG_WARN(0, "Unknown button \"%s\"", name);

@@ -72,7 +72,7 @@ typedef enum {
  *
  */
 /*@{*/
-typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j);
+typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j);
 typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
                                   AH_JOB_EXCHANGE_MODE m);
@@ -159,13 +159,14 @@ AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
  */
 /*@{*/
 AQHBCI_API
-int AH_Job_Process(AH_JOB *j);
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 AQHBCI_API
 int AH_Job_Commit(AH_JOB *j);
 /** exchanges data between the HBCI job and the banking job
  */
 AQHBCI_API
-int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj, AH_JOB_EXCHANGE_MODE m);
+int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
+                    AH_JOB_EXCHANGE_MODE m);
 
 
 /**

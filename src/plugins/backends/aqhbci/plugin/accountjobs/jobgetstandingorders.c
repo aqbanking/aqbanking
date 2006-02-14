@@ -73,20 +73,20 @@ void AH_Job_GetStandingOrders_FreeData(void *bp, void *p){
   AH_JOB_GETSTANDINGORDERS *aj;
 
   aj=(AH_JOB_GETSTANDINGORDERS*)p;
-  AB_Transaction_List2_free(aj->standingOrders);
   GWEN_FREE_OBJECT(aj);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetStandingOrders_Process(AH_JOB *j){
+int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSTANDINGORDERS *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
-  AB_TRANSACTION_LIST2 *tl;
   int rv;
   int i;
+  AB_ACCOUNT *a;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetStandingOrders");
 
@@ -97,7 +97,12 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j){
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  tl=AB_Transaction_List2_new();
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
+  ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                         AB_Account_GetBankCode(a),
+                                         AB_Account_GetAccountNumber(a));
+  assert(ai);
 
   /* search for "StandingOrder" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -108,13 +113,11 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j){
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
       AH_Job_SetStatus(j, AH_JobStatusError);
-      AB_Transaction_List2_free(tl);
       return rv;
     }
     rv=AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      AB_Transaction_List2_free(tl);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
@@ -304,20 +307,9 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j){
       }
 
       /* add to list */
-      AB_Transaction_List2_PushBack(tl, t);
-
+      AB_ImExporterAccountInfo_AddStandingOrder(ai, t);
     } /* if "standingOrder" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  }
-
-  if (AB_Transaction_List2_GetSize(tl)==0) {
-    AB_Transaction_List2_free(tl);
-    tl=0;
-  }
-  else {
-    if (aj->standingOrders)
-      AB_Transaction_List2_free(aj->standingOrders);
-    aj->standingOrders=tl;
   }
 
   return 0;
@@ -349,10 +341,6 @@ int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
     return 0;
 
   case AH_Job_ExchangeModeResults:
-    if (aj->standingOrders) {
-      AB_JobGetStandingOrders_SetStandingOrders(bj, aj->standingOrders);
-      aj->standingOrders=0;
-    }
     return 0;
 
   default:

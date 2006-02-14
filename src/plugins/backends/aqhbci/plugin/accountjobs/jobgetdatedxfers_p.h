@@ -21,11 +21,12 @@
 
 typedef struct AH_JOB_GETDATEDTRANSFERS AH_JOB_GETDATEDTRANSFERS;
 struct AH_JOB_GETDATEDTRANSFERS {
-  AB_TRANSACTION_LIST2 *datedTransfers;
+  int dummy;
 };
 static void AH_Job_GetDatedTransfers_FreeData(void *bp, void *p);
 
-static int AH_Job_GetDatedTransfers_Process(AH_JOB *j);
+static int AH_Job_GetDatedTransfers_Process(AH_JOB *j,
+                                            AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetDatedTransfers_Exchange(AH_JOB *j, AB_JOB *bj,
                                              AH_JOB_EXCHANGE_MODE m);
 

@@ -143,7 +143,7 @@ public:
 
   int enqueueJob(AB_JOB *j);
   int dequeueJob(AB_JOB *j);
-  int executeQueue();
+  int executeQueue(AB_IMEXPORTER_CONTEXT *ctx);
 
   void setAccountAlias(AB_ACCOUNT *a, const char *alias);
 

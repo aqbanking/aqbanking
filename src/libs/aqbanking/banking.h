@@ -1262,8 +1262,12 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_ExecuteQueue(AB_BANKING *ab);
+
+AQBANKING_API 
+int AB_Banking_ExecuteQueueWithCtx(AB_BANKING *ab,
+                                   AB_IMEXPORTER_CONTEXT *ctx);
 
 /**
  * <p>
@@ -1300,7 +1304,7 @@ int AB_Banking_ExecuteQueue(AB_BANKING *ab);
  * @param ab pointer to the AB_BANKING object
  * @param jl2 list of enqueued jobs to execute
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2);
 
 AQBANKING_API 
@@ -1323,6 +1327,7 @@ int AB_Banking_ExecuteJobListWithCtx(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
  * </p>
  * <ul>
  *  <li>@ref AB_Banking_ExecuteQueue</li>
+ *  <li>@ref AB_Banking_ExecuteQueueWithCtx</li>
  *  <li>@ref AB_Banking_Fini</li>
  * </ul>
  * After one of these functions has been called you are only allowed to call
@@ -2204,7 +2209,7 @@ int AB_Banking_RequestDatedTransfers(AB_BANKING *ab,
  * @param ab AqBanking main object
  * @param ctx import/export context to which all information is to be added
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_GatherResponses(AB_BANKING *ab,
                                AB_IMEXPORTER_CONTEXT *ctx);
 /*@}*/

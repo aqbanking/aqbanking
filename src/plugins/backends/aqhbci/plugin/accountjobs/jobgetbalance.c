@@ -39,8 +39,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETBALANCE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetBalance_new(AB_USER *u,
-                              AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbArgs;
@@ -72,21 +71,7 @@ void AH_Job_GetBalance_FreeData(void *bp, void *p){
   AH_JOB_GETBALANCE *aj;
 
   aj=(AH_JOB_GETBALANCE*)p;
-  AB_AccountStatus_free(aj->accountStatus);
   GWEN_FREE_OBJECT(aj);
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-AB_ACCOUNT_STATUS *AH_Job_GetBalance_GetAccountStatus(const AH_JOB *j){
-  AH_JOB_GETBALANCE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETBALANCE, j);
-  assert(aj);
-
-  return aj->accountStatus;
 }
 
 
@@ -159,7 +144,7 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetBalance_Process(AH_JOB *j){
+int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -197,6 +182,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j){
     if (dbBalance) {
       AB_ACCOUNT_STATUS *acst;
       GWEN_DB_NODE *dbT;
+      AB_ACCOUNT *a;
+      AB_IMEXPORTER_ACCOUNTINFO *ai;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
@@ -246,9 +233,15 @@ int AH_Job_GetBalance_Process(AH_JOB *j){
         AB_Value_free(v);
       }
 
-      /* set new account status */
-      AB_AccountStatus_free(aj->accountStatus);
-      aj->accountStatus=acst;
+      a=AH_AccountJob_GetAccount(j);
+      assert(a);
+      ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                             AB_Account_GetBankCode(a),
+                                             AB_Account_GetAccountNumber(a));
+      assert(ai);
+
+      /* add new account status */
+      AB_ImExporterAccountInfo_AddAccountStatus(ai, acst);
       break; /* break loop, we found the balance */
     } /* if "Balance" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -283,14 +276,7 @@ int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No arguments to exchange");
     return 0;
   case AH_Job_ExchangeModeResults:
-    if (aj->accountStatus) {
-      AB_JobGetBalance_SetAccountStatus(bj, aj->accountStatus);
-      return 0;
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No account status received");
-      return AB_ERROR_NO_DATA;
-    }
+    return 0;
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
     return AB_ERROR_NOT_SUPPORTED;

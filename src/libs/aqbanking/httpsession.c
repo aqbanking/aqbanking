@@ -319,17 +319,19 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
     if (s && strcasecmp(s, "https")==0) {
       GWEN_NETLAYER *nlssl;
       GWEN_BUFFER *nbuf;
+      int wantSecure;
 
+      wantSecure=(hc->flags & AB_HTTPSESSION_FLAGS_SECURE_SSL);
       nbuf=GWEN_Buffer_new(0, 64, 0, 1);
       AB_HttpSession__AddPeerCertFolder(hc, nbuf);
 
       nlssl=GWEN_NetLayerSsl_new(baseLayer,
                                  GWEN_Buffer_GetStart(nbuf),
                                  GWEN_Buffer_GetStart(nbuf),
-                                 0, 0, 1);
+                                 0, 0,
+                                 wantSecure);
       GWEN_Buffer_free(nbuf);
       GWEN_NetLayer_free(baseLayer);
-      //GWEN_NetLayerSsl_SetAskAddCertFn(nlssl, _nlAskAddCert, 0);
       GWEN_NetLayerSsl_SetAskAddCertFn(nlssl,
                                        AB_Banking_AskAddCert,
                                        AB_Provider_GetBanking(hc->provider));

@@ -25,6 +25,9 @@ extern "C" {
 AB_JOB *AB_JobGetBalance_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_JobGetBalance_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
 
+void AB_JobGetBalance_SetAccountStatus(AB_JOB *j,
+                                       const AB_ACCOUNT_STATUS *as);
+
 
 #ifdef __cplusplus
 }

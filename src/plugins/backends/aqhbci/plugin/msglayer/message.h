@@ -122,44 +122,13 @@ unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
 int AH_Msg_EncodeMsg(AH_MSG *hmsg);
 
 /**
+ * @param hmsg message object
+ * @param gr DB node to receive the decoded message
  * @param flags flags for @ref GWEN_MsgEngine_ParseMessage
  */
 int AH_Msg_DecodeMsg(AH_MSG *hmsg,
                      GWEN_DB_NODE *gr,
                      unsigned int flags);
-
-/**
- * When encoding a message the resulting DB is not stored automatically
- * inside the message object (to avoid copying). You can use this function
- * to do it.
- * Id a message contains signatures it is important that the message is only
- * decoded @b once. The second time you try to decode such a message would
- * lead to an error ("double use of signature detected").
- * So we need a place to store the result when storing the message inside
- * the list of unrequested messages
- * (see @ref AH_HBCIClient_AddUnrequestedMsg), since we only can determine
- * whether a message is requested if we decode it.
- * This function takes over ownership of the DB object.
- */
-void AH_Msg_SetDecodedMsg(AH_MSG *msg, GWEN_DB_NODE *db);
-
-/**
- * Returns the DB which resulted from decoding the message. This DB must
- * have been stored before (it is not automatically stored upon decoding
- * to avois copying).
- * The message remains owner of the DB returned.
- */
-GWEN_DB_NODE *AH_Msg_GetDecodedMsg(const AH_MSG *msg);
-
-
-/**
- * Returns the DB which resulted from decoding the message. This DB must
- * have been stored before (it is not automatically stored upon decoding
- * to avois copying).
- * This function relinquishes the ownership of the DB to the caller.
- */
-GWEN_DB_NODE *AH_Msg_TakeDecodedMsg(AH_MSG *msg);
-
 
 /*@}*/
 

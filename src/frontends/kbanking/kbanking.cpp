@@ -59,10 +59,10 @@ KBFlagStaff *KBanking::flagStaff(){
 
 
 
-int KBanking::executeQueue(){
+int KBanking::executeQueue(AB_IMEXPORTER_CONTEXT *ctx){
   int rv;
 
-  rv=QBanking::executeQueue();
+  rv=QBanking::executeQueue(ctx);
   _flagStaff->queueUpdated();
   return rv;
 }

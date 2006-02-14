@@ -27,6 +27,7 @@
 #include "jobmultitransfer_l.h"
 #include <aqhbci/provider.h>
 #include <aqbanking/job_be.h>
+#include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/waitcallback.h>
@@ -788,7 +789,6 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-
   return 0;
 }
 
@@ -969,11 +969,6 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
     GWEN_TYPE_UINT32 jqFlags;
     AH_JOB *j;
     AH_JOB_LIST *jl;
-    int finishedJobs;
-    int finishedJobsBefore;
-    int i;
-
-    finishedJobsBefore=AH_Outbox_CountFinishedJobs(cbox->outbox);
 
     jobsTodo=0;
     jl=AH_JobQueue_TakeJobList(jq);
@@ -1053,19 +1048,6 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 
     AH_JobQueue_free(jq);
     jq=jqTodo;
-
-    finishedJobs=AH_Outbox_CountFinishedJobs(cbox->outbox)-finishedJobsBefore;
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished jobs: %d", finishedJobs);
-    for (i=0; i<finishedJobs; i++) {
-      int rv;
-
-      rv=AB_Banking_ProgressAdvance(AH_HBCI_GetBankingApi(cbox->hbci), 0,
-                                    AB_BANKING_PROGRESS_ONE);
-      if (rv) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted");
-        return rv;
-      }
-    }
 
     if (!jobsTodo)
       break;
@@ -1578,7 +1560,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     AH_Job_List_Del(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusAnswered) {
-      rv=AH_Job_Process(j);
+      rv=AH_Job_Process(j, ob->context);
       if (rv) {
         char buf[256];
 
@@ -1709,7 +1691,7 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
       /* only process answered jobs */
       DBG_DEBUG(AQHBCI_LOGDOMAIN,
 		"Processing job \"%s\"", AH_Job_GetName(j));
-      rv=AH_Job_Process(j);
+      rv=AH_Job_Process(j, ob->context);
       if (rv) {
 	char buf[256];
 
@@ -1843,10 +1825,7 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob){
 int AH_Outbox__Execute(AH_OUTBOX *ob){
   unsigned int loop;
   unsigned int jobCount;
-  unsigned int finishedJobs;
-  unsigned int finishedJobsBefore;
   int rv;
-  int i;
 
   assert(ob);
   jobCount=AH_Outbox_CountTodoJobs(ob);
@@ -1854,8 +1833,6 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
     return 0;
   }
-
-  finishedJobsBefore=AH_Outbox_CountFinishedJobs(ob);
 
   AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(ob->hbci),
                          0,
@@ -1875,17 +1852,11 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return rv;
   }
 
-  finishedJobs=AH_Outbox_CountFinishedJobs(ob)-finishedJobsBefore;
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished jobs: %d", finishedJobs);
-  for (i=0; i<finishedJobs; i++) {
-    int rv;
-
-    rv=AB_Banking_ProgressAdvance(AH_HBCI_GetBankingApi(ob->hbci), 0,
-                                  AB_BANKING_PROGRESS_ONE);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted");
-      return rv;
-    }
+  rv=AB_Banking_ExecutionProgress(AH_HBCI_GetBankingApi(ob->hbci), 0);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted");
+    AH_Outbox__FinishOutbox(ob);
+    return rv;
   }
 
   AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(ob->hbci),
@@ -1897,7 +1868,9 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
 
 
 
-int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount) {
+int AH_Outbox_Execute(AH_OUTBOX *ob,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      int withProgress, int nounmount) {
   int rv;
   GWEN_TYPE_UINT32 pid=0;
 
@@ -1911,6 +1884,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount) {
 
   }
 
+  ob->context=ctx;
   GWEN_WaitCallback_Enter(AH_OUTBOX_EXECUTE_WCB_ID);
   rv=AH_Outbox__Execute(ob);
   /* unmount currently mounted medium */
@@ -1920,6 +1894,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount) {
     AB_Banking_ProgressEnd(AH_HBCI_GetBankingApi(ob->hbci), pid);
   }
   GWEN_WaitCallback_Leave();
+  ob->context=0;
   return rv;
 }
 

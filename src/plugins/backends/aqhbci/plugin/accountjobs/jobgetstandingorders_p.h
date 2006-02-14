@@ -21,11 +21,12 @@
 
 typedef struct AH_JOB_GETSTANDINGORDERS AH_JOB_GETSTANDINGORDERS;
 struct AH_JOB_GETSTANDINGORDERS {
-  AB_TRANSACTION_LIST2 *standingOrders;
+  int dummy;
 };
 static void AH_Job_GetStandingOrders_FreeData(void *bp, void *p);
 
-static int AH_Job_GetStandingOrders_Process(AH_JOB *j);
+static int AH_Job_GetStandingOrders_Process(AH_JOB *j,
+                                            AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
                                              AH_JOB_EXCHANGE_MODE m);
 

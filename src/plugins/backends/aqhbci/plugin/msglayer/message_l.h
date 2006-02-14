@@ -25,13 +25,11 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
 const char *AH_Msg_GetExpectedSigner(const AH_MSG *msg);
 void AH_Msg_SetExpectedSigner(AH_MSG *msg, const char *s);
+
 const char *AH_Msg_GetExpectedCrypter(const AH_MSG *msg);
 void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s);
 
 const char *AH_Msg_GetPin(const AH_MSG *msg);
-
-
-
 
 #endif /* AH_MESSAGE_L_H */
 

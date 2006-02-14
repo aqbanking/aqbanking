@@ -15,6 +15,9 @@
 # include <config.h>
 #endif
 
+/* don't warn about our own deprecated functions */
+#define AQBANKING_NOWARN_DEPRECATED 
+
 
 #include "banking_p.h"
 #include <aqbanking/banking_be.h>

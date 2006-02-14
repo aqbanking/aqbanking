@@ -1,8 +1,61 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
+  ------------------------------------------------------------------------
+
+
+2006/02/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed progress bar: Now show the correct percentage (but for HBCI only at
+  the end, I will have to change the result transfer code in AqHBCI to
+  change the status of AqBanking jobs earlier)
+- marked queue execution functions which do not take an importer context
+  as deprecated: They are still supported for a transitional period but 
+  applications should use those functions which *do* take a context.
+  
+  This is necessary because otherwise we would loose data from some backends
+  (e.g. yellownet, see below).
+  
+  By the same token, functions which return response data stored in jobs (like
+  AB_JobGetTransactions_GetTransactions) are also marked as deprecated.
+  This is to avoid having two different methods for backends and applications
+  for importing response data.
+  
+  Backends store all responses in the given AB_IMEXPORTER_CONTEXT from which
+  the application can take them. This way AqBanking can make sure that the
+  application will get even data which it did not request explicitly.
+
+  The reason for this decision is that some backends do not allow to select
+  for which account statements are to be retrieved. Those backends rather 
+  return all data for a given user (e.g. statements for all accounts of a 
+  user at a given credit institute).
+  With the previous method of storing responses directly within the job
+  objects any additionally received data will get lost, and even worse,
+  some backends allow the server to remove data it has already sent, so this
+  data will be lost for good.
+  We can't allow that to happen within AqBanking. Applications may choose
+  to ignore this additional data, but AqBanking will not.
+  
+  The new approach obsoletes the function AB_Banking_GatherResponses so it has
+  been marked as deprecated, too.
+  
+  QBankManager, KMyMoney, Grisbi and all other programs which use the
+  frontends provided by AqBanking will work with these changes without 
+  changes.
+  
+  Gnucash will show 3 compiler warnings about using deprecated functions,
+  but it will still work with these changes.
+
+  These changes make it necessary for every application to be recompiled
+  because the major SO version number must be changed for AqBanking 2.0
+  (SO_AGE->0 because of incompatible API change) and I don't want to increment
+  the SO-VERSION before a release.
+
 
 2006/02/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed debugging messages from imexporter.c
+- httpsession.c: added flag AB_HTTPSESSION_FLAGS_SECURE_SSL
 
 
 2006-02-08   Christian Stimming <stimming@tuhh.de>

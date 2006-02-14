@@ -25,7 +25,6 @@ extern "C" {
 
 
 AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account);
-AB_ACCOUNT_STATUS *AH_Job_GetBalance_GetAccountStatus(const AH_JOB *j);
 
 
 #ifdef __cplusplus

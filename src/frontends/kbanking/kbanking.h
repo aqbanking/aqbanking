@@ -90,7 +90,7 @@ public:
 
   KBFlagStaff *flagStaff();
 
-  int executeQueue();
+  int executeQueue(AB_IMEXPORTER_CONTEXT *ctx);
 
   virtual bool importContext(AB_IMEXPORTER_CONTEXT *ctx);
   virtual bool importAccountInfo(AB_IMEXPORTER_ACCOUNTINFO *ai);

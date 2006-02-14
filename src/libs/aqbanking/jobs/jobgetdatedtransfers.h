@@ -31,11 +31,8 @@ extern "C" {
 AQBANKING_API
 AB_JOB *AB_JobGetDatedTransfers_new(AB_ACCOUNT *a);
 
-/**
- * Returns the list of transactions received.
- * The job remains the owner of the list and all elements in it.
- */
-AQBANKING_API 
+/** @deprecated */
+AQBANKING_API AQBANKING_DEPRECATED
 AB_TRANSACTION_LIST2*
   AB_JobGetDatedTransfers_GetDatedTransfers(const AB_JOB *j);
 

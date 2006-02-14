@@ -35,6 +35,7 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 }
 #endif
 
+#include <aqbanking/imexporter.h>
 #include <gwenhywfar/inherit.h>
 #include <aqhbci/hbci.h>
 #include <aqhbci/user.h>
@@ -83,7 +84,9 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob);
 
 
 AQHBCI_API
-int AH_Outbox_Execute(AH_OUTBOX *ob, int withProgress, int nounmount);
+int AH_Outbox_Execute(AH_OUTBOX *ob,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      int withProgress, int nounmount);
 
 
 AQHBCI_API

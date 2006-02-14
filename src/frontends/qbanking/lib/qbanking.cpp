@@ -108,7 +108,7 @@ int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (rv) {
-    DBG_NOTICE(0, "here");
+    DBG_INFO(0, "here");
     GWEN_XMLNode_free(xmlNode);
     return -1;
   }
@@ -491,10 +491,10 @@ int QBanking::dequeueJob(AB_JOB *j){
 
 
 
-int QBanking::executeQueue(){
+int QBanking::executeQueue(AB_IMEXPORTER_CONTEXT *ctx){
   int rv;
 
-  rv=Banking::executeQueue();
+  rv=Banking::executeQueue(ctx);
   flagStaff()->queueUpdated();
   return rv;
 }

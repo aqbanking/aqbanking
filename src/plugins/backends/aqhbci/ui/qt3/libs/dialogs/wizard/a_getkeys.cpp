@@ -93,6 +93,7 @@ void ActionGetKeys::slotButtonClicked() {
   AB_PROVIDER *pro;
   GWEN_TYPE_UINT32 pid;
   int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
@@ -110,7 +111,9 @@ void ActionGetKeys::slotButtonClicked() {
                            "Retrieving the public keys of the server."
                            "</qt>"),
                         1);
-  rv=AH_Provider_GetServerKeys(pro, u, 1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetServerKeys(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error getting server keys");
     _realDialog->setStatus(ActionWidget::StatusFailed);

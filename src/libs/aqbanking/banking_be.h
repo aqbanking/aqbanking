@@ -65,6 +65,8 @@ GWEN_NL_SSL_ASKADDCERT_RESULT
                         void *user_data);
 
 
+AQBANKING_API
+int AB_Banking_ExecutionProgress(AB_BANKING *ab, GWEN_TYPE_UINT32 pid);
 
 
 #ifdef __cplusplus
