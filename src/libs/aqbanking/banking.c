@@ -2669,10 +2669,20 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
 int AB_Banking_ExecuteQueue(AB_BANKING *ab){
   AB_IMEXPORTER_CONTEXT *ctx;
   int rv;
+  AB_JOB_LIST2 *jl2;
+
+  jl2=AB_Banking_GetEnqueuedJobs(ab);
+  if (!jl2) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No jobs enqueued");
+    return 0;
+  }
 
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ExecuteQueueWithCtx(ab, ctx);
+  rv=AB_Banking_ExecuteJobListWithCtx(ab, jl2, ctx);
+  AB_Banking__DistribContextAmongJobs(ctx, jl2);
   AB_ImExporterContext_free(ctx);
+  AB_Job_List2_FreeAll(jl2);
+
   return rv;
 }
 
