@@ -40,11 +40,10 @@
   been marked as deprecated, too.
   
   QBankManager, KMyMoney, Grisbi and all other programs which use the
-  frontends provided by AqBanking will work with these changes without 
-  changes.
+  frontends provided by AqBanking will work without changes.
   
   Gnucash will show 3 compiler warnings about using deprecated functions,
-  but it will still work with these changes.
+  but it will still work.
 
   These changes make it necessary for every application to be recompiled
   because the major SO version number must be changed for AqBanking 2.0
