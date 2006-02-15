@@ -127,7 +127,7 @@ void AB_WaitCallback_Log(GWEN_WAITCALLBACK *ctx,
   case GWEN_LoggerLevelWarning:   nl=AB_Banking_LogLevelWarn; break;
   case GWEN_LoggerLevelNotice:    nl=AB_Banking_LogLevelNotice; break;
   default:
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Loglevel %d -> info", loglevel);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Loglevel %d -> info", loglevel);
     nl=AB_Banking_LogLevelInfo;
     break;
   }

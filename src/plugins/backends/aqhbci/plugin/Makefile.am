@@ -27,6 +27,8 @@ noinst_HEADERS = aqhbci_l.h
 lib_LTLIBRARIES=libaqhbci.la
 libaqhbci_la_SOURCES=dummy.c
 
+noinst_PROGRAMS=testlib
+
 xmldatadir = $(aqhbci_data)/xml
 xmldata_DATA=hbci.xml
 
@@ -82,6 +84,15 @@ ressource.o: ressource.rc
 endif
 # IS_WINDOWS
 # End of linker flags for windows resource file
+
+
+testlib_SOURCES=testlib.c
+testlib_LDADD = \
+  $(aqhbci_internal_libs) \
+  $(cbanking_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+
 
 built_sources: $(BUILT_SOURCES)
 

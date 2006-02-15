@@ -70,12 +70,14 @@ int AH_Medium_GetNextSignSeq(AH_MEDIUM *m);
 
 /**
  */
+AQHBCI_API
 AH_MEDIUM_RESULT AH_Medium_EncryptKey(AH_MEDIUM *m,
                                       GWEN_BUFFER *srckey,
                                       GWEN_BUFFER *encKey);
 
 /**
  */
+AQHBCI_API
 AH_MEDIUM_RESULT AH_Medium_DecryptKey(AH_MEDIUM *m,
                                       GWEN_BUFFER *srckey,
                                       GWEN_BUFFER *decKey);

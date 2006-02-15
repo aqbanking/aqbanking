@@ -146,11 +146,64 @@ void AH_Medium_SubFlags(AH_MEDIUM *m, GWEN_TYPE_UINT32 fl){
 
 
 
+void AH_Medium__preparePatternCtx(GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  GWEN_CRYPTTOKEN_SIGNINFO *si;
+  GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+  GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+  /* prepare sign info pattern */
+  si=GWEN_CryptToken_SignInfo_new();
+  GWEN_CryptToken_SignInfo_SetHashAlgo(si, GWEN_CryptToken_HashAlgo_RMD160);
+  GWEN_CryptToken_SignInfo_SetPaddAlgo(si,
+                                       GWEN_CryptToken_PaddAlgo_ISO9796_1A4);
+  GWEN_CryptToken_Context_SetSignInfo(ctx, si);
+  GWEN_CryptToken_SignInfo_free(si);
+
+  /* prepare crypt info pattern */
+  ci=GWEN_CryptToken_CryptInfo_new();
+  GWEN_CryptToken_CryptInfo_SetCryptAlgo(ci, GWEN_CryptToken_CryptAlgo_RSA);
+  GWEN_CryptToken_CryptInfo_SetPaddAlgo(ci,
+                                        GWEN_CryptToken_PaddAlgo_LeftZero);
+  GWEN_CryptToken_Context_SetCryptInfo(ctx, ci);
+  GWEN_CryptToken_CryptInfo_free(ci);
+
+  /* prepare key infos */
+  ki=GWEN_CryptToken_KeyInfo_new();
+  GWEN_CryptToken_KeyInfo_SetKeySize(ki, 768);
+  GWEN_CryptToken_KeyInfo_SetChunkSize(ki, 768/8);
+  GWEN_CryptToken_KeyInfo_SetCryptAlgo(ki, GWEN_CryptToken_CryptAlgo_RSA);
+
+  GWEN_CryptToken_Context_SetSignKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetVerifyKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetEncryptKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetDecryptKeyInfo(ctx, ki);
+  GWEN_CryptToken_KeyInfo_free(ki);
+}
+
+
+
+
+
+
 int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
+  GWEN_CRYPTTOKEN_CONTEXT_LIST *cl;
+  GWEN_CRYPTTOKEN_CONTEXT *patternCtx;
   GWEN_CRYPTTOKEN_USER_LIST *ul;
   int rv;
 
   assert(m);
+
+  patternCtx=GWEN_CryptToken_Context_new();
+  AH_Medium__preparePatternCtx(patternCtx);
+
+  cl=GWEN_CryptToken_Context_List_new();
+
+  rv=GWEN_CryptToken_GetMatchingContexts(ct, patternCtx, cl);
+  if (rv) {
+    GWEN_CryptToken_Context_free(patternCtx);
+    GWEN_CryptToken_Context_List_free(cl);
+    return AB_ERROR_NOT_FOUND;
+  }
 
   /* first try to create by users */
   ul=GWEN_CryptToken_User_List_new();
@@ -170,70 +223,20 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
 
       cid=GWEN_CryptToken_User_GetContextId(u);
       if (cid) {
-        const GWEN_CRYPTTOKEN_CONTEXT *tctx;
+        GWEN_CRYPTTOKEN_CONTEXT *tctx;
 
-        tctx=GWEN_CryptToken_GetContextById(ct, cid);
+        tctx=GWEN_CryptToken_FindContextInList(cl, cid);
         if (tctx) {
           AH_MEDIUM_CTX *ctx;
-          GWEN_CRYPTTOKEN_CONTEXT *nctx;
-          const GWEN_CRYPTTOKEN_KEYINFO *ki;
-          const GWEN_CRYPTTOKEN_SIGNINFO *si;
-	  const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
-          GWEN_CRYPTTOKEN_CRYPTALGO algo;
 
-          nctx=GWEN_CryptToken_Context_dup(tctx);
-          assert(nctx);
-
-          ki=GWEN_CryptToken_Context_GetSignKeyInfo(nctx);
-	  assert(ki);
-	  algo=GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki);
-	  if (algo==GWEN_CryptToken_CryptAlgo_RSA) {
-            /* select cryptInfo and signInfo for RDH mode */
-	    si=GWEN_CryptToken_GetSignInfoByAlgos(ct,
-						  GWEN_CryptToken_HashAlgo_RMD160,
-						  GWEN_CryptToken_PaddAlgo_ISO9796_1A4);
-	    ci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
-						   GWEN_CryptToken_CryptAlgo_RSA,
-						   GWEN_CryptToken_PaddAlgo_LeftZero);
-	  }
-	  else if (algo==GWEN_CryptToken_CryptAlgo_DES_3K) {
-	    /* select cryptInfo and signInfo for DDV mode */
-	    si=GWEN_CryptToken_GetSignInfoByAlgos(ct,
-						  GWEN_CryptToken_HashAlgo_RMD160,
-						  GWEN_CryptToken_PaddAlgo_None);
-	    ci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
-						   GWEN_CryptToken_CryptAlgo_DES_3K,
-						   GWEN_CryptToken_PaddAlgo_None);
-          }
-          else if (algo==GWEN_CryptToken_CryptAlgo_None) {
-            si=GWEN_CryptToken_GetSignInfoByAlgos(ct,
-                                                  GWEN_CryptToken_HashAlgo_None,
-                                                  GWEN_CryptToken_PaddAlgo_None);
-            ci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
-                                                   GWEN_CryptToken_CryptAlgo_None,
-                                                   GWEN_CryptToken_PaddAlgo_None);
-          }
-	  else {
-	    DBG_WARN(AQHBCI_LOGDOMAIN,
-		      "Invalid crypt algo \"%s\"",
-		      GWEN_CryptToken_CryptAlgo_toString(algo));
-	    si=0; ci=0;
-	  }
-
-	  if (ci && si) {
-	    GWEN_CryptToken_Context_SetSignInfo(nctx, si);
-	    GWEN_CryptToken_Context_SetCryptInfo(nctx, ci);
-
-	    ctx=AH_MediumCtx_new();
-	    AH_MediumCtx_SetUser(ctx, u);
-	    AH_MediumCtx_SetTokenContext(ctx, nctx);
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		      "Adding user \"%s\"",
-		      GWEN_CryptToken_User_GetUserId(u));
-	    AH_MediumCtx_List_Add(ctx, m->contextList);
-	  }
-	  GWEN_CryptToken_Context_free(nctx);
-	}
+          ctx=AH_MediumCtx_new();
+          AH_MediumCtx_SetUser(ctx, u);
+          AH_MediumCtx_SetTokenContext(ctx, tctx);
+          DBG_INFO(AQHBCI_LOGDOMAIN,
+                   "Adding user \"%s\"",
+                   GWEN_CryptToken_User_GetUserId(u));
+          AH_MediumCtx_List_Add(ctx, m->contextList);
+        }
         else {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Context %d not found", (int)cid);
         }
@@ -248,38 +251,28 @@ int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
 
   /* then try to read contexts only */
   if (AH_MediumCtx_List_GetCount(m->contextList)==0) {
-    GWEN_CRYPTTOKEN_CONTEXT_LIST *cl;
+    GWEN_CRYPTTOKEN_CONTEXT *tctx;
+    int idx=1;
 
-    cl=GWEN_CryptToken_Context_List_new();
-    rv=GWEN_CryptToken_FillContextList(ct, cl);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not fill context list (%d)", rv);
-      GWEN_CryptToken_Context_List_free(cl);
-      return AB_ERROR_NO_DATA;
+    tctx=GWEN_CryptToken_Context_List_First(cl);
+    while (tctx) {
+      AH_MEDIUM_CTX *ctx;
+      GWEN_CRYPTTOKEN_USER *u;
+
+      ctx=AH_MediumCtx_new();
+      AH_MediumCtx_SetTokenContext(ctx, tctx);
+      u=GWEN_CryptToken_User_new();
+      /* create an empty user */
+      GWEN_CryptToken_User_SetId(u, idx);
+      AH_MediumCtx_SetUser(ctx, u);
+      GWEN_CryptToken_User_free(u);
+      AH_MediumCtx_List_Add(ctx, m->contextList);
+      idx++;
+      tctx=GWEN_CryptToken_Context_List_Next(tctx);
     }
-    else {
-      GWEN_CRYPTTOKEN_CONTEXT *tctx;
-      int idx=1;
-
-      tctx=GWEN_CryptToken_Context_List_First(cl);
-      while (tctx) {
-        AH_MEDIUM_CTX *ctx;
-        GWEN_CRYPTTOKEN_USER *u;
-
-	ctx=AH_MediumCtx_new();
-	AH_MediumCtx_SetTokenContext(ctx, tctx);
-	u=GWEN_CryptToken_User_new();
-        /* create an empty user */
-        GWEN_CryptToken_User_SetId(u, idx);
-	AH_MediumCtx_SetUser(ctx, u);
-	GWEN_CryptToken_User_free(u);
-	AH_MediumCtx_List_Add(ctx, m->contextList);
-        idx++;
-	tctx=GWEN_CryptToken_Context_List_Next(tctx);
-      }
-    }
-    GWEN_CryptToken_Context_List_free(cl);
   }
+
+  GWEN_CryptToken_Context_List_free(cl);
 
   /* still no contexts? */
   if (AH_MediumCtx_List_GetCount(m->contextList)==0) {
@@ -417,7 +410,7 @@ int AH_Medium_Create(AH_MEDIUM *m){
 
   /* reset */
   assert(m->cryptToken==0);
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Clearing context list");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Clearing context list");
   AH_MediumCtx_List_Clear(m->contextList);
   m->currentContext=0;
   m->selected=-1;

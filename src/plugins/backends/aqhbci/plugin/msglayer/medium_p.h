@@ -56,6 +56,8 @@ static int AH_Medium__ReadKeySpecs(AH_MEDIUM *m);
 static int AH_Medium__SetKeyStatus(AH_MEDIUM *m, int kid,
                                    GWEN_TYPE_UINT32 kstatus);
 
+static void AH_Medium__preparePatternCtx(GWEN_CRYPTTOKEN_CONTEXT *ctx);
+
 
 #endif /* AH_MEDIUM_P_H */
 

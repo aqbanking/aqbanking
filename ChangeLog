@@ -3,6 +3,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/02/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added crypt token test in src/plugins/backends/aqhbci/plugin
+- adapted AqHBCI crypt token code to latest changes in Gwenhywfar
+This version needs the latest CVS version of Gwenhywfar.
+
 
 2006/02/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

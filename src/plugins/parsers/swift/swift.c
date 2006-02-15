@@ -181,7 +181,7 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
   /* read first line, should be empty */
   for (;;) {
     if (GWEN_BufferedIO_CheckEOF(bio)) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Empty stream");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Empty stream");
       GWEN_Buffer_free(lbuf);
       return 1;
     }
