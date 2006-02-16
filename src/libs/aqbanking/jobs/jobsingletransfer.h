@@ -19,6 +19,12 @@
 #include <aqbanking/transaction.h>
 #include <aqbanking/transactionlimits.h>
 
+/** @addtogroup G_AB_JOBS_XFER_TRANSFER
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -91,6 +97,7 @@ const int *AB_JobSingleTransfer_GetTextKeys(const AB_JOB *j);
 }
 #endif
 
+/*@}*/ /* defgroup */
 
 #endif
 

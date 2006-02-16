@@ -22,11 +22,77 @@
 extern "C" {
 #endif
 
-/** @defgroup AB_JOB AB_JOB (Online Banking Tasks)
- * @ingroup AB_C_INTERFACE
+/** @defgroup G_AB_JOB Online Banking Tasks
+ * @ingroup G_AB_C_INTERFACE
  *
  * This group represents online banking tasks such as retrieving the balance,
  * downloading transaction statements, issue transfers etc.
+ */
+
+  /** @defgroup G_AB_JOBS_GETBALANCE Get Balance
+   * @ingroup G_AB_JOB
+   */
+
+  /** @defgroup G_AB_JOBS_GETTRANSACTIONS Get Transaction Statements
+   * @ingroup G_AB_JOB
+   */
+
+  /** @defgroup G_AB_JOBS_XFERS Transfer Jobs
+   * @ingroup G_AB_JOB
+   */
+  /** @defgroup G_AB_JOBS_XFER_TRANSFER National Transfer
+   * @ingroup G_AB_JOBS_XFERS
+   */
+  /** @defgroup G_AB_JOBS_XFER_DEBIT Debit Notes
+   * @ingroup G_AB_JOBS_XFERS
+   */
+  /** @defgroup G_AB_JOBS_XFER_EU EU Transfer
+   * @ingroup G_AB_JOBS_XFERS
+   */
+  /** @defgroup G_AB_JOBS_XFER_INTERNAL Internal Transfer
+   * @ingroup G_AB_JOBS_XFERS
+   */
+
+
+  /** @defgroup G_AB_JOBS_DATED_TRANSFER Dated Transfers
+   * @ingroup G_AB_JOB
+   *
+   * This is a scheduled transaction managed by the credit institute.
+   */
+  /** @defgroup G_AB_JOBS_DATED_TRANSFER_MK Create a Dated Transfer
+   * @ingroup G_AB_JOBS_DATED_TRANSFER
+   */
+  /** @defgroup G_AB_JOBS_DATED_TRANSFER_MOD Modify a Dated Transfer
+   * @ingroup G_AB_JOBS_DATED_TRANSFER
+   */
+  /** @defgroup G_AB_JOBS_DATED_TRANSFER_DEL Delete a Dated Transfer
+   * @ingroup G_AB_JOBS_DATED_TRANSFER
+   */
+  /** @defgroup G_AB_JOBS_DATED_TRANSFER_GET Get Dated Transfers
+   * @ingroup G_AB_JOBS_DATED_TRANSFER
+   */
+
+
+  /** @defgroup G_AB_JOBS_STO Standing Orders
+   * @ingroup G_AB_JOB
+   */
+  /** @defgroup G_AB_JOBS_STO_MK Create a Standing Order
+   * @ingroup G_AB_JOBS_STO
+   */
+  /** @defgroup G_AB_JOBS_STO_MOD Modify a Standing Order
+   * @ingroup G_AB_JOBS_STO
+   */
+  /** @defgroup G_AB_JOBS_STO_DEL Delete a Standing Order
+   * @ingroup G_AB_JOBS_STO
+   */
+  /** @defgroup G_AB_JOBS_STO_GET Get Standing Orders
+   * @ingroup G_AB_JOBS_STO
+   */
+
+
+
+/** @addtogroup G_AB_JOB
+ *
  */
 /*@{*/
 

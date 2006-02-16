@@ -19,6 +19,12 @@
 #include <aqbanking/transaction.h>
 #include <aqbanking/transactionlimits.h>
 
+/** @addtogroup G_AB_JOBS_DATED_TRANSFER_MK
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,6 +82,8 @@ const AB_TRANSACTION_LIMITS *AB_JobCreateDatedTransfer_GetFieldLimits(AB_JOB *j)
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/ /* defgroup */
 
 
 #endif

@@ -33,6 +33,7 @@ static int
   AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                            AB_IMEXPORTER_ACCOUNTINFO *ai,
                                            const char *docType,
+                                           int noted,
                                            GWEN_BUFFER *buf);
 
 

@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-/** @defgroup G_AB_BANKING AB_BANKING (Main Interface)
+/** @defgroup G_AB_BANKING Main Interface
  * @ingroup G_AB_C_INTERFACE
  *
  * @short This group contains the main API function group.
@@ -103,7 +103,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
 
 
 
-/** @defgroup G_AB_BANKING_JOB_API AB_BANKING Job-API
+/** @defgroup G_AB_BANKING_JOB_API Standard API
  *
  * @short This group contains the job API ("main interface") function group.
  *
@@ -2091,7 +2091,7 @@ AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByLocalName(AB_BANKING *ab,
 /*@}*/ /* defgroup Middle Level API */
 
 
-/** @defgroup G_AB_BANKING_IMEXPORT_API Im/Exporter API
+/** @defgroup G_AB_BANKING_IMEXPORT_API Simplified API
  *
  * @short This group contains a very simple API.
  *
@@ -2187,28 +2187,7 @@ int AB_Banking_RequestDatedTransfers(AB_BANKING *ab,
                                      const char *accountNumber);
 
 
-/**
- * <p>
- * This functions gathers all available information from the results of
- * all currently finished jobs. Jobs which have been evaluated by this
- * function and which had been created by the calling application are
- * automatically removed from the queue of finished jobs.
- * </p>
- * <p>
- * Please note that this function even returns information extracted from
- * requests which have been issued by other applications (those finished
- * jobs are @b not removed from the finished queue to allow the requesting
- * application to later gather its own responses).
- * </p>
- * <p>
- * All information is added to the given import context. Thus you only need
- * a single function in your application to import data read from a file
- * (via the Import/Export API) and from online requests.
- * </p>
- * @return 0 if ok, !=0 on error (see @ref AB_ERROR)
- * @param ab AqBanking main object
- * @param ctx import/export context to which all information is to be added
- */
+/** @deprecated */
 AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_GatherResponses(AB_BANKING *ab,
                                AB_IMEXPORTER_CONTEXT *ctx);

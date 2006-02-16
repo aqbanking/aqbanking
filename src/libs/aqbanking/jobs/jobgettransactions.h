@@ -20,6 +20,12 @@
 #include <aqbanking/accstatus.h>
 
 
+/** @addtogroup G_AB_JOBS_GETTRANSACTIONS
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -86,6 +92,9 @@ const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j);
 #ifdef __cplusplus
 }
 #endif
+
+
+/*@}*/ /* addtogroup */
 
 
 #endif /* AQBANKING_JOBGETTRANSACTIONS_H */

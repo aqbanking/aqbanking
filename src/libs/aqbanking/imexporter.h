@@ -132,9 +132,12 @@ AQBANKING_API
 const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
+/*@}*/ /* defgroup */
 
 
-/** @name Im-/export Context
+
+/** @defgroup AB_IMEXPORTER_CONTEXT Im- and Exporter Context
+ * @ingroup AB_IMEXPORTER
  *
  * A context contains the list of accounts for which data has been imported
  * or which are to be exported.
@@ -144,7 +147,8 @@ const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 /*@{*/
 AQBANKING_API 
 AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
-AQBANKING_API 
+
+AQBANKING_API
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
 
 /** Stores a complete import/export context to a GWEN_DB.
@@ -263,19 +267,24 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 AQBANKING_API
 void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
                                          AB_TRANSACTION *t);
+/*@}*/ /* defgroup */
 
 
-/*@}*/
 
 
-
-/** @name Im-/export Account Info
+/** @defgroup AB_IMEXPORTER_ACCOUNTINFO Im- and Exporter Account Info
+ * @ingroup AB_IMEXPORTER
  *
  * Such a structure contains the list of imported/to be exported transactions
  * for a given account.
  */
 /*@{*/
-AQBANKING_API 
+
+/** @name Constructor, Destructor, Copy
+ *
+ */
+/*@{*/
+AQBANKING_API
 AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new();
 AQBANKING_API 
 void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea);
@@ -289,262 +298,13 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
   AB_IMEXPORTER_ACCOUNTINFO*
   AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oldiea);
+/*@}*/
 
 
-/**
- * Takes over ownership of the given transaction.
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                             AB_TRANSACTION *t);
-/**
- * Returns the first transaction stored within the context.
- * The context remains the owner of the object returned.
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * Returns the next transaction stored within the context.
- * The context remains the owner of the object returned.
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/** Callback function type for
- * AB_ImExporterAccountInfo_TransactionsForEach()
+/** @name Informational Functions
  *
- * (As soon as transaction.h declares this type itself, this
- * declaration can be removed. Currently transaction.h only
- * declares the LIST2 but not the CONSTLIST2, so we add this
- * declaration here. If transaction.h declares the CONSTLIST2 as
- * well, it wouldn't harm because this typedef is exactly
- * identical to the one from the GWEN_CONSTLIST2_FUNCTION_LIB_DEFS
- * macro.)  */
-typedef const AB_TRANSACTION *
-(AB_TRANSACTION_CONSTLIST2_FOREACH)(const AB_TRANSACTION *element,
-				    void *user_data);
-
-/** Traverses the list of Transactions in this AccountInfo,
- * calling the callback function 'func' on each list element.
- * Traversal will stop when 'func' returns a non-NULL value, and
- * the routine will return with that value. Otherwise the routine
- * will return NULL.
- *
- * Note: It is not totally clear to me whether this function might
- * interfere with AB_ImExporterAccountInfo_GetFirstTransaction() /
- * AB_ImExporterAccountInfo_GetNextTransaction() . To be on the
- * safe side, you should probably traverse the transaction list
- * only *either* by those mentioned two functions *or* by this
- * ForEach function, but you should probably not mix the access
- * through this two methods. (This doubt be changed in future
- * versions.)
- *
- * Available since aqbanking-1.9.7.
- *
- * @param list The list to traverse.
- * @param func The function to be called with each list element.
- * @param user_data A pointer passed on to the function 'func'.
- * @return The non-NULL pointer returned by 'func' as soon as it
- * returns one. Otherwise (i.e. 'func' always returns NULL)
- * returns NULL.
  */
-AQBANKING_API
-const AB_TRANSACTION *
-AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
-					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
-					     void* user_data);
-
-/**
- * Takes over ownership of the given account status.
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                               AB_ACCOUNT_STATUS *st);
-
-/**
- * Returns the first account status stored within the context and removes
- * it.
- * The caller becomes the new owner of the account status returned (if any)
- * which makes him/her responsible for freeing it using
- * @ref AB_AccountStatus_free.
- */
-AQBANKING_API 
-AB_ACCOUNT_STATUS*
-AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * Returns the next account status stored within the context and removes it
- * The caller becomes the new owner of the account status returned (if any)
- * which makes him/her responsible for freeing it using
- * @ref AB_AccountStatus_free.
- */
-AQBANKING_API 
-AB_ACCOUNT_STATUS*
-AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-
-/**
- * <p>
- * Takes over ownership of the given standing order.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                               AB_TRANSACTION *t);
-/**
- * <p>
- * Returns the first standing order stored within the context.
- * The context remains the owner of the object returned.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * <p>
- * Returns the next standing order stored within the context.
- * The context remains the owner of the object returned.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-
-/**
- * <p>
- * Takes over ownership of the given transfer.
- * </p>
- * <p>
- * The transfer can be any kind of transfer (like single transfer,
- * debit note, EU transfer etc).
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                          AB_TRANSACTION *t);
-/**
- * <p>
- * Returns the first transfer stored within the context.
- * The context remains the owner of the object returned.
- * The transfer can be any kind of transfer (like single transfer,
- * debit note, EU transfer etc).
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * <p>
- * Returns the next transfer stored within the context.
- * The context remains the owner of the object returned.
- * The transfer can be any kind of transfer (like single transfer,
- * debit note, EU transfer etc).
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-
-
-/**
- * <p>
- * Takes over ownership of the given dated transfer.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                               AB_TRANSACTION *t);
-/**
- * <p>
- * Returns the first dated transfer stored within the context.
- * The context remains the owner of the object returned.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * <p>
- * Returns the next dated transfer stored within the context.
- * The context remains the owner of the object returned.
- * </p>
- * <p>
- * This function is only used in the context of the function
- * @ref AB_Banking_GatherResponses. It is especially not used when
- * importing or exporting normal transactions via
- * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
- * stated otherwise (see documentation of the importer/exporter in question).
- * </p>
- */
-AQBANKING_API 
-const AB_TRANSACTION*
-AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-
+/*@{*/
 /**
  * Bank code of the institute the account is at.
  */
@@ -611,8 +371,348 @@ AB_ImExporterAccountInfo_GetDescription(const AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 void AB_ImExporterAccountInfo_SetDescription(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                        const char *s);
-
 /*@}*/
+
+
+
+/** @name Transactions
+ *
+ */
+/*@{*/
+/**
+ * Takes over ownership of the given transaction.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                             AB_TRANSACTION *t);
+/**
+ * Returns the first transaction stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns the next transaction stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/** Callback function type for
+ * AB_ImExporterAccountInfo_TransactionsForEach()
+ *
+ * (As soon as transaction.h declares this type itself, this
+ * declaration can be removed. Currently transaction.h only
+ * declares the LIST2 but not the CONSTLIST2, so we add this
+ * declaration here. If transaction.h declares the CONSTLIST2 as
+ * well, it wouldn't harm because this typedef is exactly
+ * identical to the one from the GWEN_CONSTLIST2_FUNCTION_LIB_DEFS
+ * macro.)  */
+typedef const AB_TRANSACTION *
+(AB_TRANSACTION_CONSTLIST2_FOREACH)(const AB_TRANSACTION *element,
+				    void *user_data);
+
+/** Traverses the list of Transactions in this AccountInfo,
+ * calling the callback function 'func' on each list element.
+ * Traversal will stop when 'func' returns a non-NULL value, and
+ * the routine will return with that value. Otherwise the routine
+ * will return NULL.
+ *
+ * Note: It is not totally clear to me whether this function might
+ * interfere with AB_ImExporterAccountInfo_GetFirstTransaction() /
+ * AB_ImExporterAccountInfo_GetNextTransaction() . To be on the
+ * safe side, you should probably traverse the transaction list
+ * only *either* by those mentioned two functions *or* by this
+ * ForEach function, but you should probably not mix the access
+ * through this two methods. (This doubt be changed in future
+ * versions.)
+ *
+ * Available since aqbanking-1.9.7.
+ *
+ * @param list The list to traverse.
+ * @param func The function to be called with each list element.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ */
+AQBANKING_API
+const AB_TRANSACTION *
+AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
+					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
+					     void* user_data);
+/*@}*/
+
+
+/** @name Account Status
+ *
+ */
+/*@{*/
+/**
+ * Takes over ownership of the given account status.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               AB_ACCOUNT_STATUS *st);
+
+/**
+ * Returns the first account status stored within the context and removes
+ * it.
+ * The caller becomes the new owner of the account status returned (if any)
+ * which makes him/her responsible for freeing it using
+ * @ref AB_AccountStatus_free.
+ */
+AQBANKING_API 
+AB_ACCOUNT_STATUS*
+AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns the next account status stored within the context and removes it
+ * The caller becomes the new owner of the account status returned (if any)
+ * which makes him/her responsible for freeing it using
+ * @ref AB_AccountStatus_free.
+ */
+AQBANKING_API 
+AB_ACCOUNT_STATUS*
+AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
+/*@}*/
+
+
+/** @name Standing Orders
+ *
+ */
+/*@{*/
+
+/**
+ * <p>
+ * Takes over ownership of the given standing order.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               AB_TRANSACTION *t);
+/**
+ * <p>
+ * Returns the first standing order stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * <p>
+ * Returns the next standing order stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
+/*@}*/
+
+
+/** @name Transfers
+ *
+ */
+/*@{*/
+/**
+ * <p>
+ * Takes over ownership of the given transfer.
+ * </p>
+ * <p>
+ * The transfer can be any kind of transfer (like single transfer,
+ * debit note, EU transfer etc).
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                          AB_TRANSACTION *t);
+/**
+ * <p>
+ * Returns the first transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * The transfer can be any kind of transfer (like single transfer,
+ * debit note, EU transfer etc).
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * <p>
+ * Returns the next transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * The transfer can be any kind of transfer (like single transfer,
+ * debit note, EU transfer etc).
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+/*@}*/
+
+
+
+/** @name Dated Transfers
+ *
+ */
+/*@{*/
+/**
+ * <p>
+ * Takes over ownership of the given dated transfer.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               AB_TRANSACTION *t);
+/**
+ * <p>
+ * Returns the first dated transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * <p>
+ * Returns the next dated transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+/*@}*/
+
+
+/** @name Noted Transactions
+ *
+ */
+/*@{*/
+/**
+ * <p>
+ * Takes over ownership of the given noted transfer.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                                  AB_TRANSACTION *t);
+/**
+ * <p>
+ * Returns the first noted transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * <p>
+ * Returns the next noted transfer stored within the context.
+ * The context remains the owner of the object returned.
+ * </p>
+ * <p>
+ * This function is only used in the context of the function
+ * @ref AB_Banking_GatherResponses. It is especially not used when
+ * importing or exporting normal transactions via
+ * @ref AB_ImExporter_Import or @ref AB_ImExporter_Export unless explicitly
+ * stated otherwise (see documentation of the importer/exporter in question).
+ * </p>
+ */
+AQBANKING_API 
+const AB_TRANSACTION*
+AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+/*@}*/
+
+
+
+/*@}*/ /* defgroup */
 
 
 /** @name Helper Functions
@@ -659,7 +759,6 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p,
 #endif
 
 
-/*@}*/ /* defgroup */
 
 
 #endif /* AQBANKING_IMEXPORTER_H */

@@ -18,6 +18,11 @@
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
 
+/** @addtogroup G_AB_JOBS_DATED_TRANSFER_GET
+ *
+ */
+/*@{*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,6 +46,9 @@ AB_TRANSACTION_LIST2*
 #ifdef __cplusplus
 }
 #endif
+
+
+/*@}*/
 
 
 #endif /* AQBANKING_JOBGETDATEDTRANSFERS_H */

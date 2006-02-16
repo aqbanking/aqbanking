@@ -16,7 +16,7 @@ AC_CONFIG_HEADER([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=7
-AQBANKING_VERSION_BUILD=4
+AQBANKING_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -1568,8 +1568,6 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/ressource.rc
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
-  src/libs/aqbanking++/Makefile
-  src/libs/aqbanking++/ressource.rc
   src/frontends/Makefile
   src/frontends/cbanking/Makefile
   src/frontends/cbanking/cbanking-config.in

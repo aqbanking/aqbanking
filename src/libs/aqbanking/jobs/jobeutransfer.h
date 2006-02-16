@@ -19,6 +19,13 @@
 #include <aqbanking/transaction.h>
 #include <aqbanking/eutransferinfo.h>
 
+
+/** @addtogroup G_AB_JOBS_XFER_EU
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -108,6 +115,9 @@ void AB_JobEuTransfer_SetChargeWhom(AB_JOB *j,
 #ifdef __cplusplus
 }
 #endif
+
+
+/*@}*/ /* addtogroup */
 
 
 #endif

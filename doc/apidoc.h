@@ -1,7 +1,33 @@
 
 
-/** @defgroup G_AB_C_INTERFACE API for C  */
-/** @defgroup G_AB_CPP_INTERFACE API for C++ */
+/** @defgroup G_AB_LIBRARY AqBanking Library */
+
+/** @defgroup G_AB_C_INTERFACE API for C
+ *  @ingroup G_AB_LIBRARY
+ */
+
+/** @defgroup G_AB_FRONTENDS Frontends */
+
+/** @defgroup G_AB_QBANKING QT Frontend (QBanking)
+ * @ingroup G_AB_FRONTENDS
+ */
+
+/** @defgroup G_AB_KBANKING KDE Frontend (KBanking)
+ * @ingroup G_AB_FRONTENDS
+ */
+
+/** @defgroup G_AB_G2BANKING GTK2 Frontend (G2Banking)
+ * @ingroup G_AB_FRONTENDS
+ */
+
+
+/** @defgroup G_AB_CBANKING Console Frontend (CBanking)
+ * @ingroup G_AB_FRONTENDS
+ */
+
+
+/** @defgroup G_AB_BACKENDS Backends */
+
 
 
 /** @mainpage AqBanking Documentation Main Page
@@ -110,3 +136,9 @@ immediately be supported by all applications.
 @verbinclude 03-APPS
 
  */
+
+
+/** @defgroup G_TUTORIALS Tutorials  */
+
+
+

@@ -61,8 +61,10 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   char *owner;
   char *description;
   AB_ACCOUNT_TYPE accountType;
+
   AB_TRANSACTION_LIST *transactions;
   AB_TRANSACTION *nextTransaction;
+
   AB_ACCOUNT_STATUS_LIST *accStatusList;
   AB_ACCOUNT_STATUS *nextAccountStatus;
 
@@ -71,6 +73,9 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
 
   AB_TRANSACTION_LIST *datedTransfers;
   AB_TRANSACTION *nextDatedTransfer;
+
+  AB_TRANSACTION_LIST *notedTransactions;
+  AB_TRANSACTION *nextNotedTransaction;
 
   AB_TRANSACTION_LIST *transfers;
   AB_TRANSACTION *nextTransfer;

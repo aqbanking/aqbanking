@@ -19,6 +19,13 @@
 #include <aqbanking/transaction.h>
 #include <aqbanking/transactionlimits.h>
 
+
+/** @addtogroup G_AB_JOBS_XFER_DEBIT
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -90,6 +97,9 @@ const int *AB_JobSingleDebitNote_GetTextKeys(const AB_JOB *j);
 #ifdef __cplusplus
 }
 #endif
+
+
+/*@}*/ /* addtogroup */
 
 
 #endif

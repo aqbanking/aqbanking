@@ -83,7 +83,8 @@ void AH_Job_GetTransactions_FreeData(void *bp, void *p){
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                             const char *docType,
+					     const char *docType,
+                                             int noted,
                                              GWEN_BUFFER *buf){
   GWEN_BUFFEREDIO *bio;
   GWEN_DBIO *dbio;
@@ -170,6 +171,9 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
         AB_Transaction_SetLocalAccountNumber(t,
                                              AB_Account_GetAccountNumber(a));
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
+        if (noted)
+	  AB_ImExporterAccountInfo_AddNotedTransaction(ai, t);
+	else
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
       done++;
@@ -182,37 +186,39 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     } /* while */
 
     /* read all endsaldos */
-    dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
-    while (dbT) {
-      GWEN_DB_NODE *dbX;
-      GWEN_TIME *ti=0;
-
-      dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-      if (dbX)
-        ti=GWEN_Time_fromDb(dbX);
-      dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-      if (dbX) {
-        AB_VALUE *v;
-
-        v=AB_Value_fromDb(dbX);
-        if (v) {
-          AB_BALANCE *bal;
-          AB_ACCOUNT_STATUS *as;
-
-          bal=AB_Balance_new(v, ti);
-          AB_Value_free(v);
-          as=AB_AccountStatus_new();
-          if (ti)
-            AB_AccountStatus_SetTime(as, ti);
-          AB_AccountStatus_SetNotedBalance(as, bal);
-          AB_Balance_free(bal);
-          AB_ImExporterAccountInfo_AddAccountStatus(ai, as);
-        }
-      }
-      GWEN_Time_free(ti);
-
-      dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
-    } /* while */
+    if (!noted) {
+      dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
+      while (dbT) {
+	GWEN_DB_NODE *dbX;
+	GWEN_TIME *ti=0;
+  
+	dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
+	if (dbX)
+	  ti=GWEN_Time_fromDb(dbX);
+	dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+	if (dbX) {
+	  AB_VALUE *v;
+  
+	  v=AB_Value_fromDb(dbX);
+	  if (v) {
+	    AB_BALANCE *bal;
+	    AB_ACCOUNT_STATUS *as;
+  
+	    bal=AB_Balance_new(v, ti);
+	    AB_Value_free(v);
+	    as=AB_AccountStatus_new();
+	    if (ti)
+	      AB_AccountStatus_SetTime(as, ti);
+	    AB_AccountStatus_SetNotedBalance(as, bal);
+	    AB_Balance_free(bal);
+	    AB_ImExporterAccountInfo_AddAccountStatus(ai, as);
+	  }
+	}
+	GWEN_Time_free(ti);
+  
+	dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
+      } /* while */
+    }
 
     dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
   } /* while */
@@ -316,7 +322,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", tbooked)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)){
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
@@ -327,7 +333,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* read noted transactions */
   if (GWEN_Buffer_GetUsedBytes(tnoted)) {
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", tnoted)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1, tnoted)) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions");

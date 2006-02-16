@@ -18,6 +18,11 @@
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
 
+/** @addtogroup G_AB_JOBS_STO_GET
+ *
+ */
+/*@{*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,6 +47,7 @@ AB_TRANSACTION_LIST2*
 }
 #endif
 
+/*@}*/
 
 #endif /* AQBANKING_JOBGETSTANDINGORDERS_H */
 

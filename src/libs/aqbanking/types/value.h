@@ -128,14 +128,14 @@ int AB_Value_Compare(const AB_VALUE  *v1, const AB_VALUE *v2);
 
 /** @name Arithmetic operations */
 /*@{*/
-/** Add the value @c vToAdd to the given value @v, i.e. assign
+/** Add the value @c vToAdd to the given value <i>v</i>, i.e. assign
     v=v+vToAdd. Returns zero on success, or -1 if any input argument
     is invalid. (Note: Right now this function ignores the currency
     field.) */
 AQBANKING_API
 int AB_Value_AddValue(AB_VALUE  *v, const AB_VALUE *vToAdd);
 
-/** Subtract the value @c vToSub from the given value @v,
+/** Subtract the value @c vToSub from the given value <i>v</i>,
     i.e. assign v=v-vToSub. Returns zero on succes, or -1 if any
     input argument is invalid. (Note: Right now this function ignores
     the currency field.) */

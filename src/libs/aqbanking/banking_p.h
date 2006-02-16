@@ -35,6 +35,7 @@
 #define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
 
 #include "banking_l.h"
+#include "provider_l.h"
 #include "account_l.h"
 #include "job_l.h"
 #include "imexporter_l.h"

@@ -1,4 +1,4 @@
-SUBDIRS=aqbanking aqbanking++
+SUBDIRS=aqbanking
 
 sources:
 	for d in $(SUBDIRS); do \

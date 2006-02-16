@@ -77,10 +77,6 @@ symlinkFolder "src/libs/aqbanking" "headers/aqbanking"
 ln -s "${bprefix}/version.h" headers/aqbanking/version.h
 ln -s "${bprefix}/system.h" headers/aqbanking/system.h
 
-# symlink all headers from src/lib/aqbanking++
-mkdir -p headers/aqbanking++
-symlinkFolder "src/libs/aqbanking++" "headers/aqbanking++"
-
 # symlink all headers from src/frontends
 for frontend in @aqbanking_frontends@; do
   mkdir -p headers/${frontend}

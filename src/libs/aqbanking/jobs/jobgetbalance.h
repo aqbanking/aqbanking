@@ -18,6 +18,11 @@
 #include <aqbanking/job.h>
 #include <aqbanking/accstatus.h>
 
+/** @addtogroup G_AB_JOBS_GETBALANCE
+ *
+ */
+/*@{*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,6 +36,8 @@ const AB_ACCOUNT_STATUS *AB_JobGetBalance_GetAccountStatus(AB_JOB *j);
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/ /* addtogroup */
 
 
 #endif /* AQBANKING_JOBGETBALANCE_H */

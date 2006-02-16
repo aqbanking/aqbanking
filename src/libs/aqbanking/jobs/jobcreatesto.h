@@ -19,6 +19,13 @@
 #include <aqbanking/transaction.h>
 #include <aqbanking/transactionlimits.h>
 
+
+/** @addtogroup G_AB_JOBS_STO_MK Create a Standing Order
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,6 +83,8 @@ const AB_TRANSACTION_LIMITS *AB_JobCreateStandingOrder_GetFieldLimits(AB_JOB *j)
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/ /* defgroup */
 
 
 #endif

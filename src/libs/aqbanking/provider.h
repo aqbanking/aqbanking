@@ -36,10 +36,6 @@ extern "C" {
 
 typedef struct AB_PROVIDER AB_PROVIDER;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER, AQBANKING_API)
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_PROVIDER, AB_Provider, AQBANKING_API)
-/* Do not terminate these lines with semicolon because they are
-   macros, not functions, and ISO C89 does not allow a semicolon
-   there. */
 
 typedef struct AB_PROVIDER_DESCRIPTION AB_PROVIDER_DESCRIPTION;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AQBANKING_API)
@@ -64,7 +60,7 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
 extern "C" {
 #endif
 
-/** @defgroup G_AB_PROVIDER AB_PROVIDER (Online Banking Backends)
+/** @defgroup G_AB_PROVIDER Online Banking Backends
  * @ingroup G_AB_C_INTERFACE
  *
  * @brief This group represents backends. (Don't use in applications)

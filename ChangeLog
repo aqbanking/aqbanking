@@ -3,6 +3,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/02/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- imexporter: Added notedTransactions (those are transactions which are noted
+  at the bank but which have not been booked). Noted transactions are
+  now stored as such by AqHBCI.
+- no longer build libbankingpp.la
+- provider lists are no longer public
+- updated Doxyfile.in to current version of Doxygen
+- started reorganizing API documentation (not finished yet)
+
+
 2006/02/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added crypt token test in src/plugins/backends/aqhbci/plugin

@@ -23,7 +23,7 @@ extern "C" {
 
 
 /**
- * @file msgengine.h
+ * @file aqbanking/msgengine.h
  *
  * This message engine implements a few new types:
  * <ul>

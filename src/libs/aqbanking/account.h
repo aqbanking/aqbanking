@@ -22,9 +22,21 @@
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
+
+/** @defgroup G_AB_ACCOUNT Accounts
+ * @ingroup AB_C_INTERFACE
+ *
+ * @brief This group represents accounts.
+ *
+ * Accounts are only created by AB_PROVIDERs, not by the application.
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 typedef struct AB_ACCOUNT AB_ACCOUNT;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_ACCOUNT, AQBANKING_API)
@@ -58,16 +70,6 @@ typedef enum {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** @defgroup AB_ACCOUNT AB_ACCOUNT (Managing accounts)
- * @ingroup AB_C_INTERFACE
- *
- * @brief This group represents accounts.
- *
- * Accounts are only created by AB_PROVIDERs, not by the application.
- */
-/*@{*/
-
 
 AQBANKING_API 
 void AB_Account_free(AB_ACCOUNT *acc);
@@ -174,13 +176,14 @@ AQBANKING_API
 void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u);
 
 
-/*@}*/
 
 
 #ifdef __cplusplus
 }
 #endif
 
+
+/*@}*/ /* defgroup */
 
 
 #endif /* AQBANKING_ACCOUNT_H */
