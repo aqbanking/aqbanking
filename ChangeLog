@@ -3,6 +3,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006-02-17   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Use AC_CONFIG_HEADERS, not HEADER, according to
+	autoconf docs.
+
 2006/02/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - imexporter: Added notedTransactions (those are transactions which are noted
