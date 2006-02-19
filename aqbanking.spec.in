@@ -359,7 +359,6 @@ make install-strip \
 ### The aqbanking files
 %{_bindir}/%{name}-config
 %{_includedir}/%{name}
-%{_includedir}/%{name}++
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/%{name}.pc
