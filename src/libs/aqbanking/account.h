@@ -24,7 +24,7 @@
 
 
 /** @defgroup G_AB_ACCOUNT Accounts
- * @ingroup AB_C_INTERFACE
+ * @ingroup G_AB_C_INTERFACE
  *
  * @brief This group represents accounts.
  *

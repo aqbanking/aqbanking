@@ -10,8 +10,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GB_SIMPLEBOX_H
-#define GB_SIMPLEBOX_H
+#ifndef GB_INPUTBOX_L_H
+#define GB_INPUTBOX_L_H
 
 #include <gtk/gtk.h>
 
@@ -19,19 +19,18 @@
 #include <aqbanking/banking.h>
 
 
-GtkWidget *GB_SimpleBox_new(AB_BANKING *ab,
-                            GWEN_TYPE_UINT32 id,
-                            GWEN_TYPE_UINT32 flags,
-                            const char *title,
-                            const char *text);
-GWEN_TYPE_UINT32 GB_SimpleBox_GetId(GtkWidget *w);
+
+gboolean GBanking_GetInput(AB_BANKING *ab,
+                           GWEN_TYPE_UINT32 flags,
+                           const char *title,
+                           const char *text,
+                           char *buffer,
+                           int minLen,
+                           int maxLen,
+                           GtkWidget *parent);
 
 
-
-
-
-
-#endif
+#endif /* GB_INPUTBOX_L_H */
 
 
 

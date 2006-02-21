@@ -29,9 +29,9 @@ extern "C" {
 
 
 /**
- * Creates a job which retrieves a list of currently active standing orders
+ * Creates a job which retrieves a list of currently active dated transfers
  * for the given account.
- * @param a account for which you want the standing orders
+ * @param a account for which you want the dated transfers
  */
 AQBANKING_API
 AB_JOB *AB_JobGetDatedTransfers_new(AB_ACCOUNT *a);

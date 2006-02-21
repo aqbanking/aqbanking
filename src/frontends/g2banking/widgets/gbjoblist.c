@@ -280,9 +280,9 @@ AB_JOB *GB_JobList__FindJob(AB_JOB_LIST2 *sjl, GWEN_TYPE_UINT32 id) {
 
 
 void GB_JobList__selected_foreach_func(GtkTreeModel  *model,
-                                             GtkTreePath   *path,
-                                             GtkTreeIter   *iter,
-                                             gpointer       userdata) {
+                                       GtkTreePath   *path,
+                                       GtkTreeIter   *iter,
+                                       gpointer       userdata) {
   GB_JOBLIST *jl;
   AB_JOB_LIST2 *sjl;
   gint int_data;

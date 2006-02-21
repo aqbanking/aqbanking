@@ -18,9 +18,28 @@
 #include <aqbanking/jobsingletransfer.h>
 
 
+/** @addtogroup G_AB_JOBS_XFER_TRANSFER
+ *
+ */
+/*@{*/
+
+/** @name Backend Functions
+ *
+ * Functions in this group are only to be called by banking backends.
+ */
+/*@{*/
+
+/**
+ * This function lets the backend specify the limits for some of the fields
+ * of a @ref AB_TRANSACTION.
+ */
 AQBANKING_API
 void AB_JobSingleTransfer_SetFieldLimits(AB_JOB *j,
                                          AB_TRANSACTION_LIMITS *limits);
+/*@}*/ 
+
+
+/*@}*/ /* addtogroup */
 
 #endif
 

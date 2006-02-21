@@ -98,18 +98,18 @@ extern "C" {
  * @ref AB_Provider_Execute on this provider. This functions really sends the
  * jobs to the bank server or creates DTAUS discs or whatever the provider is
  * supposed to do.
- * After that AqBanking call @ref AB_Provider_ResetQueue to make sure no job
+ * After that AqBanking calls @ref AB_Provider_ResetQueue to make sure no job
  * is left in the providers queue after execution.
  * </p>
  * <p>
  * Another base class used between AqBanking and providers is @ref AB_ACCOUNT.
- * When executing @ref AB_Banking_Init AqBanking calls
- * @ref AB_Provider_GetAccountList on every active provider. This makes sure
- * that AqBanking always has an updated list of accounts.
- * When loading account information AqBanking also calls the function
- * @ref AB_Provider_UpdateAccount on the appropriate provider to make sure
- * that all accounts have updated information (such as account name, owner
- * name etc).
+ * An account stores a reference to its associated provider.
+ * When executing @ref AB_Banking_Init AqBanking calls the provider function
+ * @ref AB_Provider_ExtendAccount on every account to let the backend
+ * initialize the account.
+ * </p>
+ * <p>
+ * It is the same with @ref AB_USER.
  * </p>
  */
 /*@{*/
@@ -139,6 +139,8 @@ GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro);
 /**
  * This copies the name of the folder for AqBanking's backend data into
  * the given GWEN_Buffer. This folder is reserved for this backend.
+ * Please note that this folder does not necessarily exist, but the backend
+ * is free to create it.
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param pro pointer to the provider object
  * @param buf buffer to append the path name to

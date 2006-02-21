@@ -20,8 +20,12 @@
 #include <aqbanking/transactionlimits.h>
 
 
-/** @addtogroup G_AB_JOBS_XFER_INTERNAL Internal Transfer
+/** @addtogroup G_AB_JOBS_XFER_INTERNAL
  *
+ * An internal transfer is a transfer between two accounts of the same
+ * customer at the same bank. Some banks only allow to use this job for
+ * this kind of transfer while others only allow normal transfers (as
+ * described in @ref G_AB_JOBS_XFER_TRANSFER).
  */
 /*@{*/
 

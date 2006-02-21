@@ -27,8 +27,11 @@ extern "C" {
 #endif
 
 
-/** @addtogroup G_AB_PROVIDER
+/** @defgroup G_AB_PROVIDER_BE Backend Functions
+ * @ingroup G_AB_PROVIDER
  *
+ * Functions in this group are only to be called by AqBanking or its
+ * backends. They must especially not be called by applications!
  */
 /*@{*/
 
@@ -47,7 +50,10 @@ extern "C" {
  */
 typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab);
 
-
+/**
+ * This type is used with @ref AB_Provider_ExtendAccount and
+ * @ref AB_Provider_ExtendUser.
+ */
 typedef enum {
   /** Object to be extended has just been created. For some backends this
    * means that some settings are allowed to be missing at this point.*/
@@ -137,6 +143,9 @@ AQBANKING_API
 AB_PROVIDER *AB_Provider_new(AB_BANKING *ab,
                              const char *name);
 
+/**
+ * @return 0 if the backend is not initialized, !=0 if it is
+ */
 AQBANKING_API
 int AB_Provider_IsInit(const AB_PROVIDER *pro);
 
@@ -290,7 +299,7 @@ void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f);
 /*@}*/
 
 
-/*@}*/ /* addtogroup */
+/*@}*/ /* defgroup */
 
 
 #ifdef __cplusplus

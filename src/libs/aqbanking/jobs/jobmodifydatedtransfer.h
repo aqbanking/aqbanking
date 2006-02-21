@@ -21,6 +21,7 @@
 
 /** @addtogroup G_AB_JOBS_DATED_TRANSFER_MOD
  *
+ * This job modifies an already existing dated transfer at the bank.
  */
 /*@{*/
 

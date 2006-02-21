@@ -70,20 +70,3 @@ AB_JOB *AB_JobSingleTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-/* deprecated functions */
-
-
-
-
-int AB_JobSingleTransfer_GetMaxPurposeLines(const AB_JOB *j){
-  return AB_JobTransferBase_GetMaxPurposeLines(j);
-}
-
-
-
-const int *AB_JobSingleTransfer_GetTextKeys(const AB_JOB *j){
-  return AB_JobTransferBase_GetTextKeys(j);
-}
-
-
-

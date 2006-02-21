@@ -21,6 +21,8 @@
 
 /** @addtogroup G_AB_JOBS_XFER_TRANSFER
  *
+ * This is a single national transfer (i.e. the banks of the payee and the
+ * recipient are in the same country).
  */
 /*@{*/
 
@@ -74,22 +76,6 @@ const AB_TRANSACTION *AB_JobSingleTransfer_GetTransaction(const AB_JOB *j);
  */
 AQBANKING_API 
 const AB_TRANSACTION_LIMITS *AB_JobSingleTransfer_GetFieldLimits(AB_JOB *j);
-
-/**
- * @deprecated
- * Please use @ref AB_JobSingleTransfer_GetFieldLimits instead and take
- * the interesting limit from that object.
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_JobSingleTransfer_GetMaxPurposeLines(const AB_JOB *j);
-
-/**
- * @deprecated
- * Please use @ref AB_JobSingleTransfer_GetFieldLimits instead and take
- * the interesting limit from that object.
- */
-AQBANKING_API AQBANKING_DEPRECATED
-const int *AB_JobSingleTransfer_GetTextKeys(const AB_JOB *j);
 /*@}*/
 
 

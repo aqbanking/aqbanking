@@ -51,16 +51,15 @@ AB_ACCOUNT_STATUS_LIST2*
   AB_JobGetTransactions_GetAccountStatusList(const AB_JOB *j);
 
 
-/**
- * Returns the maximum number of days the bank stores your transaction
- * data for the account associated with the given job.
- * @return 0 if unknown, number of days otherwise
- * @param j job
+/** @name Arguments
+ *
+ * Possibly arguments for this job are the first date
+ * (@ref AB_JobGetTransactions_SetFromTime) and the last date
+ * (@ref AB_JobGetTransactions_SetToTime). This is only a hint for the
+ * backend. Some backends ignore this date range because their underlying
+ * protocol does not specify a way to communicate this date range.
  */
-AQBANKING_API 
-int AB_JobGetTransactions_GetMaxStoreDays(const AB_JOB *j);
-
-
+/*@{*/
 /**
  * Sets the first date for which you want the reports (the time doesn't
  * matter, only the date component of the given GWEN_TIME is used).
@@ -86,7 +85,25 @@ const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j);
 
 AQBANKING_API
 const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j);
+/*@}*/
 
+
+/** @name Parameters
+ *
+ * The functions in this group are only available after the function
+ * @ref AB_Job_CheckAvailability has been called and only if that call flagged
+ * success (i.e. that the job is available).
+ */
+/*@{*/
+/**
+ * Returns the maximum number of days the bank stores your transaction
+ * data for the account associated with the given job.
+ * @return 0 if unknown, number of days otherwise
+ * @param j job
+ */
+AQBANKING_API 
+int AB_JobGetTransactions_GetMaxStoreDays(const AB_JOB *j);
+/*@}*/
 
 
 #ifdef __cplusplus

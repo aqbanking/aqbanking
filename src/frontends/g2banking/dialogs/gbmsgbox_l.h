@@ -10,8 +10,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GB_INPUTBOX_H
-#define GB_INPUTBOX_H
+#ifndef GB_MSGBOX_L_H
+#define GB_MSGBOX_L_H
 
 #include <gtk/gtk.h>
 
@@ -20,17 +20,18 @@
 
 
 
-gboolean GBanking_GetInput(AB_BANKING *ab,
-                           GWEN_TYPE_UINT32 flags,
-                           const char *title,
-                           const char *text,
-                           char *buffer,
-                           int minLen,
-                           int maxLen,
-                           GtkWidget *parent);
+GtkWidget *GB_MsgBox_new(AB_BANKING *ab,
+                         GWEN_TYPE_UINT32 flags,
+                         const char *title,
+                         const char *text,
+                         const char *b1,
+                         const char *b2,
+                         const char *b3,
+                         GtkWidget *parent);
 
 
-#endif /* GB_INPUTBOX_H */
+
+#endif /* GB_MSGBOX_L_H */
 
 
 

@@ -3,10 +3,24 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/02/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more work on API documentation
+- removed deprecated functions:
+  - AB_JobSingleDebitNote_GetMaxPurposeLines
+  - AB_JobSingleDebitNote_GetTextKeys
+  - AB_JobSingleTransfer_GetMaxPurposeLines
+  - AB_JobSingleTransfer_GetTextKeys
+  - AB_JobTransferBase_GetTextKeys
+  - AB_JobTransferBase_GetMaxPurposeLines
+- removed db argument from function GB_ProfileList_Clear (was not used anyway)
+
+
 2006-02-17   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Use AC_CONFIG_HEADERS, not HEADER, according to
 	autoconf docs.
+
 
 2006/02/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

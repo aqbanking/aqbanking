@@ -30,10 +30,16 @@
 extern "C" {
 #endif
 
+/**
+ * This type indicates who is to be charged for the EU transfer.
+ */
 typedef enum {
   AB_JobEuTransfer_ChargeWhom_Unknown=0,
+  /** the issuer of the transfer pays for it */
   AB_JobEuTransfer_ChargeWhom_Local,
+  /** the recipient of the transfer pays */
   AB_JobEuTransfer_ChargeWhom_Remote,
+  /** the issuer and the recipient share in paying the fees */
   AB_JobEuTransfer_ChargeWhom_Share
 } AB_JOBEUTRANSFER_CHARGE_WHOM;
 
@@ -104,6 +110,10 @@ int AB_JobEuTransfer_GetIbanAllowed(const AB_JOB *j);
 AQBANKING_API 
 AB_JOBEUTRANSFER_CHARGE_WHOM AB_JobEuTransfer_GetChargeWhom(const AB_JOB *j);
 
+/**
+ * Indicate who is to be charged for this transfer (i.e. who has to pay the
+ * extra fees for this transfer).
+ */
 AQBANKING_API 
 void AB_JobEuTransfer_SetChargeWhom(AB_JOB *j,
                                     AB_JOBEUTRANSFER_CHARGE_WHOM i);

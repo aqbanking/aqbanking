@@ -18,7 +18,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gbsimplebox.h"
+#include "gbsimplebox_l.h"
 
 
 

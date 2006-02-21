@@ -13,7 +13,7 @@
 #ifndef GB_MSGBOX_P_H
 #define GB_MSGBOX_P_H
 
-#include "gbmsgbox.h"
+#include "gbmsgbox_l.h"
 
 
 #define GB_MSGBOX_ID "GB_MSGBOX"

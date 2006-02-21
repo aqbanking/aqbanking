@@ -16,10 +16,10 @@
 #endif
 
 #include "gbanking_p.h"
-#include "gbsimplebox.h"
-#include "gbprogress.h"
-#include "gbinputbox.h"
-#include "gbmsgbox.h"
+#include "gbsimplebox_l.h"
+#include "gbprogress_l.h"
+#include "gbinputbox_l.h"
+#include "gbmsgbox_l.h"
 
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>

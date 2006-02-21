@@ -13,13 +13,13 @@ noinst_LTLIBRARIES=libwidgets.la
 
 iheaderdir=${includedir}/g2banking
 iheader_HEADERS=\
- gbprogress.h \
- gbsimplebox.h \
  gbjoblist.h \
  gbprofilelist.h
 
 noinst_HEADERS=\
+ gbprogress_l.h \
  gbprogress_p.h \
+ gbsimplebox_l.h \
  gbsimplebox_p.h \
  gbjoblist_p.h \
  gbprofilelist_p.h

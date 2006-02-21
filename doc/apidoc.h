@@ -19,7 +19,12 @@
 /** @defgroup G_AB_G2BANKING GTK2 Frontend (G2Banking)
  * @ingroup G_AB_FRONTENDS
  */
-
+/** @defgroup G_AB_G2BANKING_VIEWS Views
+ * @ingroup G_AB_G2BANKING
+ */
+/** @defgroup G_AB_G2BANKING_WIDGETS Widgets
+ * @ingroup G_AB_G2BANKING
+ */
 
 /** @defgroup G_AB_CBANKING Console Frontend (CBanking)
  * @ingroup G_AB_FRONTENDS
@@ -38,9 +43,7 @@ tasks.
 This library was designed by Martin Preuss<martin@aquamaniac.de> to
 provide a generic way for applications to use Online Banking
 (e.g. HBCI), and to import/export financial data (such as OFX, SWIFT,
-DTAUS). It is written in C but a C++ interface to the main functions
-is also provided (see @ref G_AB_C_INTERFACE and @ref
-G_AB_CPP_INTERFACE).
+DTAUS). It is written in C (see @ref G_AB_C_INTERFACE).
 
 If you are writing an application and want to use AqBanking's
 features, there are two possibilities:

@@ -36,6 +36,7 @@ extern "C" {
  */
 AQBANKING_API
 GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j);
+
 AQBANKING_API
 void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i);
 
@@ -57,6 +58,14 @@ void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 AQBANKING_API
 void AB_Job_SetUsedTan(AB_JOB *j, const char *s);
 
+/**
+ * Reads a GWEN_TIME object from a DB variable.
+ * The expected format of the variable is "YYYYMMDD hh:mm:ss" (where YYYY is
+ * the year in 4-digit-notion, MM is the number of the month beginning with
+ * 1=January, DD is the day of the month beginning with 1, hh is the hour
+ * of the day, mm are the minutes of the hour and ss are the seconds of the
+ * minute.
+ */
 AQBANKING_API
 GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name);
 AQBANKING_API
@@ -66,9 +75,23 @@ AQBANKING_API
 void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
                          GWEN_DB_NODE *db,
                          const char *name);
+
+/**
+ * Reads a GWEN_TIME object from a DB variable ignoring the time part.
+ * The expected format of the variable is "YYYYMMDD".
+ */
 AQBANKING_API
 GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name);
 
+
+/**
+ * This function should only be used when copying logs from a backend-private
+ * job object (e.g. AqHBCI internally uses its own job types) to an
+ * AqBanking job.
+ * @param j job to operate on
+ * @param txt the text to log (it is expected to have the same format as
+ * logs created via @ref AB_Job_Log).
+ */
 AQBANKING_API
 void AB_Job_LogRaw(AB_JOB *j, const char *txt);
 

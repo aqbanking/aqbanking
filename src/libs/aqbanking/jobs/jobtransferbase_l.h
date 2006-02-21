@@ -19,14 +19,15 @@
 
 
 AB_JOB *AB_JobTransferBase_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
+
 int AB_JobTransferBase_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
 const AB_TRANSACTION *AB_JobTransferBase_GetTransaction(const AB_JOB *j);
+
 const AB_TRANSACTION_LIMITS *AB_JobTransferBase_GetFieldLimits(AB_JOB *j);
-const int *AB_JobTransferBase_GetTextKeys(const AB_JOB *j);
-int AB_JobTransferBase_GetMaxPurposeLines(const AB_JOB *j);
 
 void AB_JobTransferBase_SetFieldLimits(AB_JOB *j,
                                        AB_TRANSACTION_LIMITS *limits);
+
 AB_JOB *AB_JobTransferBase_fromDb(AB_JOB_TYPE jt,
                                   AB_ACCOUNT *a,
                                   GWEN_DB_NODE *db);

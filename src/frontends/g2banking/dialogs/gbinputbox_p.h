@@ -13,7 +13,7 @@
 #ifndef GB_INPUTBOX_P_H
 #define GB_INPUTBOX_P_H
 
-#include "gbinputbox.h"
+#include "gbinputbox_l.h"
 
 
 #define GB_INPUTBOX_ID "GB_INPUTBOX"

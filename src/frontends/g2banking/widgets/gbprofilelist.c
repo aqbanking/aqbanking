@@ -255,7 +255,7 @@ void GB_ProfileList_AddProfile(GtkWidget *w, GWEN_DB_NODE *db) {
 
 
 
-void GB_ProfileList_Clear(GtkWidget *w, GWEN_DB_NODE *db) {
+void GB_ProfileList_Clear(GtkWidget *w) {
   GB_PROFILELIST *pl;
 
   pl=gtk_object_get_data(GTK_OBJECT(w), GB_PROFILELIST_ID);

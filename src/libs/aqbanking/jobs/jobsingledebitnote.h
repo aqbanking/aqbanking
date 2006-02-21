@@ -22,6 +22,20 @@
 
 /** @addtogroup G_AB_JOBS_XFER_DEBIT
  *
+ * <p>
+ * Debit notes are inverse transfers: You specify an account from which you
+ * want to draw money to on of your accounts.
+ * </p>
+ * <p>
+ * Obviously not every customer is allowed to draw from any other account.
+ * This feature is only reserved for business customers of credit institutes
+ * (not restricted by us but by your credit institute).
+ * </p>
+ * <p>
+ * In most cases your are required to sign a special document with your bank
+ * to be able to use such a jib.
+ * </p>
+ *
  */
 /*@{*/
 
@@ -75,22 +89,6 @@ const AB_TRANSACTION *AB_JobSingleDebitNote_GetTransaction(const AB_JOB *j);
  */
 AQBANKING_API 
 const AB_TRANSACTION_LIMITS *AB_JobSingleDebitNote_GetFieldLimits(AB_JOB *j);
-
-/**
- * @deprecated
- * Please use @ref AB_JobSingleDebitNote_GetFieldLimits instead and take
- * the interesting limit from that object.
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_JobSingleDebitNote_GetMaxPurposeLines(const AB_JOB *j);
-
-/**
- * @deprecated
- * Please use @ref AB_JobSingleDebitNote_GetFieldLimits instead and take
- * the interesting limit from that object.
- */
-AQBANKING_API AQBANKING_DEPRECATED
-const int *AB_JobSingleDebitNote_GetTextKeys(const AB_JOB *j);
 /*@}*/
 
 

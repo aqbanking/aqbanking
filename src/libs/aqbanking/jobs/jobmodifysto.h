@@ -22,6 +22,7 @@
 
 /** @addtogroup G_AB_JOBS_STO_MOD
  *
+ * This job modifies an already existing standing order.
  */
 /*@{*/
 

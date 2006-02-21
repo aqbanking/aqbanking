@@ -75,6 +75,9 @@ extern "C" {
 
   /** @defgroup G_AB_JOBS_STO Standing Orders
    * @ingroup G_AB_JOB
+   *
+   * Standing orders are transfers which are performed automatically by the
+   * bank on a regular basis.
    */
   /** @defgroup G_AB_JOBS_STO_MK Create a Standing Order
    * @ingroup G_AB_JOBS_STO
@@ -318,6 +321,10 @@ const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i);
 
 /** @name Logging Functions
  *
+ * AqBanking logs every activity on a job. These logs can be usefull when
+ * something went wrong.
+ * If a job performs without problems most of the logs are removed from the
+ * job because otherwise the jobs would fill up your disk space.
  */
 /*@{*/
 AQBANKING_API
@@ -326,6 +333,12 @@ void AB_Job_Log(AB_JOB *j,
                 const char *who,
 		const char *txt);
 
+/**
+ * Returns a string list containing the logs of the job. Each entry of that
+ * string list contains the date/time, loglevel, source and text.
+ * The caller becomes the owner of the returned object (if any), please call
+ * @ref GWEN_StringList_free on it to avoid memory leaks.
+ */
 AQBANKING_API
 GWEN_STRINGLIST *AB_Job_GetLogs(const AB_JOB *j);
 

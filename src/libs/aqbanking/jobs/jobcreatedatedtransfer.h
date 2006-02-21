@@ -21,6 +21,7 @@
 
 /** @addtogroup G_AB_JOBS_DATED_TRANSFER_MK
  *
+ * This job creates a dated transfer.
  */
 /*@{*/
 

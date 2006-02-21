@@ -15,7 +15,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gbprogress.h"
+#include "gbprogress_l.h"
 
 #define GB_PROGRESS_ID "GB_PROGRESS"
 

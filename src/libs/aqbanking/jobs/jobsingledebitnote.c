@@ -70,20 +70,3 @@ AB_JOB *AB_JobSingleDebitNote_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-/* deprecated functions */
-
-
-
-
-int AB_JobSingleDebitNote_GetMaxPurposeLines(const AB_JOB *j){
-  return AB_JobTransferBase_GetMaxPurposeLines(j);
-}
-
-
-
-const int *AB_JobSingleDebitNote_GetTextKeys(const AB_JOB *j){
-  return AB_JobTransferBase_GetTextKeys(j);
-}
-
-
-
