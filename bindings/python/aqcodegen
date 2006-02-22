@@ -17,16 +17,17 @@ from enum import Enum, check_enum\
 """
 
 enumheader = u"""
-%(i)sclass %(name)s(Enum):\
+%(i)sclass %(name)s(Enum):
+%(i)s    unknown = -1 # unknown\
 """
 
 enumadapter = u"""
 %(i)sclass %(name)sAdapter(c_int):
 %(i)s    def _check_retval_(i):
-%(i)s        return %(name)s(i)
+%(i)s        return %(oname)s(i)
 %(i)s    _check_retval_ = staticmethod(_check_retval_)
 %(i)s    def from_param(cls, e):
-%(i)s        check_enum(e, %(name)s, 'argument')
+%(i)s        check_enum(e, %(oname)s, 'argument')
 %(i)s        return int(e)
 %(i)s    from_param = classmethod(from_param)
 """
@@ -375,7 +376,7 @@ class CodeGenerator(object):
         else:
             oname = enumname
         self.type_id[attrValue(a,'id')] = ValueType_enum(oname)
-        d = {"i": p, "name": enumname}
+        d = {"i": p, "name": enumname, "oname": oname}
         self.write(enumheader % d)
         n = 0
         for c in t.getElementsByTagName('value'):

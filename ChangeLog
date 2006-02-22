@@ -1,7 +1,11 @@
-
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
+
+2006-02-22   Christian Stimming <stimming@tuhh.de>
+
+	* bindings/python/aqcodegen: Add small improvements to python code
+	generator as suggested by M. Dietrich <mdt@emdete.de>.
 
 2006/02/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
