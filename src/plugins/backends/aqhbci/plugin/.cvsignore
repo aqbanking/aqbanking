@@ -6,3 +6,4 @@ header.xml
 *.dll
 *.def
 *.lib
+testlib
