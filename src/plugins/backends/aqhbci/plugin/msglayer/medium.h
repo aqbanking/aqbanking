@@ -23,6 +23,16 @@
 #include <aqbanking/banking.h>
 #include <aqhbci/aqhbci.h>
 
+
+/** @defgroup G_AB_BE_AQHBCI_MEDIUM HBCI Medium
+ * @ingroup G_AB_BE_AQHBCI
+ * @short Security Medium For HBCI
+ * @author Martin Preuss<martin@libchipcard.de>
+ *
+ */
+/*@{*/
+
+
 /**
  * If this flag is set then signing with an RSA key will not choose the
  * smaller signature according iso9796-appendix. The default is to allow it.
@@ -62,7 +72,6 @@ GWEN_LIST_FUNCTION_LIB_DEFS(AH_MEDIUM, AH_Medium, AQHBCI_API);
 
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/crypt.h>
-#include <aqhbci/hbci.h>
 
 #include <aqhbci/mediumctx.h>
 
@@ -71,30 +80,11 @@ extern "C" {
 #endif
 
 
-/** @defgroup AQHBCI_MOD_HBCI_MEDIUM HBCI Medium
- * @ingroup AQHBCI_MOD_HBCI
- * @short Security Medium For HBCI
- * @author Martin Preuss<martin@libchipcard.de>
- *
- */
-/*@{*/
-
 
 /** @name Constructor And Destructor
  *
  */
 /*@{*/
-/**
- * @param mtn medium type name (like "RDHFile", "DDVCard" etc)
- * @param bankId bank code (German "Bankleitzahl")
- * @param userId id of this medium's owner
- */
-AQHBCI_API
-AH_MEDIUM *AH_Medium_new(AH_HBCI *hbci,
-                         const char *typeName,
-                         const char *subTypeName,
-                         const char *mediumName);
-
 /**
  * Destroys the medium if the internal usage counter reaches zero.
  * That counter is incremented by @ref AH_Medium_new and
@@ -117,6 +107,7 @@ AQHBCI_API
 void AH_Medium_Attach(AH_MEDIUM *m);
 
 /*@}*/
+
 
 
 /** @name Informational Functions
@@ -168,8 +159,8 @@ int AH_Medium_IsMounted(AH_MEDIUM *m);
 AQHBCI_API
 int AH_Medium_GetTokenIdData(AH_MEDIUM *m, GWEN_BUFFER *buf);
 
-
 /*@}*/
+
 
 
 /** @name Context Selection, Creation and Removal
@@ -201,12 +192,15 @@ int AH_Medium_WriteContext(AH_MEDIUM *m,
 			   const char *server,
 			   int port);
 
-
 /*@}*/
 
 
 
 
+/** @name Mounting and Unmounting
+ *
+ */
+/*@{*/
 
 /**
  * <p>
@@ -236,18 +230,20 @@ int AH_Medium_Create(AH_MEDIUM *m);
  */
 AQHBCI_API
 int AH_Medium_Unmount(AH_MEDIUM *m, int force);
+/*@}*/
 
 
+
+/** @name Pins and Keys
+ *
+ */
+/*@{*/
 
 /**
  * Makes the medium change the PIN.
  */
 AQHBCI_API
 int AH_Medium_ChangePin(AH_MEDIUM *m);
-
-
-
-/*@}*/ /* defgroup */
 
 
 AQHBCI_API
@@ -270,6 +266,7 @@ AQHBCI_API
 int AH_Medium_ResetServerKeys(AH_MEDIUM *m);
 AQHBCI_API
 int AH_Medium_ResetUserKeys(AH_MEDIUM *m);
+/*@}*/
 
 
 
@@ -277,6 +274,9 @@ int AH_Medium_ResetUserKeys(AH_MEDIUM *m);
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/ /* defgroup */
+
 
 #endif /* AH_MEDIUM_H */
 

@@ -25,7 +25,7 @@ iheader_HEADERS=aqhbci.h
 noinst_HEADERS = aqhbci_l.h
 
 lib_LTLIBRARIES=libaqhbci.la
-libaqhbci_la_SOURCES=dummy.c
+libaqhbci_la_SOURCES=aqhbci.c
 
 noinst_PROGRAMS=testlib
 

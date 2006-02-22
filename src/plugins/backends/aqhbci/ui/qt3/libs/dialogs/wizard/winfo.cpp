@@ -16,6 +16,7 @@
 #endif
 
 #include "winfo.h"
+#include <aqhbci/provider.h>
 
 #include <gwenhywfar/debug.h>
 #include <unistd.h>
@@ -23,8 +24,8 @@
 
 
 
-WizardInfo::WizardInfo(AH_HBCI *hbci)
-:_hbci(hbci)
+WizardInfo::WizardInfo(AB_PROVIDER *pro)
+:_provider(pro)
 ,_user(0)
 ,_medium(0)
 ,_context(0)
@@ -43,8 +44,8 @@ WizardInfo::~WizardInfo() {
 
 
 
-AH_HBCI *WizardInfo::getHbci() const {
-  return _hbci;
+AB_PROVIDER *WizardInfo::getProvider() const {
+  return _provider;
 }
 
 
@@ -241,7 +242,7 @@ void WizardInfo::releaseData() {
   if (_medium && (_flags & WIZARDINFO_FLAGS_MEDIUM_CREATED)) {
     if (_flags & WIZARDINFO_FLAGS_MEDIUM_ADDED) {
       DBG_INFO(0, "Unlisting medium");
-      AH_HBCI_RemoveMedium(_hbci, _medium);
+      AH_Provider_RemoveMedium(_provider, _medium);
       _flags&=~WIZARDINFO_FLAGS_MEDIUM_ADDED;
     }
     DBG_INFO(0, "Deleting medium");

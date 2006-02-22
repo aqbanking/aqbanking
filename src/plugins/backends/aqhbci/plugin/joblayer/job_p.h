@@ -16,6 +16,7 @@
 
 #include "job_l.h"
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/msgengine.h>
 
 
 

@@ -6,6 +6,13 @@
  *  @ingroup G_AB_LIBRARY
  */
 
+/** @defgroup G_AB_BANKING Main Interface
+ * @ingroup G_AB_C_INTERFACE
+ */
+/** @defgroup G_AB_ACCOUNT Accounts
+ * @ingroup G_AB_C_INTERFACE
+ */
+
 /** @defgroup G_AB_FRONTENDS Frontends */
 
 /** @defgroup G_AB_QBANKING QT Frontend (QBanking)

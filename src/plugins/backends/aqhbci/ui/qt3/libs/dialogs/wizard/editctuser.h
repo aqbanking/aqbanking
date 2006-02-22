@@ -33,6 +33,8 @@ private:
   AH_CRYPT_MODE _getCryptMode(AH_MEDIUM *m, int idx);
   void _fromContext(int i);
 
+  bool _checkStringSanity(const char *s);
+
 public:
   EditCtUser(QBanking *qb,
              WizardInfo *wi,

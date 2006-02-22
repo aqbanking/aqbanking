@@ -30,13 +30,12 @@
 
 
 CfgModuleHbci::CfgModuleHbci(QBanking *qb, const QString &name)
-:QBCfgModule(qb, name), _hbci(0) {
+:QBCfgModule(qb, name), _provider(0) {
   AB_PROVIDER *pro;
 
   pro=AB_Banking_GetProvider(qb->getCInterface(), AH_PROVIDER_NAME);
   assert(pro);
-  _hbci=AH_Provider_GetHbci(pro);
-  assert(_hbci);
+  _provider=pro;
   setFlags(QBCFGMODULE_FLAGS_CAN_CREATE_USER);
 }
 
@@ -62,7 +61,7 @@ QBCfgTabPageAccount *CfgModuleHbci::getEditAccountPage(AB_ACCOUNT *a,
 
 
 int CfgModuleHbci::createNewUser(QWidget *parent) {
-  UserWizard dlg(getBanking(), _hbci, parent);
+  UserWizard dlg(getBanking(), _provider, parent);
 
   if (dlg.exec())
     return 0;

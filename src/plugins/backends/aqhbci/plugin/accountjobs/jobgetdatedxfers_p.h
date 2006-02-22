@@ -15,7 +15,7 @@
 #define AH_JOBGETDATEDTRANSFERS_P_H
 
 
-#include <aqhbci/jobgetdatedxfers.h>
+#include "jobgetdatedxfers_l.h"
 #include <gwenhywfar/db.h>
 
 

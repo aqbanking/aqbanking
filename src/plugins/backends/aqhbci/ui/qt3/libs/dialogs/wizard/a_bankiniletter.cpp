@@ -19,6 +19,8 @@
 #include "wizard.h"
 #include "iniletter.h"
 
+#include <aqhbci/user.h>
+
 #include <qbanking/qbanking.h>
 
 #include <qpushbutton.h>

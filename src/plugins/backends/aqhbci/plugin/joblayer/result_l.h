@@ -10,17 +10,13 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_RESULT_H
-#define AH_RESULT_H
+#ifndef AH_RESULT_L_H
+#define AH_RESULT_L_H
 
 #include <gwenhywfar/misc.h>
 
 #include <stdio.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct AH_RESULT AH_RESULT;
 
@@ -47,11 +43,6 @@ int AH_Result_IsOk(const AH_RESULT *r);
 int AH_Result_IsMsgResult(const AH_RESULT *r);
 
 void AH_Result_Dump(const AH_RESULT *r, FILE *f, unsigned int insert);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif /* AH_RESULT_H */

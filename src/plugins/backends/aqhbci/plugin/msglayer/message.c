@@ -23,8 +23,7 @@
 #include "mediumctx_l.h"
 #include "medium_l.h"
 #include "dialog_l.h"
-
-#include <aqhbci/msgengine.h>
+#include "msgengine_l.h"
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/gwenhywfar.h>

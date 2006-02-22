@@ -21,6 +21,11 @@
 #include "aqhbci_l.h"
 #include "hbci_l.h"
 #include "user_l.h"
+#include "msgengine_l.h"
+#include <aqhbci/user.h>
+
+#include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/base64.h>
@@ -34,10 +39,6 @@
 #include <gwenhywfar/nl_hbci.h>
 #include <gwenhywfar/net2.h>
 
-#include <aqhbci/msgengine.h>
-#include <aqhbci/user.h>
-
-#include <aqbanking/banking_be.h>
 
 #include <string.h>
 #include <ctype.h>
@@ -469,13 +470,8 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
   GWEN_NETLAYER *nl;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
-  const char *bankAddr;
-  int bankPort;
-  AH_BPD_ADDR_TYPE addrType;
-  const AH_BPD_ADDR *bpdAddr;
-  const char *p;
   int rv;
-  GWEN_URL *url;
+  const GWEN_URL *url;
   int useHttp;
   GWEN_TYPE_UINT32 uFlags;
 
@@ -484,30 +480,10 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
   uFlags=AH_User_GetFlags(dlg->dialogOwner);
 
   /* take bank addr from user */
-  bpdAddr=AH_User_GetAddress(dlg->dialogOwner);
-  if (!bpdAddr) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User has no address settings");
-    return AB_ERROR_INVALID;
-  }
-  addrType=AH_BpdAddr_GetType(bpdAddr);
-  bankAddr=AH_BpdAddr_GetAddr(bpdAddr);
-  if (!bankAddr) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User has no valid address settings");
-    return AB_ERROR_INVALID;
-  }
-  url=GWEN_Url_fromString(bankAddr);
+  url=AH_User_GetServerUrl(dlg->dialogOwner);
   if (!url) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User has no valid address settings");
     return AB_ERROR_INVALID;
-  }
-
-  bankPort=-1;
-  p=AH_BpdAddr_GetSuffix(bpdAddr);
-  if (p) {
-    if (1!=sscanf(p, "%i", &bankPort)) {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "User has bad port settings");
-      bankPort=-1;
-    }
   }
 
   /* create netLayers, the lowest layer is always a socket */
@@ -517,28 +493,15 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
   rv=AH_Dialog__SetAddress(dlg, addr, GWEN_Url_GetServer(url));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Url_free(url);
     return rv;
   }
-  if (bankPort==-1) {
-    switch(addrType) {
-    case AH_BPD_AddrTypeSSL: bankPort=443; break;
-    case AH_BPD_AddrTypeTCP:
-    default:                 bankPort=3000; break;
-    }
-  }
-  GWEN_Url_SetPort(url, bankPort);
-  GWEN_InetAddr_SetPort(addr, bankPort);
+
+  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
   GWEN_NetLayer_SetPeerAddr(nlBase, addr);
   GWEN_InetAddr_free(addr);
 
   useHttp=0;
-  switch(addrType) {
-  case AH_BPD_AddrTypeTCP:
-    nl=nlBase;
-    break;
-
-  case AH_BPD_AddrTypeSSL: {
+  if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan) {
     GWEN_BUFFER *nbuf;
     GWEN_DB_NODE *dbHeader;
     const char *s;
@@ -550,7 +513,7 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
     nl=GWEN_NetLayerSsl_new(nlBase,
 			    GWEN_Buffer_GetStart(nbuf),
 			    GWEN_Buffer_GetStart(nbuf),
-			    0, 0, 0);
+                            0, 0, 0);
     GWEN_NetLayer_free(nlBase);
     nlBase=nl;
     GWEN_Buffer_Reset(nbuf);
@@ -562,9 +525,6 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
     nl=GWEN_NetLayerHttp_new(nlBase);
     assert(nl);
     GWEN_NetLayer_free(nlBase);
-
-    GWEN_Url_SetProtocol(url, "https");
-    GWEN_Url_SetPort(url, bankPort);
 
     dbHeader=GWEN_NetLayerHttp_GetOutHeader(nl);
     assert(dbHeader);
@@ -592,18 +552,9 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
     GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
     GWEN_Buffer_free(nbuf);
     useHttp=1;
-    break;
   }
-
-  case AH_BPD_AddrTypeBTX:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Address type \"BTX\" not supported");
-    GWEN_Url_free(url);
-    return AB_ERROR_INVALID;
-
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported address type (%d)", addrType);
-    GWEN_Url_free(url);
-    return AB_ERROR_INVALID;
+  else {
+    nl=nlBase;
   }
 
   /* create HBCI layer around whatever layer we just created */
@@ -617,7 +568,6 @@ int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
 
   GWEN_Net_AddConnectionToPool(nl);
 
-  GWEN_Url_free(url);
   return 0;
 }
 

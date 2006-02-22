@@ -19,6 +19,7 @@
 #include "jobqueue_p.h"
 #include "aqhbci_l.h"
 #include "job_l.h"
+#include "user_l.h"
 #include "message_l.h"
 #include "hbci_l.h"
 #include "medium_l.h"

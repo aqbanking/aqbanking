@@ -15,7 +15,17 @@
 #define AH_MEDIUM_L_H
 
 #include <aqhbci/medium.h>
+#include "hbci_l.h"
 
+/**
+ * @param mtn medium type name (like "RDHFile", "DDVCard" etc)
+ * @param bankId bank code (German "Bankleitzahl")
+ * @param userId id of this medium's owner
+ */
+AH_MEDIUM *AH_Medium_new(AH_HBCI *hbci,
+                         const char *typeName,
+                         const char *subTypeName,
+                         const char *mediumName);
 
 AH_HBCI *AH_Medium_GetHBCI(const AH_MEDIUM *m);
 AB_BANKING *AH_Medium_GetBankingApi(const AH_MEDIUM *m);

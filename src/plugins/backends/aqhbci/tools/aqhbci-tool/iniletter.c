@@ -16,9 +16,7 @@
 
 
 #include "globals.h"
-
-#include <aqhbci/outbox.h>
-#include <aqhbci/adminjobs.h>
+#include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/md.h>
@@ -36,7 +34,6 @@ int iniLetter(AB_BANKING *ab,
               char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   AB_USER_LIST2 *ul;
   AB_USER *u=0;
   int rv;
@@ -121,8 +118,6 @@ int iniLetter(AB_BANKING *ab,
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
@@ -264,7 +259,7 @@ int iniLetter(AB_BANKING *ab,
     if (!bankKey) {
       GWEN_Buffer_AppendString(lbuf,
                                I18N("Customer system: "));
-      GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(hbci));
+      GWEN_Buffer_AppendString(lbuf, AH_Provider_GetProductName(pro));
       GWEN_Buffer_AppendString(lbuf, "\n");
     }
 

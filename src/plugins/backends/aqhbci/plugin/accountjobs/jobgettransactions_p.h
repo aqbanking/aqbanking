@@ -15,7 +15,7 @@
 #define AH_JOBGETTRANSACTIONS_P_H
 
 
-#include <aqhbci/jobgettransactions.h>
+#include "jobgettransactions_l.h"
 #include <gwenhywfar/db.h>
 
 

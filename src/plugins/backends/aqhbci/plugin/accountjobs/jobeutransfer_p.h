@@ -15,7 +15,7 @@
 #define AH_JOBEUTRANSFER_P_H
 
 
-#include <aqhbci/jobsingletransfer.h>
+#include "jobsingletransfer_l.h"
 #include <gwenhywfar/db.h>
 
 

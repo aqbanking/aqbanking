@@ -14,6 +14,8 @@
 #ifndef GWHBCI_DIALOG_L_H
 #define GWHBCI_DIALOG_L_H
 
+typedef struct AH_DIALOG AH_DIALOG;
+
 #define AH_DIALOG_FLAGS_INITIATOR     0x0001
 #define AH_DIALOG_FLAGS_OPEN          0x0002
 #define AH_DIALOG_FLAGS_AUTHENTICATED 0x0004
@@ -21,11 +23,10 @@
 #define AH_DIALOG_FLAGS_ANONYMOUS     0x0010
 #define AH_DIALOG_FLAGS_HAVEKEYS      0x0020
 
-#include "dialog.h"
+#include "hbci_l.h"
+#include "message_l.h"
 
-#include <aqhbci/message.h>
 #include <aqhbci/aqhbci.h>
-#include <aqhbci/hbci.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/user.h>
@@ -36,6 +37,16 @@
 #include <gwenhywfar/msgengine.h>
 
 
+AH_DIALOG *AH_Dialog_new(AB_USER *owner);
+void AH_Dialog_free(AH_DIALOG *dlg);
+
+void AH_Dialog_Attach(AH_DIALOG *dlg);
+
+AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg);
+
+int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout);
+
+int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout);
 
 
 GWEN_TYPE_UINT32 AH_Dialog_GetFlags(const AH_DIALOG *dlg);
@@ -67,6 +78,7 @@ AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout);
 int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg);
 int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout);
 
+AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg);
 
 
 #endif /* GWHBCI_DIALOG_L_H */

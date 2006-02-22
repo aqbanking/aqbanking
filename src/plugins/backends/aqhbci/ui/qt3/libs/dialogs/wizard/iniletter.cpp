@@ -18,9 +18,6 @@
 
 #include <qbanking/qbanking.h>
 
-#include <aqhbci/outbox.h>
-#include <aqhbci/adminjobs.h>
-
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/crypt.h>

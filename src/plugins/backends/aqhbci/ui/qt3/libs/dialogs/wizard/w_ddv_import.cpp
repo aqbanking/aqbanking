@@ -21,6 +21,8 @@
 #include "a_finished.h"
 #include "a_getaccounts.h"
 
+#include <aqhbci/user.h>
+
 #include <qtimer.h>
 
 

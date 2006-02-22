@@ -47,7 +47,7 @@ CfgTabPageUserHbci::CfgTabPageUserHbci(QBanking *qb,
                                        QWidget *parent,
                                        const char *name, WFlags f)
 :QBCfgTabPageUser(qb, "HBCI", u, parent, name, f)
-,_hbci(0)
+,_provider(0)
 ,_withHttp(true){
   AB_PROVIDER *pro;
 
@@ -56,7 +56,7 @@ CfgTabPageUserHbci::CfgTabPageUserHbci(QBanking *qb,
                     "user settings.</p>"));
 
   pro=AB_User_GetProvider(u);
-  _hbci=AH_Provider_GetHbci(pro);
+  _provider=pro;
 
   _realPage=new CfgTabPageUserHbciUi(this);
 
@@ -98,7 +98,7 @@ CfgTabPageUserHbci::~CfgTabPageUserHbci() {
 
 bool CfgTabPageUserHbci::toGui() {
   const char *s;
-  const AH_BPD_ADDR *ba;
+  const GWEN_URL *url;
   AH_MEDIUM *m;
   AH_USER_STATUS ust;
   AB_USER *u;
@@ -124,10 +124,10 @@ bool CfgTabPageUserHbci::toGui() {
   _realPage->userStatusCombo->setCurrentItem(i);
   slotStatusChanged(i);
 
-  ba=AH_User_GetAddress(u);
-  if (ba) {
-    s=AH_BpdAddr_GetAddr(ba);
-    if (ba)
+  url=AH_User_GetServerUrl(u);
+  if (url) {
+    s=GWEN_Url_GetServer(url);
+    if (s)
       _realPage->serverEdit->setText(QString::fromUtf8(s));
   }
 
@@ -177,8 +177,7 @@ bool CfgTabPageUserHbci::toGui() {
 
 bool CfgTabPageUserHbci::fromGui() {
   AH_USER_STATUS ust;
-  const AH_BPD_ADDR *oldBa;
-  AH_BPD_ADDR *newBa;
+  GWEN_URL *url;
   AH_MEDIUM *m;
   AB_USER *u;
 
@@ -193,14 +192,21 @@ bool CfgTabPageUserHbci::fromGui() {
   }
   AH_User_SetStatus(u, ust);
 
+  /* url */
   QString qs=_realPage->serverEdit->text();
-  oldBa=AH_User_GetAddress(u);
-  if (oldBa)
-    newBa=AH_BpdAddr_dup(oldBa);
-  else
-    newBa = AH_BpdAddr_new();
-  AH_BpdAddr_SetAddr(newBa, qs.utf8());
-  AH_User_SetAddress(u, newBa);
+  url=GWEN_Url_fromString(qs.utf8());
+  assert(url);
+
+  if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+    GWEN_Url_SetProtocol(url, "https");
+    GWEN_Url_SetPort(url, 443);
+  }
+  else {
+    GWEN_Url_SetProtocol(url, "hbci");
+    GWEN_Url_SetPort(url, 3000);
+  }
+  AH_User_SetServerUrl(u, url);
+  GWEN_Url_free(url);
 
   m=AH_User_GetMedium(u);
   assert(m);
@@ -282,7 +288,7 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
 
   qb=getBanking();
   assert(qb);
-  pro=AH_HBCI_GetProvider(_hbci);
+  pro=_provider;
   assert(pro);
   u=getUser();
   assert(u);
@@ -334,7 +340,7 @@ void CfgTabPageUserHbci::slotGetSysId() {
 
   qb=getBanking();
   assert(qb);
-  pro=AH_HBCI_GetProvider(_hbci);
+  pro=_provider;
   assert(pro);
   u=getUser();
   assert(u);
@@ -369,7 +375,7 @@ void CfgTabPageUserHbci::slotGetAccounts() {
 
   qb=getBanking();
   assert(qb);
-  pro=AH_HBCI_GetProvider(_hbci);
+  pro=_provider;
   assert(pro);
   u=getUser();
   assert(u);
@@ -413,7 +419,7 @@ void CfgTabPageUserHbci::slotGetAccounts() {
 
 void CfgTabPageUserHbci::slotFinishUser() {
   UserWizard::finishUser(getBanking(),
-                         _hbci,
+                         _provider,
                          getUser(),
                          this);
   toGui();

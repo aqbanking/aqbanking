@@ -24,6 +24,8 @@
 #include "a_getsysid.h"
 #include "a_getaccounts.h"
 
+#include <aqhbci/user.h>
+
 #include <qtimer.h>
 
 

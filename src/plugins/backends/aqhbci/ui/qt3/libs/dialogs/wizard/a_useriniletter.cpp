@@ -20,6 +20,7 @@
 #include "iniletter.h"
 
 #include <aqhbci/provider.h>
+#include <aqhbci/user.h>
 
 #include <qbanking/qbanking.h>
 
@@ -69,7 +70,7 @@ void ActionUserIniLetter::enter() {
   wi=w->getWizardInfo();
   u=wi->getUser();
   m=wi->getMedium();
-  pro=AH_HBCI_GetProvider(wi->getHbci());
+  pro=wi->getProvider();
   assert(pro);
 
   /* mount medium (if necessary) */

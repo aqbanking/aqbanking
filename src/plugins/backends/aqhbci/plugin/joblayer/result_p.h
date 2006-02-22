@@ -13,7 +13,7 @@
 #ifndef AH_RESULT_P_H
 #define AH_RESULT_P_H
 
-#include <aqhbci/result.h>
+#include "result_l.h"
 
 
 struct AH_RESULT {

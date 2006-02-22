@@ -15,7 +15,7 @@
 #define AH_JOBGETBALANCE_P_H
 
 
-#include <aqhbci/jobgetbalance.h>
+#include "jobgetbalance_l.h"
 #include <gwenhywfar/db.h>
 
 

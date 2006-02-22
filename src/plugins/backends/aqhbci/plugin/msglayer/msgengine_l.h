@@ -10,27 +10,12 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifndef AH_MSGENGINE_L_H
+#define AH_MSGENGINE_L_H
 
-#ifndef AH_JOBGETSTANDINGORDERS_H
-#define AH_JOBGETSTANDINGORDERS_H
+#include "msgengine.h"
 
+void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u);
 
-#include <aqhbci/accountjob.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-AH_JOB *AH_Job_GetStandingOrders_new(AB_USER *u, AB_ACCOUNT *account);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* AH_JOBGETSTANDINGORDERS_H */
-
+#endif /* AH_MSGENGINE_H */
 

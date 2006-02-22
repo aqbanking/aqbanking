@@ -10,27 +10,15 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifndef AH_PROVIDER_L_H
+#define AH_PROVIDER_L_H
 
-#ifndef AH_JOBPLUGIN_P_H
-#define AH_JOBPLUGIN_P_H
-
-#include <aqhbci/jobplugin.h>
+#include "provider.h"
+#include "hbci_l.h"
 
 
-struct AH_JOBPLUGIN {
-  GWEN_LIST_ELEMENT(AH_JOBPLUGIN);
-  GWEN_INHERIT_ELEMENT(AH_JOBPLUGIN);
-
-  AH_PROVIDER *provider;
-
-  GWEN_LIBLOADER *libLoader;
-
-  char *name;
-  char *description;
-
-  AH_JOBPLUGIN_FACTORYFN factoryFn;
-  AH_JOBPLUGIN_CHECKFN checkFn;
-};
+AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro);
 
 
 #endif
+

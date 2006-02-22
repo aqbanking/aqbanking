@@ -35,10 +35,10 @@
 extern "C" {
 #endif
 
-/** @defgroup G_AB_BANKING Main Interface
- * @ingroup G_AB_C_INTERFACE
+/** @addtogroup G_AB_BANKING Main Interface
  *
  * @short This group contains the main API function group.
+ *
  * <p>
  * A program should first call @ref AB_Banking_Init to allow AqBanking
  * to load its configuration files and initialize itself.

@@ -17,6 +17,7 @@
 
 #include "i18n_l.h"
 #include "hbci-updates_p.h"
+#include "user_l.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -95,6 +96,89 @@ int AH_HBCI_UpdateDb(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  } /* if update */
+
+  return 0;
+}
+
+
+
+int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  int rv;
+  GWEN_TYPE_UINT32 oldVersion;
+  GWEN_TYPE_UINT32 currentVersion;
+
+  if (0==GWEN_DB_Groups_Count(db) &&
+      0==GWEN_DB_Variables_Count(db)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+	       "Initial setup, nothing to upgrade");
+    return 0;
+  }
+
+  oldVersion=AH_HBCI_GetLastVersion(hbci);
+
+  currentVersion=
+    (AQHBCI_VERSION_MAJOR<<24) |
+    (AQHBCI_VERSION_MINOR<<16) |
+    (AQHBCI_VERSION_PATCHLEVEL<<8) |
+    AQHBCI_VERSION_BUILD;
+
+  if (currentVersion>oldVersion) {
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Updating from %d.%d.%d.%d",
+             (oldVersion>>24) & 0xff,
+             (oldVersion>>16) & 0xff,
+             (oldVersion>>8) & 0xff,
+             oldVersion & 0xff);
+
+    if (oldVersion<((1<<24) | (9<<16) | (7<<8) | 7)) {
+      rv=AH_HBCI_UpdateUser_1_9_7_7(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
+    /* insert more updates here */
+
+
+  } /* if update */
+
+  return 0;
+}
+
+
+
+int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_TYPE_UINT32 oldVersion;
+  GWEN_TYPE_UINT32 currentVersion;
+
+  if (0==GWEN_DB_Groups_Count(db) &&
+      0==GWEN_DB_Variables_Count(db)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+	       "Initial setup, nothing to upgrade");
+    return 0;
+  }
+
+  oldVersion=AH_HBCI_GetLastVersion(hbci);
+
+  currentVersion=
+    (AQHBCI_VERSION_MAJOR<<24) |
+    (AQHBCI_VERSION_MINOR<<16) |
+    (AQHBCI_VERSION_PATCHLEVEL<<8) |
+    AQHBCI_VERSION_BUILD;
+
+  if (currentVersion>oldVersion) {
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Updating from %d.%d.%d.%d",
+             (oldVersion>>24) & 0xff,
+             (oldVersion>>16) & 0xff,
+             (oldVersion>>8) & 0xff,
+             oldVersion & 0xff);
+
+    /* insert more updates here */
+
+
   } /* if update */
 
   return 0;
@@ -405,10 +489,6 @@ int AH_HBCI_Update_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-
-
-
-
 int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbBanks;
   AB_BANKING *ab;
@@ -531,12 +611,36 @@ int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
                                        GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                        "server");
                   if (dbT) {
-                    AH_BPD_ADDR *addr;
+                    const char *s_addr;
+                    const char *s_port;
+                    const char *s_type;
 
-                    addr=AH_BpdAddr_FromDb(dbT);
-                    assert(addr);
-                    AH_User_SetAddress(u, addr);
-                    AH_BpdAddr_free(addr);
+                    s_addr=GWEN_DB_GetCharValue(dbT, "address", 0, 0);
+                    s_port=GWEN_DB_GetCharValue(dbT, "suffix", 0, 0);
+                    s_type=GWEN_DB_GetCharValue(dbT, "type", 0, "tcp");
+                    if (s_addr) {
+                      GWEN_URL *url;
+                      int bankPort=0;
+
+                      if (s_port)
+                        bankPort=atoi(s_port);
+                      url=GWEN_Url_fromString(s_addr);
+                      assert(url);
+                      if (s_type && strcasecmp(s_type, "ssl")==0) {
+                        GWEN_Url_SetProtocol(url, "https");
+                        if (bankPort==0)
+                          bankPort=443;
+                        GWEN_Url_SetPort(url, bankPort);
+                      }
+                      else {
+                        GWEN_Url_SetProtocol(url, "hbci");
+                        if (bankPort==0)
+                          bankPort=3000;
+                        GWEN_Url_SetPort(url, bankPort);
+                      }
+                      AH_User_SetServerUrl(u, url);
+                      GWEN_Url_free(url);
+                    }
                   }
 
                   /* set BPD */
@@ -653,6 +757,76 @@ int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   return 0;
 }
+
+
+
+
+
+
+
+
+int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_DB_NODE *dbT;
+  
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "server");
+  if (dbT) {
+    const char *s_addr;
+    const char *s_port;
+    const char *s_type;
+  
+    s_addr=GWEN_DB_GetCharValue(dbT, "address", 0, 0);
+    s_port=GWEN_DB_GetCharValue(dbT, "suffix", 0, 0);
+    s_type=GWEN_DB_GetCharValue(dbT, "type", 0, "tcp");
+    if (s_addr) {
+      GWEN_URL *url;
+      int bankPort=0;
+      GWEN_BUFFER *ubuf;
+
+      if (s_port)
+        bankPort=atoi(s_port);
+      url=GWEN_Url_fromString(s_addr);
+      assert(url);
+      if (s_type && strcasecmp(s_type, "ssl")==0) {
+        GWEN_Url_SetProtocol(url, "https");
+        if (bankPort==0)
+          bankPort=443;
+        GWEN_Url_SetPort(url, bankPort);
+      }
+      else {
+        GWEN_Url_SetProtocol(url, "hbci");
+        if (bankPort==0)
+          bankPort=3000;
+        GWEN_Url_SetPort(url, bankPort);
+      }
+
+      GWEN_DB_UnlinkGroup(dbT);
+      GWEN_DB_Group_free(dbT);
+
+      ubuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (GWEN_Url_toString(url, ubuf)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not store url");
+        GWEN_Url_free(url);
+        return -1;
+      }
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "server", GWEN_Buffer_GetStart(ubuf));
+      GWEN_Buffer_free(ubuf);
+      GWEN_Url_free(url);
+    }
+  }
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

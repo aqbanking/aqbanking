@@ -16,7 +16,7 @@
 
 #include <qbanking/qbcfgmodule.h>
 
-#include <aqhbci/hbci.h>
+#include <aqhbci/provider.h>
 
 
 #define CFGMODULEHBCI_NAME "aqhbci"
@@ -24,7 +24,7 @@
 
 class CfgModuleHbci : public QBCfgModule {
 private:
-  AH_HBCI *_hbci;
+  AB_PROVIDER *_provider;
 public:
   CfgModuleHbci(QBanking *qb, const QString &name);
   virtual ~CfgModuleHbci();

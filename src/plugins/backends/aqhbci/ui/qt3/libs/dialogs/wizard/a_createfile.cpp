@@ -50,7 +50,7 @@ ActionCreateFile::~ActionCreateFile() {
 bool ActionCreateFile::apply() {
   std::string fname;
   WizardInfo *wInfo;
-  AH_HBCI *h;
+  AB_PROVIDER *pro;
   AH_MEDIUM *m;
   int rv;
 
@@ -63,18 +63,18 @@ bool ActionCreateFile::apply() {
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
-  h=wInfo->getHbci();
-  assert(h);
+  pro=wInfo->getProvider();
+  assert(pro);
 
-  m=AH_HBCI_FindMedium(h, AQHBCI_A_CREATEFILE_CT_TYPE, fname.c_str());
+  m=AH_Provider_FindMedium(pro, AQHBCI_A_CREATEFILE_CT_TYPE, fname.c_str());
   if (m) {
     DBG_ERROR(0, "Medium is already listed");
     return false;
   }
 
-  m=AH_HBCI_MediumFactory(h,
-                          AQHBCI_A_CREATEFILE_CT_TYPE, 0,
-                          fname.c_str());
+  m=AH_Provider_MediumFactory(pro,
+                              AQHBCI_A_CREATEFILE_CT_TYPE, 0,
+                              fname.c_str());
   assert(m);
 
   rv=AH_Medium_Create(m);
@@ -95,14 +95,14 @@ bool ActionCreateFile::apply() {
 
 bool ActionCreateFile::undo() {
   WizardInfo *wInfo;
-  AH_HBCI *h;
+  AB_PROVIDER *pro;
   AH_MEDIUM *m;
   std::string fname;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
-  h=wInfo->getHbci();
-  assert(h);
+  pro=wInfo->getProvider();
+  assert(pro);
 
   fname=getWizard()->getWizardInfo()->getMediumName();
   if (fname.empty())

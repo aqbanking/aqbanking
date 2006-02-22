@@ -101,7 +101,7 @@ void ActionGetKeys::slotButtonClicked() {
   assert(u);
   qb=getWizard()->getBanking();
   assert(qb);
-  pro=AH_HBCI_GetProvider(wInfo->getHbci());
+  pro=wInfo->getProvider();
   assert(pro);
 
   _realDialog->setStatus(ActionWidget::StatusChecking);

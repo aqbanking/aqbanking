@@ -23,8 +23,9 @@
 #include "w_rdh_new.h"
 #include "w_rdh_new2.h"
 
-#include <aqhbci/hbci.h>
+#include <aqhbci/provider.h>
 #include <aqhbci/medium.h>
+#include <aqhbci/user.h>
 #include <qbanking/qbanking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
@@ -32,9 +33,9 @@
 #include <qmessagebox.h>
 
 
-UserWizard::UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent)
+UserWizard::UserWizard(QBanking *qb, AB_PROVIDER *pro, QWidget *parent)
 :_app(qb)
-,_hbci(hbci)
+,_provider(pro)
 ,_parent(parent) {
 
 
@@ -49,7 +50,7 @@ UserWizard::~UserWizard() {
 
 bool UserWizard::_handleModePinTan() {
   WizardPinTanNew *w;
-  WizardInfo wInfo(_hbci);
+  WizardInfo wInfo(_provider);
   AH_MEDIUM *m;
   int rv;
   GWEN_TIME *ti;
@@ -63,9 +64,9 @@ bool UserWizard::_handleModePinTan() {
   assert(ti);
   GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", bufName);
   GWEN_Time_free(ti);
-  m=AH_HBCI_MediumFactory(_hbci,
-                          "pintan", 0,
-                          GWEN_Buffer_GetStart(bufName));
+  m=AH_Provider_MediumFactory(_provider,
+                              "pintan", 0,
+                              GWEN_Buffer_GetStart(bufName));
   GWEN_Buffer_free(bufName);
   assert(m);
 
@@ -93,7 +94,7 @@ bool UserWizard::_handleModePinTan() {
       return false;
     }
 
-    AH_HBCI_AddMedium(_hbci, m);
+    AH_Provider_AddMedium(_provider, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
@@ -129,8 +130,8 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
                                   QBanking::QStringToUtf8String(txt).c_str(),
                                   0, GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY);
-  rv=AH_HBCI_CheckMedium(_hbci, GWEN_CryptToken_Device_Card,
-                         mtypeName, msubTypeName, mediumName);
+  rv=AH_Provider_CheckMedium(_provider, GWEN_CryptToken_Device_Card,
+                             mtypeName, msubTypeName, mediumName);
   GWEN_WaitCallback_Leave();
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -140,9 +141,9 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
     return false;
   }
 
-  m=AH_HBCI_FindMedium(_hbci,
-                       GWEN_Buffer_GetStart(mtypeName),
-                       GWEN_Buffer_GetStart(mediumName));
+  m=AH_Provider_FindMedium(_provider,
+                           GWEN_Buffer_GetStart(mtypeName),
+                           GWEN_Buffer_GetStart(mediumName));
   if (m) {
     DBG_INFO(0, "Medium is already listed");
     wInfo->setMedium(m);
@@ -154,10 +155,10 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
     return true;
   }
 
-  m=AH_HBCI_MediumFactory(_hbci,
-                          GWEN_Buffer_GetStart(mtypeName),
-                          GWEN_Buffer_GetStart(msubTypeName),
-                          GWEN_Buffer_GetStart(mediumName));
+  m=AH_Provider_MediumFactory(_provider,
+                              GWEN_Buffer_GetStart(mtypeName),
+                              GWEN_Buffer_GetStart(msubTypeName),
+                              GWEN_Buffer_GetStart(mediumName));
   assert(m);
   wInfo->setMedium(m);
   wInfo->addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
@@ -172,7 +173,7 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
 
 bool UserWizard::_handleModeImportCard() {
   Wizard *w;
-  WizardInfo wInfo(_hbci);
+  WizardInfo wInfo(_provider);
   AH_MEDIUM *m;
   int rv;
   const char *s;
@@ -216,7 +217,7 @@ bool UserWizard::_handleModeImportCard() {
     }
 
     DBG_INFO(0, "Adding medium");
-    AH_HBCI_AddMedium(_hbci, m);
+    AH_Provider_AddMedium(_provider, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
@@ -236,7 +237,7 @@ bool UserWizard::_handleModeImportCard() {
 
 bool UserWizard::_handleModeImportFile() {
   Wizard *w;
-  WizardInfo wInfo(_hbci);
+  WizardInfo wInfo(_provider);
   int rv;
 
   wInfo.setCryptMode(AH_CryptMode_Rdh);
@@ -259,7 +260,7 @@ bool UserWizard::_handleModeImportFile() {
     }
 
     DBG_INFO(0, "Adding medium");
-    AH_HBCI_AddMedium(_hbci, m);
+    AH_Provider_AddMedium(_provider, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
@@ -279,7 +280,7 @@ bool UserWizard::_handleModeImportFile() {
 
 bool UserWizard::_handleModeCreateFile() {
   Wizard *w;
-  WizardInfo wInfo(_hbci);
+  WizardInfo wInfo(_provider);
   int rv;
 
   wInfo.setCryptMode(AH_CryptMode_Rdh);
@@ -302,7 +303,7 @@ bool UserWizard::_handleModeCreateFile() {
     }
 
     DBG_INFO(0, "Adding medium");
-    AH_HBCI_AddMedium(_hbci, m);
+    AH_Provider_AddMedium(_provider, m);
     wInfo.setMedium(0);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     AB_Banking_AddUser(_app->getCInterface(), wInfo.getUser());
@@ -351,11 +352,11 @@ bool UserWizard::exec() {
 
 
 bool UserWizard::finishUser(QBanking *qb,
-                            AH_HBCI *hbci,
+                            AB_PROVIDER *pro,
                             AB_USER *u,
                             QWidget *parent) {
   WizardRdhNew2 *w;
-  WizardInfo wInfo(hbci);
+  WizardInfo wInfo(pro);
   AH_MEDIUM *m;
   int rv;
 

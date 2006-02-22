@@ -17,6 +17,8 @@
 
 #include "account_p.h"
 #include "aqhbci_l.h"
+#include "provider_l.h"
+#include "hbci-updates_l.h"
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/debug.h>
@@ -40,10 +42,19 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
+    int rv;
+
     GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
     GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae,
                          AH_Account_freeData);
     ae->hbci=AH_Provider_GetHbci(pro);
+
+    /* update db to latest version */
+    rv=AH_HBCI_UpdateDbAccount(ae->hbci, db);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
+      assert(0);
+    }
 
     ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
   }

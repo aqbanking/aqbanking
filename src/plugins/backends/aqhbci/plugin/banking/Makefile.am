@@ -3,7 +3,7 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
-  -I$(srcdir)/../applayer -I$(srcdir)/..
+  -I$(srcdir)/../applayer -I$(srcdir)/../accountjobs  -I$(srcdir)/..
 
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\" \
@@ -12,17 +12,15 @@ DEFS += -DLOCALEDIR=\"$(localedir)\" \
 noinst_LTLIBRARIES=libhbcibanking.la
 
 noinst_HEADERS=\
- jobplugin_p.h \
+ provider_l.h \
  provider_p.h
 
 
 iheaderdir=${includedir}/aqhbci
 iheader_HEADERS=\
- jobplugin.h \
  provider.h
 
 libhbcibanking_la_SOURCES=\
- jobplugin.c \
  provider.c
 
 sources:

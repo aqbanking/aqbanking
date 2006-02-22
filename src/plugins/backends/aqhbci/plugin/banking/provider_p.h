@@ -15,20 +15,17 @@
 
 #define AH_PROVIDER_DATADIR ".libaqhbci"
 
-#include <aqhbci/hbci.h>
-#include <aqhbci/provider.h>
+#include "provider_l.h"
 #include "job_l.h"
-#include <aqhbci/job.h>
-#include <aqhbci/outbox.h>
-#include <aqhbci/jobplugin.h>
+#include "outbox_l.h"
 
 
+typedef struct AH_PROVIDER AH_PROVIDER;
 struct AH_PROVIDER {
   AH_HBCI *hbci;
   AB_JOB_LIST2 *bankingJobs;
   AH_OUTBOX *outbox;
   GWEN_DB_NODE *dbConfig;
-  AH_JOBPLUGIN_LIST *jobPlugins;
   GWEN_DB_NODE *dbTempConfig;
 };
 static void AH_Provider_FreeData(void *bp, void *p);
@@ -56,27 +53,6 @@ static int AH_Provider_Update(AB_PROVIDER *pro,
                               GWEN_TYPE_UINT32 currentVersion);
 
 /*@}*/
-
-
-static AH_JOB *AH_Provider__GetPluginJob(AH_PROVIDER *hp,
-                                         AB_JOB_TYPE jt,
-                                         AB_USER *mu,
-                                         AB_ACCOUNT *ma);
-
-static AH_JOBPLUGIN *AH_Provider_FindJobPlugin(AH_PROVIDER *hp,
-                                               const char *name);
-
-
-static AH_JOBPLUGIN *AH_Provider_LoadJobPlugin(AH_PROVIDER *hp,
-                                               const char *path,
-                                               const char *modname);
-
-static int AH_Provider_LoadJobPlugins(AH_PROVIDER *pro, const char *path);
-
-
-static int AH_Provider_LoadAllJobPlugins(AB_PROVIDER *pro);
-
-
 
 #endif /* AH_PROVIDER_P_H */
 

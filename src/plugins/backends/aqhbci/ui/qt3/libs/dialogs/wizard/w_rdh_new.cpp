@@ -24,6 +24,8 @@
 #include "a_useriniletter.h"
 #include "a_wait.h"
 
+#include <aqhbci/user.h>
+
 #include <qtimer.h>
 
 

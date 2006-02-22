@@ -16,6 +16,8 @@
 
 
 #include "editctuser.h"
+#include <aqhbci/user.h>
+
 #include <qbanking/qbanking.h>
 #include <qbanking/qbselectbank.h>
 //#include "selectcontext.h"
@@ -183,6 +185,19 @@ AH_CRYPT_MODE EditCtUser::_getCryptMode(AH_MEDIUM *m, int idx) {
 
 
 
+bool EditCtUser::_checkStringSanity(const char *s) {
+  assert(s);
+  while(*s) {
+    if (iscntrl(*s) || isspace(*s)) {
+      return false;
+    }
+    s++;
+  } /* while */
+  return true;
+}
+
+
+
 bool EditCtUser::apply(){
   GWEN_INETADDRESS *addr;
   GWEN_ERRORCODE err;
@@ -227,7 +242,7 @@ bool EditCtUser::apply(){
   idx=userCombo->currentItem();
 
   /* some sanitiy checks */
-  if (AH_HBCI_CheckStringSanity(userId.c_str())) {
+  if (_checkStringSanity(userId.c_str())) {
     QMessageBox::critical(this,
                           tr("Invalid Input"),
                           tr("<qt>"
@@ -399,7 +414,7 @@ bool EditCtUser::apply(){
 			userId.c_str(),
 			custId.c_str());
   if (!u) {
-    AH_BPD_ADDR *ba;
+    GWEN_URL *url;
 
     DBG_INFO(0, "Creating user");
     u=AB_Banking_CreateUser(_app->getCInterface(), AH_PROVIDER_NAME);
@@ -413,19 +428,19 @@ bool EditCtUser::apply(){
     AH_User_SetCryptMode(u, cm);
     AH_User_SetHbciVersion(u, hbciVersion);
 
-    ba=AH_BpdAddr_new();
-    assert(ba);
-    AH_BpdAddr_SetAddr(ba, fullServerAddr.c_str());
+    /* set address */
+    url=GWEN_Url_fromString(fullServerAddr.c_str());
+    assert(url);
     if (cm==AH_CryptMode_Pintan) {
-      AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeSSL);
-      AH_BpdAddr_SetSuffix(ba, "443");
+      GWEN_Url_SetProtocol(url, "https");
+      GWEN_Url_SetPort(url, 443);
     }
     else {
-      AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeTCP);
-      AH_BpdAddr_SetSuffix(ba, "3000");
+      GWEN_Url_SetProtocol(url, "hbci");
+      GWEN_Url_SetPort(url, 3000);
     }
-    AH_User_SetAddress(u, ba);
-    AH_BpdAddr_free(ba);
+    AH_User_SetServerUrl(u, url);
+    GWEN_Url_free(url);
 
     _wInfo->setUser(u);
     _wInfo->addFlags(WIZARDINFO_FLAGS_USER_CREATED);

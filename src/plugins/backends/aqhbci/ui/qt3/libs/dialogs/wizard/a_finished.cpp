@@ -19,7 +19,6 @@
 #include "wizard.h"
 #include <qbanking/qbanking.h>
 
-#include <aqhbci/dialog.h>
 #include <gwenhywfar/debug.h>
 
 #include <assert.h>

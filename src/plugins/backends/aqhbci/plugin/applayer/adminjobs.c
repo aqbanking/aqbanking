@@ -21,8 +21,7 @@
 #include "adminjobs_p.h"
 #include "job_l.h"
 #include "jobqueue_l.h"
-#include <aqhbci/hbci.h>
-#include <aqhbci/job.h>
+#include "hbci_l.h"
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/debug.h>

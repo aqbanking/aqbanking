@@ -17,7 +17,6 @@
 
 #include "cfgtabpageuserhbci.ui.h"
 #include <qbanking/qbcfgtabpageuser.h>
-#include <aqhbci/hbci.h>
 
 
 class QComboBox;
@@ -26,7 +25,7 @@ class QComboBox;
 class CfgTabPageUserHbci: public QBCfgTabPageUser {
   Q_OBJECT
 private:
-  AH_HBCI *_hbci;
+  AB_PROVIDER *_provider;
   CfgTabPageUserHbciUi *_realPage;
   bool _withHttp;
 

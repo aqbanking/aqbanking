@@ -14,8 +14,6 @@
 #ifndef AQHBCI_SELECTMODE_H
 #define AQHBCI_SELECTMODE_H
 
-#include <aqhbci/hbci.h>
-
 #include "selectmode.ui.h"
 
 

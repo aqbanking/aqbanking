@@ -11,27 +11,17 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBGETBALANCE_H
-#define AH_JOBGETBALANCE_H
+#ifndef AH_JOBGETBALANCE_L_H
+#define AH_JOBGETBALANCE_L_H
 
 
-#include <aqhbci/accountjob.h>
+#include "accountjob_l.h"
 #include <aqbanking/accstatus.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account);
 
 
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* AH_JOBGETBALANCE_H */
+#endif /* AH_JOBGETBALANCE_L_H */
 
 

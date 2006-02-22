@@ -15,13 +15,16 @@
 #define AH_ACCOUNTJOBS_L_H
 
 
-#include <aqhbci/accountjob.h>
+#include "job_l.h"
+#include <aqbanking/account.h>
 #include <gwenhywfar/buffer.h>
 
 
 AH_JOB *AH_AccountJob_new(const char *name,
                           AB_USER *u,
                           AB_ACCOUNT *account);
+
+AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j);
 
 
 int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf);

@@ -10,35 +10,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_MSGENGINE_H
-#define AH_MSGENGINE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-typedef struct AH_MSGENGINE AH_MSGENGINE;
-#ifdef __cplusplus
-}
-#endif
-
-#include <aqhbci/aqhbci.h>
-#include <aqbanking/user.h>
-#include <gwenhywfar/msgengine.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-AQHBCI_API
-GWEN_MSGENGINE *AH_MsgEngine_new();
+#ifndef AH_JOBGETDATEDTRANSFERS_L_H
+#define AH_JOBGETDATEDTRANSFERS_L_H
 
 
-void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u);
-
-#ifdef __cplusplus
-}
-#endif
+#include "accountjob_l.h"
 
 
-#endif /* AH_MSGENGINE_H */
+AH_JOB *AH_Job_GetDatedTransfers_new(AB_USER *u, AB_ACCOUNT *account);
+
+
+#endif /* AH_JOBGETDATEDTRANSFERS_H */
+
 

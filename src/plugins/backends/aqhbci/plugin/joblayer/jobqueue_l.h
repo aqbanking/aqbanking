@@ -14,7 +14,6 @@
 #ifndef AH_JOBQUEUE_L_H
 #define AH_JOBQUEUE_L_H
 
-#include <aqhbci/jobqueue.h>
 #include "job_l.h"
 
 
@@ -37,8 +36,8 @@ typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 /** a dialog job has been started */
 
 #include <gwenhywfar/misc.h>
-#include <aqhbci/job.h>
-#include <aqhbci/message.h>
+
+#include "message_l.h"
 
 typedef enum {
   AH_JobQueueAddResultOk=0,

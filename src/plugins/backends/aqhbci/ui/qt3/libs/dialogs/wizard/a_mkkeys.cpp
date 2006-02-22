@@ -23,6 +23,7 @@
 
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
+#include <aqhbci/user.h>
 #include <gwenhywfar/debug.h>
 
 #include <assert.h>

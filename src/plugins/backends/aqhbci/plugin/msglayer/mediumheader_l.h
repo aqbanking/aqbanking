@@ -11,15 +11,11 @@
  ***************************************************************************/
 
 
-#ifndef AH_MEDIUMHEADER_H
-#define AH_MEDIUMHEADER_H
+#ifndef AH_MEDIUMHEADER_L_H
+#define AH_MEDIUMHEADER_L_H
 
 #include <gwenhywfar/buffer.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct AH_MEDIUMHEADER AH_MEDIUMHEADER;
 
@@ -44,10 +40,4 @@ GWEN_TYPE_UINT32 AH_MediumHeader_GetMinorVersion(const AH_MEDIUMHEADER *mh);
 
 
 
-#ifdef __cplusplus
-}
-#endif
-
-
-
-#endif /* AH_MEDIUMHEADER_H */
+#endif /* AH_MEDIUMHEADER_L_H */

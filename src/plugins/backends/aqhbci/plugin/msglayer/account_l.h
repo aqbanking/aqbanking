@@ -16,7 +16,7 @@
 
 
 #include "account.h"
-#include <aqhbci/hbci.h>
+#include "hbci_l.h"
 #include <aqbanking/provider_be.h>
 
 

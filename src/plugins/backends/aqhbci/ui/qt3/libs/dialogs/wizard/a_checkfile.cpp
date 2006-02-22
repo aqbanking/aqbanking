@@ -94,7 +94,7 @@ void ActionCheckFile::slotButtonClicked() {
   assert(wInfo);
   qb=getWizard()->getBanking();
   assert(qb);
-  pro=AH_HBCI_GetProvider(wInfo->getHbci());
+  pro=wInfo->getProvider();
   assert(pro);
 
   _realDialog->setStatus(ActionWidget::StatusChecking);
@@ -113,9 +113,9 @@ void ActionCheckFile::slotButtonClicked() {
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
                                   QBanking::QStringToUtf8String(txt).c_str(),
                                   0, GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY);
-  rv=AH_HBCI_CheckMedium(wInfo->getHbci(),
-                         GWEN_CryptToken_Device_File,
-                         mtypeName, msubTypeName, mediumName);
+  rv=AH_Provider_CheckMedium(pro,
+                             GWEN_CryptToken_Device_File,
+                             mtypeName, msubTypeName, mediumName);
   GWEN_WaitCallback_Leave();
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -126,19 +126,19 @@ void ActionCheckFile::slotButtonClicked() {
     return;
   }
 
-  m=AH_HBCI_FindMedium(wInfo->getHbci(),
-                       GWEN_Buffer_GetStart(mtypeName),
-                       GWEN_Buffer_GetStart(mediumName));
+  m=AH_Provider_FindMedium(pro,
+                           GWEN_Buffer_GetStart(mtypeName),
+                           GWEN_Buffer_GetStart(mediumName));
   if (m) {
     DBG_ERROR(0, "Medium is already listed");
     created=false;
     wInfo->setMedium(m);
   }
   else {
-    m=AH_HBCI_MediumFactory(wInfo->getHbci(),
-                            GWEN_Buffer_GetStart(mtypeName),
-                            GWEN_Buffer_GetStart(msubTypeName),
-                            GWEN_Buffer_GetStart(mediumName));
+    m=AH_Provider_MediumFactory(pro,
+                                GWEN_Buffer_GetStart(mtypeName),
+                                GWEN_Buffer_GetStart(msubTypeName),
+                                GWEN_Buffer_GetStart(mediumName));
     assert(m);
     created=true;
   }
@@ -175,13 +175,10 @@ bool ActionCheckFile::apply() {
 
 bool ActionCheckFile::undo() {
   WizardInfo *wInfo;
-  AH_HBCI *h;
   AH_MEDIUM *m;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
-  h=wInfo->getHbci();
-  assert(h);
 
   m=wInfo->getMedium();
   if (m) {

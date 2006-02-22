@@ -14,7 +14,6 @@
 #ifndef AQHBCI_WINFO_H
 #define AQHBCI_WINFO_H
 
-#include <aqhbci/hbci.h>
 #include <aqhbci/medium.h>
 #include <gwenhywfar/types.h>
 #include <string>
@@ -28,7 +27,7 @@
 
 class WizardInfo {
 private:
-  AH_HBCI *_hbci;
+  AB_PROVIDER *_provider;
   AB_USER *_user;
   AH_MEDIUM *_medium;
 
@@ -47,10 +46,10 @@ private:
   GWEN_TYPE_UINT32 _flags;
 
 public:
-  WizardInfo(AH_HBCI *hbci);
+  WizardInfo(AB_PROVIDER *pro);
   ~WizardInfo();
 
-  AH_HBCI *getHbci() const ;
+  AB_PROVIDER *getProvider() const ;
 
   AH_MEDIUM *getMedium() const;
   void setMedium(AH_MEDIUM *m);

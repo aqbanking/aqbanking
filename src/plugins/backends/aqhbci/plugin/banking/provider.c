@@ -18,21 +18,25 @@
 #include "aqhbci_l.h"
 #include "account_l.h"
 #include "hbci_l.h"
+#include "dialog_l.h"
 #include "outbox_l.h"
 #include "user_l.h"
 #include "medium_l.h"
+
+#include "jobgetbalance_l.h"
+#include "jobgettransactions_l.h"
+#include "jobgetstandingorders_l.h"
+#include "jobgetdatedxfers_l.h"
+#include "jobsingletransfer_l.h"
+#include "jobmultitransfer_l.h"
+#include "jobeutransfer_l.h"
+#include "adminjobs_l.h"
+#include <aqhbci/user.h>
+
 #include <aqbanking/account_be.h>
 #include <aqbanking/provider_be.h>
 #include <aqbanking/job_be.h>
-#include <aqhbci/user.h>
-#include <aqhbci/jobgetbalance.h>
-#include <aqhbci/jobgettransactions.h>
-#include <aqhbci/jobgetstandingorders.h>
-#include <aqhbci/jobgetdatedxfers.h>
-#include <aqhbci/jobsingletransfer.h>
-#include <aqhbci/jobmultitransfer.h>
-#include <aqhbci/jobeutransfer.h>
-#include <aqhbci/adminjobs.h>
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/directory.h>
@@ -85,9 +89,6 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   hp->dbTempConfig=GWEN_DB_Group_new("tmpConfig");
   hp->bankingJobs=AB_Job_List2_new();
 
-  /* create job plugin list */
-  hp->jobPlugins=AH_JobPlugin_List_new();
-
   return pro;
 }
 
@@ -100,7 +101,6 @@ void AH_Provider_FreeData(void *bp, void *p) {
   hp=(AH_PROVIDER*)p;
   AB_Job_List2_FreeAll(hp->bankingJobs);
   AH_Outbox_free(hp->outbox);
-  AH_JobPlugin_List_free(hp->jobPlugins);
 
   GWEN_DB_Group_free(hp->dbTempConfig);
   AH_HBCI_free(hp->hbci);
@@ -150,8 +150,6 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   hp->dbConfig=dbData;
   rv=AH_HBCI_Init(hp->hbci);
 
-  AH_Provider_LoadAllJobPlugins(pro);
-
   return rv;
 }
 
@@ -171,9 +169,6 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   hp->bankingJobs=AB_Job_List2_new();
   AH_Outbox_free(hp->outbox);
   hp->outbox=0;
-
-  AH_JobPlugin_List_free(hp->jobPlugins);
-  hp->jobPlugins=AH_JobPlugin_List_new();
 
   rv=AH_HBCI_Fini(hp->hbci);
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
@@ -624,11 +619,9 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   default:
-    mj=AH_Provider__GetPluginJob(hp, AB_Job_GetType(j), mu, ma);
-    if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return AB_ERROR_NOT_AVAILABLE;
-    }
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Job not supported by AqHBCI");
+    return AB_ERROR_NOT_AVAILABLE;
   } /* switch */
   assert(mj);
 
@@ -901,191 +894,6 @@ AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro){
   assert(hp);
 
   return hp->hbci;
-}
-
-
-
-AH_JOB *AH_Provider__GetPluginJob(AH_PROVIDER *hp,
-                                  AB_JOB_TYPE jt,
-                                  AB_USER *mcu,
-                                  AB_ACCOUNT *ma){
-  AH_JOBPLUGIN *jp;
-  AH_JOB *j;
-
-  /* search for a plugin which supports this job */
-  jp=AH_JobPlugin_List_First(hp->jobPlugins);
-  while(jp) {
-    if (AH_JobPlugin_CheckType(jp, jt))
-      break;
-    jp=AH_JobPlugin_List_Next(jp);
-  }
-
-  if (!jp) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No plugin found for job type %d", jt);
-    return 0;
-  }
-
-  /* let the plugin create the job */
-  j=AH_JobPlugin_Factory(jp, jt, mcu, ma);
-  if (!j) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Plugin found, but job not created (type %d)", jt);
-    return 0;
-  }
-
-  return j;
-}
-
-
-
-AH_JOBPLUGIN *AH_Provider_FindJobPlugin(AH_PROVIDER *hp, const char *name) {
-  AH_JOBPLUGIN *jp;
-
-  jp=AH_JobPlugin_List_First(hp->jobPlugins);
-  while(jp) {
-    if (strcasecmp(name, AH_JobPlugin_GetName(jp))==0)
-      break;
-    jp=AH_JobPlugin_List_Next(jp);
-  }
-
-  return jp;
-}
-
-
-
-AH_JOBPLUGIN *AH_Provider_LoadJobPlugin(AH_PROVIDER *hp,
-                                        const char *path,
-                                        const char *modname){
-  GWEN_LIBLOADER *ll;
-  AH_JOBPLUGIN *jp;
-  AH_JOBPLUGIN_NEWFN fn;
-  void *p;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_BUFFER *mbuf;
-
-  ll=GWEN_LibLoader_new();
-  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower((int)(*(s++))));
-
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         path,
-                                         modname)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Could not load job plugin \"%s\"", modname);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  GWEN_Buffer_AppendString(mbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(mbuf);
-
-  fn=(AH_JOBPLUGIN_NEWFN)p;
-  assert(fn);
-  jp=fn(hp);
-  if (!jp) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No instance created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  AH_JobPlugin_SetLibLoader(jp, ll);
-
-  return jp;
-}
-
-
-int AH_Provider_LoadJobPlugins(AH_PROVIDER *hp, const char *path){
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
-
-  l=GWEN_LoadPluginDescrs(path);
-  if (l) {
-    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
-    GWEN_PLUGIN_DESCRIPTION *pd;
-
-    it=GWEN_PluginDescription_List2_First(l);
-    assert(it);
-    pd=GWEN_PluginDescription_List2Iterator_Data(it);
-    assert(pd);
-    while(pd) {
-      AH_JOBPLUGIN *jp;
-
-      jp=AH_Provider_LoadJobPlugin(hp,
-                                   path,
-                                   GWEN_PluginDescription_GetName(pd));
-      if (jp) {
-        if (AH_Provider_FindJobPlugin(hp, AH_JobPlugin_GetName(jp))) {
-          DBG_INFO(AQHBCI_LOGDOMAIN,
-                   "Plugin \"%s\" already loaded, skipping",
-                   AH_JobPlugin_GetName(jp));
-          AH_JobPlugin_free(jp);
-        }
-        else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                     "Adding job plugin \"%s\"",
-                     AH_JobPlugin_GetName(jp));
-          AH_JobPlugin_List_Add(jp, hp->jobPlugins);
-        }
-      }
-      else {
-        DBG_WARN(AQHBCI_LOGDOMAIN,
-                 "Could not load job plugin \"%s\"",
-                 GWEN_PluginDescription_GetName(pd));
-      }
-      pd=GWEN_PluginDescription_List2Iterator_Next(it);
-    } /* while */
-
-    GWEN_PluginDescription_List2Iterator_free(it);
-    GWEN_PluginDescription_List2_freeAll(l);
-  }
-  return 0;
-}
-
-
-
-int AH_Provider_LoadAllJobPlugins(AB_PROVIDER *pro){
-  AH_PROVIDER *hp;
-  GWEN_BUFFER *pbuf;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  if (AH_Provider_LoadJobPlugins(hp, AQHBCI_PLUGINS AH_PATH_SEP "jobs")) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error loading global job plugins");
-  }
-
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Provider_GetUserDataDir(pro, pbuf)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not determine user data dir");
-  }
-  else {
-    GWEN_Buffer_AppendString(pbuf,
-                             AH_PATH_SEP "plugins"
-                             AH_PATH_SEP AQHBCI_SO_EFFECTIVE_STR
-                             AH_PATH_SEP "jobs");
-    if (AH_Provider_LoadJobPlugins(hp,GWEN_Buffer_GetStart(pbuf))) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error loading global job plugins");
-    }
-  }
-  GWEN_Buffer_free(pbuf);
-
-  return 0;
 }
 
 
@@ -2059,6 +1867,89 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 
   return 0;
 }
+
+
+
+
+
+
+
+
+AH_MEDIUM *AH_Provider_MediumFactory(AB_PROVIDER *pro,
+                                     const char *typeName,
+                                     const char *subTypeName,
+                                     const char *mediumName) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_MediumFactory(hbci, typeName, subTypeName, mediumName);
+}
+
+
+
+AH_MEDIUM *AH_Provider_FindMedium(const AB_PROVIDER *pro,
+                                  const char *typeName,
+                                  const char *mediumName) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_FindMedium(hbci, typeName, mediumName);
+}
+
+
+
+AH_MEDIUM *AH_Provider_FindMediumById(const AB_PROVIDER *pro,
+                                      GWEN_TYPE_UINT32 id) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_FindMediumById(hbci, id);
+}
+
+
+
+int AH_Provider_AddMedium(AB_PROVIDER *pro, AH_MEDIUM *m) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_AddMedium(hbci, m);
+}
+
+
+
+int AH_Provider_RemoveMedium(AB_PROVIDER *pro, AH_MEDIUM *m) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_RemoveMedium(hbci, m);
+}
+
+
+
+int AH_Provider_CheckMedium(AB_PROVIDER *pro,
+                            GWEN_CRYPTTOKEN_DEVICE dev,
+                            GWEN_BUFFER *mtypeName,
+                            GWEN_BUFFER *msubTypeName,
+                            GWEN_BUFFER *mediumName) {
+  AH_HBCI *hbci;
+
+  hbci=AH_Provider_GetHbci(pro);
+  assert(hbci);
+  return AH_HBCI_CheckMedium(hbci, dev, mtypeName, msubTypeName, mediumName);
+}
+
+
+
+
+
+
+
+
 
 
 

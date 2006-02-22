@@ -16,7 +16,7 @@
 
 #define AH_MEDIUMHEADER_MAGIC "#AHM"
 
-#include <aqhbci/mediumheader.h>
+#include "mediumheader_l.h"
 
 
 struct AH_MEDIUMHEADER {

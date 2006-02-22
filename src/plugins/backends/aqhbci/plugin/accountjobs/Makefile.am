@@ -11,25 +11,20 @@ noinst_LTLIBRARIES=libhbciaccjobs.la
 noinst_HEADERS=\
   accountjob_l.h \
   accountjob_p.h \
+  jobgetbalance_l.h \
   jobgetbalance_p.h \
+  jobgettransactions_l.h \
   jobgettransactions_p.h \
+  jobgetstandingorders_l.h \
   jobgetstandingorders_p.h \
+  jobgetdatedxfers_l.h \
   jobgetdatedxfers_p.h \
+  jobsingletransfer_l.h \
   jobsingletransfer_p.h \
+  jobeutransfer_l.h \
   jobeutransfer_p.h \
   jobmultitransfer_l.h \
   jobmultitransfer_p.h
-
-iheaderdir=${includedir}/aqhbci
-iheader_HEADERS=\
-  accountjob.h \
-  jobgetbalance.h \
-  jobgettransactions.h \
-  jobgetstandingorders.h \
-  jobgetdatedxfers.h \
-  jobsingletransfer.h \
-  jobeutransfer.h \
-  jobmultitransfer.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \

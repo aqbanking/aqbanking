@@ -18,7 +18,9 @@
 
 #include "user_p.h"
 #include "hbci_l.h"
-#include "msgengine.h"
+#include "provider_l.h"
+#include "hbci-updates_l.h"
+#include "msgengine_l.h"
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/debug.h>
@@ -133,11 +135,19 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       em==AB_ProviderExtendMode_Extend) {
     AH_USER *ue;
     const char *s;
+    int rv;
 
     GWEN_NEW_OBJECT(AH_USER, ue);
     GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
 
     ue->hbci=AH_Provider_GetHbci(pro);
+    /* update db to latest version */
+    rv=AH_HBCI_UpdateDbUser(ue->hbci, db);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update user db (%d)", rv);
+      assert(0);
+    }
+
     s=AB_User_GetCountry(u);
     if (!s || !*s)
       AB_User_SetCountry(u, "de");
@@ -173,10 +183,20 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     }
 
     /* load server address */
-    gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "server");
-    if (gr) {
-      ue->serverAddress=AH_BpdAddr_FromDb(gr);
-      assert(ue->serverAddress);
+    s=GWEN_DB_GetCharValue(db, "server", 0, 0);
+    if (s) {
+      ue->serverUrl=GWEN_Url_fromString(s);
+      assert(ue->serverUrl);
+      if (GWEN_Url_GetPort(ue->serverUrl)==0) {
+        if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+          GWEN_Url_SetPort(ue->serverUrl, 443);
+          GWEN_Url_SetProtocol(ue->serverUrl, "https");
+        }
+        else {
+          GWEN_Url_SetProtocol(ue->serverUrl, "hbci");
+          GWEN_Url_SetPort(ue->serverUrl, 3000);
+        }
+      }
     }
 
     /* load BPD */
@@ -207,7 +227,20 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
       assert(gr);
       AH_Bpd_ToDb(ue->bpd, gr);
-    }
+      if (ue->serverUrl) {
+	GWEN_BUFFER *nbuf;
+
+	nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	if (GWEN_Url_toString(ue->serverUrl, nbuf)) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not store url");
+	  GWEN_Buffer_free(nbuf);
+	  assert(0);
+	}
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             "server", GWEN_Buffer_GetStart(nbuf));
+	GWEN_Buffer_free(nbuf);
+      } /* if serverUrl */
+    } /* if save */
   }
 }
 
@@ -217,7 +250,7 @@ void AH_User_freeData(void *bp, void *p) {
 
   ue=(AH_USER*)p;
   AH_Medium_free(ue->medium);
-  AH_BpdAddr_free(ue->serverAddress);
+  GWEN_Url_free(ue->serverUrl);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   GWEN_FREE_OBJECT(ue);
@@ -365,39 +398,28 @@ AH_MEDIUM *AH_User_GetMedium(const AB_USER *u) {
 
 
 
-const AH_BPD_ADDR *AH_User_GetAddress(const AB_USER *u) {
+const GWEN_URL *AH_User_GetServerUrl(const AB_USER *u) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  return ue->serverAddress;
+  return ue->serverUrl;
 }
 
 
 
-void AH_User_SetAddress(AB_USER *u, const AH_BPD_ADDR *a) {
+void AH_User_SetServerUrl(AB_USER *u, const GWEN_URL *url) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_BpdAddr_free(ue->serverAddress);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  if (a) {
-    ue->serverAddress=AH_BpdAddr_dup(a);
-    db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "server");
-    assert(db);
-    AH_BpdAddr_ToDb(ue->serverAddress, db);
-  }
-  else {
-    ue->serverAddress=0;
-    GWEN_DB_DeleteGroup(db, "server");
-  }
+  GWEN_Url_free(ue->serverUrl);
+  if (url) ue->serverUrl=GWEN_Url_dup(url);
+  else ue->serverUrl=0;
 }
 
 

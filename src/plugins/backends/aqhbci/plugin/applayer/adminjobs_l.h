@@ -11,13 +11,13 @@
  ***************************************************************************/
 
 
-#ifndef AH_ADMINJOBS_H
-#define AH_ADMINJOBS_H
+#ifndef AH_ADMINJOBS_L_H
+#define AH_ADMINJOBS_L_H
 
 
-#include <gwenhywfar/crypt.h>
-#include <aqhbci/job.h>
+#include "job_l.h"
 #include <aqhbci/account.h>
+#include <gwenhywfar/crypt.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,11 +32,8 @@ extern "C" {
  */
 
 
-AQHBCI_API
 AH_JOB *AH_Job_GetKeys_new(AB_USER *u);
-AQHBCI_API
 GWEN_CRYPTKEY *AH_Job_GetKeys_GetSignKey(const AH_JOB *j);
-AQHBCI_API
 GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
 
 
@@ -50,7 +47,6 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
  */
 
 
-AQHBCI_API
 AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
                             const GWEN_CRYPTKEY *cryptKey,
                             const GWEN_CRYPTKEY *signKey);
@@ -66,10 +62,8 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AQHBCI_API
 AH_JOB *AH_Job_GetSysId_new(AB_USER *u);
 
-AQHBCI_API
 const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
 
 
@@ -83,7 +77,6 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AQHBCI_API
 AH_JOB *AH_Job_UpdateBank_new(AB_USER *u);
 
 /**
@@ -94,7 +87,6 @@ AH_JOB *AH_Job_UpdateBank_new(AB_USER *u);
  * inspected by the application (most likely the setup wizard).
  * You can not use any of these accounts directly for account jobs !
  */
-AQHBCI_API
 AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
 
 /**
@@ -107,7 +99,6 @@ AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
  * inspected by the application (most likely the setup wizard).
  * You can not use any of these accounts directly for account jobs !
  */
-AQHBCI_API
 AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j);
 
 
@@ -130,9 +121,7 @@ typedef enum {
 } AH_JOB_TESTVERSION_RESULT;
 
 
-AQHBCI_API
 AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon);
-AQHBCI_API
 AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
 
 
@@ -143,11 +132,9 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AQHBCI_API
 AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate);
-AQHBCI_API
 AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
 
 
@@ -156,5 +143,5 @@ AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
 #endif
 
 
-#endif /* AH_ADMINJOBS_H */
+#endif /* AH_ADMINJOBS_L_H */
 

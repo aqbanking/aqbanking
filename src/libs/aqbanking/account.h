@@ -23,8 +23,7 @@
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 
-/** @defgroup G_AB_ACCOUNT Accounts
- * @ingroup G_AB_C_INTERFACE
+/** @addtogroup G_AB_ACCOUNT Accounts
  *
  * @brief This group represents accounts.
  *

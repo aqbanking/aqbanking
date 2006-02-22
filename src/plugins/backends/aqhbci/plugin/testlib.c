@@ -5,7 +5,6 @@
 
 #include "msglayer/medium_l.h"
 #include <aqhbci/provider.h>
-#include <aqhbci/hbci.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
@@ -38,7 +37,6 @@ static int _getPin(AB_BANKING *ab,
 int check1() {
   AB_BANKING *ab;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   AH_MEDIUM *medium=0;
   GWEN_CRYPTKEY *remotePrivCryptKey=0;
@@ -62,11 +60,8 @@ int check1() {
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
-  medium=AH_HBCI_MediumFactory(hbci, "ohbci", 0, "check1.medium");
-
+  medium=AH_Provider_MediumFactory(pro, "ohbci", 0, "check1.medium");
   if (!medium) {
     DBG_ERROR(0, "Could not create medium object");
     return 3;
@@ -158,7 +153,6 @@ int check1() {
 int check2() {
   AB_BANKING *ab;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   AH_MEDIUM *medium=0;
   GWEN_CRYPTKEY *localCryptKey=0;
@@ -190,10 +184,8 @@ int check2() {
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
-  medium=AH_HBCI_MediumFactory(hbci, "ohbci", 0, "check2.medium");
+  medium=AH_Provider_MediumFactory(pro, "ohbci", 0, "check2.medium");
 
   if (!medium) {
     DBG_ERROR(0, "Could not create medium object");

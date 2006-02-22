@@ -7,17 +7,12 @@ INCLUDES = -I$(top_builddir)/headers $(all_includes) \
 noinst_LTLIBRARIES=libhbcijob.la
 
 noinst_HEADERS=\
-  job_p.h \
   job_l.h \
-  jobqueue_p.h \
+  job_p.h \
   jobqueue_l.h \
+  jobqueue_p.h \
+  result_l.h \
   result_p.h
-
-iheaderdir=${includedir}/aqhbci
-iheader_HEADERS=\
-  job.h \
-  jobqueue.h \
-  result.h
 
 libhbcijob_la_SOURCES=\
   job.c \

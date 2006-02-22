@@ -11,25 +11,15 @@
  ***************************************************************************/
 
 
-#ifndef AH_CONNECTION_P_H
-#define AH_CONNECTION_P_H
-
-#include <aqhbci/connection.h>
+#ifndef AH_JOBGETSTANDINGORDERS_L_H
+#define AH_JOBGETSTANDINGORDERS_L_H
 
 
-typedef struct AH_CONNECTION AH_CONNECTION;
-struct AH_CONNECTION {
-  AH_HBCI *hbci;
-  int connectionDown;
-};
+#include "accountjob_l.h"
+
+AH_JOB *AH_Job_GetStandingOrders_new(AB_USER *u, AB_ACCOUNT *account);
 
 
-static void AH_Connection_FreeData(void *bp, void *p);
-
-static void AH_Connection_Up(GWEN_NETCONNECTION *conn);
-static void AH_Connection_Down(GWEN_NETCONNECTION *conn);
-
-
-#endif /* AH_CONNECTION_P_H */
+#endif /* AH_JOBGETSTANDINGORDERS_H */
 
 

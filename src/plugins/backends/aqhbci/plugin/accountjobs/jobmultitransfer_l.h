@@ -15,19 +15,23 @@
 #define AH_JOBMULTITRANSFER_L_H
 
 
-#include <aqhbci/jobmultitransfer.h>
+#include "accountjob_l.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/gwentime.h>
+
+
+AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
+                                 AB_ACCOUNT *account);
+
+AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *cu,
+                                  AB_ACCOUNT *account);
 
 
 int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);
 
+int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j);
 
-#ifdef __cplusplus
-}
-#endif
+int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);
 
 
 #endif /* AH_JOBMULTITRANSFER_L_H */

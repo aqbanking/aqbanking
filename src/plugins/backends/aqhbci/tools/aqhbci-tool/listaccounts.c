@@ -32,7 +32,6 @@ int listAccounts(AB_BANKING *ab,
                  char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   AB_ACCOUNT_LIST2 *al;
   const GWEN_ARGS args[]={
@@ -79,8 +78,6 @@ int listAccounts(AB_BANKING *ab,
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
   al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de", "*", "*");
   if (al) {

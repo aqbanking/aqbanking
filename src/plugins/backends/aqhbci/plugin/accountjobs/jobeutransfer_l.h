@@ -11,26 +11,18 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBGETDATEDTRANSFERS_H
-#define AH_JOBGETDATEDTRANSFERS_H
+#ifndef AH_JOBEUTRANSFER_L_H
+#define AH_JOBEUTRANSFER_L_H
 
 
-#include <aqhbci/accountjob.h>
+#include "accountjob_l.h"
+
+#include <gwenhywfar/gwentime.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+AH_JOB *AH_Job_EuTransfer_new(AB_USER *cu, AB_ACCOUNT *account);
 
 
-AH_JOB *AH_Job_GetDatedTransfers_new(AB_USER *u, AB_ACCOUNT *account);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* AH_JOBGETDATEDTRANSFERS_H */
+#endif /* AH_JOBEUTRANSFER_L_H */
 
 

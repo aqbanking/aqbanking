@@ -11,18 +11,13 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBSINGLETRANSFER_H
-#define AH_JOBSINGLETRANSFER_H
+#ifndef AH_JOBSINGLETRANSFER_L_H
+#define AH_JOBSINGLETRANSFER_L_H
 
 
-#include <aqhbci/accountjob.h>
+#include "accountjob_l.h"
 
 #include <gwenhywfar/gwentime.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 AH_JOB *AH_Job_SingleTransfer_new(AB_USER *u,
@@ -58,11 +53,6 @@ const char *AH_Job_SingleTransfer_GetFiid(AH_JOB *j);
 const char *AH_Job_SingleTransfer_GetOldFiid(AH_JOB *j);
 
 
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* AH_JOBSINGLETRANSFER_H */
+#endif /* AH_JOBSINGLETRANSFER_L_H */
 
 

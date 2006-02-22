@@ -14,7 +14,6 @@
 #define AH_USER_P_H
 
 #include "user_l.h"
-#include "bpd.h"
 
 
 typedef struct AH_USER AH_USER;
@@ -24,7 +23,7 @@ struct AH_USER {
 
   AH_MEDIUM *medium;
 
-  AH_BPD_ADDR *serverAddress;
+  GWEN_URL *serverUrl;
   AH_BPD *bpd;
 
   GWEN_TYPE_UINT32 flags;

@@ -19,13 +19,13 @@ class QWidget;
 class QBanking;
 class WizardInfo;
 
-#include <aqhbci/hbci.h>
+#include <aqbanking/provider.h>
 
 
 class UserWizard {
 private:
   QBanking *_app;
-  AH_HBCI *_hbci;
+  AB_PROVIDER *_provider;
   QWidget *_parent;
 
   bool _checkAndCreateMedium(WizardInfo *wInfo);
@@ -35,11 +35,11 @@ private:
   bool _handleModeCreateFile();
 
 public:
-  UserWizard(QBanking *qb, AH_HBCI *hbci, QWidget *parent);
+  UserWizard(QBanking *qb, AB_PROVIDER *pro, QWidget *parent);
   ~UserWizard();
 
   static bool finishUser(QBanking *qb,
-                         AH_HBCI *hbci,
+                         AB_PROVIDER *pro,
                          AB_USER *u,
                          QWidget *parent);
 

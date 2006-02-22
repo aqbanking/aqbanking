@@ -16,8 +16,10 @@
 
 
 #include "globals.h"
+#include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/url.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -80,7 +82,6 @@ int addUser(AB_BANKING *ab,
             char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   const char *bankId;
   const char *userId;
@@ -201,8 +202,6 @@ int addUser(AB_BANKING *ab,
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   userId=GWEN_DB_GetCharValue(db, "userId", 0, 0);
@@ -210,7 +209,7 @@ int addUser(AB_BANKING *ab,
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
   mediumNumber=GWEN_DB_GetIntValue(db, "mediumNumber", 0, 0);
 
-  ml=AH_HBCI_GetMediaList(hbci);
+  ml=AH_Provider_GetMediaList(pro);
   medium=0;
   if (ml) {
     i=mediumNumber;
@@ -244,7 +243,7 @@ int addUser(AB_BANKING *ab,
     int rv;
     AB_USER *user;
     AH_CRYPT_MODE cm;
-    AH_BPD_ADDR *ba;
+    GWEN_URL *url;
     AH_MEDIUM_CTX *mctx;
     const char *lbankId;
     const char *luserId;
@@ -367,18 +366,18 @@ int addUser(AB_BANKING *ab,
     }
 
     /* set address */
-    ba=AH_BpdAddr_new();
-    AH_BpdAddr_SetAddr(ba, lserverAddr);
+    url=GWEN_Url_fromString(lserverAddr);
+    assert(url);
     if (cm==AH_CryptMode_Pintan) {
-      AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeSSL);
-      AH_BpdAddr_SetSuffix(ba, "443");
+      GWEN_Url_SetProtocol(url, "https");
+      GWEN_Url_SetPort(url, 443);
     }
     else {
-      AH_BpdAddr_SetType(ba, AH_BPD_AddrTypeTCP);
-      AH_BpdAddr_SetSuffix(ba, "3000");
+      GWEN_Url_SetProtocol(url, "hbci");
+      GWEN_Url_SetPort(url, 3000);
     }
-    AH_User_SetAddress(user, ba);
-    AH_BpdAddr_free(ba);
+    AH_User_SetServerUrl(user, url);
+    GWEN_Url_free(url);
 
     GWEN_Buffer_free(bufServer);
     GWEN_Buffer_free(bufUserId);

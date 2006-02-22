@@ -26,6 +26,9 @@
         inherit="public"
         list="lib"
         list2="public" >
+    <descr>
+      This group represents a user within AqBanking.
+    </descr>
     <pre-headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >aqbanking/error.h</header>

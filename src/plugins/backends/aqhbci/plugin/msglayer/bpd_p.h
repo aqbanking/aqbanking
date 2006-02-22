@@ -13,7 +13,7 @@
 #ifndef AH_BPD_P_H
 #define AH_BPD_P_H
 
-#include <aqhbci/bpd.h>
+#include "bpd_l.h"
 
 
 #define AH_BPD_MAXHBCIVERSIONS 16

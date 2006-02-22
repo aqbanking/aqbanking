@@ -17,9 +17,10 @@
 
 #include "a_getcert.h"
 #include "wizard.h"
+#include <aqhbci/provider.h>
+
 #include <qbanking/qbanking.h>
 
-#include <aqhbci/dialog.h>
 #include <gwenhywfar/debug.h>
 
 #include <assert.h>
@@ -49,31 +50,20 @@ ActionGetCert::~ActionGetCert() {
 
 bool ActionGetCert::apply() {
   WizardInfo *wInfo;
-  QBanking *qb;
+  AB_PROVIDER *pro;
   AB_USER *u;
-  AH_DIALOG *dialog;
   int rv;
-  int alwaysAskForCert;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
+  pro=wInfo->getProvider();
+  assert(pro);
   u=wInfo->getUser();
   assert(u);
-  dialog=AH_Dialog_new(u);
-  assert(dialog);
 
-  qb=getWizard()->getBanking();
-  AH_HBCI_RemoveAllBankCerts(wInfo->getHbci(), u);
-  alwaysAskForCert=AB_Banking_GetAlwaysAskForCert(qb->getCInterface());
-  AB_Banking_SetAlwaysAskForCert(qb->getCInterface(), 1);
-
-  rv=AH_Dialog_Connect(dialog, 30);
-  AH_Dialog_Disconnect(dialog, 2);
-  AH_Dialog_free(dialog);
-  AB_Banking_SetAlwaysAskForCert(qb->getCInterface(),
-                                 alwaysAskForCert);
+  rv=AH_Provider_GetCert(pro, u, 1);
   if (rv) {
-    DBG_ERROR(0, "Could not connect to server (%d)", rv);
+    DBG_ERROR(0, "Could not get certificate (%d)", rv);
     return false;
   }
 

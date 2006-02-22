@@ -32,7 +32,6 @@
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
 #include <aqhbci/provider.h>
-#include <aqhbci/hbci.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

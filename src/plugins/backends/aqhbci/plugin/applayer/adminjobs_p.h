@@ -14,7 +14,7 @@
 #ifndef AH_ADMINJOBS_P_H
 #define AH_ADMINJOBS_P_H
 
-#include <aqhbci/adminjobs.h>
+#include "adminjobs_l.h"
 
 
 /* __________________________________________________________________________

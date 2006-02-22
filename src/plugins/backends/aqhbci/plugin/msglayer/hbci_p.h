@@ -15,7 +15,6 @@
 #define GWHBCI_HBCI_P_H
 
 #include "hbci_l.h"
-#include <aqhbci/message.h>
 
 #define AH_REGKEY_PATHS       "Software\\AqHbci\\Paths"
 #define AH_REGKEY_XMLDATADIR  "xmldatadir"
@@ -29,8 +28,6 @@
 
 
 struct AH_HBCI {
-  GWEN_INHERIT_ELEMENT(AH_HBCI);
-
   AB_BANKING *banking;
   AB_PROVIDER *provider;
 
@@ -49,6 +46,8 @@ struct AH_HBCI {
 
   int transferTimeout;
   int connectTimeout;
+
+  GWEN_TYPE_UINT32 lastVersion;
 
 };
 

@@ -55,5 +55,22 @@
 #define AQHBCI_LOGDOMAIN "aqhbci"
 
 
+typedef enum {
+  AH_CryptMode_Unknown=-1,
+  /** No type.  */
+  AH_CryptMode_None=0,
+  /** DES-DES-Verfahren  */
+  AH_CryptMode_Ddv,
+  /** PIN/TAN mode  */
+  AH_CryptMode_Pintan,
+  /** RSA-DES-Hybridverfahren  */
+  AH_CryptMode_Rdh
+} AH_CRYPT_MODE;
+AQHBCI_API
+AH_CRYPT_MODE AH_CryptMode_fromString(const char *s);
+AQHBCI_API
+const char *AH_CryptMode_toString(AH_CRYPT_MODE v);
+
+
 #endif /* AQHBCI_AQHBCI_H */
 

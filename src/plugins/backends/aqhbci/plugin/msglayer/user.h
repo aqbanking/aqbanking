@@ -17,19 +17,20 @@
 #include <gwenhywfar/misc.h>
 
 
-/** @defgroup MOD_USER HBCI User
- *
- * @ingroup MOD_MSGLAYER
+/** @defgroup G_AB_BE_AQHBCI_USER HBCI User Extensions
+ * @ingroup G_AB_BE_AQHBCI
+ * @short HBCI-specific user functions
+ * @author Martin Preuss<martin@libchipcard.de>
  *
  */
 /*@{*/
 
 #include <aqhbci/medium.h>
-#include <aqhbci/bpd.h>
 
 #include <aqbanking/user.h>
 
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/url.h>
 
 
 
@@ -75,13 +76,6 @@ AH_MEDIUM *AH_User_GetMedium(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetMedium(AB_USER *u, AH_MEDIUM *m);
 
-
-AQHBCI_API
-const char *AH_User_GetPeerId(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetPeerId(AB_USER *u, const char *s);
-
-
 AQHBCI_API
 int AH_User_GetContextIdx(const AB_USER *u);
 AQHBCI_API
@@ -93,33 +87,27 @@ AH_CRYPT_MODE AH_User_GetCryptMode(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetCryptMode(AB_USER *u, AH_CRYPT_MODE m);
 
+AQHBCI_API
+const char *AH_User_GetPeerId(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetPeerId(AB_USER *u, const char *s);
 
 AQHBCI_API
-const AH_BPD_ADDR *AH_User_GetAddress(const AB_USER *u);
+const char *AH_User_GetSystemId(const AB_USER *u);
 AQHBCI_API
-void AH_User_SetAddress(AB_USER *u, const AH_BPD_ADDR *a);
+void AH_User_SetSystemId(AB_USER *u, const char *s);
 
 
 AQHBCI_API
-int AH_User_GetBpdVersion(const AB_USER *u);
+const GWEN_URL *AH_User_GetServerUrl(const AB_USER *u);
 AQHBCI_API
-void AH_User_SetBpdVersion(AB_USER *u, int i);
-
-AQHBCI_API
-AH_BPD *AH_User_GetBpd(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetBpd(AB_USER *u, AH_BPD *bpd);
+void AH_User_SetServerUrl(AB_USER *u, const GWEN_URL *url);
 
 
 AQHBCI_API
 int AH_User_GetHbciVersion(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHbciVersion(AB_USER *u, int i);
-
-AQHBCI_API
-int AH_User_GetUpdVersion(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetUpdVersion(AB_USER *u, int i);
 
 /**
  * Returns 0 if the bank doesn't sign messages, 1 otherwise.
@@ -139,6 +127,10 @@ AQHBCI_API
 void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
 
 
+/** @name Pin/Tan Settings
+ *
+ */
+/*@{*/
 /**
  * Returns the major HTTP version to be used in PIN/TAN mode (defaults to 1).
  */
@@ -161,40 +153,8 @@ AQHBCI_API
 const char *AH_User_GetHttpUserAgent(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHttpUserAgent(AB_USER *u, const char *s);
+/*@}*/
 
-
-/**
- * The upd (User Parameter Data) contains groups for every account
- * the customer has access to. The name of the group ressembles the
- * accountId. The structure is as follows (assuming an account id of
- * "123456" and a per day limit of 4000,- Euro for the job HKUEB which
- * is to be signed by at least one user):
- *
- * @code
- *
- * 11111 {
- *   updjob {
- *     char job="HKUEB"
- *     int  minsign="1"
- *     limit {
- *       char type="E"
- *       char value="4000,"
- *       char currency="EUR"
- *     } # limit
- *   } # updjob
- * } # 11111
- * @endcode
- *
- */
-AQHBCI_API
-GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n);
-
-AQHBCI_API
-const char *AH_User_GetSystemId(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetSystemId(AB_USER *u, const char *s);
 
 
 

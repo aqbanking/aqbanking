@@ -14,7 +14,7 @@
 #define AH_MSGENGINE_P_H
 
 
-#include <aqhbci/msgengine.h>
+#include "msgengine_l.h"
 
 
 struct AH_MSGENGINE {

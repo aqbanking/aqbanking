@@ -11,14 +11,10 @@ EXTRA_DIST=README
 noinst_LTLIBRARIES=libhbciapp.la
 
 noinst_HEADERS=\
+  adminjobs_l.h \
   adminjobs_p.h\
   outbox_l.h \
   outbox_p.h
-
-iheaderdir=${includedir}/aqhbci
-iheader_HEADERS=\
-  adminjobs.h \
-  outbox.h
 
 libhbciapp_la_SOURCES=\
   adminjobs.c \

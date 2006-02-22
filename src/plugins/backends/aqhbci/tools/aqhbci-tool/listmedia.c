@@ -16,6 +16,7 @@
 
 
 #include "globals.h"
+#include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
 
@@ -32,7 +33,6 @@ int listMedia(AB_BANKING *ab,
               char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   const AH_MEDIUM_LIST *ml;
   const GWEN_ARGS args[]={
@@ -79,10 +79,8 @@ int listMedia(AB_BANKING *ab,
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
-  ml=AH_HBCI_GetMediaList(hbci);
+  ml=AH_Provider_GetMediaList(pro);
   if (ml) {
     const AH_MEDIUM *m;
     int i;

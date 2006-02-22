@@ -19,6 +19,8 @@
 #include "jobmultitransfer_p.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
+#include <aqhbci/account.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>

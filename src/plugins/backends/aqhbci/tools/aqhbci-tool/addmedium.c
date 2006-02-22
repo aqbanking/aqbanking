@@ -32,7 +32,6 @@ int addMedium(AB_BANKING *ab,
               char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AH_HBCI *hbci;
   int rv;
   AH_MEDIUM *medium=0;
   const char *mediumName;
@@ -104,8 +103,6 @@ int addMedium(AB_BANKING *ab,
 
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
-  hbci=AH_Provider_GetHbci(pro);
-  assert(hbci);
 
   mediumName=GWEN_DB_GetCharValue(db, "mediumName", 0, 0);
   if (mediumName)
@@ -133,25 +130,26 @@ int addMedium(AB_BANKING *ab,
     if (mediumName)
       GWEN_Buffer_AppendString(bufName, mediumName);
 
-    rv=AH_HBCI_CheckMedium(hbci, dev, bufTypeName, bufSubTypeName, bufName);
+    rv=AH_Provider_CheckMedium(pro, dev,
+                               bufTypeName, bufSubTypeName, bufName);
     if (rv) {
       DBG_ERROR(0, "Medium not supported");
       AB_Banking_Fini(ab);
       return 3;
     }
 
-    if (AH_HBCI_FindMedium(hbci,
-                           GWEN_Buffer_GetStart(bufTypeName),
-                           GWEN_Buffer_GetStart(bufName))) {
+    if (AH_Provider_FindMedium(pro,
+                               GWEN_Buffer_GetStart(bufTypeName),
+                               GWEN_Buffer_GetStart(bufName))) {
       DBG_ERROR(0, "Medium is already listed");
       AB_Banking_Fini(ab);
       return 3;
     }
 
-    medium=AH_HBCI_MediumFactory(hbci,
-                                 GWEN_Buffer_GetStart(bufTypeName),
-                                 GWEN_Buffer_GetStart(bufSubTypeName),
-                                 GWEN_Buffer_GetStart(bufName));
+    medium=AH_Provider_MediumFactory(pro,
+                                     GWEN_Buffer_GetStart(bufTypeName),
+                                     GWEN_Buffer_GetStart(bufSubTypeName),
+                                     GWEN_Buffer_GetStart(bufName));
   }
   else {
     GWEN_BUFFER *bufName;
@@ -168,9 +166,9 @@ int addMedium(AB_BANKING *ab,
       GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", bufName);
       GWEN_Time_free(ti);
     }
-    medium=AH_HBCI_MediumFactory(hbci,
-                                 "pintan", 0,
-                                 GWEN_Buffer_GetStart(bufName));
+    medium=AH_Provider_MediumFactory(pro,
+                                     "pintan", 0,
+                                     GWEN_Buffer_GetStart(bufName));
     GWEN_Buffer_free(bufName);
   }
 
@@ -194,7 +192,7 @@ int addMedium(AB_BANKING *ab,
     return 3;
   }
 
-  AH_HBCI_AddMedium(hbci, medium);
+  AH_Provider_AddMedium(pro, medium);
   fprintf(stdout, "Medium added.\n");
 
 

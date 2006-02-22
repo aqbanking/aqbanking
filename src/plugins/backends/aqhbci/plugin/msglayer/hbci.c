@@ -29,8 +29,6 @@
 
 #include <aqbanking/banking_be.h>
 
-#include <aqhbci/msgengine.h>
-
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
@@ -52,36 +50,6 @@
 #include <time.h>
 
 
-GWEN_INHERIT_FUNCTIONS(AH_HBCI);
-
-
-
-AH_CRYPT_MODE AH_CryptMode_fromString(const char *s) {
-  if (strcasecmp(s, "none")==0)
-    return AH_CryptMode_None;
-  else if (strcasecmp(s, "ddv")==0)
-    return AH_CryptMode_Ddv;
-  else if (strcasecmp(s, "pintan")==0)
-    return AH_CryptMode_Pintan;
-  else if (strcasecmp(s, "rdh")==0)
-    return AH_CryptMode_Rdh;
-  else
-    return AH_CryptMode_Unknown;
-}
-
-
-
-const char *AH_CryptMode_toString(AH_CRYPT_MODE v) {
-  switch(v) {
-  case AH_CryptMode_None:   return "none";
-  case AH_CryptMode_Ddv:    return "ddv";
-  case AH_CryptMode_Pintan: return "pintan";
-  case AH_CryptMode_Rdh:    return "rdh";
-  default:                  return "unknown";
-  }
-}
-
-
 
 AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   AH_HBCI *hbci;
@@ -99,7 +67,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   }
 
   GWEN_NEW_OBJECT(AH_HBCI, hbci);
-  GWEN_INHERIT_INIT(AH_HBCI, hbci);
   hbci->provider=pro;
   hbci->banking=AB_Provider_GetBanking(pro);
   hbci->activeMedia=AH_Medium_List_new();
@@ -125,7 +92,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
 void AH_HBCI_free(AH_HBCI *hbci){
   if (hbci) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_HBCI");
-    GWEN_INHERIT_FINI(AH_HBCI, hbci);
 
     /* free current medium */
     if (hbci->currentMedium) {
@@ -239,6 +205,8 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 
   /* load and update config data */
   db=AB_Provider_GetData(hbci->provider);
+
+  hbci->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
   rv=AH_HBCI_UpdateDb(hbci, db);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -351,6 +319,7 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
 
   return 0;
 }
+
 
 
 int AH_HBCI_Update(AH_HBCI *hbci,
@@ -1368,6 +1337,13 @@ void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i){
 GWEN_TYPE_UINT32 AH_HBCI_GetNextMediumId(AH_HBCI *hbci) {
   assert(hbci);
   return ++(hbci->lastMediumId);
+}
+
+
+
+GWEN_TYPE_UINT32 AH_HBCI_GetLastVersion(const AH_HBCI *hbci) {
+  assert(hbci);
+  return hbci->lastVersion;
 }
 
 

@@ -22,7 +22,7 @@
 #include "accountjob_l.h"
 #include "jobqueue_l.h"
 #include "hbci_l.h"
-#include "adminjobs.h"
+#include "adminjobs_l.h"
 #include "dialog_l.h"
 #include "jobmultitransfer_l.h"
 #include <aqhbci/provider.h>
