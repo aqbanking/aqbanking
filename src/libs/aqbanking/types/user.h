@@ -6,7 +6,7 @@
 
 /** @page P_AB_USER_PUBLIC AB_User (public)
 This page describes the properties of AB_USER
-@anchor AB_USER_UniqueId
+This group represents a user within AqBanking.@anchor AB_USER_UniqueId
 <h3>UniqueId</h3>
 <p>
 </p>
@@ -139,6 +139,7 @@ AQBANKING_API int AB_User_IsModified(const AB_USER *st);
 /** Sets the modified state of the given object
 */
 AQBANKING_API void AB_User_SetModified(AB_USER *st, int i);
+
 
 
 

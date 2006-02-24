@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 /** @defgroup G_AB_JOB Online Banking Tasks
- * @ingroup G_AB_C_INTERFACE
+ * @ingroup G_AB_ONLINE_BANKING
  *
  * This group represents online banking tasks such as retrieving the balance,
  * downloading transaction statements, issue transfers etc.

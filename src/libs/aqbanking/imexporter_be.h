@@ -22,6 +22,12 @@
 #include <aqbanking/imexporter.h>
 #include <gwenhywfar/misc.h>
 
+/** @defgroup G_AB_BE_IMEXPORTER Generic Im- and Exporter
+ * @ingroup G_AB_BE_INTERFACE
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -92,6 +98,7 @@ void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
 }
 #endif
 
+/*@}*/ /* defgroup */
 
 
 #endif /* AQBANKING_IMEXPORTER_BE_H */

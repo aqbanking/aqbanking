@@ -16,27 +16,41 @@
 #include <aqhbci/aqhbci.h> /* for AQHBCI_API */
 #include <aqbanking/provider.h>
 
+/** @defgroup G_AB_BE_AQHBCI_Account HBCI Account Extensions
+ * @ingroup G_AB_BE_AQHBCI
+ * @short HBCI-specific user functions
+ * @author Martin Preuss<martin@libchipcard.de>
+ *
+ */
+/*@{*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
+/** @name Flags
+ *
+ */
+/*@{*/
+/** Prefer single transfers over multi transfers for this account */
 #define AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER  0x00000001
+/** Prefer single debit notes over multi debit notes for this account */
 #define AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE 0x00000002
+/*@}*/
 
+
+/** @name Flag Manipulation Functions
+ *
+ * See @ref AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER and following.
+ */
+/*@{*/
 AQHBCI_API
 void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                            GWEN_TYPE_UINT32 flags);
 
 AQHBCI_API
 GWEN_TYPE_UINT32 AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
-
-
-
-AQHBCI_API
-const char *AH_Account_GetSuffix(const AB_ACCOUNT *a);
-AQHBCI_API
-void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s);
 
 AQHBCI_API
 GWEN_TYPE_UINT32 AH_Account_GetFlags(const AB_ACCOUNT *a);
@@ -50,6 +64,20 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
 AQHBCI_API
 void AH_Account_SubFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
 
+/*@}*/
+
+
+
+/** @name Account Id Suffix
+ *
+ */
+/*@{*/
+AQHBCI_API
+const char *AH_Account_GetSuffix(const AB_ACCOUNT *a);
+AQHBCI_API
+void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s);
+/*@}*/
+
 
 #ifdef __cplusplus
 }
@@ -57,6 +85,7 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
 
 
 
+/*@}*/ /* defgroup */
 
 
 #endif /* AH_ACCOUNT_H */

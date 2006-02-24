@@ -21,13 +21,25 @@
 #include <gwenhywfar/url.h>
 #include <gwenhywfar/nl_http.h>
 
+/** @defgroup G_AB_PROVIDER_HTTPSESS HTTP Session Management
+ * @ingroup G_AB_BE_INTERFACE
+ *
+ * Functions in this group provide a HTTP session management. This can be
+ * used by backends which use the SSL transport protocol.
+ */
+/*@{*/
 
+/** @name Session Flags
+ *
+ */
+/*@{*/
 #define AB_HTTPSESSION_FLAGS_ALLOW_REDIRECT 0x00000001
 #define AB_HTTPSESSION_FLAGS_REUSE          0x00000002
 #define AB_HTTPSESSION_FLAGS_SECURE_SSL     0x00000004
 
 #define AB_HTTPSESSION_DEFAULT_CONNECT_TIMEOUT  30
 #define AB_HTTPSESSION_DEFAULT_TRANSFER_TIMEOUT 60
+/*@}*/
 
 
 
@@ -36,18 +48,36 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_HTTPSESSION, AQBANKING_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_HTTPSESSION, AB_HttpSession, AQBANKING_API)
 
 
+/** @name Constructor/Destructor
+ *
+ */
+/*@{*/
 AQBANKING_API 
 AB_HTTPSESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u);
 
 AQBANKING_API 
 void AB_HttpSession_free(AB_HTTPSESSION *hc);
+/*@}*/
 
+
+
+/** @name Getters for Related Objects
+ *
+ */
+/*@{*/
 AQBANKING_API 
 AB_USER *AB_HttpSession_GetUser(const AB_HTTPSESSION *hc);
 
 AQBANKING_API 
 AB_PROVIDER *AB_HttpSession_GetProvider(const AB_HTTPSESSION *hc);
+/*@}*/
 
+
+
+/** @name Settings
+ *
+ */
+/*@{*/
 AQBANKING_API 
 GWEN_TYPE_UINT32 AB_HttpSession_GetSessionId(const AB_HTTPSESSION *hc);
 
@@ -82,8 +112,14 @@ int AB_HttpSession_GetTransferTimeout(const AB_HTTPSESSION *hc);
 
 AQBANKING_API 
 void AB_HttpSession_SetTransferTimeout(AB_HTTPSESSION *hc, int i);
+/*@}*/
 
 
+
+/** @name Transfer Functions
+ *
+ */
+/*@{*/
 AQBANKING_API 
 int AB_HttpSession_Open(AB_HTTPSESSION *hc);
 
@@ -98,8 +134,10 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
                                const char *pSendBody,
                                int lSendBody,
                                GWEN_BUFFER *recvBuf);
+/*@}*/
 
 
+/*@}*/ /* defgroup */
 
 
 

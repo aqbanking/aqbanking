@@ -17,10 +17,6 @@
 #include <aqbanking/system.h>
 
 
-/* @FIXME: disabled until next release of GnuCash */
-/*#define AQBANKING_NOWARN_DEPRECATED*/
-
-
 #ifdef BUILDING_AQBANKING
 # /* building AqBanking */
 # if AQBANKING_SYS_IS_WINDOWS
@@ -75,8 +71,8 @@
 #define AQBANKING_LOGDOMAIN "aqbanking"
 
 
-/** @defgroup AB_ERROR (Error Codes)
- * @ingroup AB_C_INTERFACE
+/** @defgroup AB_ERROR Error Codes
+ * @ingroup G_AB_C_INTERFACE
  */
 /*@{*/
 #define AB_ERROR_SUCCESS           0

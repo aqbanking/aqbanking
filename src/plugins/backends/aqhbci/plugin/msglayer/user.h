@@ -38,12 +38,30 @@
 extern "C" {
 #endif
 
+/** @name HBCI User Flags
+ *
+ */
+/*@{*/
+/** bank doesn't sign its messages */
 #define AH_USER_FLAGS_BANK_DOESNT_SIGN        0x00000001
+/** bank uses correct signature sequence counters for its messages */
 #define AH_USER_FLAGS_BANK_USES_SIGNSEQ       0x00000002
-#define AH_USER_FLAGS_PREFER_SINGLE_TRANSFER  0x00000004
-#define AH_USER_FLAGS_PREFER_SINGLE_DEBITNOTE 0x00000008
+#define AH_USER_FLAGS_RESERVED1               0x00000004
+#define AH_USER_FLAGS_RESERVED2               0x00000008
+/** for pin/tan mode: keep HTTP connections alive (reuse for multiple
+ * requests) */
 #define AH_USER_FLAGS_KEEPALIVE               0x00000010
+/** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
+ * indicates that some jobs are supported even when there is no UPD job
+ * description for it */
 #define AH_USER_FLAGS_IGNORE_UPD              0x00000020
+/*@}*/
+
+
+/** @name Functions for Flags and Status
+ *
+ */
+/*@{*/
 
 AQHBCI_API
 void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
@@ -70,7 +88,30 @@ AH_USER_STATUS AH_User_GetStatus(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetStatus(AB_USER *u, AH_USER_STATUS i);
 
+/**
+ * Returns 0 if the bank doesn't sign messages, 1 otherwise.
+ * This can be used in case the bank sends a sign key upon request but
+ * never signs it's messages.
+ */
+AQHBCI_API
+GWEN_TYPE_UINT32 AH_User_GetFlags(const AB_USER *u);
 
+AQHBCI_API
+void AH_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+
+AQHBCI_API
+void AH_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+
+AQHBCI_API
+void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+/*@}*/
+
+
+
+/** @name Medium Functions
+ *
+ */
+/*@{*/
 AQHBCI_API
 AH_MEDIUM *AH_User_GetMedium(const AB_USER *u);
 AQHBCI_API
@@ -80,8 +121,16 @@ AQHBCI_API
 int AH_User_GetContextIdx(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetContextIdx(AB_USER *u, int idx);
+/*@}*/
 
 
+/** @name Miscellanous Settings
+ *
+ */
+/*@{*/
+/**
+ * Crypt mode (see @ref AH_CryptMode_Ddv and following).
+ */
 AQHBCI_API
 AH_CRYPT_MODE AH_User_GetCryptMode(const AB_USER *u);
 AQHBCI_API
@@ -108,23 +157,8 @@ AQHBCI_API
 int AH_User_GetHbciVersion(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHbciVersion(AB_USER *u, int i);
+/*@}*/
 
-/**
- * Returns 0 if the bank doesn't sign messages, 1 otherwise.
- * This can be used in case the bank sends a sign key upon request but
- * never signs it's messages.
- */
-AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_GetFlags(const AB_USER *u);
-
-AQHBCI_API
-void AH_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
-
-AQHBCI_API
-void AH_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
-
-AQHBCI_API
-void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
 
 
 /** @name Pin/Tan Settings

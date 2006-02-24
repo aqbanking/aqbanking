@@ -52,39 +52,91 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 /*@}*/
 
 
+
 /** @name Server Interactive Functions
  *
+ * Functions in this group are used from setup wizards or tools.
+ * They send requests to the server (including opening and closing of the
+ * progress dialog by calling @ref AB_Banking_ProgressStart etc).
  */
 /*@{*/
+/**
+ * Retrieve a list of accounts. Not all banks support this. If the bank does
+ * then the retrieved accounts are automatically added to AqBanking.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the list of accounts is to be received
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
 AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             int nounmount);
 
+/**
+ * Retrieve the system id for the given user. This is only needed for
+ * PIN/TAN and for RDH mode.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the system id is to be received
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
 AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          int nounmount);
 
+/**
+ * Retrieve the public server keys for the given user. This is only needed for
+ * PIN/TAN and for RDH mode.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the public keys are to be received
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
 AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               int nounmount);
 
+/**
+ * Retrieve the public keys of the given user. This is only needed for
+ * PIN/TAN and for RDH mode.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the public keys are to be sent
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
 AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              int nounmount);
 
+/**
+ * Retrieve the SSL certificate for the given user. This is only needed for
+ * PIN/TAN mode.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the SSL certificate is to be received
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount);
 /*@}*/
 
 
+
 /** @name Generating Ini-Letters
  *
+ * INI letters are used in RDH mode only. They are used to verify the public
+ * server keys and to create a letter to be sent to the bank for verification
+ * of the public user keys.
  */
 /*@{*/
+/**
+ * Creates a text version of the INI letter. This function needs to mount
+ * the medium so the user will be ask for the pin.
+ */
 AQHBCI_API
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
@@ -92,6 +144,10 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 GWEN_BUFFER *lbuf,
                                 int nounmount);
 
+/**
+ * Creates a HTML version of the INI letter. This function needs to mount
+ * the medium so the user will be ask for the pin.
+ */
 AQHBCI_API
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  AB_USER *u,

@@ -2,16 +2,46 @@
 
 /** @defgroup G_AB_LIBRARY AqBanking Library */
 
-/** @defgroup G_AB_C_INTERFACE API for C
+/** @defgroup G_AB_C_INTERFACE API for Applications
  *  @ingroup G_AB_LIBRARY
  */
 
-/** @defgroup G_AB_BANKING Main Interface
- * @ingroup G_AB_C_INTERFACE
+/** @defgroup G_AB_ONLINE_BANKING Online Banking
+ *  @ingroup G_AB_C_INTERFACE
  */
 /** @defgroup G_AB_ACCOUNT Accounts
+ * @ingroup G_AB_ONLINE_BANKING
+ */
+
+/** @defgroup G_AB_INFO Bank/Country Info
+ *  @ingroup G_AB_C_INTERFACE
+ */
+
+/** @defgroup G_AB_IMEXPORTER Generic Im- and Exporter
  * @ingroup G_AB_C_INTERFACE
  */
+
+/** @defgroup G_AB_SIMPLE Simplified API
+ *  @ingroup G_AB_C_INTERFACE
+ */
+
+
+/** @defgroup G_AB_VIRTUAL Virtual Functions
+ *  @ingroup G_AB_C_INTERFACE
+ */
+
+
+/** @defgroup G_AB_BE_INTERFACE API for Backends
+ * @ingroup G_AB_LIBRARY
+ */
+/** @defgroup G_AB_BE_BANKING Main Interface
+ * @ingroup G_AB_BE_INTERFACE
+ */
+/** @defgroup G_AB_PROVIDER Backend Objects
+ * @ingroup G_AB_BE_INTERFACE
+ */
+
+
 
 /** @defgroup G_AB_FRONTENDS Frontends */
 
@@ -38,7 +68,8 @@
  */
 
 
-/** @defgroup G_AB_BACKENDS Backends */
+/** @defgroup G_AB_BACKENDS Backends
+ */
 
 
 
@@ -56,7 +87,7 @@ If you are writing an application and want to use AqBanking's
 features, there are two possibilities:
 
  - Use the "Im/Exporter Layer API", which requires the least coding
- effort on the application side. See @ref G_AB_BANKING_IMEXPORT_API
+ effort on the application side. See @ref G_AB_ONLINE_BANKING,
 
  - Or you can use the "Main Interface API" (also called "High level
  API" sometimes), which offers the highest flexibility by its access
@@ -82,54 +113,38 @@ library is organized in multiple layers:
 
 <ul>
   <li>
-
-  <b>Lowlevel</b>: This level is represented by the function group
-  AB_PROVIDER (see @ref G_AB_PROVIDER). These functions should
-  <i>not</i> be accessed by an application; instead, they are accessed
-  by <i>plugins</i>. The plugins (e.g. AqHBCI) implement the Provider
-  functions which actually implement the online banking
-  functionality. ("Provider" is simply another word for "backend".)
-  Currently only AqHBCI for HBCI is available. However the API has
-  been designed to be as wide open as possible. This layer also
-  includes the simple API (consisting of a single function for now)
-  for plugins that are importing transactions from a file.
-    
-  </li>
-  <li>
-
-  <b>Midlevel</b>: This is the glue between lowlevel and
-  highlevel. This is the layer which holds the list of manageable
-  accounts and distributes jobs across the providers. This is also not
-  used by the application.
-
-  </li>
-  <li>
-
-  <b>Highlevel</b> (or "Main Interface"): These are the functions used
-  by the application (see @ref G_AB_BANKING and @ref G_APP_INTRO) This
-  layer offers:
-
+    <b>API for Applications</b>:
+    This contains the complete API to be used by applications (see 
+    @ref G_AB_C_INTERFACE). It is subdivided into several groups and 
+    includes (among other things):
     <ul>
       <li>Managing Backends/Providers</li>
       <li>Managing Accounts</li>
       <li>Accepting @ref AB_JOB objects for online banking jobs from
-      the application and sending it to the corresponding
+      the application and sending them to the corresponding
       provider</li>
     </ul>
-    The application only needs to ask AqBanking for a list of accounts
-    and to map those accounts to its own accounts.
-
   </li>
+
   <li>
-
-  <b>ImExporter Layer</b> (previously this was occasionally called
-  "Application Layer"): This layer offers an even simpler API to
-  applications, where the calls to all lower layers are combined, and
-  the application will <i>not</i> deal with @ref AB_JOB objects. This
-  may be useful when adding AqBanking support to applications which
-  have not been designed to work with AqBanking in the first place
-  (see @ref G_AB_BANKING_IMEXPORT_API)
-
+    <b>Simplified API</b>: 
+    This layer offers an even simpler API to applications, where the calls to 
+    all lower layers are combined, and the application will <i>not</i> deal 
+    with @ref AB_JOB objects. This may be useful when adding AqBanking support
+    to applications which have not been designed to work with AqBanking in the
+    first place (see @ref G_AB_SIMPLE)
+  </li>
+  
+  <li>
+    <b>API for Backends</b>
+    This level is represented by the function group @ref G_AB_BE_INTERFACE).
+    These functions should <i>not</i> be accessed by an application; instead,
+    they are accessed by <i>plugins</i>. The plugins (e.g. AqHBCI) implement
+    the Provider functions which actually implement the online banking
+    functionality. ("Provider" is simply another word for "backend".)
+    The API has been designed to be as wide open as possible, and currently
+    it is used by plugins for HBCI, OFX Direct Connect, YellowNet, 
+    DTAUS and GeldKarte providers.
   </li>
 </ul>
 
@@ -139,7 +154,7 @@ simple user interaction functions, independently of the actual
 graphical or text frontend. (see @ref G_AB_PROVIDER) This has the
 additional advantage that any new backend/provider will then
 immediately be supported by all applications.
-  */
+*/
 
 /**
 @page G_APP_INTRO Introduction into application programming with AqBanking

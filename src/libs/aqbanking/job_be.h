@@ -21,6 +21,11 @@
 
 #include <aqbanking/job.h>
 
+/** @defgroup G_AB_BE_JOB Online Banking Tasks
+ * @ingroup G_AB_BE_INTERFACE
+ */
+/*@{*/
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,6 +106,8 @@ void AB_Job_LogRaw(AB_JOB *j, const char *txt);
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/ /* defgroup */
 
 
 #endif /* AQBANKING_JOB_BE_H */

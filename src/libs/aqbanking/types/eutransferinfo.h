@@ -18,7 +18,7 @@ get it with @ref AB_EuTransferInfo_GetCountryCode
 @anchor AB_EUTRANSFER_INFO_FieldLimits
 <h3>FieldLimits</h3>
 <p>
-This is the list of known field limits for an AB_TRANSACTION. This object remains the owner of lists returned via @ref AB_EuTransfer_GetFieldLimits..</p>
+This is the list of known field limits for an AB_TRANSACTION. This object remains the owner of lists returned via @ref AB_JobEuTransferInfo_GetFieldLimits.</p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetFieldLimits, 
 get it with @ref AB_EuTransferInfo_GetFieldLimits

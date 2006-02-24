@@ -37,6 +37,7 @@ AB_USER *AB_User__new();
 
 
 
+
 /**
 * Returns the property @ref AB_USER_Data
 */

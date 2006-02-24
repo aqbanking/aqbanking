@@ -2,6 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/02/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more work on API documentation, restructured API doc
+- removed function AB_Banking_GatherResponses (it is not used by any
+  application any longer)
+- removed flags AH_USER_FLAGS_PREFER_SINGLE_TRANSFER and
+  AH_USER_FLAGS_PREFER_SINGLE_DEBITNOTE (this is in account.h now)
+- fixed a bug in AqHBCI: Was using user flags to determine whether the user
+  prefers single transers
+
+
 2006/02/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - more work on API documentation

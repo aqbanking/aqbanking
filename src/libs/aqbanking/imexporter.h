@@ -22,7 +22,8 @@
 #include <aqbanking/accstatus.h>
 
 
-/** @defgroup AB_IMEXPORTER Generic Im- and Exporter
+/** @addtogroup G_AB_IMEXPORTER Generic Im- and Exporter
+ *
  * @short Generic Financial Data Importer/Exporter
  * <p>
  * This group contains a generic importer/exporter.
@@ -137,7 +138,7 @@ const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
 /** @defgroup AB_IMEXPORTER_CONTEXT Im- and Exporter Context
- * @ingroup AB_IMEXPORTER
+ * @ingroup G_AB_IMEXPORTER
  *
  * A context contains the list of accounts for which data has been imported
  * or which are to be exported.
@@ -273,7 +274,7 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
 
 
 /** @defgroup AB_IMEXPORTER_ACCOUNTINFO Im- and Exporter Account Info
- * @ingroup AB_IMEXPORTER
+ * @ingroup G_AB_IMEXPORTER
  *
  * Such a structure contains the list of imported/to be exported transactions
  * for a given account.

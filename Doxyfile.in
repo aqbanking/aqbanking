@@ -459,7 +459,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = doc/apidoc.h \
+INPUT                  = doc/apidoc.h tutorials/tutorials.h \
                          @DOXYGEN_INPUT@
 
 # If the value of the INPUT tag contains directories, you can use the 
@@ -502,7 +502,7 @@ EXCLUDE_PATTERNS       = *moc* \
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = doc
+EXAMPLE_PATH           = doc tutorials
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

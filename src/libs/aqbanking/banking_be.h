@@ -21,6 +21,10 @@
 #include <gwenhywfar/nl_ssl.h>
 #include <aqbanking/banking.h>
 
+/** @addtogroup G_AB_BE_BANKING
+ */
+/*@{*/
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,6 +76,8 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab, GWEN_TYPE_UINT32 pid);
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/
 
 
 #endif /* AQBANKING_BANKING_BE_H */

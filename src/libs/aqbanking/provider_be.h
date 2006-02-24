@@ -27,11 +27,8 @@ extern "C" {
 #endif
 
 
-/** @defgroup G_AB_PROVIDER_BE Backend Functions
- * @ingroup G_AB_PROVIDER
+/** @addtogroup G_AB_PROVIDER
  *
- * Functions in this group are only to be called by AqBanking or its
- * backends. They must especially not be called by applications!
  */
 /*@{*/
 
@@ -185,6 +182,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro);
  * The value returned here is stored within the job in question and becomes
  * available via @ref AB_Job_CheckAvailability.
  * @param pro backend object
+ * @param j job to update
  */
 AQBANKING_API
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
@@ -218,6 +216,7 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
  * @ref AB_PROVIDER_ADDJOB_FN. After calling this function @b all jobs are
  * removed from the backend's queue in any case.
  * @param pro backend object
+ * @param ctx im-/exporter context to receive responses
  */
 AQBANKING_API
 int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);

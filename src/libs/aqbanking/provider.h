@@ -60,8 +60,7 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
 extern "C" {
 #endif
 
-/** @defgroup G_AB_PROVIDER Online Banking Backends
- * @ingroup G_AB_C_INTERFACE
+/** @addtogroup G_AB_PROVIDER
  *
  * @brief This group represents backends. (Don't use in applications)
  *

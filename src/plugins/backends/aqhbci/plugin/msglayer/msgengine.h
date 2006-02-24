@@ -13,6 +13,19 @@
 #ifndef AH_MSGENGINE_H
 #define AH_MSGENGINE_H
 
+/** @defgroup G_AB_BE_AQHBCI_MSGENGINE HBCI Message Engine
+ * @ingroup G_AB_BE_AQHBCI
+ * @short HBCI-specific message engine extension
+ * @author Martin Preuss<martin@libchipcard.de>
+ *
+ * This is an extension for @ref GWEN_MSGENGINE which additionally supports
+ * some HBCI types (like date, time, DTAUS binary type, SWIFT binary type
+ * etc).
+ * It is used by AqHBCI internally and by the tool hbcixml2.
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,11 +46,11 @@ AQHBCI_API
 GWEN_MSGENGINE *AH_MsgEngine_new();
 
 
-void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u);
-
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/
 
 
 #endif /* AH_MSGENGINE_H */

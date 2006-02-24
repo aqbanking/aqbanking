@@ -218,17 +218,8 @@ static int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
                                        const char *backend,
                                        GWEN_BUFFER *pbuf);
 
-static int AB_Banking__isSameDay(const GWEN_TIME *t1, const GWEN_TIME *t2);
-static void AB_Banking__RemoveDuplicateJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl);
-
 static int AB_Banking__TransformIban(const char *iban, int len,
                                      char *newIban, int maxLen);
-
-/* @param jm 0:finished job, 1:pending job */
-static int AB_Banking_GatherJobListResponses(AB_BANKING *ab,
-                                             AB_JOB_LIST2 *jl,
-                                             AB_IMEXPORTER_CONTEXT *ctx,
-                                             int jm);
 
 
 static GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId);

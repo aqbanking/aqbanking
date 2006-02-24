@@ -46,7 +46,7 @@
       <descr>
         This is the list of known field limits for an AB_TRANSACTION.
         This object remains the owner of lists returned via
-        @ref AB_JobEuTransfer_GetFieldLimits.
+        @ref AB_JobEuTransferInfo_GetFieldLimits.
       </descr>
     </elem>
     
