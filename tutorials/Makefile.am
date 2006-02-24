@@ -1,4 +1,4 @@
-EXTRA_DIST = README tutorial.h
+EXTRA_DIST = README tutorials.h
 
 INCLUDES = \
   -I$(top_builddir)/headers \

@@ -47,6 +47,11 @@ iheader_HEADERS=\
  account_be.h \
  banking.h \
  banking_be.h \
+ banking_imex.h \
+ banking_info.h \
+ banking_ob.h \
+ banking_simple.h \
+ banking_virt.h \
  bankinfoplugin.h \
  bankinfoplugin_be.h \
  country.h \
