@@ -1351,9 +1351,6 @@ class BankingBase(c_void_p):
         chk(aqb.AB_Banking_RequestTransactions(
             self, bankCode, accountNumber, firstDate, lastDate))
 
-    def gatherResponses(self, context):
-        chk(aqb.AB_Banking_GatherResponses(self, context))
-
     def iterAccounts(self):
 	al = aqb.AB_Banking_GetAccounts(self)
         if not al:
@@ -1441,7 +1438,6 @@ aqb.AB_Banking_FindWizard.argtypes = (
     BankingBase, c_char_p, c_char_p, GWEN_Buffer)
 aqb.AB_Banking_RequestTransactions.argtypes = (
     BankingBase, c_char_p, c_char_p, GWEN_Time, GWEN_Time)
-aqb.AB_Banking_GatherResponses.argtypes = BankingBase, ImExporterContext
 
 # FIXME: should not be needed for stable version of aqBanking
 # shut up aqBanking.. too noisy..

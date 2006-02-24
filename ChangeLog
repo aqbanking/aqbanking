@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006-02-24   Christian Stimming <stimming@tuhh.de>
+
+	* bindings/python/__init__.py: Also remove
+	AB_Banking_GatherResponses from python bindings.
+
 2006/02/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - more work on API documentation, restructured API doc
