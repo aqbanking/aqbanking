@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=1
 AQBANKING_VERSION_MINOR=9
 AQBANKING_VERSION_PATCHLEVEL=7
-AQBANKING_VERSION_BUILD=7
+AQBANKING_VERSION_BUILD=8
 dnl "stable", "rcX", "betaX", "cvs"
 AQBANKING_VERSION_TAG="cvs"
 AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.$AQBANKING_VERSION_BUILD${AQBANKING_VERSION_TAG}"
@@ -60,6 +60,11 @@ AQOFXCONNECT_SO_CURRENT=1
 AQOFXCONNECT_SO_REVISION=1
 AQOFXCONNECT_SO_AGE=0
 AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
+
+AQYELLOWNET_SO_CURRENT=1
+AQYELLOWNET_SO_REVISION=1
+AQYELLOWNET_SO_AGE=0
+AQYELLOWNET_SO_EFFECTIVE="`echo \$(($AQYELLOWNET_SO_CURRENT-$AQYELLOWNET_SO_AGE))`"
 
 #
 # frontends
@@ -363,6 +368,18 @@ AC_SUBST(AQOFXCONNECT_SO_REVISION)
 AC_SUBST(AQOFXCONNECT_SO_AGE)
 AC_SUBST(AQOFXCONNECT_SO_EFFECTIVE)
 AC_DEFINE_UNQUOTED(AQOFXCONNECT_SO_EFFECTIVE_STR, "$AQOFXCONNECT_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+#
+# same for AqYellowNet
+#
+
+AC_SUBST(AQYELLOWNET_SO_CURRENT)
+AC_SUBST(AQYELLOWNET_SO_REVISION)
+AC_SUBST(AQYELLOWNET_SO_AGE)
+AC_SUBST(AQYELLOWNET_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQYELLOWNET_SO_EFFECTIVE_STR, "$AQYELLOWNET_SO_EFFECTIVE",
                    [effective SO version])
 
 
@@ -1405,6 +1422,42 @@ AC_SUBST(aqofxconnect_libs)
 AC_SUBST(aqofxconnect_plugins)
 AC_SUBST(aqofxconnect_data)
 #AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Configure stuff for backend AqYellowNew
+#
+
+case "$aqbanking_backends" in *aqyellownet*)
+  case "$OS_TYPE" in
+      posix)
+          aqyellownet_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin -laqyellownet"
+          aqyellownet_libs="-L\${libdir} -laqyellownet"
+          aqyellownet_includes="-I\${prefix}/include"
+          aqyellownet_plugins="\${libdir}/aqyellownet/plugins/${AQYELLOWNET_SO_EFFECTIVE}"
+          aqyellownet_data="\${datadir}/aqyellownet"
+          ;;
+      windows)
+          ACX_WINDOWS_PATHS
+          aqyellownet_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin -laqyellownet"
+          aqyellownet_libs="-L\${libdir} -laqyellownet-${AQYELLOWNET_SO_EFFECTIVE}"
+          aqyellownet_includes="-I\${prefix}/include"
+          aqyellownet_plugins="\${libdir}/aqyellownet/plugins/${AQYELLOWNET_SO_EFFECTIVE}"
+          aqyellownet_data="\${datadir}/aqyellownet"
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqyellownet_includes)
+AC_SUBST(aqyellownet_includes)
+AC_SUBST(aqyellownet_internal_libs)
+AC_SUBST(aqyellownet_libs)
+AC_SUBST(aqyellownet_plugins)
+AC_SUBST(aqyellownet_data)
+#AC_DEFINE_UNQUOTED(AQYELLOWNET_DATA, "${aqyellownet_data}", [data dir])
 
 
 

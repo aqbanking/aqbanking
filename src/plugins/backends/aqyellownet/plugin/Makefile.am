@@ -8,7 +8,6 @@ INCLUDES = \
 # when installing DATA objects into libdir)
 extralibdir = $(libdir)
 dist_extralib_DATA=\
- libaqyellownet.la \
  libaqyellownet.so
 
 EXTRA_DIST= aqyellownet.xml.in COPYING
@@ -28,10 +27,13 @@ aqyellownet_la_SOURCES= \
  aqyellownet-plugin.c
 
 aqyellownet_la_LIBADD= \
-  $(srcdir)/libaqyellownet.la \
+  -L$(srcdir) -laqyellownet \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 aqyellownet_la_LDFLAGS=-module
+
+#  -L$(srcdir) -laqyellownet
+#  $(srcdir)/libaqyellownet.la
 
 sources:
 

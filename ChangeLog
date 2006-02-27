@@ -2,10 +2,19 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+
+2006/02/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed linking against prebuilt libaqyellownet.so
+- define some configure.ac variables for AqYellowNet
+- "make srcdoc" now creates multifolder docs (fewer files per folder)
+
+
 2006-02-24   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/__init__.py: Also remove
 	AB_Banking_GatherResponses from python bindings.
+
 
 2006/02/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

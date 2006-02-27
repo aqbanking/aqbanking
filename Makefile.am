@@ -35,6 +35,8 @@ listdoc.h:
 	mklistdoc -v `find headers -name '*.h' ` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
+	test -d apidoc && rm -Rf apidoc;
+	mkdir -p apidoc/html/aqbanking-@AQBANKING_VERSION_RELEASE_STRING@
 	doxygen
 
 install-srcdoc: srcdoc
