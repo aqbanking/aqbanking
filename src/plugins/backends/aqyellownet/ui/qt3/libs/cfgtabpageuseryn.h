@@ -22,7 +22,6 @@ class CfgTabPageUserYnUi;
 
 
 class CfgTabPageUserYn: public QBCfgTabPageUser {
-  Q_OBJECT
 private:
   CfgTabPageUserYnUi *_realPage;
 
@@ -35,10 +34,6 @@ public:
   virtual bool fromGui();
   virtual bool toGui();
   virtual bool checkGui();
-
-public slots:
-  void slotServerTest();
-  void slotServerChanged(const QString &qs);
 };
 
 #endif // AQDTAUS_CFGTABPAGEUSER_H

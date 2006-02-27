@@ -24,8 +24,7 @@ nodist_aqyellownet_la_SOURCES=\
  cfgtabpageaccountyn.ui.cpp \
  cfgtabpageaccountyn.ui.moc.cpp \
  cfgtabpageuseryn.ui.cpp \
- cfgtabpageuseryn.ui.moc.cpp \
- cfgtabpageuseryn.moc.cpp
+ cfgtabpageuseryn.ui.moc.cpp
 
 aqyellownet_la_SOURCES= \
  cfgmoduleyn.cpp \
