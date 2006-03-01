@@ -2,6 +2,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006-03-01   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Fix variables for aqyellownet so that
+	builddir!=srcdir works correctly. Fixes make distcheck.
 
 2006/02/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -1323,7 +1323,7 @@ case "$aqbanking_backends" in *aqdtaus*)
   case "$OS_TYPE" in
       posix)
           aqdtaus_internal_libs="${abs_top_builddir}/src/plugins/backends/aqdtaus/plugin/libaqdtaus.la"
-          aqdtaus_libs="-L\${libdir} ${aqdtaus_internal_libs}"
+          aqdtaus_libs="-L\${libdir} -laqdtaus"
           aqdtaus_includes="-I\${prefix}/include"
           aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
           aqdtaus_data="\${datadir}/aqdtaus"
@@ -1433,7 +1433,7 @@ AC_SUBST(aqofxconnect_data)
 case "$aqbanking_backends" in *aqyellownet*)
   case "$OS_TYPE" in
       posix)
-          aqyellownet_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin -laqyellownet"
+          aqyellownet_internal_libs="${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin/aqyellownet.la"
           aqyellownet_libs="-L\${libdir} -laqyellownet"
           aqyellownet_includes="-I\${prefix}/include"
           aqyellownet_plugins="\${libdir}/aqyellownet/plugins/${AQYELLOWNET_SO_EFFECTIVE}"
@@ -1441,7 +1441,7 @@ case "$aqbanking_backends" in *aqyellownet*)
           ;;
       windows)
           ACX_WINDOWS_PATHS
-          aqyellownet_internal_libs="-L${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin -laqyellownet"
+          aqyellownet_internal_libs="${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin/aqyellownet.la"
           aqyellownet_libs="-L\${libdir} -laqyellownet-${AQYELLOWNET_SO_EFFECTIVE}"
           aqyellownet_includes="-I\${prefix}/include"
           aqyellownet_plugins="\${libdir}/aqyellownet/plugins/${AQYELLOWNET_SO_EFFECTIVE}"
