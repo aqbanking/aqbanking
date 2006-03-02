@@ -241,8 +241,8 @@ bool EditCtUser::apply(){
   serverAddr=QBanking::QStringToUtf8String(qs);
   idx=userCombo->currentItem();
 
-  /* some sanitiy checks */
-  if (_checkStringSanity(userId.c_str())) {
+  /* some sanity checks */
+  if (!_checkStringSanity(userId.c_str())) {
     QMessageBox::critical(this,
                           tr("Invalid Input"),
                           tr("<qt>"

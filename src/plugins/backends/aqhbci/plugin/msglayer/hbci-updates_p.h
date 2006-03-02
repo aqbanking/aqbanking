@@ -69,6 +69,18 @@ static int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db);
 /*@}*/
 
 
+/** @name Account DB Update Functions
+ *
+ * Functions in this group called from @ref AB_Account_Extend.
+ */
+/*@{*/
+/**
+ * This update sets the account flags to the default value if they are "0".
+ * This now makes single transfers the default.
+ */
+static int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db);
+/*@}*/
+
 
 /** @name Newer Update Functions
  *

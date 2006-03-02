@@ -56,7 +56,10 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
       assert(0);
     }
 
-    ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
+    if (em==AB_ProviderExtendMode_Create)
+      ae->flags=AH_BANK_FLAGS_DEFAULT;
+    else
+      ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
   }
 }
 

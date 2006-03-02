@@ -37,6 +37,11 @@ extern "C" {
 #define AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER  0x00000001
 /** Prefer single debit notes over multi debit notes for this account */
 #define AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE 0x00000002
+
+#define AH_BANK_FLAGS_DEFAULT (\
+  AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER | \
+  AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE \
+  )
 /*@}*/
 
 

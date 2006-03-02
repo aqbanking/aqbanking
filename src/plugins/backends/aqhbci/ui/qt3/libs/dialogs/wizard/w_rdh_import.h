@@ -23,6 +23,7 @@ private:
 public:
   WizardRdhImport(QBanking *qb,
                   WizardInfo *wInfo,
+                  bool isFile,
                   QWidget* parent=0, const char* name=0,
                   bool modal=FALSE);
   virtual ~WizardRdhImport();

@@ -18,6 +18,7 @@
 #include "i18n_l.h"
 #include "hbci-updates_p.h"
 #include "user_l.h"
+#include "account_l.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -152,6 +153,7 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_TYPE_UINT32 oldVersion;
   GWEN_TYPE_UINT32 currentVersion;
+  int rv;
 
   if (0==GWEN_DB_Groups_Count(db) &&
       0==GWEN_DB_Variables_Count(db)) {
@@ -176,6 +178,13 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
              (oldVersion>>8) & 0xff,
              oldVersion & 0xff);
 
+    if (oldVersion<((1<<24) | (9<<16) | (7<<8) | 9)) {
+      rv=AH_HBCI_UpdateAccount_1_9_7_9(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
     /* insert more updates here */
 
 
@@ -820,6 +829,24 @@ int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
+
+
+
+
+
+int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_TYPE_UINT32 flags;
+
+  flags=AH_Account_Flags_fromDb(db, "accountFlags");
+  if (flags==0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+               "Setting account flags to default");
+    flags=AH_BANK_FLAGS_DEFAULT;
+    AH_Account_Flags_toDb(db, "accountFlags", flags);
+  }
+
+  return 0;
+}
 
 
 

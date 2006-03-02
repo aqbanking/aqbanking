@@ -31,6 +31,7 @@
 
 WizardRdhImport::WizardRdhImport(QBanking *qb,
                                  WizardInfo *wInfo,
+                                 bool isFile,
                                  QWidget* parent, const char* name,
                                  bool modal)
 :Wizard(qb, wInfo,
@@ -41,18 +42,20 @@ WizardRdhImport::WizardRdhImport(QBanking *qb,
   setDescription(tr("<qt>"
                     "This wizard imports users from a <b>RDH</b> medium."
                     "</qt>"));
-  wa=new ActionSelectFile(this, true,
-                          tr("Select Existing Key File"),
-                          tr("<qt>"
-                             "<p>"
-                             "Select the existing file you want to use as "
-                             "keyfile."
-                             "</p>"
-                             "</qt>"));
-  addAction(wa);
+  if (isFile) {
+    wa=new ActionSelectFile(this, true,
+                            tr("Select Existing Key File"),
+                            tr("<qt>"
+                               "<p>"
+                               "Select the existing file you want to use as "
+                               "keyfile."
+                               "</p>"
+                               "</qt>"));
+    addAction(wa);
 
-  wa=new ActionCheckFile(this);
-  addAction(wa);
+    wa=new ActionCheckFile(this);
+    addAction(wa);
+  }
 
   wa=new ActionEditUser(this);
   addAction(wa);

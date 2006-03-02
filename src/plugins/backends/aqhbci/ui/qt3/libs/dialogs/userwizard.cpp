@@ -202,7 +202,8 @@ bool UserWizard::_handleModeImportCard() {
   }
   else {
     wInfo.setCryptMode(AH_CryptMode_Rdh);
-    w=new WizardRdhImport(_app, &wInfo, _parent, "WizardRdhImport", TRUE);
+    w=new WizardRdhImport(_app, &wInfo, false,
+                          _parent, "WizardRdhImport", TRUE);
   }
 
   /* setup user */
@@ -241,7 +242,8 @@ bool UserWizard::_handleModeImportFile() {
   int rv;
 
   wInfo.setCryptMode(AH_CryptMode_Rdh);
-  w=new WizardRdhImport(_app, &wInfo, _parent, "WizardRdhImport", TRUE);
+  w=new WizardRdhImport(_app, &wInfo, TRUE,
+                        _parent, "WizardRdhImport", TRUE);
 
   /* setup user */
   if (w->exec()==QDialog::Accepted) {

@@ -2,10 +2,20 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/03/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- make single transfers/debit notes the default. Otherwise some people think
+  that there was something wrong with their transfers if they issued more
+  than one in a single setting
+- fixed a bug in AqHBCI setup wizard: Was asking for file even if a card
+  is used
+
+
 2006-03-01   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix variables for aqyellownet so that
 	builddir!=srcdir works correctly. Fixes make distcheck.
+
 
 2006/02/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
