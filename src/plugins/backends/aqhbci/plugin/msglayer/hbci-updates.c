@@ -109,13 +109,6 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_TYPE_UINT32 oldVersion;
   GWEN_TYPE_UINT32 currentVersion;
 
-  if (0==GWEN_DB_Groups_Count(db) &&
-      0==GWEN_DB_Variables_Count(db)) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "Initial setup, nothing to upgrade");
-    return 0;
-  }
-
   oldVersion=AH_HBCI_GetLastVersion(hbci);
 
   currentVersion=
@@ -126,7 +119,7 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   if (currentVersion>oldVersion) {
     DBG_WARN(AQHBCI_LOGDOMAIN,
-             "Updating from %d.%d.%d.%d",
+             "Updating user from %d.%d.%d.%d",
              (oldVersion>>24) & 0xff,
              (oldVersion>>16) & 0xff,
              (oldVersion>>8) & 0xff,
@@ -155,13 +148,6 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_TYPE_UINT32 currentVersion;
   int rv;
 
-  if (0==GWEN_DB_Groups_Count(db) &&
-      0==GWEN_DB_Variables_Count(db)) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "Initial setup, nothing to upgrade");
-    return 0;
-  }
-
   oldVersion=AH_HBCI_GetLastVersion(hbci);
 
   currentVersion=
@@ -172,7 +158,7 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   if (currentVersion>oldVersion) {
     DBG_WARN(AQHBCI_LOGDOMAIN,
-             "Updating from %d.%d.%d.%d",
+             "Updating account from %d.%d.%d.%d",
              (oldVersion>>24) & 0xff,
              (oldVersion>>16) & 0xff,
              (oldVersion>>8) & 0xff,
