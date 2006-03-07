@@ -1542,6 +1542,7 @@ int AH_Medium__ReadKeySpec(AH_MEDIUM *m,
   assert(pks);
 
   /* maybe cache this data later */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading keyspec %x", kid);
   rv=GWEN_CryptToken_ReadKeySpec(m->cryptToken, kid, &ks);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Unable to read keyspec %x (%d)",
@@ -1596,6 +1597,7 @@ int AH_Medium__ReadKeySpecs(AH_MEDIUM *m) {
   }
   else {
     ks=0;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading keyspec for local sign key");
     rv=AH_Medium__ReadKeySpec(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki), &ks);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading keyspec (%d)", rv);
@@ -1616,6 +1618,7 @@ int AH_Medium__ReadKeySpecs(AH_MEDIUM *m) {
   }
   else {
     ks=0;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading keyspec for local crypt key");
     rv=AH_Medium__ReadKeySpec(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki), &ks);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading keyspec (%d)", rv);
@@ -1636,6 +1639,7 @@ int AH_Medium__ReadKeySpecs(AH_MEDIUM *m) {
   }
   else {
     ks=0;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading keyspec for remote sign key");
     rv=AH_Medium__ReadKeySpec(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki), &ks);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading keyspec (%d)", rv);
@@ -1656,6 +1660,7 @@ int AH_Medium__ReadKeySpecs(AH_MEDIUM *m) {
   }
   else {
     ks=0;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading keyspec for remote crypt key");
     rv=AH_Medium__ReadKeySpec(m, GWEN_CryptToken_KeyInfo_GetKeyId(ki), &ks);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading keyspec (%d)", rv);

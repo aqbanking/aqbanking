@@ -18,6 +18,7 @@
 #include "selectmode.h"
 
 #include <qradiobutton.h>
+#include <qtimer.h>
 #include <gwenhywfar/debug.h>
 
 
@@ -28,6 +29,7 @@ SelectMode::SelectMode(QWidget* parent, const char* name,
 :SelectModeUi(parent, name, modal, fl)
 ,_mode(ModeUnknown) {
 
+  QTimer::singleShot(0, this, SLOT(adjustSize()));
 }
 
 

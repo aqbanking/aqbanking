@@ -1607,6 +1607,12 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
 #endif
 
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "AqBanking v"
+           AQBANKING_VERSION_FULL_STRING
+           " (compiled at "
+           COMPILE_DATETIME
+           "): initialising");
 
   /* define sysconf paths */
   GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);

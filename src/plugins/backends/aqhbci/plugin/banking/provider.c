@@ -938,9 +938,11 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return rv;
   }
 
@@ -948,6 +950,8 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
     // TODO: show errors
     AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return AB_ERROR_GENERIC;
   }
   else {
@@ -955,6 +959,8 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       AH_Outbox_free(ob);
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
       return rv;
     }
   }
@@ -964,11 +970,14 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   assert(accs);
   if (AB_Account_List2_GetSize(accs)==0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No accounts found");
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return AB_ERROR_NO_DATA;
   }
 
   AH_Outbox_free(ob);
-
+  if (!nounmount)
+    AH_Medium_Unmount(m, 1);
   return 0;
 }
 
@@ -1010,9 +1019,11 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return rv;
   }
 
@@ -1020,6 +1031,8 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
     // TODO: show errors
     AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return AB_ERROR_GENERIC;
   }
   else {
@@ -1027,6 +1040,8 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       AH_Outbox_free(ob);
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
       return rv;
     }
   }
@@ -1035,6 +1050,8 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   if (!s) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id");
     AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return AB_ERROR_NO_DATA;
   }
 
@@ -1042,12 +1059,17 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   if (rv) {
     DBG_ERROR(0, "Could not select user");
     AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
     return rv;
   }
 
   AH_User_SetSystemId(u, s);
 
   AH_Outbox_free(ob);
+
+  if (!nounmount)
+    AH_Medium_Unmount(m, 1);
 
   return 0;
 }
@@ -1229,7 +1251,7 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_AddJob(ob, job);
 
   /* execute queue */
-  rv=AH_Outbox_Execute(ob, ctx, 0, nounmount);
+  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
   if (rv) {
     AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
                            I18N("Could not execute outbox."));

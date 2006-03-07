@@ -198,7 +198,8 @@ to activate the AqHBCI backend of AqBanking.
      "X" is the index number of the medium in the list, this number is needed
      as argument to "-m" in the next step.
 
- 4) aqhbci-tool adduser -m X [-s SERVER-ADDRESS]
+ 4) aqhbci-tool adduser -m X [-s SERVER-ADDRESS] [-u USER_ID]
+     [-c CUSTOMER_ID] [-b BANK_CODE]
      "X" is now the medium index number as retrieved via the command 
      "listmedia" from the previous step.
 

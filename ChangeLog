@@ -2,6 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released AqBanking - 1.9.8beta (2006-03-07)
+===========================================================================
+
+
+2006/03/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs in AqHBCI concerning import of users (importing keyfiles
+  now works again as intended)
+
+
 2006/03/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - make single transfers/debit notes the default. Otherwise some people think

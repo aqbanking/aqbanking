@@ -1,5 +1,16 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.8beta (2006-03-07)
+===========================================================================
+
+This release fixes some bugs concerning importing/creating HBCI users and
+problems with the YellowNet backend. The build system and the API have been 
+cleaned up (including documentation). An update is recommended.
+Depending applications need to be recompiled due to changes in the API.
+This version is source-compatible with the previous release.
+
+
+===========================================================================
                Released AqBanking - 1.9.7beta (2006-02-06)
 ===========================================================================
 
