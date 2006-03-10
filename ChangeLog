@@ -2,10 +2,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006-03-10   Christian Stimming <stimming@tuhh.de>
+
+	* bindings/python/_basetypes.py: Add library names for Mac OSX as
+	pointed out by Roman Dilken.
+
 ===========================================================================
 MARK: released AqBanking - 1.9.8beta (2006-03-07)
 ===========================================================================
-
 
 2006/03/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

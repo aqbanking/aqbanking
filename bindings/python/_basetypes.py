@@ -11,6 +11,9 @@ if sys.modules['ctypes'].__version__ < '0.9.5':
 if os.name == 'nt':
     aqb = cdll.aqbanking32_14
     gwen = cdll.gwenhywfar32_38
+elif os.name == 'mac':
+    aqb = cdll.aqbanking
+    gwen = cdll.gwenhywfar
 else:
     aqb = cdll['libaqbanking.so.14']
     gwen = cdll['libgwenhywfar.so.38']
