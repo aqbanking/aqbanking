@@ -15,6 +15,7 @@
 #define AQBANKING_VALUE_H
 
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/buffer.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
@@ -48,10 +49,26 @@ AB_VALUE *AB_Value_new(double value, const char *currency);
 AQBANKING_API 
 AB_VALUE *AB_Value_dup(const AB_VALUE *v);
 
-/** Create a value from the given string. FIXME: describe string
-    format here. */
+/** Create a value from the given string.
+ * The string is expected to contain a value in the following format:
+ * a.b:c (a=value before the comma, b=value after comma, c=optional
+ * currency).
+ * Examples:
+ * <ul>
+ *  <li>-124,45</li>
+ *  <li>-124,45:EUR</li>
+ *  <li>124,45:EUR</li>
+ *  <li>+124,45:EUR</li>
+ * </ul>
+ */
 AQBANKING_API 
 AB_VALUE *AB_Value_fromString(const char *s);
+
+/** Stores the given value in the given buffer in a format that is recognized
+ * by @ref AB_Value_fromString.
+ */
+AQBANKING_API 
+int AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf);
 
 /** Create a value from the given GWEN_DB. */
 AQBANKING_API 

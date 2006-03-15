@@ -180,6 +180,9 @@ Suisse "Post Finance" credit institute.
 This bank required me to sign a nondisclosure agreement so the module is
 available binary-only.
 
+To use YellowNet with AqBanking you must tell your bank to provide you with
+SWIFT files for download instead of XML.
+
 
 4.4. DTAUS
 ----------

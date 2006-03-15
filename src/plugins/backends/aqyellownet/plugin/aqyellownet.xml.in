@@ -1,9 +1,9 @@
 <plugin name="aqyellownet" type="provider" >
   <version>@AQYELLOWNET_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Suisse YellowNet</short>
+  <short>Swiss YellowNet</short>
   <descr>
-    This backend provides support for Suisse YellowNet.
+    This backend provides support for Swiss YellowNet.
   </descr>
 </plugin>
 

@@ -2,10 +2,22 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+2006/03/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Value_toString()
+
+
+2006/03/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some typos in YellowNet plugin (reported by Tomas Pospisek)
+- added a note about required file formats for YellowNet to README
+
+
 2006-03-10   Christian Stimming <stimming@tuhh.de>
 
 	* bindings/python/_basetypes.py: Add library names for Mac OSX as
 	pointed out by Roman Dilken.
+
 
 ===========================================================================
 MARK: released AqBanking - 1.9.8beta (2006-03-07)

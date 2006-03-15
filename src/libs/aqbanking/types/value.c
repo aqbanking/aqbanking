@@ -182,6 +182,25 @@ AB_VALUE *AB_Value_fromString(const char *s){
 
 
 
+int AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+  assert(v);
+  assert(buf);
+
+  if (!v->isValid)
+    return AB_ERROR_INVALID;
+  if (GWEN_Text_DoubleToBuffer(v->value, buf)) {
+    return -1;
+  }
+  if (v->currency && v->currency[0]) {
+    GWEN_Buffer_AppendString(buf, ":");
+    GWEN_Buffer_AppendString(buf, v->currency);
+  }
+
+  return 0;
+}
+
+
+
 void AB_Value_free(AB_VALUE *v){
   if (v) {
     free(v->currency);
