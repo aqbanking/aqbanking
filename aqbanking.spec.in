@@ -360,7 +360,11 @@ make install-strip \
 %{_bindir}/%{name}-config
 %{_includedir}/%{name}
 %{_libdir}/*.la
-%{_libdir}/*.so
+%{_libdir}/libaqbanking.so
+%{_libdir}/libaqdtaus.so
+%{_libdir}/libaqhbci.so
+%{_libdir}/libaqnone.so
+%{_libdir}/libcbanking.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_datadir}/aclocal
 ### The aqhbci files
@@ -391,6 +395,7 @@ make install-strip \
 %defattr(-,root,root)
 %{_bindir}/qb-help
 %{_libdir}/libqbanking.so.*
+%{_libdir}/libqbanking.so
 %{aq_plugindir}/debugger/aqhbci
 %{aq_plugindir}/wizards
 %{qb_cfgmoddir}/aqhbci*
@@ -401,17 +406,20 @@ make install-strip \
 %files gtk2
 %defattr(-,root,root)
 %{_libdir}/libg2banking.so.*
+%{_libdir}/libg2banking.so
 %{fronts_datadir}/g2banking
 
 %files kde3
 %defattr(-,root,root)
 %{_libdir}/libkbanking.so.*
+%{_libdir}/libkbanking.so
 
 %if %have_libofx
 %files ofx
 %defattr(-,root,root)
 %{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
+%{_libdir}/libaqofxconnect.so
 %{_includedir}/aqofxconnect
 %{aq_plugindir}/providers/aqofxconnect.*
 %{imex_plugindir}/ofx.*
@@ -427,6 +435,7 @@ make install-strip \
 %defattr(-,root,root)
 %{_bindir}/aqgeldkarte-config
 %{_libdir}/libaqgeldkarte.so.*
+%{_libdir}/libaqgeldkarte.so
 %{_includedir}/aqgeldkarte
 %{aq_plugindir}/providers/aqgeldkarte.*
 

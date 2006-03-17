@@ -2,7 +2,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
-2006-03-17   Christian Stimming <stimming@tuhh.de>
+2006-03-17  Christian Stimming  <stimming@tuhh.de>
+
+	* aqbanking.spec.in: Fix -devel package so that it contains
+	libfoo.so only for those libraries that are in the base
+	package. All other .so files are in the respective
+	subpackages. This means the current dependency problem of
+	libaqyellownet.so (which will be fixed in the next 1-2 days
+	anyway) doesn't harm the rest of the RPMs.
 
 	* src/plugins/backends/aqhbci/tools/aqhbci-tool/README: Improve
 	documentation; emphasize the difference and the German translation
