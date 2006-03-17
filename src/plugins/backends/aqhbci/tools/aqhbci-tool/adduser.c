@@ -112,8 +112,8 @@ int addUser(AB_BANKING *ab,
     1,                            /* maxnum */
     "u",                          /* short option */
     "user",                       /* long option */
-    "Specify the user id",        /* short description */
-    "Specify the user id"         /* long description */
+    "Specify the user id (Benutzerkennung)",        /* short description */
+    "Specify the user id (Benutzerkennung)"         /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -123,8 +123,8 @@ int addUser(AB_BANKING *ab,
     1,                            /* maxnum */
     "c",                          /* short option */
     "customer",                   /* long option */
-    "Specify the customer id",    /* short description */
-    "Specify the customer id"     /* long description */
+    "Specify the customer id (Kundennummer)",    /* short description */
+    "Specify the customer id (Kundennummer)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -279,7 +279,7 @@ int addUser(AB_BANKING *ab,
 
     luserId=userId?userId:GWEN_Buffer_GetStart(bufUserId);
     if (!luserId || !*luserId) {
-      DBG_ERROR(0, "No user id stored and none given");
+      DBG_ERROR(0, "No user id (Benutzerkennung) stored and none given");
       GWEN_Buffer_free(bufServer);
       GWEN_Buffer_free(bufUserId);
       GWEN_Buffer_free(bufBankId);

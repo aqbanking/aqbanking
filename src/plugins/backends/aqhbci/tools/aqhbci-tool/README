@@ -18,6 +18,16 @@ manage HBCI users/customers/accounts.
 1. Command Overview
 ===================
 
+To see a list of implemented commands, run "aqhbci-tool --help". 
+To see a list of available options for a particular command
+"COMMAND", run "aqhbci-tool COMMAND --help".
+
+Two common options need to be distinguished carefully from each
+other: "-c CUSTOMER_ID" refers to the German "Kunden-ID" or
+"Kundennummer". "-u USER_ID" refers to the German
+"Benutzerkennung". If your bank has specified both to you, you
+need to check carefully not to confuse one with the other.
+
 The following commands are implemented:
 
 

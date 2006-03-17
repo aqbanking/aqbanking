@@ -61,8 +61,8 @@ int iniLetter(AB_BANKING *ab,
     1,                            /* maxnum */
     "c",                          /* short option */
     "customer",                   /* long option */
-    "Specify the customer id",    /* short description */
-    "Specify the customer id"     /* long description */
+    "Specify the customer id (Kundennummer)",    /* short description */
+    "Specify the customer id (Kundennummer)"     /* long description */
   },
   {
     0, /* flags */

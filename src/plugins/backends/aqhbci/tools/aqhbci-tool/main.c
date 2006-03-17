@@ -54,8 +54,8 @@ int main(int argc, char **argv) {
     0,                            /* maxnum */
     "h",                          /* short option */
     "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
+    "Show this help screen. For help on commands, run aqhbci-tool <COMMAND> --help.",      /* short description */
+    "Show this help screen. For help on commands, run aqhbci-tool <COMMAND> --help."       /* long description */
   }
   };
 
