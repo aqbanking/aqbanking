@@ -2,6 +2,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE=0 before next release     !
   ------------------------------------------------------------------------
 
+
+2006/03/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- updated binary libaqyellownet.so to require the currently built version
+  of AqBanking
+
+
 2006-03-17  Christian Stimming  <stimming@tuhh.de>
 
 	* aqbanking.spec.in: Fix -devel package so that it contains
@@ -14,6 +21,7 @@
 	* src/plugins/backends/aqhbci/tools/aqhbci-tool/README: Improve
 	documentation; emphasize the difference and the German translation
 	of customer id (Kundennummer) and user id (Benutzerkennung).
+
 
 2006/03/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -35,6 +43,7 @@
 ===========================================================================
 MARK: released AqBanking - 1.9.8beta (2006-03-07)
 ===========================================================================
+
 
 2006/03/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
