@@ -3,6 +3,13 @@
   ------------------------------------------------------------------------
 
 
+2006/03/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqYellowNet
+  - no longer store data we write when using GWEN_NetLayerLog
+  - check for file name extension and only untar files which are tar'ed
+
+
 2006/03/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - updated binary libaqyellownet.so to require the currently built version
