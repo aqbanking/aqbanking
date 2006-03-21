@@ -3,6 +3,9 @@
 -------------------------------------------------
 - AqHBCI: fixed a bug which prevented aqhbci-tool from creating PIN/TAN
   media
+- SWIFT-Importer: This plugin is now able to read complete SWIFT documents 
+  (containing block specifiers etc). So we can now import YellowNet MT940
+  documents directly into QBankManager and other applications
 
 
 ===========================================================================

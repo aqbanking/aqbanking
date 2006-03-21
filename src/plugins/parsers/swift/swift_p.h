@@ -44,6 +44,11 @@ int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
                        char *buffer,
                        unsigned int s);
 
+int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
+                            AHB_SWIFT_TAG_LIST *tl,
+                            unsigned int maxTags);
+
+
 int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
                            AHB_SWIFT_TAG_LIST *tl,
                            unsigned int maxTags);
