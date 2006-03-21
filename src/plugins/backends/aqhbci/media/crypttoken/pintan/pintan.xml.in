@@ -25,7 +25,6 @@
 
   <crypttokens>
     <crypttoken typeName="pintan">
-  
       <flags>
         <flag>manages_signseq</flag>
         <flag>predef_context_only</flag>
@@ -34,53 +33,66 @@
       <signinfos>
         <signinfo>
           <id>1</id>
-          <hashalgo>none</hashalgo>
-          <paddalgo>none</paddalgo>
+          <hashalgo>any</hashalgo>
+          <paddalgo>any</paddalgo>
         </signinfo>
       </signinfos>
       
       <cryptinfos>
         <cryptinfo>
           <id>1</id>
-          <cryptalgo>none</cryptalgo>
-          <paddalgo>none</paddalgo>
+          <cryptalgo>any</cryptalgo>
+          <paddalgo>any</paddalgo>
         </cryptinfo>
       </cryptinfos>
+
+      <authinfos>
+        <authinfo>
+          <id>1</id>
+          <hashalgo>any</hashalgo>
+          <paddalgo>any</paddalgo>
+        </authinfo>
+      </authinfos>
       
       <keyinfos>
         <keyinfo>
           <keyId>1</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
+          <maxKeySize>2048</maxKeySize>
           <chunksize>96</chunksize>
-          <cryptalgo>none</cryptalgo>
+          <cryptalgo>rsa</cryptalgo>
           <keyDescription>Fake Key for all Operations</keyDescription>
           <keyFlags>
             <flag>canSign</flag>
             <flag>canVerify</flag>
             <flag>hasSignSeq</flag>
-            <flag>canEncrypt</flag>
-            <flag>canDecrypt</flag>
           </keyFlags>
         </keyinfo>
       </keyinfos>
   
       <contexts>
-        <!-- There only is one context, and it is the context for HBCI -->
+
         <context>
           <id>1</id>
-          <contextType>hbci</contextType>
+          <contextType>rsa</contextType>
           <description>Context for HBCI operations</description>
+          
           <signkeyinfo id="1" />
           <verifykeyinfo id="1" />
           <signinfo id="1" />
+  
           <encryptKeyInfo id="1" />
           <decryptKeyInfo id="1" />
           <cryptinfo id="1" />
+
+          <localAuthKeyInfo id="1" />
+          <remoteAuthKeyInfo id="1" />
+          <authinfo id="1" />
+          
         </context>
+
       </contexts>
-      
     </crypttoken>
   </crypttokens>
 
