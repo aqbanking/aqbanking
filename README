@@ -217,7 +217,7 @@ are not managed by any other online banking backend.
 
 AqBanking has several direct dependencies:
 
-- "Gwenhywfar" >= 1.16.0, available from
+- "Gwenhywfar" >= 2.1.0, available from
 http://gwenhywfar.sf.net/, is absolutely required
 
 - "LibOFX" >= 0.8.0 from http://sf.net/projects/libofx is required
