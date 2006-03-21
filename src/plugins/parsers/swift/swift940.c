@@ -58,6 +58,13 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
 
+  while(*p && *p==32)
+    p++;
+  if (*p==0) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 25 is empty");
+    return 0;
+  }
+
   p2=strchr(p, '/');
   if (p2) {
     char *s;
@@ -70,6 +77,10 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     free(s);
     p=p2+1;
   }
+
+  while(*p && *p==32)
+    p++;
+
   if (*p) {
     p2=p;
     while(*p2 && isdigit(*p2))
