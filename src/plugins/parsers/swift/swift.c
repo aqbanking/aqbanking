@@ -366,12 +366,12 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
         return -1;
       }
-      GWEN_Text_DumpString(swhead, 4, stderr, 2);
       if (swhead[2]!=':') {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
+        GWEN_Text_DumpString(swhead, 4, stderr, 2);
         return -1;
       }
-      DBG_ERROR(0, "Reading block %d", swhead[1]-'0');
+      DBG_DEBUG(0, "Reading block %d", swhead[1]-'0');
       if (swhead[1]=='4')
         break;
 
@@ -432,50 +432,52 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
       }
     }
 
-    for (;;) {
-      GWEN_ERRORCODE err;
-      char swhead[4];
-      unsigned int bsize;
-      int curls=0;
-
-      /* read block start ("{n:...") */
-      bsize=3;
-      err=GWEN_BufferedIO_ReadRawForced(bio, swhead, &bsize);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        return -1;
-      }
-      if (swhead[2]!=':') {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
-        return -1;
-      }
-
-      /* skip block */
+    if (!GWEN_BufferedIO_CheckEOF(bio)) {
       for (;;) {
-        c=GWEN_BufferedIO_ReadChar(bio);
-        if (c<0) {
-          if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN,
-                      "EOF met (%d)", c);
-            return -1;
-          }
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Error reading from BIO (%d)", c);
+        GWEN_ERRORCODE err;
+        char swhead[4];
+        unsigned int bsize;
+        int curls=0;
+  
+        /* read block start ("{n:...") */
+        bsize=3;
+        err=GWEN_BufferedIO_ReadRawForced(bio, swhead, &bsize);
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
           return -1;
         }
-        if (c=='{')
-          curls++;
-        else if (c=='}') {
-          if (curls==0)
-            break;
-          else
-            curls--;
+        if (swhead[2]!=':') {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
+          return -1;
         }
-      }
-
-      if (swhead[1]=='5')
-        break;
-    } /* for */
+  
+        /* skip block */
+        for (;;) {
+          c=GWEN_BufferedIO_ReadChar(bio);
+          if (c<0) {
+            if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
+              DBG_ERROR(AQBANKING_LOGDOMAIN,
+                        "EOF met (%d)", c);
+              return -1;
+            }
+            DBG_ERROR(AQBANKING_LOGDOMAIN,
+                      "Error reading from BIO (%d)", c);
+            return -1;
+          }
+          if (c=='{')
+            curls++;
+          else if (c=='}') {
+            if (curls==0)
+              break;
+            else
+              curls--;
+          }
+        }
+  
+        if (swhead[1]=='5')
+          break;
+      } /* for */
+    } /* if something follows block 4 */
   } /* if full SWIFT with blocks */
 
   return 0;
