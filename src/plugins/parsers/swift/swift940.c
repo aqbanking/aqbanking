@@ -253,6 +253,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   int neg;
   GWEN_TIME *ti;
   char curr3=0;
+  const char *currency;
 
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -374,9 +375,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     s[p2-p]=0;
   }
   AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
-  AHB_SWIFT__SetCharValue(data, flags,
-                          "value/currency",
-                          GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"));
+  currency=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
+  if (currency)
+    AHB_SWIFT__SetCharValue(data, flags,
+			    "value/currency", currency);
   free(s);
   bleft-=p2-p;
   p=p2;
@@ -578,19 +580,30 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   bleft-=6;
 
   /* currency (M) */
-  if (bleft<3) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing currency (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          "SWIFT: Missing currency");
-    return -1;
+  if (!isdigit(*p)) {
+    /* only read currency if this is not part of the value (like in some
+     * swiss MT940) */
+    if (bleft<3) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing currency (%s)", p);
+      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+			    "SWIFT: Missing currency");
+      return -1;
+    }
+    memmove(buffer, p, 3);
+    buffer[3]=0;
+    AHB_SWIFT__SetCharValue(data, flags, "value/currency", buffer);
+    p+=3;
+    bleft-=3;
   }
-  memmove(buffer, p, 3);
-  buffer[3]=0;
-  AHB_SWIFT__SetCharValue(data, flags, "value/currency", buffer);
-  p+=3;
-  bleft-=3;
 
   /* value (M) */
+  if (bleft<1) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing value (%s)", p);
+    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+			  "SWIFT: Missing value");
+    return -1;
+  }
+
   p2=p;
   while(*p2 && (isdigit(*p2) || *p2==',')) p2++;
   if (p2==p) {
@@ -613,6 +626,115 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   free(s);
   bleft-=p2-p;
   p=p2;
+
+  return 0;
+}
+
+
+
+int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
+                          GWEN_TYPE_UINT32 flags,
+                          GWEN_DB_NODE *data,
+                          GWEN_DB_NODE *cfg){
+  const char *p;
+  const char *p2;
+
+  p=AHB_SWIFT_Tag_GetData(tg);
+  assert(p);
+
+  while(*p) {
+    int code;
+
+    code=0;
+    /* read code */
+    if (strlen(p)>2) {
+      if (isdigit(p[0]) && isdigit(p[1])) {
+	/* starts with a two digit number */
+	code=(((p[0]-'0')*10) + (p[1]-'0'));
+	p+=2;
+      }
+    }
+
+    /* search for end of line */
+    p2=p;
+    while(*p2 && *p2!=10 && *p2!=13)
+      p2++;
+
+    if (code==0) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "No code in line");
+      p=p2;
+    }
+    else {
+      int len;
+
+      len=p2-p;
+      if (len<1 || (len==1 && *p=='/')) {
+	DBG_DEBUG(AQBANKING_LOGDOMAIN, "Empty field %02d", code);
+      }
+      else {
+	char *s;
+
+	s=(char*)malloc(len+1);
+	memmove(s, p, len);
+	s[len]=0;
+	DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got his field: %02d: %s", code, s);
+
+	switch(code) {
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+	  AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+	  break;
+
+	case 15: /* Auftraggeber1 */
+	case 16: /* Auftraggeber2 */
+	  AHB_SWIFT__SetCharValue(data, flags, "localName", s);
+	  break;
+
+	case 17: /* Buchungstext */
+	  AHB_SWIFT__SetCharValue(data, flags, "text", s);
+	  break;
+
+	case 18: /* Primanota */
+	  AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+	  break;
+
+	case 19: /* Uhrzeit der Buchung */
+	case 20: /* Anzahl der Sammlerposten */
+	case 33: /* BLZ Auftraggeber */
+	case 34: /* Konto Auftraggeber */
+	  break;
+
+	default: /* ignore all other fields (if any) */
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Unknown :NS: field \"%02d\" (%s) (%s)",
+		   code, s,
+		   AHB_SWIFT_Tag_GetData(tg));
+	  break;
+	}
+        free(s);
+      }
+      p=p2;
+    }
+
+    if (*p==10)
+      p++;
+    if (*p==13)
+      p++;
+    if (*p==10)
+      p++;
+  } /* while */
 
   return 0;
 }
@@ -654,6 +776,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
     }
     else if (strcasecmp(id, "60F")==0) { /* StartSaldo */
       GWEN_DB_NODE *dbSaldo;
+      const char *curr;
 
       /* start a new day */
       dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
@@ -668,6 +791,13 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
         GWEN_DB_Group_free(dbTemplate);
         return -1;
       }
+
+      curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
+      if (curr) {
+	AHB_SWIFT__SetCharValue(dbTemplate, flags,
+				"value/currency", curr);
+      }
+
     }
     else if (strcasecmp(id, "62F")==0) { /* EndSaldo */
       GWEN_DB_NODE *dbSaldo;
@@ -690,7 +820,8 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
     }
     else if (strcasecmp(id, "61")==0) {
       if (!dbDay) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Your bank does not send an opening saldo");
         dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
       }
 
@@ -706,7 +837,8 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
     }
     else if (strcasecmp(id, "86")==0) {
       if (!dbTransaction) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Bad sequence of tags (86 before 61), ignoring");
+	DBG_WARN(AQBANKING_LOGDOMAIN,
+		 "Bad sequence of tags (86 before 61), ignoring");
       }
       else {
         if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
@@ -714,6 +846,19 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
           GWEN_DB_Group_free(dbTemplate);
           return -1;
         }
+      }
+    }
+    else if (strcasecmp(id, "NS")==0) {
+      if (!dbTransaction) {
+	DBG_DEBUG(AQBANKING_LOGDOMAIN,
+		  "Ignoring NS tags outside transactions");
+      }
+      else {
+	if (AHB_SWIFT940_Parse_NS(tg, flags, dbTransaction, cfg)) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	  GWEN_DB_Group_free(dbTemplate);
+	  return -1;
+	}
       }
     }
 

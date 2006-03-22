@@ -8,6 +8,11 @@
     specifiers etc). So we can now import YellowNet MT940 documents directly 
     into QBankManager and other applications
   - Tag 25: blanks are now skipped
+  - added handling of non-SWIFT tags (":NS:", thanks to Flavio Rump for 
+    providing a test file)
+  - Tag 62x: Made more robust (many banks store the currency here even if
+    they should not)
+  - correct handling of currency (uses the currency reported via :60F:)
 
 
 ===========================================================================
