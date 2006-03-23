@@ -1,0 +1,331 @@
+#!/usr/bin/perl -w
+# fixuifiles processes .ui files and removes some insanity:
+# * Too high minimum Qt version (see $minversion_* in the top of the script)
+# * Hardcoded untranslatable Alt+Letter accels (auto-added by Qt Designer)
+# * Captions that are equal to classname (auto-added by Qt Designer)
+
+# This script is licensed under the GPL version 2.
+# (c) 2004 David Faure <faure@kde.org>
+# Based on fixkdeincludes, (c) 2001-2003 Dirk Mueller <mueller@kde.org>
+
+use strict;
+use File::Basename;
+use Cwd;
+
+# Fix the version number in .ui files if it's bigger than this:
+my $default_minversion_maj = 3;
+my $default_minversion_min = 3;
+
+# Known words which are ok as captions
+my %knowncaptions = (
+  'Settings' => '',
+  'Statistics' => '',
+  'General' => '',
+  'Tracks' => '',
+  'Constants' => '',
+  'Preferences' => '',
+  'Encryption' => ''
+);
+
+# declaration of useful subroutines
+sub process_ui_file($);
+sub find_ui_files($);
+sub read_required_version($);
+
+# some global variables
+my $verbose = 0; # turns on debugging
+my $omit_Qt_check = 0; # turns off Qt version checking
+my @explicitfiles = (); # filled in if passing files on the command line
+my $minversion_maj = $default_minversion_maj;
+my $minversion_min = $default_minversion_min;
+
+while (defined ($ARGV[0]))
+{
+  $_ = shift;
+  if (/^--help$|^-h$/)  {
+    print "Usage: fixuifiles [OPTIONS] files...\n";
+    print "Options are:\n";
+    print "\t-v, --verbose\tBe verbose\n";
+    print "\t--omitqtcheck\tDoes not check for Qt minimum version\n";
+    exit 0;
+  }
+  elsif (/^--verbose$|^-v$/) {
+    $verbose = 1;
+  }elsif (/^--omitqtcheck/) {
+    $omit_Qt_check = 1;
+  }
+  elsif (!/^-/) {
+    push @explicitfiles, $_;
+  }
+}
+
+# Find .ui files in the given dir
+sub find_ui_files($)
+{
+  my ( $dir ) = @_;
+
+  opendir (DIR, "$dir") || die "Couldn't read '$dir'\n";
+  my @files = grep { /^.*\.ui$/ } readdir(DIR);
+  closedir(DIR);
+
+  #print "found files: [ " . join(' ', @files) . " ] in $dir\n" if ($verbose);
+
+  # prefix them with $dir
+  my @retfiles = ();
+  foreach my $file(@files) {
+    push @retfiles, "$dir/$file";
+  }
+
+  return @retfiles;
+}
+
+# Ensure the version at the top of the file is not too high
+sub fix_version($)
+{
+  my $srcfile = shift @_;
+  open(SRC, "< $srcfile") || die "fix_version: couldn't open '$srcfile'\n";
+  my @contents = <SRC>;
+  my @fixedcontents = ();
+  close(SRC);
+  my $needfix = 0;
+  my $foundversion = 0;
+  foreach my $line (@contents) {
+      if (!$foundversion && $line =~ m/version=\"([0-9]+)\.([0-9]+)(\.[0-9]+)?\"/) {
+	  my $version_maj = $1;
+	  my $version_min = $2;
+	  if ( $version_maj > $minversion_maj ||
+	       ( $version_maj == $minversion_maj && $version_min > $minversion_min ) ) {
+	      $line =~ s/version=\"[0-9]+\.[0-9]+\"/version=\"$minversion_maj.$minversion_min\"/o;
+	      $needfix = 1;
+	      print "$srcfile: version was $version_maj.$version_min, set to $minversion_maj.$minversion_min\n";
+	  }
+	  $foundversion = 1;
+      }
+      push @fixedcontents, $line;
+  }
+  if (!$foundversion) {
+      # TODO improve so that the script adds the necessary line
+      print "$srcfile has no UI version, please fix it\n";
+  }
+  if ($needfix) {
+      open(SRC, "> $srcfile") || die "fix_version: couldn't open '$srcfile' for writing\n";
+      print SRC @fixedcontents;
+      close(SRC);
+  }
+}
+
+# Ensure no auto-added Alt+letter accel exists - those are untranslatable
+sub fix_accels($)
+{
+  my $srcfile = shift @_;
+  open(SRC, "< $srcfile") || die "fix_accels: couldn't open '$srcfile'\n";
+  my @contents = <SRC>;
+  close(SRC);
+  return if ( !grep( /<string>Alt\+[A-Z]<\/string>/, @contents ));
+  my @fixedcontents = ();
+
+  my $firstline;
+  my $accelsremoved = 0;
+  my $inside_accel = 0;
+  # inside_accel is 0 before <property>
+  # 1 after <property> and before <string>
+  # 2 after <string> if alt+letter, and before </property>
+  foreach my $line (@contents) {
+      if ( $inside_accel == 1 ) {
+	  if ( $line =~ m/<string>(Alt\+[A-Z])<\/string>/ ) {
+	      print "$srcfile: accel $1 removed\n" if ($verbose);
+	      $inside_accel = 2;
+	      $accelsremoved++;
+	  } else { # Not alt+letter, keep accel
+	      push @fixedcontents, $firstline;
+	      $inside_accel = 0;
+	  }
+      }
+      if ($line =~ m/property name=\"accel\"/) {
+	  $inside_accel = 1;
+	  $firstline = $line;
+      }
+      if ($inside_accel == 0) {
+	  push @fixedcontents, $line;
+      }
+      $inside_accel = 0 if ($inside_accel && $line =~ m/<\/property>/);
+  }
+  if ($accelsremoved) {
+      print "$srcfile: $accelsremoved accels removed\n";
+      open(SRC, "> $srcfile") || die "fix_accels: couldn't open '$srcfile' for writing\n";
+      print SRC @fixedcontents;
+      close(SRC);
+  }
+}
+
+# Ensure no auto-added includehints exist
+sub fix_includehints($)
+{
+  my $srcfile = shift @_;
+  open(SRC, "< $srcfile") || die "fix_includehints: couldn't open '$srcfile'\n";
+  my @contents = <SRC>;
+  close(SRC);
+  return if ( !grep( /<includehint>.*<\/includehint>/, @contents ));
+  my @fixedcontents = ();
+
+  my $includesremoved = 0;
+  my $inside_include = 0;
+  # inside_include is 0 before <includehints>
+  # 1 after <includehints>
+  foreach my $line (@contents) {
+      if ( $inside_include == 1 ) {
+          if ( $line =~ m/<includehint>(.*)<\/includehint>/ ) {
+              print "$srcfile: includehint $1 removed\n" if ($verbose);
+              $includesremoved++;
+          }
+      }
+      if ($line =~ m/<includehints>/) {
+          $inside_include = 1;
+      }
+      if ($inside_include == 0) {
+          push @fixedcontents, $line;
+      }
+      $inside_include = 0 if ($inside_include && $line =~ m/<\/includehints>/);
+  }
+  if ($includesremoved) {
+      print "$srcfile: $includesremoved includehints removed\n";
+      open(SRC, "> $srcfile") || die "fix_includehints: couldn't open '$srcfile' for writing\n";
+      print SRC @fixedcontents;
+      close(SRC);
+  }
+}
+
+# Ensure no auto-added caption exists - it's pretty stupid to have to
+# translate Form1 or MyClassName
+sub fix_captions($)
+{
+  my $srcfile = shift @_;
+  open(SRC, "< $srcfile") || die "fix_captions: couldn't open '$srcfile'\n";
+  my @contents = <SRC>;
+  close(SRC);
+  my @fixedcontents = ();
+
+  my $firstline;
+  my $class = "";
+  my $captionsremoved = 0;
+  my $inside_caption = 0;
+  # inside_caption is 0 before <property>
+  # 1 after <property> and before <string>
+  # 2 after <string> if caption should be removed, and before </property>
+  foreach my $line (@contents) {
+      $class = $1 if ($line =~ m/<class>(.*)<\/class>/);
+      if ( $inside_caption == 1 ) {
+	  $line =~ m/<string>(.*)<\/string>/ || die "Malformed XML (no string under caption)";
+	  my $caption = $1;
+	  print "$srcfile: caption='$caption' class='$class'\n" if ($verbose);
+	  if ( ( $caption eq $class && !defined $knowncaptions{$caption} ) ||
+		 ($caption =~ m/Form[0-9]/) ) {
+	      if ( $caption =~ m/^[A-Z][a-z]*$/ ) {
+		  print "$srcfile: removing caption '$caption' (warning! could be real caption)\n";
+	      } else {
+		  print "$srcfile: removing caption '$caption'\n";
+	      }
+	      $inside_caption = 2;
+	      $captionsremoved++;
+	  } else {                # Real caption, keep it
+	      print "$srcfile: keeping caption '$caption'\n" if ($verbose);
+	      push @fixedcontents, $firstline;
+	      $inside_caption = 0;
+	  }
+      }
+      if ($line =~ m/property name=\"caption\"/) {
+	  $inside_caption = 1;
+	  $firstline = $line;
+      }
+      if ($inside_caption == 0) {
+	  push @fixedcontents, $line;
+      }
+      $inside_caption = 0 if ($inside_caption && $line =~ m/<\/property>/);
+  }
+  if ($captionsremoved) {
+      open(SRC, "> $srcfile") || die "fix_captions: couldn't open '$srcfile' for writing\n";
+      print SRC @fixedcontents;
+      close(SRC);
+  }
+}
+
+# Find a .qt_minversion in $dir or any parent directory.
+sub read_required_version($)
+{
+  my $dir = Cwd::abs_path( shift @_ );
+
+  $minversion_maj = $default_minversion_maj;
+  $minversion_min = $default_minversion_min;
+  while ( length($dir) > 1 ) {
+      my $versfile = "$dir/.qt_minversion";
+      my $version;
+      if ( open (VERSFILE, "< $versfile") ) {
+	  while (<VERSFILE>) {
+	      $version = $_ if (!/^#/);
+	  }
+	  close(VERSFILE);
+      } else {
+	  $versfile = "$dir/configure.in.in";
+	  if ( open (VERSFILE, "< $versfile") ) {
+	      while (<VERSFILE>) {
+		  $version = $1 if m/^#MIN_CONFIG\(([0-9]+.[0-9]+)\)/;
+	      }
+	      close(VERSFILE);
+	  }
+      }
+      if (defined $version && $version =~ m/([0-9]+)\.([0-9]+)/) {
+	  $minversion_maj = $1;
+	  $minversion_min = $2;
+	  print "Found min version $1.$2 in $versfile\n" if ($verbose);
+	  return;
+      }
+      $dir = dirname($dir);
+  }
+}
+
+# Process one .ui file
+sub process_ui_file($)
+{
+  my $file = shift @_;
+  &read_required_version( dirname($file) );
+
+  print "Checking: $file\n" if($verbose);
+  &fix_version($file) if(!$omit_Qt_check);
+  &fix_accels($file);
+  &fix_captions($file);
+  &fix_includehints($file);
+}
+
+#############################################################################
+# here is the main logic
+#
+
+# process files from the command line, if any
+if ( $#explicitfiles >= 0 ) {
+  foreach my $file( @explicitfiles ) {
+    &process_ui_file( $file );
+  }
+  exit 0;
+}
+
+# first generate a list of subdirectories
+my @dirlist = ();
+push @dirlist, ".";
+foreach my $dir ( @dirlist ) {
+ opendir (DIR, "$dir") || warn "Couldn't read '$dir'";
+ my $subdir = "";
+ while( $subdir = readdir(DIR)) {
+   next if ($subdir =~ /^\./);
+   next if !( -d "$dir/$subdir");
+   push @dirlist, "$dir/$subdir";
+ }
+ closedir(DIR);
+}
+
+# now iterate over all subdirs
+foreach my $dir(@dirlist) {
+  my @uifile = find_ui_files($dir);
+  foreach my $file(@uifile) {
+    &process_ui_file($file);
+  }
+}

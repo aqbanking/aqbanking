@@ -1,3 +1,7 @@
+2006-03-23  Christian Stimming <stimming@tuhh.de>
+
+	* admin/fixuifiles: Copy script from kmymoney that will clean up
+	UI files.
 
 2006/03/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
