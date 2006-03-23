@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.10beta (2006-03-23)
+===========================================================================
+
+This release fixes a bug in AqHBCI which prevented PINTAN media from being
+created. It also now includes an improved version of the SWIFT parser which
+reads more kinds of SWIFT documents (especially those provided by some
+Swiss banks).
+
+
+===========================================================================
                Released AqBanking - 1.9.9beta (2006-03-20)
 ===========================================================================
 

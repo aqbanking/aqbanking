@@ -1,13 +1,25 @@
+
+===========================================================================
+MARK: released AqBanking - 1.9.10beta (2006-03-23)
+===========================================================================
+
+
+2006/03/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added admin/fixuifiles to EXTRA_DIST
+
+
 2006-03-23  Christian Stimming <stimming@tuhh.de>
 
 	* admin/fixuifiles: Copy script from kmymoney that will clean up
 	UI files.
 
+
 2006/03/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI: fixed a bug which prevented aqhbci-tool from creating PIN/TAN
   media
-- SWIFT-Importer: 
+- SWIFT parser: 
   - this plugin is now able to read complete SWIFT documents (containing block
     specifiers etc). So we can now import YellowNet MT940 documents directly 
     into QBankManager and other applications
