@@ -315,20 +315,24 @@ int addUser(AB_BANKING *ab,
     assert(ctx);
     ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
     assert(ci);
-    ca=GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci);
-    if (ca==GWEN_CryptToken_CryptAlgo_RSA)
-      cm=AH_CryptMode_Rdh;
-    else if (ca==GWEN_CryptToken_CryptAlgo_DES_3K)
-      cm=AH_CryptMode_Ddv;
-    else if (ca==GWEN_CryptToken_CryptAlgo_None)
+    if (strcasecmp(AH_Medium_GetMediumTypeName(medium), "pintan")==0)
       cm=AH_CryptMode_Pintan;
     else {
-      DBG_ERROR(0, "Invalid crypt algo (%s), unable to detect crypt mode",
-                GWEN_CryptToken_CryptAlgo_toString(ca));
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
-      return 3;
+      ca=GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci);
+      if (ca==GWEN_CryptToken_CryptAlgo_RSA)
+        cm=AH_CryptMode_Rdh;
+      else if (ca==GWEN_CryptToken_CryptAlgo_DES_3K)
+        cm=AH_CryptMode_Ddv;
+      else if (ca==GWEN_CryptToken_CryptAlgo_None)
+        cm=AH_CryptMode_Pintan;
+      else {
+        DBG_ERROR(0, "Invalid crypt algo (%s), unable to detect crypt mode",
+                  GWEN_CryptToken_CryptAlgo_toString(ca));
+        GWEN_Buffer_free(bufServer);
+        GWEN_Buffer_free(bufUserId);
+        GWEN_Buffer_free(bufBankId);
+        return 3;
+      }
     }
 
     user=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);

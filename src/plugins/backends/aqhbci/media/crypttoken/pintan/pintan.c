@@ -96,7 +96,7 @@ GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_new(GWEN_PLUGIN_MANAGER *pm,
   AH_CT_PINTAN *lct;
   GWEN_CRYPTTOKEN *ct;
 
-  DBG_ERROR(0, "Creating crypttoken (PinTan)");
+  DBG_DEBUG(0, "Creating crypttoken (PinTan)");
 
   /* create crypt token */
   ct=GWEN_CryptToken_new(pm,

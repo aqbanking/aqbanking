@@ -3,6 +3,16 @@
 -------------------------------------------------
 - fixed a bug in QBanking importer: Was segfaulting hen clicking "back" on
   on a certain page (reported by Adreas Pakulat)
+- SWIFT parser:
+  - fixed a bug (was using "text" instead of "transactionText" when storing
+    the transaction text ("Buchungstext"). This change will however fool
+    QBankManager when retrieving transactions because incominmg transactions
+    will now have this field filled, so QBankManager does not detect them
+    as duplicates. 
+    This will only occurr the first time QBankManager retrieves transactions
+    per account.
+- AqHBCI:
+  - fixed a bug in AqHBCI-Tool (was using a false cryptmode for pintan media)
 
 
 ===========================================================================

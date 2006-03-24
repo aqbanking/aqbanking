@@ -180,7 +180,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       if (*s) {
         switch(id) {
         case 0: /* Buchungstext */
-          AHB_SWIFT__SetCharValue(data, flags, "text", s);
+          AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
           break;
         case 10: /* Primanota */
           AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
@@ -703,7 +703,7 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
 	  break;
 
 	case 17: /* Buchungstext */
-	  AHB_SWIFT__SetCharValue(data, flags, "text", s);
+	  AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
 	  break;
 
 	case 18: /* Primanota */
