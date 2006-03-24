@@ -146,7 +146,7 @@ void AH_Medium_SubFlags(AH_MEDIUM *m, GWEN_TYPE_UINT32 fl){
 
 
 
-void AH_Medium__preparePatternCtx(GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+void AH_Medium__preparePatternCtxRdh(GWEN_CRYPTTOKEN_CONTEXT *ctx) {
   GWEN_CRYPTTOKEN_SIGNINFO *si;
   GWEN_CRYPTTOKEN_CRYPTINFO *ci;
   GWEN_CRYPTTOKEN_KEYINFO *ki;
@@ -182,27 +182,88 @@ void AH_Medium__preparePatternCtx(GWEN_CRYPTTOKEN_CONTEXT *ctx) {
 
 
 
+void AH_Medium__preparePatternCtxDdv(GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  GWEN_CRYPTTOKEN_SIGNINFO *si;
+  GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+  GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+  /* prepare sign info pattern */
+  si=GWEN_CryptToken_SignInfo_new();
+  GWEN_CryptToken_SignInfo_SetHashAlgo(si, GWEN_CryptToken_HashAlgo_RMD160);
+  GWEN_CryptToken_SignInfo_SetPaddAlgo(si, GWEN_CryptToken_PaddAlgo_None);
+  GWEN_CryptToken_Context_SetSignInfo(ctx, si);
+  GWEN_CryptToken_SignInfo_free(si);
+
+  /* prepare crypt info pattern */
+  ci=GWEN_CryptToken_CryptInfo_new();
+  GWEN_CryptToken_CryptInfo_SetCryptAlgo(ci, GWEN_CryptToken_CryptAlgo_DES_3K);
+  GWEN_CryptToken_CryptInfo_SetPaddAlgo(ci, GWEN_CryptToken_PaddAlgo_None);
+  GWEN_CryptToken_Context_SetCryptInfo(ctx, ci);
+  GWEN_CryptToken_CryptInfo_free(ci);
+
+  /* prepare key infos */
+  ki=GWEN_CryptToken_KeyInfo_new();
+  GWEN_CryptToken_KeyInfo_SetKeySize(ki, 16);
+  GWEN_CryptToken_KeyInfo_SetChunkSize(ki, 8);
+  GWEN_CryptToken_KeyInfo_SetCryptAlgo(ki, GWEN_CryptToken_CryptAlgo_DES_3K);
+
+  GWEN_CryptToken_Context_SetSignKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetVerifyKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetEncryptKeyInfo(ctx, ki);
+  GWEN_CryptToken_Context_SetDecryptKeyInfo(ctx, ki);
+  GWEN_CryptToken_KeyInfo_free(ki);
+}
+
+
+
+
+int AH_Medium__findContexts(AH_MEDIUM *m,
+                            GWEN_CRYPTTOKEN *ct,
+                            GWEN_CRYPTTOKEN_CONTEXT_LIST **pList){
+  GWEN_CRYPTTOKEN_CONTEXT_LIST *cl;
+  GWEN_CRYPTTOKEN_CONTEXT *patternCtx;
+  int rv;
+
+  cl=GWEN_CryptToken_Context_List_new();
+  patternCtx=GWEN_CryptToken_Context_new();
+  AH_Medium__preparePatternCtxRdh(patternCtx);
+
+  rv=GWEN_CryptToken_GetMatchingContexts(ct, patternCtx, cl);
+  if (rv==GWEN_ERROR_NO_DATA) {
+    GWEN_CryptToken_Context_free(patternCtx);
+    GWEN_CryptToken_Context_List_free(cl);
+
+    cl=GWEN_CryptToken_Context_List_new();
+    patternCtx=GWEN_CryptToken_Context_new();
+    AH_Medium__preparePatternCtxDdv(patternCtx);
+    rv=GWEN_CryptToken_GetMatchingContexts(ct, patternCtx, cl);
+  }
+
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching context found (%d)", rv);
+    GWEN_CryptToken_Context_free(patternCtx);
+    GWEN_CryptToken_Context_List_free(cl);
+    return AB_ERROR_NOT_FOUND;
+  }
+  GWEN_CryptToken_Context_free(patternCtx);
+
+  *pList=cl;
+  return 0;
+}
 
 
 
 int AH_Medium__ReadContextsFromToken(AH_MEDIUM *m, GWEN_CRYPTTOKEN *ct){
   GWEN_CRYPTTOKEN_CONTEXT_LIST *cl;
-  GWEN_CRYPTTOKEN_CONTEXT *patternCtx;
   GWEN_CRYPTTOKEN_USER_LIST *ul;
   int rv;
 
   assert(m);
 
-  patternCtx=GWEN_CryptToken_Context_new();
-  AH_Medium__preparePatternCtx(patternCtx);
-
-  cl=GWEN_CryptToken_Context_List_new();
-
-  rv=GWEN_CryptToken_GetMatchingContexts(ct, patternCtx, cl);
+  rv=AH_Medium__findContexts(m, ct, &cl);
   if (rv) {
-    GWEN_CryptToken_Context_free(patternCtx);
-    GWEN_CryptToken_Context_List_free(cl);
-    return AB_ERROR_NOT_FOUND;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   /* first try to create by users */

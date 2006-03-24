@@ -79,7 +79,7 @@ bool UserWizard::_handleModePinTan() {
 
   wInfo.setMedium(m);
   wInfo.addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
-
+  wInfo.setCryptMode(AH_CryptMode_Pintan);
 
   /* setup user */
   w=new WizardPinTanNew(_app, &wInfo, _parent, "WizardPinTanNew", TRUE);

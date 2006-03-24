@@ -332,7 +332,8 @@ bool EditCtUser::apply(){
   }
 
   /* get crypt mode */
-  cm=_getCryptMode(m, _wInfo->getContext());
+  cm=_wInfo->getCryptMode();
+  //_getCryptMode(m, _wInfo->getContext());
   if (cm==AH_CryptMode_Unknown) {
     DBG_ERROR(0, "Unknown crypt mode/mount error");
     return false;

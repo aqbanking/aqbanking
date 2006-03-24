@@ -56,7 +56,12 @@ static int AH_Medium__ReadKeySpecs(AH_MEDIUM *m);
 static int AH_Medium__SetKeyStatus(AH_MEDIUM *m, int kid,
                                    GWEN_TYPE_UINT32 kstatus);
 
-static void AH_Medium__preparePatternCtx(GWEN_CRYPTTOKEN_CONTEXT *ctx);
+static void AH_Medium__preparePatternCtxDdv(GWEN_CRYPTTOKEN_CONTEXT *ctx);
+static void AH_Medium__preparePatternCtxRdh(GWEN_CRYPTTOKEN_CONTEXT *ctx);
+
+static int AH_Medium__findContexts(AH_MEDIUM *m,
+                                   GWEN_CRYPTTOKEN *ct,
+                                   GWEN_CRYPTTOKEN_CONTEXT_LIST **pList);
 
 
 #endif /* AH_MEDIUM_P_H */

@@ -13,6 +13,9 @@
     per account.
 - AqHBCI:
   - fixed a bug in AqHBCI-Tool (was using a false cryptmode for pintan media)
+  - fixed the same bug in HBCI user wizard
+  - fixed some more bugs related to user creation (sigh)
+  -> tested: ddv, rdh, pintan (all three work now)
 
 
 ===========================================================================
