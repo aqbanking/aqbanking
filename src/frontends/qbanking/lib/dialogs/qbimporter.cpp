@@ -385,6 +385,7 @@ bool QBImporter::doSelectSourcePage(QWidget *p){
 
 
 bool QBImporter::undoSelectSourcePage(QWidget *p){
+  _importer=0;
   return true;
 }
 
@@ -480,7 +481,7 @@ bool QBImporter::undoSelectImporterPage(QWidget *p){
   GWEN_DB_Group_free(_profiles);
   _profiles=0;
   _profile=0;
-  _importer=0;
+  //_importer=0;
   return true;
 }
 

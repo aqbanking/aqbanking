@@ -1,4 +1,10 @@
 
+2006/03/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in QBanking importer: Was segfaulting hen clicking "back" on
+  on a certain page (reported by Adreas Pakulat)
+
+
 ===========================================================================
 MARK: released AqBanking - 1.9.10beta (2006-03-23)
 ===========================================================================
