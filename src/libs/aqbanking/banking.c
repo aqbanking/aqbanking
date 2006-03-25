@@ -5344,7 +5344,7 @@ AB_Banking_AskAddCert(GWEN_NETLAYER *nl,
     GWEN_Text_ToHexBuffer(msgHash, bsize, dbuf, 0, 0, 0);
     if (strlen(GWEN_Buffer_GetStart(dbuf))>=sizeof(varName)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Uuups, varname buffer is too small (%d needed)",
+		"Uuups, varname buffer is too small (%zd needed)",
 		strlen(GWEN_Buffer_GetStart(dbuf)));
       abort();
     }
