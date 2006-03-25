@@ -1,7 +1,12 @@
 
+2006/03/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AqOfxConnect: Was not initialising list code
+
+
 2006/03/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- fixed a bug in QBanking importer: Was segfaulting hen clicking "back" on
+- fixed a bug in QBanking importer: Was segfaulting when clicking "back"
   on a certain page (reported by Adreas Pakulat)
 - SWIFT parser:
   - fixed a bug (was using "text" instead of "transactionText" when storing

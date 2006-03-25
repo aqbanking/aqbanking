@@ -35,6 +35,7 @@ AO_USERQUEUE *AO_UserQueue_new(AB_USER *u) {
 
   assert(u);
   GWEN_NEW_OBJECT(AO_USERQUEUE, uq);
+  GWEN_LIST_INIT(AO_USERQUEUE, uq);
   uq->user=u;
   uq->jobs=AB_Job_List2_new();
 
@@ -45,6 +46,7 @@ AO_USERQUEUE *AO_UserQueue_new(AB_USER *u) {
 
 void AO_UserQueue_free(AO_USERQUEUE *uq) {
   if (uq) {
+    GWEN_LIST_FINI(AO_USERQUEUE, uq);
     AB_Job_List2_free(uq->jobs);
     GWEN_FREE_OBJECT(uq);
   }

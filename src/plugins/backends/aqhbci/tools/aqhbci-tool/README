@@ -189,7 +189,7 @@ to activate the AqHBCI backend of AqBanking.
 
 11) aqhbci-tool getaccounts [-c CUSTOMER_ID]
 
-11) aqhbci-tool listaccounts
+12) aqhbci-tool listaccounts
 
 
 
