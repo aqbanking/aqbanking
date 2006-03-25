@@ -82,7 +82,7 @@ GWEN_WAITCALLBACK_RESULT AB_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
       wcb->lastProgress=GWEN_WaitCallback_GetProgressPos(ctx);
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
 		 "Progress changed to %lld",
-		 wcb->lastProgress);
+		 (long long int)wcb->lastProgress);
       rv=AB_Banking_ProgressAdvance(wcb->banking, 0, wcb->lastProgress);
     }
   }
