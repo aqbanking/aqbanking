@@ -799,22 +799,6 @@ int AB_Banking_SetTanStatus(AB_BANKING *ab,
                             const char *tan,
                             AB_BANKING_TANSTATUS status);
 
-/**
- * This influences the behaviour of AqBanking when new certificates are
- * received. If the returned value is !=0 then the user will be asked for
- * every single certificate received.
- */
-AQBANKING_API
-int AB_Banking_GetAlwaysAskForCert(const AB_BANKING *ab);
-
-/**
- * This influences the behaviour of AqBanking when new certificates are
- * received. If the given value is !=0 then the user will be asked for
- * every single certificate received.
- */
-AQBANKING_API 
-void AB_Banking_SetAlwaysAskForCert(AB_BANKING *ab, int i);
-
 /*@}*/
 
 
