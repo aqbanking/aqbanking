@@ -120,6 +120,9 @@ AC_ARG_WITH(qt3-libs,
         /usr/lib/qt/lib${libdirsuffix} \
         /usr/local/lib/qt/lib${libdirsuffix} \
         /usr/lib${libdirsuffix} \
+        /usr/lib${libdirsuffix}/qt3/lib \
+        /usr/lib${libdirsuffix}/qt-3.3/lib \
+        /usr/lib${libdirsuffix}/qt-3.2/lib \
         /usr/local/lib${libdirsuffix} \
         /opt/qt/lib${libdirsuffix} \
         /usr/X11R6/lib${libdirsuffix} \
