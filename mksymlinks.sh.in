@@ -86,7 +86,9 @@ done
 # symlink all headers from src/plugins/backends/
 for backend in @aqbanking_backends@; do
   mkdir -p headers/${backend}
-  symlinkFolder "src/plugins/backends/${backend}/plugin" "headers/${backend}"
+  if [ -d "src/plugins/backends/${backend}/plugin" ] ; then
+    symlinkFolder "src/plugins/backends/${backend}/plugin" "headers/${backend}"
+  fi
 done
 
 
