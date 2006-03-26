@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 1.9.11rc1 (2006-03-26)
+===========================================================================
+
+This is the first release candidate of AqBanking2. Creating users for HBCI 
+and now works again and an important bug in OFX DirectConnect has been
+fixed.
+
+
+===========================================================================
                Released AqBanking - 1.9.10beta (2006-03-23)
 ===========================================================================
 

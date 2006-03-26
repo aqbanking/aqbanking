@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released AqBanking - 1.9.11beta (2006-03-26)
+===========================================================================
+
+
 2006/03/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in AqOfxConnect: Was not initialising list code
@@ -11,7 +16,7 @@
 - SWIFT parser:
   - fixed a bug (was using "text" instead of "transactionText" when storing
     the transaction text ("Buchungstext"). This change will however fool
-    QBankManager when retrieving transactions because incominmg transactions
+    QBankManager when retrieving transactions because incoming transactions
     will now have this field filled, so QBankManager does not detect them
     as duplicates. 
     This will only occurr the first time QBankManager retrieves transactions
