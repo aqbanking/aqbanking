@@ -200,7 +200,4 @@ Please choose the &lt;b&gt;online&lt;/b&gt; account you want the
     </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>qbaccountlist.h</includehint>
-</includehints>
 </UI>

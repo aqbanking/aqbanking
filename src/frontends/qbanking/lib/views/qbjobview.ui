@@ -106,7 +106,4 @@
     </image>
 </images>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>qbjoblist.h</includehint>
-</includehints>
 </UI>

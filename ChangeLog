@@ -1,5 +1,10 @@
 2006-03-27   Christian Stimming <stimming@tuhh.de>
 
+	* src/*.ui: Run the admin/fixuifiles on all ui files. 
+
+	* src/frontends/g2banking/g2banking.glade: Run glade-fixup on this
+	file.
+	
 	* m4/qt3.m4: Fix typo in determining the extension of shared
 	libraries. Potentially erroneous on mac/darwin.
 
