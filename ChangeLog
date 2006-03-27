@@ -1,3 +1,11 @@
+
+2006/03/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a possible problem in imexporter.c: Check for unset account number
+  and bankcode in AccountInfo (should fix the strcasecmp problem David
+  reported)
+
+
 2006-03-27   Christian Stimming <stimming@tuhh.de>
 
 	* src/*.ui: Run the admin/fixuifiles on all ui files. 
@@ -7,6 +15,7 @@
 	
 	* m4/qt3.m4: Fix typo in determining the extension of shared
 	libraries. Potentially erroneous on mac/darwin.
+
 
 ===========================================================================
 MARK: released AqBanking - 1.9.11beta (2006-03-26)

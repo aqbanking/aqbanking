@@ -1140,10 +1140,19 @@ AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
   assert(iec);
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   while(iea) {
-    if (strcasecmp(AB_ImExporterAccountInfo_GetBankCode(iea),
-                   bankCode)==0 &&
-        strcasecmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
-                   accountNumber)==0) {
+    const char *sBankCode;
+    const char *sAccountNumber;
+
+    sBankCode=AB_ImExporterAccountInfo_GetBankCode(iea);
+    if (sBankCode==0)
+      sBankCode="";
+    sAccountNumber=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+    if (sAccountNumber==0)
+      sAccountNumber="";
+    if (strcasecmp(sBankCode,
+		   bankCode)==0 &&
+	strcasecmp(sAccountNumber,
+		   accountNumber)==0) {
       return iea;
     }
     iea=AB_ImExporterAccountInfo_List_Next(iea);
