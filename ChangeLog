@@ -1,3 +1,7 @@
+2006-03-27   Christian Stimming <stimming@tuhh.de>
+
+	* m4/qt3.m4: Fix typo in determining the extension of shared
+	libraries. Potentially erroneous on mac/darwin.
 
 ===========================================================================
 MARK: released AqBanking - 1.9.11beta (2006-03-26)

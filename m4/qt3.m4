@@ -138,7 +138,7 @@ AC_ARG_WITH(qt3-libs,
 # shrext_cmds='.so'; but on darwin it is actually a text command.
 eval std_shrext=\"$shrext_cmds\"
 if test -n "${std_shrext}"; then
-   std_strext='.so'
+   std_shrext='.so'
 fi
 
 # Choose library name of qt
