@@ -254,3 +254,9 @@ sl-headers:
 py-check:
 	cd ../moneysplash/unittests && \
 	  PYTHONPATH=$(pyexecdir) $(PYTHON) test_1.py
+
+# Call this to have Qt's uic files and glade files cleaned up from
+# bad elements
+code-cleanup:
+	-admin/fixuifiles
+	-admin/glade-fixup
