@@ -1,3 +1,10 @@
+2006-03-29   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageaccounthbci.cpp,
+	src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/cfgtabpageaccountdtaus.cpp:
+	Add implementation of declared slots; necessary for win32 because
+	this doesn't allow undefined references.
+
 
 2006/03/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

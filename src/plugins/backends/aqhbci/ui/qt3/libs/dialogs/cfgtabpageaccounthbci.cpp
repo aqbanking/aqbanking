@@ -109,4 +109,12 @@ bool CfgTabPageAccountHbci::checkGui() {
 }
 
 
-
+// These are currently unimplemented!
+void CfgTabPageAccountHbci::slotFloppyToggled(bool on) 
+{ assert(0); }
+void CfgTabPageAccountHbci::slotMountToggled(bool on)
+{ assert(0); }
+void CfgTabPageAccountHbci::slotFolderLostFocus()
+{ assert(0); }
+void CfgTabPageAccountHbci::slotFolder()
+{ assert(0); }

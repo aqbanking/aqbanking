@@ -16,7 +16,7 @@ noinst_HEADERS=\
  cfgmodulehbci_p.h
 
 
-aqhbci_la_LDFLAGS=@STRIPALL@ -module
+aqhbci_la_LDFLAGS=@STRIPALL@ -module -no-undefined
 
 aqhbci_la_LIBADD=\
   dialogs/libdialogs.la \

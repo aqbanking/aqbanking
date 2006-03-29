@@ -15,7 +15,7 @@ noinst_HEADERS=\
  cfgmoduledtaus_p.h
 
 
-aqdtaus_la_LDFLAGS=@STRIPALL@ -module
+aqdtaus_la_LDFLAGS=@STRIPALL@ -module -no-undefined
 
 aqdtaus_la_LIBADD=\
   dialogs/libdialogs.la \

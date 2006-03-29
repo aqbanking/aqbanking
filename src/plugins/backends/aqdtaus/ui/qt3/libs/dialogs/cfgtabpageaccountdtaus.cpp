@@ -222,4 +222,5 @@ void CfgTabPageAccountDtaus::slotFolder(){
 }
 
 
-
+void CfgTabPageAccountDtaus::accept()
+{ assert(0); }
