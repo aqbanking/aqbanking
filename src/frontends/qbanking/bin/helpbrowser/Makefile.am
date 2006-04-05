@@ -59,7 +59,7 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done
 
 # This section is for a qt4 environment

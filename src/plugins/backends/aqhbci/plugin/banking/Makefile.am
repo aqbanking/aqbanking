@@ -28,6 +28,6 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done
 

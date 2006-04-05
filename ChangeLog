@@ -1,4 +1,10 @@
 
+2006/04/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed Makefile.am's to use "$(MAKE)" instead of hardcoded "make" (should fix
+  build on *BSD)
+
+
 ===========================================================================
 MARK: released AqBanking - 2.0.0 (2006-04-03)
 ===========================================================================

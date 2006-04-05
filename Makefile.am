@@ -71,7 +71,7 @@ setup: aqbanking.iss
 	  grep -v relink_command $${A} > $${A}.tmp && \
 	    mv $${A}.tmp $${A}; \
 	done
-	make DESTDIR="`pwd`/$(wintmpdir)" \
+	$(MAKE) DESTDIR="`pwd`/$(wintmpdir)" \
 	     aqbanking_pkgdatadir="/share/$(PACKAGE)" \
 	     gwenhywfar_plugins="/gwen" \
 	     WIN_PATH_WINDOWS_MINGW="/windows" \
@@ -91,23 +91,23 @@ I18NFILES=$(shell cat $(srcdir)/i18nsources $(srcdir)/qtsources)
 # Current build rule:
 sources:
 	rm -f $(srcdir)/i18nsources $(srcdir)/qtsources
-	make -C $(top_srcdir)/src sources
+	$(MAKE) -C $(top_srcdir)/src sources
 $(srcdir)/i18nsources $(srcdir)/qtsources:
-	make sources
+	$(MAKE) sources
 
 # Could also be solved this way: Read the I18NFILES variable from file
 #include $(srcdir)/i18nsources
 # (Needs the following build rule:)
 #sources:
 #	rm -f $(srcdir)/i18nsources
-#	make -C $(top_srcdir)/src sources
+#	$(MAKE) -C $(top_srcdir)/src sources
 #	mv $(srcdir)/i18nsources $(srcdir)/i18nsources.tmp
 #	echo "I18NFILES = \\" > $(srcdir)/i18nsources
 #	$(SED) 's!\(^.*$$\)!$$(top_srcdir)/\1 \\!' \
 #	  $(srcdir)/i18nsources.tmp >> $(srcdir)/i18nsources
 #	echo '$$(top_srcdir)/config.h' >> $(srcdir)/i18nsources
 #	rm -f $(srcdir)/i18nsources.tmp
-#	make Makefile
+#	$(MAKE) Makefile
 
 # The list of available languages (makes file name transformations much easier)
 ALL_LINGUAS = $(basename $(notdir $(shell ls $(srcdir)/po/*.po)))
@@ -222,10 +222,10 @@ endif # if USE_I18N
 
 
 # Extra rule instead of "all" which creates the auto-generated headers
-# *first* and only then starts "make all". This avoids duplicate
+# *first* and only then starts "$(MAKE) all". This avoids duplicate
 # compilation.
 quick: config.h version.h system.h
-	make
+	$(MAKE)
 
 # Rule for only building the source rpm
 srpm: $(PACKAGE).spec dist
@@ -236,7 +236,7 @@ srpm: $(PACKAGE).spec dist
 # This section is for a qt4 environment
 qt4-port:
 	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3 src/plugins/backends/aqdtaus/ui/qt3; do \
-	  make -C $$d qt4-port; \
+	  $(MAKE) -C $$d qt4-port; \
 	done
 
 BUILT_SOURCES = $(iheader_HEADERS) sl-headers
@@ -246,7 +246,7 @@ symlinks: mksymlinks.sh
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 sl-headers:
-	make -C src built_sources
+	$(MAKE) -C src built_sources
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 # Call aqbanking's testcases plus the unittests from the

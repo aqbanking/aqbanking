@@ -27,7 +27,7 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done
 
 

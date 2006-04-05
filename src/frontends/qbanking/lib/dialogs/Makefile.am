@@ -150,5 +150,5 @@ DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
 	list='$(SUBDIRS)'; for d in $$list; do \
-	  make -C $$d built_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;

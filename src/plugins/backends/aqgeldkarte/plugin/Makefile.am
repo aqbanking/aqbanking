@@ -74,11 +74,11 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done
 
 built_sources:
 	for d in $(SUBDIRS); do \
-	  make -C $$d built_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;
 

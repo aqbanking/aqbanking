@@ -88,7 +88,7 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done ;
 
 %.moc: %.h
@@ -110,13 +110,13 @@ qt4-port:
 	 $(YES) | $(QT3TO4) $$A; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d qt4-port; \
+	  $(MAKE) -C $$d qt4-port; \
 	done
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
 	for d in $(SUBDIRS); do \
-	  make -C $$d built_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;
 

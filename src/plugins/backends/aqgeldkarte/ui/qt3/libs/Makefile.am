@@ -30,7 +30,7 @@ CLEANFILES = $(nodist_aqgeldkarte_la_SOURCES)
 
 sources:
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done
 
 
@@ -40,12 +40,12 @@ sources:
 # This section is for a qt4 environment
 qt4-port:
 	for d in $(SUBDIRS); do \
-	  make -C $$d qt4-port; \
+	  $(MAKE) -C $$d qt4-port; \
 	done
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
 
 built_sources: $(BUILT_SOURCES)
 	for d in $(SUBDIRS); do \
-	  make -C $$d built_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;

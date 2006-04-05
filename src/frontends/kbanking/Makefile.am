@@ -54,7 +54,7 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
-	  make -C $$d sources; \
+	  $(MAKE) -C $$d sources; \
 	done ;
 
 
@@ -81,7 +81,7 @@ clean-ui:
 
 built_sources: $(BUILT_SOURCES)
 	for d in $(SUBDIRS); do \
-	  make -C $$d built_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;
 
 
