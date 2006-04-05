@@ -1,8 +1,11 @@
 
-2006/04/04: Martin Preuss<martin@libchipcard.de>
+
+2006/04/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed Makefile.am's to use "$(MAKE)" instead of hardcoded "make" (should fix
   build on *BSD)
+- AQBANKING_VERSION_BUILD is now automatically updated from SVN's revision
+- changed AQBANKING_VERSION_RELEASE_STRING and AQBANKING_VERSION_FULL_STRING
 
 
 ===========================================================================
