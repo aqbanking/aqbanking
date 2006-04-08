@@ -35,6 +35,9 @@ case "$AQBANKING_VERSION_TAG" in svn|cvs)
       ;;
     *)
       AQBANKING_VERSION_BUILD=`LC_ALL="C" $SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
+      if test "x$AQBANKING_VERSION_BUILD" = "x" ; then
+	AQBANKING_VERSION_BUILD="1"
+      fi
       ;;
   esac
   ;;
