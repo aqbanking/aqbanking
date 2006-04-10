@@ -1400,7 +1400,8 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
           GWEN_BUFFER *mbuf;
 
           mbuf=GWEN_Buffer_new(0, 128, 0, 1);
-          GWEN_Buffer_AppendString(mbuf, "Received account: ");
+          GWEN_Buffer_AppendString(mbuf, I18N("Received account:"));
+	  GWEN_Buffer_AppendString(mbuf, " ");
           GWEN_Buffer_AppendString(mbuf, bankCode);
           GWEN_Buffer_AppendString(mbuf, " / ");
           if (accountName)
@@ -1497,7 +1498,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
                                0,
                                AB_Banking_LogLevelNotice,
-                               "Bank message received");
+                               I18N("Bank message received"));
         subject=GWEN_DB_GetCharValue(dbRd, "subject", 0, "(Kein Betreff)");
         text=GWEN_DB_GetCharValue(dbRd, "text", 0, 0);
         if (subject && text) {
@@ -1734,7 +1735,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
                            0,
                            AB_Banking_LogLevelError,
-                           "Response without security info (internal)");
+                           I18N("Response without security info (internal)"));
     return AB_ERROR_GENERIC;
   }
 
@@ -1751,7 +1752,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
       AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
                              0,
                              AB_Banking_LogLevelError,
-                             "Invalid bank signature");
+                             I18N("Invalid bank signature"));
       return AB_ERROR_SECURITY;
     }
   } /* for */

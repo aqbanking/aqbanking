@@ -638,7 +638,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 	AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(hp->hbci),
 			       0,
 			       AB_Banking_LogLevelError,
-			       "ERROR: Multiple signatures not yet supported");
+			       I18N("ERROR: Multiple signatures not yet supported"));
 	return AB_ERROR_GENERIC;
       }
       AH_Job_AddSigner(mj, AB_User_GetUserId(mu));
