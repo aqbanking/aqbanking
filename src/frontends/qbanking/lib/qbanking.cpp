@@ -219,7 +219,7 @@ int QBanking::inputBox(GWEN_TYPE_UINT32 flags,
 
     s=ib.getInput();
     int len=s.length();
-    if (len && len<maxLen-1) {
+    if (len && len<maxLen) {
       // FIXME: QString::latin1() is most probably wrong here!
       // This means that the entered string will be passed into
       // AQ_BANKING in latin1 encoding, not in utf8. This should

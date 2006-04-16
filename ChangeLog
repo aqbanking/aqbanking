@@ -1,12 +1,20 @@
+
+2006/04/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in QBanking::inputBox (was not computing maxLen correctly)
+
+
 2006-04-10  Christian Stimming  <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/plugin/banking/provider.c,
 	joblayer/job.c: Mark forgotten strings for translation.
 
+
 2006-04-08  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: If "svn info" returns an empty string, set a build
 	number. Necessary when building from a svn-version tarball.
+
 
 2006/04/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
