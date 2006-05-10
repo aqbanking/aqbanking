@@ -1,5 +1,9 @@
 2006-05-10   Christian Stimming <stimming@tuhh.de>
 
+	* aqbanking.spec.in: Improve spec file as pointed out by Stanislav
+	Brabec from SuSE: Remove doubled directory; add entries for base
+	directories.
+
 	* configure.ac: Change RELEASE_STRING of svn versions from
 	x.y.z-r111 to x.y.z.r111 because tools like rpmbuild do not accept
 	a '-' inside the version numbers.

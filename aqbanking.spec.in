@@ -304,7 +304,7 @@ make install-strip \
 %post -n %{name}-qt3 -p /sbin/ldconfig
 %postun -n %{name}-qt3 -p /sbin/ldconfig
 
-### The file list for all packages
+### The file list for all packages, starting with the base package
 %if %is_suse
 %files -f %{name}.lang
 %else
@@ -312,6 +312,19 @@ make install-strip \
 %endif
 %defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog README
+# The directories used by the base package
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
+%dir %{aq_plugindir}
+%dir %{aq_plugindir}/debugger
+%dir %{aq_plugindir}/providers
+%dir %{imex_plugindir}
+%dir %{fronts_libdir}
+%dir %{fronts_libdir}/qbanking
+%dir %{qb_cfgmoddir}
+%dir %{_datadir}/%{name}
+%dir %{fronts_datadir}
+%dir %{imex_datadir}
 ### The original aqbanking files
 %{_bindir}/%{name}-tool
 %{_libdir}/lib%{name}*.so.*
@@ -336,7 +349,6 @@ make install-strip \
 %{imex_datadir}/dtaus
 %{imex_datadir}/eri
 %{imex_datadir}/eri2
-%{imex_datadir}/ofx
 %{imex_datadir}/openhbci1
 %{imex_datadir}/swift
 ### The aqhbci files
