@@ -40,6 +40,7 @@ IniLetter::IniLetter(bool isUser,
 ,_isUserKey(isUser)
 ,_result(false){
   if (_isUserKey) {
+    textLabel->setText(tr("User key that can be printed now."));
     serverLabel->hide();
     goodHashButton->hide();
     badHashButton->hide();
