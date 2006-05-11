@@ -705,14 +705,14 @@ XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 
 case "$aqbanking_backends" in *aqgeldkarte*)
   AC_CHIPCARD_CLIENT(1,9,20,0)
-  AC_MSG_CHECKING(if chipcard_client is useable)
-  if test "x$have_chipcard_client" != "xyes"; then
+  AC_MSG_CHECKING([if chipcard_client is useable])
+  if test "x$have_chipcard_client" == "xyes"; then
     AC_MSG_RESULT(yes)
   else
     AC_MSG_RESULT(no)
   fi
   
-  all_includes="$all_includes $chipcard2_client_includes"
+  all_includes="$all_includes $chipcard_client_includes"
   ;;
 esac
 

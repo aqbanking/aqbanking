@@ -1,9 +1,14 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
 
 2006/05/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added IBAN field to AB_IMEXPORTER_ACCOUNTINFO
 - added localIban field to AB_TRANSACTION
 - started working on importer for YellowNet XML files
+- fixed configure.ac regarding libchipcard2 (reported by Andreas Pakulat)
 
 
 2006-05-10   Christian Stimming <stimming@tuhh.de>
