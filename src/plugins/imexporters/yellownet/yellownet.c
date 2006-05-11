@@ -430,8 +430,10 @@ int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
     char lbuffer[1024];
     GWEN_ERRORCODE err;
     const char *p;
+    unsigned int bsize;
 
-    err=GWEN_BufferedIO_ReadRawForced(bio, lbuffer, sizeof(lbuffer));
+    bsize=sizeof(lbuffer)-1;
+    err=GWEN_BufferedIO_ReadRawForced(bio, lbuffer, &bsize);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
                "File \"%s\" is not supported by this plugin",
@@ -440,6 +442,7 @@ int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
       GWEN_BufferedIO_free(bio);
       return AB_ERROR_BAD_DATA;
     }
+    lbuffer[bsize]=0;
 
     p=strstr(lbuffer, "<?xml");
     if (p)
