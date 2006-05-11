@@ -1726,6 +1726,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/qif/ressource.rc
   src/plugins/imexporters/qif/profiles/Makefile
   src/plugins/imexporters/qif/profiles/default.conf
+  src/plugins/imexporters/yellownet/Makefile
+  src/plugins/imexporters/yellownet/yellownet.xml
+  src/plugins/imexporters/yellownet/ressource.rc
+  src/plugins/imexporters/yellownet/profiles/Makefile
+  src/plugins/imexporters/yellownet/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml

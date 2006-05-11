@@ -1,0 +1,11 @@
+
+char name="default"
+char shortDescr="default profile"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="This profile supports the old YellowNet XML format"
+int import="1"
+int export="0"
+
+params {
+} # params
+

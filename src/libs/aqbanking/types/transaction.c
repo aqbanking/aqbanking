@@ -274,6 +274,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->localAccountNumber);
   if (st->localSuffix)
     free(st->localSuffix);
+  if (st->localIban)
+    free(st->localIban);
   if (st->localName)
     free(st->localName);
   if (st->remoteCountry)
@@ -359,6 +361,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->localAccountNumber=strdup(d->localAccountNumber);
   if (d->localSuffix)
     st->localSuffix=strdup(d->localSuffix);
+  if (d->localIban)
+    st->localIban=strdup(d->localIban);
   if (d->localName)
     st->localName=strdup(d->localName);
   if (d->remoteCountry)
@@ -453,6 +457,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->localSuffix)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localSuffix", st->localSuffix))
+      return -1;
+  if (st->localIban)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localIban", st->localIban))
       return -1;
   if (st->localName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localName", st->localName))
@@ -631,6 +638,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetLocalBranchId(st, GWEN_DB_GetCharValue(db, "localBranchId", 0, 0));
   AB_Transaction_SetLocalAccountNumber(st, GWEN_DB_GetCharValue(db, "localAccountNumber", 0, 0));
   AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
+  AB_Transaction_SetLocalIban(st, GWEN_DB_GetCharValue(db, "localIban", 0, 0));
   AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
   AB_Transaction_SetRemoteCountry(st, GWEN_DB_GetCharValue(db, "remoteCountry", 0, 0));
   AB_Transaction_SetRemoteBankName(st, GWEN_DB_GetCharValue(db, "remoteBankName", 0, 0));
@@ -911,6 +919,26 @@ void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *st, const char *d) {
     st->localSuffix=strdup(d);
   else
     st->localSuffix=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetLocalIban(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localIban;
+}
+
+
+void AB_Transaction_SetLocalIban(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localIban)
+    free(st->localIban);
+  if (d && *d)
+    st->localIban=strdup(d);
+  else
+    st->localIban=0;
   st->_modified=1;
 }
 

@@ -270,6 +270,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->bankName);
     free(iea->accountNumber);
     free(iea->accountName);
+    free(iea->iban);
     free(iea->owner);
     free(iea->description);
     AB_Transaction_List_free(iea->notedTransactions);
@@ -299,6 +300,7 @@ AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
   COPY_CHAR(bankName);
   COPY_CHAR(accountNumber);
   COPY_CHAR(accountName);
+  COPY_CHAR(iban);
   COPY_CHAR(owner);
   COPY_CHAR(description);
   iea->accountType=oi->accountType;
@@ -331,6 +333,7 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
   STORE_CHAR(bankName);
   STORE_CHAR(accountNumber);
   STORE_CHAR(accountName);
+  STORE_CHAR(iban);
   STORE_CHAR(owner);
   STORE_CHAR(description);
   STORE_INT(accountType);
@@ -504,6 +507,7 @@ AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
   RESTORE_CHAR(bankCode);
   RESTORE_CHAR(bankName);
   RESTORE_CHAR(accountNumber);
+  RESTORE_CHAR(iban);
   RESTORE_CHAR(owner);
   RESTORE_CHAR(description);
   RESTORE_INT(accountType, AB_AccountType_Bank);
@@ -886,6 +890,24 @@ void AB_ImExporterAccountInfo_SetAccountNumber(AB_IMEXPORTER_ACCOUNTINFO *iea,
   free(iea->accountNumber);
   if (s) iea->accountNumber=strdup(s);
   else iea->accountNumber=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetIban(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return iea->iban;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetIban(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                      const char *s) {
+  assert(iea);
+  free(iea->iban);
+  if (s) iea->iban=strdup(s);
+  else iea->iban=0;
 }
 
 

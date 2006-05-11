@@ -60,6 +60,38 @@ Set this property with @ref AB_Transaction_SetLocalSuffix,
 get it with @ref AB_Transaction_GetLocalSuffix
 </p>
 
+@anchor AB_TRANSACTION_LocalIban
+<h4>LocalIban</h4>
+<p>
+International Bank Account Number according to ECBS EBS 204.
+<table>
+  <tr>
+    <th>Pos</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td>0-1</td>
+    <td>Country code according to ISO 3166</td>
+  </tr>
+  <tr>
+    <td>2-3</td>
+    <td>Checksum</td>
+  </tr>
+  <tr>
+    <td>4-33</td>
+    <td>Country specific account info</td>
+  </tr>
+</table>
+Examples:
+<ul>
+  <li>BE62510007547061</li>
+  <li>FR1420041010050500013M02606</li>
+</ul></p>
+<p>
+Set this property with @ref AB_Transaction_SetLocalIban, 
+get it with @ref AB_Transaction_GetLocalIban
+</p>
+
 @anchor AB_TRANSACTION_LocalName
 <h4>LocalName</h4>
 <p>
@@ -716,6 +748,15 @@ AQBANKING_API const char *AB_Transaction_GetLocalSuffix(const AB_TRANSACTION *el
 * Set the property @ref AB_TRANSACTION_LocalSuffix
 */
 AQBANKING_API void AB_Transaction_SetLocalSuffix(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LocalIban
+*/
+AQBANKING_API const char *AB_Transaction_GetLocalIban(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_LocalIban
+*/
+AQBANKING_API void AB_Transaction_SetLocalIban(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LocalName

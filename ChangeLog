@@ -1,3 +1,11 @@
+
+2006/05/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added IBAN field to AB_IMEXPORTER_ACCOUNTINFO
+- added localIban field to AB_TRANSACTION
+- started working on importer for YellowNet XML files
+
+
 2006-05-10   Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking.spec.in: Improve spec file as pointed out by Stanislav
@@ -7,6 +15,7 @@
 	* configure.ac: Change RELEASE_STRING of svn versions from
 	x.y.z-r111 to x.y.z.r111 because tools like rpmbuild do not accept
 	a '-' inside the version numbers.
+
 
 2006/04/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

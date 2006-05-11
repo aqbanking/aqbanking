@@ -584,6 +584,22 @@
           empty. (HBCI only)
         </descr>
       </elem>
+      <elem name="localIban" type="char" ptr="1">
+        <descr>
+          International Bank Account Number according to ECBS EBS 204.
+          <table>
+            <tr><th>Pos</th><th>Meaning</th></tr>
+            <tr><td>0-1</td><td>Country code according to ISO 3166</td></tr>
+            <tr><td>2-3</td><td>Checksum</td></tr>
+            <tr><td>4-33</td><td>Country specific account info</td></tr>
+          </table>
+          Examples:
+          <ul>
+            <li>BE62510007547061</li>
+            <li>FR1420041010050500013M02606</li>
+          </ul>
+        </descr>
+      </elem>
       <elem name="localName" type="char" ptr="1" />
     </group>
 

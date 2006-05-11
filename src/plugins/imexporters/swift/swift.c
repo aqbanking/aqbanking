@@ -99,7 +99,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 			  I18N("Error importing data"));
     GWEN_DB_Group_free(dbData);
     GWEN_WaitCallback_Leave();
-    return rv;
+    return AB_ERROR_BAD_DATA;
   }
 
   GWEN_WaitCallback_Leave();

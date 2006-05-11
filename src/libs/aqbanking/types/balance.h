@@ -24,7 +24,7 @@ extern "C" {
 typedef struct AB_BALANCE AB_BALANCE;
 
 AQBANKING_API 
-AB_BALANCE *AB_Balance_new(AB_VALUE *v, const GWEN_TIME *t);
+AB_BALANCE *AB_Balance_new(const AB_VALUE *v, const GWEN_TIME *t);
 AQBANKING_API 
 AB_BALANCE *AB_Balance_fromDb(GWEN_DB_NODE *db);
 AQBANKING_API 
