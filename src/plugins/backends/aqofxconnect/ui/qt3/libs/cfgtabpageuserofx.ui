@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>394</width>
-            <height>411</height>
+            <height>441</height>
         </rect>
     </property>
     <property name="caption">
@@ -283,6 +283,22 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
                         <string>Supports Bill Pay</string>
                     </property>
                 </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>emptyBankIdCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Send Empty Bank Id</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Send empty bank id even if one is set</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Use this if your bank does not allow sending a bank id (even if there is such an id).
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
             </vbox>
         </widget>
         <spacer>
@@ -298,7 +314,7 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
             <property name="sizeHint">
                 <size>
                     <width>21</width>
-                    <height>16</height>
+                    <height>40</height>
                 </size>
             </property>
         </spacer>

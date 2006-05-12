@@ -69,6 +69,8 @@ GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       f|=AO_USER_FLAGS_INVESTMENT;
     else if (strcasecmp(s, "billpay")==0)
       f|=AO_USER_FLAGS_BILLPAY;
+    else if (strcasecmp(s, "emptyBankId")==0)
+      f|=AO_USER_FLAGS_EMPTY_BANKID;
     else {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
                 "Unknown user flag \"%s\"", s);
@@ -94,6 +96,9 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (f & AO_USER_FLAGS_BILLPAY)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "billpay");
+  if (f & AO_USER_FLAGS_EMPTY_BANKID)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+			 "emptyBankId");
 }
 
 

@@ -103,12 +103,16 @@ int AO_Context_Update(AO_CONTEXT *ctx){
     pro=AB_User_GetProvider(ctx->user);
     assert(pro);
 
-    s=AB_User_GetBankCode(ctx->user);
-    if (s && isdigit(*s))
-      /* only copy bank id if it is a number (-> routing number)
-       * otherwise it serves only identification purposes for this backend
-       * and doesn't represent a routing number */
-      strncpy(ctx->ai->bankid, s, OFX_BANKID_LENGTH-1);
+    if (!(AO_User_GetFlags(ctx->user) &
+          AO_USER_FLAGS_EMPTY_BANKID)) {
+      /* only copy bank code if not forbidden by user */
+      s=AB_User_GetBankCode(ctx->user);
+      if (s && isdigit(*s))
+        /* only copy bank id if it is a number (-> routing number)
+         * otherwise it serves only identification purposes for this backend
+         * and doesn't represent a routing number */
+        strncpy(ctx->ai->bankid, s, OFX_BANKID_LENGTH-1);
+    }
 
     s=AO_User_GetBrokerId(ctx->user);
     if (s)

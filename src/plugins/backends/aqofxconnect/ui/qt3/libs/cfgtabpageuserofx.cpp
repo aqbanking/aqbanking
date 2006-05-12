@@ -117,6 +117,8 @@ bool CfgTabPageUserOfx::fromGui() {
     f|=AO_USER_FLAGS_INVESTMENT;
   if (_realPage->billPayCheck->isChecked())
     f|=AO_USER_FLAGS_BILLPAY;
+  if (_realPage->emptyBankIdCheck->isChecked())
+    f|=AO_USER_FLAGS_EMPTY_BANKID;
   AO_User_SetFlags(u, f);
 
   return true;
@@ -161,6 +163,7 @@ bool CfgTabPageUserOfx::toGui() {
   _realPage->statementCheck->setChecked(f & AO_USER_FLAGS_STATEMENTS);
   _realPage->investmentCheck->setChecked(f & AO_USER_FLAGS_INVESTMENT);
   _realPage->billPayCheck->setChecked(f & AO_USER_FLAGS_BILLPAY);
+  _realPage->emptyBankIdCheck->setChecked(f & AO_USER_FLAGS_EMPTY_BANKID);
 
   return true;
 }
