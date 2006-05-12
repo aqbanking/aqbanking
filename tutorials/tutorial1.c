@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
    * The second argument is the folder in which the AqBanking settings are
    * stored. You should in most cases provide NULL here which makes AqBanking
    * choose the default path ($HOME/.banking).
-   * If this folder doesn't exist it will created as soon as AqBanking has
+   * If this folder doesn't exist it will be created as soon as AqBanking has
    * something to store (in most cases when closing the application).
    */
   ab=CBanking_new("tutorial1", 0);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   }
 
   /* The AqBanking instance you created at the beginning must always be
-   * detroyed using this function to avoid memory leaks.
+   * destroyed using this function to avoid memory leaks.
    */
   AB_Banking_free(ab);
 

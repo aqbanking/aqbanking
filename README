@@ -373,13 +373,13 @@ or on Windows/mingw32
 =============================
 
 AqBanking uses registry keys below HKEY_CURRENT_USER.  Currently
-the following keys are used. These ekys are created by the setup.exe which
+the following keys are used. These keys are created by the setup.exe which
 contains the binary package for WIN32 platforms.
 
 
 7.1. Software\\AqBanking\\Paths\\pkgdatadir
 -------------------------------------------
-This is the data folder (i.e. $PREFIX/share on POSIX systems).
+This is the data folder (i.e. $PREFIX/share/aqbanking on POSIX systems).
 
 
 7.2. Software\\AqBanking\\Paths\\sysconfdir
@@ -419,7 +419,7 @@ info, debug and verbous.
 8.2. AQBANKING_STORE_JOBLOGS
 ----------------------------
 If this variable is defined then AqBanking will always store job logs with 
-jobs. Otherwise job logs are only stored for jobs with a status other tan
+jobs. Otherwise job logs are only stored for jobs with a status other than
 "finished". Job logs can become quite big.
 
 
@@ -469,5 +469,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2006/01/31
+Martin Preuss, Hamburg/Germany, 2006/05/12
 
