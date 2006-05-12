@@ -4,6 +4,11 @@
 
 2006-05-12  Christian Stimming <stimming@tuhh.de>
 
+	* po/de.po: Improved and reviewed German translation. Now really
+	reviewed all strings that were contributed by Jens Koerner on
+	2006-01-22, which unfortunately contained quite a number of
+	seriosly flawed translations.
+
 	*src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:
 	For the user's ini-letter, show a different explanation than for
 	the Bank letter.
