@@ -32,7 +32,7 @@
 
 
 ActionUserIniLetter::ActionUserIniLetter(Wizard *w)
-:WizardAction(w, "UserIniLetter", QWidget::tr("User's Iniletter"))
+:WizardAction(w, "UserIniLetter", QWidget::tr("User's Ini Letter"))
 ,_key(0) {
   _iniLetterDialog=new IniLetter(true,
                                  this,

@@ -34,7 +34,7 @@ ActionGetSysId::ActionGetSysId(Wizard *w)
 :WizardAction(w, "GetSysId", QWidget::tr("Retrieve System Id")) {
   _realDialog=new ActionWidget
     (tr("<qt>"
-        "We will now let the bank assign a system id to AqBanking."
+        "We will now retrieve a system id for this application."
         "</qt>"),
      tr("<qt>"
         "<p>"
@@ -43,7 +43,7 @@ ActionGetSysId::ActionGetSysId(Wizard *w)
         "between signature counters used by different programs."
         "</p>"
         "<p>"
-        "This allows for real multi-application access to your accounts."
+        "This allows you to access your accounts through multiple applications."
         "</p>"
         "</qt>"),
      tr("Get System Id"),

@@ -1155,7 +1155,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   }
 
   AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelNotice,
-                         I18N("Keys saved"));
+                         I18N("Keys saved."));
 
   AH_Outbox_free(ob);
 
@@ -1222,9 +1222,9 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
   signKey=AH_Medium_GetLocalPubSignKey(m);
   cryptKey=AH_Medium_GetLocalPubCryptKey(m);
   if (!signKey || !cryptKey) {
-    DBG_ERROR(0, "Either sign- or crypt key missing");
+    DBG_ERROR(0, "Either sign key or crypt key missing");
     AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
-                           I18N("Either sign- or crypt key missing"));
+                           I18N("Either sign key or crypt key missing"));
     GWEN_CryptKey_free(signKey);
     GWEN_CryptKey_free(cryptKey);
     if (!nounmount && mounted)
@@ -1452,7 +1452,7 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 
   if (useBankKey) {
     GWEN_Buffer_AppendString(lbuf,
-                             I18N("Bank           : "));
+                             I18N("Bank Code      : "));
     GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
   }
   else {
@@ -1594,7 +1594,7 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   if (!useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I found the above key "
+                             I18N("I confirm that I created the above key "
                                   "for my electronic signature.\n"));
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
@@ -1723,7 +1723,7 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 
   if (useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Bank"));
+    GWEN_Buffer_AppendString(lbuf, I18N("Bank Code"));
     GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
     GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
     GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
@@ -1875,7 +1875,7 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
   if (!useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
     GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I found the above key "
+                             I18N("I confirm that I created the above key "
                                   "for my electronic signature.\n"));
     GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
     GWEN_Buffer_AppendString(lbuf, "<table>\n");
