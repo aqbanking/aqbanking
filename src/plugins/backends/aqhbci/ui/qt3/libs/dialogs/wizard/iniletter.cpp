@@ -40,6 +40,11 @@ IniLetter::IniLetter(bool isUser,
 ,_isUserKey(isUser)
 ,_result(false){
   if (_isUserKey) {
+    textLabel->setText( tr( "<qt>\n"
+"This is the Ini-Letter of you, the user. "
+"Please print out a paper copy by pressing \"Print\". "
+"Then sign this paper copy and send it to your bank.\n"
+			    "</qt>" ) );
     serverLabel->hide();
     goodHashButton->hide();
     badHashButton->hide();

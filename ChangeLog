@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006-05-12  Christian Stimming <stimming@tuhh.de>
+
+	*src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:
+	For the user's ini-letter, show a different explanation than for
+	the Bank letter.
+	
 2006/05/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqOfxConnect: Added a user flag which makes the backend not send the
