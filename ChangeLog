@@ -2,6 +2,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- SWIFT parser:
+  - added :86: field ?38 (IBAN)
+  - fixed field :61: (ignore leading '/' in customer reference)
+
+
 2006-05-12  Christian Stimming <stimming@tuhh.de>
 
 	* po/de.po: Improved and reviewed German translation. Now really
@@ -13,6 +20,7 @@
 	For the user's ini-letter, show a different explanation than for
 	the Bank letter.
 	
+
 2006/05/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqOfxConnect: Added a user flag which makes the backend not send the

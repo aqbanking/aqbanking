@@ -217,8 +217,12 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
           break;
     
         case 34: /* Textschluesselergaenzung */
+	  break;
+
+	case 38: /* IBAN */
+	  AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
           break;
-    
+
         default: /* ignore all other fields (if any) */
           DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
                    AHB_SWIFT_Tag_GetData(tg));
@@ -401,30 +405,41 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   bleft-=3;
 
   /* customer reference (M) */
-  p2=p;
-  while(*p2 && *p2!='/' && *p2!=10) p2++;
+  if (bleft>1 && *p=='/' && p[1]!='/') {
+    p++;
+    bleft--;
 
-  if (p2!=p) {
-    s=(char*)malloc(p2-p+1);
-    memmove(s, p, p2-p);
-    s[p2-p]=0;
-    AHB_SWIFT__SetCharValue(data, flags, "custref", s);
-    free(s);
+    p2=p;
+    while(*p2 && *p2!='/' && *p2!=10) p2++;
+
+    if (p2==p) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s)", p);
+      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+			    "SWIFT: Missing customer reference");
+    }
+    else {
+      s=(char*)malloc(p2-p+1);
+      memmove(s, p, p2-p);
+      s[p2-p]=0;
+      AHB_SWIFT__SetCharValue(data, flags, "custref", s);
+      free(s);
+    }
+    bleft-=p2-p;
+    p=p2;
+    assert(bleft>=0);
   }
-  bleft-=p2-p;
-  p=p2;
 
   /* bank reference (K) */
-  if (*p=='/') {
-    if (p[1]=='/') {
+  if (bleft>1) {
+    if (*p=='/' && p[1]=='/') {
       /* found bank reference */
       p2=p+2;
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                              "SWIFT: Missing bank reference");
-        return -1;
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
+	GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+			      "SWIFT: Missing bank reference");
+	return -1;
       }
       s=(char*)malloc(p2-p+1);
       memmove(s, p, p2-p+1);
@@ -433,11 +448,13 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       free(s);
       bleft-=p2-p;
       p=p2;
+      assert(bleft>=0);
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
       GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                            "SWIFT: Bad bank reference");
+			    "SWIFT: Bad bank reference "
+			    "(missing double slash)");
       return -1;
     }
   }
@@ -452,10 +469,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       /* read extra information */
       if (*p=='/') {
         if (bleft<6) {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
-          return 0;
-        }
-        if (strncasecmp(p, "/OCMT/", 6)==0) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Unknown extra data, ignoring (%s)", p);
+	  return 0;
+	}
+	if (strncasecmp(p, "/OCMT/", 6)==0) {
           /* original value */
           p+=6;
           bleft-=6;
@@ -510,13 +528,14 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           p=p2;
         }
         else {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown extra data, ignoring (%s)", p);
-          return 0;
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Unknown extra data, ignoring (%s)", p);
+	  return 0;
         }
       }
       else {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Bad extra data, ignoring (%s)", p);
-        return 0;
+	DBG_WARN(AQBANKING_LOGDOMAIN, "Bad extra data, ignoring (%s)", p);
+	return 0;
       }
     } /* while */
   } /* if there is extra data */
