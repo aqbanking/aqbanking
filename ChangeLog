@@ -7,6 +7,7 @@
 - SWIFT parser:
   - added :86: field ?38 (IBAN)
   - fixed field :61: (ignore leading '/' in customer reference)
+  - customerReference and bankReference are now correctly imported
 
 
 2006-05-12  Christian Stimming <stimming@tuhh.de>

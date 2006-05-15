@@ -405,9 +405,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   bleft-=3;
 
   /* customer reference (M) */
-  if (bleft>1 && *p=='/' && p[1]!='/') {
-    p++;
-    bleft--;
+  if (bleft>1) {
+    if (*p=='/' && p[1]!='/') {
+      p++;
+      bleft--;
+    }
 
     p2=p;
     while(*p2 && *p2!='/' && *p2!=10) p2++;
@@ -421,7 +423,8 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       s=(char*)malloc(p2-p+1);
       memmove(s, p, p2-p);
       s[p2-p]=0;
-      AHB_SWIFT__SetCharValue(data, flags, "custref", s);
+      if (strcasecmp(s, "NONREF")!=0)
+        AHB_SWIFT__SetCharValue(data, flags, "customerReference", s);
       free(s);
     }
     bleft-=p2-p;
@@ -433,7 +436,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (bleft>1) {
     if (*p=='/' && p[1]=='/') {
       /* found bank reference */
-      p2=p+2;
+      p+=2;
+      bleft-=2;
+
+      p2=p;
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
@@ -444,18 +450,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       s=(char*)malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
-      AHB_SWIFT__SetCharValue(data, flags, "bankref", s);
+      AHB_SWIFT__SetCharValue(data, flags, "bankReference", s);
       free(s);
       bleft-=p2-p;
       p=p2;
       assert(bleft>=0);
-    }
-    else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-			    "SWIFT: Bad bank reference "
-			    "(missing double slash)");
-      return -1;
     }
   }
 
@@ -468,6 +467,9 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     while(*p) {
       /* read extra information */
       if (*p=='/') {
+        if (p[1]==0)
+          return 0;
+
         if (bleft<6) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN,
 		   "Unknown extra data, ignoring (%s)", p);
