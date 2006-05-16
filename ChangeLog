@@ -2,6 +2,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqOfxConnect: Added a user flag which makes the backend not send the
+  FID even if there is one. This is reportedly needed for some banks
+  (thanks to David Reiser for pointing it out)
+
+
 2006/05/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - SWIFT parser:

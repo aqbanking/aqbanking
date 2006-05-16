@@ -299,6 +299,22 @@ Use this if your bank does not allow sending a bank id (even if there is such an
 &lt;/qt&gt;</string>
                     </property>
                 </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>emptyFidCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Send Empty FID</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Send empty FID even if one is set</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Use this if your bank does not allow sending a FID (even if there is such an id).
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
             </vbox>
         </widget>
         <spacer>

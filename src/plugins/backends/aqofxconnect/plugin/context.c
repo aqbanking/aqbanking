@@ -122,9 +122,12 @@ int AO_Context_Update(AO_CONTEXT *ctx){
     if (s)
       strncpy(ctx->fi->org, s, OFX_ORG_LENGTH-1);
 
-    s=AO_User_GetFid(ctx->user);
-    if (s)
-      strncpy(ctx->fi->fid, s, OFX_FID_LENGTH-1);
+    if (!(AO_User_GetFlags(ctx->user) &
+	  AO_USER_FLAGS_EMPTY_FID)) {
+      s=AO_User_GetFid(ctx->user);
+      if (s)
+	strncpy(ctx->fi->fid, s, OFX_FID_LENGTH-1);
+    }
 
     s=AB_User_GetUserId(ctx->user);
     if (s) {
