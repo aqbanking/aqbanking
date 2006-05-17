@@ -235,10 +235,10 @@ static int AB_Banking__LoadData(AB_BANKING *ab,
 static void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
                                                 AB_JOB_LIST2 *jl2);
 
-AB_IMEXPORTER_ACCOUNTINFO*
+
+static AB_IMEXPORTER_ACCOUNTINFO*
   AB_Banking__FindAccountInfo(AB_IMEXPORTER_CONTEXT *ctx,
-                              const char *bankId,
-                              const char *accountNr);
+                              const AB_ACCOUNT *a);
 
 
 #endif /* AQBANKING_BANKING_P_H */

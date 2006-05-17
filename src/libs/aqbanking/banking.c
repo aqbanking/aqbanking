@@ -2850,30 +2850,68 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_Banking__FindAccountInfo(AB_IMEXPORTER_CONTEXT *ctx,
-                            const char *bankId,
-			    const char *accountNr) {
-  AB_IMEXPORTER_ACCOUNTINFO *ai;
-  AB_IMEXPORTER_ACCOUNTINFO *aiFound=0;
+			    const AB_ACCOUNT *a) {
+  const char *bankId;
+  const char *accountNr;
+  const char *accountName;
 
-  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(ai) {
-    const char *s1;
-    const char *s2;
+  bankId=AB_Account_GetBankCode(a);
+  accountNr=AB_Account_GetAccountNumber(a);
+  accountName=AB_Account_GetAccountName(a);
 
-    s1=AB_ImExporterAccountInfo_GetBankCode(ai);
-    s2=AB_ImExporterAccountInfo_GetAccountNumber(ai);
-    if (bankId && s1 && strcasecmp(bankId, s1)==0) {
-      if (aiFound) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Ambiguous account specification");
-        return 0;
-      }
-      aiFound=ai;
-    }
-    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
-  }
+  if (bankId || accountNr || accountName) {
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
+    AB_IMEXPORTER_ACCOUNTINFO *aiFound=0;
 
-  return aiFound;
+    ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+    while(ai) {
+      const char *s1;
+      const char *s2;
+      const char *s3;
+
+      s1=AB_ImExporterAccountInfo_GetBankCode(ai);
+      s2=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+      s3=AB_ImExporterAccountInfo_GetAccountName(ai);
+      if (s1 || s2 || s3) {
+	int match=1;
+
+	if ((s2 && accountNr)) {
+	  /* account number is given in both, maybe bank code, too */
+	  if (strcasecmp(s2, accountNr)!=0)
+	    /* mismatch of account number */
+	    match=0;
+	  if (match && s1 && bankId) {
+	    if (strcasecmp(s1, bankId)!=0)
+	      /* mismatch of bank code */
+	      match=0;
+	  }
+	}
+	else if (s3 && accountName) {
+	  /* account name is given in both */
+	  if (strcasecmp(s3, accountName)!=0)
+	    /* mismatch of account name */
+	    match=0;
+	}
+	else {
+          /* could not match anything */
+	  match=0;
+	}
+
+	if (match) {
+	  if (aiFound) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN,
+		      "Ambiguous account specification");
+	    return 0;
+	  }
+	  aiFound=ai;
+	} /* if no mismatch */
+      } /* if any argument is given in account info */
+      ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    } /* while */
+    return aiFound;
+  } /* if there is anything in the account to cmp against */
+
+  return 0;
 }
 
 
@@ -2901,9 +2939,7 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-	  ai=AB_Banking__FindAccountInfo(ctx,
-					 AB_Account_GetBankCode(a),
-					 AB_Account_GetAccountNumber(a));
+	  ai=AB_Banking__FindAccountInfo(ctx, a);
 	  if (ai) {
             AB_ACCOUNT_STATUS *ast;
   
@@ -2923,9 +2959,7 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_Banking__FindAccountInfo(ctx,
-					 AB_Account_GetBankCode(a),
-					 AB_Account_GetAccountNumber(a));
+          ai=AB_Banking__FindAccountInfo(ctx, a);
 	  if (ai) {
             AB_ACCOUNT_STATUS *ast;
             const AB_TRANSACTION *t;
@@ -2964,9 +2998,7 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_Banking__FindAccountInfo(ctx,
-					 AB_Account_GetBankCode(a),
-					 AB_Account_GetAccountNumber(a));
+          ai=AB_Banking__FindAccountInfo(ctx, a);
 	  if (ai) {
             const AB_TRANSACTION *t;
   
@@ -2991,9 +3023,7 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_Banking__FindAccountInfo(ctx,
-					 AB_Account_GetBankCode(a),
-					 AB_Account_GetAccountNumber(a));
+          ai=AB_Banking__FindAccountInfo(ctx, a);
 	  if (ai) {
             const AB_TRANSACTION *t;
   
