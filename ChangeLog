@@ -9,7 +9,7 @@
 - fixed a problem which prevented Gnucash (and other apps which still use
   the old context-less queue execution code) from receiving account data
   for accounts for which the servers don't send bank ids.
-  This problem does not effect QBankManager, KMyMoney or AqBanking-Tool.
+  This problem does not affect QBankManager, KMyMoney or AqBanking-Tool.
 
 
 2006/05/16: Martin Preuss<martin@libchipcard.de>
