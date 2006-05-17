@@ -126,9 +126,14 @@ bool CfgTabPageUserHbci::toGui() {
 
   url=AH_User_GetServerUrl(u);
   if (url) {
-    s=GWEN_Url_GetServer(url);
-    if (s)
-      _realPage->serverEdit->setText(QString::fromUtf8(s));
+    GWEN_BUFFER *ubuf;
+
+    ubuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Url_toString(url, ubuf)==0) {
+      _realPage->serverEdit
+	->setText(QString::fromUtf8(GWEN_Buffer_GetStart(ubuf)));
+    }
+    GWEN_Buffer_free(ubuf);
   }
 
   m=AH_User_GetMedium(u);

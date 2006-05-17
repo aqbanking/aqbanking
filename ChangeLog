@@ -5,6 +5,7 @@
 2006/05/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added environment variable "AQOFX_LOG_COMM" to log the OFX communication
+- AqHBCI: fixed a bug in user page (was not setting the complete URL)
 
 
 2006/05/16: Martin Preuss<martin@libchipcard.de>
