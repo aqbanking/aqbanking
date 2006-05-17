@@ -2848,6 +2848,36 @@ int AB_Banking_ExecuteJobList(AB_BANKING *ab, AB_JOB_LIST2 *jl2){
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_Banking__FindAccountInfo(AB_IMEXPORTER_CONTEXT *ctx,
+                            const char *bankId,
+			    const char *accountNr) {
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+  AB_IMEXPORTER_ACCOUNTINFO *aiFound=0;
+
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  while(ai) {
+    const char *s1;
+    const char *s2;
+
+    s1=AB_ImExporterAccountInfo_GetBankCode(ai);
+    s2=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+    if (bankId && s1 && strcasecmp(bankId, s1)==0) {
+      if (aiFound) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Ambiguous account specification");
+        return 0;
+      }
+      aiFound=ai;
+    }
+    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+  }
+
+  return aiFound;
+}
+
+
+
 void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
                                          AB_JOB_LIST2 *jl2){
   AB_JOB_LIST2_ITERATOR *jit;
@@ -2871,10 +2901,10 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_ImExporterContext_FindAccountInfo(ctx,
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a));
-          if (ai) {
+	  ai=AB_Banking__FindAccountInfo(ctx,
+					 AB_Account_GetBankCode(a),
+					 AB_Account_GetAccountNumber(a));
+	  if (ai) {
             AB_ACCOUNT_STATUS *ast;
   
             ast=AB_ImExporterAccountInfo_GetFirstAccountStatus(ai);
@@ -2893,10 +2923,10 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_ImExporterContext_FindAccountInfo(ctx,
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a));
-          if (ai) {
+          ai=AB_Banking__FindAccountInfo(ctx,
+					 AB_Account_GetBankCode(a),
+					 AB_Account_GetAccountNumber(a));
+	  if (ai) {
             AB_ACCOUNT_STATUS *ast;
             const AB_TRANSACTION *t;
   
@@ -2934,10 +2964,10 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_ImExporterContext_FindAccountInfo(ctx,
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a));
-          if (ai) {
+          ai=AB_Banking__FindAccountInfo(ctx,
+					 AB_Account_GetBankCode(a),
+					 AB_Account_GetAccountNumber(a));
+	  if (ai) {
             const AB_TRANSACTION *t;
   
             t=AB_ImExporterAccountInfo_GetFirstStandingOrder(ai);
@@ -2961,10 +2991,10 @@ void AB_Banking__DistribContextAmongJobs(AB_IMEXPORTER_CONTEXT *ctx,
   
           a=AB_Job_GetAccount(j);
           assert(a);
-          ai=AB_ImExporterContext_FindAccountInfo(ctx,
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a));
-          if (ai) {
+          ai=AB_Banking__FindAccountInfo(ctx,
+					 AB_Account_GetBankCode(a),
+					 AB_Account_GetAccountNumber(a));
+	  if (ai) {
             const AB_TRANSACTION *t;
   
             t=AB_ImExporterAccountInfo_GetFirstDatedTransfer(ai);
