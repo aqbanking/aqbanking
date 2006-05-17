@@ -859,7 +859,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  if (1) {
+  if (getenv("AQOFX_LOG_COMM")) {
     FILE *f;
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
@@ -962,7 +962,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
   /* release connection ressources */
   GWEN_NetLayer_free(nl);
 
-  if (1) {
+  if (getenv("AQOFX_LOG_COMM")) {
     FILE *f;
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,

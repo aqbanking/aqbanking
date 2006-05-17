@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added environment variable "AQOFX_LOG_COMM" to log the OFX communication
+
+
 2006/05/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqOfxConnect: Added a user flag which makes the backend not send the

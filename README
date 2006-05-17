@@ -35,6 +35,7 @@
                8.2.   AQBANKING_STORE_JOBLOGS
                8.3.   AQHBCI_LOGBOOKED
                8.4.   AQHBCI_DEBUG_JOBS
+               8.5.   AQOFX_LOG_COMM
                9.   Security in PIN/TAN Mode
                10.  Thanks
 
@@ -435,6 +436,14 @@ a problem in the SWIFT parser.
 ----------------------
 If this variable exists then additional debugging data is stored with each
 job.
+
+
+8.5. AQOFX_LOG_COMM
+-------------------
+If this variable exists then all OFX communication is logged to /tmp/ofx.log.
+This is only needed when debugging AqOfxConnect.
+WARNING: This might expose your user id and password to everyone who can read
+that file!
 
 
 
