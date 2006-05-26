@@ -3782,7 +3782,6 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
   char *s;
   char *pfront;
   assert(ab);
-  assert(backend);
   assert(pbuf);
 
   pl=AB_Banking_GetWizardDescrs(ab);

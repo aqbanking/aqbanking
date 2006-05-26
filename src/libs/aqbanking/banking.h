@@ -310,9 +310,14 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
  * This function simpifies wizard handling. It searches for a wizard for
  * the given frontends.
  * @param ab pointer to the AB_BANKING object
- * @param backend no longer used
- * @param frontends This is a semicolon separated list of acceptable frontends
- * The following lists merely are suggestions:
+ *
+ * @param backend This argument is no longer being used.  For
+ * aqbanking >= 2.0.1 it can be NULL, but for aqbanking <= 2.0.0
+ * it must be set to non-null.  The argument is completely ignored
+ * since aqbanking>=1.9.0.
+ *
+ * @param frontends A semicolon-separated list of acceptable
+ * frontends, or NULL.  The following strings are suggested:
  * <table>
  *  <tr>
  *    <td>KDE Applications</td>
@@ -331,8 +336,9 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
  *    <td>gtk;gnome;qt;kde</td>
  *  </tr>
  * </table>
- * You can always add an asterisk ("*") to the list to accept any other
- * frontend (or pass a NULL pointer to accept the first valid frontend).
+ * Alternatively, you can always add an asterisk ("*") to the list
+ * to accept any other frontend, or pass a NULL pointer to accept
+ * the first valid frontend.
  */
 AQBANKING_API
 int AB_Banking_FindWizard(AB_BANKING *ab,
