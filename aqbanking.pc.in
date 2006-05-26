@@ -44,5 +44,5 @@ Description: A library for online banking functions and financial data import/ex
 
 Version: @VERSION@
 Libs: @aqbanking_ldflags@ @aqbanking_libs@
-Cflags: @aqbanking_includes@
+Cflags: @aqbanking_includes@ @gwenhywfar_includes@
 

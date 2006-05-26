@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006-05-26   Christian Stimming <stimming@tuhh.de>
+
+	* aqbanking.pc.in: Add gwenhywfar_includes to CFLAGS because those
+	are needed by dependent packages as well due to included gwen
+	headers in aqbanking headers.
+
 2006/05/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed internal function AB_Banking__FindAccountInfo()
