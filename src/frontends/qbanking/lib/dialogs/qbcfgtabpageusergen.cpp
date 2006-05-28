@@ -262,8 +262,8 @@ void QBCfgTabPageUserGeneral::slotBankIdButtonClicked() {
       const char *t;
 
       t=AB_BankInfo_GetBankId(bi);
-      assert(t);
-      _realPage->bankIdEdit->setText(QString::fromUtf8(t));
+      if (t)
+	_realPage->bankIdEdit->setText(QString::fromUtf8(t));
       AB_BankInfo_free(bi);
     }
   }

@@ -2,11 +2,19 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- frontends/qbanking/lib/dialogs/qbcfgtabpageusergen.cpp:
+  - removed an assertion to at least not crash applications in case a bank
+    is selected vor which no routing number is present
+
+
 2006-05-26   Christian Stimming <stimming@tuhh.de>
 
 	* aqbanking.pc.in: Add gwenhywfar_includes to CFLAGS because those
 	are needed by dependent packages as well due to included gwen
 	headers in aqbanking headers.
+
 
 2006/05/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
