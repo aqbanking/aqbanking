@@ -2,6 +2,21 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- src/plugins/imexporter/yellownet/yellownet.c: 
+  - now also reads LNS entries
+  - now also reads account currency
+- src/libs/imexporter*{c,h}:  
+  - added functions AB_ImExporterAccountInfo_GetCurrency() and
+    AB_ImExporterAccountInfo_SetCurrency()
+- some minor fixes in other importers
+- pulled in latest AqYellowNet plugin which now uses the XML files provided
+  by PostFinance instead of MT940. This is because it is rather difficult to
+  make PostFinance send MT940 reports so we now use the format which is
+  supported by them in any case.
+
+
 2006/05/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - frontends/qbanking/lib/dialogs/qbcfgtabpageusergen.cpp:

@@ -359,6 +359,18 @@ void AB_ImExporterAccountInfo_SetIban(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                       const char *s);
 
 /**
+ * Account currency
+ */
+AQBANKING_API 
+const char*
+AB_ImExporterAccountInfo_GetCurrency(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+void AB_ImExporterAccountInfo_SetCurrency(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                          const char *s);
+
+
+/**
  * Name of the account' owner.
  * Used when importing data, not used when exporting.
  */

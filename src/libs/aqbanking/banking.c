@@ -2712,6 +2712,17 @@ int AB_Banking_ExecuteQueueWithCtx(AB_BANKING *ab,
     return rv;
   }
 
+#if 0
+  if (1) {
+    GWEN_DB_NODE *dbTest;
+
+    dbTest=GWEN_DB_Group_new("ctx");
+    AB_ImExporterContext_toDb(ctx, dbTest);
+    GWEN_DB_WriteFile(dbTest, "/tmp/queue.ctx", GWEN_DB_FLAGS_DEFAULT);
+    GWEN_DB_Group_free(dbTest);
+  }
+#endif
+
   return 0;
 }
 
@@ -4464,7 +4475,9 @@ AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
 
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(AQBANKING_LOGDOMAIN, err);
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load provider plugin \"%s\"", modname);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load provider plugin \"%s\"",
+              modname);
     GWEN_Buffer_free(mbuf);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -4494,7 +4507,9 @@ AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
   assert(fn);
   ie=fn(ab, db);
   if (!ie) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No im/exporter created");
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error in plugin [%s]: No im/exporter created",
+              dirpath);
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;

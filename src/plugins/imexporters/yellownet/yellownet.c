@@ -77,6 +77,8 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 
     nn=GWEN_XMLNode_FindFirstTag(n, "C078", 0, 0);
     if (nn) {
+      GWEN_XMLNODE *nnn;
+
       /* account number */
       s=GWEN_XMLNode_GetCharValue(nn, "D_3194", 0);
       if (s)
@@ -85,6 +87,13 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
       s=GWEN_XMLNode_GetCharValue(nn, "D_3192", 0);
       if (s)
 	AB_ImExporterAccountInfo_SetIban(ai, s);
+      /* currency */
+      nnn=GWEN_XMLNode_FindFirstTag(nn, "D_6345", 0, 0);
+      if (nnn) {
+        s=GWEN_XMLNode_GetProperty(nnn, "value", 0);
+        if (s)
+          AB_ImExporterAccountInfo_SetCurrency(ai, s);
+      }
     }
 
     /* account number */
@@ -108,9 +117,15 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 	nn=GWEN_XMLNode_FindFirstTag(n, "C058", 0, 0);
 	if (nn) {
 	  s=GWEN_XMLNode_GetCharValue(nn, "D_3124", 0);
-	  if (s && *s)
-	    AB_ImExporterAccountInfo_SetOwner(ai, s);
-	}
+          if (s && *s) {
+            GWEN_BUFFER *xbuf;
+
+            xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+            AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
+            AB_ImExporterAccountInfo_SetOwner(ai, GWEN_Buffer_GetStart(xbuf));
+            GWEN_Buffer_free(xbuf);
+          }
+        }
       }
     }
   }
@@ -184,8 +199,9 @@ GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
 
 
 
-AB_TRANSACTION *AB_ImExporterYN__ReadLNE(AB_IMEXPORTER *ie,
-					 GWEN_XMLNODE *node) {
+AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
+                                             AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                             GWEN_XMLNODE *node) {
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(node, "SG6", 0, 0);
@@ -211,10 +227,10 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE(AB_IMEXPORTER *ie,
       /* Gutschrift */
       val=AB_ImExporterYN__ReadValue(ie, nn, 210);
       if (val) {
-	if (AB_Value_IsZero(val)) {
-	  AB_Value_free(val);
-	  val=0;
-	}
+        if (AB_Value_IsZero(val)) {
+          AB_Value_free(val);
+          val=0;
+        }
       }
       if (val==0) {
 	val=AB_ImExporterYN__ReadValue(ie, nn, 211);
@@ -224,7 +240,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE(AB_IMEXPORTER *ie,
     }
     if (val==0)
       val=AB_Value_new(0.0, 0);
-
+    AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
     AB_Transaction_SetValue(t, val);
     AB_Value_free(val);
     val=0;
@@ -240,8 +256,19 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE(AB_IMEXPORTER *ie,
 	GWEN_XMLNODE *nData;
   
 	nData=GWEN_XMLNode_GetFirstData(nnn);
-	if (nData)
-	  AB_Transaction_AddPurpose(t, GWEN_XMLNode_GetData(nData), 0);
+        if (nData) {
+          const char *s;
+
+          s=GWEN_XMLNode_GetData(nData);
+          if (s) {
+            GWEN_BUFFER *xbuf;
+
+            xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+            AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
+            AB_Transaction_AddPurpose(t, GWEN_Buffer_GetStart(xbuf), 0);
+            GWEN_Buffer_free(xbuf);
+          }
+        }
 	nnn=GWEN_XMLNode_FindNextTag(nnn, "D_4440", 0, 0);
       }
     }
@@ -269,15 +296,18 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
       const char *s;
 
       s=GWEN_XMLNode_GetProperty(nn, "Value", 0);
-      if (s && strcasecmp(s, "LNE")==0) {
+      if (s &&
+          (strcasecmp(s, "LNE")==0 ||
+           strcasecmp(s, "LNS")==0)
+         ) {
 	AB_TRANSACTION *t;
 
-	t=AB_ImExporterYN__ReadLNE(ie, n);
+	t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, n);
 	if (t) {
 	  const char *s;
 
 	  s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
-          AB_Transaction_SetLocalAccountNumber(t, s);
+	  AB_Transaction_SetLocalAccountNumber(t, s);
 	  s=AB_ImExporterAccountInfo_GetIban(ai);
 	  AB_Transaction_SetLocalIban(t, s);
 	  AB_ImExporterAccountInfo_AddTransaction(ai, t);
@@ -329,6 +359,7 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 	  AB_ACCOUNT_STATUS *ast;
 	  AB_BALANCE *bal;
 
+          AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
 	  ast=AB_AccountStatus_new();
 	  bal=AB_Balance_new(val, ti);
 

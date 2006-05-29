@@ -270,6 +270,13 @@ int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
       }
 
       /* it doesn't, so there is a CR/LF inside the tag */
+      if (GWEN_Buffer_GetUsedBytes(lbuf)>AHB_SWIFT_MAXLINELEN*4) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Too many bytes in line, maybe not SWIFT");
+        GWEN_Buffer_free(lbuf);
+        return -1;
+      }
+
       GWEN_Buffer_AppendByte(lbuf, 10);
       GWEN_Buffer_AppendString(lbuf, buffer);
     } /* for */

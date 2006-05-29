@@ -50,8 +50,9 @@ AB_IMEXPORTER_ACCOUNTINFO*
                                    GWEN_XMLNODE *doc);
 
 
-AB_TRANSACTION *AB_ImExporterYN__ReadLNE(AB_IMEXPORTER *ie,
-                                         GWEN_XMLNODE *node);
+AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
+                                             AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                             GWEN_XMLNODE *node);
 
 int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
                                       AB_IMEXPORTER_ACCOUNTINFO *ai,
