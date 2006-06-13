@@ -883,7 +883,7 @@ int QBanking::init(){
 			  QMessageBox::Ok,QMessageBox::NoButton);
     delete _simpleCallback;
     _simpleCallback=0;
-    return false;
+    return -1;
   }
 
   _fastCallback=new QBFastCallback(GWEN_WAITCALLBACK_ID_FAST);
@@ -904,7 +904,7 @@ int QBanking::init(){
 			  QMessageBox::Ok,QMessageBox::NoButton);
     delete _fastCallback;
     _fastCallback=0;
-    return false;
+    return -1;
   }
 
   /* create cfg module plugin manager */
@@ -920,7 +920,7 @@ int QBanking::init(){
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(0,
               "Could not register cfg module plugin manager");
-    return false;
+    return -1;
   }
   _pluginManagerCfgModules=pm;
 

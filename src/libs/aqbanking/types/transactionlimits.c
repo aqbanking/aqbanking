@@ -16,6 +16,7 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/error.h>
+#include <aqbanking/textkeydescr.h>
 
 
 GWEN_LIST_FUNCTIONS(AB_TRANSACTION_LIMITS, AB_TransactionLimits)
@@ -31,6 +32,7 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_new() {
   st->_usage=1;
   GWEN_LIST_INIT(AB_TRANSACTION_LIMITS, st)
   st->valuesTextKey=GWEN_StringList_new();
+  st->textKeys=AB_TextKeyDescr_List_new();
   st->valuesCycleWeek=GWEN_StringList_new();
   st->valuesCycleMonth=GWEN_StringList_new();
   st->valuesExecutionDayWeek=GWEN_StringList_new();
@@ -45,6 +47,8 @@ void AB_TransactionLimits_free(AB_TRANSACTION_LIMITS *st) {
     if (--(st->_usage)==0) {
   if (st->valuesTextKey)
     GWEN_StringList_free(st->valuesTextKey);
+  if (st->textKeys)
+    AB_TextKeyDescr_List_free(st->textKeys);
   if (st->valuesCycleWeek)
     GWEN_StringList_free(st->valuesCycleWeek);
   if (st->valuesCycleMonth)
@@ -90,6 +94,8 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
   st->minLenTextKey=d->minLenTextKey;
   if (d->valuesTextKey)
     st->valuesTextKey=GWEN_StringList_dup(d->valuesTextKey);
+  if (d->textKeys)
+    st->textKeys=AB_TextKeyDescr_List_dup(d->textKeys);
   st->maxLenCustomerReference=d->maxLenCustomerReference;
   st->minLenCustomerReference=d->minLenCustomerReference;
   st->maxLenBankReference=d->maxLenBankReference;
@@ -187,6 +193,20 @@ int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db)
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (st->textKeys)
+  if (1) {
+    GWEN_DB_NODE *dbT;
+    AB_TEXTKEY_DESCR *e;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "textKeys");
+    assert(dbT);
+    e=AB_TextKeyDescr_List_First(st->textKeys);
+    while(e) {
+      if (AB_TextKeyDescr_toDb(e, GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_CREATE_GROUP, "element")))
+        return -1;
+      e=AB_TextKeyDescr_List_Next(e);
+    } /* while */
+  } /* if (1) */
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLenCustomerReference", st->maxLenCustomerReference))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minLenCustomerReference", st->minLenCustomerReference))
@@ -336,6 +356,29 @@ int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db) {
       AB_TransactionLimits_AddValuesTextKey(st, s, 0);
     } /* for */
   }
+  st->textKeys=AB_TextKeyDescr_List_new();
+  if (1) {/* just for local vars */
+    GWEN_DB_NODE *dbT;
+    AB_TEXTKEY_DESCR *e;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "textKeys");
+    if (dbT) {
+      GWEN_DB_NODE *dbT2;
+
+      dbT2=GWEN_DB_FindFirstGroup(dbT, "element");
+      while(dbT2) {
+        e=AB_TextKeyDescr_fromDb(dbT2);
+        if (!e) {
+          DBG_ERROR(0, "Bad element for type \"AB_TEXTKEY_DESCR\"");
+          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+            GWEN_DB_Dump(dbT2, stderr, 2);
+          AB_TransactionLimits_free(st);
+          return 0;
+        }
+        AB_TextKeyDescr_List_Add(e, st->textKeys);    dbT2=GWEN_DB_FindNextGroup(dbT2, "element");
+      } /* while */
+    } /* if (dbT) */
+  } /* if (1) */
   AB_TransactionLimits_SetMaxLenCustomerReference(st, GWEN_DB_GetIntValue(db, "maxLenCustomerReference", 0, 0));
   AB_TransactionLimits_SetMinLenCustomerReference(st, GWEN_DB_GetIntValue(db, "minLenCustomerReference", 0, 0));
   AB_TransactionLimits_SetMaxLenBankReference(st, GWEN_DB_GetIntValue(db, "maxLenBankReference", 0, 0));
@@ -797,6 +840,38 @@ void AB_TransactionLimits_ClearValuesTextKey(AB_TRANSACTION_LIMITS *st) {
 
 int AB_TransactionLimits_HasValuesTextKey(const AB_TRANSACTION_LIMITS *st, const char *d) {
   return GWEN_StringList_HasString(st->valuesTextKey, d);
+}
+
+
+
+
+AB_TEXTKEY_DESCR_LIST *AB_TransactionLimits_GetTextKeys(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->textKeys;
+}
+
+
+void AB_TransactionLimits_SetTextKeys(AB_TRANSACTION_LIMITS *st, AB_TEXTKEY_DESCR_LIST *d) {
+  assert(st);
+  if (st->textKeys)
+    AB_TextKeyDescr_List_free(st->textKeys);
+  if (d) {
+    AB_TEXTKEY_DESCR *e;
+
+  st->textKeys=AB_TextKeyDescr_List_new();
+    e=AB_TextKeyDescr_List_First(d);
+    while(e) {
+      AB_TEXTKEY_DESCR *ne;
+
+      ne=AB_TextKeyDescr_dup(e);
+      assert(ne);
+      AB_TextKeyDescr_List_Add(ne, st->textKeys);
+      e=AB_TextKeyDescr_List_Next(e);
+    } /* while (e) */
+  } /* if LIST */
+  else
+    st->textKeys=0;
+  st->_modified=1;
 }
 
 

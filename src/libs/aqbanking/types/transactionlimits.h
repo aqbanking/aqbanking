@@ -252,6 +252,15 @@ Set this property with @ref AB_TransactionLimits_SetValuesTextKey,
 get it with @ref AB_TransactionLimits_GetValuesTextKey
 </p>
 
+@anchor AB_TRANSACTION_LIMITS_TextKeys
+<h4>TextKeys</h4>
+<p>
+This list of text key descriptions may contain an entry for every supported text key. However, not all backends fill this list and this list does not have to be complete. If you want to know which textkeys are supported please use valuesTextKey instead.</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetTextKeys, 
+get it with @ref AB_TransactionLimits_GetTextKeys
+</p>
+
 <h3>Customer Reference</h3>
 <p>
 Limits for customer reference.</p>
@@ -518,6 +527,7 @@ typedef struct AB_TRANSACTION_LIMITS AB_TRANSACTION_LIMITS;
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/error.h>
+#include <aqbanking/textkeydescr.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -840,6 +850,15 @@ AQBANKING_API void AB_TransactionLimits_AddValuesTextKey(AB_TRANSACTION_LIMITS *
 AQBANKING_API void AB_TransactionLimits_RemoveValuesTextKey(AB_TRANSACTION_LIMITS *st, const char *d);
 AQBANKING_API void AB_TransactionLimits_ClearValuesTextKey(AB_TRANSACTION_LIMITS *st);
 AQBANKING_API int AB_TransactionLimits_HasValuesTextKey(const AB_TRANSACTION_LIMITS *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_TextKeys
+*/
+AQBANKING_API AB_TEXTKEY_DESCR_LIST *AB_TransactionLimits_GetTextKeys(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_TextKeys
+*/
+AQBANKING_API void AB_TransactionLimits_SetTextKeys(AB_TRANSACTION_LIMITS *el, AB_TEXTKEY_DESCR_LIST *d);
 
 /*@}*/
 

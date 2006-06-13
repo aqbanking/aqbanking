@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added textkeydescr to transactionLimits: This allows for descriptions of
+  textkeys used by a backend (as needed for Swiss EZAG)
+
+
 2006/05/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/plugins/imexporter/yellownet/yellownet.c: 
@@ -21,7 +27,7 @@
 -------------------------------------------------
 - frontends/qbanking/lib/dialogs/qbcfgtabpageusergen.cpp:
   - removed an assertion to at least not crash applications in case a bank
-    is selected vor which no routing number is present
+    is selected for which no routing number is present
 
 
 2006-05-26   Christian Stimming <stimming@tuhh.de>
@@ -131,7 +137,7 @@ MARK: released AqBanking - 2.0.0 (2006-04-03)
 
 2006/04/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- imported int SVN
+- imported into SVN
 
 
 2006-03-29   Christian Stimming <stimming@tuhh.de>

@@ -35,6 +35,7 @@ struct AB_TRANSACTION_LIMITS {
   int maxLenTextKey;
   int minLenTextKey;
   GWEN_STRINGLIST *valuesTextKey;
+  AB_TEXTKEY_DESCR_LIST *textKeys;
   int maxLenCustomerReference;
   int minLenCustomerReference;
   int maxLenBankReference;
@@ -152,6 +153,7 @@ Limits for remote IAN.*/
  *
 Limits for textKey.*/
 /*@{*/
+
 
 
 

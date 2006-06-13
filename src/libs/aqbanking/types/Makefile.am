@@ -22,6 +22,8 @@ noinst_HEADERS=\
   pin_p.h \
   split_l.h \
   split_p.h \
+  textkeydescr_l.h \
+  textkeydescr_p.h \
   transaction_l.h \
   transaction_p.h \
   transactionlimits_l.h \
@@ -39,6 +41,7 @@ iheader_HEADERS=\
   bankinfo.h \
   bankinfoservice.h \
   split.h \
+  textkeydescr.h \
   transaction.h \
   transactionfns.h \
   transactionlimits.h \
@@ -55,6 +58,7 @@ libtypes_la_SOURCES=\
   eutransferinfo.c \
   pin.c \
   split.c \
+  textkeydescr.c \
   transaction.c \
   transactionfns.c \
   transactionlimits.c \

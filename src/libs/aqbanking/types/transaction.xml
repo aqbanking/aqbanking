@@ -32,6 +32,14 @@
       <function type="free" name="AB_Split_List_free" />
     </functions>
   </type>
+
+  <type id="AB_TEXTKEY_DESCR_LIST" prefix="AB_TextKeyDescr_List" >
+    <functions>
+      <function type="new" name="AB_TextKeyDescr_List_new" />
+      <function type="dup" name="AB_TextKeyDescr_List_dup" />
+      <function type="free" name="AB_TextKeyDescr_List_free" />
+    </functions>
+  </type>
   
   <type id="GWEN_TYPE_UINT32" dbtype="int" />
 
@@ -106,6 +114,37 @@
 
   </type>
 
+
+  <type id="AB_TEXTKEY_DESCR" 
+        prefix="AB_TextKeyDescr" 
+        class="TextKeyDescr"
+        access="public"
+        filename="textkeydescr"
+        list="public"
+        list2="public" >
+    <descr>
+      This type contains the description of a textkey.
+      Please note that all text fields are in UTF-8.
+    </descr>
+    <headers>
+      <header type="sys" >aqbanking/error.h</header>
+    </headers>
+  
+    <elem name="value" type="int" />
+    <elem name="name" type="char" ptr="1" >
+      <descr>
+        This is the localized name for the text key value given above.
+      </descr>
+    </elem>
+    <elem name="descr" type="char" ptr="1" >
+      <descr>
+        This is the localized description for the text key value given above.
+      </descr>
+    </elem>
+
+  </type>
+
+
   <type id="AB_TRANSACTION_LIMITS" 
         prefix="AB_TransactionLimits" 
         class="TransactionLimits"
@@ -158,6 +197,7 @@
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >gwenhywfar/stringlist.h</header>
       <header type="sys" >aqbanking/error.h</header>
+      <header type="sys" >aqbanking/textkeydescr.h</header>
     </headers>
     
     <group name="Issuer Name" >
@@ -245,6 +285,15 @@
           This string list contains one entry for every supported text key.
           The values must be positive integers in decimal form (no leading
           zero, no comma or decimal point).
+        </descr>
+      </elem>
+      <elem name="textKeys" type="AB_TEXTKEY_DESCR_LIST" ptr="1" mode="list"
+          elemType="AB_TEXTKEY_DESCR" const="0" init="1" copy="1" >
+        <descr>
+          This list of text key descriptions may contain an entry for every
+          supported text key. However, not all backends fill this list and
+          this list does not have to be complete. If you want to know
+          which textkeys are supported please use valuesTextKey instead.
         </descr>
       </elem>
     </group>

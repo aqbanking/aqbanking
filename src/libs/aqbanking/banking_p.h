@@ -50,6 +50,7 @@
 struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
   int isOpen;
+  int isBasicsOpen;
   char *appName;
   char *appEscName;
   int appExtensions;
