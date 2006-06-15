@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 2.1.0 (2006-06-15)
+===========================================================================
+
+The YellowNet plugin now uses XML files provided by PostFinance instead of
+hard-to-get MT940 files when downloading transaction statements. It also
+contains some OFX-related fixes and an improved German translation.
+
+
+===========================================================================
                Released AqBanking - 2.0.0 (2006-04-03)
 ===========================================================================
 

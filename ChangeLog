@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released AqBanking - 2.1.0 (2006-06-15)
+===========================================================================
+
+
 2006/06/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added textkeydescr to transactionLimits: This allows for descriptions of
