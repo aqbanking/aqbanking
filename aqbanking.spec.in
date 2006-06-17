@@ -345,12 +345,14 @@ make install-strip \
 %{imex_plugindir}/openhbci1.*
 %{imex_plugindir}/qif.*
 %{imex_plugindir}/swift.*
+%{imex_plugindir}/yellownet.*
 %{imex_datadir}/csv
 %{imex_datadir}/dtaus
 %{imex_datadir}/eri
 %{imex_datadir}/eri2
 %{imex_datadir}/openhbci1
 %{imex_datadir}/swift
+%{imex_datadir}/yellownet
 ### The aqhbci files
 %{_bindir}/aqhbci-tool
 %{_libdir}/libaqhbci.so.*
