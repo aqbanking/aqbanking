@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- aqyellownet-config --vstring returned broken data. Fixed that.
+
+
 ===========================================================================
 MARK: released AqBanking - 2.1.0 (2006-06-15)
 ===========================================================================

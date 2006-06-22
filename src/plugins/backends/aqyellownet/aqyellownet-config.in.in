@@ -23,22 +23,22 @@ for d in $*; do
 	    result="$result @aqyellownet_data@"
 	    ;;
 	--vmajor)
-	    result="$result @AQYELLOWNET_VERSION_MAJOR@"
+	    result="$result @AQBANKING_VERSION_MAJOR@"
 	    ;;
 	--vminor)
-	    result="$result @AQYELLOWNET_VERSION_MINOR@"
+	    result="$result @AQBANKING_VERSION_MINOR@"
 	    ;;
 	--vpatchlevel)
-	    result="$result @AQYELLOWNET_VERSION_PATCHLEVEL@"
+	    result="$result @AQBANKING_VERSION_PATCHLEVEL@"
 	    ;;
 	--vbuild)
-	    result="$result @AQYELLOWNET_VERSION_BUILD@"
+	    result="$result @AQBANKING_VERSION_BUILD@"
 	    ;;
 	--vtag)
-	    result="$result @AQYELLOWNET_VERSION_TAG@"
+	    result="$result @AQBANKING_VERSION_TAG@"
 	    ;;
         --vstring)
-	    result="$result @AQYELLOWNET_VERSION_MAJOR@.@AQYELLOWNET_VERSION_MINOR@.@AQYELLOWNET_VERSION_PATCHLEVEL@"
+	    result="$result @AQBANKING_VERSION_MAJOR@.@AQBANKING_VERSION_MINOR@.@AQBANKING_VERSION_PATCHLEVEL@"
             ;;
 	*)
 	    echo "Usage:"
