@@ -5,6 +5,10 @@
 2006/06/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - aqyellownet-config --vstring returned broken data. Fixed that.
+- added function AB_ImExporterContext_ReadDb()
+- added im-/exporter plugin which reads/writes XML files
+- let svn write the revision number directly into configure.ac on each 
+  svn update. Fixes all problems with using svninfo.
 
 
 ===========================================================================

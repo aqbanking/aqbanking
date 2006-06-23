@@ -1,5 +1,14 @@
 # Process this file with autoconf to produce a configure script.
 
+###-------------------------------------------------------------------------
+#
+# The following line makes sure that this file is always touched when a new
+# revision is checked out.
+#
+# $Rev$
+#
+
+
 AC_PREREQ(2.56)
 AC_INIT
 AC_CANONICAL_TARGET([])
@@ -691,7 +700,7 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(2,1,0,0)
+AC_GWENHYWFAR(2,3,0,1075)
 
 all_includes="$all_includes $gwenhywfar_includes"
 XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
@@ -1731,6 +1740,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/yellownet/ressource.rc
   src/plugins/imexporters/yellownet/profiles/Makefile
   src/plugins/imexporters/yellownet/profiles/default.conf
+  src/plugins/imexporters/xmldb/Makefile
+  src/plugins/imexporters/xmldb/xmldb.xml
+  src/plugins/imexporters/xmldb/ressource.rc
+  src/plugins/imexporters/xmldb/profiles/Makefile
+  src/plugins/imexporters/xmldb/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml

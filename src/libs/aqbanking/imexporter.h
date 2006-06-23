@@ -166,6 +166,11 @@ AQBANKING_API
 AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db);
 
 
+AQBANKING_API 
+int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
+                                GWEN_DB_NODE *db);
+
+
 /**
  * Adds the content of the second context to the first one.
  * Frees the second context.

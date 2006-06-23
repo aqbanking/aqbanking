@@ -492,7 +492,6 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
 }
 
 
-
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
@@ -1104,11 +1103,10 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 
 
 
-AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db) {
-  AB_IMEXPORTER_CONTEXT *iec;
+int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
+                                GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbT;
 
-  iec=AB_ImExporterContext_new();
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 		       "accountInfoList");
   if (dbT) {
@@ -1123,6 +1121,16 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db) {
     }
   }
 
+  return 0;
+}
+
+
+
+AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_fromDb(GWEN_DB_NODE *db) {
+  AB_IMEXPORTER_CONTEXT *iec;
+
+  iec=AB_ImExporterContext_new();
+  AB_ImExporterContext_ReadDb(iec, db);
   return iec;
 }
 
