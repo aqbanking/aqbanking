@@ -366,6 +366,22 @@
     <ELEM name="job" type="an" maxsize="6" />
     <ELEM name="needTan" type="an" maxsize="1" />
   </GROUPdef>
+
+
+   <GROUPdef id="tanMethod" delimiter=":" terminator="" version="1" >
+     <ELEM name="function" type="num" maxsize="3" />
+     <ELEM name="process" type="num" size="1" />
+     <ELEM name="methodId" type="ascii" />
+     <ELEM name="methodName" type="ascii" maxsize="30" />
+     <ELEM name="tanMaxLen" type="num" maxsize="2" />
+     <ELEM name="formatId" type="ascii" />
+     <ELEM name="prompt" type="ascii" maxsize="30" />
+     <ELEM name="returnMaxLen" type="num" maxsize="3" />
+     <ELEM name="maxActiveLists" type="num" size="1" minnum="0" />
+     <ELEM name="multiTanAllowed" type="alpha" size="1" />
+     <ELEM name="timeShiftAllowed" type="alpha" size="1" />
+   </GROUPdef>
+
 </GROUPs>
 
 

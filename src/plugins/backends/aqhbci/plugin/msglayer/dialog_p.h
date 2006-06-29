@@ -34,6 +34,9 @@ struct AH_DIALOG {
 
   GWEN_DB_NODE *globalValues;
   char *logName;
+
+  GWEN_TYPE_UINT32 itanMethod;
+
 };
 
 

@@ -954,7 +954,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
 
             if (code>=9000)
               ll=AB_Banking_LogLevelError;
-            else if (code>=3000)
+            else if (code>=3000 && code!=3920)
               ll=AB_Banking_LogLevelWarn;
             else
               ll=AB_Banking_LogLevelInfo;
@@ -971,6 +971,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
                        GWEN_Buffer_GetStart(lbuf));
             GWEN_Buffer_free(lbuf);
           }
+
           /* found a result */
           r=AH_Result_new(code,
                           text,
@@ -1142,7 +1143,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
     }
     if (dbRd) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "Checking group \"%s\"", GWEN_DB_GroupName(dbRd));
+                 "Checking group \"%s\"", GWEN_DB_GroupName(dbRd));
       if (strcasecmp(GWEN_DB_GroupName(dbRd), "bpd")==0){
         AH_BPD *bpd;
         GWEN_DB_NODE *n;
@@ -1292,6 +1293,53 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         } /* while */
         modCust=1;
       } /* if PIN/TAN extension found */
+
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0){
+        GWEN_DB_NODE *dbRes;
+
+        dbRes=GWEN_DB_GetFirstGroup(dbRd);
+        while(dbRes) {
+          if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
+            int code;
+            const char *text;
+  
+            code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
+            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+            if (code==3920) {
+              int i;
+
+              AH_User_SetTanMethods(u, 0);
+              for (i=0; ; i++) {
+                int j;
+
+                j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
+                if (j==0)
+                  break;
+                switch(j) {
+                case 999:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
+                  break;
+                case 991:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_1);
+                  break;
+                case 992:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_2);
+                  break;
+                default:
+                  DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown TAN method %d", j);
+                  break;
+                }
+              } /* for */
+              if (i==0)
+                AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
+            }
+          } /* if result */
+          dbRes=GWEN_DB_GetNextGroup(dbRes);
+        } /* while */
+      }
 
       else {
         GWEN_XMLNODE *bpdn;

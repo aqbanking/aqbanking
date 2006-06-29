@@ -123,6 +123,22 @@ static int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_Tan
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+typedef struct AH_JOB_TAN AH_JOB_TAN;
+struct AH_JOB_TAN {
+  char *challenge;
+};
+static void AH_Job_Tan_FreeData(void *bp, void *p);
+static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
+                               AH_JOB_EXCHANGE_MODE m);
+
+
+
 #endif /* AH_ADMINJOBS_P_H */
 
 

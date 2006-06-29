@@ -133,6 +133,14 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       }
     }
 
+    if (oldVersion<((2<<24) | (1<<16) | (1<<8) | 1)) {
+      rv=AH_HBCI_UpdateUser_2_1_1_1(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
     /* insert more updates here */
 
 
@@ -810,6 +818,17 @@ int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     }
   }
 
+  return 0;
+}
+
+
+
+int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_TYPE_UINT32 tm;
+
+  tm=AH_USER_TANMETHOD_SINGLE_STEP;
+  AH_User_TanMethods_toDb(db, "tanMethods", tm);
+  AH_User_TanMethods_toDb(db, "selectedTanMethod", tm);
   return 0;
 }
 

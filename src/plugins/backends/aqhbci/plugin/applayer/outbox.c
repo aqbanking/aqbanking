@@ -774,19 +774,32 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 				     AH_JOBQUEUE *jq){
   int rv;
 
-  rv=AH_Outbox__CBox_SendQueue(cbox, timeout, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
-    return rv;
+  if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
+      AH_Dialog_GetItanMethod(dlg)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "iTAN mode");
+
+    rv=AH_Outbox__CBox_Itan(cbox, dlg, jq, timeout);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Normal mode");
+    rv=AH_Outbox__CBox_SendQueue(cbox, timeout, dlg, jq);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
+      return rv;
+    }
 
-  AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded,
-				  AH_JobStatusSent);
+    AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded,
+                                    AH_JobStatusSent);
 
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
-    return rv;
+    rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
+      return rv;
+    }
   }
 
   return 0;
@@ -805,6 +818,8 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating dialog open request");
   if ((jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) ||
       (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)) {
+    GWEN_TYPE_UINT32 tm;
+
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
 	       "Creating non-anonymous dialog open request");
@@ -817,6 +832,12 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
       AH_Job_AddSigner(jDlgOpen,
                        AB_User_GetUserId(cbox->user));
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
+
+    tm=AH_User_GetSelectedTanMethod(cbox->user);
+    if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan &&
+        tm && tm!=AH_USER_TANMETHOD_SINGLE_STEP){
+      AH_Dialog_SetItanMethod(dlg, tm);
+    }
   }
   else {
     /* neither sign nor crypt, use anonymous dialog */
@@ -1985,6 +2006,8 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
 
 
 
+#include "itan.inc"
+#include "itan1.inc"
 
 
 

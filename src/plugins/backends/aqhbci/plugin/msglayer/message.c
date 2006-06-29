@@ -189,6 +189,7 @@ void AH_Msg_free(AH_MSG *hmsg){
     GWEN_LIST_FINI(AH_MSG, hmsg);
     GWEN_KeySpec_List_free(hmsg->signers);
     GWEN_KeySpec_free(hmsg->crypter);
+    GWEN_Buffer_free(hmsg->itanHashBuffer);
     GWEN_Buffer_free(hmsg->buffer);
     GWEN_Buffer_free(hmsg->origbuffer);
     AH_Dialog_free(hmsg->dialog);
@@ -828,6 +829,10 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
 #ifdef AH_MSG_HEAVY_DEBUG
       return -1;
 #endif
+      if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error skipping segment");
+        return -1;
+      }
       errors++;
     }
     segments++;
@@ -1607,6 +1612,54 @@ const char *AH_Msg_GetPin(const AH_MSG *msg){
   assert(msg);
   return msg->usedPin;
 }
+
+
+
+void AH_Msg_SetItanHashMode(AH_MSG *hmsg, int i) {
+  assert(hmsg);
+  hmsg->itanHashMode=i;
+}
+
+
+
+int AH_Msg_GetItanHashMode(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->itanHashMode;
+}
+
+
+
+void AH_Msg_SetItanHashBuffer(AH_MSG *hmsg, GWEN_BUFFER *hbuf) {
+  assert(hmsg);
+  if (hmsg->itanHashBuffer!=hbuf) {
+    GWEN_Buffer_free(hmsg->itanHashBuffer);
+    hmsg->itanHashBuffer=hbuf;
+  }
+}
+
+
+
+GWEN_BUFFER *AH_Msg_GetItanHashBuffer(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->itanHashBuffer;
+}
+
+
+
+void AH_Msg_SetItanMethod(AH_MSG *hmsg, GWEN_TYPE_UINT32 i) {
+  assert(hmsg);
+  hmsg->itanMethod=i;
+}
+
+
+
+GWEN_TYPE_UINT32 AH_Msg_GetItanMethod(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->itanMethod;
+}
+
+
+
 
 
 

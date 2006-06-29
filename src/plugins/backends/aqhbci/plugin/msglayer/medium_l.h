@@ -126,6 +126,12 @@ int AH_Medium_InputTan(AH_MEDIUM *m,
                        int minLen,
                        int maxLen);
 
+int AH_Medium_InputTanWithChallenge(AH_MEDIUM *m,
+                                    const char *challenge,
+                                    char *pwbuffer,
+                                    int minLen,
+                                    int maxLen);
+
 int AH_Medium_SetTanStatus(AH_MEDIUM *m,
                            const char *tan,
                            AB_BANKING_TANSTATUS status);

@@ -1447,6 +1447,63 @@ int AH_Medium_InputTan(AH_MEDIUM *m,
 
 
 
+int AH_Medium_InputTanWithChallenge(AH_MEDIUM *m,
+                                    const char *challenge,
+                                    char *pwbuffer,
+                                    int minLen,
+                                    int maxLen){
+  int rv;
+  const char *name;
+  char buffer[512];
+
+  assert(m);
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+  snprintf(buffer, sizeof(buffer)-1,
+	   I18N("Please enter the TAN\n"
+                "for %s.\n"
+                "The server provided the following challenge:\n"
+                "%s"
+                "<html>"
+                "<p>"
+		"Please enter the next TAN for <i>%s</i>."
+                "</p>"
+                "<p>"
+                "The server provided the following challenge:"
+                "</p>"
+                "<p align=\"center\" >"
+                "<font color=\"blue\">%s</font>"
+                "</p>"
+                "</html>"),
+           AH_Medium_GetDescriptiveName(m), challenge,
+           AH_Medium_GetDescriptiveName(m), challenge);
+
+  name=AH_Medium_GetMediumName(m);
+  if (name) {
+    rv=AB_Banking_GetTan(AH_HBCI_GetBankingApi(m->hbci),
+			 name,
+			 I18N("Enter TAN"),
+			 buffer,
+			 pwbuffer,
+			 minLen,
+			 maxLen);
+  }
+  else {
+    rv=AB_Banking_InputBox(AH_HBCI_GetBankingApi(m->hbci),
+			   AB_BANKING_INPUT_FLAGS_NUMERIC|
+			   AB_BANKING_INPUT_FLAGS_SHOW,
+			   I18N("Enter TAN"),
+			   buffer,
+			   pwbuffer,
+			   minLen,
+			   maxLen);
+  }
+  return rv;
+}
+
+
+
 int AH_Medium_SetTanStatus(AH_MEDIUM *m,
                            const char *tan,
                            AB_BANKING_TANSTATUS status){

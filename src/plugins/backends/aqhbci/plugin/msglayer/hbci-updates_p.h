@@ -66,6 +66,13 @@ static int AH_HBCI_Update_Any(AH_HBCI *hbci, GWEN_DB_NODE *db);
  * This update converts AH_BPDADDR groups to GWEN_URL strings.
  */
 static int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
+/**
+ * This update adds the variable "tanMethods" with an initial value of
+ * "singleStep"
+ */
+static int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
 /*@}*/
 
 

@@ -60,11 +60,14 @@ struct AH_MSG {
 
   char *usedPin;
 
+  int itanMethod;
+  int itanHashMode;
+  GWEN_BUFFER *itanHashBuffer;
+
   GWEN_DB_NODE *decodedMsg;
 };
 
 
-static void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
 static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
 
 static int AH_Msg_AddMsgTail(AH_MSG *hmsg);

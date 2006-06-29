@@ -80,5 +80,8 @@ int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout);
 
 AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg);
 
+void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, GWEN_TYPE_UINT32 i);
+GWEN_TYPE_UINT32 AH_Dialog_GetItanMethod(const AH_DIALOG *dlg);
+
 
 #endif /* GWHBCI_DIALOG_L_H */

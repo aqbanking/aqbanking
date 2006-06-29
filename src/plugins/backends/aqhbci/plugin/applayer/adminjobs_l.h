@@ -138,6 +138,31 @@ AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
 AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
 
 
+
+
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_Tan
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+/**
+ * This is an internal job. It is only used to present a TAN using a
+ * two-step mechanism (iTAN).
+ */
+AH_JOB *AH_Job_Tan_new(AB_USER *u, int process);
+void AH_Job_Tan_SetHash(AH_JOB *j,
+                        const unsigned char *p,
+                        unsigned int len);
+void AH_Job_Tan_SetReference(AH_JOB *j, const char *p);
+void AH_Job_Tan_SetTanList(AH_JOB *j, const char *s);
+void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p);
+
+const char *AH_Job_Tan_GetChallenge(const AH_JOB *j);
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -67,6 +67,7 @@ unsigned int AH_Msg_GetHbciVersion(const AH_MSG *hmsg);
 void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i);
 
 const char *AH_Msg_GetTan(const AH_MSG *hmsg);
+void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
 
 int AH_Msg_GetNeedTan(const AH_MSG *hmsg);
 void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i);
@@ -80,9 +81,18 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                             GWEN_XMLNODE *node,
                             GWEN_DB_NODE *data);
 
+void AH_Msg_SetItanMethod(AH_MSG *hmsg, GWEN_TYPE_UINT32 i);
+GWEN_TYPE_UINT32 AH_Msg_GetItanMethod(const AH_MSG *hmsg);
+
+void AH_Msg_SetItanHashMode(AH_MSG *hmsg, int i);
+int AH_Msg_GetItanHashMode(const AH_MSG *hmsg);
+
+void AH_Msg_SetItanHashBuffer(AH_MSG *hmsg, GWEN_BUFFER *hbuf);
+GWEN_BUFFER *AH_Msg_GetItanHashBuffer(const AH_MSG *hmsg);
+
 unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
-                                    GWEN_XMLNODE *node,
-                                    GWEN_DB_NODE *data);
+                               GWEN_XMLNODE *node,
+                               GWEN_DB_NODE *data);
 
 int AH_Msg_EncodeMsg(AH_MSG *hmsg);
 

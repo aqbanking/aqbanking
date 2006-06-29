@@ -359,6 +359,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
       unsigned int lastSeg;
       GWEN_DB_NODE *jargs;
       GWEN_XMLNODE *jnode;
+      GWEN_BUFFER *msgBuf;
 
       DBG_INFO(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
       jargs=AH_Job_GetArguments(j);
@@ -379,6 +380,8 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
       }
 
       firstSeg=AH_Msg_GetCurrentSegmentNumber(msg);
+      msgBuf=AH_Msg_GetBuffer(msg);
+      assert(msgBuf);
       lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
       if (!lastSeg) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
@@ -388,10 +391,13 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
       else {
         AH_Job_SetFirstSegment(j, firstSeg);
         AH_Job_SetLastSegment(j, lastSeg);
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
-                 AH_Job_GetName(j));
-        AH_Job_SetStatus(j, AH_JobStatusEncoded);
-        encodedJobs++;
+
+        if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
+                   AH_Job_GetName(j));
+          AH_Job_SetStatus(j, AH_JobStatusEncoded);
+          encodedJobs++;
+        }
       }
     } /* if status matches */
     j=AH_Job_List_Next(j);
@@ -886,7 +892,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
               if (jq->usedPin) {
                 AH_MEDIUM *m;
 
-                DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad signature");
+                DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad pin");
                 m=AH_User_GetMedium(jq->user);
                 assert(m);
                 if (AH_User_GetCryptMode(jq->user)==AH_CryptMode_Pintan) {
@@ -911,6 +917,10 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 	    AH_Job_AddFlags(j, plusFlags);
             AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbResponse));
             AH_Job_SetStatus(j, AH_JobStatusAnswered);
+          }
+          else {
+            DBG_ERROR(AQHBCI_LOGDOMAIN,
+                      "Status %d of job doesn't match", st);
           }
           j=AH_Job_List_Next(j);
         } /* while */
@@ -972,17 +982,25 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   /* set usedTan status accordingly */
   j=AH_Job_List_First(jq->jobs);
   while(j) {
-    AH_JOB_STATUS st;
+    const char *utan;
 
-    st=AH_Job_GetStatus(j);
-    if (st==AH_JobStatusSent ||
-        st==AH_JobStatusAnswered) {
-      if (jq->usedTan) {
+    utan=AH_Job_GetUsedTan(j);
+    if (utan) {
+      AH_JOB_STATUS st;
+
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_TANUSED);
+      st=AH_Job_GetStatus(j);
+      if (st==AH_JobStatusSent ||
+          st==AH_JobStatusAnswered) {
         if (tanRecycle)
           AH_Job_SubFlags(j, AH_JOB_FLAGS_TANUSED);
-        else
-          AH_Job_AddFlags(j, AH_JOB_FLAGS_TANUSED);
       }
+      else {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Bad status %d", st);
+      }
+    }
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "No TAN");
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -999,7 +1017,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
   if (abortQueue) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "Aboting queue");
+	       "Aborting queue");
     return AB_ERROR_ABORTED;
   }
 

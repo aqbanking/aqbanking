@@ -640,6 +640,23 @@ int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout) {
 
 
 
+void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, GWEN_TYPE_UINT32 i) {
+  assert(dlg);
+  dlg->itanMethod=i;
+}
+
+
+
+GWEN_TYPE_UINT32 AH_Dialog_GetItanMethod(const AH_DIALOG *dlg) {
+  assert(dlg);
+  return dlg->itanMethod;
+}
+
+
+
+
+
+
 
 
 

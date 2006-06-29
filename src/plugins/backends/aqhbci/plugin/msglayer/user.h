@@ -58,6 +58,32 @@ extern "C" {
 /*@}*/
 
 
+
+/** @name HBCI TAN Methods
+ *
+ */
+/*@{*/
+/** single step PIN/TAN */
+#define AH_USER_TANMETHOD_SINGLE_STEP        0x00000001
+/** two step PIN/TAN, method 0 */
+#define AH_USER_TANMETHOD_TWO_STEP_0         0x00000002
+/** two step PIN/TAN, method 1 */
+#define AH_USER_TANMETHOD_TWO_STEP_1         0x00000004
+/** two step PIN/TAN, method 2 */
+#define AH_USER_TANMETHOD_TWO_STEP_2         0x00000008
+/** two step PIN/TAN, method 3 */
+#define AH_USER_TANMETHOD_TWO_STEP_3         0x00000010
+/** two step PIN/TAN, method 4 */
+#define AH_USER_TANMETHOD_TWO_STEP_4         0x00000020
+/** two step PIN/TAN, method 5 */
+#define AH_USER_TANMETHOD_TWO_STEP_5         0x00000040
+/** two step PIN/TAN, method 6 */
+#define AH_USER_TANMETHOD_TWO_STEP_6         0x00000060
+/** two step PIN/TAN, method 7 */
+#define AH_USER_TANMETHOD_TWO_STEP_7         0x00000080
+/*@}*/
+
+
 /** @name Functions for Flags and Status
  *
  */
@@ -68,6 +94,15 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                         GWEN_TYPE_UINT32 flags);
 AQHBCI_API
 GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
+
+
+AQHBCI_API
+void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
+                             GWEN_TYPE_UINT32 m);
+
+AQHBCI_API
+GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
+                                           const char *name);
 
 
 typedef enum {
@@ -104,6 +139,34 @@ void AH_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
 
 AQHBCI_API
 void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+
+
+/*@}*/
+
+
+/** @name PIN/TAN Specific Functions
+ *
+ */
+/*@{*/
+AQHBCI_API
+GWEN_TYPE_UINT32 AH_User_GetTanMethods(const AB_USER *u);
+
+AQHBCI_API
+void AH_User_SetTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+
+AQHBCI_API
+void AH_User_AddTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+
+AQHBCI_API
+void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+
+AQHBCI_API
+GWEN_TYPE_UINT32 AH_User_GetSelectedTanMethod(const AB_USER *u);
+
+AQHBCI_API
+void AH_User_SetSelectedTanMethod(AB_USER *u, GWEN_TYPE_UINT32 m);
+
+
 /*@}*/
 
 

@@ -2,6 +2,30 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- update the VERSION_BUILD number by hand again: Internal code assumes that
+  the BUILD version is max 8 bit, but current revision is already more then
+  ten bits long...
+  PLEASE NOTE: Any change to the subversion repository should be accompanied
+  by an increment of the VERSION_BUILD.
+- AqHBCI: Started work on support for iTAN:
+  - added functions:
+    - AH_User_GetTanMethods()
+    - AH_User_SetTanMethods()
+    - AH_User_AddTanMethods()
+    - AH_User_SubTanMethods()
+    - AH_User_GetSelectedTanMethod()
+    - AH_User_SetSelectedTanMethod()
+  - AH_Job_CommitSystemData() now checks for result code 3920 (supported iTAN
+    modes), adds supported modes
+  - AH_Msg_SignMsg(): set SigHead/function appropriately (Sicherheitsfunktion,
+    kodiert)
+  - fixed a bug in AH_Msg_ReadMessage(): Was not advancing to next segment
+    on parsing error
+  -> ITAN process 1 now works with Stefan's test server!
+
+
 2006/06/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - aqyellownet-config --vstring returned broken data. Fixed that.

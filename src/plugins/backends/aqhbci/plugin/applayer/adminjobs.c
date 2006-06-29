@@ -1086,6 +1086,226 @@ int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_Tan
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+GWEN_INHERIT(AH_JOB, AH_JOB_TAN);
+
+
+AH_JOB *AH_Job_Tan_new(AB_USER *u, int process) {
+  AH_JOB *j;
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+  GWEN_DB_NODE *dbParams;
+
+  j=AH_Job_new("JobTan", u, 0);
+  if (!j)
+    return 0;
+
+  GWEN_NEW_OBJECT(AH_JOB_TAN, aj);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TAN, j, aj,
+                       AH_Job_Tan_FreeData);
+  /* overwrite some virtual functions */
+  AH_Job_SetProcessFn(j, AH_Job_Tan_Process);
+  AH_Job_SetExchangeFn(j, AH_Job_Tan_Exchange);
+
+  /* set some known arguments */
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+  dbParams=AH_Job_GetParams(j);
+  assert(dbParams);
+
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "process", process);
+  if (process==1 || process==2)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "moreTans", "N");
+  return j;
+}
+
+
+
+void AH_Job_Tan_FreeData(void *bp, void *p){
+  AH_JOB_TAN *aj;
+
+  aj=(AH_JOB_TAN*)p;
+  free(aj->challenge);
+  GWEN_FREE_OBJECT(aj);
+}
+
+
+
+int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbResponses;
+  GWEN_DB_NODE *dbCurr;
+  int rv;
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Processing JobTan");
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbResponses=AH_Job_GetResponses(j);
+  assert(dbResponses);
+
+  /* search for "TanResponse" */
+  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+  while(dbCurr) {
+    GWEN_DB_NODE *dbTanResponse;
+
+    rv=AH_Job_CheckEncryption(j, dbCurr);
+    if (rv) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+    rv=AH_Job_CheckSignature(j, dbCurr);
+    if (rv) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+
+    dbTanResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                                   "data/tanResponse");
+    if (dbTanResponse) {
+      const char *s;
+
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a TAN response");
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+        GWEN_DB_Dump(dbTanResponse, stderr, 2);
+
+      s=GWEN_DB_GetCharValue(dbTanResponse, "challenge", 0, 0);
+      if (s) {
+        free(aj->challenge);
+        aj->challenge=strdup(s);
+      }
+
+      break; /* break loop, we found the tanResponse */
+    } /* if "TanResponse" */
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  }
+
+  return 0;
+}
+
+
+
+int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
+                        AH_JOB_EXCHANGE_MODE m){
+  AH_JOB_TAN *aj;
+
+  DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  switch(m) {
+  case AH_Job_ExchangeModeParams:
+    break;
+  case AH_Job_ExchangeModeArgs:
+    break;
+  case AH_Job_ExchangeModeResults:
+    break;
+  default:
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
+    return AB_ERROR_NOT_SUPPORTED;
+  } /* switch */
+
+  return 0;
+}
+
+
+
+void AH_Job_Tan_SetHash(AH_JOB *j,
+                        const unsigned char *p,
+                        unsigned int len) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "jobHash", p, len);
+
+}
+
+
+
+void AH_Job_Tan_SetReference(AH_JOB *j, const char *p) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "jobReference", p);
+}
+
+
+
+void AH_Job_Tan_SetTanList(AH_JOB *j, const char *p) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "tanList", p);
+}
+
+
+
+void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "tanInfo", p);
+}
+
+
+
+const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
+  AH_JOB_TAN *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  return aj->challenge;
+}
+
+
+
+
 
 
 

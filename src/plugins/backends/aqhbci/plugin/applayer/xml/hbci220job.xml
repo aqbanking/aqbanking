@@ -191,6 +191,21 @@
  </JOBdef>
 
 
+ <!--  Geschaeftsvorfall: Saldenabfrage (Version 1) -->
+ <JOBdef id="JobTan" 
+         code="HKTAN"
+         params="HITANS"
+         version="1" 
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="TanResponse"
+         single="1"
+         pversion="220"
+ >
+   <SEG type="Tan" version="1" />
+ </JOBdef>
 
 
 </JOBs>

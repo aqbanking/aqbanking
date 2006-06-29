@@ -284,6 +284,7 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
   }
   else if (strcasecmp(GWEN_MsgEngine_GetMode(e), "PINTAN")==0) {
     const char *secid;
+    GWEN_TYPE_UINT32 tm;
 
     if (hmsg->noSysId)
       secid="0";
@@ -297,6 +298,32 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
     GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                          "SecDetails/SecId",
                          secid);
+
+    /* for iTAN mode: set selected mode (Sicherheitsfunktion, kodiert) */
+    tm=AH_Msg_GetItanMethod(hmsg);
+    if (tm==0)
+      tm=AH_Dialog_GetItanMethod(hmsg->dialog);
+    if (tm) {
+      int m;
+
+      switch(tm) {
+      case AH_USER_TANMETHOD_SINGLE_STEP: m=999; break;
+      case AH_USER_TANMETHOD_TWO_STEP_0:  m=990; break;
+      case AH_USER_TANMETHOD_TWO_STEP_1:  m=991; break;
+      case AH_USER_TANMETHOD_TWO_STEP_2:  m=992; break;
+      case AH_USER_TANMETHOD_TWO_STEP_3:  m=993; break;
+      case AH_USER_TANMETHOD_TWO_STEP_4:  m=994; break;
+      case AH_USER_TANMETHOD_TWO_STEP_5:  m=995; break;
+      case AH_USER_TANMETHOD_TWO_STEP_6:  m=996; break;
+      case AH_USER_TANMETHOD_TWO_STEP_7:  m=997; break;
+      default:
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid selected tan mode %x", tm);
+        GWEN_DB_Group_free(cfg);
+        return -1;
+      }
+      GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                          "function", m);
+    }
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,

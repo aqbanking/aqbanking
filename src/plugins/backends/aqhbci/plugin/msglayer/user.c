@@ -107,6 +107,79 @@ GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
+void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
+                             GWEN_TYPE_UINT32 m) {
+  GWEN_DB_DeleteVar(db, name);
+  if (m & AH_USER_TANMETHOD_SINGLE_STEP)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "singleStep");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_0)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep0");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_1)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep1");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_2)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep2");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_3)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep3");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_4)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep4");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_5)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep5");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_6)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep6");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_7)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep7");
+}
+
+
+
+GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
+                                           const char *name) {
+  GWEN_TYPE_UINT32 fl=0;
+  int i;
+
+  for (i=0; ; i++) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, name, i, 0);
+    if (!s)
+      break;
+    if (strcasecmp(s, "singleStep")==0)
+      fl|=AH_USER_TANMETHOD_SINGLE_STEP;
+    else if (strcasecmp(s, "twoStep0")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_0;
+    else if (strcasecmp(s, "twoStep1")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_1;
+    else if (strcasecmp(s, "twoStep2")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_2;
+    else if (strcasecmp(s, "twoStep3")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_3;
+    else if (strcasecmp(s, "twoStep4")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_4;
+    else if (strcasecmp(s, "twoStep5")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_5;
+    else if (strcasecmp(s, "twoStep6")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_6;
+    else if (strcasecmp(s, "twoStep7")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_7;
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown tan method \"%s\"", s);
+    }
+  }
+
+  return fl;
+}
+
+
+
 
 
 
@@ -764,6 +837,100 @@ void AH_User_SetHttpVMinor(AB_USER *u, int i) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "httpVMinor", i);
 }
+
+
+
+GWEN_TYPE_UINT32 AH_User_GetTanMethods(const AB_USER *u) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  db=AB_User_GetProviderData(u);
+  assert(db);
+
+  ue->tanMethods=AH_User_TanMethods_fromDb(db, "tanMethods");
+  return ue->tanMethods;
+}
+
+
+
+void AH_User_SetTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  db=AB_User_GetProviderData(u);
+  assert(db);
+
+  ue->tanMethods=m;
+  AH_User_TanMethods_toDb(db, "tanMethods", ue->tanMethods);
+}
+
+
+
+void AH_User_AddTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  AH_User_SetTanMethods(u, ue->tanMethods | m);
+}
+
+
+
+void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  AH_User_SetTanMethods(u, ue->tanMethods & ~m);
+}
+
+
+
+GWEN_TYPE_UINT32 AH_User_GetSelectedTanMethod(const AB_USER *u) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  db=AB_User_GetProviderData(u);
+  assert(db);
+
+  ue->selectedTanMethod=AH_User_TanMethods_fromDb(db, "selectedTanMethod");
+  return ue->selectedTanMethod;
+}
+
+
+
+void AH_User_SetSelectedTanMethod(AB_USER *u, GWEN_TYPE_UINT32 m) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  db=AB_User_GetProviderData(u);
+  assert(db);
+
+  ue->tanMethods=m;
+  AH_User_TanMethods_toDb(db, "selectedTanMethod", ue->selectedTanMethod);
+}
+
+
 
 
 
