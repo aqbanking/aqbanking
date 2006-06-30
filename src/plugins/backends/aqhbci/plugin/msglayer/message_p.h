@@ -112,6 +112,13 @@ static int AH_Msg_PrepareCryptoSegDec(AH_MSG *hmsg,
                                       GWEN_BUFFER *msgkeybuf);
 
 
+static GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment,
+                                        unsigned int slen,
+                                        GWEN_BUFFEREDIO *bio);
+static GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment,
+                                        unsigned int slen,
+                                        GWEN_BUFFEREDIO *bio);
+
 
 #endif /* AH_MESSAGE_P_H */
 

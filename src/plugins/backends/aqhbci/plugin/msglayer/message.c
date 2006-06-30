@@ -1345,6 +1345,107 @@ void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i){
 
 
 
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
+				 GWEN_BUFFEREDIO *bio){
+  int plusCount=0;
+  int lastWasEscape=0;
+  int segDone=0;
+  const char *p;
+  unsigned int count;
+
+  p=psegment;
+  count=slen;
+  while(*p && !segDone && count--) {
+    int normalChar=1;
+    GWEN_ERRORCODE err;
+
+    err=0;
+    if (lastWasEscape) {
+      lastWasEscape=0;
+      normalChar=0;
+    }
+    else {
+      if (*p=='?') {
+	lastWasEscape=1;
+      }
+      else {
+	if (*p=='\'')
+	  segDone=1;
+	else if (*p=='+')
+	  plusCount++;
+	lastWasEscape=0;
+      }
+    }
+    if (plusCount>=3 && normalChar && *p!='+' && *p!='\'' && *p!=':')
+      err=GWEN_BufferedIO_WriteChar(bio, '*');
+    else
+      err=GWEN_BufferedIO_WriteChar(bio, *p);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+      return err;
+    }
+
+    p++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
+				 GWEN_BUFFEREDIO *bio){
+  int plusCount=0;
+  int lastWasEscape=0;
+  int segDone=0;
+  const char *p;
+  unsigned int count;
+
+  p=psegment;
+  count=slen;
+  while(*p && !segDone && count--) {
+    int normalChar=1;
+    GWEN_ERRORCODE err;
+
+    err=0;
+    if (lastWasEscape) {
+      lastWasEscape=0;
+      normalChar=0;
+    }
+    else {
+      if (*p=='?') {
+	lastWasEscape=1;
+      }
+      else {
+	if (*p=='\'')
+	  segDone=1;
+	else if (*p=='+')
+	  plusCount++;
+	lastWasEscape=0;
+      }
+    }
+    if (plusCount>=1 && normalChar && *p!='+' && *p!='\'' && *p!=':')
+      err=GWEN_BufferedIO_WriteChar(bio, '*');
+    else
+      err=GWEN_BufferedIO_WriteChar(bio, *p);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+      return err;
+    }
+
+    p++;
+  } /* while */
+
+  return 0;
+}
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
 void AH_Msg_LogMessage(AH_MSG *msg,
                        GWEN_BUFFER *buf,
@@ -1449,81 +1550,57 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   bsize=GWEN_Buffer_GetUsedBytes(buf);
   if (bsize && msg->usedPin) {
     char *p;
+    unsigned int bleft;
 
-    p=strstr(GWEN_Buffer_GetStart(buf), "HNSHA");
-    if (p) {
-      unsigned int pos;
-      int plusCount=0;
-      int lastWasEscape=0;
-      int segDone=0;
+    bleft=bsize;
+    p=GWEN_Buffer_GetStart(buf);
+    while(bleft) {
+      char *segEnd;
+      unsigned int slen;
 
-      pos=(unsigned int)(p-GWEN_Buffer_GetStart(buf));
-      if (pos) {
-        err=GWEN_BufferedIO_WriteRawForced(bio,
-                                           GWEN_Buffer_GetStart(buf),
-                                           &pos);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-          GWEN_BufferedIO_Abandon(bio);
-          GWEN_BufferedIO_free(bio);
-          GWEN_DB_Group_free(db);
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
-          return;
-        }
+      if (*p=='\'') {
+	err=GWEN_BufferedIO_WriteChar(bio, *p);
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+	  GWEN_BufferedIO_Abandon(bio);
+	  GWEN_BufferedIO_free(bio);
+	  GWEN_DB_Group_free(db);
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
+	  return;
+	}
+	p++;
+	bleft--;
       }
-
-      while(*p && !segDone) {
-        int normalChar=1;
-
-        err=0;
-        if (lastWasEscape) {
-          lastWasEscape=0;
-          normalChar=0;
-        }
-        else {
-          if (*p=='?') {
-            lastWasEscape=1;
-          }
-          else {
-            if (*p=='\'')
-              segDone=1;
-            else if (*p=='+')
-              plusCount++;
-            lastWasEscape=0;
-          }
-        }
-        if (plusCount>=3 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-	  err=GWEN_BufferedIO_WriteChar(bio, '*');
-	else
-	  err=GWEN_BufferedIO_WriteChar(bio, *p);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-          GWEN_BufferedIO_Abandon(bio);
-          GWEN_BufferedIO_free(bio);
-          GWEN_DB_Group_free(db);
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
-          return;
-        }
-
-        p++;
-      } /* while */
-
-      pos=(unsigned int)(p-GWEN_Buffer_GetStart(buf));
-      bsize=bsize-pos;
-      if (bsize) {
-        err=GWEN_BufferedIO_WriteRawForced(bio,
-                                           p,
-                                           &bsize);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-          GWEN_BufferedIO_Abandon(bio);
-          GWEN_BufferedIO_free(bio);
-          GWEN_DB_Group_free(db);
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
-          return;
-        }
+      else {
+	segEnd=strchr(p, '\'');
+	assert(segEnd);
+	slen=segEnd-p+1;
+	assert(slen);
+  
+	if (strncasecmp(p, "HNSHA:", 6)==0)
+	  err=AH_Msg__AnonHnsha(p, slen, bio);
+	else if (strncasecmp(p, "HKPAE:", 6)==0)
+	  err=AH_Msg__AnonHkpae(p, slen, bio);
+	/* add more segments with confidential data here */
+	else {
+	  unsigned int l;
+  
+	  l=slen;
+	  err=GWEN_BufferedIO_WriteRawForced(bio, p, &l);
+	}
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+	  GWEN_BufferedIO_Abandon(bio);
+	  GWEN_BufferedIO_free(bio);
+	  GWEN_DB_Group_free(db);
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
+	  return;
+	}
+  
+	bleft-=slen;
+	p=segEnd+1;
       }
-    } /* if HNSHA found */
+    }
   }
   else {
     err=GWEN_BufferedIO_WriteRawForced(bio,

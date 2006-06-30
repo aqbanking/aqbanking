@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added support for anonymisation of other segments than HNSHA (as needed
+  by HKPAE, changePin, in order to keep the new pin from the log files)
+
+
 2006/06/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - update the VERSION_BUILD number by hand again: Internal code assumes that
