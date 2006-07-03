@@ -2,7 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006-07-03   Christian Stimming <stimming@tuhh.de>
 
+	* Makefile.am: Fix rule srcdoc if directory was not existing, as
+	pointed out by Micha Lenk.
+
+	
 2006/07/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - renamed AH_ImExporter_DbFromIso8859_1ToUtf8() to 
