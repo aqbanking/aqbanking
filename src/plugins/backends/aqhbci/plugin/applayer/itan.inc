@@ -226,15 +226,32 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
 			 AH_JOBQUEUE *qJob,
 			 int timeout){
   int rv;
+  int process;
+
+  process=AH_Dialog_GetItanProcessType(dlg);
+  if (process==1)
+    rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob, timeout);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "iTAN method %d not supported", process);
+    return AB_ERROR_INVALID;
+  }
+
+  return rv;
+}
+
+
+
+int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
+				   AH_DIALOG *dlg) {
   AH_JOB *jTan;
   AB_USER *u;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod=0;
   GWEN_TYPE_UINT32 fid=0;
-  GWEN_TYPE_UINT32 um=0;
   int process;
 
-  u=AH_JobQueue_GetUser(qJob);
+  u=cbox->user;
   assert(u);
 
   /* test create HKTAN job */
@@ -269,13 +286,30 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
     }
 
     if (fid) {
-      if (um) {
-	if (fid==um)
+      if (AH_User_GetTanMethods(u) & fid) {
+	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
+	if (process==1) {
+	  const char *s;
+	  const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
+	  char lbuf[256];
+
+	  /* FIXME: for now we only support process 1 */
+	  s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
+          if (!s || !*s)
+	    s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
+	  snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
+          lbuf[sizeof(lbuf)-1]=0;
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+	  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+				 0,
+				 AB_Banking_LogLevelInfo,
+                                 lbuf);
 	  break;
-      }
-      else {
-	if (AH_User_GetTanMethods(u) & fid)
-	  break;
+	}
+	else {
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		     "iTan process type \"%d\" not supported", process);
+	}
       }
     }
 
@@ -284,22 +318,17 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
 
   if (!dbMethod || !fid) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "TAN mode %x not found", um);
+	      "No matching iTAN mode found");
     AH_Job_free(jTan);
     return -1;
   }
 
-  process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-  AH_Job_free(jTan);
-  if (process==1)
-    rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob, timeout);
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "iTAN method %d not supported", process);
-    return AB_ERROR_INVALID;
-  }
+  AH_Dialog_SetItanMethod(dlg, fid);
+  AH_Dialog_SetItanProcessType(dlg, process);
 
-  return rv;
+  AH_Job_free(jTan);
+
+  return 0;
 }
 
 

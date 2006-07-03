@@ -183,6 +183,9 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
                          AH_JOBQUEUE *qJob,
                          int timeout);
 
+int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
+                                   AH_DIALOG *dlg);
+
 
 
 #endif /* AH_OUTBOX_P_H */

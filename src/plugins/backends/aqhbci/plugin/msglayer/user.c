@@ -898,43 +898,6 @@ void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
 
 
 
-GWEN_TYPE_UINT32 AH_User_GetSelectedTanMethod(const AB_USER *u) {
-  AH_USER *ue;
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  ue->selectedTanMethod=AH_User_TanMethods_fromDb(db, "selectedTanMethod");
-  return ue->selectedTanMethod;
-}
-
-
-
-void AH_User_SetSelectedTanMethod(AB_USER *u, GWEN_TYPE_UINT32 m) {
-  AH_USER *ue;
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  ue->tanMethods=m;
-  AH_User_TanMethods_toDb(db, "selectedTanMethod", ue->selectedTanMethod);
-}
-
-
-
-
-
-
 
 
 

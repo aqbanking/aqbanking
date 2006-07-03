@@ -1339,6 +1339,88 @@ int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount) {
 
 
 
+int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             int nounmount) {
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_MEDIUM *m;
+  AH_JOB *job;
+  AH_OUTBOX *ob;
+  int rv;
+  AH_PROVIDER *hp;
+  GWEN_TYPE_UINT32 tm=0;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(u);
+  m=AH_User_GetMedium(u);
+  assert(m);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  job=AH_Job_GetItanModes_new(u);
+  if (!job) {
+    DBG_ERROR(0, "Job not supported, should not happen");
+    return AB_ERROR_GENERIC;
+  }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+
+  ob=AH_Outbox_new(h);
+  AH_Outbox_AddJob(ob, job);
+
+  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
+  if (rv) {
+    DBG_ERROR(0, "Could not execute outbox.\n");
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return rv;
+  }
+
+  if (AH_Job_HasErrors(job)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
+    // TODO: show errors
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_GENERIC;
+  }
+  else {
+    rv=AH_Job_Commit(job);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+      AH_Outbox_free(ob);
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      return rv;
+    }
+  }
+
+  tm=AH_Job_GetItanModes_GetModes(job);
+  if (!tm) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No iTAN modes reported");
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return AB_ERROR_NO_DATA;
+  }
+
+  AH_Outbox_free(ob);
+
+  if (!nounmount)
+    AH_Medium_Unmount(m, 1);
+
+  return 0;
+}
+
+
+
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,

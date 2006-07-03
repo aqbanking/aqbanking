@@ -17,6 +17,7 @@
 typedef struct AH_JOB AH_JOB;
 
 
+#define AH_JOB_FLAGS_NOITAN         0x00002000
 #define AH_JOB_FLAGS_TANUSED        0x00004000
 #define AH_JOB_FLAGS_NOSYSID        0x00008000
 #define AH_JOB_FLAGS_NEEDCRYPT      0x00010000

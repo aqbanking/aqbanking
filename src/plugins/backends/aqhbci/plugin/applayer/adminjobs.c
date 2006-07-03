@@ -910,7 +910,7 @@ int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	int code;
 
 	DBG_INFO(AQHBCI_LOGDOMAIN, "Found message result");
-        code=GWEN_DB_GetIntValue(dbResult, "code", 0, -1);
+        code=GWEN_DB_GetIntValue(dbResult, "resultCode", 0, -1);
 	if (code>=9000) {
 	  if (code==9180) {
 	    /* version is definately not supported */
@@ -1302,6 +1302,169 @@ const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
 
   return aj->challenge;
 }
+
+
+
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetItanModes
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+GWEN_INHERIT(AH_JOB, AH_JOB_GETITANMODES);
+
+
+AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
+  AH_JOB *j;
+  GWEN_DB_NODE *args;
+  AH_JOB_GETITANMODES *jd;
+
+  assert(u);
+  j=AH_Job_new("JobGetItanModes", u, 0);
+  if (!j) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "JobGetItanModes not supported, should not happen");
+    return 0;
+  }
+  GWEN_NEW_OBJECT(AH_JOB_GETITANMODES, jd);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETITANMODES, j, jd,
+                       AH_Job_GetItanModes_FreeData);
+  AH_Job_SetProcessFn(j, AH_Job_GetItanModes_Process);
+
+  jd->modes=0;
+
+  /* set arguments */
+  args=AH_Job_GetArguments(j);
+  assert(args);
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "prepare/bpdversion", 0);
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "prepare/updversion", 0);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetItanModes created");
+  return j;
+}
+
+
+
+void AH_Job_GetItanModes_FreeData(void *bp, void *p){
+  AH_JOB_GETITANMODES *jd;
+
+  jd=(AH_JOB_GETITANMODES*)p;
+  GWEN_FREE_OBJECT(jd);
+}
+
+
+
+int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+  AH_JOB_GETITANMODES *jd;
+  GWEN_DB_NODE *dbResponses;
+  GWEN_DB_NODE *dbCurr;
+  GWEN_DB_NODE *dbMsgResponse;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETITANMODES, j);
+  assert(jd);
+
+  jd->modes=0;
+
+  dbResponses=AH_Job_GetResponses(j);
+  assert(dbResponses);
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsing this response");
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+    GWEN_DB_Dump(dbResponses, stderr, 2);
+
+  /* search for "SegResult" */
+  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+
+  while(dbCurr) {
+    dbMsgResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                                   "data/SegResult");
+    if (dbMsgResponse){
+      GWEN_DB_NODE *dbRes;
+
+      dbRes=GWEN_DB_FindFirstGroup(dbMsgResponse, "result");
+      while(dbRes){
+        int code;
+
+        code=GWEN_DB_GetIntValue(dbRes, "resultCode", 0, -1);
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found message result (%d)", code);
+        if (code==3920) {
+          int i;
+          GWEN_TYPE_UINT32 tm=0;
+
+          for (i=0; ; i++) {
+            int j;
+  
+            j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
+            if (j==0)
+              break;
+            switch(j) {
+            case 999:
+              tm|=AH_USER_TANMETHOD_SINGLE_STEP;
+              break;
+            case 990:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_0;
+              break;
+            case 991:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_1;
+              break;
+            case 992:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_2;
+              break;
+            case 993:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_3;
+              break;
+            case 994:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_4;
+              break;
+            case 995:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_5;
+              break;
+            case 996:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_6;
+              break;
+            case 997:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_7;
+              break;
+            default:
+              DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown TAN method %d", j);
+              break;
+            }
+          } /* for */
+          if (i==0) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN,
+                      "Bad server response: No TAN method reported");
+            return -1;
+          }
+          jd->modes=tm;
+        } /* if correct result found */
+
+        dbRes=GWEN_DB_FindNextGroup(dbRes, "result");
+      } /* while result */
+    }
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  } /* while */
+
+
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j){
+  AH_JOB_GETITANMODES *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETITANMODES, j);
+  assert(jd);
+
+  return jd->modes;
+}
+
+
+
 
 
 

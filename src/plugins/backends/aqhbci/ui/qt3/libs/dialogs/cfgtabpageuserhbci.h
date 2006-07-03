@@ -44,6 +44,7 @@ public slots:
   void slotGetServerKeys();
   void slotGetSysId();
   void slotGetAccounts();
+  void slotGetItanModes();
   void slotFinishUser();
 
 private:

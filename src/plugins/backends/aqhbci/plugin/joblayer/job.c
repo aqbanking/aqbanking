@@ -53,6 +53,7 @@ AH_JOB *AH_Job_new(const char *name,
   int needsBPD;
   int needTAN;
   int noSysId;
+  int noItan;
   GWEN_DB_NODE *bpdgrp;
   const AH_BPD *bpd;
   GWEN_MSGENGINE *e;
@@ -113,6 +114,7 @@ AH_JOB *AH_Job_new(const char *name,
   needsBPD=(atoi(GWEN_XMLNode_GetProperty(node, "needbpd", "0"))!=0);
   needTAN=(atoi(GWEN_XMLNode_GetProperty(node, "needtan", "0"))!=0);
   noSysId=(atoi(GWEN_XMLNode_GetProperty(node, "nosysid", "0"))!=0);
+  noItan=(atoi(GWEN_XMLNode_GetProperty(node, "noitan", "0"))!=0);
   paramName=GWEN_XMLNode_GetProperty(node, "params", "");
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
 
@@ -262,6 +264,10 @@ AH_JOB *AH_Job_new(const char *name,
     j->flags|=AH_JOB_FLAGS_SINGLE;
   }
 
+  if (noItan) {
+    j->flags|=AH_JOB_FLAGS_NOITAN;
+  }
+
   /* get description */
   descrNode=GWEN_XMLNode_FindFirstTag(jobNode, "DESCR", 0, 0);
   if (descrNode) {
@@ -304,6 +310,9 @@ AH_JOB *AH_Job_new(const char *name,
       j->flags|=(AH_JOB_FLAGS_NEEDCRYPT| AH_JOB_FLAGS_CRYPT);
     if (atoi(GWEN_XMLNode_GetProperty(msgNode, "nosysid", "0"))!=0)
       j->flags|=AH_JOB_FLAGS_NOSYSID;
+    if (atoi(GWEN_XMLNode_GetProperty(msgNode, "noitan", "0"))!=0) {
+      j->flags|=AH_JOB_FLAGS_NOITAN;
+    }
   } /* if msgNode */
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Single message job");
@@ -443,6 +452,12 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
       j->flags|=AH_JOB_FLAGS_NOSYSID;
     else
       j->flags&=~AH_JOB_FLAGS_NOSYSID;
+
+    if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "noitan", "0"))!=0) {
+      j->flags|=AH_JOB_FLAGS_NOITAN;
+    }
+    else
+      j->flags&=~AH_JOB_FLAGS_NOITAN;
 
     j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
     return 1;

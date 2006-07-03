@@ -36,6 +36,7 @@ struct AH_DIALOG {
   char *logName;
 
   GWEN_TYPE_UINT32 itanMethod;
+  int itanProcessType;
 
 };
 

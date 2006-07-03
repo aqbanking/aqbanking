@@ -122,6 +122,21 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
  */
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+
+/**
+ * Ask the server for the list of supported iTAN modes. Not all servers
+ * support iTAN so it is ok for the server to not report any modes.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the list of iTAN modes is to be received
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+AQHBCI_API
+int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             int nounmount);
+
+
 /*@}*/
 
 

@@ -160,13 +160,6 @@ void AH_User_AddTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
 AQHBCI_API
 void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
 
-AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_GetSelectedTanMethod(const AB_USER *u);
-
-AQHBCI_API
-void AH_User_SetSelectedTanMethod(AB_USER *u, GWEN_TYPE_UINT32 m);
-
-
 /*@}*/
 
 

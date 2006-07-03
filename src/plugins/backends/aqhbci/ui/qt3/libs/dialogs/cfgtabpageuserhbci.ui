@@ -217,6 +217,14 @@
                         <string>Get Accounts</string>
                     </property>
                 </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>getItanModesButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Get iTAN Modes</string>
+                    </property>
+                </widget>
                 <spacer>
                     <property name="name">
                         <cstring>spacer27</cstring>
@@ -229,7 +237,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>80</width>
+                            <width>20</width>
                             <height>21</height>
                         </size>
                     </property>

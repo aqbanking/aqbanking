@@ -161,6 +161,18 @@ const char *AH_Job_Tan_GetChallenge(const AH_JOB *j);
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetItanModes
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+AH_JOB *AH_Job_GetItanModes_new(AB_USER *u);
+GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j);
+
+
+
+
 
 
 #ifdef __cplusplus

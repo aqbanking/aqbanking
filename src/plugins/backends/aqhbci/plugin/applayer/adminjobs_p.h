@@ -139,6 +139,24 @@ static int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetItanModes
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+typedef struct AH_JOB_GETITANMODES AH_JOB_GETITANMODES;
+struct AH_JOB_GETITANMODES {
+  GWEN_TYPE_UINT32 modes;
+};
+static void AH_Job_GetItanModes_FreeData(void *bp, void *p);
+static int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+
+
+
+
+
+
 #endif /* AH_ADMINJOBS_P_H */
 
 

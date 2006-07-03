@@ -828,7 +828,6 @@ int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   tm=AH_USER_TANMETHOD_SINGLE_STEP;
   AH_User_TanMethods_toDb(db, "tanMethods", tm);
-  AH_User_TanMethods_toDb(db, "selectedTanMethod", tm);
   return 0;
 }
 

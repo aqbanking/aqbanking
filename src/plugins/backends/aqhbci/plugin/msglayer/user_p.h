@@ -28,7 +28,6 @@ struct AH_USER {
 
   GWEN_TYPE_UINT32 flags;
   GWEN_TYPE_UINT32 tanMethods;
-  GWEN_TYPE_UINT32 selectedTanMethod;
 };
 
 static void AH_User_freeData(void *bp, void *p);

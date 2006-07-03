@@ -779,8 +779,8 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
   int rv;
 
   if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
-      AH_Dialog_GetItanMethod(dlg)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "iTAN mode");
+      AH_Dialog_GetItanProcessType(dlg)!=0) {
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "iTAN mode");
 
     rv=AH_Outbox__CBox_Itan(cbox, dlg, jq, timeout);
     if (rv) {
@@ -789,7 +789,7 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
     }
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Normal mode");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Normal mode");
     rv=AH_Outbox__CBox_SendQueue(cbox, timeout, dlg, jq);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
@@ -820,13 +820,13 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating dialog open request");
+  AH_Dialog_SetItanProcessType(dlg, 0);
+
   if ((jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) ||
       (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)) {
-    GWEN_TYPE_UINT32 tm;
-
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "Creating non-anonymous dialog open request");
+               "Creating non-anonymous dialog open request");
     jDlgOpen=AH_Job_new("JobDialogInit", cbox->user, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
@@ -837,10 +837,21 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
                        AB_User_GetUserId(cbox->user));
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
-    tm=AH_User_GetSelectedTanMethod(cbox->user);
-    if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan &&
-        tm && tm!=AH_USER_TANMETHOD_SINGLE_STEP){
-      AH_Dialog_SetItanMethod(dlg, tm);
+    if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
+      GWEN_TYPE_UINT32 tm;
+
+      tm=AH_User_GetTanMethods(cbox->user);
+      if ((tm & ~AH_USER_TANMETHOD_SINGLE_STEP) &&
+          !(jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)){
+        /* only use itan if any other mode than singleStep is available
+         * and the job queue does not request non-ITAN mode
+         */
+        rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
+        if (rv) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+      }
     }
   }
   else {
@@ -1003,7 +1014,8 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
     jqFlags=AH_JobQueue_GetFlags(jq);
     jqFlags&=~(AH_JOBQUEUE_FLAGS_CRYPT |
                AH_JOBQUEUE_FLAGS_SIGN |
-               AH_JOBQUEUE_FLAGS_NOSYSID);
+               AH_JOBQUEUE_FLAGS_NOSYSID |
+               AH_JOBQUEUE_FLAGS_NOITAN);
     AH_JobQueue_SetFlags(jqTodo, (jqFlags&AH_JOBQUEUE_FLAGS_COPYMASK));
 
     /* copy todo jobs */
@@ -1192,6 +1204,16 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
   assert(dlg);
+
+  /* select iTAN mode */
+  if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
+    rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
+    if (rv) {
+      AH_Dialog_Disconnect(dlg, 2);
+      AH_Dialog_free(dlg);
+      return rv;
+    }
+  }
 
   /* handle queue */
   rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout);

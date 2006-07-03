@@ -15,6 +15,15 @@
   marked it deprecated)
 - AqHBCI now internally calls AB_ImExporter_DbFromIso8859_1ToUtf8() on each
   response received from the server. This should fix the old Umlaut problems.
+- AqHBCI:
+  - more work on iTAN: The iTAN mode to be used throughout a dialog is now
+    selected automatically by AqHBCI depending on the modes allowed for the
+    dialog owner
+  - added job AH_Job_GetItanModes
+  - added function AH_Provider_GetItanModes
+  - added job/queue flags AH_JOB_FLAGS_NOITAN
+  - QT3: added button for retrieving the list of supported iTAN modes to
+    HBCI user config page
 
 
 2006/06/30: Martin Preuss<martin@libchipcard.de>

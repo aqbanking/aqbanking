@@ -83,5 +83,8 @@ AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg);
 void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, GWEN_TYPE_UINT32 i);
 GWEN_TYPE_UINT32 AH_Dialog_GetItanMethod(const AH_DIALOG *dlg);
 
+int AH_Dialog_GetItanProcessType(const AH_DIALOG *dlg);
+void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i);
+
 
 #endif /* GWHBCI_DIALOG_L_H */

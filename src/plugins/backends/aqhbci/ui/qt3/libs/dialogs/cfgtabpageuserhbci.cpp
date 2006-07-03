@@ -76,6 +76,11 @@ CfgTabPageUserHbci::CfgTabPageUserHbci(QBanking *qb,
           this,
           SLOT(slotGetAccounts()));
 
+  connect(_realPage->getItanModesButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(slotGetItanModes()));
+
   connect(_realPage->finishUserButton,
           SIGNAL(clicked()),
           this,
@@ -145,6 +150,7 @@ bool CfgTabPageUserHbci::toGui() {
 
   _realPage->getServerKeysButton->setEnabled(false);
   _realPage->getSysIdButton->setEnabled(false);
+  _realPage->getItanModesButton->setEnabled(false);
 
   if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
     _withHttp=true;
@@ -159,6 +165,7 @@ bool CfgTabPageUserHbci::toGui() {
       _realPage->userAgentEdit->setText(QString::fromUtf8(s));
 
     _realPage->getSysIdButton->setEnabled(true);
+    _realPage->getItanModesButton->setEnabled(true);
   }
   else {
     _withHttp=false;
@@ -416,6 +423,41 @@ void CfgTabPageUserHbci::slotGetAccounts() {
       qb->progressEnd(pid);
       return;
     }
+  }
+  qb->progressEnd(pid);
+}
+
+
+
+void CfgTabPageUserHbci::slotGetItanModes() {
+  AB_USER *u;
+  QBanking *qb;
+  AB_PROVIDER *pro;
+  int rv;
+  GWEN_TYPE_UINT32 pid;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  qb=getBanking();
+  assert(qb);
+  pro=_provider;
+  assert(pro);
+  u=getUser();
+  assert(u);
+
+  DBG_ERROR(0, "Retrieving List of Allowed iTAN Modes");
+  pid=qb->progressStart(tr("Retrieving List of Allowed iTAN Modes"),
+                        tr("<qt>"
+                           "Retrieving the list of supported iTAN modes "
+                           "from the bank server."
+                           "</qt>"),
+                        1);
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetItanModes(pro, u, ctx, 1);
+  AB_ImExporterContext_free(ctx);
+  if (rv) {
+    DBG_ERROR(0, "Error getting iTAN Modes (%d)", rv);
+    qb->progressEnd(pid);
+    return;
   }
   qb->progressEnd(pid);
 }

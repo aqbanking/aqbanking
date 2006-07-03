@@ -110,6 +110,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
   int crypt;
   int needTAN;
   int noSysId;
+  int noItan;
   GWEN_STRINGLIST *jobTypes;
   AH_JOB *cj;
   AH_BPD *bpd;
@@ -135,6 +136,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
   crypt=0;
   needTAN=0;
   noSysId=0;
+  noItan=0;
   jobTypes=GWEN_StringList_new();
   cj=AH_Job_List_First(jq->jobs);
   while(cj) {
@@ -146,16 +148,23 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
                 (AH_Job_GetFlags(cj) & AH_JOB_FLAGS_DLGJOB));
     crypt|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_CRYPT);
     needTAN|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NEEDTAN);
-    noSysId|=(AH_Job_GetFlags(cj) & AH_JOBQUEUE_FLAGS_NOSYSID);
+    noSysId|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOSYSID);
+    noItan|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOITAN);
     cj=AH_Job_List_Next(cj);
   } /* while */
   jobTypeCount=GWEN_StringList_Count(jobTypes);
   GWEN_StringList_free(jobTypes);
 
-  if (jobCount &&
-      ((crypt!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT) ||
-        (needTAN!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN))||
-        (noSysId!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID))))) {
+  if (
+      jobCount &&
+      (
+       (crypt!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)) ||
+       (needTAN!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)) ||
+       (noSysId!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)) ||
+       (noItan!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN))
+      )
+     ) {
+
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Encryption/TAN/SysId flags for queue and this job differ");
     return AH_JobQueueAddResultJobLimit;
@@ -237,6 +246,8 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
     jq->flags|=AH_JOBQUEUE_FLAGS_NEEDTAN;
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)
     jq->flags|=AH_JOBQUEUE_FLAGS_NOSYSID;
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
+    jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Job added to the queue");
   return AH_JobQueueAddResultOk;

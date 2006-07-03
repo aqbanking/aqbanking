@@ -654,6 +654,23 @@ GWEN_TYPE_UINT32 AH_Dialog_GetItanMethod(const AH_DIALOG *dlg) {
 
 
 
+int AH_Dialog_GetItanProcessType(const AH_DIALOG *dlg) {
+  assert(dlg);
+  return dlg->itanProcessType;
+}
+
+
+
+void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i) {
+  assert(dlg);
+  dlg->itanProcessType=i;
+}
+
+
+
+
+
+
 
 
 
