@@ -160,7 +160,7 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
   /* import from db */
   GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
                         I18N("Data imported, transforming to UTF-8"));
-  rv=AH_ImExporter_DbFromIso8859_1ToUtf8(dbData);
+  rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
     GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
                           "Error converting data");

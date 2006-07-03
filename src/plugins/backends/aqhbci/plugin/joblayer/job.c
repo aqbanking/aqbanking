@@ -1320,6 +1320,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
                   AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
                   break;
+                case 990:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_0);
+                  break;
                 case 991:
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
                   AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_1);
@@ -1327,6 +1331,26 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
                 case 992:
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
                   AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_2);
+                  break;
+                case 993:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_3);
+                  break;
+                case 994:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_4);
+                  break;
+                case 995:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_5);
+                  break;
+                case 996:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_6);
+                  break;
+                case 997:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_7);
                   break;
                 default:
                   DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown TAN method %d", j);
@@ -1340,7 +1364,6 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */
       }
-
       else {
         GWEN_XMLNODE *bpdn;
         int segver;
@@ -1369,7 +1392,8 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
             AH_BPD *bpd;
             char numbuffer[32];
 
-            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"", GWEN_DB_GroupName(dbRd));
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"",
+                       GWEN_DB_GroupName(dbRd));
             bpd=AH_User_GetBpd(j->user);
             assert(bpd);
 	    if (!bpdDeleted) {
@@ -1401,9 +1425,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
             modCust=1;
           } /* if isbpdjob */
           else {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"%s\" is known but not as a BPD job",
-                     GWEN_DB_GroupName(dbRd));
-          }
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
+		     "Segment \"%s\" is known but not as a BPD job",
+		     GWEN_DB_GroupName(dbRd));
+	  }
         } /* if segment found */
         else {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Did not find segment \"%s\" (%d) ignoring",
@@ -1415,9 +1440,9 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         /* UserData found */
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found UserData");
         AH_User_SetUpdVersion(j->user,
-                                  GWEN_DB_GetIntValue(dbRd,
-                                                      "version",
-                                                      0, 0));
+			      GWEN_DB_GetIntValue(dbRd,
+						  "version",
+						  0, 0));
       }
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData")==0){
         const char *accountId;
@@ -1444,7 +1469,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         assert(bankCode);
         custId=GWEN_DB_GetCharValue(dbRd, "customer", 0, 0);
         assert(custId);
-        if (1) {
+	if (1) {
           GWEN_BUFFER *mbuf;
 
           mbuf=GWEN_Buffer_new(0, 128, 0, 1);

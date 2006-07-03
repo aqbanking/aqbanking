@@ -1591,6 +1591,12 @@ int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
 
 
 
+int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
+  return AH_ImExporter__Transform_Group(db, 0);
+}
+
+
+
 void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
                                      AB_IMEXPORTER_CONTEXT *toAdd) {
   AB_IMEXPORTER_ACCOUNTINFO *iea;

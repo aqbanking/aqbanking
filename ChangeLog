@@ -2,6 +2,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2006/07/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- renamed AH_ImExporter_DbFromIso8859_1ToUtf8() to 
+  AB_ImExporter_DbFromIso8859_1ToUtf8() (left old function around but
+  marked it deprecated)
+- AqHBCI now internally calls AB_ImExporter_DbFromIso8859_1ToUtf8() on each
+  response received from the server. This should fix the old Umlaut problems.
+
+
 2006/06/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added support for anonymisation of other segments than HNSHA (as needed

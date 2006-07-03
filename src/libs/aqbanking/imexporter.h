@@ -766,12 +766,15 @@ void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
                                    int size,
                                    GWEN_BUFFER *buf);
 
+AQBANKING_DEPRECATED AQBANKING_API
+int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db);
+
 /**
  * This function call @ref AB_ImExporter_Iso8859_1ToUtf8 on all char
  * values in the given db.
  */
 AQBANKING_API 
-int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db);
+int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db);
 
 AQBANKING_API 
 GWEN_TIME *AB_ImExporter_DateFromString(const char *p,

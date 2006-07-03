@@ -28,6 +28,7 @@
 #include <aqhbci/provider.h>
 #include <aqbanking/job_be.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/imexporter.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/waitcallback.h>
@@ -726,6 +727,9 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
                            I18N("Bad response (unable to decode)"));
     return AB_ERROR_GENERIC;
   }
+
+  /* transform from ISO 8859-1 to UTF8 */
+  AB_ImExporter_DbFromIso8859_1ToUtf8(rsp);
 
   /* check for message reference */
   if (AH_Msg_GetMsgRef(msg)==0) {
