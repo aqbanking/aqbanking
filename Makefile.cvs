@@ -1,7 +1,7 @@
 
 MP_CFLAGS=-ggdb -Wall -O
 #MP_CONF_FLAGS=--enable-maintainer-mode --disable-static
-MP_CONF_FLAGS=--enable-maintainer-mode --disable-static --enable-local
+MP_CONF_FLAGS=INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-local
 
 default: all
 
