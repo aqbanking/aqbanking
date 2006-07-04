@@ -158,6 +158,7 @@ void AH_Job_Tan_SetTanList(AH_JOB *j, const char *s);
 void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p);
 
 const char *AH_Job_Tan_GetChallenge(const AH_JOB *j);
+const char *AH_Job_Tan_GetReference(const AH_JOB *j);
 
 
 
@@ -171,6 +172,15 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u);
 GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j);
 
 
+
+
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_ChangePin
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin);
 
 
 

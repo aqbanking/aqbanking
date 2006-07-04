@@ -131,6 +131,7 @@ static int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 typedef struct AH_JOB_TAN AH_JOB_TAN;
 struct AH_JOB_TAN {
   char *challenge;
+  char *reference;
 };
 static void AH_Job_Tan_FreeData(void *bp, void *p);
 static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);

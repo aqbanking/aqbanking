@@ -870,6 +870,41 @@
  </SEGdef>
 
 
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ChangePin"
+         code="DKPAE"
+         version="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="newPin" type="ascii" maxsize="6" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="DIPAES" version="1"
+         delimiter="+" terminator="'" isbpdjob="1" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="jobspermsg" type="num" maxsize="3" />
+   <ELEM name="minsigs" type="num" maxsize="3" />
+
+   <ELEM name="securityClass" type="num" size="1" minnum="0" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="securityClass">1</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
 </SEGs>
 
 

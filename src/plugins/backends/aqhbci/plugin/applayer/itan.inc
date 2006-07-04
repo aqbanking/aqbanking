@@ -257,8 +257,10 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   /* test create HKTAN job */
   jTan=AH_Job_Tan_new(u, 0);
   if (!jTan) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
-    return -1;
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not (yet?) available");
+    AH_Dialog_SetItanMethod(dlg, 0);
+    AH_Dialog_SetItanProcessType(dlg, 0);
+    return 0;
   }
 
   /* find DB_NODE for selected TanMethod */

@@ -137,6 +137,20 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
                              int nounmount);
 
 
+/**
+ * Ask the user for a new PIN and make the server change the PIN to the
+ * newly entered one.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the pin is to be changed
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+AQHBCI_API
+int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
+                          AB_IMEXPORTER_CONTEXT *ctx,
+                          int nounmount);
+
+
 /*@}*/
 
 

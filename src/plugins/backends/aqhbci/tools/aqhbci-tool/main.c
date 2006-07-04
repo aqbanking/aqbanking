@@ -204,6 +204,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "getitanmodes")==0) {
     rv=getItanModes(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "changepin")==0) {
+    rv=changePin(ab, db, argc, argv);
+  }
 
   else if (strcasecmp(cmd, "activate")==0) {
     int res;

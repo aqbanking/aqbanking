@@ -24,6 +24,7 @@
   - added job/queue flags AH_JOB_FLAGS_NOITAN
   - QT3: added button for retrieving the list of supported iTAN modes to
     HBCI user config page
+  - started working on iTAN process type 2
 
 
 2006/06/30: Martin Preuss<martin@libchipcard.de>

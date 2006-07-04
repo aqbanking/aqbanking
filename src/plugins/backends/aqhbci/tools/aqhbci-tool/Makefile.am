@@ -25,7 +25,8 @@ aqhbci_tool_SOURCES=main.c \
  listusers.c \
  listaccounts.c \
  iniletter.c \
- getitanmodes.c
+ getitanmodes.c \
+ changepin.c
 
 aqhbci_tool_LDADD = \
   $(aqhbci_internal_libs) \

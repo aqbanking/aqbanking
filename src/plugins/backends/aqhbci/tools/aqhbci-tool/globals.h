@@ -112,6 +112,11 @@ int getItanModes(AB_BANKING *ab,
                  int argc,
                  char **argv);
 
+int changePin(AB_BANKING *ab,
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
+
 
 #endif
 

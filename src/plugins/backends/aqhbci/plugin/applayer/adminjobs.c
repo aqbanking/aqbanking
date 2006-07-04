@@ -1133,6 +1133,7 @@ void AH_Job_Tan_FreeData(void *bp, void *p){
   AH_JOB_TAN *aj;
 
   aj=(AH_JOB_TAN*)p;
+  free(aj->reference);
   free(aj->challenge);
   GWEN_FREE_OBJECT(aj);
 }
@@ -1184,6 +1185,12 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (s) {
         free(aj->challenge);
         aj->challenge=strdup(s);
+      }
+
+      s=GWEN_DB_GetCharValue(dbTanResponse, "jobReference", 0, 0);
+      if (s) {
+        free(aj->reference);
+        aj->reference=strdup(s);
       }
 
       break; /* break loop, we found the tanResponse */
@@ -1301,6 +1308,18 @@ const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
   assert(aj);
 
   return aj->challenge;
+}
+
+
+
+const char *AH_Job_Tan_GetReference(const AH_JOB *j) {
+  AH_JOB_TAN *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  return aj->reference;
 }
 
 
@@ -1465,10 +1484,36 @@ GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j){
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_ChangePin
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
+  AH_JOB *j;
+  GWEN_DB_NODE *dbArgs;
 
+  assert(u);
+  j=AH_Job_new("JobChangePin", u, 0);
+  if (!j) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "JobChangePin not supported, should not happen");
+    return 0;
+  }
+
+  /* set arguments */
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "newPin", newPin);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "JobChangePin created");
+  return j;
+}
 
 
 

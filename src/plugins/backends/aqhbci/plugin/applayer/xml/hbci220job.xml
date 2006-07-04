@@ -191,7 +191,7 @@
  </JOBdef>
 
 
- <!--  Geschaeftsvorfall: Saldenabfrage (Version 1) -->
+ <!--  Geschaeftsvorfall: TAN einreichen (Version 1) -->
  <JOBdef id="JobTan" 
          code="HKTAN"
          params="HITANS"
@@ -205,6 +205,23 @@
          pversion="220"
  >
    <SEG type="Tan" version="1" />
+ </JOBdef>
+
+
+
+ <!--  Geschaeftsvorfall: Pin aendern (Version 1) -->
+ <JOBdef id="JobChangePin" 
+         code="DKPAES"
+         params="DIPAES"
+         version="1" 
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         single="1"
+         pversion="220"
+ >
+   <SEG type="ChangePin" version="1" />
  </JOBdef>
 
 

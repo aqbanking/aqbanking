@@ -155,99 +155,100 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
   jobTypeCount=GWEN_StringList_Count(jobTypes);
   GWEN_StringList_free(jobTypes);
 
-  if (
-      jobCount &&
-      (
-       (crypt!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)) ||
-       (needTAN!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)) ||
-       (noSysId!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)) ||
-       (noItan!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN))
-      )
-     ) {
+  if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0) {
+    if (jobCount &&
+        (
+         (crypt!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)) ||
+         (needTAN!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)) ||
+         (noSysId!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)) ||
+         (noItan!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN))
+        )
+       ) {
 
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Encryption/TAN/SysId flags for queue and this job differ");
-    return AH_JobQueueAddResultJobLimit;
-  }
-
-  /* check for single jobs */
-  if (hasSingle) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Queue already contains a job which wants to be left alone");
-    return AH_JobQueueAddResultQueueFull;
-  }
-
-  /* check if this job is single and there already are jobs in the queue */
-  if (((AH_Job_GetFlags(j) & AH_JOB_FLAGS_SINGLE) ||
-       (AH_Job_GetFlags(j) & AH_JOB_FLAGS_DLGJOB)) && jobCount) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Queue already contains jobs and this one has the SINGLE flag");
-    return AH_JobQueueAddResultJobLimit;
-  }
-
-  /* check if adding this job would exceed the limit of jobs of this kind */
-  if (jobsPerMsg && thisJobTypeCount>jobsPerMsg) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Too many jobs of this kind (limit is %d)", jobsPerMsg);
-    return AH_JobQueueAddResultJobLimit;
-  }
-
-  /* check for maximum of different job types per message */
-  if (maxJobTypes && jobTypeCount>maxJobTypes) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Too many different job types (limit is %d)", maxJobTypes);
-    return AH_JobQueueAddResultJobLimit;
-  }
-
-  /* check for signers */
-  if (!jobCount && !GWEN_StringList_Count(jq->signers)) {
-    const GWEN_STRINGLIST *sl;
-
-    /* no jobs in queue and no signers,
-     * so simply copy the signers of this job */
-    sl=AH_Job_GetSigners(j);
-    if (sl) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Copying signers from job to queue");
-      GWEN_StringList_free(jq->signers);
-      jq->signers=GWEN_StringList_dup(sl);
-    }
-  }
-  else {
-    const GWEN_STRINGLIST *sl;
-    GWEN_STRINGLISTENTRY *se;
-
-    sl=AH_Job_GetSigners(j);
-    if (GWEN_StringList_Count(sl)!=GWEN_StringList_Count(jq->signers)) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Number of signers of the job differs from that of the queue");
+               "Encryption/TAN/SysId flags for queue and this job differ");
       return AH_JobQueueAddResultJobLimit;
     }
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      if (!GWEN_StringList_HasString(jq->signers,
-                                     GWEN_StringListEntry_Data(se))) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Signers of the job differ from those of the queue");
+
+    /* check for single jobs */
+    if (hasSingle) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Queue already contains a job which wants to be left alone");
+      return AH_JobQueueAddResultQueueFull;
+    }
+
+    /* check if this job is single and there already are jobs in the queue */
+    if (((AH_Job_GetFlags(j) & AH_JOB_FLAGS_SINGLE) ||
+         (AH_Job_GetFlags(j) & AH_JOB_FLAGS_DLGJOB)) && jobCount) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Queue already contains jobs and this one has the SINGLE flag");
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check if adding this job would exceed the limit of jobs of this kind */
+    if (jobsPerMsg && thisJobTypeCount>jobsPerMsg) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Too many jobs of this kind (limit is %d)", jobsPerMsg);
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check for maximum of different job types per message */
+    if (maxJobTypes && jobTypeCount>maxJobTypes) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Too many different job types (limit is %d)", maxJobTypes);
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check for signers */
+    if (!jobCount && !GWEN_StringList_Count(jq->signers)) {
+      const GWEN_STRINGLIST *sl;
+
+      /* no jobs in queue and no signers,
+       * so simply copy the signers of this job */
+      sl=AH_Job_GetSigners(j);
+      if (sl) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Copying signers from job to queue");
+        GWEN_StringList_free(jq->signers);
+        jq->signers=GWEN_StringList_dup(sl);
+      }
+    }
+    else {
+      const GWEN_STRINGLIST *sl;
+      GWEN_STRINGLISTENTRY *se;
+
+      sl=AH_Job_GetSigners(j);
+      if (GWEN_StringList_Count(sl)!=GWEN_StringList_Count(jq->signers)) {
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "Number of signers of the job differs from that of the queue");
         return AH_JobQueueAddResultJobLimit;
       }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while se */
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        if (!GWEN_StringList_HasString(jq->signers,
+                                       GWEN_StringListEntry_Data(se))) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Signers of the job differ from those of the queue");
+          return AH_JobQueueAddResultJobLimit;
+        }
+        se=GWEN_StringListEntry_Next(se);
+      } /* while se */
+    }
+
+    /* adjust queue flags according to current job */
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)
+      jq->flags|=AH_JOBQUEUE_FLAGS_CRYPT;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_SIGN;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NEEDTAN;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NOSYSID;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
   }
 
   /* actually add job to queue */
   AH_Job_List_Add(j, jq->jobs);
   AH_Job_SetStatus(j, AH_JobStatusEnqueued);
-
-  /* adjust queue flags according to current job */
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)
-    jq->flags|=AH_JOBQUEUE_FLAGS_CRYPT;
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN)
-    jq->flags|=AH_JOBQUEUE_FLAGS_SIGN;
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)
-    jq->flags|=AH_JOBQUEUE_FLAGS_NEEDTAN;
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)
-    jq->flags|=AH_JOBQUEUE_FLAGS_NOSYSID;
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
-    jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Job added to the queue");
   return AH_JobQueueAddResultOk;
