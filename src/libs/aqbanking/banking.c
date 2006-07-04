@@ -945,6 +945,7 @@ int AB_Banking_ProgressLog(AB_BANKING *ab,
                            AB_BANKING_LOGLEVEL level,
                            const char *text){
   assert(ab);
+
   if (ab->progressLogFn)
     return ab->progressLogFn(ab, id, level, text);
   DBG_INFO(AQBANKING_LOGDOMAIN, "No progressLog function set");

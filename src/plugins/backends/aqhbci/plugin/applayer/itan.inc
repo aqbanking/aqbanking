@@ -231,6 +231,8 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
   process=AH_Dialog_GetItanProcessType(dlg);
   if (process==1)
     rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob, timeout);
+  else if (process==2)
+    rv=AH_Outbox__CBox_Itan2(cbox, dlg, qJob, timeout);
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "iTAN method %d not supported", process);
@@ -288,30 +290,35 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     }
 
     if (fid) {
-      if (AH_User_GetTanMethods(u) & fid) {
+      GWEN_TYPE_UINT32 um;
+
+      um=AH_User_GetTanMethods(u);
+      if (
+          (um==0) ||
+          (um==AH_USER_TANMETHOD_SINGLE_STEP) ||
+          (um & fid)) {
 	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-	if (process==1) {
+        if (process==1 || process==2) {
 	  const char *s;
 	  const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
 	  char lbuf[256];
 
-	  /* FIXME: for now we only support process 1 */
-	  s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
+          s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
           if (!s || !*s)
-	    s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
-	  snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
+            s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
+          snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
           lbuf[sizeof(lbuf)-1]=0;
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
-	  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-				 0,
-				 AB_Banking_LogLevelInfo,
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+          AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+                                 0,
+                                 AB_Banking_LogLevelInfo,
                                  lbuf);
-	  break;
-	}
-	else {
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		     "iTan process type \"%d\" not supported", process);
-	}
+          break;
+        }
+        else {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "iTan process type \"%d\" not supported", process);
+        }
       }
     }
 

@@ -248,11 +248,6 @@ void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i);
 
 
 AQHBCI_API
-void AH_HBCI_HbciToUtf8(const char *p,
-                        int size,
-                        GWEN_BUFFER *buf);
-
-AQHBCI_API
 int AH_HBCI_CheckStringSanity(const char *s);
 
 

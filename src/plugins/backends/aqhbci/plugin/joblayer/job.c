@@ -1173,14 +1173,8 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
 
         /* read bank name */
         p=GWEN_DB_GetCharValue(dbRd, "name", 0, 0);
-        if (p) {
-	  GWEN_BUFFER *xbuf;
-
-	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	  AH_HBCI_HbciToUtf8(p, 0, xbuf);
-	  AH_Bpd_SetBankName(bpd, GWEN_Buffer_GetStart(xbuf));
-          GWEN_Buffer_free(xbuf);
-        }
+        if (p)
+          AH_Bpd_SetBankName(bpd, p);
         AH_Bpd_SetJobTypesPerMsg(bpd,
                                  GWEN_DB_GetIntValue(dbRd,
                                                      "jobtypespermsg",
@@ -1530,22 +1524,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         }
 
         /* modify account */
-	if (accountName) {
-	  GWEN_BUFFER *xbuf;
-
-	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	  AH_HBCI_HbciToUtf8(accountName, 0, xbuf);
-          AB_Account_SetAccountName(acc, GWEN_Buffer_GetStart(xbuf));
-          GWEN_Buffer_free(xbuf);
-        }
-	if (userName) {
-	  GWEN_BUFFER *xbuf;
-
-	  xbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	  AH_HBCI_HbciToUtf8(userName, 0, xbuf);
-          AB_Account_SetOwnerName(acc, GWEN_Buffer_GetStart(xbuf));
-          GWEN_Buffer_free(xbuf);
-        }
+        if (accountName)
+          AB_Account_SetAccountName(acc, accountName);
+        if (userName)
+          AB_Account_SetOwnerName(acc, userName);
 
         /* set bank name */
         bpd=AH_User_GetBpd(j->user);

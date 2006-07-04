@@ -2,6 +2,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/07/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - removed functions AH_HBCI_HbciToUtf8() and AH_JobQueue_AddAsUtf8() because
+    they are no longer needed since the whole server response is transformed
+    to UTF8 -> finally fixes Umlaut problems
+  - implemented iTAN process type 2: It now works against the test server,
+    tomorrow I will have to test it against a real server
+
+
 2006-07-03   Christian Stimming <stimming@tuhh.de>
 
 	* Makefile.am: Fix rule srcdoc if directory was not existing, as

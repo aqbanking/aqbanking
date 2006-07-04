@@ -144,6 +144,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
   AH_Msg_free(msg1);
+
   AH_Job_SetStatus(j, AH_JobStatusSent);
   AH_Job_SetStatus(jTan1, AH_JobStatusSent);
 
@@ -158,12 +159,9 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   rv=AH_Job_Process(jTan1, cbox->outbox->context);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg1);
     return rv;
   }
   challenge=AH_Job_Tan_GetChallenge(jTan1);
-
-  AH_Msg_free(msg1);
 
   /* prepare second message (the one with the TAN) */
   msg2=AH_Msg_new(dlg);
@@ -205,6 +203,21 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
   AH_Job_Tan_SetReference(jTan2, AH_Job_Tan_GetReference(jTan1));
 
+  /* copy signers */
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
+    if (!se) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+      return AB_ERROR_INVALID;
+    }
+    while(se) {
+      AH_Job_AddSigner(jTan2, GWEN_StringListEntry_Data(se));
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
   rv=AH_JobQueue_AddJob(qJob, jTan2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -226,6 +239,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 			 0,
 			 AB_Banking_LogLevelInfo,
 			 I18N("Encoding queue"));
+  AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);

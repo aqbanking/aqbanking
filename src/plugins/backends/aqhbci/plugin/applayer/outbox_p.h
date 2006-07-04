@@ -178,13 +178,18 @@ static int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
                                  AH_JOBQUEUE *jq,
                                  int timeout);
 
-int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
-                         AH_DIALOG *dlg,
-                         AH_JOBQUEUE *qJob,
-                         int timeout);
+static int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
+                                 AH_DIALOG *dlg,
+                                 AH_JOBQUEUE *qJob,
+                                 int timeout);
 
-int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
-                                   AH_DIALOG *dlg);
+static int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
+                                AH_DIALOG *dlg,
+                                AH_JOBQUEUE *qJob,
+                                int timeout);
+
+static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
+                                          AH_DIALOG *dlg);
 
 
 

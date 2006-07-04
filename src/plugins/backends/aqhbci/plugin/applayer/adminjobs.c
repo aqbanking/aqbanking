@@ -610,22 +610,10 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       AB_Account_SetBankCode(acc, bankCode);
       AB_Account_SetAccountNumber(acc, accountId);
 
-      if (accountName) {
-        GWEN_BUFFER *xbuf;
-
-        xbuf=GWEN_Buffer_new(0, 32, 0, 1);
-        AH_HBCI_HbciToUtf8(accountName, 0, xbuf);
-        AB_Account_SetAccountName(acc, GWEN_Buffer_GetStart(xbuf));
-        GWEN_Buffer_free(xbuf);
-      }
-      if (userName) {
-        GWEN_BUFFER *xbuf;
-
-        xbuf=GWEN_Buffer_new(0, 32, 0, 1);
-        AH_HBCI_HbciToUtf8(userName, 0, xbuf);
-        AB_Account_SetOwnerName(acc, GWEN_Buffer_GetStart(xbuf));
-        GWEN_Buffer_free(xbuf);
-      }
+      if (accountName)
+        AB_Account_SetAccountName(acc, accountName);
+      if (userName)
+        AB_Account_SetOwnerName(acc, userName);
 
       AB_Account_List2_PushBack(jd->accountList, acc);
     }

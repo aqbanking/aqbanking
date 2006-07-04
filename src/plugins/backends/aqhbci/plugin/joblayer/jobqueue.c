@@ -28,6 +28,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -525,48 +526,6 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
 
 
 
-void AH_JobQueue__AddAsUtf8(GWEN_BUFFER *buf, const char *txt) {
-  while(*txt) {
-    switch((unsigned char)(*txt)) {
-    case 0xc4: /* AE */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0x84);
-      break;
-    case 0xd6: /* OE */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0x96);
-      break;
-    case 0xdc: /* UE */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0x9c);
-      break;
-    case 0xdf: /* sharp-s */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0x9f);
-      break;
-    case 0xe4: /* ae */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xa4);
-      break;
-    case 0xf6: /* oe */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xb6);
-      break;
-    case 0xfc: /* ue */
-      GWEN_Buffer_AppendByte(buf, 0xc3);
-      GWEN_Buffer_AppendByte(buf, 0xbc);
-      break;
-    default:
-      if (isascii(*txt))
-        GWEN_Buffer_AppendByte(buf, *txt);
-      else
-        GWEN_Buffer_AppendByte(buf, ' ');
-    }
-    txt++;
-  } /* while */
-}
-
-
 int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
                                 AH_MSG *msg,
                                 GWEN_DB_NODE *db) {
@@ -612,6 +571,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       while(dbResult) {
         rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
         p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+
         if (rcode>=9000 && rcode<10000) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
 		   "Result: Error (%d: %s)", rcode, p);
@@ -643,7 +603,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           snprintf(numbuf, sizeof(numbuf), "%04d", rcode);
           GWEN_Buffer_AppendString(logmsg, numbuf);
           GWEN_Buffer_AppendString(logmsg, " - ");
-          AH_JobQueue__AddAsUtf8(logmsg, p);
+          GWEN_Buffer_AppendString(logmsg, p);
           if (isMsgResult)
             GWEN_Buffer_AppendString(logmsg, " (M)");
           else
