@@ -23,10 +23,14 @@ Austrian Banks:
 - blz-at.csv
   CSV file containing the list of Austrian banks (as provided by the
   Oesterreichische Bundesbank)
+  http://www.oenb.at/idakilz/kiverzeichnis?action=toDownloadPage
   http://www.stuzza.at/BLZEDI.php
-  http://www2.oenb.at/tridion/institutsleitzahlen/abfrage_menu.php?contenturl=/de/stat_melders/standards_und_codes/Institutsleitzahlen/standards_und_codes.jsp
 
 Swiss Banks:
 - 
   http://www.sic.ch/de/tkicch_index/tkicch_onlineservices/tkicch_onlineservices_downloadbcbankmasterdata.htm
 
+
+US Banks:
+- FedACHdir.txt
+  https://www.fededirectory.frb.org/FedACHdir.txt

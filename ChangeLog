@@ -2,6 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/07/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- generic bankinfo plugin:
+  - implemented a mechanism to update bank info files via additional files
+  - Germany: Updated HBCI and bank info files (now reads new
+    format of Bundesbank files)
+  - Austria: 
+    - updated BLZ file (now reads new, more extensive format)
+    - added OFX server information for BAWAG P.S.K and EasyBank
+
+
 2006/07/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI:

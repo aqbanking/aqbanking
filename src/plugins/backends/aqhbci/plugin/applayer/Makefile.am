@@ -6,7 +6,7 @@ INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/../accountjobs \
   -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
 
-EXTRA_DIST=README itan.inc itan1.inc
+EXTRA_DIST=README itan.inc itan1.inc itan2.inc
 
 noinst_LTLIBRARIES=libhbciapp.la
 

@@ -38,8 +38,11 @@ usbankdatadir = $(bankinfodatadir)/us
 usbankdata_DATA = $(us_files)
 
 at.tar.bz2:
-	./mkdeinfo build-at data/at/blz-at.csv data/at/gke_kidaten.csv.utf8 tmp.banks
+	./mkdeinfo build-at data/at/kidaten.csv.utf8 tmp.banks
 	test -d at || mkdir -p at
+	if test -f data/at/aux.conf; then \
+	  ./mkdeinfo update tmp.banks data/at/aux.conf tmp.banks; \
+	fi
 	./mkdeinfo install tmp.banks at
 	tar cf at.tar at && bzip2 -9 at.tar
 	rm -rf tmp.banks
@@ -48,13 +51,16 @@ $(at_files): at.tar.bz2
 	test -d at || mkdir -p at
 	bunzip2 -k -c $< | tar xmf -
 
-at-daten: data/at/gke_kidaten.csv
-	$(SED) s/\"//g <data/at/gke_kidaten.csv >data/at/gke_kidaten.csv.out
-	iconv -f iso8859-15 -t utf-8 data/at/gke_kidaten.csv.out -o data/at/gke_kidaten.csv.utf8
+at-daten: data/at/kidaten.csv
+	$(SED) s/\"//g <data/at/kidaten.csv >data/at/kidaten.csv.out
+	iconv -f iso8859-15 -t utf-8 data/at/kidaten.csv.out -o data/at/kidaten.csv.utf8
 
 ch.tar.bz2:
 	./mkdeinfo build-ch data/ch/bcbankenstamm.csv tmp.banks
 	test -d ch || mkdir -p ch
+	if test -f data/ch/aux.conf; then \
+	  ./mkdeinfo update tmp.banks data/ch/aux.conf tmp.banks; \
+	fi
 	./mkdeinfo install tmp.banks ch
 	tar cf ch.tar ch && bzip2 -9 ch.tar
 	rm -rf tmp.banks
@@ -66,6 +72,9 @@ $(ch_files): ch.tar.bz2
 de.tar.bz2:
 	./mkdeinfo build data/de/blz.csv data/de/fints_institute.csv tmp.banks
 	test -d de || mkdir -p de
+	if test -f data/de/aux.conf; then \
+	  ./mkdeinfo update tmp.banks data/de/aux.conf tmp.banks; \
+	fi
 	./mkdeinfo install tmp.banks de
 	tar cf de.tar de && bzip2 -9 de.tar
 	rm -rf tmp.banks
@@ -75,8 +84,11 @@ $(de_files): de.tar.bz2
 	bunzip2 -k -c $< | tar xmf -
 
 us.tar.bz2:
-	./mkdeinfo build-am data/us/bankinfo us data/us/FedACHdir.txt tmp.banks
+	./mkdeinfo build-am data/us/fidata us data/us/FedACHdir.txt tmp.banks
 	test -d us || mkdir -p us
+	if test -f data/us/aux.conf; then \
+	  ./mkdeinfo update tmp.banks data/us/aux.conf tmp.banks; \
+	fi
 	./mkdeinfo install tmp.banks us
 	tar cf us.tar us && bzip2 -9 us.tar
 	rm -rf tmp.banks

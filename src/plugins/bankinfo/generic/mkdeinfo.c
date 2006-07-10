@@ -1585,7 +1585,7 @@ int makeBankInfos(const char *path) {
 
 
 
-int loadBanks(const char *fname) {
+int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
   GWEN_TYPE_UINT32 count=0;
   GWEN_BUFFEREDIO *bio;
   int fd;
@@ -1620,7 +1620,7 @@ int loadBanks(const char *fname) {
 
     bi=AB_BankInfo_fromDb(dbT);
     assert(bi);
-    AB_BankInfo_List_Add(bi, bis);
+    AB_BankInfo_List_Add(bi, biList);
     GWEN_DB_Group_free(dbT);
     count++;
     snprintf(numbuf, sizeof(numbuf), "%08x", count);
@@ -1673,25 +1673,21 @@ int main(int argc, char **argv) {
   }
 
   else if (strcasecmp(argv[1], "build-at")==0) {
-    const char *blzFile, *kiFile, *dstFile;
+    const char *blzFile;
+    const char *dstFile;
 
-    if (argc<5) {
+    if (argc<4) {
       fprintf(stderr,
               "Usage:\n"
-              "%s build-at BLZ-file KI-file DESTFILE\n",
+              "%s build-at BLZ-file DESTFILE\n",
               argv[0]);
       return 1;
     }
     blzFile=argv[2];
-    kiFile=argv[3];
-    dstFile=argv[4];
+    dstFile=argv[3];
     bis=AB_BankInfo_List_new();
     dbIdx=GWEN_DB_Group_new("indexList");
     if (readATBLZFile(blzFile)) {
-      DBG_ERROR(0, "Error.");
-      return 2;
-    }
-    if (readATBLZFile2(kiFile)) {
       DBG_ERROR(0, "Error.");
       return 2;
     }
@@ -1772,7 +1768,7 @@ int main(int argc, char **argv) {
     path=argv[3];
     bis=AB_BankInfo_List_new();
     dbIdx=GWEN_DB_Group_new("indexList");
-    if (loadBanks(srcFile)) {
+    if (loadBanks(srcFile, bis)) {
       fprintf(stderr, "Error loading data file.\n");
       return 2;
     }
@@ -1819,6 +1815,70 @@ int main(int argc, char **argv) {
     }
     GWEN_Buffer_free(dbuf);
   }
+  else if (strcasecmp(argv[1], "update")==0) {
+    const char *srcFile1;
+    const char *srcFile2;
+    const char *destFile;
+    AB_BANKINFO_LIST *updBis;
+    AB_BANKINFO *curBi;
+
+    if (argc<5) {
+      fprintf(stderr,
+              "Usage:\n"
+              "%s update SRCFILE UPDATEFILE DESTFILE\n",
+              argv[0]);
+      return 1;
+    }
+    srcFile1=argv[2];
+    srcFile2=argv[3];
+    destFile=argv[4];
+    dbIdx=GWEN_DB_Group_new("indexList");
+    bis=AB_BankInfo_List_new();
+    updBis=AB_BankInfo_List_new();
+    if (loadBanks(srcFile1, bis)) {
+      fprintf(stderr, "Error loading data file.\n");
+      return 2;
+    }
+    if (loadBanks(srcFile2, updBis)) {
+      fprintf(stderr, "Error loading update data file.\n");
+      return 2;
+    }
+
+    curBi=AB_BankInfo_List_First(updBis);
+    while(curBi) {
+      const char *bankId;
+
+      bankId=AB_BankInfo_GetBankId(curBi);
+      if (bankId) {
+	AB_BANKINFO *origBi;
+
+	origBi=AB_BankInfo_List_First(bis);
+	while(origBi) {
+	  const char *s;
+
+	  s=AB_BankInfo_GetBankId(origBi);
+	  if (s && strcasecmp(s, bankId)==0)
+            break;
+	  origBi=AB_BankInfo_List_Next(origBi);
+	}
+
+	if (origBi) {
+	  /* replace original */
+	  AB_BankInfo_List_Del(origBi);
+	  AB_BankInfo_free(origBi);
+	  origBi=AB_BankInfo_dup(curBi);
+	  AB_BankInfo_List_Add(origBi, bis);
+	}
+      }
+
+      curBi=AB_BankInfo_List_Next(curBi);
+    }
+
+    if (saveBankInfos(destFile)) {
+      return 3;
+    }
+
+  }
   else if (strcasecmp(argv[1], "debug")==0) {
     const char *bankFile;
 
@@ -1832,7 +1892,7 @@ int main(int argc, char **argv) {
     bankFile=argv[2];
     bis=AB_BankInfo_List_new();
     dbIdx=GWEN_DB_Group_new("indexList");
-    if (loadBanks(bankFile)) {
+    if (loadBanks(bankFile, bis)) {
       DBG_ERROR(0, "Error.");
       return 2;
     }
