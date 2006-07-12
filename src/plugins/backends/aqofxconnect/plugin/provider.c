@@ -1094,7 +1094,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   AO_PROVIDER *dp;
   AO_CONTEXT *ctx;
   char *msg;
-  GWEN_BUFFER *rbuf;
+  GWEN_BUFFER *rbuf=0;
   int rv;
   AB_USER *u;
   AB_ACCOUNT *a;
