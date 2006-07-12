@@ -104,7 +104,7 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
-testlib_LDADD = libg2banking.la
+testlib_LDADD = libg2banking.la $(aqbanking_internal_libs)
 TESTS = testlib
 
 CLEANFILES += $(BUILT_SOURCES)

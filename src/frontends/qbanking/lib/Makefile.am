@@ -97,9 +97,9 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib checklib
 testlib_SOURCES = testlib.cpp
-testlib_LDADD = libqbanking.la
+testlib_LDADD = libqbanking.la $(aqbanking_internal_libs)
 checklib_SOURCES = checklib.cpp
-checklib_LDADD = libqbanking.la
+checklib_LDADD = libqbanking.la $(aqbanking_internal_libs)
 TESTS = checklib
 clean-local:
 	-rm -rf testfolder

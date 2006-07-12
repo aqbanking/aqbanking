@@ -61,7 +61,7 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.cpp
-testlib_LDADD = libkbanking.la
+testlib_LDADD = libkbanking.la $(aqbanking_internal_libs)
 TESTS = testlib
 
 %.moc.cpp: %.h
