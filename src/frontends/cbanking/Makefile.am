@@ -56,7 +56,7 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
-testlib_LDADD = libcbanking.la
+testlib_LDADD = libcbanking.la $(aqbanking_internal_libs)
 TESTS = testlib
 
 built_sources:
