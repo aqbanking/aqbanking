@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 2.2.0 (2006-07-13)
+===========================================================================
+
+This release introduces support for HBCI iTAN mode, adds the ability to 
+modify the PIN in PIN/TAN mode and finally fixes some nasty umlaut problems. 
+An XML exporter for transaction export has been added. Bank info files for
+Germany and Austria have been updated.
+
+
+===========================================================================
                Released AqBanking - 2.1.0 (2006-06-15)
 ===========================================================================
 

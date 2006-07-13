@@ -1,6 +1,13 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released AqBanking - 2.2.0 (2006-07-13)
+===========================================================================
+
+
+2006/07/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqOfxConnect: Fixed a bug in provider.c which could lead to a segfault
+
 
 2006/07/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
