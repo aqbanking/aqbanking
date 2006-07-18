@@ -1329,6 +1329,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
                   AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
                   break;
+                case 900:
+                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
+                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_00);
+                  break;
                 case 990:
                   DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
                   AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_0);

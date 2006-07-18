@@ -403,6 +403,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "chkacc")==0) {
     rv=chkAcc(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "chkiban")==0) {
+    rv=chkIban(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "listbal")==0) {
     rv=listBal(ab, db, argc, argv);
   }

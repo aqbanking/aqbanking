@@ -113,6 +113,9 @@ void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
   if (m & AH_USER_TANMETHOD_SINGLE_STEP)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "singleStep");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_00)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep00");
   if (m & AH_USER_TANMETHOD_TWO_STEP_0)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "twoStep0");
@@ -154,6 +157,8 @@ GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
       break;
     if (strcasecmp(s, "singleStep")==0)
       fl|=AH_USER_TANMETHOD_SINGLE_STEP;
+    else if (strcasecmp(s, "twoStep00")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
     else if (strcasecmp(s, "twoStep0")==0)
       fl|=AH_USER_TANMETHOD_TWO_STEP_0;
     else if (strcasecmp(s, "twoStep1")==0)

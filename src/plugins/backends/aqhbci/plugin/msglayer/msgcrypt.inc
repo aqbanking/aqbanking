@@ -308,6 +308,7 @@ int AH_Msg_SignMsg(AH_MSG *hmsg,
 
       switch(tm) {
       case AH_USER_TANMETHOD_SINGLE_STEP: m=999; break;
+      case AH_USER_TANMETHOD_TWO_STEP_00: m=900; break;
       case AH_USER_TANMETHOD_TWO_STEP_0:  m=990; break;
       case AH_USER_TANMETHOD_TWO_STEP_1:  m=991; break;
       case AH_USER_TANMETHOD_TWO_STEP_2:  m=992; break;

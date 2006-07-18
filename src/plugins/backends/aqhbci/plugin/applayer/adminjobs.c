@@ -1411,6 +1411,9 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
             case 999:
               tm|=AH_USER_TANMETHOD_SINGLE_STEP;
               break;
+            case 900:
+              tm|=AH_USER_TANMETHOD_TWO_STEP_00;
+              break;
             case 990:
               tm|=AH_USER_TANMETHOD_TWO_STEP_0;
               break;

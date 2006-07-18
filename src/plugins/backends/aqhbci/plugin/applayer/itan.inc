@@ -276,6 +276,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
     switch(fn) {
     case 999: fid=AH_USER_TANMETHOD_SINGLE_STEP; break;
+    case 900: fid=AH_USER_TANMETHOD_TWO_STEP_00; break;
     case 990: fid=AH_USER_TANMETHOD_TWO_STEP_0; break;
     case 991: fid=AH_USER_TANMETHOD_TWO_STEP_1; break;
     case 992: fid=AH_USER_TANMETHOD_TWO_STEP_2; break;

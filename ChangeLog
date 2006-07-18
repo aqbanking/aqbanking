@@ -1,4 +1,16 @@
 
+2006/07/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added aqbanking-tool command "chkiban" which checks whether a given IBAN
+  is valid
+
+
+2006/07/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: implemented a fix for buggy servers in iTAN mode which use the
+  undefined code 900 instead of 990
+
+
 ===========================================================================
 MARK: released AqBanking - 2.2.0 (2006-07-13)
 ===========================================================================

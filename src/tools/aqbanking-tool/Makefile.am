@@ -24,10 +24,11 @@ aqbanking_tool_SOURCES=\
  transfer.c \
  debitnote.c \
  chkacc.c \
+ chkiban.c \
  chktrans.c \
  listbal.c \
  import.c \
- joblog.c
+ joblog.c 
 
 aqbanking_tool_LDADD = \
   $(cbanking_internal_libs) \
