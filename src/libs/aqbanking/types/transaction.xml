@@ -160,12 +160,12 @@
       <li>
         maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the
         described element is not allowed to be set in the transaction.
-        All other values represent the maximum lenght of the described
+        All other values represent the maximum length of the described
         field.
       </li>
       <li>
         minLenSOMETHING: if 0 then this limit is unknown.
-        All other values represent the minimum lenght of the described
+        All other values represent the minimum length of the described
         field.
       </li>
       <li>
@@ -330,13 +330,13 @@
       </descr>
       <elem name="minValueSetupTime" type="int">
         <descr>
-          Minimum time in days between issueing of a request and its
+          Minimum time in days between issuing of a request and its
           first execution.
         </descr>
       </elem>
       <elem name="maxValueSetupTime" type="int">
         <descr>
-          Maximum time in days between issueing of a request and its
+          Maximum time in days between issuing of a request and its
           first execution.
         </descr>
       </elem>
@@ -535,12 +535,12 @@
           </value>
           <value>accepted
             <descr>
-              The transfer has been accepted by the bank
+              The transfer has been accepted by the bank.
             </descr>
           </value>
           <value>rejected
             <descr>
-              The transfer has been rejected by the bank (or was errornous)
+              The transfer has been rejected by the bank (or was erroneous).
             </descr>
           </value>
           <value>pending
