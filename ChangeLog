@@ -1,3 +1,9 @@
+
+2006/08/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in DTAUS importer profile "default"
+
+
 2006-07-24   Christian Stimming <stimming@tuhh.de>
 
 	* src/libs/aqbanking/types/transaction.xml: Fix typos as reported
