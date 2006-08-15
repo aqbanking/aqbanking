@@ -1,5 +1,5 @@
 
-char name="DTAUS"
+char name="default"
 char shortDescr="DTAUS Format"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the German DTAUS format"
