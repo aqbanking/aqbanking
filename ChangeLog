@@ -1,3 +1,7 @@
+2006-09-11  Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Fix gcc version number checking for -fvisibility
+	so that it works with gcc2.95 as well.
 
 2006/09/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -1025,17 +1025,26 @@ ACX_COMPILE_WARN()
 # GCC version (check for usability)
 #
 AC_MSG_CHECKING(if symbol visibility is supported)
+visibility_cflags=""
 case `basename $CC` in 
   gcc*)
-     gccversion=`$CC --version | { read x1 x2 x3; echo $x3; }`
+     dnl Determine version number (watch out: the outside square
+     dnl parenteses are vitally important here!)
+     gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
      case $gccversion in
-       0.* | 1.* | 2.* | 3.*)
-         visibility_supported="no (needs gcc >=4.0, you have $gccversion)"
-         ;;
-       *)
-         visibility_supported="yes"
+       4.*)
+	 # Activate -fvisibility=hidden only for explicit 4.x gcc
+	 # versions. We never now what future gcc's might do with
+	 # that argument, and we also can't be sure that other
+	 # gcc's happen to show very weird version
+	 # numbers. Therefore leave the default at non-activated.
+         visibility_supported="yes, gcc-${gccversion}"
          AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
          visibility_cflags="-fvisibility=hidden"
+         ;;
+       *)
+	 # Default: -fvisibility=hidden not activated.
+         visibility_supported="no (needs gcc >=4.0, you have gcc-${gccversion})"
          ;;
       esac
       ;;
