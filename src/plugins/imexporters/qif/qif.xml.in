@@ -2,12 +2,12 @@
   <plugin name="qif" type="imexporter.inactive" import="1" export="1" >
     <version>@AQBANKING_VERSION_STRING@</version>
     <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>DTAUS</short>
+    <short>QIF</short>
     <descr>
-      This plugin imports and exports DTAUS data.
+      This plugin imports QIF data. (Export currently unimplemented.)
     </descr>
     <descr lang="de" >
-      Diese Erweiterung importiert/exportiert DTAUS-Dateien.
+      Diese Erweiterung importiert QIF-Dateien. (Export ist noch nicht implementiert.)
     </descr>
   </plugin>
 </PluginDescr>

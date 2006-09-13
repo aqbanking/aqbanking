@@ -1,3 +1,8 @@
+2006-09-13  Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/imexporters/qif: Fix various configuration files so
+	that qif import could potentially be tested.
+
 2006-09-11  Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix gcc version number checking for -fvisibility

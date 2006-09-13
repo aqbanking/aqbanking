@@ -62,7 +62,7 @@ BEGIN
             VALUE "InternalName", "Aqbanking\0"
             VALUE "LegalCopyright", "Copyright © 2004 by Martin Preuss\0"
             VALUE "LegalTrademarks", "Aquamaniac\0"
-            VALUE "OriginalFilename", "dtaus.dll\0"
+            VALUE "OriginalFilename", "qif.dll\0"
             //VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "Aqbanking\0"
             VALUE "ProductVersion", "v@AQBANKING_VERSION_FULL_STRING@\0"

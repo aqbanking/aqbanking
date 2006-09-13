@@ -1,5 +1,5 @@
 
-char name="QIF"
+char name="default"
 char shortDescr="Quicken Interchange Format"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the QIF format used by Quicken"
