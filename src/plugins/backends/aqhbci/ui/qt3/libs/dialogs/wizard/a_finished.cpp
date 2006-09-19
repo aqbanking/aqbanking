@@ -32,9 +32,9 @@ ActionFinished::ActionFinished(Wizard *w)
   QLabel *tl;
 
   tl=new QLabel(this, "FinishedText");
-  tl->setText("<qt>"
+  tl->setText(tr("<qt>"
               "The new user has now been setup. Have fun."
-              "</qt>");
+		 "</qt>"));
   addWidget(tl);
 }
 

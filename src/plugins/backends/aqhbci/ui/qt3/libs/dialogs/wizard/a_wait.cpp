@@ -32,7 +32,7 @@ ActionWait::ActionWait(Wizard *w)
   QLabel *tl;
 
   tl=new QLabel(this, "WaitText");
-  tl->setText("<qt>"
+  tl->setText(tr("<qt>"
               "<p>"
               "The new user has now been setup partly."
               "</p>"
@@ -45,7 +45,7 @@ ActionWait::ActionWait(Wizard *w)
               "of the application. You can then finish the setup of this "
               "user."
               "</p>"
-              "</qt>");
+		 "</qt>"));
   addWidget(tl);
 }
 
