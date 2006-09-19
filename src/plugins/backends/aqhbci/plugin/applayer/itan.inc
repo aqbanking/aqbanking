@@ -251,7 +251,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod=0;
   GWEN_TYPE_UINT32 fid=0;
-  int process;
+  int process=0;
 
   u=cbox->user;
   assert(u);
