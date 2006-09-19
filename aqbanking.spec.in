@@ -352,6 +352,7 @@ make install-strip \
 %{imex_datadir}/eri
 %{imex_datadir}/eri2
 %{imex_datadir}/openhbci1
+%{imex_datadir}/qif
 %{imex_datadir}/swift
 %{imex_datadir}/xmldb
 %{imex_datadir}/yellownet
