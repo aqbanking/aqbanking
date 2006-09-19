@@ -34,10 +34,10 @@ ActionGetCert::ActionGetCert(Wizard *w)
   QLabel *tl;
 
   tl=new QLabel(this, "GetCertText");
-  tl->setText("<tr>"
-              "When you click <i>next</i> below we will attempt to "
-              "retrieve the servers SSL certificate"
-              "</tr>");
+  tl->setText(tr("<qt>"
+		 "When you click <i>next</i> below we will attempt to "
+		 "retrieve the server's SSL certificate."
+		 "</qt>"));
   addWidget(tl);
 }
 
