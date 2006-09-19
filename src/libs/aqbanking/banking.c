@@ -4993,10 +4993,30 @@ int AB_Banking_GetPin(AB_BANKING *ab,
         break;
       }
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Pin is registered as \"bad\"");
+      AB_Banking_MessageBox(ab,
+                            AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+                            AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+                            I18N("Error"),
+                            I18N("The PIN was wrong. Please enter the correct PIN."),
+                            I18N("Ok"), 0, 0);
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Pin is too short/long");
       AB_Pin_SetStatus(p, "bad");
+      if (l < minLen)
+	AB_Banking_MessageBox(ab,
+			      AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			      AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			      I18N("Error"),
+			      I18N("The PIN was too short. Please enter the correct PIN."),
+			      I18N("Ok"), 0, 0);
+      else
+	AB_Banking_MessageBox(ab,
+			      AB_BANKING_MSG_FLAGS_TYPE_ERROR |
+			      AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
+			      I18N("Error"),
+			      I18N("The PIN was too long. Please enter the correct PIN."),
+			      I18N("Ok"), 0, 0);
     }
     rv=AB_Banking__GetPin(ab, flags, token, title, text, buffer,
                           minLen, maxLen);
