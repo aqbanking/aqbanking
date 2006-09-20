@@ -47,9 +47,12 @@ at.tar.bz2:
 	tar cf at.tar at && bzip2 -9 at.tar
 	rm -rf tmp.banks
 
-$(at_files): at.tar.bz2
+$(at_files): at_files_tmp
+
+at_files_tmp: at.tar.bz2
 	test -d at || mkdir -p at
 	bunzip2 -k -c $< | tar xmf -
+	touch $@
 
 at-daten: data/at/kidaten.csv
 	$(SED) s/\"//g <data/at/kidaten.csv >data/at/kidaten.csv.out
@@ -65,9 +68,12 @@ ch.tar.bz2:
 	tar cf ch.tar ch && bzip2 -9 ch.tar
 	rm -rf tmp.banks
 
-$(ch_files): ch.tar.bz2
+$(ch_files): ch_files_tmp
+
+ch_files_tmp: ch.tar.bz2
 	test -d ch || mkdir -p ch
 	bunzip2 -k -c $< | tar xmf -
+	touch $@
 
 de.tar.bz2:
 	./mkdeinfo build data/de/blz.csv data/de/fints_institute.csv tmp.banks
@@ -79,9 +85,12 @@ de.tar.bz2:
 	tar cf de.tar de && bzip2 -9 de.tar
 	rm -rf tmp.banks
 
-$(de_files): de.tar.bz2
+$(de_files): de_files_tmp
+
+de_files_tmp: de.tar.bz2
 	test -d de || mkdir -p de
 	bunzip2 -k -c $< | tar xmf -
+	touch $@
 
 us.tar.bz2:
 	./mkdeinfo build-am data/us/fidata us data/us/FedACHdir.txt tmp.banks
@@ -93,10 +102,14 @@ us.tar.bz2:
 	tar cf us.tar us && bzip2 -9 us.tar
 	rm -rf tmp.banks
 
-$(us_files): us.tar.bz2
+$(us_files): us_files_tmp
+
+us_files_tmp: us.tar.bz2
 	test -d us || mkdir -p us
 	bunzip2 -k -c $< | tar xmf -
+	touch $@
 
+.INTERMEDIATE: at_files_tmp ch_files_tmp de_files_tmp us_files_tmp
 
 bankdata: $(at_files) $(ch_files) $(de_files) $(us_files)
 
