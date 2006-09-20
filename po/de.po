@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-19 22:16+0200\n"
-"PO-Revision-Date: 2006-09-19 22:36+0200\n"
+"PO-Revision-Date: 2006-09-20 10:53+0200\n"
 "Last-Translator: Christian Stimming <stimming@tuhh.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2481,6 +2481,11 @@ msgid ""
 "provided the following challenge:</p><p align=\"center\" ><font color=\"blue"
 "\">%s</font></p></html>"
 msgstr ""
+"Bitte geben Sie die TAN \n"
+"für %s ein.\n"
+"Der Server fragt Sie nach folgendem \n"
+"TAN-Index: %s\n"
+"<html><p>Bitte geben Sie die TAN für <i>%s</i> ein.</p><p>Der Server fragt Sie nach folgendem TAN-Index:</p><p align=\"center\"><font color=\"blue\">%s</font></p></html>"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/message.c:948
 msgid "Bad message number, ignoring"
@@ -2730,7 +2735,7 @@ msgstr "Konnte keine Verbindung zum Server herstellen"
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1454
 msgid "Enter New Banking PIN"
-msgstr ""
+msgstr "Neue Banking-PIN eingeben"
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1455
 msgid ""
@@ -2739,6 +2744,9 @@ msgid ""
 "<html><p>Please enter a new banking PIN.</p><p>You must only enter numbers, "
 "not letters.</p></html>"
 msgstr ""
+"Bitte geben Sie eine neue Banking-PIN ein.\n"
+"Sie dürfen nur Zahlen eingeben, keine Buchstaben.\n"
+"<html><p>Bitte geben Sie eine neue Banking-PIN ein.</p><p>Sie dürfen nur Zahlen eingeben, keine Buchstaben.</p></html>"
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1576
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1846
@@ -4692,13 +4700,12 @@ msgstr ""
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.cpp:448
 msgid "Retrieving List of Allowed iTAN Modes"
-msgstr ""
+msgstr "Liste der erlaubten iTAN-Modi abrufen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.cpp:449
-#, fuzzy
 msgid ""
 "<qt>Retrieving the list of supported iTAN modes from the bank server.</qt>"
-msgstr "<qt>Die Liste der verfügbaren Konten wird nun abgerufen.</qt>"
+msgstr "<qt>Die Liste der verfügbaren iTAN-Modi wird nun abgerufen.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageaccounthbci.cpp:49
 msgid "<p>This page contains HBCI specific account settings.</p>"
@@ -4779,7 +4786,7 @@ msgstr "Kontenliste abrufen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.ui.cpp:178
 msgid "Get iTAN Modes"
-msgstr ""
+msgstr "iTAN-Modi abrufen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageaccounthbci.ui.cpp:65
 msgid "HBCI"
@@ -5086,9 +5093,7 @@ msgstr "<pq>Die ausgewählte Schlüsseldatei wird jetzt überprüft.</qt>"
 msgid ""
 "<qt>When you click the button below the file you selected will be checked in "
 "order to find out which plugin is needed to support the keyfile.</qt>"
-msgstr ""
-"<qt>Beim Anklicken des Knopfes unten wird die ausgewählte Datei überprüft um "
-"benötigte Plugins für die Schlüsseldatei zu ermitteln.<qt>"
+msgstr "<qt>Beim Anklicken des Knopfes unten wird die ausgewählte Datei überprüft, um benötigte Plugins für die Schlüsseldatei zu ermitteln.<qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_checkfile.cpp:110
 msgid "<qt>Checking type of the key file, please wait...</qt>"
@@ -5107,7 +5112,7 @@ msgstr "Server-Zertifikat abrufen"
 msgid ""
 "<qt>When you click <i>next</i> below we will attempt to retrieve the "
 "server's SSL certificate.</qt>"
-msgstr ""
+msgstr "<qt>Wenn Sie <i>Weiter</i> klicken, wird das SSL-Zertifikat des Servers abgerufen.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getkeys.cpp:33
 msgid "Retrieve Server Keys"
@@ -5266,11 +5271,11 @@ msgid ""
 "application.</p><p>In the next days your bank will inform you about the "
 "success of the application. You can then finish the setup of this user.</p></"
 "qt>"
-msgstr ""
+msgstr "<qt><p>Der neue Benutzer ist nun teilweise eingerichtet.</p><p>Sie müssen jetzt abwarten, bis Ihre Bank die Registrierung bestätigt. Anschließend können Sie diese Einrichtung abschließen. In den nächsten Tagen müsste sich die Bank bei Ihnen melden, um die erfolgreiche Registrierung zu bestätigen. Rufen Sie dann diesen Einrichtungs-Assistent erneut auf.</p></qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_finished.cpp:35
 msgid "<qt>The new user has now been setup. Have fun.</qt>"
-msgstr ""
+msgstr "<qt>Der neue Benutzer ist nun eingerichtet. Sie können diesen jetzt benutzen.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_getaccounts.cpp:34
 msgid "Retrieve Account List"
@@ -5963,27 +5968,20 @@ msgstr ""
 "Bankleitzahl akzeptiert.</qt>"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.ui.cpp:212
-#, fuzzy
 msgid "Send Empty FID"
-msgstr "Leere Bankleitzahl senden"
+msgstr "Leere FID senden"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.ui.cpp:213
-#, fuzzy
 msgid "Send empty FID even if one is set"
-msgstr ""
-"Leere Bankleitzahl senden, obwohl eine eingetragen ist (nötig für manche OFX-"
-"Banken)"
+msgstr "Leere FID senden, obwohl eine eingetragen ist (nötig für manche OFX-Banken)"
 
 #: src/plugins/backends/aqofxconnect/ui/qt3/libs/cfgtabpageuserofx.ui.cpp:214
-#, fuzzy
 msgid ""
 "<qt>\n"
 "Use this if your bank does not allow sending a FID (even if there is such an "
 "id).\n"
 "</qt>"
-msgstr ""
-"<qt>Aktivieren Sie diese Einstellung, wenn Ihre OFX-Bank keine gesetzte "
-"Bankleitzahl akzeptiert.</qt>"
+msgstr "<qt>Aktivieren Sie diese Einstellung, wenn Ihre OFX-Bank keine gesetzte FID akzeptiert.</qt>"
 
 #: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageaccountyn.cpp:44
 #: src/plugins/backends/aqyellownet/ui/qt3/libs/cfgtabpageuseryn.cpp:51
