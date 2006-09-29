@@ -1383,21 +1383,13 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
-  if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-    // TODO: show errors
-    AH_Outbox_free(ob);
-    if (!nounmount)
-      AH_Medium_Unmount(m, 1);
-    return AB_ERROR_GENERIC;
-  }
-  else {
+  if (!AH_Job_HasErrors(job)) {
     rv=AH_Job_Commit(job);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       AH_Outbox_free(ob);
       if (!nounmount)
-        AH_Medium_Unmount(m, 1);
+	AH_Medium_Unmount(m, 1);
       return rv;
     }
   }
@@ -1410,6 +1402,9 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
       AH_Medium_Unmount(m, 1);
     return AB_ERROR_NO_DATA;
   }
+
+  /* set TAN methods */
+  AH_User_SetTanMethods(u, tm);
 
   AH_Outbox_free(ob);
 

@@ -118,6 +118,18 @@ int changePin(AB_BANKING *ab,
               char **argv);
 
 
+
+int test1(AB_BANKING *ab,
+          GWEN_DB_NODE *dbArgs,
+          int argc,
+          char **argv);
+
+int test2(AB_BANKING *ab,
+          GWEN_DB_NODE *dbArgs,
+          int argc,
+          char **argv);
+
+
 #endif
 
 

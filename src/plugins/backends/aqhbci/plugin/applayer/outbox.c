@@ -887,6 +887,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     return rv;
   }
   if (AH_Job_HasErrors(jDlgOpen)) {
+    /* TODO: check for iTAN related error and try again */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening dialog, aborting");
     AH_JobQueue_free(jqDlgOpen);
     return AB_ERROR_GENERIC;

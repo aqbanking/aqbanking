@@ -2664,8 +2664,12 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
   ab->currentJobs=0;
 
   if (!succ) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
-    return AB_ERROR_GENERIC;
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
+    /* don't return an error here, because at least when retrieving the
+     * list of allowed iTAN modes there will most definately be an error with
+     * the only job in the queue
+     */
+    /*return AB_ERROR_GENERIC;*/
   }
 
   return 0;

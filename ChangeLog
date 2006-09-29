@@ -1,3 +1,14 @@
+2006/09/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- changed behaviour of the ExecuteQueue functions: If the only problem is
+  that not a single job has been executed previous versions returned an
+  error. This is disturbing when retrieving iTAN modes, so the special case
+  that all jobs contained errors is no longer handled by this routine (e.g.
+  in such a case it will return "OK")
+- AqHBCI: AH_Provider_GetItanModes now ignores the error state of the job
+  (even if the dialog is aborted the job did fine, because the error code
+  3920 contains the information the job is to retrieve)
+
 2006-09-19  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Show error message when a wrong

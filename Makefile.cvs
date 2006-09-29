@@ -62,7 +62,7 @@ mp:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="GPL aqyellownet"
+	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
 	make sources
 
 mp2:

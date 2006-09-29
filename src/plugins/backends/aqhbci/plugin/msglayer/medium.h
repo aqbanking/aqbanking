@@ -271,6 +271,23 @@ int AH_Medium_ResetUserKeys(AH_MEDIUM *m);
 
 
 
+/** @name Functions Which Are Not Part of the API
+ *
+ * These functions are only used for debugging purposes, you MUST NOT
+ * rely on their existence or parameter list!
+ */
+/*@{*/
+
+AQHBCI_API
+AH_MEDIUM_RESULT AH_Medium_EncryptWithKey(AH_MEDIUM *m,
+					  GWEN_BUFFER *msgbuf,
+					  GWEN_BUFFER *encryptbuf,
+					  GWEN_CRYPTKEY *sessionKey);
+/*@}*/
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

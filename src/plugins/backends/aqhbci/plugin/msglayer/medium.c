@@ -975,7 +975,6 @@ GWEN_BUFFER *AH_Medium_GenerateMsgKey(AH_MEDIUM *m) {
 
 
 
-
 AH_MEDIUM_RESULT AH_Medium_Encrypt(AH_MEDIUM *m,
                                    GWEN_BUFFER *msgbuf,
                                    GWEN_BUFFER *encryptbuf,
@@ -2183,6 +2182,47 @@ GWEN_TYPE_UINT32 AH_Medium_GetUniqueId(const AH_MEDIUM *m) {
 
 void AH_Medium_SetUniqueId(AH_MEDIUM *m, GWEN_TYPE_UINT32 id) {
   m->uniqueId=id;
+}
+
+
+
+
+
+
+
+AH_MEDIUM_RESULT AH_Medium_EncryptWithKey(AH_MEDIUM *m,
+					  GWEN_BUFFER *msgbuf,
+					  GWEN_BUFFER *encryptbuf,
+					  GWEN_CRYPTKEY *sessionKey) {
+  GWEN_ERRORCODE err;
+
+  assert(m);
+
+  if (!AH_Medium_IsMounted(m)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Medium is not mounted");
+    return AH_MediumResultGenericError;
+  }
+
+  /* padd message */
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Padding with ANSI X9.23");
+  if (GWEN_Padd_PaddWithANSIX9_23(msgbuf)) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return AH_MediumResultGenericError;
+  }
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Padding with ANSI X9.23: done");
+
+  /* encrypt message */
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encrypting with session key");
+  err=GWEN_CryptKey_Encrypt(sessionKey,
+                            msgbuf,
+                            encryptbuf);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return AH_MediumResultGenericError;
+  }
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encrypting with session key: done");
+
+  return AH_MediumResultOk;
 }
 
 
