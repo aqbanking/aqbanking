@@ -1397,6 +1397,10 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   tm=AH_Job_GetItanModes_GetModes(job);
   if (!tm) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No iTAN modes reported");
+    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
+                           0,
+                           AB_Banking_LogLevelError,
+                           I18N("No iTAN modes reported."));
     AH_Outbox_free(ob);
     if (!nounmount)
       AH_Medium_Unmount(m, 1);
@@ -1404,6 +1408,10 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   }
 
   /* set TAN methods */
+  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
+                         0,
+                         AB_Banking_LogLevelNotice,
+                         I18N("Retrieved iTAN modes, storing."));
   AH_User_SetTanMethods(u, tm);
 
   AH_Outbox_free(ob);
