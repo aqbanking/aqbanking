@@ -1,3 +1,13 @@
+
+2006/09/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: 
+  - added methods 901-907 (not supported by specs but some banks
+    don't card and use those values anyway)
+  - getItanModes: now commit full job instead of iTAN modes only. Should fix
+    thw problems with Sparda bank
+
+
 2006/09/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - changed behaviour of the ExecuteQueue functions: If the only problem is

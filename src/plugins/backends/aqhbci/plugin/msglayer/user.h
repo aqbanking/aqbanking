@@ -83,6 +83,20 @@ extern "C" {
 #define AH_USER_TANMETHOD_TWO_STEP_7         0x00000080
 /** two step PIN/TAN, method 0 (900)  */
 #define AH_USER_TANMETHOD_TWO_STEP_00        0x00000100
+/** two step PIN/TAN, method 0 (901)  */
+#define AH_USER_TANMETHOD_TWO_STEP_01        0x00000400
+/** two step PIN/TAN, method 0 (902)  */
+#define AH_USER_TANMETHOD_TWO_STEP_02        0x00000800
+/** two step PIN/TAN, method 0 (903)  */
+#define AH_USER_TANMETHOD_TWO_STEP_03        0x00001000
+/** two step PIN/TAN, method 0 (904)  */
+#define AH_USER_TANMETHOD_TWO_STEP_04        0x00002000
+/** two step PIN/TAN, method 0 (905)  */
+#define AH_USER_TANMETHOD_TWO_STEP_05        0x00004000
+/** two step PIN/TAN, method 0 (906)  */
+#define AH_USER_TANMETHOD_TWO_STEP_06        0x00008000
+/** two step PIN/TAN, method 0 (907)  */
+#define AH_USER_TANMETHOD_TWO_STEP_07        0x00010000
 /*@}*/
 
 

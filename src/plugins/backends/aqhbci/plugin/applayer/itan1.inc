@@ -89,7 +89,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
     switch(fn) {
     case 999: fid=AH_USER_TANMETHOD_SINGLE_STEP; break;
-    case 900: fid=AH_USER_TANMETHOD_TWO_STEP_00; break;
     case 990: fid=AH_USER_TANMETHOD_TWO_STEP_0; break;
     case 991: fid=AH_USER_TANMETHOD_TWO_STEP_1; break;
     case 992: fid=AH_USER_TANMETHOD_TWO_STEP_2; break;
@@ -98,6 +97,14 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     case 995: fid=AH_USER_TANMETHOD_TWO_STEP_5; break;
     case 996: fid=AH_USER_TANMETHOD_TWO_STEP_6; break;
     case 997: fid=AH_USER_TANMETHOD_TWO_STEP_7; break;
+    case 900: fid=AH_USER_TANMETHOD_TWO_STEP_00; break;
+    case 901: fid=AH_USER_TANMETHOD_TWO_STEP_01; break;
+    case 902: fid=AH_USER_TANMETHOD_TWO_STEP_02; break;
+    case 903: fid=AH_USER_TANMETHOD_TWO_STEP_03; break;
+    case 904: fid=AH_USER_TANMETHOD_TWO_STEP_04; break;
+    case 905: fid=AH_USER_TANMETHOD_TWO_STEP_05; break;
+    case 906: fid=AH_USER_TANMETHOD_TWO_STEP_06; break;
+    case 907: fid=AH_USER_TANMETHOD_TWO_STEP_07; break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid tan method %d", fn);
       fid=0;

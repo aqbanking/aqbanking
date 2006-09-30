@@ -113,9 +113,6 @@ void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
   if (m & AH_USER_TANMETHOD_SINGLE_STEP)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "singleStep");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_00)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep00");
   if (m & AH_USER_TANMETHOD_TWO_STEP_0)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "twoStep0");
@@ -140,6 +137,30 @@ void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
   if (m & AH_USER_TANMETHOD_TWO_STEP_7)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "twoStep7");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_00)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep00");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_01)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep01");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_02)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep02");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_03)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep03");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_04)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep04");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_05)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep05");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_06)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep06");
+  if (m & AH_USER_TANMETHOD_TWO_STEP_07)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "twoStep07");
 }
 
 
@@ -157,8 +178,6 @@ GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
       break;
     if (strcasecmp(s, "singleStep")==0)
       fl|=AH_USER_TANMETHOD_SINGLE_STEP;
-    else if (strcasecmp(s, "twoStep00")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
     else if (strcasecmp(s, "twoStep0")==0)
       fl|=AH_USER_TANMETHOD_TWO_STEP_0;
     else if (strcasecmp(s, "twoStep1")==0)
@@ -175,6 +194,24 @@ GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
       fl|=AH_USER_TANMETHOD_TWO_STEP_6;
     else if (strcasecmp(s, "twoStep7")==0)
       fl|=AH_USER_TANMETHOD_TWO_STEP_7;
+    else if (strcasecmp(s, "twoStep00")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
+    else if (strcasecmp(s, "twoStep00")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
+    else if (strcasecmp(s, "twoStep01")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_01;
+    else if (strcasecmp(s, "twoStep02")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_02;
+    else if (strcasecmp(s, "twoStep03")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_03;
+    else if (strcasecmp(s, "twoStep04")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_04;
+    else if (strcasecmp(s, "twoStep05")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_05;
+    else if (strcasecmp(s, "twoStep06")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_06;
+    else if (strcasecmp(s, "twoStep07")==0)
+      fl|=AH_USER_TANMETHOD_TWO_STEP_07;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown tan method \"%s\"", s);
     }

@@ -1383,17 +1383,6 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
-  if (!AH_Job_HasErrors(job)) {
-    rv=AH_Job_Commit(job);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      AH_Outbox_free(ob);
-      if (!nounmount)
-	AH_Medium_Unmount(m, 1);
-      return rv;
-    }
-  }
-
   tm=AH_Job_GetItanModes_GetModes(job);
   if (!tm) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No iTAN modes reported");
@@ -1405,6 +1394,23 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
     if (!nounmount)
       AH_Medium_Unmount(m, 1);
     return AB_ERROR_NO_DATA;
+  }
+
+  /* we have received tan methods, so there was a 3920 response. In this
+   * special case we need to apply the job data, because otherwise we couldn't
+   * fully connect to the server next time.
+   */
+  rv=AH_Job_Commit(job);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
+                           0,
+                           AB_Banking_LogLevelError,
+                           I18N("Could not commit result to the system"));
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AH_Medium_Unmount(m, 1);
+    return rv;
   }
 
   /* set TAN methods */
