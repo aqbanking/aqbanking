@@ -860,6 +860,10 @@ AC_SUBST(LIBGLADE2_LIBS)
 # QT3
 #
 
+QT3TO4="NO"
+UIC3="NO"
+QT_BINDIR=""
+
 case "$aqbanking_frontends" in *qbanking*)
   AQ_CHECK_QT3
   if test "$have_qt3" = "yes"; then
@@ -875,33 +879,32 @@ case "$aqbanking_frontends" in *qbanking*)
   
   dnl Store the bin dir for the windows dlls
   QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
+
+  dnl Check for potential qt4 environment, but only if moc is from qt4
+  dnl (watch out: the outside square parenteses are vitally important here!)
+  MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+  if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
+    UIC3="${qt3_uic}"
+  else
+    AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+    AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+  fi
+
+  dnl Make sure moc and uic come from the same Qt version
+  dnl (watch out: the outside square parenteses are vitally important here!)
+  UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+  if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
+        "` echo ${UIC_VERSION} | cut -d. -f1 `" \
+     -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
+        "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
+    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
+  fi
   ;;
 esac
 
 dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
-
-dnl Check for potential qt4 environment, but only if moc is from qt4
-dnl (watch out: the outside square parenteses are vitally important here!)
-MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
-    UIC3="${qt3_uic}"
-    QT4TO4="NO"
-else
-    AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-    AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-fi
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
-
-dnl Make sure moc and uic come from the same Qt version
-dnl (watch out: the outside square parenteses are vitally important here!)
-UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
-        "` echo ${UIC_VERSION} | cut -d. -f1 `" \
-     -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
-        "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
-    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-fi
 
 ###-------------------------------------------------------------------------
 #
