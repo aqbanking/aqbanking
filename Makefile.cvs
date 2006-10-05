@@ -46,6 +46,8 @@ all:
 	 done; \
 	 echo "aclocal $${ACLOCAL_FLAGS}"; \
 	 aclocal $${ACLOCAL_FLAGS} || (echo -e '***\n*** If the line above shows the error message "macro AC_GWENHYWFAR not \n*** found", you need to specify the environment variable ACLOCAL_FLAGS \n*** to be "-I GWENHYWFAR_PREFIX/share/aclocal". For example, do the following:\n***\n***   export ACLOCAL_FLAGS="-I ${HOME}/usr/share/aclocal"\n***   make -f Makefile.cvs\n***'; exit 1)
+	@if ! grep -q AC_GWENHYWFAR aclocal.m4  ; then echo -e "***\n*** Error: The configure macro of the gwenhywfar package could not be found. \n*** Please specify the environment variable ACLOCAL_FLAGS \n*** to be \"-I GWENHYWFAR_PREFIX/share/aclocal\". \n"; exit 1 ; fi
+	@if ! grep -q PKG_CHECK_MODULES aclocal.m4  ; then echo -e "***\n*** Error: The configure macro of the pkg-config package \n*** (usually included in gnome) could not be found. \n*** Please specify the environment variable ACLOCAL_FLAGS \n*** to be \"-I GNOME_PREFIX/share/aclocal\". \n"; exit 1 ; fi
 	autoheader
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	if test ! -f qtsources; then echo > qtsources; fi
