@@ -1,4 +1,10 @@
 
+2006/10/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- src/plugins/parsers/dtaus/dtaus-exports.c: increased hardlimit for size of
+  DTAUS file to 256kb (was 64kb)
+
+
 2006/09/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI: 

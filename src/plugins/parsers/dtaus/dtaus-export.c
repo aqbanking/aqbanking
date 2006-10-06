@@ -748,7 +748,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   sumAccountIds=0;
 
   dst=GWEN_Buffer_new(0, 1024, 0, 1);
-  GWEN_Buffer_SetHardLimit(dst, 64*1024);
+  GWEN_Buffer_SetHardLimit(dst, AHB_DTAUS_HARDLIMIT);
 
   /* create A set */
   if (AHB_DTAUS__CreateSetA(dst, cfg)) {

@@ -14,6 +14,9 @@
 #define AQHBCIBANK_DTAUS_EXPORT_P_H
 
 
+#define AHB_DTAUS_HARDLIMIT (256*1024)
+
+
 int AHB_DTAUS__ToDTA(int c);
 int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
                        unsigned int size,
