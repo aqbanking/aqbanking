@@ -1,6 +1,6 @@
 
 char name="SWIFT-MT942"
-char shortDescr="SWIFT MT942 Format"
+char shortDescr="Generic SWIFT MT942 Format"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports SWIFT MT942 documents"
 int import="1"

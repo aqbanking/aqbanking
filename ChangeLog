@@ -1,4 +1,16 @@
 
+2006/10/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- src/plugins/parsers/swift: added profile options:
+  - "skipFileLines": Number of lines to be skipped at the beginning of a
+    file to be importef
+  - "skipDocLines": Number of lines to be skipped at the beginning of a
+    MT940/1 document (a file may contain multiple MT940/1 docs)
+  - added profile for AMRO bank
+  - better check function for SWIFT files (only reads until a line with ":20"
+    is found in which case the file is supposed to be importable)
+
+
 2006/10/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/plugins/parsers/dtaus/dtaus-exports.c: increased hardlimit for size of

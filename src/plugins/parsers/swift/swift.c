@@ -500,6 +500,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   AHB_SWIFT_TAG_LIST *tl;
   int rv;
   const char *p;
+  int skipFileLines;
+  int skipDocLines;
 
   p=GWEN_DB_GetCharValue(cfg, "type", 0, "mt940");
   if (strcasecmp(p, "mt940")!=0 &&
@@ -510,12 +512,56 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
               GWEN_DBIO_GetName(dbio));
     return -1;
   }
+  skipFileLines=GWEN_DB_GetIntValue(cfg, "skipFileLines", 0, 0);
+  skipDocLines=GWEN_DB_GetIntValue(cfg, "skipDocLines", 0, 0);
+
   tl=AHB_SWIFT_Tag_List_new();
 
   /* fill tag list */
   GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
                         "SWIFT: Reading complete stream");
+  if (skipFileLines>0) {
+    int i;
+    GWEN_BUFFER *lbuf;
+
+    lbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    for (i=0; i<skipFileLines; i++) {
+      GWEN_ERRORCODE err;
+
+      err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
+      if (!GWEN_Error_IsOk(err)) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
+	GWEN_Buffer_free(lbuf);
+	AHB_SWIFT_Tag_List_free(tl);
+	return -1;
+      }
+      GWEN_Buffer_Reset(lbuf);
+    }
+    GWEN_Buffer_free(lbuf);
+  }
+
   for(;;) {
+    /* skip lines at the beginning if requested */
+    if (skipDocLines>0) {
+      int i;
+      GWEN_BUFFER *lbuf;
+  
+      lbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      for (i=0; i<skipDocLines; i++) {
+	GWEN_ERRORCODE err;
+
+	err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
+	  GWEN_Buffer_free(lbuf);
+	  AHB_SWIFT_Tag_List_free(tl);
+	  return -1;
+	}
+	GWEN_Buffer_Reset(lbuf);
+      }
+      GWEN_Buffer_free(lbuf);
+    }
+
     rv=AHB_SWIFT_ReadDocument(bio, tl, 0);
     if (rv==-1) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
@@ -558,9 +604,9 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
                                                const char *fname) {
   int fd;
   GWEN_BUFFEREDIO *bio;
-  AHB_SWIFT_TAG_LIST *tl;
-  int rv;
-  int cnt;
+  int i;
+  GWEN_DBIO_CHECKFILE_RESULT res;
+  GWEN_BUFFER *lbuf;
 
   assert(dbio);
   assert(fname);
@@ -573,32 +619,39 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
     return GWEN_DBIO_CheckFileResultNotOk;
   }
 
-  tl=AHB_SWIFT_Tag_List_new();
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-  rv=AHB_SWIFT_ReadDocument(bio, tl, 1);
-  cnt=AHB_SWIFT_Tag_List_GetCount(tl);
-  AHB_SWIFT_Tag_List_free(tl);
+
+  /* search for ":20:" tag */
+  lbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  res=GWEN_DBIO_CheckFileResultNotOk;
+  for (i=0; i<20; i++) {
+    GWEN_ERRORCODE err;
+    const char *p;
+
+    if (GWEN_BufferedIO_CheckEOF(bio))
+      break;
+
+    err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
+      res=GWEN_DBIO_CheckFileResultNotOk;
+      break;
+    }
+    p=GWEN_Buffer_GetStart(lbuf);
+    if (strstr(p, ":20:")) {
+      /* don't be too sure about the file being importable... */
+      res=GWEN_DBIO_CheckFileResultUnknown;
+      break;
+    }
+    GWEN_Buffer_Reset(lbuf);
+  } /* for */
+  GWEN_Buffer_free(lbuf);
+
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
-  if (rv==0) {
-    if (cnt==0) {
-      /* unknown but rather unlikely that this file is supported */
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "Unknown whether file \"%s\" is supported by this plugin",
-               fname);
-      return GWEN_DBIO_CheckFileResultUnknown;
-    }
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-             "File \"%s\" is supported by this plugin",
-             fname);
-    return GWEN_DBIO_CheckFileResultOk;
-  }
-  /* definately not supported if an error occurred */
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-           "File \"%s\" is not supported by this plugin",
-           fname);
-  return GWEN_DBIO_CheckFileResultNotOk;
+
+  return res;
 }
 
 

@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=2
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=3
+AQBANKING_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -1720,6 +1720,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/swift/profiles/Makefile
   src/plugins/imexporters/swift/profiles/swiftmt940.conf
   src/plugins/imexporters/swift/profiles/swiftmt942.conf
+  src/plugins/imexporters/swift/profiles/amro942.conf
   src/plugins/imexporters/csv/Makefile
   src/plugins/imexporters/csv/csv.xml
   src/plugins/imexporters/csv/ressource.rc
