@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released AqBanking - 2.2.2beta (2006-10-09)
+===========================================================================
+
+
 2006/10/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/plugins/parsers/swift: added profile options:
@@ -21,7 +26,7 @@
 -------------------------------------------------
 - AqHBCI: 
   - added methods 901-907 (not supported by specs but some banks
-    don't card and use those values anyway)
+    don't care and use those values anyway)
   - getItanModes: now commit full job instead of iTAN modes only. Should fix
     thw problems with Sparda bank
 
@@ -37,20 +42,24 @@
   (even if the dialog is aborted the job did fine, because the error code
   3920 contains the information the job is to retrieve)
 
+
 2006-09-19  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Show error message when a wrong
 	PIN was entered.
+
 
 2006-09-13  Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/imexporters/qif: Fix various configuration files so
 	that qif import could potentially be tested.
 
+
 2006-09-11  Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix gcc version number checking for -fvisibility
 	so that it works with gcc2.95 as well.
+
 
 2006/09/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -71,6 +80,7 @@ MARK: released AqBanking - 2.2.1 (2006-08-25)
 
 	* src/libs/aqbanking/types/transaction.xml: Fix typos as reported
 	by Archimedes Submerged.
+
 
 2006/07/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
