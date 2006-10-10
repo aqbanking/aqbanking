@@ -136,6 +136,10 @@ int main(int argc, char **argv) {
                                   "    Requests a system id for the given "
                                   "user\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  getitanmodes:\n"
+                                  "    Requests supported iTAN modes for the given "
+                                  "user\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  iniletter:\n"
                                   "    Print the INI letter for a given "
                                   "user\n\n"));
