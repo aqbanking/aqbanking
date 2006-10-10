@@ -994,6 +994,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   int rv;
   AH_PROVIDER *hp;
   const char *s;
+  int i;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -1009,40 +1010,73 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   h=AH_Provider_GetHbci(pro);
   assert(h);
 
-  job=AH_Job_GetSysId_new(u);
-  if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
-    return AB_ERROR_GENERIC;
-  }
-  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+  job=0;
+  ob=0;
+  rv=0;
+  for (i=0; ; i++) {
+    job=AH_Job_GetSysId_new(u);
+    if (!job) {
+      DBG_ERROR(0, "Job not supported, should not happen");
+      return AB_ERROR_GENERIC;
+    }
+    AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h);
-  AH_Outbox_AddJob(ob, job);
+    ob=AH_Outbox_new(h);
+    AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 0, 1);
-  if (rv) {
-    DBG_ERROR(0, "Could not execute outbox.\n");
-    if (!nounmount)
-      AH_Medium_Unmount(m, 1);
-    return rv;
-  }
-
-  if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-    // TODO: show errors
-    AH_Outbox_free(ob);
-    if (!nounmount)
-      AH_Medium_Unmount(m, 1);
-    return AB_ERROR_GENERIC;
-  }
-  else {
-    rv=AH_Job_Commit(job);
+    rv=AH_Outbox_Execute(ob, ctx, 0, 1);
     if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      AH_Outbox_free(ob);
+      DBG_ERROR(0, "Could not execute outbox.\n");
       if (!nounmount)
         AH_Medium_Unmount(m, 1);
       return rv;
+    }
+
+    if (AH_Job_HasErrors(job)) {
+      if (AH_Job_HasItanResult(job)) {
+        AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                               I18N("Adjusting to iTAN modes of the server"));
+        rv=AH_Job_Commit(job);
+        if (rv) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+          AH_Outbox_free(ob);
+          if (!nounmount)
+            AH_Medium_Unmount(m, 1);
+          return rv;
+        }
+
+        AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                               I18N("Retrying to get system id."));
+      }
+      else {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
+        // TODO: show errors
+        AH_Outbox_free(ob);
+        if (!nounmount)
+          AH_Medium_Unmount(m, 1);
+        return AB_ERROR_GENERIC;
+      }
+    }
+    else {
+      rv=AH_Job_Commit(job);
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+        AH_Outbox_free(ob);
+        if (!nounmount)
+          AH_Medium_Unmount(m, 1);
+        return rv;
+      }
+      break;
+    }
+    AH_Job_free(job);
+    AH_Outbox_free(ob);
+    if (i>1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Tried too often, giving up");
+      AB_Banking_ProgressLog(ab, 0, AB_Banking_LogLevelError,
+                             I18N("Could not get system id after multiple trials"));
+      if (!nounmount)
+        AH_Medium_Unmount(m, 1);
+      return AB_ERROR_GENERIC;
     }
   }
 

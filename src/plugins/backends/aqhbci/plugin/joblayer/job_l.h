@@ -154,6 +154,13 @@ int AH_Job_Commit(AH_JOB *j);
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
                     AH_JOB_EXCHANGE_MODE m);
 
+/**
+ * Check whether the results for this job contain warning 3920. In this
+ * case the result must be commited.
+ * @return 0 if there is no such result, !=0 otherwise
+ */
+int AH_Job_HasItanResult(AH_JOB *j);
+
 
 /**
  * You can use this from the Commit function of the inheriting class to

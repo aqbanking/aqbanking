@@ -888,9 +888,22 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
   }
   if (AH_Job_HasErrors(jDlgOpen)) {
     /* TODO: check for iTAN related error and try again */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening dialog, aborting");
-    AH_JobQueue_free(jqDlgOpen);
-    return AB_ERROR_GENERIC;
+    if (AH_Job_HasItanResult(jDlgOpen)) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		 "Adjusting to iTAN modes of the server");
+      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+			     0,
+			     AB_Banking_LogLevelNotice,
+			     I18N("Adjusting to iTAN modes of the server"));
+      rv=AH_Job_CommitSystemData(jDlgOpen);
+      AH_JobQueue_free(jqDlgOpen);
+      return 1;
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening dialog, aborting");
+      AH_JobQueue_free(jqDlgOpen);
+      return AB_ERROR_GENERIC;
+    }
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done");
   rv=AH_Job_CommitSystemData(jDlgOpen);
@@ -1110,7 +1123,8 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
 					   AH_JOBQUEUE_LIST *jql){
   AH_DIALOG *dlg;
   AH_JOBQUEUE *jq;
-  int rv;
+  int rv=0;
+  int i;
   GWEN_TYPE_UINT32 jqflags;
 
   if (AH_JobQueue_List_GetCount(jql)==0) {
@@ -1119,31 +1133,51 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     return 0;
   }
 
-  dlg=AH_Dialog_new(cbox->user);
-  rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not begin a dialog for customer \"%s\" (%d)",
-             AB_User_GetCustomerId(cbox->user), rv);
-    /* finish all queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                         "Could not begin dialog");
-    AH_Dialog_free(dlg);
-    return rv;
+  for(i=0; i<2; i++) {
+    dlg=AH_Dialog_new(cbox->user);
+    rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "Could not begin a dialog for customer \"%s\" (%d)",
+	       AB_User_GetCustomerId(cbox->user), rv);
+      /* finish all queues */
+      AH_Outbox__CBox_HandleQueueListError(cbox, jql,
+					   "Could not begin dialog");
+      AH_Dialog_free(dlg);
+      return rv;
+    }
+    assert(dlg);
+  
+    jq=AH_JobQueue_List_First(jql);
+    jqflags=AH_JobQueue_GetFlags(jq);
+  
+    /* open dialog */
+    rv=AH_Outbox__CBox_OpenDialog(cbox, timeout, dlg, jqflags);
+    if (rv==0)
+      break;
+    else if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
+      AH_Dialog_Disconnect(dlg, 2);
+      /* finish all queues */
+      AH_Outbox__CBox_HandleQueueListError(cbox, jql,
+					   "Could not open dialog");
+      AH_Dialog_free(dlg);
+      return rv;
+    }
+    else if (rv==1) {
+      AH_Dialog_Disconnect(dlg, 2);
+      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+			     0,
+			     AB_Banking_LogLevelInfo,
+			     I18N("Retrying to open dialog"));
+    }
   }
-  assert(dlg);
-
-  jq=AH_JobQueue_List_First(jql);
-  jqflags=AH_JobQueue_GetFlags(jq);
-
-  /* open dialog */
-  rv=AH_Outbox__CBox_OpenDialog(cbox, timeout, dlg, jqflags);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
     AH_Dialog_Disconnect(dlg, 2);
     /* finish all queues */
     AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                         "Could not open dialog");
+					 "Could not open dialog");
     AH_Dialog_free(dlg);
     return rv;
   }

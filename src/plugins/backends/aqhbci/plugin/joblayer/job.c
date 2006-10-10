@@ -1603,6 +1603,48 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
 
 
 
+int AH_Job_HasItanResult(AH_JOB *j) {
+  GWEN_DB_NODE *dbCurr;
+
+  assert(j);
+  assert(j->usage);
+
+  dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
+  while(dbCurr) {
+    GWEN_DB_NODE *dbRd;
+
+    dbRd=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
+    if (dbRd) {
+      dbRd=GWEN_DB_GetFirstGroup(dbRd);
+    }
+    if (dbRd) {
+      if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0){
+        GWEN_DB_NODE *dbRes;
+
+        dbRes=GWEN_DB_GetFirstGroup(dbRd);
+        while(dbRes) {
+          if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
+            int code;
+            const char *text;
+  
+            code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
+            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+            if (code==3920) {
+              return 1;
+            }
+          } /* if result */
+          dbRes=GWEN_DB_GetNextGroup(dbRes);
+        } /* while */
+      }
+    } /* if response data found */
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  } /* while */
+
+  return 0; /* no iTAN response */
+}
+
+
+
 int AH_Job_DefaultProcessHandler(AH_JOB *j){
   assert(j);
   assert(j->usage);
