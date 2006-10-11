@@ -1734,7 +1734,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
   pm=GWEN_PluginManager_new("imexporters");
 #ifdef LOCAL_INSTALL
-  GWEN_Buffer_AppendString(buf, "imexporters");
+  GWEN_Buffer_AppendString(buf, AB_IMEXPORTER_FOLDER);
   GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_Crop(buf, 0, pos);
 #endif
@@ -2334,7 +2334,7 @@ int AB_Banking_Save(AB_BANKING *ab) {
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP "providers");
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP AB_PROVIDER_FOLDER);
   if (l) {
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
     GWEN_PLUGIN_DESCRIPTION *pd;
@@ -2394,7 +2394,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP "imexporters");
+  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP AB_IMEXPORTER_FOLDER);
   return l;
 }
 
@@ -3370,7 +3370,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 
     /* read global profiles */
     GWEN_Buffer_AppendString(buf, pkgdatadir);
-    GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
+    GWEN_Buffer_AppendString(buf, DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
     if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Bad name for importer/exporter");
@@ -3404,7 +3404,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
     GWEN_Buffer_free(buf);
     return 0;
   }
-  GWEN_Buffer_AppendString(buf, DIRSEP "imexporters" DIRSEP);
+  GWEN_Buffer_AppendString(buf, DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
   if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Bad name for importer/exporter");
