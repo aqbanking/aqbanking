@@ -4,6 +4,7 @@
 - relaxed limits in HBCI format files
 - improved AB_ImExporter_Iso8859_1ToUtf8: No longer stores control characters
   in result buffer
+- added SWIFT importer profile for AMRO 940 (in addition to AMRO 942)
 
 
 2006/10/10: Martin Preuss<martin@libchipcard.de>
