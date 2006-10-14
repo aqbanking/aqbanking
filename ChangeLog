@@ -1,4 +1,9 @@
 
+2006/10/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- relaxed limits in HBCI format files
+
+
 2006/10/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI-Tool: mention command "getitanmodes" in help screen

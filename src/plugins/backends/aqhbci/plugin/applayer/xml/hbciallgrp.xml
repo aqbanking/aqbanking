@@ -48,8 +48,8 @@
 
   <GROUPdef id="ktv" delimiter=":" version="2">
     <!-- "Kontoverbindung" -->
-    <ELEM name="accountid" type="ascii" maxsize="20" />
-    <ELEM name="accountsubid" type="ascii" maxsize="20" minnum="0" />
+    <ELEM name="accountid" type="ascii" />
+    <ELEM name="accountsubid" type="ascii" minnum="0" />
     <GROUP type="kik" />
   </GROUPdef>
 
