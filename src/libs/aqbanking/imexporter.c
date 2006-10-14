@@ -1383,6 +1383,8 @@ void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
       break;
 
     c=(unsigned char)(*(p++));
+    if (c<32 || c==127)
+      c=32;
     switch(c) {
     case 0xc4: /* AE */
       GWEN_Buffer_AppendByte(buf, 0xc3);

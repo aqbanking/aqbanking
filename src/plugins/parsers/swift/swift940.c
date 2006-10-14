@@ -73,7 +73,9 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     s=(char*)malloc(p2-p+1);
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
-    AHB_SWIFT__SetCharValue(data, flags, "localBankCode", s);
+    AHB_SWIFT__SetCharValue(data,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "localBankCode", s);
     free(s);
     p=p2+1;
   }
@@ -88,7 +90,9 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     if (p2==p) {
       DBG_WARN(AQBANKING_LOGDOMAIN,
                "LocalAccountNumber starts with nondigits (%s)", p);
-      AHB_SWIFT__SetCharValue(data, flags, "localAccountNumber", p);
+      AHB_SWIFT__SetCharValue(data,
+                              GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              "localAccountNumber", p);
     }
     else {
       char *s;
@@ -96,7 +100,9 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
       s=(char*)malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
-      AHB_SWIFT__SetCharValue(data, flags, "localAccountNumber", s);
+      AHB_SWIFT__SetCharValue(data,
+                              GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              "localAccountNumber", s);
       free(s);
     }
   }
