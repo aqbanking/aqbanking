@@ -42,6 +42,11 @@ case "$target" in
 	AC_DEFINE(OS_BEOS,1,[if BeOS is used])
 	OS_TYPE="posix"
 	;;
+    *-darwin*)
+	OSYSTEM="darwin"
+	AC_DEFINE(OS_DARWIN,1,[if Darwin is used])
+	OS_TYPE="posix"
+	;;
     *-win32*)
     	OSYSTEM="windows"
 	AC_DEFINE(OS_WIN32,1,[if WIN32 is used])

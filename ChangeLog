@@ -5,6 +5,8 @@
 - updated German bankinfo files
 - qbanking: fixed a bug (_flags was not initialized) reported by Mike
   Alexander
+- fixed m4 files to make them find QT on Darwin, too (as reported by Marc
+  Andre Selig)
 
 
 2006/10/14: Martin Preuss<martin@libchipcard.de>

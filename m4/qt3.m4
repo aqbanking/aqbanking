@@ -149,7 +149,12 @@ else
 fi
 
 # This is the name of the qt library to search for.
-qt_searchname="lib${qt_libname}${std_shrext}.3"
+if test "x$OSYSTEM" = "xDarwin"; then
+   qt_searchname="lib${qt_libname}.3.dylib"
+else
+   qt_searchname="lib${qt_libname}${std_shrext}.3"
+fi
+
 
 if test -z "$qt3_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_qt3_libs])
