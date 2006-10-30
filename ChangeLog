@@ -1,4 +1,9 @@
 
+2006/10/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- documentation fix
+
+
 2006/10/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - relaxed limits in HBCI format files

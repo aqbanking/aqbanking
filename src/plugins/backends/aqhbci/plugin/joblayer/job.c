@@ -1377,6 +1377,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */
       }
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0){
+	/* TODO: Read the key received and ask the user to accept it */
+      }
+
       else {
         GWEN_XMLNODE *bpdn;
         int segver;

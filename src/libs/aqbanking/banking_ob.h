@@ -297,6 +297,13 @@ AQBANKING_API
 int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
 
 /**
+ * @deprecated
+ * use @ref AB_Banking_ExecuteQueueWithCtx instead
+ */
+AQBANKING_API AQBANKING_DEPRECATED
+int AB_Banking_ExecuteQueue(AB_BANKING *ab);
+
+/**
  * <p>
  * This function sends all jobs in the queue to their corresponding backends
  * and allows those backends to process them.
@@ -328,9 +335,6 @@ int AB_Banking_EnqueuePendingJobs(AB_BANKING *ab, int mineOnly);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_ExecuteQueue(AB_BANKING *ab);
-
 AQBANKING_API 
 int AB_Banking_ExecuteQueueWithCtx(AB_BANKING *ab,
                                    AB_IMEXPORTER_CONTEXT *ctx);
