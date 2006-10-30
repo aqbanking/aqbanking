@@ -25,7 +25,9 @@
 QBCfgModule::QBCfgModule(QBanking *qb, const QString &name)
 :_qbanking(qb)
 ,_name(name)
-,_plugin(0){
+,_plugin(0)
+,_flags(0)
+{
 
 }
 
