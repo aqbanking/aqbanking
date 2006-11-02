@@ -534,8 +534,10 @@ void QBPrintDialog::slotPrint(){
                               tr("Text does not fit on the page.\n"
                                  "Do you want to print it anyway?"),
 			      QMessageBox::Yes,QMessageBox::Abort);
-    if (r !=0 && r != QMessageBox::Yes)
+    if (r !=0 && r != QMessageBox::Yes) {
+      p.end();
       return;
+    }
   }
 
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
@@ -554,9 +556,9 @@ void QBPrintDialog::slotPrint(){
     p.drawText(view.right() - p.fontMetrics().width(QString::number(page)),
                view.bottom() + p.fontMetrics().ascent() + 5,
                QString::number(page));
+    _printer->newPage();
     if (view.top()>=txt.height())
       break;
-    _printer->newPage();
     if (GWEN_WaitCallbackProgress(page)==
         GWEN_WaitCallbackResult_Abort) {
       int r = QMessageBox::critical(this,
@@ -565,11 +567,13 @@ void QBPrintDialog::slotPrint(){
 				QMessageBox::Yes,QMessageBox::No);
       if (r !=0 && r != QMessageBox::Yes) {
         GWEN_WaitCallback_Leave();
+	p.end();
         return;
       }
     }
     page++;
   } while (TRUE);
+
   GWEN_WaitCallback_Leave();
 
   p.end();

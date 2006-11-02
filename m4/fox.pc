@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FOX
+Description: FOX is a C++ based Toolkit for developing Graphical User Interfaces
+Version: 1.6.16
+Libs: -L${libdir} -lFOX-1.6  -lXext -lX11 -lXcursor -lXrandr   -ldl  -lpthread -lrt -ljpeg -lpng -ltiff -lz -lbz2 -lm -lGLU -lGL
+Cflags: -I${includedir}/fox-1.6

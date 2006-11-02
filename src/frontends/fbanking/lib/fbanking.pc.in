@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@fbanking_includes@
+
+Name: fbanking
+Description: FBanking is the AqBanking frontend for the Fox Toolkit
+Version: @FBANKING_VERSION_MAJOR@.@FBANKING_VERSION_MINOR@.@FBANKING_VERSION_PATCHLEVEL@
+Libs: @fbanking_libs@
+Cflags: @fbanking_includes@

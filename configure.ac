@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=2
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=3
-AQBANKING_VERSION_BUILD=3
+AQBANKING_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -118,6 +118,11 @@ CBANKING_SO_REVISION=0
 CBANKING_SO_AGE=0
 CBANKING_SO_EFFECTIVE="`echo \$(($CBANKING_SO_CURRENT-$CBANKING_SO_AGE))`"
 
+FBANKING_SO_CURRENT=1
+FBANKING_SO_REVISION=0
+FBANKING_SO_AGE=0
+FBANKING_SO_EFFECTIVE="`echo \$(($FBANKING_SO_CURRENT-$FBANKING_SO_AGE))`"
+
 
 
 ###-------------------------------------------------------------------------
@@ -188,6 +193,14 @@ CBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 CBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 CBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 CBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
+
+FBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+FBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+FBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+FBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+FBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
+FBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
+FBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 
 
@@ -533,6 +546,46 @@ AC_DEFINE_UNQUOTED(CBANKING_SO_EFFECTIVE_STR, "$CBANKING_SO_EFFECTIVE",
                    [effective SO version])
 
 
+#
+# same for FBanking
+#
+
+AC_SUBST(FBANKING_VERSION_MAJOR)
+AC_SUBST(FBANKING_VERSION_MINOR)
+AC_SUBST(FBANKING_VERSION_PATCHLEVEL)
+AC_SUBST(FBANKING_VERSION_BUILD)
+AC_SUBST(FBANKING_VERSION_TAG)
+AC_SUBST(FBANKING_VERSION_FULL_STRING)
+AC_SUBST(FBANKING_VERSION_STRING)
+AC_SUBST(FBANKING_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_MAJOR,$FBANKING_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_MINOR,$FBANKING_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_PATCHLEVEL,$FBANKING_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_BUILD,$FBANKING_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_STRING,"$FBANKING_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_FULL_STRING,"$FBANKING_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(FBANKING_VERSION_TAG,$FBANKING_VERSION_TAG, [tag])
+
+AC_SUBST(FBANKING_SO_CURRENT)
+AC_SUBST(FBANKING_SO_REVISION)
+AC_SUBST(FBANKING_SO_AGE)
+AC_SUBST(FBANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(FBANKING_SO_EFFECTIVE_STR, "$FBANKING_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+###-------------------------------------------------------------------------
+#
+# determine operating system
+#
+AQ_CHECK_OS
+
 
 ###-------------------------------------------------------------------------
 #
@@ -649,6 +702,10 @@ case "$aqbanking_frontends" in *qbanking*)
 esac
 case "$aqbanking_frontends" in *kbanking*)
   tmp_frontends="${tmp_frontends} kbanking"
+  ;;
+esac
+case "$aqbanking_frontends" in *fbanking*)
+  tmp_frontends="${tmp_frontends} fbanking"
   ;;
 esac
 aqbanking_frontends="${tmp_frontends}"
@@ -923,9 +980,28 @@ esac
 
 ###-------------------------------------------------------------------------
 #
+# Check for fox toolkit
+#
+
+case "$aqbanking_frontends" in *fbanking*)
+  pkg_modules="fox >= 1.6.0"
+  PKG_CHECK_MODULES(FOX, [$pkg_modules], [have_fox="yes"], [have_fox="no"])
+  if test "$have_fox" = "yes"; then
+    AC_DEFINE(HAVE_FOX, 1, [if Fox Toolkit is available])
+    fox_includes="$FOX_CFLAGS"
+    fox_libs="$FOX_LIBS"
+  fi
+  ;;
+esac
+AC_SUBST(fox_includes)
+AC_SUBST(fox_libs)
+
+
+
+###-------------------------------------------------------------------------
+#
 # OS dependant settings
 #
-AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
@@ -1289,13 +1365,24 @@ for frontend in $aqbanking_frontends; do
           ;;
       esac
       ;;
+    fbanking)
+      if test "x$have_fox" != "xyes"; then
+        AC_MSG_NOTICE([
+*** Fox Toolkit is required for FOX-frontend "fbanking". 
+*** Specify --with-frontends="cbanking g2banking qbanking kbanking" to build 
+*** aqbanking without that frontend.])
+	dependencies_ok="no"
+      fi
+      ;;
   esac
 done
 
 AM_CONDITIONAL(MAKE_QT_CATS, [test "x$have_qt3" = "xyes"])
 
 if test "x$dependencies_ok" != "xyes"; then
-  AC_MSG_ERROR([*** Requirements not fulfilled. Fix your requirements or change the configuration.])
+  AC_MSG_ERROR([
+*** Requirements not fulfilled. Fix your requirements or change the 
+*** configuration.])
 fi
 
 
@@ -1610,6 +1697,35 @@ AC_SUBST(cbanking_data)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for frontend fbanking
+#
+
+case "$OS_TYPE" in
+    posix)
+        fbanking_libs="-L\${libdir} -lfbanking"
+        fbanking_internal_libs="${abs_top_builddir}/src/frontends/fbanking/libfbanking.la"
+        fbanking_includes="-I\${prefix}/include"
+        fbanking_data="\${datadir}/aqbanking/frontends/fbanking"
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
+        fbanking_internal_libs="${abs_top_builddir}/src/frontends/fbanking/libfbanking.la"
+        fbanking_libs="-L`eval echo $prefix/lib` -lfbanking-${FBANKING_SO_EFFECTIVE}"
+        fbanking_includes="-I`eval echo $prefix/include`"
+        fbanking_data="\${datadir}/aqbanking/frontends/fbanking"
+	all_includes="$all_includes -mms-bitfields"
+    	;;
+esac
+
+AC_SUBST(fbanking_includes)
+AC_SUBST(fbanking_internal_libs)
+AC_SUBST(fbanking_libs)
+AC_SUBST(fbanking_data)
+
+
+
+###-------------------------------------------------------------------------
+#
 # subst selected UIs
 #
 
@@ -1651,6 +1767,13 @@ AC_CONFIG_FILES([
   src/frontends/cbanking/Makefile
   src/frontends/cbanking/cbanking-config.in
   src/frontends/cbanking/ressource.rc
+  src/frontends/fbanking/Makefile
+  src/frontends/fbanking/lib/Makefile
+  src/frontends/fbanking/lib/fbanking.pc
+  src/frontends/fbanking/lib/ressource.rc
+  src/frontends/fbanking/lib/base-widgets/Makefile
+  src/frontends/fbanking/lib/ext-widgets/Makefile
+  src/frontends/fbanking/lib/dialogs/Makefile
   src/frontends/g2banking/Makefile
   src/frontends/g2banking/g2banking-config.in
   src/frontends/g2banking/version.h

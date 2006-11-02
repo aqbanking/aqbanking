@@ -1,4 +1,16 @@
 
+2006/11/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started working on frontend for Fox Toolkit (as needed by one of
+  my other projects)
+
+
+2006/11/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- qbanking/qbprinterdialog.cpp: Now always call QPrinter::newPage() at the
+  end.
+
+
 2006/10/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - documentation fix

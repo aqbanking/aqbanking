@@ -64,7 +64,7 @@ mp:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
 	make sources
 
 mp2:
@@ -74,8 +74,9 @@ mp2:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus"
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends="cbanking fbanking g2banking qbanking kbanking"
 	make sources
 
 mp-win:
-	CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local
+
