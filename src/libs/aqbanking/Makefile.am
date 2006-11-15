@@ -13,7 +13,6 @@ localedir=$(datadir)/locale
 DEFS += \
  -DLOCALEDIR=\"$(localedir)\" \
  -DAQBANKING_PLUGINS=\"$(aqbanking_plugindir)\" \
- -DGLOBALDATADIR=\"$(aqbanking_pkgdatadir)\" \
  -DAQBANKING_SYSCONF_DIR=\"$(sysconfdir)\" \
  -DAQBANKING_DATA_DIR=\"$(pkgdatadir)\" \
  -DCOMPILE_DATETIME=\"@DATETIME@\"
