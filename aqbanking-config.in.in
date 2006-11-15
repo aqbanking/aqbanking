@@ -17,7 +17,7 @@ for d in $*; do
 	    result="$result @aqbanking_ldflags@ @aqbanking_libs@"
 	    ;;
 	--libraries++)
-	    result="$result @aqbanking_ldflags@ @aqbanking_libspp@"
+	    result="$result "
 	    ;;
 	--plugins)
 	    result="$result @aqbanking_plugindir@"

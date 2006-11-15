@@ -1009,7 +1009,6 @@ case "$OS_TYPE" in
         aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 	aqbanking_ldflags="-L\${libdir}"
         aqbanking_libs="-laqbanking"
-        aqbanking_libspp="-laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_pkgdatadir="\${datadir}/aqbanking"
@@ -1022,7 +1021,6 @@ case "$OS_TYPE" in
         aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 	aqbanking_ldflags="-L\${libdir}"
         aqbanking_libs="-laqbanking-${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_libspp="-laqbankingpp-${AQBANKING_SO_EFFECTIVE}"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
         aqbanking_pkgdatadir="\${datadir}/aqbanking"
@@ -1161,7 +1159,6 @@ AC_SUBST(aqbanking_includes)
 AC_SUBST(aqbanking_internal_libs)
 AC_SUBST(aqbanking_ldflags)
 AC_SUBST(aqbanking_libs)
-AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugindir)
 AC_SUBST(aqbanking_pkgdatadir)
 

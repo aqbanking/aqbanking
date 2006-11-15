@@ -13,7 +13,6 @@ bindir=@bindir@
 # Particular variables of aqbanking
 plugindir=@aqbanking_plugindir@
 pkgdatadir=@aqbanking_pkgdatadir@
-librariespp=@aqbanking_ldflags@ @aqbanking_libspp@
 all_includes=@all_includes@
 
 # ... and particular variables of all included subpackages

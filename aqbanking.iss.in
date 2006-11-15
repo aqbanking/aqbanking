@@ -141,7 +141,6 @@ begin
   StringChange(FileString, '@'+'aqbanking_includes@', '-I'+includedir);
   StringChange(FileString, '@'+'aqbanking_ldflags@', '-L'+bindir);
   StringChange(FileString, '@'+'aqbanking_libs@', '@aqbanking_libs@');
-  StringChange(FileString, '@'+'aqbanking_libspp@', '@aqbanking_libspp@');
   StringChange(FileString, '@'+'aqbanking_plugindir@', plugindir);
   StringChange(FileString, '@'+'aqbanking_pkgdatadir@', pkgdatadir);
   StringChange(FileString, '@'+'AQBANKING_VERSION_MAJOR@', '@AQBANKING_VERSION_MAJOR@');
