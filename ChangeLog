@@ -1,3 +1,7 @@
+2006-11-15   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Define aqbanking_pkgdatadir in terms of $datadir
+	as suggested by Fink maintainer David Reiser.
 
 2006/11/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

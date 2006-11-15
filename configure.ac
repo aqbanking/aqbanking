@@ -1012,7 +1012,7 @@ case "$OS_TYPE" in
         aqbanking_libspp="-laqbankingpp"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
+        aqbanking_pkgdatadir="\${datadir}/aqbanking"
 
     	;;
     windows)
@@ -1025,7 +1025,7 @@ case "$OS_TYPE" in
         aqbanking_libspp="-laqbankingpp-${AQBANKING_SO_EFFECTIVE}"
         aqbanking_includes="-I`eval echo $prefix/include`"
         aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
-        aqbanking_pkgdatadir="`eval echo $prefix/share`/aqbanking"
+        aqbanking_pkgdatadir="\${datadir}/aqbanking"
 
     	;;
 esac
@@ -1164,7 +1164,6 @@ AC_SUBST(aqbanking_libs)
 AC_SUBST(aqbanking_libspp)
 AC_SUBST(aqbanking_plugindir)
 AC_SUBST(aqbanking_pkgdatadir)
-#AC_DEFINE_UNQUOTED(AQBANKING_DATA, "${aqbanking_pkgdatadir}", [data dir])
 
 
 ###-------------------------------------------------------------------------
