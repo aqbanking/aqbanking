@@ -236,17 +236,22 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   int doAdd=1;
   GWEN_DB_NODE *dbJob;
 
+  if (!pro) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No provider");
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
+  if (!dp) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No provider data");
   assert(dp);
 
   a=AB_Job_GetAccount(j);
+  if (!a) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No account found in job");
   assert(a);
 
   u=AB_Account_GetFirstUser(a);
+  if (!u) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No first user found for account");
   assert(u);
 
   dbJob=AB_Job_GetProviderData(j, pro);
+  if (!dbJob) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No provider data found in job");
   assert(dbJob);
 
   switch(AB_Job_GetType(j)) {
@@ -265,6 +270,7 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
 
   uq=AO_Queue_GetUserQueue(dp->queue, u);
+  if (!uq) DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No queue found for this user");
   assert(uq);
 
   if (AB_Job_GetType(j)==AB_Job_TypeGetBalance) {
