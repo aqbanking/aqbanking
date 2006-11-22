@@ -122,13 +122,13 @@ void QBCfgTabPageBackends::slotBackendEnable(){
 
   pd=_realPage->backendList->getCurrentPluginDescr();
   if (!pd) {
-    fprintf(stderr, "No provider selected.\n");
+    DBG_WARN(0, "No provider selected.");
   }
   else {
     int rv;
 
     if (GWEN_PluginDescription_IsActive(pd)) {
-      fprintf(stderr, "Provider already active.\n");
+      DBG_WARN(0, "Provider already active.");
       return;
     }
 
@@ -157,14 +157,14 @@ void QBCfgTabPageBackends::slotBackendDisable(){
 
   pd=_realPage->backendList->getCurrentPluginDescr();
   if (!pd) {
-    fprintf(stderr, "No provider selected.\n");
+    DBG_WARN(0, "No provider selected.");
   }
   else {
     int rv;
     int r;
 
     if (!GWEN_PluginDescription_IsActive(pd)) {
-      fprintf(stderr, "Provider already inactive.\n");
+      DBG_WARN(0, "Provider already inactive.");
       return;
     }
 

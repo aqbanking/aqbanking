@@ -236,7 +236,7 @@ string LogManager::_anonymize(const string &bankCode,
     logfile=new LogAnalyzer::LogFile(lfname);
   }
   catch (Error xerr) {
-    fprintf(stderr, "Error: %s\n", xerr.errorString().c_str());
+    DBG_ERROR(0, "LogAnalyzer::LogFile error: %s", xerr.errorString().c_str());
     return "";
   }
 
@@ -287,7 +287,7 @@ string LogManager::_anonymize(const string &bankCode,
     trustedData=GWEN_MsgEngine_TakeTrustInfo(_msgEngine);
     if (trustedData) {
       if (GWEN_MsgEngine_TrustedData_CreateReplacements(trustedData)) {
-        fprintf(stderr, "Could not anonymize log (createReplacements)\n");
+        DBG_ERROR(0, "Could not anonymize log (createReplacements)");
         GWEN_MsgEngine_TrustedData_free(trustedData);
         return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not anonymize logfile."));
       }

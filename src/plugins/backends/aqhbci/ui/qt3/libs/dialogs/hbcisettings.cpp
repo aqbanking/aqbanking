@@ -193,11 +193,11 @@ void HBCISettings::slotNewUser(){
   UserWizard uw(_app, _hbci, this);
 
   if (uw.exec()) {
-    fprintf(stderr, "Ok :-)\n");
+    DBG_INFO(0, "UserWizard::exec done ok :-)");
     updateLists();
   }
   else {
-    fprintf(stderr, "No new user added\n");
+    DBG_ERROR(0, "UserWizard::exec failed; no new user added");
   }
 }
 

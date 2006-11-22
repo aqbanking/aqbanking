@@ -1,3 +1,9 @@
+2006-11-22   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/bin/wizard/qt3_wizard.cpp: Replace last
+	fprintf()s by correct DBG_* macros to decrease unnecessary
+	verbosity.
+
 2006-11-15   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Define aqbanking_pkgdatadir in terms of $datadir

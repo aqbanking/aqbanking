@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
   ab=new QBanking("aqgeldkarte-qt-wizard", 0);
   if (ab->init()) {
-    fprintf(stderr, "Error on init.\n");
+    DBG_ERROR(0, "Error on QBanking::init");
     return 2;
   }
 
@@ -76,9 +76,9 @@ int main(int argc, char **argv) {
   av->fini();
 
   if (ab->fini()) {
-    fprintf(stderr, "Error on fini.\n");
+    DBG_ERROR(0, "Error on QBanking::fini");
   }
-  fprintf(stderr, "FINI done.\n");
+  DBG_INFO(0, "QBanking::fini done");
 
   delete av;
   delete ab;
