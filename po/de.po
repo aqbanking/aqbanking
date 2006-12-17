@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-19 22:16+0200\n"
-"PO-Revision-Date: 2006-09-20 10:53+0200\n"
+"PO-Revision-Date: 2006-12-17 22:10+0100\n"
 "Last-Translator: Christian Stimming <stimming@tuhh.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1755,15 +1755,15 @@ msgstr "Simbabwe Dollar"
 
 #: src/libs/aqbanking/cryptmanager.c:97
 msgid "access password"
-msgstr "Zugriffs-Password"
+msgstr "Zugriffs-Passwort"
 
 #: src/libs/aqbanking/cryptmanager.c:99
 msgid "manager password"
-msgstr "Management-Password"
+msgstr "Management-Passwort"
 
 #: src/libs/aqbanking/cryptmanager.c:101
 msgid "password"
-msgstr "Password"
+msgstr "Passwort"
 
 #: src/libs/aqbanking/cryptmanager.c:106
 msgid ""
@@ -1803,7 +1803,7 @@ msgstr ""
 #: src/plugins/backends/aqhbci/plugin/msglayer/medium.c:1367
 #: src/plugins/backends/aqofxconnect/plugin/context.c:151
 msgid "Enter Password"
-msgstr "Password eingeben"
+msgstr "Passwort eingeben"
 
 #: src/libs/aqbanking/cryptmanager.c:300
 msgid ""
