@@ -1,5 +1,7 @@
 SUBDIRS=base-widgets dialogs ext-widgets
 
+EXTRA_DIST=fbanking.pc.in
+
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
@@ -12,6 +14,8 @@ DEFS += -DBUILDING_FBANKING \
   -DFBANKING_HELPDIR=\"@fbanking_helpdir@\"
 
 
+pkgconfigdir=$(libdir)/pkgconfig
+pkgconfig_DATA=fbanking.pc
 
 iheaderdir = $(includedir)/fbanking
 iheader_HEADERS=\
@@ -29,4 +33,8 @@ libfbanking_la_SOURCES=\
 
 libfbanking_la_LIBADD=\
  $(aqbanking_internal_libs) $(gwenhywfar_libs) $(fox_libs)
- 
+
+libfbanking_la_LDFLAGS= -no-undefined \
+  -version-info @FBANKING_SO_CURRENT@:@FBANKING_SO_REVISION@:@FBANKING_SO_AGE@
+
+
