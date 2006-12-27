@@ -1,4 +1,9 @@
 
+2006/12/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- updated German bankinfo files
+
+
 2006/12/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - applied a patch by Andreas Koehler to make "includedir" available to
