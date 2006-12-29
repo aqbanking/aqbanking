@@ -2,7 +2,7 @@
 2006/12/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in qt3.m4: Was checking for "Darwin", not for "darwin". Qt3
-  should now be found even on that system
+  should now be found even on that system (pointed out by Marc Andre Selig)
 
 
 ===========================================================================
