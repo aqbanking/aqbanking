@@ -1,6 +1,8 @@
 
 - let aqhbci remove unneeded data from settings.conf (after migrating to
   1.9.x)
+- remove splits from transactions (->simplification, also splits are not
+  used for now and are deprecated anyway)
 
 
 -----------------------------------------------------------------------------

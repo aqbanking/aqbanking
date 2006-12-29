@@ -36,11 +36,11 @@
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/gwentime.h>
 
-#include <chipcard2-client/client/card.h>
-#include <chipcard2-client/cards/geldkarte.h>
-#include <chipcard2-client/cards/geldkarte_values.h>
-#include <chipcard2-client/cards/geldkarte_blog.h>
-#include <chipcard2-client/cards/geldkarte_llog.h>
+#include <chipcard3/client/card.h>
+#include <chipcard3/client/cards/geldkarte.h>
+#include <chipcard3/client/cards/geldkarte_values.h>
+#include <chipcard3/client/cards/geldkarte_blog.h>
+#include <chipcard3/client/cards/geldkarte_llog.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -112,6 +112,7 @@ void AG_Provider_FreeData(void *bp, void *p) {
 int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AG_PROVIDER *dp;
   const char *logLevelName;
+  LC_CLIENT_RESULT res;
 
   if (!GWEN_Logger_IsOpen(AQGELDKARTE_LOGDOMAIN)) {
     GWEN_Logger_Open(AQGELDKARTE_LOGDOMAIN,
@@ -145,10 +146,11 @@ int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   dp->dbConfig=dbData;
 
-  dp->chipcardClient=LC_Client_new(PACKAGE, VERSION, 0);
-  if (LC_Client_ReadConfigFile(dp->chipcardClient, 0)) {
+  dp->chipcardClient=LC_Client_new("AqGeldKarte", VERSION);
+  res=LC_Client_Init(dp->chipcardClient);
+  if (res!=LC_Client_ResultOk) {
     DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
-              "Error loading chipcard2 client configuration file");
+	      "Error initializing libchipcard3 client (%d).", res);
     return AB_ERROR_NOT_INIT;
   }
 
@@ -404,7 +406,7 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
 
       t=AB_Transaction_new();
 
-      val=(double)(LC_GeldKarte_BLog_GetValue(blog))/100.0;
+      val=(double)(LC_GeldKarte_BLog_GetLoaded(blog))/100.0;
       switch(LC_GeldKarte_BLog_GetStatus(blog) & 0x60) {
       case 0x60:
 	s=I18N("STORNO");
@@ -588,14 +590,15 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro,
     AB_JOB *bj;
     LC_CARD *gc;
     GWEN_TYPE_UINT32 bid;
+    int rv;
 
     bid=AB_Banking_ShowBox(AB_Provider_GetBanking(pro),
                            0,
                            I18N("Accessing Card"),
                            I18N("Reading card, please wait..."));
-    gc=AG_Provider_MountCard(pro, AG_Card_GetAccount(card));
-    if (!gc) {
-      DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not mount card");
+    rv=AG_Provider_MountCard(pro, AG_Card_GetAccount(card), &gc);
+    if (rv || !gc) {
+      DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not mount card (%d)", rv);
       AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
       return AB_ERROR_GENERIC;
     }
@@ -697,25 +700,27 @@ int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc){
+
+int AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc,
+			  LC_CARD **pCard){
   LC_CLIENT_RESULT res;
-  GWEN_DB_NODE *dbCardData;
-  LC_CARD *hcard;
+  AG_PROVIDER *dp;
+  LC_CARD *hcard=0;
   int first;
   const char *currCardNumber;
-  AG_PROVIDER *dp;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
-  res=LC_Client_StartWait(dp->chipcardClient, 0, 0);
+  res=LC_Client_Start(dp->chipcardClient);
   if (res!=LC_Client_ResultOk) {
-    DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not send StartWait request");
-    return 0;
+    DBG_ERROR(LC_LOGDOMAIN, "Could not send Start request");
+    return GWEN_ERROR_CT_IO_ERROR;
   }
 
   first=1;
+  hcard=0;
   for (;;) {
     int timeout;
 
@@ -725,62 +730,76 @@ LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc){
     else
       timeout=5;
 
-    hcard=LC_Client_WaitForNextCard(dp->chipcardClient, timeout);
+    if (hcard==0) {
+      DBG_INFO(LC_LOGDOMAIN, "Waiting for next card");
+      res=LC_Client_GetNextCard(dp->chipcardClient, &hcard, timeout);
+      if (res!=LC_Client_ResultOk &&
+	  res!=LC_Client_ResultWait) {
+	DBG_ERROR(LC_LOGDOMAIN, "Error while waiting for card (%d)", res);
+	return GWEN_ERROR_CT_IO_ERROR;
+      }
+    }
     if (!hcard) {
       int mres;
 
       mres=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                                 AB_BANKING_MSG_FLAGS_TYPE_WARN |
-                                 AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-                                 AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-                                 I18N("Insert Card"),
-                                 I18N("Please insert your chipcard into the "
-                                      "reader and click OK"
-                                      "<html>"
-                                      "Please insert your chipcard into the "
-                                      "reader and click <i>ok</i>"
-                                      "</html>"),
-                                 I18N("OK"), I18N("Abort"), 0);
+				 AB_BANKING_MSG_FLAGS_TYPE_WARN |
+				 AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
+				 AB_BANKING_MSG_FLAGS_CONFIRM_B1,
+				 I18N("Insert Card"),
+				 I18N("Please insert your chipcard into the "
+				      "reader and click OK"
+				      "<html>"
+				      "Please insert your chipcard into the "
+				      "reader and click <i>ok</i>"
+				      "</html>"),
+				 I18N("OK"), I18N("Abort"), 0);
       if (mres!=1) {
-        DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
-        LC_Client_StopWait(dp->chipcardClient);
-        return 0;
+	DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
+	LC_Client_Stop(dp->chipcardClient);
+	return GWEN_ERROR_USER_ABORTED;
       }
     }
     else {
       /* ok, we have a card, now check it */
+      DBG_INFO(LC_LOGDOMAIN, "Extending card");
       if (LC_GeldKarte_ExtendCard(hcard)) {
-        DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
-                  "GeldKarte card not available, please check your setup");
-        LC_Card_free(hcard);
-        LC_Client_StopWait(dp->chipcardClient);
-        return 0;
+	DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
+		  "GeldKarte card not available, please check your setup");
+	LC_Card_free(hcard);
+	LC_Client_Stop(dp->chipcardClient);
+	return GWEN_ERROR_NOT_AVAILABLE;
       }
 
+      DBG_INFO(LC_LOGDOMAIN, "Opening card");
       res=LC_Card_Open(hcard);
       if (res!=LC_Client_ResultOk) {
-        LC_Card_free(hcard);
-        DBG_NOTICE(AQGELDKARTE_LOGDOMAIN,
-                   "Could not open card, maybe not a GeldKarte?");
+	LC_Client_ReleaseCard(dp->chipcardClient, hcard);
+	LC_Card_free(hcard);
+	hcard=0;
+	DBG_NOTICE(LC_LOGDOMAIN,
+                   "Could not open card (%d), maybe not a DDV card?",
+                   res);
       } /* if card not open */
       else {
-        const char *mname;
+	const char *mname;
+        GWEN_DB_NODE *dbCardData;
 
-        mname=AG_Account_GetCardId(acc);
-        dbCardData=LC_GeldKarte_GetCardDataAsDb(hcard);
-        assert(dbCardData);
+	mname=AG_Account_GetCardId(acc);
+	dbCardData=LC_GeldKarte_GetCardDataAsDb(hcard);
+	assert(dbCardData);
 
-        currCardNumber=GWEN_DB_GetCharValue(dbCardData,
-                                            "cardNumber",
-                                            0,
-                                            0);
-        if (!currCardNumber) {
-          DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
-                    "INTERNAL: No card number in card data.");
+	currCardNumber=GWEN_DB_GetCharValue(dbCardData,
+					    "cardNumber",
+					    0,
+					    0);
+	if (!currCardNumber) {
+	  DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
+		    "INTERNAL: No card number in card data.");
 	  abort();
 	}
 
-        DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Card number: %s", currCardNumber);
+	DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Card number: %s", currCardNumber);
         if (!mname || !*mname) {
           DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "No medium name");
           AG_Account_SetCardId(acc, currCardNumber);
@@ -793,16 +812,26 @@ LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc){
           break;
         }
 
-        DBG_NOTICE(AQGELDKARTE_LOGDOMAIN,
+	DBG_NOTICE(AQGELDKARTE_LOGDOMAIN,
                    "Card number does not equal ([%s] != [%s]",
-                   mname, currCardNumber);
+		   mname, currCardNumber);
 
-        LC_Card_Close(hcard);
-	LC_Card_free(hcard);
+	LC_Card_Close(hcard);
+	LC_Client_ReleaseCard(dp->chipcardClient, hcard);
+        LC_Card_free(hcard);
+        hcard=0;
 
-        hcard=LC_Client_PeekNextCard(dp->chipcardClient);
-        if (!hcard) {
-          int mres;
+	res=LC_Client_GetNextCard(dp->chipcardClient, &hcard,
+				  LC_CLIENT_TIMEOUT_NONE);
+	if (res!=LC_Client_ResultOk) {
+	  int mres;
+
+	  if (res!=LC_Client_ResultWait) {
+	    DBG_ERROR(LC_LOGDOMAIN,
+		      "Communication error (%d)", res);
+	    LC_Client_Stop(dp->chipcardClient);
+	    return GWEN_ERROR_CT_IO_ERROR;
+	  }
 
           mres=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
                                      AB_BANKING_MSG_FLAGS_TYPE_WARN |
@@ -816,14 +845,14 @@ LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc){
                                           " chipcard into the reader and "
                                           "click <i>ok</i>"
                                           "</html>"),
-                                     I18N("OK"), I18N("Abort"), 0);
-          if (mres!=1) {
-            DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
-            LC_Client_StopWait(dp->chipcardClient);
-            return 0;
-          }
-        } /* if there is no other card waiting */
-        else {
+				     I18N("OK"), I18N("Abort"), 0);
+	  if (mres!=1) {
+	    DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
+	    LC_Client_Stop(dp->chipcardClient);
+	    return GWEN_ERROR_USER_ABORTED;
+	  }
+	} /* if there is no other card waiting */
+	else {
           /* otherwise there already is another card in another reader,
            * so no need to bother the user. This allows to insert all
            * cards in all readers and let me choose the card ;-) */
@@ -835,20 +864,11 @@ LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc){
   } /* for */
 
   /* ok, now we have the card we wanted to have, now ask for the pin */
-  LC_Client_StopWait(dp->chipcardClient);
+  LC_Client_Stop(dp->chipcardClient);
 
-  DBG_NOTICE(AQGELDKARTE_LOGDOMAIN, "Medium mounted");
-
-  return hcard;
+  *pCard=hcard;
+  return 0;
 }
-
-
-
-
-
-
-
-
 
 
 

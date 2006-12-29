@@ -18,7 +18,7 @@
 #include "provider.h"
 #include <aqbanking/transaction.h>
 
-#include <chipcard2-client/client/client.h>
+#include <chipcard3/client/client.h>
 
 
 typedef struct AG_PROVIDER AG_PROVIDER;

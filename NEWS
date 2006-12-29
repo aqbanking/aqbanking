@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 2.2.4 (2006-12-27)
+===========================================================================
+
+AqGeldKarte has been fixed and adapted to Libchipcard3 which is now required
+instead of Libchipcard2. The QBanking frontend is now less verbous, QT should
+now be found on Darwin, too. Some other minor bugs have been fixed as well
+and the bank data files for Germany have been updated.
+
+
+===========================================================================
                Released AqBanking - 2.2.3 (2006-10-10)
 ===========================================================================
 

@@ -18,7 +18,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/provider_be.h>
 
-#include <chipcard2-client/client/card.h>
+#include <chipcard3/client/card.h>
 
 
 #ifdef __cplusplus
@@ -29,7 +29,8 @@ AQGELDKARTE_API
 AB_PROVIDER *AG_Provider_new(AB_BANKING *ab);
 
 AQGELDKARTE_API
-LC_CARD *AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc);
+int AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc,
+			  LC_CARD **pCard);
 
 
 #ifdef __cplusplus

@@ -23,7 +23,7 @@
 #include <qbanking/qbanking.h>
 #include <qbanking/qbcfgtab.h>
 
-#include <chipcard2-client/cards/geldkarte.h>
+#include <chipcard3/client/cards/geldkarte.h>
 
 #include <qpushbutton.h>
 #include <qcombobox.h>
@@ -103,6 +103,7 @@ void CfgTabPageAccountGeldKarte::slotReadFromCard() {
   std::string cardId;
   const char *s;
   GWEN_TYPE_UINT32 bid;
+  int rv;
 
   a=getAccount();
   assert(a);
@@ -121,9 +122,28 @@ void CfgTabPageAccountGeldKarte::slotReadFromCard() {
      QBanking::QStringToUtf8String(tr("Reading card, "
                                       "please wait...")).c_str()
     );
-  card=AG_Provider_MountCard(pro, a);
+  rv=AG_Provider_MountCard(pro, a, &card);
   AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
-  if (card) {
+  if (rv || card==NULL) {
+    if (rv!=GWEN_ERROR_USER_ABORTED) {
+      QMessageBox::critical(this,
+			    tr("Error Accessing Card"),
+			    tr("<qt>"
+			       "<p>"
+			       "Could not read a card."
+			       "</p>"
+			       "<p>"
+			       "Please check the console logs and make "
+			       "sure that Libchipcard3 is correctly setup."
+			       "</p>"
+			       "</qt>"),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+    }
+    // we've set the card id to NULL above, need to undo it here
+    if (!cardId.empty())
+      AG_Account_SetCardId(a, cardId.c_str());
+  }
+  else {
     GWEN_DB_NODE *dbAccount;
 
     dbAccount=LC_GeldKarte_GetAccountDataAsDb(card);
@@ -142,10 +162,6 @@ void CfgTabPageAccountGeldKarte::slotReadFromCard() {
 
     LC_Card_Close(card);
     LC_Card_free(card);
-  }
-  else {
-    if (!cardId.empty())
-      AG_Account_SetCardId(a, cardId.c_str());
   }
 }
 

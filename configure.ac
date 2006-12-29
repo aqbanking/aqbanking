@@ -24,10 +24,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=2
 AQBANKING_VERSION_MINOR=2
-AQBANKING_VERSION_PATCHLEVEL=3
-AQBANKING_VERSION_BUILD=5
+AQBANKING_VERSION_PATCHLEVEL=4
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="svn"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -62,7 +62,7 @@ esac
 
 AQBANKING_SO_CURRENT=19
 AQBANKING_SO_AGE=3
-AQBANKING_SO_REVISION=2
+AQBANKING_SO_REVISION=3
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -762,11 +762,11 @@ XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
 
 ###-------------------------------------------------------------------------
 #
-# Check for LibChipcard2
+# Check for LibChipcard3
 #
 
 case "$aqbanking_backends" in *aqgeldkarte*)
-  AC_CHIPCARD_CLIENT(1,9,20,0)
+  AC_CHIPCARD3_CLIENT(3,0,0,0)
   AC_MSG_CHECKING([if chipcard_client is useable])
   if test "x$have_chipcard_client" == "xyes"; then
     AC_MSG_RESULT(yes)

@@ -1,4 +1,4 @@
-                                                                    2006/01/27
+                                                                    2006/12/27
 
                                 Content
                                 =======
@@ -253,14 +253,14 @@ http://linuxwiki.de/AqBanking )
 5.2. Applications
 -----------------
 
-These application fully or partially support AqBanking:
+These applications fully or partially support AqBanking:
  - QBankManager (http://www.aquamaniac.de/qbanking/)
  - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://kmymoney2.sf.net/)
  - (partially) Grisbi (http://sourceforge.net/projects/grisbi)
 
 The aqbanking package also includes several command-line tools
-(aqbanking-tool, aqhbci-tool) and GUI tools (aqhbci-qt-wizard etc)
+(aqbanking-tool, aqhbci-tool) and GUI tools (qt3-wizard etc)
 used by Gnucash, KMyMoney and QBanking to let the user setup,
 modify and debug HBCI settings.
 
@@ -478,5 +478,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2006/05/12
+Martin Preuss, Hamburg/Germany, 2006/12/27
 

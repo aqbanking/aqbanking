@@ -1,7 +1,16 @@
 
+===========================================================================
+MARK: released AqBanking - 2.2.4 (2006-12-27)
+===========================================================================
+
+
 2006/12/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - updated German bankinfo files
+- ported AqGeldKarte to Libchipcard3
+- AqGeldKarte: Now uses "loaded" instead of "value" from BLOG entries of the
+  card when reading transactions
+- fixed specfile (removed some build dependencies, require Libchipcard3)
 
 
 2006/12/17: Martin Preuss<martin@libchipcard.de>

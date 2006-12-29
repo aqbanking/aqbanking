@@ -77,7 +77,7 @@
 
 # versions of required helper-libraries
 %define _gwenhywfar_version   1.99.4.1
-%define _libchipcard2_version 1.9.19.2
+%define _libchipcard3_version 3.0.0.0
 %define _libofx_version       0.8.1
 
 
@@ -162,10 +162,6 @@ Summary:       Aqbanking tools for Gnome2/Gtk2
 Group:         Development/Libraries/C and C++
 Obsoletes:     aqbanking-gnome2
 Requires:      %{name} = %{version}
-Requires:      glade
-#Requires:      libgail-gnome
-BuildRequires: glade
-BuildRequires: libgail-gnome-devel
 
 %description gtk2
 This package contains the aqbanking-tools (gnome/gtk2) for aqbanking.
@@ -215,9 +211,9 @@ Author: Martin Preuss <martin@libchipcard.de>
 Summary:       Aqbanking tools for Qt3
 Group:         Development/Libraries/C and C++
 Requires:      %{name} = %{version}
-Requires:      libchipcard2 >= %{_libchipcard2_version}
+Requires:      libchipcard3 >= %{_libchipcard3_version}
 Requires:      gwenhywfar >= %{_gwenhywfar_version}
-BuildRequires: libchipcard2-devel >= %{_libchipcard2_version}
+BuildRequires: libchipcard3-devel >= %{_libchipcard3_version}
 BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
 
 %description geldkarte
@@ -230,8 +226,8 @@ Summary:       Aqbanking tools for Qt3
 Group:         Development/Libraries/C and C++
 Requires:      %{name} = %{version}
 Requires:      gwenhywfar >= %{_gwenhywfar_version}
-Requires:      libchipcard2 >= %{_libchipcard2_version}
-BuildRequires: libchipcard2-devel >= %{_libchipcard2_version}
+Requires:      libchipcard3 >= %{_libchipcard3_version}
+BuildRequires: libchipcard3-devel >= %{_libchipcard3_version}
 BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
 
 %description geldkarte-qt3
