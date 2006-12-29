@@ -149,7 +149,7 @@ else
 fi
 
 # This is the name of the qt library to search for.
-if test "x$OSYSTEM" = "xDarwin"; then
+if test "x$OSYSTEM" = "xdarwin"; then
    qt_searchname="lib${qt_libname}.3.dylib"
 else
    qt_searchname="lib${qt_libname}${std_shrext}.3"
