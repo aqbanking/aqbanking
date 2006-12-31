@@ -3,7 +3,6 @@ EXTRA_DIST=\
  acx_compile_warn.m4 \
  acx_windows_paths.m4 \
  as-scrub-include.m4 \
- chipcard2-client.m4 \
  kde3.m4 \
  os.m4 \
  qt3.m4 \
