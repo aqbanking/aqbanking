@@ -44,7 +44,7 @@ AB_JOB *AB_JobGetDatedTransfers_new(AB_ACCOUNT *a) {
 
 
 
-void AB_JobGetDatedTransfers_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_JobGetDatedTransfers_FreeData(void *bp, void *p){
   AB_JOB_GETDATEDTRANSFERS *aj;
 
   aj=(AB_JOB_GETDATEDTRANSFERS*)p;

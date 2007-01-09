@@ -21,7 +21,7 @@ struct AB_WAITCALLBACK {
   AB_BANKING *banking;
   GWEN_TYPE_UINT64 lastProgress;
 };
-static void AB_WaitCallback_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_WaitCallback_FreeData(void *bp, void *p);
 
 
 static GWEN_WAITCALLBACK_RESULT

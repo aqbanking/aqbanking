@@ -54,7 +54,7 @@ GWEN_MSGENGINE *AB_MsgEngine_new(){
 
 
 
-void AB_MsgEngine_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p){
   GWEN_MSGENGINE *e;
   AB_MSGENGINE *le;
 

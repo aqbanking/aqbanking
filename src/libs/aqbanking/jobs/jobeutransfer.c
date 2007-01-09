@@ -48,7 +48,7 @@ AB_JOB *AB_JobEuTransfer_new(AB_ACCOUNT *a){
 
 
 
-void AB_JobEuTransfer_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_JobEuTransfer_FreeData(void *bp, void *p) {
   AB_JOBEUTRANSFER *jd;
 
   jd=(AB_JOBEUTRANSFER*)p;

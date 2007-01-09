@@ -164,7 +164,7 @@ int Banking_Linker::Print(AB_BANKING *ab,
 }
 
 
-void Banking_Linker::freeData(void *bp, void *p) {
+void GWENHYWFAR_CB Banking_Linker::freeData(void *bp, void *p) {
   Banking *kb;
 
   DBG_NOTICE(AQBANKING_LOGDOMAIN, "Banking_Linker: Freeing Banking");

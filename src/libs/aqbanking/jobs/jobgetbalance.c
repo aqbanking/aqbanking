@@ -46,7 +46,7 @@ AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a){
 
 
 
-void AB_JobGetBalance_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_JobGetBalance_FreeData(void *bp, void *p) {
   AB_JOBGETBALANCE *aj;
 
   aj=(AB_JOBGETBALANCE*)p;

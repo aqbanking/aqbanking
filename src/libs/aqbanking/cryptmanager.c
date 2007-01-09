@@ -57,7 +57,7 @@ GWEN_PLUGIN_MANAGER *AB_CryptManager_new(AB_BANKING *ab) {
 
 
 
-void AB_CryptManager_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_CryptManager_FreeData(void *bp, void *p) {
   AB_CRYPTMANAGER *bcm;
 
   bcm=(AB_CRYPTMANAGER *)p;

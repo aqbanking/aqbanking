@@ -34,7 +34,7 @@ private:
                    unsigned int level,
                    GWEN_LOGGER_LEVEL logLevel,
                    const char *s);
-  static void _freeData(void *bp, void *p);
+  static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
 protected:
   GWEN_WAITCALLBACK *cCallback();

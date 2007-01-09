@@ -38,7 +38,7 @@ struct AB_JOB_GETTRANSACTIONS {
   AB_ACCOUNT_STATUS_LIST2 *accountStatusList;
 };
 
-static void AB_JobGetTransactions_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_JobGetTransactions_FreeData(void *bp, void *p);
 
 
 

@@ -25,7 +25,7 @@ struct AB_JOBTRANSFERBASE {
   AB_TRANSACTION_LIMITS *limits;
   int *textKeys;
 };
-static void AB_JobTransferBase_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_JobTransferBase_FreeData(void *bp, void *p);
 
 
 #endif

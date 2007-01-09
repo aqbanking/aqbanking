@@ -59,7 +59,7 @@ class Banking_Linker {
                    const char *docType,
                    const char *descr,
                    const char *text);
-  static void freeData(void *bp, void *p);
+  static void GWENHYWFAR_CB freeData(void *bp, void *p);
 };
 
 

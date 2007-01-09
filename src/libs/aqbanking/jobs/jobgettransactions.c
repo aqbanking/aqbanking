@@ -45,7 +45,7 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a) {
 
 
 
-void AB_JobGetTransactions_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_JobGetTransactions_FreeData(void *bp, void *p){
   AB_JOB_GETTRANSACTIONS *aj;
 
   aj=(AB_JOB_GETTRANSACTIONS*)p;

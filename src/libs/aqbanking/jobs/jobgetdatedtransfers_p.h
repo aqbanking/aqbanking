@@ -35,7 +35,7 @@ struct AB_JOB_GETDATEDTRANSFERS {
 
 };
 
-static void AB_JobGetDatedTransfers_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_JobGetDatedTransfers_FreeData(void *bp, void *p);
 
 
 

@@ -23,7 +23,7 @@ struct AB_CRYPTMANAGER {
   AB_BANKING *banking;
   GWEN_TYPE_UINT32 showBoxId;
 };
-static void AB_CryptManager_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_CryptManager_FreeData(void *bp, void *p);
 
 
 static int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,

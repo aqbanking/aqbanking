@@ -26,7 +26,7 @@ struct AB_MSGENGINE {
 
 
 
-static void AB_MsgEngine_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p);
 
 static int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
                                  GWEN_BUFFER *msgbuf,

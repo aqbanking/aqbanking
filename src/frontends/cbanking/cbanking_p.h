@@ -35,7 +35,7 @@ struct CBANKING {
   GWEN_DB_NODE *dbPins;
   int nonInteractive;
 };
-void CBanking_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB CBanking_FreeData(void *bp, void *p);
 
 
 char CBanking__readCharFromStdin(int waitFor);

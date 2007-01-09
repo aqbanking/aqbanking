@@ -71,7 +71,7 @@ void QBWaitCallback::_log(GWEN_WAITCALLBACK *ctx,
 
 
 
-void QBWaitCallback::_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB QBWaitCallback::_freeData(void *bp, void *p) {
   QBWaitCallback *wcb;
 
   assert(p);

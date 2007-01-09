@@ -74,7 +74,7 @@ AB_BANKING *CBanking_new(const char *appName,
 
 
 
-void CBanking_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB CBanking_FreeData(void *bp, void *p) {
   CBANKING *cb;
 
   cb=(CBANKING*)p;

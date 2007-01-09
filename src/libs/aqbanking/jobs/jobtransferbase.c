@@ -46,7 +46,7 @@ AB_JOB *AB_JobTransferBase_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
 
 
 
-void AB_JobTransferBase_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_JobTransferBase_FreeData(void *bp, void *p) {
   AB_JOBTRANSFERBASE *jd;
 
   jd=(AB_JOBTRANSFERBASE*)p;

@@ -49,7 +49,7 @@ GWEN_WAITCALLBACK *AB_WaitCallback_new(AB_BANKING *ab, const char *id){
 
 
 
-void AB_WaitCallback_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_WaitCallback_FreeData(void *bp, void *p){
   AB_WAITCALLBACK *wcb;
 
   wcb=(AB_WAITCALLBACK*)p;

@@ -26,7 +26,7 @@ struct AB_JOBEUTRANSFER {
   int ibanAllowed;
   AB_JOBEUTRANSFER_CHARGE_WHOM chargeWhom;
 };
-static void AB_JobEuTransfer_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_JobEuTransfer_FreeData(void *bp, void *p);
 
 
 #endif

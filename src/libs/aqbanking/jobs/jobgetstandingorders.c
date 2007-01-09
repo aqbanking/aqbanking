@@ -44,7 +44,7 @@ AB_JOB *AB_JobGetStandingOrders_new(AB_ACCOUNT *a) {
 
 
 
-void AB_JobGetStandingOrders_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_JobGetStandingOrders_FreeData(void *bp, void *p){
   AB_JOB_GETSTANDINGORDERS *aj;
 
   aj=(AB_JOB_GETSTANDINGORDERS*)p;
