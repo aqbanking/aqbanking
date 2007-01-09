@@ -33,7 +33,7 @@ struct AB_IMEXPORTER_ERI2 {
 
 
 AB_IMEXPORTER *eri2_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AB_ImExporterERI2_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p);
 int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              GWEN_BUFFEREDIO *bio,

@@ -50,7 +50,7 @@ AB_IMEXPORTER *yellownet_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AB_ImExporterYN_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p){
   AB_IMEXPORTER_YELLOWNET *ieh;
 
   ieh=(AB_IMEXPORTER_YELLOWNET*)p;

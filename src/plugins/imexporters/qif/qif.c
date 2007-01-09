@@ -45,7 +45,7 @@ AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AH_ImExporterQIF_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterQIF_FreeData(void *bp, void *p){
 }
 
 

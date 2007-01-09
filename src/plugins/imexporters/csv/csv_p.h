@@ -26,7 +26,7 @@ struct AH_IMEXPORTER_CSV {
 
 
 AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AH_ImExporterCSV_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p);
 
 int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,

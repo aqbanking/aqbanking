@@ -608,7 +608,7 @@ AB_IMEXPORTER *eri_factory(AB_BANKING *ab, GWEN_DB_NODE *db) {
 
 
 
-void AH_ImExporterERI_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_ImExporterERI_FreeData(void *bp, void *p) {
   AH_IMEXPORTER_ERI *ieh;
 
   ieh = (AH_IMEXPORTER_ERI*) p;

@@ -54,7 +54,7 @@ AB_IMEXPORTER *swift_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AH_ImExporterSWIFT_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p){
   AH_IMEXPORTER_SWIFT *ieh;
 
   ieh=(AH_IMEXPORTER_SWIFT*)p;

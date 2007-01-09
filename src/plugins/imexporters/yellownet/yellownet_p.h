@@ -26,7 +26,7 @@ struct AB_IMEXPORTER_YELLOWNET {
 
 
 AB_IMEXPORTER* yellownet_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AB_ImExporterYN_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p);
 
 int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
                            AB_IMEXPORTER_CONTEXT *ctx,

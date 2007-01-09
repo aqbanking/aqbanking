@@ -52,7 +52,7 @@ AB_IMEXPORTER *ofx_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AH_ImExporterOFX_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p){
   AH_IMEXPORTER_OFX *ieh;
 
   ieh=(AH_IMEXPORTER_OFX*)p;

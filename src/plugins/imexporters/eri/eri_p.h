@@ -43,7 +43,7 @@ struct ERI_TRANSACTION {
 };
 
 AB_IMEXPORTER* eri_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AH_ImExporterERI_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_ImExporterERI_FreeData(void *bp, void *p);
 
 int AH_ImExporterERI_Import(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,

@@ -27,7 +27,7 @@ struct AH_IMEXPORTER_OPENHBCI1 {
 
 
 AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p);
 
 int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CONTEXT *ctx,

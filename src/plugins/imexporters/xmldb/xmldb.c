@@ -55,7 +55,7 @@ AB_IMEXPORTER *xmldb_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AH_ImExporterXMLDB_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p){
   AH_IMEXPORTER_XMLDB *ieh;
 
   ieh=(AH_IMEXPORTER_XMLDB*)p;

@@ -27,7 +27,7 @@ struct AH_IMEXPORTER_DTAUS {
 
 
 AB_IMEXPORTER* dtaus_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AH_ImExporterDTAUS_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p);
 
 int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,

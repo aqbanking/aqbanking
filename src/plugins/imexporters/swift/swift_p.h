@@ -27,7 +27,7 @@ struct AH_IMEXPORTER_SWIFT {
 
 
 AB_IMEXPORTER* swift_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-void AH_ImExporterSWIFT_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p);
 
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,

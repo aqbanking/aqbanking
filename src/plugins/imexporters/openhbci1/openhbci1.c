@@ -51,7 +51,7 @@ AB_IMEXPORTER *openhbci1_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
   AH_IMEXPORTER_OPENHBCI1 *ieh;
 
   ieh=(AH_IMEXPORTER_OPENHBCI1*)p;
