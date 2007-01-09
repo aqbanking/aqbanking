@@ -350,7 +350,7 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 }
 
 
-void AH_User_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   AH_USER *ue;
 
   ue=(AH_USER*)p;

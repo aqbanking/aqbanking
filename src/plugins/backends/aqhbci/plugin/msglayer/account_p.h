@@ -25,7 +25,7 @@ struct AH_ACCOUNT {
   GWEN_TYPE_UINT32 flags;
 };
 
-static void AH_Account_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);
 
 
 #endif /* AH_ACCOUNT_P_H */

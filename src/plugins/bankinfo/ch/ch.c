@@ -60,7 +60,7 @@ AB_BANKINFO_PLUGIN *ch_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void AB_BankInfoPluginCH_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_BankInfoPluginCH_FreeData(void *bp, void *p){
   AB_BANKINFO_PLUGIN_CH *bde;
 
   bde=(AB_BANKINFO_PLUGIN_CH*)p;

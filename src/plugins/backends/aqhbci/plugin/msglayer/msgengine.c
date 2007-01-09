@@ -467,7 +467,7 @@ void AH_MsgEngine_Data_free(AH_MSGENGINE *x) {
 
 
 
-void AH_MsgEngine_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_MsgEngine_FreeData(void *bp, void *p) {
   AH_MSGENGINE *x;
 
   x=(AH_MSGENGINE*)p;

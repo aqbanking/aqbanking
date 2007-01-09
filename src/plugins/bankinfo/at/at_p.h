@@ -24,7 +24,7 @@ struct AB_BANKINFO_PLUGIN_AT {
 };
 
 
-void AB_BankInfoPluginAT_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AB_BankInfoPluginAT_FreeData(void *bp, void *p);
 
 
 #endif /* AQBANKING_BANKINFO_AT_P_H */

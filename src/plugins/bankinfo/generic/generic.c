@@ -63,7 +63,7 @@ AB_BANKINFO_PLUGIN *AB_BankInfoPluginGENERIC_new(AB_BANKING *ab,
 
 
 
-void AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p){
   AB_BANKINFO_PLUGIN_GENERIC *bde;
 
   bde=(AB_BANKINFO_PLUGIN_GENERIC*)p;

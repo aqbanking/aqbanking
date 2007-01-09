@@ -26,7 +26,7 @@ struct AB_BANKINFO_PLUGIN_GENERIC {
 };
 
 
-void AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AB_BankInfoPluginGENERIC_FreeData(void *bp, void *p);
 
 AB_BANKINFO *AB_BankInfoPluginGENERIC_GetBankInfo(AB_BANKINFO_PLUGIN *bip,
                                                   const char *branchId,

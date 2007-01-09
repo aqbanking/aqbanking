@@ -42,7 +42,7 @@ void AD_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 
 
 
-void AD_Account_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AD_Account_FreeData(void *bp, void *p) {
   AD_ACCOUNT *ad;
 
   ad=(AD_ACCOUNT*)p;

@@ -32,7 +32,7 @@ struct AB_BANKINFO_PLUGIN_DE {
 };
 
 
-void AB_BankInfoPluginDE_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AB_BankInfoPluginDE_FreeData(void *bp, void *p);
 
 AB_BANKINFO_CHECKRESULT
 AB_BankInfoPluginDE_CheckAccount(AB_BANKINFO_PLUGIN *bip,

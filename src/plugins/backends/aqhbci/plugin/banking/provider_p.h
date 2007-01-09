@@ -28,7 +28,7 @@ struct AH_PROVIDER {
   GWEN_DB_NODE *dbConfig;
   GWEN_DB_NODE *dbTempConfig;
 };
-static void AH_Provider_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p);
 
 
 static AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, GWEN_TYPE_UINT32 jid);

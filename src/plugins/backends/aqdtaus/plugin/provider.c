@@ -83,7 +83,7 @@ AB_PROVIDER *AD_Provider_new(AB_BANKING *ab){
 
 
 
-void AD_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AD_Provider_FreeData(void *bp, void *p) {
   AD_PROVIDER *dp;
 
   dp=(AD_PROVIDER*)p;

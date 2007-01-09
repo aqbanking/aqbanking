@@ -30,7 +30,7 @@ struct AH_USER {
   GWEN_TYPE_UINT32 tanMethods;
 };
 
-static void AH_User_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
 
 
 

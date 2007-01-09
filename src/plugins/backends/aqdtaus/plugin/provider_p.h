@@ -27,7 +27,7 @@ struct AD_PROVIDER {
   GWEN_TYPE_UINT32 lastJobId;
 };
 
-static void AD_Provider_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AD_Provider_FreeData(void *bp, void *p);
 
 static int AD_Provider_AddTransfer(AB_PROVIDER *pro,
                                    AB_ACCOUNT *acc,

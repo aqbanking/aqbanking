@@ -49,7 +49,7 @@ static int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 static AH_MSGENGINE *AH_MsgEngine_Data_new();
 static void AH_MsgEngine_Data_free(AH_MSGENGINE *x);
 
-static void AH_MsgEngine_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_MsgEngine_FreeData(void *bp, void *p);
 
 
 

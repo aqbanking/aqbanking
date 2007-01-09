@@ -94,7 +94,7 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
 
 
 
-void AH_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p) {
   AH_PROVIDER *hp;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Destroying AH_PROVIDER");

@@ -20,7 +20,7 @@ struct AD_ACCOUNT {
   int dummy;
 };
 
-void AD_Account_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AD_Account_FreeData(void *bp, void *p);
 
 
 
