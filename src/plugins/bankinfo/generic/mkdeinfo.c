@@ -1625,7 +1625,11 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
     count++;
     snprintf(numbuf, sizeof(numbuf), "%08x", count);
     GWEN_DB_SetIntValue(dbIdx, GWEN_DB_FLAGS_OVERWRITE_VARS, numbuf, pos);
+    if (count & ~31) {
+      fprintf(stdout, "%u\r", count);
+    }
   } /* while */
+  fprintf(stdout, "\n");
   fprintf(stdout, "  Read %d banks.\n", count);
 
   return 0;

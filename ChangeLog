@@ -1,4 +1,10 @@
 
+2007/01/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- applied a patch by Christian Lupien to AO_Context_Update(): Now also sets 
+  the correct account types for other types than bank account
+
+
 2006/12/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in qt3.m4: Was checking for "Darwin", not for "darwin". Qt3
