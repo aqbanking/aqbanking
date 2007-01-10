@@ -191,7 +191,7 @@ AH_JOB *AH_Job_SingleTransferBase_new(AB_USER *u,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_SingleTransfer_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_SingleTransfer_FreeData(void *bp, void *p){
   AH_JOB_SINGLETRANSFER *aj;
 
   aj=(AH_JOB_SINGLETRANSFER*)p;

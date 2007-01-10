@@ -67,7 +67,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_GetBalance_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p){
   AH_JOB_GETBALANCE *aj;
 
   aj=(AH_JOB_GETBALANCE*)p;

@@ -68,7 +68,7 @@ AH_JOB *AH_Job_GetDatedTransfers_new(AB_USER *u, AB_ACCOUNT *account) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_GetDatedTransfers_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetDatedTransfers_FreeData(void *bp, void *p){
   AH_JOB_GETDATEDTRANSFERS *aj;
 
   aj=(AH_JOB_GETDATEDTRANSFERS*)p;

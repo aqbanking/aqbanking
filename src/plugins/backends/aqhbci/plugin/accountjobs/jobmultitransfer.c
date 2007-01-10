@@ -120,7 +120,7 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_MultiTransfer_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_MultiTransfer_FreeData(void *bp, void *p){
   AH_JOB_MULTITRANSFER *aj;
 
   aj=(AH_JOB_MULTITRANSFER*)p;

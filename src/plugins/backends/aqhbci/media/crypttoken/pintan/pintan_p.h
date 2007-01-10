@@ -28,7 +28,7 @@ struct AH_CT_PINTAN {
 static GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_new(GWEN_PLUGIN_MANAGER *pm,
                                                 const char *name);
 
-static void AH_CryptTokenPinTan_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_CryptTokenPinTan_FreeData(void *bp, void *p);
 
 
 static int AH_CryptTokenPinTan_Open(GWEN_CRYPTTOKEN *ct, int manage);

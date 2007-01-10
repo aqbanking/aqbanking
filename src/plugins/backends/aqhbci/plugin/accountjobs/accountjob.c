@@ -83,7 +83,7 @@ AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_AccountJob_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p) {
   AH_ACCOUNTJOB *aj;
 
   aj=(AH_ACCOUNTJOB*)p;

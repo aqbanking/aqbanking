@@ -23,7 +23,7 @@ typedef struct AH_JOB_GETDATEDTRANSFERS AH_JOB_GETDATEDTRANSFERS;
 struct AH_JOB_GETDATEDTRANSFERS {
   int dummy;
 };
-static void AH_Job_GetDatedTransfers_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Job_GetDatedTransfers_FreeData(void *bp, void *p);
 
 static int AH_Job_GetDatedTransfers_Process(AH_JOB *j,
                                             AB_IMEXPORTER_CONTEXT *ctx);

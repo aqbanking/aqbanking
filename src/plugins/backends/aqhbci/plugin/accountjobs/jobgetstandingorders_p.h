@@ -23,7 +23,7 @@ typedef struct AH_JOB_GETSTANDINGORDERS AH_JOB_GETSTANDINGORDERS;
 struct AH_JOB_GETSTANDINGORDERS {
   int dummy;
 };
-static void AH_Job_GetStandingOrders_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Job_GetStandingOrders_FreeData(void *bp, void *p);
 
 static int AH_Job_GetStandingOrders_Process(AH_JOB *j,
                                             AB_IMEXPORTER_CONTEXT *ctx);

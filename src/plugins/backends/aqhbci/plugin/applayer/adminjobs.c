@@ -90,7 +90,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_GetKeys_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
   AH_JOB *j;
   AH_JOB_GETKEYS *jd;
 
@@ -545,7 +545,7 @@ AH_JOB *AH_Job_UpdateBank_new(AB_USER *u) {
 
 
 
-void AH_Job_UpdateBank_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p){
   AH_JOB_UPDATEBANK *jd;
 
   jd=(AH_JOB_UPDATEBANK*)p;
@@ -707,7 +707,7 @@ AH_JOB *AH_Job_GetSysId_new(AB_USER *u){
 
 
 
-void AH_Job_GetSysId_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetSysId_FreeData(void *bp, void *p){
   AH_JOB_GETSYSID *jd;
 
   jd=(AH_JOB_GETSYSID*)p;
@@ -856,7 +856,7 @@ AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon){
 
 
 
-void AH_Job_TestVersion_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_TestVersion_FreeData(void *bp, void *p){
   AH_JOB_TESTVERSION *jd;
 
   jd=(AH_JOB_TESTVERSION*)p;
@@ -1035,7 +1035,7 @@ AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
 
 
 
-void AH_Job_GetStatus_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetStatus_FreeData(void *bp, void *p){
   AH_JOB_GETSTATUS *aj;
 
   aj=(AH_JOB_GETSTATUS*)p;
@@ -1117,7 +1117,7 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process) {
 
 
 
-void AH_Job_Tan_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
   AH_JOB_TAN *aj;
 
   aj=(AH_JOB_TAN*)p;
@@ -1354,7 +1354,7 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
 
 
 
-void AH_Job_GetItanModes_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetItanModes_FreeData(void *bp, void *p){
   AH_JOB_GETITANMODES *jd;
 
   jd=(AH_JOB_GETITANMODES*)p;

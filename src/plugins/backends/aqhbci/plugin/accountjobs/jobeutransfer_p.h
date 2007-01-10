@@ -23,7 +23,7 @@ typedef struct AH_JOB_EUTRANSFER AH_JOB_EUTRANSFER;
 struct AH_JOB_EUTRANSFER {
   int isTransfer;
 };
-static void AH_Job_EuTransfer_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Job_EuTransfer_FreeData(void *bp, void *p);
 static int AH_Job_EuTransfer_Process(AH_JOB *j,
                                      AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,

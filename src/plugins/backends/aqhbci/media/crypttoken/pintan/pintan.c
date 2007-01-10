@@ -121,7 +121,7 @@ GWEN_CRYPTTOKEN *AH_CryptTokenPinTan_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void AH_CryptTokenPinTan_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_CryptTokenPinTan_FreeData(void *bp, void *p) {
   AH_CT_PINTAN *lct;
 
   lct=(AH_CT_PINTAN*)p;

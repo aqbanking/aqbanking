@@ -25,7 +25,7 @@ struct AH_JOB_SINGLETRANSFER {
   char *fiid;
   char *oldFiid;
 };
-static void AH_Job_SingleTransfer_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_Job_SingleTransfer_FreeData(void *bp, void *p);
 static int AH_Job_SingleTransfer_Process(AH_JOB *j,
                                          AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,

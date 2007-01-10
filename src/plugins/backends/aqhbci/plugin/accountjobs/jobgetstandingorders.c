@@ -69,7 +69,7 @@ AH_JOB *AH_Job_GetStandingOrders_new(AB_USER *u, AB_ACCOUNT *account) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_GetStandingOrders_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetStandingOrders_FreeData(void *bp, void *p){
   AH_JOB_GETSTANDINGORDERS *aj;
 
   aj=(AH_JOB_GETSTANDINGORDERS*)p;

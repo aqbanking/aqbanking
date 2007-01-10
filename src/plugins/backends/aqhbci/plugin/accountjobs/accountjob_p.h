@@ -24,7 +24,7 @@ struct AH_ACCOUNTJOB {
 };
 
 
-static void AH_AccountJob_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p);
 
 
 
