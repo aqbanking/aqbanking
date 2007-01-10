@@ -1,5 +1,5 @@
 /***************************************************************************
- $RCSfile$
+ $RCSfile: banking.c,v $
  -------------------
  cvs         : $Id$
  begin       : Mon Mar 01 2004
@@ -2297,14 +2297,17 @@ int AB_Banking_Save(AB_BANKING *ab) {
     return AB_ERROR_GENERIC;
   }
 #ifdef OS_WIN32
-  if (unlink(ab->configFile)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not delete old file \"%s\": %s",
-              ab->configFile,
-              strerror(errno));
-    GWEN_Buffer_free(rpbuf);
-    GWEN_DB_Group_free(db);
-    return AB_ERROR_GENERIC;
+  if (access(ab->configFile, F_OK) == 0) {
+    /* Need to unlink the old file only if it already existed */
+    if (unlink(ab->configFile)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not delete old file \"%s\": %s",
+		ab->configFile,
+		strerror(errno));
+      GWEN_Buffer_free(rpbuf);
+      GWEN_DB_Group_free(db);
+      return AB_ERROR_GENERIC;
+    }
   }
 #endif
   if (rename(GWEN_Buffer_GetStart(rpbuf), ab->configFile)) {
