@@ -11,8 +11,8 @@
  ***************************************************************************/
 
 
-#ifndef CBANKING_PROGRESS_H
-#define CBANKING_PROGRESS_H
+#ifndef CBANKING_PROGRESS_P_H
+#define CBANKING_PROGRESS_P_H
 
 #define CBANKING_PROGRESS_CHAR_ABORT 27
 

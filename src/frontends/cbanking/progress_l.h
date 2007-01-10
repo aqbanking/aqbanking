@@ -11,8 +11,8 @@
  ***************************************************************************/
 
 
-#ifndef CBANKING_PROGRESS_H
-#define CBANKING_PREGRESS_H
+#ifndef CBANKING_PROGRESS_L_H
+#define CBANKING_PREGRESS_L_H
 
 
 #include <aqbanking/banking.h>
