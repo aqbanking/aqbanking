@@ -1019,7 +1019,7 @@ case "$OS_TYPE" in
         aqbanking_sys_is_windows=1
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
-        aqbanking_libs="-laqbanking-${AQBANKING_SO_EFFECTIVE}"
+        aqbanking_libs="-laqbanking"
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
@@ -1398,7 +1398,7 @@ case "$aqbanking_backends" in *aqhbci*)
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
-          aqhbci_libs="-laqhbci-${AQHBCI_SO_EFFECTIVE}"
+          aqhbci_libs="-laqhbci"
           ;;
   esac
   ;;
@@ -1434,7 +1434,7 @@ case "$aqbanking_backends" in *aqdtaus*)
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQDTAUS_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
-          aqdtaus_libs="-L\${libdir} -laqdtaus-${AQDTAUS_SO_EFFECTIVE}"
+          aqdtaus_libs="-L\${libdir} -laqdtaus"
           ;;
   esac
   ;;
@@ -1469,7 +1469,7 @@ case "$aqbanking_backends" in *aqgeldkarte*)
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQGELDKARTE_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
-          aqgeldkarte_libs="-L\${libdir} -laqgeldkarte-${AQGELDKARTE_SO_EFFECTIVE}"
+          aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
           ;;
   esac
   ;;
@@ -1504,7 +1504,7 @@ case "$aqbanking_backends" in *aqofxconnect*)
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQOFXCONNECT_DLL,1, [Define if DLL is built])
           ACX_WINDOWS_PATHS
-          aqofxconnect_libs="-L\${libdir} -laqofxconnect-${AQOFXCONNECT_SO_EFFECTIVE}"
+          aqofxconnect_libs="-L\${libdir} -laqofxconnect"
           ;;
   esac
   ;;
@@ -1538,7 +1538,7 @@ case "$aqbanking_backends" in *aqyellownet*)
           ;;
       windows)
           ACX_WINDOWS_PATHS
-          aqyellownet_libs="-L\${libdir} -laqyellownet-${AQYELLOWNET_SO_EFFECTIVE}"
+          aqyellownet_libs="-L\${libdir} -laqyellownet"
           ;;
   esac
   ;;
@@ -1570,7 +1570,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
-        g2banking_libs="-L`eval echo $prefix/lib` -lg2banking-${G2BANKING_SO_EFFECTIVE}"
+        g2banking_libs="-L\${libdir} -lg2banking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1598,7 +1598,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_KBANKING_DLL,1, [Define if DLL is built])
-        kbanking_libs="-L\${libdir} -lkbanking-${KBANKING_SO_EFFECTIVE}"
+        kbanking_libs="-L\${libdir} -lkbanking"
     	;;
 esac
 
@@ -1627,7 +1627,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
-        qbanking_libs="-L\${libdir} -lqbanking-${QBANKING_SO_EFFECTIVE}"
+        qbanking_libs="-L\${libdir} -lqbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1657,7 +1657,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_CBANKING_DLL,1, [Define if DLL is built])
-        cbanking_libs="-L\${libdir} -lcbanking-${CBANKING_SO_EFFECTIVE}"
+        cbanking_libs="-L\${libdir} -lcbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1685,7 +1685,7 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_FBANKING_DLL,1, [Define if DLL is built])
-        fbanking_libs="-L`eval echo $prefix/lib` -lfbanking-${FBANKING_SO_EFFECTIVE}"
+        fbanking_libs="-L\${libdir} -lfbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
