@@ -52,8 +52,7 @@ aqdtaus_la_LIBADD= \
   $(gwenhywfar_libs)
 libaqdtaus_la_LDFLAGS = -no-undefined \
   -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
-aqdtaus_la_LDFLAGS = -no-undefined -module \
-  -version-info @AQDTAUS_SO_CURRENT@:@AQDTAUS_SO_REVISION@:@AQDTAUS_SO_AGE@
+aqdtaus_la_LDFLAGS = -no-undefined -module -avoid-version
 
 # Add the linker flags for windows resource file
 libaqdtaus_la_DEPENDENCIES = $(aqbanking_internal_libs)

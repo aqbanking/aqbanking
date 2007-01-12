@@ -50,8 +50,7 @@ aqgeldkarte_la_LIBADD= \
   $(gwenhywfar_libs)
 libaqgeldkarte_la_LDFLAGS = -no-undefined \
   -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
-aqgeldkarte_la_LDFLAGS = -no-undefined -module \
-  -version-info @AQGELDKARTE_SO_CURRENT@:@AQGELDKARTE_SO_REVISION@:@AQGELDKARTE_SO_AGE@
+aqgeldkarte_la_LDFLAGS = -no-undefined -module -avoid-version
 
 # Add the linker flags for windows resource file
 libaqgeldkarte_la_DEPENDENCIES = $(aqbanking_internal_libs)

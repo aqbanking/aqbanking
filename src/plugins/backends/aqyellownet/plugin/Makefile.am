@@ -30,7 +30,7 @@ aqyellownet_la_LIBADD= \
   -L$(srcdir) -laqyellownet \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-aqyellownet_la_LDFLAGS=-module
+aqyellownet_la_LDFLAGS=-module -avoid-version
 
 #  -L$(srcdir) -laqyellownet
 #  $(srcdir)/libaqyellownet.la

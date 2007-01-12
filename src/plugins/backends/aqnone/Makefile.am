@@ -30,7 +30,7 @@ libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 libaqnone_la_LDFLAGS = -no-undefined
 
 aqnone_la_LIBADD = libaqnone.la $(aqbanking_internal_libs) $(gwenhywfar_libs)
-aqnone_la_LDFLAGS = -no-undefined -module -version-info 0:0:0
+aqnone_la_LDFLAGS = -no-undefined -module -avoid-version
 
 # Add the linker flags for windows resource file
 libaqnone_la_DEPENDENCIES = $(aqbanking_internal_libs)

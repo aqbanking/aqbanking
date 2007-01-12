@@ -63,8 +63,8 @@ aqhbci_la_LIBADD = \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
-aqhbci_la_LDFLAGS = -no-undefined -module \
-  -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
+aqhbci_la_LDFLAGS = -no-undefined -module -avoid-version
+#  -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
 # Add the linker flags for windows resource file
