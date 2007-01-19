@@ -190,18 +190,26 @@ int AO_Context_Update(AO_CONTEXT *ctx){
     case AB_AccountType_Investment:
       t=OFX_INVEST_ACCOUNT;
       break;
+#ifdef OFX_CHECKING_ACCOUNT
     case AB_AccountType_Checking:
       t=OFX_CHECKING_ACCOUNT;
       break;
+#endif
+#ifdef OFX_SAVINGS_ACCOUNT
     case AB_AccountType_Savings:
       t=OFX_SAVINGS_ACCOUNT;
       break;
+#endif
+#ifdef OFX_CMA_ACCOUNT
     case AB_AccountType_Cash:
       t=OFX_CMA_ACCOUNT;
       break;
+#endif
+#ifdef OFX_CREDITLINE_ACCOUNT
     case AB_AccountType_Bank:
       t=OFX_CREDITLINE_ACCOUNT;
       break;
+#endif
     case AB_AccountType_Unknown:
     default:
       t=OFX_BANK_ACCOUNT;
