@@ -266,12 +266,12 @@ int checkArgs(s_args &args, int argc, char **argv) {
       i++;
       if (i>=argc)
 	return -1;
-      if (argv[i]=="stderr")
+      if (strcmp(argv[i],"stderr")==0)
         args.logType=GWEN_LoggerTypeConsole;
-      else if (argv[i]=="file")
+      else if (strcmp(argv[i],"file")==0)
 	args.logType=GWEN_LoggerTypeFile;
 #ifdef HAVE_SYSLOG_H
-      else if (argv[i]=="syslog")
+      else if (strcmp(argv[i],"syslog")==0)
 	args.logType=GWEN_LoggerTypeSyslog;
 #endif
       else {
