@@ -140,6 +140,15 @@ int main(int argc, char **argv) {
                                   "    Requests supported iTAN modes for the given "
                                   "user\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  listusers:\n"
+                                  "    List the users\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  listaccounts:\n"
+                                  "    List the accounts\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  changepin:\n"
+                                  "    Change the PIN of a key file\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  iniletter:\n"
                                   "    Print the INI letter for a given "
                                   "user\n\n"));
