@@ -99,7 +99,7 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
 
 
 
-void AO_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p) {
   AO_PROVIDER *dp;
 
   dp=(AO_PROVIDER*)p;

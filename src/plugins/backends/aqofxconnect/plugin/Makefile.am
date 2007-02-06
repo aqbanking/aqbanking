@@ -1,7 +1,7 @@
 INCLUDES=-I$(top_builddir)/headers $(LIBOFX_INCLUDES) $(all_includes)
 
 localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
 
 EXTRA_DIST=aqofxconnect.xml.in
 

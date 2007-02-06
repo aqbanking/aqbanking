@@ -138,7 +138,7 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
 
 
-void AO_User_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
   AO_USER *ue;
 
   ue=(AO_USER*)p;

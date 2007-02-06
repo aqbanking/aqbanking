@@ -1912,6 +1912,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/aqofxconnect-config.in
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
+  src/plugins/backends/aqofxconnect/plugin/ressource.rc
   src/plugins/backends/aqofxconnect/ui/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile

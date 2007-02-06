@@ -39,7 +39,7 @@ struct AO_PROVIDER {
   AB_JOB_LIST2 *bankingJobs;
 };
 
-static void AO_Provider_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p);
 
 static int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);

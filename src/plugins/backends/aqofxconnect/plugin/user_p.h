@@ -21,7 +21,7 @@ struct AO_USER {
   GWEN_TYPE_UINT32 flags;
 };
 
-static void AO_User_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);
 
 
 

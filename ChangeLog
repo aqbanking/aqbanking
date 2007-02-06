@@ -1,3 +1,9 @@
+2007-02-06   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqofxconnect/*: Add __stdcall function
+	decoration on callback functions as needed by gwen>=2.4.1. Add
+	forgotten ressource.rc file. Make aqofxconnect plugin compile on
+	win32.
 
 ===========================================================================
 MARK: released AqBanking - 2.2.6 (2007-01-19)
