@@ -381,8 +381,9 @@ void QBCfgTabPageAccountGeneral::slotLeftButtonClicked() {
   if (ul.empty()) {
     QMessageBox::critical(this,
                           tr("Selection Error"),
-                          tr("No user selected.\n"),
+                          tr("No user selected."),
                           QMessageBox::Retry,QMessageBox::NoButton);
+    return;
   }
   u=ul.front();
   _realPage->userList2->removeUser(u);
@@ -399,8 +400,9 @@ void QBCfgTabPageAccountGeneral::slotRightButtonClicked() {
   if (ul.empty()) {
     QMessageBox::critical(this,
                           tr("Selection Error"),
-                          tr("No user selected.\n"),
+                          tr("No user selected."),
                           QMessageBox::Retry,QMessageBox::NoButton);
+    return;
   }
   u=ul.front();
   _realPage->userList1->removeUser(u);

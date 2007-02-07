@@ -173,8 +173,9 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
   if (al.empty()) {
     QMessageBox::critical(this,
                           tr("Selection Error"),
-                          tr("No user selected.\n"),
+                          tr("No account selected."),
                           QMessageBox::Retry,QMessageBox::NoButton);
+    return;
   }
   a=al.front();
   if (QBEditAccount::editAccount(getBanking(), a, this)) {

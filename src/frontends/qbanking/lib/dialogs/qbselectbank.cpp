@@ -359,7 +359,7 @@ void QBSelectBank::accept() {
   else {
     QMessageBox::critical(this,
                           tr("Selection Error"),
-                          tr("No Bank Selected."),
+                          tr("No bank selected."),
 			  QMessageBox::Retry,QMessageBox::NoButton);
   }
 }

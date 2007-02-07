@@ -196,8 +196,8 @@ void QBCfgTabPageUsers::slotUserEdit() {
   if (ul.empty()) {
     QMessageBox::critical(this,
                           tr("Selection Error"),
-                          tr("No user selected.\n"),
-                          tr("Dismiss"));
+                          tr("No user selected."),
+                          QMessageBox::Retry,QMessageBox::NoButton);
     return;
   }
   u=ul.front();
