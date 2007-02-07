@@ -88,7 +88,10 @@ QBInputBox::QBInputBox(const QString& title,
 ,_edit1(0)
 ,_edit2(0)
 {
+#if QT_VERSION < 0x040000
+  // this crashes in qt-4 and is unused anyway
   QSimpleRichText rt(text, font());
+#endif
   int width;
   int height;
   int max_textwidth=400;
@@ -96,9 +99,11 @@ QBInputBox::QBInputBox(const QString& title,
   QLabel *l;
 
   _validator=new Validator(this, "Validator", flags, minLen, maxLen);
+#if QT_VERSION < 0x040000
   rt.setWidth(max_textwidth);
   width=rt.widthUsed();
   height=rt.height();
+#endif
 
   setCaption(title);
 

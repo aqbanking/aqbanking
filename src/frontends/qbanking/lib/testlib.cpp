@@ -89,6 +89,16 @@ int main(int argc, char *argv[]){
     return 2;
   }
 
+  if (true)
+  {
+      char mybuffer[50];
+      int rv = qb->inputBox(0, "Test for password InputBox", 
+			    "This is a test. Just enter something.",
+			    mybuffer,
+			    1, 40);
+      qDebug("QBanking::inputBox: rv=%d; Resulting password: \"%s\"",
+	     rv, mybuffer);
+  }
 
   bi=qb->selectBank();
   if (bi==0) {
