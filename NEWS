@@ -1,5 +1,19 @@
 
 ===========================================================================
+               Released AqBanking - 2.2.7 (2007-02-07)
+===========================================================================
+
+Minor bugfix release: Fix aqofxconnect to compile also on Windows.
+Improve aqbanking-tool and aqhbci-tool usage messages to show all
+commands.  Fix command line processing in tool hbcixml.
+
+===========================================================================
+               Released AqBanking - 2.2.6 (2007-01-19)
+===========================================================================
+
+Fixed changes in aqofxconnect to be enabled only for new libofx versions.
+
+===========================================================================
                Released AqBanking - 2.2.5 (2007-01-16)
 ===========================================================================
 

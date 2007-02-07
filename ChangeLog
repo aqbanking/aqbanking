@@ -1,3 +1,7 @@
+===========================================================================
+MARK: released AqBanking - 2.2.7 (2007-02-07)
+===========================================================================
+
 2007-02-06   Christian Stimming <stimming@tuhh.de>
 
 	* src/plugins/backends/aqofxconnect/*: Add __stdcall function
