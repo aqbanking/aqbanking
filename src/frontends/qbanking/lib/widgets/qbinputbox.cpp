@@ -92,8 +92,8 @@ QBInputBox::QBInputBox(const QString& title,
   // this crashes in qt-4 and is unused anyway
   QSimpleRichText rt(text, font());
 #endif
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   int max_textwidth=400;
   int max_textheight=400;
   QLabel *l;
