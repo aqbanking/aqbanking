@@ -27,7 +27,9 @@ nodist_aqofxconnect_la_SOURCES=\
 noinst_HEADERS=\
  cfgmoduleofx_p.h \
  cfgtabpageaccountofx.h \
- cfgtabpageuserofx.h \
+ cfgtabpageuserofx.h
+
+nodist_noinst_HEADERS=\
  cfgtabpageaccountofx.ui.h \
  cfgtabpageuserofx.ui.h
 
@@ -41,7 +43,7 @@ aqofxconnect_la_LIBADD=\
 
 
 BUILT_SOURCES = $(nodist_aqofxconnect_la_SOURCES)
-CLEANFILES = $(nodist_aqofxconnect_la_SOURCES)
+CLEANFILES = $(nodist_aqofxconnect_la_SOURCES) $(nodist_noinst_HEADERS)
 
 sources:
 	for f in $(aqofxconnect_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
