@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 2.2.8 (r1171, 2007-02-12)
+===========================================================================
+
+Minor bugfix release: Fix qt4 porting code and Makefile rules of
+aqofxconnect. Fix more issues with qt4 and qbanking. Fix crashes
+when actions have no selected items in qbanking. Updated German
+translation.
+
+===========================================================================
                Released AqBanking - 2.2.7 (2007-02-07)
 ===========================================================================
 

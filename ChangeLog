@@ -1,5 +1,29 @@
 ===========================================================================
-MARK: released AqBanking - 2.2.7 (2007-02-07)
+MARK: released AqBanking - 2.2.8 (r1171, 2007-02-12)
+===========================================================================
+
+2007-02-12   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile.am:
+	Properly exclude generated files from qt4-port but include them in
+	CLEANFILES.
+	
+2007-02-07   Christian Stimming <stimming@tuhh.de>
+
+	* src/frontends/qbanking/lib/dialogs/*.cpp: Fix crash when actions
+	have no selected items.
+	
+	* src/frontends/qbanking/lib/widgets/qbinputbox.cpp: Ifdef out the
+	QSimpleRichText for width calculation because it crashes on qt4
+	and it is not really needed.
+
+2007-02-07   Christian Stimming <stimming@tuhh.de>
+
+	* src/plugins/backends/aqofxconnect/ui: Fix qt4 port code for
+	ofxconnect ui parts.
+
+===========================================================================
+MARK: released AqBanking - 2.2.7 (r1156, 2007-02-07)
 ===========================================================================
 
 2007-02-06   Christian Stimming <stimming@tuhh.de>
