@@ -170,20 +170,20 @@ catalogs: $(I18NLINGUAS)
 
 
 
-localedir = $(datadir)/locale
+ilocaledir = $(datadir)/locale
 install-mo-catalogs: catalogs
 	@for i in $(ALL_LINGUAS); do \
 	  filecat=$(top_builddir)/po/$$i.mo; \
 	  fileqm=$(top_builddir)/po/$$i.qm; \
           echo "Installing translation catalog for language \"$$i\""; \
-          $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
-          $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
+          $(mkinstalldirs) "$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES"; \
+          $(INSTALL_DATA) $${filecat} $(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
 uninstall-mo-catalogs:
 	@$(NORMAL_UNINSTALL)
 	@for i in $(ALL_LINGUAS); do \
-	  echo " rm -f '$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo'"; \
-	  rm -f "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
+	  echo " rm -f '$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo'"; \
+	  rm -f "$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
 	done
 
 
@@ -235,9 +235,18 @@ srpm: $(PACKAGE).spec dist
 
 # This section is for a qt4 environment
 qt4-port:
+if HAVE_QT3TO4
 	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3 src/plugins/backends/aqdtaus/ui/qt3 src/plugins/backends/aqofxconnect/ui/qt3; do \
 	  $(MAKE) -C $$d qt4-port; \
 	done
+else
+	@echo "***"
+	@echo "*** Error: The tool \"qt3to4\" has not been found by ./configure. "
+	@echo "*** Did you add \"qbanking\" to the argument list of --with-frontends=\"...\""
+	@echo "*** so that the qt4 tools are being detected?"
+	@echo "***"
+	@exit 1
+endif
 
 BUILT_SOURCES = $(iheader_HEADERS) sl-headers
 CLEANFILES += $(BUILT_SOURCES)
