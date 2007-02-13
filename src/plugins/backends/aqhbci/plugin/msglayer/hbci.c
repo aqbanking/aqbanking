@@ -828,7 +828,7 @@ int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Removing cert \"%s\"", nbuffer);
       GWEN_Buffer_Crop(nbuf, 0, pathLen);
       GWEN_Buffer_SetPos(nbuf, pathLen);
-      GWEN_Buffer_AppendByte(nbuf, '/');
+      GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP);
       GWEN_Buffer_AppendString(nbuf, nbuffer);
 
       if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
@@ -1032,7 +1032,7 @@ int AH_HBCI_AddCustomerPath(const AH_HBCI *hbci,
   assert(u);
   if (AH_HBCI_AddUserPath(hbci, u, nbuf))
     return -1;
-  GWEN_Buffer_AppendByte(nbuf, '/');
+  GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP);
 
   /* escape and append customer name */
   customerId=AB_User_GetCustomerId(u);
