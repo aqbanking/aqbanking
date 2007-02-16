@@ -178,18 +178,17 @@ void AB_HttpSession__AddPeerCertFolder(AB_HTTPSESSION *hc, GWEN_BUFFER *nbuf){
   const char *s;
 
   AB_Provider_GetUserDataDir(hc->provider, nbuf);
-  GWEN_Buffer_AppendString(nbuf, "/banks/");
+  GWEN_Buffer_AppendString(nbuf, DIRSEP "banks" DIRSEP);
   s=AB_User_GetCountry(hc->user);
   if (!s || !*s)
     s="ch";
   GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendByte(nbuf, '/');
+  GWEN_Buffer_AppendString(nbuf, DIRSEP);
   s=AB_User_GetBankCode(hc->user);
   if (!s || !*s)
     s="none";
   GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendByte(nbuf, '/');
-  GWEN_Buffer_AppendString(nbuf, "/certs");
+  GWEN_Buffer_AppendString(nbuf, DIRSEP "certs");
 }
 
 

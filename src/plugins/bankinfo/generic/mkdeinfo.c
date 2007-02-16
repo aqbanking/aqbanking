@@ -34,6 +34,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifndef GWEN_DIR_SEPARATOR_S
+  /* for gwenyhwfar < 2.5.4 */
+# define GWEN_DIR_SEPARATOR '/'
+# define GWEN_DIR_SEPARATOR_S "/"
+#endif
 
 #define FUZZY_SHIFT 10
 #define FUZZY_THRESHOLD 850
@@ -891,7 +896,7 @@ int readMSMFiles(const char *path, const char *country) {
   dbuf=GWEN_Buffer_new(0, 256, 0, 1);
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(pbuf, path);
-  GWEN_Buffer_AppendByte(pbuf, '/');
+  GWEN_Buffer_AppendByte(pbuf, GWEN_DIR_SEPARATOR);
   pos=GWEN_Buffer_GetPos(pbuf);
 
   GWEN_Buffer_AppendString(pbuf, "banks.xml");
@@ -1515,7 +1520,7 @@ int makeBankInfos(const char *path) {
 
     /* create path */
     GWEN_Buffer_AppendString(dbuf, path);
-    GWEN_Buffer_AppendString(dbuf, "/banks/");
+    GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S "banks" GWEN_DIR_SEPARATOR_S);
 
     snprintf(numbuf, sizeof(numbuf), "%04x", count);
     GWEN_Buffer_AppendBytes(dbuf, numbuf, 2);
@@ -1530,7 +1535,7 @@ int makeBankInfos(const char *path) {
       return -1;
     }
 
-    GWEN_Buffer_AppendByte(dbuf, '/');
+    GWEN_Buffer_AppendByte(dbuf, GWEN_DIR_SEPARATOR);
     GWEN_Buffer_AppendBytes(dbuf, numbuf+2, 2);
     GWEN_Buffer_AppendString(dbuf, ".bank");
 
@@ -1782,7 +1787,7 @@ int main(int argc, char **argv) {
             "this will take a few minutes ...\n", path);
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(dbuf, path);
-    GWEN_Buffer_AppendByte(dbuf, '/');
+    GWEN_Buffer_AppendByte(dbuf, GWEN_DIR_SEPARATOR);
     pos=GWEN_Buffer_GetPos(dbuf);
 
     GWEN_Buffer_AppendString(dbuf, "banks.data");

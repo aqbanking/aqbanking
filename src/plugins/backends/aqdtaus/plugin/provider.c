@@ -38,6 +38,11 @@
 #include <errno.h>
 #include <string.h>
 
+#ifndef GWEN_DIR_SEPARATOR
+  /* for gwenyhwfar < 2.5.4 */
+# define GWEN_DIR_SEPARATOR '/'
+#endif
+
 #ifdef HAVE_I18N
 # ifdef HAVE_LOCALE_H
 #  include <locale.h>
@@ -520,7 +525,7 @@ int AD_Provider_WriteDTAUS(AB_PROVIDER *pro,
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(tbuf, AD_Account_GetFolder(da));
-  GWEN_Buffer_AppendByte(tbuf, '/');
+  GWEN_Buffer_AppendByte(tbuf, GWEN_DIR_SEPARATOR);
   GWEN_Buffer_AppendString(tbuf, "DTAUS0.TXT");
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Directory_OsifyPath(GWEN_Buffer_GetStart(tbuf), pbuf, 1);
@@ -798,11 +803,11 @@ int AD_Provider_SaveJob(AB_PROVIDER *pro, AD_JOB *dj, GWEN_BUFFER *data){
     GWEN_Buffer_free(pbuf);
     return rv;
   }
-  GWEN_Buffer_AppendByte(pbuf, '/');
+  GWEN_Buffer_AppendByte(pbuf, GWEN_DIR_SEPARATOR);
   GWEN_Buffer_AppendString(pbuf, AB_Account_GetBankCode(da));
-  GWEN_Buffer_AppendByte(pbuf, '/');
+  GWEN_Buffer_AppendByte(pbuf, GWEN_DIR_SEPARATOR);
   GWEN_Buffer_AppendString(pbuf, AB_Account_GetAccountNumber(da));
-  GWEN_Buffer_AppendByte(pbuf, '/');
+  GWEN_Buffer_AppendByte(pbuf, GWEN_DIR_SEPARATOR);
   snprintf(numbuf, sizeof(numbuf), "%08x", AD_Job_GetJobId(dj));
   GWEN_Buffer_AppendString(pbuf, numbuf);
   GWEN_Buffer_AppendString(pbuf, ".dtaus");

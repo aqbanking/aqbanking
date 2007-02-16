@@ -159,7 +159,7 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   /* get path */
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/banks.data");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "banks.data");
 
   /* open file */
   fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
@@ -234,7 +234,7 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__SearchbyCode(AB_BANKINFO_PLUGIN *bip,
 
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/blz.idx");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "blz.idx");
   f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
   if (!f) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "fopen(%s): %s",
@@ -297,7 +297,7 @@ int AB_BankInfoPluginGENERIC__AddById(AB_BANKINFO_PLUGIN *bip,
 
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/blz.idx");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "blz.idx");
   f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
   if (!f) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "fopen(%s): %s",
@@ -365,7 +365,7 @@ int AB_BankInfoPluginGENERIC__AddByBic(AB_BANKINFO_PLUGIN *bip,
 
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/bic.idx");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "bic.idx");
   f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
   if (!f) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "fopen(%s): %s",
@@ -438,7 +438,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
 
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/namloc.idx");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "namloc.idx");
   f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
   if (!f) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "fopen(%s): %s",
@@ -609,7 +609,7 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
   /* get path */
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
-  GWEN_Buffer_AppendString(pbuf, "/banks.data");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "banks.data");
   /* open file */
   fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
   if (fd==-1) {

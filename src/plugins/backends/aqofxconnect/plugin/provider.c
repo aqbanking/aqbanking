@@ -16,6 +16,12 @@
 
 #define AO_PROVIDER_HEAVY_DEBUG
 
+#ifndef GWEN_DIR_SEPARATOR_S
+  /* for gwenyhwfar < 2.5.4 */
+# define GWEN_DIR_SEPARATOR '/'
+# define GWEN_DIR_SEPARATOR_S "/"
+#endif
+
 #include "provider_p.h"
 #include "account.h"
 #include "queues_l.h"
@@ -606,17 +612,16 @@ void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
   const char *s;
 
   AB_Provider_GetUserDataDir(pro, nbuf);
-  GWEN_Buffer_AppendString(nbuf, "/banks/");
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S "banks" GWEN_DIR_SEPARATOR_S);
   s=AB_User_GetCountry(u);
   if (!s || !*s)
     s="us";
   GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendByte(nbuf, '/');
+  GWEN_Buffer_AppendByte(nbuf, GWEN_DIR_SEPARATOR);
   s=AB_User_GetBankCode(u);
   assert(s);
   GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendByte(nbuf, '/');
-  GWEN_Buffer_AppendString(nbuf, "/certs");
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S "certs");
 }
 
 
