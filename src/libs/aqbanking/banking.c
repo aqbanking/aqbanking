@@ -3831,6 +3831,9 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
                                  AB_WIZARD_FOLDER
                                  DIRSEP);
         GWEN_Buffer_AppendString(pbuf, name);
+	/* For windows, we need the exe extension as well */
+	if (strlen(EXEEXT) > 0)
+	  GWEN_Buffer_AppendString(pbuf, EXEEXT);
 	GWEN_PluginDescription_List2Iterator_free(pit);
 	GWEN_PluginDescription_List2_freeAll(pl);
 	return 0;
@@ -3881,6 +3884,9 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
                                    AB_WIZARD_FOLDER
                                    DIRSEP);
           GWEN_Buffer_AppendString(pbuf, name);
+	  /* For windows, we need the exe extension as well */
+	  if (strlen(EXEEXT) > 0)
+	    GWEN_Buffer_AppendString(pbuf, EXEEXT);
           free(s);
 	  GWEN_PluginDescription_List2Iterator_free(pit);
 	  GWEN_PluginDescription_List2_freeAll(pl);

@@ -11,6 +11,7 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 # $(datadir) et al are not available.
 localedir=$(datadir)/locale
 DEFS += \
+ -DEXEEXT=\"$(EXEEXT)\" \
  -DLOCALEDIR=\"$(localedir)\" \
  -DAQBANKING_PLUGINS=\"$(aqbanking_plugindir)\" \
  -DAQBANKING_SYSCONF_DIR=\"$(sysconfdir)\" \
