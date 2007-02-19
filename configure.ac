@@ -1836,6 +1836,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/aqmoney2.conf
   src/plugins/imexporters/csv/profiles/comdirect.conf
   src/plugins/imexporters/csv/profiles/mijnpostbank.conf
+  src/plugins/imexporters/csv/profiles/oko.conf
   src/plugins/imexporters/csv/profiles/spk-aachen.conf
   src/plugins/imexporters/csv/profiles/tonline-banking.conf
   src/plugins/imexporters/csv/profiles/test.conf

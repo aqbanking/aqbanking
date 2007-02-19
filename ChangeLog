@@ -2,6 +2,7 @@
 -------------------------------------------------
 - removed dispensable path escaping in AqHBCI (should fix the problem with
   "x:" on windows)
+- added CSV profile for Helsingin OP Pankki (contributed by Fabian Ritzmann)
 
 2007-02-18  Christian Stimming  <stimming@tuhh.de>
 
