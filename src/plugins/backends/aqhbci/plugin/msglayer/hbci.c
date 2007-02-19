@@ -858,8 +858,6 @@ int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
 
 
 int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
-  GWEN_BUFFER *nbuf;
-
   /* check for existence of that file */
   if (GWEN_Directory_GetPath(path,
                              GWEN_PATH_FLAGS_ESCAPE |
@@ -869,28 +867,14 @@ int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
     return -1;
   }
 
-  /* escape path */
-  nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  if (GWEN_Path_Convert(path, nbuf,
-                        GWEN_PATH_FLAGS_CHECKROOT |
-                        GWEN_PATH_FLAGS_ESCAPE |
-                        GWEN_PATH_FLAGS_TOLERANT_ESCAPE |
-                        GWEN_PATH_FLAGS_VARIABLE)) {
-    GWEN_Buffer_free(nbuf);
-    return -1;
-  }
-
   /* write file */
   if (GWEN_DB_WriteFile(db,
-                        GWEN_Buffer_GetStart(nbuf),
-                        GWEN_DB_FLAGS_DEFAULT)) {
+			path,
+			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not write file \"%s\"",
-             GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
+	     "Could not write file \"%s\"", path);
     return -1;
   }
-  GWEN_Buffer_free(nbuf);
 
   return 0;
 }
@@ -898,7 +882,6 @@ int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
 
 
 GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
-  GWEN_BUFFER *nbuf;
   GWEN_DB_NODE *db;
 
   /* check for existence of the file */
@@ -911,31 +894,18 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
     return 0;
   }
 
-  /* escape path */
-  nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  if (GWEN_Path_Convert(path, nbuf,
-                        GWEN_PATH_FLAGS_CHECKROOT |
-                        GWEN_PATH_FLAGS_ESCAPE |
-                        GWEN_PATH_FLAGS_TOLERANT_ESCAPE |
-                        GWEN_PATH_FLAGS_VARIABLE)) {
-    GWEN_Buffer_free(nbuf);
-    return 0;
-  }
-
   /* file exists, load it */
   db=GWEN_DB_Group_new("cfg");
   if (GWEN_DB_ReadFile(db,
-                       GWEN_Buffer_GetStart(nbuf),
-                       GWEN_DB_FLAGS_DEFAULT |
+                       path,
+		       GWEN_DB_FLAGS_DEFAULT |
                        GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not read file \"%s\"",
-             GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
+	     "Could not read file \"%s\"",
+	     path);
     GWEN_DB_Group_free(db);
     return 0;
   }
-  GWEN_Buffer_free(nbuf);
 
   return db;
 }
