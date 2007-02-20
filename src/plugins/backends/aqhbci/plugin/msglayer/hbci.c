@@ -860,8 +860,6 @@ int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
 int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
   /* check for existence of that file */
   if (GWEN_Directory_GetPath(path,
-                             GWEN_PATH_FLAGS_ESCAPE |
-                             GWEN_PATH_FLAGS_TOLERANT_ESCAPE |
                              GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Path \"%s\" is not available", path);
     return -1;
@@ -887,8 +885,6 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
   /* check for existence of the file */
   if (GWEN_Directory_GetPath(path,
                              GWEN_PATH_FLAGS_PATHMUSTEXIST |
-                             GWEN_PATH_FLAGS_ESCAPE |
-                             GWEN_PATH_FLAGS_TOLERANT_ESCAPE |
                              GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Path \"%s\" does not exist", path);
     return 0;
