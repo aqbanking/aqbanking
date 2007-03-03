@@ -1422,6 +1422,51 @@ AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName) {
   return u;
 }
 
+static AB_USER *checkusers_fn(AB_USER *item, void *user_data) {
+  AB_USER *u = user_data;
+  return (item == u) ? item : NULL;
+}
+static AB_ACCOUNT *checkaccounts_fn(AB_ACCOUNT *item, void *user_data) {
+  AB_USER_LIST2 *userlist = AB_Account_GetUsers(item);
+  AB_USER *u = AB_User_List2_ForEach(userlist, checkusers_fn, user_data);
+  AB_User_List2_free(userlist);
+  return u ? item : NULL;
+}
+
+int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u) {
+  int rv;
+  AB_ACCOUNT_LIST2 *acclist;
+  AB_ACCOUNT *acc_rv;
+
+  assert(ab);
+  assert(u);
+
+  acclist = AB_Banking_GetAccounts(ab);
+  acc_rv = AB_Account_List2_ForEach(acclist, checkaccounts_fn, u);
+  AB_Account_List2_free(acclist);
+  if (acc_rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing user: Still belongs to an account (bankcode %s, accountnumber %s). Delete the account first.",
+	      AB_Account_GetBankCode(acc_rv),
+	      AB_Account_GetAccountNumber(acc_rv));
+    return -10;
+  }
+
+  rv = AB_User_List_Del(u);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing user from list (%d)", rv);
+    return rv;
+  }
+
+  rv = AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
+			      AB_ProviderExtendMode_Remove);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of user (%d)", rv);
+    return rv;
+  }
+
+  AB_User_free(u);
+  return 0;
+}
 
 
 int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
@@ -1482,6 +1527,28 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   return 0;
 }
 
+int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
+  int rv;
+
+  assert(ab);
+  assert(a);
+
+  rv = AB_Account_List_Del(a);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing account from list (%d)", rv);
+    return rv;
+  }
+
+  rv = AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+				 AB_ProviderExtendMode_Remove);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of account (%d)", rv);
+    return rv;
+  }
+
+  AB_Account_free(a);
+  return 0;
+}
 
 
 GWEN_TYPE_UINT64 AB_Banking__char2uint64(const char *accountId) {

@@ -1,3 +1,8 @@
+2007-03-03  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking_ob.h: Add functions for DeleteUser
+	and DeleteAccounts.
+
 2007-02-20  Christian Stimming  <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/plugin/msglayer/hbci.c: Really

@@ -90,6 +90,26 @@ AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName);
  */
 AQBANKING_API
 int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u);
+
+/**
+ * Removes the given user from all internal lists and deletes the
+ * object. The caller must not use the AB_USER pointer anymore after
+ * calling this function.
+ *
+ * Watch out: Before this can succeed, this user *must* be removed
+ * from all AB_Accounts that it was added to. Otherwise this operation
+ * will fail. So before you call this operation, make sure you either
+ * removed the user from its accounts, or delete the accounts in
+ * question.
+ *
+ * @returns Zero on success, nonzero on error. In particular, if the
+ * user still belongs to any account, "-10" is returned and no
+ * operation is done.
+ *
+ * New in aqbanking-2.2.9.
+ */
+AQBANKING_API
+int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u);
 /*@}*/
 
 
@@ -205,6 +225,18 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName);
  */
 AQBANKING_API 
 int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a);
+
+/**
+ * Removes the given account from all internal lists and deletes the
+ * object. The caller must not use the AB_ACCOUNT pointer anymore
+ * after calling this function.
+ *
+ * @returns Zero on success, nonzero on error. 
+ *
+ * New in aqbanking-2.2.9.
+ */
+AQBANKING_API
+int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 /*@}*/
 
 
