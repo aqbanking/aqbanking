@@ -1,3 +1,9 @@
+2007-03-04  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking_ob.h: Add function
+	AB_Banking_FindFirstAccountOfUser that exposes the first part of
+	the DeleteUser function.
+
 2007-03-03  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking_ob.h: Add functions for DeleteUser

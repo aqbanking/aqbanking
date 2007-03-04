@@ -92,6 +92,25 @@ AQBANKING_API
 int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u);
 
 /**
+ * Searches all accounts for one that contains the given user. Returns
+ * the first of these accounts, or NULL if this user does not belong
+ * to any account.
+ *
+ * It is a prerequisite of AB_Banking_DeleteUser() that the user must
+ * not belong to any account anymore. Use this function to check
+ * whether this is the case (i.e. this function returns NULL), or if
+ * it is not the case, you know at least one account that this user
+ * still belongs to.
+ *
+ * @return The first account that this user belongs to, or NULL if
+ * this user does not belong to any account.
+ *
+ * New in aqbanking-2.2.9.
+ */
+AQBANKING_API
+AB_ACCOUNT *AB_Banking_FindFirstAccountOfUser(AB_BANKING *ab, AB_USER *u);
+
+/**
  * Removes the given user from all internal lists and deletes the
  * object. The caller must not use the AB_USER pointer anymore after
  * calling this function.

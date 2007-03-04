@@ -1432,18 +1432,27 @@ static AB_ACCOUNT *checkaccounts_fn(AB_ACCOUNT *item, void *user_data) {
   AB_User_List2_free(userlist);
   return u ? item : NULL;
 }
-
-int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u) {
-  int rv;
+AB_ACCOUNT *AB_Banking_FindFirstAccountOfUser(AB_BANKING *ab, AB_USER *u) {
   AB_ACCOUNT_LIST2 *acclist;
-  AB_ACCOUNT *acc_rv;
+  AB_ACCOUNT *result;
 
   assert(ab);
   assert(u);
 
   acclist = AB_Banking_GetAccounts(ab);
-  acc_rv = AB_Account_List2_ForEach(acclist, checkaccounts_fn, u);
+  result = AB_Account_List2_ForEach(acclist, checkaccounts_fn, u);
   AB_Account_List2_free(acclist);
+  return result;
+}
+
+int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u) {
+  int rv;
+  AB_ACCOUNT *acc_rv;
+
+  assert(ab);
+  assert(u);
+
+  acc_rv = AB_Banking_FindFirstAccountOfUser(ab, u);
   if (acc_rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing user: Still belongs to an account (bankcode %s, accountnumber %s). Delete the account first.",
 	      AB_Account_GetBankCode(acc_rv),
