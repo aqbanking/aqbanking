@@ -190,6 +190,34 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
 
 
 void QBCfgTabPageAccounts::slotAccountDel() {
+  std::list<AB_ACCOUNT*> al =
+    _realPage->accountList->getSelectedAccounts();
+  if (al.empty()) {
+    QMessageBox::critical(this,
+                          tr("Selection Error"),
+                          tr("No account selected."),
+                          QMessageBox::Retry,QMessageBox::NoButton);
+    return;
+  }
+  AB_ACCOUNT *a = al.front();
+  int r = QMessageBox::warning(this,
+				tr("Really delete account?"),
+				tr("You are about to delete an accout. This action will "
+				   "take effect immediately and cannot be undone. "
+				   "(You can add the account later again, of course.)\n\n"
+				   "Do you want to delete this account?"),
+				QMessageBox::Yes,QMessageBox::Abort);
+  if (r != 0 && r != QMessageBox::Yes) {
+    return;
+  }
+  int rv = AB_Banking_DeleteAccount(getBanking()->getCInterface(), a);
+  if (rv == 0) {
+    DBG_INFO(0, "Accepted");
+  }
+  else {
+    DBG_INFO(0, "Rejected");
+  }
+  updateView();
 }
 
 

@@ -213,10 +213,51 @@ void QBCfgTabPageUsers::slotUserEdit() {
 
 
 void QBCfgTabPageUsers::slotUserDel() {
-  QMessageBox::critical(this,
-                        tr("Error"),
-                        tr("Not yet supported.\n"),
-                        tr("Dismiss"));
+
+  std::list<AB_USER*> ul =
+    _realPage->userList->getSelectedUsers();
+  if (ul.empty()) {
+    QMessageBox::critical(this,
+                          tr("Selection Error"),
+                          tr("No user selected."),
+                          QMessageBox::Retry,QMessageBox::NoButton);
+    return;
+  }
+
+  AB_USER *u = ul.front();
+  AB_BANKING *ab = getBanking()->getCInterface();
+  AB_ACCOUNT *oneacc = AB_Banking_FindFirstAccountOfUser(ab, u);
+  if (oneacc != NULL) {
+    // FIXME: Instead of this message, the user should be asked
+    // whether that account should be deleted as well, and then
+    // FindFirstAccountOfUser should be queried again until it returns
+    // NULL.
+    QMessageBox::critical(this,
+                          tr("User belongs to an account"),
+                          tr("This user still belongs to an existing account. "
+			     "Please remove the user from the accounts "
+			     "or delete the account first."),
+                          QMessageBox::Retry,QMessageBox::NoButton);
+    return;
+  }
+  int r = QMessageBox::warning(this,
+				tr("Really delete user?"),
+				tr("You are about to delete a user. This action will "
+				   "take effect immediately and cannot be undone. "
+				   "(You can add the user later again, of course.)\n\n"
+				   "Do you want to delete this user?"),
+				QMessageBox::Yes,QMessageBox::Abort);
+  if (r != 0 && r != QMessageBox::Yes) {
+    return;
+  }
+  int rv = AB_Banking_DeleteUser(ab, u);
+  if (rv == 0) {
+    DBG_INFO(0, "Accepted");
+  }
+  else {
+    DBG_INFO(0, "Rejected");
+  }
+  updateView();
 }
 
 

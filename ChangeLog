@@ -1,5 +1,9 @@
 2007-03-04  Christian Stimming  <stimming@tuhh.de>
 
+	* src/frontends/qbanking/lib/dialogs/qbcfgtabpageusers.cpp:
+	Eventually, implement the "Remove" button for accounts and users
+	in the wizard.
+
 	* src/libs/aqbanking/banking_ob.h: Add function
 	AB_Banking_FindFirstAccountOfUser that exposes the first part of
 	the DeleteUser function.
