@@ -1,4 +1,12 @@
+
+===========================================================================
+MARK: released AqBanking - 2.2.9 (r1198, 2007-03-05)
+===========================================================================
+
 2007-03-05  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Increment SO_MAJOR and SO_AGE because of
+	additions.
 
 	* src/libs/aqbanking/types/transactionfns.h: Add convenience
 	function FillLocalFromAccount for easier AB_TRANSACTION
@@ -37,7 +45,7 @@
 
 
 ===========================================================================
-MARK: released AqBanking - 2.2.8 (r1171, 2007-02-12)
+MARK: released AqBanking - 2.2.8 (r1173, 2007-02-12)
 ===========================================================================
 
 2007-02-12   Christian Stimming <stimming@tuhh.de>

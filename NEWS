@@ -1,6 +1,15 @@
 
 ===========================================================================
-               Released AqBanking - 2.2.8 (r1171, 2007-02-12)
+               Released AqBanking - 2.2.9 (r1198, 2007-03-05)
+===========================================================================
+
+This release offers some improvements in the setup wizard, namely the
+account and user removal can now be used. Other than that, several
+windows bugs have been fixed with path separators and wizard path
+lookup. Also, a CSV profile for Helsinging OP Pankki has been added.
+
+===========================================================================
+               Released AqBanking - 2.2.8 (r1173, 2007-02-12)
 ===========================================================================
 
 Minor bugfix release: Fix qt4 porting code and Makefile rules of
