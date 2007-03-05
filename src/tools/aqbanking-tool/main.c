@@ -37,22 +37,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   assert(db);
   t=AB_Transaction_new();
 
-  /* local account */
-  s=AB_Account_GetCountry(a);
-  if (!s || !*s)
-    s="de";
-  AB_Transaction_SetLocalCountry(t, s);
-  AB_Transaction_SetRemoteCountry(t, s);
-
-  s=AB_Account_GetBankCode(a);
-  if (s && *s)
-    AB_Transaction_SetLocalBankCode(t, s);
-  s=AB_Account_GetAccountNumber(a);
-  if (s && *s)
-    AB_Transaction_SetLocalAccountNumber(t, s);
-  s=AB_Account_GetOwnerName(a);
-  if (s && *s)
-    AB_Transaction_SetLocalName(t, s);
+  AB_Transaction_FillLocalFromAccount(t, a);
 
   /* remote account */
   s=GWEN_DB_GetCharValue(db, "remoteBankId", 0, 0);

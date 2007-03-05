@@ -1,3 +1,9 @@
+2007-03-05  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/types/transactionfns.h: Add convenience
+	function FillLocalFromAccount for easier AB_TRANSACTION
+	preparation.
+
 2007-03-04  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/lib/dialogs/qbcfgtabpageusers.cpp:

@@ -116,9 +116,28 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
 }
 
 
+void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
+{
+  const char *s;
 
+  assert(t);
+  assert(a);
 
+  /* local account */
+  s=AB_Account_GetCountry(a);
+  if (!s || !*s)
+    s="de";
+  AB_Transaction_SetLocalCountry(t, s);
+  AB_Transaction_SetRemoteCountry(t, s);
 
-
-
+  s=AB_Account_GetBankCode(a);
+  if (s && *s)
+    AB_Transaction_SetLocalBankCode(t, s);
+  s=AB_Account_GetAccountNumber(a);
+  if (s && *s)
+    AB_Transaction_SetLocalAccountNumber(t, s);
+  s=AB_Account_GetOwnerName(a);
+  if (s && *s)
+    AB_Transaction_SetLocalName(t, s);
+}
 
