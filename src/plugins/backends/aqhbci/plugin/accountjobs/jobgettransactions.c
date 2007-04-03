@@ -333,6 +333,21 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* read noted transactions */
   if (GWEN_Buffer_GetUsedBytes(tnoted)) {
+    if (getenv("AQHBCI_LOGNOTED")) {
+      FILE *f;
+
+      f=fopen("/tmp/noted.mt", "w+");
+      if (f) {
+        if (fwrite(GWEN_Buffer_GetStart(tnoted),
+                   GWEN_Buffer_GetUsedBytes(tnoted), 1, f)!=1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "fwrite: %s", strerror(errno));
+        }
+        if (fclose(f)) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "fclose: %s", strerror(errno));
+        }
+      }
+    }
+
     if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1, tnoted)) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);

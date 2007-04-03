@@ -153,6 +153,9 @@ int main(int argc, char **argv) {
                                   "    Print the INI letter for a given "
                                   "user\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  addaccount:\n"
+                                  "    Manually add account \n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  activate:\n"
                                   "    Activates the AqHBCI backend\n\n"));
     GWEN_Buffer_AppendString(ubuf,
@@ -193,6 +196,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "getaccounts")==0) {
     rv=getAccounts(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "addaccount")==0) {
+    rv=addAccount(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "getsysid")==0) {
     rv=getSysId(ab, db, argc, argv);

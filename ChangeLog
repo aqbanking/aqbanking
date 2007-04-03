@@ -1,4 +1,10 @@
 
+2007/04/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- applied 2 patches from Patrick Prasse: add command "addaccount" to
+  aqhbci-tool and add the ability to log noted MT942 to a file
+
+
 ===========================================================================
 MARK: released AqBanking - 2.2.9 (r1198, 2007-03-05)
 ===========================================================================
