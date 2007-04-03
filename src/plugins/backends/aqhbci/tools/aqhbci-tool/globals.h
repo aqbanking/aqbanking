@@ -57,6 +57,11 @@ int getAccounts(AB_BANKING *ab,
                 int argc,
                 char **argv);
 
+int addAccount(AB_BANKING *ab,
+	       GWEN_DB_NODE *dbArgs,
+	       int argc,
+	       char **argv);
+
 int addMedium(AB_BANKING *ab,
               GWEN_DB_NODE *dbArgs,
               int argc,

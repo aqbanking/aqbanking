@@ -27,9 +27,9 @@
 
 
 int addAccount(AB_BANKING *ab,
-		GWEN_DB_NODE *dbArgs,
-		int argc,
-		char **argv) {
+	       GWEN_DB_NODE *dbArgs,
+	       int argc,
+	       char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AB_USER_LIST2 *ul;
