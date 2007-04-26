@@ -1582,6 +1582,7 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
                                                  const char *bankCode,
                                                  const char *accountId){
   AB_ACCOUNT *a;
+  const char *our_bankCode, *our_accountId;
 
   if ((bankCode == NULL) || (accountId == NULL))
     return NULL;
@@ -1594,12 +1595,15 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
   assert(a);
   while(a) {
     if (bankCode) {
-      if (strcasecmp(AB_Account_GetBankCode(a), bankCode)==0 &&
-          strcasecmp(AB_Account_GetAccountNumber(a), accountId)==0)
+      our_bankCode = AB_Account_GetBankCode(a);
+      our_accountId = AB_Account_GetAccountNumber(a);
+      if (our_bankCode && strcasecmp(our_bankCode, bankCode)==0 &&
+          our_accountId && strcasecmp(our_accountId, accountId)==0)
         break;
     }
     else {
-      if (strcasecmp(AB_Account_GetAccountNumber(a), accountId)==0)
+      our_accountId = AB_Account_GetAccountNumber(a);
+      if (our_accountId && strcasecmp(our_accountId, accountId)==0)
         break;
     }
     a=AB_Account_List_Next(a);
@@ -1618,7 +1622,8 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
         lan=AB_Banking__char2uint64(AB_Account_GetAccountNumber(a));
         if (lan) {
           if (bankCode) {
-            if (strcasecmp(AB_Account_GetBankCode(a), bankCode)==0 &&
+	    our_bankCode = AB_Account_GetBankCode(a);
+            if (our_bankCode && strcasecmp(our_bankCode, bankCode)==0 &&
                 an==lan)
               break;
           }

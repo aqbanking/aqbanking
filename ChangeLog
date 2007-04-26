@@ -1,3 +1,8 @@
+2007-04-26  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Fix crash if account number or
+	bank code was NULL; could happen if the user entered a
+	non-numerical value. Gnucash bug#433594.
 
 2007/04/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
