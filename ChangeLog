@@ -1,8 +1,16 @@
+
+2007/04/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- function AH_Job_CheckEncryption() always returns OK for PIN/TAN mode (since
+  there really isn't anything to check in PIN/TAN mode)
+
+
 2007-04-26  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Fix crash if account number or
 	bank code was NULL; could happen if the user entered a
 	non-numerical value. Gnucash bug#433594.
+
 
 2007/04/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

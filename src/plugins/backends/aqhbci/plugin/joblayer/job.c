@@ -1768,67 +1768,72 @@ void AH_Job_SetExpectedCrypter(AH_JOB *j, const char *s){
 
 
 int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
-  GWEN_DB_NODE *dbSecurity;
-  const char *s;
-
-  assert(j);
-  assert(j->usage);
-  assert(dbRsp);
-  dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                              "security");
-  if (!dbSecurity) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No security settings, should not happen");
-    AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                           0,
-                           AB_Banking_LogLevelError,
-			   I18N("Response without security info (internal)"));
-    return AB_ERROR_SECURITY;
-  }
-
-  s=GWEN_DB_GetCharValue(dbSecurity, "crypter", 0, 0);
-  if (s) {
-    if (*s=='!' || *s=='?') {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Encrypted with invalid key (%s)", s);
-      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                             0,
-                             AB_Banking_LogLevelError,
-                             I18N("Response encrypted with invalid key"));
-      return AB_ERROR_SECURITY;
-    }
-  }
-  if (j->expectedCrypter) {
-    /* check crypter */
-    if (!s) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"Response is not encrypted (but expected to be)");
-      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                             0,
-                             AB_Banking_LogLevelError,
-			     I18N("Response is not encrypted as expected"));
-      return AB_ERROR_SECURITY;
-
-    }
-
-    if (strcasecmp(s, j->expectedCrypter)!=0) {
-      DBG_WARN(AQHBCI_LOGDOMAIN,
-               "Not encrypted with the expected key "
-               "(exp: \"%s\", is: \"%s\"",
-               j->expectedCrypter, s);
-      /*
-      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                             0,
-                             AB_Banking_LogLevelError,
-			     I18N("Response not encrypted with expected key"));
-      return AB_ERROR_SECURITY;
-      */
-    }
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Encrypted as expected");
+  if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking security in PIN/TAN mode");
   }
   else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No encryption expected");
+    GWEN_DB_NODE *dbSecurity;
+    const char *s;
+  
+    assert(j);
+    assert(j->usage);
+    assert(dbRsp);
+    dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+				"security");
+    if (!dbSecurity) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"No security settings, should not happen");
+      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+			     0,
+			     AB_Banking_LogLevelError,
+			     I18N("Response without security info (internal)"));
+      return AB_ERROR_SECURITY;
+    }
+  
+    s=GWEN_DB_GetCharValue(dbSecurity, "crypter", 0, 0);
+    if (s) {
+      if (*s=='!' || *s=='?') {
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+		  "Encrypted with invalid key (%s)", s);
+	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+			       0,
+			       AB_Banking_LogLevelError,
+			       I18N("Response encrypted with invalid key"));
+	return AB_ERROR_SECURITY;
+      }
+    }
+    if (j->expectedCrypter) {
+      /* check crypter */
+      if (!s) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+		  "Response is not encrypted (but expected to be)");
+	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+			       0,
+			       AB_Banking_LogLevelError,
+			       I18N("Response is not encrypted as expected"));
+	return AB_ERROR_SECURITY;
+  
+      }
+  
+      if (strcasecmp(s, j->expectedCrypter)!=0) {
+	DBG_WARN(AQHBCI_LOGDOMAIN,
+		 "Not encrypted with the expected key "
+		 "(exp: \"%s\", is: \"%s\"",
+		 j->expectedCrypter, s);
+	/*
+	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+			       0,
+			       AB_Banking_LogLevelError,
+			       I18N("Response not encrypted with expected key"));
+	return AB_ERROR_SECURITY;
+	*/
+      }
+  
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Encrypted as expected");
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No encryption expected");
+    }
   }
 
   return 0;
