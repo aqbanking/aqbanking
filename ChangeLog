@@ -1,4 +1,10 @@
 
+2007/06/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved evaluation of HBCI status codes for transfer jobs (some banks send
+  17 instead of 10 or 20 in response to a transfer request)
+
+
 2007/04/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - function AH_Job_CheckEncryption() always returns OK for PIN/TAN mode (since
