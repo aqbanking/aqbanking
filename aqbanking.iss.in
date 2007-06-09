@@ -89,6 +89,7 @@ Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "i
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "importerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"
 Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
+Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "wizarddir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\wizards"
 
 Root: HKCU; Subkey: "Software\AqHbci\Paths"; ValueType: string; ValueName: "xmldatadir"; ValueData: "{app}\share\aqhbci\xml"; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\QBanking\Paths"; ValueType: string; ValueName: "cfgmoduledir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\frontends\qbanking\cfgmodules"; Flags: uninsdeletevalue

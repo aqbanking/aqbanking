@@ -24,6 +24,7 @@
 #define AB_BANKING_REGKEY_PROVIDERDIR "providerdir"
 #define AB_BANKING_REGKEY_IMPORTERDIR "importerdir"
 #define AB_BANKING_REGKEY_SYSCONFDIR  "sysconfdir"
+#define AB_BANKING_REGKEY_WIZARDDIR   "wizarddir"
 
 #define AB_BANKING_USERDATADIR ".banking"
 #define AB_WIZARD_FOLDER "wizards"

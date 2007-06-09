@@ -1698,13 +1698,11 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
   /* define sysconf paths */
   GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
-#ifdef OS_WIN32
   GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
                                      AB_PM_LIBNAME,
-                                     AB_PM_DATADIR,
+                                     AB_PM_SYSCONFDIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_SYSCONFDIR);
-#endif
   GWEN_PathManager_AddPath(AB_PM_LIBNAME,
                            AB_PM_LIBNAME,
                            AB_PM_SYSCONFDIR,
@@ -1713,17 +1711,29 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
   /* define data paths */
   GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
-#ifdef OS_WIN32
   GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
                                      AB_PM_LIBNAME,
                                      AB_PM_DATADIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_DATADIR);
-#endif
   GWEN_PathManager_AddPath(AB_PM_LIBNAME,
                            AB_PM_LIBNAME,
                            AB_PM_DATADIR,
                            AQBANKING_DATA_DIR);
+
+  /* define wizard paths */
+  GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
+  GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
+                                     AB_PM_LIBNAME,
+                                     AB_PM_WIZARDDIR,
+                                     AB_BANKING_REGKEY_PATHS,
+                                     AB_BANKING_REGKEY_WIZARDDIR);
+  GWEN_PathManager_AddPath(AB_PM_LIBNAME,
+                           AB_PM_LIBNAME,
+                           AB_PM_WIZARDDIR,
+			   AQBANKING_PLUGINS
+			   DIRSEP
+			   AB_WIZARD_FOLDER);
 
 #ifdef LOCAL_INSTALL
   buf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -2185,6 +2195,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
   GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
+  GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
 
   GWEN_DB_ClearGroup(ab->data, 0);
   GWEN_Logger_Close(AQBANKING_LOGDOMAIN);
@@ -2417,8 +2428,17 @@ int AB_Banking_Save(AB_BANKING *ab) {
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
+  GWEN_PLUGIN_MANAGER *pm;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP AB_PROVIDER_FOLDER);
+  pm = GWEN_PluginManager_FindPluginManager("provider");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "provider");
+    return 0;
+  }
+
+  l = GWEN_PluginManager_GetPluginDescrs(pm);
   if (l) {
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
     GWEN_PLUGIN_DESCRIPTION *pd;
@@ -2445,10 +2465,16 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *wdl;
+  GWEN_STRINGLIST *sl;
+  const char *wizard_folder;
 
-  wdl=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS
-                            DIRSEP
-                            AB_WIZARD_FOLDER);
+  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
+  /* Out of laziness we simply use the first path. */
+  wizard_folder = GWEN_StringList_FirstString(sl);
+
+  wdl=GWEN_LoadPluginDescrs(wizard_folder);
+
+  GWEN_StringList_free(sl);
   return wdl;
 }
 
@@ -3906,11 +3932,16 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 		 "Found a plugin description with no name.");
       }
       else {
-        GWEN_Buffer_AppendString(pbuf,
-                                 AQBANKING_PLUGINS
-                                 DIRSEP
-                                 AB_WIZARD_FOLDER
-                                 DIRSEP);
+	GWEN_STRINGLIST *sl;
+	const char *wizard_folder;
+
+	sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
+	/* Out of laziness we simply use the first path. */
+	wizard_folder = GWEN_StringList_FirstString(sl);
+        GWEN_Buffer_AppendString(pbuf, wizard_folder);
+	GWEN_StringList_free(sl);
+
+        GWEN_Buffer_AppendString(pbuf, DIRSEP);
         GWEN_Buffer_AppendString(pbuf, name);
 	/* For windows, we need the exe extension as well */
 	if (strlen(EXEEXT) > 0)
@@ -3959,11 +3990,17 @@ int AB_Banking_FindWizard(AB_BANKING *ab,
 		   "Found a plugin description with no name");
 	}
 	else {
-          GWEN_Buffer_AppendString(pbuf,
-                                   AQBANKING_PLUGINS
-                                   DIRSEP
-                                   AB_WIZARD_FOLDER
-                                   DIRSEP);
+	  GWEN_STRINGLIST *sl;
+	  const char *wizard_folder;
+
+	  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
+	  /* Out of laziness we simply use the first path. */
+	  wizard_folder = GWEN_StringList_FirstString(sl);
+
+	  GWEN_Buffer_AppendString(pbuf, wizard_folder);
+	  GWEN_StringList_free(sl);
+
+	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
           GWEN_Buffer_AppendString(pbuf, name);
 	  /* For windows, we need the exe extension as well */
 	  if (strlen(EXEEXT) > 0)
