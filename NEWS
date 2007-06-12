@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 2.3.0 (r1240, 2007-06-12)
+===========================================================================
+
+Fix some path lookup issues on MS Windows. Fix a crash with erroneous
+bank codes. Fix check function in PIN/TAN mode. Improved
+aqhbci-tool. Add a function for easier initial setup (hence the
+incremented version number).
+
+===========================================================================
                Released AqBanking - 2.2.9 (r1198, 2007-03-05)
 ===========================================================================
 
