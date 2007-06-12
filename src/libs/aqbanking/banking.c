@@ -4041,6 +4041,38 @@ int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend){
 }
 
 
+void AB_Banking_ActivateAllProviders(AB_BANKING*ab){
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
+  GWEN_PLUGIN_MANAGER *pm;
+
+  pm = GWEN_PluginManager_FindPluginManager("provider");
+  if (!pm) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not find plugin manager for \"%s\"",
+              "provider");
+    return;
+  }
+
+  descrs = GWEN_PluginManager_GetPluginDescrs(pm);
+  if (descrs) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
+    GWEN_PLUGIN_DESCRIPTION *pd;
+
+    it = GWEN_PluginDescription_List2_First(descrs);
+    assert(it);
+    pd = GWEN_PluginDescription_List2Iterator_Data(it);
+    assert(pd);
+    while (pd) {
+      const char *pname = GWEN_PluginDescription_GetName(pd);
+
+      AB_Banking_ActivateProvider(ab, pname);
+
+      pd = GWEN_PluginDescription_List2Iterator_Next(it);
+    } /* while */
+    GWEN_PluginDescription_List2Iterator_free(it);
+    GWEN_PluginDescription_List2_free(descrs);
+  }
+}
 
 void AB_Banking__AddJobDir(const AB_BANKING *ab,
 			   const char *as,

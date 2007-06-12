@@ -1,3 +1,11 @@
+2007-06-12  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: Add function
+	AB_Banking_ActivateAllProviders() that does exactly that. (This
+	function is only meaningful in aqbanking2 but not in aqbanking3
+	because there, all backends will be in the "active" state
+	anyway. Hence, it won't be ported to aqbanking3.)
+
 2007-06-09  Christian Stimming  <stimming@tuhh.de>
 
 	* src/libs/aqbanking/banking.c: Fix wizard path lookup on

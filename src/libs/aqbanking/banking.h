@@ -307,6 +307,11 @@ AQBANKING_API
 int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
 
 
+/** Activates all available providers. New in aqbanking>= 2.2.10. */
+AQBANKING_API
+void AB_Banking_ActivateAllProviders(AB_BANKING*ab);
+
+
 /**
  * This function simpifies wizard handling. It searches for a wizard for
  * the given frontends.
