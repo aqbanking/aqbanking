@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-03-05 21:42+0100\n"
-"PO-Revision-Date: 2007-03-05 21:44+0100\n"
+"PO-Revision-Date: 2007-06-17 13:15+0200\n"
 "Last-Translator: Christian Stimming <stimming@tuhh.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4559,7 +4559,7 @@ msgstr "Deaktivieren"
 
 #: src/frontends/qbanking/lib/dialogs/qbselectbackend.ui.cpp:97
 msgid "Select Backend"
-msgstr "Wählen Sie Banking-Modul (Backend)"
+msgstr "Wählen Sie das Banking-Modul (Backend)"
 
 #: src/frontends/qbanking/lib/dialogs/qbselectbackend.ui.cpp:98
 msgid ""
