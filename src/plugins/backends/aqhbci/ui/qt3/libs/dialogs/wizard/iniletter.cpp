@@ -28,6 +28,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qtextview.h>
+#include <qlabel.h> // for qt4 setWordWrap(true)
 
 
 
@@ -55,6 +56,10 @@ IniLetter::IniLetter(bool isUser,
     connect(goodHashButton, SIGNAL(clicked()), this, SLOT(slotGoodHash()));
     connect(badHashButton, SIGNAL(clicked()), this, SLOT(slotBadHash()));
   }
+#if (QT_VERSION >= 0x040000)
+  // In qt4, QLabel has word-wrap disabled by default
+  textLabel->setWordWrap(true);
+#endif // QT_VERSION >= 4
 }
 
 

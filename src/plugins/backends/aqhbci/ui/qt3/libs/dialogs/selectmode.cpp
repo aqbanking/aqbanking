@@ -19,6 +19,7 @@
 
 #include <qradiobutton.h>
 #include <qtimer.h>
+#include <qlabel.h> // for qt4 setWordWrap(true)
 #include <gwenhywfar/debug.h>
 
 
@@ -30,6 +31,10 @@ SelectMode::SelectMode(QWidget* parent, const char* name,
 ,_mode(ModeUnknown) {
 
   QTimer::singleShot(0, this, SLOT(adjustSize()));
+#if (QT_VERSION >= 0x040000)
+  // In qt4, QLabel has word-wrap disabled by default
+  textLabel1->setWordWrap(true);
+#endif // QT_VERSION >= 4
 }
 
 

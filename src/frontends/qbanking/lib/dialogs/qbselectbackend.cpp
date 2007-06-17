@@ -25,6 +25,7 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qtextbrowser.h>
+#include <qlabel.h> // for qt4 setWordWrap(true)
 
 
 
@@ -76,6 +77,10 @@ QBSelectBackend::QBSelectBackend(QBanking *kb,
   else
     slotActivated(0);
 
+#if (QT_VERSION >= 0x040000)
+  // In qt4, QLabel has word-wrap disabled by default
+  textLabel1->setWordWrap(true);
+#endif // QT_VERSION >= 4
 }
 
 
