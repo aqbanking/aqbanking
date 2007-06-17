@@ -110,7 +110,7 @@ int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
   if (rv) {
-    DBG_INFO(0, "here");
+    DBG_DEBUG(0, "here");
     GWEN_XMLNode_free(xmlNode);
     return -1;
   }
@@ -924,7 +924,7 @@ int QBanking::init(){
   }
 
   /* create cfg module plugin manager */
-  DBG_INFO(0, "Registering cfg module plugin manager");
+  DBG_DEBUG(0, "Registering cfg module plugin manager");
   pm=GWEN_PluginManager_new(QBANKING_PM_CFGMODULE);
   GWEN_PluginManager_AddPathFromWinReg(pm,
                                        QBANKING_REGKEY_PATHS,

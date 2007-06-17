@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
   if (ab->fini()) {
     DBG_ERROR(0, "Error on QBanking::fini");
   }
-  DBG_INFO(0, "QBanking::fini done");
+  DBG_DEBUG(0, "QBanking::fini done");
 
   delete ab;
 
