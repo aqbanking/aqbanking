@@ -1,3 +1,9 @@
+2007-06-17  Christian Stimming  <stimming@tuhh.de>
+
+	* src/frontends/qbanking/lib/qbanking.cpp: Path lookup of i18n
+	files now uses the DATADIR of the aqbanking path manager instead
+	of a hard-coded path.
+
 ===========================================================================
 MARK: released AqBanking - 2.3.0 (r1240, 2007-06-12)
 ===========================================================================

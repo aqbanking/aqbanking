@@ -2,8 +2,6 @@
 
 #include <qapplication.h>
 #include <qmessagebox.h>
-#include <qtranslator.h>
-#include <qtextcodec.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwenhywfar.h>
@@ -14,7 +12,6 @@
 int main(int argc, char *argv[]){
   QApplication a(argc, argv);
   QBanking *qb;
-  QTranslator *translator;
   GWEN_ERRORCODE err;
   int rv;
   const char *s;
@@ -58,19 +55,6 @@ int main(int argc, char *argv[]){
     l=GWEN_Logger_Name2Level(s);
     if (l!=GWEN_LoggerLevelUnknown)
       GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, l);
-  }
-
-  translator=new QTranslator(0);
-  QString pkgdatadir(PKGDATADIR);
-  if (translator->load(QTextCodec::locale()+QString(".qm"),
-                       QString(pkgdatadir + "/" "i18n" "/"))) {
-    DBG_INFO(0, "I18N available for your language");
-    qApp->installTranslator(translator);
-  }
-  else {
-    DBG_WARN(0, "Internationalisation is not available for your language");
-    delete translator;
-    translator=0;
   }
 
   qb=new QBanking("testLib", "testfolder");

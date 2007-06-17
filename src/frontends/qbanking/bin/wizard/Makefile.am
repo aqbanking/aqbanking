@@ -7,8 +7,6 @@ INCLUDES = \
   -I../../lib/widgets -I../../lib/dialogs -I../../lib/views -I../../lib \
   $(qt3_includes) $(all_includes)
 
-DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
-
 EXTRA_DIST = qt3_wizard.xml.in
 
 plugindir = $(aqbanking_plugindir)/wizards

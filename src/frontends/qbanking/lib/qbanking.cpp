@@ -45,9 +45,11 @@
 #include <qtranslator.h>
 #include <qtextcodec.h>
 #include <qprocess.h>
+#include <qdir.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/libloader.h>
+#include <gwenhywfar/pathmanager.h> // for GWEN_PathManager_GetPaths
 
 
 #ifdef OS_WIN32
@@ -851,16 +853,30 @@ int QBanking::init(){
     return rv;
 
   _translator=new QTranslator(0);
-  DBG_DEBUG(0, "PKGDATADIR="PKGDATADIR);
+  QString languageCode = QTextCodec::locale();
+  languageCode.truncate(2);
+
+  GWEN_STRINGLIST *sl =
+    GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_DATADIR);
+  assert(sl);
+  QString datadir(GWEN_StringList_FirstString(sl));
+  GWEN_StringList_free(sl);
+  QDir i18ndir = datadir;
+  if (!i18ndir.exists())
+    DBG_INFO(0, "Datadir %s does not exist.", i18ndir.path().ascii());
+  i18ndir.cd("i18n");
+  if (!i18ndir.exists())
+    DBG_INFO(0, "I18ndir %s does not exist.", i18ndir.path().ascii());
+
   // no need to specify ".qm" suffix; QTranslator tries that itself
-  if (_translator->load(QTextCodec::locale(),
-			QString(PKGDATADIR DIRSEP "i18n"))) {
+  if (_translator->load(languageCode,
+			i18ndir.path())) {
     DBG_DEBUG(0, "I18N available for your language");
     qApp->installTranslator(_translator);
   }
   else {
     DBG_INFO(0, "Internationalisation is not available for your language %s", 
-	     QTextCodec::locale());
+	     languageCode.ascii());
     delete _translator;
     _translator=0;
   }
