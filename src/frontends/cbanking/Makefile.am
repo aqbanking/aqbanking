@@ -43,6 +43,9 @@ libcbanking_la_DEPENDENCIES += ressource.o
 libcbanking_la_LDFLAGS += -Wl,ressource.o
 ressource.o: ressource.rc
 	$(RC) -o $@ $<
+if USE_I18N
+libcbanking_la_LIBADD += -liconv
+endif
 endif
 # IS_WINDOWS
 # End of linker flags for windows resource file
