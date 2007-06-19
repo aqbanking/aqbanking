@@ -12,7 +12,12 @@ found_dir=""
 ls=$1
 ld="$2"
 for li in $ld; do
-    if test -r "$li/$ls"; then
+    case "$build" in
+      *-win32*) fname="$li\\$ls" ;;
+      *)        fname="$li/$ls"  ;;
+    esac
+    
+    if test -r "$fname"; then
         found_dir="$li"
         break
     fi

@@ -1,5 +1,8 @@
 2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
 
+	* m4/searchfiles.m4: When searching for files and choosing the
+	path separator, examine $build instead of $host.
+
 	* m4/os.m4: Replace all target tests by ones for the host system
 	type.  Host and target would only differ if we were about to build
 	a cross-compiler, but using host is more precise nonetheless.
