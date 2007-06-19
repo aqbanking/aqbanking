@@ -1,3 +1,11 @@
+2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
+
+	* m4/os.m4: Replace all target tests by ones for the host system
+	type.  Host and target would only differ if we were about to build
+	a cross-compiler, but using host is more precise nonetheless.
+
+	* configure.ac: Use AC_CANONICAL_BUILD and _HOST, but not _TARGET
+
 2007-06-17  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/lib/qbanking.cpp: Path lookup of i18n

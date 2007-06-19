@@ -15,13 +15,13 @@ dnl     Depending on your system one of the following is defined in addition:
 dnl      OS_LINUX, OS_OPENBSD, OS_FREEBSD, OS_BEOS, OS_WIN32
 
 # check for OS
-AC_MSG_CHECKING([target system type])
+AC_MSG_CHECKING([host system type])
 OSYSTEM=""
 OS_TYPE=""
 MAKE_DLL_TARGET=""
 INSTALL_DLL_TARGET=""
-AC_DEFINE_UNQUOTED(OS_NAME,"$target", [target system])
-case "$target" in
+AC_DEFINE_UNQUOTED(OS_NAME,"$host", [host system])
+case "$host" in
     *-linux*)
 	OSYSTEM="linux"
 	AC_DEFINE(OS_LINUX,1,[if linux is used])
@@ -60,7 +60,7 @@ case "$target" in
         AC_DEFINE_UNQUOTED(BUILDING_DLL,1,[if DLL is to be built])
 	;;
     *)
-	AC_MSG_WARN([Sorry, but target $target is not supported.
+	AC_MSG_WARN([Sorry, but host $host is not supported.
         Please report if it works anyway. We will assume that your system
         is a posix system and continue.])
 	OSYSTEM="unknown"
@@ -69,7 +69,7 @@ case "$target" in
 esac
 
 AC_SUBST(OSYSTEM)
-AC_DEFINE_UNQUOTED(OS_SHORTNAME,"$OSYSTEM",[target system])
+AC_DEFINE_UNQUOTED(OS_SHORTNAME,"$OSYSTEM",[host system])
 AC_SUBST(OS_TYPE)
 AC_DEFINE_UNQUOTED(OS_TYPE,"$OS_TYPE",[system type])
 AC_SUBST(MAKE_DLL_TARGET)
