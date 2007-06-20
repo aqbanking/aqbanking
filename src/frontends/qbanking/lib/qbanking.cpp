@@ -945,15 +945,13 @@ int QBanking::init(){
   // no need to specify ".qm" suffix; QTranslator tries that itself
   if (_translator->load(languageCode,
 			i18ndir.path())) {
-    DBG_DEBUG(0, "I18N available for your language");
-    qApp->installTranslator(_translator);
+    DBG_DEBUG(0, "Qt I18N available for your language");
   }
   else {
-    DBG_INFO(0, "Internationalisation is not available for your language %s", 
+    DBG_INFO(0, "No Qt translation found for your language %s", 
 	     languageCode.ascii());
-    delete _translator;
-    _translator=0;
   }
+  qApp->installTranslator(_translator);
 
   _simpleCallback=new QBSimpleCallback(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
   if (_simpleCallback->registerCallback()) {
