@@ -843,6 +843,75 @@ bool QBanking::interactiveImport(){
 }
 
 
+// ////////////////////////////////////////
+// This part is needed only for qt4, see the explanation at the class.
+#if QT_VERSION >= 0x040000
+
+// These lines copied from aqbanking/i18n_l.h
+#ifdef HAVE_I18N
+# ifdef HAVE_LOCALE_H
+#  include <locale.h>
+# endif
+# ifdef HAVE_LIBINTL_H
+#  include <libintl.h>
+# endif
+# define I18N(msg) dgettext(PACKAGE, msg)
+#else
+# error "no i18n"
+# define I18N(msg) msg
+#endif
+
+/** An override implementation of the default QTranslation behaviour.
+ *
+ * In qt4, the QTranslator will refuse to translate our messages which
+ * have a NULL contextString in the po file. The po file does not have
+ * a notion of "contextString", so there's no way we could provide the
+ * proper context anyway. In qt3, this was accepted by the
+ * QTranslator, but not so in qt4.
+ *
+ * Hence for qt4 we have to override the QTranslator::translate()
+ * method by our own method that additionally looks up strings by
+ * dgettext(). We do this by providing our own derived class of
+ * QTranslator and install that one as translator instead of the
+ * default class.
+ */
+class MyTranslator : public QTranslator {
+public:
+  // Standard constructor
+  MyTranslator(QObject *parent)
+    : QTranslator(parent)
+  {
+  }
+  // Standard destructor
+  ~MyTranslator() { }
+  // This overrides the default translate() method of QTranslator.
+  QString translate ( const char * context, const char * sourceText,
+		      const char * comment = 0 ) const
+  {
+    // First lookup the normal qt translation method.
+    QString result = QTranslator::translate(context, sourceText, comment);
+    //qDebug("Qt Translation: context='%s', sourceText='%s', result='%s'", context, sourceText, result.ascii());
+
+    // Did we get a translation from qt's QTranslator?
+    if (result.isEmpty()) {
+      // No, the normal qt method didn't find anything. Therefore try
+      // dgettext().
+      const char *gtext = I18N(sourceText);
+      // Did gettext find a translation?
+      if (gtext && *gtext && gtext != sourceText) {
+	// Yes, so convert the utf8 gettext string properly to a
+	// QString.
+	result = QString::fromUtf8(gtext);
+	// qDebug("Gettext got translation: sourceText='%s', result='%s'", sourceText, result.toLocal8Bit().data());
+      }
+    }
+    // Returning the resulting translation.
+    return result;
+  }
+};
+#endif // QT_VERSION >= 0x040000
+// ////////////////////////////////////////
+
 
 int QBanking::init(){
   int rv;
@@ -852,7 +921,13 @@ int QBanking::init(){
   if (rv)
     return rv;
 
-  _translator=new QTranslator(0);
+  _translator=new 
+#if QT_VERSION >= 0x040000
+    MyTranslator(0) // In qt4, use our own translation implementation.
+#else
+    QTranslator(0) // In qt3, QTranslator works fine for us.
+#endif
+    ;
   QString languageCode = QTextCodec::locale();
   languageCode.truncate(2);
 

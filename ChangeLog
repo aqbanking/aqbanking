@@ -1,5 +1,9 @@
 2007-06-20  Christian Stimming  <stimming@tuhh.de>
 
+	* src/frontends/qbanking/lib/qbanking.cpp: For qt4 (win32, unix)
+	add and install a QTranslator override class because the standard
+	QTranslator will no longer work for us as desired.
+
 	* src/libs/aqbanking/banking.c: For win32, add registry lookup for
 	locale path.
 
