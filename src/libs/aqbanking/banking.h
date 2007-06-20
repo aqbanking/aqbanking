@@ -49,6 +49,7 @@ typedef struct AB_BANKING AB_BANKING;
 #define AB_PM_SYSCONFDIR "sysconfdir"
 #define AB_PM_DATADIR    "datadir"
 #define AB_PM_WIZARDDIR  "wizarddir"
+#define AB_PM_LOCALEDIR  "localedir"
 
 
 

@@ -1677,24 +1677,46 @@ int AB_Banking_Init(AB_BANKING *ab) {
   else
     GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelNotice);
 
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  s=bindtextdomain(PACKAGE,  LOCALEDIR);
-  if (s) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Locale bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error binding locale");
-  }
-#endif
-
   DBG_INFO(AQBANKING_LOGDOMAIN,
            "AqBanking v"
            AQBANKING_VERSION_FULL_STRING
            " (compiled at "
            COMPILE_DATETIME
            "): initialising");
+
+  /* define locale paths */
+  GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_LOCALEDIR);
+  GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
+                                     AB_PM_LIBNAME,
+                                     AB_PM_LOCALEDIR,
+                                     AB_BANKING_REGKEY_PATHS,
+                                     AB_BANKING_REGKEY_LOCALEDIR);
+  GWEN_PathManager_AddPath(AB_PM_LIBNAME,
+                           AB_PM_LIBNAME,
+                           AB_PM_LOCALEDIR,
+                           LOCALEDIR);
+
+#ifdef HAVE_I18N
+  setlocale(LC_ALL,"");
+  {
+    GWEN_STRINGLIST *sl = 
+      GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_LOCALEDIR);
+    const char *localedir =
+      GWEN_StringList_FirstString(sl);
+
+    s = bindtextdomain(PACKAGE, localedir);
+    if (s) {
+      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Locale bound.");
+      bind_textdomain_codeset(PACKAGE, "UTF-8");
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error binding locale to directory %s",
+		localedir);
+    }
+
+    GWEN_StringList_free(sl);
+  }
+#endif
 
   /* define sysconf paths */
   GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);

@@ -1,3 +1,8 @@
+2007-06-20  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.c: For win32, add registry lookup for
+	locale path.
+
 2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
 
 	* m4/searchfiles.m4: When searching for files and choosing the
