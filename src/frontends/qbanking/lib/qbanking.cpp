@@ -857,7 +857,6 @@ bool QBanking::interactiveImport(){
 # endif
 # define I18N(msg) dgettext(PACKAGE, msg)
 #else
-# error "no i18n"
 # define I18N(msg) msg
 #endif
 
