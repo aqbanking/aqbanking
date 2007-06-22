@@ -1,3 +1,8 @@
+
+===========================================================================
+MARK: released AqBanking - 2.3.1 (r1266, 2007-06-22)
+===========================================================================
+
 2007-06-20  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/lib/qbanking.cpp: For qt4 (win32, unix)
