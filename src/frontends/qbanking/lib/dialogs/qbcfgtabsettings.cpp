@@ -40,7 +40,9 @@ QBCfgTabSettings::QBCfgTabSettings(QBanking *qb,
 :QBCfgTab(qb, parent, name, f) {
   setHelpContext("QBCfgTabSettings");
   setDescription(tr("This dialog allows adjusting the settings of "
-                    "<b>AqBanking</b>."));
+                    "<b>AqBanking</b>. "
+		    "Click \"Users\" and \"New\" to create a new "
+		    "AqBanking user for your Online Banking access."));
   resize(720, 400);
 }
 
