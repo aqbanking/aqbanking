@@ -197,7 +197,7 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
 
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Deinit done");
+  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Deinit done");
 
   if (errors)
     return AB_ERROR_GENERIC;
@@ -524,7 +524,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 
 	if (rj && rj!=uj) {
 	  /* found referenced job, copy status and result text */
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
 		    "Copying status from referenced job");
 	  AB_Job_SetStatus(uj, AB_Job_GetStatus(rj));
 	  AB_Job_SetResultText(uj, AB_Job_GetResultText(rj));
@@ -743,7 +743,7 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
   /* complete address, set address in transport layer */
   GWEN_InetAddr_SetPort(addr, bankPort);
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Port is: %d", bankPort);
+  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Port is: %d", bankPort);
   GWEN_NetLayer_SetPeerAddr(nlBase, addr);
   GWEN_InetAddr_free(addr);
 
@@ -772,7 +772,7 @@ GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
     break;
 
   default:
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
               "Unknown server type %d", addrType);
     return 0;
   } /* switch */
@@ -1232,7 +1232,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 	/* start new context */
         rv=AO_Provider_RequestStatements(pro, uj, ctx);
 	if (rv==AB_ERROR_USER_ABORT) {
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User aborted");
+	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
 	  return rv;
 	}
@@ -1249,7 +1249,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 				      0,
 				      AO_Provider_CountDoneJobs(dp->bankingJobs));
 	if (rv==AB_ERROR_USER_ABORT) {
-	  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User aborted");
+	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
 	  return rv;
 	}

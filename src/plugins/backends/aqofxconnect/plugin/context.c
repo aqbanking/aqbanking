@@ -295,12 +295,12 @@ int AO_Context_StatusCallback(const struct OfxStatusData data,
   pro=AB_User_GetProvider(ctx->user);
   assert(pro);
 
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN,
             "StatusCallback");
 
   if (data.code_valid) {
     if (data.ofx_element_name_valid) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
                 "%s: %d (%s, %s)",
                 data.ofx_element_name,
                 data.code,
@@ -308,7 +308,7 @@ int AO_Context_StatusCallback(const struct OfxStatusData data,
                 data.description);
     }
     else {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
                 "OFX: %d (%s, %s)",
                 data.code,
                 data.name,
@@ -378,7 +378,7 @@ int AO_Context_StatusCallback(const struct OfxStatusData data,
       ctx->lastErrorCode=data.code;
       if (!(data.ofx_element_name_valid &&
             strcasecmp(data.ofx_element_name, "SONRS")!=0)) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+        DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
                   "Will abort user queue");
         ctx->abort=1;
       }
@@ -401,7 +401,7 @@ int AO_Context_AccountCallback(const struct OfxAccountData data,
 
   ctx=(AO_CONTEXT*)user_data;
 
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN,
             "AccountCallback");
 
   ai=AB_ImExporterAccountInfo_new();
@@ -449,7 +449,7 @@ int AO_Context_SecurityCallback(const struct OfxSecurityData data,
   AO_CONTEXT *ctx;
 
   ctx=(AO_CONTEXT*)user_data;
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN,
             "SecurityCallback");
 
   return 0;
@@ -463,12 +463,12 @@ int AO_Context_TransactionCallback(const struct OfxTransactionData data,
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   ctx=(AO_CONTEXT*)user_data;
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN,
             "TransactionCallback");
 
   ai=AO_Context_GetLastAccountInfo(ctx);
   if (!ai) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Transaction but no account. Ignoring");
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Transaction but no account. Ignoring");
     return -1;
   }
   else {
@@ -586,7 +586,7 @@ int AO_Context_TransactionCallback(const struct OfxTransactionData data,
 
     } /* if transaction type is valid */
     else {
-      DBG_NOTICE(AQOFXCONNECT_LOGDOMAIN, "No transaction type");
+      DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "No transaction type");
     }
 
     if (data.server_transaction_id_valid)
@@ -597,7 +597,7 @@ int AO_Context_TransactionCallback(const struct OfxTransactionData data,
     else if (data.reference_number_valid)
       AB_Transaction_SetCustomerReference(t, data.reference_number);
 
-    DBG_INFO(0, "Adding transaction");
+    DBG_DEBUG(0, "Adding transaction");
     AB_ImExporterAccountInfo_AddTransaction(ai, t);
   }
 
@@ -611,11 +611,11 @@ int AO_Context_StatementCallback(const struct OfxStatementData data,
   AO_CONTEXT *ctx;
 
   ctx=(AO_CONTEXT*)user_data;
-  DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN,
             "StatementCallback");
 
   if (ctx->lastAccountInfo==0) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
               "Account statement but no last account info, ignoring");
     return 0;
   }
@@ -661,7 +661,7 @@ int AO_Context_StatementCallback(const struct OfxStatementData data,
       AB_AccountStatus_SetDisposable(ast, v);
       AB_Value_free(v);
     }
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Adding account status");
+    DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Adding account status");
     AB_ImExporterAccountInfo_AddAccountStatus(ctx->lastAccountInfo, ast);
   }
 
@@ -708,7 +708,7 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
         char msg[]=I18N_NOOP("Adding account %s to bank %s");
         char msgbuf[512];
 
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Adding account %s to bank %s",
+        DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Adding account %s to bank %s",
                   accountNumber, bankCode);
 
         /* account does not exist, add it */
@@ -734,7 +734,7 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
         AB_Banking_AddAccount(AB_Provider_GetBanking(pro),a );
       }
       else {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+        DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
                   "Account %s at bank %s already exists",
                   accountNumber, bankCode);
       }
@@ -748,7 +748,7 @@ int AO_Context_ProcessImporterContext(AO_CONTEXT *ctx){
         AB_Account_SetAccountName(a, s);
     }
     else {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+      DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
                 "BankCode or AccountNumber missing (%s/%s)",
                 bankCode, accountNumber);
     }

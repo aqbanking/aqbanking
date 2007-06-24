@@ -1,3 +1,7 @@
+2007-06-24  Christian Stimming  <stimming@tuhh.de>
+
+	* src/plugins/backends/aqofxconnect/plugin/context.c: Make
+	ofxconnect plugin much less verbose during normal operation.
 
 ===========================================================================
 MARK: released AqBanking - 2.3.1 (r1266, 2007-06-22)
