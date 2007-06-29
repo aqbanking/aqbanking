@@ -2215,6 +2215,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     ab->pluginManagerPkgdatadir=0;
   }
 
+  GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_LOCALEDIR);
   GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
   GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
   GWEN_PathManager_UndefinePath(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
