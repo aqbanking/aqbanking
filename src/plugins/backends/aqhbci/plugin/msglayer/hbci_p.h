@@ -16,7 +16,10 @@
 
 #include "hbci_l.h"
 
-#define AH_REGKEY_PATHS       "Software\\AqHbci\\Paths"
+/* Note: We use the key "AqBanking" because from the windows registry
+ * point of view, these plugins all belong to the large AqBanking
+ * package. */
+#define AH_REGKEY_PATHS       "Software\\AqBanking\\Paths"
 #define AH_REGKEY_XMLDATADIR  "xmldatadir"
 
 #define AH_PM_LIBNAME       "aqhbci"

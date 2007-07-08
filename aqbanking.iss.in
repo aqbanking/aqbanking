@@ -45,8 +45,8 @@ Source: "win32-tmp\usr\lib\lib*.la"; DestDir: "{app}\lib"; Components: main
 Source: "win32-tmp\usr\lib\aqbanking\*"; DestDir: "{app}\lib\aqbanking"; Flags: recursesubdirs; Components: main
 
 ; The plugins that belong to gwenhywfar. 
-Source: "win32-tmp\gwen\dbio\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
-Source: "win32-tmp\gwen\crypttoken\*"; DestDir: "{reg:HKCU\Software\Gwenhywfar\Paths,plugindir|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}\crypttoken"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "win32-tmp\gwen\dbio\*"; DestDir: "{reg:HKLM\Software\Gwenhywfar\Paths,dbio-plugins|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "win32-tmp\gwen\crypttoken\*"; DestDir: "{reg:HKLM\Software\Gwenhywfar\Paths,plugindir|{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@}\crypttoken"; Flags: ignoreversion recursesubdirs; Components: main
 
 ; The commandline tools
 Source: "win32-tmp\usr\bin\*.exe"; DestDir: "{app}\bin"; Components: main
@@ -76,24 +76,24 @@ Source: "ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 Type: files; Name: "{app}\bin\*-config"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Define the registry keys Setup should create (HKCU = HKEY_CURRENT_USER)
+; Define the registry keys Setup should create (HKLM = HKEY_LOCAL_MACHINE)
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Registry]
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "importerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "wizarddir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\wizards"
-Root: HKCU; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "importerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "wizarddir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\wizards"
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
 
-Root: HKCU; Subkey: "Software\AqHbci\Paths"; ValueType: string; ValueName: "xmldatadir"; ValueData: "{app}\share\aqhbci\xml"; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "Software\QBanking\Paths"; ValueType: string; ValueName: "cfgmoduledir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\frontends\qbanking\cfgmodules"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\AqHbci\Paths"; ValueType: string; ValueName: "xmldatadir"; ValueData: "{app}\share\aqhbci\xml"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\QBanking\Paths"; ValueType: string; ValueName: "cfgmoduledir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\frontends\qbanking\cfgmodules"; Flags: uninsdeletevalue
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -176,7 +176,7 @@ end;
 
 function InitializeSetup(): Boolean;
 begin
-  Result := Length(ExpandConstant('{reg:HKCU\Software\Gwenhywfar\Paths,prefix|a}')) > 1;
+  Result := Length(ExpandConstant('{reg:HKLM\Software\Gwenhywfar\Paths,prefix|a}')) > 1;
   if Result = False then 
     MsgBox(ExpandConstant('{cm:PrereqNotFound}'), mbInformation, MB_OK);
 end;

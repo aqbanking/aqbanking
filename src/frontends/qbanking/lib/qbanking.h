@@ -15,9 +15,6 @@
 
 
 #define QBANKING_PM_CFGMODULE        "qbanking_cfg_module"
-#define QBANKING_REGKEY_PATHS        "Software\\QBanking\\Paths"
-#define QBANKING_REGKEY_CFGMODULEDIR "cfgmoduledir"
-#define QBANKING_CFGMODULEDIR        "cfgmodules"
 
 
 #include <aqbanking/banking.h>

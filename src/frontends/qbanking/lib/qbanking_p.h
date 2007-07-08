@@ -17,6 +17,12 @@
 #include <aqbanking/banking.h>
 #include "qbanking.h"
 
+/* Note: We use the key "AqBanking" because from the windows registry
+ * point of view, these plugins all belong to the large AqBanking
+ * package. */
+#define QBANKING_REGKEY_PATHS        "Software\\AqBanking\\Paths"
+#define QBANKING_REGKEY_CFGMODULEDIR "cfgmoduledir"
+#define QBANKING_CFGMODULEDIR        "cfgmodules"
 
 #endif /* QBANKING_BANKING_P_H */
 
