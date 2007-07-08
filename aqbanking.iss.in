@@ -79,21 +79,22 @@ Type: files; Name: "{app}\bin\*-config"
 ; Define the registry keys Setup should create (HKLM = HKEY_LOCAL_MACHINE)
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Registry]
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "importerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "wizarddir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\wizards"
-Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
-
-Root: HKLM; Subkey: "Software\AqHbci\Paths"; ValueType: string; ValueName: "xmldatadir"; ValueData: "{app}\share\aqhbci\xml"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\QBanking\Paths"; ValueType: string; ValueName: "cfgmoduledir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\frontends\qbanking\cfgmodules"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking"; ValueType: none; Flags: uninsdeletekeyifempty
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: none; Flags: uninsdeletekeyifempty
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "providerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\providers"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "bankinfodir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\bankinfo"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "imexporterdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "importerdir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\imexporters"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "pkgdatadir"; ValueData: "{app}\share\@PACKAGE@"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "wizarddir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\wizards"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Aqbanking\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\AqBanking\Paths"; ValueType: string; ValueName: "xmldatadir"; ValueData: "{app}\share\aqhbci\xml"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\AqBanking\Paths"; ValueType: string; ValueName: "cfgmoduledir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@AQBANKING_SO_EFFECTIVE@\frontends\qbanking\cfgmodules"; Flags: uninsdeletevalue
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
