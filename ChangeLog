@@ -1,3 +1,9 @@
+2007-08-04  Christian Stimming  <stimming@tuhh.de>
+
+	* src/plugins/parsers/dtaus/dtaus-export.c: Improve error handling
+	of dtaus export as used on debitnotes: Immediately abort when
+	words are too long.
+
 ===========================================================================
 Released aqbanking-2.3.2 (2007-07-08, r1280)
 ===========================================================================

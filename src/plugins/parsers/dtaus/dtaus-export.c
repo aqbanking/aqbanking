@@ -72,8 +72,10 @@ int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
 
   ssize=strlen(s);
   if (ssize>size) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Word too long, chopping it \"%s\" (%d>%d)",
-             s, ssize, size);
+    /* Error out here because e.g. truncated accountid will lead to failed jobs. */
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Word \"%s\" too long: Has length %d but must not be longer than %d characters",
+	      s, ssize, size);
+    return -1;
   }
 
   for (i=0; i<size; i++) {
@@ -107,8 +109,10 @@ int AHB_DTAUS__AddNum(GWEN_BUFFER *dst,
 
   i=strlen(s);
   if (i>size) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Word too long, chopping it");
-    i=size;
+    /* Error out here because e.g. truncated BLZ will lead to failed jobs. */
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Number \"%s\" too long: Has length %d but must not be longer than %d characters",
+	      s, i, size);
+    return -1;
   }
   j=size-i;
   if (j) {
@@ -153,7 +157,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                           GWEN_DB_GetCharValue(cfg,
                                                "bankCode",
                                                0, "0"))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing bankCode to buffer");
     return -1;
   }
 
@@ -165,7 +169,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                          GWEN_DB_GetCharValue(cfg,
                                               "name",
                                               0, "0"))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing name to buffer");
     return -1;
   }
 
@@ -191,7 +195,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "accountid",
                                              0, ""))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing accountid to buffer");
     return -1;
   }
 
@@ -200,7 +204,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
                         GWEN_DB_GetCharValue(cfg,
                                              "custref",
                                              0, "0"))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing custref to buffer");
     return -1;
   }
 
@@ -226,7 +230,7 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
     snprintf(buffer, sizeof(buffer), "%02d%02d%04d", day, month+1, year);
 
     if (AHB_DTAUS__AddWord(dst, 8, buffer)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing execdate to buffer");
       GWEN_Time_free(ti);
       return -1;
     }
