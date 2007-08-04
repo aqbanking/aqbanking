@@ -101,6 +101,9 @@ int chkIban(AB_BANKING *ab,
             int argc,
             char **argv);
 
+AB_BANKINFO_CHECKRESULT accountcheck(AB_BANKING *ab, const char *country,
+				     const char *bankcode, const char *accountid,
+				     int forceCheck);
 
 #endif
 

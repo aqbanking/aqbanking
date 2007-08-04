@@ -302,37 +302,15 @@ int debitNote(AB_BANKING *ab,
         DBG_ERROR(AQT_LOGDOMAIN, "Jobs is not available with this account");
         return 3;
       }
-      res=AB_Banking_CheckAccount(ab,
-                                  AB_Transaction_GetRemoteCountry(t),
-                                  0,
-                                  AB_Transaction_GetRemoteBankCode(t),
-                                  AB_Transaction_GetRemoteAccountNumber(t));
-      switch(res) {
-      case AB_BankInfoCheckResult_NotOk:
-        DBG_ERROR(AQT_LOGDOMAIN,
-                  "Invalid combination of bank code and account number "
-                  "for remote account");
-        return 1;
-
-      case AB_BankInfoCheckResult_UnknownBank:
-        if (forceCheck) {
-          DBG_ERROR(AQT_LOGDOMAIN, "Remote bank code is unknown");
-          return 1;
-        }
-        break;
-      case AB_BankInfoCheckResult_UnknownResult:
-        if (forceCheck) {
-          DBG_ERROR(AQT_LOGDOMAIN,
-                    "Indifferent result for remote account check");
-          return 1;
-        }
-        break;
-      case AB_BankInfoCheckResult_Ok:
-        break;
-      default:
-        DBG_ERROR(AQT_LOGDOMAIN, "Unknown check result %d", res);
-        return 3;
-      }
+      res=accountcheck(ab,
+		       AB_Transaction_GetRemoteCountry(t),
+		       AB_Transaction_GetRemoteBankCode(t),
+		       AB_Transaction_GetRemoteAccountNumber(t),
+		       forceCheck);
+      if (res == AB_BankInfoCheckResult_NotOk
+	  || (forceCheck && (res == AB_BankInfoCheckResult_UnknownBank
+			     || res == AB_BankInfoCheckResult_UnknownResult)))
+	return 1;
 
       rv=AB_JobSingleDebitNote_SetTransaction(j, t);
       if (rv) {
@@ -404,6 +382,41 @@ int debitNote(AB_BANKING *ab,
 
 
 
+AB_BANKINFO_CHECKRESULT accountcheck(AB_BANKING *ab, const char *country,
+				     const char *bankcode, const char *accountid,
+				     int forceCheck)
+{
+  AB_BANKINFO_CHECKRESULT res=
+    AB_Banking_CheckAccount(ab,
+			    country,
+			    0,
+			    bankcode, accountid);
+  switch(res) {
+  case AB_BankInfoCheckResult_NotOk:
+    DBG_ERROR(AQT_LOGDOMAIN,
+	      "Invalid remote bank code and account number: Bank code %s, account %s",
+	      bankcode, accountid);
+    break;
 
-
+  case AB_BankInfoCheckResult_UnknownBank:
+    if (forceCheck) {
+      DBG_ERROR(AQT_LOGDOMAIN, "Remote bank code %s is unknown at account %s",
+		bankcode, accountid);
+    }
+    break;
+  case AB_BankInfoCheckResult_UnknownResult:
+    if (forceCheck) {
+      DBG_ERROR(AQT_LOGDOMAIN,
+		"Indifferent result for remote account check: Bank code %s, account %s",
+		bankcode, accountid);
+    }
+    break;
+  case AB_BankInfoCheckResult_Ok:
+    break;
+  default:
+    DBG_ERROR(AQT_LOGDOMAIN, "Unknown check result %d at Bank code %s, account %s",
+	      res, bankcode, accountid);
+  }
+  return res;
+}
 

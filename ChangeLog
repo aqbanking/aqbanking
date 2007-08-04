@@ -1,5 +1,8 @@
 2007-08-04  Christian Stimming  <stimming@tuhh.de>
 
+	* src/tools/aqbanking-tool/debitnote.c: Add more verbose error
+	message on failed account number check.
+
 	* src/plugins/parsers/dtaus/dtaus-export.c: Improve error handling
 	of dtaus export as used on debitnotes: Immediately abort when
 	words are too long.
