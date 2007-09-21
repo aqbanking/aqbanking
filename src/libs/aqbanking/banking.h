@@ -210,6 +210,7 @@ int AB_Banking_Fini(AB_BANKING *ab);
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab banking interface
  */
+AQBANKING_API
 int AB_Banking_Save(AB_BANKING *ab);
 
 /*@}*/

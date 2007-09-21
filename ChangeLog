@@ -1,3 +1,8 @@
+2007-09-21  Christian Stimming  <stimming@tuhh.de>
+
+	* src/libs/aqbanking/banking.h: Add missing AQBANKING_API at
+	AB_Banking_save.
+
 2007-08-04  Christian Stimming  <stimming@tuhh.de>
 
 	* src/tools/aqbanking-tool/debitnote.c: Add more verbose error
