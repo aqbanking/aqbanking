@@ -1,4 +1,12 @@
 ===========================================================================
+Released aqbanking-2.3.3 (2007-10-15, r1305)
+===========================================================================
+
+Very minor improvements: One windows function signature has been
+fixed. DTAUS export has been improved. Error messages at
+aqbanking-tool have been improved.
+
+===========================================================================
 Released aqbanking-2.3.2 (2007-07-08, r1280)
 ===========================================================================
 
