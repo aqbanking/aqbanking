@@ -17,6 +17,9 @@
 #define AHB_DTAUS_HARDLIMIT (256*1024)
 
 
+#include <aqbanking/value.h>
+
+
 int AHB_DTAUS__ToDTA(int c);
 int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
                        unsigned int size,
@@ -32,24 +35,26 @@ int AHB_DTAUS__CreateSetA(GWEN_BUFFER *dst,
 int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                           GWEN_DB_NODE *cfg,
                           GWEN_DB_NODE *xa,
-                          double *sumEUR,
-                          double *sumDEM,
-                          double *sumBankCodes,
-                          double *sumAccountIds);
+			  AB_VALUE *sumEUR,
+                          AB_VALUE *sumDEM,
+                          AB_VALUE *sumBankCodes,
+                          AB_VALUE *sumAccountIds);
 int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
                           GWEN_DB_NODE *cfg,
                           int csets,
-                          double sumEUR,
-                          double sumDEM,
-                          double sumBankCodes,
-                          double sumAccountIds);
+                          AB_VALUE *sumEUR,
+                          AB_VALUE *sumDEM,
+                          AB_VALUE *sumBankCodes,
+                          AB_VALUE *sumAccountIds);
 
 
 int AHB_DTAUS__Export(GWEN_DBIO *dbio,
-                      GWEN_BUFFEREDIO *bio,
-                      GWEN_TYPE_UINT32 flags,
+		      GWEN_IO_LAYER *io,
                       GWEN_DB_NODE *data,
-                      GWEN_DB_NODE *cfg);
+		      GWEN_DB_NODE *cfg,
+		      uint32_t flags,
+		      uint32_t guiid,
+		      int msecs);
 
 
 

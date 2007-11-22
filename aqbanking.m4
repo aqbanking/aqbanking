@@ -36,6 +36,13 @@ aqbanking_plugins=""
 aqbanking_libs=""
 aqbanking_libspp=""
 aqbanking_includes=""
+
+qbanking_libs=""
+qbanking_plugindir=""
+qbanking_helpdir=""
+
+aqhbci_libs=""
+
 if test "$enable_aqbanking" != "no"; then
   AC_MSG_CHECKING(for aqbanking)
   AC_ARG_WITH(aqbanking-dir, [  --with-aqbanking-dir=DIR
@@ -62,21 +69,51 @@ if test "$enable_aqbanking" != "no"; then
 *** option --with-aqbanking-dir=DIR.])
   else
       AC_MSG_RESULT($aqbanking_dir)
+
       AC_MSG_CHECKING(for aqbanking libs)
       aqbanking_libs="`$aqbanking_dir/bin/aqbanking-config --libraries`"
       AC_MSG_RESULT($aqbanking_libs)
+
       AC_MSG_CHECKING(for aqbanking C++ libs)
       aqbanking_libspp="`$aqbanking_dir/bin/aqbanking-config --libraries++`"
       AC_MSG_RESULT($aqbanking_libspp)
+
       AC_MSG_CHECKING(for aqbanking includes)
       aqbanking_includes="`$aqbanking_dir/bin/aqbanking-config --includes`"
       AC_MSG_RESULT($aqbanking_includes)
+
       AC_MSG_CHECKING(for aqbanking plugins)
       aqbanking_plugins="`$aqbanking_dir/bin/aqbanking-config --plugins`"
       AC_MSG_RESULT($aqbanking_plugins)
+
       AC_MSG_CHECKING(for aqbanking data)
       aqbanking_data="`$aqbanking_dir/bin/aqbanking-config --data`"
       AC_MSG_RESULT($aqbanking_data)
+
+      AC_MSG_CHECKING(whether QBanking is supported)
+      have_qbanking="`$aqbanking_dir/bin/aqbanking-config --has-qbanking`"
+      AC_MSG_RESULT(have_qbanking)
+
+      AC_MSG_CHECKING(for qbanking libs)
+      qbanking_libs="`$aqbanking_dir/bin/aqbanking-config --qbanking-libraries`"
+      AC_MSG_RESULT($aqbanking_libs)
+
+      AC_MSG_CHECKING(for qbanking plugins)
+      qbanking_plugins="`$aqbanking_dir/bin/aqbanking-config --qbanking-plugins`"
+      AC_MSG_RESULT($qbanking_plugins)
+
+      AC_MSG_CHECKING(for qbanking helpdir)
+      qbanking_helpdir="`$aqbanking_dir/bin/aqbanking-config --qbanking-helpdir`"
+      AC_MSG_RESULT($qbanking_helpdir)
+
+      AC_MSG_CHECKING(whether AqHBCI is supported)
+      have_aqhbci="`$aqbanking_dir/bin/aqbanking-config --has-aqhbci`"
+      AC_MSG_RESULT($have_aqhbci)
+
+      AC_MSG_CHECKING(for AqHBCI libs)
+      aqhbci_libs="`$aqbanking_dir/bin/aqbanking-config --aqhbci-libraries`"
+      AC_MSG_RESULT($aqhbci_libs)
+      
   fi
   AC_MSG_CHECKING(if aqbanking test desired)
   AC_ARG_ENABLE(aqbanking,
@@ -116,6 +153,12 @@ if test "$enable_aqbanking" != "no"; then
   fi
 dnl end of "if enable-aqbanking"
 fi
+
+AC_SUBST(aqhbci_libs)
+
+AC_SUBST(qbanking_libs)
+AC_SUBST(qbanking_plugins)
+AC_SUBST(qbanking_helpdir)
 
 AC_SUBST(aqbanking_dir)
 AC_SUBST(aqbanking_plugins)

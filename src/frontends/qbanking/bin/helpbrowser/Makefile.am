@@ -26,9 +26,9 @@ nodist_libqbhelp_la_SOURCES=\
  qbhelpbrowser.ui.cpp
 
 
-bin_PROGRAMS = qb-help
-qb_help_SOURCES = qb_help.cpp
-qb_help_LDADD= libqbhelp.la \
+bin_PROGRAMS = qb-help@QBANKING_SO_EFFECTIVE@
+qb_help@QBANKING_SO_EFFECTIVE@_SOURCES = qb_help.cpp
+qb_help@QBANKING_SO_EFFECTIVE@_LDADD= libqbhelp.la \
   $(qt3_libs) \
   $(gwenhywfar_libs)
 

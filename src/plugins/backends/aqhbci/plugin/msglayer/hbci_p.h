@@ -39,18 +39,16 @@ struct AH_HBCI {
 
   GWEN_XMLNODE *defs;
 
-  AH_MEDIUM_LIST *activeMedia;
-
-  GWEN_TYPE_UINT32 counter;
-  AH_MEDIUM *currentMedium;
-  GWEN_TYPE_UINT32 lastMediumId;
+  uint32_t counter;
 
   GWEN_DB_NODE *sharedRuntimeData;
 
   int transferTimeout;
   int connectTimeout;
 
-  GWEN_TYPE_UINT32 lastVersion;
+  GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
+
+  uint32_t lastVersion;
 
 };
 
@@ -65,12 +63,6 @@ static GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path);
 
 static int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node);
 static GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci);
-
-static int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
-static int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-static int AH_HBCI__AddMedium(AH_HBCI *hbci, AH_MEDIUM *m);
-
 
 #endif /* GWHBCI_HBCI_P_H */
 

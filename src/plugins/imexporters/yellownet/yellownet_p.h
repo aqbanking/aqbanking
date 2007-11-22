@@ -30,10 +30,11 @@ void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p);
 
 int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
                            AB_IMEXPORTER_CONTEXT *ctx,
-                           GWEN_BUFFEREDIO *bio,
-                           GWEN_DB_NODE *params);
+                           GWEN_IO_LAYER *io,
+			   GWEN_DB_NODE *params,
+			   uint32_t guiid);
 
-int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname);
+int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 
 AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,

@@ -20,6 +20,8 @@
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/url.h>
+#include <gwenhywfar/ct.h>
+#include <gwenhywfar/ctplugin.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -83,19 +85,18 @@ int addUser(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   int rv;
+  GWEN_BUFFER *nameBuffer=NULL;
+  const char *tokenName;
+  const char *tokenType;
   const char *bankId;
   const char *userId;
   const char *customerId;
-  AH_MEDIUM *medium=0;
-  int mediumNumber;
   const char *server;
-  const AH_MEDIUM_LIST *ml;
-  int i;
-  int idx;
+  uint32_t cid;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "bankId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -106,7 +107,7 @@ int addUser(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "userId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -117,7 +118,7 @@ int addUser(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "customerId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -128,18 +129,29 @@ int addUser(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
-    "mediumNumber",               /* name */
-    0,                            /* minnum */
+    GWEN_ArgsType_Char,           /* type */
+    "tokenType",                  /* name */
+    1,                            /* minnum */
     1,                            /* maxnum */
-    "m",                          /* short option */
-    "medium",                     /* long option */
-    "Specify the medium number",    /* short description */
-    "Specify the medium number"     /* long description */
+    "t",                          /* short option */
+    "tokentype",                  /* long option */
+    "Specify the crypt token type", /* short description */
+    "Specify the crypt token type"  /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
+    "tokenName",                  /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "n",                          /* short option */
+    "tokenname",                  /* long option */
+    "Specify the crypt token name", /* short description */
+    "Specify the crypt token name"  /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
     "serverAddr",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -150,7 +162,7 @@ int addUser(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "context",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -161,7 +173,7 @@ int addUser(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -185,7 +197,7 @@ int addUser(AB_BANKING *ab,
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -200,139 +212,160 @@ int addUser(AB_BANKING *ab,
     return 2;
   }
 
+  rv=AB_Banking_OnlineInit(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
 
+  tokenType=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
+  tokenName=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   userId=GWEN_DB_GetCharValue(db, "userId", 0, 0);
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
-  mediumNumber=GWEN_DB_GetIntValue(db, "mediumNumber", 0, 0);
+  cid=GWEN_DB_GetIntValue(db, "context", 0, 0);
 
-  ml=AH_Provider_GetMediaList(pro);
-  medium=0;
-  if (ml) {
-    i=mediumNumber;
-    medium=AH_Medium_List_First(ml);
-    while(medium && i--)
-      medium=AH_Medium_List_Next(medium);
-  }
-
-  if (!medium) {
-    DBG_ERROR(0, "Medium number \"%d\" not available", mediumNumber);
-    return 3;
-  }
-
-
-  rv=AH_Medium_Mount(medium);
-  if (rv) {
-    DBG_ERROR(0, "Error mounting medium (%d)", rv);
-    return 3;
-  }
-  idx=GWEN_DB_GetIntValue(db, "context", 0, 0);
-  if (idx<0) {
-    DBG_ERROR(0, "No context given.");
-    return 3;
-  }
-  if (idx>=0) {
-    int country;
-    GWEN_BUFFER *bufBankId;
-    GWEN_BUFFER *bufUserId;
-    GWEN_BUFFER *bufServer;
-    int port;
-    int rv;
-    AB_USER *user;
-    AH_CRYPT_MODE cm;
-    GWEN_URL *url;
-    AH_MEDIUM_CTX *mctx;
+  if (1) {
     const char *lbankId;
     const char *luserId;
     const char *lcustomerId;
     const char *lserverAddr;
-    const GWEN_CRYPTTOKEN_CONTEXT *ctx;
-    const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
-    GWEN_CRYPTTOKEN_CRYPTALGO ca;
+    AH_CRYPT_MODE cm;
+    GWEN_URL *url;
+    GWEN_CRYPT_TOKEN_CONTEXT *ctx=NULL;
+    AB_USER *user;
 
-    bufBankId=GWEN_Buffer_new(0, 32, 0, 1);
-    bufUserId=GWEN_Buffer_new(0, 32, 0, 1);
-    bufServer=GWEN_Buffer_new(0, 32, 0, 1);
-    rv=AH_Medium_ReadContext(medium,
-                             idx,
-                             &country,
-                             bufBankId,
-                             bufUserId,
-                             bufServer,
-                             &port);
-    if (rv) {
-      DBG_ERROR(0, "Error reading context %d from medium", idx);
-      return 3;
+    if (strcasecmp(tokenType, "pintan")==0) {
+      lbankId=bankId;
+      luserId=userId;
+      lcustomerId=customerId?customerId:luserId;
+      lserverAddr=server;
+      cm=AH_CryptMode_Pintan;
+    }
+    else {
+      GWEN_PLUGIN_MANAGER *pm;
+      GWEN_PLUGIN *pl;
+      GWEN_CRYPT_TOKEN *ct;
+      const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
+      const GWEN_CRYPT_TOKEN_KEYINFO *ki;
+      uint32_t keyId;
+      GWEN_CRYPT_CRYPTALGOID algo;
+
+      if (cid==0) {
+	DBG_ERROR(0, "No context given.");
+	return 1;
+      }
+
+      /* get crypt token */
+      pm=GWEN_PluginManager_FindPluginManager("ct");
+      if (pm==0) {
+	DBG_ERROR(0, "Plugin manager not found");
+	return 3;
+      }
+
+      pl=GWEN_PluginManager_GetPlugin(pm, tokenType);
+      if (pl==0) {
+	DBG_ERROR(0, "Plugin not found");
+	return 3;
+      }
+      DBG_INFO(0, "Plugin found");
+
+      ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, tokenName);
+      if (ct==0) {
+	DBG_ERROR(0, "Could not create crypt token");
+	return 3;
+      }
+
+      /* open crypt token */
+      rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+      if (rv) {
+	DBG_ERROR(0, "Could not open token (%d)", rv);
+	return 3;
+      }
+
+      /* get real token name */
+      nameBuffer=GWEN_Buffer_new(0, 64, 0, 1);
+      GWEN_Buffer_AppendString(nameBuffer,
+			       GWEN_Crypt_Token_GetTokenName(ct));
+      tokenName=GWEN_Buffer_GetStart(nameBuffer);
+
+      cctx=GWEN_Crypt_Token_GetContext(ct, cid, 0);
+      if (cctx==NULL) {
+	DBG_ERROR(0, "Context %02x not found", cid);
+	return 3;
+      }
+      ctx=GWEN_Crypt_Token_Context_dup(cctx);
+      lbankId=bankId?bankId:GWEN_Crypt_Token_Context_GetServiceId(ctx);
+
+      luserId=userId?userId:GWEN_Crypt_Token_Context_GetUserId(ctx);
+      lcustomerId=customerId?customerId:luserId;
+
+      lserverAddr=server?server:GWEN_Crypt_Token_Context_GetAddress(ctx);
+
+      /* determine crypt mode */
+      keyId=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+      if (keyId==0)
+	keyId=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
+      if (keyId==0)
+	keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
+      if (keyId==0)
+	keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
+      if (keyId==0) {
+	DBG_ERROR(0, "No keys, unable to determine crypt mode");
+	GWEN_Crypt_Token_Close(ct, 1, 0);
+	return 3;
+      }
+  
+      ki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId, 0xffffffff, 0);
+      if (ki==NULL) {
+	DBG_ERROR(0,
+		  "Could not get keyinfo for key %d, "
+		  "unable to determine crypt mode", keyId);
+	GWEN_Crypt_Token_Close(ct, 1, 0);
+	return 3;
+      }
+
+      rv=GWEN_Crypt_Token_Close(ct, 0, 0);
+      if (rv) {
+	DBG_ERROR(0, "Could not close token (%d)", rv);
+	return 3;
+      }
+
+      algo=GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki);
+      if (algo==GWEN_Crypt_CryptAlgoId_Des3K)
+	cm=AH_CryptMode_Ddv;
+      else if (algo==GWEN_Crypt_CryptAlgoId_Rsa)
+	cm=AH_CryptMode_Rdh;
+      else {
+	DBG_ERROR(0,
+		  "Unexpected crypt algorithm \"%s\", "
+		  "unable to determine crypt mode",
+		  GWEN_Crypt_CryptAlgoId_toString(algo));
+	return 3;
+      }
+
+      GWEN_Crypt_Token_free(ct);
     }
 
-    lbankId=bankId?bankId:GWEN_Buffer_GetStart(bufBankId);
     if (!lbankId || !*lbankId) {
       DBG_ERROR(0, "No bank id stored and none given");
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
       return 3;
     }
-
-    luserId=userId?userId:GWEN_Buffer_GetStart(bufUserId);
     if (!luserId || !*luserId) {
       DBG_ERROR(0, "No user id (Benutzerkennung) stored and none given");
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
       return 3;
     }
-
-    lcustomerId=customerId?customerId:luserId;
 
     user=AB_Banking_FindUser(ab, AH_PROVIDER_NAME,
-                             "de",
-                             lbankId, luserId, lcustomerId);
+			     "de",
+			     lbankId, luserId, lcustomerId);
     if (user) {
       DBG_ERROR(0, "User %s already exists", luserId);
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
       return 3;
-    }
-
-    rv=AH_Medium_SelectContext(medium, idx);
-    if (rv) {
-      DBG_ERROR(0, "Could not select context %d (%d)", idx, rv);
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
-      return 3;
-    }
-
-    mctx=AH_Medium_GetCurrentContext(medium);
-    assert(mctx);
-
-    ctx=AH_MediumCtx_GetTokenContext(mctx);
-    assert(ctx);
-    ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
-    assert(ci);
-    if (strcasecmp(AH_Medium_GetMediumTypeName(medium), "pintan")==0)
-      cm=AH_CryptMode_Pintan;
-    else {
-      ca=GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci);
-      if (ca==GWEN_CryptToken_CryptAlgo_RSA)
-        cm=AH_CryptMode_Rdh;
-      else if (ca==GWEN_CryptToken_CryptAlgo_DES_3K)
-        cm=AH_CryptMode_Ddv;
-      else if (ca==GWEN_CryptToken_CryptAlgo_None)
-        cm=AH_CryptMode_Pintan;
-      else {
-        DBG_ERROR(0, "Invalid crypt algo (%s), unable to detect crypt mode",
-                  GWEN_CryptToken_CryptAlgo_toString(ca));
-        GWEN_Buffer_free(bufServer);
-        GWEN_Buffer_free(bufUserId);
-        GWEN_Buffer_free(bufBankId);
-        return 3;
-      }
     }
 
     user=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);
@@ -342,7 +375,9 @@ int addUser(AB_BANKING *ab,
     AB_User_SetBankCode(user, lbankId);
     AB_User_SetUserId(user, luserId);
     AB_User_SetCustomerId(user, lcustomerId);
-    AH_User_SetContextIdx(user, idx);
+    AH_User_SetTokenType(user, tokenType);
+    AH_User_SetTokenName(user, tokenName);
+    AH_User_SetTokenContextId(user, cid);
     AH_User_SetCryptMode(user, cm);
 
     if (cm==AH_CryptMode_Pintan)
@@ -351,51 +386,61 @@ int addUser(AB_BANKING *ab,
       AH_User_SetHbciVersion(user, 210);
 
     /* try to get server address from database if still unknown */
-    if (!server && GWEN_Buffer_GetUsedBytes(bufServer)==0) {
+    if (!lserverAddr || *lserverAddr==0) {
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       if (getBankUrl(ab,
                      cm,
                      lbankId,
-                     bufServer)) {
-        DBG_INFO(0, "Could not find server address for \"%s\"",
-                 lbankId);
+		     tbuf)) {
+	DBG_INFO(0, "Could not find server address for \"%s\"",
+		 lbankId);
+      }
+      if (GWEN_Buffer_GetUsedBytes(tbuf)==0) {
+	DBG_ERROR(0, "No address given and none available in internal db");
+	return 3;
+      }
+      url=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
+      if (url==NULL) {
+	DBG_ERROR(0, "Bad URL \"%s\" in internal db",
+		  GWEN_Buffer_GetStart(tbuf));
+	return 3;
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+    else {
+      /* set address */
+      url=GWEN_Url_fromString(lserverAddr);
+      if (url==NULL) {
+	DBG_ERROR(0, "Bad URL \"%s\"", lserverAddr);
+	return 3;
       }
     }
-    lserverAddr=server?server:GWEN_Buffer_GetStart(bufServer);
-    if (!lserverAddr || !*lserverAddr) {
-      DBG_ERROR(0, "No address given and none available in internal db");
-      GWEN_Buffer_free(bufServer);
-      GWEN_Buffer_free(bufUserId);
-      GWEN_Buffer_free(bufBankId);
-      return 3;
-    }
 
-    /* set address */
-    url=GWEN_Url_fromString(lserverAddr);
-    assert(url);
     if (cm==AH_CryptMode_Pintan) {
       GWEN_Url_SetProtocol(url, "https");
-      GWEN_Url_SetPort(url, 443);
+      if (GWEN_Url_GetPort(url)==0)
+	GWEN_Url_SetPort(url, 443);
     }
     else {
       GWEN_Url_SetProtocol(url, "hbci");
-      GWEN_Url_SetPort(url, 3000);
+      if (GWEN_Url_GetPort(url)==0)
+	GWEN_Url_SetPort(url, 3000);
     }
     AH_User_SetServerUrl(user, url);
     GWEN_Url_free(url);
 
-    GWEN_Buffer_free(bufServer);
-    GWEN_Buffer_free(bufUserId);
-    GWEN_Buffer_free(bufBankId);
-
     if (cm==AH_CryptMode_Ddv)
       AH_User_SetStatus(user, AH_UserStatusEnabled);
 
-    AH_User_SetMedium(user, medium);
     AB_Banking_AddUser(ab, user);
   }
-  else {
-    DBG_ERROR(0, "Invalid context %d", idx);
-    return 3;
+
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
   }
 
 

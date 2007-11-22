@@ -18,7 +18,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/provider_be.h>
 
-#include <chipcard3/client/card.h>
+#include <chipcard/client/card.h>
 
 
 #ifdef __cplusplus

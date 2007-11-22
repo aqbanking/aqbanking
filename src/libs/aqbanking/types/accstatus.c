@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -67,7 +68,7 @@ AB_ACCOUNT_STATUS *AB_AccountStatus_dup(const AB_ACCOUNT_STATUS *as){
 
 AB_ACCOUNT_STATUS *AB_AccountStatus_fromDb(GWEN_DB_NODE *db){
   AB_ACCOUNT_STATUS *as;
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
   GWEN_DB_NODE *tdb;
 
   GWEN_NEW_OBJECT(AB_ACCOUNT_STATUS, as);

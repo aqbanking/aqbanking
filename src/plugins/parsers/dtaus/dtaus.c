@@ -20,6 +20,8 @@
 #include "dtaus-export_p.h"
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/dbio_be.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

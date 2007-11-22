@@ -17,13 +17,13 @@
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/cgui.h>
 
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/debug.h>
 #include <aqbanking/banking.h>
 
 
-#include <cbanking/cbanking.h>
 #include "globals.h"
 
 
@@ -34,10 +34,11 @@ int main(int argc, char **argv) {
   const char *cmd;
   int rv;
   AB_BANKING *ab;
+  GWEN_GUI *gui;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "cfgfile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -48,7 +49,7 @@ int main(int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -59,17 +60,11 @@ int main(int argc, char **argv) {
   }
   };
 
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  if (bindtextdomain(PACKAGE,  LOCALEDIR)==0)
-    fprintf(stderr, "Error binding locale\n");
-#endif
-
   GWEN_Logger_Open("aqhbci-tool", "aqhbci-tool", 0,
-                   GWEN_LoggerTypeConsole,
-                   GWEN_LoggerFacilityUser);
-  GWEN_Logger_SetLevel("aqhbci-tool", GWEN_LoggerLevelWarning);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
+		   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
+  GWEN_Logger_SetLevel("aqhbci-tool", GWEN_LoggerLevel_Warning);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
@@ -79,7 +74,7 @@ int main(int argc, char **argv) {
 		     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
-    return -1;
+    return 1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
     GWEN_BUFFER *ubuf;
@@ -93,7 +88,7 @@ int main(int argc, char **argv) {
                                   "[LOCAL OPTIONS]\n"));
     GWEN_Buffer_AppendString(ubuf,
                              I18N("\nGlobal Options:\n"));
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -104,14 +99,6 @@ int main(int argc, char **argv) {
                                   "    This command creates an empty PIN "
                                   "file\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-                             I18N("  addmedium:\n"
-                                  "    Makes a crypttoken (medium) known to "
-                                  "AqHBCI\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  listmedia:\n"
-                                  "    Shows the list of currently known "
-                                  "crypttoken (media)\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
                              I18N("  adduser:\n"
                                   "    Adds a user "
                                   "(-> setup HBCI for a bank)\n\n"));
@@ -119,11 +106,11 @@ int main(int argc, char **argv) {
                              I18N("  getkeys:\n"
                                   "    Requests the server's key\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  getcert:\n"
+                                  "    Requests the server's SSL certificate\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  createkeys:\n"
                                   "    Create user keys.\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  resetkeys:\n"
-                                  "    Destroy keys (use with care!!)\n\n"));
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  sendkeys:\n"
                                   "    Send the user keys to the bank.\n\n"));
@@ -155,12 +142,6 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  addaccount:\n"
                                   "    Manually add account \n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  activate:\n"
-                                  "    Activates the AqHBCI backend\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  deactivate:\n"
-                                  "    Deactivates the AqHBCI backend\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
@@ -179,20 +160,18 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  ab=CBanking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0));
-  CBanking_SetCharSet(ab, "ISO-8859-15");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
+  GWEN_Gui_SetGui(gui);
+
+  ab=AB_Banking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0),
+		    0);
 
   if (strcasecmp(cmd, "mkpinlist")==0) {
     rv=mkPinList(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=addUser(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "addmedium")==0) {
-    rv=addMedium(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listmedia")==0) {
-    rv=listMedia(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "getaccounts")==0) {
     rv=getAccounts(ab, db, argc, argv);
@@ -203,14 +182,14 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "getsysid")==0) {
     rv=getSysId(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "getcert")==0) {
+    rv=getCert(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "getkeys")==0) {
     rv=getKeys(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "createkeys")==0) {
     rv=createKeys(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "resetkeys")==0) {
-    rv=resetKeys(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sendkeys")==0) {
     rv=sendKeys(ab, db, argc, argv);
@@ -233,64 +212,7 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "test2")==0) {
-    rv=test2(ab, db, argc, argv);
-  }
 
-  else if (strcasecmp(cmd, "activate")==0) {
-    int res;
-
-    rv=0;
-    res=AB_Banking_Init(ab);
-    if (res) {
-      DBG_ERROR(0, "Error on init (%d)", res);
-      rv=2;
-    }
-    else {
-      res=AB_Banking_ActivateProvider(ab, "aqhbci");
-      if (res) {
-        DBG_ERROR(0, "Error activating HBCI backend (%d)", res);
-        rv=3;
-      }
-      else {
-        res=AB_Banking_Fini(ab);
-        if (res) {
-          DBG_ERROR(0, "Error on fini (%d)", res);
-          rv=5;
-        }
-        else {
-          fprintf(stderr, "Backend AqHBCI activated.\n");
-        }
-      }
-    }
-  }
-  else if (strcasecmp(cmd, "deactivate")==0) {
-    int res;
-
-    rv=0;
-    res=AB_Banking_Init(ab);
-    if (res) {
-      DBG_ERROR(0, "Error on init (%d)", res);
-      rv=2;
-    }
-    else {
-      res=AB_Banking_DeactivateProvider(ab, "aqhbci");
-      if (res) {
-        DBG_ERROR(0, "Error deactivating HBCI backend (%d)", res);
-        rv=3;
-      }
-      else {
-        res=AB_Banking_Fini(ab);
-        if (res) {
-          DBG_ERROR(0, "Error on fini (%d)", res);
-          rv=5;
-        }
-        else {
-          fprintf(stderr, "Backend AqHBCI deactivated.\n");
-        }
-      }
-    }
-  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

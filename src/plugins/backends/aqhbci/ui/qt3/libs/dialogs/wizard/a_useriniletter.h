@@ -17,8 +17,6 @@
 #include "waction.h"
 #include "winfo.h"
 
-#include <gwenhywfar/crypt.h>
-
 
 class IniLetter;
 
@@ -27,7 +25,6 @@ class ActionUserIniLetter: public WizardAction {
   Q_OBJECT
 private:
   IniLetter *_iniLetterDialog;
-  GWEN_CRYPTKEY *_key;
 public:
   ActionUserIniLetter(Wizard *w);
   virtual ~ActionUserIniLetter();

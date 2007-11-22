@@ -51,7 +51,7 @@ bool ActionCreateFile::apply() {
   std::string fname;
   WizardInfo *wInfo;
   AB_PROVIDER *pro;
-  AH_MEDIUM *m;
+  GWEN_CRYPT_TOKEN *ct;
   int rv;
 
   if (!ActionSelectFile::apply())
@@ -66,27 +66,28 @@ bool ActionCreateFile::apply() {
   pro=wInfo->getProvider();
   assert(pro);
 
-  m=AH_Provider_FindMedium(pro, AQHBCI_A_CREATEFILE_CT_TYPE, fname.c_str());
-  if (m) {
-    DBG_ERROR(0, "Medium is already listed");
-    return false;
-  }
+  rv=AH_Provider_GetCryptToken(pro,
+			       wInfo->getMediumType().c_str(),
+			       wInfo->getMediumName().c_str(),
+			       &ct);
 
-  m=AH_Provider_MediumFactory(pro,
-                              AQHBCI_A_CREATEFILE_CT_TYPE, 0,
-                              fname.c_str());
-  assert(m);
-
-  rv=AH_Medium_Create(m);
   if (rv) {
-    DBG_ERROR(0, "Could not create medium (%d)", rv);
-    AH_Medium_free(m);
+    DBG_ERROR(0, "Error creating CryptToken object (%d)", rv);
     return false;
   }
 
-  wInfo->setMedium(m);
+  assert(ct);
+
+  rv=GWEN_Crypt_Token_Create(ct, 0);
+  if (rv) {
+    DBG_ERROR(0, "Error creating CryptToken (%d)", rv);
+    AH_Provider_ClearCryptTokenList(pro);
+    return false;
+  }
+
+  wInfo->setToken(ct);
   wInfo->addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED |
-                  WIZARDINFO_FLAGS_MEDIUM_FILE_CREATED);
+		  WIZARDINFO_FLAGS_MEDIUM_FILE_CREATED);
 
   return true;
 }
@@ -96,8 +97,8 @@ bool ActionCreateFile::apply() {
 bool ActionCreateFile::undo() {
   WizardInfo *wInfo;
   AB_PROVIDER *pro;
-  AH_MEDIUM *m;
   std::string fname;
+  GWEN_CRYPT_TOKEN *ct;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
@@ -108,13 +109,13 @@ bool ActionCreateFile::undo() {
   if (fname.empty())
     return true;
 
-  m=wInfo->getMedium();
-  if (m) {
+  ct=wInfo->getToken();
+  if (ct) {
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
-      AH_Medium_free(m);
+      AH_Provider_ClearCryptTokenList(pro);
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }
-    wInfo->setMedium(0);
+    wInfo->setToken(NULL);
     unlink(fname.c_str());
   }
 

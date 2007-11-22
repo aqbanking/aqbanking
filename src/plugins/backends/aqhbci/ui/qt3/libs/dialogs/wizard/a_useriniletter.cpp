@@ -32,10 +32,10 @@
 
 
 ActionUserIniLetter::ActionUserIniLetter(Wizard *w)
-:WizardAction(w, "UserIniLetter", QWidget::tr("User's Ini Letter"))
-,_key(0) {
+:WizardAction(w, "UserIniLetter", QWidget::tr("User's Ini Letter")){
   _iniLetterDialog=new IniLetter(true,
-                                 this,
+                                 w->getWizardInfo()->getProvider(),
+				 this,
                                  "IniLetterDialog");
   addWidget(_iniLetterDialog);
   _iniLetterDialog->show();
@@ -47,8 +47,6 @@ ActionUserIniLetter::ActionUserIniLetter(Wizard *w)
 
 
 ActionUserIniLetter::~ActionUserIniLetter() {
-  if (_key)
-    GWEN_CryptKey_free(_key);
 }
 
 
@@ -57,65 +55,18 @@ void ActionUserIniLetter::enter() {
   Wizard *w;
   WizardInfo *wi;
   AB_USER *u;
-  AH_MEDIUM *m;
-  int rv;
-  GWEN_CRYPTKEY *key;
-  AB_PROVIDER *pro;
-  const char *s;
-  QString userName;
-  QString userId;
-  QString appName;
 
+  setNextEnabled(false);
   w=getWizard();
   wi=w->getWizardInfo();
   u=wi->getUser();
-  m=wi->getMedium();
-  pro=wi->getProvider();
-  assert(pro);
+  assert(u);
 
-  /* mount medium (if necessary) */
-  if (!AH_Medium_IsMounted(m)) {
-    rv=AH_Medium_Mount(m);
-    if (rv) {
-      DBG_ERROR(0, "Could not mount medium (%d)", rv);
-      setNextEnabled(false);
-      return;
-    }
-  }
-
-  /* select context of the user */
-  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
-  if (rv) {
-    DBG_ERROR(0, "Could not select context (%d)", rv);
-    setNextEnabled(false);
-    return;
-  }
-
-  /* get key */
-  key=AH_Medium_GetLocalPubSignKey(m);
-  assert(key);
-
-  s=AB_User_GetUserName(u);
-  if (s)
-    userName=QString::fromUtf8(s);
-  s=AB_User_GetUserId(u);
-  if (s)
-    userId=QString::fromUtf8(s);
-
-  s=AH_Provider_GetProductName(pro);
-  if (s)
-    appName=QString::fromUtf8(s);
-
-  if (!_iniLetterDialog->init(userName,
-                              userId,
-                              appName,
-                              key)) {
+  if (!_iniLetterDialog->init(u)) {
     DBG_ERROR(0, "Could not init dialog");
-    GWEN_CryptKey_free(key);
     setNextEnabled(false);
     return;
   }
-  _key=key;
   setNextEnabled(true);
 }
 

@@ -20,7 +20,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <aqbanking/transaction.h>
-#include <aqbanking/split.h>
 #include <ctype.h>
 
 
@@ -123,12 +122,12 @@ int AH_ImExporterQIF__GetDate(AB_IMEXPORTER *ie,
       GWEN_Buffer_AppendString(tbuf, " )\n");
       GWEN_Buffer_AppendString(tbuf, I18N(t2h));
 
-      rv=AB_Banking_InputBox(AB_ImExporter_GetBanking(ie),
-                             0,
-                             first?I18N("Enter Date Format"):
-                             I18N("Enter Correct Date Format"),
-                             GWEN_Buffer_GetStart(tbuf),
-			     dfbuf, 4,  sizeof(dfbuf)-1);
+      rv=GWEN_Gui_InputBox(0,
+			   first?I18N("Enter Date Format"):
+			   I18N("Enter Correct Date Format"),
+			   GWEN_Buffer_GetStart(tbuf),
+			   dfbuf, 4,  sizeof(dfbuf)-1,
+			   0);
       GWEN_Buffer_free(tbuf);
       if (rv) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here");
@@ -271,15 +270,15 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
       GWEN_Buffer_AppendString(tbuf, t1h);
       GWEN_Buffer_AppendString(tbuf, paramContent);
       GWEN_Buffer_AppendString(tbuf, t2h);
-      rv=AB_Banking_MessageBox(AB_ImExporter_GetBanking(ie),
-			       AB_BANKING_MSG_FLAGS_TYPE_WARN |
-			       AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL |
-                               AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			       I18N("Value Parsing"),
-			       I18N(GWEN_Buffer_GetStart(tbuf)),
-			       I18N("Possibility 1"),
-			       I18N("Possibility 2"),
-			       0);
+      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			     GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+			     GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+			     I18N("Value Parsing"),
+			     I18N(GWEN_Buffer_GetStart(tbuf)),
+			     I18N("Possibility 1"),
+			     I18N("Possibility 2"),
+			     0,
+			     0);
       GWEN_Buffer_free(tbuf);
       if (rv==1) {
 	fixpoint='.';
@@ -315,23 +314,23 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
     else if (*s!=komma) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Bad character in value string");
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
   }
   if (i>=(int)sizeof(numbuf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Value string too long");
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
   numbuf[i]=0;
 
   if (GWEN_Text_StringToDouble(numbuf, &dval)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Value string does not contain a floating point value.");
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
-  v=AB_Value_new(dval, 0);
+  v=AB_Value_fromDouble(dval);
   *pv=v;
   return 0;
 }
@@ -361,7 +360,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     const char *p;
 
     if (!GWEN_Buffer_GetUsedBytes(buf)) {
-      GWEN_ERRORCODE err;
+      int err;
 
       if (GWEN_BufferedIO_CheckEOF(bio)) {
         done=1;
@@ -369,10 +368,10 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
       }
 
       err=GWEN_BufferedIO_ReadLine2Buffer(bio, buf);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_DB_Group_free(dbData);
-        return AB_ERROR_GENERIC;
+      if (err) {
+	DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+	GWEN_DB_Group_free(dbData);
+	return err;
       }
     }
 
@@ -547,7 +546,6 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
   AB_VALUE *vAmount=0;
   GWEN_DB_NODE *dbCurrentSplit=0;
   AB_TRANSACTION *t=0;
-  GWEN_DB_NODE *dbSplit=0;
 
   assert(ie);
   ieqif=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_QIF, ie);
@@ -558,7 +556,7 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
     const char *p;
 
     if (!GWEN_Buffer_GetUsedBytes(buf)) {
-      GWEN_ERRORCODE err;
+      int err;
 
       if (GWEN_BufferedIO_CheckEOF(bio)) {
         done=1;
@@ -566,10 +564,10 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
       }
 
       err=GWEN_BufferedIO_ReadLine2Buffer(bio, buf);
-      if (!GWEN_Error_IsOk(err)) {
+      if (err) {
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
         GWEN_DB_Group_free(dbData);
-        return AB_ERROR_GENERIC;
+	return err;
       }
     }
 
@@ -695,45 +693,6 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
   if (s)
     AB_Transaction_AddPurpose(t, s, 0);
 
-  dbSplit=GWEN_DB_FindFirstGroup(dbData, "split");
-  while(dbSplit) {
-    AB_SPLIT *sp;
-    AB_VALUE *vSplit=0;
-
-    sp=AB_Split_new();
-    s=GWEN_DB_GetCharValue(dbSplit, "amount", 0, 0);
-    if (s) {
-      int rv;
-
-      rv=AH_ImExporterQIF__GetValue(ie, params,
-                                    "bank/statement/split/amountFormat",
-                                    I18N("Transaction split amount value"),
-                                    s, &vSplit);
-      if (rv) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-        AB_Value_free(vSplit);
-        AB_Split_free(sp);
-        AB_Transaction_free(t);
-        AB_Value_free(vAmount);
-        GWEN_Time_free(ti);
-        GWEN_DB_Group_free(dbData);
-        return rv;
-      }
-    }
-
-    if (vSplit)
-      AB_Split_SetValue(sp, vSplit);
-    AB_Value_free(vSplit);
-    s=GWEN_DB_GetCharValue(dbSplit, "memo", 0, 0);
-    if (s)
-      AB_Split_AddPurpose(sp, s, 0);
-
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding split");
-    AB_Split_List_Add(sp, AB_Transaction_GetSplits(t));
-
-    dbSplit=GWEN_DB_FindNextGroup(dbSplit, "split");
-  } /* while */
-
   DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
   AB_ImExporterAccountInfo_AddTransaction(iea, t);
 
@@ -768,15 +727,15 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
   buf=GWEN_Buffer_new(0, 256, 0, 1);
 
   while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    GWEN_ERRORCODE err;
+    int err;
     const char *p;
     int rv;
 
     err=GWEN_BufferedIO_ReadLine2Buffer(bio, buf);
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
       GWEN_Buffer_free(buf);
-      return AB_ERROR_GENERIC;
+      return err;
     }
     p=GWEN_Buffer_GetStart(buf);
     while(isspace(*p))
@@ -817,7 +776,7 @@ int AH_ImExporterQIF_Export(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
 			    GWEN_BUFFEREDIO *bio,
                             GWEN_DB_NODE *params){
-  return AB_ERROR_NOT_SUPPORTED;
+  return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 

@@ -18,7 +18,7 @@
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
 
@@ -61,9 +61,10 @@ void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p){
 
 
 int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
-                              AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_BUFFEREDIO *bio,
-                              GWEN_DB_NODE *params){
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid){
   AH_IMEXPORTER_DTAUS *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -78,26 +79,30 @@ int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
   rv=GWEN_DBIO_Import(ieh->dbio,
-                      bio,
-                      GWEN_DB_FLAGS_DEFAULT |
-                      GWEN_PATH_FLAGS_CREATE_GROUP,
-                      dbData,
-		      dbSubParams);
+		      io,
+		      dbData,
+		      dbSubParams,
+		      GWEN_DB_FLAGS_DEFAULT |
+		      GWEN_PATH_FLAGS_CREATE_GROUP,
+		      guiid,
+		      2000);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          "Error importing data");
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
 
   /* transform DB to transactions */
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        "Data imported, transforming to transactions");
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+		       "Data imported, transforming to transactions");
   rv=AH_ImExporterDTAUS__ImportFromGroup(ctx, dbData, params);
   if (rv) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          "Error importing data");
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Error,
+			 "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
@@ -147,9 +152,10 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                              "Error in config file");
-        return AB_ERROR_GENERIC;
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     "Error in config file");
+	return GWEN_ERROR_GENERIC;
       }
       if (strcasecmp(GWEN_DB_GroupName(dbT), "debitnote")==0)
         AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
@@ -173,7 +179,7 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
   AH_IMEXPORTER_DTAUS *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -182,12 +188,12 @@ int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   assert(ieh);
   assert(ieh->dbio);
 
-  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
+  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname, guiid, 2000);
   switch(rv) {
   case GWEN_DBIO_CheckFileResultOk:      return 0;
-  case GWEN_DBIO_CheckFileResultNotOk:   return AB_ERROR_BAD_DATA;
-  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_UNKNOWN;
-  default:                               return AB_ERROR_GENERIC;
+  case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
+  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_INDIFFERENT;
+  default:                               return GWEN_ERROR_GENERIC;
   } /* switch */
 }
 

@@ -22,12 +22,11 @@
 #include "user_l.h"
 #include "message_l.h"
 #include "hbci_l.h"
-#include "medium_l.h"
 #include "dialog_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/logger.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
 #include <stdlib.h>
@@ -247,6 +246,10 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
       jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
   }
 
+  /* update maximum security profile */
+  if (AH_Job_GetSecurityProfile(j)>jq->secProfile)
+    jq->secProfile=AH_Job_GetSecurityProfile(j);
+
   /* actually add job to queue */
   AH_Job_List_Add(j, jq->jobs);
   AH_Job_SetStatus(j, AH_JobStatusEnqueued);
@@ -277,7 +280,7 @@ AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq){
 
 
 
-GWEN_TYPE_UINT32 AH_JobQueue_GetMsgNum(const AH_JOBQUEUE *jq){
+uint32_t AH_JobQueue_GetMsgNum(const AH_JOBQUEUE *jq){
   assert(jq);
   assert(jq->usage);
   return jq->msgNum;
@@ -302,6 +305,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
   }
   msg=AH_Msg_new(dlg);
   AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(jq->user));
+  AH_Msg_SetSecurityProfile(msg, jq->secProfile);
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
@@ -316,7 +320,6 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
                     (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
 
   /* copy signers */
-
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
     se=GWEN_StringList_FirstEntry(jq->signers);
     if (!se) {
@@ -325,37 +328,19 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
       return 0;
     }
     while(se) {
-      GWEN_KEYSPEC *ks;
-
-      ks=GWEN_KeySpec_new();
-      GWEN_KeySpec_SetKeyType(ks, "RSA");
-      GWEN_KeySpec_SetOwner(ks, GWEN_StringListEntry_Data(se));
-      GWEN_KeySpec_SetKeyName(ks, "S");
-      GWEN_KeySpec_SetNumber(ks, 999);
-      GWEN_KeySpec_SetVersion(ks, 999);
-      AH_Msg_AddSigner(msg, ks);
-      GWEN_KeySpec_free(ks);
+      AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
   }
 
   /* copy crypter */
   if (jq->flags & AH_JOBQUEUE_FLAGS_CRYPT) {
-    GWEN_KEYSPEC *ks;
+    const char *s;
 
-    ks=GWEN_KeySpec_new();
-    GWEN_KeySpec_SetKeyType(ks, "RSA");
-    /* The name doesn't matter here, since jobs are only used by clients
-     * and the client code for getMedium always uses the name of the dialog
-     * owner instead of the name from the keyspec when retrieving the medium
-     * for encryption.
-     */
-    GWEN_KeySpec_SetOwner(ks, "");
-    GWEN_KeySpec_SetKeyName(ks, "V");
-    GWEN_KeySpec_SetNumber(ks, 999);
-    GWEN_KeySpec_SetVersion(ks, 999);
-    AH_Msg_SetCrypter(msg, ks);
-    GWEN_KeySpec_free(ks);
+    s=AH_User_GetPeerId(jq->user);
+    if (!s)
+      s=AB_User_GetUserId(jq->user);
+    AH_Msg_SetCrypterId(msg, s);
   }
 
   encodedJobs=0;
@@ -480,23 +465,9 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
   while(j) {
     const char *tan;
     AB_USER *u;
-    AH_MEDIUM *m;
 
     u=AH_Job_GetUser(j);
     assert(u);
-    m=AH_User_GetMedium(u);
-    assert(m);
-
-    if (!AH_Medium_IsMounted(m)) {
-      int rv;
-
-      rv=AH_HBCI_GetMedium(AH_Job_GetHbci(j), u, &m);
-      if (rv) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Could not mount medium (%d)", rv);
-        return rv;
-      }
-    }
 
     tan=AH_Job_GetUsedTan(j);
     if (tan) {
@@ -504,13 +475,15 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
 
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_TANUSED) {
         DBG_INFO(AQHBCI_LOGDOMAIN,
-                 "TAN \"%s\" used", tan);
-        rv=AH_Medium_SetTanStatus(m, tan, AB_Banking_TanStatusUsed);
+		 "TAN \"%s\" used", tan);
+	rv=AH_User_SetPinStatus(jq->user, jq->usedPin,
+				GWEN_Gui_PasswordStatus_Used);
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN,
                  "TAN \"%s\" not used", tan);
-        rv=AH_Medium_SetTanStatus(m, tan, AB_Banking_TanStatusUnused);
+	rv=AH_User_SetPinStatus(jq->user, jq->usedPin,
+				GWEN_Gui_PasswordStatus_Unused);
       }
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -531,7 +504,6 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
                                 GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbSecurity;
   GWEN_DB_NODE *dbCurr;
-  const GWEN_KEYSPEC *ks;
   AH_JOB *j;
   AH_DIALOG *dlg;
   const char *p;
@@ -539,6 +511,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   int rv;
   int dialogAborted=0;
   int abortQueue=0;
+  GWEN_STRINGLISTENTRY *se;
 
   assert(jq);
   assert(jq->usage);
@@ -558,12 +531,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       const char *p;
       int isMsgResult;
       GWEN_BUFFER *logmsg;
-      AB_BANKING_LOGLEVEL level;
+      GWEN_LOGGER_LEVEL level;
       GWEN_DB_NODE *dbResult;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found a result");
 
-      level=AB_Banking_LogLevelNotice;
+      level=GWEN_LoggerLevel_Notice;
       isMsgResult=(strcasecmp(GWEN_DB_GroupName(dbCurr),
                               "MsgResult")==0);
 
@@ -575,7 +548,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         if (rcode>=9000 && rcode<10000) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
 		   "Result: Error (%d: %s)", rcode, p);
-	  level=AB_Banking_LogLevelError;
+	  level=GWEN_LoggerLevel_Error;
 	  if (isMsgResult) {
 	    if (rcode==9800)
 	      dialogAborted=1;
@@ -588,11 +561,11 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 		   "Result: Warning (%d: %s)", rcode, p);
           if (rcode==3910)
             tanRecycle=1;
-          level=AB_Banking_LogLevelWarn;
+	  level=GWEN_LoggerLevel_Warning;
         }
         else {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, p);
-          level=AB_Banking_LogLevelNotice;
+          level=GWEN_LoggerLevel_Notice;
         }
 
         logmsg=GWEN_Buffer_new(0, 256, 0, 1);
@@ -621,11 +594,10 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           else
             GWEN_Buffer_AppendString(logmsg, " (S)");
         }
-        AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-                               0,
-                               level,
-                               GWEN_Buffer_GetStart(logmsg));
-        GWEN_Buffer_free(logmsg);
+	GWEN_Gui_ProgressLog(0,
+			     level,
+			     GWEN_Buffer_GetStart(logmsg));
+	GWEN_Buffer_free(logmsg);
         dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
       } /* while results */
     }
@@ -645,34 +617,21 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "dialogId", p);
 
   /* get all signers */
-  ks=GWEN_KeySpec_List_First(AH_Msg_GetSigners(msg));
-  while(ks) {
+  se=GWEN_StringList_FirstEntry(AH_Msg_GetSignerIdList(msg));
+  while(se) {
     const char *p;
 
-    p=GWEN_KeySpec_GetOwner(ks);
-    if (!p) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signer with no name?!");
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
-      GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "signer", p);
-    }
-    ks=GWEN_KeySpec_List_Next(ks);
+    p=GWEN_StringListEntry_Data(se);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
+    GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "signer", p);
+    se=GWEN_StringListEntry_Next(se);
   } /* while */
 
   /* set crypter */
-  ks=AH_Msg_GetCrypter(msg);
-  if (ks) {
-    const char *p;
-
-    p=GWEN_KeySpec_GetOwner(ks);
-    if (!p) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypter with no name?!");
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Storing crypter \"%s\"", p);
-      GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "crypter", p);
-    }
+  p=AH_Msg_GetCrypterId(msg);
+  if (p) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Storing crypter \"%s\"", p);
+    GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "crypter", p);
   }
 
   /* remove attach points of all jobs */
@@ -821,7 +780,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         AH_Job_SetStatus(j, AH_JobStatusAnswered);
       } /* if matching job found */
       else {
-        GWEN_TYPE_UINT32 plusFlags;
+        uint32_t plusFlags;
 
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "No job found, adding response \"%s\" to all jobs",
@@ -861,19 +820,10 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
             if (rcode==9340) {
               DBG_ERROR(AQHBCI_LOGDOMAIN,
                         "Found a segresult: %d", rcode);
-              if (jq->usedPin) {
-                AH_MEDIUM *m;
-
-                DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad pin");
-                m=AH_User_GetMedium(jq->user);
-                assert(m);
-                if (AH_User_GetCryptMode(jq->user)==AH_CryptMode_Pintan) {
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Marking pin as bad");
-                  AH_Medium_SetPinStatus(m,
-                                         jq->usedPin,
-                                         AB_Banking_PinStatusBad);
-                }
-              }
+	      if (jq->usedPin) {
+		AH_User_SetPinStatus(jq->user, jq->usedPin,
+				     GWEN_Gui_PasswordStatus_Bad);
+	      }
             }
             dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
           } /* while */
@@ -900,7 +850,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       }
     }
     else {
-      GWEN_TYPE_UINT32 plusFlags;
+      uint32_t plusFlags;
 
       /* no reference segment number, add response to all jobs and
        * to the queue */
@@ -984,13 +934,13 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   }
   if (dialogAborted) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer");
-    return AB_ERROR_ABORTED;
+    return GWEN_ERROR_ABORTED;
   }
 
   if (abortQueue) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
 	       "Aborting queue");
-    return AB_ERROR_ABORTED;
+    return GWEN_ERROR_ABORTED;
   }
 
   return rv;
@@ -998,7 +948,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
 
 
-GWEN_TYPE_UINT32 AH_JobQueue_GetFlags(AH_JOBQUEUE *jq){
+uint32_t AH_JobQueue_GetFlags(AH_JOBQUEUE *jq){
   assert(jq);
   assert(jq->usage);
   return jq->flags;
@@ -1006,7 +956,7 @@ GWEN_TYPE_UINT32 AH_JobQueue_GetFlags(AH_JOBQUEUE *jq){
 
 
 
-void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
+void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, uint32_t f){
   assert(jq);
   assert(jq->usage);
   jq->flags=f;
@@ -1014,7 +964,7 @@ void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
 
 
 
-void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
+void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, uint32_t f){
   assert(jq);
   assert(jq->usage);
   jq->flags|=f;
@@ -1022,7 +972,7 @@ void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
 
 
 
-void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f){
+void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, uint32_t f){
   assert(jq);
   assert(jq->usage);
   jq->flags&=~f;
@@ -1058,7 +1008,7 @@ void AH_JobQueue_SetJobStatusOnMatch(AH_JOBQUEUE *jq,
 
 
 void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert) {
-  GWEN_TYPE_UINT32 k;
+  uint32_t k;
   AH_JOB *j;
   GWEN_STRINGLISTENTRY *se;
 

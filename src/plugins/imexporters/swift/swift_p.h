@@ -31,15 +31,17 @@ void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p);
 
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_BUFFEREDIO *bio,
-                              GWEN_DB_NODE *params);
+			      GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid);
 
-int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname);
+int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 
 int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
-                                        GWEN_DB_NODE *dbParams);
+					GWEN_DB_NODE *dbParams,
+					uint32_t guiid);
 
 
 #endif /* AQHBCI_IMEX_SWIFT_P_H */

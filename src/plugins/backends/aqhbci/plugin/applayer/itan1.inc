@@ -14,9 +14,9 @@
 
 
 #include "message_l.h"
-#include "medium_l.h"
+#include "user_l.h"
 
-#include <gwenhywfar/md.h>
+#include <gwenhywfar/mdigest.h>
 
 
 
@@ -32,11 +32,10 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_JOB *j;
   AH_JOB *jTan;
   AB_USER *u;
-  AH_MEDIUM *medium;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod=0;
-  GWEN_TYPE_UINT32 fid=0;
-  GWEN_TYPE_UINT32 um=0;
+  uint32_t fid=0;
+  uint32_t um=0;
   GWEN_BUFFER *bHash;
   AH_JOBQUEUE *jq;
   const char *challenge;
@@ -51,9 +50,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   u=AH_Job_GetUser(j);
   assert(u);
 
-  medium=AH_User_GetMedium(u);
-  assert(medium);
-
   um=AH_Dialog_GetItanMethod(dlg);
   assert(um);
 
@@ -63,6 +59,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
   }
+
   /* copy signers */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
     GWEN_STRINGLISTENTRY *se;
@@ -70,7 +67,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     while(se) {
       AH_Job_AddSigner(jTan, GWEN_StringListEntry_Data(se));
@@ -176,9 +173,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+  GWEN_Gui_ProgressLog(
 			 0,
-			 AB_Banking_LogLevelInfo,
+			 GWEN_LoggerLevel_Info,
 			 I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 0);
   rv=AH_Msg_EncodeMsg(msg2);
@@ -225,7 +222,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
 
   /* get challenge */
-  rv=AH_Job_Process(jTan, cbox->outbox->context);
+  rv=AH_Job_Process(jTan, cbox->outbox->context, cbox->guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -239,10 +236,11 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_Medium_InputTanWithChallenge(medium, challenge,
-				       tanBuffer,
-				       1,
-				       sizeof(tanBuffer));
+    rv=AH_User_InputTanWithChallenge(u,
+				     challenge,
+				     tanBuffer,
+				     1,
+				     sizeof(tanBuffer));
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg1);
@@ -257,7 +255,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No challenge received");
     AH_Msg_free(msg1);
     AH_JobQueue_free(jq);
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   AH_JobQueue_free(jq);
@@ -265,9 +263,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   /* now handle the real job */
   /* encode job message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+  GWEN_Gui_ProgressLog(
 			 0,
-			 AB_Banking_LogLevelInfo,
+			 GWEN_LoggerLevel_Info,
 			 I18N("Encoding queue"));
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {

@@ -26,9 +26,11 @@ struct AH_JOB_GETSTANDINGORDERS {
 static void GWENHYWFAR_CB AH_Job_GetStandingOrders_FreeData(void *bp, void *p);
 
 static int AH_Job_GetStandingOrders_Process(AH_JOB *j,
-                                            AB_IMEXPORTER_CONTEXT *ctx);
+					    AB_IMEXPORTER_CONTEXT *ctx,
+					    uint32_t guiid);
 static int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
-                                             AH_JOB_EXCHANGE_MODE m);
+					     AH_JOB_EXCHANGE_MODE m,
+					     uint32_t guiid);
 
 
 #endif /* AH_JOBGETSTANDINGORDERS_P_H */

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -38,66 +39,40 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
     /* prepare first buffer */
     dbT=GWEN_DB_Group_new("transaction");
     if (AB_Transaction_toDb(t1, dbT)==0) {
-      GWEN_BUFFEREDIO *bio;
-      GWEN_ERRORCODE err;
+      int err;
 
       /* remove variables from comparison */
       GWEN_DB_DeleteVar(dbT, "status");
 
-      bio=GWEN_BufferedIO_Buffer2_new(buf1, 0);
-      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-      if (GWEN_DB_WriteToStream(dbT, bio, GWEN_DB_FLAGS_COMPACT)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "INTERNAL: Error writing DB to stream");
-        GWEN_BufferedIO_free(bio);
-        GWEN_Buffer_free(buf0);
-        GWEN_Buffer_free(buf1);
-        GWEN_DB_Group_free(dbT);
-        return -1;
+      err=GWEN_DB_WriteToBuffer(dbT, buf1, GWEN_DB_FLAGS_COMPACT, 0, 2000);
+      if (err) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "INTERNAL: Error writing DB to buffer");
+	GWEN_Buffer_free(buf0);
+	GWEN_Buffer_free(buf1);
+	GWEN_DB_Group_free(dbT);
+	return -1;
       }
-      err=GWEN_BufferedIO_Close(bio);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_BufferedIO_free(bio);
-        GWEN_Buffer_free(buf0);
-        GWEN_Buffer_free(buf1);
-        GWEN_DB_Group_free(dbT);
-        return -1;
-      }
-      GWEN_BufferedIO_free(bio);
     }
     GWEN_DB_Group_free(dbT);
   
     /* prepare second buffer */
     dbT=GWEN_DB_Group_new("transaction");
     if (AB_Transaction_toDb(t0, dbT)==0) {
-      GWEN_BUFFEREDIO *bio;
-      GWEN_ERRORCODE err;
-  
+      int err;
+
       /* remove variables from comparison */
       GWEN_DB_DeleteVar(dbT, "status");
 
-      bio=GWEN_BufferedIO_Buffer2_new(buf0, 0);
-      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-      if (GWEN_DB_WriteToStream(dbT, bio, GWEN_DB_FLAGS_COMPACT)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "INTERNAL: Error writing DB to stream");
-        GWEN_BufferedIO_free(bio);
-        GWEN_Buffer_free(buf0);
-        GWEN_Buffer_free(buf1);
-        GWEN_DB_Group_free(dbT);
-        return -1;
+      err=GWEN_DB_WriteToBuffer(dbT, buf0, GWEN_DB_FLAGS_COMPACT, 0, 2000);
+      if (err) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "INTERNAL: Error writing DB to buffer");
+	GWEN_Buffer_free(buf0);
+	GWEN_Buffer_free(buf1);
+	GWEN_DB_Group_free(dbT);
+	return -1;
       }
-      err=GWEN_BufferedIO_Close(bio);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        GWEN_BufferedIO_free(bio);
-        GWEN_Buffer_free(buf0);
-        GWEN_Buffer_free(buf1);
-        GWEN_DB_Group_free(dbT);
-        return -1;
-      }
-      GWEN_BufferedIO_free(bio);
     }
     GWEN_DB_Group_free(dbT);
   

@@ -25,7 +25,11 @@ struct AO_CONTEXT {
 
   LibofxContextPtr ofxctx;
   struct OfxFiLogin *fi;
+#ifdef LIBOFX_GT_0_8_4
+  struct OfxAccountData *ai;
+#else
   struct OfxAccountInfo *ai;
+#endif
 
   AB_IMEXPORTER_ACCOUNTINFO *lastAccountInfo;
   int lastErrorCode;

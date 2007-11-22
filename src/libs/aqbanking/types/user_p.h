@@ -13,14 +13,14 @@ struct AB_USER {
   int _usage;
   int _modified;
 
-  GWEN_TYPE_UINT32 uniqueId;
+  uint32_t uniqueId;
   char *backendName;
   char *userName;
   char *userId;
   char *customerId;
   char *country;
   char *bankCode;
-  GWEN_TYPE_UINT32 lastSessionId;
+  uint32_t lastSessionId;
   GWEN_DB_NODE *data;
   AB_BANKING *banking;
 };

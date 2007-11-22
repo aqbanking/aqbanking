@@ -15,11 +15,11 @@
 int main(int argc, char *argv[]){
   QApplication a(argc, argv);
   QBanking *qb;
-  GWEN_ERRORCODE err;
+  int err;
   int rv;
 
   err=GWEN_Init();
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     return 2;
   }
@@ -35,11 +35,18 @@ int main(int argc, char *argv[]){
   if (rv) {
     qFatal("Error on QBanking::init: %d", rv);
   } 
+  rv=qb->onlineInit();
+  if (rv) {
+    qFatal("Error on AB_Banking::onlineInit: %d", rv);
+  } 
   // else qDebug("QBanking::init successful.");
 
   // maybe insert QBanking testcases here...
 
   // and delete it again
+  if (qb->onlineFini()) {
+    qFatal("Error on AB_Banking::onlineFini: %d", rv);
+  }
   if (qb->fini()) {
     qFatal("Error on QBanking::fini: %d", rv);
   }
@@ -48,7 +55,7 @@ int main(int argc, char *argv[]){
   // Remove the test directory again
   QDir testdir(testfolder);
   if ( !testdir.exists() )
-    qFatal("Error: Testfolder \"%s\" did not exist", testfolder);
+    qFatal("Error: Testfolder \"%s\" was not created by aqbanking", testfolder);
   // count() returns the number of files, including the
   // directory entries "." and ".."
   if ( testdir.count() != 3 )

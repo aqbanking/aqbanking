@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -46,7 +47,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab);
 /**
  * Loads an importer/exporter backend with the given name. You can use
  * @ref AB_Banking_GetImExporterDescrs to retrieve a list of available
- * backends.
+ * im-/exporters.
  * AqBanking remains the owner of the object returned (if any), so you
  * <b>must not</b> free it.
  */
@@ -60,7 +61,9 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
  * </p>
  * <p>
  * Local profiles overwrite global ones, allowing the user to customize the
- * profiles.
+ * profiles. Local profiles are expected in a folder below the user
+ * local folder (e.g. "$HOME/.banking"). The local profile folder for the
+ * CSV plugin is in "$HOME/.banking/imexporters/csv/profiles".
  * </p>
  * <p>
  * The GWEN_DB returned contains one group for every loaded profile. Every

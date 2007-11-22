@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -21,7 +22,7 @@
 
 
 
-GWEN_TYPE_UINT32 AB_Banking_GetUniqueId(AB_BANKING *ab);
+uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 /**
  * This copies the name of the folder for AqBanking's backend data into
@@ -44,6 +45,8 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
 GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
                                          AB_PROVIDER *pro);
 
+
+int AB_Banking_IsOnlineInit(const AB_BANKING *ab);
 
 
 #endif /* AQBANKING_BANKING_L_H */

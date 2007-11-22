@@ -64,7 +64,7 @@
          terminator="'" 
  >
    <GROUP type="SegHead" name="head" />
-   <Group type="TransferBase" version="2" />
+   <Group type="TransferBase" version="2" name="transaction"/>
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>

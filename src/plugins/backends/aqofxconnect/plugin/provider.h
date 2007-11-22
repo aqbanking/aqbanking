@@ -31,7 +31,8 @@ typedef struct AO_PROVIDER AO_PROVIDER;
 AQOFXCONNECT_API AB_PROVIDER *AO_Provider_new(AB_BANKING *ab);
 
 AQOFXCONNECT_API int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-                                                 AB_USER *u);
+						 AB_USER *u,
+						 uint32_t guiid);
 
 #ifdef __cplusplus
 }

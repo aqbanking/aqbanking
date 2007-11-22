@@ -30,7 +30,9 @@
 int resetKeys(AB_BANKING *ab,
               GWEN_DB_NODE *dbArgs,
               int argc,
-              char **argv) {
+	      char **argv) {
+#warning "TODO"
+#if 0
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AB_USER_LIST2 *ul;
@@ -42,7 +44,7 @@ int resetKeys(AB_BANKING *ab,
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "bankId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -53,7 +55,7 @@ int resetKeys(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "customerId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -64,7 +66,7 @@ int resetKeys(AB_BANKING *ab,
   },
   {
     0, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "userKeys",                   /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -75,7 +77,7 @@ int resetKeys(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -99,7 +101,7 @@ int resetKeys(AB_BANKING *ab,
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -109,6 +111,12 @@ int resetKeys(AB_BANKING *ab,
   }
 
   rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -157,10 +165,10 @@ int resetKeys(AB_BANKING *ab,
       return 3;
     }
 
-    rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
+    rv=AH_Medium_SelectContext(m, AH_User_GetContextId(u));
     if (rv) {
       DBG_ERROR(0, "Could not select context %d (%d)",
-                AH_User_GetContextIdx(u), rv);
+                AH_User_GetContextId(u), rv);
       AB_Banking_Fini(ab);
       return 3;
     }
@@ -185,12 +193,19 @@ int resetKeys(AB_BANKING *ab,
   }
 
 
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
+  }
+
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;
   }
 
+#endif
   return 0;
 }
 

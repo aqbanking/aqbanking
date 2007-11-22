@@ -61,16 +61,22 @@ void ActionSelectFile::slotFileButtonClicked() {
   QString filename;
   QString title;
 
-  if (_mustExist)
+  if (_mustExist) {
     title=tr("Enter existing medium file name");
-  else
+    filename=QFileDialog::getOpenFileName(_realDialog->fileNameEdit->text(),
+					  QString::null,
+					  this,
+					  "slotFileButtonClicked",
+					  title);
+  }
+  else {
     title=tr("Enter new medium file name");
-
-  filename=QFileDialog::getSaveFileName(_realDialog->fileNameEdit->text(),
-                                        QString::null,
-                                        this,
-                                        "slotFileButtonClicked",
-                                        title);
+    filename=QFileDialog::getSaveFileName(_realDialog->fileNameEdit->text(),
+					  QString::null,
+					  this,
+					  "slotFileButtonClicked",
+					  title);
+  }
   if (!filename.isEmpty())
     _realDialog->fileNameEdit->setText(filename);
 }
@@ -108,6 +114,8 @@ bool ActionSelectFile::apply() {
   if (s.empty())
     return false;
   getWizard()->getWizardInfo()->setMediumName(s);
+  if (!_mustExist)
+    getWizard()->getWizardInfo()->setMediumType("ohbci");
   return true;
 }
 

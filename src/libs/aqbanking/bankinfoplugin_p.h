@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -22,7 +23,7 @@
 struct AB_BANKINFO_PLUGIN {
   GWEN_INHERIT_ELEMENT(AB_BANKINFO_PLUGIN);
   GWEN_LIST_ELEMENT(AB_BANKINFO_PLUGIN);
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
 
   char *country;
 

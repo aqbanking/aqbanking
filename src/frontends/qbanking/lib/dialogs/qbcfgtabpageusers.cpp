@@ -158,7 +158,6 @@ void QBCfgTabPageUsers::slotUserNew() {
         }
         else {
           DBG_NOTICE(0, "User created");
-          getCfgTab()->updateViews();
         }
       }
       else {
@@ -183,6 +182,7 @@ void QBCfgTabPageUsers::slotUserNew() {
                 s.c_str());
     }
     updateView();
+    emit signalUpdate();
   }
 }
 
@@ -208,6 +208,7 @@ void QBCfgTabPageUsers::slotUserEdit() {
     DBG_INFO(0, "Rejected");
   }
   updateView();
+  emit signalUpdate();
 }
 
 
@@ -257,6 +258,7 @@ void QBCfgTabPageUsers::slotUserDel() {
   else {
     DBG_INFO(0, "Rejected");
   }
+  emit signalUpdate();
   updateView();
 }
 
@@ -264,6 +266,13 @@ void QBCfgTabPageUsers::slotUserDel() {
 
 void QBCfgTabPageUsers::updateView() {
   _userRescan();
+}
+
+
+
+void QBCfgTabPageUsers::slotUpdate() {
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating users view");
+  updateView();
 }
 
 

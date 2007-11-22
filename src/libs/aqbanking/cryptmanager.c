@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -21,6 +22,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/gui.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -45,12 +47,6 @@ GWEN_PLUGIN_MANAGER *AB_CryptManager_new(AB_BANKING *ab) {
   /* set virtual functions */
   GWEN_CryptManager_SetGetPinFn(cm, AB_CryptManager_GetPin);
   GWEN_CryptManager_SetSetPinStatusFn(cm, AB_CryptManager_SetPinStatus);
-  GWEN_CryptManager_SetBeginEnterPinFn(cm, AB_CryptManager_BeginEnterPin);
-  GWEN_CryptManager_SetEndEnterPinFn(cm, AB_CryptManager_EndEnterPin);
-  GWEN_CryptManager_SetInsertTokenFn(cm, AB_CryptManager_InsertToken);
-  GWEN_CryptManager_SetInsertCorrectTokenFn(cm,
-					    AB_CryptManager_InsertCorrectToken);
-  GWEN_CryptManager_SetShowMessageFn(cm, AB_CryptManager_ShowMessage);
 
   return cm;
 }
@@ -70,7 +66,7 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                            GWEN_CRYPTTOKEN *token,
                            GWEN_CRYPTTOKEN_PINTYPE pt,
 			   GWEN_CRYPTTOKEN_PINENCODING pe,
-			   GWEN_TYPE_UINT32 flags,
+			   uint32_t flags,
                            unsigned char *pwbuffer,
                            unsigned int minLength,
                            unsigned int maxLength,
@@ -83,7 +79,7 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   const char *numeric_warning = "";
   char buffer[512];
   char *notunsigned_pwbuffer;
-  GWEN_TYPE_UINT32 bflags=0;
+  uint32_t bflags=0;
 
   assert(cm);
   bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
@@ -104,11 +100,11 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   buffer[sizeof(buffer)-1]=0;
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_NUMERIC) {
     numeric_warning = I18N("\nYou must only enter numbers, not letters.");
-    bflags|=AB_BANKING_INPUT_FLAGS_NUMERIC;
+    bflags|=GWEN_GUI_INPUT_FLAGS_NUMERIC;
   }
 
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT)
-    bflags|=AB_BANKING_INPUT_FLAGS_ALLOW_DEFAULT;
+    bflags|=GWEN_GUI_INPUT_FLAGS_ALLOW_DEFAULT;
 
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_CONFIRM) {
     snprintf(buffer, sizeof(buffer)-1,
@@ -127,7 +123,7 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
              dname,
 	     minLength,
 	     numeric_warning);
-    bflags|=AB_BANKING_INPUT_FLAGS_CONFIRM;
+    bflags|=GWEN_GUI_INPUT_FLAGS_CONFIRM;
   }
   else {
     snprintf(buffer, sizeof(buffer)-1,
@@ -164,23 +160,23 @@ int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                          minLength,
 			 maxLength);
     GWEN_Buffer_free(nbuf);
+    if (rv)
+      rv=GWEN_ERROR_GENERIC;
   }
   else {
-    rv=AB_Banking_InputBox(bcm->banking,
-                           bflags,
-			   I18N("Enter Password"),
-                           buffer,
-			   notunsigned_pwbuffer,
-			   minLength,
-			   maxLength);
+    rv=GWEN_Gui_InputBox(bflags,
+			 I18N("Enter Password"),
+			 buffer,
+			 notunsigned_pwbuffer,
+			 minLength,
+			 maxLength);
   }
 
   if (rv) {
     free(notunsigned_pwbuffer);
-    if (rv==AB_ERROR_USER_ABORT)
-      return GWEN_ERROR_USER_ABORTED;
-    else if (rv==AB_ERROR_DEFAULT_VALUE)
-      return GWEN_ERROR_CT_DEFAULT_PIN;
+    if (rv==GWEN_ERROR_USER_ABORTED ||
+	rv==GWEN_ERROR_DEFAULT_VALUE)
+      return rv;
     return -1;
   }
 
@@ -223,7 +219,7 @@ int AB_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *cm,
 				 GWEN_CRYPTTOKEN *token,
 				 GWEN_CRYPTTOKEN_PINTYPE pt,
 				 GWEN_CRYPTTOKEN_PINENCODING pe,
-				 GWEN_TYPE_UINT32 flags,
+				 uint32_t flags,
 				 unsigned char *buffer,
 				 unsigned int pinLength,
 				 int isOk){
@@ -275,219 +271,10 @@ int AB_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *cm,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN, "CryptToken has no name");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   return 0;
 }
-
-
-
-int AB_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
-				  GWEN_CRYPTTOKEN *token,
-				  GWEN_CRYPTTOKEN_PINTYPE pt) {
-  AB_CRYPTMANAGER *bcm;
-  char buffer[512];
-
-  assert(cm);
-  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
-  assert(bcm);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  snprintf(buffer, sizeof(buffer)-1,
-	   I18N("Please enter your PIN into the card reader."
-		"<html>"
-		"Please enter your PIN into the card reader."
-		"</html>"));
-  bcm->showBoxId=AB_Banking_ShowBox(bcm->banking,
-				    AB_BANKING_SHOWBOX_FLAGS_BEEP,
-				    I18N("Secure PIN Input"),
-				    buffer);
-  return 0;
-}
-
-
-
-int AB_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
-                                GWEN_CRYPTTOKEN *token,
-                                GWEN_CRYPTTOKEN_PINTYPE pt,
-				int ok) {
-  AB_CRYPTMANAGER *bcm;
-
-  assert(cm);
-  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
-  assert(bcm);
-
-  AB_Banking_HideBox(bcm->banking, bcm->showBoxId);
-  bcm->showBoxId=0;
-
-  return 0;
-}
-
-
-
-int AB_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
-				GWEN_CRYPTTOKEN *token) {
-  AB_CRYPTMANAGER *bcm;
-  int rv;
-  char buffer[512];
-
-  assert(cm);
-  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
-  assert(bcm);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  if (GWEN_CryptToken_GetDeviceType(token)==GWEN_CryptToken_Device_File)
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please insert the security disc\nfor %s"
-		  "<html>"
-		  "Please insert the security disc for <i>%s</i>"
-		  "</html>"),
-	     GWEN_CryptToken_GetDescriptiveName(token),
-	     GWEN_CryptToken_GetDescriptiveName(token));
-  else
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please insert the chip card\nfor %s"
-		  "<html>"
-		  "Please insert the chip card for <i>%s</i>"
-		  "</html>"),
-	     GWEN_CryptToken_GetDescriptiveName(token),
-	     GWEN_CryptToken_GetDescriptiveName(token));
-
-  rv=AB_Banking_MessageBox(bcm->banking,
-			   AB_BANKING_MSG_FLAGS_TYPE_WARN |
-			   AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			   AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			   I18N("Insert Medium"),
-			   buffer,
-			   I18N("OK"), I18N("Abort"), 0);
-  if (rv==2) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "User aborted");
-    AB_Banking_MessageBox(bcm->banking,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			  AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			  I18N("User Abort"),
-			  I18N("Action aborted by user."),
-			  I18N("Dismiss"), 0, 0);
-    return GWEN_ERROR_USER_ABORTED;
-  }
-  else if (rv!=1) {
-    AB_Banking_MessageBox(bcm->banking,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			  AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("An internal error occurred."),
-			  I18N("Dismiss"), 0, 0);
-    return -1;
-  }
-
-  return 0;
-}
-
-
-
-int AB_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
-				       GWEN_CRYPTTOKEN *token) {
-  AB_CRYPTMANAGER *bcm;
-  int rv;
-  char buffer[512];
-
-  assert(cm);
-  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
-  assert(bcm);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  if (GWEN_CryptToken_GetDeviceType(token)==GWEN_CryptToken_Device_File)
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please insert the correct security disc\nfor %s"
-		  "<html>"
-		  "Please insert the <b>correct</b> security disc for "
-		  "<i>%s</i>"
-		  "</html>"),
-	     GWEN_CryptToken_GetDescriptiveName(token),
-	     GWEN_CryptToken_GetDescriptiveName(token));
-  else
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please insert the correct chip card\nfor %s"
-		  "<html>"
-		  "Please insert the <b>correct</b> chip card for <i>%s</i>"
-		  "</html>"),
-	     GWEN_CryptToken_GetDescriptiveName(token),
-	     GWEN_CryptToken_GetDescriptiveName(token));
-
-  rv=AB_Banking_MessageBox(bcm->banking,
-			   AB_BANKING_MSG_FLAGS_TYPE_WARN |
-			   AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			   AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			   I18N("Insert Medium"),
-			   buffer,
-			   I18N("OK"), I18N("Abort"), 0);
-  if (rv==2) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "User aborted");
-    AB_Banking_MessageBox(bcm->banking,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			  AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			  I18N("User Abort"),
-			  I18N("Action aborted by user."),
-			  I18N("Dismiss"), 0, 0);
-    return GWEN_ERROR_USER_ABORTED;
-  }
-  else if (rv!=1) {
-    AB_Banking_MessageBox(bcm->banking,
-			  AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			  AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			  AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("An internal error occurred."),
-			  I18N("Dismiss"), 0, 0);
-    return -1;
-  }
-
-  return 0;
-}
-
-
-
-int AB_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
-				GWEN_CRYPTTOKEN *token,
-				const char *title,
-				const char *msg) {
-  AB_CRYPTMANAGER *bcm;
-
-  assert(cm);
-  bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, AB_CRYPTMANAGER, cm);
-  assert(bcm);
-
-  AB_Banking_MessageBox(bcm->banking,
-			AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-			AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-			AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-			title,
-			msg,
-			I18N("Dismiss"), 0, 0);
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

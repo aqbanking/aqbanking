@@ -30,7 +30,7 @@ GWEN_LIST_FUNCTIONS(AD_JOB, AD_Job)
 
 
 
-AD_JOB *AD_Job_new(AB_ACCOUNT *acc, int isDebitJob, GWEN_TYPE_UINT32 jid){
+AD_JOB *AD_Job_new(AB_ACCOUNT *acc, int isDebitJob, uint32_t jid){
   AD_JOB *dj;
 
   assert(acc);
@@ -92,7 +92,7 @@ AB_ACCOUNT *AD_Job_GetAccount(const AD_JOB *dj){
 
 
 
-GWEN_TYPE_UINT32 AD_Job_GetJobId(const AD_JOB *dj){
+uint32_t AD_Job_GetJobId(const AD_JOB *dj){
   assert(dj);
   return dj->jobId;
 }

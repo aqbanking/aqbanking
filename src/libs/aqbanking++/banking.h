@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file 
@@ -17,16 +18,12 @@
 #ifndef AQ_BANKING_CPP_H
 #define AQ_BANKING_CPP_H
 
+#include <cstdlib>
 
 #include <aqbanking/banking.h>
+#include <aqbanking/system.h>
 #include <list>
 #include <string>
-
-
-#define QBANKING_IMPORTER_FLAGS_COMPLETE_DAYS  0x00000001
-#define QBANKING_IMPORTER_FLAGS_OVERWRITE_DAYS 0x00000002
-#define QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES  0x00000004
-#define QBANKING_IMPORTER_FLAGS_FUZZY          0x00000008
 
 
 /**
@@ -41,16 +38,14 @@
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class Banking {
-  friend class Banking_Linker;
-
+class AB_Banking {
 private:
   AB_BANKING *_banking;
 
 public:
-  Banking(const char *appname,
+  AB_Banking(const char *appname,
           const char *fname);
-  virtual ~Banking();
+  virtual ~AB_Banking();
 
 
   AB_BANKING *getCInterface();
@@ -59,13 +54,23 @@ public:
   /**
    * See @ref AB_Banking_Init
    */
-  int init();
+  virtual int init();
 
   /**
    * See @ref AB_Banking_Fini
    */
-  int fini();
+  virtual int fini();
 
+
+  /**
+   * See @ref AB_Banking_OnlineInit
+   */
+  int onlineInit();
+
+  /**
+   * See @ref AB_Banking_OnlineFini
+   */
+  int onlineFini();
 
   /**
    * Loads a backend with the given name. You can use
@@ -95,7 +100,16 @@ public:
    * The pointer returned is still owned by AqBanking, so you MUST NOT free
    * it.
    */
-  AB_ACCOUNT *getAccount(GWEN_TYPE_UINT32 uniqueId);
+  AB_ACCOUNT *getAccount(uint32_t uniqueId);
+
+  /**
+   * Returns a list of pointers to currently known users.
+   * Please note that the pointers in this list are still owned by
+   * AqBanking, so you MUST NOT free them.
+   * However, destroying the list will not free the users, so it is
+   * safe to do that.
+   */
+  std::list<AB_USER*> getUsers();
 
   /**
    * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
@@ -104,6 +118,8 @@ public:
    * AqBanking is able to separate and store the data for every application.
    */
   GWEN_DB_NODE *getAppData();
+
+  GWEN_DB_NODE *getSharedData(const char *name);
 
   int getUserDataDir(GWEN_BUFFER *buf) const ;
   int getAppUserDataDir(GWEN_BUFFER *buf) const ;
@@ -121,7 +137,7 @@ public:
   std::list<GWEN_PLUGIN_DESCRIPTION*> getProviderDescrs();
 
   /**
-   * Returns a list of wizard descriptions for the given backend.
+   * Returns a list of wizard descriptions.
    * You must free the contents of the list after using it via
    * @ref clearPluginDescrs() before deleting the list itself.
    */
@@ -135,8 +151,6 @@ public:
    */
   void clearPluginDescrs(std::list<GWEN_PLUGIN_DESCRIPTION*> &l);
 
-  int activateProvider(const char *pname);
-  int deactivateProvider(const char *pname);
   std::list<std::string> getActiveProviders();
 
   std::string findWizard(const char *frontends);
@@ -156,112 +170,20 @@ public:
    */
   /*@{*/
   /**
-   * Enqueues a job. This function does not take over the ownership of the
-   * job. However, this function makes sure that the job will not be deleted
-   * as long as it is in the queue (by calling @ref AB_Job_Attach).
-   * So it is safe for you to call @ref AB_Job_free on an enqueued job directly
-   * after enqueuing it (but it doesn't make much sense since you would not be able to
-   * check for a result).
-   *
-   */
-  int enqueueJob(AB_JOB *j);
-
-  /**
-   * Removes a job from the queue. This function does not free the given
-   * job, the caller still is the owner.
-   * Dequeued jobs however are NOT preserved across shutdowns.
-   */
-  int dequeueJob(AB_JOB *j);
-
-  /**
-   * This function sends all jobs in the queue to their corresponding backends
+   * This function sends all jobs in the list to their corresponding backends
    * and allows that backend to process it.
-   * If the user did not abort or there was no fatal error the queue is
-   * empty upon return. You can verify this by calling
-   * @ref AB_Banking_GetEnqueuedJobs.
    */
-  int executeQueue();
+  virtual int executeJobs(AB_JOB_LIST2 *jl,
+			  AB_IMEXPORTER_CONTEXT *ctx,
+			  uint32_t guiid);
 
-  /**
-   * Returns the list of currently enqueued jobs. If the queue is empty
-   * NULL is returned.
-   */
-  std::list<AB_JOB*> getEnqueuedJobs();
   /*@}*/
-
-
-  /** @name User Interaction
-   *
-   */
-  /*@{*/
-  /**
-   * See @ref AB_Banking_MessageBox
-   */
-  virtual int messageBox(GWEN_TYPE_UINT32 flags,
-                         const char *title,
-                         const char *text,
-                         const char *b1,
-                         const char *b2,
-                         const char *b3);
-
-  /**
-   * See @ref AB_Banking_InputBox
-   */
-  virtual int inputBox(GWEN_TYPE_UINT32 flags,
-                       const char *title,
-                       const char *text,
-                       char *buffer,
-                       int minLen,
-                       int maxLen);
-
-  /**
-   * See @ref AB_Banking_ShowBox
-   */
-  virtual GWEN_TYPE_UINT32 showBox(GWEN_TYPE_UINT32 flags,
-                                   const char *title,
-                                   const char *text);
-  /**
-   * See @ref AB_Banking_HideBox
-   */
-  virtual void hideBox(GWEN_TYPE_UINT32 id);
-
-  /**
-   * See @ref AB_Banking_ProgressStart
-   */
-  virtual GWEN_TYPE_UINT32 progressStart(const char *title,
-                                         const char *text,
-                                         GWEN_TYPE_UINT32 total);
-
-  /**
-   * See @ref AB_Banking_ProgressAdvance
-   */
-  virtual int progressAdvance(GWEN_TYPE_UINT32 id,
-                              GWEN_TYPE_UINT32 progress);
-  /**
-   * See @ref AB_Banking_ProgressLog
-   */
-  virtual int progressLog(GWEN_TYPE_UINT32 id,
-                          AB_BANKING_LOGLEVEL level,
-                          const char *text);
-  /**
-   * See @ref AB_Banking_ProgressEnd
-   */
-  virtual int progressEnd(GWEN_TYPE_UINT32 id);
-
-
-  /**
-   * See @ref AB_Banking_Print
-   */
-  virtual int print(const char *docTitle,
-                    const char *docType,
-                    const char *descr,
-                    const char *text);
 
   /**
    * Let the application import a given statement context.
    */
   virtual bool importContext(AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_TYPE_UINT32 flags);
+                             uint32_t flags);
 
 };
 

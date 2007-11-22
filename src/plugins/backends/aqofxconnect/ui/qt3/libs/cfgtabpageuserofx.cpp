@@ -79,7 +79,7 @@ bool CfgTabPageUserOfx::fromGui() {
   std::string s;
   const char *t;
   GWEN_URL *url;
-  GWEN_TYPE_UINT32 f=0;
+  uint32_t f=0;
 
   u=getUser();
   assert(u);
@@ -96,6 +96,24 @@ bool CfgTabPageUserOfx::fromGui() {
     AO_User_SetBrokerId(u, 0);
   else
     AO_User_SetBrokerId(u, s.c_str());
+
+  s=QBanking::QStringToUtf8String(_realPage->appIdEdit->text());
+  if (s.empty())
+    AO_User_SetAppId(u, 0);
+  else
+    AO_User_SetAppId(u, s.c_str());
+
+  s=QBanking::QStringToUtf8String(_realPage->appVerEdit->text());
+  if (s.empty())
+    AO_User_SetAppVer(u, 0);
+  else
+    AO_User_SetAppVer(u, s.c_str());
+
+  s=QBanking::QStringToUtf8String(_realPage->headerVerEdit->text());
+  if (s.empty())
+    AO_User_SetHeaderVer(u, 0);
+  else
+    AO_User_SetHeaderVer(u, s.c_str());
 
   s=QBanking::QStringToUtf8String(_realPage->urlEdit->text());
   url=GWEN_Url_fromString(s.c_str());
@@ -121,6 +139,8 @@ bool CfgTabPageUserOfx::fromGui() {
     f|=AO_USER_FLAGS_EMPTY_BANKID;
   if (_realPage->emptyFidCheck->isChecked())
     f|=AO_USER_FLAGS_EMPTY_FID;
+  if (_realPage->forceSsl3Check->isChecked())
+    f|=AO_USER_FLAGS_FORCE_SSL3;
   AO_User_SetFlags(u, f);
 
   return true;
@@ -131,7 +151,7 @@ bool CfgTabPageUserOfx::fromGui() {
 bool CfgTabPageUserOfx::toGui() {
   AB_USER *u;
   const char *s;
-  GWEN_TYPE_UINT32 f;
+  uint32_t f;
 
   u=getUser();
   assert(u);
@@ -150,14 +170,15 @@ bool CfgTabPageUserOfx::toGui() {
   if (s)
     _realPage->urlEdit->setText(QString::fromUtf8(s));
 
-  if (AO_User_GetHttpVMajor(u)==1) {
-    if (AO_User_GetHttpVMinor(u)==0)
-      _realPage->httpVersionCombo->setCurrentItem(0);
-    else
-      _realPage->httpVersionCombo->setCurrentItem(1);
-  }
-  else
-    _realPage->httpVersionCombo->setCurrentItem(0);
+  s=AO_User_GetAppId(u);
+  if (s)
+    _realPage->appIdEdit->setText(QString::fromUtf8(s));
+  s=AO_User_GetAppVer(u);
+  if (s)
+    _realPage->appVerEdit->setText(QString::fromUtf8(s));
+  s=AO_User_GetHeaderVer(u);
+  if (s)
+    _realPage->headerVerEdit->setText(QString::fromUtf8(s));
 
   f=AO_User_GetFlags(u);
   _realPage->accountListCheck->setChecked(f & AO_USER_FLAGS_ACCOUNT_LIST);
@@ -167,6 +188,7 @@ bool CfgTabPageUserOfx::toGui() {
   _realPage->billPayCheck->setChecked(f & AO_USER_FLAGS_BILLPAY);
   _realPage->emptyBankIdCheck->setChecked(f & AO_USER_FLAGS_EMPTY_BANKID);
   _realPage->emptyFidCheck->setChecked(f & AO_USER_FLAGS_EMPTY_FID);
+  _realPage->forceSsl3Check->setChecked(f & AO_USER_FLAGS_FORCE_SSL3);
 
   return true;
 }
@@ -256,7 +278,7 @@ void CfgTabPageUserOfx::slotGetAccounts() {
   assert(u);
   pro=AB_User_GetProvider(u);
   assert(pro);
-  rv=AO_Provider_RequestAccounts(pro, u);
+  rv=AO_Provider_RequestAccounts(pro, u, 0);
   if (rv) {
     DBG_ERROR(0, "Error requesting account list");
   }

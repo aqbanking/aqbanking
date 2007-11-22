@@ -7,168 +7,116 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
-#ifndef AQBANKING_VALUE_H
-#define AQBANKING_VALUE_H
+#ifndef AB_VALUE_H
+#define AB_VALUE_H
 
-#include <gwenhywfar/db.h>
 #include <gwenhywfar/buffer.h>
-#include <aqbanking/error.h> /* for AQBANKING_API */
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/list.h>
+
+#include <aqbanking/error.h>
+
+#include <stdio.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** An abstract monetary value in HBCI. It has an amount and a
-    currency string. 
-
-    Right now the amount is stored as a "double" floating-point value,
-    but in the future this might be changed to a fixed-point
-    representation to avoid rounding errors in financial
-    calculations. Therefore some basic arithmetic operations are
-    already supported, and more are likely to come. */
 typedef struct AB_VALUE AB_VALUE;
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_VALUE, AB_Value, AQBANKING_API)
 
-/** @name Constructor/Destructor */
-/*@{*/
-/** Create a new value with the given amount and the given ISO-4217
- * currency. (Constructor)
+/** Creates a deep copy of an AB_VALUE_LIST object
  *
- * @param value The amount
- *
- * @param currency The currency as ISO-4217 string, e.g. "EUR" for
- * Euro; may be NULL
-*/
-AQBANKING_API 
-AB_VALUE *AB_Value_new(double value, const char *currency);
-
-/** Create a duplicate of the given value (Copy constructor). */
-AQBANKING_API 
-AB_VALUE *AB_Value_dup(const AB_VALUE *v);
-
-/** Create a value from the given string.
- * The string is expected to contain a value in the following format:
- * a.b:c (a=value before the comma, b=value after comma, c=optional
- * currency).
- * Examples:
- * <ul>
- *  <li>-124,45</li>
- *  <li>-124,45:EUR</li>
- *  <li>124,45:EUR</li>
- *  <li>+124,45:EUR</li>
- * </ul>
  */
-AQBANKING_API 
-AB_VALUE *AB_Value_fromString(const char *s);
+AQBANKING_API AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *vl);
 
-/** Stores the given value in the given buffer in a format that is recognized
- * by @ref AB_Value_fromString.
+
+AQBANKING_API AB_VALUE *AB_Value_new(void);
+AQBANKING_API AB_VALUE *AB_Value_dup(const AB_VALUE *ov);
+AQBANKING_API void AB_Value_free(AB_VALUE *v);
+
+/**
+ * This function reads a AB_VALUE from a string. Strings suitable as
+ * arguments are those created by @ref AB_Value_toString or simple
+ * floating point string (as in "123.45" or "-123.45").
  */
-AQBANKING_API 
-int AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf);
+AQBANKING_API AB_VALUE *AB_Value_fromString(const char *s);
+
+/**
+ * This function exports the value in a format which can be recognized
+ * by the function @ref AB_Value_fromString. You should not make any
+ * assumption about the format of the string created here.
+ */
+AQBANKING_API void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf);
+
+AQBANKING_API void AB_Value_toHumanReadableString(const AB_VALUE *v,
+                                            GWEN_BUFFER *buf,
+                                            int prec);
+
+AQBANKING_API AB_VALUE *AB_Value_fromDouble(double i);
+
 
 /** Create a value from the given GWEN_DB. */
-AQBANKING_API 
-AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db);
+AQBANKING_API AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db);
 
 /** Write the given value into the given GWEN_DB. */
-AQBANKING_API 
-int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db);
-
-/** Free the given value (Destructor). */
-AQBANKING_API 
-void AB_Value_free(AB_VALUE *v);
-/*@}*/
+AQBANKING_API int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db);
 
 
-/** @name Getters/Setters */
-/*@{*/
-/** Returns the value part as a double. */
-AQBANKING_API 
-double AB_Value_GetValue(const AB_VALUE *v);
-
-/** Set the value of this AB_VALUE from a double. */
-AQBANKING_API 
-void AB_Value_SetValue(AB_VALUE *v, double d);
-
-/** Returns the ISO-4217 currency string of the given value,
-    e.g. "EUR" for Euro. WATCH OUT: The currency string may be
-    NULL!  */
-AQBANKING_API 
-const char *AB_Value_GetCurrency(const AB_VALUE *v);
-
-/** Set the ISO-4217 currency string of this value, e.g. "EUR" for
-    Euro. The currency string may be NULL. */
-AQBANKING_API 
-void AB_Value_SetCurrency(AB_VALUE *v, const char *s);
-/*@}*/
+/**
+ * This function returns the value as a double.
+ * You should not feed another AB_VALUE from this double, because the
+ * conversion from an AB_VALUE to a double might be lossy!
+ */
+AQBANKING_API double AB_Value_GetValueAsDouble(const AB_VALUE *v);
 
 
-/** @name Predicates/Comparisons */
-/*@{*/
-/** Predicate: Returns nonzero (TRUE) if the given value is
-    valid. FIXME: Describe what "valid" means. */
-AQBANKING_API 
-int AB_Value_IsValid(const AB_VALUE *v);
+/**
+ * You should not use a double retrieved via
+ * @ref AB_Value_GetValueAsDouble as an argument to this function, because
+ * the conversion from AB_VALUE to double to AB_VALUE might change the
+ * real value.
+ */
+AQBANKING_API void AB_Value_SetValueFromDouble(AB_VALUE *v, double i);
 
-/** Predicate: Returns nonzero (TRUE) if the value is negative (lesser
-    than zero), or zero (FALSE) otherwise. */
-AQBANKING_API 
-int AB_Value_IsNegative(const AB_VALUE *v);
+AQBANKING_API void AB_Value_SetZero(AB_VALUE *v);
 
-/** Predicate: Returns nonzero (TRUE) if the value is positive
-    (greater or equal to zero), or zero (FALSE) otherwise. */
-AQBANKING_API 
-int AB_Value_IsPositive(const AB_VALUE *v);
+AQBANKING_API int AB_Value_IsZero(const AB_VALUE *v);
+AQBANKING_API int AB_Value_IsNegative(const AB_VALUE *v);
+AQBANKING_API int AB_Value_IsPositive(const AB_VALUE *v);
+AQBANKING_API int AB_Value_Compare(const AB_VALUE *v1, const AB_VALUE *v2);
 
-/** Predicate: Returns nonzero (TRUE) if the value is equal to zero,
-    or zero (FALSE) otherwise. */
-AQBANKING_API 
-int AB_Value_IsZero(const AB_VALUE *v);
+AQBANKING_API int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2);
+AQBANKING_API int AB_Value_SubValue(AB_VALUE *v1, const AB_VALUE *v2);
+AQBANKING_API int AB_Value_MultValue(AB_VALUE *v1, const AB_VALUE *v2);
+AQBANKING_API int AB_Value_DivValue(AB_VALUE *v1, const AB_VALUE *v2);
 
-/** Equality predicate: Returns nonzero (TRUE) if v1 is equal to v2,
-    or zero (FALSE) otherwise. (Note: Right now this function ignores
-    the currency field.) */
-AQBANKING_API 
-int AB_Value_IsEqual(const AB_VALUE  *v1, const AB_VALUE *v2);
-
-/** Compare function: Returns +1 if v1>v2, zero if v1 == v2, and -1 if
-    v1<v2. (Note: Right now this function ignores the currency
-    field.) */
-AQBANKING_API 
-int AB_Value_Compare(const AB_VALUE  *v1, const AB_VALUE *v2);
-/*@}*/
+AQBANKING_API int AB_Value_Negate(AB_VALUE *v);
 
 
-/** @name Arithmetic operations */
-/*@{*/
-/** Add the value @c vToAdd to the given value <i>v</i>, i.e. assign
-    v=v+vToAdd. Returns zero on success, or -1 if any input argument
-    is invalid. (Note: Right now this function ignores the currency
-    field.) */
-AQBANKING_API
-int AB_Value_AddValue(AB_VALUE  *v, const AB_VALUE *vToAdd);
+AQBANKING_API const char *AB_Value_GetCurrency(const AB_VALUE *v);
+AQBANKING_API void AB_Value_SetCurrency(AB_VALUE *v, const char *s);
 
-/** Subtract the value @c vToSub from the given value <i>v</i>,
-    i.e. assign v=v-vToSub. Returns zero on succes, or -1 if any
-    input argument is invalid. (Note: Right now this function ignores
-    the currency field.) */
-AQBANKING_API 
-int AB_Value_SubValue(AB_VALUE  *v, const AB_VALUE *vToSub);
 
-/** Negate the sign of the given value, i.e. assign v=-v. Returns zero
-    on succes, or -1 if any input argument is invalid. */
-AQBANKING_API 
-int AB_Value_Negate(AB_VALUE *v);
-/*@}*/
+AQBANKING_API void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* AQBANKING_VALUE_H */
+
+#endif /* AB_VALUE_H */
+
+
+
+
+
+
 
 

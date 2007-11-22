@@ -146,11 +146,11 @@ AQBANKING_API void AB_User_SetModified(AB_USER *st, int i);
 /**
 * Returns the property @ref AB_USER_UniqueId
 */
-AQBANKING_API GWEN_TYPE_UINT32 AB_User_GetUniqueId(const AB_USER *el);
+AQBANKING_API uint32_t AB_User_GetUniqueId(const AB_USER *el);
 /**
 * Set the property @ref AB_USER_UniqueId
 */
-AQBANKING_API void AB_User_SetUniqueId(AB_USER *el, GWEN_TYPE_UINT32 d);
+AQBANKING_API void AB_User_SetUniqueId(AB_USER *el, uint32_t d);
 
 /**
 * Returns the property @ref AB_USER_BackendName
@@ -209,11 +209,11 @@ AQBANKING_API void AB_User_SetBankCode(AB_USER *el, const char *d);
 /**
 * Returns the property @ref AB_USER_LastSessionId
 */
-AQBANKING_API GWEN_TYPE_UINT32 AB_User_GetLastSessionId(const AB_USER *el);
+AQBANKING_API uint32_t AB_User_GetLastSessionId(const AB_USER *el);
 /**
 * Set the property @ref AB_USER_LastSessionId
 */
-AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, GWEN_TYPE_UINT32 d);
+AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, uint32_t d);
 
 
 /**

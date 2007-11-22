@@ -11,28 +11,22 @@ noinst_LTLIBRARIES=libviews.la
 
 iheaderdir=${includedir}/qbanking
 iheader_HEADERS=\
- qbjobview.h \
  qbbankselector.h
 
 
 nodist_iheader_HEADERS= \
- qbjobview.ui.h \
  qbbankselector.ui.h
 
 libviews_la_SOURCES=\
- qbjobview.cpp \
  qbbankselector.cpp
 
 MOC_FILES=\
- qbjobview.ui.moc \
- qbjobview.moc \
  qbbankselector.ui.moc qbbankselector.moc
 
 nodist_libviews_la_SOURCES=\
- qbjobview.ui.cpp \
  qbbankselector.ui.cpp
 
-UI_FILES = qbjobview.ui qbbankselector.ui
+UI_FILES = qbbankselector.ui
 
 
 EXTRA_DIST = $(UI_FILES)

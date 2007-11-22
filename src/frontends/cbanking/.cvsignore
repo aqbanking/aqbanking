@@ -1,7 +1,0 @@
-*.dll
-*.def
-*.lib
-*.rc
-*-config
-*-config.in
-testlib

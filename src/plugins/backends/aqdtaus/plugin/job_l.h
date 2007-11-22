@@ -28,7 +28,7 @@ extern "C" {
 typedef struct AD_JOB AD_JOB;
 GWEN_LIST_FUNCTION_DEFS(AD_JOB, AD_Job)
 
-AD_JOB *AD_Job_new(AB_ACCOUNT *acc, int isDebitJob, GWEN_TYPE_UINT32 jid);
+AD_JOB *AD_Job_new(AB_ACCOUNT *acc, int isDebitJob, uint32_t jid);
 void AD_Job_free(AD_JOB *dj);
 
 void AD_Job_AddTransfer(AD_JOB *dj, AB_TRANSACTION *t);
@@ -38,7 +38,7 @@ AB_TRANSACTION_LIST2 *AD_Job_GetTransfers(const AD_JOB *dj);
 int AD_Job_GetIsDebitNote(const AD_JOB *dj);
 
 AB_ACCOUNT *AD_Job_GetAccount(const AD_JOB *dj);
-GWEN_TYPE_UINT32 AD_Job_GetJobId(const AD_JOB *dj);
+uint32_t AD_Job_GetJobId(const AD_JOB *dj);
 
 void AD_Job_SetResult(AD_JOB *dj, int code, const char *text);
 int AD_Job_GetResultCode(const AD_JOB *dj);

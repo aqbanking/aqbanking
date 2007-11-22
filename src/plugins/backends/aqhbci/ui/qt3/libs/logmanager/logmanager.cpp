@@ -68,7 +68,7 @@ LogManager::LogManager(const char *baseDir,
   GWEN_XMLNODE *defs;
   list<string>::iterator sit;
   const char *xmlfilename = AQHBCI_DATAFOLDER 
-    AH_PATH_SEP "xml" AH_PATH_SEP "hbci.xml";
+    AH_PATH_SEP "hbci.xml";
 
   if (baseDir)
     _baseDir=baseDir;
@@ -127,7 +127,7 @@ LogManager::~LogManager(){
 
 
 int LogManager::_scanBanks() {
-  GWEN_DIRECTORYDATA *dlogs;
+  GWEN_DIRECTORY *dlogs;
   string dname;
 
   dname=_baseDir;
@@ -171,7 +171,7 @@ int LogManager::_scanBanks() {
 
 
 int LogManager::_scanBank(const string &bankCode) {
-  GWEN_DIRECTORYDATA *dlogs;
+  GWEN_DIRECTORY *dlogs;
   string dname;
 
   dname=_baseDir;
@@ -357,7 +357,7 @@ string LogManager::_anonymize(const string &bankCode,
                             QMessageBox::Ok,QMessageBox::NoButton);
       return QBanking::QStringToUtf8String(QWidget::tr("Error: Could not anonymize logfile."));
     }
-    result+=string(tstr.c_str());
+    result+=tstr;
   }
   return result;
 }
@@ -408,7 +408,7 @@ string LogManager::_dump(const string &s) {
   unsigned int i;
 
   p=(const unsigned char*)s.data();
-  for (i=0; i<s.length(); i++) {
+  for (i=0; i<s.size(); i++) {
     if (*p==13 || *p==10)
       result+=*p;
     else if (*p<32 || *p>126)
@@ -475,9 +475,13 @@ void LogManager::saveFile() {
       }
 
       // IO_Raw doesn't exist in qt4
-      if (!f.open(IO_WriteOnly | IO_Truncate)) {
-        QMessageBox::critical(this,
-                              tr("File Error"),
+      if (!f.open(IO_WriteOnly | IO_Truncate
+#ifdef IO_Raw
+		  | IO_Raw
+#endif
+		 )) {
+	QMessageBox::critical(this,
+			      tr("File Error"),
                               tr("<qt>"
                                  "<p>"
                                  "Could not create file \"%1\""

@@ -1,0 +1,250 @@
+<JOBs>
+ <!-- 
+  --------------------------------------------------------------------
+                     Administrative Jobs
+  --------------------------------------------------------------------
+ -->
+
+
+ <JOBdef id="JobDialogInit" 
+         version="3" 
+         pversion="300"
+         internal="1"
+ >
+   <SEG type="Ident" name="ident" />
+   <SEG type="Prepare" name="prepare" />
+ </JOBdef>
+
+
+
+ <JOBdef id="JobDialogEnd" 
+         version="3" 
+         pversion="300"
+         internal="1"
+ >
+   <SEG type="DialogEnd" />
+ </JOBdef>
+
+
+
+ <JOBdef id="JobDialogInitAnon" 
+         version="3"
+         pversion="300"
+         crypt="0" 
+         sign="0" 
+         internal="1"
+         nosysid="1"
+ >
+   <SEG type="Ident" name="ident" />
+   <SEG type="Prepare" name="prepare" />
+
+   <VALUES>
+     <VALUE path="ident/customerId">9999999999</VALUE>
+     <VALUE path="ident/systemId">0</VALUE>
+     <VALUE path="ident/status">0</VALUE>
+     <VALUE path="prepare/bpdversion">999</VALUE>
+     <VALUE path="prepare/updversion">999</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+ <JOBdef id="JobGetKeys"
+         version="3" 
+         pversion="300"
+         mode="RDH" 
+         dlg="1" 
+         needsbpd="0"
+         response="GetKeyResponse"
+  >
+   <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
+     <SEG name="ident" type="Ident" />
+     <SEG name="prepare" type="Prepare" />
+     <SEG type="getKey" name="cryptkey" />
+     <SEG type="getKey" name="signKey" />
+     <SEG type="getKey" name="authKey" />
+     <VALUES>
+       <VALUE path="ident/customerId">9999999999</VALUE>
+       <!-- No system id is needed in this special case -->
+       <VALUE path="ident/status">0</VALUE>
+       <VALUE path="ident/systemId">0</VALUE>
+       <VALUE path="cryptkey/key/keytype">V</VALUE>
+       <VALUE path="cryptkey/key/keynum">999</VALUE>
+       <VALUE path="cryptkey/key/keyversion">999</VALUE>
+       <VALUE path="cryptkey/key/userid">999</VALUE>
+       <VALUE path="signkey/key/keytype">S</VALUE>
+       <VALUE path="signkey/key/keynum">999</VALUE>
+       <VALUE path="signkey/key/keyversion">999</VALUE>
+       <VALUE path="signkey/key/userid">999</VALUE>
+       <VALUE path="authkey/key/keytype">D</VALUE>
+       <VALUE path="authkey/key/keynum">999</VALUE>
+       <VALUE path="authkey/key/keyversion">999</VALUE>
+       <VALUE path="authkey/key/userid">999</VALUE>
+     </VALUES>
+   </MESSAGE>
+<!--   <MESSAGE name="close" sign="1" crypt="0" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+-->
+ </JOBdef>
+
+
+
+ <JOBdef id="JobSendKeys"
+         version="1" 
+         pversion="300"
+         mode="RDH" 
+         dlg="1" 
+         needsbpd="0"
+  >
+   <MESSAGE name="open" crypt="1" sign="1" >
+     <SEG name="ident" type="Ident" />
+     <SEG type="sendsignKey" name="signKey" />
+     <SEG type="sendcryptKey" name="cryptkey" />
+     <VALUES>
+       <VALUE path="cryptkey/key/keytype">V</VALUE>
+       <VALUE path="signkey/key/keytype">S</VALUE>
+     </VALUES>
+   </MESSAGE>
+ </JOBdef>
+
+
+
+ <JOBdef id="JobSync" 
+         version="1" 
+         pversion="300"
+         crypt="0" 
+         sign="0" 
+         dlg="1" 
+         needsbpd="0" 
+         response="syncresponse"
+  >
+   <MESSAGE name="open" nosysid="1" >
+     <SEG type="Ident" name="ident" />
+     <SEG type="Prepare" name="prepare" />
+     <SEG type="Sync" name="sync" />
+
+     <VALUES>
+       <VALUE path="ident/systemId">0</VALUE>
+     </VALUES>
+   </MESSAGE>
+
+   <!--
+   <MESSAGE name="close" sign="1" crypt="0" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+   -->
+ </JOBdef>
+
+
+
+ <JOBdef id="JobGetAccounts" 
+         version="1" 
+         pversion="300"
+         dlg="1"
+ >
+   <MESSAGE name="open" crypt="1" sign="1" >
+     <SEG type="Ident" name="ident" />
+     <SEG type="Prepare" name="prepare" />
+   </MESSAGE>
+   <MESSAGE name="close" sign="1" crypt="1" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+ </JOBdef>
+
+
+
+ <JOBdef id="JobGetBankInfo" 
+         version="3" 
+         pversion="300"
+         dlg="1"
+ >
+   <MESSAGE name="open" crypt="0" sign="0" >
+     <SEG type="Ident" name="ident" />
+     <SEG type="Prepare" name="prepare" />
+
+     <VALUES>
+       <VALUE path="ident/customerId">9999999999</VALUE>
+       <VALUE path="ident/systemId">0</VALUE>
+       <VALUE path="ident/status">0</VALUE>
+     </VALUES>
+   </MESSAGE>
+   <MESSAGE name="close" sign="0" crypt="0" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+ </JOBdef>
+
+
+
+ <JOBdef id="JobUpdateBankInfo" 
+         version="3"
+         pversion="300"
+         dlg="1"
+ >
+   <MESSAGE name="open" crypt="1" sign="1" >
+     <SEG type="Ident" name="ident" />
+     <SEG type="Prepare" name="prepare" />
+
+     <VALUES>
+       <VALUE path="prepare/bpdversion">999</VALUE>
+       <VALUE path="prepare/updversion">999</VALUE>
+     </VALUES>
+   </MESSAGE>
+   <MESSAGE name="close" sign="1" crypt="1" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+ </JOBdef>
+
+
+ <!--  Geschaeftsvorfall: TAN einreichen (Version 1) -->
+ <JOBdef id="JobTan" 
+         code="HKTAN"
+         params="HITANS"
+         version="1" 
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="TanResponse"
+         single="1"
+         pversion="300"
+ >
+   <SEG type="Tan" version="1" />
+ </JOBdef>
+
+
+
+ <!--  Geschaeftsvorfall: Pin aendern (Version 1) -->
+ <JOBdef id="JobChangePin" 
+         code="HKPAE"
+         params="HIPAES"
+         version="1"
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         single="1"
+         pversion="300"
+ >
+   <SEG type="ChangePin" version="1" />
+ </JOBdef>
+
+
+
+ <JOBdef id="JobGetItanModes" 
+         version="1" 
+         pversion="300"
+         dlg="1"
+ >
+   <MESSAGE name="open" crypt="1" sign="1" noitan="1" >
+     <SEG type="Ident" name="ident" />
+     <SEG type="Prepare" name="prepare" />
+   </MESSAGE>
+   <MESSAGE name="close" sign="1" crypt="1" noitan="1" >
+     <SEG type="DialogEnd" />
+   </MESSAGE>
+ </JOBdef>
+
+
+</JOBs>
+

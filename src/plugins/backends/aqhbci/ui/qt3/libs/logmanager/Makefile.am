@@ -4,7 +4,7 @@ INCLUDES = \
   -I../widgets -I.. \
   $(all_includes)
 
-DEFS += -DAQHBCI_DATAFOLDER=\"@aqhbci_data@\"
+DEFS += -DAQHBCI_DATAFOLDER=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"
 
 UI_FILES= \
   logmanager.ui
@@ -30,8 +30,8 @@ liblogmanager_la_SOURCES=\
   error.cpp \
   loganalyzer.cpp
 
-liblogmanager_la_LIBADD = \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin $(aqhbci_internal_libs)
+liblogmanager_la_LIBADD = $(qbanking_internal_libs) $(aqhbci_internal_libs) \
+  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin
 
 BUILT_SOURCES = $(nodist_liblogmanager_la_SOURCES)
 CLEANFILES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS)

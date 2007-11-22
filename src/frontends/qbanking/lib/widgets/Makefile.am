@@ -2,14 +2,12 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/.. -I$(srcdir)/../dialogs \
   -I.. -I../dialogs \
-  $(all_includes)
+  $(gwenhywfar_includes) $(qt3_includes)
 
 DEFS += -DBUILDING_QBANKING
 AM_CPPFLAGS= @visibility_cflags@
 
 UI_FILES= \
- qbprogress.ui \
- qbsimplebox.ui \
  qbcfgtab.ui
 
 EXTRA_DIST=$(UI_FILES)
@@ -17,41 +15,28 @@ EXTRA_DIST=$(UI_FILES)
 noinst_LTLIBRARIES=libwidgets.la
 
 nodist_iheader_HEADERS=\
- qbprogress.ui.h \
- qbsimplebox.ui.h \
  qbcfgtab.ui.h
 
 iheaderdir=${includedir}/qbanking
 iheader_HEADERS=\
- qbsimplebox.h \
  qbaccountlist.h \
- qbinputbox.h \
  qbjoblist.h \
  qbplugindescrlist.h \
- qbprogress.h \
  qbcfgtab.h qbcfgtabpage.h \
  qbcfgtabpageuser.h \
  qbcfgtabpageaccount.h \
  qbuserlist.h
 
 MOC_FILES=\
- qbprogress.moc qbprogress.ui.moc \
- qbsimplebox.moc qbsimplebox.ui.moc \
- qbcfgtab.moc qbcfgtab.ui.moc \
- qbinputbox.moc
+ qbcfgtab.moc qbcfgtab.ui.moc
 
 nodist_libwidgets_la_SOURCES=\
- qbprogress.ui.cpp \
- qbsimplebox.ui.cpp \
  qbcfgtab.ui.cpp
 
 libwidgets_la_SOURCES=\
  qbaccountlist.cpp \
  qbjoblist.cpp \
- qbinputbox.cpp \
  qbplugindescrlist.cpp \
- qbprogress.cpp  \
- qbsimplebox.cpp \
  qbcfgtab.cpp \
  qbcfgtabpage.cpp \
  qbcfgtabpageuser.cpp \

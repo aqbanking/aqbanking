@@ -1,10 +1,12 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
+  -I$(srcdir)/../../gui \
   -I$(srcdir)/../../lib/widgets \
   -I$(srcdir)/../../lib/dialogs \
   -I$(srcdir)/../../lib/views \
+  -I$(srcdir)/../../lib/gui \
   -I$(srcdir)/../../lib \
-  -I../../lib/widgets -I../../lib/dialogs -I../../lib/views -I../../lib \
+  -I../../lib/widgets -I../../lib/dialogs -I../../lib/gui -I../../lib/views -I../../lib \
   $(qt3_includes) $(all_includes)
 
 EXTRA_DIST = qt3_wizard.xml.in

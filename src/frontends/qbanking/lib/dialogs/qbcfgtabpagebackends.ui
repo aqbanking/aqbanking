@@ -53,49 +53,6 @@
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout11</cstring>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>backendEnableButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Enable</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>backendDisableButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Disable</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer10</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Vertical</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>20</width>
-                            <height>141</height>
-                        </size>
-                    </property>
-                </spacer>
-            </vbox>
-        </widget>
     </hbox>
 </widget>
 <customwidgets>
@@ -123,5 +80,6 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>qbanking/qbplugindescrlist.h</includehint>
 </includehints>
 </UI>

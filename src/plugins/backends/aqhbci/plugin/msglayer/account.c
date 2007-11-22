@@ -109,7 +109,7 @@ void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s){
 
 
 void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                           GWEN_TYPE_UINT32 flags) {
+                           uint32_t flags) {
   GWEN_DB_DeleteVar(db, name);
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
@@ -121,8 +121,8 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-GWEN_TYPE_UINT32 AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
-  GWEN_TYPE_UINT32 fl=0;
+uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+  uint32_t fl=0;
   int i;
 
   for (i=0; ; i++) {
@@ -145,7 +145,7 @@ GWEN_TYPE_UINT32 AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-GWEN_TYPE_UINT32 AH_Account_GetFlags(const AB_ACCOUNT *a) {
+uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a) {
   AH_ACCOUNT *ae;
   GWEN_DB_NODE *db;
 
@@ -162,7 +162,7 @@ GWEN_TYPE_UINT32 AH_Account_GetFlags(const AB_ACCOUNT *a) {
 
 
 
-void AH_Account_SetFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
   AH_ACCOUNT *ae;
   GWEN_DB_NODE *db;
 
@@ -179,7 +179,7 @@ void AH_Account_SetFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
 
 
 
-void AH_Account_AddFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -191,7 +191,7 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
 
 
 
-void AH_Account_SubFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags) {
+void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
   AH_ACCOUNT *ae;
 
   assert(a);

@@ -7,24 +7,37 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
-#ifndef AQBANKING_VALUE_P_H
-#define AQBANKING_VALUE_P_H
+#ifndef AB_VALUE_P_H
+#define AB_VALUE_P_H
 
-#include <aqbanking/value.h>
+#include "value.h"
+
+#include <gmp.h>
+
 
 /** Internal structure of AB_VALUE -- do not access this directly! */
 struct AB_VALUE {
-  double value;
+  GWEN_LIST_ELEMENT(AB_VALUE)
+
+  mpq_t value;
   char *currency;
-  int isValid;
 };
 
 
+static void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf);
 
-#endif /* AQBANKING_VALUE_P_H */
+
+#endif /* AB_VALUE_P_H */
+
+
+
+
+
+
 
 

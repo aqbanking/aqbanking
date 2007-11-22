@@ -52,22 +52,22 @@ extern "C" {
 /*@{*/
 AQHBCI_API
 void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                           GWEN_TYPE_UINT32 flags);
+                           uint32_t flags);
 
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
+uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_Account_GetFlags(const AB_ACCOUNT *a);
+uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a);
 
 AQHBCI_API
-void AH_Account_SetFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
+void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags);
 
 AQHBCI_API
-void AH_Account_AddFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
+void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags);
 
 AQHBCI_API
-void AH_Account_SubFlags(AB_ACCOUNT *a, GWEN_TYPE_UINT32 flags);
+void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags);
 
 /*@}*/
 

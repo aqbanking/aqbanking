@@ -70,23 +70,23 @@ WizardInfo *Wizard::getWizardInfo() {
 
 
 
-void Wizard::log(AB_BANKING_LOGLEVEL level, const QString &text) {
+void Wizard::log(GWEN_LOGGER_LEVEL level, const QString &text) {
   QString tmp;
 
   tmp+=_logtext;
   tmp+="<tr><td>" + 
       QTime::currentTime().toString() +
       "</td><td>";
-  if (level<=AB_Banking_LogLevelError) {
+  if (level<=GWEN_LoggerLevel_Error) {
     tmp+=QString("<font color=\"red\">%1</font>").arg(text);
   }
-  else if (level==AB_Banking_LogLevelWarn) {
+  else if (level==GWEN_LoggerLevel_Warning) {
     tmp+=QString("<font color=\"blue\">%1</font>").arg(text);
   }
-  else if (level==AB_Banking_LogLevelInfo) {
+  else if (level==GWEN_LoggerLevel_Info) {
     tmp+=QString("<font color=\"green\">%1</font>").arg(text);
   }
-  else if (level>=AB_Banking_LogLevelDebug) {
+  else if (level>=GWEN_LoggerLevel_Debug) {
     return;
   }
   else

@@ -125,13 +125,13 @@ int AB_User_ReadDb(AB_USER *st, GWEN_DB_NODE *db) {
 
 
 
-GWEN_TYPE_UINT32 AB_User_GetUniqueId(const AB_USER *st) {
+uint32_t AB_User_GetUniqueId(const AB_USER *st) {
   assert(st);
   return st->uniqueId;
 }
 
 
-void AB_User_SetUniqueId(AB_USER *st, GWEN_TYPE_UINT32 d) {
+void AB_User_SetUniqueId(AB_USER *st, uint32_t d) {
   assert(st);
   st->uniqueId=d;
   st->_modified=1;
@@ -260,13 +260,13 @@ void AB_User_SetBankCode(AB_USER *st, const char *d) {
 
 
 
-GWEN_TYPE_UINT32 AB_User_GetLastSessionId(const AB_USER *st) {
+uint32_t AB_User_GetLastSessionId(const AB_USER *st) {
   assert(st);
   return st->lastSessionId;
 }
 
 
-void AB_User_SetLastSessionId(AB_USER *st, GWEN_TYPE_UINT32 d) {
+void AB_User_SetLastSessionId(AB_USER *st, uint32_t d) {
   assert(st);
   st->lastSessionId=d;
   st->_modified=1;

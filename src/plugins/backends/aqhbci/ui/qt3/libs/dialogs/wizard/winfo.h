@@ -14,8 +14,9 @@
 #ifndef AQHBCI_WINFO_H
 #define AQHBCI_WINFO_H
 
-#include <aqhbci/medium.h>
+#include <aqhbci/provider.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/ct.h>
 #include <string>
 
 
@@ -29,21 +30,23 @@ class WizardInfo {
 private:
   AB_PROVIDER *_provider;
   AB_USER *_user;
-  AH_MEDIUM *_medium;
+  GWEN_CRYPT_TOKEN *_token;
 
-  int _context;
+  uint32_t _context;
 
   int _country;
   std::string _bankId;
   std::string _userId;
   std::string _userName;
   std::string _customerId;
+  std::string _peerId;
   std::string _server;
+  std::string _mediumType;
   std::string _mediumName;
   AH_CRYPT_MODE _cryptMode;
   int _port;
 
-  GWEN_TYPE_UINT32 _flags;
+  uint32_t _flags;
 
 public:
   WizardInfo(AB_PROVIDER *pro);
@@ -51,14 +54,14 @@ public:
 
   AB_PROVIDER *getProvider() const ;
 
-  AH_MEDIUM *getMedium() const;
-  void setMedium(AH_MEDIUM *m);
+  GWEN_CRYPT_TOKEN *getToken() const;
+  void setToken(GWEN_CRYPT_TOKEN *ct);
 
   AH_CRYPT_MODE getCryptMode() const;
   void setCryptMode(AH_CRYPT_MODE cm);
 
-  int getContext() const;
-  void setContext(int i);
+  uint32_t getContext() const;
+  void setContext(uint32_t i);
 
   AB_USER *getUser() const;
   void setUser(AB_USER *u);
@@ -78,19 +81,25 @@ public:
   const std::string &getCustomerId() const;
   void setCustomerId(const std::string &s);
 
+  const std::string &getPeerId() const;
+  void setPeerId(const std::string &s);
+
   const std::string &getServer() const;
   void setServer(const std::string &s);
 
   int getPort() const;
   void setPort(int i);
 
+  const std::string &getMediumType() const;
+  void setMediumType(const std::string &s);
+
   const std::string &getMediumName() const;
   void setMediumName(const std::string &s);
 
-  GWEN_TYPE_UINT32 getFlags() const;
-  void setFlags(GWEN_TYPE_UINT32 fl);
-  void addFlags(GWEN_TYPE_UINT32 fl);
-  void subFlags(GWEN_TYPE_UINT32 fl);
+  uint32_t getFlags() const;
+  void setFlags(uint32_t fl);
+  void addFlags(uint32_t fl);
+  void subFlags(uint32_t fl);
 
   void releaseData();
 

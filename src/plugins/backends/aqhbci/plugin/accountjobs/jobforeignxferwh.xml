@@ -1,0 +1,199 @@
+
+<!-- 
+  This is a special job which is not part of the official API.
+ -->
+
+
+<SEGs>
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ForeignTransferWH"
+         code="HKAUB"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="transfers" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIAUBS" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="ForeignTransferWH"
+         code="HKAUB"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="transfers" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIAUBS" version="3"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ForeignTransferWH"
+         code="HKAUB"
+         version="4"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="transfers" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIAUBS" version="4"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="ForeignTransferWH"
+         code="HKAUB"
+         version="5"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="transfers" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIAUBS" version="5"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="1" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Auslandsueberweisung/DTAZV (Version 2) -->
+ <JOBdef id="JobForeignTransferWH"
+         code="HKAUB"
+         params="HIAUBS"
+         version="2"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         single="1"
+         needTan="1"
+  >
+   <SEG type="ForeignTransferWH" version="2" />
+ </JOBdef>
+
+
+
+ <!-- Geschaeftsvorfall: Auslandsueberweisung/DTAZV (Version 3) -->
+ <JOBdef id="JobForeignTransferWH"
+         code="HKAUB"
+         params="HIAUBS"
+         version="3"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         single="1"
+         needTan="1"
+  >
+   <SEG type="ForeignTransferWH" version="3" />
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Auslandsueberweisung/DTAZV (Version 4) -->
+ <JOBdef id="JobForeignTransferWH"
+         code="HKAUB"
+         params="HIAUBS"
+         version="4"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         single="1"
+         needTan="1"
+  >
+   <SEG type="ForeignTransferWH" version="4" />
+ </JOBdef>
+
+
+
+ <!-- Geschaeftsvorfall: Auslandsueberweisung/DTAZV (Version 5) -->
+ <JOBdef id="JobForeignTransferWH"
+         code="HKAUB"
+         params="HIAUBS"
+         version="5"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         single="1"
+         needTan="1"
+  >
+   <SEG type="ForeignTransferWH" version="5" />
+ </JOBdef>
+
+
+</JOBs>
+
+
+
+
+
+
+

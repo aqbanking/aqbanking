@@ -80,7 +80,7 @@ int AH_CryptTokenPinTan_Plugin_CheckToken(GWEN_PLUGIN *pl,
                                           GWEN_BUFFER *subTypeName,
                                           GWEN_BUFFER *name) {
 
-  return GWEN_ERROR_CT_IO_ERROR;
+  return GWEN_ERROR_IO;
 }
 
 
@@ -212,8 +212,8 @@ int AH_CryptTokenPinTan_Close(GWEN_CRYPTTOKEN *ct) {
 
 
 int AH_CryptTokenPinTan_GetSignSeq(GWEN_CRYPTTOKEN *ct,
-                                   GWEN_TYPE_UINT32 kid,
-                                   GWEN_TYPE_UINT32 *signSeq) {
+                                   uint32_t kid,
+                                   uint32_t *signSeq) {
   AH_CT_PINTAN *lct;
 
   assert(ct);
@@ -228,7 +228,7 @@ int AH_CryptTokenPinTan_GetSignSeq(GWEN_CRYPTTOKEN *ct,
 
 
 int AH_CryptTokenPinTan_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
-                                    GWEN_TYPE_UINT32 kid,
+                                    uint32_t kid,
                                     GWEN_KEYSPEC **pks) {
   AH_CT_PINTAN *lct;
   GWEN_KEYSPEC *ks;

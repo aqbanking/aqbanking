@@ -25,8 +25,6 @@
  */
 /*@{*/
 
-#include <aqhbci/medium.h>
-
 #include <aqbanking/user.h>
 
 #include <gwenhywfar/db.h>
@@ -55,6 +53,9 @@ extern "C" {
  * indicates that some jobs are supported even when there is no UPD job
  * description for it */
 #define AH_USER_FLAGS_IGNORE_UPD              0x00000020
+
+/** forces use of SSLv3 for Pin/TAN mode */
+#define AH_USER_FLAGS_FORCE_SSL3              0x00000040
 /*@}*/
 
 
@@ -107,17 +108,17 @@ extern "C" {
 
 AQHBCI_API
 void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        GWEN_TYPE_UINT32 flags);
+                        uint32_t flags);
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
+uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 
 
 AQHBCI_API
 void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
-                             GWEN_TYPE_UINT32 m);
+                             uint32_t m);
 
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
+uint32_t AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
                                            const char *name);
 
 
@@ -145,16 +146,16 @@ void AH_User_SetStatus(AB_USER *u, AH_USER_STATUS i);
  * never signs it's messages.
  */
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_GetFlags(const AB_USER *u);
+uint32_t AH_User_GetFlags(const AB_USER *u);
 
 AQHBCI_API
-void AH_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+void AH_User_SetFlags(AB_USER *u, uint32_t flags);
 
 AQHBCI_API
-void AH_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+void AH_User_AddFlags(AB_USER *u, uint32_t flags);
 
 AQHBCI_API
-void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
+void AH_User_SubFlags(AB_USER *u, uint32_t flags);
 
 
 /*@}*/
@@ -165,35 +166,34 @@ void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags);
  */
 /*@{*/
 AQHBCI_API
-GWEN_TYPE_UINT32 AH_User_GetTanMethods(const AB_USER *u);
+uint32_t AH_User_GetTanMethods(const AB_USER *u);
 
 AQHBCI_API
-void AH_User_SetTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+void AH_User_SetTanMethods(AB_USER *u, uint32_t m);
 
 AQHBCI_API
-void AH_User_AddTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+void AH_User_AddTanMethods(AB_USER *u, uint32_t m);
 
 AQHBCI_API
-void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m);
+void AH_User_SubTanMethods(AB_USER *u, uint32_t m);
 
 /*@}*/
 
 
 
-/** @name Medium Functions
- *
- */
-/*@{*/
 AQHBCI_API
-AH_MEDIUM *AH_User_GetMedium(const AB_USER *u);
+const char *AH_User_GetTokenType(const AB_USER *u);
 AQHBCI_API
-void AH_User_SetMedium(AB_USER *u, AH_MEDIUM *m);
+void AH_User_SetTokenType(AB_USER *u, const char *s);
+AQHBCI_API
+const char *AH_User_GetTokenName(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetTokenName(AB_USER *u, const char *s);
+AQHBCI_API
+uint32_t AH_User_GetTokenContextId(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetTokenContextId(AB_USER *u, uint32_t id);
 
-AQHBCI_API
-int AH_User_GetContextIdx(const AB_USER *u);
-AQHBCI_API
-void AH_User_SetContextIdx(AB_USER *u, int idx);
-/*@}*/
 
 
 /** @name Miscellanous Settings
@@ -207,6 +207,9 @@ AQHBCI_API
 AH_CRYPT_MODE AH_User_GetCryptMode(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetCryptMode(AB_USER *u, AH_CRYPT_MODE m);
+
+int AH_User_GetRdhType(const AB_USER *u);
+void AH_User_SetRdhType(AB_USER *u, int i);
 
 AQHBCI_API
 const char *AH_User_GetPeerId(const AB_USER *u);
@@ -260,6 +263,27 @@ const char *AH_User_GetHttpUserAgent(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHttpUserAgent(AB_USER *u, const char *s);
 /*@}*/
+
+
+/** @name Passwords/Pins/Tans
+ *
+ */
+/*@{*/
+
+AQHBCI_API
+int AH_User_MkPasswdName(const AB_USER *u, GWEN_BUFFER *buf);
+
+AQHBCI_API
+int AH_User_MkPinName(const AB_USER *u, GWEN_BUFFER *buf);
+
+AQHBCI_API
+int AH_User_MkTanName(const AB_USER *u,
+		      const char *challenge,
+		      GWEN_BUFFER *buf);
+
+
+/*@}*/
+
 
 
 

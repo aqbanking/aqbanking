@@ -230,7 +230,8 @@ const char *AH_Job_SingleTransfer_GetOldFiid(AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SingleTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_SingleTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				  uint32_t guiid){
   AH_JOB_SINGLETRANSFER *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -480,14 +481,6 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
     return -1;
   }
 
-  /* collapse splits if any */
-  n=AB_Split_List_GetCount(AB_Transaction_GetSplits(t));
-  if (n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Transfer contains splits, unable to handle");
-    return -1;
-  }
-
   /* check purpose */
   if (lim) {
     maxn=AB_TransactionLimits_GetMaxLinesPurpose(lim);
@@ -518,7 +511,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many purpose lines (%d>%d)", n, maxn);
 	  GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
 	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
@@ -527,9 +520,9 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
 	  GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -541,7 +534,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No purpose lines");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   /* check remote name */
@@ -575,7 +568,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 		    "Too many remote name lines (%d>%d)",
 		    n, maxn);
           GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
         AB_ImExporter_Utf8ToDta(p, -1, tbuf);
@@ -585,9 +578,9 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 		   "Too many chars in remote name line %d (%d>%d)",
 		   n, l, maxs);
           GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -599,7 +592,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote name lines");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   /* check local name */
@@ -615,7 +608,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
     if (!s) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"No owner name in account, giving up");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     AB_Transaction_SetLocalName(t, s);
   }
@@ -689,7 +682,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
       if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Text key \"%s\" not supported by bank",
 		  numbuf);
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
     }
   }
@@ -716,7 +709,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
           if (n==0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "No cycle given");
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
 
           snprintf(numbuf, sizeof(numbuf), "%d", n);
@@ -725,7 +718,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Month day \"%s\" not supported by bank",
                       numbuf);
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
         }
 
@@ -738,7 +731,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
           if (n==0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "No execution day given");
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
 
           snprintf(numbuf, sizeof(numbuf), "%d", n);
@@ -747,7 +740,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Execution month day \"%s\" not supported by bank",
                       numbuf);
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
       }
@@ -763,7 +756,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
           if (n==0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "No cycle given");
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
 
           snprintf(numbuf, sizeof(numbuf), "%d", n);
@@ -772,7 +765,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Week day \"%s\" not supported by bank",
                       numbuf);
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
 
@@ -785,7 +778,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
           if (n==0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "No execution day given");
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
 
           snprintf(numbuf, sizeof(numbuf), "%d", n);
@@ -794,14 +787,14 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Execution month day \"%s\" not supported by bank",
                       numbuf);
-            return AB_ERROR_INVALID;
+            return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
       }
       else {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
                   "Unsupported period %d", AB_Transaction_GetPeriod(t));
-        return AB_ERROR_INVALID;
+        return GWEN_ERROR_INVALID;
       }
 
       /* check setup times */
@@ -821,7 +814,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt<n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Minimum setup time violated");
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
 
         /* check maximum setup time */
@@ -829,7 +822,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt>n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Maximum setup time violated");
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
       }
       break;
@@ -852,7 +845,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt<n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Minimum setup time violated");
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
 
         /* check maximum setup time */
@@ -860,7 +853,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt>n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Maximum setup time violated");
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
       }
       break;
@@ -881,7 +874,8 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-                                   AH_JOB_EXCHANGE_MODE m){
+				   AH_JOB_EXCHANGE_MODE m,
+				   uint32_t guiid){
   AH_JOB_SINGLETRANSFER *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -893,7 +887,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
   if (aj->jobType!=AB_Job_GetType(bj)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Different job types");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -906,7 +900,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
     dbParams=AH_Job_GetParams(j);
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
-    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
       GWEN_DB_Dump(dbParams, stderr, 2);
 
     /* read limits */
@@ -1175,7 +1169,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN,
                 "Unhandled job type %d", aj->jobType);
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
 
     if (ot) {
@@ -1191,7 +1185,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Invalid transaction");
 	AB_Job_SetStatus(bj, AB_Job_StatusError);
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
@@ -1226,7 +1220,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       default:
         DBG_ERROR(AQHBCI_LOGDOMAIN,
                   "Unhandled job type %d", aj->jobType);
-        return AB_ERROR_INVALID;
+        return GWEN_ERROR_INVALID;
       }
 
       dbT=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -1288,7 +1282,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         assert(dbV);
 
 	nbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (GWEN_Text_DoubleToBuffer(AB_Value_GetValue(v),
+	if (GWEN_Text_DoubleToBuffer(AB_Value_GetValueAsDouble(v),
 				     nbuf)) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer overflow");
           GWEN_Buffer_free(nbuf);
@@ -1427,7 +1421,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         default:
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d",
                     AB_Transaction_GetPeriod(t));
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
         GWEN_DB_SetCharValue(dbT,
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -1488,7 +1482,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     return 0;
   }
@@ -1507,7 +1501,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     if (!r) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No segment results");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      /* return AB_ERROR_NO_DATA; */
+      /* return GWEN_ERROR_NO_DATA; */
       return 0;
     }
     has10=0;
@@ -1622,7 +1616,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

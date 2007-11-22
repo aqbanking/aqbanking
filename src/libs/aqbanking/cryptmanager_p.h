@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -21,7 +22,7 @@
 typedef struct AB_CRYPTMANAGER AB_CRYPTMANAGER;
 struct AB_CRYPTMANAGER {
   AB_BANKING *banking;
-  GWEN_TYPE_UINT32 showBoxId;
+  uint32_t showBoxId;
 };
 static void GWENHYWFAR_CB AB_CryptManager_FreeData(void *bp, void *p);
 
@@ -30,7 +31,7 @@ static int AB_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                                   GWEN_CRYPTTOKEN *token,
                                   GWEN_CRYPTTOKEN_PINTYPE pt,
                                   GWEN_CRYPTTOKEN_PINENCODING pe,
-                                  GWEN_TYPE_UINT32 flags,
+                                  uint32_t flags,
                                   unsigned char *buffer,
                                   unsigned int minLength,
                                   unsigned int maxLength,
@@ -40,28 +41,10 @@ static int AB_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *pm,
                                         GWEN_CRYPTTOKEN *token,
                                         GWEN_CRYPTTOKEN_PINTYPE pt,
                                         GWEN_CRYPTTOKEN_PINENCODING pe,
-                                        GWEN_TYPE_UINT32 flags,
+                                        uint32_t flags,
                                         unsigned char *buffer,
                                         unsigned int pinLength,
                                         int isOk);
-
-static int AB_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
-                                         GWEN_CRYPTTOKEN *token,
-                                         GWEN_CRYPTTOKEN_PINTYPE pt);
-static int AB_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
-                                       GWEN_CRYPTTOKEN *token,
-                                       GWEN_CRYPTTOKEN_PINTYPE pt,
-                                       int ok);
-static int AB_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
-                                       GWEN_CRYPTTOKEN *token);
-static int AB_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
-                                              GWEN_CRYPTTOKEN *token);
-
-static int AB_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
-                                       GWEN_CRYPTTOKEN *token,
-                                       const char *title,
-                                       const char *msg);
-
 
 
 

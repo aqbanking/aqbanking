@@ -14,10 +14,80 @@
 
 
 #include "message_l.h"
-#include "medium_l.h"
 
-#include <gwenhywfar/md.h>
+#include <gwenhywfar/mdigest.h>
 
+
+int AH_Outbox__CBox__Hash(int mode,
+			  const uint8_t *p,
+			  unsigned int l,
+			  AH_MSG *msg) {
+  GWEN_MDIGEST *md=NULL;
+  int rv;
+  GWEN_BUFFER *hbuf;
+
+  DBG_ERROR(0, "HAshmode: %d", mode);
+
+  switch(mode) {
+  case 0:
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No ITAN hash mode, assuming RMD160");
+    /* fall through */
+  case 1:  /* RMD160 over buffer */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using RMD160");
+    md=GWEN_MDigest_Rmd160_new();
+    if (md==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD RMD160");
+    }
+    break;
+
+  case 2:  /* SHA over buffer */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using SHA1");
+    md=GWEN_MDigest_Sha1_new();
+    if (md==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD SHA1");
+    }
+    break;
+
+  default: /* invalid mode */
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "Invalid ITAN hash mode \"%d\"",
+	      mode);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (md==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "No message digestion algo (mode %d)", mode);
+    return GWEN_ERROR_INVALID;
+  }
+
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_Update(md, p, l);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+
+  hbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  GWEN_Buffer_AppendBytes(hbuf,
+			  (const char*)GWEN_MDigest_GetDigestPtr(md),
+			  GWEN_MDigest_GetDigestSize(md));
+  GWEN_MDigest_free(md);
+  AH_Msg_SetItanHashBuffer(msg, hbuf);
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hashed job segment");
+
+  return 0;
+}
 
 
 
@@ -28,8 +98,8 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg){
   GWEN_DB_NODE *jargs;
   GWEN_XMLNODE *jnode;
   GWEN_BUFFER *msgBuf;
-  GWEN_TYPE_UINT32 startPos;
-  GWEN_TYPE_UINT32 endPos;
+  uint32_t startPos;
+  uint32_t endPos;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
   user=AH_Job_GetUser(j);
@@ -53,40 +123,22 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg){
     se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     while(se) {
-      GWEN_KEYSPEC *ks;
-
-      ks=GWEN_KeySpec_new();
-      GWEN_KeySpec_SetKeyType(ks, "RSA");
-      GWEN_KeySpec_SetOwner(ks, GWEN_StringListEntry_Data(se));
-      GWEN_KeySpec_SetKeyName(ks, "S");
-      GWEN_KeySpec_SetNumber(ks, 999);
-      GWEN_KeySpec_SetVersion(ks, 999);
-      AH_Msg_AddSigner(msg, ks);
-      GWEN_KeySpec_free(ks);
+      AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
   }
 
   /* copy crypter */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT) {
-    GWEN_KEYSPEC *ks;
-
-    ks=GWEN_KeySpec_new();
-    GWEN_KeySpec_SetKeyType(ks, "RSA");
     /* The name doesn't matter here, since jobs are only used by clients
      * and the client code for getMedium always uses the name of the dialog
      * owner instead of the name from the keyspec when retrieving the medium
      * for encryption.
      */
-    GWEN_KeySpec_SetOwner(ks, "");
-    GWEN_KeySpec_SetKeyName(ks, "V");
-    GWEN_KeySpec_SetNumber(ks, 999);
-    GWEN_KeySpec_SetVersion(ks, 999);
-    AH_Msg_SetCrypter(msg, ks);
-    GWEN_KeySpec_free(ks);
+    AH_Msg_SetCrypterId(msg, "owner");
   }
 
   /* get arguments and XML node */
@@ -117,6 +169,7 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg){
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
 	     AH_Job_GetName(j));
     AH_Job_SetStatus(j, AH_JobStatusError);
+    return GWEN_ERROR_INTERNAL;
   }
   else {
     AH_Job_SetFirstSegment(j, firstSeg);
@@ -124,61 +177,18 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg){
 
     /* iTAN management */
     if (AH_Msg_GetItanHashBuffer(msg)==0) {
+      int rv;
+
       endPos=GWEN_Buffer_GetPos(msgBuf);
-      switch(AH_Msg_GetItanHashMode(msg)) {
-      case 0:
-	DBG_NOTICE(AQHBCI_LOGDOMAIN, "No ITAN hash mode");
-	break;
-
-      case 1: { /* RMD160 over buffer */
-	GWEN_BUFFER *hbuf;
-
-	hbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (GWEN_MD_HashToBuffer("rmd160",
-				 GWEN_Buffer_GetStart(msgBuf)+startPos,
-				 endPos-startPos,
-				 hbuf)) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Could not rmd160 hash data");
-	  AH_Job_SetStatus(j, AH_JobStatusError);
-	  GWEN_Buffer_free(hbuf);
-	  return AB_ERROR_INVALID;
-	}
-	else {
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		   "RMD160 hashed job segment");
-	  AH_Msg_SetItanHashBuffer(msg, hbuf);
-	}
-	break;
-      }
-
-      case 2: { /* SHA over buffer */
-	GWEN_BUFFER *hbuf;
-
-	hbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (GWEN_MD_HashToBuffer("sha1",
-				 GWEN_Buffer_GetStart(msgBuf)+startPos,
-				 endPos-startPos,
-				 hbuf)) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Could not sha1 hash data");
-	  AH_Job_SetStatus(j, AH_JobStatusError);
-	  GWEN_Buffer_free(hbuf);
-	}
-	else {
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		   "SHA1 hashed job segment");
-	  AH_Msg_SetItanHashBuffer(msg, hbuf);
-	}
-	break;
-      }
-
-      default: /* invalid mode */
+      rv=AH_Outbox__CBox__Hash(AH_Msg_GetItanHashMode(msg),
+			       (const uint8_t*)GWEN_Buffer_GetStart(msgBuf)+startPos,
+			       endPos-startPos,
+			       msg);
+      if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Invalid ITAN hash mode \"%d\"",
-		  AH_Msg_GetItanHashMode(msg));
+		  "Could not hash data (%d)", rv);
 	AH_Job_SetStatus(j, AH_JobStatusError);
-        return AB_ERROR_INVALID;
+	return rv;
       }
     }
 
@@ -201,17 +211,15 @@ int AH_Outbox__CBox_Itan_SendMsg(AH_OUTBOX__CBOX *cbox,
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelInfo,
-                         I18N("Sending queue"));
-  rv=AH_Dialog_SendMessage_Wait(dlg, msg, timeout);
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Sending queue"));
+  rv=AH_Dialog_SendMessage(dlg, msg);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			   0,
-			   AB_Banking_LogLevelError,
-			   I18N("Unable to send (network error)"));
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Unable to send (network error)"));
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Message sent");
@@ -236,7 +244,7 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "iTAN method %d not supported", process);
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   return rv;
@@ -250,7 +258,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   AB_USER *u;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod=0;
-  GWEN_TYPE_UINT32 fid=0;
+  uint32_t fid=0;
   int process=0;
 
   u=cbox->user;
@@ -296,7 +304,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     }
 
     if (fid) {
-      GWEN_TYPE_UINT32 um;
+      uint32_t um;
 
       um=AH_User_GetTanMethods(u);
       if (
@@ -315,9 +323,9 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
           snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
           lbuf[sizeof(lbuf)-1]=0;
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
-          AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+          GWEN_Gui_ProgressLog(
                                  0,
-                                 AB_Banking_LogLevelInfo,
+                                 GWEN_LoggerLevel_Info,
                                  lbuf);
           break;
         }

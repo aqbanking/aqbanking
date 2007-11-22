@@ -15,7 +15,7 @@
 # include <config.h>
 #endif
 
-
+#include "i18n_l.h"
 #include "user_p.h"
 #include "hbci_l.h"
 #include "provider_l.h"
@@ -62,7 +62,7 @@ AH_USER_STATUS AH_User_Status_fromString(const char *s){
 
 
 void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        GWEN_TYPE_UINT32 flags) {
+                        uint32_t flags) {
   GWEN_DB_DeleteVar(db, name);
   if (flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
@@ -75,12 +75,15 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_USER_FLAGS_IGNORE_UPD)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "ignoreUpd");
+  if (flags & AH_USER_FLAGS_FORCE_SSL3)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+			 "forceSsl3");
 }
 
 
 
-GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
-  GWEN_TYPE_UINT32 fl=0;
+uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+  uint32_t fl=0;
   int i;
 
   for (i=0; ; i++) {
@@ -97,6 +100,8 @@ GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_KEEPALIVE;
     else if (strcasecmp(s, "ignoreUpd")==0)
       fl|=AH_USER_FLAGS_IGNORE_UPD;
+    else if (strcasecmp(s, "forceSsl3")==0)
+      fl|=AH_USER_FLAGS_FORCE_SSL3;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }
@@ -108,7 +113,7 @@ GWEN_TYPE_UINT32 AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
-                             GWEN_TYPE_UINT32 m) {
+                             uint32_t m) {
   GWEN_DB_DeleteVar(db, name);
   if (m & AH_USER_TANMETHOD_SINGLE_STEP)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
@@ -165,9 +170,9 @@ void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-GWEN_TYPE_UINT32 AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
-                                           const char *name) {
-  GWEN_TYPE_UINT32 fl=0;
+uint32_t AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
+				   const char *name) {
+  uint32_t fl=0;
   int i;
 
   for (i=0; ; i++) {
@@ -231,7 +236,6 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                     AB_PROVIDER_EXTEND_MODE em) {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *gr;
-  GWEN_TYPE_UINT32 mediumId;
 
   db=AB_User_GetProviderData(u);
   assert(db);
@@ -263,29 +267,13 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                                   AH_HBCI_GetDefinitions(ue->hbci),
                                   0);
 
+    s=GWEN_DB_GetCharValue(db, "cryptMode", 0, "unknown");
+    ue->cryptMode=AH_CryptMode_fromString(s);
 
-    ue->flags=AH_User_Flags_fromDb(db, "userFlags");
+    s=GWEN_DB_GetCharValue(db, "status", 0, "unknown");
+    ue->status=AH_User_Status_fromString(s);
 
-    /* get medium */
-    mediumId=GWEN_DB_GetIntValue(db, "medium", 0, 0);
-    if (mediumId) {
-      ue->medium=AH_HBCI_FindMediumById(ue->hbci, mediumId);
-      if (!ue->medium) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Medium for user \"%08x\" is not available",
-                  AB_User_GetUniqueId(u));
-        abort();
-      }
-      AH_Medium_Attach(ue->medium);
-    }
-    else {
-      if (em==AB_ProviderExtendMode_Extend) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "No medium id for user \"%s\"",
-                  AB_User_GetUserId(u));
-        abort();
-      }
-    }
+    ue->hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 210);
 
     /* load server address */
     s=GWEN_DB_GetCharValue(db, "server", 0, 0);
@@ -300,7 +288,7 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
         else {
           GWEN_Url_SetProtocol(ue->serverUrl, "hbci");
           GWEN_Url_SetPort(ue->serverUrl, 3000);
-        }
+	}
       }
     }
 
@@ -312,26 +300,79 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     }
     else
       ue->bpd=AH_Bpd_new();
+
+    /* load UPD */
+    gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "upd");
+    if (gr)
+      ue->dbUpd=GWEN_DB_Group_dup(gr);
+    else
+      ue->dbUpd=GWEN_DB_Group_new("upd");
+
+    /* get peer id */
+    s=GWEN_DB_GetCharValue(db, "peerId", 0, 0);
+    if (s)
+      ue->peerId=strdup(s);
+
+    /* get system id */
+    s=GWEN_DB_GetCharValue(db, "systemId", 0, 0);
+    if (s)
+      ue->systemId=strdup(s);
+
+    ue->updVersion=GWEN_DB_GetIntValue(db, "updVersion", 0, 0);
+
+    /* setup HTTP version */
+    ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
+    ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
+    if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
+      ue->httpVMajor=1;
+      ue->httpVMinor=0;
+    }
+
+    /* read user flags */
+    ue->flags=AH_User_Flags_fromDb(db, "userFlags");
+
+    /* setup tan methods */
+    ue->tanMethods=AH_User_TanMethods_fromDb(db, "tanMethods");
+
+    /* setup medium stuff */
+    s=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
+    if (s)
+      ue->tokenType=strdup(s);
+    s=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
+    if (s)
+      ue->tokenName=strdup(s);
+
+    ue->tokenContextId=GWEN_DB_GetIntValue(db, "tokenContextId", 0, 1);
+
+    /* get rdh type */
+    ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
   }
   else {
     AH_USER *ue;
+    const char *s;
 
     ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
     assert(ue);
 
     if (em==AB_ProviderExtendMode_Add) {
-      assert(AH_User_GetMedium(u));
     }
     else if (em==AB_ProviderExtendMode_Save) {
-      assert(ue->medium);
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "medium",
-                          AH_Medium_GetUniqueId(ue->medium));
+      GWEN_DB_ClearGroup(db, NULL);
 
-      assert(ue->bpd);
-      gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
-      assert(gr);
-      AH_Bpd_ToDb(ue->bpd, gr);
+      /* save crypt mode */
+      s=AH_CryptMode_toString(ue->cryptMode);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "cryptMode", s);
+
+      /* save status */
+      s=AH_User_Status_toString(ue->status);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "status", s);
+
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "hbciVersion", ue->hbciVersion);
+
+      /* save URL */
       if (ue->serverUrl) {
 	GWEN_BUFFER *nbuf;
 
@@ -345,6 +386,56 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                              "server", GWEN_Buffer_GetStart(nbuf));
 	GWEN_Buffer_free(nbuf);
       } /* if serverUrl */
+
+      /* save UPD */
+      assert(ue->bpd);
+      gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
+      assert(gr);
+      AH_Bpd_ToDb(ue->bpd, gr);
+
+      /* save BPD */
+      gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
+      assert(gr);
+      GWEN_DB_AddGroupChildren(gr, ue->dbUpd);
+
+      if (ue->peerId)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "peerId", ue->peerId);
+
+      if (ue->systemId)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "systemId", ue->systemId);
+
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "updVersion", ue->updVersion);
+
+      /* save http settings */
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "httpVMajor", ue->httpVMajor);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "httpVMinor", ue->httpVMinor);
+      if (ue->httpUserAgent)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "httpUserAgent", ue->httpUserAgent);
+
+      /* save flags */
+      AH_User_Flags_toDb(db, "userFlags", ue->flags);
+
+      /* save tan methods */
+      AH_User_TanMethods_toDb(db, "tanMethods", ue->tanMethods);
+
+      /* save crypt token settings */
+      if (ue->tokenType)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "tokenType", ue->tokenType);
+      if (ue->tokenName)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "tokenName", ue->tokenName);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "tokenContextId", ue->tokenContextId);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "rdhType", ue->rdhType);
+
     } /* if save */
   }
 }
@@ -354,7 +445,6 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   AH_USER *ue;
 
   ue=(AH_USER*)p;
-  AH_Medium_free(ue->medium);
   GWEN_Url_free(ue->serverUrl);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
@@ -364,102 +454,101 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
 
 
 const char *AH_User_GetPeerId(const AB_USER *u) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetCharValue(db, "peerId", 0, 0);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->peerId;
 }
 
 
 
 void AH_User_SetPeerId(AB_USER *u, const char *s) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->peerId);
   if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "peerId", s);
+    ue->peerId=strdup(s);
   else
-    GWEN_DB_DeleteVar(db, "peerId");
+    ue->peerId=NULL;
 }
 
 
 
-int AH_User_GetContextIdx(const AB_USER *u){
-  GWEN_DB_NODE *db;
+uint32_t AH_User_GetTokenContextId(const AB_USER *u){
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetIntValue(db, "contextIdx", 0, 0);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tokenContextId;
 }
 
 
 
-void AH_User_SetContextIdx(AB_USER *u, int idx){
-  GWEN_DB_NODE *db;
+void AH_User_SetTokenContextId(AB_USER *u, uint32_t id){
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "contextIdx", idx);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->tokenContextId=id;
 }
 
 
 
 AH_CRYPT_MODE AH_User_GetCryptMode(const AB_USER *u) {
-  GWEN_DB_NODE *db;
-  const char *s;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  s=GWEN_DB_GetCharValue(db, "cryptMode", 0, "unknown");
-  return AH_CryptMode_fromString(s);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->cryptMode;
 }
 
 
 
 void AH_User_SetCryptMode(AB_USER *u, AH_CRYPT_MODE m) {
-  GWEN_DB_NODE *db;
-  const char *s;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  s=AH_CryptMode_toString(m);
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "cryptMode", s);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->cryptMode=m;
 }
 
 
 
 AH_USER_STATUS AH_User_GetStatus(const AB_USER *u){
-  GWEN_DB_NODE *db;
-  const char *s;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  s=GWEN_DB_GetCharValue(db, "status", 0, "unknown");
-  return AH_User_Status_fromString(s);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->status;
 }
 
 
 
 void AH_User_SetStatus(AB_USER *u, AH_USER_STATUS i){
-  GWEN_DB_NODE *db;
-  const char *s;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  s=AH_User_Status_toString(i);
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "status", s);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->status=i;
 }
 
 
@@ -472,33 +561,6 @@ AH_HBCI *AH_User_GetHbci(const AB_USER *u){
   assert(ue);
 
   return ue->hbci;
-}
-
-
-
-void AH_User_SetMedium(AB_USER *u, AH_MEDIUM *m) {
-  AH_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  if (m)
-    AH_Medium_Attach(m);
-  AH_Medium_free(ue->medium);
-  ue->medium=m;
-}
-
-
-
-AH_MEDIUM *AH_User_GetMedium(const AB_USER *u) {
-  AH_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  return ue->medium;
 }
 
 
@@ -531,69 +593,53 @@ void AH_User_SetServerUrl(AB_USER *u, const GWEN_URL *url) {
 
 int AH_User_GetUpdVersion(const AB_USER *u){
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  return GWEN_DB_GetIntValue(db, "updVersion", 0, 0);
+  return ue->updVersion;
 }
 
 
 
 void AH_User_SetUpdVersion(AB_USER *u, int i){
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "updVersion", i);
+  ue->updVersion=i;
 }
 
 
 
 GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u){
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  return GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "upd");
+  return ue->dbUpd;
 }
 
 
 
 void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
   if (n) {
-    GWEN_DB_AddGroupChildren(db, n);
-    GWEN_DB_Group_free(n);
+    GWEN_DB_Group_free(ue->dbUpd);
+    ue->dbUpd=GWEN_DB_Group_dup(n);
   }
+  else
+    GWEN_DB_ClearGroup(ue->dbUpd, NULL);
 }
 
 
@@ -612,25 +658,15 @@ AH_BPD *AH_User_GetBpd(const AB_USER *u){
 
 void AH_User_SetBpd(AB_USER *u, AH_BPD *bpd){
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
+  assert(bpd);
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  if (bpd) {
-    if (ue->bpd!=bpd)
-      AH_Bpd_free(ue->bpd);
-    ue->bpd=bpd;
-    db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
-    assert(db);
-    AH_Bpd_ToDb(ue->bpd, db);
-  }
-  else {
-    ue->bpd=0;
-    GWEN_DB_DeleteGroup(db, "bpd");
+  if (ue->bpd!=bpd) {
+    AH_Bpd_free(ue->bpd);
+    ue->bpd=AH_Bpd_dup(bpd);
   }
 }
 
@@ -663,26 +699,29 @@ void AH_User_SetBpdVersion(AB_USER *u, int i){
 
 
 const char *AH_User_GetSystemId(const AB_USER *u) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetCharValue(db, "systemId", 0, 0);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->systemId;
 }
 
 
 
 void AH_User_SetSystemId(AB_USER *u, const char *s) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->systemId);
   if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "systemId", s);
+    ue->systemId=strdup(s);
   else
-    GWEN_DB_DeleteVar(db, "systemId");
+    ue->systemId=NULL;
 }
 
 
@@ -699,255 +738,638 @@ GWEN_MSGENGINE *AH_User_GetMsgEngine(const AB_USER *u) {
 
 
 
-GWEN_TYPE_UINT32 AH_User_GetFlags(const AB_USER *u) {
+uint32_t AH_User_GetFlags(const AB_USER *u) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  ue->flags=AH_User_Flags_fromDb(db, "userFlags");
   return ue->flags;
 }
 
 
 
-void AH_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 flags) {
+void AH_User_SetFlags(AB_USER *u, uint32_t flags) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
-
-  db=AB_User_GetProviderData(u);
-  assert(db);
 
   ue->flags=flags;
-  AH_User_Flags_toDb(db, "userFlags", ue->flags);
 }
 
 
 
-void AH_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 flags) {
+void AH_User_AddFlags(AB_USER *u, uint32_t flags) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_User_SetFlags(u, ue->flags | flags);
+  ue->flags|=flags;
 }
 
 
 
-void AH_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 flags) {
+void AH_User_SubFlags(AB_USER *u, uint32_t flags) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_User_SetFlags(u, ue->flags & ~flags);
+  ue->flags&=~flags;
 }
 
 
 
 int AH_User_GetHbciVersion(const AB_USER *u) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  return GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
+  return ue->hbciVersion;
 }
 
 
 
 void AH_User_SetHbciVersion(AB_USER *u, int i) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "hbciVersion", i);
+  ue->hbciVersion=i;
 }
 
 
 
 const char *AH_User_GetHttpUserAgent(const AB_USER *u) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetCharValue(db, "httpUserAgent", 0, 0);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->httpUserAgent;
 }
 
 
 
 void AH_User_SetHttpUserAgent(AB_USER *u, const char *s) {
-  GWEN_DB_NODE *db;
+  AH_USER *ue;
 
   assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->httpUserAgent);
   if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "httpUserAgent", s);
+    ue->httpUserAgent=strdup(s);
   else
-    GWEN_DB_DeleteVar(db, "httpUserAgent");
+    ue->httpUserAgent=NULL;
 }
 
 
 
 int AH_User_GetHttpVMajor(const AB_USER *u) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  return GWEN_DB_GetIntValue(db, "httpVMajor", 0, 0);
+  return ue->httpVMajor;
 }
 
 
 
 void AH_User_SetHttpVMajor(AB_USER *u, int i) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "httpVMajor", i);
+  ue->httpVMajor=i;
 }
 
 
 
 int AH_User_GetHttpVMinor(const AB_USER *u) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  return GWEN_DB_GetIntValue(db, "httpVMinjor", 0, 0);
+  return ue->httpVMinor;
 }
 
 
 
 void AH_User_SetHttpVMinor(AB_USER *u, int i) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "httpVMinor", i);
+  ue->httpVMinor=i;
 }
 
 
 
-GWEN_TYPE_UINT32 AH_User_GetTanMethods(const AB_USER *u) {
+uint32_t AH_User_GetTanMethods(const AB_USER *u) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
-  ue->tanMethods=AH_User_TanMethods_fromDb(db, "tanMethods");
   return ue->tanMethods;
 }
 
 
 
-void AH_User_SetTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+void AH_User_SetTanMethods(AB_USER *u, uint32_t m) {
   AH_USER *ue;
-  GWEN_DB_NODE *db;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
-
-  db=AB_User_GetProviderData(u);
-  assert(db);
 
   ue->tanMethods=m;
-  AH_User_TanMethods_toDb(db, "tanMethods", ue->tanMethods);
 }
 
 
 
-void AH_User_AddTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+void AH_User_AddTanMethods(AB_USER *u, uint32_t m) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_User_SetTanMethods(u, ue->tanMethods | m);
+  ue->tanMethods|=m;
 }
 
 
 
-void AH_User_SubTanMethods(AB_USER *u, GWEN_TYPE_UINT32 m) {
+void AH_User_SubTanMethods(AB_USER *u, uint32_t m) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_User_SetTanMethods(u, ue->tanMethods & ~m);
+  ue->tanMethods&=~m;
 }
 
 
 
+int AH_User_GetRdhType(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->rdhType;
+}
 
 
 
+void AH_User_SetRdhType(AB_USER *u, int i) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->rdhType=i;
+}
 
 
 
+const char *AH_User_GetTokenType(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tokenType;
+}
 
 
+
+void AH_User_SetTokenType(AB_USER *u, const char *s) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->tokenType);
+  if (s)
+    ue->tokenType=strdup(s);
+  else
+    ue->tokenType=NULL;
+}
+
+
+
+const char *AH_User_GetTokenName(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tokenName;
+}
+
+
+
+void AH_User_SetTokenName(AB_USER *u, const char *s) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->tokenName);
+  if (s)
+    ue->tokenName=strdup(s);
+  else
+    ue->tokenName=NULL;
+}
+
+
+
+int AH_User_MkPasswdName(const AB_USER *u, GWEN_BUFFER *buf) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->tokenType && ue->tokenName) {
+    GWEN_Buffer_AppendString(buf, "PASSWORD_");
+    GWEN_Buffer_AppendString(buf, ue->tokenType);
+    GWEN_Buffer_AppendString(buf, "_");
+    GWEN_Buffer_AppendString(buf, ue->tokenName);
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
+    return GWEN_ERROR_NO_DATA;
+  }
+}
+
+
+
+int AH_User_MkPinName(const AB_USER *u, GWEN_BUFFER *buf) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->tokenType && ue->tokenName) {
+    GWEN_Buffer_AppendString(buf, "PIN_");
+    GWEN_Buffer_AppendString(buf, ue->tokenType);
+    GWEN_Buffer_AppendString(buf, "_");
+    GWEN_Buffer_AppendString(buf, ue->tokenName);
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
+    return GWEN_ERROR_NO_DATA;
+  }
+}
+
+
+
+int AH_User_MkTanName(const AB_USER *u,
+		      const char *challenge,
+		      GWEN_BUFFER *buf) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->tokenType && ue->tokenName) {
+    GWEN_Buffer_AppendString(buf, "TAN_");
+    GWEN_Buffer_AppendString(buf, ue->tokenType);
+    GWEN_Buffer_AppendString(buf, "_");
+    GWEN_Buffer_AppendString(buf, ue->tokenName);
+    if (challenge) {
+      GWEN_Buffer_AppendString(buf, "_");
+      GWEN_Buffer_AppendString(buf, challenge);
+    }
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
+    return GWEN_ERROR_NO_DATA;
+  }
+}
+
+
+
+void AH_User__MkPrompt(AB_USER *u,
+		       const char *t,
+		       GWEN_BUFFER *pbuf,
+		       int minLen, int maxLen,
+		       int flags){
+  const char *numeric_warning = "";
+  char buffer[512];
+  const char *un;
+  const char *bn=NULL;
+  AB_BANKINFO *bi;
+
+  assert(u);
+  un=AB_User_GetUserId(u);
+
+  /* find bank name */
+  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
+			    "de",
+                            "*",
+			    AB_User_GetBankCode(u));
+  if (bi)
+    bn=AB_BankInfo_GetBankName(bi);
+  if (!bn)
+    AB_User_GetBankCode(u);
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+  if (flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) {
+    numeric_warning = I18N(" You must only enter numbers, not letters.");
+  }
+  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
+    snprintf(buffer, sizeof(buffer)-1,
+	     I18N("Please enter a new %s for \n"
+		  "user %s at %s\n"
+		  "The input must be at least %d characters long.%s"
+		  "<html>"
+		  "<p>"
+		  "Please enter a new %s for user <i>%s</i> at "
+		  "<i>%s</i>."
+		  "</p>"
+		  "<p>"
+		  "The input must be at least %d characters long.%s"
+		  "</p>"
+		  "</html>"),
+	     t, un, bn,
+	     minLen,
+	     numeric_warning,
+	     t, un, bn,
+	     minLen,
+	     numeric_warning);
+  }
+  else {
+    snprintf(buffer, sizeof(buffer)-1,
+	     I18N("Please enter the %s for \n"
+		  "user %s at %s\n"
+		  "%s"
+		  "<html>"
+		  "Please enter the %s for user <i>%s</i> at"
+		  "<i>%s</i>.<br>"
+		  "%s"
+		  "</html>"),
+	     t, un, bn,
+	     numeric_warning,
+	     t, un, bn,
+	     numeric_warning);
+  }
+  buffer[sizeof(buffer)-1]=0;
+
+  GWEN_Buffer_AppendString(pbuf, buffer);
+  AB_BankInfo_free(bi);
+}
+
+
+
+int AH_User_InputPin(AB_USER *u,
+		     char *pwbuffer,
+		     int minLen, int maxLen,
+		     int flags){
+  GWEN_BUFFER *pbuf;
+  GWEN_BUFFER *nbuf;
+  int rv;
+
+  pbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User__MkPrompt(u, I18N("PIN"), pbuf, minLen, maxLen, flags);
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkPasswdName(u, nbuf);
+  rv=GWEN_Gui_GetPassword(flags,
+			  GWEN_Buffer_GetStart(nbuf),
+			  I18N("Enter PIN"),
+			  GWEN_Buffer_GetStart(pbuf),
+			  pwbuffer,
+			  minLen,
+			  maxLen,
+			  0);
+  GWEN_Buffer_free(nbuf);
+  GWEN_Buffer_free(pbuf);
+  return rv;
+}
+
+
+
+int AH_User_InputPasswd(AB_USER *u,
+			char *pwbuffer,
+			int minLen, int maxLen,
+			int flags){
+  GWEN_BUFFER *pbuf;
+  GWEN_BUFFER *nbuf;
+  int rv;
+
+  pbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User__MkPrompt(u, I18N("password"), pbuf, minLen, maxLen, flags);
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkPasswdName(u, nbuf);
+  rv=GWEN_Gui_GetPassword(flags,
+			  GWEN_Buffer_GetStart(nbuf),
+			  I18N("Enter Password"),
+			  GWEN_Buffer_GetStart(pbuf),
+			  pwbuffer,
+			  minLen,
+			  maxLen,
+			  0);
+  GWEN_Buffer_free(nbuf);
+  GWEN_Buffer_free(pbuf);
+  return rv;
+}
+
+
+
+int AH_User_InputTan(AB_USER *u,
+		     char *pwbuffer,
+		     int minLen,
+		     int maxLen){
+  int rv;
+  char buffer[512];
+  const char *un;
+  const char *bn=NULL;
+  GWEN_BUFFER *nbuf;
+  AB_BANKINFO *bi;
+
+  assert(u);
+  un=AB_User_GetUserId(u);
+  /* find bank name */
+  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
+			    "de",
+                            "*",
+			    AB_User_GetBankCode(u));
+  if (bi)
+    bn=AB_BankInfo_GetBankName(bi);
+  if (!bn)
+    AB_User_GetBankCode(u);
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+  snprintf(buffer, sizeof(buffer)-1,
+	   I18N("Please enter the next TAN\n"
+		"for user %s at %s."
+		"<html>"
+		"Please enter the next TAN for user <i>%s</i> at "
+		"<i>%s</i>."
+		"</html>"),
+	   un, bn,
+           un, bn);
+  buffer[sizeof(buffer)-1]=0;
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkTanName(u, NULL, nbuf);
+
+  rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
+			  GWEN_GUI_INPUT_FLAGS_NUMERIC |
+			  GWEN_GUI_INPUT_FLAGS_SHOW,
+			  GWEN_Buffer_GetStart(nbuf),
+			  I18N("Enter TAN"),
+			  buffer,
+			  pwbuffer,
+			  minLen,
+			  maxLen,
+			  0);
+  GWEN_Buffer_free(nbuf);
+  AB_BankInfo_free(bi);
+  return rv;
+}
+
+
+
+int AH_User_InputTanWithChallenge(AB_USER *u,
+				  const char *challenge,
+				  char *pwbuffer,
+				  int minLen,
+				  int maxLen){
+  int rv;
+  char buffer[512];
+  const char *un;
+  const char *bn=NULL;
+  GWEN_BUFFER *nbuf;
+  AB_BANKINFO *bi;
+
+  assert(u);
+  un=AB_User_GetUserId(u);
+  /* find bank name */
+  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
+			    "de",
+                            "*",
+			    AB_User_GetBankCode(u));
+  if (bi)
+    bn=AB_BankInfo_GetBankName(bi);
+  if (!bn)
+    AB_User_GetBankCode(u);
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+  snprintf(buffer, sizeof(buffer)-1,
+	   I18N("Please enter the TAN\n"
+		"for user %s at %s.\n"
+                "The server provided the following challenge:\n"
+                "%s"
+                "<html>"
+                "<p>"
+		"Please enter the TAN for user <i>%s</i> at "
+		"<i>%s</i>."
+		"</p>"
+                "<p>"
+                "The server provided the following challenge:"
+                "</p>"
+                "<p align=\"center\" >"
+                "<font color=\"blue\">%s</font>"
+                "</p>"
+                "</html>"),
+	   un, bn, challenge,
+	   un, bn, challenge);
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkTanName(u, challenge, nbuf);
+  rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
+			  GWEN_GUI_INPUT_FLAGS_NUMERIC |
+			  GWEN_GUI_INPUT_FLAGS_SHOW,
+			  GWEN_Buffer_GetStart(nbuf),
+			  I18N("Enter TAN"),
+			  buffer,
+			  pwbuffer,
+			  minLen,
+			  maxLen,
+			  0);
+  GWEN_Buffer_free(nbuf);
+  AB_BankInfo_free(bi);
+  return rv;
+}
+
+
+
+int AH_User_SetTanStatus(AB_USER *u,
+			 const char *challenge,
+			 const char *tan,
+			 GWEN_GUI_PASSWORD_STATUS status){
+  GWEN_BUFFER *nbuf;
+  int rv;
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkTanName(u, challenge, nbuf);
+  rv=GWEN_Gui_SetPasswordStatus(GWEN_Buffer_GetStart(nbuf),
+				tan,
+				status,
+				0);
+  GWEN_Buffer_free(nbuf);
+  return rv;
+}
+
+
+
+int AH_User_SetPinStatus(AB_USER *u,
+			 const char *pin,
+			 GWEN_GUI_PASSWORD_STATUS status){
+  GWEN_BUFFER *nbuf;
+  int rv;
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkPinName(u, nbuf);
+  rv=GWEN_Gui_SetPasswordStatus(GWEN_Buffer_GetStart(nbuf),
+				pin,
+				status,
+				0);
+  GWEN_Buffer_free(nbuf);
+  return rv;
+}
 
 
 

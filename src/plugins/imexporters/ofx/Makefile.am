@@ -9,7 +9,7 @@ EXTRA_DIST=ofx.c ofx_p.h ofx.xml.in
 #####
 if WITH_OFX_PLUGIN
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(top_builddir)/headers $(libofx_includes) $(gwenhywfar_includes)
 #EXTRA_DIST=README
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
@@ -23,7 +23,7 @@ noinst_HEADERS=\
 ofx_la_SOURCES=\
  ofx.c
 
-ofx_la_LIBADD=$(aqbanking_internal_libs) -lofx $(gwenhywfar_libs) 
+ofx_la_LIBADD=$(aqbanking_internal_libs) $(libofx_libs) $(gwenhywfar_libs) 
 ofx_la_LDFLAGS = -no-undefined @STRIPALL@ \
   -module -omit-version
 

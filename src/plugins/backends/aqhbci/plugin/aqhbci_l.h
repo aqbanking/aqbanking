@@ -16,20 +16,12 @@
 
 #include <aqhbci/aqhbci.h>
 
-#ifdef HAVE_I18N
-# ifdef HAVE_LOCALE_H
-#  include <locale.h>
-# endif
-# ifdef HAVE_LIBINTL_H
-#  include <libintl.h>
-# endif
+#include <gwenhywfar/i18n.h>
 
-# define I18N(msg) dgettext(PACKAGE, msg)
-#else
-# define I18N(msg) msg
-#endif
 
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 #define I18N_NOOP(msg) msg
+#define I18S(msg) msg
 
 #endif /* AQHBCI_AQHBCI_L_H */
 

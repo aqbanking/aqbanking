@@ -31,7 +31,7 @@
 #include <aqbanking/imexporter.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -45,8 +45,8 @@ GWEN_LIST_FUNCTIONS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 
 
 AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
-                                     AB_USER *u,
-                                     AH_OUTBOX *ob) {
+				     AB_USER *u,
+				     AH_OUTBOX *ob) {
   AH_OUTBOX__CBOX *cbox;
 
   assert(hbci);
@@ -62,6 +62,9 @@ AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
   cbox->pendingJobs=AB_Job_List2_new();
   cbox->hbci=hbci;
   cbox->outbox=ob;
+
+  cbox->guiid=ob->guiid;
+
   return cbox;
 }
 
@@ -148,8 +151,8 @@ int AH_Outbox__CBox_CheckPending(AH_OUTBOX__CBOX *cbox) {
                                     "data/GetStatusResponse");
           if (dbResult) {
             const char *rDialogId;
-            GWEN_TYPE_UINT32 rMsgNum;
-            GWEN_TYPE_UINT32 rSegNum;
+            uint32_t rMsgNum;
+            uint32_t rSegNum;
             int rCode;
   
             DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking status response");
@@ -178,9 +181,9 @@ int AH_Outbox__CBox_CheckPending(AH_OUTBOX__CBOX *cbox) {
                                        "msgRef");
                   if (dbJ) {
                     const char *jDialogId;
-                    GWEN_TYPE_UINT32 jMsgNum;
-                    GWEN_TYPE_UINT32 jFirstSeg;
-                    GWEN_TYPE_UINT32 jLastSeg;
+                    uint32_t jMsgNum;
+                    uint32_t jFirstSeg;
+                    uint32_t jLastSeg;
   
                     DBG_DEBUG(AQHBCI_LOGDOMAIN,
                              "Pending job has a message reference");
@@ -468,7 +471,7 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
           errors++;
         }
         else {
-          AH_Job_Log(j, AB_Banking_LogLevelInfo,
+          AH_Job_Log(j, GWEN_LoggerLevel_Info,
                      "Dialog job enqueued");
           /* job added. This is a dialog job, so we need to begin and
            * and end the dialog */
@@ -523,7 +526,7 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
           /* set status to ERROR and move to finished queue */
           AH_Job_SetStatus(j, AH_JobStatusError);
           AH_Job_List_Add(j, cbox->finishedJobs);
-          AH_Job_Log(j, AB_Banking_LogLevelError,
+          AH_Job_Log(j, GWEN_LoggerLevel_Error,
                      "Could not enqueing HBCI-job");
           errors++;
         } /* if first job failed */
@@ -565,7 +568,7 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
         /* job added successfully */
         DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" successfully added",
                  AH_Job_GetName(j));
-        AH_Job_Log(j, AB_Banking_LogLevelInfo,
+        AH_Job_Log(j, GWEN_LoggerLevel_Info,
                    "HBCI-job enqueued (1)");
         firstJob=0;
         jobsAdded++;
@@ -649,31 +652,28 @@ int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelInfo,
-                         I18N("Encoding queue"));
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Encoding queue"));
   msg=AH_JobQueue_ToMessage(jq, dlg);
   if (!msg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode queue");
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			   0,
-			   AB_Banking_LogLevelError,
-                           I18N("Unable to encode"));
-    return AB_ERROR_GENERIC;
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Unable to encode"));
+    return GWEN_ERROR_GENERIC;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelInfo,
-                         I18N("Sending queue"));
-  rv=AH_Dialog_SendMessage_Wait(dlg, msg, timeout);
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Sending queue"));
+
+  rv=AH_Dialog_SendMessage(dlg, msg);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			   0,
-                           AB_Banking_LogLevelError,
-                           I18N("Unable to send (network error)"));
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Unable to send (network error)"));
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Message sent");
@@ -692,28 +692,24 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
 
   assert(cbox);
 
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelInfo,
-                         I18N("Waiting for response"));
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Waiting for response"));
 
-
-  msg=AH_Dialog_RecvMessage_Wait(dlg, timeout);
-  if (!msg) {
+  rv=AH_Dialog_RecvMessage(dlg, &msg);
+  if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "No message within specified timeout, giving up");
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-                           0,
-                           AB_Banking_LogLevelError,
-                           I18N("No response (timeout)"));
+	     "No message within specified timeout, giving up");
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("No response (timeout)"));
     return AB_ERROR_NETWORK;
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Got a message");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelInfo,
-                         I18N("Response received"));
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Response received"));
 
   /* try to dispatch the message */
   rsp=GWEN_DB_Group_new("response");
@@ -721,11 +717,10 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
     AH_Msg_Dump(msg, stderr, 2);
     GWEN_DB_Group_free(rsp);
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			   0,
-			   AB_Banking_LogLevelError,
-                           I18N("Bad response (unable to decode)"));
-    return AB_ERROR_GENERIC;
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Bad response (unable to decode)"));
+    return GWEN_ERROR_GENERIC;
   }
 
   /* transform from ISO 8859-1 to UTF8 */
@@ -734,30 +729,29 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   /* check for message reference */
   if (AH_Msg_GetMsgRef(msg)==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unrequested message, deleting it");
+    AH_Msg_Dump(msg, stderr, 2);
+    GWEN_DB_Dump(rsp, stderr, 2);
     GWEN_DB_Group_free(rsp);
     AH_Msg_free(msg);
-    AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			   0,
-			   AB_Banking_LogLevelError,
-                           I18N("Bad response (bad message reference)"));
-    return AB_ERROR_GENERIC;
+    GWEN_Gui_ProgressLog(cbox->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Bad response (bad message reference)"));
+    return GWEN_ERROR_GENERIC;
   }
 
   rv=AH_JobQueue_DispatchMessage(jq, msg, rsp);
   if (rv) {
-    if (rv==AB_ERROR_ABORTED) {
+    if (rv==GWEN_ERROR_ABORTED) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog aborted by server");
-      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-                             0,
-                             AB_Banking_LogLevelError,
-                             I18N("Dialog aborted by server"));
+      GWEN_Gui_ProgressLog(cbox->guiid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Dialog aborted by server"));
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not dispatch response");
-      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-                             0,
-                             AB_Banking_LogLevelError,
-                             I18N("Bad response (unable to dispatch)"));
+      GWEN_Gui_ProgressLog(cbox->guiid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Bad response (unable to dispatch)"));
     }
     GWEN_DB_Group_free(rsp);
     AH_Msg_free(msg);
@@ -814,7 +808,7 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
 			       AH_DIALOG *dlg,
-			       GWEN_TYPE_UINT32 jqFlags) {
+			       uint32_t jqFlags) {
   AH_JOBQUEUE *jqDlgOpen;
   AH_JOB *jDlgOpen;
   int rv;
@@ -830,7 +824,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     jDlgOpen=AH_Job_new("JobDialogInit", cbox->user, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
     if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)
       AH_Job_AddSigner(jDlgOpen,
@@ -838,7 +832,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
     if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
-      GWEN_TYPE_UINT32 tm;
+      uint32_t tm;
 
       tm=AH_User_GetTanMethods(cbox->user);
       if ((tm & ~AH_USER_TANMETHOD_SINGLE_STEP) &&
@@ -860,15 +854,14 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->user, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInitAnon");
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
     AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
   }
 
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-                         0,
-                         AB_Banking_LogLevelNotice,
-			 I18N("Opening dialog"));
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Opening dialog"));
   jqDlgOpen=AH_JobQueue_new(cbox->user);
   AH_JobQueue_AddFlags(jqDlgOpen, AH_JOBQUEUE_FLAGS_OUTBOX);
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Enqueueing dialog open request");
@@ -877,7 +870,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
     AH_Job_free(jDlgOpen);
     AH_JobQueue_free(jqDlgOpen);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgOpen);
@@ -891,22 +884,21 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     if (AH_Job_HasItanResult(jDlgOpen)) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
 		 "Adjusting to iTAN modes of the server");
-      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			     0,
-			     AB_Banking_LogLevelNotice,
-			     I18N("Adjusting to iTAN modes of the server"));
-      rv=AH_Job_CommitSystemData(jDlgOpen);
+      GWEN_Gui_ProgressLog(cbox->guiid,
+			   GWEN_LoggerLevel_Notice,
+			   I18N("Adjusting to iTAN modes of the server"));
+      rv=AH_Job_CommitSystemData(jDlgOpen, cbox->guiid);
       AH_JobQueue_free(jqDlgOpen);
       return 1;
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening dialog, aborting");
       AH_JobQueue_free(jqDlgOpen);
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done");
-  rv=AH_Job_CommitSystemData(jDlgOpen);
+  rv=AH_Job_CommitSystemData(jDlgOpen, cbox->guiid);
   AH_JobQueue_free(jqDlgOpen);
   return rv;
 }
@@ -916,24 +908,23 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
 int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
 				int timeout,
 				AH_DIALOG *dlg,
-				GWEN_TYPE_UINT32 jqFlags) {
+				uint32_t jqFlags) {
   AH_JOBQUEUE *jqDlgClose;
   AH_JOB *jDlgClose;
   GWEN_DB_NODE *db;
-  GWEN_TYPE_UINT32 dlgFlags;
+  uint32_t dlgFlags;
   int rv;
 
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
-			 0,
-			 AB_Banking_LogLevelNotice,
-                         I18N("Closing dialog"));
+  GWEN_Gui_ProgressLog(cbox->guiid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Closing dialog"));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
 	     jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
   jDlgClose=AH_Job_new("JobDialogEnd", cbox->user, 0);
   if (!jDlgClose) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogEnd");
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   /* set some parameters */
@@ -959,7 +950,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
       AH_JobQueueAddResultOk) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
     AH_JobQueue_free(jqDlgClose);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgClose);
@@ -969,7 +960,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog closed");
-  rv=AH_Job_CommitSystemData(jDlgClose);
+  rv=AH_Job_CommitSystemData(jDlgClose, cbox->guiid);
   AH_JobQueue_free(jqDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not commit system data");
@@ -997,7 +988,7 @@ void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
                AH_Job_GetName(j));
       AH_Job_SetStatus(j, AH_JobStatusError);
       if (logStr)
-        AH_Job_Log(j, AB_Banking_LogLevelError, logStr);
+        AH_Job_Log(j, GWEN_LoggerLevel_Error, logStr);
     }
     AH_Job_List_Add(j, cbox->finishedJobs);
   }
@@ -1016,7 +1007,7 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
   jobsTodo=0;
   for (;;) {
     AH_JOBQUEUE *jqTodo;
-    GWEN_TYPE_UINT32 jqFlags;
+    uint32_t jqFlags;
     AH_JOB *j;
     AH_JOB_LIST *jl;
 
@@ -1050,13 +1041,13 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 	      AH_JobQueueAddResultOk){
 	    DBG_ERROR(AQHBCI_LOGDOMAIN,
 		      "That's weird, I could not add the job to redo queue");
-            AH_Job_Log(j, AB_Banking_LogLevelError,
+            AH_Job_Log(j, GWEN_LoggerLevel_Error,
                        "Could not re-enqueue HBCI-job");
             AH_Job_SetStatus(j, AH_JobStatusError);
 	  }
 	  else {
 	    jobsTodo++;
-            AH_Job_Log(j, AB_Banking_LogLevelInfo,
+            AH_Job_Log(j, GWEN_LoggerLevel_Info,
                        "HBCI-job re-enqueued (multi-message job)");
 	    j=0; /* mark that this job has been dealt with */
 	  }
@@ -1071,12 +1062,12 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "That's weird, I could not add the job to redo queue");
 	  AH_Job_SetStatus(j, AH_JobStatusError);
-          AH_Job_Log(j, AB_Banking_LogLevelError,
+          AH_Job_Log(j, GWEN_LoggerLevel_Error,
                      "Could not enqueue HBCI-job");
 	}
 	else {
 	  jobsTodo++;
-          AH_Job_Log(j, AB_Banking_LogLevelInfo,
+          AH_Job_Log(j, GWEN_LoggerLevel_Info,
                      "HBCI-job enqueued (2)");
 	  j=0; /* mark that this job has been dealt with */
 	}
@@ -1088,7 +1079,7 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 	DBG_DEBUG(AQHBCI_LOGDOMAIN, "Bad status \"%s\" (%d)",
 		  AH_Job_StatusName(AH_Job_GetStatus(j)),
 		  AH_Job_GetStatus(j));
-	if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+	if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
 	  AH_Job_Dump(j, stderr, 4);
       }
       if (j) {
@@ -1125,7 +1116,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   AH_JOBQUEUE *jq;
   int rv=0;
   int i;
-  GWEN_TYPE_UINT32 jqflags;
+  uint32_t jqflags;
 
   if (AH_JobQueue_List_GetCount(jql)==0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No queues to handle, doing nothing");
@@ -1134,7 +1125,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   }
 
   for(i=0; i<2; i++) {
-    dlg=AH_Dialog_new(cbox->user);
+    dlg=AH_Dialog_new(cbox->user, cbox->guiid);
     rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1166,9 +1157,9 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     }
     else if (rv==1) {
       AH_Dialog_Disconnect(dlg, 2);
-      AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+      GWEN_Gui_ProgressLog(
 			     0,
-			     AB_Banking_LogLevelInfo,
+			     GWEN_LoggerLevel_Info,
 			     I18N("Retrying to open dialog"));
     }
   }
@@ -1226,7 +1217,7 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   int rv;
 
   /* open connection */
-  dlg=AH_Dialog_new(cbox->user);
+  dlg=AH_Dialog_new(cbox->user, cbox->guiid);
   rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1271,12 +1262,12 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
 void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
 					   AH_JOBQUEUE_LIST *jqlWanted,
 					   AH_JOBQUEUE_LIST *jqlRest,
-					   GWEN_TYPE_UINT32 jqflags,
-					   GWEN_TYPE_UINT32 jqmask) {
+					   uint32_t jqflags,
+					   uint32_t jqmask) {
   AH_JOBQUEUE *jq;
 
   while((jq=AH_JobQueue_List_First(jql))) {
-    GWEN_TYPE_UINT32 flags;
+    uint32_t flags;
 
     AH_JobQueue_List_Del(jq);
     flags=AH_JobQueue_GetFlags(jq);
@@ -1347,8 +1338,8 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
 					int timeout,
-					GWEN_TYPE_UINT32 jqflags,
-					GWEN_TYPE_UINT32 jqmask){
+					uint32_t jqflags,
+					uint32_t jqmask){
   AH_JOBQUEUE_LIST *jqlWanted;
   AH_JOBQUEUE_LIST *jqlRest;
   int rv;
@@ -1457,7 +1448,7 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
 
 
 
-AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci) {
+AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci, uint32_t guiid) {
   AH_OUTBOX *ob;
 
   assert(hbci);
@@ -1467,6 +1458,7 @@ AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci) {
   ob->hbci=hbci;
   ob->userBoxes=AH_Outbox__CBox_List_new();
   ob->finishedJobs=AH_Job_List_new();
+  ob->guiid=guiid;
   ob->usage=1;
   return ob;
 }
@@ -1523,7 +1515,7 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob){
 
   if (errors) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "%d errors occurred", errors);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -1642,7 +1634,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     AH_Job_List_Del(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusAnswered) {
-      rv=AH_Job_Process(j, ob->context);
+      rv=AH_Job_Process(j, ob->context, cbox->guiid);
       if (rv) {
         char buf[256];
 
@@ -1656,9 +1648,9 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
                  AH_Job_GetName(j));
 	AH_Job_SetStatus(j, AH_JobStatusError);
 
-        AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+        GWEN_Gui_ProgressLog(
                                0,
-                               AB_Banking_LogLevelError,
+                               GWEN_LoggerLevel_Error,
                                buf);
       }
     }
@@ -1707,7 +1699,7 @@ int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout){
     AH_Outbox__CBox_free(cbox);
     if (rv)
       errors++;
-    if (rv==AB_ERROR_USER_ABORT) {
+    if (rv==GWEN_ERROR_USER_ABORTED) {
       AH_Outbox__FinishOutbox(ob);
       return rv;
     }
@@ -1736,7 +1728,7 @@ void AH_Outbox_Commit(AH_OUTBOX *ob){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_Commit(j);
+      AH_Job_Commit(j, ob->guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -1753,7 +1745,7 @@ void AH_Outbox_CommitSystemData(AH_OUTBOX *ob){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_DefaultCommitHandler(j);
+      AH_Job_DefaultCommitHandler(j, ob->guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -1773,7 +1765,7 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
       /* only process answered jobs */
       DBG_DEBUG(AQHBCI_LOGDOMAIN,
 		"Processing job \"%s\"", AH_Job_GetName(j));
-      rv=AH_Job_Process(j, ob->context);
+      rv=AH_Job_Process(j, ob->context, ob->guiid);
       if (rv) {
 	char buf[256];
 
@@ -1789,9 +1781,9 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
 		 AH_Job_GetName(j));
 	AH_Job_SetStatus(j, AH_JobStatusError);
 
-	AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(ob->hbci),
+	GWEN_Gui_ProgressLog(
 			       0,
-			       AB_Banking_LogLevelError,
+			       GWEN_LoggerLevel_Error,
 			       buf);
       }
     }
@@ -1916,10 +1908,9 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return 0;
   }
 
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(ob->hbci),
-                         0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("AqHBCI started"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("AqHBCI started"));
 
   rv=AH_Outbox_StartSending(ob);
   if (rv) {
@@ -1941,10 +1932,9 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return rv;
   }
 
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(ob->hbci),
-                         0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("AqHBCI finished."));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("AqHBCI finished."));
   return 0;
 }
 
@@ -1954,28 +1944,29 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
                       int withProgress, int nounmount) {
   int rv;
-  GWEN_TYPE_UINT32 pid=0;
+  uint32_t pid=0;
 
   assert(ob);
   if (withProgress) {
-    pid=AB_Banking_ProgressStart(AH_HBCI_GetBankingApi(ob->hbci),
-				 I18N("Executing Jobs"),
-				 I18N("Now the jobs are send via their "
-				      "backends to the credit institutes."),
-				 AH_Outbox_CountTodoJobs(ob));
-
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+			       GWEN_GUI_PROGRESS_ALLOW_EMBED |
+			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       I18N("Executing Jobs"),
+			       I18N("Now the jobs are send via their "
+				    "backends to the credit institutes."),
+			       AH_Outbox_CountTodoJobs(ob),
+			       0);
   }
 
   ob->context=ctx;
-  GWEN_WaitCallback_Enter(AH_OUTBOX_EXECUTE_WCB_ID);
   rv=AH_Outbox__Execute(ob);
   /* unmount currently mounted medium */
   if (!nounmount)
-    AH_HBCI_UnmountCurrentMedium(ob->hbci);
+    AH_HBCI_ClearCryptTokenList(ob->hbci);
   if (withProgress) {
-    AB_Banking_ProgressEnd(AH_HBCI_GetBankingApi(ob->hbci), pid);
+    GWEN_Gui_ProgressEnd(pid);
   }
-  GWEN_WaitCallback_Leave();
   ob->context=0;
   return rv;
 }

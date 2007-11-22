@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -109,7 +110,7 @@ AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *a) {
 
   ul=AB_User_List2_new();
   for (i=0; ; i++) {
-    GWEN_TYPE_UINT32 id;
+    uint32_t id;
     AB_USER *u;
 
     id=GWEN_DB_GetIntValue(a->data, "static/user", i, 0);
@@ -135,7 +136,7 @@ AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *a) {
 
 
 AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *a) {
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
   AB_USER *u;
 
   assert(a);
@@ -201,7 +202,7 @@ AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *a) {
 
   ul=AB_User_List2_new();
   for (i=0; ; i++) {
-    GWEN_TYPE_UINT32 id;
+    uint32_t id;
     AB_USER *u;
 
     id=GWEN_DB_GetIntValue(a->data, "static/selectedUser", i, 0);
@@ -228,7 +229,7 @@ AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *a) {
 
 
 AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *a) {
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
   AB_USER *u;
 
   assert(a);
@@ -324,7 +325,7 @@ void AB_Account_Attach(AB_ACCOUNT *a){
 
 
 
-GWEN_TYPE_UINT32 AB_Account_GetUniqueId(const AB_ACCOUNT *a){
+uint32_t AB_Account_GetUniqueId(const AB_ACCOUNT *a){
   assert(a);
   assert(a->usage);
   return GWEN_DB_GetIntValue(a->data, "static/uniqueId", 0, 0);
@@ -332,7 +333,7 @@ GWEN_TYPE_UINT32 AB_Account_GetUniqueId(const AB_ACCOUNT *a){
 
 
 
-void AB_Account_SetUniqueId(AB_ACCOUNT *a, GWEN_TYPE_UINT32 id){
+void AB_Account_SetUniqueId(AB_ACCOUNT *a, uint32_t id){
   assert(a);
   assert(a->usage);
   GWEN_DB_SetIntValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,

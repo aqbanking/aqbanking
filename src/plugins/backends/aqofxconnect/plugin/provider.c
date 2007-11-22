@@ -16,12 +16,6 @@
 
 #define AO_PROVIDER_HEAVY_DEBUG
 
-#ifndef GWEN_DIR_SEPARATOR_S
-  /* for gwenyhwfar < 2.5.4 */
-# define GWEN_DIR_SEPARATOR '/'
-# define GWEN_DIR_SEPARATOR_S "/"
-#endif
-
 #include "provider_p.h"
 #include "account.h"
 #include "queues_l.h"
@@ -45,12 +39,8 @@
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/net2.h>
-#include <gwenhywfar/nl_ssl.h>
-#include <gwenhywfar/nl_socket.h>
-#include <gwenhywfar/nl_http.h>
-#include <gwenhywfar/nl_packets.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/i18n.h>
 
 #include <libofx/libofx.h>
 
@@ -59,18 +49,10 @@
 #include <errno.h>
 #include <string.h>
 
-#ifdef HAVE_I18N
-# ifdef HAVE_LOCALE_H
-#  include <locale.h>
-# endif
-# ifdef HAVE_LIBINTL_H
-#  include <libintl.h>
-# endif
 
-# define I18N(msg) dgettext(PACKAGE, msg)
-#else
-# define I18N(msg) msg
-#endif
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
+#define I18N_NOOP(msg) msg
+#define I18S(msg) msg
 
 #define I18N_NOOP(msg) msg
 
@@ -121,9 +103,6 @@ void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p) {
 
 int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AO_PROVIDER *dp;
-#ifdef HAVE_I18N
-  const char *s;
-#endif
   const char *logLevelName;
 
   assert(pro);
@@ -135,7 +114,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     GWEN_LOGGER_LEVEL ll;
 
     ll=GWEN_Logger_Name2Level(logLevelName);
-    if (ll!=GWEN_LoggerLevelUnknown) {
+    if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(AQOFXCONNECT_LOGDOMAIN, ll);
       DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
                "Overriding loglevel for AqOFXConnect with \"%s\"",
@@ -147,18 +126,6 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
                 logLevelName);
     }
   }
-
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  s=bindtextdomain(PACKAGE,  LOCALEDIR);
-  if (s) {
-    DBG_NOTICE(AQOFXCONNECT_LOGDOMAIN, "Locale bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-  else {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Error binding locale");
-  }
-#endif
 
   dp->dbConfig=dbData;
   dp->lastJobId=GWEN_DB_GetIntValue(dp->dbConfig, "lastJobId", 0, 0);
@@ -200,14 +167,14 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Deinit done");
 
   if (errors)
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
 
   return 0;
 }
 
 
 
-int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
+int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   AO_PROVIDER *dp;
 
   assert(pro);
@@ -228,13 +195,13 @@ int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "Job not supported (%d)",
              AB_Job_GetType(j));
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 
 
 
-int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
+int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   AO_PROVIDER *dp;
   AB_ACCOUNT *a;
   AB_USER *u;
@@ -271,7 +238,7 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "Job not supported (%d)",
              AB_Job_GetType(j));
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
 
@@ -437,7 +404,7 @@ int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl){
 
 
 
-AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid) {
+AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, uint32_t jid) {
   AB_JOB_LIST2_ITERATOR *jit;
 
   jit=AB_Job_List2_First(jl);
@@ -461,38 +428,26 @@ AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, GWEN_TYPE_UINT32 jid) {
 
 
 
-int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
+int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
+			uint32_t guiid){
   AO_PROVIDER *dp;
   int oks=0;
   int errors=0;
   AB_JOB_LIST2_ITERATOR *jit;
-  GWEN_TYPE_UINT32 pid;
   int rv;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  pid=AB_Banking_ProgressStart(AB_Provider_GetBanking(pro),
-			       I18N("Sending Requests"),
-			       I18N("We are now sending all requests "
-				    "to the banks.\n"
-				    "<html>"
-				    "We are now sending all requests "
-				    "to the banks.\n"
-				    "</html>"),
-			       AB_Job_List2_GetSize(dp->bankingJobs));
-
-
-  rv=AO_Provider_ExecQueue(pro, ctx);
+  rv=AO_Provider_ExecQueue(pro, ctx, guiid);
   if (!rv)
     oks++;
   else {
     errors++;
-    if (rv==AB_ERROR_USER_ABORT) {
+    if (rv==GWEN_ERROR_USER_ABORTED) {
       AO_Queue_Clear(dp->queue);
       AB_Job_List2_Clear(dp->bankingJobs);
-      AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
       return rv;
     }
   }
@@ -507,7 +462,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
     while(uj) {
       if (AB_Job_GetStatus(uj)==AB_Job_StatusSent) {
 	AB_JOB *rj;
-	GWEN_TYPE_UINT32 rjid;
+	uint32_t rjid;
 
 	rj=uj;
         /* find referenced job (if any) */
@@ -538,7 +493,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   }
 
   rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(pro), 0);
-  if (rv==AB_ERROR_USER_ABORT) {
+  if (rv==GWEN_ERROR_USER_ABORTED) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "User aborted");
     return rv;
@@ -546,11 +501,10 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 
   AO_Queue_Clear(dp->queue);
   AB_Job_List2_Clear(dp->bankingJobs);
-  AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
 
   if (!oks && errors) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Not a single job succeeded");
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -591,13 +545,13 @@ int AO_Provider_EncodeJob(AB_PROVIDER *pro,
   default:
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Unsupported job type (%d)",
               AB_Job_GetType(j));
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   if (res==0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "Could not create request for job");
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
   *pData=res;
   return 0;
@@ -606,410 +560,15 @@ int AO_Provider_EncodeJob(AB_PROVIDER *pro,
 
 
 
-void AO_Provider_AddBankCertFolder(AB_PROVIDER *pro,
-                                   const AB_USER *u,
-                                   GWEN_BUFFER *nbuf) {
-  const char *s;
-
-  AB_Provider_GetUserDataDir(pro, nbuf);
-  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S "banks" GWEN_DIR_SEPARATOR_S);
-  s=AB_User_GetCountry(u);
-  if (!s || !*s)
-    s="us";
-  GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendByte(nbuf, GWEN_DIR_SEPARATOR);
-  s=AB_User_GetBankCode(u);
-  assert(s);
-  GWEN_Buffer_AppendString(nbuf, s);
-  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S "certs");
-}
-
-
-
-
-GWEN_NETLAYER *AO_Provider_CreateConnection(AB_PROVIDER *pro,
-                                            AB_USER *u) {
-  AO_PROVIDER *dp;
-  GWEN_NETLAYER *nlBase;
-  GWEN_NETLAYER *nl=0;
-  GWEN_SOCKET *sk;
-  GWEN_INETADDRESS *addr;
-  const char *bankAddr;
-  int bankPort;
-  AO_USER_SERVERTYPE addrType;
-  GWEN_ERRORCODE err;
-  GWEN_BUFFER *nbuf;
-  GWEN_URL *url;
-  GWEN_DB_NODE *dbHeader;
-  const char *s;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  /* create socket */
-  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-
-  /* create transport layer */
-  nlBase=GWEN_NetLayerSocket_new(sk, 1);
-
-  addrType=AO_User_GetServerType(u);
-
-  /* get address */
-  bankAddr=AO_User_GetServerAddr(u);
-  if (!bankAddr) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User has no valid address settings");
-    GWEN_NetLayer_free(nlBase);
-    return 0;
-  }
-
-  bankPort=AO_User_GetServerPort(u);
-  if (bankPort<1) {
-    /* set default port if none given */
-    switch(addrType) {
-    case AO_User_ServerTypeHTTP:  bankPort=80; break;
-    case AO_User_ServerTypeHTTPS: bankPort=443; break;
-    default:
-      DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
-               "Unknown address type (%d), assuming HTTPS",
-               addrType);
-      bankPort=443;
-      break;
-    } /* switch */
-  }
-
-  /* extract address and local path from URL */
-  url=GWEN_Url_fromString(bankAddr);
-  if (!url) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bad URL");
-    GWEN_NetLayer_free(nlBase);
-    return 0;
-  }
-  if (GWEN_Url_GetPort(url)!=0)
-    bankPort=GWEN_Url_GetPort(url);
-
-  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
-  /* resolve address */
-  if (!GWEN_Error_IsOk(err)) {
-    char dbgbuf[256];
-
-    snprintf(dbgbuf, sizeof(dbgbuf)-1,
-	     I18N("Resolving hostname \"%s\" ..."),
-	     GWEN_Url_GetServer(url));
-    dbgbuf[sizeof(dbgbuf)-1]=0;
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-                           dbgbuf);
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Resolving hostname \"%s\"",
-	     GWEN_Url_GetServer(url));
-    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
-    if (!GWEN_Error_IsOk(err)) {
-      snprintf(dbgbuf, sizeof(dbgbuf)-1,
-	       I18N("Unknown hostname \"%s\""),
-               GWEN_Url_GetServer(url));
-      dbgbuf[sizeof(dbgbuf)-1]=0;
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                             AB_Banking_LogLevelError,
-                             dbgbuf);
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-		"Error resolving hostname \"%s\":",
-                GWEN_Url_GetServer(url));
-      DBG_ERROR_ERR(AQOFXCONNECT_LOGDOMAIN, err);
-      GWEN_Url_free(url);
-      GWEN_NetLayer_free(nlBase);
-      return 0;
-    }
-    else {
-      char addrBuf[256];
-      GWEN_ERRORCODE err;
-
-      err=GWEN_InetAddr_GetAddress(addr, addrBuf, sizeof(addrBuf)-1);
-      addrBuf[sizeof(addrBuf)-1]=0;
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(AQOFXCONNECT_LOGDOMAIN, err);
-      }
-      else {
-        snprintf(dbgbuf, sizeof(dbgbuf)-1,
-                 I18N("IP address is %s"),
-                 addrBuf);
-        dbgbuf[sizeof(dbgbuf)-1]=0;
-        AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                               AB_Banking_LogLevelNotice,
-                               dbgbuf);
-      }
-    }
-  }
-
-  /* complete address, set address in transport layer */
-  GWEN_InetAddr_SetPort(addr, bankPort);
-  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Port is: %d", bankPort);
-  GWEN_NetLayer_SetPeerAddr(nlBase, addr);
-  GWEN_InetAddr_free(addr);
-
-  switch(addrType) {
-  case AO_User_ServerTypeHTTP:
-    break;
-
-  case AO_User_ServerTypeHTTPS:
-    nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AO_Provider_AddBankCertFolder(pro, u, nbuf);
-
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-			   I18N("Creating HTTPS connection"));
-
-    nl=GWEN_NetLayerSsl_new(nlBase,
-			    GWEN_Buffer_GetStart(nbuf),
-			    GWEN_Buffer_GetStart(nbuf),
-			    0, 0, 1);
-    GWEN_Buffer_free(nbuf);
-    GWEN_NetLayer_free(nlBase);
-    nlBase=nl;
-    GWEN_NetLayerSsl_SetAskAddCertFn(nlBase,
-                                     AB_Banking_AskAddCert,
-                                     AB_Provider_GetBanking(pro));
-    break;
-
-  default:
-    DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
-              "Unknown server type %d", addrType);
-    return 0;
-  } /* switch */
-
-  /* add HTTP protocol to the chain, prepare command and header */
-  nl=GWEN_NetLayerHttp_new(nlBase);
-  GWEN_NetLayer_free(nlBase);
-  GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
-  dbHeader=GWEN_NetLayerHttp_GetOutHeader(nl);
-  assert(dbHeader);
-  s=GWEN_Url_GetServer(url);
-  if (s)
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "Host", s);
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "Pragma", "no-cache");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "Cache-control", "no cache");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "Content-type",
-		       "application/x-ofx");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "Accept",
-		       "*/*, application/x-ofx");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "Connection",
-                       "close");
-  GWEN_Url_free(url);
-  nlBase=nl;
-
-  /* add packets protocol to the chain */
-  nl=GWEN_NetLayerPackets_new(nlBase);
-  GWEN_NetLayer_free(nlBase);
-
-  GWEN_Net_AddConnectionToPool(nl);
-
-  /* return connection */
-  return nl;
-}
-
-
-
-int AO_Provider_SendMessage(AB_PROVIDER *pro,
-                            AB_USER *u,
-			    GWEN_NETLAYER *nl,
-                            const char *p,
-                            unsigned int plen) {
-  GWEN_BUFFER *nbuf;
-  GWEN_NETLAYER_STATUS nst;
-  GWEN_NL_PACKET *pk;
-  int rv;
-
-  assert(u);
-
-  nst=GWEN_NetLayer_GetStatus(nl);
-  if (nst==GWEN_NetLayerStatus_Disconnected) {
-    /* connection down */
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-	     "Connection is down");
-    return AB_ERROR_NETWORK;
-  }
-
-  nbuf=GWEN_Buffer_new(0, plen, 0, 1);
-  GWEN_Buffer_AppendBytes(nbuf, p, plen);
-  pk=GWEN_NL_Packet_new();
-  GWEN_Buffer_Rewind(nbuf);
-  GWEN_NL_Packet_SetBuffer(pk, nbuf);
-  rv=GWEN_NetLayerPackets_SendPacket(nl, pk);
-  if (rv) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-	     "Network error");
-    GWEN_NL_Packet_free(pk);
-    return AB_ERROR_NETWORK;
-  }
-
-  GWEN_NL_Packet_free(pk);
-
-  DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Message enqueued");
-  return 0;
-}
-
-
-
-int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
-                               AB_USER *u,
-                               const char *p,
-                               unsigned int plen,
-                               GWEN_BUFFER **rbuf) {
-  AO_PROVIDER *dp;
-  GWEN_NETLAYER *nl;
-  GWEN_NL_PACKET *pk;
-  int rv;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
-  assert(dp);
-
-  if (getenv("AQOFX_LOG_COMM")) {
-    FILE *f;
-
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Saving response in \"/tmp/ofx.log\" ...");
-    f=fopen("/tmp/ofx.log", "a+");
-    if (!f) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      fprintf(f, "\n\nSending:\n");
-      fprintf(f, "-------------------------------------\n");
-      if (fwrite(p,
-		 plen,
-                 1,
-                 f)!=1) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
-
-  /* setup connection */
-  nl=AO_Provider_CreateConnection(pro, u);
-  if (!nl) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Could not create connection");
-    return AB_ERROR_GENERIC;
-  }
-
-  /* connect */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Connecting..."));
-  rv=GWEN_NetLayer_Connect_Wait(nl, dp->connectTimeout);
-  if (rv) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not connect to bank (%d)", rv);
-    GWEN_NetLayer_free(nl);
-    return AB_ERROR_NETWORK;
-  }
-
-  /* send message */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Sending request..."));
-  rv=AO_Provider_SendMessage(pro, u, nl, p, plen);
-  if (rv) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-             "Error %d", rv);
-    GWEN_NetLayer_Disconnect(nl);
-    GWEN_NetLayer_free(nl);
-    return rv;
-  }
-
-  /* make sure message gets sent */
-  rv=GWEN_NetLayerPackets_Flush(nl, dp->sendTimeout);
-  if (rv) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-	     "Network error");
-    GWEN_NetLayer_Disconnect(nl);
-    GWEN_NetLayer_free(nl);
-    return AB_ERROR_NETWORK;
-  }
-
-  /* wait for response */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-			 I18N("Waiting for response..."));
-  pk=GWEN_NetLayerPackets_GetNextPacket_Wait(nl, dp->recvTimeout);
-  if (!pk) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "No response received");
-    GWEN_NetLayer_Disconnect(nl);
-    GWEN_NetLayer_free(nl);
-    return AB_ERROR_NETWORK;
-  }
-
-  /* found a response, transform it */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Parsing response..."));
-
-  /* disconnect */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Disconnecting..."));
-  if (GWEN_NetLayer_Disconnect(nl)) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-	     "Could not disconnect connection");
-  }
-
-  *rbuf=GWEN_NL_Packet_TakeBuffer(pk);
-  GWEN_NL_Packet_free(pk);
-
-  /* release connection ressources */
-  GWEN_NetLayer_free(nl);
-
-  if (getenv("AQOFX_LOG_COMM")) {
-    FILE *f;
-
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Saving response in \"/tmp/ofx.log\" ...");
-    f=fopen("/tmp/ofx.log", "a+");
-    if (!f) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      fprintf(f, "\n\nReceived:\n");
-      fprintf(f, "-------------------------------------\n");
-      if (fwrite(GWEN_Buffer_GetStart(*rbuf),
-		 GWEN_Buffer_GetUsedBytes(*rbuf),
-		 1,
-		 f)!=1) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
-
-  return 0;
-}
-
-
-
 int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-                                AB_USER *u) {
+				AB_USER *u,
+				uint32_t guiid) {
   AO_PROVIDER *dp;
   AO_CONTEXT *ctx;
   char *msg;
-  GWEN_BUFFER *rbuf;
+  GWEN_BUFFER *rbuf=NULL;
   int rv;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
   AB_IMEXPORTER_CONTEXT *ictx;
 
   assert(u);
@@ -1017,26 +576,31 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  pid=AB_Banking_ProgressStart(AB_Provider_GetBanking(pro),
-                               I18N("Requesting account list"),
-                               I18N("We are now requesting a list of "
-                                    "accounts\n"
-                                    "which can be managed via OFX.\n"
-                                    "<html>"
-                                    "We are now requesting a list of "
-                                    "accounts "
-                                    "which can be managed via <i>OFX</i>.\n"
-                                    "</html>"),
-			       1);
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_SHOW_LOG |
+                             GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Requesting account list"),
+			     I18N("We are now requesting a list of "
+				  "accounts\n"
+				  "which can be managed via OFX.\n"
+				  "<html>"
+				  "We are now requesting a list of "
+				  "accounts "
+				  "which can be managed via <i>OFX</i>.\n"
+				  "</html>"),
+			     1,
+			     guiid);
   ictx=AB_ImExporterContext_new();
   ctx=AO_Context_new(u, 0, ictx);
   assert(ctx);
-  rv=AO_Context_Update(ctx);
+  rv=AO_Context_Update(ctx, guiid);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
               "Error updating context");
     AO_Context_free(ctx);
-    AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
+    GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
 
@@ -1046,62 +610,62 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
               "Could not generate getAccounts-request");
     AO_Context_free(ctx);
     AB_ImExporterContext_free(ictx);
-    AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
-    return AB_ERROR_GENERIC;
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_ERROR_GENERIC;
   }
 
-  fprintf(stderr, "Sending this: %s\n", msg);
-  //AO_Context_free(ctx);
-  //AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
-  //return 0;
-
-  rv=AO_Provider_SendAndReceive(pro, u, msg, strlen(msg), &rbuf);
-  if (rv) {
+  rv=AO_Provider_SendAndReceive(pro, u,
+				(const uint8_t*)msg,
+				strlen(msg),
+				&rbuf,
+				guiid);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getAccounts-request (%d)", rv);
     AO_Context_free(ctx);
     AB_ImExporterContext_free(ictx);
-    AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
+    GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
 
   /* parse response */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Parsing response"));
+  GWEN_Gui_ProgressLog(guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Parsing response"));
 
   rv=libofx_proc_buffer(AO_Context_GetOfxContext(ctx),
                         GWEN_Buffer_GetStart(rbuf),
                         GWEN_Buffer_GetUsedBytes(rbuf));
   if (rv) {
-    DBG_ERROR(0, "Error parsing data: %d", rv);
-    rv=AB_ERROR_BAD_DATA;
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+	      "Error parsing data: %d", rv);
+    rv=GWEN_ERROR_BAD_DATA;
   }
   GWEN_Buffer_free(rbuf);
 
   if (!rv) {
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                           0,
-                           AB_Banking_LogLevelInfo,
-                           I18N("Processing response"));
-    rv=AO_Context_ProcessImporterContext(ctx);
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Processing response"));
+    rv=AO_Context_ProcessImporterContext(ctx, guiid);
     if (rv) {
-      DBG_ERROR(0, "Error pprocessing data: %d", rv);
-      rv=AB_ERROR_BAD_DATA;
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+		"Error pprocessing data: %d", rv);
+      rv=GWEN_ERROR_BAD_DATA;
     }
   }
 
   AO_Context_free(ctx);
   AB_ImExporterContext_free(ictx);
-  AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
+  GWEN_Gui_ProgressEnd(pid);
   return rv;
 }
 
 
 
 int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
-				  AB_IMEXPORTER_CONTEXT *ictx) {
+				  AB_IMEXPORTER_CONTEXT *ictx,
+				  uint32_t guiid) {
   AO_PROVIDER *dp;
   AO_CONTEXT *ctx;
   char *msg;
@@ -1133,13 +697,17 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   /* create and setup context */
   ctx=AO_Context_new(u, j, ictx);
   assert(ctx);
-  rv=AO_Context_Update(ctx);
+  rv=AO_Context_Update(ctx, guiid);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
               "Error updating context");
     AO_Context_free(ctx);
     return rv;
   }
+
+#ifdef OfxAccountData
+# warning Have OfxAccountData
+#endif
 
   /* create request data */
   msg=libofx_request_statement(AO_Context_GetFi(ctx),
@@ -1149,16 +717,15 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
               "Could not generate getStatements-request");
     AO_Context_free(ctx);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
-  //fprintf(stderr, "Sending this: %s\n", msg);
-  //AO_Context_free(ctx);
-  //AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
-  //return 0;
-
-  rv=AO_Provider_SendAndReceive(pro, u, msg, strlen(msg), &rbuf);
-  if (rv) {
+  rv=AO_Provider_SendAndReceive(pro, u,
+				(const uint8_t*) msg,
+				strlen(msg),
+				&rbuf,
+				guiid);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
               "Error exchanging getStatements-request (%d)", rv);
     GWEN_Buffer_free(rbuf);
@@ -1167,34 +734,34 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   }
 
   /* parse response */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                         0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Parsing response"));
+  GWEN_Gui_ProgressLog(guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Parsing response"));
 
   rv=libofx_proc_buffer(AO_Context_GetOfxContext(ctx),
                         GWEN_Buffer_GetStart(rbuf),
                         GWEN_Buffer_GetUsedBytes(rbuf));
   if (rv) {
-    DBG_ERROR(0, "Error parsing data: %d", rv);
-    rv=AB_ERROR_BAD_DATA;
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+	      "Error parsing data: %d", rv);
+    rv=GWEN_ERROR_BAD_DATA;
   }
   GWEN_Buffer_free(rbuf);
 
   if (!rv) {
     if (AO_Context_GetAbort(ctx))
-      rv=AB_ERROR_ABORTED;
+      rv=GWEN_ERROR_ABORTED;
   }
 
   if (!rv) {
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro),
-                           0,
-                           AB_Banking_LogLevelInfo,
-                           I18N("Processing response"));
-    rv=AO_Context_ProcessImporterContext(ctx);
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Processing response"));
+    rv=AO_Context_ProcessImporterContext(ctx, guiid);
     if (rv) {
-      DBG_ERROR(0, "Error pprocessing data: %d", rv);
-      rv=AB_ERROR_BAD_DATA;
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+		"Error pprocessing data: %d", rv);
+      rv=GWEN_ERROR_BAD_DATA;
     }
   }
 
@@ -1206,7 +773,8 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 
 int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              AO_USERQUEUE *uq){
+			      AO_USERQUEUE *uq,
+			      uint32_t guiid){
   AB_JOB_LIST2_ITERATOR *jit;
   AO_PROVIDER *dp;
   int errors=0;
@@ -1230,13 +798,13 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
         int rv;
 
 	/* start new context */
-        rv=AO_Provider_RequestStatements(pro, uj, ctx);
-	if (rv==AB_ERROR_USER_ABORT) {
+	rv=AO_Provider_RequestStatements(pro, uj, ctx, guiid);
+	if (rv==GWEN_ERROR_USER_ABORTED) {
 	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
 	  return rv;
 	}
-	else if (rv==AB_ERROR_ABORTED) {
+	else if (rv==GWEN_ERROR_ABORTED) {
           DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Aborted");
           break;
         }
@@ -1245,10 +813,9 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 	  oks++;
 	else
 	  errors++;
-	rv=AB_Banking_ProgressAdvance(AB_Provider_GetBanking(pro),
-				      0,
-				      AO_Provider_CountDoneJobs(dp->bankingJobs));
-	if (rv==AB_ERROR_USER_ABORT) {
+	rv=GWEN_Gui_ProgressAdvance(guiid,
+				    AO_Provider_CountDoneJobs(dp->bankingJobs));
+	if (rv==GWEN_ERROR_USER_ABORTED) {
 	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
 	  return rv;
@@ -1263,18 +830,14 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
     AB_Job_List2Iterator_free(jit);
   }
 
-  if (!oks && errors) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Not a single job succeeded");
-    return AB_ERROR_GENERIC;
-  }
-
   return 0;
 }
 
 
 
 int AO_Provider_ExecQueue(AB_PROVIDER *pro,
-                          AB_IMEXPORTER_CONTEXT *ctx) {
+			  AB_IMEXPORTER_CONTEXT *ctx,
+			  uint32_t guiid) {
   AO_USERQUEUE *uq;
   AO_PROVIDER *dp;
   int errors=0;
@@ -1287,12 +850,12 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 
   uq=AO_Queue_FirstUserQueue(dp->queue);
   while(uq) {
-    rv=AO_Provider_ExecUserQueue(pro, ctx, uq);
+    rv=AO_Provider_ExecUserQueue(pro, ctx, uq, guiid);
     if (rv)
       errors++;
     else
       oks++;
-    if (rv==AB_ERROR_USER_ABORT) {
+    if (rv==GWEN_ERROR_USER_ABORTED) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
       return rv;
     }
@@ -1301,7 +864,7 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 
   if (!oks && errors) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Not a single job succeeded");
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -1323,5 +886,7 @@ int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
   return 0;
 }
 
+
+#include "network.c"
 
 

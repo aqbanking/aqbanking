@@ -127,6 +127,9 @@
                     <property name="name">
                         <cstring>initCardRadio</cstring>
                     </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
                     <property name="text">
                         <string>Init Chipcard</string>
                     </property>

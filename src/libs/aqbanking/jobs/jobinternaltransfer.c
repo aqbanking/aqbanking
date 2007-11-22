@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -54,20 +55,6 @@ int AB_JobInternalTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
 const AB_TRANSACTION *AB_JobInternalTransfer_GetTransaction(const AB_JOB *j){
   return AB_JobTransferBase_GetTransaction(j);
 }
-
-
-
-int AB_JobInternalTransfer_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
-  return AB_JobTransferBase_toDb(j, db);
-}
-
-
-
-AB_JOB *AB_JobInternalTransfer_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
-  return AB_JobTransferBase_fromDb(AB_Job_TypeTransfer, a, db);
-}
-
-
 
 
 

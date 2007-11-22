@@ -24,7 +24,8 @@
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/ctplugin.h>
 
 #include <assert.h>
 
@@ -83,12 +84,12 @@ void ActionCheckFile::slotButtonClicked() {
   AB_PROVIDER *pro;
   int rv;
   GWEN_BUFFER *mtypeName;
-  GWEN_BUFFER *msubTypeName;
   GWEN_BUFFER *mediumName;
   std::string s;
   QString txt;
-  AH_MEDIUM *m;
+  GWEN_CRYPT_TOKEN *ct;
   bool created;
+  uint32_t pid;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
@@ -99,64 +100,67 @@ void ActionCheckFile::slotButtonClicked() {
 
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
-  mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
-  msubTypeName=GWEN_Buffer_new(0, 64, 0, 1);
-  mediumName=GWEN_Buffer_new(0, 64, 0, 1);
+  txt=QWidget::trUtf8("<qt>"
+                      "Checking type of the key file, please wait..."
+		      "</qt>");
 
+  /* try to determine the type and name */
+  mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
+  mediumName=GWEN_Buffer_new(0, 64, 0, 1);
   s=wInfo->getMediumName();
   if (!s.empty())
     GWEN_Buffer_AppendString(mediumName, s.c_str());
 
-  txt=QWidget::trUtf8("<qt>"
-                      "Checking type of the key file, please wait..."
-                      "</qt>");
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-                                  QBanking::QStringToUtf8String(txt).c_str(),
-                                  0, GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY);
-  rv=AH_Provider_CheckMedium(pro,
-                             GWEN_CryptToken_Device_File,
-                             mtypeName, msubTypeName, mediumName);
-  GWEN_WaitCallback_Leave();
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     QWidget::tr("Checking Medium").utf8(),
+			     txt.utf8(),
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+
+  rv=AH_Provider_CheckCryptToken(pro,
+				 GWEN_Crypt_Token_Device_File,
+				 mtypeName,
+				 mediumName,
+				 0);
+  GWEN_Gui_ProgressEnd(pid);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
-    GWEN_Buffer_free(msubTypeName);
     GWEN_Buffer_free(mtypeName);
     _realDialog->setStatus(ActionWidget::StatusFailed);
     return;
   }
-
-  m=AH_Provider_FindMedium(pro,
-                           GWEN_Buffer_GetStart(mtypeName),
-                           GWEN_Buffer_GetStart(mediumName));
-  if (m) {
-    DBG_ERROR(0, "Medium is already listed");
-    created=false;
-    wInfo->setMedium(m);
-  }
-  else {
-    m=AH_Provider_MediumFactory(pro,
-                                GWEN_Buffer_GetStart(mtypeName),
-                                GWEN_Buffer_GetStart(msubTypeName),
-                                GWEN_Buffer_GetStart(mediumName));
-    assert(m);
-    created=true;
-  }
-
+  wInfo->setMediumType(GWEN_Buffer_GetStart(mtypeName));
+  wInfo->setMediumName(GWEN_Buffer_GetStart(mediumName));
   GWEN_Buffer_free(mediumName);
-  GWEN_Buffer_free(msubTypeName);
   GWEN_Buffer_free(mtypeName);
 
-  rv=AH_Medium_Mount(m);
+  /* create crypt token */
+  rv=AH_Provider_GetCryptToken(pro,
+			       wInfo->getMediumType().c_str(),
+			       wInfo->getMediumName().c_str(),
+			       &ct);
+  if (rv) {
+    DBG_ERROR(0, "Error creating CryptToken object (%d)", rv);
+    _realDialog->setStatus(ActionWidget::StatusFailed);
+    return;
+  }
+
+  created=true;
+
+  rv=GWEN_Crypt_Token_Open(ct, 0, 0);
   if (rv) {
     DBG_ERROR(0, "Error mounting medium (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
     if (created)
-      AH_Medium_free(m);
+      AH_Provider_ClearCryptTokenList(pro);
     return;
   }
 
-  wInfo->setMedium(m);
+  wInfo->setToken(ct);
   if (created)
     wInfo->addFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
 
@@ -175,21 +179,22 @@ bool ActionCheckFile::apply() {
 
 bool ActionCheckFile::undo() {
   WizardInfo *wInfo;
-  AH_MEDIUM *m;
+  GWEN_CRYPT_TOKEN *ct;
+  AB_PROVIDER *pro;
 
   wInfo=getWizard()->getWizardInfo();
   assert(wInfo);
 
-  m=wInfo->getMedium();
-  if (m) {
-    if (AH_Medium_IsMounted(m))
-      AH_Medium_Unmount(m, 1);
+  pro=wInfo->getProvider();
+  assert(pro);
 
+  ct=wInfo->getToken();
+  if (ct) {
+    AH_Provider_ClearCryptTokenList(pro);
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
-      AH_Medium_free(m);
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }
-    wInfo->setMedium(0);
+    wInfo->setToken(NULL);
   }
 
   return true;

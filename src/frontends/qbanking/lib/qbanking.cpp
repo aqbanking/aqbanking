@@ -16,10 +16,7 @@
 #endif
 
 
-#include "qbanking_p.h"
-#include "qbprogress.h"
-#include "qbsimplebox.h"
-#include "qbinputbox.h"
+#include "qbanking.h"
 #include "qbflagstaff.h"
 #include "qbmapaccount.h"
 #include "qbimporter.h"
@@ -28,9 +25,6 @@
 #include "qbselectbank.h"
 #include "qbcfgmodule.h"
 #include "qbcfgtabsettings.h"
-
-#include "qbwcb_fast.h"
-#include "qbwcb_simple.h"
 
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgettransactions.h>
@@ -52,23 +46,31 @@
 #include <gwenhywfar/pathmanager.h> // for GWEN_PathManager_GetPaths
 
 
+/* Note: We use the key "AqBanking" because from the windows registry
+ * point of view, these plugins all belong to the large AqBanking
+ * package. */
+#define QBANKING_REGKEY_PATHS        "Software\\AqBanking\\Paths"
+#define QBANKING_REGKEY_CFGMODULEDIR "cfgmoduledir"
+#define QBANKING_CFGMODULEDIR        "cfgmodules"
+
+
 #ifdef OS_WIN32
 # define DIRSEP "\\"
 #else
 # define DIRSEP "/"
 #endif
 
+#define QBANKING_DESTLIB "qbanking"
+
 
 
 QBanking::QBanking(const char *appname,
                    const char *fname)
-:Banking(appname, fname)
-,_parentWidget(0)
-,_lastWidgetId(0)
-,_logLevel(AB_Banking_LogLevelInfo)
+:AB_Banking(appname, fname)
+,_parentWidget(NULL)
+,_logLevel(GWEN_LoggerLevel_Info)
 ,_translator(0)
-,_simpleCallback(0)
-,_fastCallback(0)
+,_gui(NULL)
 ,_pluginManagerCfgModules(0)
 ,_appCfgModule(0){
   _flagStaff=new QBFlagStaff();
@@ -86,6 +88,18 @@ QBanking::~QBanking(){
 
 
 
+QGui *QBanking::getGui() const {
+  return _gui;
+}
+
+
+
+void QBanking::setGui(QGui *g) {
+  _gui=g;
+}
+
+
+
 void QBanking::setAppHelpPath(const QString &s) {
   _appHelpPath=s;
 }
@@ -93,25 +107,13 @@ void QBanking::setAppHelpPath(const QString &s) {
 
 
 int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
-  GWEN_BUFFEREDIO *bio;
   GWEN_XMLNODE *xmlNode;
-  GWEN_BUFFER *buf;
-  int rv;
 
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(buf, text);
-  GWEN_Buffer_Rewind(buf);
-  bio=GWEN_BufferedIO_Buffer2_new(buf, 1);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "html");
-  rv=GWEN_XML_Parse(xmlNode, bio,
-		    GWEN_XML_FLAGS_DEFAULT |
-                    GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
-  if (rv) {
+  xmlNode=GWEN_XMLNode_fromString(text, strlen(text),
+				  GWEN_XML_FLAGS_DEFAULT |
+				  GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  if (xmlNode==NULL) {
     DBG_DEBUG(0, "here");
-    GWEN_XMLNode_free(xmlNode);
     return -1;
   }
   else {
@@ -120,31 +122,20 @@ int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
     nn=GWEN_XMLNode_FindFirstTag(xmlNode, "html", 0, 0);
     if (nn) {
       GWEN_XMLNODE *on, *onn;
+      int rv;
 
       on=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
       onn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "qt");
       GWEN_XMLNode_AddChild(on, onn);
       GWEN_XMLNode_AddChildrenOnly(onn, nn, 1);
 
-        /* text contains HTML tag, take it */
-      bio=GWEN_BufferedIO_Buffer2_new(tbuf, 0);
-      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-      rv=GWEN_XMLNode_WriteToStream(on, bio, GWEN_XML_FLAGS_DEFAULT);
+      /* text contains HTML tag, take it */
+      rv=GWEN_XMLNode_toBuffer(on, tbuf, GWEN_XML_FLAGS_DEFAULT);
       GWEN_XMLNode_free(on);
       if (rv) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing data to stream");
-	GWEN_BufferedIO_Abandon(bio);
-	GWEN_BufferedIO_free(bio);
-        GWEN_XMLNode_free(xmlNode);
+	GWEN_XMLNode_free(xmlNode);
 	return -1;
-      }
-      else {
-	rv=GWEN_BufferedIO_Close(bio);
-	GWEN_BufferedIO_free(bio);
-        if (rv) {
-          GWEN_XMLNode_free(xmlNode);
-          return -1;
-        }
       }
     }
     else {
@@ -158,347 +149,8 @@ int QBanking::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
 
 
 
-int QBanking::messageBox(GWEN_TYPE_UINT32 flags,
-                         const char *title,
-                         const char *text,
-                         const char *b1,
-                         const char *b2,
-                         const char *b3){
-  int rv;
-  GWEN_BUFFER *buf;
-
-  buf=GWEN_Buffer_new(0, strlen(text), 0, 1);
-  if (!_extractHTML(text, buf)) {
-    text=GWEN_Buffer_GetStart(buf);
-  }
-
-  switch(flags & AB_BANKING_MSG_FLAGS_TYPE_MASK) {
-  case AB_BANKING_MSG_FLAGS_TYPE_WARN:
-    rv=QMessageBox::warning(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text), 
-			    b1 ? QString::fromUtf8(b1) : QString::null,
-			    b2 ? QString::fromUtf8(b2) : QString::null,
-			    b3 ? QString::fromUtf8(b3) : QString::null);
-    break;
-  case AB_BANKING_MSG_FLAGS_TYPE_ERROR:
-    rv=QMessageBox::critical(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text), 
-			     b1 ? QString::fromUtf8(b1) : QString::null,
-			     b2 ? QString::fromUtf8(b2) : QString::null,
-			     b3 ? QString::fromUtf8(b3) : QString::null);
-    break;
-  case AB_BANKING_MSG_FLAGS_TYPE_INFO:
-  default:
-    rv=QMessageBox::information(_parentWidget, QString::fromUtf8(title), QString::fromUtf8(text),
-				b1 ? QString::fromUtf8(b1) : QString::null,
-				b2 ? QString::fromUtf8(b2) : QString::null,
-				b3 ? QString::fromUtf8(b3) : QString::null);
-    break;
-  }
-  rv++;
-  GWEN_Buffer_free(buf);
-  return rv;
-}
-
-
-
-int QBanking::inputBox(GWEN_TYPE_UINT32 flags,
-                       const char *title,
-                       const char *text,
-                       char *buffer,
-                       int minLen,
-                       int maxLen){
-  GWEN_BUFFER *buf;
-
-  buf=GWEN_Buffer_new(0, strlen(text), 0, 1);
-  if (!_extractHTML(text, buf)) {
-    text=GWEN_Buffer_GetStart(buf);
-  }
-
-  QBInputBox ib(QString::fromUtf8(title), QString::fromUtf8(text),
-		flags, minLen, maxLen, 0, "InputBox", true);
-  GWEN_Buffer_free(buf);
-  if (ib.exec()==QDialog::Accepted) {
-    QString s;
-
-    s=ib.getInput();
-    int len=s.length();
-    if (len && len<maxLen) {
-      // FIXME: QString::latin1() is most probably wrong here!
-      // This means that the entered string will be passed into
-      // AQ_BANKING in latin1 encoding, not in utf8. This should
-      // probably be replaced by s.utf8()! But we need to watch
-      // out for potentially breaking some people's PINs. For
-      // those who had Umlauts in their PIN there should at least
-      // be a commandline-tool available that will accept PINs in
-      // a configurable encoding for reading, and a different PIN
-      // for writing. -- cstim, 2005-09-15
-      memmove(buffer, s.latin1(), len);
-      buffer[len]=0;
-    }
-    else {
-      DBG_ERROR(0, "Bad pin length");
-      return AB_ERROR_INVALID;
-    }
-    return 0;
-  }
-  else {
-    DBG_WARN(0, "Aborted by user");
-    return AB_ERROR_USER_ABORT;
-  }
-}
-
-
-
-GWEN_TYPE_UINT32 QBanking::showBox(GWEN_TYPE_UINT32 flags,
-                                   const char *title,
-                                   const char *text){
-  GWEN_TYPE_UINT32 id;
-  QBSimpleBox *b;
-  QWidget *w;
-  GWEN_BUFFER *buf;
-
-  buf=GWEN_Buffer_new(0, strlen(text), 0, 1);
-  if (!_extractHTML(text, buf)) {
-    text=GWEN_Buffer_GetStart(buf);
-  }
-
-  w=_findProgressWidget(0);
-  id=++_lastWidgetId;
-  b=new QBSimpleBox(id, QString::fromUtf8(title),
-		    QString::fromUtf8(text),
-		    w, "SimpleBox",
-		    Qt::WType_TopLevel | Qt::WType_Dialog | Qt::WShowModal);
-  GWEN_Buffer_free(buf);
-  //b->setModal(true);
-  if (flags & AB_BANKING_SHOWBOX_FLAGS_BEEP)
-    QApplication::beep();
-
-  b->show();
-  _simpleBoxWidgets.push_front(b);
-  qApp->processEvents();
-  return id;
-}
-
-
-
-void QBanking::hideBox(GWEN_TYPE_UINT32 id){
-  if (_simpleBoxWidgets.size()==0) {
-    DBG_WARN(0, "No simpleBox widgets");
-    return;
-  }
-  if (id==0) {
-    QBSimpleBox *b;
-
-    b=_simpleBoxWidgets.front();
-    b->close(true);
-    _simpleBoxWidgets.pop_front();
-  }
-  else {
-    std::list<QBSimpleBox*>::iterator it;
-    for (it=_simpleBoxWidgets.begin(); it!=_simpleBoxWidgets.end(); it++) {
-      if ((*it)->getId()==id) {
-        (*it)->close(true);
-        _simpleBoxWidgets.erase(it);
-        break;
-      }
-    }
-  }
-  qApp->processEvents();
-}
-
-
-
-GWEN_TYPE_UINT32 QBanking::progressStart(const char *title,
-                                         const char *text,
-                                         GWEN_TYPE_UINT32 total){
-  GWEN_TYPE_UINT32 id;
-  QBProgress *pr;
-  GWEN_BUFFER *buf;
-
-  buf=GWEN_Buffer_new(0, strlen(text), 0, 1);
-  if (!_extractHTML(text, buf)) {
-    text=GWEN_Buffer_GetStart(buf);
-  }
-
-  _cleanupProgressWidgets();
-  id=++_lastWidgetId;
-  pr=new QBProgress(id,
-                    QBProgress::ProgressTypeNormal,
-                    QString::fromUtf8(title),
-                    QString::fromUtf8(text),
-                    QString::null,
-                    _parentWidget, "ProgressWidget",
-                    Qt::WType_Dialog | Qt::WShowModal);
-  GWEN_Buffer_free(buf);
-  if (pr->start(total)) {
-    DBG_ERROR(0, "Could not start progress dialog");
-    delete pr;
-    return 0;
-  }
-  pr->show();
-  _progressWidgets.push_front(pr);
-  return id;
-}
-
-
-
-QBProgress *QBanking::_findProgressWidget(GWEN_TYPE_UINT32 id) {
-  std::list<QBProgress*>::iterator it;
-
-  if (_progressWidgets.size()==0) {
-    DBG_WARN(0, "No progress widgets");
-    return 0;
-  }
-  if (id==0)
-    return _progressWidgets.front();
-  for (it=_progressWidgets.begin(); it!=_progressWidgets.end(); it++) {
-    if ((*it)->getId()==id)
-      return *it;
-  }
-
-  DBG_WARN(0, "Progress widget \"%08x\" not found", (unsigned int)id);
-  return 0;
-}
-
-
-
-void QBanking::_cleanupProgressWidgets() {
-  std::list<QBProgress*>::iterator it;
-
-  while(1) {
-    bool del;
-
-    del=false;
-    for (it=_progressWidgets.begin(); it!=_progressWidgets.end(); it++) {
-      if ((*it)->isClosed()) {
-        delete *it;
-        _progressWidgets.erase(it);
-        del=true;
-        break;
-      }
-    } /* for */
-    if (!del)
-      break;
-  } /* while */
-}
-
-
-
-int QBanking::progressAdvance(GWEN_TYPE_UINT32 id,
-                              GWEN_TYPE_UINT32 progress){
-  QBProgress *pr;
-
-  pr=_findProgressWidget(id);
-  if (pr) {
-    return pr->advance(progress);
-  }
-  else
-    return AB_ERROR_NOT_FOUND;
-}
-
-
-
-int QBanking::progressLog(GWEN_TYPE_UINT32 id,
-                          AB_BANKING_LOGLEVEL level,
-                          const char *chartext){
-  QBProgress *pr;
-  QString text(QString::fromUtf8(chartext));
-
-  // Necessary when passing this QString into the macros
-  QCString local8Bit = text.local8Bit();
-
-  if (level>_logLevel) {
-    DBG_NOTICE(0, "Not logging this: %02d: %s (we are at %d)",
-               level, local8Bit.data(), _logLevel);
-    /* don't log this */
-    return 0;
-  }
-
-  DBG_INFO(0, "%02d: %s", level, local8Bit.data());
-  pr=_findProgressWidget(id);
-  if (pr) {
-    return pr->log(level, text);
-  }
-  else {
-    return AB_ERROR_NOT_FOUND;
-  }
-}
-
-
-
-int QBanking::progressEnd(GWEN_TYPE_UINT32 id){
-  QBProgress *pr;
-  int res;
-
-  if (_progressWidgets.size()==0) {
-    DBG_INFO(0, "No active progress widget");
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  res=AB_ERROR_NOT_FOUND;
-  if (id==0) {
-    pr=_progressWidgets.front();
-    res=pr->end();
-    _progressWidgets.pop_front();
-  }
-  else {
-    std::list<QBProgress*>::iterator it;
-
-    for (it=_progressWidgets.begin(); it!=_progressWidgets.end(); it++) {
-      if ((*it)->getId()==id) {
-	res=(*it)->end();
-	_progressWidgets.erase(it);
-	break;
-      }
-    }
-  }
-
-  return res;
-}
-
-
-
-void QBanking::setParentWidget(QWidget *w) {
-  _parentWidget=w;
-}
-
-QWidget *QBanking::getParentWidget() {
-  return _parentWidget;
-}
-
-
 QBFlagStaff *QBanking::flagStaff(){
   return _flagStaff;
-}
-
-
-
-int QBanking::enqueueJob(AB_JOB *j){
-  int rv;
-
-  rv=Banking::enqueueJob(j);
-
-  flagStaff()->queueUpdated();
-  return rv;
-}
-
-
-
-int QBanking::dequeueJob(AB_JOB *j){
-  int rv;
-
-  rv=Banking::dequeueJob(j);
-  flagStaff()->queueUpdated();
-  return rv;
-}
-
-
-
-int QBanking::executeQueue(AB_IMEXPORTER_CONTEXT *ctx){
-  int rv;
-
-  rv=Banking::executeQueue(ctx);
-  flagStaff()->queueUpdated();
-  return rv;
 }
 
 
@@ -522,7 +174,7 @@ void QBanking::invokeHelp(const QString &context,
     url+=+"#"+subject;
 
   p=new QProcess();
-  p->addArgument("qb-help");
+  p->addArgument(QBHELP_BINARY_NAME);
   p->addArgument(url);
   if (!_appHelpPath.isEmpty())
     p->addArgument(_appHelpPath);
@@ -577,196 +229,6 @@ AB_ACCOUNT *QBanking::_getAccount(const char *accountId){
 
 
 
-
-bool QBanking::requestBalance(const char *accountId){
-  AB_ACCOUNT *a;
-  int rv;
-
-  if (!accountId) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Account id is required");
-    return AB_ERROR_INVALID;
-  }
-
-  a=_getAccount(accountId);
-  if (!a)
-    return false;
-
-  rv=AB_Banking_RequestBalance(getCInterface(),
-			       AB_Account_GetBankCode(a),
-			       AB_Account_GetAccountNumber(a));
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Request error (%d)",
-	      rv);
-    QMessageBox::critical(_parentWidget,
-                          QWidget::tr("Queue Error"),
-                          QWidget::tr("<qt>"
-				      "<p>"
-				      "Unable to enqueue your request."
-				      "</p>"
-				      "</qt>"
-				     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
-  }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Job successfully enqueued");
-  return true;
-}
-
-
-
-bool QBanking::requestTransactions(const char *accountId,
-                                   const QDate &fromDate,
-                                   const QDate &toDate){
-  AB_ACCOUNT *a;
-  int rv;
-  AB_JOB *job;
-
-  if (!accountId) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Account id is required");
-    return AB_ERROR_INVALID;
-  }
-
-  a=_getAccount(accountId);
-  if (!a)
-    return false;
-
-  job=AB_JobGetTransactions_new(a);
-  rv=AB_Job_CheckAvailability(job);
-  if (rv) {
-    DBG_NOTICE(0, "Job \"GetTransactions\" is not available (%d)", rv);
-    AB_Job_free(job);
-    QMessageBox::critical(_parentWidget,
-			  QWidget::tr("Job Not Available"),
-			  QWidget::tr("The job you requested is not available"
-				      "with\n"
-				      "the backend which handles "
-				      "this account.\n"),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
-  }
-
-  /* check/set fromDate */
-  if (fromDate.isValid()) {
-    GWEN_TIME *ti1;
-
-    ti1=GWEN_Time_new(fromDate.year(),
-		      fromDate.month()-1,
-		      fromDate.day(), 0, 0, 0, 0);
-    AB_JobGetTransactions_SetFromTime(job, ti1);
-    GWEN_Time_free(ti1);
-  }
-  else {
-    GWEN_DB_NODE *db;
-
-    db=getSharedData("qbanking");
-    assert(db);
-    db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			"banking/lastUpdate");
-    if (db) {
-      GWEN_TIME *ti;
-
-      ti=GWEN_Time_fromDb(db);
-      if (ti) {
-	AB_JobGetTransactions_SetFromTime(job, ti);
-	GWEN_Time_free(ti);
-      }
-    }
-    else {
-      QDate qd;
-      GWEN_TIME *ti1;
-      int days;
-      int day, month, year;
-
-      ti1=GWEN_CurrentTime();
-      days=AB_JobGetTransactions_GetMaxStoreDays(job);
-      if (days!=-1) {
-	GWEN_TIME *ti2;
-  
-	ti2=GWEN_Time_fromSeconds(GWEN_Time_Seconds(ti1)-(60*60*24*days));
-	GWEN_Time_free(ti1);
-	ti1=ti2;
-      }
-      if (GWEN_Time_GetBrokenDownDate(ti1, &day, &month, &year)) {
-	DBG_ERROR(0, "Bad date");
-	qd=QDate();
-      }
-      else
-	qd=QDate(year, month+1, day);
-      GWEN_Time_free(ti1);
-
-      QBPickStartDate psd(this, qd, QDate(), 3, 0, "PickStartDate", true);
-      if (psd.exec()!=QDialog::Accepted) {
-	AB_Job_free(job);
-	return false;
-      }
-      qd=psd.getDate();
-      if (qd.isValid()) {
-	ti1=GWEN_Time_new(qd.year(), qd.month()-1, qd.day(), 0, 0, 0, 0);
-	AB_JobGetTransactions_SetFromTime(job, ti1);
-	GWEN_Time_free(ti1);
-      }
-    }
-  }
-
-  /* check/set toDate */
-  if (toDate.isValid()) {
-    GWEN_TIME *ti1;
-
-    ti1=GWEN_Time_new(toDate.year(),
-		      toDate.month()-1,
-		      toDate.day(), 0, 0, 0, 0);
-    AB_JobGetTransactions_SetToTime(job, ti1);
-    GWEN_Time_free(ti1);
-  }
-
-  DBG_NOTICE(0, "Enqueuing job");
-  rv=enqueueJob(job);
-  AB_Job_free(job);
-  if (rv) {
-    DBG_ERROR(0,
-	      "Request error (%d)",
-	      rv);
-    QMessageBox::critical(_parentWidget,
-			  QWidget::tr("Queue Error"),
-			  QWidget::tr("<qt>"
-				      "<p>"
-				      "Unable to enqueue your request."
-				      "</p>"
-				      "</qt>"
-				     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
-  }
-  else {
-    GWEN_TIME *ti1;
-    GWEN_DB_NODE *dbT;
-
-    ti1=GWEN_CurrentTime();
-    dbT=getSharedData("qbanking");
-    assert(dbT);
-    dbT=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-			 "banking/lastUpdate");
-    assert(dbT);
-    if (GWEN_Time_toDb(ti1, dbT)) {
-      DBG_ERROR(0, "Could not save time");
-    }
-    GWEN_Time_free(ti1);
-  }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Job successfully enqueued");
-  statusMessage(QWidget::tr("Jobs added to outbox"));
-
-  return true;
-}
-
-
-
 void QBanking::setAccountAlias(AB_ACCOUNT *a, const char *alias){
   assert(a);
   assert(alias);
@@ -806,7 +268,7 @@ bool QBanking::askMapAccount(const char *id,
 
 
 bool QBanking::importContext(AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_TYPE_UINT32 flags){
+                             uint32_t flags){
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
@@ -820,7 +282,7 @@ bool QBanking::importContext(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 bool QBanking::importAccountInfo(AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                 GWEN_TYPE_UINT32 flags){
+                                 uint32_t flags){
   DBG_NOTICE(0, "Import account info function not overloaded");
   return false;
 }
@@ -916,7 +378,7 @@ int QBanking::init(){
   int rv;
   GWEN_PLUGIN_MANAGER *pm;
 
-  rv=Banking::init();
+  rv=AB_Banking::init();
   if (rv)
     return rv;
 
@@ -935,81 +397,46 @@ int QBanking::init(){
   assert(sl);
   QString datadir(GWEN_StringList_FirstString(sl));
   GWEN_StringList_free(sl);
+  datadir+=DIRSEP;
+  datadir+="aqbanking";
   QDir i18ndir = datadir;
   if (!i18ndir.exists())
-    DBG_INFO(0, "Datadir %s does not exist.", i18ndir.path().ascii());
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Datadir %s does not exist.", i18ndir.path().ascii());
   i18ndir.cd("i18n");
   if (!i18ndir.exists())
-    DBG_INFO(0, "I18ndir %s does not exist.", i18ndir.path().ascii());
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "I18ndir %s does not exist.", i18ndir.path().ascii());
 
   // no need to specify ".qm" suffix; QTranslator tries that itself
   if (_translator->load(languageCode,
 			i18ndir.path())) {
-    DBG_DEBUG(0, "Qt I18N available for your language");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	      "Qt I18N available for your language");
   }
   else {
-    DBG_INFO(0, "No Qt translation found for your language %s", 
-	     languageCode.ascii());
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "No Qt translation found for your language %s",
+	      languageCode.ascii());
   }
   qApp->installTranslator(_translator);
 
-  _simpleCallback=new QBSimpleCallback(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
-  if (_simpleCallback->registerCallback()) {
-    QMessageBox::critical(_parentWidget,
-                          QWidget::tr("Internal Error"),
-                          QWidget::tr("<qt>"
-                                      "<p>"
-                                      "Could not register SimpleCallback."
-                                      "</p>"
-                                      "<p>"
-                                      "This is an internal error, please "
-                                      "report it to "
-                                      "<b>martin@libchipcard.de</b>"
-                                      "</p>"
-                                      "</qt>"
-                                     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    delete _simpleCallback;
-    _simpleCallback=0;
-    return -1;
-  }
-
-  _fastCallback=new QBFastCallback(GWEN_WAITCALLBACK_ID_FAST);
-  if (_fastCallback->registerCallback()) {
-    QMessageBox::critical(_parentWidget,
-                          QWidget::tr("Internal Error"),
-                          QWidget::tr("<qt>"
-                                      "<p>"
-                                      "Could not register FastCallback."
-                                      "</p>"
-                                      "<p>"
-                                      "This is an internal error, please "
-                                      "report it to "
-                                      "<b>martin@libchipcard.de</b>"
-                                      "</p>"
-                                      "</qt>"
-                                     ),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    delete _fastCallback;
-    _fastCallback=0;
-    return -1;
-  }
-
   /* create cfg module plugin manager */
-  DBG_DEBUG(0, "Registering cfg module plugin manager");
-  pm=GWEN_PluginManager_new(QBANKING_PM_CFGMODULE);
-  GWEN_PluginManager_AddPathFromWinReg(pm,
+  DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	    "Registering cfg module plugin manager");
+  pm=GWEN_PluginManager_new(QBANKING_PM_CFGMODULE, QBANKING_DESTLIB);
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not register cfg module plugin manager");
+    return -1;
+  }
+  GWEN_PluginManager_AddPathFromWinReg(pm, QBANKING_DESTLIB,
                                        QBANKING_REGKEY_PATHS,
-                                       QBANKING_REGKEY_CFGMODULEDIR);
-  GWEN_PluginManager_AddPath(pm,
+				       QBANKING_REGKEY_CFGMODULEDIR);
+  GWEN_PluginManager_AddPath(pm, QBANKING_DESTLIB,
                              QBANKING_PLUGINS
                              DIRSEP
                              QBANKING_CFGMODULEDIR);
-  if (GWEN_PluginManager_Register(pm)) {
-    DBG_ERROR(0,
-              "Could not register cfg module plugin manager");
-    return -1;
-  }
   _pluginManagerCfgModules=pm;
 
   return 0;
@@ -1020,17 +447,6 @@ int QBanking::init(){
 int QBanking::fini(){
   int rv;
   std::list<QBCfgModule*>::iterator it;
-
-  if (_fastCallback) {
-    _fastCallback->unregisterCallback();
-    delete _fastCallback;
-    _fastCallback=0;
-  }
-  if (_simpleCallback) {
-    _simpleCallback->unregisterCallback();
-    delete _simpleCallback;
-    _simpleCallback=0;
-  }
 
   /* unload and free all config modules */
   for (it=_cfgModules.begin(); it!=_cfgModules.end(); it++) {
@@ -1052,7 +468,7 @@ int QBanking::fini(){
   }
 
   /* deinit base class */
-  rv=Banking::fini();
+  rv=AB_Banking::fini();
   if (_translator) {
     qApp->removeTranslator(_translator);
     delete _translator;
@@ -1072,38 +488,6 @@ void QBanking::outboxCountChanged(int count){
 
 void QBanking::statusMessage(const QString &s){
   flagStaff()->statusMessage(s);
-}
-
-
-
-int QBanking::print(const char *docTitle,
-                    const char *docType,
-                    const char *descr,
-                    const char *text){
-  GWEN_BUFFER *buf1;
-  GWEN_BUFFER *buf2;
-  int rv;
-
-  buf1=GWEN_Buffer_new(0, strlen(descr)+32, 0, 1);
-  if (!_extractHTML(descr, buf1)) {
-    descr=GWEN_Buffer_GetStart(buf1);
-  }
-  buf2=GWEN_Buffer_new(0, strlen(text)+32, 0, 1);
-  if (!_extractHTML(text, buf2)) {
-    text=GWEN_Buffer_GetStart(buf2);
-  }
-
-  QBPrintDialog pdlg(this, docTitle, docType, descr, text, _parentWidget,
-                     "printdialog", true);
-
-  if (pdlg.exec()==QDialog::Accepted)
-    rv=0;
-  else
-    rv=AB_ERROR_USER_ABORT;
-
-  GWEN_Buffer_free(buf2);
-  GWEN_Buffer_free(buf1);
-  return rv;
 }
 
 
@@ -1185,52 +569,13 @@ bool QBanking::isPure7BitAscii(const QString &input){
 
 
 
-GWEN_TYPE_UINT32 QBanking::progressStart(const QString &title,
-					 const QString &text,
-					 GWEN_TYPE_UINT32 total) {
-  std::string s1;
-  std::string s2;
-
-  s1=QStringToUtf8String(title);
-  s2=QStringToUtf8String(text);
-
-  return QBanking::progressStart(s1.c_str(), s2.c_str(), total);
-}
-
-
-
-int QBanking::progressLog(GWEN_TYPE_UINT32 id,
-			  AB_BANKING_LOGLEVEL level,
-			  const QString &text) {
-  std::string s1;
-
-  s1=QStringToUtf8String(text);
-  return QBanking::progressLog(id, level, s1.c_str());
-}
-
-
-
-GWEN_TYPE_UINT32 QBanking::showBox(GWEN_TYPE_UINT32 flags,
-                                   const QString &title,
-                                   const QString &text) {
-  std::string s1;
-  std::string s2;
-
-  s1=QStringToUtf8String(title);
-  s2=QStringToUtf8String(text);
-
-  return QBanking::showBox(flags, s1.c_str(), s2.c_str());
-}
-
-
-
 QBCfgModule *QBanking::_loadCfgModule(const char *modname){
   GWEN_LIBLOADER *ll;
   QBCfgModule *mod;
   QBCFGMODULE_FACTORY_FN fn;
   void *p;
   const char *s;
-  GWEN_ERRORCODE err;
+  int err;
   GWEN_BUFFER *mbuf;
   GWEN_PLUGIN *pl;
   GWEN_PLUGIN_MANAGER *pm;
@@ -1261,7 +606,7 @@ QBCfgModule *QBanking::_loadCfgModule(const char *modname){
 
   /* resolve name of factory function */
   err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(mbuf);
     GWEN_Plugin_free(pl);

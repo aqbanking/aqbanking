@@ -26,6 +26,27 @@ for d in $*; do
 	--data)
 	    result="$result @aqbanking_pkgdatadir@"
 	    ;;
+
+        --has-qbanking)
+            result=@with_qbanking@
+            ;;
+	--qbanking-libraries)
+	    result="$result @aqbanking_ldflags@ @qbanking_libs@"
+	    ;;
+	--qbanking-plugins)
+	    result="$result @qbanking_plugindir@"
+	    ;;
+	--qbanking-helpdir)
+	    result="$result @qbanking_helpdir@"
+	    ;;
+
+        --has-aqhbci)
+            result=@with_aqhbci@
+            ;;
+	--aqhbci-libraries)
+	    result="$result @aqbanking_ldflags@ @aqhbci_libs@"
+	    ;;
+
 	--vmajor)
 	    result="$result @AQBANKING_VERSION_MAJOR@"
 	    ;;

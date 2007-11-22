@@ -86,7 +86,7 @@ bool CfgTabPageAccountHbci::fromGui() {
 
 bool CfgTabPageAccountHbci::toGui() {
   AB_ACCOUNT *a;
-  GWEN_TYPE_UINT32 aFlags;
+  uint32_t aFlags;
   int i;
 
   a=getAccount();

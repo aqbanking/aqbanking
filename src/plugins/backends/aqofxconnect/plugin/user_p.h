@@ -18,7 +18,7 @@
 
 typedef struct AO_USER AO_USER;
 struct AO_USER {
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
 };
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);

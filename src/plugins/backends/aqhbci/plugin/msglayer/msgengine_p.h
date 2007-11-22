@@ -32,8 +32,8 @@ static int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
                                   GWEN_BUFFER *gbuf,
                                   GWEN_BUFFER *data,
                                   GWEN_XMLNODE *node);
-static GWEN_DB_VALUETYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-                                                const char *tname);
+static GWEN_DB_NODE_TYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
+						const char *tname);
 
 static int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
                                      GWEN_XMLNODE *node,

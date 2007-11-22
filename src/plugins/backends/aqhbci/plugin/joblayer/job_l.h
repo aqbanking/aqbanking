@@ -80,10 +80,13 @@ typedef enum {
  *
  */
 /*@{*/
-typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j);
+typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 uint32_t guiid);
+typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, uint32_t guiid);
 typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
-                                  AH_JOB_EXCHANGE_MODE m);
+				  AH_JOB_EXCHANGE_MODE m,
+				  uint32_t guiid);
 /**
  * This function is called on multi-message jobs and should return:
  * <ul>
@@ -118,6 +121,7 @@ const char *AH_Job_GetAccountId(const AH_JOB *j);
 const char *AH_Job_GetDescription(const AH_JOB *j);
 
 int AH_Job_GetMinSignatures(const AH_JOB *j);
+int AH_Job_GetSecurityProfile(const AH_JOB *j);
 int AH_Job_GetJobsPerMsg(const AH_JOB *j);
 
 AB_USER *AH_Job_GetUser(const AH_JOB *j);
@@ -147,12 +151,13 @@ AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
  *
  */
 /*@{*/
-int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-int AH_Job_Commit(AH_JOB *j);
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid);
+int AH_Job_Commit(AH_JOB *j, uint32_t guiid);
 /** exchanges data between the HBCI job and the banking job
  */
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
-                    AH_JOB_EXCHANGE_MODE m);
+		    AH_JOB_EXCHANGE_MODE m,
+		    uint32_t guiid);
 
 /**
  * Check whether the results for this job contain warning 3920. In this
@@ -167,7 +172,7 @@ int AH_Job_HasItanResult(AH_JOB *j);
  * additionally let the job do some basic stuff (like saving UPD, BPD,
  * messages etc).
  */
-int AH_Job_CommitSystemData(AH_JOB *j);
+int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid);
 
 
 /**
@@ -175,13 +180,13 @@ int AH_Job_CommitSystemData(AH_JOB *j);
  * additionally let the job do some basic stuff (like catching UPD, BPD,
  * messages etc).
  */
-int AH_Job_DefaultProcessHandler(AH_JOB *j);
+int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid);
 
 /**
  * You can use this from the Commit function of the inheriting class.
  * It calls @ref AH_Job_CommitSystemData.
  */
-int AH_Job_DefaultCommitHandler(AH_JOB *j);
+int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid);
 /*@}*/
 
 
@@ -201,11 +206,11 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert);
 const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j);
 
 
-GWEN_TYPE_UINT32 AH_Job_GetFirstSegment(const AH_JOB *j);
-void AH_Job_SetFirstSegment(AH_JOB *j, GWEN_TYPE_UINT32 i);
+uint32_t AH_Job_GetFirstSegment(const AH_JOB *j);
+void AH_Job_SetFirstSegment(AH_JOB *j, uint32_t i);
 
-GWEN_TYPE_UINT32 AH_Job_GetLastSegment(const AH_JOB *j);
-void AH_Job_SetLastSegment(AH_JOB *j, GWEN_TYPE_UINT32 i);
+uint32_t AH_Job_GetLastSegment(const AH_JOB *j);
+void AH_Job_SetLastSegment(AH_JOB *j, uint32_t i);
 
 int AH_Job_HasSegment(const AH_JOB *j, int seg);
 
@@ -226,14 +231,14 @@ int AH_Job_PrepareNextMessage(AH_JOB *j);
 void AH_Job_SetMsgNum(AH_JOB *j, unsigned int i);
 void AH_Job_SetDialogId(AH_JOB *j, const char *s);
 
-GWEN_TYPE_UINT32 AH_Job_GetFlags(const AH_JOB *j);
-void AH_Job_SetFlags(AH_JOB *j, GWEN_TYPE_UINT32 f);
-void AH_Job_AddFlags(AH_JOB *j, GWEN_TYPE_UINT32 f);
-void AH_Job_SubFlags(AH_JOB *j, GWEN_TYPE_UINT32 f);
+uint32_t AH_Job_GetFlags(const AH_JOB *j);
+void AH_Job_SetFlags(AH_JOB *j, uint32_t f);
+void AH_Job_AddFlags(AH_JOB *j, uint32_t f);
+void AH_Job_SubFlags(AH_JOB *j, uint32_t f);
 
 
-GWEN_TYPE_UINT32 AH_Job_GetId(const AH_JOB *j);
-void AH_Job_SetId(AH_JOB *j, GWEN_TYPE_UINT32 i);
+uint32_t AH_Job_GetId(const AH_JOB *j);
+void AH_Job_SetId(AH_JOB *j, uint32_t i);
 
 AH_HBCI *AH_Job_GetHbci(const AH_JOB *j);
 AB_BANKING *AH_Job_GetBankingApi(const AH_JOB *j);
@@ -250,7 +255,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp);
 const char *AH_Job_GetUsedTan(const AH_JOB *j);
 void AH_Job_SetUsedTan(AH_JOB *j, const char *s);
 
-void AH_Job_Log(AH_JOB *j, AB_BANKING_LOGLEVEL ll, const char *txt);
+void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt);
 
 
 #endif /* AH_JOB_L_H */

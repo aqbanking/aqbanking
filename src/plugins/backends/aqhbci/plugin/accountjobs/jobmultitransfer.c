@@ -155,7 +155,8 @@ int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_MultiTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_MultiTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				 uint32_t guiid){
   AH_JOB_MULTITRANSFER *aj;
 
   assert(j);
@@ -190,14 +191,6 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   else
     lim=AB_JobSingleDebitNote_GetFieldLimits(bj);
 
-  /* collapse splits if any */
-  n=AB_Split_List_GetCount(AB_Transaction_GetSplits(t));
-  if (n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Transfer contains splits, unable to handle");
-    return -1;
-  }
-
   /* check purpose */
   if (lim) {
     maxn=AB_TransactionLimits_GetMaxLinesPurpose(lim);
@@ -228,7 +221,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many purpose lines (%d>%d)", n, maxn);
 	  GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
 	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
@@ -237,9 +230,9 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
 	  GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -251,7 +244,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No purpose lines");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   /* check remote name */
@@ -285,7 +278,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 		    "Too many remote name lines (%d>%d)",
 		    n, maxn);
           GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
         AB_ImExporter_Utf8ToDta(p, -1, tbuf);
@@ -295,9 +288,9 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 		   "Too many chars in remote name line %d (%d>%d)",
 		   n, l, maxs);
           GWEN_StringList_free(nsl);
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -309,7 +302,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote name lines");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   /* check local name */
@@ -325,7 +318,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
     if (!s) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"No owner name in account, giving up");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     AB_Transaction_SetLocalName(t, s);
   }
@@ -390,7 +383,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
       if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Text key \"%s\" not supported by bank",
 		  numbuf);
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
     }
   }
@@ -402,7 +395,8 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-                                  AH_JOB_EXCHANGE_MODE m){
+				  AH_JOB_EXCHANGE_MODE m,
+				  uint32_t guiid){
   AH_JOB_MULTITRANSFER *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -416,7 +410,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Not a %s job job",
 	      (aj->isTransfer)?"MultiTransfer":"MultiDebitNote");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -428,7 +422,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
     dbParams=AH_Job_GetParams(j);
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
-    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
       GWEN_DB_Dump(dbParams, stderr, 2);
     /* read limits */
     lim=AB_TransactionLimits_new();
@@ -484,7 +478,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Invalid transaction");
 	AB_Job_SetStatus(bj, AB_Job_StatusError);
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
@@ -510,14 +504,14 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       /* store transaction */
       if (AB_Transaction_toDb(t, dbT)) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error storing transaction to db");
-        return AB_ERROR_BAD_DATA;
+        return GWEN_ERROR_BAD_DATA;
       }
       aj->transferCount++;
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     return 0;
   }
@@ -535,7 +529,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     if (!r) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "No segment results");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     has10=0;
     has20=0;
@@ -562,14 +556,14 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       DBG_INFO(AQHBCI_LOGDOMAIN,
                "Can't determine the status (neither 0010 nor 0020)");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     return 0;
   }
 
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode %d", m);
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

@@ -124,6 +124,9 @@ void QBJobListViewItem::_populate() {
   case AB_Job_TypeInternalTransfer:
     tmp=QWidget::tr("Internal Transfer");
     break;
+  case AB_Job_TypeLoadCellPhone:
+    tmp=QWidget::tr("Load Cellphone");
+    break;
 
   case AB_Job_TypeUnknown:
     tmp=QWidget::tr("(unknown)");

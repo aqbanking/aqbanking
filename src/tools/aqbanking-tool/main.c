@@ -293,19 +293,6 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  Check a combination of bank id and "
                                   "account number\n"));
-    GWEN_Buffer_AppendString(ubuf, "\n");
-    GWEN_Buffer_AppendString(ubuf, " chkiban\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  Check an IBAN, an international bank "
-				  "account number\n"));
-    GWEN_Buffer_AppendString(ubuf, "\n");
-    GWEN_Buffer_AppendString(ubuf, " import\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  Import a file.\n"));
-    GWEN_Buffer_AppendString(ubuf, "\n");
-    GWEN_Buffer_AppendString(ubuf, " joblog\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  Show the log of a job.\n"));
     GWEN_Buffer_AppendString(ubuf, "\n\n");
     GWEN_Buffer_AppendString(ubuf, I18N("Example\n"));
     GWEN_Buffer_AppendString(ubuf, I18N("=======\n\n"));

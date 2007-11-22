@@ -19,7 +19,7 @@
 #include <aqbanking/imexporter_be.h>
 #include <aqbanking/banking.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
 

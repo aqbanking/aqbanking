@@ -1,11 +1,365 @@
+
+2007/11/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed two bugs in AqHBCI
+- update specfile
+- fixed LibOFX version detection code
+- no longer install libaqbanking++
+
+
 ===========================================================================
-Released aqbanking-2.3.3 (2007-10-15, r1305)
+MARK: released AqBanking - 2.9.17rc5 (2007-11-17)
 ===========================================================================
 
-2007-09-21  Christian Stimming  <stimming@tuhh.de>
 
-	* src/libs/aqbanking/banking.h: Add missing AQBANKING_API at
-	AB_Banking_save.
+2007/11/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in ktoblzcheck-related code
+- simplified default settings for local installation mode (and WIN32)
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.16rc4 (2007-11-14)
+===========================================================================
+
+
+2007/11/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- configure.ac: added --with-locale-searchdir
+
+
+2007/11/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- moved password and cert cache from QGui to CppGui
+- moved print dialog stuff from QGui to QBGui. Now the class QGui is
+  independent of QBanking again and can thus be used in other projects
+  as well
+- AqHBCI:
+  - fixed autodetection code for SSLv3-only servers
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.15rc3 (2007-11-13)
+===========================================================================
+
+
+2007/11/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - AH_Dialog_RecvMessage_Https() now checks for the size of the received
+    HBCI message (this has become necessary because we ignore some IO errors
+    now to support some otherwise problematic servers)
+
+
+2007/11/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - AH_Dialog_RecvMessage_Https_read() is now more tolerant when receiving
+    an error: If in this case there is any data in the buffer we still try
+    to use that data received (because GnuTLS seems to have problems with at 
+    least one server otherwise)
+  - AH_Msg_VerifyRdh() does not report an error if the message was not
+    properly signed. This is checked later by AH_Job_CheckSignature() so no
+    need to bail out so soon.
+  - no longer check signature in Pin/Tan mode since there is none
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.14rc2 (2007-11-11)
+===========================================================================
+
+
+2007/11/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI
+  - AH_Dialog_SendPacket_Https() now always retries to connect with a 
+    different setting for AH_USER_FLAGS_FORCE_SSL3.
+    The result is that AqHBCI manages this flag itself.
+  - removed misleading tooltips from ActionWidget
+
+
+2007/11/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- workaround for bug in HBCI server implementations: Some servers
+  return the hash method "0" which means "no hash supported" when they
+  really mean "1" (RIPE MD160). So now we assume "1" if we encounter "0".
+  This makes wire transfers work again with Netbank in Pin/Tan mode
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.13rc1 (2007-11-09)
+===========================================================================
+
+
+2007/11/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- aqhbci-tool: added command "getcert" which requests the servers SSL
+  certificate
+- AB_Banking: 
+  - now activates all available backends upon init
+  - marked functions for activating and deactivating backends as
+    deprecated
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.12beta (2007-11-07)
+===========================================================================
+
+
+2007/11/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed target "srcdoc"
+- use same SOVERSION for libaqnone as for libaqbanking
+
+
+2007/11/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in DTAUS exporter
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.11beta (2007-11-03)
+===========================================================================
+
+
+2007/11/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed default path of XML file for tool hbcixml
+- only install aqbanking-config, removed the other *-config files.
+  aqbanking-config now contains the settings for QBanking and AqHBCI as
+  well.
+- AqHBCI: Is more tolerant now when checking for the name of a signer
+  because the security does not come from the signer name but from the
+  correctness of the signature which is checked nonetheless.
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.10beta (2007-11-02)
+===========================================================================
+
+
+2007/11/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- function AH_Provider_GetCert() now retries to connect to a server with
+  the flag AH_USER_FLAGS_FORCE_SSL3 if it didn't work without it
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.9beta (2007-10-31)
+===========================================================================
+
+
+2007/10/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed I18N (now QBanking is also able to translate again)
+- fixed AqHBCI wizard: 
+  - creating a keyfile now works
+  - creating a PIN/TAN user works
+  - importing a user works
+- fixed RDH mode (is now able to ignore a missing public sign key and a
+  missing system id)
+- updated German bank info data
+- fixed a bug in tool mkdeinfo
+- fixed a bug in generic bankinfo module (was not closing files)
+- adapted code for reading US bank info to allow reading the latest version 
+  of Jeremy Jongsma's data files
+- updated US bank info data
+- added bank info files for Canada (only 30 banks for now, derived from
+  the MS-Money files)
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.8beta (2007-10-30)
+===========================================================================
+
+
+2007/10/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added missing files to EXTRA_DIST
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.7beta (2007-10-28)
+===========================================================================
+
+
+2007/10/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqOfxConnect: added some fields to AO_User:
+  - appid     (default: QWIN)
+  - appver    (default: 1400)
+  - headerVer (default: 102)
+  These might become helpfull in solving the problem of new header versions.
+- AqHBCI: fixed URL problem
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.6beta (2007-10-27)
+===========================================================================
+
+
+2007/10/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- re-enabled AqOfxConnect and adapted it to the latest changes.
+  However, since the OFX DC test server seems to be gone I can't test it.
+- plugin lists are now global. In fact they have always been global, since you
+  cannot load the same plugin more than once so it only makes sense to make
+  the lists in AqBanking global as well (as they are in gwenhywfar for the
+  same reason)
+- adjusted some of the APIDOC to reflect the new API (not finished, though)
+- libofx provides a pkgconfig file, so use that instead of handling the
+  gory details ourselves
+- removed currently uncompilable backends from default list to simplify
+  the building process
+- aqofxconnect: adjusted to latest LibOFX CVS while still keeping source
+  compatibility with latest released version of Libofx
+- imexporter "ofx" now makes use of the function libofx_set_dtd_dir()
+  if possible (looks up the folder in which DTD files are stored and
+  sets this in libofx to allow for local installation as needed for WIN32)
+- use the I18N functions of gwen, no need for each individual DLL to link
+  against libintl
+- AqHBCI admin functions now correctly open a progress window
+
+
+2007/10/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- !!!!!!!!!!!!!!!!!!!!!!!!!!   IMPORTANT CHANGE  !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ---------------------------------------------------------------------------
+  AqBanking now uses the folder "$HOME/.aqbanking" on Linux and
+  "$HOME/aqbanking" on Windows.
+  This is to avoid the new version destroying/modifying data of old versions
+  of AqBanking. It has the nice side effect of allowing for multiple 
+  generations of AqBanking to be used in parallel.
+- introduced local installation mode:
+  This can be used on Linux (on Windows this mode is always used since we
+  need relocatable files there).
+  Normally on Linux this project is installed to a well defined prefix and
+  in respect to the FHS.
+  However, it might sometimes be interesting to be able to have a relocatable
+  version of AqBanking, too. That is AqBanking looks for its data files and
+  plugins in folders below the location of the called executable (using
+  binreloc).
+- set io layer flag GWEN_IO_LAYER_TLS_FLAGS_ALLOW_V1_CA_CRT for TLS in
+  pin/tan connections because some servers still use those certs
+- added flag for AH_USER: AH_USER_FLAGS_FORCE_SSL3.
+  This is used to force the use of SSLv3 in Pin/Tan mode. This is needed for
+  connections to the NetBank.
+- added configuration checkbox for the new flag
+- increased maximum length of pin in pin/tan mode
+- removed remaining references to deprecated Gwenhywfar modules
+
+
+2007/10/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- enabled the tutorials
+- worked on re-enabling the AqHBCI wizard (importing a DDV card and
+  OpenHBCI key file now works)
+- added class QBGui(), and extension of QGui() but with support for the
+  getPassword() function and certificate management
+- added CSV profile for "Steiermaerkische Sparkasse (AT)" provided by 
+  Christian Pontesegger
+- fixed imexporter for SWIFT (now works with AMRO files again)
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.5beta (2007-10-25)
+===========================================================================
+
+
+2007/10/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added missing file to "make dist" target
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.4beta (2007-10-24)
+===========================================================================
+
+
+2007/10/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_Banking_Init() is now split internally. There now is a global part which
+  is used with all AB_BANKING object (plugin managers, path managers etc)
+  and a local part which inits/deinits the AB_BANKING object.
+  This allows for multiple AB_BANKING objects to be used independently (but
+  only for non-online stuff, or if every object uses a different configuration
+  for online banking, since otherwise the objects would overwrite each other's
+  changes)
+
+
+2007/10/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqBanking now cross-compiles for WIN32 using mingw32 on Debian.
+  The resulting binaries work on Windows XP :-)
+
+
+2007/10/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed log analyzer of aqhbci-qt3-debugger
+
+
+2007/10/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- re-enabled AqHBCI QT wizard (does not work yet, but it already
+  compiles)
+
+
+2007/10/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed remaining references to old crypto stuff in gwen
+
+
+2007/10/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- forced using SSL3 in dialog_https.c (HBCI), because at least the netbank
+  does not seem to allow SSLv1 (maybe they allow SSLv2, but anyway, I will
+  have to make that a configurable option later)
+
+
+2007/09/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- re-implemented print() function (used to be implemented in class QBanking
+  but that function is now part of GWEN_GUI and derived classes, so this
+  functionality had to be moved, too)
+
+
+2007/09/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: implemented pin/tan (works now)
+- QBanking: added missing virtual gui function to c++ gui class
+- fixed backend AqNone
+
+
+2007/09/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - now uses new CryptToken framework of recent Gwenhywfar
+  - removed AH_MEDIUM, AH_MEDIUM_CONTEXT and all related functions
+  -> DDV and RDH already work!
+
+
+2007/09/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - prepared transition from old CryptToken framework to new one
+
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.3beta (2007-09-11)
+===========================================================================
+
+
+2007/09/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- numerous fixes, HBCI now works (DDV, RDH and PINTAN)
+
+
+2007/08/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- even more work on porting... Now at least AqBanking, the IO plugins and
+  AqHBCI compile without errors (PinTan not yet reimplemented)
+
 
 2007-08-04  Christian Stimming  <stimming@tuhh.de>
 
@@ -16,14 +370,16 @@ Released aqbanking-2.3.3 (2007-10-15, r1305)
 	of dtaus export as used on debitnotes: Immediately abort when
 	words are too long.
 
-===========================================================================
-Released aqbanking-2.3.2 (2007-07-08, r1280)
-===========================================================================
+
+2007/07/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more work on porting AqHBCI to Gwen3 (not finished yet)
+
 
 2007-07-08  Christian Stimming  <stimming@tuhh.de>
 
 	* src/plugins/backends/aqhbci/plugin/msglayer/hbci_p.h,
-	src/frontends/qbanking/lib/qbanking_p.h: Have aqhbci and qbanking
+	src/frontends/qbanking/lib/qbanking.cpp: Have aqhbci and qbanking
 	registry paths be registered below Software\AqBanking as well.
 
 2007-06-24  Christian Stimming  <stimming@tuhh.de>
@@ -31,9 +387,6 @@ Released aqbanking-2.3.2 (2007-07-08, r1280)
 	* src/plugins/backends/aqofxconnect/plugin/context.c: Make
 	ofxconnect plugin much less verbose during normal operation.
 
-===========================================================================
-MARK: released AqBanking - 2.3.1 (r1266, 2007-06-22)
-===========================================================================
 
 2007-06-20  Christian Stimming  <stimming@tuhh.de>
 
@@ -44,7 +397,8 @@ MARK: released AqBanking - 2.3.1 (r1266, 2007-06-22)
 	* src/libs/aqbanking/banking.c: For win32, add registry lookup for
 	locale path.
 
-2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
+
+2007-06-17  Andreas Koehler  <andi5.py@gmx.net>
 
 	* m4/searchfiles.m4: When searching for files and choosing the
 	path separator, examine $build instead of $host.
@@ -55,23 +409,13 @@ MARK: released AqBanking - 2.3.1 (r1266, 2007-06-22)
 
 	* configure.ac: Use AC_CANONICAL_BUILD and _HOST, but not _TARGET
 
+
 2007-06-17  Christian Stimming  <stimming@tuhh.de>
 
 	* src/frontends/qbanking/lib/qbanking.cpp: Path lookup of i18n
 	files now uses the DATADIR of the aqbanking path manager instead
 	of a hard-coded path.
 
-===========================================================================
-MARK: released AqBanking - 2.3.0 (r1240, 2007-06-12)
-===========================================================================
-
-2007-06-12  Christian Stimming  <stimming@tuhh.de>
-
-	* src/libs/aqbanking/banking.c: Add function
-	AB_Banking_ActivateAllProviders() that does exactly that. (This
-	function is only meaningful in aqbanking2 but not in aqbanking3
-	because there, all backends will be in the "active" state
-	anyway. Hence, it won't be ported to aqbanking3.)
 
 2007-06-09  Christian Stimming  <stimming@tuhh.de>
 
@@ -79,16 +423,75 @@ MARK: released AqBanking - 2.3.0 (r1240, 2007-06-12)
 	windows. Use the GWEN_PathManager so that on windows the registry
 	path is used on windows instead of a hard-coded path.
 
+
 2007/06/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - improved evaluation of HBCI status codes for transfer jobs (some banks send
   17 instead of 10 or 20 in response to a transfer request)
 
 
-2007/04/14: Martin Preuss<martin@libchipcard.de>
+2007/05/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed prototype of AB_Value_new(): As it turned out having an empty
+  argument list makes gcc believe it can accept any numbers of arguments 
+  here?!?
+  Defining it explicitly as AB_Value_new(void) now catches the cases where
+  still the previous argument list was used troughout the code (e.g. the one
+  which took a double as argument).
+
+
+2007/05/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- moved to new server
+
+
+2007/05/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - function AH_Job_CheckEncryption() always returns OK for PIN/TAN mode (since
   there really isn't anything to check in PIN/TAN mode)
+- decreased verbosity of AqHBCI message engine in debug mode
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.2beta (2007-05-14)
+===========================================================================
+
+
+2007/05/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- no longer install *_l.h files
+- added missing file to header install list
+
+
+2007/05/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added list function definitions for AB_VALUE
+- added job AB_JOB_LOADCELLPHONE (supports loading prepaid cards via backends,
+  currently HBCI only)
+- added missing calls to AB_Banking_OnlineInit() and AB_Banking_OnlineFini() 
+  to aqhbci-tool
+- added tutorial4 which tries to load the prepaid card for a cell phone
+
+
+2007/05/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- did some work on EU transfers. Unfortunately my bank replies with
+  "missing bank code" even if I provide the IBAN (so there should be no
+  bank code)... This sucks, but I have no other means to test this so for
+  now the EU transfers are still broken.
+
+
+2007/05/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted to latest changes in Libchipcard3.1 (soon to become Libchipcard4)
+- fixed a bug in value.c: Was not honouring minus sign after latest changes!
+
+
+2007/04/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed DTAUS importer (was not calculating checksums correctly after
+  moving from double-based values to gmp-based ones (thanks to Mathias from
+  HQ GmbH for reporting)
 
 
 2007-04-26  Christian Stimming  <stimming@tuhh.de>
@@ -98,20 +501,54 @@ MARK: released AqBanking - 2.3.0 (r1240, 2007-06-12)
 	non-numerical value. Gnucash bug#433594.
 
 
+2007/04/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AqBanking's init code (was registering plugin manager
+  after adding paths)
+
+
+2007/04/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started implementing FinTS3 in AqHBCI:
+  - XML: Added description of generic BPD jobs (version 2)
+  - added AH_Job_GetSecurityProfile()
+  - added rdh type (is now used to determine which RDH mode is used,
+    e.g. RDH1, RDH2 etc)
+
+
+2007/04/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- README: Added GMP as a dependency
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.1beta (2007-04-04)
+===========================================================================
+
+
+2007/04/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in QT3-wizard: Was not initializing online banking stuff
+- fixed another bug in QT3-wizard: Was not initializing GWEN_GUI stuff
+- fixed a bug in frontend qbanking: Now uses correct order for module 
+  registration
+- moved qgui stuff to frontend/qbanking/lib and export it (this makes it
+  accessible by QBanking)
+
+
+===========================================================================
+MARK: released AqBanking - 2.9.0beta (2007-04-03)
+===========================================================================
+
+
 2007/04/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - applied 2 patches from Patrick Prasse: add command "addaccount" to
   aqhbci-tool and add the ability to log noted MT942 to a file
+- updated German bankinfo files
 
-
-===========================================================================
-MARK: released AqBanking - 2.2.9 (r1198, 2007-03-05)
-===========================================================================
 
 2007-03-05  Christian Stimming  <stimming@tuhh.de>
-
-	* configure.ac: Increment SO_MAJOR and SO_AGE because of
-	additions.
 
 	* src/libs/aqbanking/types/transactionfns.h: Add convenience
 	function FillLocalFromAccount for easier AB_TRANSACTION
@@ -137,45 +574,18 @@ MARK: released AqBanking - 2.2.9 (r1198, 2007-03-05)
 	* src/plugins/backends/aqhbci/plugin/msglayer/hbci.c: Really
 	remove unneeded path escaping to fix windows problems.
 
-2007/02/18: Martin Preuss
+
+2007/02/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed dispensable path escaping in AqHBCI (should fix the problem with
   "x:" on windows)
 - added CSV profile for Helsingin OP Pankki (contributed by Fabian Ritzmann)
 
+
 2007-02-18  Christian Stimming  <stimming@tuhh.de>
 
-	* src/libs/aqbanking/banking.c: Add EXEEXT at wizard path for
+	* src/libs/aqbanking/banking_online.c: Add EXEEXT at wizard path for
 	executable extensions on windows.
-
-
-===========================================================================
-MARK: released AqBanking - 2.2.8 (r1173, 2007-02-12)
-===========================================================================
-
-2007-02-12   Christian Stimming <stimming@tuhh.de>
-
-	* src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile.am:
-	Properly exclude generated files from qt4-port but include them in
-	CLEANFILES.
-	
-2007-02-07   Christian Stimming <stimming@tuhh.de>
-
-	* src/frontends/qbanking/lib/dialogs/*.cpp: Fix crash when actions
-	have no selected items.
-	
-	* src/frontends/qbanking/lib/widgets/qbinputbox.cpp: Ifdef out the
-	QSimpleRichText for width calculation because it crashes on qt4
-	and it is not really needed.
-
-2007-02-07   Christian Stimming <stimming@tuhh.de>
-
-	* src/plugins/backends/aqofxconnect/ui: Fix qt4 port code for
-	ofxconnect ui parts.
-
-===========================================================================
-MARK: released AqBanking - 2.2.7 (r1156, 2007-02-07)
-===========================================================================
 
 2007-02-06   Christian Stimming <stimming@tuhh.de>
 
@@ -184,35 +594,113 @@ MARK: released AqBanking - 2.2.7 (r1156, 2007-02-07)
 	forgotten ressource.rc file. Make aqofxconnect plugin compile on
 	win32.
 
-===========================================================================
-MARK: released AqBanking - 2.2.6 (2007-01-19)
-===========================================================================
-
 
 2007/01/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- modified changes from 2007/01/10: Some of the account types added only exist
-  in the latest versions of Libofx, so we need to #ifdef them out for older
-  versions
+- adapted AqYellowNet and AqGeldKarte
+- clarified COPYRIGHT notice in headers of source files
+- AqHBCI: fixed a bug in loganalyzer code
 
 
-===========================================================================
-MARK: released AqBanking - 2.2.5 (2007-01-16)
-===========================================================================
+2007/01/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed FOX frontend FBanking
+
+
+2007/01/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in QT gui implementation: Now QBankManager works again!!
+
+
+2007/01/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- replaced old style AB_VALUE with a version which internally uses GMP instead
+  of double
+- DTAUS parser now uses AB_VALUE instead of double (should fix the problems
+  we had with some DTAUS records due to rounding errors of double's)
+- renamed banking_*.inc to banking_*.c to make CS happy :-)
+- fixed some bugs/compile stoppers, disabled aqbanking-tool: Now most of
+  AqBanking compiles again
+- removed duplicate banking.{h,cpp} from frontend QBanking
+- removed frontend KBanking (it internally used QBanking anyway)
+- removed frontend G2Banking (was only to be used by the project "Grisbi" 
+  which seems to have not too much interest in online banking)
+- backend AqOfxConnect now compiles again
+- backend AqDTAUS now compiles again
+
+
+2007/01/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- split banking.c into multiple files (got too large)
+- temporarily disabled tutorials
+- added test program to tutorials folder which tests the QT frontend with
+  AqHBCI (qtfrontend.cpp)
+  -> I was able to retrieve my account balance for an HBCI PIN/TAN account
+  for the first time with this branch!
+
+
+2007/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added 2nd implementation of GWEN_GUI: This implementation uses QT for
+  user interaction. The GUI code itself does not depend on AqBanking or
+  the QT frontend QBanking, it can therefore be used by any QT application
+  to provide a GWEN_GUI implementation.
+  Because GWEN_GUI collects all interaction which was formerly handled by
+  multiple methods (like GWEN_WaitCallbacks, GWEN_CryptManager and the
+  various callbacks of AqBanking) there is only a single place left where
+  user interaction is to be caught by an application. So by using the QT GUI
+  stuff an application also catches all interaction from GWEN's and 
+  AqBanking's plugins.
+- removed cbanking frontend altogether, because it is no longer needed
+  (there no longer are user interaction callbacks in AqBanking, and there
+  already is a console gui in Gwenhywfar)
+- AqHBCI backend and QBanking frontend now compile
+
 
 2007/01/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - applied a patch by Christian Lupien to AO_Context_Update(): Now also sets 
   the correct account types for other types than bank account
-- Fixed some typos in src/frontends/cbanking/*.h
-- Updated German bankinfos
+- many plugins can be compiled again:
+  - all bankinfo plugins
+  - all parser plugins
+  - all imexporter plugins
+  - AqHBCI
 
-2007-01-10   Christian Stimming <stimming@tuhh.de>
 
-	* src/libs/aqbanking/banking.c: Fix saving of config file on
-	win32.
-	* src/*: Add __stdcall function decoration on callback functions
-	as needed by gwen>=2.4.1.
+2007/01/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted console frontend to gwen3 (not tested, though)
+
+
+2007/01/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed src/libs/aqbanking/wcb*.{c,h} from svn
+- removed job queues/list from from AB_BANKING: Now the application has
+  to manage these lists themselves. But because they are seldomly needed
+  (I didn't use them in two of my applications, and GnuCash/KMyMoney also do
+  not use them, so it is safe to say they are not needed)
+- without this need we can now remove AB_Job_fromDb and _toDb (which again
+  simplifies AqBanking)
+- started removing simple API, because it is based on AqBanking's ability
+  to manage a job queue itself (which AqBanking no longer does)
+- removed all remaining virtual functions from AB_BANKING. 
+  The handling of bad pins has been removed, too. Applications like GnuCash
+  never used it and it should rather be a feature of an application anyway.
+
+
+2007/01/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- restructured error codes: Many of the codes used in AqBanking already exist
+  in Gwenhywfar, so we now just extend Gwenhywfar's error codes
+- removed usage of WaitCallbacks
+- removed user interactive callbacks (are now handled by Gwenhywfar)
+
+
+===========================================================================
+MARK: started working on aqbanking3 (2007/01/04)
+===========================================================================
+
 
 2006/12/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

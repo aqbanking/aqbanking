@@ -32,7 +32,7 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 #include <aqhbci/user.h>
 
 
-AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci);
+AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci, uint32_t guiid);
 void AH_Outbox_free(AH_OUTBOX *ob);
 void AH_Outbox_Attach(AH_OUTBOX *ob);
 

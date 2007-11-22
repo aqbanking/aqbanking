@@ -44,7 +44,7 @@ private:
   QBanking *_qbanking;
   QString _name;
   GWEN_PLUGIN *_plugin;
-  GWEN_TYPE_UINT32 _flags;
+  uint32_t _flags;
 
   void setPlugin(GWEN_PLUGIN *pl);
   GWEN_PLUGIN *getPlugin();
@@ -55,8 +55,8 @@ public:
 
   const QString &getName() const;
 
-  GWEN_TYPE_UINT32 getFlags() const;
-  void setFlags(GWEN_TYPE_UINT32 fl);
+  uint32_t getFlags() const;
+  void setFlags(uint32_t fl);
 
   virtual QBCfgTabPageUser *getEditUserPage(AB_USER *u, QWidget *parent=0);
   virtual QBCfgTabPageAccount *getEditAccountPage(AB_ACCOUNT *a,

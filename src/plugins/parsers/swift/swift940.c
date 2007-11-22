@@ -16,6 +16,7 @@
 #endif
 
 #include "swift940_p.h"
+#include "i18n_l.h"
 
 /* #include <aqhbci/aqhbci.h> */
 #include <aqbanking/error.h>
@@ -24,16 +25,15 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
 
 
-
 int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
-                            GWEN_TYPE_UINT32 flags,
+                            uint32_t flags,
                             const char *name,
                             const char *s) {
   GWEN_BUFFER *vbuf;
@@ -49,7 +49,7 @@ int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
 
 
 int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg){
   const char *p;
@@ -70,7 +70,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     char *s;
 
     /* "BLZ/Konto" */
-    s=(char*)malloc(p2-p+1);
+    s=(char*)GWEN_Memory_malloc(p2-p+1);
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
     AHB_SWIFT__SetCharValue(data,
@@ -97,7 +97,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     else {
       char *s;
 
-      s=(char*)malloc(p2-p+1);
+      s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT__SetCharValue(data,
@@ -112,7 +112,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
 
 
 int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg){
   const char *p;
@@ -145,7 +145,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     while(*p) {
       if (strlen(p)<3) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                               "SWIFT: Bad field in :86: tag");
         return -1;
       }
@@ -155,7 +155,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
         p++;
       if (!*p) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                               "SWIFT: Partial field id");
         return -1;
       }
@@ -166,7 +166,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
         p++;
       if (!*p) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                               "SWIFT: Partial field id");
         return -1;
       }
@@ -177,7 +177,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 
       /* find end of field/beginning of next field */
       while(*p2 && *p2!='?') p2++;
-      s=(char*)malloc(p2-p+1);
+      s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT_Condense(s);
@@ -250,7 +250,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 
 
 int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg){
   const char *p;
@@ -272,7 +272,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* valuata date (M) */
   if (bleft<6) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing valuta date (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Missing valuta date");
     return -1;
   }
@@ -294,7 +294,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (*p && isdigit(*p)) {
     if (bleft<4) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info,
                             "SWIFT: Bad booking date");
       return -1;
     }
@@ -332,7 +332,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* credit/debit mark (M) */
   if (bleft<2) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Bad value string");
     return -1;
   }
@@ -353,7 +353,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* third character of currency (K) */
   if (bleft<1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Bad currency");
     return -1;
   }
@@ -370,11 +370,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     p2++;
   if (p2==p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No value (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Bad value");
     return -1;
   }
-  s=(char*)malloc(p2-p+1+(neg?1:0));
+  s=(char*)GWEN_Memory_malloc(p2-p+1+(neg?1:0));
   if (neg) {
     s[0]='-';
     memmove(s+1, p, p2-p+1);
@@ -400,7 +400,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   /* key (M) */
   if (bleft<3) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing booking key (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Missing booking key");
     return -1;
   }
@@ -422,11 +422,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
     if (p2==p) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s)", p);
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			    "SWIFT: Missing customer reference");
     }
     else {
-      s=(char*)malloc(p2-p+1);
+      s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p);
       s[p2-p]=0;
       if (strcasecmp(s, "NONREF")!=0)
@@ -449,11 +449,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
-	GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			      "SWIFT: Missing bank reference");
 	return -1;
       }
-      s=(char*)malloc(p2-p+1);
+      s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT__SetCharValue(data, flags, "bankReference", s);
@@ -496,11 +496,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad original value (%s)", p);
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+            GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                                   "SWIFT: Bad original value");
             return -1;
           }
-          s=(char*)malloc(p2-p+1);
+          s=(char*)GWEN_Memory_malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
           AHB_SWIFT__SetCharValue(data, flags, "origvalue/value", s);
@@ -523,11 +523,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           while(*p2 && *p2!='/') p2++;
           if (p2==p) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad charges value (%s)", p);
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+            GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                                   "SWIFT: Bad charges value");
             return -1;
           }
-          s=(char*)malloc(p2-p+1);
+	  s=(char*)GWEN_Memory_malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
           AHB_SWIFT__SetCharValue(data, flags, "charges/value", s);
@@ -554,7 +554,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
 
 int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
-                             GWEN_TYPE_UINT32 flags,
+                             uint32_t flags,
                              GWEN_DB_NODE *data,
                              GWEN_DB_NODE *cfg){
   const char *p;
@@ -573,7 +573,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* credit/debit mark (M) */
   if (bleft<2) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Bad value string");
     return -1;
   }
@@ -586,7 +586,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* date (M) */
   if (bleft<6) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing date (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Missing date");
     return -1;
   }
@@ -612,7 +612,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
      * swiss MT940) */
     if (bleft<3) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing currency (%s)", p);
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			    "SWIFT: Missing currency");
       return -1;
     }
@@ -626,7 +626,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   /* value (M) */
   if (bleft<1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing value (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			  "SWIFT: Missing value");
     return -1;
   }
@@ -635,11 +635,11 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   while(*p2 && (isdigit(*p2) || *p2==',')) p2++;
   if (p2==p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value (%s)", p);
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "SWIFT: Bad value");
     return -1;
   }
-  s=(char*)malloc(p2-p+1+(neg?1:0));
+  s=(char*)GWEN_Memory_malloc(p2-p+1+(neg?1:0));
   if (neg) {
     s[0]='-';
     memmove(s+1, p, p2-p+1);
@@ -660,7 +660,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 
 
 int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg){
   const char *p;
@@ -701,7 +701,7 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
       else {
 	char *s;
 
-	s=(char*)malloc(len+1);
+	s=(char*)GWEN_Memory_malloc(len+1);
 	memmove(s, p, len);
 	s[len]=0;
 	DBG_DEBUG(AQBANKING_LOGDOMAIN, "Got his field: %02d: %s", code, s);
@@ -768,24 +768,31 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
 
 
 
-int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
-                        AHB_SWIFT_TAG_LIST *tl,
-                        GWEN_TYPE_UINT32 flags,
-                        GWEN_DB_NODE *data,
-                        GWEN_DB_NODE *cfg){
+int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
+			GWEN_DB_NODE *data,
+			GWEN_DB_NODE *cfg,
+			uint32_t flags,
+			uint32_t guiid,
+			int msecs) {
   AHB_SWIFT_TAG *tg;
   GWEN_DB_NODE *dbDay;
   GWEN_DB_NODE *dbTemplate;
   GWEN_DB_NODE *dbTransaction;
-  int tagCount;
+  uint32_t progressId;
 
   dbDay=0;
   dbTransaction=0;
-  tagCount=0;
 
   dbTemplate=GWEN_DB_Group_new("template");
 
-  GWEN_WaitCallback_SetProgressTotal(AHB_SWIFT_Tag_List_GetCount(tl));
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    I18N("Importing SWIFT tags..."),
+				    NULL,
+				    AHB_SWIFT_Tag_List_GetCount(tl),
+				    guiid);
 
   tg=AHB_SWIFT_Tag_List_First(tl);
   while(tg) {
@@ -798,6 +805,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       if (AHB_SWIFT940_Parse_25(tg, flags, dbTemplate, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         GWEN_DB_Group_free(dbTemplate);
+	GWEN_Gui_ProgressEnd(progressId);
         return -1;
       }
     }
@@ -816,6 +824,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         GWEN_DB_Group_free(dbTemplate);
+	GWEN_Gui_ProgressEnd(progressId);
         return -1;
       }
 
@@ -841,6 +850,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         GWEN_DB_Group_free(dbTemplate);
+	GWEN_Gui_ProgressEnd(progressId);
         return -1;
       }
       dbDay=0;
@@ -859,6 +869,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
       if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         GWEN_DB_Group_free(dbTemplate);
+	GWEN_Gui_ProgressEnd(progressId);
         return -1;
       }
     }
@@ -871,6 +882,7 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
         if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
           GWEN_DB_Group_free(dbTemplate);
+	  GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
       }
@@ -884,22 +896,26 @@ int AHB_SWIFT940_Import(GWEN_BUFFEREDIO *bio,
 	if (AHB_SWIFT940_Parse_NS(tg, flags, dbTransaction, cfg)) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
 	  GWEN_DB_Group_free(dbTemplate);
+	  GWEN_Gui_ProgressEnd(progressId);
 	  return -1;
 	}
       }
     }
 
-    tagCount++;
-    if (GWEN_WaitCallbackProgress(tagCount)==GWEN_WaitCallbackResult_Abort){
-      DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                            "SWIFT: User aborted");
+    if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)==
+	GWEN_ERROR_USER_ABORTED) {
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			   I18N("Aborted by user"));
+      GWEN_Gui_ProgressEnd(progressId);
       GWEN_DB_Group_free(dbTemplate);
-      return AB_ERROR_USER_ABORT;
+      return GWEN_ERROR_USER_ABORTED;
     }
+
     tg=AHB_SWIFT_Tag_List_Next(tg);
   } /* while */
+
   GWEN_DB_Group_free(dbTemplate);
+  GWEN_Gui_ProgressEnd(progressId);
 
   return 0;
 }

@@ -24,7 +24,9 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/dbio.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+
+#include <gwenhywfar/io_memory.h>
 
 #include <aqbanking/jobgettransactions.h>
 #include <aqbanking/jobgettransactions_be.h>
@@ -85,18 +87,18 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
 					     const char *docType,
                                              int noted,
-                                             GWEN_BUFFER *buf){
-  GWEN_BUFFEREDIO *bio;
+					     GWEN_BUFFER *buf,
+					     uint32_t guiid){
   GWEN_DBIO *dbio;
-  GWEN_ERRORCODE err;
+  GWEN_IO_LAYER *io;
   int rv;
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbDay;
   GWEN_DB_NODE *dbParams;
   AB_ACCOUNT *a;
   AB_USER *u;
-  GWEN_TYPE_UINT64 cnt=0;
-  GWEN_TYPE_UINT64 done = 0;
+  uint32_t progressId;
+  uint64_t cnt=0;
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
@@ -106,30 +108,32 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   dbio=GWEN_DBIO_GetPlugin("swift");
   if (!dbio) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not supported");
-    return -1;
+    return AB_ERROR_PLUGIN_MISSING;
   }
-  bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  GWEN_Buffer_Rewind(buf);
+  io=GWEN_Io_LayerMemory_new(buf);
 
   db=GWEN_DB_Group_new("transactions");
   dbParams=GWEN_DB_Group_new("params");
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "type", docType);
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    rv=GWEN_DBIO_Import(dbio, bio, GWEN_PATH_FLAGS_CREATE_GROUP,
-                        db, dbParams);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing SWIFT %s", docType);
-    }
-  } /* while */
-  GWEN_DB_Group_free(dbParams);
-  err=GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "called from here");
+		       "type", docType);
+
+  rv=GWEN_DBIO_Import(dbio, io,
+		      db, dbParams,
+		      GWEN_PATH_FLAGS_CREATE_GROUP,
+		      guiid, 2000);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "Error parsing SWIFT %s (%d)",
+	      docType, rv);
+    GWEN_DB_Group_free(dbParams);
     GWEN_DB_Group_free(db);
-    return -1;
+    GWEN_Io_Layer_free(io);
+    return rv;
   }
+  GWEN_DB_Group_free(dbParams);
+  GWEN_Io_Layer_free(io);
 
   /* first count the groups */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
@@ -144,13 +148,14 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
   } /* while */
 
-  /* enter waitcallback context */
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
-                                  I18N("Importing transactions..."),
-                                  I18N("transaction(s)"),
-                                  GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
-  GWEN_WaitCallback_SetProgressTotal(cnt);
-  GWEN_WaitCallback_SetProgressPos(0);
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    I18N("Importing transactions..."),
+				    NULL,
+				    cnt,
+				    guiid);
 
   /* add transactions to list */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
@@ -176,12 +181,13 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	else
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
-      done++;
-      if (GWEN_WaitCallbackProgress(done)==GWEN_WaitCallbackResult_Abort) {
-        GWEN_WaitCallback_Leave();
-        return AB_ERROR_USER_ABORT;
+
+      if (GWEN_ERROR_USER_ABORTED==
+	  GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)) {
+	GWEN_Gui_ProgressEnd(progressId);
+	return GWEN_ERROR_USER_ABORTED;
       }
-      GWEN_WaitCallback_SetProgressPos(done);
+
       dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
     } /* while */
 
@@ -223,7 +229,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
   } /* while */
 
-  GWEN_WaitCallback_Leave();
+  GWEN_Gui_ProgressEnd(progressId);
 
   GWEN_DB_Group_free(db);
   return 0;
@@ -232,7 +238,8 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				   uint32_t guiid){
   AH_JOB_GETTRANSACTIONS *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -282,7 +289,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       const void *p;
       unsigned int bs;
 
-      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbXA, stderr, 2);
       p=GWEN_DB_GetBinValue(dbXA, "booked", 0, 0, 0, &bs);
       if (p && bs)
@@ -322,7 +329,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)){
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0,
+						 tbooked, guiid)){
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
@@ -348,7 +356,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1, tnoted)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1,
+						 tnoted, guiid)) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions");
@@ -366,7 +375,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
-                                    AH_JOB_EXCHANGE_MODE m){
+				    AH_JOB_EXCHANGE_MODE m,
+				    uint32_t guiid){
   AH_JOB_GETTRANSACTIONS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -377,7 +387,7 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 
   if (AB_Job_GetType(bj)!=AB_Job_TypeGetTransactions) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetTransactions job");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -405,7 +415,7 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
       dbArgs=AH_Job_GetArguments(j);
       if (GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year)) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Internal error: bad fromTime");
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
       snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d", year, month+1, day);
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -421,7 +431,7 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
       dbArgs=AH_Job_GetArguments(j);
       if (GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year)) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Internal error: bad toTime");
-	return AB_ERROR_INVALID;
+	return GWEN_ERROR_INVALID;
       }
       snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d", year, month+1, day);
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -436,7 +446,7 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

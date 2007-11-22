@@ -7,12 +7,15 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
 #ifndef AQBANKING_CRYPTMANAGER_L_H
 #define AQBANKING_CRYPTMANAGER_L_H
+
+#error do not include me.
 
 #define AB_CRYPTTOKEN_PLUGIN_FOLDER "crypttoken"
 

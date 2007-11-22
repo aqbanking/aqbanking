@@ -131,7 +131,7 @@ int AH_Result_IsMsgResult(const AH_RESULT *r){
 
 
 void AH_Result_Dump(const AH_RESULT *r, FILE *f, unsigned int insert) {
-  GWEN_TYPE_UINT32 k;
+  uint32_t k;
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");

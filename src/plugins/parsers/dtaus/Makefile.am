@@ -1,4 +1,7 @@
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) $(all_includes)
+INCLUDES = \
+  -I$(top_builddir)/headers $(gwenhywfar_includes) \
+  -I$(top_srcdir)/src/libs/aqbanking
+
 EXTRA_DIST=README
 
 dbioplugindir = $(gwenhywfar_plugins)/dbio
@@ -23,7 +26,7 @@ dtaus_la_SOURCES=\
 
 dtaus_la_LIBADD = \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(gwenhywfar_libs) 
 
 dtaus_la_LDFLAGS = -no-undefined $(STRIPALL) -module -omit-version
 
@@ -35,6 +38,7 @@ dtaus_la_DEPENDENCIES = \
 if IS_WINDOWS
 dtaus_la_DEPENDENCIES += ressource.o
 dtaus_la_LDFLAGS += -Wl,ressource.o
+
 ressource.o: ressource.rc
 	$(RC) -o $@ $<
 endif

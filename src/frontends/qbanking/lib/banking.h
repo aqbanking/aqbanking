@@ -1,13 +1,14 @@
 /***************************************************************************
  $RCSfile$
                              -------------------
-    cvs         : $Id$
+    cvs         : $Id: banking.h 1282 2007-07-25 13:20:54Z martin $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file 
@@ -20,56 +21,11 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/system.h>
+
+#include <qbanking/api.h>
+
 #include <list>
 #include <string>
-
-
-#ifdef BUILDING_QBANKING
-# /* building AqBanking */
-# if AQBANKING_SYS_IS_WINDOWS
-#   /* for windows */
-#   ifdef __declspec
-#     define QBANKING_API __declspec (dllexport)
-#   else /* if __declspec */
-#     define QBANKING_API
-#   endif /* if NOT __declspec */
-# else
-#   /* for non-win32 */
-#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
-#     define QBANKING_API __attribute__((visibility("default")))
-#   else
-#     define QBANKING_API
-#   endif
-# endif
-#else
-# /* not building AqBanking */
-# if AQBANKING_SYS_IS_WINDOWS
-#   /* for windows */
-#   ifdef __declspec
-#     define QBANKING_API __declspec (dllimport)
-#   else /* if __declspec */
-#     define QBANKING_API
-#   endif /* if NOT __declspec */
-# else
-#   /* for non-win32 */
-#   define QBANKING_API
-# endif
-#endif
-
-#ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
-# define QBANKING_EXPORT __attribute__((visibility("default")))
-# define QBANKING_NOEXPORT __attribute__((visibility("hidden")))
-#else
-# define QBANKING_EXPORT
-# define QBANKING_NOEXPORT
-#endif
-
-
-#define QBANKING_IMPORTER_FLAGS_COMPLETE_DAYS  0x00000001
-#define QBANKING_IMPORTER_FLAGS_OVERWRITE_DAYS 0x00000002
-#define QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES  0x00000004
-#define QBANKING_IMPORTER_FLAGS_FUZZY          0x00000008
-#define QBANKING_IMPORTER_FLAGS_AS_ORDERS      0x00000010
 
 
 /**
@@ -84,16 +40,14 @@
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class QBANKING_API Banking {
-  friend class Banking_Linker;
-
+class QBANKING_API AB_Banking {
 private:
   AB_BANKING *_banking;
 
 public:
-  Banking(const char *appname,
+  AB_Banking(const char *appname,
           const char *fname);
-  virtual ~Banking();
+  virtual ~AB_Banking();
 
 
   AB_BANKING *getCInterface();
@@ -102,13 +56,23 @@ public:
   /**
    * See @ref AB_Banking_Init
    */
-  int init();
+  virtual int init();
 
   /**
    * See @ref AB_Banking_Fini
    */
-  int fini();
+  virtual int fini();
 
+
+  /**
+   * See @ref AB_Banking_OnlineInit
+   */
+  int onlineInit();
+
+  /**
+   * See @ref AB_Banking_OnlineFini
+   */
+  int onlineFini();
 
   /**
    * Loads a backend with the given name. You can use
@@ -138,7 +102,7 @@ public:
    * The pointer returned is still owned by AqBanking, so you MUST NOT free
    * it.
    */
-  AB_ACCOUNT *getAccount(GWEN_TYPE_UINT32 uniqueId);
+  AB_ACCOUNT *getAccount(uint32_t uniqueId);
 
   /**
    * Returns a list of pointers to currently known users.
@@ -189,8 +153,6 @@ public:
    */
   void clearPluginDescrs(std::list<GWEN_PLUGIN_DESCRIPTION*> &l);
 
-  int activateProvider(const char *pname);
-  int deactivateProvider(const char *pname);
   std::list<std::string> getActiveProviders();
 
   std::string findWizard(const char *frontends);
@@ -210,112 +172,20 @@ public:
    */
   /*@{*/
   /**
-   * Enqueues a job. This function does not take over the ownership of the
-   * job. However, this function makes sure that the job will not be deleted
-   * as long as it is in the queue (by calling @ref AB_Job_Attach).
-   * So it is safe for you to call @ref AB_Job_free on an enqueued job directly
-   * after enqueuing it (but it doesn't make much sense since you would not be able to
-   * check for a result).
-   *
-   */
-  int enqueueJob(AB_JOB *j);
-
-  /**
-   * Removes a job from the queue. This function does not free the given
-   * job, the caller still is the owner.
-   * Dequeued jobs however are NOT preserved across shutdowns.
-   */
-  int dequeueJob(AB_JOB *j);
-
-  /**
-   * This function sends all jobs in the queue to their corresponding backends
+   * This function sends all jobs in the list to their corresponding backends
    * and allows that backend to process it.
-   * If the user did not abort or there was no fatal error the queue is
-   * empty upon return. You can verify this by calling
-   * @ref AB_Banking_GetEnqueuedJobs.
    */
-  virtual int executeQueue(AB_IMEXPORTER_CONTEXT *ctx);
+  virtual int executeJobs(AB_JOB_LIST2 *jl,
+			  AB_IMEXPORTER_CONTEXT *ctx,
+			  uint32_t guiid);
 
-  /**
-   * Returns the list of currently enqueued jobs. If the queue is empty
-   * NULL is returned.
-   */
-  std::list<AB_JOB*> getEnqueuedJobs();
   /*@}*/
-
-
-  /** @name User Interaction
-   *
-   */
-  /*@{*/
-  /**
-   * See @ref AB_Banking_MessageBox
-   */
-  virtual int messageBox(GWEN_TYPE_UINT32 flags,
-                         const char *title,
-                         const char *text,
-                         const char *b1,
-                         const char *b2,
-                         const char *b3);
-
-  /**
-   * See @ref AB_Banking_InputBox
-   */
-  virtual int inputBox(GWEN_TYPE_UINT32 flags,
-                       const char *title,
-                       const char *text,
-                       char *buffer,
-                       int minLen,
-                       int maxLen);
-
-  /**
-   * See @ref AB_Banking_ShowBox
-   */
-  virtual GWEN_TYPE_UINT32 showBox(GWEN_TYPE_UINT32 flags,
-                                   const char *title,
-                                   const char *text);
-  /**
-   * See @ref AB_Banking_HideBox
-   */
-  virtual void hideBox(GWEN_TYPE_UINT32 id);
-
-  /**
-   * See @ref AB_Banking_ProgressStart
-   */
-  virtual GWEN_TYPE_UINT32 progressStart(const char *title,
-                                         const char *text,
-                                         GWEN_TYPE_UINT32 total);
-
-  /**
-   * See @ref AB_Banking_ProgressAdvance
-   */
-  virtual int progressAdvance(GWEN_TYPE_UINT32 id,
-                              GWEN_TYPE_UINT32 progress);
-  /**
-   * See @ref AB_Banking_ProgressLog
-   */
-  virtual int progressLog(GWEN_TYPE_UINT32 id,
-                          AB_BANKING_LOGLEVEL level,
-                          const char *text);
-  /**
-   * See @ref AB_Banking_ProgressEnd
-   */
-  virtual int progressEnd(GWEN_TYPE_UINT32 id);
-
-
-  /**
-   * See @ref AB_Banking_Print
-   */
-  virtual int print(const char *docTitle,
-                    const char *docType,
-                    const char *descr,
-                    const char *text);
 
   /**
    * Let the application import a given statement context.
    */
   virtual bool importContext(AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_TYPE_UINT32 flags);
+                             uint32_t flags);
 
 };
 

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -16,6 +17,7 @@
 
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/logger.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 #ifdef __cplusplus
@@ -159,20 +161,22 @@ typedef enum {
   AB_Job_TypeGetStandingOrders,
   /** retrieve list of dated transfers for an online account */
   AB_Job_TypeGetDatedTransfers,
-  /* creates a new standing order */
+  /** creates a new standing order */
   AB_Job_TypeCreateStandingOrder,
-  /* modifies an existing standing order */
+  /** modifies an existing standing order */
   AB_Job_TypeModifyStandingOrder,
-  /* deletes an existing standing order */
+  /** deletes an existing standing order */
   AB_Job_TypeDeleteStandingOrder,
-  /* creates a new dated transfer */
+  /** creates a new dated transfer */
   AB_Job_TypeCreateDatedTransfer,
-  /* modifies an existing dated transfer */
+  /** modifies an existing dated transfer */
   AB_Job_TypeModifyDatedTransfer,
-  /* deletes an existing dated transfer */
+  /** deletes an existing dated transfer */
   AB_Job_TypeDeleteDatedTransfer,
   /* internal transfer between two accounts at the same bank */
-  AB_Job_TypeInternalTransfer
+  AB_Job_TypeInternalTransfer,
+  /** Load a prepaid card from a bank account */
+  AB_Job_TypeLoadCellPhone
 } AB_JOB_TYPE;
 
 
@@ -214,7 +218,7 @@ void AB_Job_Attach(AB_JOB *j);
  * enqueued (i.e. by calling @ref AB_Banking_EnqueueJob).
  */
 AQBANKING_API
-GWEN_TYPE_UINT32 AB_Job_GetJobId(const AB_JOB *j);
+uint32_t AB_Job_GetJobId(const AB_JOB *j);
 
 /**
  * Returns the name of the application which created this job.
@@ -240,7 +244,7 @@ GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j);
  * by the backend when asked to check for this job.
  */
 AQBANKING_API
-int AB_Job_CheckAvailability(AB_JOB *j);
+int AB_Job_CheckAvailability(AB_JOB *j, uint32_t guiid);
 
 /**
  * Returns the status of this job.
@@ -315,6 +319,21 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s);
 AQBANKING_API
 const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i);
 
+AQBANKING_API
+GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name);
+
+AQBANKING_API
+void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
+                         GWEN_DB_NODE *db,
+                         const char *name);
+
+AQBANKING_API
+GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name);
+
+AQBANKING_API
+void AB_Job_DateToDb(const GWEN_TIME *ti, GWEN_DB_NODE *db, const char *name);
+
+
 /*@}*/
 
 
@@ -329,7 +348,7 @@ const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i);
 /*@{*/
 AQBANKING_API
 void AB_Job_Log(AB_JOB *j,
-		AB_BANKING_LOGLEVEL ll,
+		GWEN_LOGGER_LEVEL ll,
                 const char *who,
 		const char *txt);
 

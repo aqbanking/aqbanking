@@ -1,11 +1,18 @@
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
 
-DEFS += -DXMLDATA_DIR=\"$(aqhbci_data)/xml\"
+DEFS += -DXMLDATA_DIR=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"
 
-bin_PROGRAMS=hbcixml2
+bin_PROGRAMS=hbcixml3
 noinst_HEADERS=loganalyzer.h error.h pointer.h
-hbcixml2_SOURCES=hbcixml.cpp loganalyzer.cpp error.cpp
-hbcixml2_LDADD = \
+hbcixml3_SOURCES=hbcixml.cpp loganalyzer.cpp error.cpp
+hbcixml3_LDADD = \
   $(aqhbci_internal_libs) \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(gwenhywfar_libs) 
+
+if IS_WINDOWS
+
+hbcixml3_LDFLAGS = -mconsole
+
+endif
+

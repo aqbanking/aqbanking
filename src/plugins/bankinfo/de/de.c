@@ -19,16 +19,24 @@
 #include "../generic/generic_l.h"
 
 #include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/directory.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
 
 
 
@@ -49,6 +57,7 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_BANKINFO_PLUGIN_DE *bde;
 #ifdef HAVE_KTOBLZCHECK
   const char *s;
+  GWEN_STRINGLIST *paths;
 #endif
 
   bip=AB_BankInfoPluginGENERIC_new(ab, db, "de");
@@ -69,12 +78,59 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
              " which corrupts the heap.\n");
   }
 
-  bde->checker = AccountNumberCheck_new();
-  if (!bde->checker) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "KtoBlzCheck returned an error");
-    AB_BankInfoPlugin_free(bip);
-    return 0;
+  /* try to find the data file */
+  paths=AB_Banking_GetGlobalDataDirs();
+  if (paths) {
+    GWEN_DB_NODE *db;
+    GWEN_BUFFER *fbuf;
+    int rv;
+
+    db=GWEN_DB_Group_new("config");
+    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(paths,
+				      "ktoblzcheck"
+				      DIRSEP
+				      "bankdata.txt",
+				      fbuf);
+    if (rv) {
+      /* for debian */
+      rv=GWEN_Directory_FindFileInPaths(paths,
+					"libktoblzcheck1"
+					DIRSEP
+					"bankdata.txt",
+					fbuf);
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"File [%s] not found",
+		"libktoblzcheck1"
+		DIRSEP
+		"bankdata.txt");
+    }
+    GWEN_StringList_free(paths);
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Bank data for KtoBlzCheck not found (%d)", rv);
+    }
+    else {
+      bde->checker=AccountNumberCheck_new_file(GWEN_Buffer_GetStart(fbuf));
+      if (!bde->checker) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "KtoBlzCheck returned an error");
+	GWEN_Buffer_free(fbuf);
+	AB_BankInfoPlugin_free(bip);
+	return 0;
+      }
+      GWEN_Buffer_free(fbuf);
+    }
+  }
+
+  if (bde->checker==NULL) {
+    bde->checker=AccountNumberCheck_new();
+    if (!bde->checker) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"KtoBlzCheck returned an error");
+      AB_BankInfoPlugin_free(bip);
+      return 0;
+    }
   }
 #endif
   AB_BankInfoPlugin_SetCheckAccountFn(bip, AB_BankInfoPluginDE_CheckAccount);

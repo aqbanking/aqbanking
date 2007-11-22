@@ -37,7 +37,7 @@ int listUsers(AB_BANKING *ab,
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -61,7 +61,7 @@ int listUsers(AB_BANKING *ab,
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -71,6 +71,12 @@ int listUsers(AB_BANKING *ab,
   }
 
   rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -102,6 +108,12 @@ int listUsers(AB_BANKING *ab,
       AB_User_List2Iterator_free(uit);
     }
     AB_User_List2_free(ul);
+  }
+
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
   }
 
   rv=AB_Banking_Fini(ab);

@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   string hdir;
   QTranslator translator(0);
 
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Notice);
   //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelNotice);
   //GWEN_Logger_SetLevel("aqhbci", GWEN_LoggerLevelNotice);
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
   hdir=QDir::homeDirPath().local8Bit().data();
   hdir+="/";
-  hdir+=".banking";
+  hdir+=".aqbanking";
 
   hb=new LogManager(hdir.c_str(), 0, "LogManager", false);
   app.setMainWidget(hb);

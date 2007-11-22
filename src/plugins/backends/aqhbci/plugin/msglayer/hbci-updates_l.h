@@ -18,12 +18,6 @@
 #include <gwenhywfar/types.h>
 
 /**
- * This function is called from AH_Provider_Init to update the GWEN_DB
- * to the current version.
- */
-int AH_HBCI_UpdateDb(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
  * This function is called from AH_User_Extend to extend the given user data
  * DB to the latest version.
  */
@@ -41,8 +35,8 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db);
  */
 int AH_HBCI_Update2(AH_HBCI *hbci,
                     GWEN_DB_NODE *db,
-                    GWEN_TYPE_UINT32 oldVersion,
-                    GWEN_TYPE_UINT32 currentVersion);
+                    uint32_t oldVersion,
+                    uint32_t currentVersion);
 
 
 

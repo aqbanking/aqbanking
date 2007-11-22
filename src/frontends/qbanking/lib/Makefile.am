@@ -1,66 +1,53 @@
-SUBDIRS=widgets dialogs views
+SUBDIRS=widgets dialogs views gui
 
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
   -Idialogs -Iwidgets -Iviews \
+  -I$(top_srcdir)/src/libs/aqbanking++ \
   $(all_includes)
 
 DEFS += -DBUILDING_QBANKING \
   -DQBANKING_PLUGINS=\"@qbanking_plugindir@\" \
-  -DQBANKING_HELPDIR=\"@qbanking_helpdir@\"
+  -DQBANKING_HELPDIR=\"@qbanking_helpdir@\" \
+  -DQBHELP_BINARY_NAME=\"qb-help@QBANKING_SO_EFFECTIVE@$(EXEEXT)\"
 
 AM_CPPFLAGS= @visibility_cflags@
 
 
 lib_LTLIBRARIES=libqbanking.la
 
-bin_SCRIPTS=qbanking-config
-M4dir = $(datadir)/aclocal
-dist_M4_DATA=qbanking.m4
-
 iheaderdir = $(includedir)/qbanking
 iheader_HEADERS=\
+ api.h \
+ banking.h \
  qbflagstaff.h \
  qbanking.h \
- qbwaitcallback.h \
- qbwcb_fast.h \
- qbwcb_simple.h \
- qbwcb_progress.h \
- qbcfgmodule.h \
- banking.h
+ qbgui.h \
+ qbcfgmodule.h
 
-noinst_HEADERS = \
- qbanking_p.h \
- banking_p.h
+#noinst_HEADERS =
 
 libqbanking_la_SOURCES=\
+ banking.cpp \
  qbflagstaff.cpp \
  qbanking.cpp \
- qbwaitcallback.cpp \
- qbwcb_fast.cpp \
- qbwcb_simple.cpp \
- qbwcb_progress.cpp \
- qbcfgmodule.cpp \
- banking.cpp
+ qbgui.cpp \
+ qbcfgmodule.cpp
 
 MOC_FILES=\
  qbflagstaff.moc
 
 nodist_libqbanking_la_SOURCES=
 
-qbanking-config: qbanking-config.in
-	echo "#! /bin/sh" >qbanking-config && \
-	cat qbanking-config.in >>qbanking-config && \
-	chmod a+x qbanking-config
-
 BUILT_SOURCES = $(MOC_FILES) $(nodist_libqbanking_la_SOURCES) version.h
-CLEANFILES = $(BUILT_SOURCES) i18nsources qbanking-config qbanking-config.in ressource.rc
+CLEANFILES = $(BUILT_SOURCES) i18nsources ressource.rc
 
 libqbanking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
+ gui/libqgui.la \
  $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
 
 libqbanking_la_LDFLAGS = -no-undefined \
@@ -71,6 +58,7 @@ libqbanking_la_DEPENDENCIES = \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
+ gui/libqgui.la \
  $(aqbanking_internal_libs)
 # if IS_WINDOWS
 if IS_WINDOWS

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -37,7 +38,7 @@ AB_JOB *AB_JobGetBalance_new(AB_ACCOUNT *a){
   AB_JOB *j;
   AB_JOBGETBALANCE *aj;
 
-  j=AB_Job_new_l(AB_Job_TypeGetBalance, a);
+  j=AB_Job_new(AB_Job_TypeGetBalance, a);
   GWEN_NEW_OBJECT(AB_JOBGETBALANCE, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBGETBALANCE, j, aj,
                        AB_JobGetBalance_FreeData);
@@ -52,49 +53,6 @@ void GWENHYWFAR_CB AB_JobGetBalance_FreeData(void *bp, void *p) {
   aj=(AB_JOBGETBALANCE*)p;
   AB_AccountStatus_free(aj->accountStatus);
   GWEN_FREE_OBJECT(aj);
-}
-
-
-
-AB_JOB *AB_JobGetBalance_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
-  GWEN_DB_NODE *dbT;
-  AB_JOB *j;
-  AB_JOBGETBALANCE *aj;
-
-  j=AB_Job_new(AB_Job_TypeGetBalance, a);
-  GWEN_NEW_OBJECT(AB_JOBGETBALANCE, aj);
-  GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBGETBALANCE, j, aj,
-                       AB_JobGetBalance_FreeData);
-
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "result/accountstatus");
-  if (dbT) {
-    aj->accountStatus=AB_AccountStatus_fromDb(dbT);
-  }
-  return j;
-}
-
-
-
-int AB_JobGetBalance_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
-  AB_JOBGETBALANCE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBGETBALANCE, j);
-  assert(aj);
-
-  if (aj->accountStatus) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "result/accountstatus");
-    assert(dbT);
-    if (AB_AccountStatus_toDb(aj->accountStatus, dbT)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account status");
-      return -1;
-    }
-  }
-  return 0;
 }
 
 

@@ -12,21 +12,21 @@
 int main(int argc, char *argv[]){
   QApplication a(argc, argv);
   QBanking *qb;
-  GWEN_ERRORCODE err;
+  int err;
   int rv;
   const char *s;
   AB_BANKINFO *bi;
 
   err=GWEN_Init();
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     return 2;
   }
 
   GWEN_Logger_Open(0,
 		   "TestLib", 0,
-		   GWEN_LoggerTypeConsole,
-		   GWEN_LoggerFacilityUser);
+		   GWEN_LoggerType_Console,
+		   GWEN_LoggerFacility_User);
 
   // set loglevels
   s=getenv("LOGLEVEL");
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
     GWEN_LOGGER_LEVEL ll;
 
     ll=GWEN_Logger_Name2Level(s);
-    if (ll!=GWEN_LoggerLevelUnknown) {
+    if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(0, ll);
       DBG_WARN(0,
                "Overriding loglevel for QBankManager with \"%s\"",
@@ -46,14 +46,14 @@ int main(int argc, char *argv[]){
     }
   }
   else {
-    GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+    GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Notice);
   }
   s=getenv("GWEN_LOGLEVEL");
   if (s) {
     GWEN_LOGGER_LEVEL l;
 
     l=GWEN_Logger_Name2Level(s);
-    if (l!=GWEN_LoggerLevelUnknown)
+    if (l!=GWEN_LoggerLevel_Unknown)
       GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, l);
   }
 
@@ -73,16 +73,6 @@ int main(int argc, char *argv[]){
     return 2;
   }
 
-  if (true)
-  {
-      char mybuffer[50];
-      int rv = qb->inputBox(0, "Test for password InputBox", 
-			    "This is a test. Just enter something.",
-			    mybuffer,
-			    1, 40);
-      qDebug("QBanking::inputBox: rv=%d; Resulting password: \"%s\"",
-	     rv, mybuffer);
-  }
 
   bi=qb->selectBank();
   if (bi==0) {

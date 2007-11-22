@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -36,7 +37,7 @@ AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a) {
   AB_JOB *j;
   AB_JOB_GETTRANSACTIONS *aj;
 
-  j=AB_Job_new_l(AB_Job_TypeGetTransactions, a);
+  j=AB_Job_new(AB_Job_TypeGetTransactions, a);
   GWEN_NEW_OBJECT(AB_JOB_GETTRANSACTIONS, aj);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j, aj,
                        AB_JobGetTransactions_FreeData);
@@ -198,151 +199,6 @@ void AB_JobGetTransactions_SetMaxStoreDays(AB_JOB *j, int i){
 
   aj->maxStoreDays=i;
 }
-
-
-
-
-AB_JOB *AB_JobGetTransactions_fromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
-  AB_JOB *j;
-  AB_JOB_GETTRANSACTIONS *aj;
-  GWEN_DB_NODE *dbT;
-
-  j=AB_Job_new(AB_Job_TypeGetTransactions, a);
-  GWEN_NEW_OBJECT(AB_JOB_GETTRANSACTIONS, aj);
-  GWEN_INHERIT_SETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j, aj,
-                       AB_JobGetTransactions_FreeData);
-  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
-  assert(aj);
-
-  aj->fromTime=AB_Job_DateOnlyFromDb(db, "args/fromdate");
-  aj->toTime=AB_Job_DateOnlyFromDb(db, "args/todate");
-
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "result/transactions");
-  if (dbT) {
-    GWEN_DB_NODE *dbT2;
-
-    aj->transactions=AB_Transaction_List2_new();
-
-    /* read transactions */
-    dbT2=GWEN_DB_FindFirstGroup(dbT, "transaction");
-    while(dbT2) {
-      AB_TRANSACTION *t;
-
-      t=AB_Transaction_fromDb(dbT2);
-      if (t)
-        AB_Transaction_List2_PushBack(aj->transactions, t);
-      dbT2=GWEN_DB_FindNextGroup(dbT2, "transaction");
-    } /* while */
-  } /* if transactions */
-
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "result/accountStatusList");
-  if (dbT) {
-    GWEN_DB_NODE *dbT2;
-
-    aj->accountStatusList=AB_AccountStatus_List2_new();
-
-    /* read transactions */
-    dbT2=GWEN_DB_FindFirstGroup(dbT, "accountStatus");
-    while(dbT2) {
-      AB_ACCOUNT_STATUS *as;
-
-      as=AB_AccountStatus_fromDb(dbT2);
-      if (as)
-        AB_AccountStatus_List2_PushBack(aj->accountStatusList, as);
-      dbT2=GWEN_DB_FindNextGroup(dbT2, "accountStatus");
-    } /* while */
-  } /* if accountStatusList */
-
-  return j;
-}
-
-
-
-int AB_JobGetTransactions_toDb(const AB_JOB *j, GWEN_DB_NODE *db){
-  AB_JOB_GETTRANSACTIONS *aj;
-  GWEN_DB_NODE *dbT;
-  int errors;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOB_GETTRANSACTIONS, j);
-  assert(aj);
-
-  errors=0;
-  if (aj->fromTime)
-    AB_Job_DateOnlyToDb(aj->fromTime, db, "args/fromdate");
-
-  if (aj->toTime)
-    AB_Job_DateOnlyToDb(aj->toTime, db, "args/todate");
-
-  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "result");
-  assert(dbT);
-
-  if (aj->transactions) {
-    AB_TRANSACTION_LIST2_ITERATOR *it;
-    GWEN_DB_NODE *dbT2;
-
-    dbT2=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                          "transactions");
-    assert(dbT2);
-    it=AB_Transaction_List2_First(aj->transactions);
-    if (it) {
-      AB_TRANSACTION *t;
-
-      t=AB_Transaction_List2Iterator_Data(it);
-      assert(t);
-      while(t) {
-        GWEN_DB_NODE *dbT3;
-
-        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_PATH_FLAGS_CREATE_GROUP,
-                              "transaction");
-        assert(dbT3);
-        if (AB_Transaction_toDb(t, dbT3)) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving transaction");
-          errors++;
-        }
-        t=AB_Transaction_List2Iterator_Next(it);
-      } /* while */
-      AB_Transaction_List2Iterator_free(it);
-    } /* if it */
-  } /* if transactions */
-
-  if (aj->accountStatusList) {
-    AB_ACCOUNT_STATUS_LIST2_ITERATOR *it;
-    GWEN_DB_NODE *dbT2;
-
-    dbT2=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                          "accountStatusList");
-    assert(dbT2);
-    it=AB_AccountStatus_List2_First(aj->accountStatusList);
-    if (it) {
-      AB_ACCOUNT_STATUS *as;
-
-      as=AB_AccountStatus_List2Iterator_Data(it);
-      assert(as);
-      while(as) {
-        GWEN_DB_NODE *dbT3;
-
-        dbT3=GWEN_DB_GetGroup(dbT2, GWEN_PATH_FLAGS_CREATE_GROUP,
-                              "accountStatus");
-        assert(dbT3);
-        if (AB_AccountStatus_toDb(as, dbT3)) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving accountStatus");
-          errors++;
-        }
-        as=AB_AccountStatus_List2Iterator_Next(it);
-      } /* while */
-      AB_AccountStatus_List2Iterator_free(it);
-    } /* if it */
-  } /* if accountStatusList */
-
-
-  return 0;
-}
-
-
-
 
 
 

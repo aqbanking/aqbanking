@@ -30,7 +30,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/directory.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/gwentime.h>
 
 #include <unistd.h>
@@ -105,7 +105,7 @@ void GWENHYWFAR_CB AD_Provider_FreeData(void *bp, void *p) {
 int AD_Provider_AddTransfer(AB_PROVIDER *pro,
                             AB_ACCOUNT *acc,
                             const AB_TRANSACTION *t,
-                            GWEN_TYPE_UINT32 *jobId) {
+                            uint32_t *jobId) {
   AD_PROVIDER *dp;
   AD_JOB *dj;
   int maxXfers;
@@ -144,7 +144,7 @@ int AD_Provider_AddTransfer(AB_PROVIDER *pro,
 int AD_Provider_AddDebitNote(AB_PROVIDER *pro,
                              AB_ACCOUNT *acc,
                              const AB_TRANSACTION *t,
-                             GWEN_TYPE_UINT32 *jobId) {
+                             uint32_t *jobId) {
   AD_PROVIDER *dp;
   AD_JOB *dj;
   int maxXfers;
@@ -188,8 +188,8 @@ int AD_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   if (!GWEN_Logger_IsOpen(AQDTAUS_LOGDOMAIN)) {
     GWEN_Logger_Open(AQDTAUS_LOGDOMAIN,
                      "aqdtaus", 0,
-		     GWEN_LoggerTypeConsole,
-		     GWEN_LoggerFacilityUser);
+		     GWEN_LoggerType_Console,
+		     GWEN_LoggerFacility_User);
   }
 
   logLevelName=getenv("AQDTAUS_LOGLEVEL");
@@ -197,7 +197,7 @@ int AD_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     GWEN_LOGGER_LEVEL ll;
 
     ll=GWEN_Logger_Name2Level(logLevelName);
-    if (ll!=GWEN_LoggerLevelUnknown) {
+    if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(AQDTAUS_LOGDOMAIN, ll);
       DBG_WARN(AQDTAUS_LOGDOMAIN,
                "Overriding loglevel for AqDTAUS with \"%s\"",
@@ -243,14 +243,14 @@ int AD_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   AD_Job_List_Clear(dp->myJobs);
 
   if (errors)
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
 
   return 0;
 }
 
 
 
-AD_JOB *AD_Provider_FindMyJob(AB_PROVIDER *pro, GWEN_TYPE_UINT32 jid) {
+AD_JOB *AD_Provider_FindMyJob(AB_PROVIDER *pro, uint32_t jid) {
   AD_PROVIDER *dp;
   AD_JOB *dj;
 
@@ -297,7 +297,7 @@ int AD_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   default:
     DBG_INFO(AQDTAUS_LOGDOMAIN, "Job not supported (%d)", AB_Job_GetType(j));
     AB_TransactionLimits_free(lim);
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 
@@ -308,7 +308,7 @@ int AD_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   AB_ACCOUNT *da;
   const AB_TRANSACTION *t;
   int rv;
-  GWEN_TYPE_UINT32 jobId;
+  uint32_t jobId;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AD_PROVIDER, pro);
@@ -358,7 +358,7 @@ int AD_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   default:
     DBG_INFO(AQDTAUS_LOGDOMAIN, "Job not supported (%d)", AB_Job_GetType(j));
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 
@@ -404,24 +404,23 @@ int AD_Provider_ExecCommand(AB_PROVIDER *pro, const char *cmd){
   if (pst!=GWEN_ProcessStateRunning) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Error executing command");
     GWEN_Process_free(pr);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   /* wait for process to terminate */
   while((pst=GWEN_Process_CheckState(pr))==GWEN_ProcessStateRunning) {
-    if (AB_Banking_ProgressAdvance(AB_Provider_GetBanking(pro),
-                                   0, AB_BANKING_PROGRESS_NONE)) {
+    if (GWEN_Gui_ProgressAdvance(0, GWEN_GUI_PROGRESS_NONE)) {
       DBG_ERROR(AQDTAUS_LOGDOMAIN, "User aborted via waitcallback");
       GWEN_Process_Terminate(pr);
       GWEN_Process_free(pr);
-      return AB_ERROR_USER_ABORT;
+      return GWEN_ERROR_USER_ABORTED;
     }
     GWEN_Socket_Select(0, 0, 0, 500);
   } /* while */
   if (pst!=GWEN_ProcessStateExited) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Abnormal command termination.");
     GWEN_Process_free(pr);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   result=GWEN_Process_GetResult(pr);
@@ -429,7 +428,7 @@ int AD_Provider_ExecCommand(AB_PROVIDER *pro, const char *cmd){
 
   if (result!=0) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Command returned an error (%d)", result);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -438,7 +437,7 @@ int AD_Provider_ExecCommand(AB_PROVIDER *pro, const char *cmd){
 
 
 int AD_Provider_CheckEmptyDir(const char *path) {
-  GWEN_DIRECTORYDATA *dir;
+  GWEN_DIRECTORY *dir;
 
   dir=GWEN_Directory_new();
   if (GWEN_Directory_Open(dir, path)==0) {
@@ -449,7 +448,7 @@ int AD_Provider_CheckEmptyDir(const char *path) {
           strcmp(buffer, ".")!=0) {
         DBG_INFO(AQDTAUS_LOGDOMAIN,
                  "Folder \"%s\" is not empty", path);
-        return AB_ERROR_FOUND;
+        return GWEN_ERROR_FOUND;
       }
     }
     GWEN_Directory_Close(dir);
@@ -457,7 +456,7 @@ int AD_Provider_CheckEmptyDir(const char *path) {
   else {
     DBG_INFO(AQDTAUS_LOGDOMAIN, "Could not open folder \"%s\"", path);
     GWEN_Directory_free(dir);
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
   GWEN_Directory_free(dir);
@@ -483,7 +482,7 @@ int AD_Provider__WriteDTAUS(AB_PROVIDER *pro,
               "Could not create file \"%s\": %s",
               path,
               strerror(errno));
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   if (1!=fwrite(GWEN_Buffer_GetStart(buf),
@@ -495,7 +494,7 @@ int AD_Provider__WriteDTAUS(AB_PROVIDER *pro,
               path,
               strerror(errno));
     fclose(f);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   if (fclose(f)) {
@@ -503,7 +502,7 @@ int AD_Provider__WriteDTAUS(AB_PROVIDER *pro,
               "Could not close file \"%s\": %s",
               path,
               strerror(errno));
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -544,14 +543,13 @@ int AD_Provider_MountDisc(AB_PROVIDER *pro, AB_ACCOUNT *da) {
   cmd=AD_Account_GetMountCommand(da);
   if (cmd) {
     int rv;
-    GWEN_TYPE_UINT32 bid;
+    uint32_t bid;
 
-    bid=AB_Banking_ShowBox(AB_Provider_GetBanking(pro),
-                           0,
-                           I18N("Mounting disc"),
-                           I18N("Mounting floppy disc, please wait..."));
+    bid=GWEN_Gui_ShowBox(0,
+			 I18N("Mounting disc"),
+			 I18N("Mounting floppy disc, please wait..."));
     rv=AD_Provider_ExecCommand(pro, cmd);
-    AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
+    GWEN_Gui_HideBox(bid);
     if (rv) {
       DBG_WARN(AQDTAUS_LOGDOMAIN, "Could not mount disc");
     }
@@ -568,14 +566,13 @@ int AD_Provider_UnmountDisc(AB_PROVIDER *pro, AB_ACCOUNT *da) {
   cmd=AD_Account_GetUnmountCommand(da);
   if (cmd) {
     int rv;
-    GWEN_TYPE_UINT32 bid;
+    uint32_t bid;
 
-    bid=AB_Banking_ShowBox(AB_Provider_GetBanking(pro),
-                           0,
-                           I18N("Unmounting disc"),
-                           I18N("Unmounting floppy disc, please wait..."));
+    bid=GWEN_Gui_ShowBox(0,
+			 I18N("Unmounting disc"),
+			 I18N("Unmounting floppy disc, please wait..."));
     rv=AD_Provider_ExecCommand(pro, cmd);
-    AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
+    GWEN_Gui_HideBox(bid);
     if (rv) {
       DBG_WARN(AQDTAUS_LOGDOMAIN, "Could not unmount disc");
     }
@@ -710,9 +707,9 @@ int AD_Provider_PrintBegleitZettel(AB_PROVIDER *pro,
 
           v=AB_Value_fromDb(dbValue);
           assert(v);
-          ev=AB_Value_GetValue(v);
-          AB_Value_free(v);
-        }
+	  ev=AB_Value_GetValueAsDouble(v);
+	  AB_Value_free(v);
+	}
 
         snprintf(tbuf, sizeof(tbuf),
                  I18N(msgLineTxt),
@@ -775,12 +772,11 @@ int AD_Provider_PrintBegleitZettel(AB_PROVIDER *pro,
 
   GWEN_Buffer_Dump(abuf, stderr, 2);
 
-  rv=AB_Banking_Print(AB_Provider_GetBanking(pro),
-                      I18N("Begleitzettel fuer DTAUS Disketten"),
-                      "AQDTAUS:BEGLEITZETTEL",
-                      I18N("Diesen Zettel muessen Sie der Diskette "
-                           "beilegen."),
-                      GWEN_Buffer_GetStart(abuf));
+  rv=GWEN_Gui_Print(I18N("Begleitzettel fuer DTAUS Disketten"),
+		    "AQDTAUS:BEGLEITZETTEL",
+		    I18N("Diesen Zettel muessen Sie der Diskette "
+			 "beilegen."),
+		    GWEN_Buffer_GetStart(abuf));
   GWEN_Buffer_free(hbuf);
   GWEN_Buffer_free(abuf);
 
@@ -818,7 +814,7 @@ int AD_Provider_SaveJob(AB_PROVIDER *pro, AD_JOB *dj, GWEN_BUFFER *data){
               "Could not create file \"%s\"",
               GWEN_Buffer_GetStart(pbuf));
     GWEN_Buffer_free(pbuf);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   rv=AD_Provider__WriteDTAUS(pro, GWEN_Buffer_GetStart(pbuf), data);
@@ -838,7 +834,7 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
   GWEN_DBIO *dbio;
   GWEN_BUFFER *buf;
   GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
+  int err;
   int mounted=0;
   int rv;
 
@@ -849,9 +845,9 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
   dbio=GWEN_DBIO_GetPlugin("dtaus");
   if (!dbio) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "DTAUS parser plugin not available");
-    AD_Job_SetResult(dj, AB_ERROR_NOT_AVAILABLE,
+    AD_Job_SetResult(dj, GWEN_ERROR_NOT_AVAILABLE,
                      I18N("DTAUS parser not available"));
-    return AB_ERROR_NOT_AVAILABLE;
+    return GWEN_ERROR_NOT_AVAILABLE;
   }
 
   da=AD_Job_GetAccount(dj);
@@ -874,18 +870,18 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
                        (AD_Job_GetIsDebitNote(dj))?"debitNote":"transfer");
 
   /* create DB with all transfers */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Creating DTAUS object from job"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Creating DTAUS object from job"));
   dbTransfers=GWEN_DB_Group_new("transfers");
   ait=AB_Transaction_List2_First(AD_Job_GetTransfers(dj));
   if (ait==0) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "No transactions");
     GWEN_DB_Group_free(dbTransfers);
     GWEN_DB_Group_free(dbCfg);
-    AD_Job_SetResult(dj, AB_ERROR_NO_DATA,
+    AD_Job_SetResult(dj, GWEN_ERROR_NO_DATA,
                      I18N("No transactions"));
-    return AB_ERROR_NO_DATA;
+    return GWEN_ERROR_NO_DATA;
   }
   else {
     AB_TRANSACTION *t;
@@ -903,9 +899,9 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
         DBG_ERROR(AQDTAUS_LOGDOMAIN, "Bad transaction");
         GWEN_DB_Group_free(dbTransfers);
         GWEN_DB_Group_free(dbCfg);
-        AD_Job_SetResult(dj, AB_ERROR_BAD_DATA,
+        AD_Job_SetResult(dj, GWEN_ERROR_BAD_DATA,
                          I18N("Malformed transaction"));
-        return AB_ERROR_BAD_DATA;
+        return GWEN_ERROR_BAD_DATA;
       }
       t=AB_Transaction_List2Iterator_Next(ait);
     }
@@ -924,28 +920,28 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
     GWEN_Buffer_free(buf);
     GWEN_DB_Group_free(dbTransfers);
     GWEN_DB_Group_free(dbCfg);
-    AD_Job_SetResult(dj, AB_ERROR_BAD_DATA,
+    AD_Job_SetResult(dj, GWEN_ERROR_BAD_DATA,
                      I18N("Could not create DTAUS data"));
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   GWEN_Buffer_Dump(buf, stderr, 2);
 
   /* now we have the DTAUS object in our buffer */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Verifying DTAUS object"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Verifying DTAUS object"));
   err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Error flushing DTAUS object");
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(buf);
     GWEN_DB_Group_free(dbTransfers);
     GWEN_DB_Group_free(dbCfg);
-    AD_Job_SetResult(dj, AB_ERROR_BAD_DATA,
+    AD_Job_SetResult(dj, GWEN_ERROR_BAD_DATA,
                      I18N("Could not flush DTAUS data"));
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
   GWEN_BufferedIO_free(bio);
 
@@ -955,17 +951,18 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
   bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
 
-  if (GWEN_DBIO_Import(dbio, bio, GWEN_PATH_FLAGS_CREATE_GROUP,
-                       dbTransfers, dbCfg)) {
+  err=GWEN_DBIO_Import(dbio, bio, GWEN_PATH_FLAGS_CREATE_GROUP,
+		       dbTransfers, dbCfg);
+  if (err) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Error re-importing DTAUS object");
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(buf);
     GWEN_DB_Group_free(dbTransfers);
     GWEN_DB_Group_free(dbCfg);
-    AD_Job_SetResult(dj, AB_ERROR_GENERIC,
-                     I18N("Could not re-import DTAUS data"));
-    return AB_ERROR_GENERIC;
+    AD_Job_SetResult(dj, GWEN_ERROR_GENERIC,
+		     I18N("Could not re-import DTAUS data"));
+    return err;
   }
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
@@ -993,80 +990,77 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
              I18N(discMsg),
              AD_Job_GetJobId(dj),
              AD_Job_GetJobId(dj));
-    rv=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                             AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                             AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                             AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                             I18N("Insert Disc"),
-                             msgBuf,
-                             I18N("Ok"), I18N("Abort"), 0);
+    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			   GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			   GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			   I18N("Insert Disc"),
+			   msgBuf,
+			   I18N("Ok"), I18N("Abort"), 0);
     if (rv!=1) {
       DBG_ERROR(AQDTAUS_LOGDOMAIN, "User aborted");
       GWEN_Buffer_free(buf);
       GWEN_DB_Group_free(dbTransfers);
       if (mounted)
         AD_Provider_UnmountDisc(pro, da);
-      AD_Job_SetResult(dj, AB_ERROR_USER_ABORT, I18N("User aborted"));
-      return AB_ERROR_USER_ABORT;
+      AD_Job_SetResult(dj, GWEN_ERROR_USER_ABORTED, I18N("User aborted"));
+      return GWEN_ERROR_USER_ABORTED;
     }
 
     if (AD_Account_GetMountAllowed(da)) {
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                             AB_Banking_LogLevelNotice,
-                             I18N("Mounting disc"));
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Notice,
+			   I18N("Mounting disc"));
       rv=AD_Provider_MountDisc(pro, da);
       if (rv) {
         DBG_INFO(AQDTAUS_LOGDOMAIN, "here");
         GWEN_Buffer_free(buf);
         GWEN_DB_Group_free(dbTransfers);
-        AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                              AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                              AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                              AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                              I18N("Error"),
-                              I18N("Could not mount disc.\n"
-                                   "Please see console logs for details."
-                                   "<html>"
-                                   "<p>"
-                                   "Could not mount disc."
-                                   "Please see console logs for details."
-                                   "</p>"
-                                   "</html>"),
-                              I18N("Dismiss"), 0, 0);
-        AD_Job_SetResult(dj, rv, I18N("Could not mount disc"));
+        GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			    GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			    GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			    I18N("Error"),
+			    I18N("Could not mount disc.\n"
+				 "Please see console logs for details."
+				 "<html>"
+				 "<p>"
+				 "Could not mount disc."
+				 "Please see console logs for details."
+				 "</p>"
+				 "</html>"),
+			    I18N("Dismiss"), 0, 0);
+	AD_Job_SetResult(dj, rv, I18N("Could not mount disc"));
         return rv;
       }
       mounted=1;
     } /* if mounting allowed */
 
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-                           I18N("Checking whether disc is empty"));
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Checking whether disc is empty"));
     for (;;) {
       rv=AD_Provider_CheckEmptyDir(AD_Account_GetFolder(da));
-      if (rv==AB_ERROR_FOUND) {
+      if (rv==GWEN_ERROR_FOUND) {
         /* disc not empty */
-        rv=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                                 AB_BANKING_MSG_FLAGS_TYPE_WARN |
-                                 AB_BANKING_MSG_FLAGS_CONFIRM_B2 |
-                                 AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                                 I18N("Warning"),
-                                 I18N("The disc is not empty.\n"
-                                      "Please insert an empty disc and click "
-                                      " \"OK\""
-                                      "<html>"
-                                      "<p>"
-                                      "The disc is not empty."
-                                      "</p>"
-                                      "<p>"
-                                      "Please insert an <b>empty</b> disc and"
-                                      " click <i>OK</i>"
-                                      "</p>"
-                                      "</html>"),
-                                 I18N("Ok"),
-                                 I18N("Use This Disc"),
-                                 I18N("Abort"));
-        if (rv==2)
+        rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			       GWEN_GUI_MSG_FLAGS_CONFIRM_B2 |
+			       GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			       I18N("Warning"),
+			       I18N("The disc is not empty.\n"
+				    "Please insert an empty disc and click "
+				    " \"OK\""
+				    "<html>"
+				    "<p>"
+				    "The disc is not empty."
+				    "</p>"
+				    "<p>"
+				    "Please insert an <b>empty</b> disc and"
+				    " click <i>OK</i>"
+				    "</p>"
+				    "</html>"),
+			       I18N("Ok"),
+			       I18N("Use This Disc"),
+			       I18N("Abort"));
+	if (rv==2)
           break;
         else if (rv!=1) {
           DBG_ERROR(AQDTAUS_LOGDOMAIN, "User aborted");
@@ -1074,28 +1068,27 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
           GWEN_DB_Group_free(dbTransfers);
           if (mounted)
             AD_Provider_UnmountDisc(pro, da);
-          AD_Job_SetResult(dj, AB_ERROR_USER_ABORT, I18N("User aborted"));
-          return AB_ERROR_USER_ABORT;
+          AD_Job_SetResult(dj, GWEN_ERROR_USER_ABORTED, I18N("User aborted"));
+          return GWEN_ERROR_USER_ABORTED;
         }
       }
       else if (rv) {
         DBG_INFO(AQDTAUS_LOGDOMAIN, "here");
-        AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                              AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                              AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                              AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                              I18N("Error"),
-                              I18N("Could not open disc folder.\n"
-                                   "Please see console logs for details."
-                                   "<html>"
-                                   "<p>"
-                                   "Could not open disc folder."
-                                   "Please see console logs for details."
-                                   "</p>"
-                                   "</html>"),
-                              I18N("Dismiss"), 0, 0);
-        GWEN_Buffer_free(buf);
-        GWEN_DB_Group_free(dbTransfers);
+        GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			    GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			    GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			    I18N("Error"),
+			    I18N("Could not open disc folder.\n"
+				 "Please see console logs for details."
+				 "<html>"
+				 "<p>"
+				 "Could not open disc folder."
+				 "Please see console logs for details."
+				 "</p>"
+				 "</html>"),
+			    I18N("Dismiss"), 0, 0);
+	GWEN_Buffer_free(buf);
+	GWEN_DB_Group_free(dbTransfers);
         if (mounted)
           AD_Provider_UnmountDisc(pro, da);
         AD_Job_SetResult(dj, rv, I18N("Could not open disc folder"));
@@ -1108,37 +1101,36 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
   } /* if useDisc */
 
   /* write file */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Saving DTAUS object"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Saving DTAUS object"));
   rv=AD_Provider_WriteDTAUS(pro, da, buf);
   if (rv==0)
     rv=AD_Provider_SaveJob(pro, dj, buf);
 
   /* unmount if mounted */
   if (mounted) {
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-                           I18N("Unmounting disc"));
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Unmounting disc"));
     AD_Provider_UnmountDisc(pro, da);
   }
 
   /* check result */
   if (rv) {
-    AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                          AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                          AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                          AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                          I18N("Error"),
-                          I18N("Could not create DTAUS file.\n"
-                               "Please see console logs for details."
-                               "<html>"
-                               "<p>"
-                               "Could not create DTAUS file."
-                               "Please see console logs for details."
-                               "</p>"
-                               "</html>"),
-                          I18N("Dismiss"), 0, 0);
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("Error"),
+			I18N("Could not create DTAUS file.\n"
+			     "Please see console logs for details."
+			     "<html>"
+			     "<p>"
+			     "Could not create DTAUS file."
+			     "Please see console logs for details."
+			     "</p>"
+			     "</html>"),
+			I18N("Dismiss"), 0, 0);
     AD_Job_SetResult(dj, rv, I18N("Could not write DTAUS file"));
     GWEN_Buffer_free(buf);
     GWEN_DB_Group_free(dbTransfers);
@@ -1148,48 +1140,46 @@ int AD_Provider_ProcessJob(AB_PROVIDER *pro, AD_JOB *dj){
     AD_Job_SetResult(dj, 0, I18N("Ok."));
 
   /* print "Begleitzettel" */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Printing Begleitzettel"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Printing Begleitzettel"));
   rv=AD_Provider_PrintBegleitZettel(pro, dj, dbTransfers);
   if (rv) {
-    if (rv==AB_ERROR_NOT_SUPPORTED) {
-      AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                            AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                            AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                            AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                            I18N("Warning"),
-                            I18N("Your application does not support "
-                                 "printing.\n"
-                                 "Therefore the Begleitzettel can not be "
-                                 "printed."
-                                 "<html>"
-                                 "<p>"
-                                 "Your application does not support "
-                                 "printing."
-                                 "</p>"
-                                 "<p>"
-                                 "Therefore the Begleitzettel can not be "
-                                 "printed."
-                                 "</p>"
-                                 "</html>"),
-                            I18N("Dismiss"), 0, 0);
+    if (rv==GWEN_ERROR_NOT_SUPPORTED) {
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			  GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Warning"),
+			  I18N("Your application does not support "
+			       "printing.\n"
+			       "Therefore the Begleitzettel can not be "
+			       "printed."
+			       "<html>"
+			       "<p>"
+			       "Your application does not support "
+			       "printing."
+			       "</p>"
+			       "<p>"
+			       "Therefore the Begleitzettel can not be "
+			       "printed."
+			       "</p>"
+			       "</html>"),
+			  I18N("Dismiss"), 0, 0);
     }
     else {
-      AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                            AB_BANKING_MSG_FLAGS_TYPE_ERROR |
-                            AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-                            AB_BANKING_MSG_FLAGS_SEVERITY_NORMAL,
-                            I18N("Error"),
-                            I18N("Could not print Begleitzettel.\n"
-                                 "Please see console logs for details."
-                                 "<html>"
-                                 "<p>"
-                                 "Could not print Begleitzettel"
-                                 "Please see console logs for details."
-                                 "</p>"
-                               "</html>"),
-                            I18N("Dismiss"), 0, 0);
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			  GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Error"),
+			  I18N("Could not print Begleitzettel.\n"
+			       "Please see console logs for details."
+			       "<html>"
+			       "<p>"
+			       "Could not print Begleitzettel"
+			       "Please see console logs for details."
+			       "</p>"
+			       "</html>"),
+			  I18N("Dismiss"), 0, 0);
     }
 
   }
@@ -1221,9 +1211,9 @@ int AD_Provider__Execute(AB_PROVIDER *pro){
     int rv;
 
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Handling job");
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-                           I18N("Handling job"));
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Handling job"));
     rv=AD_Provider_ProcessJob(pro, dj);
     if (rv) {
       DBG_INFO(AQDTAUS_LOGDOMAIN, "Error processing job (%d)", rv);
@@ -1231,10 +1221,9 @@ int AD_Provider__Execute(AB_PROVIDER *pro){
     else
       succeeded++;
     done++;
-    if (AB_Banking_ProgressAdvance(AB_Provider_GetBanking(pro),
-                                   0, done)) {
+    if (GWEN_Gui_ProgressAdvance(0, done)) {
       DBG_ERROR(AQDTAUS_LOGDOMAIN, "User aborted via waitcallback");
-      return AB_ERROR_USER_ABORT;
+      return GWEN_ERROR_USER_ABORTED;
     }
     dj=AD_Job_List_Next(dj);
   }
@@ -1270,7 +1259,7 @@ int AD_Provider__Execute(AB_PROVIDER *pro){
 
   if (succeeded==0) {
     DBG_ERROR(AQDTAUS_LOGDOMAIN, "Not a single job succeeded");
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -1280,7 +1269,7 @@ int AD_Provider__Execute(AB_PROVIDER *pro){
 
 int AD_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AD_PROVIDER *dp;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
   int cnt;
   int rv;
   const char *msg=I18N_NOOP
@@ -1306,10 +1295,13 @@ int AD_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   snprintf(msgBuf, sizeof(msgBuf),
            I18N(msg), cnt, cnt);
 
-  pid=AB_Banking_ProgressStart(AB_Provider_GetBanking(pro),
-                               I18N("Creating DTAUS Disc(s)"), msgBuf, cnt);
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Creating DTAUS Disc(s)"), msgBuf, cnt);
   rv=AD_Provider__Execute(pro);
-  AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
+  GWEN_Gui_ProgressEnd(pid);
 
   return rv;
 }

@@ -33,9 +33,7 @@ noinst_HEADERS=\
 iheaderdir=${includedir}/aqdtaus
 iheader_HEADERS=\
  account.h \
- aqdtaus.h \
- job.h \
- provider.h
+ aqdtaus.h
 
 libaqdtaus_la_SOURCES= \
  account.c \

@@ -1,7 +1,19 @@
 
-MP_CFLAGS=-ggdb -Wall -O
+MY_CFLAGS=-ggdb -Wall -O
 #MP_CONF_FLAGS=--enable-maintainer-mode --disable-static
 MP_CONF_FLAGS=INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-local
+
+WIN32_OPTIONS=\
+  --host=i586-mingw32msvc \
+  --target=i586-mingw32msvc \
+  --enable-version-specific-runtime-libs \
+  --with-gcc \
+  --with-gnu-ld \
+  --without-x \
+  --enable-threads=win32 \
+  --disable-win32-registry
+
+MINGW32_PREFIX=/usr/i586-mingw32msvc
 
 default: all
 
@@ -64,7 +76,43 @@ mp:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" \
+	  CXXFLAGS="-ggdb -Wall" \
+	  CFLAGS="$(MP_CFLAGS)" \
+	  ./configure $(MP_CONF_FLAGS) \
+	    --with-backends="aqhbci aqofxconnect"  \
+	    --with-frontends="qbanking"
+	make sources
+
+mp-priv:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
+	automake --add-missing
+	autoconf
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" \
+	  CXXFLAGS="-ggdb -Wall" \
+	  CFLAGS="$(MP_CFLAGS)" \
+          LIBOFX_CFLAGS="-I/opt/devel/4/include" \
+	  LIBOFX_LIBS="-L/opt/devel/4/lib -lofx" \
+	  ./configure $(MP_CONF_FLAGS) \
+	    --with-backends="aqhbci aqofxconnect"  \
+	    --with-frontends="qbanking" \
+	    --with-gwen-dir=/opt/devel/4 \
+	    --with-chipcard-client-dir=/opt/devel/4 \
+	    --prefix=/opt/devel/4
+	make sources
+
+
+mp-orig:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
+	automake --add-missing
+	autoconf
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus aqyellownet aqgeldkarte" --with-frontends="qbanking" --with-gwen-dir=/opt/devel --with-chipcard-client-dir=/opt/devel
 	make sources
 
 mp2:
@@ -74,9 +122,36 @@ mp2:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends="cbanking fbanking g2banking qbanking kbanking"
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends="fbanking qbanking kbanking"
 	make sources
 
 mp-win:
 	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-Wall" CFLAGS="-Wall" ./configure --prefix=/c/posix --with-gwen-dir=/c/posix --enable-local
+
+
+mp-w32:
+	PATH="$(MINGW32_PREFIX)/bin:$(PATH)"
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" \
+	LIBOFX_CFLAGS="-I$(MINGW32_PREFIX)/include" \
+	LIBOFX_LIBS="-L$(MINGW32_PREFIX)/lib -lofx" \
+        DLLTOOL=i586-mingw32msvc-dlltool \
+	OBJDUMP=i586-mingw32msvc-objdump \
+	LD=i586-mingw32msvc-ld \
+	AR=i586-mingw32msvc-ar \
+	NM=i586-mingw32msvc-nm \
+	RANLIB=i586-mingw32msvc-ranlib \
+	STRIP=i586-mingw32msvc-strip \
+	STRIPPROG=i586-mingw32msvc-strip \
+	AS=i586-mingw32msvc-as \
+	RC=i586-mingw32msvc-windres \
+	./configure \
+	  --enable-maintainer-mode \
+	  --prefix=$(MINGW32_PREFIX) $(WIN32_OPTIONS) \
+	  --enable-release \
+	  --with-gwen-dir=$(MINGW32_PREFIX) \
+	  --with-chipcard-client-dir=$(MINGW32_PREFIX) \
+	  --with-backends="aqhbci aqofxconnect" \
+	  --with-frontends="" \
+	  --disable-tutorials \
+	  --with-xmlmerge=/usr/bin/xmlmerge
 

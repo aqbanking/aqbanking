@@ -19,14 +19,10 @@
 
 
 
-FXIMPLEMENT(FBanking, Banking, NULL, 0)
-
-
-
 
 FBanking::FBanking(const char *appName,
 		   const char *dirName)
-:Banking(appName, dirName)
+:AB_Banking(appName, dirName)
 {
 }
 
@@ -38,13 +34,13 @@ FBanking::~FBanking() {
 
 
 int FBanking::init() {
-  return Banking::init();
+  return AB_Banking::init();
 }
 
 
 
 int FBanking::fini() {
-  return Banking::fini();
+  return AB_Banking::fini();
 }
 
 

@@ -24,6 +24,7 @@
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
 
 #include <assert.h>
 
@@ -87,7 +88,7 @@ void ActionSendKeys::slotButtonClicked() {
   QBanking *qb;
   AB_USER *u;
   AB_PROVIDER *pro;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
 
@@ -102,22 +103,24 @@ void ActionSendKeys::slotButtonClicked() {
 
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
-  pid=qb->progressStart(tr("Sending User Keys"),
-                        tr("<qt>"
-                           "Sending your public keys to the server."
-                           "</qt>"),
-                        1);
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     tr("Sending User Keys").utf8(),
+			     NULL,
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_SendUserKeys(pro, u, ctx, 1);
+  rv=AH_Provider_SendUserKeys(pro, u, ctx, 1, pid);
+  GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error sending user keys");
     _realDialog->setStatus(ActionWidget::StatusFailed);
-    qb->progressEnd(pid);
     return;
   }
-
-  qb->progressEnd(pid);
 
   _realDialog->setStatus(ActionWidget::StatusSuccess);
   setNextEnabled(true);

@@ -1,4 +1,5 @@
-SUBDIRS=admin doc m4 src bindings po tutorials
+SUBDIRS=admin doc m4 src bindings po @TUTORIALS@
+DIST_SUBDIRS=admin doc m4 src bindings po tutorials
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
@@ -32,7 +33,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = aqbanking.pc
 
 listdoc.h:
-	mklistdoc -v `find headers -name '*.h' ` >listdoc.h
+	$(gwenhywfar_bindir)/mklistdoc -v `find headers -name '*.h' ` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
 	if test -d apidoc; then rm -Rf apidoc; fi
@@ -82,7 +83,8 @@ setup: aqbanking.iss
 	 && $(ISCC) aqbanking.iss \
 	 && rm -rf $(wintmpdir)
 
-if USE_I18N
+
+if IF_MAKE_I18N_FILES
 
 # We directly read that file list. For old make programs, you would
 # set this to an empty variable, because they are only needed by the
@@ -221,12 +223,6 @@ CLEANFILES += $(I18NCATALOGS)
 endif # if USE_I18N
 
 
-# Extra rule instead of "all" which creates the auto-generated headers
-# *first* and only then starts "$(MAKE) all". This avoids duplicate
-# compilation.
-quick: config.h version.h system.h
-	$(MAKE)
-
 # Rule for only building the source rpm
 srpm: $(PACKAGE).spec dist
 	rpmbuild="rpm" && \
@@ -254,7 +250,7 @@ CLEANFILES += $(BUILT_SOURCES)
 symlinks: mksymlinks.sh
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
-sl-headers:
+sl-headers: mksymlinks.sh
 	$(MAKE) -C src built_sources
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -100,7 +101,7 @@ int AB_BankInfoPlugin_GetBankInfoByTemplate(AB_BANKINFO_PLUGIN *bip,
     return bip->getBankInfoByTemplateFn(bip, tbi, bl);
 
   DBG_INFO(AQBANKING_LOGDOMAIN, "GetBankInfoByTemplate function not set");
-  return AB_ERROR_NOT_SUPPORTED;
+  return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 

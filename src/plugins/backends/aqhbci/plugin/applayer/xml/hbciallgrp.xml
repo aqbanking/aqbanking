@@ -126,6 +126,14 @@
     <ELEM name="minsigs" type="num" maxsize="3" />
   </GROUPdef>
 
+  <GROUPdef id="BPDJob" delimiter="+" version="2" >
+    <!-- "Geschaeftsvorfallparameter, allgemein" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="3" />
+    <ELEM name="secProfile" type="num" maxsize="1" />
+  </GROUPdef>
+
 
   <GROUPdef id="language" delimiter=":" version="1" >
     <ELEM name="language" type="num" maxsize="3" minnum="1" maxnum="9" />
@@ -179,6 +187,13 @@
     <!-- Zertifikat -->
     <ELEM name="type" type="num" maxsize="1" />
     <ELEM name="cert" type="bin" maxsize="2048" />
+  </GROUPdef>
+
+
+  <GROUPdef id="SecProfile" delimiter=":" version="1">
+    <!-- Sicherheitsprofil, ab FinTS3 -->
+    <ELEM name="code" type="an" maxsize="16" />
+    <ELEM name="version" type="num" maxsize="3" />
   </GROUPdef>
 
 

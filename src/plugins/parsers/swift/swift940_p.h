@@ -20,23 +20,23 @@
 
 
 int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg);
 
 
 int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
-                          GWEN_TYPE_UINT32 flags,
+                          uint32_t flags,
                           GWEN_DB_NODE *data,
                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
-                             GWEN_TYPE_UINT32 flags,
+                             uint32_t flags,
                              GWEN_DB_NODE *data,
                              GWEN_DB_NODE *cfg);
 

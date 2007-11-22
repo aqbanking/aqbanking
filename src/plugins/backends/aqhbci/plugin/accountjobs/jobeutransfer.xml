@@ -15,15 +15,17 @@
          terminator="'" 
  >
    <GROUP type="SegHead" name="head" />
-   <GROUP name="ouraccount" type="ktv" trustlevel="4" version="2" />
-   <ELEM name="ourName" type="dta" maxsize="140" />
-   <GROUP name="otheraccount" type="ktv" trustlevel="4" version="2" minnum="0" />
-   <ELEM name="iban" type="dta" minnum="0" maxsize="34"/>
-   <ELEM name="otherBankName" type="dta" maxsize="140" />
-   <ELEM name="otherName" type="dta" maxsize="140" />
-   <GROUP name="value" type="btg" trustlevel="4" version="1" />
-   <ELEM name="chargeWhom" type="num" maxsize="1" />
-   <ELEM name="purpose" type="dta" maxsize="140" />
+   <GROUP name="transaction" delimiter="+">
+     <GROUP name="ouraccount" type="ktv" trustlevel="4" version="2" />
+     <ELEM name="ourName" type="an" maxsize="140" />
+     <GROUP name="otheraccount" type="ktv" trustlevel="4" version="2" minnum="0" />
+     <ELEM name="iban" type="ascii" minnum="0" maxsize="34"/>
+     <ELEM name="otherBankName" type="an" maxsize="140" minnum="0" />
+     <ELEM name="otherName" type="an" maxsize="140" />
+     <GROUP name="value" type="btg" trustlevel="4" version="1" />
+     <ELEM name="chargeWhom" type="num" maxsize="1" />
+     <ELEM name="purpose" type="an" maxsize="140" />
+   </GROUP>
    
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

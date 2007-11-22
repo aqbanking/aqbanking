@@ -24,7 +24,11 @@ noinst_HEADERS=\
   jobeutransfer_l.h \
   jobeutransfer_p.h \
   jobmultitransfer_l.h \
-  jobmultitransfer_p.h
+  jobmultitransfer_p.h \
+  jobforeignxferwh_l.h \
+  jobforeignxferwh_p.h \
+  jobloadcellphone_l.h \
+  jobloadcellphone_p.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -34,7 +38,9 @@ libhbciaccjobs_la_SOURCES=\
   jobgetstandingorders.c \
   jobsingletransfer.c \
   jobeutransfer.c \
-  jobmultitransfer.c
+  jobmultitransfer.c \
+  jobforeignxferwh.c \
+  jobloadcellphone.c
 
 
 sources:
@@ -54,13 +60,15 @@ xmlfiles=\
   $(srcdir)/jobinternaltransfer.xml \
   $(srcdir)/jobeutransfer.xml \
   $(srcdir)/jobmultitransfer.xml \
+  $(srcdir)/jobforeignxferwh.xml \
   $(srcdir)/jobcreatesto.xml \
   $(srcdir)/jobmodifysto.xml \
   $(srcdir)/jobdeletesto.xml \
   $(srcdir)/jobgetdatedxfers.xml \
   $(srcdir)/jobcreatedatedxfer.xml \
   $(srcdir)/jobmodifydatedxfer.xml \
-  $(srcdir)/jobdeletedatedxfer.xml
+  $(srcdir)/jobdeletedatedxfer.xml \
+  $(srcdir)/jobloadcellphone.xml
 
 EXTRA_DIST=$(xmlfiles)
 

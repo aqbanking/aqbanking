@@ -23,9 +23,9 @@ AC_CONFIG_HEADERS([config.h])
 # AqBanking versions
 #
 
-AQBANKING_VERSION_MAJOR=2
-AQBANKING_VERSION_MINOR=3
-AQBANKING_VERSION_PATCHLEVEL=3
+AQBANKING_VERSION_MAJOR=3
+AQBANKING_VERSION_MINOR=0
+AQBANKING_VERSION_PATCHLEVEL=0
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -38,14 +38,14 @@ AQBANKING_VERSION_TAG="stable"
 #
 
 SVN="svn"
-AQBANKING_VERSION_FULL_STRING="${AQBANKING_VERSION_MAJOR}.${AQBANKING_VERSION_MINOR}.${AQBANKING_VERSION_PATCHLEVEL}.${AQBANKING_VERSION_BUILD}-${AQBANKING_VERSION_TAG}"
+AQBANKING_VERSION_FULL_STRING="${AQBANKING_VERSION_MAJOR}.${AQBANKING_VERSION_MINOR}.${AQBANKING_VERSION_PATCHLEVEL}.${AQBANKING_VERSION_BUILD}${AQBANKING_VERSION_TAG}"
 AQBANKING_VERSION_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
 
 case "$AQBANKING_VERSION_TAG" in 
   svn|cvs)
      rev=`LC_ALL="C" $SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
      if test "x$rev" != "x" ; then
-       AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL-${AQBANKING_VERSION_TAG}-r${rev}"
+       AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.${AQBANKING_VERSION_PATCHLEVEL}${AQBANKING_VERSION_TAG}-r${rev}"
      fi
     ;;
 esac
@@ -61,36 +61,36 @@ esac
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=21
-AQBANKING_SO_AGE=5
-AQBANKING_SO_REVISION=2
+AQBANKING_SO_CURRENT=20
+AQBANKING_SO_AGE=0
+AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
 # backends
 #
 
-AQHBCI_SO_CURRENT=11
-AQHBCI_SO_AGE=1
-AQHBCI_SO_REVISION=3
+AQHBCI_SO_CURRENT=12
+AQHBCI_SO_AGE=0
+AQHBCI_SO_REVISION=0
 AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
 
-AQDTAUS_SO_CURRENT=3
+AQDTAUS_SO_CURRENT=4
 AQDTAUS_SO_AGE=0
 AQDTAUS_SO_REVISION=0
 AQDTAUS_SO_EFFECTIVE="`echo \$(($AQDTAUS_SO_CURRENT-$AQDTAUS_SO_AGE))`"
 
-AQGELDKARTE_SO_CURRENT=4
+AQGELDKARTE_SO_CURRENT=5
 AQGELDKARTE_SO_AGE=0
 AQGELDKARTE_SO_REVISION=0
 AQGELDKARTE_SO_EFFECTIVE="`echo \$(($AQGELDKARTE_SO_CURRENT-$AQGELDKARTE_SO_AGE))`"
 
-AQOFXCONNECT_SO_CURRENT=3
+AQOFXCONNECT_SO_CURRENT=4
 AQOFXCONNECT_SO_AGE=0
 AQOFXCONNECT_SO_REVISION=0
 AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
 
-AQYELLOWNET_SO_CURRENT=3
+AQYELLOWNET_SO_CURRENT=4
 AQYELLOWNET_SO_AGE=0
 AQYELLOWNET_SO_REVISION=0
 AQYELLOWNET_SO_EFFECTIVE="`echo \$(($AQYELLOWNET_SO_CURRENT-$AQYELLOWNET_SO_AGE))`"
@@ -99,27 +99,12 @@ AQYELLOWNET_SO_EFFECTIVE="`echo \$(($AQYELLOWNET_SO_CURRENT-$AQYELLOWNET_SO_AGE)
 # frontends
 #
 
-G2BANKING_SO_CURRENT=2
-G2BANKING_SO_REVISION=0
-G2BANKING_SO_AGE=0
-G2BANKING_SO_EFFECTIVE="`echo \$(($G2BANKING_SO_CURRENT-$G2BANKING_SO_AGE))`"
-
-KBANKING_SO_CURRENT=3
-KBANKING_SO_AGE=2
-KBANKING_SO_REVISION=1
-KBANKING_SO_EFFECTIVE="`echo \$(($KBANKING_SO_CURRENT-$KBANKING_SO_AGE))`"
-
-QBANKING_SO_CURRENT=4
-QBANKING_SO_REVISION=1
+QBANKING_SO_CURRENT=5
+QBANKING_SO_REVISION=0
 QBANKING_SO_AGE=0
 QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
 
-CBANKING_SO_CURRENT=1
-CBANKING_SO_REVISION=0
-CBANKING_SO_AGE=0
-CBANKING_SO_EFFECTIVE="`echo \$(($CBANKING_SO_CURRENT-$CBANKING_SO_AGE))`"
-
-FBANKING_SO_CURRENT=1
+FBANKING_SO_CURRENT=2
 FBANKING_SO_REVISION=0
 FBANKING_SO_AGE=0
 FBANKING_SO_EFFECTIVE="`echo \$(($FBANKING_SO_CURRENT-$FBANKING_SO_AGE))`"
@@ -163,22 +148,6 @@ AQOFXCONNECT_VERSION_TAG=$AQBANKING_VERSION_TAG
 AQOFXCONNECT_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 AQOFXCONNECT_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
-G2BANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-G2BANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-G2BANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-G2BANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-G2BANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-G2BANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-G2BANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
-
-KBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-KBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-KBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-KBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-KBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-KBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-KBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
-
 QBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
 QBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
 QBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
@@ -186,14 +155,6 @@ QBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 QBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 QBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 QBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
-
-CBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-CBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-CBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-CBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-CBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-CBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-CBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 FBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
 FBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
@@ -228,7 +189,7 @@ case "$AQBANKING_VERSION_TAG" in
      AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
      
      # add TAG
-     AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_RELEASE_STRING-${AQBANKING_VERSION_TAG}"
+     AQBANKING_VERSION_RELEASE_STRING="${AQBANKING_VERSION_RELEASE_STRING}${AQBANKING_VERSION_TAG}"
      ;;
 esac
 
@@ -236,10 +197,7 @@ AQHBCI_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQDTAUS_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQGELDKARTE_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQOFXCONNECT_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-G2BANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-KBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 QBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-CBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 
 
 
@@ -412,74 +370,6 @@ AC_DEFINE_UNQUOTED(AQYELLOWNET_SO_EFFECTIVE_STR, "$AQYELLOWNET_SO_EFFECTIVE",
 
 
 #
-# same for G2Banking
-#
-
-AC_SUBST(G2BANKING_VERSION_MAJOR)
-AC_SUBST(G2BANKING_VERSION_MINOR)
-AC_SUBST(G2BANKING_VERSION_PATCHLEVEL)
-AC_SUBST(G2BANKING_VERSION_BUILD)
-AC_SUBST(G2BANKING_VERSION_TAG)
-AC_SUBST(G2BANKING_VERSION_FULL_STRING)
-AC_SUBST(G2BANKING_VERSION_STRING)
-AC_SUBST(G2BANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_MAJOR,$G2BANKING_VERSION_MAJOR, 
-                   [major version])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_MINOR,$G2BANKING_VERSION_MINOR, 
-                   [minor version])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_PATCHLEVEL,$G2BANKING_VERSION_PATCHLEVEL, 
-                   [patchlevel])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_BUILD,$G2BANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_STRING,"$G2BANKING_VERSION_STRING", 
-                   [version string])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_FULL_STRING,"$G2BANKING_VERSION_FULL_STRING",
-                   [full version string])
-AC_DEFINE_UNQUOTED(G2BANKING_VERSION_TAG,$G2BANKING_VERSION_TAG, [tag])
-
-AC_SUBST(G2BANKING_SO_CURRENT)
-AC_SUBST(G2BANKING_SO_REVISION)
-AC_SUBST(G2BANKING_SO_AGE)
-AC_SUBST(G2BANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(G2BANKING_SO_EFFECTIVE_STR, "$G2BANKING_SO_EFFECTIVE",
-                   [effective SO version])
-
-
-#
-# same for KBanking
-#
-
-AC_SUBST(KBANKING_VERSION_MAJOR)
-AC_SUBST(KBANKING_VERSION_MINOR)
-AC_SUBST(KBANKING_VERSION_PATCHLEVEL)
-AC_SUBST(KBANKING_VERSION_BUILD)
-AC_SUBST(KBANKING_VERSION_TAG)
-AC_SUBST(KBANKING_VERSION_FULL_STRING)
-AC_SUBST(KBANKING_VERSION_STRING)
-AC_SUBST(KBANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_MAJOR,$KBANKING_VERSION_MAJOR, 
-                   [major version])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_MINOR,$KBANKING_VERSION_MINOR, 
-                   [minor version])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_PATCHLEVEL,$KBANKING_VERSION_PATCHLEVEL, 
-                   [patchlevel])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_BUILD,$KBANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_STRING,"$KBANKING_VERSION_STRING", 
-                   [version string])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_FULL_STRING,"$KBANKING_VERSION_FULL_STRING",
-                   [full version string])
-AC_DEFINE_UNQUOTED(KBANKING_VERSION_TAG,$KBANKING_VERSION_TAG, [tag])
-
-AC_SUBST(KBANKING_SO_CURRENT)
-AC_SUBST(KBANKING_SO_REVISION)
-AC_SUBST(KBANKING_SO_AGE)
-AC_SUBST(KBANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(KBANKING_SO_EFFECTIVE_STR, "$KBANKING_SO_EFFECTIVE",
-                   [effective SO version])
-
-
-#
 # same for QBanking
 #
 
@@ -510,40 +400,6 @@ AC_SUBST(QBANKING_SO_REVISION)
 AC_SUBST(QBANKING_SO_AGE)
 AC_SUBST(QBANKING_SO_EFFECTIVE)
 AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
-                   [effective SO version])
-
-
-#
-# same for CBanking
-#
-
-AC_SUBST(CBANKING_VERSION_MAJOR)
-AC_SUBST(CBANKING_VERSION_MINOR)
-AC_SUBST(CBANKING_VERSION_PATCHLEVEL)
-AC_SUBST(CBANKING_VERSION_BUILD)
-AC_SUBST(CBANKING_VERSION_TAG)
-AC_SUBST(CBANKING_VERSION_FULL_STRING)
-AC_SUBST(CBANKING_VERSION_STRING)
-AC_SUBST(CBANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_MAJOR,$CBANKING_VERSION_MAJOR, 
-                   [major version])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_MINOR,$CBANKING_VERSION_MINOR, 
-                   [minor version])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_PATCHLEVEL,$CBANKING_VERSION_PATCHLEVEL, 
-                   [patchlevel])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_BUILD,$CBANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_STRING,"$CBANKING_VERSION_STRING", 
-                   [version string])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_FULL_STRING,"$CBANKING_VERSION_FULL_STRING",
-                   [full version string])
-AC_DEFINE_UNQUOTED(CBANKING_VERSION_TAG,$CBANKING_VERSION_TAG, [tag])
-
-AC_SUBST(CBANKING_SO_CURRENT)
-AC_SUBST(CBANKING_SO_REVISION)
-AC_SUBST(CBANKING_SO_AGE)
-AC_SUBST(CBANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(CBANKING_SO_EFFECTIVE_STR, "$CBANKING_SO_EFFECTIVE",
                    [effective SO version])
 
 
@@ -685,24 +541,12 @@ AC_CHECK_FUNCS([setlocale])
 AC_ARG_WITH(frontends, 
   [  --with-frontends=list      space separated list of frontends (default:all)],
   [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="cbanking g2banking qbanking kbanking"]
+  [aqbanking_frontends="qbanking"]
 )
 # The ordering is important due to linker dependencies, so force
 # the correct ordering here:
-case "$aqbanking_frontends" in *cbanking*)
-  tmp_frontends="cbanking"
-  ;;
-esac
-case "$aqbanking_frontends" in *g2banking*)
-  tmp_frontends="${tmp_frontends} g2banking"
-  ;;
-esac
 case "$aqbanking_frontends" in *qbanking*)
   tmp_frontends="${tmp_frontends} qbanking"
-  ;;
-esac
-case "$aqbanking_frontends" in *kbanking*)
-  tmp_frontends="${tmp_frontends} kbanking"
   ;;
 esac
 case "$aqbanking_frontends" in *fbanking*)
@@ -729,7 +573,7 @@ AC_ARG_WITH(backends,
 tmp_backends=""
 for f in ${aqbanking_backends}; do
   if test "x${f}" = "xGPL" -o "x${f}" = "xgpl"; then
-    tmp_backends="${tmp_backends} aqhbci aqdtaus aqgeldkarte aqofxconnect"
+    tmp_backends="${tmp_backends} aqhbci aqofxconnect"
   else
     tmp_backends="${tmp_backends} ${f}"
   fi
@@ -754,20 +598,31 @@ AC_SUBST(aqbanking_backends)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(2,3,0,1075)
+AC_GWENHYWFAR(3,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
-XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"
+
+
+###-------------------------------------------------------------------------
+#
+# check xmlmerge
+#
+AC_MSG_CHECKING(xmlmerge)
+AC_ARG_WITH(xmlmerge, [  --with-xmlmerge=PATH path and name of tool xmlmerge],
+  [XMLMERGE="$withval"],
+  [XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"])
+AC_SUBST(XMLMERGE)
+AC_MSG_RESULT($XMLMERGE)
 
 
 
 ###-------------------------------------------------------------------------
 #
-# Check for LibChipcard3
+# Check for LibChipcard4
 #
 
 case "$aqbanking_backends" in *aqgeldkarte*)
-  AC_CHIPCARD3_CLIENT(3,0,0,0)
+  AC_CHIPCARD_CLIENT(4,0,0)
   AC_MSG_CHECKING([if chipcard_client is useable])
   if test "x$have_chipcard_client" == "xyes"; then
     AC_MSG_RESULT(yes)
@@ -818,39 +673,28 @@ AC_ARG_ENABLE(libofx,
   ],
   enable_libofx="yes")
 AC_MSG_RESULT($enable_libofx)
-
+  
 if test "$enable_libofx" = "yes"; then
-  HAVE_OFX="yes"
-  AC_CHECK_LIB(ofx, libofx_proc_buffer, [HAVE_OFX="yes"], [HAVE_OFX="no"])
-  AC_CHECK_HEADERS([libofx/libofx.h], [], [HAVE_OFX="no"])
-  if test "$HAVE_OFX" != "yes"; then
-    AC_MSG_WARN([
-  *** LibOFX >=0.7.0 not found, the OFX plugin will not be compiled.
-  *** Please get LibOFX from http://libofx.sf.net/.
-  *** Make sure that the libofx-devel packages are also installed.])
-  else
-    AC_CHECK_MEMBERS([struct OfxAccountInfo.brokerid], 
-                     [HAVE_OFX_WITH_CONNECT="yes"], [],
-                     [#include <libofx/libofx.h>])
-    if test "$HAVE_OFX_WITH_CONNECT" = "yes"; then
-       AC_DEFINE_UNQUOTED(HAVE_OFX_WITH_CONNECT, 1, [whether direct connect is available])
-    fi
-    AC_CHECK_MEMBERS([struct OfxTransactionData.fees_valid], 
-                     [HAVE_OFX_0_8_PLUS="yes"], [],
-                     [#include <libofx/libofx.h>])
-    if test "$HAVE_OFX_0_8_PLUS" = "yes"; then
-       AC_DEFINE_UNQUOTED(HAVE_OFX_0_8_PLUS, 1, [whether LibOFX>0.8 is available])
-    fi
-
-    LIBOFX_INCLUDES=""
-    LIBOFX_LIBS="-lofx"
+  pkg_modules="libofx >= 0.8.2"
+  PKG_CHECK_MODULES(LIBOFX, 
+                    [$pkg_modules], 
+                    [have_libofx="yes"], 
+                    [have_libofx="no"])
+  if test "$have_libofx" = "yes"; then
+    HAVE_OFX="yes"
+    HAVE_OFX_WITH_CONNECT="yes"
+    AC_DEFINE(HAVE_OFX, 1, [if LibOFX is available])
+    libofx_includes="$LIBOFX_CFLAGS"
+    libofx_libs="$LIBOFX_LIBS"
   fi
 else
   HAVE_OFX="no"
 fi
+
+
 AM_CONDITIONAL(WITH_OFX_PLUGIN, [test "$HAVE_OFX" = "yes"])
-AC_SUBST(LIBOFX_INCLUDES)
-AC_SUBST(LIBOFX_LIBS)
+AC_SUBST(libofx_includes)
+AC_SUBST(libofx_libs)
 
 
 
@@ -890,93 +734,60 @@ AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 
 ###-------------------------------------------------------------------------
 #
-# GTK2
-#
-
-case "$aqbanking_frontends" in *g2banking*)
-  pkg_modules="gtk+-2.0 >= 2.0.0"
-  dnl $4=true => don't die in case of failure.
-  PKG_CHECK_MODULES(GTK2, [$pkg_modules], [], true)
-
-  pkg_modules="libglade-2.0 >= 2.0.0"
-  dnl $4=true => don't die in case of failure.
-  PKG_CHECK_MODULES(LIBGLADE2, [$pkg_modules], [], true)
-
-  all_includes="$all_includes  ${GTK2_CFLAGS} ${LIBGLADE2_CFLAGS}"
-
-  ;;
-esac
-AC_SUBST(GTK2_CFLAGS)
-AC_SUBST(GTK2_LIBS)
-AC_SUBST(LIBGLADE2_CFLAGS)
-AC_SUBST(LIBGLADE2_LIBS)
-
-
-
-###-------------------------------------------------------------------------
-#
 # QT3
 #
 
 QT3TO4="NO"
 UIC3="NO"
 QT_BINDIR=""
+FRONTENDS_INCLUDES_QBANKING="NO"
 
-case "$aqbanking_frontends" in *qbanking*)
-  AQ_CHECK_QT3
-  if test "$have_qt3" = "yes"; then
-    all_includes="$all_includes $qt3_includes"
+case "$aqbanking_frontends" in 
+  *qbanking*)
+    AQ_CHECK_QT3
+    if test "$have_qt3" = "yes"; then
+      all_includes="$all_includes $qt3_includes"
+    
+      # Define this macro to disable the cast from QString to const char
+      # which implicitly uses latin1()!
+      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+    fi
+    
+    dnl windows/mingw doesnt have the yes program, so add this emulation
+    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+    
+    dnl Store the bin dir for the windows dlls
+    QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
   
-    # Define this macro to disable the cast from QString to const char
-    # which implicitly uses latin1()!
-    AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
-  fi
+    dnl Check for potential qt4 environment, but only if moc is from qt4
+    dnl (watch out: the outside square parenteses are vitally important here!)
+    MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
+      UIC3="${qt3_uic}"
+    else
+      AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+      AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+    fi
   
-  dnl windows/mingw doesnt have the yes program, so add this emulation
-  AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-  
-  dnl Store the bin dir for the windows dlls
-  QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
-
-  dnl Check for potential qt4 environment, but only if moc is from qt4
-  dnl (watch out: the outside square parenteses are vitally important here!)
-  MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-  if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
-    UIC3="${qt3_uic}"
-  else
-    AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-    AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-  fi
-
-  dnl Make sure moc and uic come from the same Qt version
-  dnl (watch out: the outside square parenteses are vitally important here!)
-  UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-  if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
-        "` echo ${UIC_VERSION} | cut -d. -f1 `" \
-     -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
-        "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
-    AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-  fi
-  ;;
+    dnl Make sure moc and uic come from the same Qt version
+    dnl (watch out: the outside square parenteses are vitally important here!)
+    UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
+          "` echo ${UIC_VERSION} | cut -d. -f1 `" \
+       -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
+          "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
+      AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
+    fi
+    AC_DEFINE(BUILD_QBANKING_FRONTEND, 1, [if qbanking frontend is built])
+    ;;
+  *)
+    qbanking_internal_libs=""
+    ;;
 esac
 
 dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
-
-###-------------------------------------------------------------------------
-#
-# KDE3
-#
-
-case "$aqbanking_frontends" in *kbanking*)
-  AQ_CHECK_KDE3
-  if test "$have_kde3" = "yes"; then
-    all_includes="$all_includes $kde3_includes"
-  fi
-  ;;
-esac
-
 
 
 ###-------------------------------------------------------------------------
@@ -1001,12 +812,32 @@ AC_SUBST(fox_libs)
 
 ###-------------------------------------------------------------------------
 #
+# Check for GMP
+#
+
+# Allow the user to override the gmp_libs detection here
+if test "x$gmp_libs" = "x"; then
+  AC_CHECK_LIB(gmp, __gmpz_init, [have_gmp="yes"], [have_gmp="no"])
+  AC_CHECK_HEADERS(gmp.h, [], [have_gmp="no"])
+  if test "$have_gmp" != "yes"; then
+    AC_MSG_ERROR([GMP is required, see http://swox.com/gmp])
+  else
+    gmp_libs="-lgmp"
+  fi
+fi
+AC_SUBST(gmp_libs)
+
+
+
+###-------------------------------------------------------------------------
+#
 # OS dependant settings
 #
 
 # Common settings; can be overridden per-OS below.
 aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 aqbanking_ldflags="-L\${libdir}"
+aqbanking_libs="-laqbanking"
 aqbanking_includes="-I\${includedir}"
 aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
 aqbanking_pkgdatadir="\${datadir}/aqbanking"
@@ -1014,51 +845,208 @@ aqbanking_pkgdatadir="\${datadir}/aqbanking"
 case "$OS_TYPE" in
     posix)
         aqbanking_sys_is_windows=0
-        aqbanking_libs="-laqbanking"
     	;;
     windows)
         aqbanking_sys_is_windows=1
         AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
-        ACX_WINDOWS_PATHS
-        aqbanking_libs="-laqbanking"
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether local installation mode is enabled
+#
+
+AC_MSG_CHECKING(whether local installation mode is wanted)
+AC_ARG_ENABLE(local-install,
+  [  --enable-local-install         allow local installation mode (default=no)],
+  enable_local_install="$enableval",
+  enable_local_install="no")
+AC_MSG_RESULT($enable_local_install)
+
+if test "$enable_local_install" != "no"; then
+  AC_DEFINE(ENABLE_LOCAL_INSTALL, 1, [whether local install is wanted])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check plugin search path
+#
+AC_MSG_CHECKING(plugin search dir)
+AC_ARG_WITH(plugin-searchdir, [  --with-plugin-searchdir=DIR where to search for plugins],
+  [aqbanking_plugin_searchdir="$withval"],
+  [aqbanking_plugin_searchdir=""])
+
+if test -z "${aqbanking_plugin_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    aqbanking_plugin_searchdir="lib/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+  else
+    if test "$enable_local_install" != "no"; then
+      aqbanking_plugin_searchdir="lib/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+    else
+      aqbanking_plugin_searchdir="$aqbanking_plugindir"
+    fi
+  fi
+fi
+
+AC_SUBST(aqbanking_plugin_searchdir)
+AC_MSG_RESULT($aqbanking_plugin_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check cfg search dir
+#
+AC_MSG_CHECKING(cfg search dir)
+AC_ARG_WITH(cfg-searchdir, [  --with-cfg-searchdir=DIR where to search for cfg files],
+  [aqbanking_cfg_searchdir="$withval"],
+  [aqbanking_cfg_searchdir=""])
+
+if test -z "$aqbanking_cfg_searchdir"; then
+  if test "$OSYSTEM" = "windows"; then
+    aqbanking_cfg_searchdir="etc"
+  else
+    if test "$enable_local_install" != "no"; then
+      aqbanking_cfg_searchdir="etc"
+    else
+      aqbanking_cfg_searchdir="\$(sysconfdir)"
+    fi
+  fi
+fi
+
+
+AC_SUBST(aqbanking_cfg_searchdir)
+AC_MSG_RESULT($aqbanking_cfg_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check locale search dir
+#
+AC_MSG_CHECKING(locale search dir)
+AC_ARG_WITH(locale-searchdir, [  --with-locale-searchdir=DIR where to search for locale files],
+  [aqbanking_locale_searchdir="$withval"],
+  [aqbanking_locale_searchdir=""])
+
+if test -z "${aqbanking_locale_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    aqbanking_locale_searchdir="share/locale"
+  else
+    if test "$enable_local_install" != "no"; then
+      aqbanking_locale_searchdir="share/locale"
+    else
+      aqbanking_locale_searchdir="\$(localedir)"
+    fi
+  fi
+fi
+
+AC_SUBST(aqbanking_locale_searchdir)
+AC_MSG_RESULT($aqbanking_locale_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check data search dir
+#
+AC_MSG_CHECKING(data search dir)
+AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for data files],
+  [aqbanking_data_searchdir="$withval"],
+  [aqbanking_data_searchdir=""])
+
+if test -z "${aqbanking_data_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    aqbanking_data_searchdir="share"
+  else
+    if test "$enable_local_install" != "no"; then
+      aqbanking_data_searchdir="share"
+    else
+      aqbanking_data_searchdir="\$(datadir)"
+    fi
+  fi
+fi
+
+AC_SUBST(aqbanking_data_searchdir)
+AC_MSG_RESULT($aqbanking_data_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+# check for Distribution
+
+AQ_DISTRIBUTION
+
 
 
 ###-------------------------------------------------------------------------
 #
 # check for I18N
 #
-HAVE_I18N="yes"
+
+
+# check whether i18n files are to be created
 AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
-if test "$XGETTEXT" != "missing"; then
-  AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
-  AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
-else
-  HAVE_I18N="no"
+
+MAKE_I18N_FILES="yes"
+if test "$XGETTEXT" = "missing"; then
+  MAKE_I18N_FILES="no"
   AC_MSG_WARN([xgettext is missing. Locale suport is disabled.])
 fi
-AC_SUBST(HAVE_I18N)
-if test "$HAVE_I18N" = "yes"; then
-  AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
-fi
-AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
 
-# check for --qt argument of msgfmt
-AC_PATH_PROG([MSGFMT], [msgfmt], [NO])
-AC_MSG_CHECKING(whether msgfmt understands --qt)
-if test "x${MSGFMT}" != "x"; then
-  if ${MSGFMT} --qt --help >/dev/null 2>&1; then
-    MSGFMT_SUPPORTS_QT=yes
+AC_PATH_PROG([MSGFMT], [msgfmt], [missing])
+if test "$MSGFMT" = "missing"; then
+  MAKE_I18N_FILES="no"
+  AC_MSG_WARN([msgfmt is missing. Locale suport is disabled.])
+else
+  # check for --qt argument of msgfmt
+  AC_MSG_CHECKING(whether msgfmt understands --qt)
+  if test "x${MSGFMT}" != "x"; then
+    if ${MSGFMT} --qt --help >/dev/null 2>&1; then
+      MSGFMT_SUPPORTS_QT=yes
+    else
+      MSGFMT_SUPPORTS_QT=no
+    fi
   else
     MSGFMT_SUPPORTS_QT=no
   fi
-else
-  MSGFMT_SUPPORTS_QT=no
+  AC_MSG_RESULT($MSGFMT_SUPPORTS_QT)
 fi
+
+AC_SUBST(MAKE_I18N_FILES)
 AC_SUBST(MSGFMT_SUPPORTS_QT)
-AC_MSG_RESULT($MSGFMT_SUPPORTS_QT)
+AM_CONDITIONAL(IF_MAKE_I18N_FILES, [test "$MAKE_I18N_FILES" = "yes"])
+
+
+# then check whether i18n support is to be compiled in
+i18n_libs=""
+HAVE_I18N="yes"
+AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+AC_CHECK_FUNCS([setlocale])
+
+if test "$OS_TYPE" != "windows"; then
+  oldlibs="$LIBS"
+  LIBS=""
+  AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
+  i18n_libs="$LIBS"
+  LIBS="$oldlibs"
+else
+  i18n_libs="-lintl"
+fi
+
+if test "$HAVE_I18N" != "NO"; then
+  AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
+fi
+
+AC_SUBST(HAVE_I18N)
+AC_SUBST(i18n_libs)
+
 
 
 ###-------------------------------------------------------------------------
@@ -1217,12 +1205,15 @@ AC_ARG_ENABLE(full-doc,
 if test "$enable_fulldoc" = "yes"; then
 	DOXYGEN_INPUT="listdoc.h src"
         DOXYGEN_DEFINE=""
+        DOXYGEN_FILE_PATTERNS="*.h *.c *.cpp"
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
 	DOXYGEN_INPUT="listdoc.h headers"
+        DOXYGEN_FILE_PATTERNS="*.h"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
+AC_SUBST(DOXYGEN_FILE_PATTERNS)
 AC_MSG_RESULT($enable_fulldoc)
 
 
@@ -1255,51 +1246,12 @@ AC_SUBST(DOXYGEN_TAGFILES)
 
 ###-------------------------------------------------------------------------
 #
-# check for local install mode
-#
-
-AC_MSG_CHECKING(whether local install mode is wanted)
-enable_local_install="no"
-
-AC_ARG_ENABLE(local,
-  [  --enable-local     allow local installation (default=$enable_local_install)],
-  [ case "${enableval}" in
-    yes) enable_local_install="yes";;
-    no)  enable_local_install="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-local);;
-    esac
-  ],[])
-AC_MSG_RESULT($enable_local_install)
-
-if test "x${enable_local_install}" = "xyes"; then
-  AC_DEFINE([LOCAL_INSTALL], 1, [if local installation is allowed])
-fi
-
-
-
-###-------------------------------------------------------------------------
-#
 # check for dependencies of backends
 #
 
 dependencies_ok="yes"
 for backend in $aqbanking_backends; do
   case "$backend" in
-
-    aqhbci)
-      have_cbanking="no"
-      for frontend in $aqbanking_frontends; do
-	case "$frontend" in
-	  cbanking)
-	  have_cbanking="yes"
-	  ;;
-	esac
-      done
-      if test "x$have_cbanking" != "xyes"; then
-        AC_MSG_NOTICE([*** The backend aqhbci (currently) requires the cbanking frontend. Specify --with-frontends="cbanking" to build aqbanking with at least the cbanking frontend.])
-	dependencies_ok="no"
-      fi
-      ;;
 
     aqofxconnect)
       if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
@@ -1325,43 +1277,22 @@ done
 # check for dependencies of frontends
 #
 
+with_qbanking="no"
 for frontend in $aqbanking_frontends; do
   case "$frontend" in
-    g2banking)
-      if test -z "${GTK2_LIBS}"; then
-        AC_MSG_NOTICE([*** GTK2 is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      if test "x${LIBGLADE2_LIBS}" = "x"; then
-        AC_MSG_NOTICE([*** The library "libglade2" is required for GTK2-frontend "g2banking". Specify --with-frontends="cbanking qbanking kbanking" to build aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      ;;
     qbanking)
       if test "x$have_qt3" != "xyes"; then
-        AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="cbanking g2banking" to build aqbanking without that frontend.])
+        AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="" to build aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
       qt3_ui="qt3"
-      ;;
-    kbanking)
-      if test "x$have_kde3" != "xyes"; then
-        AC_MSG_NOTICE([*** KDE3 is required for KDE-frontend "kbanking". Specify --with-frontends="cbanking g2banking qbanking" to build aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      case $aqbanking_frontends in 
-        *qbanking*)
-          ;;
-        *)
-          AC_MSG_ERROR([QT3 frontend is needed by KDE-frontend.])
-          ;;
-      esac
+      with_qbanking="yes"
       ;;
     fbanking)
       if test "x$have_fox" != "xyes"; then
         AC_MSG_NOTICE([
 *** Fox Toolkit is required for FOX-frontend "fbanking". 
-*** Specify --with-frontends="cbanking g2banking qbanking kbanking" to build 
+*** Specify --with-frontends="qbanking" to build 
 *** aqbanking without that frontend.])
 	dependencies_ok="no"
       fi
@@ -1377,6 +1308,8 @@ if test "x$dependencies_ok" != "xyes"; then
 *** configuration.])
 fi
 
+AC_SUBST(with_qbanking)
+
 
 
 ###-------------------------------------------------------------------------
@@ -1388,18 +1321,16 @@ fi
 aqhbci_internal_libs="${abs_top_builddir}/src/plugins/backends/aqhbci/plugin/libaqhbci.la"
 aqhbci_ldflags="-L\${libdir}"
 aqhbci_includes="-I\${includedir}"
-aqhbci_plugindir="\${libdir}/aqhbci/plugins/${AQHBCI_SO_EFFECTIVE}"
-aqhbci_data="\${datadir}/aqhbci"
+aqhbci_libs="-laqhbci"
+with_aqhbci="no"
 
 case "$aqbanking_backends" in *aqhbci*)
+  with_aqhbci="yes"
   case "$OS_TYPE" in
       posix)
-          aqhbci_libs="-laqhbci"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQHBCI_DLL,1, [Define if DLL is built])
-          ACX_WINDOWS_PATHS
-          aqhbci_libs="-laqhbci"
           ;;
   esac
   ;;
@@ -1410,9 +1341,20 @@ AC_SUBST(aqhbci_includes)
 AC_SUBST(aqhbci_internal_libs)
 AC_SUBST(aqhbci_libs)
 AC_SUBST(aqhbci_ldflags)
-AC_SUBST(aqhbci_plugindir)
-AC_SUBST(aqhbci_data)
-AC_SUBST(XMLMERGE)
+AC_SUBST(with_aqhbci)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check AqHBCI data dir
+#
+AC_MSG_CHECKING(aqhbci data dir)
+AC_ARG_WITH(aqhbci-datadir, [  --with-aqhbci-datadir=DIR where to search for data files],
+  [aqhbci_datadir="$withval"],
+  [aqhbci_datadir="$aqhbci_data"])
+AC_SUBST(aqhbci_datadir)
+AC_MSG_RESULT($aqhbci_datadir)
 
 
 
@@ -1424,18 +1366,14 @@ AC_SUBST(XMLMERGE)
 # Common settings
 aqdtaus_internal_libs="${abs_top_builddir}/src/plugins/backends/aqdtaus/plugin/libaqdtaus.la"
 aqdtaus_includes="-I\${includedir}"
-aqdtaus_plugins="\${libdir}/aqdtaus/plugins/${AQDTAUS_SO_EFFECTIVE}"
-aqdtaus_data="\${datadir}/aqdtaus"
+aqdtaus_libs="-L\${libdir} -laqdtaus"
 
 case "$aqbanking_backends" in *aqdtaus*)
   case "$OS_TYPE" in
       posix)
-          aqdtaus_libs="-L\${libdir} -laqdtaus"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQDTAUS_DLL,1, [Define if DLL is built])
-          ACX_WINDOWS_PATHS
-          aqdtaus_libs="-L\${libdir} -laqdtaus"
           ;;
   esac
   ;;
@@ -1445,8 +1383,6 @@ AS_SCRUB_INCLUDE(aqdtaus_includes)
 AC_SUBST(aqdtaus_includes)
 AC_SUBST(aqdtaus_internal_libs)
 AC_SUBST(aqdtaus_libs)
-AC_SUBST(aqdtaus_plugins)
-AC_SUBST(aqdtaus_data)
 #AC_DEFINE_UNQUOTED(AQDTAUS_DATA, "${aqdtaus_data}", [data dir])
 
 
@@ -1459,18 +1395,14 @@ AC_SUBST(aqdtaus_data)
 # Common settings
 aqgeldkarte_internal_libs="${abs_top_builddir}/src/plugins/backends/aqgeldkarte/plugin/libaqgeldkarte.la"
 aqgeldkarte_includes="-I\${includedir}"
-aqgeldkarte_plugins="\${libdir}/aqgeldkarte/plugins/${AQGELDKARTE_SO_EFFECTIVE}"
-aqgeldkarte_data="\${datadir}/aqgeldkarte"
+aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
 
 case "$aqbanking_backends" in *aqgeldkarte*)
   case "$OS_TYPE" in
       posix)
-          aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQGELDKARTE_DLL,1, [Define if DLL is built])
-          ACX_WINDOWS_PATHS
-          aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
           ;;
   esac
   ;;
@@ -1480,8 +1412,6 @@ AS_SCRUB_INCLUDE(aqgeldkarte_includes)
 AC_SUBST(aqgeldkarte_includes)
 AC_SUBST(aqgeldkarte_internal_libs)
 AC_SUBST(aqgeldkarte_libs)
-AC_SUBST(aqgeldkarte_plugins)
-AC_SUBST(aqgeldkarte_data)
 #AC_DEFINE_UNQUOTED(AQGELDKARTE_DATA, "${aqgeldkarte_data}", [data dir])
 
 
@@ -1494,18 +1424,14 @@ AC_SUBST(aqgeldkarte_data)
 # Common settings
 aqofxconnect_internal_libs="${abs_top_builddir}/src/plugins/backends/aqofxconnect/plugin/libaqofxconnect.la"
 aqofxconnect_includes="-I\${includedir}"
-aqofxconnect_plugins="\${libdir}/aqofxconnect/plugins/${AQOFXCONNECT_SO_EFFECTIVE}"
-aqofxconnect_data="\${datadir}/aqofxconnect"
+aqofxconnect_libs="-L\${libdir} -laqofxconnect"
 
 case "$aqbanking_backends" in *aqofxconnect*)
   case "$OS_TYPE" in
       posix)
-          aqofxconnect_libs="-L\${libdir} -laqofxconnect"
           ;;
       windows)
           AC_DEFINE_UNQUOTED(BUILDING_AQOFXCONNECT_DLL,1, [Define if DLL is built])
-          ACX_WINDOWS_PATHS
-          aqofxconnect_libs="-L\${libdir} -laqofxconnect"
           ;;
   esac
   ;;
@@ -1515,8 +1441,6 @@ AS_SCRUB_INCLUDE(aqofxconnect_includes)
 AC_SUBST(aqofxconnect_includes)
 AC_SUBST(aqofxconnect_internal_libs)
 AC_SUBST(aqofxconnect_libs)
-AC_SUBST(aqofxconnect_plugins)
-AC_SUBST(aqofxconnect_data)
 #AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
 
 
@@ -1529,17 +1453,13 @@ AC_SUBST(aqofxconnect_data)
 # Common settings
 aqyellownet_internal_libs="${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin/aqyellownet.la"
 aqyellownet_includes="-I\${includedir}"
-aqyellownet_plugins="\${libdir}/aqyellownet/plugins/${AQYELLOWNET_SO_EFFECTIVE}"
-aqyellownet_data="\${datadir}/aqyellownet"
+aqyellownet_libs="-L\${libdir} -laqyellownet"
 
 case "$aqbanking_backends" in *aqyellownet*)
   case "$OS_TYPE" in
       posix)
-          aqyellownet_libs="-L\${libdir} -laqyellownet"
           ;;
       windows)
-          ACX_WINDOWS_PATHS
-          aqyellownet_libs="-L\${libdir} -laqyellownet"
           ;;
   esac
   ;;
@@ -1549,64 +1469,7 @@ AS_SCRUB_INCLUDE(aqyellownet_includes)
 AC_SUBST(aqyellownet_includes)
 AC_SUBST(aqyellownet_internal_libs)
 AC_SUBST(aqyellownet_libs)
-AC_SUBST(aqyellownet_plugins)
-AC_SUBST(aqyellownet_data)
 #AC_DEFINE_UNQUOTED(AQYELLOWNET_DATA, "${aqyellownet_data}", [data dir])
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for frontend g2banking
-#
-
-# Common settings
-g2banking_internal_libs="${abs_top_builddir}/src/frontends/g2banking/libg2banking.la"
-g2banking_includes="-I\${includedir}"
-g2banking_data="\${datadir}/aqbanking/frontends/g2banking"
-
-case "$OS_TYPE" in
-    posix)
-        g2banking_libs="-L\${libdir} -lg2banking"
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_AQBANKING_DLL,1, [Define if DLL is built])
-        g2banking_libs="-L\${libdir} -lg2banking"
-	all_includes="$all_includes -mms-bitfields"
-    	;;
-esac
-
-AC_SUBST(g2banking_includes)
-AC_SUBST(g2banking_internal_libs)
-AC_SUBST(g2banking_libs)
-AC_SUBST(g2banking_data)
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for frontend kbanking
-#
-
-# Common settings
-kbanking_internal_libs="${abs_top_builddir}/src/frontends/kbanking/libkbanking.la"
-kbanking_includes="-I\${includedir}"
-kbanking_data="\${datadir}/kbanking"
-
-case "$OS_TYPE" in
-    posix)
-        kbanking_libs="-L\${libdir} -lkbanking"
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_KBANKING_DLL,1, [Define if DLL is built])
-        kbanking_libs="-L\${libdir} -lkbanking"
-    	;;
-esac
-
-AC_SUBST(kbanking_includes)
-AC_SUBST(kbanking_libs)
-AC_SUBST(kbanking_internal_libs)
-AC_SUBST(kbanking_data)
 
 
 
@@ -1618,17 +1481,16 @@ AC_SUBST(kbanking_data)
 # Common settings
 qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
 qbanking_includes="-I\${includedir}"
+qbanking_libs="-L\${libdir} -lqbanking"
 qbanking_data="\${datadir}/qbanking"
 qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
 qbanking_helpdir="\${datadir}/aqbanking/frontends/qbanking/help"
 
 case "$OS_TYPE" in
     posix)
-        qbanking_libs="-L\${libdir} -lqbanking"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
-        qbanking_libs="-L\${libdir} -lqbanking"
 	all_includes="$all_includes -mms-bitfields"
     	;;
 esac
@@ -1639,34 +1501,6 @@ AC_SUBST(qbanking_libs)
 AC_SUBST(qbanking_data)
 AC_SUBST(qbanking_plugindir)
 AC_SUBST(qbanking_helpdir)
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for frontend cbanking
-#
-
-# Common settings
-cbanking_internal_libs="${abs_top_builddir}/src/frontends/cbanking/libcbanking.la"
-cbanking_includes="-I\${includedir}"
-cbanking_data="\${datadir}/cbanking"
-
-case "$OS_TYPE" in
-    posix)
-        cbanking_libs="-L\${libdir} -lcbanking"
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_CBANKING_DLL,1, [Define if DLL is built])
-        cbanking_libs="-L\${libdir} -lcbanking"
-	all_includes="$all_includes -mms-bitfields"
-    	;;
-esac
-
-AC_SUBST(cbanking_includes)
-AC_SUBST(cbanking_internal_libs)
-AC_SUBST(cbanking_libs)
-AC_SUBST(cbanking_data)
 
 
 
@@ -1709,6 +1543,28 @@ AC_SUBST(qt3_ui)
 
 ###-------------------------------------------------------------------------
 #
+# check whether tutorials are to be built
+#
+
+AC_MSG_CHECKING(whether tutorials are to be built)
+AC_ARG_ENABLE(tutorials,
+  [  --enable-tutorials         build tutorials (default=yes)],
+  [ case "${enableval}" in
+    yes) TUTORIALS="tutorials";;
+    no)  TUTORIALS="";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-tutorials);;
+    esac
+  ],
+  [
+   TUTORIALS="tutorials"
+   enableval="yes"
+  ])
+AC_MSG_RESULT($enableval)
+AC_SUBST(TUTORIALS)
+
+
+###-------------------------------------------------------------------------
+#
 # Cleanup includes, define all_XXX
 #
 
@@ -1745,10 +1601,8 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/ressource.rc
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
+  src/libs/aqbanking++/Makefile
   src/frontends/Makefile
-  src/frontends/cbanking/Makefile
-  src/frontends/cbanking/cbanking-config.in
-  src/frontends/cbanking/ressource.rc
   src/frontends/fbanking/Makefile
   src/frontends/fbanking/lib/Makefile
   src/frontends/fbanking/lib/fbanking.pc
@@ -1756,27 +1610,13 @@ AC_CONFIG_FILES([
   src/frontends/fbanking/lib/base-widgets/Makefile
   src/frontends/fbanking/lib/ext-widgets/Makefile
   src/frontends/fbanking/lib/dialogs/Makefile
-  src/frontends/g2banking/Makefile
-  src/frontends/g2banking/g2banking-config.in
-  src/frontends/g2banking/version.h
-  src/frontends/g2banking/ressource.rc
-  src/frontends/g2banking/dialogs/Makefile
-  src/frontends/g2banking/views/Makefile
-  src/frontends/g2banking/widgets/Makefile
-  src/frontends/kbanking/Makefile
-  src/frontends/kbanking/dialogs/Makefile
-  src/frontends/kbanking/views/Makefile
-  src/frontends/kbanking/widgets/Makefile
-  src/frontends/kbanking/version.h
-  src/frontends/kbanking/kbanking-config.in
-  src/frontends/kbanking/ressource.rc
   src/frontends/qbanking/Makefile
   src/frontends/qbanking/lib/Makefile
   src/frontends/qbanking/lib/dialogs/Makefile
   src/frontends/qbanking/lib/views/Makefile
   src/frontends/qbanking/lib/widgets/Makefile
+  src/frontends/qbanking/lib/gui/Makefile
   src/frontends/qbanking/lib/version.h
-  src/frontends/qbanking/lib/qbanking-config.in
   src/frontends/qbanking/lib/ressource.rc
   src/frontends/qbanking/bin/Makefile
   src/frontends/qbanking/bin/wizard/Makefile
@@ -1789,6 +1629,8 @@ AC_CONFIG_FILES([
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile
   src/plugins/bankinfo/at/at.xml
+  src/plugins/bankinfo/ca/Makefile
+  src/plugins/bankinfo/ca/ca.xml
   src/plugins/bankinfo/ch/Makefile
   src/plugins/bankinfo/ch/ch.xml
   src/plugins/bankinfo/de/Makefile
@@ -1839,6 +1681,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/mijnpostbank.conf
   src/plugins/imexporters/csv/profiles/oko.conf
   src/plugins/imexporters/csv/profiles/spk-aachen.conf
+  src/plugins/imexporters/csv/profiles/spk-steiermark.conf
   src/plugins/imexporters/csv/profiles/tonline-banking.conf
   src/plugins/imexporters/csv/profiles/test.conf
   src/plugins/imexporters/openhbci1/Makefile
@@ -1870,11 +1713,6 @@ AC_CONFIG_FILES([
   src/plugins/parsers/swift/ressource.rc
   src/plugins/backends/Makefile
   src/plugins/backends/aqhbci/Makefile
-  src/plugins/backends/aqhbci/media/Makefile
-  src/plugins/backends/aqhbci/media/crypttoken/Makefile
-  src/plugins/backends/aqhbci/media/crypttoken/pintan/Makefile
-  src/plugins/backends/aqhbci/media/crypttoken/pintan/pintan.xml
-  src/plugins/backends/aqhbci/media/crypttoken/pintan/ressource.rc
   src/plugins/backends/aqhbci/plugin/Makefile
   src/plugins/backends/aqhbci/plugin/aqhbci.xml
   src/plugins/backends/aqhbci/plugin/header.xml
@@ -1889,7 +1727,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/tools/Makefile
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
-  src/plugins/backends/aqhbci/aqhbci-config.in
   src/plugins/backends/aqhbci/ui/Makefile
   src/plugins/backends/aqhbci/ui/qt3/Makefile
   src/plugins/backends/aqhbci/ui/qt3/qt3_debug/Makefile
@@ -1900,7 +1737,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
   src/plugins/backends/aqdtaus/Makefile
   src/plugins/backends/aqdtaus/version.h
-  src/plugins/backends/aqdtaus/aqdtaus-config.in
   src/plugins/backends/aqdtaus/plugin/Makefile
   src/plugins/backends/aqdtaus/plugin/aqdtaus.xml
   src/plugins/backends/aqdtaus/plugin/ressource.rc
@@ -1910,7 +1746,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqgeldkarte/Makefile
   src/plugins/backends/aqgeldkarte/version.h
-  src/plugins/backends/aqgeldkarte/aqgeldkarte-config.in
   src/plugins/backends/aqgeldkarte/plugin/Makefile
   src/plugins/backends/aqgeldkarte/plugin/aqgeldkarte.xml
   src/plugins/backends/aqgeldkarte/ui/Makefile
@@ -1919,7 +1754,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
-  src/plugins/backends/aqofxconnect/aqofxconnect-config.in
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
   src/plugins/backends/aqofxconnect/plugin/ressource.rc
@@ -1930,7 +1764,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc
   src/plugins/backends/aqyellownet/Makefile
-  src/plugins/backends/aqyellownet/aqyellownet-config.in
   src/plugins/backends/aqyellownet/plugin/Makefile
   src/plugins/backends/aqyellownet/plugin/aqyellownet.xml
   src/plugins/backends/aqyellownet/ui/Makefile
@@ -1965,9 +1798,16 @@ echo
 echo
 echo "Summary"
 echo "----------------------------------------------------"
-echo "AqBanking version  : $AQBANKING_VERSION_FULL_STRING"
-echo "Supported backends :$aqbanking_backends"
-echo "Supported frontends: $aqbanking_frontends"
+echo "AqBanking version       : $AQBANKING_VERSION_FULL_STRING"
+echo "Supported backends      :$aqbanking_backends"
+echo "Supported frontends     :$aqbanking_frontends"
+echo "Local Installation Mode : $enable_local_install"
+echo "Cfg Search Folder       : $aqbanking_cfg_searchdir"
+echo "Data Search Folder      : $aqbanking_data_searchdir"
+echo "Locale Search Folder    : $aqbanking_locale_searchdir"
+echo "Symbol Visibility       : $visibility_supported"
+echo "Use KtoBlzCheck         : $have_ktoblzcheck"
+echo "Use LibOfx              : $HAVE_OFX"
 echo
 echo "You can now run \"make\" (or gmake on FreeBSD) to compile."
 

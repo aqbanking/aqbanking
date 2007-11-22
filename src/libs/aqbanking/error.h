@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -15,6 +16,7 @@
 #define AQBANKING_ERROR_H
 
 #include <aqbanking/system.h>
+#include <gwenhywfar/error.h>
 
 
 #ifdef BUILDING_AQBANKING
@@ -75,33 +77,27 @@
  * @ingroup G_AB_C_INTERFACE
  */
 /*@{*/
-#define AB_ERROR_SUCCESS           0
-#define AB_ERROR_GENERIC         (-1)
-#define AB_ERROR_NOT_SUPPORTED   (-2)
-#define AB_ERROR_NOT_AVAILABLE   (-3)
-#define AB_ERROR_BAD_CONFIG_FILE (-4)
-#define AB_ERROR_INVALID         (-5)
-#define AB_ERROR_NETWORK         (-6)
-#define AB_ERROR_NOT_FOUND       (-7)
-#define AB_ERROR_EMPTY           (-8)
-#define AB_ERROR_USER_ABORT      (-9)
-#define AB_ERROR_FOUND           (-10)
-#define AB_ERROR_NO_DATA         (-11)
-#define AB_ERROR_NOFN            (-12)
-#define AB_ERROR_UNKNOWN_ACCOUNT (-13)
-#define AB_ERROR_NOT_INIT        (-14)
-#define AB_ERROR_SECURITY        (-15)
-#define AB_ERROR_BAD_DATA        (-16)
-#define AB_ERROR_UNKNOWN         (-17)
-#define AB_ERROR_ABORTED         (-18)
-#define AB_ERROR_DEFAULT_VALUE   (-19)
-#define AB_ERROR_BAD_PIN         (-20)
-#define AB_ERROR_IO              (-21)
 
-#define AB_ERROR_USER1           (-128)
-#define AB_ERROR_USER2           (-129)
-#define AB_ERROR_USER3           (-130)
-#define AB_ERROR_USER4           (-131)
+#define AB_ERROR_OFFSET GWEN_ERROR_USEROFFSET
+
+#define AB_ERROR_BAD_CONFIG_FILE (AB_ERROR_OFFSET-1)
+#define AB_ERROR_NETWORK         (AB_ERROR_OFFSET-2)
+#define AB_ERROR_EMPTY           (AB_ERROR_OFFSET-3)
+
+#define AB_ERROR_INDIFFERENT     (AB_ERROR_OFFSET-4)
+#define AB_ERROR_UNKNOWN_ACCOUNT (AB_ERROR_OFFSET-5)
+
+#define AB_ERROR_NOT_INIT        (AB_ERROR_OFFSET-6)
+#define AB_ERROR_SECURITY        (AB_ERROR_OFFSET-7)
+#define AB_ERROR_PLUGIN_MISSING  (AB_ERROR_OFFSET-8)
+
+#define AB_ERROR_USER1           (AB_ERROR_OFFSET-50)
+#define AB_ERROR_USER2           (AB_ERROR_OFFSET-51)
+#define AB_ERROR_USER3           (AB_ERROR_OFFSET-52)
+#define AB_ERROR_USER4           (AB_ERROR_OFFSET-53)
+
+#define AB_ERROR_USEROFFSET      (AB_ERROR_OFFSET-100)
+
 /*@}*/
 
 

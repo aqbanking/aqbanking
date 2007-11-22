@@ -33,6 +33,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/iomanager.h>
 
 // #include <aqhbci/version.h>
 #include <aqhbci/msgengine.h>
@@ -179,8 +182,8 @@ int checkArgs(s_args &args, int argc, char **argv) {
   args.version=0;
   args.hversion=210;
   args.logFile=MYNAME ".log";
-  args.logType=GWEN_LoggerTypeConsole;
-  args.logLevel=GWEN_LoggerLevelWarning;
+  args.logType=GWEN_LoggerType_Console;
+  args.logLevel=GWEN_LoggerLevel_Warning;
   args.trustLevel=0;
 
   if (argc<2) {
@@ -267,12 +270,12 @@ int checkArgs(s_args &args, int argc, char **argv) {
       if (i>=argc)
 	return -1;
       if (strcmp(argv[i],"stderr")==0)
-        args.logType=GWEN_LoggerTypeConsole;
+        args.logType=GWEN_LoggerType_Console;
       else if (strcmp(argv[i],"file")==0)
-	args.logType=GWEN_LoggerTypeFile;
+	args.logType=GWEN_LoggerType_File;
 #ifdef HAVE_SYSLOG_H
       else if (strcmp(argv[i],"syslog")==0)
-	args.logType=GWEN_LoggerTypeSyslog;
+	args.logType=GWEN_LoggerType_Syslog;
 #endif
       else {
         fprintf(stderr,"Unknown log type \"%s\"\n",
@@ -286,21 +289,21 @@ int checkArgs(s_args &args, int argc, char **argv) {
       if (i>=argc)
 	return -1;
       if (strcmp(argv[i], "emergency")==0)
-	args.logLevel=GWEN_LoggerLevelEmergency;
+	args.logLevel=GWEN_LoggerLevel_Emergency;
       else if (strcmp(argv[i], "alert")==0)
-	args.logLevel=GWEN_LoggerLevelAlert;
+	args.logLevel=GWEN_LoggerLevel_Alert;
       else if (strcmp(argv[i], "critical")==0)
-	args.logLevel=GWEN_LoggerLevelCritical;
+	args.logLevel=GWEN_LoggerLevel_Critical;
       else if (strcmp(argv[i], "error")==0)
-	args.logLevel=GWEN_LoggerLevelError;
+	args.logLevel=GWEN_LoggerLevel_Error;
       else if (strcmp(argv[i], "warning")==0)
-	args.logLevel=GWEN_LoggerLevelWarning;
+	args.logLevel=GWEN_LoggerLevel_Warning;
       else if (strcmp(argv[i], "notice")==0)
-	args.logLevel=GWEN_LoggerLevelNotice;
+	args.logLevel=GWEN_LoggerLevel_Notice;
       else if (strcmp(argv[i], "info")==0)
-	args.logLevel=GWEN_LoggerLevelInfo;
+	args.logLevel=GWEN_LoggerLevel_Info;
       else if (strcmp(argv[i], "debug")==0)
-	args.logLevel=GWEN_LoggerLevelDebug;
+	args.logLevel=GWEN_LoggerLevel_Debug;
       else {
 	fprintf(stderr,
                 "Unknown log level \"%s\"\n",
@@ -509,7 +512,7 @@ int show(const s_args &args) {
   } // for
 
 
-  if (args.logLevel>=GWEN_LoggerLevelDebug)
+  if (args.logLevel>=GWEN_LoggerLevel_Debug)
     GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
 
   listNode=GWEN_MsgEngine_ListMessage(e,
@@ -525,7 +528,7 @@ int show(const s_args &args) {
   GWEN_MsgEngine_free(e);
 
   DBG_INFO(0, "Listnode:");
-  if (args.logLevel>=GWEN_LoggerLevelInfo)
+  if (args.logLevel>=GWEN_LoggerLevel_Info)
     GWEN_XMLNode_Dump(listNode, stderr, 1);
 
   version=atoi(GWEN_XMLNode_GetProperty(listNode, "version", "-1"));
@@ -597,7 +600,7 @@ int listAll(const s_args &args) {
   } // for
 
 
-  if (args.logLevel>=GWEN_LoggerLevelInfo)
+  if (args.logLevel>=GWEN_LoggerLevel_Info)
     GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
 
 
@@ -713,7 +716,7 @@ int checkAll(const s_args &args) {
   } // for
 
 
-  if (args.logLevel>=GWEN_LoggerLevelInfo)
+  if (args.logLevel>=GWEN_LoggerLevel_Info)
     GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
 
 
@@ -796,11 +799,8 @@ void _logMessage(const string &fname,
                  const string &msg,
                  GWEN_DB_NODE *hd) {
   int fd;
-  GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
-  unsigned int size;
-  const char *p;
-  unsigned int pos;
+  int rv;
+  GWEN_IO_LAYER *io;
 
   fd=open(fname.c_str(),
           O_RDWR | O_CREAT | O_APPEND,
@@ -810,58 +810,92 @@ void _logMessage(const string &fname,
     return;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
-  if (GWEN_DB_WriteToStream(hd, bio,
-                            GWEN_DB_FLAGS_WRITE_SUBGROUPS |
-                            GWEN_DB_FLAGS_DETAILED_GROUPS |
-                            GWEN_DB_FLAGS_USE_COLON|
-                            GWEN_DB_FLAGS_OMIT_TYPES)) {
-    DBG_INFO(0, "called from here");
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
+  /* create io layer for this file */
+  io=GWEN_Io_LayerFile_new(-1, fd);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     return;
   }
 
-  // append empty line to separate header from data
-  err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)){
-    DBG_INFO(0, "called from here");
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
-    return;
-  }
-  size=msg.length();
-
-  p=msg.data();
-  pos=0;
-  while(pos<size) {
-    unsigned int lsize;
-
-    lsize=size-pos;
-    err=GWEN_BufferedIO_WriteRaw(bio, p+pos, &lsize);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "called from here");
-      GWEN_BufferedIO_Abandon(bio);
-      GWEN_BufferedIO_free(bio);
-      return;
-    }
-    pos+=lsize;
-  } // while
-
-  // append CR for better readability
-  err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)){
-    DBG_INFO(0, "called from here");
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
+  rv=GWEN_DB_WriteToIo(hd, io,
+		       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
+		       GWEN_DB_FLAGS_DETAILED_GROUPS |
+		       GWEN_DB_FLAGS_USE_COLON|
+		       GWEN_DB_FLAGS_OMIT_TYPES,
+		       0,
+		       2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     return;
   }
 
-  if (GWEN_BufferedIO_Close(bio)) {
-    DBG_INFO(0, "called from here");
+  /* append empty line to separate header from data */
+  rv=GWEN_Io_Layer_WriteChar(io, '\n',
+			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
+			     0,
+			     2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
+    return;
   }
-  GWEN_BufferedIO_free(bio);
+
+  /* write data */
+  rv=GWEN_Io_Layer_WriteBytes(io,
+			      (const uint8_t*)msg.data(),
+			      msg.length(),
+			      GWEN_IO_REQUEST_FLAGS_WRITEALL,
+			      0,
+                              2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
+    return;
+  }
+
+  /* append CR for better readability */
+  rv=GWEN_Io_Layer_WriteChar(io, '\n',
+			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
+			     0,
+			     2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
+    return;
+  }
+
+  /* close layer */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 30000);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
+    return;
+  }
+
+  GWEN_Io_Layer_free(io);
 }
 
 
@@ -1135,7 +1169,8 @@ int analyzeLog(const s_args &args) {
 
   if (!args.parseFile.empty()) {
     if (GWEN_DB_WriteFile(allgr, args.parseFile.c_str(),
-                          GWEN_DB_FLAGS_DEFAULT)) {
+			  GWEN_DB_FLAGS_DEFAULT,
+			  0, 2000)) {
       fprintf(stderr, "ERROR saving message.\n");
       GWEN_DB_Group_free(allgr);
       GWEN_MsgEngine_free(e);
@@ -1174,7 +1209,7 @@ int main(int argc, char **argv) {
                        MYNAME,
                        args.logFile.c_str(),
                        args.logType,
-                       GWEN_LoggerFacilityUser)) {
+		       GWEN_LoggerFacility_User)) {
     fprintf(stderr, "Could not start logging, aborting.\n");
     return 2;
   }

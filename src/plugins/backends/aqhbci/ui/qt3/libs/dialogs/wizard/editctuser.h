@@ -28,10 +28,11 @@ private:
   WizardInfo *_wInfo;
   AB_BANKINFO *_bankInfo;
   bool _dataIsOk;
+  uint32_t _idList[32];
+  uint32_t _idCount;
 
   QString _getServerAddr() const;
-  AH_CRYPT_MODE _getCryptMode(AH_MEDIUM *m, int idx);
-  void _fromContext(int i);
+  void _fromContext(int i, bool overwrite=true);
 
   bool _checkStringSanity(const char *s);
 

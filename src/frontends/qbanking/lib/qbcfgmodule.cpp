@@ -76,26 +76,26 @@ const QString &QBCfgModule::getName() const {
 
 
 
-GWEN_TYPE_UINT32 QBCfgModule::getFlags() const {
+uint32_t QBCfgModule::getFlags() const {
   return _flags;
 }
 
 
 
-void QBCfgModule::setFlags(GWEN_TYPE_UINT32 fl) {
+void QBCfgModule::setFlags(uint32_t fl) {
   _flags=fl;
 }
 
 
 
 int QBCfgModule::createNewUser(QWidget *parent) {
-  return AB_ERROR_NOT_SUPPORTED;
+  return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 
 
 int QBCfgModule::createNewAccount(QWidget *parent) {
-  return AB_ERROR_NOT_SUPPORTED;
+  return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 

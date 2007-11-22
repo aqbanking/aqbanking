@@ -25,6 +25,7 @@
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
 
 #include <assert.h>
 
@@ -80,7 +81,7 @@ void ActionGetAccounts::slotButtonClicked() {
   QBanking *qb;
   AB_USER *u;
   AB_PROVIDER *pro;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx = AB_ImExporterContext_new();
 
@@ -96,16 +97,19 @@ void ActionGetAccounts::slotButtonClicked() {
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
   DBG_INFO(0, "Retrieving accounts");
-  pid=qb->progressStart(tr("Getting List of Accounts"),
-                        tr("<qt>"
-                           "Retrieving the list of our accounts from the "
-                           "bank server."
-                           "</qt>"),
-                        1);
-  rv=AH_Provider_GetAccounts(pro, u, ctx, 1);
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     tr("Getting List of Accounts").utf8(),
+			     NULL,
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 1, pid);
+  GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {
-    if (rv==AB_ERROR_NO_DATA) {
+    if (rv==GWEN_ERROR_NO_DATA) {
       QMessageBox::information(this,
                                tr("No Account List"),
                                tr("<qt>"
@@ -123,12 +127,9 @@ void ActionGetAccounts::slotButtonClicked() {
     else {
       DBG_ERROR(0, "Error getting accounts");
       _realDialog->setStatus(ActionWidget::StatusFailed);
-      qb->progressEnd(pid);
       return;
     }
   }
-
-  qb->progressEnd(pid);
 
   _realDialog->setStatus(ActionWidget::StatusSuccess);
 }

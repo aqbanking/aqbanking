@@ -13,7 +13,24 @@ noinst_HEADERS=\
  jobgetdatedtransfers_p.h \
  jobgetbalance_p.h \
  jobtransferbase_p.h \
- jobeutransfer_p.h
+ jobeutransfer_p.h \
+ jobcreatesto_l.h \
+ jobgetbalance_l.h \
+ jobgettransactions_l.h \
+ jobgetstandingorders_l.h \
+ jobtransferbase_l.h \
+ jobsingletransfer_l.h \
+ jobsingledebitnote_l.h \
+ jobgetdatedtransfers_l.h \
+ jobmodifysto_l.h \
+ jobdeletesto_l.h \
+ jobcreatedatedtransfer_l.h \
+ jobmodifydatedtransfer_l.h \
+ jobdeletedatedtransfer_l.h \
+ jobinternaltransfer_l.h \
+ jobeutransfer_l.h \
+ jobloadcellphone_l.h \
+ jobloadcellphone_p.h
 
 
 
@@ -21,47 +38,34 @@ iheaderdir=${includedir}/aqbanking
 iheader_HEADERS= \
  jobgetbalance.h \
  jobgetbalance_be.h \
- jobgetbalance_l.h \
  jobgettransactions.h \
  jobgettransactions_be.h \
- jobgettransactions_l.h \
  jobgetstandingorders.h \
  jobgetstandingorders_be.h \
- jobgetstandingorders_l.h \
- jobtransferbase_l.h \
  jobsingletransfer.h \
  jobsingletransfer_be.h \
- jobsingletransfer_l.h \
  jobsingledebitnote.h \
  jobsingledebitnote_be.h \
- jobsingledebitnote_l.h \
  jobgetdatedtransfers.h \
  jobgetdatedtransfers_be.h \
- jobgetdatedtransfers_l.h \
  jobcreatesto.h \
  jobcreatesto_be.h \
- jobcreatesto_l.h \
  jobmodifysto.h \
  jobmodifysto_be.h \
- jobmodifysto_l.h \
  jobdeletesto.h \
  jobdeletesto_be.h \
- jobdeletesto_l.h \
  jobcreatedatedtransfer.h \
  jobcreatedatedtransfer_be.h \
- jobcreatedatedtransfer_l.h \
  jobmodifydatedtransfer.h \
  jobmodifydatedtransfer_be.h \
- jobmodifydatedtransfer_l.h \
  jobdeletedatedtransfer.h \
  jobdeletedatedtransfer_be.h \
- jobdeletedatedtransfer_l.h \
  jobinternaltransfer.h \
  jobinternaltransfer_be.h \
- jobinternaltransfer_l.h \
  jobeutransfer.h \
- jobeutransfer_l.h \
- jobeutransfer_be.h
+ jobeutransfer_be.h \
+ jobloadcellphone.h \
+ jobloadcellphone_be.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \
@@ -78,7 +82,8 @@ libjobs_la_SOURCES=\
  jobmodifydatedtransfer.c \
  jobdeletedatedtransfer.c \
  jobinternaltransfer.c \
- jobeutransfer.c
+ jobeutransfer.c \
+ jobloadcellphone.c
 
 
 sources:

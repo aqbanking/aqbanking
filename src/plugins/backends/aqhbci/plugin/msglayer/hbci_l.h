@@ -17,7 +17,7 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/plugindescr.h>
-#include <gwenhywfar/crypttoken.h>
+#include <gwenhywfar/ct.h>
 
 #include <aqhbci/aqhbci.h>
 
@@ -26,7 +26,6 @@
 typedef struct AH_HBCI AH_HBCI;
 
 
-#include <aqhbci/medium.h>
 #include <aqhbci/user.h>
 #include <aqhbci/account.h>
 
@@ -35,9 +34,6 @@ typedef struct AH_HBCI AH_HBCI;
 
 #define AH_HBCI_LAST_VERSION_NONE 0xffffffff
 
-
-
-int AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u, AH_MEDIUM **m);
 
 
 int AH_HBCI_AddObjectPath(const AH_HBCI *hbci,
@@ -71,17 +67,15 @@ int AH_HBCI_AddAccountPath(const AH_HBCI *hbci,
 
 void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf);
 
-GWEN_TYPE_UINT32 AH_HBCI_GetNextMediumId(AH_HBCI *hbci);
-
 GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci);
 
 
 int AH_HBCI_Update(AH_HBCI *hbci,
-                   GWEN_TYPE_UINT32 lastVersion,
-                   GWEN_TYPE_UINT32 currentVersion);
+                   uint32_t lastVersion,
+                   uint32_t currentVersion);
 
 
-GWEN_TYPE_UINT32 AH_HBCI_GetLastVersion(const AH_HBCI *hbci);
+uint32_t AH_HBCI_GetLastVersion(const AH_HBCI *hbci);
 
 
 
@@ -124,77 +118,6 @@ AQHBCI_API
 int AH_HBCI_Init(AH_HBCI *hbci);
 AQHBCI_API
 int AH_HBCI_Fini(AH_HBCI *hbci);
-
-
-
-AQHBCI_API
-AH_MEDIUM*
-  AH_HBCI_MediumFactory(AH_HBCI *hbci,
-                        const char *typeName,
-			const char *subTypeName,
-                        const char *mediumName);
-
-AQHBCI_API
-AH_MEDIUM*
-AH_HBCI_MediumFactoryDb(AH_HBCI *hbci,
-                        const char *typeName,
-			const char *subTypeName,
-                        GWEN_DB_NODE *db);
-
-AQHBCI_API
-AH_MEDIUM *AH_HBCI_FindMedium(const AH_HBCI *hbci,
-                              const char *typeName,
-                              const char *mediumName);
-
-AQHBCI_API
-AH_MEDIUM *AH_HBCI_FindMediumById(const AH_HBCI *hbci, GWEN_TYPE_UINT32 id);
-
-
-AQHBCI_API
-AH_MEDIUM *AH_HBCI_SelectMedium(AH_HBCI *hbci,
-                                const char *typeName,
-                                const char *subTypeName,
-                                const char *mediumName);
-
-AQHBCI_API
-AH_MEDIUM *AH_HBCI_SelectMediumDb(AH_HBCI *hbci,
-                                  const char *typeName,
-                                  const char *subTypeName,
-                                  GWEN_DB_NODE *db);
-
-AQHBCI_API
-int AH_HBCI_AddMedium(AH_HBCI *hbci, AH_MEDIUM *m);
-
-AQHBCI_API
-const AH_MEDIUM_LIST *AH_HBCI_GetMediaList(const AH_HBCI *hbci);
-
-
-/**
- * This function only removes the object from the internal list, it doesn't
- * delete its files.
- * You should only call this for objects which you just created in the same
- * session since otherwise it will reappear upon next startup.
- * This function does not destroy the object.
- */
-AQHBCI_API
-int AH_HBCI_RemoveMedium(AH_HBCI *hbci, AH_MEDIUM *m);
-
-
-AQHBCI_API
-int AH_HBCI_UnmountCurrentMedium(AH_HBCI *hbci);
-
-
-AQHBCI_API
-GWEN_PLUGIN_DESCRIPTION_LIST2*
-AH_HBCI_GetMediumPluginDescrs(AH_HBCI *hbci,
-                              GWEN_CRYPTTOKEN_DEVICE dev);
-
-AQHBCI_API
-int AH_HBCI_CheckMedium(AH_HBCI *hbci,
-                        GWEN_CRYPTTOKEN_DEVICE dev,
-                        GWEN_BUFFER *mtypeName,
-                        GWEN_BUFFER *msubTypeName,
-                        GWEN_BUFFER *mediumName);
 
 
 
@@ -249,6 +172,16 @@ void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i);
 
 AQHBCI_API
 int AH_HBCI_CheckStringSanity(const char *s);
+
+
+AQHBCI_API
+int AH_HBCI_GetCryptToken(AH_HBCI *hbci,
+			  const char *tname,
+			  const char *cname,
+			  GWEN_CRYPT_TOKEN **pCt);
+
+AQHBCI_API
+void AH_HBCI_ClearCryptTokenList(AH_HBCI *hbci);
 
 
 #endif /* GWHBCI_HBCI_L_H */

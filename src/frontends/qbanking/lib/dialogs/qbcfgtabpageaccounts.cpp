@@ -155,6 +155,7 @@ void QBCfgTabPageAccounts::slotAccountNew() {
       DBG_INFO(0, "Accepted, adding account");
       AB_Banking_AddAccount(getBanking()->getCInterface(), a);
       updateView();
+      emit signalUpdate();
     }
     else {
       DBG_INFO(0, "Rejected");
@@ -184,6 +185,7 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
   else {
     DBG_INFO(0, "Rejected");
   }
+  emit signalUpdate();
   updateView();
 }
 
@@ -217,6 +219,7 @@ void QBCfgTabPageAccounts::slotAccountDel() {
   else {
     DBG_INFO(0, "Rejected");
   }
+  emit signalUpdate();
   updateView();
 }
 
@@ -224,6 +227,13 @@ void QBCfgTabPageAccounts::slotAccountDel() {
 
 void QBCfgTabPageAccounts::updateView() {
   _accountRescan();
+}
+
+
+
+void QBCfgTabPageAccounts::slotUpdate() {
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating accounts view");
+  updateView();
 }
 
 

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -38,7 +39,7 @@ AB_JOB *AB_JobEuTransfer_new(AB_ACCOUNT *a){
   AB_JOB *j;
   AB_JOBEUTRANSFER *jd;
 
-  j=AB_Job_new_l(AB_Job_TypeEuTransfer, a);
+  j=AB_Job_new(AB_Job_TypeEuTransfer, a);
   GWEN_NEW_OBJECT(AB_JOBEUTRANSFER, jd);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBEUTRANSFER, j, jd,
                        AB_JobEuTransfer_FreeData);
@@ -181,6 +182,16 @@ int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
   assert(jd);
 
   /* TODO: check transaction */
+
+  if (1) {
+    GWEN_DB_NODE *dbT;
+
+    DBG_ERROR(0, "Transaction is:");
+    dbT=GWEN_DB_Group_new("Test-Transaction");
+    AB_Transaction_toDb(t, dbT);
+    GWEN_DB_Dump(dbT, stderr, 2);
+    GWEN_DB_Group_free(dbT);
+  }
 
   AB_Transaction_free(jd->transaction);
   if (t) {

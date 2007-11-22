@@ -18,17 +18,25 @@
 
 #include "ofx_p.h"
 #include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
 #include <aqbanking/imexporter_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/directory.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
 
 
 
@@ -63,12 +71,14 @@ void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p){
 
 int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_BUFFEREDIO *bio,
-			    GWEN_DB_NODE *params){
+                            GWEN_IO_LAYER *io,
+			    GWEN_DB_NODE *params,
+			    uint32_t guiid){
   AH_IMEXPORTER_OFX *ieh;
   LibofxContextPtr ofxctx;
   GWEN_BUFFER *dbuf;
   int rv;
+  GWEN_STRINGLIST *paths;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie);
@@ -78,33 +88,58 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
   ofxctx=libofx_get_new_context();
 
   ofx_set_account_cb(ofxctx,
-                     AH_ImExporterOFX_AccountCallback_cb,
-                     ieh);
+		     AH_ImExporterOFX_AccountCallback_cb,
+		     ieh);
   ofx_set_transaction_cb(ofxctx,
-                         AH_ImExporterOFX_TransactionCallback_cb,
-                         ieh);
+			 AH_ImExporterOFX_TransactionCallback_cb,
+			 ieh);
+
+  paths=AB_Banking_GetGlobalDataDirs();
+  if (paths) {
+    GWEN_BUFFER *fbuf;
+    int rv;
+
+    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindPathForFile(paths,
+				      "libofx"
+				      DIRSEP
+				      "dtd"
+				      DIRSEP
+				      "ofx150.dtd",
+				      fbuf);
+    GWEN_StringList_free(paths);
+    if (rv==0) {
+      GWEN_Buffer_AppendString(fbuf,
+			       DIRSEP
+			       "libofx"
+			       DIRSEP
+			       "dtd"
+			       DIRSEP);
+#ifdef LIBOFX_GT_0_8_4
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+	       "Setting path for DTD files to [%s]",
+	       GWEN_Buffer_GetStart(fbuf));
+      libofx_set_dtd_dir(ofxctx, GWEN_Buffer_GetStart(fbuf));
+#else
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+	       "Cannot set path for DTD files to [%s]: libofx is 0.8.3 or older",
+	       GWEN_Buffer_GetStart(fbuf));
+#endif
+    }
+    GWEN_Buffer_free(fbuf);
+    GWEN_StringList_free(paths);
+  }
 
   /* read whole stream into buffer */
   dbuf=GWEN_Buffer_new(0, 2048, 0, 1);
   GWEN_Buffer_SetStep(dbuf, 4096);
-
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    char buffer[256];
-    unsigned int bs;
-    GWEN_ERRORCODE err;
-
-    bs=sizeof(buffer);
-    err=GWEN_BufferedIO_ReadRaw(bio, buffer, &bs);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-      GWEN_Buffer_free(dbuf);
-      libofx_free_context(ofxctx);
-      return AB_ERROR_GENERIC;
-    }
-    if (bs==0)
-      break;
-    GWEN_Buffer_AppendBytes(dbuf, buffer, bs);
-  } /* while */
+  rv=GWEN_Io_Layer_ReadToBufferUntilEof(io, dbuf, guiid, 2000);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(dbuf);
+    libofx_free_context(ofxctx);
+    return rv;
+  }
 
   /* setup debugging parameters */
   extern int ofx_PARSER_msg;
@@ -131,7 +166,7 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
   ieh->context=0;
   if (rv)
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
 
   DBG_ERROR(0, "Returning");
   return 0;
@@ -139,7 +174,7 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
   int fd;
   GWEN_BUFFEREDIO *bio;
 
@@ -151,7 +186,7 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "open(%s): %s", fname, strerror(errno));
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
   bio=GWEN_BufferedIO_File_new(fd);
@@ -159,16 +194,16 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
   while(!GWEN_BufferedIO_CheckEOF(bio)) {
     char lbuffer[256];
-    GWEN_ERRORCODE err;
+    int err;
 
     err=GWEN_BufferedIO_ReadLine(bio, lbuffer, sizeof(lbuffer));
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-               "File \"%s\" is not supported by this plugin",
+	       "File \"%s\" is not supported by this plugin",
                fname);
       GWEN_BufferedIO_Close(bio);
       GWEN_BufferedIO_free(bio);
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
     if (-1!=GWEN_Text_ComparePattern(lbuffer, "*<OFX>*", 0) ||
         -1!=GWEN_Text_ComparePattern(lbuffer, "*<OFC>*", 0)) {
@@ -184,7 +219,7 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
-  return AB_ERROR_BAD_DATA;
+  return GWEN_ERROR_BAD_DATA;
 }
 
 
@@ -332,13 +367,19 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       cur=0;
       if (data.account_ptr)
         if (data.account_ptr->currency_valid)
-          cur=data.account_ptr->currency;
-      val=AB_Value_new(data.amount, cur);
+	  cur=data.account_ptr->currency;
+      val=AB_Value_fromDouble(data.amount);
+      assert(val);
+      AB_Value_SetCurrency(val, cur);
       if (data.invtransactiontype_valid)
-        /* negate for investment transaction type (hack, see KMyMoney) */
+	/* negate for investment transaction type (hack, see KMyMoney) */
 	AB_Value_Negate(val);
       AB_Transaction_SetValue(t, val);
       AB_Value_free(val);
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "No amount in transaction");
     }
 
     if (data.transactiontype_valid){
@@ -466,18 +507,18 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       if (data.fees_valid || data.commission_valid) {
         AB_VALUE *vFees;
 
-        vFees=AB_Value_new(0, 0);
+	vFees=AB_Value_new();
         if (data.fees_valid) {
           AB_VALUE *v;
 
-          v=AB_Value_new(data.fees, 0);
-          AB_Value_AddValue(vFees, v);
-          AB_Value_free(v);
+	  v=AB_Value_fromDouble(data.fees);
+	  AB_Value_AddValue(vFees, v);
+	  AB_Value_free(v);
         }
         if (data.commission_valid) {
           AB_VALUE *v;
 
-          v=AB_Value_new(data.commission, 0);
+	  v=AB_Value_fromDouble(data.commission);
           AB_Value_AddValue(vFees, v);
           AB_Value_free(v);
         }
@@ -492,7 +533,7 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       if (data.unitprice_valid && data.fees_valid) {
         AB_VALUE *v;
 
-        v=AB_Value_new(data.fees, 0); /* TODO: add currency */
+	v=AB_Value_fromDouble(data.fees); /* TODO: add currency */
         AB_Transaction_SetUnitPrice(t, v);
         AB_Value_free(v);
       }

@@ -4,7 +4,13 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 noinst_LTLIBRARIES=libtypes.la
 
-typefiles=transaction.xml pin.xml bankinfo.xml eutransferinfo.xml user.xml
+typefiles=\
+  transaction.xml \
+  pin.xml \
+  bankinfo.xml \
+  eutransferinfo.xml \
+  user.xml \
+  cellphone.xml
 
 EXTRA_DIST=$(typefiles)
 
@@ -20,8 +26,6 @@ noinst_HEADERS=\
   bankinfoservice_p.h \
   pin_l.h \
   pin_p.h \
-  split_l.h \
-  split_p.h \
   textkeydescr_l.h \
   textkeydescr_p.h \
   transaction_l.h \
@@ -31,7 +35,9 @@ noinst_HEADERS=\
   user_l.h \
   user_p.h \
   userfns_l.h \
-  value_p.h
+  value_p.h \
+  cellphoneproduct_l.h \
+  cellphoneproduct_p.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -40,7 +46,6 @@ iheader_HEADERS=\
   balance.h \
   bankinfo.h \
   bankinfoservice.h \
-  split.h \
   textkeydescr.h \
   transaction.h \
   transactionfns.h \
@@ -48,7 +53,8 @@ iheader_HEADERS=\
   eutransferinfo.h \
   user.h \
   userfns.h \
-  value.h
+  value.h \
+  cellphoneproduct.h
 
 libtypes_la_SOURCES=\
   accstatus.c \
@@ -57,18 +63,18 @@ libtypes_la_SOURCES=\
   bankinfoservice.c \
   eutransferinfo.c \
   pin.c \
-  split.c \
   textkeydescr.c \
   transaction.c \
   transactionfns.c \
   transactionlimits.c \
   user.c \
   userfns.c \
-  value.c
+  value.c \
+  cellphoneproduct.c
 
 
 types: $(typefiles)
-	typemaker -d AQBANKING_API $(typefiles)
+	$(gwenhywfar_bindir)/typemaker -d AQBANKING_API $(typefiles)
 
 
 sources:

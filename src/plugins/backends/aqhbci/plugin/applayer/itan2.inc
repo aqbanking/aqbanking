@@ -14,9 +14,9 @@
 
 
 #include "message_l.h"
-#include "medium_l.h"
+#include "user_l.h"
 
-#include <gwenhywfar/md.h>
+#include <gwenhywfar/mdigest.h>
 
 
 
@@ -33,7 +33,6 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_JOB *jTan1;
   AH_JOB *jTan2;
   AB_USER *u;
-  AH_MEDIUM *medium;
   const char *challenge;
 
   jl=AH_JobQueue_GetJobList(qJob);
@@ -45,9 +44,6 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 
   u=AH_Job_GetUser(j);
   assert(u);
-
-  medium=AH_User_GetMedium(u);
-  assert(medium);
 
   /* prepare HKTAN (process type 4) */
   jTan1=AH_Job_Tan_new(u, 4);
@@ -63,7 +59,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     while(se) {
       AH_Job_AddSigner(jTan1, GWEN_StringListEntry_Data(se));
@@ -99,9 +95,9 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 
   /* encode message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+  GWEN_Gui_ProgressLog(
                          0,
-                         AB_Banking_LogLevelInfo,
+                         GWEN_LoggerLevel_Info,
                          I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg1, 0);
   rv=AH_Msg_EncodeMsg(msg1);
@@ -156,7 +152,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* get challenge */
-  rv=AH_Job_Process(jTan1, cbox->outbox->context);
+  rv=AH_Job_Process(jTan1, cbox->outbox->context, cbox->guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -174,10 +170,11 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_Medium_InputTanWithChallenge(medium, challenge,
-				       tanBuffer,
-                                       1,
-                                       sizeof(tanBuffer));
+    rv=AH_User_InputTanWithChallenge(u,
+				     challenge,
+				     tanBuffer,
+				     1,
+				     sizeof(tanBuffer));
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg2);
@@ -190,7 +187,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No challenge received");
     AH_Msg_free(msg2);
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   /* prepare HKTAN (process type 2) */
@@ -210,7 +207,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     while(se) {
       AH_Job_AddSigner(jTan2, GWEN_StringListEntry_Data(se));
@@ -235,9 +232,9 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AB_Banking_ProgressLog(AH_HBCI_GetBankingApi(cbox->hbci),
+  GWEN_Gui_ProgressLog(
 			 0,
-			 AB_Banking_LogLevelInfo,
+			 GWEN_LoggerLevel_Info,
 			 I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);

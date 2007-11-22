@@ -16,7 +16,7 @@
 #include "provider_l.h"
 #include "job_l.h"
 #include <aqbanking/transaction.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 
 
 typedef struct AD_PROVIDER AD_PROVIDER;
@@ -24,7 +24,7 @@ struct AD_PROVIDER {
   AD_JOB_LIST *myJobs;
   AB_JOB_LIST2 *bankingJobs;
   GWEN_DB_NODE *dbConfig;
-  GWEN_TYPE_UINT32 lastJobId;
+  uint32_t lastJobId;
 };
 
 static void GWENHYWFAR_CB AD_Provider_FreeData(void *bp, void *p);
@@ -32,14 +32,14 @@ static void GWENHYWFAR_CB AD_Provider_FreeData(void *bp, void *p);
 static int AD_Provider_AddTransfer(AB_PROVIDER *pro,
                                    AB_ACCOUNT *acc,
                                    const AB_TRANSACTION *t,
-                                   GWEN_TYPE_UINT32 *jid);
+                                   uint32_t *jid);
 
 static int AD_Provider_AddDebitNote(AB_PROVIDER *pro,
                                     AB_ACCOUNT *acc,
                                     const AB_TRANSACTION *t,
-                                    GWEN_TYPE_UINT32 *jid);
+                                    uint32_t *jid);
 
-static AD_JOB *AD_Provider_FindMyJob(AB_PROVIDER *pro, GWEN_TYPE_UINT32 jid);
+static AD_JOB *AD_Provider_FindMyJob(AB_PROVIDER *pro, uint32_t jid);
 
 static int AD_Provider_ExecCommand(AB_PROVIDER *pro, const char *cmd);
 

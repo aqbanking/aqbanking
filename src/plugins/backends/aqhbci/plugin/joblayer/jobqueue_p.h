@@ -25,10 +25,12 @@ struct AH_JOBQUEUE {
 
   AB_USER *user;
   GWEN_STRINGLIST *signers;
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
   AH_JOB_LIST *jobs;
-  GWEN_TYPE_UINT32 msgNum;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t msgNum;
+  uint32_t flags;
+
+  int secProfile;
 
   char *usedTan;
   char *usedPin;

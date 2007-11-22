@@ -28,6 +28,7 @@
 
 // Gwenhywfar includes
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/debug.h>
 
 
 
@@ -40,9 +41,7 @@ QBCfgTabSettings::QBCfgTabSettings(QBanking *qb,
 :QBCfgTab(qb, parent, name, f) {
   setHelpContext("QBCfgTabSettings");
   setDescription(tr("This dialog allows adjusting the settings of "
-                    "<b>AqBanking</b>. "
-		    "Click \"Users\" and \"New\" to create a new "
-		    "AqBanking user for your Online Banking access."));
+                    "<b>AqBanking</b>."));
   resize(720, 400);
 }
 
@@ -57,6 +56,10 @@ void QBCfgTabSettings::addAccountsPage() {
   QBCfgTabPageAccounts *p;
 
   p=new QBCfgTabPageAccounts(getBanking(), this);
+  connect(p, SIGNAL(signalUpdate()),
+	  this, SLOT(slotUpdate()));
+  connect(this, SIGNAL(signalUpdate()),
+	  p, SLOT(slotUpdate()));
   addPage(p);
 }
 
@@ -66,6 +69,10 @@ void QBCfgTabSettings::addUsersPage() {
   QBCfgTabPageUsers *p;
 
   p=new QBCfgTabPageUsers(getBanking(), this);
+  connect(p, SIGNAL(signalUpdate()),
+	  this, SLOT(slotUpdate()));
+  connect(this, SIGNAL(signalUpdate()),
+	  p, SLOT(slotUpdate()));
   addPage(p);
 }
 
@@ -75,6 +82,10 @@ void QBCfgTabSettings::addBackendsPage() {
   QBCfgTabPageBackends *p;
 
   p=new QBCfgTabPageBackends(getBanking(), this);
+  connect(p, SIGNAL(signalUpdate()),
+	  this, SLOT(slotUpdate()));
+  connect(this, SIGNAL(signalUpdate()),
+	  p, SLOT(slotUpdate()));
   addPage(p);
 }
 
@@ -84,6 +95,8 @@ void QBCfgTabSettings::addBackendsPage() {
 
 
 void QBCfgTabSettings::slotUpdate() {
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating all tabs");
+  emit signalUpdate();
 }
 
 

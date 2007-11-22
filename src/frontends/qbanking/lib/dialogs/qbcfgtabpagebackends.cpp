@@ -47,11 +47,6 @@ QBCfgTabPageBackends::QBCfgTabPageBackends(QBanking *qb,
   setDescription(tr("This page allows you to enable, disable and setup"
                     " banking backends for AqBanking."));
 
-  QObject::connect(_realPage->backendEnableButton, SIGNAL(clicked()),
-                   this, SLOT(slotBackendEnable()));
-  QObject::connect(_realPage->backendDisableButton, SIGNAL(clicked()),
-                   this, SLOT(slotBackendDisable()));
-
 }
 
 
@@ -117,84 +112,17 @@ bool QBCfgTabPageBackends::fromGui() {
 
 
 
-void QBCfgTabPageBackends::slotBackendEnable(){
-  GWEN_PLUGIN_DESCRIPTION *pd;
-
-  pd=_realPage->backendList->getCurrentPluginDescr();
-  if (!pd) {
-    DBG_WARN(0, "No provider selected.");
-  }
-  else {
-    int rv;
-
-    if (GWEN_PluginDescription_IsActive(pd)) {
-      DBG_WARN(0, "Provider already active.");
-      return;
-    }
-
-    rv=getBanking()->activateProvider(GWEN_PluginDescription_GetName(pd));
-    _backendRescan();
-    if (rv) {
-      QMessageBox::critical(this,
-                            tr("Backend Error"),
-                            tr("Could not activate this backend.\n"),
-			    QMessageBox::Ok,QMessageBox::NoButton);
-    }
-    else {
-      QMessageBox::information(this,
-                               tr("Backend Activated"),
-                               tr("This backend has successfully been "
-                                  "activated.\n"),
-                               QMessageBox::Ok);
-    }
-  }
-}
-
-
-
-void QBCfgTabPageBackends::slotBackendDisable(){
-  GWEN_PLUGIN_DESCRIPTION *pd;
-
-  pd=_realPage->backendList->getCurrentPluginDescr();
-  if (!pd) {
-    DBG_WARN(0, "No provider selected.");
-  }
-  else {
-    int rv;
-    int r;
-
-    if (!GWEN_PluginDescription_IsActive(pd)) {
-      DBG_WARN(0, "Provider already inactive.");
-      return;
-    }
-
-    r=QMessageBox::warning(this,
-                           tr("Disable Backend"),
-                           tr("This would remove all accounts currently "
-                              "supported by that backend.\n"
-                              "\n"
-                              "Do you still want me to disable it?"),
-                           QMessageBox::Yes, QMessageBox::No);
-    if (r!=0 && r!=QMessageBox::Yes)
-      return;
-
-    rv=getBanking()->deactivateProvider(GWEN_PluginDescription_GetName(pd));
-    _backendRescan();
-    if (rv) {
-      QMessageBox::critical(this,
-                            tr("Backend Error"),
-                            tr("Could not deactivate this backend.\n"),
-                            QMessageBox::Ok,QMessageBox::NoButton);
-    }
-  }
-}
-
-
 
 void QBCfgTabPageBackends::updateView() {
   _backendRescan();
 }
 
+
+
+void QBCfgTabPageBackends::slotUpdate() {
+  DBG_INFO(AQBANKING_LOGDOMAIN, "updating backend view");
+  updateView();
+}
 
 
 #include "qbcfgtabpagebackends.moc"

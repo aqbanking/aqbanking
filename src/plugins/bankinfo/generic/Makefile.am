@@ -1,7 +1,9 @@
-INCLUDES = -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
+           -I$(top_srcdir)/src/libs/aqbanking
+
 EXTRA_DIST=\
   dbb.conf hbci.conf atblz.conf fedachdir.conf bcbankenstamm.conf \
-  kidaten.conf README at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
+  kidaten.conf README at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2 ca.tar.bz2
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
@@ -17,13 +19,14 @@ noinst_HEADERS=\
 libbankinfo_la_SOURCES=\
  generic.c
 
-libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
+libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 libbankinfo_la_LDFLAGS = $(STRIPALL)
 
 at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
 ch_files=ch/blz.idx ch/bic.idx ch/namloc.idx ch/banks.data
 de_files=de/blz.idx de/bic.idx de/namloc.idx de/banks.data
 us_files=us/blz.idx us/bic.idx us/namloc.idx us/banks.data
+ca_files=ca/blz.idx ca/bic.idx ca/namloc.idx ca/banks.data
 
 atbankdatadir = $(bankinfodatadir)/at
 atbankdata_DATA = $(at_files)
@@ -36,6 +39,9 @@ chbankdata_DATA = $(ch_files)
 
 usbankdatadir = $(bankinfodatadir)/us
 usbankdata_DATA = $(us_files)
+
+cabankdatadir = $(bankinfodatadir)/ca
+cabankdata_DATA = $(ca_files)
 
 at.tar.bz2:
 	./mkdeinfo build-at data/at/kidaten.csv.utf8 tmp.banks
@@ -109,15 +115,34 @@ us_files_tmp: us.tar.bz2
 	bunzip2 -k -c $< | tar xmf -
 	touch $@
 
-.INTERMEDIATE: at_files_tmp ch_files_tmp de_files_tmp us_files_tmp
 
-bankdata: $(at_files) $(ch_files) $(de_files) $(us_files)
+ca.tar.bz2:
+	./mkdeinfo build-am data/us/fidata ca data/us/FedACHdir.txt tmp.banks
+	test -d ca || mkdir -p ca
+	if test -f data/ca/aux.conf; then \
+	  ./mkdeinfo update tmp.banks data/ca/aux.conf tmp.banks; \
+	fi
+	./mkdeinfo install tmp.banks ca
+	tar cf ca.tar ca && bzip2 -9 ca.tar
+	rm -rf tmp.banks
+
+$(ca_files): ca_files_tmp
+
+ca_files_tmp: ca.tar.bz2
+	test -d ca || mkdir -p ca
+	bunzip2 -k -c $< | tar xmf -
+	touch $@
+
+
+.INTERMEDIATE: at_files_tmp ch_files_tmp de_files_tmp us_files_tmp ca_files_tmp
+
+bankdata: $(at_files) $(ch_files) $(de_files) $(us_files) $(ca_files)
 
 all-local: bankdata
 
-dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2
+dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2 ca.tar.bz2
 
-CLEANFILES = $(at_files) $(ch_files) $(de_files) $(us_files)
+CLEANFILES = $(at_files) $(ch_files) $(de_files) $(ca_files) $(us_files)
 
 if IS_WINDOWS
 # Doesn't link on windows; too lazy to fix this for now.

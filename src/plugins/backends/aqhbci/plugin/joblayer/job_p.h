@@ -37,8 +37,8 @@ struct AH_JOB {
 
   unsigned int msgNum;
   char *dialogId;
-  GWEN_TYPE_UINT32 firstSegment;
-  GWEN_TYPE_UINT32 lastSegment;
+  uint32_t firstSegment;
+  uint32_t lastSegment;
 
   GWEN_STRINGLIST *signers;
 
@@ -49,13 +49,14 @@ struct AH_JOB {
   GWEN_DB_NODE *jobResponses;
 
   AH_JOB_STATUS status;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
   int minSigs;
+  int secProfile;
   int jobsPerMsg;
 
   GWEN_MSGENGINE *msgEngine;
 
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
 
   AH_JOB_PROCESS_FN processFn;
   AH_JOB_COMMIT_FN commitFn;
@@ -67,7 +68,7 @@ struct AH_JOB {
   AH_RESULT_LIST *segResults;
   AH_RESULT_LIST *msgResults;
 
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
 
   GWEN_STRINGLIST *log;
 };

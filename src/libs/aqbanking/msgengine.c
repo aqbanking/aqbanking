@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -68,8 +69,8 @@ void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p){
 
 
 
-GWEN_TYPE_UINT32 AB_MsgEngine__FromBCD(GWEN_TYPE_UINT32 value) {
-  GWEN_TYPE_UINT32 rv;
+uint32_t AB_MsgEngine__FromBCD(uint32_t value) {
+  uint32_t rv;
 
   rv=0;
   rv+=((value>>28)&0xf)*10000000;
@@ -86,8 +87,8 @@ GWEN_TYPE_UINT32 AB_MsgEngine__FromBCD(GWEN_TYPE_UINT32 value) {
 
 
 
-GWEN_TYPE_UINT32 AB_MsgEngine__ToBCD(GWEN_TYPE_UINT32 value) {
-  GWEN_TYPE_UINT32 rv;
+uint32_t AB_MsgEngine__ToBCD(uint32_t value) {
+  uint32_t rv;
 
   rv=0;
   rv+=value/10000000;
@@ -207,7 +208,7 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
   else if (strcasecmp(type, "dword")==0) {
     int bigEndian;
     int isBCD;
-    GWEN_TYPE_UINT32 value;
+    uint32_t value;
     int c;
     char numbuf[32];
 
@@ -338,7 +339,7 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
     int size;
     int condense;
     int kvk;
-    GWEN_TYPE_UINT32 vpos=0;
+    uint32_t vpos=0;
 
     kvk=atoi(GWEN_XMLNode_GetProperty(node, "kvk", "0"));
     condense=atoi(GWEN_XMLNode_GetProperty(node, "condense", "1"));
@@ -591,7 +592,7 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
   else if (strcasecmp(type, "dword")==0) {
     int bigEndian;
     int isBCD;
-    GWEN_TYPE_UINT32 value;
+    uint32_t value;
 
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Supporting type \"dword\"");
     isBCD=atoi(GWEN_XMLNode_GetProperty(node, "bcd", "0"));
@@ -736,8 +737,8 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
 
 
 
-GWEN_DB_VALUETYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-                                         const char *tname){
+GWEN_DB_NODE_TYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
+					 const char *tname){
   AB_MSGENGINE *le;
 
   assert(e);
@@ -747,14 +748,14 @@ GWEN_DB_VALUETYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
   if (strcasecmp(tname, "byte")==0 ||
       strcasecmp(tname, "word")==0 ||
       strcasecmp(tname, "dword")==0)
-    return GWEN_DB_VALUETYPE_INT;
+    return GWEN_DB_NodeType_ValueInt;
   else if (strcasecmp(tname, "bytes")==0 ||
            strcasecmp(tname, "tlv")==0)
-    return GWEN_DB_VALUETYPE_BIN;
+    return GWEN_DB_NodeType_ValueBin;
   else if (strcasecmp(tname, "bcd")==0)
-    return GWEN_DB_VALUETYPE_CHAR;
+    return GWEN_DB_NodeType_ValueChar;
   else
-    return GWEN_DB_VALUETYPE_UNKNOWN;
+    return GWEN_DB_NodeType_Unknown;
 }
 
 
@@ -814,7 +815,7 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
     }
 
     DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Entering BinTypeRead with this:");
-    if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelVerbous)
+    if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Verbous)
       GWEN_Buffer_Dump(vbuf, stderr, 2);
 
     p=GWEN_Buffer_GetStart(vbuf);

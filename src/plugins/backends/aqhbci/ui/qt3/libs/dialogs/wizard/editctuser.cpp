@@ -40,6 +40,7 @@
 #include <qtextview.h>
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
 
 
 
@@ -53,7 +54,8 @@ EditCtUser::EditCtUser(QBanking *qb,
 ,_app(qb)
 ,_wInfo(wi)
 ,_bankInfo(0)
-,_dataIsOk(false) {
+,_dataIsOk(false)
+,_idCount(0) {
   connect(bankCodeButton, SIGNAL(clicked()),
           this, SLOT(slotBankCodeClicked()));
   connect(bankCodeEdit, SIGNAL(lostFocus()),
@@ -73,36 +75,93 @@ EditCtUser::~EditCtUser() {
 
 
 void EditCtUser::init() {
+  int rv;
+  uint32_t idx;
   int i;
-
-  assert(_wInfo->getMedium());
+  bool fromContextCalled=false;
 
   userCombo->clear();
-  for (i=0; i<5; i++) {
-    GWEN_BUFFER *bufUserId;
-    char numbuf[16];
 
-    bufUserId=GWEN_Buffer_new(0, 64, 0, 1);
-    snprintf(numbuf, sizeof(numbuf), "%d:", i+1);
-    GWEN_Buffer_AppendString(bufUserId, numbuf);
-    if (AH_Medium_ReadContext(_wInfo->getMedium(), i, 0, 0, bufUserId, 0, 0)){
-      GWEN_Buffer_free(bufUserId);
-      break;
-    }
-    userCombo->insertItem(QString::fromUtf8(GWEN_Buffer_GetStart(bufUserId)));
-    GWEN_Buffer_free(bufUserId);
-  }
-
-  DBG_INFO(0, "Using Context %d", _wInfo->getContext());
-
-  userCombo->setCurrentItem(_wInfo->getContext());
-  _fromContext(_wInfo->getContext());
+  bankCodeEdit->setText(QString::fromUtf8(_wInfo->getBankId().c_str()));
+  userIdEdit->setText(QString::fromUtf8(_wInfo->getUserId().c_str()));
+  customerIdEdit->setText(QString::fromUtf8(_wInfo->getCustomerId().c_str()));
+  nameEdit->setText(QString::fromUtf8(_wInfo->getUserName().c_str()));
+  serverEdit->setText(QString::fromUtf8(_wInfo->getServer().c_str()));
+  peerIdEdit->setText(QString::fromUtf8(_wInfo->getPeerId().c_str()));
 
   if (_wInfo->getCryptMode()==AH_CryptMode_Pintan) {
-    i=2;
+    userCombo->setEnabled(false);
     hbciVersionCombo->setEnabled(false);
   }
   else {
+    GWEN_CRYPT_TOKEN *ct;
+    uint32_t idCount;
+
+    ct=_wInfo->getToken();
+    assert(ct);
+
+    if (!GWEN_Crypt_Token_IsOpen(ct)) {
+      rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+      if (rv) {
+	DBG_ERROR(0, "Error opening token (%d)", rv);
+	QMessageBox::critical(this,
+			      tr("Error"),
+			      tr("Could not open crypt token"),
+			      QMessageBox::Ok,QMessageBox::NoButton);
+	return;
+      }
+    }
+
+    idCount=32;
+    rv=GWEN_Crypt_Token_GetContextIdList(ct, _idList, &idCount, 0);
+    if (rv) {
+      DBG_ERROR(0, "Error reading context list (%d)", rv);
+      QMessageBox::critical(this,
+			    tr("Error"),
+			    tr("Could not read context list from token"),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+      return;
+    }
+    _idCount=idCount;
+
+    for (idx=0; idx<_idCount; idx++) {
+      QString qs;
+      const char *s;
+      const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
+
+      cctx=GWEN_Crypt_Token_GetContext(ct, _idList[idx], 0);
+      if (cctx) {
+	qs=QString::number(_idList[idx]);
+	qs+=":";
+	s=GWEN_Crypt_Token_Context_GetUserId(cctx);
+	if (s) {
+	  qs+=" ";
+	  qs+=QString::fromUtf8(s);
+	}
+
+	s=GWEN_Crypt_Token_Context_GetServiceId(cctx);
+	if (s) {
+	  qs+="/";
+	  qs+=QString::fromUtf8(s);
+	}
+      }
+      else {
+	qs=tr("Unreadable Context");
+      }
+      userCombo->insertItem(qs);
+      if (_idList[idx]==_wInfo->getContext()) {
+	DBG_INFO(0, "Using Context %d", idx);
+	userCombo->setCurrentItem(idx);
+	_fromContext(idx, false);
+	fromContextCalled=true;
+      }
+    }
+
+    if (!fromContextCalled) {
+      DBG_ERROR(0, "Reading context now");
+      _fromContext(0, false);
+    }
+
     if (_wInfo->getUser()) {
       switch(AH_User_GetHbciVersion(_wInfo->getUser())) {
       case 201: i=0; break;
@@ -113,8 +172,11 @@ void EditCtUser::init() {
     }
     else
       i=1;
+    hbciVersionCombo->setCurrentItem(i);
   }
-  hbciVersionCombo->setCurrentItem(i);
+
+  /* validate server address in edit field */
+  _getServerAddr();
 }
 
 
@@ -128,59 +190,6 @@ QString EditCtUser::_getServerAddr() const {
   }
   serverEdit->setText(entered);
   return entered;
-}
-
-
-
-AH_CRYPT_MODE EditCtUser::_getCryptMode(AH_MEDIUM *m, int idx) {
-  const GWEN_CRYPTTOKEN_CONTEXT *ctx;
-  const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
-  GWEN_CRYPTTOKEN_CRYPTALGO ca;
-  AH_MEDIUM_CTX *mctx;
-  AH_CRYPT_MODE cm;
-  int rv;
-
-  DBG_ERROR(0, "Checking context %d", idx);
-
-  if (!AH_Medium_IsMounted(m)) {
-    rv=AH_Medium_Mount(m);
-    if (rv) {
-      DBG_ERROR(0, "Error mounting (%d)", rv);
-      QMessageBox::critical(this,
-                            tr("Mount Medium"),
-                            tr("Could not mount medium"),
-                            QMessageBox::Ok,QMessageBox::NoButton);
-      return AH_CryptMode_Unknown;
-    }
-  }
-
-  rv=AH_Medium_SelectContext(m, idx);
-  if (rv) {
-    DBG_ERROR(0, "Could not select context %d (%d)", idx, rv);
-    return AH_CryptMode_Unknown;
-  }
-
-  mctx=AH_Medium_GetCurrentContext(m);
-  assert(mctx);
-
-  ctx=AH_MediumCtx_GetTokenContext(mctx);
-  assert(ctx);
-  ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
-  assert(ci);
-  ca=GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci);
-  if (ca==GWEN_CryptToken_CryptAlgo_RSA)
-    cm=AH_CryptMode_Rdh;
-  else if (ca==GWEN_CryptToken_CryptAlgo_DES_3K)
-    cm=AH_CryptMode_Ddv;
-  else if (ca==GWEN_CryptToken_CryptAlgo_None)
-    cm=AH_CryptMode_Pintan;
-  else {
-    DBG_ERROR(0, "Invalid crypt algo (%s), unable to detect crypt mode",
-              GWEN_CryptToken_CryptAlgo_toString(ca));
-    return AH_CryptMode_Unknown;
-  }
-
-  return cm;
 }
 
 
@@ -200,11 +209,10 @@ bool EditCtUser::_checkStringSanity(const char *s) {
 
 bool EditCtUser::apply(){
   GWEN_INETADDRESS *addr;
-  GWEN_ERRORCODE err;
+  int err;
   QString qs;
   int i;
   AH_CRYPT_MODE cm;
-  AH_MEDIUM *m;
   AB_USER *u;
   int idx;
   std::string bankId;
@@ -213,12 +221,10 @@ bool EditCtUser::apply(){
   std::string userName;
   std::string fullServerAddr;
   std::string serverAddr;
-  std::string mediumDescr;
+  std::string peerId;
   int hbciVersion;
 
-  /* do user data page, we have to create the medium etc */
-  m=_wInfo->getMedium();
-  assert(m);
+  /* do user data page */
 
   switch(hbciVersionCombo->currentItem()) {
   case 0:  hbciVersion=201; break;
@@ -232,7 +238,7 @@ bool EditCtUser::apply(){
   userId=QBanking::QStringToUtf8String(userIdEdit->text());
   userName=QBanking::QStringToUtf8String(nameEdit->text());
   custId=QBanking::QStringToUtf8String(customerIdEdit->text());
-  mediumDescr=QBanking::QStringToUtf8String(descriptionEdit->text());
+  peerId=QBanking::QStringToUtf8String(peerIdEdit->text());
   qs=_getServerAddr();
   fullServerAddr=QBanking::QStringToUtf8String(qs);
   i=qs.find('/');
@@ -333,7 +339,6 @@ bool EditCtUser::apply(){
 
   /* get crypt mode */
   cm=_wInfo->getCryptMode();
-  //_getCryptMode(m, _wInfo->getContext());
   if (cm==AH_CryptMode_Unknown) {
     DBG_ERROR(0, "Unknown crypt mode/mount error");
     return false;
@@ -373,31 +378,30 @@ bool EditCtUser::apply(){
   }
 
 
-  // TODO: Select context !!
-
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
   err=GWEN_InetAddr_SetAddress(addr, serverAddr.c_str());
-  if (!GWEN_Error_IsOk(err)) {
-    GWEN_TYPE_UINT32 wid;
+  if (err) {
+    uint32_t wid;
 
-    wid=_app->showBox(0, QWidget::tr("Please wait"),
-		      QWidget::tr("Resolving host address..."));
+    wid=GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Notice,
+			     QWidget::tr("Resolving host address...").utf8());
     // Note: The QCString::data() is the conversion that will
     // correctly convert the QCString to the char* pointer.
     DBG_INFO(0, "Resolving hostname \"%s\"",
 	     qs.local8Bit().data());
     err=GWEN_InetAddr_SetName(addr, serverAddr.c_str());
     if (wid)
-      AB_Banking_HideBox(_app->getCInterface(), wid);
-    if (!GWEN_Error_IsOk(err)) {
+      GWEN_Gui_HideBox(wid);
+    if (err) {
       DBG_ERROR(0,
-                "Error resolving hostname \"%s\":",
+		"Error resolving hostname \"%s\":",
 		serverAddr.c_str());
       DBG_ERROR_ERR(0, err);
       QMessageBox::critical(this,
 			    QWidget::tr("Network Error"),
 			    QWidget::tr("Could not resolve the server address %1.\n"
-                                        "Maybe there is a typo? Please correct the server address.")
+					"Maybe there is a typo? Please correct the server address.")
 			    .arg(QString::fromUtf8(serverAddr.c_str())),
 			    QMessageBox::Ok,QMessageBox::NoButton);
       GWEN_InetAddr_free(addr);
@@ -425,7 +429,14 @@ bool EditCtUser::apply(){
     AB_User_SetUserId(u, userId.c_str());
     AB_User_SetCustomerId(u, custId.c_str());
     AB_User_SetUserName(u, userName.c_str());
-    AH_User_SetMedium(u, m);
+    if (!peerId.empty())
+      AH_User_SetPeerId(u, peerId.c_str());
+
+    AH_User_SetTokenType(u, _wInfo->getMediumType().c_str());
+    AH_User_SetTokenName(u, _wInfo->getMediumName().c_str());
+    _wInfo->setContext(_idList[idx]);
+    AH_User_SetTokenContextId(u, _wInfo->getContext());
+
     AH_User_SetCryptMode(u, cm);
     AH_User_SetHbciVersion(u, hbciVersion);
 
@@ -443,6 +454,7 @@ bool EditCtUser::apply(){
     AH_User_SetServerUrl(u, url);
     GWEN_Url_free(url);
 
+    AB_Banking_AddUser(_app->getCInterface(), u);
     _wInfo->setUser(u);
     _wInfo->addFlags(WIZARDINFO_FLAGS_USER_CREATED);
   }
@@ -469,13 +481,6 @@ bool EditCtUser::apply(){
     return false;
   }
 
-  _wInfo->setContext(idx);
-  AH_User_SetContextIdx(u, idx);
-
-  /* Set a descriptiveName in the medium. */
-  if (!mediumDescr.empty())
-    AH_Medium_SetDescriptiveName(m, mediumDescr.c_str());
-
   if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
     /* PIN/TAN only works with HBCI version 2.20. It might work with
      * other versions as well but this is not defined in the specs. */
@@ -494,9 +499,9 @@ bool EditCtUser::undo(){
   if (u) {
     if (_wInfo->getFlags() & WIZARDINFO_FLAGS_USER_CREATED) {
       DBG_INFO(0, "Removing user and all subordinate objects");
+      AB_Banking_DeleteUser(_app->getCInterface(), u);
       _wInfo->setUser(0);
       _wInfo->subFlags(WIZARDINFO_FLAGS_USER_CREATED);
-      AB_User_free(u);
     } // if _userCreated
   } // if user
 
@@ -547,8 +552,9 @@ void EditCtUser::slotBankCodeClicked() {
   _bankInfo=0;
   bi=QBSelectBank::selectBank(_app,
                               0,
-                              tr("Select a bank"),
-                              bankCodeEdit->text());
+			      tr("Select a bank"),
+			      "de",
+			      bankCodeEdit->text());
   if (bi) {
     const char *s;
     AB_BANKINFO_SERVICE *sv;
@@ -559,8 +565,7 @@ void EditCtUser::slotBankCodeClicked() {
       bankCodeEdit->setText(QString::fromUtf8(s));
 
     sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
-    isPinTan=_getCryptMode(_wInfo->getMedium(), _wInfo->getContext())==
-      AH_CryptMode_Pintan;
+    isPinTan=(_wInfo->getCryptMode()==AH_CryptMode_Pintan);
 
     while(sv) {
       s=AB_BankInfoService_GetType(sv);
@@ -582,40 +587,73 @@ void EditCtUser::slotBankCodeClicked() {
 
 
 
-void EditCtUser::_fromContext(int i) {
-  int country;
-  GWEN_BUFFER *bankId;
-  GWEN_BUFFER *userId;
-  GWEN_BUFFER *server;
-  int port;
-  int rv;
+void EditCtUser::_fromContext(int i, bool overwrite) {
+  if (i<(int)_idCount) {
+    GWEN_CRYPT_TOKEN *ct;
+    const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
+    int rv;
 
-  bankId=GWEN_Buffer_new(0, 64, 0, 1);
-  userId=GWEN_Buffer_new(0, 64, 0, 1);
-  server=GWEN_Buffer_new(0, 64, 0, 1);
-  rv=AH_Medium_ReadContext(_wInfo->getMedium(),
-                           i, &country, bankId, userId, server, &port);
-  if (rv) {
-    DBG_ERROR(0, "Could not read context %d", i);
-    GWEN_Buffer_free(server);
-    GWEN_Buffer_free(userId);
-    GWEN_Buffer_free(bankId);
-    return;
+    ct=_wInfo->getToken();
+    assert(ct);
+
+    if (!GWEN_Crypt_Token_IsOpen(ct)) {
+      rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+      if (rv) {
+	DBG_ERROR(0, "Error opening token (%d)", rv);
+	QMessageBox::critical(this,
+			      tr("Error"),
+			      tr("Could not open crypt token"),
+			      QMessageBox::Ok,QMessageBox::NoButton);
+	return;
+      }
+    }
+
+    if (userIdEdit->text().isEmpty()) {
+      DBG_ERROR(0, "User Id is empty");
+    }
+    else {
+      DBG_ERROR(0, "User Id is not empty");
+    }
+
+    cctx=GWEN_Crypt_Token_GetContext(ct, _idList[i], 0);
+    if (cctx) {
+      const char *s;
+
+      s=GWEN_Crypt_Token_Context_GetUserId(cctx);
+      if (s) {
+        DBG_ERROR(0, "User id available");
+	if (overwrite || userIdEdit->text().isEmpty())
+	  userIdEdit->setText(QString::fromUtf8(s));
+	if (overwrite || customerIdEdit->text().isEmpty())
+	  customerIdEdit->setText(QString::fromUtf8(s));
+      }
+      else {
+	DBG_ERROR(0, "User id not available");
+      }
+      s=GWEN_Crypt_Token_Context_GetServiceId(cctx);
+      if (s && (overwrite || bankCodeEdit->text().isEmpty()))
+	bankCodeEdit->setText(QString::fromUtf8(s));
+      s=GWEN_Crypt_Token_Context_GetAddress(cctx);
+      if (s && (overwrite || serverEdit->text().isEmpty()))
+	serverEdit->setText(QString::fromUtf8(s));
+      s=GWEN_Crypt_Token_Context_GetUserName(cctx);
+      if (s && (overwrite || nameEdit->text().isEmpty()))
+	nameEdit->setText(QString::fromUtf8(s));
+      s=GWEN_Crypt_Token_Context_GetPeerId(cctx);
+      if (overwrite || peerIdEdit->text().isEmpty())
+	peerIdEdit->setText(QString::fromUtf8(s));
+    }
+    _wInfo->setContext(_idList[i]);
+    DBG_ERROR(0, "Using context %d", i);
   }
-
-  bankCodeEdit->setText(QString::fromUtf8(GWEN_Buffer_GetStart(bankId)));
-  userIdEdit->setText(QString::fromUtf8(GWEN_Buffer_GetStart(userId)));
-  customerIdEdit->setText("");
-  serverEdit->setText(QString::fromUtf8(GWEN_Buffer_GetStart(server)));
-  GWEN_Buffer_free(server);
-  GWEN_Buffer_free(userId);
-  GWEN_Buffer_free(bankId);
+  else {
+    DBG_ERROR(0, "Invalid context %d", i);
+  }
 }
 
 
 
 void EditCtUser::slotContextActivated(int i) {
-  _wInfo->setContext(i);
   _fromContext(i);
 }
 

@@ -22,7 +22,7 @@
 typedef struct AH_ACCOUNT AH_ACCOUNT;
 struct AH_ACCOUNT {
   AH_HBCI *hbci;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
 };
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);

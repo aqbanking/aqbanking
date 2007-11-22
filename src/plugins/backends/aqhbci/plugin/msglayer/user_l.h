@@ -19,6 +19,7 @@
 #include "hbci_l.h"
 #include <aqbanking/provider_be.h>
 #include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/gui.h>
 
 
 void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
@@ -62,6 +63,38 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n);
 
 int AH_User_GetUpdVersion(const AB_USER *u);
 void AH_User_SetUpdVersion(AB_USER *u, int i);
+
+
+int AH_User_InputPin(AB_USER *u,
+		     char *pwbuffer,
+		     int minLen, int maxLen,
+		     int flags);
+
+int AH_User_InputPasswd(AB_USER *u,
+			char *pwbuffer,
+			int minLen, int maxLen,
+			int flags);
+
+int AH_User_InputTan(AB_USER *u,
+		     char *pwbuffer,
+		     int minLen,
+		     int maxLen);
+
+int AH_User_InputTanWithChallenge(AB_USER *u,
+				  const char *challenge,
+				  char *pwbuffer,
+				  int minLen,
+				  int maxLen);
+
+int AH_User_SetTanStatus(AB_USER *u,
+			 const char *challenge,
+			 const char *tan,
+			 GWEN_GUI_PASSWORD_STATUS status);
+
+int AH_User_SetPinStatus(AB_USER *u,
+			 const char *pin,
+			 GWEN_GUI_PASSWORD_STATUS status);
+
 
 
 #endif /* AH_USER_L_H */

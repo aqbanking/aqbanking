@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -32,7 +33,8 @@
 # include <config.h>
 #endif
 
-#include <cbanking/cbanking.h>
+#include <aqbanking/banking.h>
+#include <gwenhywfar/cgui.h>
 
 
 
@@ -40,8 +42,12 @@ int main(int argc, char **argv) {
   AB_BANKING *ab;
   AB_ACCOUNT_LIST2 *accs;
   int rv;
+  GWEN_GUI *gui;
 
-  ab=CBanking_new("tutorial2", 0);
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  ab=AB_Banking_new("tutorial2", 0, 0);
   rv=AB_Banking_Init(ab);
   if (rv) {
     fprintf(stderr, "Error on init (%d)\n", rv);
@@ -117,7 +123,6 @@ int main(int argc, char **argv) {
     return 3;
   }
   AB_Banking_free(ab);
-
   return 0;
 }
 

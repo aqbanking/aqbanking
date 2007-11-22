@@ -7,8 +7,11 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
+
+#warning Needs to be ported to IoLayer
 
 
 #ifdef HAVE_CONFIG_H
@@ -29,6 +32,7 @@
 #include <gwenhywfar/net2.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/gui.h>
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"
@@ -88,7 +92,7 @@ AB_PROVIDER *AB_HttpSession_GetProvider(const AB_HTTPSESSION *hc) {
 
 
 
-GWEN_TYPE_UINT32 AB_HttpSession_GetSessionId(const AB_HTTPSESSION *hc) {
+uint32_t AB_HttpSession_GetSessionId(const AB_HTTPSESSION *hc) {
   assert(hc);
   return hc->sessionId;
 }
@@ -139,28 +143,28 @@ void AB_HttpSession_SetTransferTimeout(AB_HTTPSESSION *hc, int i) {
 
 
 
-GWEN_TYPE_UINT32 AB_HttpSession_GetFlags(const AB_HTTPSESSION *hc) {
+uint32_t AB_HttpSession_GetFlags(const AB_HTTPSESSION *hc) {
   assert(hc);
   return hc->flags;
 }
 
 
 
-void AB_HttpSession_SetFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f) {
+void AB_HttpSession_SetFlags(AB_HTTPSESSION *hc, uint32_t f) {
   assert(hc);
   hc->flags=f;
 }
 
 
 
-void AB_HttpSession_AddFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f) {
+void AB_HttpSession_AddFlags(AB_HTTPSESSION *hc, uint32_t f) {
   assert(hc);
   hc->flags|=f;
 }
 
 
 
-void AB_HttpSession_SubFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f) {
+void AB_HttpSession_SubFlags(AB_HTTPSESSION *hc, uint32_t f) {
   assert(hc);
   hc->flags&=~f;
 }
@@ -243,7 +247,7 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
     GWEN_SOCKET *sk;
     GWEN_INETADDRESS *addr;
     const char *s;
-    GWEN_ERRORCODE err;
+    int err;
     GWEN_BUFFER *pbuf;
 #endif
 
@@ -258,29 +262,25 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
     sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
     addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
     err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       char dbgbuf[256];
 
       snprintf(dbgbuf, sizeof(dbgbuf)-1,
                I18N("Resolving hostname \"%s\" ..."),
                GWEN_Url_GetServer(url));
       dbgbuf[sizeof(dbgbuf)-1]=0;
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                             AB_Banking_LogLevelNotice,
-                             dbgbuf);
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, dbgbuf);
       DBG_INFO(AQBANKING_LOGDOMAIN, "Resolving hostname \"%s\"",
                GWEN_Url_GetServer(url));
 
       err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
-      if (!GWEN_Error_IsOk(err)) {
-        snprintf(dbgbuf, sizeof(dbgbuf)-1,
-                 I18N("Unknown hostname \"%s\""),
-                 GWEN_Url_GetServer(url));
-        dbgbuf[sizeof(dbgbuf)-1]=0;
-        AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                               AB_Banking_LogLevelError,
-                               dbgbuf);
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
+      if (err) {
+	snprintf(dbgbuf, sizeof(dbgbuf)-1,
+		 I18N("Unknown hostname \"%s\""),
+		 GWEN_Url_GetServer(url));
+	dbgbuf[sizeof(dbgbuf)-1]=0;
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, dbgbuf);
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Error resolving hostname \"%s\":",
                   GWEN_Url_GetServer(url));
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
@@ -288,23 +288,21 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
       }
       else {
         char addrBuf[256];
-        GWEN_ERRORCODE err;
+        int err;
   
         err=GWEN_InetAddr_GetAddress(addr, addrBuf, sizeof(addrBuf)-1);
         addrBuf[sizeof(addrBuf)-1]=0;
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-          return AB_ERROR_NETWORK;
-        }
+	if (err) {
+	  DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+	  return AB_ERROR_NETWORK;
+	}
         else {
           snprintf(dbgbuf, sizeof(dbgbuf)-1,
                    I18N("IP address is %s"),
                    addrBuf);
           dbgbuf[sizeof(dbgbuf)-1]=0;
-          AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                                 AB_Banking_LogLevelNotice,
-                                 dbgbuf);
-        }
+	  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, dbgbuf);
+	}
 
       }
     }
@@ -331,9 +329,6 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
                                  wantSecure);
       GWEN_Buffer_free(nbuf);
       GWEN_NetLayer_free(baseLayer);
-      GWEN_NetLayerSsl_SetAskAddCertFn(nlssl,
-                                       AB_Banking_AskAddCert,
-                                       AB_Provider_GetBanking(hc->provider));
       baseLayer=nlssl;
     }
 #endif
@@ -374,9 +369,7 @@ int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *hc, const GWEN_URL *url) {
   if (st==GWEN_NetLayerStatus_Unconnected) {
     int timeout;
 
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                           AB_Banking_LogLevelNotice,
-                           I18N("Connecting"));
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Connecting"));
 
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "Not connected, connecting now");
@@ -407,7 +400,7 @@ int AB_HttpSession___SendRequest(AB_HTTPSESSION *hc,
                                  GWEN_BUFFER *buf) {
   GWEN_BUFFEREDIO *bio;
   int rv;
-  GWEN_ERRORCODE err;
+  int err;
 
   bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
   GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
@@ -431,7 +424,7 @@ int AB_HttpSession___SendRequest(AB_HTTPSESSION *hc,
   }
 
   err=GWEN_BufferedIO_Flush(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     GWEN_BufferedIO_Abandon(bio);
     GWEN_BufferedIO_free(bio);
@@ -445,17 +438,16 @@ int AB_HttpSession___SendRequest(AB_HTTPSESSION *hc,
 
 
 int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
-                            const char *command,
-                            const GWEN_URL *url,
-                            GWEN_DB_NODE *dbHeader,
-                            const char *pBody,
-                            int lBody,
-                            GWEN_BUFFER *buf) {
+			       const char *command,
+			       const GWEN_URL *url,
+			       GWEN_DB_NODE *dbHeader,
+			       const char *pBody,
+			       int lBody,
+			       GWEN_BUFFER *buf,
+			       uint32_t guiid) {
   int rv;
 
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                         AB_Banking_LogLevelInfo,
-                         I18N("Sending request"));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Sending request"));
 
   rv=AB_HttpSession___SendRequest(hc, command, url, dbHeader, pBody, lBody, buf);
   if (rv==0 || (rv>=200 && rv<300))
@@ -533,12 +525,11 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
       GWEN_Buffer_free(url2);
       GWEN_Buffer_free(url1);
   
-      rv=AB_Banking_MessageBox(AB_Provider_GetBanking(hc->provider),
-                               AB_BANKING_MSG_FLAGS_TYPE_WARN |
-                               AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
-                               I18N("Redirection Requested"),
-                               txtBuffer,
-                               I18N("Yes"), I18N("Abort"), 0);
+      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			     I18N("Redirection Requested"),
+			     txtBuffer,
+			     I18N("Yes"), I18N("Abort"), 0, guiid);
       if (rv!=1) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "User does not follow redirection");
@@ -549,7 +540,7 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
       /* resend request, now using the new URL */
       GWEN_Buffer_Reset(buf);
       rv=AB_HttpSession___SendRequest(hc, command, newUrl, dbHeader,
-                                   pBody, lBody, buf);
+				      pBody, lBody, buf);
       GWEN_Url_free(newUrl);
       return rv;
     }
@@ -566,16 +557,14 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
 int AB_HttpSession_Open(AB_HTTPSESSION *hc) {
   int rv;
   GWEN_BUFFER *pbuf;
-  GWEN_TYPE_UINT32 bpos;
+  uint32_t bpos;
   char pwbuf[16];
 
   /* reset */
   hc->sessionId=AB_User_GetLastSessionId(hc->user)+1;
   AB_User_SetLastSessionId(hc->user, hc->sessionId);
 
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Opening session"));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Opening session"));
 
   /* create path */
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -600,7 +589,7 @@ int AB_HttpSession_Open(AB_HTTPSESSION *hc) {
               "Could not create path \"%s\"",
 	      GWEN_Buffer_GetStart(pbuf));
     GWEN_Buffer_free(pbuf);
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   free(hc->logFolder);
   hc->logFolder=strdup(GWEN_Buffer_GetStart(pbuf));
@@ -614,9 +603,7 @@ int AB_HttpSession_Open(AB_HTTPSESSION *hc) {
 
 void AB_HttpSession_Close(AB_HTTPSESSION *hc) {
   assert(hc);
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(hc->provider), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Closing session"));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Closing session"));
   if (hc->netLayer) {
     GWEN_NetLayer_Disconnect(hc->netLayer);
     GWEN_NetLayer_free(hc->netLayer);

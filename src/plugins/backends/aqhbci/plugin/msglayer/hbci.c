@@ -25,7 +25,6 @@
 #include "hbci_p.h"
 #include "aqhbci_l.h"
 #include "hbci-updates_l.h"
-#include "medium_l.h"
 
 #include <aqbanking/banking_be.h>
 
@@ -34,9 +33,9 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/libloader.h>
-#include <gwenhywfar/net2.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/pathmanager.h>
+#include <gwenhywfar/ctplugin.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -62,14 +61,13 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
     GWEN_Logger_Open(AQHBCI_LOGDOMAIN,
 		     "aqhbci",
 		     0,
-		     GWEN_LoggerTypeConsole,
-		     GWEN_LoggerFacilityUser);
+		     GWEN_LoggerType_Console,
+		     GWEN_LoggerFacility_User);
   }
 
   GWEN_NEW_OBJECT(AH_HBCI, hbci);
   hbci->provider=pro;
   hbci->banking=AB_Provider_GetBanking(pro);
-  hbci->activeMedia=AH_Medium_List_new();
   hbci->productName=strdup("AQHBCI");
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
               AQHBCI_VERSION_MAJOR, AQHBCI_VERSION_MINOR);
@@ -84,6 +82,8 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   hbci->transferTimeout=AH_HBCI_DEFAULT_TRANSFER_TIMEOUT;
   hbci->connectTimeout=AH_HBCI_DEFAULT_CONNECT_TIMEOUT;
 
+  hbci->cryptTokenList=GWEN_Crypt_Token_List2_new();
+
   return hbci;
 }
 
@@ -93,26 +93,13 @@ void AH_HBCI_free(AH_HBCI *hbci){
   if (hbci) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_HBCI");
 
-    /* free current medium */
-    if (hbci->currentMedium) {
-      if (AH_Medium_IsMounted(hbci->currentMedium)) {
-        if (AH_Medium_Unmount(hbci->currentMedium, 1)) {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Could not unmount medium");
-        }
-      }
-      AH_Medium_free(hbci->currentMedium);
-      hbci->currentMedium=0;
-    }
-
-    /* free active media */
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "%d active media",
-             AH_Medium_List_GetCount(hbci->activeMedia));
-    AH_Medium_List_free(hbci->activeMedia);
-
     free(hbci->productName);
     free(hbci->productVersion);
 
     GWEN_XMLNode_free(hbci->defs);
+
+    AH_HBCI_ClearCryptTokenList(hbci);
+    GWEN_Crypt_Token_List2_free(hbci->cryptTokenList);
 
     GWEN_FREE_OBJECT(hbci);
     GWEN_Logger_Close(AQHBCI_LOGDOMAIN);
@@ -121,85 +108,9 @@ void AH_HBCI_free(AH_HBCI *hbci){
 
 
 
-int AH_HBCI__LoadMedia(AH_HBCI *hbci, GWEN_DB_NODE *db) {
-  GWEN_DB_NODE *dbMedia;
-  GWEN_DB_NODE *dbT;
-
-  dbMedia=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                           "media");
-  if (dbMedia) {
-    dbT=GWEN_DB_FindFirstGroup(dbMedia, "medium");
-    while(dbT) {
-      AH_MEDIUM *m;
-      const char *typeName;
-      const char *subTypeName;
-      const char *name;
-  
-      name=GWEN_DB_GetCharValue(dbT, "mediumName", 0, 0);
-      assert(name);
-      typeName=GWEN_DB_GetCharValue(dbT, "mediumTypeName", 0, 0);
-      assert(typeName);
-      subTypeName=GWEN_DB_GetCharValue(dbT, "mediumSubTypeName", 0, 0);
-  
-      m=AH_HBCI_FindMedium(hbci, typeName, name);
-      if (m) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Medium \"%s\"already registered, invalid setup",
-                  name);
-        return -1;
-      }
-  
-      m=AH_HBCI_MediumFactoryDb(hbci, typeName, subTypeName, dbT);
-      assert(m);
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Loaded medium \"%s\"", name);
-      AH_HBCI__AddMedium(hbci, m);
-  
-      dbT=GWEN_DB_FindNextGroup(dbT, "medium");
-    }
-  }
-  else {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "No media in configuration file");
-  }
-  return 0;
-}
-
-
-
-int AH_HBCI__SaveMedia(AH_HBCI *hbci, GWEN_DB_NODE *db) {
-  AH_MEDIUM *m;
-
-  m=AH_Medium_List_First(hbci->activeMedia);
-  if (m) {
-    GWEN_DB_NODE *dbMedia;
-
-    dbMedia=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                             "media");
-    assert(dbMedia);
-    while(m) {
-      GWEN_DB_NODE *dbT;
-
-      dbT=GWEN_DB_GetGroup(dbMedia, GWEN_PATH_FLAGS_CREATE_GROUP, "medium");
-      assert(dbT);
-      if (AH_Medium_ToDB(m, dbT)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Error storing medium \"%s\"",
-                  AH_Medium_GetMediumName(m));
-        return -1;
-      }
-      m=AH_Medium_List_Next(m);
-    }
-  }
-
-  return 0;
-}
-
-
-
 int AH_HBCI_Init(AH_HBCI *hbci) {
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *db;
-  int rv;
 
   assert(hbci);
 
@@ -207,22 +118,25 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
   db=AB_Provider_GetData(hbci->provider);
 
   hbci->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
-  rv=AH_HBCI_UpdateDb(hbci, db);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   GWEN_PathManager_DefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
-  GWEN_PathManager_AddPath(AH_PM_LIBNAME,
-                           AH_PM_LIBNAME,
-                           AH_PM_XMLDATADIR,
-                           AH_XMLDATADIR);
+#ifdef OS_WIN32
   GWEN_PathManager_AddPathFromWinReg(AH_PM_LIBNAME,
-                                     AH_PM_LIBNAME,
-                                     AH_PM_XMLDATADIR,
-                                     AH_REGKEY_PATHS,
-                                     AH_REGKEY_XMLDATADIR);
+				     AH_PM_LIBNAME,
+				     AH_PM_XMLDATADIR,
+				     AH_REGKEY_PATHS,
+				     AH_REGKEY_XMLDATADIR);
+  GWEN_PathManager_AddRelPath(AH_PM_LIBNAME,
+			      AH_PM_LIBNAME,
+			      AH_PM_XMLDATADIR,
+			      AH_XMLDATADIR,
+			      GWEN_PathManager_RelModeExe);
+#else
+  GWEN_PathManager_AddPath(AH_PM_LIBNAME,
+			   AH_PM_LIBNAME,
+			   AH_PM_XMLDATADIR,
+			   AH_XMLDATADIR);
+#endif
 
   /* Load XML files */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Loading XML files");
@@ -246,12 +160,6 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 					    AH_HBCI_DEFAULT_TRANSFER_TIMEOUT);
   hbci->connectTimeout=GWEN_DB_GetIntValue(db, "connectTimeout", 0,
 					   AH_HBCI_DEFAULT_CONNECT_TIMEOUT);
-  hbci->lastMediumId=GWEN_DB_GetIntValue(db, "lastMediumId", 0, 0);
-
-
-  /* load media */
-  AH_HBCI__LoadMedia(hbci, db);
-
   return 0;
 }
 
@@ -259,7 +167,7 @@ int AH_HBCI_Init(AH_HBCI *hbci) {
 
 int AH_HBCI_Fini(AH_HBCI *hbci) {
   GWEN_DB_NODE *db;
-  GWEN_TYPE_UINT32 currentVersion;
+  uint32_t currentVersion;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Deinitializing AH_HBCI");
   assert(hbci);
@@ -270,26 +178,12 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
     (AQHBCI_VERSION_PATCHLEVEL<<8) |
     AQHBCI_VERSION_BUILD;
 
-  /* free current medium */
-  if (hbci->currentMedium) {
-    if (AH_Medium_IsMounted(hbci->currentMedium)) {
-      if (AH_Medium_Unmount(hbci->currentMedium, 1)) {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Could not unmount medium");
-      }
-    }
-    AH_Medium_free(hbci->currentMedium);
-    hbci->currentMedium=0;
-  }
-
   /* save configuration */
   db=AB_Provider_GetData(hbci->provider);
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting version %08x",
              currentVersion);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "lastVersion", currentVersion);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastMediumId", hbci->lastMediumId);
 
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -300,14 +194,6 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "connectTimeout",
                       hbci->connectTimeout);
-
-  /* save all active media */
-  AH_HBCI__SaveMedia(hbci, db);
-
-  /* clear active media */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "%d active media",
-            AH_Medium_List_GetCount(hbci->activeMedia));
-  AH_Medium_List_Clear(hbci->activeMedia);
 
   GWEN_PathManager_UndefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
 
@@ -323,8 +209,8 @@ int AH_HBCI_Fini(AH_HBCI *hbci) {
 
 
 int AH_HBCI_Update(AH_HBCI *hbci,
-                   GWEN_TYPE_UINT32 lastVersion,
-                   GWEN_TYPE_UINT32 currentVersion) {
+                   uint32_t lastVersion,
+                   uint32_t currentVersion) {
   GWEN_DB_NODE *db;
   int rv;
 
@@ -387,25 +273,48 @@ GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci){
 
 
 GWEN_XMLNODE *AH_HBCI_LoadDefaultXmlFiles(const AH_HBCI *hbci){
-  GWEN_XMLNODE *xmlNode;
-  GWEN_STRINGLIST *slist;
+  GWEN_STRINGLIST *paths;
 
-  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  paths=GWEN_PathManager_GetPaths(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
+  if (paths) {
+    GWEN_BUFFER *fbuf;
+    int rv;
 
-  slist=GWEN_PathManager_GetPaths(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
-  if (GWEN_XML_ReadFileSearch(xmlNode,
-                              "hbci.xml",
-                              GWEN_XML_FLAGS_DEFAULT |
-			      GWEN_XML_FLAGS_HANDLE_HEADERS,
-                              slist) ) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not load XML file.\n");
-    GWEN_StringList_free(slist);
-    GWEN_XMLNode_free(xmlNode);
-    return 0;
+    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(paths,
+				      "hbci.xml",
+				      fbuf);
+    GWEN_StringList_free(paths);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "XML data file not found (%d)", rv);
+      GWEN_Buffer_free(fbuf);
+      return NULL;
+    }
+    else {
+      GWEN_XMLNODE *xmlNode;
+
+      xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+
+      rv=GWEN_XML_ReadFile(xmlNode,
+			   GWEN_Buffer_GetStart(fbuf),
+			   GWEN_XML_FLAGS_DEFAULT |
+			   GWEN_XML_FLAGS_HANDLE_HEADERS);
+      if (rv) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not load XML file [%s]: %d.\n",
+		  GWEN_Buffer_GetStart(fbuf), rv);
+	GWEN_XMLNode_free(xmlNode);
+	GWEN_Buffer_free(fbuf);
+	return NULL;
+      }
+      GWEN_Buffer_free(fbuf);
+
+      return xmlNode;
+    }
   }
-  GWEN_StringList_free(slist);
-
-  return xmlNode;
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No data files found.");
+    return NULL;
+  }
 }
 
 
@@ -480,309 +389,6 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf) {
 
 
 
-int AH_HBCI_GetMedium(AH_HBCI *hbci, AB_USER *u, AH_MEDIUM **pm){
-  AH_MEDIUM *m;
-  int rv;
-
-  assert(hbci);
-  assert(u);
-
-  if (hbci->currentMedium==AH_User_GetMedium(u)) {
-    /* return current medium if it is the wanted one, release it otherwise */
-    if (AH_Medium_SelectContext(hbci->currentMedium,
-                                AH_User_GetContextIdx(u))==0) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Returning current medium");
-      *pm=hbci->currentMedium;
-      return 0;
-    }
-    if (AH_Medium_IsMounted(hbci->currentMedium)) {
-      rv=AH_Medium_Unmount(hbci->currentMedium, 0);
-      if (rv) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not unmount medium (%d)", rv);
-        return rv;
-      }
-    }
-    AH_Medium_free(hbci->currentMedium);
-    hbci->currentMedium=0;
-  }
-
-  m=AH_User_GetMedium(u);
-  assert(m);
-
-  if (!AH_Medium_IsMounted(m)) {
-    rv=AH_Medium_Mount(m);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not mount medium (%d)", rv);
-      return rv;
-    }
-  }
-
-  /* store current medium */
-  hbci->currentMedium=m;
-  AH_Medium_Attach(m);
-
-  rv=AH_Medium_SelectContext(hbci->currentMedium,
-                             AH_User_GetContextIdx(u));
-  if (rv){
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Error selecting context %d for \"%s:%s/%s\" (%d)",
-              AH_User_GetContextIdx(u),
-              AB_User_GetCountry(u),
-              AB_User_GetBankCode(u),
-              AB_User_GetUserId(u),
-              rv);
-    return rv;
-  }
-
-  *pm=m;
-  return 0;
-}
-
-
-
-AH_MEDIUM*
-AH_HBCI_MediumFactory(AH_HBCI *hbci,
-                      const char *typeName,
-		      const char *subTypeName,
-		      const char *mediumName) {
-  AH_MEDIUM *m;
-
-  m=AH_Medium_new(hbci, typeName, subTypeName, mediumName);
-  if (!m) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No medium created");
-    return 0;
-  }
-  return m;
-}
-
-
-
-AH_MEDIUM*
-AH_HBCI_MediumFactoryDb(AH_HBCI *hbci,
-                        const char *typeName,
-			const char *subTypeName,
-			GWEN_DB_NODE *db) {
-  AH_MEDIUM *m;
-  int rv;
-  const char *mediumName;
-
-  mediumName=GWEN_DB_GetCharValue(db, "mediumName", 0, 0);
-  m=AH_HBCI_MediumFactory(hbci, typeName, subTypeName, mediumName);
-  if (!m) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Medium plugin does not create a medium");
-    return 0;
-  }
-
-  rv=AH_Medium_FromDB(m, db);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error restoring medium \"%s\" (%d)",
-             typeName, rv);
-    AH_Medium_free(m);
-    return 0;
-  }
-
-  return m;
-}
-
-
-
-int AH_HBCI_CheckMedium(AH_HBCI *hbci,
-                        GWEN_CRYPTTOKEN_DEVICE devt,
-                        GWEN_BUFFER *typeName,
-                        GWEN_BUFFER *subTypeName,
-                        GWEN_BUFFER *tokenName) {
-  GWEN_PLUGIN_MANAGER *pm;
-  int rv;
-
-  pm=GWEN_PluginManager_FindPluginManager("crypttoken");
-  if (pm==0) {
-    DBG_ERROR(0, "Plugin manager not found");
-    return AB_ERROR_GENERIC;
-  }
-
-  rv=GWEN_CryptManager_CheckToken(pm, devt,
-                                  typeName,
-                                  subTypeName,
-                                  tokenName);
-  if (rv) {
-    DBG_ERROR(0, "Token is not supported by any plugin");
-    return AB_ERROR_NOT_FOUND;
-  }
-
-  return 0;
-}
-
-
-
-AH_MEDIUM *AH_HBCI_FindMedium(const AH_HBCI *hbci,
-                              const char *typeName,
-                              const char *mediumName){
-  AH_MEDIUM *m;
-
-  assert(hbci);
-  assert(typeName);
-  m=AH_Medium_List_First(hbci->activeMedia);
-  if (!mediumName)
-    mediumName="";
-
-  while(m) {
-    if (strcasecmp(typeName, AH_Medium_GetMediumTypeName(m))==0 &&
-        strcasecmp(mediumName, AH_Medium_GetMediumName(m))==0)
-      return m;
-    m=AH_Medium_List_Next(m);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Medium \"%s\" (%s) not found", mediumName, typeName);
-  return 0;
-}
-
-
-
-AH_MEDIUM *AH_HBCI_FindMediumById(const AH_HBCI *hbci, GWEN_TYPE_UINT32 id){
-  AH_MEDIUM *m;
-
-  assert(hbci);
-  m=AH_Medium_List_First(hbci->activeMedia);
-  while(m) {
-    if (id==AH_Medium_GetUniqueId(m))
-      return m;
-    m=AH_Medium_List_Next(m);
-  } /* while */
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Medium \"%08x\" not found", id);
-  return 0;
-}
-
-
-
-AH_MEDIUM *AH_HBCI_SelectMedium(AH_HBCI *hbci,
-                                const char *typeName,
-				const char *subTypeName,
-                                const char *mediumName){
-  AH_MEDIUM *m;
-
-  m=0;
-  if (mediumName && typeName)
-    m=AH_HBCI_FindMedium(hbci, typeName, mediumName);
-  if (!m) {
-    m=AH_HBCI_MediumFactory(hbci, typeName, subTypeName, mediumName);
-    if (!m) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create medium \"%s\" (%s)",
-               mediumName, typeName);
-      return 0;
-    }
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding medium \"%s\" (%s) to the list",
-             mediumName, typeName);
-    AH_Medium_List_Add(m, hbci->activeMedia);
-  }
-
-  return m;
-}
-
-
-
-AH_MEDIUM *AH_HBCI_SelectMediumDb(AH_HBCI *hbci,
-                                  const char *typeName,
-				  const char *subTypeName,
-                                  GWEN_DB_NODE *db) {
-  AH_MEDIUM *m;
-  const char *mediumName;
-
-  m=0;
-  mediumName=GWEN_DB_GetCharValue(db, "mediumName", 0, 0);
-  if (mediumName && typeName)
-    m=AH_HBCI_FindMedium(hbci, typeName, mediumName);
-  if (!m) {
-    m=AH_HBCI_MediumFactoryDb(hbci, typeName, subTypeName, db);
-    if (!m) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create medium \"%s\" (%s)",
-               mediumName, typeName);
-      return 0;
-    }
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding medium \"%s\" (%s) to the list",
-             mediumName, typeName);
-    AH_Medium_List_Add(m, hbci->activeMedia);
-  }
-
-  return m;
-}
-
-
-
-int AH_HBCI__AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
-  assert(hbci);
-  assert(m);
-
-  if (AH_HBCI_FindMediumById(hbci,
-                             AH_Medium_GetUniqueId(m))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Medium already listed");
-    return -1;
-  }
-
-  AH_Medium_List_Add(m, hbci->activeMedia);
-  return 0;
-}
-
-
-
-int AH_HBCI_AddMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
-  GWEN_TYPE_UINT32 uid;
-
-  assert(hbci);
-  assert(m);
-
-  uid=AH_Medium_GetUniqueId(m);
-  if (uid==0)
-    AH_Medium_SetUniqueId(m, ++(hbci->lastMediumId));
-
-  return AH_HBCI__AddMedium(hbci, m);
-}
-
-
-
-int AH_HBCI_RemoveMedium(AH_HBCI *hbci, AH_MEDIUM *m) {
-  assert(hbci);
-  assert(m);
-  AH_Medium_List_Del(m);
-  return 0;
-}
-
-
-
-const AH_MEDIUM_LIST *AH_HBCI_GetMediaList(const AH_HBCI *hbci) {
-  assert(hbci);
-  return hbci->activeMedia;
-}
-
-
-
-GWEN_PLUGIN_DESCRIPTION_LIST2*
-AH_HBCI_GetMediumPluginDescrs(AH_HBCI *hbci,
-			      GWEN_CRYPTTOKEN_DEVICE dev) {
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *cl = 0;
-  GWEN_PLUGIN_MANAGER *pm;
-
-  /* load complete list */
-  pm=GWEN_PluginManager_FindPluginManager("crypttoken");
-  if (!pm) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Could not find plugin manager for \"%s\"",
-              "crypttoken");
-    return 0;
-  }
-
-  cl=GWEN_CryptManager_GetPluginDescrs(pm, dev);
-  if (!cl) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No matching plugin descriptions");
-    return 0;
-  }
-
-  return cl;
-}
-
-
-
 int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
                               const AB_USER *u,
                               GWEN_BUFFER *nbuf) {
@@ -797,7 +403,7 @@ int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
 
 
 int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
-  GWEN_DIRECTORYDATA *d;
+  GWEN_DIRECTORY *d;
   GWEN_BUFFER *nbuf;
   char nbuffer[64];
   unsigned int pathLen;
@@ -868,7 +474,7 @@ int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
   /* write file */
   if (GWEN_DB_WriteFile(db,
 			path,
-			GWEN_DB_FLAGS_DEFAULT)) {
+			GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not write file \"%s\"", path);
     return -1;
@@ -895,7 +501,7 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
   if (GWEN_DB_ReadFile(db,
                        path,
 		       GWEN_DB_FLAGS_DEFAULT |
-                       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not read file \"%s\"",
 	     path);
@@ -1098,22 +704,6 @@ GWEN_DB_NODE *AH_HBCI_GetSharedRuntimeData(const AH_HBCI *hbci){
 
 
 
-int AH_HBCI_UnmountCurrentMedium(AH_HBCI *hbci){
-  if (hbci->currentMedium) {
-    if (AH_Medium_IsMounted(hbci->currentMedium)) {
-      if (AH_Medium_Unmount(hbci->currentMedium, 0)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Could not unmount medium");
-        return 0;
-      }
-    }
-    AH_Medium_free(hbci->currentMedium);
-    hbci->currentMedium=0;
-  }
-  return 0;
-}
-
-
-
 int AH_HBCI_GetTransferTimeout(const AH_HBCI *hbci) {
   assert(hbci);
   return hbci->transferTimeout;
@@ -1142,20 +732,110 @@ void AH_HBCI_SetConnectTimeout(AH_HBCI *hbci, int i){
 
 
 
-GWEN_TYPE_UINT32 AH_HBCI_GetNextMediumId(AH_HBCI *hbci) {
-  assert(hbci);
-  return ++(hbci->lastMediumId);
-}
-
-
-
-GWEN_TYPE_UINT32 AH_HBCI_GetLastVersion(const AH_HBCI *hbci) {
+uint32_t AH_HBCI_GetLastVersion(const AH_HBCI *hbci) {
   assert(hbci);
   return hbci->lastVersion;
 }
 
 
 
+int AH_HBCI_GetCryptToken(AH_HBCI *hbci,
+			  const char *tname,
+			  const char *cname,
+			  GWEN_CRYPT_TOKEN **pCt) {
+  GWEN_CRYPT_TOKEN *ct=NULL;
+  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
 
+  assert(hbci);
+  assert(hbci->cryptTokenList);
+
+  assert(pCt);
+  assert(tname);
+  assert(cname);
+
+  it=GWEN_Crypt_Token_List2_First(hbci->cryptTokenList);
+  if (it) {
+    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
+    assert(ct);
+    while(ct) {
+      const char *s1;
+      const char *s2;
+
+      s1=GWEN_Crypt_Token_GetTypeName(ct);
+      s2=GWEN_Crypt_Token_GetTokenName(ct);
+      assert(s1);
+      assert(s2);
+      if (strcasecmp(s1, tname)==0 &&
+	  strcasecmp(s2, cname)==0)
+	break;
+      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
+    }
+  }
+
+  if (ct==NULL) {
+    GWEN_PLUGIN_MANAGER *pm;
+    GWEN_PLUGIN *pl;
+
+    /* get crypt token */
+    pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+    if (pm==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "CryptToken plugin manager not found");
+      return GWEN_ERROR_INTERNAL;
+    }
+  
+    pl=GWEN_PluginManager_GetPlugin(pm, tname);
+    if (pl==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin \"%s\" not found", tname);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+
+    ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, cname);
+    if (ct==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
+      return GWEN_ERROR_IO;
+    }
+
+    /* add to internal list */
+    GWEN_Crypt_Token_List2_PushBack(hbci->cryptTokenList, ct);
+  }
+
+  *pCt=ct;
+  return 0;
+}
+
+
+
+void AH_HBCI_ClearCryptTokenList(AH_HBCI *hbci) {
+  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
+
+  assert(hbci);
+  assert(hbci->cryptTokenList);
+
+  it=GWEN_Crypt_Token_List2_First(hbci->cryptTokenList);
+  if (it) {
+    GWEN_CRYPT_TOKEN *ct;
+
+    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
+    assert(ct);
+    while(ct) {
+      while(GWEN_Crypt_Token_IsOpen(ct)) {
+	int rv;
+
+	rv=GWEN_Crypt_Token_Close(ct, 0, 0);
+	if (rv) {
+	  DBG_WARN(AQHBCI_LOGDOMAIN,
+		   "Could not close crypt token [%s:%s], abandoning (%d)",
+		   GWEN_Crypt_Token_GetTypeName(ct),
+		   GWEN_Crypt_Token_GetTokenName(ct),
+		   rv);
+	  GWEN_Crypt_Token_Close(ct, 1, 0);
+	}
+      }
+      GWEN_Crypt_Token_free(ct);
+      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
+    }
+  }
+  GWEN_Crypt_Token_List2_Clear(hbci->cryptTokenList);
+}
 
 

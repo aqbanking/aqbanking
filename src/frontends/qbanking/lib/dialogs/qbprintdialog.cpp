@@ -22,7 +22,7 @@
 // Gwenhywfar includes
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 
 // QT includes
 #include <qlabel.h>
@@ -540,12 +540,6 @@ void QBPrintDialog::slotPrint(){
     }
   }
 
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-                                  tr("Printing, please wait...").utf8(),
-                                  tr("page(s)").utf8(),
-                                  0);
-  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
-
   QRect view(body);
   int page = 1;
   do {
@@ -559,22 +553,8 @@ void QBPrintDialog::slotPrint(){
     _printer->newPage();
     if (view.top()>=txt.height())
       break;
-    if (GWEN_WaitCallbackProgress(page)==
-        GWEN_WaitCallbackResult_Abort) {
-      int r = QMessageBox::critical(this,
-                                tr("Aborted"),
-                                tr("Do you really want to abort?"),
-				QMessageBox::Yes,QMessageBox::No);
-      if (r !=0 && r != QMessageBox::Yes) {
-        GWEN_WaitCallback_Leave();
-	p.end();
-        return;
-      }
-    }
     page++;
   } while (TRUE);
-
-  GWEN_WaitCallback_Leave();
 
   p.end();
 }

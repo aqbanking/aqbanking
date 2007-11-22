@@ -93,7 +93,8 @@ void GWENHYWFAR_CB AH_Job_EuTransfer_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_EuTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_EuTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			      uint32_t guiid){
   AH_JOB_EUTRANSFER *aj;
 
   assert(j);
@@ -124,12 +125,6 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_EUTRANSFER, mj);
   assert(aj);
 
-  /* check for splits */
-  if (AB_Split_List_GetCount(AB_Transaction_GetSplits(t))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No splits allowed");
-    return AB_ERROR_INVALID;
-  }
-
   /* get country info (check for IBAN) */
   s=AB_Transaction_GetRemoteIban(t);
   if (s) {
@@ -142,14 +137,14 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "IBAN not allowed for this account");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
   }
   else {
     s=AB_Transaction_GetRemoteCountry(t);
     if (!s) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "remote country code not set");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     ei=AB_JobEuTransfer_FindCountryInfo(bj, s);
   }
@@ -201,7 +196,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
                    "Too many chars in line %d (%d>27), cutting off", n, l);
           l=maxs;
         }
-        np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
         memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
         GWEN_Buffer_free(tbuf);
         /* let string list take the newly alllocated string */
@@ -256,7 +251,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
 		   "Too many chars in line %d (%d>27), cutting off", n, l);
 	  l=maxs;
 	}
-	np=(char*)malloc(l+1);
+	np=(char*)GWEN_Memory_malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -280,7 +275,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
     if (!s) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"No owner name in account, giving up");
-      return AB_ERROR_INVALID;
+      return GWEN_ERROR_INVALID;
     }
     AB_Transaction_SetLocalName(t, s);
   }
@@ -360,7 +355,8 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
-                               AH_JOB_EXCHANGE_MODE m){
+			       AH_JOB_EXCHANGE_MODE m,
+			       uint32_t guiid){
   AH_JOB_EUTRANSFER *aj;
   AB_BANKING *ab;
 
@@ -377,7 +373,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Not a %s job job",
               "EuTransfer");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -439,8 +435,9 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
               else {
                 AB_VALUE *val;
 
-                val=AB_Value_new(dv, cur);
+		val=AB_Value_fromDouble(dv);
                 assert(val);
+		AB_Value_SetCurrency(val, cur);
                 AB_EuTransferInfo_SetLimitLocalValue(ei, val);
                 AB_Value_free(val);
               }
@@ -457,8 +454,9 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
               else {
                 AB_VALUE *val;
 
-                val=AB_Value_new(dv, cur);
+                val=AB_Value_fromDouble(dv);
                 assert(val);
+		AB_Value_SetCurrency(val, cur);
                 AB_EuTransferInfo_SetLimitForeignValue(ei, val);
                 AB_Value_free(val);
               }
@@ -501,7 +499,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Invalid transaction");
 	AB_Job_SetStatus(bj, AB_Job_StatusError);
-        return AB_ERROR_INVALID;
+        return GWEN_ERROR_INVALID;
       }
 
       /* get remote country information */
@@ -517,13 +515,13 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         p=AB_Transaction_GetRemoteCountry(t);
         if (!p) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "remote country code not set");
-          return AB_ERROR_INVALID;
+          return GWEN_ERROR_INVALID;
         }
         cy=AB_Banking_FindCountryByCode(ab, p);
       }
       if (!cy) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "No country info available");
-        return AB_ERROR_INVALID;
+        return GWEN_ERROR_INVALID;
       }
 
       /* store the validated transaction back into application job,
@@ -549,7 +547,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "ourAccount/accountsubid", p);
       GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "name",
+			   "ourName",
 			   AB_Transaction_GetLocalName(t));
 
       p=AB_Transaction_GetRemoteIban(t);
@@ -581,7 +579,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 			       s);
 	else {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Remote account id not set");
-	  return AB_ERROR_INVALID;
+	  return GWEN_ERROR_INVALID;
 	}
       }
 
@@ -621,7 +619,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         assert(dbV);
 
 	nbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (GWEN_Text_DoubleToBuffer(AB_Value_GetValue(v),
+	if (GWEN_Text_DoubleToBuffer(AB_Value_GetValueAsDouble(v),
 				     nbuf)) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer overflow");
           GWEN_Buffer_free(nbuf);
@@ -707,7 +705,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
 
 
@@ -727,7 +725,7 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     if (!r) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "No segment results");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     has10=0;
     has20=0;
@@ -751,14 +749,14 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       DBG_INFO(AQHBCI_LOGDOMAIN,
                "Can't determine the status (neither 0010 nor 0020)");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return AB_ERROR_NO_DATA;
+      return GWEN_ERROR_NO_DATA;
     }
     return 0;
   }
 
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

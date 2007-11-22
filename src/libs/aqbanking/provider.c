@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -99,7 +100,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider already is initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->initFn) {
     int rv;
@@ -114,7 +115,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
     return rv;
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -123,7 +124,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->finiFn) {
     GWEN_DB_NODE *dbData;
@@ -136,7 +137,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
   pro->isInit=0;
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -229,47 +230,48 @@ void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f) {
 
 
 
-int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
+int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->updateJobFn) {
-    return pro->updateJobFn(pro, j);
+    return pro->updateJobFn(pro, j, guiid);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateJob function set");
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
-int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
+int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->addJobFn) {
-    return pro->addJobFn(pro, j);
+    return pro->addJobFn(pro, j, guiid);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No addJob function set");
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
-int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
+			uint32_t guiid){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->executeFn) {
-    return pro->executeFn(pro, ctx);
+    return pro->executeFn(pro, ctx, guiid);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -278,13 +280,13 @@ int AB_Provider_ResetQueue(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   if (pro->resetQueueFn) {
     return pro->resetQueueFn(pro);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No resetQueue function set");
-  return AB_ERROR_NOFN;
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -324,8 +326,8 @@ int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 
 
 int AB_Provider_Update(AB_PROVIDER *pro,
-                       GWEN_TYPE_UINT32 lastVersion,
-                       GWEN_TYPE_UINT32 currentVersion) {
+                       uint32_t lastVersion,
+                       uint32_t currentVersion) {
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -349,7 +351,7 @@ int AB_Provider_IsInit(const AB_PROVIDER *pro){
 
 
 
-GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro){
+uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro){
   assert(pro);
   return pro->flags;
 }

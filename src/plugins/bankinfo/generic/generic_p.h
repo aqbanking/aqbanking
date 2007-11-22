@@ -58,13 +58,13 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
 
 int AB_BankInfoPluginGENERIC__CmpTemplate(AB_BANKINFO *bi,
                                           const AB_BANKINFO *tbi,
-                                          GWEN_TYPE_UINT32 flags);
+					  uint32_t flags);
 
 
 int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
                                            AB_BANKINFO *tbi,
                                            AB_BANKINFO_LIST2 *bl,
-                                           GWEN_TYPE_UINT32 flags);
+                                           uint32_t flags);
 
 #define AB_BANKINFO_GENERIC__FLAGS_COUNTRY  0x00000001
 #define AB_BANKINFO_GENERIC__FLAGS_BRANCHID 0x00000002

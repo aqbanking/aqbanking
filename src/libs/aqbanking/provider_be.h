@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file provider_be.h
@@ -91,18 +92,21 @@ typedef int (*AB_PROVIDER_FINI_FN)(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 /**
  * See @ref AB_Provider_UpdateJob
  */
-typedef int (*AB_PROVIDER_UPDATEJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
+typedef int (*AB_PROVIDER_UPDATEJOB_FN)(AB_PROVIDER *pro, AB_JOB *j,
+					uint32_t guiid);
 
 /**
  * See @ref AB_Provider_AddJob.
  */
-typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
+typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j,
+				     uint32_t guiid);
 
 /**
  * See @ref AB_Provider_Execute
  */
 typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro,
-                                      AB_IMEXPORTER_CONTEXT *ctx);
+				      AB_IMEXPORTER_CONTEXT *ctx,
+				      uint32_t guiid);
 
 
 /**
@@ -126,8 +130,8 @@ typedef int (*AB_PROVIDER_EXTEND_ACCOUNT_FN)(AB_PROVIDER *pro,
                                              AB_PROVIDER_EXTEND_MODE um);
 
 typedef int (*AB_PROVIDER_UPDATE_FN)(AB_PROVIDER *pro,
-                                     GWEN_TYPE_UINT32 lastVersion,
-                                     GWEN_TYPE_UINT32 currentVersion);
+                                     uint32_t lastVersion,
+                                     uint32_t currentVersion);
 
 
 /*@}*/
@@ -185,7 +189,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro);
  * @param j job to update
  */
 AQBANKING_API
-int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
+int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
 
 /**
  * <p>
@@ -209,7 +213,7 @@ int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
  * @param pro backend object
  */
 AQBANKING_API
-int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
+int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
 
 /**
  * Executes all jobs in the queue which have just been added via
@@ -219,7 +223,8 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
  * @param ctx im-/exporter context to receive responses
  */
 AQBANKING_API
-int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
+			uint32_t guiid);
 
 /**
  * Resets the queue of the backend.
@@ -257,8 +262,8 @@ int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
  */
 AQBANKING_API
 int AB_Provider_Update(AB_PROVIDER *pro,
-                       GWEN_TYPE_UINT32 lastVersion,
-                       GWEN_TYPE_UINT32 currentVersion);
+                       uint32_t lastVersion,
+                       uint32_t currentVersion);
 
 
 /*@}*/

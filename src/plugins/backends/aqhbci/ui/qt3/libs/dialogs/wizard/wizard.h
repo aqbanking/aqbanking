@@ -54,7 +54,7 @@ public:
   void setNextEnabled(WizardAction *a, bool b);
   void setBackEnabled(WizardAction *a, bool b);
 
-  void log(AB_BANKING_LOGLEVEL level, const QString &s);
+  void log(GWEN_LOGGER_LEVEL level, const QString &s);
   void setDescription(const QString &s);
 
   QWidget *getWidgetAsParent();

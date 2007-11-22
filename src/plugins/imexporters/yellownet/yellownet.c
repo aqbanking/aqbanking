@@ -19,10 +19,13 @@
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/fastbuffer.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -229,17 +232,17 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
       if (val) {
         if (AB_Value_IsZero(val)) {
           AB_Value_free(val);
-          val=0;
+          val=NULL;
         }
       }
-      if (val==0) {
+      if (val==NULL) {
 	val=AB_ImExporterYN__ReadValue(ie, nn, 211);
 	if (val)
 	  AB_Value_Negate(val);
       }
     }
-    if (val==0)
-      val=AB_Value_new(0.0, 0);
+    if (val==NULL)
+      val=AB_Value_new();
     AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
     AB_Transaction_SetValue(t, val);
     AB_Value_free(val);
@@ -383,13 +386,15 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 
 int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 			   AB_IMEXPORTER_CONTEXT *ctx,
-			   GWEN_BUFFEREDIO *bio,
-			   GWEN_DB_NODE *params){
+			   GWEN_IO_LAYER *io,
+			   GWEN_DB_NODE *params,
+			   uint32_t guiid){
   AB_IMEXPORTER_YELLOWNET *ieh;
   GWEN_DB_NODE *dbSubParams;
   GWEN_XMLNODE *doc;
   GWEN_XMLNODE *node;
   int rv;
+  GWEN_XML_CONTEXT *ctxml;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET, ie);
@@ -399,12 +404,14 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 			       "params");
 
   doc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-  rv=GWEN_XML_Parse(doc, bio, GWEN_XML_FLAGS_HANDLE_HEADERS);
+  ctxml=GWEN_XmlCtxStore_new(doc, GWEN_XML_FLAGS_HANDLE_HEADERS, guiid, 10000);
+  rv=GWEN_XML_ReadFromIo(ctxml, io);
+  GWEN_XmlCtx_free(ctxml);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Could not parse XML stream (%d)", rv);
     GWEN_XMLNode_free(doc);
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   node=GWEN_XMLNode_FindFirstTag(doc, "IC", 0, 0);
@@ -435,10 +442,15 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 
 
 
-int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
   AB_IMEXPORTER_YELLOWNET *ieh;
   int fd;
-  GWEN_BUFFEREDIO *bio;
+  GWEN_IO_LAYER *io;
+  GWEN_FAST_BUFFER *fb;
+  char lbuffer[1024];
+  int err;
+  const char *p;
+  unsigned int bsize;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET, ie);
@@ -451,47 +463,42 @@ int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "open(%s): %s", fname, strerror(errno));
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
+  io=GWEN_Io_LayerFile_new(fd, -1);
+  GWEN_Io_Manager_RegisterLayer(io);
+  fb=GWEN_FastBuffer_new(512, io, guiid, 2000);
 
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    char lbuffer[1024];
-    GWEN_ERRORCODE err;
-    const char *p;
-    unsigned int bsize;
 
-    bsize=sizeof(lbuffer)-1;
-    err=GWEN_BufferedIO_ReadRawForced(bio, lbuffer, &bsize);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "File \"%s\" is not supported by this plugin",
-               fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      return AB_ERROR_BAD_DATA;
-    }
-    lbuffer[bsize]=0;
+  bsize=sizeof(lbuffer)-1;
+  GWEN_FASTBUFFER_READFORCED(fb, err, lbuffer, bsize);
+  if (err<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "File \"%s\" is not supported by this plugin",
+	     fname);
+    GWEN_FastBuffer_free(fb);
+    GWEN_Io_Layer_free(io);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  lbuffer[err]=0;
 
-    p=strstr(lbuffer, "<?xml");
-    if (p)
-      p=strstr(p, "<KONAUS>");
-    if (p) {
-      /* match */
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "File \"%s\" is supported by this plugin",
-	       fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      return 0;
-    }
-  } /* while */
+  p=strstr(lbuffer, "<?xml");
+  if (p)
+    p=strstr(p, "<KONAUS>");
+  if (p) {
+    /* match */
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "File \"%s\" is supported by this plugin",
+	     fname);
+    GWEN_FastBuffer_free(fb);
+    GWEN_Io_Layer_free(io);
+    return 0;
+  }
 
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
-  return AB_ERROR_BAD_DATA;
+  GWEN_FastBuffer_free(fb);
+  GWEN_Io_Layer_free(io);
+  return GWEN_ERROR_BAD_DATA;
 }
 
 

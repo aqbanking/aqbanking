@@ -24,9 +24,11 @@ struct AH_JOB_GETBALANCE {
   int dummy;
 };
 static void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p);
-static int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				     uint32_t guiid);
 static int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
-                                      AH_JOB_EXCHANGE_MODE m);
+				      AH_JOB_EXCHANGE_MODE m,
+				      uint32_t guiid);
 
 static AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT);
 

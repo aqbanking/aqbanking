@@ -29,16 +29,11 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/base64.h>
-#include <gwenhywfar/netlayer.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/netlayer.h>
-#include <gwenhywfar/nl_socket.h>
-#include <gwenhywfar/nl_ssl.h>
-#include <gwenhywfar/nl_http.h>
-#include <gwenhywfar/nl_hbci.h>
-#include <gwenhywfar/net2.h>
 
+#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/iomanager.h>
 
 #include <string.h>
 #include <ctype.h>
@@ -52,7 +47,7 @@
 #endif
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *u) {
+AH_DIALOG *AH_Dialog_new(AB_USER *u, uint32_t guiid) {
   AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *pbuf;
@@ -62,6 +57,8 @@ AH_DIALOG *AH_Dialog_new(AB_USER *u) {
 
   GWEN_NEW_OBJECT(AH_DIALOG, dlg);
   dlg->usage=1;
+
+  dlg->guiid=guiid;
 
   dlg->globalValues=GWEN_DB_Group_new("globalValues");
   dlg->dialogId=strdup("0");
@@ -103,7 +100,7 @@ void AH_Dialog_free(AH_DIALOG *dlg){
     assert(dlg->usage);
     if (--(dlg->usage)==0) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_DIALOG");
-      GWEN_NetLayer_free(dlg->netLayer);
+      GWEN_Io_Layer_free(dlg->ioLayer);
       free(dlg->dialogId);
       free(dlg->logName);
       GWEN_MsgEngine_free(dlg->msgEngine);
@@ -116,6 +113,13 @@ void AH_Dialog_free(AH_DIALOG *dlg){
 
 
 
+uint32_t AH_Dialog_GetGuiId(const AH_DIALOG *dlg){
+  assert(dlg);
+  return dlg->guiid;
+}
+
+
+
 const char *AH_Dialog_GetLogFile(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->logName;
@@ -123,14 +127,14 @@ const char *AH_Dialog_GetLogFile(const AH_DIALOG *dlg){
 
 
 
-GWEN_TYPE_UINT32 AH_Dialog_GetNextMsgNum(AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetNextMsgNum(AH_DIALOG *dlg){
   assert(dlg);
   return ++dlg->lastMsgNum;
 }
 
 
 
-GWEN_TYPE_UINT32
+uint32_t
 AH_Dialog_GetLastReceivedMsgNum(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->lastReceivedMsgNum;
@@ -161,13 +165,6 @@ AB_USER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg){
 
 
 
-GWEN_NETLAYER *AH_Dialog_GetNetLayer(const AH_DIALOG *dlg){
-  assert(dlg);
-  return dlg->netLayer;
-}
-
-
-
 GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg){
   assert(dlg);
   assert(dlg->msgEngine);
@@ -177,7 +174,7 @@ GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg){
 
 
 int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg,
-                                  GWEN_TYPE_UINT32 msgnum){
+                                  uint32_t msgnum){
   assert(dlg);
   if (msgnum!=dlg->lastReceivedMsgNum+1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -193,14 +190,14 @@ int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg,
 
 
 
-GWEN_TYPE_UINT32 AH_Dialog_GetFlags(const AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetFlags(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->flags;
 }
 
 
 
-void AH_Dialog_SetFlags(AH_DIALOG *dlg, GWEN_TYPE_UINT32 f){
+void AH_Dialog_SetFlags(AH_DIALOG *dlg, uint32_t f){
   assert(dlg);
   dlg->flags=f;
 }
@@ -214,14 +211,14 @@ GWEN_DB_NODE *AH_Dialog_GetGlobalValues(const AH_DIALOG *dlg){
 
 
 
-void AH_Dialog_AddFlags(AH_DIALOG *dlg, GWEN_TYPE_UINT32 f){
+void AH_Dialog_AddFlags(AH_DIALOG *dlg, uint32_t f){
   assert(dlg);
   dlg->flags|=f;
 }
 
 
 
-void AH_Dialog_SubFlags(AH_DIALOG *dlg, GWEN_TYPE_UINT32 f){
+void AH_Dialog_SubFlags(AH_DIALOG *dlg, uint32_t f){
   assert(dlg);
   dlg->flags&=~f;
 }
@@ -241,7 +238,7 @@ AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg) {
 
 
 
-GWEN_TYPE_UINT32 AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
   assert(dlg);
   return dlg->lastMsgNum;
 }
@@ -252,121 +249,29 @@ GWEN_TYPE_UINT32 AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
 
 
 /* network stuff */
-
-
-AH_MSG *AH_Dialog_RecvMessage_Wait(AH_DIALOG *dlg, int timeout) {
-  AH_MSG *msg;
-  GWEN_BUFFER *tbuf;
-  int rv;
-  const char *p;
-  unsigned int i;
-
-  assert(dlg->netLayer);
-  tbuf=GWEN_Buffer_new(0, 512, 0, 1);
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
-                                  I18N("Waiting for incoming message..."),
-                                  I18N("second(s)"),
-                                  0);
-  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
-
-  rv=GWEN_NetLayer_RecvPacket(dlg->netLayer, tbuf, timeout);
-  GWEN_WaitCallback_Leave();
-  if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error receiving packet (%d)", rv);
-    GWEN_Buffer_free(tbuf);
-    return 0;
-  }
-  else if (rv==1) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN,
-	      "No incoming message due to timeout");
-    GWEN_Buffer_free(tbuf);
-    return 0;
-  }
-
-  /* close connection if wanted */
-  if (GWEN_NetLayer_FindBaseLayer(dlg->netLayer, GWEN_NL_HTTP_NAME)) {
-    if (!(AH_User_GetFlags(dlg->dialogOwner) & AH_USER_FLAGS_KEEPALIVE)) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                 "Closing connection after reception");
-      GWEN_NetLayer_Disconnect(dlg->netLayer);
-    }
-  }
-
-  /* cut off trailing zeroes */
-  i=GWEN_Buffer_GetUsedBytes(tbuf);
-  p=GWEN_Buffer_GetStart(tbuf);
-  while(i>0) {
-    if (p[i-1]!=0)
-      break;
-    i--;
-  }
-  GWEN_Buffer_Crop(tbuf, 0, i);
-
-  msg=AH_Msg_new(dlg);
-  AH_Msg_SetBuffer(msg, tbuf);
-
-  return msg;
-}
-
-
-
-AH_MSG *AH_Dialog_RecvMessage(AH_DIALOG *dlg) {
-  return AH_Dialog_RecvMessage_Wait(dlg, GWEN_NET2_TIMEOUT_NONE);
-}
-
-
-
-int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
-			  int timeout) {
-  AH_HBCI *hbci;
-  int rv;
-
+int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg) {
   assert(dlg);
-  hbci=AH_Dialog_GetHbci(dlg);
-  assert(hbci);
-  rv=GWEN_NetLayer_SendPacket(dlg->netLayer,
-			      buf, blen,
-			      timeout);
-  if (rv) {
-    if (rv==GWEN_ERROR_NOT_CONNECTED) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                 "Reconnecting dialog");
-      if (GWEN_NetLayer_FindBaseLayer(dlg->netLayer, GWEN_NL_HTTP_NAME)) {
-	/* this is a http connection, so try to reconnect */
-	rv=GWEN_NetLayer_Connect_Wait(dlg->netLayer,
-				      AH_HBCI_GetConnectTimeout(hbci));
-	if (rv) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Could not connect to bank (%d)", rv);
-	  return AB_ERROR_NETWORK;
-	}
-        /* retry to send the packet */
-	rv=GWEN_NetLayer_SendPacket(dlg->netLayer,
-				    buf, blen,
-				    timeout);
-	if (rv) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Could not send packet, giving up");
-	  return AB_ERROR_NETWORK;
-	}
-      }
-      else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Connection down, dialog aborted");
-	return AB_ERROR_NETWORK;
-      }
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog");
-      return AB_ERROR_NETWORK;
-    }
-  }
-
-  return 0;
+  if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
+    return AH_Dialog_RecvMessage_Https(dlg, pMsg, GWEN_TIMEOUT_FOREVER);
+  else
+    return AH_Dialog_RecvMessage_Hbci(dlg, pMsg, GWEN_TIMEOUT_FOREVER);
 }
 
 
 
-int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout) {
+int AH_Dialog__SendPacket(AH_DIALOG *dlg,
+			  const char *buf, int blen,
+			  int timeout) {
+  assert(dlg);
+  if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
+    return AH_Dialog_SendPacket_Https(dlg, buf, blen, timeout);
+  else
+    return AH_Dialog_SendPacket_Hbci(dlg, buf, blen, timeout);
+}
+
+
+
+int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
   int rv;
   GWEN_BUFFER *mbuf;
 
@@ -375,21 +280,16 @@ int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout) {
 
   if (AH_Msg_GetDialog(msg)!=dlg) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Message wasn't created for this dialog !");
+    return GWEN_ERROR_INVALID;
   }
 
   mbuf=AH_Msg_GetBuffer(msg);
   assert(mbuf);
 
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
-                                  I18N("Sending message..."),
-                                  I18N("second(s)"),
-                                  0);
-  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
   rv=AH_Dialog__SendPacket(dlg,
 			   GWEN_Buffer_GetStart(mbuf),
 			   GWEN_Buffer_GetUsedBytes(mbuf),
-			   timeout);
-  GWEN_WaitCallback_Leave();
+			   GWEN_TIMEOUT_FOREVER);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog");
     return rv;
@@ -400,52 +300,46 @@ int AH_Dialog_SendMessage_Wait(AH_DIALOG *dlg, AH_MSG *msg, int timeout) {
 
 
 
-int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
-  return AH_Dialog_SendMessage_Wait(dlg, msg, GWEN_NET2_TIMEOUT_NONE);
-}
-
-
-
 int AH_Dialog__SetAddress(AH_DIALOG *dlg,
 			  GWEN_INETADDRESS *addr,
 			  const char *bankAddr) {
-  GWEN_ERRORCODE err;
+  int err;
 
   err=GWEN_InetAddr_SetAddress(addr, bankAddr);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     char dbgbuf[256];
 
     snprintf(dbgbuf, sizeof(dbgbuf)-1,
 	     I18N("Resolving hostname \"%s\" ..."),
 	     bankAddr);
     dbgbuf[sizeof(dbgbuf)-1]=0;
-    AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg), 0,
-			   AB_Banking_LogLevelNotice,
-			   dbgbuf);
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 dbgbuf);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Resolving hostname \"%s\"",
 	     bankAddr);
     err=GWEN_InetAddr_SetName(addr, bankAddr);
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       snprintf(dbgbuf, sizeof(dbgbuf)-1,
 	       I18N("Unknown hostname \"%s\""),
 	       bankAddr);
       dbgbuf[sizeof(dbgbuf)-1]=0;
-      AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg), 0,
-			     AB_Banking_LogLevelError,
-			     dbgbuf);
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Error,
+			   dbgbuf);
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error resolving hostname \"%s\":",
 		bankAddr);
       DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-      return GWEN_Error_GetSimpleCode(err);
+      return err;
     }
     else {
       char addrBuf[256];
-      GWEN_ERRORCODE err;
+      int err;
 
       err=GWEN_InetAddr_GetAddress(addr, addrBuf, sizeof(addrBuf)-1);
       addrBuf[sizeof(addrBuf)-1]=0;
-      if (!GWEN_Error_IsOk(err)) {
+      if (err) {
 	DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
       }
       else {
@@ -453,9 +347,9 @@ int AH_Dialog__SetAddress(AH_DIALOG *dlg,
 		 I18N("IP address is %s"),
 		 addrBuf);
 	dbgbuf[sizeof(dbgbuf)-1]=0;
-	AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg), 0,
-			       AB_Banking_LogLevelNotice,
-			       dbgbuf);
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Notice,
+			     dbgbuf);
       }
     }
   }
@@ -465,110 +359,15 @@ int AH_Dialog__SetAddress(AH_DIALOG *dlg,
 
 
 
-int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg) {
-  GWEN_NETLAYER *nlBase;
-  GWEN_NETLAYER *nl;
-  GWEN_SOCKET *sk;
-  GWEN_INETADDRESS *addr;
-  int rv;
-  const GWEN_URL *url;
-  int useHttp;
-  GWEN_TYPE_UINT32 uFlags;
-
-  assert(dlg);
-
-  uFlags=AH_User_GetFlags(dlg->dialogOwner);
-
-  /* take bank addr from user */
-  url=AH_User_GetServerUrl(dlg->dialogOwner);
-  if (!url) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User has no valid address settings");
-    return AB_ERROR_INVALID;
+int AH_Dialog__CreateIoLayer(AH_DIALOG *dlg) {
+  if (dlg->ioLayer==NULL) {
+    if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
+      return AH_Dialog_CreateIoLayer_Https(dlg);
+    else
+      return AH_Dialog_CreateIoLayer_Hbci(dlg);
   }
-
-  /* create netLayers, the lowest layer is always a socket */
-  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  nlBase=GWEN_NetLayerSocket_new(sk, 1);
-  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  rv=AH_Dialog__SetAddress(dlg, addr, GWEN_Url_GetServer(url));
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
-  GWEN_NetLayer_SetPeerAddr(nlBase, addr);
-  GWEN_InetAddr_free(addr);
-
-  useHttp=0;
-  if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan) {
-    GWEN_BUFFER *nbuf;
-    GWEN_DB_NODE *dbHeader;
-    const char *s;
-
-    nbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AH_HBCI_AddBankCertFolder(AH_Dialog_GetHbci(dlg),
-                              dlg->dialogOwner, nbuf);
-
-    nl=GWEN_NetLayerSsl_new(nlBase,
-			    GWEN_Buffer_GetStart(nbuf),
-			    GWEN_Buffer_GetStart(nbuf),
-                            0, 0, 0);
-    GWEN_NetLayer_free(nlBase);
-    nlBase=nl;
-    GWEN_Buffer_Reset(nbuf);
-
-    GWEN_NetLayerSsl_SetAskAddCertFn(nlBase,
-                                     AB_Banking_AskAddCert,
-                                     AH_Dialog_GetBankingApi(dlg));
-
-    nl=GWEN_NetLayerHttp_new(nlBase);
-    assert(nl);
-    GWEN_NetLayer_free(nlBase);
-
-    dbHeader=GWEN_NetLayerHttp_GetOutHeader(nl);
-    assert(dbHeader);
-
-    s=GWEN_Url_GetServer(url);
-    if (s)
-      GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "Host", s);
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "Pragma", "no-cache");
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "Cache-control", "no cache");
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "Content-type",
-                         "application/x-www-form-urlencoded");
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "Connection",
-                         (uFlags & AH_USER_FLAGS_KEEPALIVE)?
-                         "keep-alive":"close");
-    s=AH_User_GetHttpUserAgent(dlg->dialogOwner);
-    if (s)
-      GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "User-Agent", s);
-
-    GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
-    GWEN_Buffer_free(nbuf);
-    useHttp=1;
-  }
-  else {
-    nl=nlBase;
-  }
-
-  /* create HBCI layer around whatever layer we just created */
-  nlBase=nl;
-  nl=GWEN_NetLayerHbci_new(nlBase);
-  assert(nl);
-  GWEN_NetLayer_free(nlBase);
-  if (useHttp)
-    GWEN_NetLayer_AddFlags(nl, GWEN_NL_HBCI_FLAGS_BASE64);
-  dlg->netLayer=nl;
-
-  GWEN_Net_AddConnectionToPool(nl);
-
-  return 0;
+  else
+    return 0;
 }
 
 
@@ -577,36 +376,39 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
   int rv;
 
   AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
-  AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-			 0,
-			 AB_Banking_LogLevelNotice,
-			 I18N("Connecting to bank..."));
+  GWEN_Gui_ProgressLog(dlg->guiid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Connecting to bank..."));
 
-  rv=AH_Dialog__CreateNetLayer(dlg);
+  rv=AH_Dialog__CreateIoLayer(dlg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=GWEN_NetLayer_Connect_Wait(dlg->netLayer, timeout);
-  if (rv) {
-    if (rv==1) {
-      AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-                             0,
-                             AB_Banking_LogLevelNotice,
-                             I18N("Timeout."));
-
+  if (AH_User_GetCryptMode(dlg->dialogOwner)!=AH_CryptMode_Pintan) {
+    /* only connect for non-HTTP mode (HTTP connects when necessary) */
+    rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer,
+					NULL,
+					0,
+					dlg->guiid,
+					timeout);
+    if (rv) {
+      if (rv==GWEN_ERROR_TIMEOUT) {
+	GWEN_Gui_ProgressLog(dlg->guiid,
+			     GWEN_LoggerLevel_Notice,
+			     I18N("Timeout."));
+      }
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"Could not connect to bank (%d)", rv);
+      GWEN_Io_Layer_free(dlg->ioLayer);
+      dlg->ioLayer=NULL;
+      return AB_ERROR_NETWORK;
     }
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Could not connect to bank (%d)", rv);
-    GWEN_NetLayer_free(dlg->netLayer);
-    dlg->netLayer=0;
-    return AB_ERROR_NETWORK;
-  }
-  AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-			 0,
-			 AB_Banking_LogLevelNotice,
+    GWEN_Gui_ProgressLog(dlg->guiid,
+			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
+  }
 
   return 0;
 }
@@ -614,40 +416,44 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
 
 
 int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout) {
-  int rv;
+  if (AH_User_GetCryptMode(dlg->dialogOwner)!=AH_CryptMode_Pintan) {
+    int rv;
 
-  AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-			 0,
-			 AB_Banking_LogLevelNotice,
+    GWEN_Gui_ProgressLog(dlg->guiid,
+			 GWEN_LoggerLevel_Notice,
 			 I18N("Disconnecting from bank..."));
 
-  rv=GWEN_NetLayer_Disconnect_Wait(dlg->netLayer, timeout);
-  dlg->flags&=~AH_DIALOG_FLAGS_OPEN;
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Could not disconnect from bank (%d)", rv);
-    GWEN_NetLayer_free(dlg->netLayer);
-    dlg->netLayer=0;
-    return AB_ERROR_NETWORK;
-  }
-  AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(dlg),
-			 0,
-			 AB_Banking_LogLevelNotice,
+    rv=GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer,
+					   NULL,
+					   0,
+					   dlg->guiid, timeout);
+    dlg->flags&=~AH_DIALOG_FLAGS_OPEN;
+    if (rv) {
+      DBG_WARN(AQHBCI_LOGDOMAIN,
+	       "Could not disconnect from bank (%d)", rv);
+    }
+
+    GWEN_Io_Layer_free(dlg->ioLayer);
+    dlg->ioLayer=0;
+
+    GWEN_Gui_ProgressLog(dlg->guiid,
+			 GWEN_LoggerLevel_Notice,
 			 I18N("Disconnected."));
+  }
 
   return 0;
 }
 
 
 
-void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, GWEN_TYPE_UINT32 i) {
+void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, uint32_t i) {
   assert(dlg);
   dlg->itanMethod=i;
 }
 
 
 
-GWEN_TYPE_UINT32 AH_Dialog_GetItanMethod(const AH_DIALOG *dlg) {
+uint32_t AH_Dialog_GetItanMethod(const AH_DIALOG *dlg) {
   assert(dlg);
   return dlg->itanMethod;
 }
@@ -668,6 +474,9 @@ void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i) {
 
 
 
+
+#include "dialog_hbci.c"
+#include "dialog_https.c"
 
 
 

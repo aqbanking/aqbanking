@@ -38,8 +38,6 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
 
-#include <cbanking/cbanking.h>
-
 
 
 int mkPinList(AB_BANKING *ab,
@@ -62,16 +60,6 @@ int addAccount(AB_BANKING *ab,
 	       int argc,
 	       char **argv);
 
-int addMedium(AB_BANKING *ab,
-              GWEN_DB_NODE *dbArgs,
-              int argc,
-              char **argv);
-
-int listMedia(AB_BANKING *ab,
-              GWEN_DB_NODE *dbArgs,
-              int argc,
-              char **argv);
-
 int getSysId(AB_BANKING *ab,
              GWEN_DB_NODE *dbArgs,
              int argc,
@@ -86,11 +74,6 @@ int createKeys(AB_BANKING *ab,
                GWEN_DB_NODE *dbArgs,
                int argc,
                char **argv);
-
-int resetKeys(AB_BANKING *ab,
-              GWEN_DB_NODE *dbArgs,
-              int argc,
-              char **argv);
 
 int sendKeys(AB_BANKING *ab,
              GWEN_DB_NODE *dbArgs,
@@ -122,14 +105,14 @@ int changePin(AB_BANKING *ab,
               int argc,
               char **argv);
 
+int getCert(AB_BANKING *ab,
+	    GWEN_DB_NODE *dbArgs,
+	    int argc,
+	    char **argv);
+
 
 
 int test1(AB_BANKING *ab,
-          GWEN_DB_NODE *dbArgs,
-          int argc,
-          char **argv);
-
-int test2(AB_BANKING *ab,
           GWEN_DB_NODE *dbArgs,
           int argc,
           char **argv);

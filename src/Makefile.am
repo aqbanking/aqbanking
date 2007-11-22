@@ -1,5 +1,5 @@
-SUBDIRS=libs frontends plugins tools test
-
+SUBDIRS=libs frontends plugins test
+DIST_SUBDIRS=libs frontends plugins tools test
 
 sources:
 	for d in $(SUBDIRS); do \

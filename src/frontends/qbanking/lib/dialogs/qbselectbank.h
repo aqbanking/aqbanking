@@ -19,7 +19,7 @@ class QBanking;
 
 #include "qbselectbank.ui.h"
 #include <aqbanking/bankinfo.h>
-#include <qbanking/banking.h> /* For QBANKING_API */
+#include <qbanking/qbanking.h> /* For QBANKING_API */
 #include <string>
 
 

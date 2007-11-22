@@ -24,7 +24,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/dbio.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 
 #include <aqbanking/jobgetstandingorders.h>
 #include <aqbanking/jobgetstandingorders_be.h>
@@ -79,7 +79,8 @@ void GWENHYWFAR_CB AH_Job_GetStandingOrders_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				     uint32_t guiid){
   AH_JOB_GETSTANDINGORDERS *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -319,7 +320,8 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
-                                      AH_JOB_EXCHANGE_MODE m){
+				      AH_JOB_EXCHANGE_MODE m,
+				      uint32_t guiid){
   AH_JOB_GETSTANDINGORDERS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -330,7 +332,7 @@ int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
 
   if (AB_Job_GetType(bj)!=AB_Job_TypeGetStandingOrders) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetStandingOrders job");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -345,7 +347,7 @@ int AH_Job_GetStandingOrders_Exchange(AH_JOB *j, AB_JOB *bj,
 
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

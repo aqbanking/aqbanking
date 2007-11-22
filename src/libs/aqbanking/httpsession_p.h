@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -30,9 +31,9 @@ struct AB_HTTPSESSION {
   GWEN_NETLAYER *netLayer;
   GWEN_URL *lastUrl;
   char *logFolder;
-  GWEN_TYPE_UINT32 sessionId;
+  uint32_t sessionId;
 
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
   int connectTimeout;
   int transferTimeout;
   GWEN_NETLAYER_HTTP_VERSION httpVersion;

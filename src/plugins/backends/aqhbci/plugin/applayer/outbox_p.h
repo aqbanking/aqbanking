@@ -53,7 +53,10 @@ struct AH_OUTBOX__CBOX {
 
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
-  GWEN_TYPE_UINT32 usage;
+
+  uint32_t guiid;
+
+  uint32_t usage;
 };
 
 
@@ -81,6 +84,10 @@ static GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox);
 
 static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
 
+static int AH_Outbox__CBox__Hash(int mode,
+				 const uint8_t *p,
+				 unsigned int l,
+				 AH_MSG *msg);
 
 
 
@@ -90,7 +97,10 @@ struct AH_OUTBOX {
   AH_OUTBOX__CBOX_LIST *userBoxes;
   AH_JOB_LIST *finishedJobs;
   AB_IMEXPORTER_CONTEXT *context;
-  GWEN_TYPE_UINT32 usage;
+
+  uint32_t guiid;
+
+  uint32_t usage;
 };
 
 
@@ -132,10 +142,10 @@ static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 
 static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
                                       AH_DIALOG *dlg,
-                                      GWEN_TYPE_UINT32 jqFlags);
+                                      uint32_t jqFlags);
 static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, int timeout,
                                        AH_DIALOG *dlg,
-                                       GWEN_TYPE_UINT32 jqFlags);
+                                       uint32_t jqFlags);
 
 static int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
                                                   int timeout,
@@ -148,12 +158,12 @@ static int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
 static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
                                                   AH_JOBQUEUE_LIST *jqlWanted,
                                                   AH_JOBQUEUE_LIST *jqlRest,
-                                                  GWEN_TYPE_UINT32 jqflags,
-                                                  GWEN_TYPE_UINT32 jqmask);
+                                                  uint32_t jqflags,
+                                                  uint32_t jqmask);
 static int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
                                                int timeout,
-                                               GWEN_TYPE_UINT32 jqflags,
-                                               GWEN_TYPE_UINT32 jqmask);
+                                               uint32_t jqflags,
+                                               uint32_t jqmask);
 
 static int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
                                                    int timeout);

@@ -15,11 +15,13 @@
 
 
 #include <aqhbci/aqhbci.h>
-#include <aqhbci/medium.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/provider_be.h>
 #include <aqbanking/user.h>
+
+#include <gwenhywfar/ct.h>
+
 
 /** @defgroup G_AB_BE_AQHBCI HBCI Backend (AqHBCI)
  *  @ingroup G_AB_BACKENDS
@@ -52,6 +54,23 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 /*@}*/
 
 
+AQHBCI_API
+int AH_Provider_GetCryptToken(AB_PROVIDER *pro,
+			      const char *tname,
+			      const char *cname,
+			      GWEN_CRYPT_TOKEN **pCt);
+
+AQHBCI_API
+void AH_Provider_ClearCryptTokenList(AB_PROVIDER *pro);
+
+
+AQHBCI_API
+int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
+				GWEN_CRYPT_TOKEN_DEVICE devt,
+				GWEN_BUFFER *typeName,
+				GWEN_BUFFER *tokenName,
+				uint32_t guiid);
+
 
 /** @name Server Interactive Functions
  *
@@ -71,7 +90,8 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
-                            int nounmount);
+			    int nounmount,
+			    uint32_t guiid);
 
 /**
  * Retrieve the system id for the given user. This is only needed for
@@ -84,7 +104,8 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
-                         int nounmount);
+			 int nounmount,
+			 uint32_t guiid);
 
 /**
  * Retrieve the public server keys for the given user. This is only needed for
@@ -97,7 +118,8 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              int nounmount);
+			      int nounmount,
+			      uint32_t guiid);
 
 /**
  * Retrieve the public keys of the given user. This is only needed for
@@ -110,7 +132,8 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
-                             int nounmount);
+			     int nounmount,
+			     uint32_t guiid);
 
 /**
  * Retrieve the SSL certificate for the given user. This is only needed for
@@ -121,7 +144,9 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
 AQHBCI_API
-int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount);
+int AH_Provider_GetCert(AB_PROVIDER *pro,
+			AB_USER *u, int nounmount,
+			uint32_t guiid);
 
 /**
  * Ask the server for the list of supported iTAN modes. Not all servers
@@ -133,8 +158,9 @@ int AH_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u, int nounmount);
  */
 AQHBCI_API
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-                             int nounmount);
+			     AB_IMEXPORTER_CONTEXT *ctx,
+			     int nounmount,
+			     uint32_t guiid);
 
 
 /**
@@ -148,7 +174,8 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
-                          int nounmount);
+			  int nounmount,
+			  uint32_t guiid);
 
 
 /*@}*/
@@ -171,7 +198,8 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,
                                 GWEN_BUFFER *lbuf,
-                                int nounmount);
+				int nounmount,
+				uint32_t guiid);
 
 /**
  * Creates a HTML version of the INI letter. This function needs to mount
@@ -182,44 +210,21 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  AB_USER *u,
                                  int useBankKey,
                                  GWEN_BUFFER *lbuf,
-                                 int nounmount);
+				 int nounmount,
+				 uint32_t guiid);
 /*@}*/
 
 
-/** @name Security Media Management
- *
- */
-/*@{*/
-AQHBCI_API
-const AH_MEDIUM_LIST *AH_Provider_GetMediaList(AB_PROVIDER *pro);
 
 AQHBCI_API
-AH_MEDIUM *AH_Provider_MediumFactory(AB_PROVIDER *pro,
-                                     const char *typeName,
-                                     const char *subTypeName,
-                                     const char *mediumName);
+int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u,
+			   int nounmount,
+			   uint32_t guiid);
+
 
 AQHBCI_API
-AH_MEDIUM *AH_Provider_FindMedium(const AB_PROVIDER *pro,
-                                  const char *typeName,
-                                  const char *mediumName);
+int AH_Provider_Test(AB_PROVIDER *pro);
 
-AQHBCI_API
-AH_MEDIUM *AH_Provider_FindMediumById(const AB_PROVIDER *pro,
-                                      GWEN_TYPE_UINT32 id);
-
-AQHBCI_API
-int AH_Provider_AddMedium(AB_PROVIDER *pro, AH_MEDIUM *m);
-
-AQHBCI_API
-int AH_Provider_RemoveMedium(AB_PROVIDER *pro, AH_MEDIUM *m);
-
-AQHBCI_API
-int AH_Provider_CheckMedium(AB_PROVIDER *pro,
-                            GWEN_CRYPTTOKEN_DEVICE dev,
-                            GWEN_BUFFER *mtypeName,
-                            GWEN_BUFFER *msubTypeName,
-                            GWEN_BUFFER *mediumName);
 
 /*@}*/
 

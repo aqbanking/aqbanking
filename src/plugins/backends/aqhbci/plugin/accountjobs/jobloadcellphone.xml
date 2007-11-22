@@ -1,0 +1,86 @@
+
+
+<SEGs>
+
+ <!-- 
+  --------------------------------------------------------------------
+                    Geschaeftsvorfall Prepaid-Karte laden
+  --------------------------------------------------------------------- 
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="LoadCellPhone"
+         code="HKPPD"
+         version="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="ProviderCode" type="num" maxsize="2" />
+   <ELEM name="PhoneNumber" type="num" maxsize="35" trustlevel="4" />
+   <GROUP name="value" type="btg" trustlevel="4" version="1" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIPPDS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+   <GROUP name="Product" delimiter=":" minnum="0" maxnum="99" >
+     <ELEM name="Code" type="num" maxsize="2" />
+     <ELEM name="Name" type="an" maxsize="35" />
+     <ELEM name="ProductName" type="an" maxsize="35" />
+     <ELEM name="FreeValueAllowed" type="an" maxsize="1" />
+   
+     <ELEM name="MinimumValue" type="num" maxsize="3" minnum="0" />
+     <ELEM name="MaximumValue" type="num" maxsize="3" minnum="0" />
+     <ELEM name="ValueList" type="ascii" minnum="0" />
+   </GROUP>
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Prepaid-Karte laden (Version 1) -->
+ <JOBdef id="JobLoadCellPhone"
+         code="HKPPD"
+         params="HIPPDS"
+         version="1"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         single="1"
+         needTan="1"
+  >
+   <SEG type="LoadCellPhone" version="1" />
+ </JOBdef>
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

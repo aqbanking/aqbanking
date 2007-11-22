@@ -29,12 +29,11 @@ struct AB_TRANSACTION {
   char *remoteSuffix;
   char *remoteIban;
   GWEN_STRINGLIST *remoteName;
-  GWEN_TYPE_UINT32 uniqueId;
+  uint32_t uniqueId;
   GWEN_TIME *valutaDate;
   GWEN_TIME *date;
   AB_VALUE *value;
   AB_VALUE *fees;
-  AB_SPLIT_LIST *splits;
   int textKey;
   char *transactionKey;
   char *customerReference;
@@ -68,7 +67,7 @@ struct AB_TRANSACTION {
 
 /** @name Local Account Info
  *
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+This group contains information about the local account.*/
 /*@{*/
 
 
@@ -82,7 +81,7 @@ This group contains information about the local account. Functions of this group
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+This group contains information about the remote account.*/
 /*@{*/
 
 
@@ -106,12 +105,11 @@ This group contains information about the remote account. Functions of this grou
 
 /** @name Value
  *
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+*/
 /*@{*/
 
 
 /*@}*/
-
 
 
 /** @name Info Which Is Not Supported by All Backends

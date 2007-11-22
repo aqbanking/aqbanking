@@ -37,11 +37,11 @@ static int AH_CryptTokenPinTan_Close(GWEN_CRYPTTOKEN *ct);
 
 
 static int AH_CryptTokenPinTan_GetSignSeq(GWEN_CRYPTTOKEN *ct,
-                                          GWEN_TYPE_UINT32 kid,
-                                          GWEN_TYPE_UINT32 *signSeq);
+                                          uint32_t kid,
+                                          uint32_t *signSeq);
 
 static int AH_CryptTokenPinTan_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
-                                           GWEN_TYPE_UINT32 kid,
+                                           uint32_t kid,
                                            GWEN_KEYSPEC **ks);
 
 static int AH_CryptTokenPinTan_FillUserList(GWEN_CRYPTTOKEN *ct,

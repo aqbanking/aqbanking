@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/dbio.h>
+#include <gwenhywfar/fastbuffer.h>
 
 
 #define AHB_SWIFT_MAXLINELEN 512
@@ -40,36 +41,40 @@ void AHB_SWIFT_Tag_free(AHB_SWIFT_TAG *tg);
  * the line or the stream ends. The end of line is signalled by an LF
  * character or a series of two "@" characters (for historical reasons).
  */
-int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
+int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
                        char *buffer,
                        unsigned int s);
 
-int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
-                            AHB_SWIFT_TAG_LIST *tl,
+int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
+			    AHB_SWIFT_TAG_LIST *tl,
                             unsigned int maxTags);
 
 
-int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
-                           AHB_SWIFT_TAG_LIST *tl,
-                           unsigned int maxTags);
-
+int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
+			   AHB_SWIFT_TAG_LIST *tl,
+			   unsigned int maxTags);
 
 
 int AHB_SWIFT_Export(GWEN_DBIO *dbio,
-		     GWEN_BUFFEREDIO *bio,
-		     GWEN_TYPE_UINT32 flags,
+		     GWEN_IO_LAYER *io,
 		     GWEN_DB_NODE *data,
-		     GWEN_DB_NODE *cfg);
+		     GWEN_DB_NODE *cfg,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs);
 
 int AHB_SWIFT_Import(GWEN_DBIO *dbio,
-		     GWEN_BUFFEREDIO *bio,
-		     GWEN_TYPE_UINT32 flags,
+		     GWEN_IO_LAYER *io,
 		     GWEN_DB_NODE *data,
-		     GWEN_DB_NODE *cfg);
+		     GWEN_DB_NODE *cfg,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs);
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
-                                               const char *fname);
-
+                                               const char *fname,
+					       uint32_t guiid,
+					       int msecs);
 
 GWEN_DBIO *GWEN_DBIO_SWIFT_Factory(GWEN_PLUGIN *pl);
 GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,

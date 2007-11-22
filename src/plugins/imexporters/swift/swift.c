@@ -22,7 +22,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
 
@@ -65,8 +65,9 @@ void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p){
 
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_BUFFEREDIO *bio,
-                              GWEN_DB_NODE *params){
+                              GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid){
   AH_IMEXPORTER_SWIFT *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -77,54 +78,40 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   assert(ieh);
   assert(ieh->dbio);
 
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-				  I18N("Parsing file..."),
-				  I18N("transaction(s)"),
-				  GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        I18N("Reading file..."));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+		       I18N("Reading file..."));
 
   rv=GWEN_DBIO_Import(ieh->dbio,
-                      bio,
-                      GWEN_DB_FLAGS_DEFAULT |
-                      GWEN_PATH_FLAGS_CREATE_GROUP,
-                      dbData,
-		      dbSubParams);
+		      io,
+		      dbData,
+		      dbSubParams,
+		      GWEN_DB_FLAGS_DEFAULT |
+		      GWEN_PATH_FLAGS_CREATE_GROUP,
+		      guiid,
+		      2000);
   if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-			  I18N("Error importing data"));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			 I18N("Error importing data"));
     GWEN_DB_Group_free(dbData);
-    GWEN_WaitCallback_Leave();
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
-  GWEN_WaitCallback_Leave();
-
   /* transform DB to transactions */
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS,
-                                  I18N("Importing transactions..."),
-                                  I18N("transaction(s)"),
-                                  GWEN_WAITCALLBACK_FLAGS_NO_REUSE);
-  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
-  GWEN_WaitCallback_SetProgressPos(0);
-
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        "Data imported, transforming to transactions");
-  rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+		       "Data imported, transforming to transactions");
+  rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params, guiid);
   if (rv) {
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          "Error importing data");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			 "Error importing data");
     GWEN_DB_Group_free(dbData);
-    GWEN_WaitCallback_Leave();
     return rv;
   }
 
   GWEN_DB_Group_free(dbData);
-  GWEN_WaitCallback_Leave();
   return 0;
 }
 
@@ -132,9 +119,19 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 
 int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
-                                        GWEN_DB_NODE *dbParams) {
+					GWEN_DB_NODE *dbParams,
+					uint32_t guiid) {
   GWEN_DB_NODE *dbT;
+  uint32_t progressId;
 
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    I18N("Importing parsed data..."),
+				    NULL,
+				    GWEN_DB_Groups_Count(db),
+				    guiid);
   dbT=GWEN_DB_GetFirstGroup(db);
   while(dbT) {
     int matches;
@@ -168,15 +165,14 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-			      I18N("Error in config file"));
-	return AB_ERROR_GENERIC;
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			     I18N("Error in config file"));
+	return GWEN_ERROR_GENERIC;
       }
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelDebug,
-			    I18N("Adding transaction"));
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
+			   I18N("Adding transaction"));
       AB_ImExporterContext_AddTransaction(ctx, t);
-      GWEN_WaitCallback_SetProgressPos(GWEN_WAITCALLBACK_PROGRESS_ONE);
     }
     else if (strcasecmp(GWEN_DB_GroupName(dbT), "startSaldo")==0) {
       /* ignore start saldo, but since the existence of this group shows
@@ -224,23 +220,30 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       int rv;
 
       // not a transaction, check subgroups
-      rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbT, dbParams);
+      rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbT, dbParams, guiid);
       if (rv) {
-        return rv;
+	GWEN_Gui_ProgressEnd(progressId);
+	return rv;
       }
     }
-    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
-      return AB_ERROR_USER_ABORT;
+
+    if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)==
+	GWEN_ERROR_USER_ABORTED) {
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			   I18N("Aborted by user"));
+      GWEN_Gui_ProgressEnd(progressId);
+      return GWEN_ERROR_USER_ABORTED;
     }
     dbT=GWEN_DB_GetNextGroup(dbT);
   } // while
 
+  GWEN_Gui_ProgressEnd(progressId);
   return 0;
 }
 
 
 
-int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
   AH_IMEXPORTER_SWIFT *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -249,12 +252,12 @@ int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   assert(ieh);
   assert(ieh->dbio);
 
-  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
+  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname, guiid, 2000);
   switch(rv) {
   case GWEN_DBIO_CheckFileResultOk:      return 0;
-  case GWEN_DBIO_CheckFileResultNotOk:   return AB_ERROR_BAD_DATA;
-  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_UNKNOWN;
-  default:                               return AB_ERROR_GENERIC;
+  case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
+  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_INDIFFERENT;
+  default:                               return GWEN_ERROR_GENERIC;
   } /* switch */
 }
 

@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -40,10 +41,10 @@ extern "C" {
  * provider uses. This id is not used by AB_Banking itself.
  */
 AQBANKING_API
-GWEN_TYPE_UINT32 AB_Job_GetIdForProvider(const AB_JOB *j);
+uint32_t AB_Job_GetIdForProvider(const AB_JOB *j);
 
 AQBANKING_API
-void AB_Job_SetIdForProvider(AB_JOB *j, GWEN_TYPE_UINT32 i);
+void AB_Job_SetIdForProvider(AB_JOB *j, uint32_t i);
 
 /**
  * Store backend specific data with a job. This data is not specific
@@ -62,32 +63,6 @@ void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 
 AQBANKING_API
 void AB_Job_SetUsedTan(AB_JOB *j, const char *s);
-
-/**
- * Reads a GWEN_TIME object from a DB variable.
- * The expected format of the variable is "YYYYMMDD hh:mm:ss" (where YYYY is
- * the year in 4-digit-notion, MM is the number of the month beginning with
- * 1=January, DD is the day of the month beginning with 1, hh is the hour
- * of the day, mm are the minutes of the hour and ss are the seconds of the
- * minute.
- */
-AQBANKING_API
-GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name);
-AQBANKING_API
-void AB_Job_DateToDb(const GWEN_TIME *ti, GWEN_DB_NODE *db, const char *name);
-
-AQBANKING_API
-void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
-                         GWEN_DB_NODE *db,
-                         const char *name);
-
-/**
- * Reads a GWEN_TIME object from a DB variable ignoring the time part.
- * The expected format of the variable is "YYYYMMDD".
- */
-AQBANKING_API
-GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name);
-
 
 /**
  * This function should only be used when copying logs from a backend-private

@@ -20,7 +20,6 @@ GWEN_LIST_FUNCTION_DEFS(AH_MSG, AH_Msg);
 
 #include "dialog_l.h"
 
-#include <gwenhywfar/keyspec.h>
 #include <gwenhywfar/xml.h>
 #include <stdio.h>
 
@@ -28,12 +27,13 @@ GWEN_LIST_FUNCTION_DEFS(AH_MSG, AH_Msg);
 AH_MSG *AH_Msg_new(AH_DIALOG *dlg);
 void AH_Msg_free(AH_MSG *hmsg);
 
-GWEN_KEYSPEC_LIST *AH_Msg_GetSigners(const AH_MSG *hmsg);
-int AH_Msg_AddSigner(AH_MSG *hmsg, const GWEN_KEYSPEC *ks);
+const GWEN_STRINGLIST *AH_Msg_GetSignerIdList(const AH_MSG *hmsg);
 unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg);
+int AH_Msg_AddSignerId(AH_MSG *hmsg, const char *s);
 int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s);
-const GWEN_KEYSPEC *AH_Msg_GetCrypter(const AH_MSG *hmsg);
-void AH_Msg_SetCrypter(AH_MSG *hmsg, const GWEN_KEYSPEC *ks);
+const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg);
+void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s);
+
 
 GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg);
 GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg);
@@ -66,6 +66,9 @@ void AH_Msg_SetResultParam(AH_MSG *hmsg, const char *s);
 unsigned int AH_Msg_GetHbciVersion(const AH_MSG *hmsg);
 void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i);
 
+int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg);
+void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i);
+
 const char *AH_Msg_GetTan(const AH_MSG *hmsg);
 void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
 
@@ -81,8 +84,8 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                             GWEN_XMLNODE *node,
                             GWEN_DB_NODE *data);
 
-void AH_Msg_SetItanMethod(AH_MSG *hmsg, GWEN_TYPE_UINT32 i);
-GWEN_TYPE_UINT32 AH_Msg_GetItanMethod(const AH_MSG *hmsg);
+void AH_Msg_SetItanMethod(AH_MSG *hmsg, uint32_t i);
+uint32_t AH_Msg_GetItanMethod(const AH_MSG *hmsg);
 
 void AH_Msg_SetItanHashMode(AH_MSG *hmsg, int i);
 int AH_Msg_GetItanHashMode(const AH_MSG *hmsg);

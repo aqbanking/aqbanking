@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file 
@@ -84,17 +85,6 @@ extern "C" {
  */
 /*@{*/
 #define AB_BANKING_EXTENSION_NONE             0x00000000
-/**
- * If this flag is set then the application allows nesting progress
- * dialogs. If the application does it might be best to use the toplevel
- * progress widget and just add a progress bar to it.
- * If this flag is not set then AqBanking keeps track of the nesting level
- * and dismisses further calls to @ref AB_Banking_ProgressStart until
- * @ref AB_Banking_ProgressEnd has been called often enough to reset the
- * nesting counter. I.e. the application will not receive nesting calls
- * to @ref AB_Banking_ProgressStart.
- */
-#define AB_BANKING_EXTENSION_NESTING_PROGRESS 0x00000001
 /*@}*/
 
 
@@ -128,17 +118,17 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * AqBanking, that is performed by @ref AB_Banking_Init.
  * </p>
  * <p>
- * Please note that this function sets a new handler for incoming SSL
- * certificates using GWEN_NetTransportSSL_SetAskAddCertFn2(), so if you
- * want to handle this in your application yourself you must overwrite this
- * handler @b after calling this function here.
- * </p>
- * <p>
  * Please note: This function internally calls @ref AB_Banking_newExtended
  * with the value 0 for <i>extensions</i>. So if your program supports any
  * extension you should call @ref AB_Banking_newExtended instead of this
  * function.
  * </p>
+ * See @ref AB_BANKING_EXTENSION_NONE and following.
+ * This is used to keep the number of callbacks to the application small
+ * (otherswise whenever we add a flag which changes the expected behaviour
+ * of a GUI callback we would have to introduce a new callback in order to
+ * maintain binary compatibility).
+
  * @return new instance of AB_BANKING
  *
  * @param appName name of the application which wants to use AqBanking.
@@ -159,23 +149,12 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * now also searched for, but if it exists it will be moved to the
  * new default path and name upon AB_Banking_Fini. The new path
  * will be "$HOME/.banking/settings.conf".
- */
-AQBANKING_API
-AB_BANKING *AB_Banking_new(const char *appName, const char *dname);
 
-/**
- * This does the same as @ref AB_Banking_new. In addition, the application
- * may state here the extensions it supports.
- * See @ref AB_BANKING_EXTENSION_NONE and following.
- * This is used to keep the number of callbacks to the application small
- * (otherswise whenever we add a flag which changes the expected behaviour
- * of a GUI callback we would have to introduce a new callback in order to
- * maintain binary compatibility).
  */
 AQBANKING_API
-AB_BANKING *AB_Banking_newExtended(const char *appName,
-                                   const char *dname,
-                                   GWEN_TYPE_UINT32 extensions);
+AB_BANKING *AB_Banking_new(const char *appName,
+			   const char *dname,
+			   uint32_t extensions);
 
 
 /**
@@ -204,13 +183,22 @@ int AB_Banking_Init(AB_BANKING *ab);
 AQBANKING_API 
 int AB_Banking_Fini(AB_BANKING *ab);
 
+
+AQBANKING_API 
+int AB_Banking_OnlineInit(AB_BANKING *ab);
+
+
+AQBANKING_API 
+int AB_Banking_OnlineFini(AB_BANKING *ab);
+
+
 /**
  * Saves all data. You may call this function periodically (especially
  * after doing setup stuff).
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab banking interface
  */
-AQBANKING_API
+AQBANKING_API 
 int AB_Banking_Save(AB_BANKING *ab);
 
 /*@}*/
@@ -281,7 +269,7 @@ const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
 
 /**
@@ -295,7 +283,7 @@ int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
  * retrieved via @ref AB_Banking_GetProviderDescrs (call
  * @ref GWEN_PluginDescription_GetName on that plugin description).
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
 
 
@@ -305,13 +293,8 @@ int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
  * It returns 0 if the backend is inactive.
  *
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
-
-
-/** Activates all available providers. New in aqbanking>= 2.2.10. */
-AQBANKING_API
-void AB_Banking_ActivateAllProviders(AB_BANKING*ab);
 
 
 /**
@@ -558,31 +541,6 @@ AQBANKING_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
                                                             const char *pn);
 /*@}*/
-
-
-
-/** @name Handling SSL Certificates
- *
- */
-/*@{*/
-
-/**
- * This influences the behaviour of AqBanking when new certificates are
- * received. If the returned value is !=0 then the user will be asked for
- * every single certificate received.
- */
-AQBANKING_API
-int AB_Banking_GetAlwaysAskForCert(const AB_BANKING *ab);
-
-/**
- * This influences the behaviour of AqBanking when new certificates are
- * received. If the given value is !=0 then the user will be asked for
- * every single certificate received.
- */
-AQBANKING_API 
-void AB_Banking_SetAlwaysAskForCert(AB_BANKING *ab, int i);
-/*@}*/
-
 
 
 

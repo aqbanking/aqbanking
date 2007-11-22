@@ -16,7 +16,6 @@
 #endif
 
 #include "aqhbci_l.h"
-#include "medium_l.h"
 
 #include "adminjobs_p.h"
 #include "job_l.h"
@@ -26,8 +25,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/net2.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
 #include <stdlib.h>
@@ -67,9 +65,8 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETKEYS,
                        j, jd, AH_Job_GetKeys_FreeData);
 
-  /* overwrite virtual functions */
+  /* overwrite virtual function */
   AH_Job_SetProcessFn(j, AH_Job_GetKeys_Process);
-  AH_Job_SetCommitFn(j, AH_Job_GetKeys_Commit);
 
   /* set args */
   args=AH_Job_GetArguments(j);
@@ -97,22 +94,49 @@ void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
   j=(AH_JOB*) bp;
   jd=(AH_JOB_GETKEYS*) p;
 
-  GWEN_CryptKey_free(jd->signKey);
-  GWEN_CryptKey_free(jd->cryptKey);
+  GWEN_Crypt_Token_KeyInfo_free(jd->signKeyInfo);
+  GWEN_Crypt_Token_KeyInfo_free(jd->cryptKeyInfo);
+  GWEN_Crypt_Token_KeyInfo_free(jd->authKeyInfo);
+  free(jd->peerId);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			   uint32_t guiid){
+  AH_HBCI *h;
   AH_JOB_GETKEYS *jd;
+  AB_USER *u;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
+  int rv;
   int haveKey;
+  GWEN_CRYPT_TOKEN *ct;
+  const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETKEYS, j);
   assert(jd);
+
+  h=AH_Job_GetHbci(j);
+  u=AH_Job_GetUser(j);
+  rv=AH_HBCI_GetCryptToken(h,
+			   AH_User_GetTokenType(u),
+			   AH_User_GetTokenName(u),
+			   &ct);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  if (cctx==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "CT context %d not found",
+	      AH_User_GetTokenContextId(u));
+    return GWEN_ERROR_NOT_FOUND;
+  }
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
@@ -138,86 +162,88 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     dbKeyResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                    "data/GetKeyResponse");
     if (dbKeyResponse) {
-      GWEN_CRYPTKEY *key;
-      GWEN_DB_NODE *dbKey;
       unsigned int bs;
       const void *p;
-      const char *ktype;
-      const char defaultExpo[3]={0x01, 0x00, 0x01};
 
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got this key response:");
-      if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+      if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbKeyResponse, stderr, 2);
-
-      dbKey=GWEN_DB_Group_new("key");
-      GWEN_DB_SetCharValue(dbKey,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "type",
-                           "RSA");
-      /* TODO: check for the correct exponent (for now assume 65537) */
-      GWEN_DB_SetBinValue(dbKey,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/e",
-                          defaultExpo,
-                          sizeof(defaultExpo));
-
-      GWEN_DB_SetIntValue(dbKey,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/public",
-                          1);
-
-      GWEN_DB_SetCharValue(dbKey,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "name",
-                           GWEN_DB_GetCharValue(dbKeyResponse,
-                                                "keyname/keytype", 0,
-                                                "V"));
-      GWEN_DB_SetCharValue(dbKey,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "owner",
-                           GWEN_DB_GetCharValue(dbKeyResponse, "keyname/userId", 0, ""));
-      GWEN_DB_SetIntValue(dbKey,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "number",
-                          GWEN_DB_GetIntValue(dbKeyResponse, "keyname/keynum", 0, 0));
-      GWEN_DB_SetIntValue(dbKey,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "version",
-                          GWEN_DB_GetIntValue(dbKeyResponse, "keyname/keyversion", 0, 0));
 
       p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0 , &bs);
       if (!p || !bs) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus");
-          GWEN_DB_Group_free(dbKey);
-          return -1;
-      }
-      GWEN_DB_SetBinValue(dbKey,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/n",
-                          p, bs);
-
-      /* now dbKey contains the key */
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating key");
-      key=GWEN_CryptKey_fromDb(dbKey);
-      GWEN_DB_Group_free(dbKey);
-      if (!key) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Could not create key (maybe type RSA is not supported)");
-        return -1;
-      }
-      ktype=GWEN_CryptKey_GetKeyName(key);
-      if (strcasecmp(ktype, "S")==0) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got the server's sign key");
-        jd->signKey=key;
-      }
-      else if (strcasecmp(ktype, "V")==0) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got the server's crypt key");
-        jd->cryptKey=key;
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus");
+	return GWEN_ERROR_BAD_DATA;
       }
       else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Got an unknown key type (\"%s\")", ktype);
-        GWEN_CryptKey_free(key);
-        return -1;
+	const uint8_t defaultExpo[3]={0x01, 0x00, 0x01};
+        const char *s;
+	uint32_t keyId;
+	GWEN_CRYPT_TOKEN_KEYINFO *ki;
+	int keySize;
+	uint32_t flags=0;
+
+        /* calculate key size in bytes */
+	if (bs>256)       /* >2048 bits? */
+	  keySize=512;    /*  -> 4096 */
+	else if (bs>128)  /* >1024 bits? */
+	  keySize=256;    /*  -> 2048 */
+	else if (bs>96)   /* >768 bits? */
+	  keySize=128;    /*  -> 1024 bits */
+	else
+	  keySize=96;     /* otherwise 768 bits */
+
+	s=GWEN_DB_GetCharValue(dbKeyResponse,
+			       "keyname/keytype", 0,
+			       "V");
+	if (strcasecmp(s, "V")==0)
+	  keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
+	else if (strcasecmp(s, "S")==0)
+	  keyId=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
+        else
+	  keyId=GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(cctx);
+
+	ki=GWEN_Crypt_Token_KeyInfo_new(keyId,
+					GWEN_Crypt_CryptAlgoId_Rsa,
+					keySize);
+
+	GWEN_Crypt_Token_KeyInfo_SetModulus(ki, p, bs);
+	GWEN_Crypt_Token_KeyInfo_SetExponent(ki,
+					     defaultExpo,
+					     sizeof(defaultExpo));
+
+	flags|=
+	  GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+	  GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+	  GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+	  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+	  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER;
+	if (strcasecmp(s, "V")==0) {
+	  flags|=GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER;
+	  jd->cryptKeyInfo=ki;
+	  s=GWEN_DB_GetCharValue(dbKeyResponse, "keyname/userId", 0, NULL);
+	  free(jd->peerId);
+	  if (s)
+	    jd->peerId=strdup(s);
+	  else
+	    jd->peerId=NULL;
+	}
+	else if (strcasecmp(s, "S")==0) {
+	  flags|=GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY;
+	  jd->signKeyInfo=ki;
+	}
+	else {
+	  flags|=GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY;
+	  jd->authKeyInfo=ki;
+	}
+	GWEN_Crypt_Token_KeyInfo_SetFlags(ki, flags);
+	GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki,
+					      GWEN_DB_GetIntValue(dbKeyResponse,
+								  "keyname/keynum",
+								  0, 0));
+	GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki,
+					       GWEN_DB_GetIntValue(dbKeyResponse,
+								   "keyname/keyversion",
+								   0, 0));
       }
       haveKey++;
     } /* if we have one */
@@ -225,9 +251,9 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   } /* while */
 
   if (haveKey==0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No server keys found");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-    return AB_ERROR_NO_DATA;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No server keys found");
+    AH_Job_SetStatus(j, AH_JobStatusError);
+    return GWEN_ERROR_NO_DATA;
   }
   return 0;
 }
@@ -235,104 +261,40 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetKeys_Commit(AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j){
   AH_JOB_GETKEYS *jd;
-  AB_USER *u;
-  AH_MEDIUM *m;
-  AH_MEDIUM_CTX *mctx;
-  int rv;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETKEYS, j);
   assert(jd);
 
-  if (AH_Job_DefaultCommitHandler(j)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in default commit handler, continue anyway");
-  }
-
-  if (jd->signKey==0 && jd->cryptKey==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No keys received");
-    return -1;
-  }
-
-  u=AH_Job_GetUser(j);
-  assert(u);
-
-  m=AH_User_GetMedium(u);
-  assert(m);
-  rv=AH_Medium_Mount(m);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not mount medium (%d)", rv);
-    return rv;
-  }
-
-  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not select user %s/%s/%s (%d)",
-              AB_User_GetCountry(u),
-              AB_User_GetBankCode(u),
-              AB_User_GetUserId(u),
-              rv);
-    AH_Medium_Unmount(m, 0);
-    return rv;
-  }
-
-  mctx=AH_Medium_GetCurrentContext(m);
-  assert(mctx);
-
-  if (jd->signKey) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting sign key");
-    GWEN_CryptKey_SetStatus(jd->signKey, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
-    AH_Medium_SetPubSignKey(m, jd->signKey);
-  }
-
-  if (jd->cryptKey) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting crypt key");
-    GWEN_CryptKey_SetStatus(jd->cryptKey, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
-    AH_Medium_SetPubCryptKey(m, jd->cryptKey);
-  }
-
-  rv=AH_Medium_Unmount(m, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not unmount medium (%d)", rv);
-    return -1;
-  }
-
-  if (!AH_User_GetPeerId(u)) {
-    if (jd->signKey)
-      AH_User_SetPeerId(u, GWEN_CryptKey_GetOwner(jd->signKey));
-    else if (jd->cryptKey)
-      AH_User_SetPeerId(u, GWEN_CryptKey_GetOwner(jd->cryptKey));
-  }
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Keys saved");
-  return 0;
+  return jd->signKeyInfo;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_CRYPTKEY *AH_Job_GetKeys_GetSignKey(const AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j){
   AH_JOB_GETKEYS *jd;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETKEYS, j);
   assert(jd);
 
-  return jd->signKey;
+  return jd->cryptKeyInfo;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j){
   AH_JOB_GETKEYS *jd;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETKEYS, j);
   assert(jd);
 
-  return jd->cryptKey;
+  return jd->authKeyInfo;
 }
 
 
@@ -350,35 +312,47 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j){
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
-                            const GWEN_CRYPTKEY *cryptKey,
-                            const GWEN_CRYPTKEY *signKey){
+			    const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
+			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
+			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
   AH_JOB *j;
   GWEN_DB_NODE *dbKey;
 
   assert(u);
+
   j=AH_Job_new("JobSendKeys", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
-    return 0;
+    return NULL;
   }
 
   /* set arguments */
   dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
                          GWEN_DB_FLAGS_DEFAULT,
-                         "signKey");
+                         "cryptKey");
   assert(dbKey);
-  if (AH_Job_SendKeys_PrepareKey(j, dbKey, signKey)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare signkey");
+  if (AH_Job_SendKeys_PrepareKey(j, dbKey, cryptKeyInfo, 0)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare cryptkey");
     AH_Job_free(j);
     return 0;
   }
 
   dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
                          GWEN_DB_FLAGS_DEFAULT,
-                         "cryptKey");
+                         "signKey");
   assert(dbKey);
-  if (AH_Job_SendKeys_PrepareKey(j, dbKey, cryptKey)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare cryptkey");
+  if (AH_Job_SendKeys_PrepareKey(j, dbKey, signKeyInfo, 1)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare signkey");
+    AH_Job_free(j);
+    return 0;
+  }
+
+  dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
+			 GWEN_DB_FLAGS_DEFAULT,
+			 "authKey");
+  assert(dbKey);
+  if (AH_Job_SendKeys_PrepareKey(j, dbKey, authKeyInfo, 2)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare authkey");
     AH_Job_free(j);
     return 0;
   }
@@ -389,23 +363,20 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
 
 
 
-
 int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
-                               GWEN_DB_NODE *dbKey,
-                               const GWEN_CRYPTKEY *key) {
-  int isCryptKey;
-  GWEN_DB_NODE *dbTmp;
-  unsigned int bsize;
-  const void *p;
+			       GWEN_DB_NODE *dbKey,
+			       const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+			       int kn) {
+  uint32_t bsize;
+  const uint8_t *p;
   AB_USER *u;
-  GWEN_ERRORCODE err;
   const char *userId;
   const AB_COUNTRY *pcountry;
   int country;
 
   assert(j);
   assert(dbKey);
-  assert(key);
+  assert(ki);
 
   u=AH_Job_GetUser(j);
   assert(u);
@@ -414,18 +385,9 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   assert(userId);
   assert(*userId);
 
-  if (strcasecmp(GWEN_CryptKey_GetKeyName(key), "V")==0)
-    isCryptKey=1;
-  else if (strcasecmp(GWEN_CryptKey_GetKeyName(key), "S")==0)
-    isCryptKey=0;
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid key type \"%s\"", GWEN_CryptKey_GetKeyName(key));
-    return -1;
-  }
-
   /* set keyname */
   pcountry=AB_Banking_FindCountryByName(AH_Job_GetBankingApi(j),
-                                        AB_User_GetCountry(u));
+					AB_User_GetCountry(u));
   if (pcountry)
     country=AB_Country_GetNumericCode(pcountry);
   else
@@ -437,24 +399,43 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
                        "keyName/bankCode", AB_User_GetBankCode(u));
 
   GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "keyName/userid", userId);
-  GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "keyName/keyType", GWEN_CryptKey_GetKeyName(key));
+		       "keyName/userid", userId);
+
+  switch(kn) {
+  case 0:
+    GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "keyName/keyType", "V");
+    break;
+  case 1:
+    GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "keyName/keyType", "S");
+    break;
+  case 2:
+  default:
+    GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "keyName/keyType", "D");
+    break;
+  }
+
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "keyName/keyNum", GWEN_CryptKey_GetNumber(key));
+		      "keyName/keyNum",
+		      GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "keyName/keyVersion", GWEN_CryptKey_GetVersion(key));
+		      "keyName/keyVersion",
+		      GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
 
   /* set key */
-  if (isCryptKey) {
+  if (kn==0) { /* crypt key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "key/purpose", 5);
 
   }
-  else {
+  else { /* sign key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "key/purpose", 6);
   }
+  /* TODO: set purpose for auth key */
+
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "key/opmode", 16);
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -464,39 +445,26 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "key/expname", 13);
 
-  dbTmp=GWEN_DB_Group_new("keydata");
-  err=GWEN_CryptKey_toDb(key, dbTmp, 1);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write key to DB");
-    GWEN_DB_Group_free(dbTmp);
-    return -1;
-  }
-
-  p=GWEN_DB_GetBinValue(dbTmp, "data/n", 0, 0, 0, &bsize);
-  if (!p) {
+  p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+  bsize=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+  if (!p || !bsize) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus in key");
-    GWEN_DB_Group_free(dbTmp);
-    return -1;
+    return GWEN_ERROR_INVALID;
   }
-
   GWEN_DB_SetBinValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "key/modulus", p, bsize);
+		      "key/modulus", p, bsize);
 
-  p=GWEN_DB_GetBinValue(dbTmp, "data/e", 0, 0, 0, &bsize);
-  if (!p) {
+  p=GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
+  bsize=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
+  if (!p || !bsize) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No exponent in key");
-    GWEN_DB_Group_free(dbTmp);
-    return -1;
+    return GWEN_ERROR_INVALID;
   }
-
   GWEN_DB_SetBinValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "key/exponent", p, bsize);
-  GWEN_DB_Group_free(dbTmp);
+		      "key/exponent", p, bsize);
 
   return 0;
 }
-
-
 
 
 
@@ -554,7 +522,8 @@ void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			      uint32_t guiid){
   AH_JOB_UPDATEBANK *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -731,7 +700,7 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
   assert(dbResponses);
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Extracting system-id from this response:");
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(dbResponses, stderr, 2);
 
   /* search for "SyncResponse" */
@@ -765,7 +734,8 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 }
 
 
-int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			    uint32_t guiid){
   AH_JOB_GETSYSID *jd;
 
   assert(j);
@@ -865,7 +835,8 @@ void GWENHYWFAR_CB AH_Job_TestVersion_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			       uint32_t guiid){
   AH_JOB_TESTVERSION *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -880,7 +851,7 @@ int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   assert(dbResponses);
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsing this response");
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(dbResponses, stderr, 2);
 
   /* search for "MsgResult" */
@@ -1045,7 +1016,8 @@ void GWENHYWFAR_CB AH_Job_GetStatus_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			     uint32_t guiid){
   AH_JOB_GETSTATUS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetStatus");
@@ -1061,7 +1033,8 @@ int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
-                              AH_JOB_EXCHANGE_MODE m){
+			      AH_JOB_EXCHANGE_MODE m,
+			      uint32_t guiid){
   AH_JOB_GETSTATUS *aj;
 
   DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d), should not happen...", m);
@@ -1128,7 +1101,8 @@ void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+		       uint32_t guiid){
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -1166,7 +1140,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       const char *s;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a TAN response");
-      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbTanResponse, stderr, 2);
 
       s=GWEN_DB_GetCharValue(dbTanResponse, "challenge", 0, 0);
@@ -1192,7 +1166,8 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
-                        AH_JOB_EXCHANGE_MODE m){
+			AH_JOB_EXCHANGE_MODE m,
+			uint32_t guiid){
   AH_JOB_TAN *aj;
 
   DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -1209,7 +1184,7 @@ int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
     break;
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
   return 0;
@@ -1363,7 +1338,8 @@ void GWENHYWFAR_CB AH_Job_GetItanModes_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+				uint32_t guiid){
   AH_JOB_GETITANMODES *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -1379,7 +1355,7 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   assert(dbResponses);
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsing this response");
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(dbResponses, stderr, 2);
 
   /* search for "SegResult" */
@@ -1399,7 +1375,7 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found message result (%d)", code);
         if (code==3920) {
           int i;
-          GWEN_TYPE_UINT32 tm=0;
+          uint32_t tm=0;
 
           for (i=0; ; i++) {
             int j;
@@ -1463,7 +1439,7 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j){
+uint32_t AH_Job_GetItanModes_GetModes(const AH_JOB *j){
   AH_JOB_GETITANMODES *jd;
 
   assert(j);

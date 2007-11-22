@@ -1,3 +1,4 @@
+DIST_SUBDIRS=aqbanking aqbanking++
 SUBDIRS=aqbanking
 
 sources:

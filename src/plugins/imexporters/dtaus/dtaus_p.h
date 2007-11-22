@@ -31,10 +31,11 @@ void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p);
 
 int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_BUFFEREDIO *bio,
-                              GWEN_DB_NODE *params);
+                              GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid);
 
-int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname);
+int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,

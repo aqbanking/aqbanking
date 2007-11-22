@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -15,7 +16,7 @@
 #define AQBANKING_IMEXPORTER_H
 
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
 #include <aqbanking/error.h>
@@ -83,8 +84,9 @@ extern "C" {
 AQBANKING_API 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-                         GWEN_BUFFEREDIO *bio,
-                         GWEN_DB_NODE *dbProfile);
+			 GWEN_IO_LAYER *io,
+			 GWEN_DB_NODE *dbProfile,
+			 uint32_t guiid);
 
 /**
  * Writes all data to the given stream.
@@ -98,8 +100,9 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 AQBANKING_API 
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-                         GWEN_BUFFEREDIO *bio,
-                         GWEN_DB_NODE *dbProfile);
+			 GWEN_IO_LAYER *io,
+			 GWEN_DB_NODE *dbProfile,
+			 uint32_t guiid);
 
 /**
  * This is just a convenience function for @ref AB_ImExporter_Import.
@@ -108,14 +111,16 @@ AQBANKING_API
 int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              const char *fname,
-                             GWEN_DB_NODE *dbProfile);
+			     GWEN_DB_NODE *dbProfile,
+			     uint32_t guiid);
 
 /**
  * This function checks whether the given importer supports the given file.
  */
 AQBANKING_API
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
-			    const char *fname);
+			    const char *fname,
+			    uint32_t guiid);
 
 /*@}*/
 

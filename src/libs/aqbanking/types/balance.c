@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -56,7 +57,7 @@ AB_BALANCE *AB_Balance_fromDb(GWEN_DB_NODE *db){
   GWEN_TIME *t;
   AB_VALUE *v;
   GWEN_DB_NODE *tdb;
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
 
   tdb=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
   if (tdb)

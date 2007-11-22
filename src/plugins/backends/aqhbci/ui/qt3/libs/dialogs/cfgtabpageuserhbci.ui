@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>411</height>
+            <height>343</height>
         </rect>
     </property>
     <property name="caption">
@@ -88,19 +88,6 @@
                         </size>
                     </property>
                 </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel7</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Descriptive Medium Name</string>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="2" column="1">
-                    <property name="name">
-                        <cstring>descriptiveEdit</cstring>
-                    </property>
-                </widget>
             </grid>
         </widget>
         <widget class="QGroupBox">
@@ -149,38 +136,41 @@
             <property name="title">
                 <string>Expert Settings</string>
             </property>
-            <widget class="QCheckBox">
+            <grid>
                 <property name="name">
-                    <cstring>bankSignCheck</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>22</y>
-                        <width>477</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Bank signs its messages</string>
-                </property>
-            </widget>
-            <widget class="QCheckBox">
-                <property name="name">
-                    <cstring>bankCounterCheck</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>49</y>
-                        <width>477</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Bank uses signature counter</string>
-                </property>
-            </widget>
+                <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>bankCounterCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank uses signature counter</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="0" column="0">
+                    <property name="name">
+                        <cstring>bankSignCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank signs its messages</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="0" column="1">
+                    <property name="name">
+                        <cstring>forceSsl3Check</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Force SSLv3</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Force the use of SSLv3</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;Force the use of &lt;b&gt;SSLv3&lt;/b&gt; in &lt;b&gt;Pin/Tan&lt;/b&gt; mode&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+            </grid>
         </widget>
         <widget class="QGroupBox">
             <property name="name">
@@ -267,14 +257,15 @@
     <tabstop>userStatusCombo</tabstop>
     <tabstop>finishUserButton</tabstop>
     <tabstop>serverEdit</tabstop>
-    <tabstop>descriptiveEdit</tabstop>
     <tabstop>httpVersionCombo</tabstop>
     <tabstop>userAgentEdit</tabstop>
     <tabstop>bankSignCheck</tabstop>
     <tabstop>bankCounterCheck</tabstop>
+    <tabstop>forceSsl3Check</tabstop>
     <tabstop>getServerKeysButton</tabstop>
     <tabstop>getSysIdButton</tabstop>
     <tabstop>getAccountsButton</tabstop>
+    <tabstop>getItanModesButton</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

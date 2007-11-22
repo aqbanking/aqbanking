@@ -24,30 +24,6 @@
 /*@{*/
 
 /**
- * This update only shows a warning about AqHBCI no longer writing the
- * pin into logfiles.
- */
-static int AH_HBCI_Update_1_0_3_9(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update adjusts the medium storage to the new structure used in
- * AqHBCI: The list of known media is now stored globally within AqHBCI,
- * and each user now only links to the global media.
- */
-static int AH_HBCI_Update_1_2_0_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update clears all context lists in all media so that they will
- * be read again.
- */
-static int AH_HBCI_Update_1_4_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This init update assigns a unique id to every medium.
- */
-static int AH_HBCI_Update_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
  * This update sets the bpdVersion and updVersion of all customers
  * to zero. Therefore upon next connect with the bank server the UPD and BPD
  * will be updated automatically.
@@ -72,6 +48,17 @@ static int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db);
  * "singleStep"
  */
 static int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
+/**
+ * This update creates the crypt token settings from the medium id
+ * and sets the rdhType if it not already is.
+ */
+static int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
+/**
+ * This update creates tokenContextId from contextId for media.
+ */
+static int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
 /*@}*/
 
@@ -98,11 +85,16 @@ static int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
 
 /**
- * This function creates users and accounts from an existing AqBanking/AqHBCI
- * setup.
+ * This function just aborts with a message.
  */
 static int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
+
+/**
+ * This function removes the "media" section of the configuration file
+ * since AqHBCI no longer uses media.
+ */
+static int AH_HBCI_Update2_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
 /*@}*/
 

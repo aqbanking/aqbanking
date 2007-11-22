@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -40,8 +41,8 @@ static int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
                                   GWEN_BUFFER *data,
                                   GWEN_XMLNODE *node);
 
-static GWEN_DB_VALUETYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-                                                const char *tname);
+static GWEN_DB_NODE_TYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
+						const char *tname);
 
 static const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
                                              const char *name,
@@ -63,8 +64,8 @@ static int AB_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
                                      GWEN_BUFFER *dbuf);
 
 
-static GWEN_TYPE_UINT32 AB_MsgEngine__FromBCD(GWEN_TYPE_UINT32 value);
-static GWEN_TYPE_UINT32 AB_MsgEngine__ToBCD(GWEN_TYPE_UINT32 value);
+static uint32_t AB_MsgEngine__FromBCD(uint32_t value);
+static uint32_t AB_MsgEngine__ToBCD(uint32_t value);
 
 
 

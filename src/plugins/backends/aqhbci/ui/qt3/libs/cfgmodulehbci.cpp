@@ -65,7 +65,7 @@ int CfgModuleHbci::createNewUser(QWidget *parent) {
 
   if (dlg.exec())
     return 0;
-  return AB_ERROR_USER_ABORT;
+  return GWEN_ERROR_USER_ABORTED;
 }
 
 

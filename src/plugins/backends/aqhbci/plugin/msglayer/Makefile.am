@@ -6,11 +6,15 @@ INCLUDES = -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../banking \
   -I$(top_srcdir)/src/libs/aqbanking
 
 
-EXTRA_DIST=msgcrypt.inc
+EXTRA_DIST=\
+  msgcrypt.inc \
+  msgcrypt_ddv.c \
+  msgcrypt_rdh.c \
+  msgcrypt_pintan.c \
+  dialog_hbci.c \
+  dialog_https.c
 
-DEFS += -DAH_XMLDATADIR=\"@aqhbci_data@/xml\"
-
-typefiles=mediumctx.xml
+DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
 
 
 noinst_LTLIBRARIES=libhbcimsg.la
@@ -26,11 +30,6 @@ noinst_HEADERS=\
  hbci_p.h \
  hbci-updates_l.h \
  hbci-updates_p.h \
- medium_l.h \
- medium_p.h \
- mediumheader_p.h \
- mediumctx_l.h \
- mediumctx_p.h \
  message_l.h \
  message_p.h \
  msgengine_l.h \
@@ -41,8 +40,6 @@ noinst_HEADERS=\
 iheaderdir=${includedir}/aqhbci
 iheader_HEADERS=\
  account.h \
- medium.h \
- mediumctx.h \
  msgengine.h \
  user.h
 
@@ -52,8 +49,6 @@ libhbcimsg_la_SOURCES=\
  dialog.c \
  hbci.c \
  hbci-updates.c \
- medium.c \
- mediumctx.c \
  message.c \
  msgengine.c \
  user.c

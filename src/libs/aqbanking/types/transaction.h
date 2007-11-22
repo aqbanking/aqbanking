@@ -6,13 +6,9 @@
 
 /** @page P_AB_TRANSACTION_PUBLIC AB_Transaction (public)
 This page describes the properties of AB_TRANSACTION
-This type contains all important information about transactions. All text fields are in UTF-8. Please note: Since version 0.9.9.1 of AqBanking a transaction may contain splits. If an AB_TRANSACTION actually does contain splits then some variables (like
-<i>localCountry</i>
-) are stored within the AB_SPLITs rather than in AB_TRANSACTION. So your application should first check for splits and read the information (marked as
-<i>in AB_SPLIT</i>
-below) from them.<h3>Local Account Info</h3>
+This type contains all important information about transactions. All text fields are in UTF-8.<h3>Local Account Info</h3>
 <p>
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
+This group contains information about the local account.</p>
 @anchor AB_TRANSACTION_LocalCountry
 <h4>LocalCountry</h4>
 <p>
@@ -103,7 +99,7 @@ get it with @ref AB_Transaction_GetLocalName
 
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
+This group contains information about the remote account.</p>
 @anchor AB_TRANSACTION_RemoteCountry
 <h4>RemoteCountry</h4>
 <p>
@@ -240,7 +236,7 @@ get it with @ref AB_Transaction_GetDate
 
 <h3>Value</h3>
 <p>
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.</p>
+</p>
 @anchor AB_TRANSACTION_Value
 <h4>Value</h4>
 <p>
@@ -257,15 +253,6 @@ get it with @ref AB_Transaction_GetValue
 <p>
 Set this property with @ref AB_Transaction_SetFees, 
 get it with @ref AB_Transaction_GetFees
-</p>
-
-@anchor AB_TRANSACTION_Splits
-<h3>Splits</h3>
-<p>
-</p>
-<p>
-Set this property with @ref AB_Transaction_SetSplits, 
-get it with @ref AB_Transaction_GetSplits
 </p>
 
 <h3>Info Which Is Not Supported by All Backends</h3>
@@ -562,7 +549,6 @@ typedef struct AB_TRANSACTION AB_TRANSACTION;
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/value.h>
-#include <aqbanking/split.h>
 #include <aqbanking/transactionlimits.h>
 #include <aqbanking/transactionfns.h>
 
@@ -635,9 +621,9 @@ typedef enum {
   AB_Transaction_StatusUnknown=-1,
   /** No status.  */
   AB_Transaction_StatusNone=0,
-  /** The transfer has been accepted by the bank  */
+  /** The transfer has been accepted by the bank.  */
   AB_Transaction_StatusAccepted,
-  /** The transfer has been rejected by the bank (or was errornous)  */
+  /** The transfer has been rejected by the bank (or was erroneous).  */
   AB_Transaction_StatusRejected,
   /** The transfer is still pending.  */
   AB_Transaction_StatusPending
@@ -701,7 +687,7 @@ AQBANKING_API void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
 
 /** @name Local Account Info
  *
-This group contains information about the local account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+This group contains information about the local account.*/
 /*@{*/
 
 /**
@@ -771,7 +757,7 @@ AQBANKING_API void AB_Transaction_SetLocalName(AB_TRANSACTION *el, const char *d
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account. Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+This group contains information about the remote account.*/
 /*@{*/
 
 /**
@@ -864,11 +850,11 @@ AQBANKING_API int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const c
 /**
 * Returns the property @ref AB_TRANSACTION_UniqueId
 */
-AQBANKING_API GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
+AQBANKING_API uint32_t AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
 /**
 * Set the property @ref AB_TRANSACTION_UniqueId
 */
-AQBANKING_API void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, GWEN_TYPE_UINT32 d);
+AQBANKING_API void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, uint32_t d);
 
 /** @name Dates
 */
@@ -895,7 +881,7 @@ AQBANKING_API void AB_Transaction_SetDate(AB_TRANSACTION *el, const GWEN_TIME *d
 
 /** @name Value
  *
-Functions of this group are also available in AB_SPLIT, please make your application check for splits first and use the values here as a fallback.*/
+*/
 /*@{*/
 
 /**
@@ -917,15 +903,6 @@ AQBANKING_API const AB_VALUE *AB_Transaction_GetFees(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_Fees
 */
 AQBANKING_API void AB_Transaction_SetFees(AB_TRANSACTION *el, const AB_VALUE *d);
-
-/**
-* Returns the property @ref AB_TRANSACTION_Splits
-*/
-AQBANKING_API AB_SPLIT_LIST *AB_Transaction_GetSplits(const AB_TRANSACTION *el);
-/**
-* Set the property @ref AB_TRANSACTION_Splits
-*/
-AQBANKING_API void AB_Transaction_SetSplits(AB_TRANSACTION *el, AB_SPLIT_LIST *d);
 
 /** @name Info Which Is Not Supported by All Backends
  *

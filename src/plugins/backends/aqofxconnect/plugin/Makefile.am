@@ -1,9 +1,9 @@
-INCLUDES=-I$(top_builddir)/headers $(LIBOFX_INCLUDES) $(all_includes)
+INCLUDES=-I$(top_builddir)/headers $(libofx_includes) $(gwenhywfar_includes)
 
 localedir=$(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
 
-EXTRA_DIST=aqofxconnect.xml.in
+EXTRA_DIST=aqofxconnect.xml.in network.c context1.c context2.c
 
 plugindir = $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES = aqofxconnect.la
@@ -46,7 +46,7 @@ aqofxconnect_la_SOURCES= \
 
 libaqofxconnect_la_LIBADD= \
   $(aqbanking_internal_libs) \
-  $(LIBOFX_LIBS) \
+  $(libofx_libs) \
   $(gwenhywfar_libs)
 libaqofxconnect_la_LDFLAGS = -no-undefined \
   -version-info $(AQOFXCONNECT_SO_CURRENT):$(AQOFXCONNECT_SO_REVISION):$(AQOFXCONNECT_SO_AGE)

@@ -2,7 +2,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
   -I../widgets -I.. \
-  $(all_includes)
+  $(gwenhywfar_includes) $(qt3_includes)
 
 DEFS += -DBUILDING_QBANKING
 AM_CPPFLAGS= @visibility_cflags@

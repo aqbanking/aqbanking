@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -36,7 +37,7 @@ AB_JOB *AB_JobTransferBase_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   AB_JOB *j;
   AB_JOBTRANSFERBASE *jd;
 
-  j=AB_Job_new_l(jt, a);
+  j=AB_Job_new(jt, a);
   GWEN_NEW_OBJECT(AB_JOBTRANSFERBASE, jd);
   GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBTRANSFERBASE, j, jd,
                        AB_JobTransferBase_FreeData);
@@ -128,86 +129,6 @@ const AB_TRANSACTION *AB_JobTransferBase_GetTransaction(const AB_JOB *j){
 
   return jd->transaction;
 }
-
-
-
-int AB_JobTransferBase_toDb(const AB_JOB *j, GWEN_DB_NODE *db) {
-  AB_JOBTRANSFERBASE *jd;
-  GWEN_DB_NODE *dbT;
-  int rv;
-
-  assert(j);
-  jd=GWEN_INHERIT_GETDATA(AB_JOB, AB_JOBTRANSFERBASE, j);
-  assert(jd);
-
-  /* write params */
-  if (jd->limits) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "params/limits");
-    assert(dbT);
-    rv=AB_TransactionLimits_toDb(jd->limits, dbT);
-    if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-      return rv;
-    }
-  }
-
-  /* write arguments */
-  if (jd->transaction) {
-    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                         "args/transaction");
-    assert(dbT);
-    rv=AB_Transaction_toDb(jd->transaction, dbT);
-    if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-      return rv;
-    }
-  }
-
-  return 0;
-}
-
-
-
-AB_JOB *AB_JobTransferBase_fromDb(AB_JOB_TYPE jt,
-                                  AB_ACCOUNT *a,
-                                  GWEN_DB_NODE *db) {
-  AB_JOB *j;
-  AB_JOBTRANSFERBASE *jd;
-  GWEN_DB_NODE *dbT;
-
-  j=AB_Job_new(jt, a);
-  GWEN_NEW_OBJECT(AB_JOBTRANSFERBASE, jd);
-  GWEN_INHERIT_SETDATA(AB_JOB, AB_JOBTRANSFERBASE, j, jd,
-                       AB_JobTransferBase_FreeData);
-
-  /* read params */
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "params/limits");
-  if (dbT)
-    jd->limits=AB_TransactionLimits_fromDb(dbT);
-
-  /* read arguments */
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                       "args/transaction");
-  if (dbT)
-    jd->transaction=AB_Transaction_fromDb(dbT);
-
-  return j;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

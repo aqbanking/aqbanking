@@ -15,11 +15,15 @@
 #endif
 
 #include "generic_p.h"
+#include "i18n_l.h"
 
 #include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -108,7 +112,12 @@ void AB_BankInfoPluginGENERIC__GetDataDir(AB_BANKINFO_PLUGIN *bip,
 
         s=GWEN_StringListEntry_Data(se);
         GWEN_Buffer_AppendString(buf, s);
-        GWEN_Buffer_AppendString(buf, DIRSEP "bankinfo" DIRSEP);
+	GWEN_Buffer_AppendString(buf,
+				 DIRSEP
+				 "aqbanking"
+				 DIRSEP
+				 "bankinfo"
+				 DIRSEP);
         GWEN_Buffer_AppendString(buf, bde->country);
         pos=GWEN_Buffer_GetPos(buf);
         GWEN_Buffer_AppendString(buf, DIRSEP);
@@ -139,10 +148,10 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   AB_BANKINFO_PLUGIN_GENERIC *bde;
   GWEN_BUFFER *pbuf;
   AB_BANKINFO *bi;
-  GWEN_BUFFEREDIO *bio;
   int fd;
   GWEN_DB_NODE *dbT;
-  GWEN_TYPE_UINT32 pos;
+  uint32_t pos;
+  int rv;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -172,7 +181,8 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   /* seek position */
   DBG_VERBOUS(0, "Seeking to %08x (%d)", pos, pos);
   if ((off_t)-1==lseek(fd, pos, SEEK_SET)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "lseek(%s, "GWEN_TYPE_TMPL_UINT32"): %s",
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "lseek(%s, %u): %s",
               GWEN_Buffer_GetStart(pbuf),
               pos,
               strerror(errno));
@@ -181,21 +191,18 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
     return 0;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 512);
-
   /* read data */
   dbT=GWEN_DB_Group_new("bank");
-
-  if (GWEN_DB_ReadFromStream(dbT, bio,
-                             GWEN_DB_FLAGS_DEFAULT |
-                             GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
-                             GWEN_PATH_FLAGS_CREATE_GROUP)) {
-    DBG_ERROR(0, "Could not load file \"%s\"",
-              GWEN_Buffer_GetStart(pbuf));
+  rv=GWEN_DB_ReadFromFd(dbT, fd,
+			GWEN_DB_FLAGS_DEFAULT |
+			GWEN_PATH_FLAGS_CREATE_GROUP|
+			GWEN_DB_FLAGS_UNTIL_EMPTY_LINE,
+			0,
+			2000);
+  close(fd);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load file \"%s\" (%d)", GWEN_Buffer_GetStart(pbuf), rv);
     GWEN_DB_Group_free(dbT);
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(pbuf);
     return 0;
   }
@@ -203,8 +210,6 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   bi=AB_BankInfo_fromDb(dbT);
   assert(bi);
   GWEN_DB_Group_free(dbT);
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
   GWEN_Buffer_free(pbuf);
 
   return bi;
@@ -288,7 +293,7 @@ int AB_BankInfoPluginGENERIC__AddById(AB_BANKINFO_PLUGIN *bip,
   GWEN_BUFFER *pbuf;
   FILE *f;
   char lbuf[512];
-  GWEN_TYPE_UINT32 count=0;
+  uint32_t count=0;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -304,7 +309,7 @@ int AB_BankInfoPluginGENERIC__AddById(AB_BANKINFO_PLUGIN *bip,
              GWEN_Buffer_GetStart(pbuf),
              strerror(errno));
     GWEN_Buffer_free(pbuf);
-    return AB_ERROR_NOT_AVAILABLE;
+    return GWEN_ERROR_NOT_AVAILABLE;
   }
 
   while(!feof(f)) {
@@ -342,7 +347,7 @@ int AB_BankInfoPluginGENERIC__AddById(AB_BANKINFO_PLUGIN *bip,
   fclose(f);
   if (!count) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Bank %s not found", bankId);
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
   return 0;
 }
@@ -356,7 +361,7 @@ int AB_BankInfoPluginGENERIC__AddByBic(AB_BANKINFO_PLUGIN *bip,
   GWEN_BUFFER *pbuf;
   FILE *f;
   char lbuf[512];
-  GWEN_TYPE_UINT32 count=0;
+  uint32_t count=0;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -372,7 +377,7 @@ int AB_BankInfoPluginGENERIC__AddByBic(AB_BANKINFO_PLUGIN *bip,
              GWEN_Buffer_GetStart(pbuf),
              strerror(errno));
     GWEN_Buffer_free(pbuf);
-    return AB_ERROR_NOT_AVAILABLE;
+    return GWEN_ERROR_NOT_AVAILABLE;
   }
 
   while(!feof(f)) {
@@ -409,7 +414,7 @@ int AB_BankInfoPluginGENERIC__AddByBic(AB_BANKINFO_PLUGIN *bip,
   fclose(f);
   if (!count) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Bank %s not found", bic);
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
   return 0;
 }
@@ -424,7 +429,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
   GWEN_BUFFER *pbuf;
   FILE *f;
   char lbuf[512];
-  GWEN_TYPE_UINT32 count=0;
+  uint32_t count=0;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -446,7 +451,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
              strerror(errno));
     GWEN_Buffer_free(pbuf);
     DBG_ERROR(AQBANKING_LOGDOMAIN, "namloc index file not available");
-    return AB_ERROR_NOT_AVAILABLE;
+    return GWEN_ERROR_NOT_AVAILABLE;
   }
 
   while(!feof(f)) {
@@ -491,7 +496,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
   fclose(f);
   if (!count) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Bank %s/%s not found", name, loc);
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
   return 0;
 }
@@ -500,7 +505,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
 
 int AB_BankInfoPluginGENERIC__CmpTemplate(AB_BANKINFO *bi,
                                           const AB_BANKINFO *tbi,
-                                          GWEN_TYPE_UINT32 flags) {
+                                          uint32_t flags) {
   const char *s;
   const char *t;
   
@@ -593,13 +598,14 @@ int AB_BankInfoPluginGENERIC__CmpTemplate(AB_BANKINFO *bi,
 int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
                                            AB_BANKINFO *tbi,
                                            AB_BANKINFO_LIST2 *bl,
-                                           GWEN_TYPE_UINT32 flags){
+                                           uint32_t flags){
   AB_BANKINFO_PLUGIN_GENERIC *bde;
-  GWEN_TYPE_UINT32 count=0;
-  GWEN_TYPE_UINT32 i=0;
-  GWEN_BUFFEREDIO *bio;
+  uint32_t count=0;
+  uint32_t i=0;
   GWEN_BUFFER *pbuf;
   int fd;
+  uint32_t progressId;
+  GWEN_IO_LAYER *io;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -618,42 +624,53 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
               GWEN_Buffer_GetStart(pbuf),
               strerror(errno));
     GWEN_Buffer_free(pbuf);
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
 
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+  io=GWEN_Io_LayerFile_new(fd, -1);
+  GWEN_Io_Manager_RegisterLayer(io);
+
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    I18N("Scanning bank database..."),
+				    NULL,
+				    GWEN_GUI_PROGRESS_NONE,
+				    0);
+
+  for (;;) {
     GWEN_DB_NODE *dbT;
     AB_BANKINFO *bi;
-    int pos;
 
     if (i & ~63) {
-      if (GWEN_WaitCallbackProgress(AB_BANKING_PROGRESS_NONE)==
-          GWEN_WaitCallbackResult_Abort) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Aborted by user");
-        GWEN_BufferedIO_Abandon(bio);
-        GWEN_BufferedIO_free(bio);
-        GWEN_Buffer_free(pbuf);
-        return AB_ERROR_USER_ABORT;
+      if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_NONE)==
+	  GWEN_ERROR_USER_ABORTED) {
+	DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+	GWEN_Gui_ProgressEnd(progressId);
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Aborted by user");
+	GWEN_Io_Layer_free(io);
+	GWEN_Buffer_free(pbuf);
+	return GWEN_ERROR_USER_ABORTED;
       }
     }
 
     dbT=GWEN_DB_Group_new("bank");
-    pos=GWEN_BufferedIO_GetBytesRead(bio);
-    if (GWEN_DB_ReadFromStream(dbT, bio,
-                               GWEN_DB_FLAGS_DEFAULT |
-                               GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
-                               GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    if (GWEN_DB_ReadFromIo(dbT, io,
+			   GWEN_DB_FLAGS_DEFAULT |
+			   GWEN_PATH_FLAGS_CREATE_GROUP |
+			   GWEN_DB_FLAGS_UNTIL_EMPTY_LINE,
+			   0,
+			   2000)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Could not read from file \"%s\"",
                 GWEN_Buffer_GetStart(pbuf));
+      GWEN_Gui_ProgressEnd(progressId);
       GWEN_DB_Group_free(dbT);
-      GWEN_BufferedIO_Abandon(bio);
-      GWEN_BufferedIO_free(bio);
+      GWEN_Io_Layer_free(io);
       GWEN_Buffer_free(pbuf);
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
 
     bi=AB_BankInfo_fromDb(dbT);
@@ -669,13 +686,14 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
     i++;
   } /* while */
 
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
+  GWEN_Gui_ProgressEnd(progressId);
+
+  GWEN_Io_Layer_free(io);
   GWEN_Buffer_free(pbuf);
 
   if (count==0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "No matching bank found");
-    return AB_ERROR_NOT_FOUND;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
   return 0;
@@ -687,7 +705,7 @@ int AB_BankInfoPluginGENERIC_SearchbyTemplate(AB_BANKINFO_PLUGIN *bip,
                                               AB_BANKINFO *tbi,
                                               AB_BANKINFO_LIST2 *bl){
   AB_BANKINFO_PLUGIN_GENERIC *bde;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
   int rv;
   const char *s;
 
@@ -759,9 +777,9 @@ int AB_BankInfoPluginGENERIC_SearchbyTemplate(AB_BANKINFO_PLUGIN *bip,
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "No quick search implemented for these flags (%08x)", flags);
-    rv=AB_ERROR_NOT_AVAILABLE;
+    rv=GWEN_ERROR_NOT_AVAILABLE;
   }
-  if (rv==AB_ERROR_NOT_AVAILABLE) {
+  if (rv==GWEN_ERROR_NOT_AVAILABLE) {
     rv=AB_BankInfoPluginGENERIC_AddByTemplate(bip, tbi, bl, flags);
   }
 

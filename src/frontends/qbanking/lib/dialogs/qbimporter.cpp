@@ -23,7 +23,9 @@
 
 // Gwenhywfar includes
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
 
 // QT includes
 #include <qlistview.h>
@@ -66,7 +68,7 @@ QBImporter::QBImporter(QBanking *kb,
 ,_profiles(0)
 ,_profile(0)
 ,_dbData(0)
-,_logLevel(GWEN_LoggerLevelInfo){
+,_logLevel(GWEN_LoggerLevel_Info){
   setModal(modal);
 
   setBackEnabled(finishPage, false);
@@ -92,7 +94,7 @@ QBImporter::QBImporter(QBanking *kb,
 
 
 QBImporter::QBImporter(QBanking *kb,
-		       GWEN_TYPE_UINT32 flags,
+		       uint32_t flags,
                        QWidget* parent,
                        const char* name,
                        bool modal)
@@ -106,7 +108,7 @@ QBImporter::QBImporter(QBanking *kb,
 ,_profiles(0)
 ,_profile(0)
 ,_dbData(0)
-,_logLevel(GWEN_LoggerLevelInfo){
+,_logLevel(GWEN_LoggerLevel_Info){
   setModal(modal);
 
   setBackEnabled(finishPage, false);
@@ -585,8 +587,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
     ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
   }
   qs=tr("Letting application import data");
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        qs.utf8());
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, qs.utf8());
 
   res=_app->importContext(ctx, _flags);
   if (res) {
@@ -600,8 +601,7 @@ bool QBImporter::_importData(AB_IMEXPORTER_CONTEXT *ctx) {
     return false;
 
     qs=tr("Error importing files.");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
-                          qs.utf8());
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, qs.utf8());
   }
 
   return res;
@@ -615,18 +615,29 @@ bool QBImporter::_checkFileType(const QString &fname){
   GWEN_PLUGIN_DESCRIPTION *pd;
   AB_IMEXPORTER *importer;
   std::list<std::string> possibles;
+  int ls;
+  uint32_t progressId;
 
   importer=0;
   _logText="";
 
-  GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS);
   assert(_importerList);
+
+  ls=GWEN_PluginDescription_List2_GetSize(_importerList);
+  qs=tr("Checking file type...");
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    qs.utf8(),
+				    NULL,
+				    ls, 0);
+
   checkFileNameLabel->setText(fname);
   checkFileTypeLabel->setText(tr("-- checking --"));
 
-  qs=tr("Checking for file type...");
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                        qs.utf8());
+  qs=tr("Checking file type...");
+  GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice, qs.utf8());
 
   // check for type
   it=GWEN_PluginDescription_List2_First(_importerList);
@@ -636,53 +647,63 @@ bool QBImporter::_checkFileType(const QString &fname){
 
   while(pd) {
     const char *pdtype;
+    int err;
 
     pdtype=GWEN_PluginDescription_GetType(pd);
     if (pdtype) {
       if (strcasecmp(pdtype, "imexporter")==0) {
         qs=QWidget::tr("Trying type \"%1\"")
           .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                              qs.utf8());
+	GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+			     qs.utf8());
         importer=AB_Banking_GetImExporter(_app->getCInterface(),
 					  GWEN_PluginDescription_GetName(pd));
         if (!importer) {
           qs=QWidget::tr("Type \"%1\" is not available")
             .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
-          GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                qs.utf8());
+	  GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+			       qs.utf8());
 	}
 	else {
 	  int rv;
     
 	  // let the importer check the file
-	  rv=AB_ImExporter_CheckFile(importer, fname.utf8());
+	  rv=AB_ImExporter_CheckFile(importer, fname.utf8(), 0); // TODO: set guiid
           if (rv==0) {
             qs=QWidget::tr("File type is \"%1\"")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                  qs.utf8());
-            break;
+	    GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+				 qs.utf8());
+	    break;
           }
-          else if (rv==AB_ERROR_UNKNOWN) {
+          else if (rv==AB_ERROR_INDIFFERENT) {
             qs=QWidget::tr("File type might be \"%1\", checking further")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
-                                  qs.utf8());
-            possibles.push_back(GWEN_PluginDescription_GetName(pd));
+            GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+				 qs.utf8());
+	    possibles.push_back(GWEN_PluginDescription_GetName(pd));
           }
           else {
             qs=QWidget::tr("File is not of type \"%1\"")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelDebug,
-                                  qs.utf8());
+            GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Debug,
+				 qs.utf8());
 	  }
 	}
       }
     }
+    err=GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE);
+    if (err==GWEN_ERROR_USER_ABORTED) {
+      GWEN_PluginDescription_List2Iterator_free(it);
+      GWEN_Gui_ProgressEnd(progressId);
+      return false;
+    }
     pd=GWEN_PluginDescription_List2Iterator_Next(it);
   } // while
+  GWEN_Gui_ProgressAdvance(progressId, ls);
+  GWEN_Gui_ProgressEnd(progressId);
   GWEN_PluginDescription_List2Iterator_free(it);
+
   if (!pd) {
     if (possibles.empty()) {
       QMessageBox::critical(this,
@@ -697,7 +718,6 @@ bool QBImporter::_checkFileType(const QString &fname){
                                "</qt>"
                               ),
 			    QMessageBox::Ok,QMessageBox::NoButton);
-      GWEN_WaitCallback_Leave();
       return false;
     }
     // there are candidates, ask user to choose one of them
@@ -711,7 +731,6 @@ bool QBImporter::_checkFileType(const QString &fname){
       assert(_importer);
       checkFileTypeLabel->setText(QString::fromUtf8(s.c_str()));
       _importerName=s.c_str();
-      GWEN_WaitCallback_Leave();
       return true;
     } // if only one string
     else {
@@ -768,13 +787,11 @@ bool QBImporter::_checkFileType(const QString &fname){
       GWEN_PluginDescription_List2Iterator_free(it);
       sfl.init();
       if (sfl.exec()!=QDialog::Accepted) {
-        GWEN_WaitCallback_Leave();
         return false;
       }
       sl=sfl.selectedEntries();
       if (sl.isEmpty()) {
         DBG_ERROR(0, "No entry selected");
-        GWEN_WaitCallback_Leave();
         return false;
       }
       else {
@@ -790,13 +807,11 @@ bool QBImporter::_checkFileType(const QString &fname){
         _importer=AB_Banking_GetImExporter(_app->getCInterface(),
                                            s.utf8());
         assert(_importer);
-        GWEN_WaitCallback_Leave();
         return true;
       }
     } // if more than one candidates
   } // if no direct hit
 
-  GWEN_WaitCallback_Leave();
   checkFileTypeLabel->setText(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
   _importerName=GWEN_PluginDescription_GetName(pd);
   _importer=importer;
@@ -847,20 +862,29 @@ bool QBImporter::_readFile(const QString &fname){
       return false;
     }
     else {
-      GWEN_BUFFEREDIO *bio;
+      GWEN_IO_LAYER *io;
 
-      bio=GWEN_BufferedIO_File_new(fd);
-      GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+      io=GWEN_Io_LayerFile_new(fd, -1);
+      assert(io);
+
+      rv=GWEN_Io_Manager_RegisterLayer(io);
+      if (rv) {
+	qs=QWidget::tr("Could not register io layer (%1)").arg(rv);
+	QMessageBox::critical(this,
+			      tr("Internal Error"),
+			      qs,
+			      QMessageBox::Ok,QMessageBox::NoButton);
+	GWEN_Io_Layer_free(io);
+	return false;
+      }
+
       rv=AB_ImExporter_Import(_importer,
 			      _context,
-			      bio,
-			      _profile);
-      if (rv) {
-	GWEN_BufferedIO_Abandon(bio);
-      }
-      else
-	GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
+			      io,
+			      _profile,
+			      0); // TODO: guiid
+      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000); // TODO: guiid
+      GWEN_Io_Layer_free(io);
       if (rv) {
 	DBG_NOTICE(0, "Error importing file \"%s\"",
 		   fname.local8Bit().data());
@@ -885,7 +909,7 @@ bool QBImporter::_readFile(const QString &fname){
 
 
 bool QBImporter::import(QBanking *qb,
-			GWEN_TYPE_UINT32 flags,
+			uint32_t flags,
 			QWidget* parent) {
   QBImporter w(qb, flags, parent, "Importer", true);
   bool res;

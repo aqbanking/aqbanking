@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -29,16 +30,15 @@ struct AB_JOB {
   char *resultText;
   AB_JOB_TYPE jobType;
   int availability;
-  GWEN_TYPE_UINT32 jobId;
-  GWEN_TYPE_UINT32 usage;
+  uint32_t jobId;
+  uint32_t usage;
   char *createdBy;
-  GWEN_TYPE_UINT32 idForProvider;
+  uint32_t idForProvider;
   GWEN_DB_NODE *dbData;
   GWEN_TIME *lastStatusChange;
   char *usedTan;
 };
 static AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData);
-
 
 
 

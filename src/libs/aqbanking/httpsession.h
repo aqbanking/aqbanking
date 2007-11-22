@@ -7,7 +7,8 @@
     email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -79,7 +80,7 @@ AB_PROVIDER *AB_HttpSession_GetProvider(const AB_HTTPSESSION *hc);
  */
 /*@{*/
 AQBANKING_API 
-GWEN_TYPE_UINT32 AB_HttpSession_GetSessionId(const AB_HTTPSESSION *hc);
+uint32_t AB_HttpSession_GetSessionId(const AB_HTTPSESSION *hc);
 
 
 AQBANKING_API GWEN_NETLAYER_HTTP_VERSION
@@ -90,16 +91,16 @@ void AB_HttpSession_SetHttpVersion(AB_HTTPSESSION *hc,
                                    GWEN_NETLAYER_HTTP_VERSION v);
 
 AQBANKING_API 
-GWEN_TYPE_UINT32 AB_HttpSession_GetFlags(const AB_HTTPSESSION *hc);
+uint32_t AB_HttpSession_GetFlags(const AB_HTTPSESSION *hc);
 
 AQBANKING_API 
-void AB_HttpSession_SetFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f);
+void AB_HttpSession_SetFlags(AB_HTTPSESSION *hc, uint32_t f);
 
 AQBANKING_API 
-void AB_HttpSession_AddFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f);
+void AB_HttpSession_AddFlags(AB_HTTPSESSION *hc, uint32_t f);
 
 AQBANKING_API 
-void AB_HttpSession_SubFlags(AB_HTTPSESSION *hc, GWEN_TYPE_UINT32 f);
+void AB_HttpSession_SubFlags(AB_HTTPSESSION *hc, uint32_t f);
 
 AQBANKING_API 
 int AB_HttpSession_GetConnectTimeout(const AB_HTTPSESSION *hc);
@@ -133,7 +134,8 @@ int AB_HttpSession_SendRequest(AB_HTTPSESSION *hc,
                                GWEN_DB_NODE *dbSendHeader,
                                const char *pSendBody,
                                int lSendBody,
-                               GWEN_BUFFER *recvBuf);
+			       GWEN_BUFFER *recvBuf,
+			       uint32_t guiid);
 /*@}*/
 
 

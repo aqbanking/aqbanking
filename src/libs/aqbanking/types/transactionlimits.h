@@ -8,8 +8,8 @@
 This page describes the properties of AB_TRANSACTION_LIMITS
 This type describes the limits for fields of an @ref AB_TRANSACTION. The limits have the following meanings:
 <ul>
-  <li>maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the described element is not allowed to be set in the transaction. All other values represent the maximum lenght of the described field.</li>
-  <li>minLenSOMETHING: if 0 then this limit is unknown. All other values represent the minimum lenght of the described field.</li>
+  <li>maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the described element is not allowed to be set in the transaction. All other values represent the maximum length of the described field.</li>
+  <li>minLenSOMETHING: if 0 then this limit is unknown. All other values represent the minimum length of the described field.</li>
   <li>maxLinesSOMETHING: if 0 then this limit is unknown All other values represent the maximum number of lines for the described field.</li>
   <li>minLinesSOMETHING: if 0 then this limit is unknown. All other values represent the minimum number of lines for the described field.</li>
   <li>valuesSOMETHING: A list of allowed values (as string). If this list is empty then there all values are allowed (those lists @b exist in any case, so the appropriate getter function will never return NULL).</li>
@@ -350,7 +350,7 @@ These limits apply to standing orders and dated transfers only.</p>
 @anchor AB_TRANSACTION_LIMITS_MinValueSetupTime
 <h4>MinValueSetupTime</h4>
 <p>
-Minimum time in days between issueing of a request and its first execution.</p>
+Minimum time in days between issuing of a request and its first execution.</p>
 <p>
 Set this property with @ref AB_TransactionLimits_SetMinValueSetupTime, 
 get it with @ref AB_TransactionLimits_GetMinValueSetupTime
@@ -359,7 +359,7 @@ get it with @ref AB_TransactionLimits_GetMinValueSetupTime
 @anchor AB_TRANSACTION_LIMITS_MaxValueSetupTime
 <h4>MaxValueSetupTime</h4>
 <p>
-Maximum time in days between issueing of a request and its first execution.</p>
+Maximum time in days between issuing of a request and its first execution.</p>
 <p>
 Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTime, 
 get it with @ref AB_TransactionLimits_GetMaxValueSetupTime

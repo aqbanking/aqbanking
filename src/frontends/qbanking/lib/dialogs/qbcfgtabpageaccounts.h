@@ -43,10 +43,14 @@ public:
   virtual bool fromGui();
   virtual void updateView();
 
+signals:
+  void signalUpdate();
+
 public slots:
   void slotAccountNew();
   void slotAccountEdit();
   void slotAccountDel();
+  void slotUpdate();
 };
 
 

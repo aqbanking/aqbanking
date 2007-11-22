@@ -42,7 +42,7 @@ int getItanModes(AB_BANKING *ab,
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "bankId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -53,7 +53,7 @@ int getItanModes(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "customerId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -64,7 +64,7 @@ int getItanModes(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -88,7 +88,7 @@ int getItanModes(AB_BANKING *ab,
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -98,6 +98,12 @@ int getItanModes(AB_BANKING *ab,
   }
 
   rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -135,13 +141,20 @@ int getItanModes(AB_BANKING *ab,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetItanModes(pro, u, ctx, 0);
+    rv=AH_Provider_GetItanModes(pro, u, ctx, 0, 0);
     AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error getting list of supported iTAN modes (%d)", rv);
       AB_Banking_Fini(ab);
       return 3;
     }
+  }
+
+
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
   }
 
 

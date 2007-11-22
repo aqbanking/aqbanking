@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -25,8 +26,8 @@
 struct AB_ACCOUNT {
   GWEN_INHERIT_ELEMENT(AB_ACCOUNT)
   GWEN_LIST_ELEMENT(AB_ACCOUNT)
-  GWEN_TYPE_UINT32 usage;
-  GWEN_TYPE_UINT32 uniqueId;
+  uint32_t usage;
+  uint32_t uniqueId;
   AB_ACCOUNT_TYPE accountType;
 
   AB_BANKING *banking;

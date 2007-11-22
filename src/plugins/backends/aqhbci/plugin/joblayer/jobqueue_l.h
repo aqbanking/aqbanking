@@ -62,7 +62,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,
 const AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq);
 AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq);
 
-GWEN_TYPE_UINT32 AH_JobQueue_GetMsgNum(const AH_JOBQUEUE *jq);
+uint32_t AH_JobQueue_GetMsgNum(const AH_JOBQUEUE *jq);
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg);
 
@@ -78,10 +78,10 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert);
 
 void AH_JobQueue_AddSigner(AH_JOBQUEUE *jq, const char *s);
 
-GWEN_TYPE_UINT32 AH_JobQueue_GetFlags(AH_JOBQUEUE *jq);
-void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f);
-void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f);
-void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, GWEN_TYPE_UINT32 f);
+uint32_t AH_JobQueue_GetFlags(AH_JOBQUEUE *jq);
+void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, uint32_t f);
+void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, uint32_t f);
+void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, uint32_t f);
 
 void AH_JobQueue_SetJobStatusOnMatch(AH_JOBQUEUE *jq,
                                      AH_JOB_STATUS matchSt,

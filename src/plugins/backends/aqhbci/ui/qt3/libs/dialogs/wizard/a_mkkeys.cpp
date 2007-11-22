@@ -37,7 +37,35 @@ ActionCreateKeys::ActionCreateKeys(Wizard *w)
         "We will now create your keys."
         "</qt>"),
      tr("<qt>"
-        "</qt>"),
+	"<font colour=red size=+2>Warning!</font><br>"
+	"<p>"
+	"Please do not create keys if the bank already has keys from you! "
+	"This would be the case if you already used this security medium "
+	"before (even with other programs)."
+	"</p>"
+	"<p>"
+	"In such a case you would destroy the keys and thus be unable to "
+	"communicate with your bank any further."
+	"</p>"
+        "<p>"
+	"There are two keys to be created:"
+	"</p>"
+	"<ul>"
+        "<li>"
+        "<b>Signature key:</b> "
+	"This key is used by to sign all messages you send to the server. "
+	"This makes sure that the bank only processes requests which have really "
+	"been sent by <b>you</b>"
+	"</li>"
+	"<li>"
+	"<b>Crypt key:</b> This key is used by the bank to encrypt messages "
+	"prior to sending them to you. This way only <b>you</b> can decrypt the "
+	"messages. "
+	"</li>"
+        "</ul>"
+        "When you press the button below the procedure starts. That will "
+        "open a window showing the progress in communication with the server."
+	"</qt>"),
      tr("Create User Keys"),
      this, "CreateKeys");
   _realDialog->setStatus(ActionWidget::StatusNone);
@@ -72,43 +100,22 @@ bool ActionCreateKeys::apply() {
 void ActionCreateKeys::slotButtonClicked() {
   WizardInfo *wi;
   AB_USER *u;
-  AH_MEDIUM *m;
   int rv;
 
   wi=getWizard()->getWizardInfo();
   assert(wi);
   u=wi->getUser();
   assert(u);
-  m=wi->getMedium();
-  assert(m);
 
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
-  /* mount medium (if necessary) */
-  if (!AH_Medium_IsMounted(m)) {
-    rv=AH_Medium_Mount(m);
-    if (rv) {
-      DBG_ERROR(0, "Could not mount medium (%d)", rv);
-      _realDialog->setStatus(ActionWidget::StatusFailed);
-      return;
-    }
-  }
-
-  /* select context of the user */
-  rv=AH_Medium_SelectContext(m, AH_User_GetContextIdx(u));
-  if (rv) {
-    DBG_ERROR(0, "Could not select context (%d)", rv);
-    _realDialog->setStatus(ActionWidget::StatusFailed);
-    return;
-  }
-
-  rv=AH_Medium_CreateKeys(m);
+  rv=AH_Provider_CreateKeys(wi->getProvider(),
+			    u, 1, 0);
   if (rv) {
     DBG_ERROR(0, "Could not create keys (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
     return;
   }
-
 
   _realDialog->setStatus(ActionWidget::StatusSuccess);
   setNextEnabled(true);

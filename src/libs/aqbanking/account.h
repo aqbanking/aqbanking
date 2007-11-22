@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -82,10 +83,10 @@ AQBANKING_API
 void AB_Account_SetAccountType(AB_ACCOUNT *acc, AB_ACCOUNT_TYPE t);
 
 AQBANKING_API 
-GWEN_TYPE_UINT32 AB_Account_GetUniqueId(const AB_ACCOUNT *acc);
+uint32_t AB_Account_GetUniqueId(const AB_ACCOUNT *acc);
 
 AQBANKING_API
-void AB_Account_SetUniqueId(AB_ACCOUNT *acc, GWEN_TYPE_UINT32 id);
+void AB_Account_SetUniqueId(AB_ACCOUNT *acc, uint32_t id);
 
 AQBANKING_API 
 const char *AB_Account_GetBackendName(const AB_ACCOUNT *acc);

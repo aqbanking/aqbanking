@@ -51,9 +51,9 @@ const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t) {
 
 
 
-GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
   int i;
-  GWEN_TYPE_UINT32 f=0;
+  uint32_t f=0;
 
   for (i=0; ; i++) {
     const char *s;
@@ -73,6 +73,8 @@ GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       f|=AO_USER_FLAGS_EMPTY_BANKID;
     else if (strcasecmp(s, "emptyFid")==0)
       f|=AO_USER_FLAGS_EMPTY_FID;
+    else if (strcasecmp(s, "forceSsl3")==0)
+      f|=AO_USER_FLAGS_FORCE_SSL3;
     else {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
                 "Unknown user flag \"%s\"", s);
@@ -84,7 +86,7 @@ GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        GWEN_TYPE_UINT32 f) {
+                        uint32_t f) {
   GWEN_DB_DeleteVar(db, name);
   if (f & AO_USER_FLAGS_ACCOUNT_LIST)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
@@ -104,6 +106,9 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (f & AO_USER_FLAGS_EMPTY_FID)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
 			 "emptyFid");
+  if (f & AO_USER_FLAGS_FORCE_SSL3)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+			 "forceSsl3");
 }
 
 
@@ -295,51 +300,7 @@ void AO_User_SetServerPort(AB_USER *u, int i) {
 
 
 
-int AO_User_GetHttpVMajor(const AB_USER *u) {
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetIntValue(db, "httpVMajor", 0, 1);
-}
-
-
-
-void AO_User_SetHttpVMajor(AB_USER *u, int i) {
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMajor", i);
-}
-
-
-
-int AO_User_GetHttpVMinor(const AB_USER *u) {
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  return GWEN_DB_GetIntValue(db, "httpVMinor", 0, 0);
-}
-
-
-
-void AO_User_SetHttpVMinor(AB_USER *u, int i) {
-  GWEN_DB_NODE *db;
-
-  assert(u);
-  db=AB_User_GetProviderData(u);
-  assert(db);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMinor", i);
-}
-
-
-
-GWEN_TYPE_UINT32 AO_User_GetFlags(const AB_USER *u) {
+uint32_t AO_User_GetFlags(const AB_USER *u) {
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -350,7 +311,7 @@ GWEN_TYPE_UINT32 AO_User_GetFlags(const AB_USER *u) {
 
 
 
-void AO_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+void AO_User_SetFlags(AB_USER *u, uint32_t f) {
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -361,7 +322,7 @@ void AO_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
 
 
 
-void AO_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+void AO_User_AddFlags(AB_USER *u, uint32_t f) {
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -372,7 +333,7 @@ void AO_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
 
 
 
-void AO_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
+void AO_User_SubFlags(AB_USER *u, uint32_t f) {
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -380,6 +341,82 @@ void AO_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 f) {
 
   ue->flags&=~f;
 }
+
+
+
+const char *AO_User_GetAppId(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "appid", 0, "QWIN");
+}
+
+
+
+void AO_User_SetAppId(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "appid", s);
+  else
+    GWEN_DB_DeleteVar(db, "appid");
+}
+
+
+
+const char *AO_User_GetAppVer(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "appver", 0, "1400");
+}
+
+
+
+void AO_User_SetAppVer(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "appver", s);
+  else
+    GWEN_DB_DeleteVar(db, "appver");
+}
+
+
+
+const char *AO_User_GetHeaderVer(const AB_USER *u) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  return GWEN_DB_GetCharValue(db, "headerver", 0, "102");
+}
+
+
+
+void AO_User_SetHeaderVer(AB_USER *u, const char *s) {
+  GWEN_DB_NODE *db;
+
+  assert(u);
+  db=AB_User_GetProviderData(u);
+  assert(db);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "headerver", s);
+  else
+    GWEN_DB_DeleteVar(db, "headerver");
+}
+
 
 
 

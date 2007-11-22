@@ -23,7 +23,9 @@
 #include <qbanking/qbanking.h>
 #include <qbanking/qbcfgtab.h>
 
-#include <chipcard3/client/cards/geldkarte.h>
+#include <chipcard/client/cards/geldkarte.h>
+
+#include <gwenhywfar/gui.h>
 
 #include <qpushbutton.h>
 #include <qcombobox.h>
@@ -102,7 +104,7 @@ void CfgTabPageAccountGeldKarte::slotReadFromCard() {
   AB_PROVIDER *pro;
   std::string cardId;
   const char *s;
-  GWEN_TYPE_UINT32 bid;
+  uint32_t bid;
   int rv;
 
   a=getAccount();
@@ -115,15 +117,14 @@ void CfgTabPageAccountGeldKarte::slotReadFromCard() {
     cardId=std::string(s);
   // this is needed to make the module read *any* card
   AG_Account_SetCardId(a, 0);
-  bid=AB_Banking_ShowBox
-    (AB_Provider_GetBanking(pro),
-     0,
+  bid=GWEN_Gui_ShowBox
+    (0,
      QBanking::QStringToUtf8String(tr("Accessing Card")).c_str(),
      QBanking::QStringToUtf8String(tr("Reading card, "
-                                      "please wait...")).c_str()
+				      "please wait...")).c_str()
     );
   rv=AG_Provider_MountCard(pro, a, &card);
-  AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
+  GWEN_Gui_HideBox(bid);
   if (rv || card==NULL) {
     if (rv!=GWEN_ERROR_USER_ABORTED) {
       QMessageBox::critical(this,

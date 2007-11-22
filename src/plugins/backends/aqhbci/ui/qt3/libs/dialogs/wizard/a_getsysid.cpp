@@ -22,6 +22,7 @@
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
 
 #include <qpushbutton.h>
 #include <qmessagebox.h>
@@ -81,7 +82,7 @@ void ActionGetSysId::slotButtonClicked() {
   QBanking *qb;
   AB_USER *u;
   AB_PROVIDER *pro;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
 
@@ -97,23 +98,24 @@ void ActionGetSysId::slotButtonClicked() {
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
   DBG_ERROR(0, "Retrieving system id");
-  pid=qb->progressStart(tr("Retrieving System Id"),
-                        tr("<qt>"
-                           "Retrieving a system id from the "
-                           "bank server."
-                           "</qt>"),
-                        1);
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     tr("Retrieving System Id").utf8(),
+			     NULL,
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(pro, u, ctx, 1);
+  rv=AH_Provider_GetSysId(pro, u, ctx, 1, pid);
+  GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {
     DBG_ERROR(0, "Error getting sysid (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
-    qb->progressEnd(pid);
     return;
   }
-
-  qb->progressEnd(pid);
 
   _realDialog->setStatus(ActionWidget::StatusSuccess);
   setNextEnabled(true);

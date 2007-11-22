@@ -26,10 +26,10 @@ noinst_HEADERS=provider_l.h provider_p.h
 libaqnone_la_SOURCES=provider.c
 aqnone_la_SOURCES=aqnone-plugin.c
 
-libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
-libaqnone_la_LDFLAGS = -no-undefined
+libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+libaqnone_la_LDFLAGS = -no-undefined -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
-aqnone_la_LIBADD = libaqnone.la $(aqbanking_internal_libs) $(gwenhywfar_libs)
+aqnone_la_LIBADD = libaqnone.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 aqnone_la_LDFLAGS = -no-undefined -module -avoid-version
 
 # Add the linker flags for windows resource file

@@ -78,13 +78,15 @@ ln -s "${bprefix}/version.h" headers/aqbanking/version.h
 ln -s "${bprefix}/system.h" headers/aqbanking/system.h
 
 # symlink all headers from src/frontends
-for frontend in @aqbanking_frontends@; do
+dirlist='@aqbanking_frontends@'  # list might be empty
+for frontend in ${dirlist} ; do
   mkdir -p headers/${frontend}
   symlinkFolder "src/frontends/${frontend}" "headers/${frontend}"
 done
 
 # symlink all headers from src/plugins/backends/
-for backend in @aqbanking_backends@; do
+dirlist='@aqbanking_backends@'  # list might be empty
+for backend in ${dirlist} ; do
   mkdir -p headers/${backend}
   if [ -d "src/plugins/backends/${backend}/plugin" ] ; then
     symlinkFolder "src/plugins/backends/${backend}/plugin" "headers/${backend}"

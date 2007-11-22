@@ -1,4 +1,4 @@
-                                                                    2006/12/27
+                                                                    2007/04/05
 
                                 Content
                                 =======
@@ -34,10 +34,12 @@
                8.1.   AQBANKING_LOGLEVEL
                8.2.   AQBANKING_STORE_JOBLOGS
                8.3.   AQHBCI_LOGBOOKED
-               8.4.   AQHBCI_DEBUG_JOBS
-               8.5.   AQOFX_LOG_COMM
+               8.4.   AQHBCI_LOGNOTED
+               8.5.   AQHBCI_DEBUG_JOBS
+               8.6.   AQOFX_LOG_COMM
                9.   Security in PIN/TAN Mode
-               10.  Thanks
+               10.  Using Your Own Profiles for Im-/Exporters
+               11.  Thanks
 
 
 
@@ -206,8 +208,8 @@ accounting programs via this backend.
 4.6. None
 ---------
 
-This is a fallback module which can be used by applications fo accounts which
-are not managed by any other online banking backend.
+This is a fallback module which can be used by applications for accounts which
+are not managed by any online banking backend.
 
 
 
@@ -220,10 +222,13 @@ are not managed by any other online banking backend.
 
 AqBanking has several direct dependencies:
 
-- "Gwenhywfar" >= 2.1.0, available from
+- "Gwenhywfar" >= 2.9.0, available from
 http://gwenhywfar.sf.net/, is absolutely required
 
-- "LibOFX" >= 0.8.0 from http://sf.net/projects/libofx is required
+- "GMP", the GNU MP Bignum Library available from 
+  http://gmplib.org/index.html is required for calculations
+
+- "LibOFX" > 0.8.0 from http://sf.net/projects/libofx is required
 for the ofx parts, otherwise the ofx parts will not be compiled.
 For the OFX Direct Connect backend even a newer version of LibOFX is needed
 (at least >=0.8.1)
@@ -232,7 +237,7 @@ For the OFX Direct Connect backend even a newer version of LibOFX is needed
 required for the German bank account number checking, otherwise
 the account number checking will not be compiled.
 
-- "libchipcard" >= 1.9.20 from http://www.libchipcard.de is
+- "libchipcard" >= 3.1.0 from http://www.libchipcard.de is
 required for the aqgeldkarte backend, otherwise the geldkarte
 parts cannot be compiled
 
@@ -432,13 +437,19 @@ contains a SWIFT MT940 document which can be very helpfull in case there is
 a problem in the SWIFT parser.
 
 
-8.4. AQHBCI_DEBUG_JOBS
+8.4. AQHBCI_LOGNOTED
+--------------------
+Same as AQHBCI_LOGBOOKED but for noted transactions (which are transactions
+which are noted but ot yet booked)
+
+
+8.5. AQHBCI_DEBUG_JOBS
 ----------------------
 If this variable exists then additional debugging data is stored with each
 job.
 
 
-8.5. AQOFX_LOG_COMM
+8.6. AQOFX_LOG_COMM
 -------------------
 If this variable exists then all OFX communication is logged to /tmp/ofx.log.
 This is only needed when debugging AqOfxConnect.
@@ -465,7 +476,19 @@ This way the running application is able to read and verify the certificates
 but unable to modify it or to add new ones.
 
 
-10. Thanks
+
+10. Using Your Own Profiles for Im-/Exporters
+=============================================
+
+You can create your own profiles to be used with the various importers.
+For AqBanking to recognize your private profiles they must be stored in
+the user local folder. 
+E.g. CSV profiles on Linux must be stored in 
+"$HOME/.aqbanking/imexporters/csv/profiles/".
+
+
+
+11. Thanks
 ==========
 
 I wish to thank the following (among others) people for their support in 
@@ -478,5 +501,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2006/12/27
+Martin Preuss, Hamburg/Germany, 2007/11/11
 

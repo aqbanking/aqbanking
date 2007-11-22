@@ -19,7 +19,8 @@
 #define AH_MSG_DEFAULTSTEP    512
 
 #include "message_l.h"
-#include <gwenhywfar/keyspec.h>
+#include <gwenhywfar/iolayer.h>
+
 
 
 struct AH_MSG {
@@ -30,14 +31,14 @@ struct AH_MSG {
   GWEN_BUFFER *buffer;
   GWEN_BUFFER *origbuffer;
 
-  GWEN_KEYSPEC *crypter;
-  GWEN_KEYSPEC_LIST *signers;
-  unsigned int nSigners;
+  GWEN_STRINGLIST *signerIdList;
+  char *crypterId;
 
   char *expectedSigner;
   char *expectedCrypter;
 
   unsigned int hbciVersion;
+  int secProfile;
 
   unsigned int nodes;
   unsigned int firstSegment;
@@ -73,17 +74,6 @@ static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
 static int AH_Msg_AddMsgTail(AH_MSG *hmsg);
 static int AH_Msg_AddMsgHead(AH_MSG *hmsg);
 
-static int AH_Msg_PrepareCryptoSeg(AH_MSG *hmsg,
-                                   AB_USER *u,
-                                   GWEN_DB_NODE *cfg,
-                                   const GWEN_KEYSPEC *ks,
-                                   int crypt,
-                                   int createCtrlRef);
-static int AH_Msg_SignMsg(AH_MSG *hmsg,
-                          GWEN_BUFFER *rawBuf,
-                          const GWEN_KEYSPEC *ks);
-static int AH_Msg_EncryptMsg(AH_MSG *hmsg);
-
 static int AH_Msg_ReadSegment(AH_MSG *hmsg,
                               GWEN_MSGENGINE *e,
                               const char *gtype,
@@ -96,28 +86,24 @@ static int AH_Msg_ReadMessage(AH_MSG *hmsg,
                               GWEN_BUFFER *mbuf,
                               GWEN_DB_NODE *gr,
                               unsigned int flags);
-static int AH_Msg_Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 static int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr);
-static int AH_Msg_Verify(AH_MSG *hmsg,
-                         GWEN_DB_NODE *gr,
-                         unsigned int flags);
-
-static int AH_Msg_PrepareCryptoSegDec(AH_MSG *hmsg,
-                                      GWEN_DB_NODE *n,
-                                      int crypt,
-                                      GWEN_KEYSPEC **keySpec,
-                                      int *signseq,
-                                      const char **pSecurityId,
-                                      int *lSecurityId,
-                                      GWEN_BUFFER *msgkeybuf);
 
 
-static GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment,
-                                        unsigned int slen,
-                                        GWEN_BUFFEREDIO *bio);
-static GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment,
-                                        unsigned int slen,
-                                        GWEN_BUFFEREDIO *bio);
+static int AH_Msg__Sign(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg__Encrypt(AH_MSG *hmsg);
+static int AH_Msg__Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+
+
+
+
+static int AH_Msg__AnonHnsha(const char *psegment,
+			     unsigned int slen,
+			     GWEN_IO_LAYER *io);
+static int AH_Msg__AnonHkpae(const char *psegment,
+			     unsigned int slen,
+			     GWEN_IO_LAYER *io);
 
 
 #endif /* AH_MESSAGE_P_H */

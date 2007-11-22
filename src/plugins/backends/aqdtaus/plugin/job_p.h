@@ -21,7 +21,7 @@ struct AD_JOB {
   AB_ACCOUNT *account;
   AB_TRANSACTION_LIST2 *transactions;
   int isDebitNote;
-  GWEN_TYPE_UINT32 jobId;
+  uint32_t jobId;
 
   int resultCode;
   char *resultText;

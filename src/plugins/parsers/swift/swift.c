@@ -17,10 +17,13 @@
 
 #include "swift_p.h"
 #include "swift940_l.h"
+#include "i18n_l.h"
 #include <aqbanking/banking.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/fastbuffer.h>
+#include <gwenhywfar/dbio_be.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -112,13 +115,13 @@ const char *AHB_SWIFT_Tag_GetData(const AHB_SWIFT_TAG *tg){
 
 
 
-int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
+int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
                        char *buffer,
-                       unsigned int s){
+		       unsigned int s){
   int lastWasAt;
   char *obuffer;
 
-  assert(bio);
+  assert(fb);
   assert(buffer);
   assert(s);
 
@@ -130,21 +133,21 @@ int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
   for(;;) {
     int c;
 
-    c=GWEN_BufferedIO_PeekChar(bio);
+    GWEN_FASTBUFFER_PEEKBYTE(fb, c);
     if (c<0) {
-      if (c==GWEN_BUFFEREDIO_CHAR_EOF)
+      if (c==GWEN_ERROR_EOF)
         break;
       else  {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading from stream");
         *buffer=0;
-        return -1;
+        return c;
       }
     }
     if (c=='}') {
       /* stop on curly bracket without reading it */
       break;
     }
-    GWEN_BufferedIO_ReadChar(bio);
+    GWEN_FASTBUFFER_READBYTE(fb, c);
 
     if (c==10)
       break;
@@ -178,8 +181,8 @@ int AHB_SWIFT_ReadLine(GWEN_BUFFEREDIO *bio,
 
 
 
-int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
-                            AHB_SWIFT_TAG_LIST *tl,
+int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
+			    AHB_SWIFT_TAG_LIST *tl,
                             unsigned int maxTags) {
   GWEN_BUFFER *lbuf;
   char buffer[AHB_SWIFT_MAXLINELEN];
@@ -194,16 +197,11 @@ int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
 
   /* read first line, should be empty */
   for (;;) {
-    if (GWEN_BufferedIO_CheckEOF(bio)) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Empty stream");
-      GWEN_Buffer_free(lbuf);
-      return 1;
-    }
-    rv=AHB_SWIFT_ReadLine(bio, buffer, sizeof(buffer)-1);
-    if (rv) {
+    rv=AHB_SWIFT_ReadLine(fb, buffer, sizeof(buffer)-1);
+    if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading from stream (%d)", rv);
       GWEN_Buffer_free(lbuf);
-      return -1;
+      return rv;
     }
     if (buffer[0])
       /* line is not empty, let's dance */
@@ -235,30 +233,38 @@ int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
      */
     for (;;) {
       buffer[0]=0;
-      if (GWEN_BufferedIO_CheckEOF(bio)) {
-        /* eof met */
-        if (GWEN_Buffer_GetUsedBytes(lbuf)==0) {
-          /* eof met and buffer empty, finished */
-          DBG_INFO(AQBANKING_LOGDOMAIN,
-                   "SWIFT document not terminated by \'-\'");
-	  GWEN_Buffer_free(lbuf);
-	  return 0;
+      GWEN_FASTBUFFER_PEEKBYTE(fb, rv);
+      if (rv<0) {
+	if (rv==GWEN_ERROR_EOF) {
+	  /* eof met */
+	  if (GWEN_Buffer_GetUsedBytes(lbuf)==0) {
+	    /* eof met and buffer empty, finished */
+	    DBG_INFO(AQBANKING_LOGDOMAIN,
+		     "SWIFT document not terminated by \'-\'");
+	    GWEN_Buffer_free(lbuf);
+	    return 0;
+	  }
+	  else {
+	    buffer[0]='-';
+	    buffer[1]=0;
+	    break;
+	  }
 	}
 	else {
-	  buffer[0]='-';
-          buffer[1]=0;
-	  break;
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	  GWEN_Buffer_free(lbuf);
+          return rv;
 	}
       }
       else {
 	/* read next line */
-        rv=AHB_SWIFT_ReadLine(bio, buffer, sizeof(buffer)-1);
-        if (rv) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Error reading from stream (%d)", rv);
-          GWEN_Buffer_free(lbuf);
-          return -1;
-        }
+	rv=AHB_SWIFT_ReadLine(fb, buffer, sizeof(buffer)-1);
+	if (rv<0) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Error reading from stream (%d)", rv);
+	  GWEN_Buffer_free(lbuf);
+	  return rv;
+	}
       }
 
       /* check whether the line starts with a ":" or "-" */
@@ -327,25 +333,25 @@ int AHB_SWIFT__ReadDocument(GWEN_BUFFEREDIO *bio,
 
 
 
-int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
-                           AHB_SWIFT_TAG_LIST *tl,
-                           unsigned int maxTags) {
+int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
+			   AHB_SWIFT_TAG_LIST *tl,
+			   unsigned int maxTags) {
   int rv;
   int c;
   int isFullSwift=0;
 
   /* check for first character being a curly bracket */
   for (;;) {
-    c=GWEN_BufferedIO_PeekChar(bio);
+    GWEN_FASTBUFFER_PEEKBYTE(fb, c);
     if (c<0) {
-      if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
-        DBG_INFO(AQBANKING_LOGDOMAIN,
-                 "EOF met, empty document");
-        return 1;
+      if (c==GWEN_ERROR_EOF) {
+	DBG_INFO(AQBANKING_LOGDOMAIN,
+		 "EOF met, empty document");
+	return 1;
       }
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Error reading from BIO (%d)", c);
-      return -1;
+		"Error reading from BIO (%d)", c);
+      return c;
     }
     if (c=='{') {
       isFullSwift=1;
@@ -355,28 +361,29 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
       /* some SWIFT documents contain 01 at the beginning and 03 at the end,
        * we simply skip those characters here */
       break;
-    GWEN_BufferedIO_ReadChar(bio);
+    GWEN_FASTBUFFER_READBYTE(fb, c);
   } /* for */
 
   if (isFullSwift) {
     /* read header, seek block 4 */
     for (;;) {
-      GWEN_ERRORCODE err;
+      int err;
       char swhead[4];
       unsigned int bsize;
       int curls=0;
 
       /* read block start ("{n:...") */
       bsize=3;
-      err=GWEN_BufferedIO_ReadRawForced(bio, swhead, &bsize);
-      if (!GWEN_Error_IsOk(err)) {
+
+      GWEN_FASTBUFFER_READFORCED(fb, err, swhead, bsize);
+      if (err<0) {
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-        return -1;
+	return err;
       }
       if (swhead[2]!=':') {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
         GWEN_Text_DumpString(swhead, 4, stderr, 2);
-        return -1;
+	return GWEN_ERROR_BAD_DATA;
       }
       DBG_DEBUG(0, "Reading block %d", swhead[1]-'0');
       if (swhead[1]=='4')
@@ -384,17 +391,17 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
 
       /* skip block */
       for (;;) {
-        c=GWEN_BufferedIO_ReadChar(bio);
+	GWEN_FASTBUFFER_READBYTE(fb, c);
         if (c<0) {
-          if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN,
-                      "EOF met (%d)", c);
-            return -1;
+	  if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN,
+		      "EOF met (%d)", c);
+	    return GWEN_ERROR_EOF;
           }
           DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Error reading from BIO (%d)", c);
-          return -1;
-        }
+	  return GWEN_ERROR_READ;
+	}
         if (c=='{')
           curls++;
         else if (c=='}') {
@@ -407,7 +414,7 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
     } /* for */
   }
 
-  rv=AHB_SWIFT__ReadDocument(bio, tl, maxTags);
+  rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
   if (rv)
     return rv;
 
@@ -418,16 +425,16 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
 
     /* skip rest of block 4 */
     for (;;) {
-      c=GWEN_BufferedIO_ReadChar(bio);
+      GWEN_FASTBUFFER_READBYTE(fb, c);
       if (c<0) {
-        if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
+	if (c==GWEN_ERROR_EOF) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "EOF met (%d)", c);
-          return -1;
+          return c;
         }
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Error reading from BIO (%d)", c);
-        return -1;
+	return c;
       }
       if (c=='{')
         curls++;
@@ -439,37 +446,38 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
       }
     }
 
-    if (!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_FASTBUFFER_PEEKBYTE(fb, c);
+    if (c>=0) {
       for (;;) {
-        GWEN_ERRORCODE err;
+	int err;
         char swhead[4];
         unsigned int bsize;
         int curls=0;
   
         /* read block start ("{n:...") */
-        bsize=3;
-        err=GWEN_BufferedIO_ReadRawForced(bio, swhead, &bsize);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-          return -1;
+	bsize=3;
+	GWEN_FASTBUFFER_READFORCED(fb, err, swhead, bsize);
+	if (err<0) {
+	  DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+	  return err;
         }
         if (swhead[2]!=':') {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
-          return -1;
+          return GWEN_ERROR_BAD_DATA;
         }
   
         /* skip block */
         for (;;) {
-          c=GWEN_BufferedIO_ReadChar(bio);
-          if (c<0) {
+	  GWEN_FASTBUFFER_READBYTE(fb, c);
+	  if (c<0) {
             if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
               DBG_ERROR(AQBANKING_LOGDOMAIN,
                         "EOF met (%d)", c);
-              return -1;
+	      return GWEN_ERROR_EOF;
             }
             DBG_ERROR(AQBANKING_LOGDOMAIN,
                       "Error reading from BIO (%d)", c);
-            return -1;
+	    return GWEN_ERROR_READ;
           }
           if (c=='{')
             curls++;
@@ -493,15 +501,18 @@ int AHB_SWIFT_ReadDocument(GWEN_BUFFEREDIO *bio,
 
 
 int AHB_SWIFT_Import(GWEN_DBIO *dbio,
-		     GWEN_BUFFEREDIO *bio,
-		     GWEN_TYPE_UINT32 flags,
+		     GWEN_IO_LAYER *io,
                      GWEN_DB_NODE *data,
-                     GWEN_DB_NODE *cfg){
-  AHB_SWIFT_TAG_LIST *tl;
+		     GWEN_DB_NODE *cfg,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs) {
   int rv;
   const char *p;
   int skipFileLines;
   int skipDocLines;
+  GWEN_FAST_BUFFER *fb;
+  int docsImported=0;
 
   p=GWEN_DB_GetCharValue(cfg, "type", 0, "mt940");
   if (strcasecmp(p, "mt940")!=0 &&
@@ -510,37 +521,31 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
               "Type \"%s\" not supported by plugin \"%s\"",
               p,
               GWEN_DBIO_GetName(dbio));
-    return -1;
+    return GWEN_ERROR_INVALID;
   }
+
   skipFileLines=GWEN_DB_GetIntValue(cfg, "skipFileLines", 0, 0);
   skipDocLines=GWEN_DB_GetIntValue(cfg, "skipDocLines", 0, 0);
 
-  tl=AHB_SWIFT_Tag_List_new();
+  fb=GWEN_FastBuffer_new(256, io, guiid, msecs);
 
-  /* fill tag list */
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
-                        "SWIFT: Reading complete stream");
-  if (skipFileLines>0) {
-    int i;
-    GWEN_BUFFER *lbuf;
+  for (;;) {
+    AHB_SWIFT_TAG_LIST *tl;
 
-    lbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    for (i=0; i<skipFileLines; i++) {
-      GWEN_ERRORCODE err;
+    tl=AHB_SWIFT_Tag_List_new();
 
-      err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
-      if (!GWEN_Error_IsOk(err)) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
-	GWEN_Buffer_free(lbuf);
-	AHB_SWIFT_Tag_List_free(tl);
-	return -1;
-      }
-      GWEN_Buffer_Reset(lbuf);
+    /* check for user abort */
+    rv=GWEN_Gui_ProgressAdvance(guiid, GWEN_GUI_PROGRESS_NONE);
+    if (rv==GWEN_ERROR_USER_ABORTED) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
+      GWEN_FastBuffer_free(fb);
+      AHB_SWIFT_Tag_List_free(tl);
+      return rv;
     }
-    GWEN_Buffer_free(lbuf);
-  }
 
-  for(;;) {
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+			 I18N("Reading SWIFT document"));
+
     /* skip lines at the beginning if requested */
     if (skipDocLines>0) {
       int i;
@@ -548,52 +553,85 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   
       lbuf=GWEN_Buffer_new(0, 256, 0, 1);
       for (i=0; i<skipDocLines; i++) {
-	GWEN_ERRORCODE err;
+	int err;
 
-	err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
+	err=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuf);
+	if (err<0) {
+	  if (err==GWEN_ERROR_EOF && i==0)
+            break;
+	  DBG_INFO(AQBANKING_LOGDOMAIN,
+		   "Error in report, aborting (%d)", err);
 	  GWEN_Buffer_free(lbuf);
+	  GWEN_FastBuffer_free(fb);
 	  AHB_SWIFT_Tag_List_free(tl);
-	  return -1;
+	  return err;
 	}
 	GWEN_Buffer_Reset(lbuf);
       }
       GWEN_Buffer_free(lbuf);
+
+      if (i<skipDocLines)
+	/* not enough lines to skip, assume end of document */
+	break;
     }
 
-    rv=AHB_SWIFT_ReadDocument(bio, tl, 0);
-    if (rv==-1) {
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+			 I18N("Parsing SWIFT data"));
+    rv=AHB_SWIFT_ReadDocument(fb, tl, 0);
+    if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
+      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+			   I18N("Error parsing SWIFT data"));
+      GWEN_FastBuffer_free(fb);
       AHB_SWIFT_Tag_List_free(tl);
-      return -1;
+      return rv;
     }
 
     if (rv==1) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "End of document reached");
+      if (docsImported==0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Empty document, aborting");
+	GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+			     I18N("Empty SWIFT document, aborting"));
+	GWEN_FastBuffer_free(fb);
+	AHB_SWIFT_Tag_List_free(tl);
+        return GWEN_ERROR_EOF;
+      }
       break;
     }
+
+    /* now all tags have been read, transform them */
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+			 I18N("Importing SWIFT data"));
+    rv=AHB_SWIFT940_Import(tl, data, cfg, flags, guiid, msecs);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
+      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+			   I18N("Error importing SWIFT data"));
+      GWEN_FastBuffer_free(fb);
+      AHB_SWIFT_Tag_List_free(tl);
+      return rv;
+    }
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+			 I18N("Swift document successfully imported"));
+    docsImported++;
   } /* for */
 
-  /* now all tags have been read, transform them */
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, "SWIFT: Parsing data");
-  if (AHB_SWIFT940_Import(bio, tl, flags, data, cfg)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
-    AHB_SWIFT_Tag_List_free(tl);
-    return -1;
-  }
-  AHB_SWIFT_Tag_List_free(tl);
+  GWEN_FastBuffer_free(fb);
   DBG_INFO(AQBANKING_LOGDOMAIN, "SWIFT MT940 successfully imported");
+
   return 0;
 }
 
 
 
 int AHB_SWIFT_Export(GWEN_DBIO *dbio,
-		     GWEN_BUFFEREDIO *bio,
-		     GWEN_TYPE_UINT32 flags,
+		     GWEN_IO_LAYER *io,
 		     GWEN_DB_NODE *data,
-                     GWEN_DB_NODE *cfg){
+                     GWEN_DB_NODE *cfg,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs) {
   DBG_ERROR(AQBANKING_LOGDOMAIN, "AHB_SWIFT_Export: Not yet implemented");
   return -1;
 }
@@ -601,7 +639,9 @@ int AHB_SWIFT_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
-                                               const char *fname) {
+					       const char *fname,
+					       uint32_t guiid,
+					       int msecs) {
   int fd;
   GWEN_BUFFEREDIO *bio;
   int i;
@@ -626,14 +666,14 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
   lbuf=GWEN_Buffer_new(0, 256, 0, 1);
   res=GWEN_DBIO_CheckFileResultNotOk;
   for (i=0; i<20; i++) {
-    GWEN_ERRORCODE err;
+    int err;
     const char *p;
 
     if (GWEN_BufferedIO_CheckEOF(bio))
       break;
 
     err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
       res=GWEN_DBIO_CheckFileResultNotOk;
       break;

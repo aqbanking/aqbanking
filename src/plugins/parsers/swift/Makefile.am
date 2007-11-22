@@ -1,4 +1,7 @@
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) $(all_includes)
+INCLUDES = \
+  -I$(top_builddir)/headers $(gwenhywfar_includes) \
+  -I$(top_srcdir)/src/libs/aqbanking
+
 EXTRA_DIST=README
 
 dbioplugindir = $(gwenhywfar_plugins)/dbio
@@ -22,7 +25,7 @@ swift_la_SOURCES=\
 
 swift_la_LIBADD = \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(gwenhywfar_libs) 
 
 swift_la_LDFLAGS = -no-undefined $(STRIPALL) -module -omit-version
 

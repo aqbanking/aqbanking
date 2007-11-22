@@ -75,9 +75,6 @@
                             <property name="text">
                                 <string>Example</string>
                             </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Get the public keys of the bank server now.</string>
-                            </property>
                         </widget>
                         <widget class="QLabel">
                             <property name="name">
@@ -354,9 +351,6 @@
                             </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Result of retrieving the public keys.</string>
                             </property>
                         </widget>
                     </hbox>

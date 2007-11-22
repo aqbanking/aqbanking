@@ -4,6 +4,10 @@
 %define name @PACKAGE@
 %define version @VERSION@
 
+%define dist    @aq_distrib_name@
+%define disttag @aq_distrib_tag@
+%define distver @aq_distrib_version@
+
 %define aq_plugindir   %{_libdir}/aqbanking/plugins/@AQBANKING_SO_EFFECTIVE@
 %define fronts_libdir  %{aq_plugindir}/frontends
 %define imex_plugindir %{aq_plugindir}/imexporters
@@ -13,32 +17,10 @@
 
 ### Optionally disable chipcard and ofx sub-packages - resulting
 ### rpms should not be released!
-%define have_libchipcard 1
+%define have_libchipcard 0
 %define have_libofx      1
-%define with_yellownet   1
+%define with_yellownet   0
 
-### Define the distribution-specific name parts
-%define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
-%define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
-%define is_fedora %(test -e /etc/fedora-release && echo 1 || echo 0)
-
-%define dist redhat
-%define disttag rh
-
-%if %is_mandrake
-%define dist    mandrake
-%define disttag mdk
-%endif
-%if %is_suse
-%define dist    suse
-%define disttag suse
-%endif
-%if %is_fedora
-%define dist    fedora
-%define disttag rhfc
-%endif
-
-%define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
 
 # Note: There is not yet a special symbol for the rpm release
 # version. We set it to one here.
@@ -48,37 +30,37 @@
 %if %have_libofx
 %if %have_libchipcard
 %if %with_yellownet
-%define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet"
+%define backendlist "aqhbci aqofxconnect aqyellownet"
 %else
-%define backendlist "aqhbci aqdtaus aqgeldkarte aqofxconnect"
+%define backendlist "aqhbci aqofxconnect"
 %endif
 %else
 %if %with_yellownet
-%define backendlist "aqhbci aqdtaus aqofxconnect aqyellownet"
+%define backendlist "aqhbci aqofxconnect aqyellownet"
 %else
-%define backendlist "aqhbci aqdtaus aqofxconnect"
+%define backendlist "aqhbci aqofxconnect"
 %endif
 %endif
 %else
 %if %have_libchipcard
 %if %with_yellownet
-%define backendlist "aqhbci aqdtaus aqgeldkarte aqyellownet"
+%define backendlist "aqhbci aqyellownet"
 %else
-%define backendlist "aqhbci aqdtaus aqgeldkarte"
+%define backendlist "aqhbci"
 %endif
 %else
 %if %with_yellownet
-%define backendlist "aqhbci aqdtaus aqyellownet"
+%define backendlist "aqhbci aqyellownet"
 %else
-%define backendlist "aqhbci aqdtaus"
+%define backendlist "aqhbci"
 %endif
 %endif
 %endif
 
 # versions of required helper-libraries
-%define _gwenhywfar_version   1.99.4.1
-%define _libchipcard3_version 3.0.0.0
-%define _libofx_version       0.8.1
+%define _gwenhywfar_version   2.9.15
+%define _libchipcard3_version 3.9.13
+%define _libofx_version       0.8.2
 
 
 ### The standard information fields.
@@ -157,27 +139,6 @@ Requires:   gwenhywfar >= %{_gwenhywfar_version}
 This package contains the aqbanking-tools for aqbanking.
 Necessary for all banking applications.
 
-%package       gtk2
-Summary:       Aqbanking tools for Gnome2/Gtk2
-Group:         Development/Libraries/C and C++
-Obsoletes:     aqbanking-gnome2
-Requires:      %{name} = %{version}
-
-%description gtk2
-This package contains the aqbanking-tools (gnome/gtk2) for aqbanking.
-Necessary for gtk2-based banking applications, e.g. Grisbi (but not gnucash).
-
-%package   kde3
-Summary:   Aqbanking tools for KDE3
-Group:     Development/Libraries/C and C++
-Requires:  aqbanking-qt3
-Obsoletes: aqbanking-kde
-Requires:  %{name} = %{version}
-
-%description kde3
-Aqbanking tools for KDE3.
-Necessary for KDE-based banking applications, e.g. KMyMoney.
-
 ### Sub-packages for OFX
 %if %have_libofx
 %package       ofx
@@ -201,37 +162,6 @@ Requires:   gwenhywfar >= %{_gwenhywfar_version}
 
 %description ofx-qt3
 Aqbanking tools for Qt3. Necessary for OFX direct connect access.
-
-Author: Martin Preuss <martin@libchipcard.de>
-%endif
-
-### Sub-packages for Geldkarte
-%if %have_libchipcard
-%package       geldkarte
-Summary:       Aqbanking tools for Qt3
-Group:         Development/Libraries/C and C++
-Requires:      %{name} = %{version}
-Requires:      libchipcard3 >= %{_libchipcard3_version}
-Requires:      gwenhywfar >= %{_gwenhywfar_version}
-BuildRequires: libchipcard3-devel >= %{_libchipcard3_version}
-BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
-
-%description geldkarte
-Aqbanking tools for Qt3. Necessary for Geldkarte access.
-
-Author: Martin Preuss <martin@libchipcard.de>
-
-%package       geldkarte-qt3
-Summary:       Aqbanking tools for Qt3
-Group:         Development/Libraries/C and C++
-Requires:      %{name} = %{version}
-Requires:      gwenhywfar >= %{_gwenhywfar_version}
-Requires:      libchipcard3 >= %{_libchipcard3_version}
-BuildRequires: libchipcard3-devel >= %{_libchipcard3_version}
-BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
-
-%description geldkarte-qt3
-Aqbanking tools for Qt3. Necessary for Geldkarte access.
 
 Author: Martin Preuss <martin@libchipcard.de>
 %endif
@@ -281,31 +211,17 @@ make install-strip \
 	DESTDIR=%{buildroot} \
 	idatadir=%{_docdir}/%{name}
 
-%if %is_suse
-%find_lang %{name}
-%endif
-
 %clean
 [ -d %{buildroot} -a "%{buildroot}" != "" ] && rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%post -n %{name}-kde3 -p /sbin/ldconfig
-%postun -n %{name}-kde3 -p /sbin/ldconfig
-
-%post -n %{name}-gtk2 -p/sbin/ldconfig
-%postun -n %{name}-gtk2 -p /sbin/ldconfig
-
 %post -n %{name}-qt3 -p /sbin/ldconfig
 %postun -n %{name}-qt3 -p /sbin/ldconfig
 
 ### The file list for all packages, starting with the base package
-%if %is_suse
-%files -f %{name}.lang
-%else
 %files
-%endif
 %defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog README
 # The directories used by the base package
@@ -322,24 +238,15 @@ make install-strip \
 %dir %{fronts_datadir}
 %dir %{imex_datadir}
 ### The original aqbanking files
-%{_bindir}/%{name}-tool
 %{_libdir}/lib%{name}*.so.*
 %{_libdir}/gwenhywfar
 %{_datadir}/%{name}/bankinfo
-%if %is_suse
-# this is done by find_lang-macro
-%else
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
-%{_datadir}/doc/%{name}
-%endif
 %{aq_plugindir}/bankinfo
 %{imex_plugindir}/csv.*
-%{imex_plugindir}/dbio.*
 %{imex_plugindir}/dtaus.*
-%{imex_plugindir}/eri.*
 %{imex_plugindir}/eri2.*
 %{imex_plugindir}/openhbci1.*
-%{imex_plugindir}/qif.*
 %{imex_plugindir}/swift.*
 %{imex_plugindir}/xmldb.*
 %{imex_plugindir}/yellownet.*
@@ -348,24 +255,17 @@ make install-strip \
 %{imex_datadir}/eri
 %{imex_datadir}/eri2
 %{imex_datadir}/openhbci1
-%{imex_datadir}/qif
 %{imex_datadir}/swift
 %{imex_datadir}/xmldb
 %{imex_datadir}/yellownet
 ### The aqhbci files
-%{_bindir}/aqhbci-tool
+%{_bindir}/aqhbci-tool3
 %{_libdir}/libaqhbci.so.*
 %{aq_plugindir}/providers/aqhbci.*
-%{_datadir}/aqhbci
 #%{_datadir}/doc/aqhbci
-### The dtaus files
-%{_libdir}/libaqdtaus.so.*
-%{aq_plugindir}/providers/aqdtaus.*
 ### The aqnone files
 %{_libdir}/libaqnone.so.*
 %{aq_plugindir}/providers/aqnone.*
-### The cbanking files
-%{_libdir}/libcbanking.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -374,31 +274,16 @@ make install-strip \
 %{_includedir}/%{name}
 %{_libdir}/*.la
 %{_libdir}/libaqbanking.so
-%{_libdir}/libaqdtaus.so
 %{_libdir}/libaqhbci.so
 %{_libdir}/libaqnone.so
-%{_libdir}/libcbanking.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_datadir}/aclocal
 ### The aqhbci files
-%{_bindir}/aqhbci-config
-%{_bindir}/hbcixml2
+%{_bindir}/hbcixml3
 %{_includedir}/aqhbci
-### The cbanking files
-%{_bindir}/cbanking-config
-%{_includedir}/cbanking
-### The g2banking files
-%{_bindir}/g2banking-config
-%{_includedir}/g2banking
+%{_datadir}/%{name}/backends/aqhbci
 ### The qbanking files
-%{_bindir}/qbanking-config
 %{_includedir}/qbanking
-### The kbanking files
-%{_bindir}/kbanking-config
-%{_includedir}/kbanking
-### The aqdtaus files
-%{_bindir}/aqdtaus-config
-%{_includedir}/aqdtaus
 
 %files -n python-aqbanking
 %defattr(644,root,root,755)
@@ -406,31 +291,18 @@ make install-strip \
 
 %files qt3
 %defattr(-,root,root)
-%{_bindir}/qb-help
+%{_bindir}/qb-help@QBANKING_SO_EFFECTIVE@
 %{_libdir}/libqbanking.so.*
 %{_libdir}/libqbanking.so
 %{aq_plugindir}/debugger/aqhbci
 %{aq_plugindir}/wizards
 %{qb_cfgmoddir}/aqhbci*
-%{qb_cfgmoddir}/aqdtaus*
 %{_datadir}/%{name}/i18n
 %{fronts_datadir}/qbanking
-
-%files gtk2
-%defattr(-,root,root)
-%{_libdir}/libg2banking.so.*
-%{_libdir}/libg2banking.so
-%{fronts_datadir}/g2banking
-
-%files kde3
-%defattr(-,root,root)
-%{_libdir}/libkbanking.so.*
-%{_libdir}/libkbanking.so
 
 %if %have_libofx
 %files ofx
 %defattr(-,root,root)
-%{_bindir}/aqofxconnect-config
 %{_libdir}/libaqofxconnect.so.*
 %{_libdir}/libaqofxconnect.so
 %{_includedir}/aqofxconnect
@@ -443,23 +315,8 @@ make install-strip \
 %{qb_cfgmoddir}/aqofxconnect*
 %endif
 
-%if %have_libchipcard
-%files geldkarte
-%defattr(-,root,root)
-%{_bindir}/aqgeldkarte-config
-%{_libdir}/libaqgeldkarte.so.*
-%{_libdir}/libaqgeldkarte.so
-%{_includedir}/aqgeldkarte
-%{aq_plugindir}/providers/aqgeldkarte.*
-
-%files geldkarte-qt3
-%defattr(-,root,root)
-%{qb_cfgmoddir}/aqgeldkarte*
-%endif
-
 %if %with_yellownet
 %files yellownet
-%{_bindir}/aqyellownet-config
 %{_libdir}/libaqyellownet.so
 %{_includedir}/aqyellownet
 %{aq_plugindir}/providers/aqyellownet.*

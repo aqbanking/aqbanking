@@ -26,6 +26,7 @@
 #define AO_USER_FLAGS_BILLPAY      0x00000008
 #define AO_USER_FLAGS_EMPTY_BANKID 0x00000010
 #define AO_USER_FLAGS_EMPTY_FID    0x00000020
+#define AO_USER_FLAGS_FORCE_SSL3   0x00000040
 
 
 
@@ -48,11 +49,11 @@ const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t);
 
 
 AQOFXCONNECT_API
-GWEN_TYPE_UINT32 AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
+uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 
 AQOFXCONNECT_API
 void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        GWEN_TYPE_UINT32 fl);
+                        uint32_t fl);
 
 
 AQOFXCONNECT_API
@@ -96,28 +97,37 @@ AQOFXCONNECT_API
 void AO_User_SetServerPort(AB_USER *u, int i);
 
 AQOFXCONNECT_API
-int AO_User_GetHttpVMajor(const AB_USER *u);
+uint32_t AO_User_GetFlags(const AB_USER *u);
 
 AQOFXCONNECT_API
-void AO_User_SetHttpVMajor(AB_USER *u, int i);
+void AO_User_SetFlags(AB_USER *u, uint32_t f);
 
 AQOFXCONNECT_API
-int AO_User_GetHttpVMinor(const AB_USER *u);
+void AO_User_AddFlags(AB_USER *u, uint32_t f);
 
 AQOFXCONNECT_API
-void AO_User_SetHttpVMinor(AB_USER *u, int i);
+void AO_User_SubFlags(AB_USER *u, uint32_t f);
+
+
 
 AQOFXCONNECT_API
-GWEN_TYPE_UINT32 AO_User_GetFlags(const AB_USER *u);
+const char *AO_User_GetAppId(const AB_USER *u);
 
 AQOFXCONNECT_API
-void AO_User_SetFlags(AB_USER *u, GWEN_TYPE_UINT32 f);
+void AO_User_SetAppId(AB_USER *u, const char *s);
 
 AQOFXCONNECT_API
-void AO_User_AddFlags(AB_USER *u, GWEN_TYPE_UINT32 f);
+const char *AO_User_GetAppVer(const AB_USER *u);
 
 AQOFXCONNECT_API
-void AO_User_SubFlags(AB_USER *u, GWEN_TYPE_UINT32 f);
+void AO_User_SetAppVer(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+const char *AO_User_GetHeaderVer(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHeaderVer(AB_USER *u, const char *s);
+
 
 #ifdef __cplusplus
 }

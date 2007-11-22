@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -30,13 +31,18 @@
 # include <config.h>
 #endif
 
-#include <cbanking/cbanking.h>
+#include <aqbanking/banking.h>
+#include <gwenhywfar/cgui.h>
 
 
 
 int main(int argc, char **argv) {
   AB_BANKING *ab;
   int rv;
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
 
   /* The first argument is the name of the application. This is needed for
    * AqBanking to internally store some application-specific settings.
@@ -49,7 +55,7 @@ int main(int argc, char **argv) {
    * If this folder doesn't exist it will be created as soon as AqBanking has
    * something to store (in most cases when closing the application).
    */
-  ab=CBanking_new("tutorial1", 0);
+  ab=AB_Banking_new("tutorial1", 0, 0);
 
   /* This function initializes AqBanking. It is only after successfull return
    * from this function that any other AqBanking function may be used.

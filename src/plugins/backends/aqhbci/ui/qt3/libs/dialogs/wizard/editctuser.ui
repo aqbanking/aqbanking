@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>562</width>
-            <height>390</height>
+            <height>376</height>
         </rect>
     </property>
     <property name="caption">
@@ -309,10 +309,10 @@
                 </widget>
                 <widget class="QLineEdit" row="3" column="1">
                     <property name="name">
-                        <cstring>descriptionEdit</cstring>
+                        <cstring>peerIdEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>A description of this user. This field is only used for yourself and can optionally be left empty.</string>
+                        <string>Key id used by the bank. If left blank then the user id is used</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="3" column="0">
@@ -320,7 +320,7 @@
                         <cstring>TextLabelDescription</cstring>
                     </property>
                     <property name="text">
-                        <string>Description (optional)</string>
+                        <string>Bank Key Id</string>
                     </property>
                 </widget>
             </grid>
@@ -330,13 +330,13 @@
 <tabstops>
     <tabstop>userCombo</tabstop>
     <tabstop>bankCodeEdit</tabstop>
+    <tabstop>bankCodeButton</tabstop>
     <tabstop>serverEdit</tabstop>
     <tabstop>hbciVersionCombo</tabstop>
     <tabstop>nameEdit</tabstop>
     <tabstop>userIdEdit</tabstop>
     <tabstop>customerIdEdit</tabstop>
-    <tabstop>descriptionEdit</tabstop>
-    <tabstop>bankCodeButton</tabstop>
+    <tabstop>peerIdEdit</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

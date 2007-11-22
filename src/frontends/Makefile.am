@@ -1,5 +1,5 @@
 SUBDIRS = $(aqbanking_frontends)
-DIST_SUBDIRS = cbanking g2banking qbanking kbanking fbanking
+DIST_SUBDIRS = qbanking fbanking
 
 sources:
 	for d in $(DIST_SUBDIRS); do \

@@ -1,21 +1,28 @@
 SUBDIRS=types jobs
 
-INCLUDES = -I$(top_builddir)/headers -I$(srcdir)/types -I$(srcdir)/jobs $(all_includes)
+INCLUDES = \
+  -I$(top_builddir)/headers \
+  -I$(srcdir)/types -I$(srcdir)/jobs $(gwenhywfar_includes)
 
 lib_LTLIBRARIES=libaqbanking.la
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
+EXTRA_DIST=\
+ banking_account.c \
+ banking_init.c \
+ banking_online.c \
+ banking_user.c
+
 
 # We define those here because within the configure script the variables 
 # $(datadir) et al are not available.
-localedir=$(datadir)/locale
 DEFS += \
  -DEXEEXT=\"$(EXEEXT)\" \
- -DLOCALEDIR=\"$(localedir)\" \
- -DAQBANKING_PLUGINS=\"$(aqbanking_plugindir)\" \
- -DAQBANKING_SYSCONF_DIR=\"$(sysconfdir)\" \
- -DAQBANKING_DATA_DIR=\"$(pkgdatadir)\" \
+ -DLOCALEDIR=\"@aqbanking_locale_searchdir@\" \
+ -DAQBANKING_PLUGINS=\"$(aqbanking_plugin_searchdir)\" \
+ -DAQBANKING_SYSCONF_DIR=\"$(aqbanking_cfg_searchdir)\" \
+ -DAQBANKING_DATA_DIR=\"$(aqbanking_data_searchdir)\" \
  -DCOMPILE_DATETIME=\"@DATETIME@\"
 
 noinst_HEADERS=\
@@ -27,9 +34,7 @@ noinst_HEADERS=\
  bankinfoplugin_p.h \
  country_l.h \
  country_p.h \
- cryptmanager_l.h \
  cryptmanager_p.h \
- httpsession_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
@@ -37,8 +42,6 @@ noinst_HEADERS=\
  job_p.h \
  provider_l.h \
  provider_p.h \
- wcb_l.h \
- wcb_p.h \
  msgengine_p.h
 
 
@@ -57,7 +60,6 @@ iheader_HEADERS=\
  bankinfoplugin_be.h \
  country.h \
  error.h \
- httpsession.h \
  imexporter.h \
  imexporter_be.h \
  job.h \
@@ -72,16 +74,13 @@ libaqbanking_la_SOURCES=\
  bankinfoplugin.c \
  banking.c \
  country.c \
- cryptmanager.c \
- httpsession.c \
  imexporter.c \
  job.c \
  provider.c \
- wcb.c\
  msgengine.c
 
 
-libaqbanking_la_LIBADD= $(gwenhywfar_libs) \
+libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  jobs/libjobs.la \
  types/libtypes.la
 

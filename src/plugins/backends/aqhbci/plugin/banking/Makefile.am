@@ -1,7 +1,7 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes) \
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
   -I$(srcdir)/../applayer -I$(srcdir)/../accountjobs  -I$(srcdir)/..
 

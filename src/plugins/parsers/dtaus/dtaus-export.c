@@ -21,6 +21,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/iolayer.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -286,10 +287,10 @@ double AHB_DTAUS__string2double(const char *s){
 int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                           GWEN_DB_NODE *cfg,
                           GWEN_DB_NODE *xa,
-                          double *sumEUR,
-                          double *sumDEM,
-                          double *sumBankCodes,
-                          double *sumAccountIds){
+			  AB_VALUE *sumEUR,
+                          AB_VALUE *sumDEM,
+                          AB_VALUE *sumBankCodes,
+                          AB_VALUE *sumAccountIds){
   unsigned int i;
   const char *p;
   char buffer[32];
@@ -297,7 +298,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   int isEuro;
   unsigned int extSets;
   unsigned int startPos;
-  double dd;
+  AB_VALUE *val;
 
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating C set");
 
@@ -376,11 +377,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          "remoteBankCode",
                          0, 0);
   if (p) {
-    if (1!=sscanf(p, "%lf", &dd)) {
+    val=AB_Value_fromString(p);
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code");
       return -1;
     }
-    *sumBankCodes+=dd;
+    AB_Value_AddValue(sumBankCodes, val);
+    AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 8, p)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
@@ -396,11 +399,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
                          "remoteAccountNumber",
                          0, 0);
   if (p) {
-    if (1!=sscanf(p, "%lf", &dd)) {
+    val=AB_Value_fromString(p);
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account id");
       return -1;
     }
-    *sumAccountIds+=dd;
+    AB_Value_AddValue(sumAccountIds, val);
+    AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 10, p)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
@@ -435,15 +440,18 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 9: value in DEM */
   if (!isEuro) {
-    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
-                                                     "value/value",
-                                                     0, "0,"));
-    if (dd==0.0) {
+    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa,
+						 "value/value",
+						 0, "0,0"));
+    if (val==NULL || AB_Value_IsZero(val)) {
+      AB_Value_free(val);
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DEM value:");
       return -1;
     }
-    *sumDEM+=dd;
-    snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
+    AB_Value_AddValue(sumDEM, val);
+    snprintf(buffer, sizeof(buffer), "%011.0lf",
+	     AB_Value_GetValueAsDouble(val)*100.0);
+    AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
@@ -484,15 +492,18 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 12: value in EUR */
   if (isEuro) {
-    dd=AHB_DTAUS__string2double(GWEN_DB_GetCharValue(xa,
-                                                     "value/value",
-                                                     0, "0,"));
-    if (dd==0.0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad EUR value:");
+    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa,
+						 "value/value",
+						 0, "0,0"));
+    if (val==NULL || AB_Value_IsZero(val)) {
+      AB_Value_free(val);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DUR value:");
       return -1;
     }
-    *sumEUR+=dd;
-    snprintf(buffer, sizeof(buffer), "%011.0lf", dd*100.0);
+    AB_Value_AddValue(sumEUR, val);
+    snprintf(buffer, sizeof(buffer), "%011.0lf",
+	     AB_Value_GetValueAsDouble(val)*100.0);
+    AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
       return -1;
@@ -665,10 +676,10 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
                           GWEN_DB_NODE *cfg,
                           int csets,
-                          double sumEUR,
-                          double sumDEM,
-                          double sumBankCodes,
-                          double sumAccountIds){
+			  AB_VALUE *sumEUR,
+                          AB_VALUE *sumDEM,
+                          AB_VALUE *sumBankCodes,
+                          AB_VALUE *sumAccountIds){
   unsigned int i;
   char buffer[32];
 
@@ -688,28 +699,32 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
   }
 
   /* field 5: sum of DEM values */
-  snprintf(buffer, sizeof(buffer), "%013.0lf", sumDEM*100.0);
+  snprintf(buffer, sizeof(buffer), "%013.0lf",
+	   AB_Value_GetValueAsDouble(sumDEM)*100.0);
   if (AHB_DTAUS__AddNum(dst, 13, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 6: sum of peer account ids */
-  snprintf(buffer, sizeof(buffer), "%017.0lf", sumAccountIds);
+  snprintf(buffer, sizeof(buffer), "%017.0lf",
+	   AB_Value_GetValueAsDouble(sumAccountIds));
   if (AHB_DTAUS__AddNum(dst, 17, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 7: sum of peer bank codes */
-  snprintf(buffer, sizeof(buffer), "%017.0lf", sumBankCodes);
+  snprintf(buffer, sizeof(buffer), "%017.0lf",
+	   AB_Value_GetValueAsDouble(sumBankCodes));
   if (AHB_DTAUS__AddNum(dst, 17, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 8: sum of EUR values */
-  snprintf(buffer, sizeof(buffer), "%013.0lf", sumEUR*100.0);
+  snprintf(buffer, sizeof(buffer), "%013.0lf",
+	   AB_Value_GetValueAsDouble(sumEUR)*100.0);
   if (AHB_DTAUS__AddNum(dst, 13, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
@@ -724,32 +739,34 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
 
 
 int AHB_DTAUS__Export(GWEN_DBIO *dbio,
-                      GWEN_BUFFEREDIO *bio,
-                      GWEN_TYPE_UINT32 flags,
+		      GWEN_IO_LAYER *io,
                       GWEN_DB_NODE *data,
-                      GWEN_DB_NODE *cfg){
-  double sumEUR;
-  double sumDEM;
-  double sumBankCodes;
-  double sumAccountIds;
+		      GWEN_DB_NODE *cfg,
+		      uint32_t flags,
+		      uint32_t guiid,
+		      int msecs){
+  AB_VALUE *sumEUR;
+  AB_VALUE *sumDEM;
+  AB_VALUE *sumBankCodes;
+  AB_VALUE *sumAccountIds;
   unsigned int cSets;
   GWEN_BUFFER *dst;
   GWEN_DB_NODE *gr;
   int isDebitNote;
   int isEuro;
-  const char *p;
-  GWEN_TYPE_UINT32 size;
-  GWEN_TYPE_UINT32 bytesWritten;
+  const uint8_t *p;
+  uint32_t size;
+  uint32_t bytesWritten;
 
   isDebitNote=(strcasecmp(GWEN_DB_GetCharValue(cfg, "type", 0, "transfer"),
                           "debitnote")==0);
   isEuro=(strcasecmp(GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"),
                      "EUR")==0);
   cSets=0;
-  sumEUR=0;
-  sumDEM=0;
-  sumBankCodes=0;
-  sumAccountIds=0;
+  sumEUR=AB_Value_new();
+  sumDEM=AB_Value_new();
+  sumBankCodes=AB_Value_new();
+  sumAccountIds=AB_Value_new();
 
   dst=GWEN_Buffer_new(0, 1024, 0, 1);
   GWEN_Buffer_SetHardLimit(dst, AHB_DTAUS_HARDLIMIT);
@@ -758,6 +775,10 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   if (AHB_DTAUS__CreateSetA(dst, cfg)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error creating A set");
     GWEN_Buffer_free(dst);
+    AB_Value_free(sumAccountIds);
+    AB_Value_free(sumBankCodes);
+    AB_Value_free(sumDEM);
+    AB_Value_free(sumEUR);
     return -1;
   }
 
@@ -767,12 +788,16 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
     if ((isDebitNote && strcasecmp(GWEN_DB_GroupName(gr), "debitnote")==0) ||
         (!isDebitNote && strcasecmp(GWEN_DB_GroupName(gr), "transfer")==0)){
       if (AHB_DTAUS__CreateSetC(dst, cfg, gr,
-                                &sumEUR, &sumDEM,
-                                &sumBankCodes, &sumAccountIds)) {
+                                sumEUR, sumDEM,
+				sumBankCodes, sumAccountIds)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating C set from this data:");
         GWEN_DB_Dump(gr, stderr, 2);
         GWEN_Buffer_free(dst);
-        return -1;
+	AB_Value_free(sumAccountIds);
+	AB_Value_free(sumBankCodes);
+	AB_Value_free(sumDEM);
+	AB_Value_free(sumEUR);
+	return -1;
       }
       cSets++;
     } /* if group matches */
@@ -785,34 +810,45 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
                             sumBankCodes, sumAccountIds)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error creating E set");
     GWEN_Buffer_free(dst);
+    AB_Value_free(sumAccountIds);
+    AB_Value_free(sumBankCodes);
+    AB_Value_free(sumDEM);
+    AB_Value_free(sumEUR);
     return -1;
   }
 
+  AB_Value_free(sumAccountIds);
+  AB_Value_free(sumBankCodes);
+  AB_Value_free(sumDEM);
+  AB_Value_free(sumEUR);
+
   /* DTAUS finished, write it */
-  p=GWEN_Buffer_GetStart(dst);
+  p=(const uint8_t*)GWEN_Buffer_GetStart(dst);
   size=GWEN_Buffer_GetUsedBytes(dst);
   bytesWritten=0;
   while(bytesWritten<size) {
-    GWEN_ERRORCODE err;
+    int err;
     unsigned int bsize;
 
     bsize=size-bytesWritten;
-    err=GWEN_BufferedIO_WriteRaw(bio, p, &bsize);
-    if (!GWEN_Error_IsOk(err)) {
+    err=GWEN_Io_Layer_WriteBytes(io, p, bsize,
+				 GWEN_IO_REQUEST_FLAGS_WRITEALL |
+				 GWEN_IO_REQUEST_FLAGS_FLUSH,
+				 guiid, msecs);
+    if (err<0) {
       DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
       GWEN_Buffer_free(dst);
-      return -1;
+      return err;
     }
     if (bsize==0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Broken pipe");
       GWEN_Buffer_free(dst);
-      return -1;
+      return GWEN_ERROR_IO;
     }
     p+=bsize;
     bytesWritten+=bsize;
   } /* while */
 
-  GWEN_Buffer_free(dst);
   return 0;
 }
 

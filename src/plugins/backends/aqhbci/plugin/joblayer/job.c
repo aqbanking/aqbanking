@@ -24,7 +24,7 @@
 #include <aqbanking/job_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
 #include <stdlib.h>
@@ -47,7 +47,6 @@ AH_JOB *AH_Job_new(const char *name,
   GWEN_XMLNODE *jobNode=0;
   GWEN_XMLNODE *msgNode;
   GWEN_XMLNODE *descrNode;
-  AH_MEDIUM *m;
   const char *segCode;
   const char *paramName;
   int needsBPD;
@@ -74,8 +73,6 @@ AH_JOB *AH_Job_new(const char *name,
   j->log=GWEN_StringList_new();
 
   /* get job descriptions */
-  m=AH_User_GetMedium(u);
-  assert(m);
 
   e=AH_User_GetMsgEngine(u);
   assert(e);
@@ -199,6 +196,7 @@ AH_JOB *AH_Job_new(const char *name,
       GWEN_DB_AddGroupChildren(j->jobParams, jobBPD);
       /* sample some variables from BPD jobs */
       j->minSigs=GWEN_DB_GetIntValue(jobBPD, "minsigs", 0, 0);
+      j->secProfile=GWEN_DB_GetIntValue(jobBPD, "secProfile", 0, 1);
       j->jobsPerMsg=GWEN_DB_GetIntValue(jobBPD, "jobspermsg", 0, 0);
     }
   } /* if paramName */
@@ -331,7 +329,7 @@ AH_JOB *AH_Job_new(const char *name,
   j->segResults=AH_Result_List_new();
   j->msgResults=AH_Result_List_new();
 
-  AH_Job_Log(j, AB_Banking_LogLevelInfo,
+  AH_Job_Log(j, GWEN_LoggerLevel_Info,
              "HBCI-Job created");
 
   return j;
@@ -415,7 +413,7 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
                  "Job has an attachpoint, so yes, we need more messages");
     j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
-    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+    AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has an attachpoint");
     return 1;
   }
@@ -431,7 +429,7 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
   if (j->msgNode) {
     /* there is another message, so set flags accordingly */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Multi-message job, still more messages");
-    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+    AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has more messages");
 
     /* sample some flags for the next message */
@@ -464,7 +462,7 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is finished", j->name);
-    AH_Job_Log(j, AB_Banking_LogLevelDebug,
+    AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has no more messages");
     j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
     return 0;
@@ -473,7 +471,7 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
 
 
 
-GWEN_TYPE_UINT32 AH_Job_GetId(const AH_JOB *j){
+uint32_t AH_Job_GetId(const AH_JOB *j){
   assert(j);
   assert(j->usage);
   return j->id;
@@ -481,7 +479,7 @@ GWEN_TYPE_UINT32 AH_Job_GetId(const AH_JOB *j){
 
 
 
-void AH_Job_SetId(AH_JOB *j, GWEN_TYPE_UINT32 i){
+void AH_Job_SetId(AH_JOB *j, uint32_t i){
   assert(j);
   assert(j->usage);
   j->id=i;
@@ -505,6 +503,14 @@ int AH_Job_GetMinSignatures(const AH_JOB *j){
 
 
 
+int AH_Job_GetSecurityProfile(const AH_JOB *j){
+  assert(j);
+  assert(j->usage);
+  return j->secProfile;
+}
+
+
+
 int AH_Job_GetJobsPerMsg(const AH_JOB *j){
   assert(j);
   assert(j->usage);
@@ -513,7 +519,7 @@ int AH_Job_GetJobsPerMsg(const AH_JOB *j){
 
 
 
-GWEN_TYPE_UINT32 AH_Job_GetFlags(const AH_JOB *j) {
+uint32_t AH_Job_GetFlags(const AH_JOB *j) {
   assert(j);
   assert(j->usage);
   return j->flags;
@@ -521,7 +527,7 @@ GWEN_TYPE_UINT32 AH_Job_GetFlags(const AH_JOB *j) {
 
 
 
-void AH_Job_SetFlags(AH_JOB *j, GWEN_TYPE_UINT32 f) {
+void AH_Job_SetFlags(AH_JOB *j, uint32_t f) {
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
@@ -531,7 +537,7 @@ void AH_Job_SetFlags(AH_JOB *j, GWEN_TYPE_UINT32 f) {
 
 
 
-void AH_Job_AddFlags(AH_JOB *j, GWEN_TYPE_UINT32 f){
+void AH_Job_AddFlags(AH_JOB *j, uint32_t f){
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -542,7 +548,7 @@ void AH_Job_AddFlags(AH_JOB *j, GWEN_TYPE_UINT32 f){
 
 
 
-void AH_Job_SubFlags(AH_JOB *j, GWEN_TYPE_UINT32 f){
+void AH_Job_SubFlags(AH_JOB *j, uint32_t f){
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -577,7 +583,7 @@ GWEN_DB_NODE *AH_Job_GetResponses(const AH_JOB *j){
 
 
 
-GWEN_TYPE_UINT32 AH_Job_GetFirstSegment(const AH_JOB *j){
+uint32_t AH_Job_GetFirstSegment(const AH_JOB *j){
   assert(j);
   assert(j->usage);
   return j->firstSegment;
@@ -585,7 +591,7 @@ GWEN_TYPE_UINT32 AH_Job_GetFirstSegment(const AH_JOB *j){
 
 
 
-void AH_Job_SetFirstSegment(AH_JOB *j, GWEN_TYPE_UINT32 i){
+void AH_Job_SetFirstSegment(AH_JOB *j, uint32_t i){
   assert(j);
   assert(j->usage);
   j->firstSegment=i;
@@ -593,7 +599,7 @@ void AH_Job_SetFirstSegment(AH_JOB *j, GWEN_TYPE_UINT32 i){
 
 
 
-GWEN_TYPE_UINT32 AH_Job_GetLastSegment(const AH_JOB *j){
+uint32_t AH_Job_GetLastSegment(const AH_JOB *j){
   assert(j);
   assert(j->usage);
   return j->lastSegment;
@@ -601,7 +607,7 @@ GWEN_TYPE_UINT32 AH_Job_GetLastSegment(const AH_JOB *j){
 
 
 
-void AH_Job_SetLastSegment(AH_JOB *j, GWEN_TYPE_UINT32 i){
+void AH_Job_SetLastSegment(AH_JOB *j, uint32_t i){
   assert(j);
   assert(j->usage);
   j->lastSegment=i;
@@ -653,7 +659,7 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
     GWEN_Buffer_AppendString(lbuf, AH_Job_StatusName(st));
     GWEN_Buffer_AppendString(lbuf, "\"");
 
-    AH_Job_Log(j, AB_Banking_LogLevelInfo,
+    AH_Job_Log(j, GWEN_LoggerLevel_Info,
                GWEN_Buffer_GetStart(lbuf));
     GWEN_Buffer_free(lbuf);
     j->status=st;
@@ -675,14 +681,14 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s){
     GWEN_Buffer_AppendString(lbuf, "Signer \"");
     GWEN_Text_EscapeToBufferTolerant(s, lbuf);
     GWEN_Buffer_AppendString(lbuf, "\" already in list");
-    AH_Job_Log(j, AB_Banking_LogLevelWarn,
+    AH_Job_Log(j, GWEN_LoggerLevel_Warning,
                GWEN_Buffer_GetStart(lbuf));
   }
   else {
     GWEN_Buffer_AppendString(lbuf, "Signer \"");
     GWEN_Text_EscapeToBufferTolerant(s, lbuf);
     GWEN_Buffer_AppendString(lbuf, "\" added");
-    AH_Job_Log(j, AB_Banking_LogLevelInfo,
+    AH_Job_Log(j, GWEN_LoggerLevel_Info,
                GWEN_Buffer_GetStart(lbuf));
   }
   GWEN_Buffer_free(lbuf);
@@ -789,7 +795,7 @@ const char *AH_Job_GetAccountId(const AH_JOB *j) {
 
 
 
-int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid){
 
   assert(j);
   assert(j->usage);
@@ -797,30 +803,31 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_Job_SampleResults(j);
 
   if (j->processFn)
-    return j->processFn(j, ctx);
+    return j->processFn(j, ctx, guiid);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No processFn set");
-    return AH_Job_DefaultProcessHandler(j);
+    return AH_Job_DefaultProcessHandler(j, guiid);
   }
 }
 
 
 
-int AH_Job_Commit(AH_JOB *j){
+int AH_Job_Commit(AH_JOB *j, uint32_t guiid){
   assert(j);
   assert(j->usage);
   if (j->commitFn)
-    return j->commitFn(j);
+    return j->commitFn(j, guiid);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No commitFn set");
-    return AH_Job_DefaultCommitHandler(j);
+    return AH_Job_DefaultCommitHandler(j, guiid);
   }
 }
 
 
 
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
-                    AH_JOB_EXCHANGE_MODE m){
+		    AH_JOB_EXCHANGE_MODE m,
+		    uint32_t guiid){
   GWEN_DB_NODE *db;
 
   assert(j);
@@ -849,14 +856,9 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
   case AH_Job_ExchangeModeResults:
     if (GWEN_DB_GetCharValue(db, "msgref/dialogId", 0, 0)==0) {
       const char *s;
-      GWEN_TIME *ti;
       GWEN_DB_NODE *dbT;
 
       /* don't overwrite existing msgref */
-      ti=GWEN_CurrentTime();
-      assert(ti);
-      AB_Job_DateToDb(ti, db, "sendtime");
-      GWEN_Time_free(ti);
 
       dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "msgref");
       assert(dbT);
@@ -877,14 +879,14 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown exchange mode %d", m);
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
   if (j->exchangeFn)
-    return j->exchangeFn(j, bj, m);
+    return j->exchangeFn(j, bj, m, guiid);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No exchangeFn set");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   }
 }
 
@@ -933,7 +935,9 @@ int AH_Job_HasWarnings(const AH_JOB *j){
 int AH_Job_HasErrors(const AH_JOB *j){
   assert(j);
   assert(j->usage);
-  return (j->flags & AH_JOB_FLAGS_HASERRORS);
+  return
+    (j->status==AH_JobStatusError) ||
+    (j->flags & AH_JOB_FLAGS_HASERRORS);
 }
 
 
@@ -965,14 +969,14 @@ void AH_Job_SampleResults(AH_JOB *j) {
           if (code) {
             GWEN_BUFFER *lbuf;
             char numbuf[32];
-            AB_BANKING_LOGLEVEL ll;
+	    GWEN_LOGGER_LEVEL ll;
 
             if (code>=9000)
-              ll=AB_Banking_LogLevelError;
+              ll=GWEN_LoggerLevel_Error;
             else if (code>=3000 && code!=3920)
-              ll=AB_Banking_LogLevelWarn;
+              ll=GWEN_LoggerLevel_Warning;
             else
-              ll=AB_Banking_LogLevelInfo;
+              ll=GWEN_LoggerLevel_Info;
             lbuf=GWEN_Buffer_new(0, 128, 0, 1);
             GWEN_Buffer_AppendString(lbuf, "SegResult: ");
             snprintf(numbuf, sizeof(numbuf), "%d", code);
@@ -996,7 +1000,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
           AH_Result_List_Add(r, j->segResults);
 
           DBG_DEBUG(AQHBCI_LOGDOMAIN, "Segment result:");
-          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+	  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
             AH_Result_Dump(r, stderr, 4);
 
           /* check result */
@@ -1026,14 +1030,14 @@ void AH_Job_SampleResults(AH_JOB *j) {
             if (code) {
               GWEN_BUFFER *lbuf;
               char numbuf[32];
-              AB_BANKING_LOGLEVEL ll;
+	      GWEN_LOGGER_LEVEL ll;
   
               if (code>=9000)
-                ll=AB_Banking_LogLevelError;
+                ll=GWEN_LoggerLevel_Error;
               else if (code>=3000)
-                ll=AB_Banking_LogLevelWarn;
+                ll=GWEN_LoggerLevel_Warning;
               else
-                ll=AB_Banking_LogLevelInfo;
+                ll=GWEN_LoggerLevel_Info;
               lbuf=GWEN_Buffer_new(0, 128, 0, 1);
               GWEN_Buffer_AppendString(lbuf, "MsgResult: ");
               snprintf(numbuf, sizeof(numbuf), "%d", code);
@@ -1056,7 +1060,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
                             1);
             AH_Result_List_Add(r, j->msgResults);
             DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message result:");
-            if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+            if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
               AH_Result_Dump(r, stderr, 4);
 
             /* check result */
@@ -1090,7 +1094,7 @@ const char *AH_Job_GetDescription(const AH_JOB *j){
 
 
 void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
-  GWEN_TYPE_UINT32 k;
+  uint32_t k;
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
@@ -1119,7 +1123,7 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
 
 
-int AH_Job_CommitSystemData(AH_JOB *j) {
+int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
   GWEN_DB_NODE *dbCurr;
   AB_USER *u;
   AB_BANKING *ab;
@@ -1474,7 +1478,7 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         int accCreated;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Found AccountData");
-        AH_Job_Log(j, AB_Banking_LogLevelInfo,
+        AH_Job_Log(j, GWEN_LoggerLevel_Info,
                    "Job contains account data");
 
         /* account data found */
@@ -1498,11 +1502,10 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
             GWEN_Buffer_AppendString(mbuf, accountName);
           else
             GWEN_Buffer_AppendString(mbuf, accountId);
-          AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                                 0,
-                                 AB_Banking_LogLevelNotice,
-                                 GWEN_Buffer_GetStart(mbuf));
-          GWEN_Buffer_free(mbuf);
+          GWEN_Gui_ProgressLog(0,
+			       GWEN_LoggerLevel_Notice,
+			       GWEN_Buffer_GetStart(mbuf));
+	  GWEN_Buffer_free(mbuf);
         }
 
         acc=AB_Banking_FindAccount(ab, AH_PROVIDER_NAME,
@@ -1573,9 +1576,9 @@ int AH_Job_CommitSystemData(AH_JOB *j) {
         const char *text;
 
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found a bank message");
-        AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+	GWEN_Gui_ProgressLog(
                                0,
-                               AB_Banking_LogLevelNotice,
+                               GWEN_LoggerLevel_Notice,
                                I18N("Bank message received"));
         subject=GWEN_DB_GetCharValue(dbRd, "subject", 0, "(Kein Betreff)");
         text=GWEN_DB_GetCharValue(dbRd, "text", 0, 0);
@@ -1649,7 +1652,7 @@ int AH_Job_HasItanResult(AH_JOB *j) {
 
 
 
-int AH_Job_DefaultProcessHandler(AH_JOB *j){
+int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid){
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_PROCESSED) {
@@ -1661,7 +1664,7 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j){
 
 
 
-int AH_Job_DefaultCommitHandler(AH_JOB *j){
+int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid){
   int rv;
 
   assert(j);
@@ -1670,7 +1673,7 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j){
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already committed job \"%s\"", j->name);
     return 0;
   }
-  rv=AH_Job_CommitSystemData(j);
+  rv=AH_Job_CommitSystemData(j, guiid);
   j->flags|=AH_JOB_FLAGS_COMMITTED;
   return rv;
 }
@@ -1783,9 +1786,9 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     if (!dbSecurity) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"No security settings, should not happen");
-      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+      GWEN_Gui_ProgressLog(
 			     0,
-			     AB_Banking_LogLevelError,
+			     GWEN_LoggerLevel_Error,
 			     I18N("Response without security info (internal)"));
       return AB_ERROR_SECURITY;
     }
@@ -1795,9 +1798,9 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
       if (*s=='!' || *s=='?') {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Encrypted with invalid key (%s)", s);
-	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+	GWEN_Gui_ProgressLog(
 			       0,
-			       AB_Banking_LogLevelError,
+			       GWEN_LoggerLevel_Error,
 			       I18N("Response encrypted with invalid key"));
 	return AB_ERROR_SECURITY;
       }
@@ -1807,10 +1810,9 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
       if (!s) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Response is not encrypted (but expected to be)");
-	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-			       0,
-			       AB_Banking_LogLevelError,
-			       I18N("Response is not encrypted as expected"));
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Response is not encrypted as expected"));
 	return AB_ERROR_SECURITY;
   
       }
@@ -1821,15 +1823,16 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 		 "(exp: \"%s\", is: \"%s\"",
 		 j->expectedCrypter, s);
 	/*
-	AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
+	GWEN_Gui_ProgressLog(
 			       0,
-			       AB_Banking_LogLevelError,
+			       GWEN_LoggerLevel_Error,
 			       I18N("Response not encrypted with expected key"));
 	return AB_ERROR_SECURITY;
 	*/
       }
-  
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Encrypted as expected");
+      else {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Encrypted as expected");
+      }
     }
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "No encryption expected");
@@ -1842,153 +1845,161 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 
 
 int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
-  GWEN_DB_NODE *dbSecurity;
-  int i;
-  GWEN_TYPE_UINT32 uFlags;
-
-  assert(j);
-  assert(j->usage);
-
-  uFlags=AH_User_GetFlags(j->user);
-
-  assert(dbRsp);
-  dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                              "security");
-  if (!dbSecurity) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No security settings, should not happen");
-    AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                           0,
-                           AB_Banking_LogLevelError,
-                           I18N("Response without security info (internal)"));
-    return AB_ERROR_GENERIC;
-  }
-
-  /* check for invalid signers */
-  for (i=0; ; i++) {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
-    if (!s)
-      break;
-    if (*s=='!') {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Invalid signature found, will not tolerate it");
-      AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                             0,
-                             AB_Banking_LogLevelError,
-                             I18N("Invalid bank signature"));
-      return AB_ERROR_SECURITY;
-    }
-  } /* for */
-
-  if (j->expectedSigner && !(uFlags & AH_USER_FLAGS_BANK_DOESNT_SIGN)) {
-    /* check signer */
-    for (i=0; ; i++) {
-      const char *s;
-
-      s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
-      if (!s) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Not signed by expected signer (%d)", i);
-        AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                               0,
-                               AB_Banking_LogLevelError,
-                               I18N("Response not signed by the bank"));
-        if (i==0) {
-          int but;
-
-          /* check whether the user want's to accept the unsigned message */
-          but=AB_Banking_MessageBox(
-	     AH_Job_GetBankingApi(j),
-	     AB_BANKING_MSG_FLAGS_TYPE_WARN |
-	     AB_BANKING_MSG_FLAGS_CONFIRM_B1 |
-	     AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS,
-	     I18N("Security Warning"),
-	     I18N(
-"The HBCI response of the bank has not been signed by the bank, \n"
-"contrary to what has been expected. This can be the case because the \n"
-"bank just stopped signing their HBCI responses. This error message \n"
-"would also occur if there were a replay attack against your computer \n"
-"in progress right now, which is probably quite unlikely. \n"
-" \n"
-"Please contact your bank and ask them whether their HBCI server \n"
-"stopped signing the HBCI responses. If the bank is concerned about \n"
-"your security, it should not stop signing the HBCI responses. \n"
-" \n"
-"Do you nevertheless want to accept this response this time or always?"
-"<html><p>"
-"The HBCI response of the bank has not been signed by the bank, \n"
-"contrary to what has been expected. This can be the case because the \n"
-"bank just stopped signing their HBCI responses. This error message \n"
-"would also occur if there were a replay attack against your computer \n"
-"in progress right now, which is probably quite unlikely. \n"
-"</p><p>"
-"Please contact your bank and ask them whether their HBCI server \n"
-"stopped signing the HBCI responses. If the bank is concerned about \n"
-"your security, it should not stop signing the HBCI responses. \n"
-"</p><p>"
-"Do you nevertheless want to accept this response this time or always?"
-"</p></html>"
-),
-	     I18N("Accept this time"),
-	     I18N("Accept always"),
-	     I18N("Abort"));
-          if (but==1) {
-            AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                                   0,
-                                   AB_Banking_LogLevelNotice,
-                                   I18N("User accepts this unsigned "
-                                        "response"));
-            AH_Job_SetExpectedSigner(j, 0);
-            break;
-          }
-          else if (but==2) {
-            AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                                   0,
-                                   AB_Banking_LogLevelNotice,
-                                   I18N("User accepts all further unsigned "
-                                        "responses"));
-            AH_User_AddFlags(j->user, AH_USER_FLAGS_BANK_DOESNT_SIGN);
-            AH_Job_SetExpectedSigner(j, 0);
-            break;
-          }
-          else {
-            AB_Banking_ProgressLog(AH_Job_GetBankingApi(j),
-                                   0,
-                                   AB_Banking_LogLevelError,
-                                   I18N("Aborted"));
-            return AB_ERROR_SECURITY;
-          }
-	}
-	else {
-	  int ii;
-
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Job signed with unexpected key(s)"
-		    "(was expecting \"%s\"):",
-		    j->expectedSigner);
-	  for (ii=0; ; ii++) {
-	    s=GWEN_DB_GetCharValue(dbSecurity, "signer", ii, 0);
-	    if (!s)
-	      break;
-	    DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Signed unexpectedly with key \"%s\"", s);
-	  }
-	  return AB_ERROR_SECURITY;
-	}
-      }
-      else {
-	if (strcasecmp(s, j->expectedSigner)==0)
-	  break;
-      }
-    } /* for */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Signature check ok");
+  if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking signature in PIN/TAN mode");
   }
   else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No signature expected");
+    GWEN_DB_NODE *dbSecurity;
+    int i;
+    uint32_t uFlags;
+  
+    assert(j);
+    assert(j->usage);
+  
+    uFlags=AH_User_GetFlags(j->user);
+  
+    assert(dbRsp);
+    dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+				"security");
+    if (!dbSecurity) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"No security settings, should not happen");
+      GWEN_Gui_ProgressLog(
+			     0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Response without security info (internal)"));
+      return GWEN_ERROR_GENERIC;
+    }
+  
+    /* check for invalid signers */
+    for (i=0; ; i++) {
+      const char *s;
+  
+      s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
+      if (!s)
+	break;
+      if (*s=='!') {
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+		  "Invalid signature found, will not tolerate it");
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Invalid bank signature"));
+	return AB_ERROR_SECURITY;
+      }
+    } /* for */
+  
+    if (j->expectedSigner && !(uFlags & AH_USER_FLAGS_BANK_DOESNT_SIGN)) {
+      /* check signer */
+      for (i=0; ; i++) {
+	const char *s;
+  
+	s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
+	if (!s) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+		    "Not signed by expected signer (%d)", i);
+	  GWEN_Gui_ProgressLog(0,
+			       GWEN_LoggerLevel_Error,
+			       I18N("Response not signed by the bank"));
+	  if (i==0) {
+	    int but;
+  
+	    /* check whether the user want's to accept the unsigned message */
+	    but=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+				    GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+				    GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+	       I18N("Security Warning"),
+	       I18N(
+  "The HBCI response of the bank has not been signed by the bank, \n"
+  "contrary to what has been expected. This can be the case because the \n"
+  "bank just stopped signing their HBCI responses. This error message \n"
+  "would also occur if there were a replay attack against your computer \n"
+  "in progress right now, which is probably quite unlikely. \n"
+  " \n"
+  "Please contact your bank and ask them whether their HBCI server \n"
+  "stopped signing the HBCI responses. If the bank is concerned about \n"
+  "your security, it should not stop signing the HBCI responses. \n"
+  " \n"
+  "Do you nevertheless want to accept this response this time or always?"
+  "<html><p>"
+  "The HBCI response of the bank has not been signed by the bank, \n"
+  "contrary to what has been expected. This can be the case because the \n"
+  "bank just stopped signing their HBCI responses. This error message \n"
+  "would also occur if there were a replay attack against your computer \n"
+  "in progress right now, which is probably quite unlikely. \n"
+  "</p><p>"
+  "Please contact your bank and ask them whether their HBCI server \n"
+  "stopped signing the HBCI responses. If the bank is concerned about \n"
+  "your security, it should not stop signing the HBCI responses. \n"
+  "</p><p>"
+  "Do you nevertheless want to accept this response this time or always?"
+  "</p></html>"
+  ),
+	       I18N("Accept this time"),
+	       I18N("Accept always"),
+	       I18N("Abort"), 0);
+	    if (but==1) {
+	      GWEN_Gui_ProgressLog(0,
+				   GWEN_LoggerLevel_Notice,
+				   I18N("User accepts this unsigned "
+					"response"));
+	      AH_Job_SetExpectedSigner(j, 0);
+	      break;
+	    }
+	    else if (but==2) {
+	      GWEN_Gui_ProgressLog(0,
+				   GWEN_LoggerLevel_Notice,
+				   I18N("User accepts all further unsigned "
+					"responses"));
+	      AH_User_AddFlags(j->user, AH_USER_FLAGS_BANK_DOESNT_SIGN);
+	      AH_Job_SetExpectedSigner(j, 0);
+	      break;
+	    }
+	    else {
+	      GWEN_Gui_ProgressLog(0,
+				   GWEN_LoggerLevel_Error,
+				   I18N("Aborted"));
+	      return AB_ERROR_SECURITY;
+	    }
+	  }
+	  else {
+	    int ii;
+  
+	    DBG_ERROR(AQHBCI_LOGDOMAIN,
+		      "Job signed with unexpected key(s)"
+		      "(was expecting \"%s\"):",
+		      j->expectedSigner);
+	    for (ii=0; ; ii++) {
+	      s=GWEN_DB_GetCharValue(dbSecurity, "signer", ii, 0);
+	      if (!s)
+		break;
+	      DBG_ERROR(AQHBCI_LOGDOMAIN,
+			"Signed unexpectedly with key \"%s\"", s);
+	    }
+	    return AB_ERROR_SECURITY;
+	  }
+	}
+	else {
+	  if (strcasecmp(s, j->expectedSigner)==0) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
+		     "Jobs signed as expected with \"%s\"",
+		     j->expectedSigner);
+	    break;
+	  }
+	  else if (*s!='!' && *s!='?') {
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
+		     "Signer name does not match expected name (%s!=%s), "
+		     "but we accept it anyway",
+		     s, j->expectedSigner);
+	    break;
+	  }
+	}
+      } /* for */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Signature check ok");
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No signature expected");
+    }
   }
-
   return 0;
 }
 
@@ -2012,7 +2023,7 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s){
 
 
 
-void AH_Job_Log(AH_JOB *j, AB_BANKING_LOGLEVEL ll, const char *txt) {
+void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt) {
   char buffer[32];
   GWEN_TIME *ti;
   GWEN_BUFFER *lbuf;

@@ -14,22 +14,67 @@
 #define FBANKING_BANKING_H
 
 
+#include <aqbanking/banking.h>
+#include <aqbanking/system.h>
+
+#ifdef BUILDING_FBANKING
+# /* building AqBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define FBANKING_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define FBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define FBANKING_API __attribute__((visibility("default")))
+#   else
+#     define FBANKING_API
+#   endif
+# endif
+#else
+# /* not building AqBanking */
+# if AQBANKING_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define FBANKING_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define FBANKING_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define FBANKING_API
+# endif
+#endif
+
+#ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+# define FBANKING_EXPORT __attribute__((visibility("default")))
+# define FBANKING_NOEXPORT __attribute__((visibility("hidden")))
+#else
+# define FBANKING_EXPORT
+# define FBANKING_NOEXPORT
+#endif
+
+
+
+#include <fx.h>
+
+
 
 #include <aqbanking/banking.h>
+#include <aqbanking++/banking.h>
 #include <aqbanking/accstatus.h>
 
 #include <fx.h>
 
 class FBanking;
 
-#include "banking.h"
 
-
-class FBANKING_API FBanking: public Banking {
-  FXDECLARE(FBanking)
-
+class FBANKING_API FBanking: public AB_Banking {
 protected:
-  FBanking(): Banking("none", NULL) {};
+  FBanking(): AB_Banking("none", NULL) {};
 
 public:
   FBanking(const char *appName,

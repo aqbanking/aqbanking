@@ -458,7 +458,7 @@ void AH_Bpd_SetIsDirty(AH_BPD *bpd, int dirty){
 
 
 void AH_Bpd_Dump(const AH_BPD *bpd, FILE *f, int insert) {
-  GWEN_TYPE_UINT32 k;
+  uint32_t k;
   unsigned int i;
 
   for (k=0; k<insert; k++)

@@ -1,33 +1,12 @@
 
+- initialize paths in first init of AB_BANKING object
+- correctly implement iTAN modes (900 to 998)
 - let aqhbci remove unneeded data from settings.conf (after migrating to
   1.9.x)
-- remove splits from transactions (->simplification, also splits are not
-  used for now and are deprecated anyway)
+
+- loganalyzer: read messages from FASTBUFFER instead from IO
+
+CAVEATS:
+- you need to call AB_Job_CheckAvailability() after creating a job
 
 
------------------------------------------------------------------------------
-temporarily stored here ;-)
-  AB_SPLIT *sp;
-  
-  sp=AB_Split_List_First(AB_Transaction_GetSplits(t));
-  if (sp) {
-    /* copy information from first split to the transaction */
-    /* local account */
-    AB_Transaction_SetLocalCountry(t, AB_Split_GetLocalCountry(sp));
-    AB_Transaction_SetLocalBankCode(t, AB_Split_GetLocalBankCode(sp));
-    AB_Transaction_SetLocalBranchId(t, AB_Split_GetLocalBranchId(sp));
-    AB_Transaction_SetLocalAccountNumber(t, AB_Split_GetLocalAccountNumber(sp));
-    AB_Transaction_SetLocalSuffix(t, AB_Split_GetLocalSuffix(sp));
-    AB_Transaction_SetLocalName(t, AB_Split_GetLocalName(sp));
-
-    /* remote account */
-    AB_Transaction_SetRemoteCountry(t, AB_Split_GetRemoteCountry(sp));
-    AB_Transaction_SetRemoteBankCode(t, AB_Split_GetRemoteBankCode(sp));
-    AB_Transaction_SetRemoteBranchId(t, AB_Split_GetRemoteBranchId(sp));
-    AB_Transaction_SetRemoteAccountNumber(t, AB_Split_GetRemoteAccountNumber(sp));
-    AB_Transaction_SetRemoteSuffix(t, AB_Split_GetRemoteSuffix(sp));
-    AB_Transaction_SetRemoteName(t, AB_Split_GetRemoteName(sp));
-
-    /* value */
-    AB_Transaction_SetValue(t, AB_Split_GetValue(sp));
-  }

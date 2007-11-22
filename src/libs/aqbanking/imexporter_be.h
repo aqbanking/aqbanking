@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file imexporter_be.h
@@ -55,19 +56,22 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie);
 /*@{*/
 typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                       GWEN_BUFFEREDIO *bio,
-                                       GWEN_DB_NODE *params);
+                                       GWEN_IO_LAYER *io,
+				       GWEN_DB_NODE *params,
+				       uint32_t guiid);
 
 typedef int (*AB_IMEXPORTER_EXPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                       GWEN_BUFFEREDIO *bio,
-                                       GWEN_DB_NODE *params);
+				       GWEN_IO_LAYER *io,
+				       GWEN_DB_NODE *params,
+				       uint32_t guiid);
 
 /**
  * Checks whether the given file is possibly supported by the plugin.
  */
 typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
-                                          const char *fname);
+					  const char *fname,
+					  uint32_t guiid);
 
 
 /*@}*/

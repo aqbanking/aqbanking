@@ -13,8 +13,21 @@
 #ifndef QBANKING_BANKING_H
 #define QBANKING_BANKING_H
 
+#include <aqbanking/banking.h>
+
+#include <qbanking/api.h>
+
+
 
 #define QBANKING_PM_CFGMODULE        "qbanking_cfg_module"
+
+
+#define QBANKING_IMPORTER_FLAGS_COMPLETE_DAYS  0x00000001
+#define QBANKING_IMPORTER_FLAGS_OVERWRITE_DAYS 0x00000002
+#define QBANKING_IMPORTER_FLAGS_ASK_ALL_DUPES  0x00000004
+#define QBANKING_IMPORTER_FLAGS_FUZZY          0x00000008
+#define QBANKING_IMPORTER_FLAGS_AS_ORDERS      0x00000010
+
 
 
 #include <aqbanking/banking.h>
@@ -34,29 +47,23 @@ class QBanking;
 
 #include <qbanking/banking.h>
 #include <qbanking/qbflagstaff.h>
+#include <qbanking/qgui.h>
 
 #include <gwenhywfar/plugin.h>
 
 
-class QBProgress;
-class QBSimpleBox;
-class QBWaitCallback;
 class QBCfgModule;
+class QGui;
 
 
-class QBANKING_API QBanking: public Banking {
-  friend class QBanking_Linker;
+class QBANKING_API QBanking: public AB_Banking {
 private:
   QGuardedPtr<QWidget> _parentWidget;
-  GWEN_TYPE_UINT32 _lastWidgetId;
-  AB_BANKING_LOGLEVEL _logLevel;
-  std::list<QBProgress*> _progressWidgets;
-  std::list<QBSimpleBox*> _simpleBoxWidgets;
+  GWEN_LOGGER_LEVEL _logLevel;
   QBFlagStaff *_flagStaff;
   QTranslator *_translator;
 
-  QBWaitCallback *_simpleCallback;
-  QBWaitCallback *_fastCallback;
+  QGui *_gui;
 
   GWEN_PLUGIN_MANAGER *_pluginManagerCfgModules;
   QBCfgModule *_appCfgModule;
@@ -64,9 +71,6 @@ private:
   std::list<QBCfgModule*> _cfgModules;
 
   QString _appHelpPath;
-
-  QBProgress *_findProgressWidget(GWEN_TYPE_UINT32 id);
-  void _cleanupProgressWidgets();
 
   AB_ACCOUNT *_getAccount(const char *accountId);
   static int _extractHTML(const char *text, GWEN_BUFFER *buf);
@@ -82,65 +86,15 @@ public:
   int init();
   int fini();
 
+  QGui *getGui() const;
+  void setGui(QGui *g);
+
+  QWidget *getParentWidget() const { return _parentWidget;};
+  void setParentWidget(QWidget *w) { _parentWidget=w;};
+
   void setAppHelpPath(const QString &s);
 
-  virtual int messageBox(GWEN_TYPE_UINT32 flags,
-			 const char *title,
-			 const char *text,
-			 const char *b1,
-			 const char *b2,
-			 const char *b3);
-
-  virtual int inputBox(GWEN_TYPE_UINT32 flags,
-		       const char *title,
-                       const char *text,
-                       char *buffer,
-                       int minLen,
-                       int maxLen);
-
-  virtual GWEN_TYPE_UINT32 showBox(GWEN_TYPE_UINT32 flags,
-                                   const char *title,
-                                   const char *text);
-  virtual void hideBox(GWEN_TYPE_UINT32 id);
-
-  virtual GWEN_TYPE_UINT32 progressStart(const char *title,
-                                         const char *text,
-                                         GWEN_TYPE_UINT32 total);
-
-  /**
-   * Advances the progress bar an application might present to the user.
-   * @param id id assigned by @ref AB_Banking_Progress_Start
-   * @param progress new value for progress. A special value is
-   *  AB_BANKING_PROGRESS_NONE which means that the progress is unchanged.
-   * This might be used as a keepalive call to a GUI.
-   */
-  virtual int progressAdvance(GWEN_TYPE_UINT32 id,
-                              GWEN_TYPE_UINT32 progress);
-  virtual int progressLog(GWEN_TYPE_UINT32 id,
-                          AB_BANKING_LOGLEVEL level,
-                          const char *text);
-  virtual int progressEnd(GWEN_TYPE_UINT32 id);
-
-  /**
-   * This function makes the application print something. This is
-   * the implementation of AB_Banking_Print(); see there for
-   * arguments. 
-   *
-   * Note: all string arguments must be in UTF-8 encoding.
-   */
-  virtual int print(const char *docTitle,
-                    const char *docType,
-                    const char *descr,
-                    const char *text);
-
   virtual QBFlagStaff *flagStaff();
-
-  void setParentWidget(QWidget *w);
-  QWidget *getParentWidget();
-
-  int enqueueJob(AB_JOB *j);
-  int dequeueJob(AB_JOB *j);
-  int executeQueue(AB_IMEXPORTER_CONTEXT *ctx);
 
   void setAccountAlias(AB_ACCOUNT *a, const char *alias);
 
@@ -162,31 +116,14 @@ public:
   virtual bool setAccountStatus(const AB_ACCOUNT *a,
                                 const AB_ACCOUNT_STATUS *ast);
 
-  bool requestBalance(const char *accountId);
-  bool requestTransactions(const char *accountId,
-                           const QDate &fromDate,
-                           const QDate &toDate);
-
   virtual bool importContext(AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_TYPE_UINT32 flags);
+                             uint32_t flags);
 
   virtual bool importAccountInfo(AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                 GWEN_TYPE_UINT32 flags);
+                                 uint32_t flags);
 
   virtual bool interactiveImport();
 
-
-  virtual GWEN_TYPE_UINT32 showBox(GWEN_TYPE_UINT32 flags,
-                                   const QString &title,
-                                   const QString &text);
-
-
-  virtual GWEN_TYPE_UINT32 progressStart(const QString &title,
-                                         const QString &text,
-                                         GWEN_TYPE_UINT32 total);
-  virtual int progressLog(GWEN_TYPE_UINT32 id,
-                          AB_BANKING_LOGLEVEL level,
-                          const QString &text);
 
   /**
    * This function makes the application print something. This is

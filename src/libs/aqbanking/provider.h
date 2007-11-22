@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 /** @file aqbanking/provider.h
@@ -133,7 +134,7 @@ AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 
 
 AQBANKING_API
-GWEN_TYPE_UINT32 AB_Provider_GetFlags(const AB_PROVIDER *pro);
+uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro);
 
 /**
  * This copies the name of the folder for AqBanking's backend data into

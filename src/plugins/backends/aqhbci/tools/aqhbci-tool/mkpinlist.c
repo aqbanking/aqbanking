@@ -39,7 +39,7 @@ int mkPinList(AB_BANKING *ab,
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,           /* type */
     "outFile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -50,7 +50,7 @@ int mkPinList(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -74,7 +74,7 @@ int mkPinList(AB_BANKING *ab,
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -86,6 +86,12 @@ int mkPinList(AB_BANKING *ab,
   outFile=GWEN_DB_GetCharValue(db, "outfile", 0, 0);
 
   rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -106,7 +112,7 @@ int mkPinList(AB_BANKING *ab,
   }
   else {
     GWEN_BUFFEREDIO *bio;
-    GWEN_ERRORCODE err;
+    int err;
     AB_USER_LIST2 *ul;
 
     bio=GWEN_BufferedIO_File_new(fd);
@@ -133,9 +139,9 @@ int mkPinList(AB_BANKING *ab,
         assert(u);
   
         while(u) {
-          AH_MEDIUM *m;
-          const char *s;
-          const char *name;
+	  const char *s;
+	  GWEN_BUFFER *nbuf;
+          int rv;
 
           GWEN_BufferedIO_WriteLine(bio, "");
           GWEN_BufferedIO_Write(bio, "# User \"");
@@ -147,30 +153,28 @@ int mkPinList(AB_BANKING *ab,
           GWEN_BufferedIO_Write(bio, s);
           GWEN_BufferedIO_WriteLine(bio, "\"");
 
-          m=AH_User_GetMedium(u);
-          assert(m);
+	  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+          if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan)
+	    rv=AH_User_MkPinName(u, nbuf);
+	  else
+	    rv=AH_User_MkPasswdName(u, nbuf);
 
-          name=AH_Medium_GetMediumName(m);
-          if (name) {
-            GWEN_BUFFER *nbuf;
+	  if (rv==0) {
             GWEN_BUFFER *obuf;
 
-            nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-            GWEN_Buffer_AppendString(nbuf, "PASSWORD::");
-            GWEN_Buffer_AppendString(nbuf, name);
-            obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-            if (GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(nbuf),
-                                         obuf)) {
-              DBG_ERROR(0, "Error escaping name to buffer");
-              return 3;
-            }
-            GWEN_BufferedIO_Write(bio, "\"");
+	    obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+	    if (GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(nbuf),
+					 obuf)) {
+	      DBG_ERROR(0, "Error escaping name to buffer");
+	      return 3;
+	    }
+	    GWEN_BufferedIO_Write(bio, "\"");
             GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(obuf));
             GWEN_BufferedIO_WriteLine(bio, "\" = \"\"");
 
             GWEN_Buffer_free(obuf);
-            GWEN_Buffer_free(nbuf);
           }
+	  GWEN_Buffer_free(nbuf);
 
           u=AB_User_List2Iterator_Next(uit);
         }
@@ -180,7 +184,7 @@ int mkPinList(AB_BANKING *ab,
     }
 
     err=GWEN_BufferedIO_Close(bio);
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       DBG_ERROR_ERR(0, err);
       GWEN_BufferedIO_Abandon(bio);
       GWEN_BufferedIO_free(bio);
@@ -189,6 +193,12 @@ int mkPinList(AB_BANKING *ab,
     GWEN_BufferedIO_free(bio);
   }
 
+
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
+  }
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

@@ -17,7 +17,7 @@
 
 #include "job_l.h"
 #include <aqhbci/account.h>
-#include <gwenhywfar/crypt.h>
+#include <gwenhywfar/ct.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,8 +33,9 @@ extern "C" {
 
 
 AH_JOB *AH_Job_GetKeys_new(AB_USER *u);
-GWEN_CRYPTKEY *AH_Job_GetKeys_GetSignKey(const AH_JOB *j);
-GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j);
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j);
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j);
 
 
 
@@ -48,8 +49,9 @@ GWEN_CRYPTKEY *AH_Job_GetKeys_GetCryptKey(const AH_JOB *j);
 
 
 AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
-                            const GWEN_CRYPTKEY *cryptKey,
-                            const GWEN_CRYPTKEY *signKey);
+			    const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
+			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
+			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo);
 
 
 
@@ -169,7 +171,7 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j);
  */
 
 AH_JOB *AH_Job_GetItanModes_new(AB_USER *u);
-GWEN_TYPE_UINT32 AH_Job_GetItanModes_GetModes(const AH_JOB *j);
+uint32_t AH_Job_GetItanModes_GetModes(const AH_JOB *j);
 
 
 

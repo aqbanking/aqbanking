@@ -17,10 +17,11 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/dbio.h>
 
+#include <aqbanking/value.h>
 
 
 int AHB_DTAUS__SetCharValue(GWEN_DB_NODE *db,
-                            GWEN_TYPE_UINT32 flags,
+			    uint32_t flags,
                             const char *name,
                             const char *s);
 
@@ -46,10 +47,10 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
 int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
                          unsigned int pos,
                          GWEN_DB_NODE *xa,
-                         double *sumEUR,
-                         double *sumDEM,
-                         double *sumBankCodes,
-                         double *sumAccountIds);
+			 AB_VALUE *sumEUR,
+                         AB_VALUE *sumDEM,
+                         AB_VALUE *sumBankCodes,
+                         AB_VALUE *sumAccountIds);
 
 /**
  * @return -1 on error, size of E-set if ok
@@ -57,10 +58,10 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
 int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
                          unsigned int pos,
                          unsigned int csets,
-                         double sumEUR,
-                         double sumDEM,
-                         double sumBankCodes,
-                         double sumAccountIds);
+                         AB_VALUE *sumEUR,
+                         AB_VALUE *sumDEM,
+			 AB_VALUE *sumBankCodes,
+                         AB_VALUE *sumAccountIds);
 
 /**
  * @return -1 on error, size of DTAUS record if ok
@@ -70,10 +71,12 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
                             GWEN_DB_NODE *cfg);
 
 int AHB_DTAUS__Import(GWEN_DBIO *dbio,
-                      GWEN_BUFFEREDIO *bio,
-                      GWEN_TYPE_UINT32 flags,
+		      GWEN_IO_LAYER *io,
                       GWEN_DB_NODE *data,
-                      GWEN_DB_NODE *cfg);
+		      GWEN_DB_NODE *cfg,
+                      uint32_t flags,
+		      uint32_t guiid,
+		      int msecs);
 
 
 

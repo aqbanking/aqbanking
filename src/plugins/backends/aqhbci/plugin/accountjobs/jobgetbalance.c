@@ -116,16 +116,16 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
     p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
     if (p) {
       if (strcasecmp(p, "D")==0 ||
-          strcasecmp(p, "RC")==0)
-        v2=AB_Value_new(-AB_Value_GetValue(v1),
-                        AB_Value_GetCurrency(v1));
+	  strcasecmp(p, "RC")==0) {
+	v2=AB_Value_dup(v1);
+	AB_Value_Negate(v2);
+      }
       else if (strcasecmp(p, "C")==0 ||
                strcasecmp(p, "RD")==0)
-        v2=AB_Value_new(AB_Value_GetValue(v1),
-                        AB_Value_GetCurrency(v1));
+	v2=AB_Value_dup(v1);
       else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
-        v2=0;
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
+	v2=0;
       }
     }
     if (v2)
@@ -144,7 +144,8 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+			      uint32_t guiid){
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -186,7 +187,7 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       AB_IMEXPORTER_ACCOUNTINFO *ai;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
-      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, stderr, 2);
 
       acst=AB_AccountStatus_new();
@@ -254,7 +255,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
-                               AH_JOB_EXCHANGE_MODE m){
+			       AH_JOB_EXCHANGE_MODE m,
+			       uint32_t guiid){
   AH_JOB_GETBALANCE *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -265,7 +267,7 @@ int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
 
   if (AB_Job_GetType(bj)!=AB_Job_TypeGetBalance) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetBalance job");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
 
   switch(m) {
@@ -279,7 +281,7 @@ int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
     return 0;
   default:
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 

@@ -4,7 +4,7 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 EXTRA_DIST=aqhbci.xml.in header.xml.in
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes) \
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
  -I$(srcdir)/joblayer
 
 BUILT_SOURCES = version.h
@@ -13,11 +13,7 @@ CLEANFILES = $(BUILT_SOURCES) hbci.xml
 
 plugindir= $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqhbci.la
-if IS_WINDOWS
-plugin_DATA = aqhbci.xml 
-else
 plugin_DATA=aqhbci.xml
-endif
 
 iheaderdir=${includedir}/aqhbci
 iheader_HEADERS=aqhbci.h
@@ -29,7 +25,7 @@ libaqhbci_la_SOURCES=aqhbci.c
 
 noinst_PROGRAMS=testlib
 
-xmldatadir = $(aqhbci_data)/xml
+xmldatadir=$(aqbanking_pkgdatadir)/backends/aqhbci
 xmldata_DATA=hbci.xml
 
 hbci.xml: header.xml applayer/xml/base.xml accountjobs/accountjobs.xml
@@ -61,7 +57,7 @@ aqhbci_la_SOURCES=aqhbci-plugin.c
 aqhbci_la_LIBADD = \
   libaqhbci.la \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(gwenhywfar_libs) 
 
 aqhbci_la_LDFLAGS = -no-undefined -module -avoid-version
 #  -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@

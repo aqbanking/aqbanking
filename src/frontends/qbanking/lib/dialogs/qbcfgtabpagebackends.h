@@ -42,9 +42,11 @@ public:
   virtual bool fromGui();
   virtual void updateView();
 
+signals:
+  void signalUpdate();
+
 public slots:
-  void slotBackendEnable();
-  void slotBackendDisable();
+  void slotUpdate();
 };
 
 

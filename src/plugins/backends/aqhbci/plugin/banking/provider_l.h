@@ -20,5 +20,15 @@
 AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro);
 
 
+AQHBCI_API
+int AH_Provider_SendDtazv(AB_PROVIDER *pro,
+			  AB_ACCOUNT *a,
+			  AB_IMEXPORTER_CONTEXT *ctx,
+			  const uint8_t *dataPtr,
+			  uint32_t dataLen,
+			  int nounmount,
+			  uint32_t guiid);
+
+
 #endif
 

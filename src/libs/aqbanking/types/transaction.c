@@ -17,7 +17,6 @@
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/value.h>
-#include <aqbanking/split.h>
 #include <aqbanking/transactionlimits.h>
 #include <aqbanking/transactionfns.h>
 
@@ -252,7 +251,6 @@ AB_TRANSACTION *AB_Transaction_new() {
   GWEN_INHERIT_INIT(AB_TRANSACTION, st)
   GWEN_LIST_INIT(AB_TRANSACTION, st)
   st->remoteName=GWEN_StringList_new();
-  st->splits=AB_Split_List_new();
   st->purpose=GWEN_StringList_new();
   st->category=GWEN_StringList_new();
   return st;
@@ -304,8 +302,6 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     AB_Value_free(st->value);
   if (st->fees)
     AB_Value_free(st->fees);
-  if (st->splits)
-    AB_Split_List_free(st->splits);
   if (st->transactionKey)
     free(st->transactionKey);
   if (st->customerReference)
@@ -392,8 +388,6 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->value=AB_Value_dup(d->value);
   if (d->fees)
     st->fees=AB_Value_dup(d->fees);
-  if (d->splits)
-    st->splits=AB_Split_List_dup(d->splits);
   st->textKey=d->textKey;
   if (d->transactionKey)
     st->transactionKey=strdup(d->transactionKey);
@@ -518,20 +512,6 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->fees)
     if (AB_Value_toDb(st->fees, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "fees")))
       return -1;
-  if (st->splits)
-  if (1) {
-    GWEN_DB_NODE *dbT;
-    AB_SPLIT *e;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "splits");
-    assert(dbT);
-    e=AB_Split_List_First(st->splits);
-    while(e) {
-      if (AB_Split_toDb(e, GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_CREATE_GROUP, "element")))
-        return -1;
-      e=AB_Split_List_Next(e);
-    } /* while */
-  } /* if (1) */
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "textKey", st->textKey))
     return -1;
   if (st->transactionKey)
@@ -701,29 +681,6 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   st->fees=AB_Value_fromDb(dbT);
 }
   }
-  st->splits=AB_Split_List_new();
-  if (1) {/* just for local vars */
-    GWEN_DB_NODE *dbT;
-    AB_SPLIT *e;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "splits");
-    if (dbT) {
-      GWEN_DB_NODE *dbT2;
-
-      dbT2=GWEN_DB_FindFirstGroup(dbT, "element");
-      while(dbT2) {
-        e=AB_Split_fromDb(dbT2);
-        if (!e) {
-          DBG_ERROR(0, "Bad element for type \"AB_SPLIT\"");
-          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
-            GWEN_DB_Dump(dbT2, stderr, 2);
-          AB_Transaction_free(st);
-          return 0;
-        }
-        AB_Split_List_Add(e, st->splits);    dbT2=GWEN_DB_FindNextGroup(dbT2, "element");
-      } /* while */
-    } /* if (dbT) */
-  } /* if (1) */
   AB_Transaction_SetTextKey(st, GWEN_DB_GetIntValue(db, "textKey", 0, 0));
   AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
   AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
@@ -1174,13 +1131,13 @@ int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d) {
 
 
 
-GWEN_TYPE_UINT32 AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
+uint32_t AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
   assert(st);
   return st->uniqueId;
 }
 
 
-void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, GWEN_TYPE_UINT32 d) {
+void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, uint32_t d) {
   assert(st);
   st->uniqueId=d;
   st->_modified=1;
@@ -1263,38 +1220,6 @@ void AB_Transaction_SetFees(AB_TRANSACTION *st, const AB_VALUE *d) {
     st->fees=AB_Value_dup(d);
   else
     st->fees=0;
-  st->_modified=1;
-}
-
-
-
-
-AB_SPLIT_LIST *AB_Transaction_GetSplits(const AB_TRANSACTION *st) {
-  assert(st);
-  return st->splits;
-}
-
-
-void AB_Transaction_SetSplits(AB_TRANSACTION *st, AB_SPLIT_LIST *d) {
-  assert(st);
-  if (st->splits)
-    AB_Split_List_free(st->splits);
-  if (d) {
-    AB_SPLIT *e;
-
-  st->splits=AB_Split_List_new();
-    e=AB_Split_List_First(d);
-    while(e) {
-      AB_SPLIT *ne;
-
-      ne=AB_Split_dup(e);
-      assert(ne);
-      AB_Split_List_Add(ne, st->splits);
-      e=AB_Split_List_Next(e);
-    } /* while (e) */
-  } /* if LIST */
-  else
-    st->splits=0;
   st->_modified=1;
 }
 

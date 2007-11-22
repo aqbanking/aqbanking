@@ -10,7 +10,7 @@
     </functions>
   </type>
   
-  <type id="GWEN_TYPE_UINT32" dbtype="int" />
+  <type id="uint32_t" basetype="int" />
 </typedefs>
 
 <types>
@@ -43,7 +43,7 @@
       <header type="local" >userfns_l.h</header>
     </c-headers>
     
-    <elem name="uniqueId" type="GWEN_TYPE_UINT32" />
+    <elem name="uniqueId" type="uint32_t" />
     <elem name="backendName" type="char" ptr="1" />
     <elem name="userName" type="char" ptr="1" />
     <elem name="userId" type="char" ptr="1" />
@@ -52,7 +52,7 @@
     <elem name="country" type="char" ptr="1" default="de" />
     <elem name="bankCode" type="char" ptr="1" />
 
-    <elem name="lastSessionId" type="GWEN_TYPE_UINT32" />
+    <elem name="lastSessionId" type="uint32_t" />
     
     <elem name="data" type="GWEN_DB_NODE" ptr="1" 
           access="private" const="0" preset='GWEN_DB_Group_new("data")'/>

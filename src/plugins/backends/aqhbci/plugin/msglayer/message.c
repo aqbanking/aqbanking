@@ -20,10 +20,9 @@
 #include "message_p.h"
 #include "aqhbci_l.h"
 #include "hbci_l.h"
-#include "mediumctx_l.h"
-#include "medium_l.h"
 #include "dialog_l.h"
 #include "msgengine_l.h"
+#include "user_l.h"
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/gwenhywfar.h>
@@ -31,6 +30,14 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/mdigest.h>
+#include <gwenhywfar/cryptkeysym.h>
+#include <gwenhywfar/padd.h>
+#include <gwenhywfar/gui.h>
+
+#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/io_file.h>
 
 #include <aqbanking/banking.h>
 
@@ -54,25 +61,13 @@ GWEN_LIST_FUNCTIONS(AH_MSG, AH_Msg);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_KEYSPEC_LIST *AH_Msg_GetSigners(const AH_MSG *hmsg){
+int AH_Msg_AddSignerId(AH_MSG *hmsg, const char *s) {
   assert(hmsg);
-  return hmsg->signers;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_AddSigner(AH_MSG *hmsg, const GWEN_KEYSPEC *ks){
-  assert(hmsg);
-  assert(ks);
-
   if (hmsg->nodes) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Signers must be added before nodes !");
-    return -1;
+    return GWEN_ERROR_INVALID;
   }
-  GWEN_KeySpec_List_Add(GWEN_KeySpec_dup(ks), hmsg->signers);
-  hmsg->nSigners++;
-  return 0;
+  return GWEN_StringList_AppendString(hmsg->signerIdList, s, 0, 1);
 }
 
 
@@ -80,24 +75,7 @@ int AH_Msg_AddSigner(AH_MSG *hmsg, const GWEN_KEYSPEC *ks){
 /* --------------------------------------------------------------- FUNCTION */
 unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg){
   assert(hmsg);
-  return hmsg->nSigners;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-const GWEN_KEYSPEC *AH_Msg_GetCrypter(const AH_MSG *hmsg){
-  assert(hmsg);
-  return hmsg->crypter;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetCrypter(AH_MSG *hmsg, const GWEN_KEYSPEC *ks){
-  assert(hmsg);
-  GWEN_KeySpec_free(hmsg->crypter);
-  hmsg->crypter=GWEN_KeySpec_dup(ks);
+  return GWEN_StringList_Count(hmsg->signerIdList);
 }
 
 
@@ -123,8 +101,7 @@ GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetBuffer(AH_MSG *hmsg,
-                           GWEN_BUFFER *bf){
+void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf){
   assert(hmsg);
   GWEN_Buffer_free(hmsg->buffer);
   hmsg->buffer=bf;
@@ -176,7 +153,7 @@ AH_MSG *AH_Msg_new(AH_DIALOG *dlg){
   hmsg->buffer=GWEN_Buffer_new(0, AH_MSG_DEFAULTSIZE, 0, 1);
   GWEN_Buffer_ReserveBytes(hmsg->buffer, AH_MSG_DEFAULTRESERVE);
   GWEN_Buffer_SetStep(hmsg->buffer, AH_MSG_DEFAULTSTEP);
-  hmsg->signers=GWEN_KeySpec_List_new();
+  hmsg->signerIdList=GWEN_StringList_new();
   return hmsg;
 }
 
@@ -187,12 +164,12 @@ void AH_Msg_free(AH_MSG *hmsg){
   if (hmsg) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_MSG");
     GWEN_LIST_FINI(AH_MSG, hmsg);
-    GWEN_KeySpec_List_free(hmsg->signers);
-    GWEN_KeySpec_free(hmsg->crypter);
+    GWEN_StringList_free(hmsg->signerIdList);
     GWEN_Buffer_free(hmsg->itanHashBuffer);
     GWEN_Buffer_free(hmsg->buffer);
     GWEN_Buffer_free(hmsg->origbuffer);
     AH_Dialog_free(hmsg->dialog);
+    free(hmsg->crypterId);
     free(hmsg->resultText);
     free(hmsg->resultParam);
     free(hmsg->usedTan);
@@ -206,6 +183,22 @@ void AH_Msg_free(AH_MSG *hmsg){
 
     GWEN_FREE_OBJECT(hmsg);
   }
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->secProfile;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i) {
+  assert(hmsg);
+  hmsg->secProfile=i;
 }
 
 
@@ -358,7 +351,7 @@ unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg) {
     rv=2;
     if (hmsg->enableInsert)
       rv++;
-    rv+=hmsg->nSigners;
+    rv+=GWEN_StringList_Count(hmsg->signerIdList);
     return rv;
   }
   return hmsg->lastSegment+1;
@@ -387,7 +380,7 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
     hmsg->firstSegment=2;
     if (hmsg->enableInsert)
       hmsg->firstSegment++;
-    hmsg->firstSegment+=hmsg->nSigners;
+    hmsg->firstSegment+=GWEN_StringList_Count(hmsg->signerIdList);
     GWEN_MsgEngine_SetIntValue(e,
                                "SegmentNumber",
                                hmsg->firstSegment);
@@ -445,10 +438,10 @@ unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Inserting a node without enableInsert flag");
     return 0;
   }
-  if (hmsg->firstSegment<(2+hmsg->nSigners)) {
+  if (hmsg->firstSegment<(2+GWEN_StringList_Count(hmsg->signerIdList))) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "First segment is %d (%d signers), can't insert a new one",
-              hmsg->firstSegment, hmsg->nSigners);
+              hmsg->firstSegment, GWEN_StringList_Count(hmsg->signerIdList));
     return 0;
   }
 
@@ -498,7 +491,7 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
   if (hmsg->firstSegment==0) {
     /* first node */
     hmsg->firstSegment=2;
-    hmsg->firstSegment+=hmsg->nSigners;
+    hmsg->firstSegment+=GWEN_StringList_Count(hmsg->signerIdList);
     GWEN_MsgEngine_SetIntValue(e,
                                "SegmentNumber",
                                hmsg->firstSegment);
@@ -516,22 +509,20 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
 
   /* sign message */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Letting all signers sign");
-  if (hmsg->nSigners) {
+  if (GWEN_StringList_Count(hmsg->signerIdList)) {
     GWEN_BUFFER *rawBuf;
-    const GWEN_KEYSPEC *ks;
+    GWEN_STRINGLISTENTRY *se;
 
     rawBuf=GWEN_Buffer_dup(hmsg->buffer);
-    ks=GWEN_KeySpec_List_First(hmsg->signers);
-    while (ks) {
-      /*DBG_INFO(AQHBCI_LOGDOMAIN, "Signing with this key:");
-       GWEN_KeySpec_Dump(ks, stderr, 1);*/
-      rv=AH_Msg_SignMsg(hmsg, rawBuf, ks);
+    se=GWEN_StringList_FirstEntry(hmsg->signerIdList);
+    while (se) {
+      rv=AH_Msg__Sign(hmsg, rawBuf, GWEN_StringListEntry_Data(se));
       if (rv) {
         GWEN_Buffer_free(rawBuf);
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
-      ks=GWEN_KeySpec_List_Next(ks);
+      se=GWEN_StringListEntry_Next(se);
     } /* while */
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
@@ -541,9 +532,9 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
   AH_Msg_LogMessage(hmsg, hmsg->buffer, 0, 0);
 
   /* encrypt message */
-  if (hmsg->crypter) {
+  if (hmsg->crypterId) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encrypting message");
-    rv=AH_Msg_EncryptMsg(hmsg);
+    rv=AH_Msg__Encrypt(hmsg);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -898,9 +889,8 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   int rv;
   GWEN_DB_NODE *n, *n2;
   AB_USER *u;
-  AH_MEDIUM *m;
   const char *mode;
-  GWEN_TYPE_UINT32 expMsgNum;
+  uint32_t expMsgNum;
 
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
@@ -908,8 +898,6 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   /* set mode */
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
-  m=AH_User_GetMedium(u);
-  assert(m);
 
   mode=AH_CryptMode_toString(AH_User_GetCryptMode(u));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Mode is: %s", mode);
@@ -924,7 +912,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   rv=AH_Msg_ReadMessage(hmsg, e, "SEG", hmsg->buffer, gr, flags);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   /* take some values out of the message head (with checks) */
@@ -934,7 +922,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
                      "MsgHead");
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No message head segment");
-    return AB_ERROR_BAD_DATA;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   /* sample message number */
@@ -942,10 +930,9 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   hmsg->msgNum=GWEN_DB_GetIntValue(n, "msgnum", 0, 0);
   if (AH_Dialog_CheckReceivedMsgNum(hmsg->dialog, hmsg->msgNum)) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message number, ignoring");
-    AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(hmsg->dialog),
-			   0,
-			   AB_Banking_LogLevelWarn,
-                           I18N("Bad message number, ignoring"));
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Warning,
+			 I18N("Bad message number, ignoring"));
     /* FIXME: this is sometimes returned by the Sparkasse server, when
      * the server is currently out of service
      * We will for now ignore this, since this message still returns an
@@ -963,7 +950,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
     p=GWEN_DB_GetCharValue(n, "dialogid", 0, 0);
     if (!p) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No dialog id in message");
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
     if (AH_Dialog_GetFlags(hmsg->dialog) & AH_DIALOG_FLAGS_INITIATOR) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Setting new dialog id (%s)", p);
@@ -982,7 +969,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
         GWEN_DB_SetCharValue(n, GWEN_DB_FLAGS_OVERWRITE_VARS,
                              "segment/error/text",
                              "Ungueltige Dialog Kennung");
-        return AB_ERROR_BAD_DATA;
+        return GWEN_ERROR_BAD_DATA;
       } /* if bad dialog id */
     } /* if !initialtor */
   }
@@ -998,19 +985,18 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
     p=GWEN_DB_GetCharValue(n2, "dialogid", 0, 0);
     if (!p) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No reference dialog id in message");
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
     if (strcasecmp(AH_Dialog_GetDialogId(hmsg->dialog), p)!=0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Dialog id does not match current dialog id !");
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
     hmsg->refMsgNum=GWEN_DB_GetIntValue(n2, "msgnum", 0, 0);
     if (hmsg->refMsgNum!=expMsgNum) {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message reference number, ignoring");
-      AB_Banking_ProgressLog(AH_Dialog_GetBankingApi(hmsg->dialog),
-			     0,
-			     AB_Banking_LogLevelWarn,
-                             I18N("Bad message reference number, ignoring"));
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Warning,
+			   I18N("Bad message reference number, ignoring"));
       hmsg->refMsgNum=expMsgNum;
     }
   }
@@ -1026,9 +1012,9 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   if (n) {
     if (GWEN_DB_GetIntValue(n, "segment/error/code", 0, 0)>=9000) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Encryption error");
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
-    rv=AH_Msg_Decrypt(hmsg, gr);
+    rv=AH_Msg__Decrypt(hmsg, gr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
       return AB_ERROR_SECURITY;
@@ -1062,9 +1048,12 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
       GWEN_DB_AddGroup(gr, n);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-      return AB_ERROR_BAD_DATA;
+      return GWEN_ERROR_BAD_DATA;
     }
   } /* if crypthead */
+
+  /* log decrypted message */
+  AH_Msg_LogMessage(hmsg, hmsg->buffer, 1, 0);
 
   /* check segment sequence numbers */
   rv=AH_Msg_SequenceCheck(gr);
@@ -1074,14 +1063,11 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   }
 
   /* verify signatures */
-  rv=AH_Msg_Verify(hmsg, gr, flags);
+  rv=AH_Msg__Verify(hmsg, gr);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return rv;
   }
-
-  /* log decrypted message */
-  AH_Msg_LogMessage(hmsg, hmsg->buffer, 1, 0);
 
   return 0;
 }
@@ -1093,7 +1079,7 @@ void AH_Msg__Dump(const AH_MSG *hmsg,
                   FILE *f,
                   unsigned int indent) {
   unsigned int i;
-  const GWEN_KEYSPEC *ks;
+  GWEN_STRINGLISTENTRY *se;
 
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "AH_Msg\n");
@@ -1120,19 +1106,19 @@ void AH_Msg__Dump(const AH_MSG *hmsg,
   }
 
   for (i=0; i<indent; i++) fprintf(f, " ");
-  if (hmsg->crypter) {
-    fprintf(f, "Crypter:\n");
-    GWEN_KeySpec_Dump(hmsg->crypter, f, indent+2);
+  if (hmsg->crypterId) {
+    fprintf(f, "Crypter: %s\n", hmsg->crypterId);
   }
   else {
     fprintf(f, "Crypter: none\n");
   }
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Signers (%d):\n", hmsg->nSigners);
-  ks=GWEN_KeySpec_List_First(hmsg->signers);
-  while(ks) {
-    GWEN_KeySpec_Dump(ks, f, indent+2);
-    ks=GWEN_KeySpec_List_Next(ks);
+  fprintf(f, "Signers (%d):\n", GWEN_StringList_Count(hmsg->signerIdList));
+  se=GWEN_StringList_FirstEntry(AH_Msg_GetSignerIdList(hmsg));
+  while(se) {
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "%s\n", GWEN_StringListEntry_Data(se));
+    se=GWEN_StringListEntry_Next(se);
   } /* while */
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "Nodes                : %d\n", hmsg->nodes);
@@ -1160,15 +1146,15 @@ AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s){
-  GWEN_KEYSPEC *ks;
+  GWEN_STRINGLISTENTRY *se;
 
-  ks=GWEN_KeySpec_List_First(AH_Msg_GetSigners(hmsg));
-  while(ks) {
-    if (strcasecmp(GWEN_KeySpec_GetOwner(ks), s)==0)
+  se=GWEN_StringList_FirstEntry(hmsg->signerIdList);
+  while(se) {
+    if (strcasecmp(GWEN_StringListEntry_Data(se), s)==0)
       break;
-    ks=GWEN_KeySpec_List_Next(ks);
-  } /* while */
-  if (ks) {
+    se=GWEN_StringListEntry_Next(se);
+  }
+  if (se) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message signed by \"%s\"", s);
     return 1;
   }
@@ -1187,7 +1173,7 @@ int AH_Msg_EnableInsert(AH_MSG *hmsg) {
   if (hmsg->nodes && !hmsg->enableInsert) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "There already are nodes in the buffer, "
              "cannot insert");
-    return AB_ERROR_INVALID;
+    return GWEN_ERROR_INVALID;
   }
   hmsg->enableInsert=1;
   return 0;
@@ -1349,8 +1335,8 @@ void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
-				 GWEN_BUFFEREDIO *bio){
+int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
+		      GWEN_IO_LAYER *io){
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1361,7 +1347,7 @@ GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
   count=slen;
   while(*p && !segDone && count--) {
     int normalChar=1;
-    GWEN_ERRORCODE err;
+    int err;
 
     err=0;
     if (lastWasEscape) {
@@ -1381,11 +1367,17 @@ GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
       }
     }
     if (plusCount>=3 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_BufferedIO_WriteChar(bio, '*');
+      err=GWEN_Io_Layer_WriteChar(io, '*',
+				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				  0,
+				  2000);
     else
-      err=GWEN_BufferedIO_WriteChar(bio, *p);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+      err=GWEN_Io_Layer_WriteChar(io, *p,
+				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				  0,
+				  2000);
+    if (err<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
     }
 
@@ -1398,8 +1390,8 @@ GWEN_ERRORCODE AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
-				 GWEN_BUFFEREDIO *bio){
+int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
+		      GWEN_IO_LAYER *io){
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1410,7 +1402,7 @@ GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
   count=slen;
   while(*p && !segDone && count--) {
     int normalChar=1;
-    GWEN_ERRORCODE err;
+    int err;
 
     err=0;
     if (lastWasEscape) {
@@ -1430,11 +1422,17 @@ GWEN_ERRORCODE AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
       }
     }
     if (plusCount>=1 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_BufferedIO_WriteChar(bio, '*');
+      err=GWEN_Io_Layer_WriteChar(io, '*',
+				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				  0,
+				  2000);
     else
-      err=GWEN_BufferedIO_WriteChar(bio, *p);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
+      err=GWEN_Io_Layer_WriteChar(io, *p,
+				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				  0,
+				  2000);
+    if (err<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
     }
 
@@ -1453,15 +1451,14 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        int crypt) {
   GWEN_DB_NODE *db;
   AB_USER *u;
-  AH_MEDIUM *m;
   AH_HBCI *h;
-  GWEN_BUFFEREDIO *bio;
   int fd;
-  GWEN_ERRORCODE err;
+  GWEN_IO_LAYER *io;
   unsigned int bsize;
   const char *logFile;
   int vmajor, vminor, vpatchlevel, vbuild;
   char vbuf[32];
+  int rv;
 
   assert(msg);
   assert(buf);
@@ -1475,9 +1472,8 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
   db=GWEN_DB_Group_new("header");
   u=AH_Dialog_GetDialogOwner(msg->dialog);
-  m=AH_User_GetMedium(u);
-  assert(m);
-  h=AH_Medium_GetHBCI(m);
+  h=AH_Dialog_GetHbci(msg->dialog);
+  assert(h);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "mode",
@@ -1524,29 +1520,55 @@ void AH_Msg_LogMessage(AH_MSG *msg,
     return;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
-  if (GWEN_DB_WriteToStream(db, bio,
-                            GWEN_DB_FLAGS_HTTP |
-                            GWEN_DB_FLAGS_OMIT_TYPES)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Could write log header to \"%s\", cannot log",
-              logFile);
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
+  /* create io layer for this file */
+  io=GWEN_Io_LayerFile_new(-1, fd);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     GWEN_DB_Group_free(db);
     return;
   }
 
-  err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
+  /* write header */
+  rv=GWEN_DB_WriteToIo(db, io,
+		       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
+		       GWEN_DB_FLAGS_DETAILED_GROUPS |
+		       GWEN_DB_FLAGS_USE_COLON|
+		       GWEN_DB_FLAGS_OMIT_TYPES,
+		       0,
+		       2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     GWEN_DB_Group_free(db);
     return;
   }
 
+  /* append empty line to separate header from data */
+  rv=GWEN_Io_Layer_WriteChar(io, '\n',
+			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
+			     0,
+			     2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
+    GWEN_DB_Group_free(db);
+    return;
+  }
+
+  /* write data */
   bsize=GWEN_Buffer_GetUsedBytes(buf);
   if (bsize && msg->usedPin) {
     char *p;
@@ -1559,15 +1581,20 @@ void AH_Msg_LogMessage(AH_MSG *msg,
       unsigned int slen;
 
       if (*p=='\'') {
-	err=GWEN_BufferedIO_WriteChar(bio, *p);
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-	  GWEN_BufferedIO_Abandon(bio);
-	  GWEN_BufferedIO_free(bio);
+	rv=GWEN_Io_Layer_WriteChar(io, *p,
+				   GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				   0,
+				   2000);
+	if (rv<0) {
+	  DBG_INFO(0, "here (%d)", rv);
+	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					      GWEN_IO_REQUEST_FLAGS_FORCE,
+					      0, 2000);
+	  GWEN_Io_Layer_free(io);
 	  GWEN_DB_Group_free(db);
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
 	  return;
 	}
+
 	p++;
 	bleft--;
       }
@@ -1578,63 +1605,80 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 	assert(slen);
   
 	if (strncasecmp(p, "HNSHA:", 6)==0)
-	  err=AH_Msg__AnonHnsha(p, slen, bio);
+	  rv=AH_Msg__AnonHnsha(p, slen, io);
 	else if (strncasecmp(p, "HKPAE:", 6)==0)
-	  err=AH_Msg__AnonHkpae(p, slen, bio);
+	  rv=AH_Msg__AnonHkpae(p, slen, io);
 	/* add more segments with confidential data here */
 	else {
 	  unsigned int l;
-  
+
 	  l=slen;
-	  err=GWEN_BufferedIO_WriteRawForced(bio, p, &l);
+	  rv=GWEN_Io_Layer_WriteBytes(io, (const uint8_t*)p, l,
+				      GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				      0,
+				      2000);
 	}
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-	  GWEN_BufferedIO_Abandon(bio);
-	  GWEN_BufferedIO_free(bio);
+	if (rv<0) {
+	  DBG_INFO(0, "here (%d)", rv);
+	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					      GWEN_IO_REQUEST_FLAGS_FORCE,
+					      0, 2000);
+	  GWEN_Io_Layer_free(io);
 	  GWEN_DB_Group_free(db);
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
 	  return;
 	}
-  
+
 	bleft-=slen;
 	p=segEnd+1;
       }
     }
   }
   else {
-    err=GWEN_BufferedIO_WriteRawForced(bio,
-                                       GWEN_Buffer_GetStart(buf),
-                                       &bsize);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-      GWEN_BufferedIO_Abandon(bio);
-      GWEN_BufferedIO_free(bio);
+    rv=GWEN_Io_Layer_WriteBytes(io,
+				(const uint8_t*)GWEN_Buffer_GetStart(buf),
+				bsize,
+				GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				0,
+				2000);
+    if (rv<0) {
+      DBG_INFO(0, "here (%d)", rv);
+      GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					  GWEN_IO_REQUEST_FLAGS_FORCE,
+					  0, 2000);
+      GWEN_Io_Layer_free(io);
       GWEN_DB_Group_free(db);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
       return;
     }
   }
 
-  err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
+  /* add LF for better readability */
+  rv=GWEN_Io_Layer_WriteChar(io, '\n',
+			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
+			     0,
+			     2000);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     GWEN_DB_Group_free(db);
     return;
   }
 
-  err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(AQHBCI_LOGDOMAIN, err);
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
-    GWEN_DB_Group_free(db);
+  /* close layer */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 30000);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					0, 2000);
+    GWEN_Io_Layer_free(io);
     return;
   }
 
-  GWEN_BufferedIO_free(bio);
+  GWEN_Io_Layer_free(io);
+
   GWEN_DB_Group_free(db);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message logged");
 }
@@ -1723,23 +1767,50 @@ GWEN_BUFFER *AH_Msg_GetItanHashBuffer(const AH_MSG *hmsg) {
 
 
 
-void AH_Msg_SetItanMethod(AH_MSG *hmsg, GWEN_TYPE_UINT32 i) {
+void AH_Msg_SetItanMethod(AH_MSG *hmsg, uint32_t i) {
   assert(hmsg);
   hmsg->itanMethod=i;
 }
 
 
 
-GWEN_TYPE_UINT32 AH_Msg_GetItanMethod(const AH_MSG *hmsg) {
+uint32_t AH_Msg_GetItanMethod(const AH_MSG *hmsg) {
   assert(hmsg);
   return hmsg->itanMethod;
 }
 
 
 
+const GWEN_STRINGLIST *AH_Msg_GetSignerIdList(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->signerIdList;
+}
 
 
 
+void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s) {
+  assert(hmsg);
+  free(hmsg->crypterId);
+  if (s)
+    hmsg->crypterId=strdup(s);
+  else
+    hmsg->crypterId=NULL;
+}
+
+
+
+const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->crypterId;
+}
+
+
+
+
+
+#include "msgcrypt_ddv.c"
+#include "msgcrypt_rdh.c"
+#include "msgcrypt_pintan.c"
 #include "msgcrypt.inc"
 
 

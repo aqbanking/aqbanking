@@ -78,11 +78,6 @@ void QBPluginDescrListViewItem::_populate() {
     tmp=QWidget::tr("(unknown)");
   setText(i++,tmp);
 
-  if (GWEN_PluginDescription_IsActive(_descr))
-    setText(i++, QWidget::tr("Yes"));
-  else
-    setText(i++, QWidget::tr("No"));
-
   // author
   setText(i++,QString::fromUtf8(GWEN_PluginDescription_GetAuthor(_descr)));
 
@@ -107,7 +102,6 @@ QBPluginDescrListView::QBPluginDescrListView(QWidget *parent, const char *name)
   setShowSortIndicator(true);
   addColumn(QWidget::tr("Name"),-1);
   addColumn(QWidget::tr("Version"),-1);
-  addColumn(QWidget::tr("Active"),-1);
   addColumn(QWidget::tr("Author"),-1);
   addColumn(QWidget::tr("Description"),-1);
 }

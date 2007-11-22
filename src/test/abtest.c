@@ -7,6 +7,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/dbio.h>
+
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
 #include <aqbanking/msgengine.h>
@@ -25,7 +27,7 @@ int test1(int argc, char **argv) {
   int rv;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", "./aqbanking.conf");
+  ab=AB_Banking_new("abtest", "./aqbanking.conf", 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -57,7 +59,7 @@ int test2(int argc, char **argv) {
   GWEN_PLUGIN_DESCRIPTION *pd;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", "./aqbanking.conf");
+  ab=AB_Banking_new("abtest", "./aqbanking.conf", 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -109,7 +111,7 @@ int test3(int argc, char **argv) {
   int rv;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", "./aqbanking.conf");
+  ab=AB_Banking_new("abtest", "./aqbanking.conf", 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -142,7 +144,7 @@ int test4(int argc, char **argv) {
   GWEN_BUFFER *pbuf;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", "./aqbanking.conf");
+  ab=AB_Banking_new("abtest", "./aqbanking.conf", 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -195,7 +197,7 @@ int test5(int argc, char **argv) {
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
                        "params/type", "mt940");
   rv=GWEN_DB_ReadFileAs(db, "test.swift", "swift", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+			GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -252,7 +254,7 @@ int test6(int argc, char **argv) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, "test.txt", "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+			GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -308,7 +310,7 @@ int test6(int argc, char **argv) {
   }
 
   rv=GWEN_DB_WriteFileAs(dbOut, "countries.csv", "csv", dbParams,
-                         GWEN_DB_FLAGS_DEFAULT);
+			 GWEN_DB_FLAGS_DEFAULT, 0, 2000);
   if (rv) {
     DBG_ERROR(0, "Error writing file");
     return 2;
@@ -411,7 +413,8 @@ int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, fname, "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+			GWEN_PATH_FLAGS_CREATE_GROUP,
+			0, 2000);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -427,7 +430,7 @@ int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries) {
   GWEN_XMLNODE *nRoot;
   GWEN_XMLNODE *nRow;
 
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
   nRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   if (GWEN_XML_ReadFile(nRoot, fname,
 			GWEN_XML_FLAGS_DEFAULT |
@@ -813,7 +816,7 @@ int test9(int argc, char **argv) {
   int rv;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", 0);
+  ab=AB_Banking_new("abtest", 0, 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -875,7 +878,7 @@ int test10(int argc, char **argv) {
   int rv;
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", 0);
+  ab=AB_Banking_new("abtest", 0, 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -937,9 +940,9 @@ int test11(int argc, char **argv) {
   AB_BANKINFO *tbi;
   int rv;
 
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Notice);
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", 0);
+  ab=AB_Banking_new("abtest", 0, 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -1002,7 +1005,7 @@ int test12(int argc, char **argv) {
   int rv;
   const char *country;
 
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelError);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
   if (argc<3) {
     fprintf(stderr, "Country code needed.\n");
     return 1;
@@ -1010,7 +1013,7 @@ int test12(int argc, char **argv) {
   country=argv[2];
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", 0);
+  ab=AB_Banking_new("abtest", 0, 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -1069,7 +1072,7 @@ int test13(int argc, char **argv) {
   int rv;
   const char *iban;
 
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelError);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
   if (argc<3) {
     fprintf(stderr, "IBAN needed.\n");
     return 1;
@@ -1115,10 +1118,10 @@ int test14(int argc, char **argv) {
   int rv;
   GWEN_BUFFER *buf;
 
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelError);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
 
   fprintf(stderr, "Creating AB_Banking...\n");
-  ab=AB_Banking_new("abtest", 0);
+  ab=AB_Banking_new("abtest", 0, 0);
 
   fprintf(stderr, "Initializing AB_Banking...\n");
   rv=AB_Banking_Init(ab);
@@ -1151,6 +1154,70 @@ int test14(int argc, char **argv) {
 
 
 
+int test15(int argc, char **argv) {
+  AB_BANKING *ab;
+  int rv;
+  GWEN_DBIO *dbio;
+  const char *fname;
+  GWEN_DB_NODE *dbParams;
+  GWEN_DB_NODE *dbData;
+
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
+
+  if (argc<3) {
+    fprintf(stderr, "Usage: %s FILENAME\n", argv[0]);
+    return 1;
+  }
+  fname=argv[2];
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0, 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  dbio=GWEN_DBIO_GetPlugin("swift");
+  if (dbio==NULL) {
+    fprintf(stderr, "SWIFT plugin not found.\n");
+    return 2;
+  }
+
+  dbParams=GWEN_DB_Group_new("params");
+  dbData=GWEN_DB_Group_new("data");
+
+  rv=GWEN_DBIO_ImportFromFile(dbio, fname,
+			      dbData,
+			      dbParams,
+			      GWEN_PATH_FLAGS_CREATE_GROUP,
+			      0,
+                              2000);
+  if (rv) {
+    fprintf(stderr, "Error on import (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  GWEN_DB_Dump(dbData, stderr, 2);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
+
+
+
 int testMsgEngine(int argc, char **argv) {
   const char *xmlFile;
   const char *dataFile;
@@ -1170,8 +1237,8 @@ int testMsgEngine(int argc, char **argv) {
   xmlFile=argv[2];
   dataFile=argv[3];
 
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelDebug);
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelDebug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Debug);
 
   e=AB_MsgEngine_new();
 
@@ -1198,7 +1265,7 @@ int testMsgEngine(int argc, char **argv) {
   db=GWEN_DB_Group_new("transactions");
 
   while(1) {
-    GWEN_ERRORCODE err;
+    int err;
     int rv;
 
     GWEN_Buffer_Reset(mbuf);
@@ -1211,7 +1278,7 @@ int testMsgEngine(int argc, char **argv) {
     }
 
     err=GWEN_BufferedIO_ReadLine2Buffer(bio, mbuf);
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       DBG_ERROR_ERR(0, err);
       return 2;
     }
@@ -1264,7 +1331,7 @@ int main(int argc, char **argv) {
 
   cmd=argv[1];
 
-  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
   if (strcasecmp(cmd, "test1")==0)
     rv=test1(argc, argv);
@@ -1294,6 +1361,8 @@ int main(int argc, char **argv) {
     rv=test13(argc, argv);
   else if (strcasecmp(cmd, "test14")==0)
     rv=test14(argc, argv);
+  else if (strcasecmp(cmd, "test15")==0)
+    rv=test15(argc, argv);
   else if (strcasecmp(cmd, "msg")==0)
     rv=testMsgEngine(argc, argv);
   else if (strcasecmp(cmd, "date")==0)

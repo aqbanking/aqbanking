@@ -1,0 +1,82 @@
+
+<typedefs>
+  <type id="AB_VALUE" prefix="AB_Value" >
+    <functions>
+      <function type="new" name="AB_Value_new" />
+      <function type="free" name="AB_Value_free" />
+      <function type="dup" name="AB_Value_dup" />
+      <function type="toDb" name="AB_Value_toDb" />
+      <function type="fromDb" name="AB_Value_fromDb" />
+    </functions>
+  </type>
+  
+  <type id="AB_VALUE_LIST" >
+    <functions>
+      <function type="new" name="AB_Value_List_new" />
+      <function type="free" name="AB_Value_List_free" />
+      <function type="dup" name="AB_Value_List_dup" />
+    </functions>
+  </type>
+</typedefs>
+
+
+
+<types>
+
+  <type id="AB_CELLPHONE_PRODUCT" 
+        prefix="AB_CellPhoneProduct" 
+        class="CellPhoneProduct"
+        access="public"
+        filename="cellphoneproduct"
+        list="public"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >aqbanking/error.h</header>
+      <header type="sys" >aqbanking/value.h</header>
+    </headers>
+    
+    <elem name="id" type="char" ptr="1" >
+      <descr>
+        Id assigned by the backend.
+      </descr>
+    </elem>
+    <elem name="providerName" type="char" ptr="1">
+      <descr>
+        Name of the provider.
+      </descr>
+    </elem>
+    <elem name="productName" type="char" ptr="1">
+      <descr>
+        Name of the product.
+      </descr>
+    </elem>
+    <elem name="allowFreeValue" type="int" />
+    <elem name="minimumValue" type="AB_VALUE" ptr="1">
+      <descr>
+        This field contains the minimum value which can be loaded onto
+        the prepaid card. This value can be empty (or non-existent) for some
+        backends and banks.
+      </descr>
+    </elem>
+    <elem name="maximumValue" type="AB_VALUE" ptr="1">
+      <descr>
+        This field contains the maximum value which can be loaded onto
+        the prepaid card. This value can be empty (or non-existent) for some
+        backends and banks.
+      </descr>
+    </elem>
+
+    <elem name="values" type="AB_VALUE_LIST" ptr="1" 
+          mode="list" elemType="AB_VALUE" 
+          init="1" copy="1" const="0" >
+      <descr>
+        This is the list of allowed values. This list might be empty!
+      </descr>
+    </elem>
+    
+  </type>
+
+</types>
+
+

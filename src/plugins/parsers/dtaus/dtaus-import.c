@@ -34,7 +34,7 @@
 
 
 int AHB_DTAUS__SetCharValue(GWEN_DB_NODE *db,
-                            GWEN_TYPE_UINT32 flags,
+                            uint32_t flags,
                             const char *name,
                             const char *s) {
   GWEN_BUFFER *vbuf;
@@ -354,12 +354,12 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
 int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
                          unsigned int pos,
                          GWEN_DB_NODE *xa,
-                         double *sumEUR,
-                         double *sumDEM,
-                         double *sumBankCodes,
-                         double *sumAccountIds){
+			 AB_VALUE *sumEUR,
+			 AB_VALUE *sumDEM,
+			 AB_VALUE *sumBankCodes,
+                         AB_VALUE *sumAccountIds){
   GWEN_BUFFER *tmp;
-  double dd;
+  AB_VALUE *val;
   unsigned int extSets;
   unsigned int i;
   unsigned int lpos;
@@ -374,12 +374,14 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bank code: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code at %d", pos+13);
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    *sumBankCodes+=dd;
+    AB_Value_AddValue(sumBankCodes, val);
+    AB_Value_free(val);
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "remoteBankCode",
@@ -398,12 +400,14 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Account id: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account id at %d", pos+21);
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    *sumAccountIds+=dd;
+    AB_Value_AddValue(sumAccountIds, val);
+    AB_Value_free(val);
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "remoteAccountNumber",
@@ -490,42 +494,27 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     }
     if (GWEN_Buffer_GetUsedBytes(tmp)) {
       if (GWEN_Buffer_GetUsedBytes(tmp)==11) {
-        char v[13];
-        const char *p;
-        unsigned int i;
+	DBG_DEBUG(AQBANKING_LOGDOMAIN, "Value: %s",
+		  GWEN_Buffer_GetStart(tmp));
 
-        DBG_DEBUG(AQBANKING_LOGDOMAIN, "Value: %s", GWEN_Buffer_GetStart(tmp));
-        if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+79);
-          GWEN_Buffer_free(tmp);
-          return -1;
-        }
-        memmove(v, GWEN_Buffer_GetStart(tmp), 9);
-        v[9]=',';
-        memmove(v+10, GWEN_Buffer_GetStart(tmp)+9, 2);
-        v[12]=0;
-        if (v[11]=='0') {
-	  v[11]=0;
-	  if (v[10]=='0')
-	    v[10]=0;
-	}
+	GWEN_Buffer_AppendString(tmp, "/100");
+	GWEN_DB_SetCharValue(xa,
+			     GWEN_DB_FLAGS_DEFAULT |
+			     GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "value/value",
+			     GWEN_Buffer_GetStart(tmp));
 
-        p=v;
-        for (i=0; i<8; i++) {
-          if ((*p)!='0')
-            break;
-          p++;
-        }
-
-        GWEN_DB_SetCharValue(xa,
-                             GWEN_DB_FLAGS_DEFAULT |
-                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/value",
-                             p);
         GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/currency", "EUR");
-        *sumEUR+=dd;
+			     "value/currency", "EUR");
+	val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+	if (val==NULL) {
+	  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bad EUR value");
+	  GWEN_Buffer_free(tmp);
+	  return -1;
+	}
+	AB_Value_AddValue(sumEUR, val);
+	AB_Value_free(val);
       }
       else {
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bad EUR value");
@@ -549,41 +538,25 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     }
     if (GWEN_Buffer_GetUsedBytes(tmp)) {
       if (GWEN_Buffer_GetUsedBytes(tmp)==11) {
-        char v[13];
-        const char *p;
-        unsigned int i;
-
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Value: %s", GWEN_Buffer_GetStart(tmp));
-        if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+50);
-          GWEN_Buffer_free(tmp);
-          return -1;
-        }
-        memmove(v, GWEN_Buffer_GetStart(tmp), 9);
-        v[9]=',';
-        memmove(v+10, GWEN_Buffer_GetStart(tmp)+9, 2);
-        v[12]=0;
-        if (v[11]=='0')
-          v[11]=0;
-        if (v[10]=='0')
-          v[10]=0;
+	GWEN_Buffer_AppendString(tmp, "/100");
+	GWEN_DB_SetCharValue(xa,
+			     GWEN_DB_FLAGS_DEFAULT |
+			     GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "value/value",
+			     GWEN_Buffer_GetStart(tmp));
 
-        p=v;
-        for (i=0; i<8; i++) {
-          if ((*p)!='0')
-            break;
-          p++;
-        }
-
-        GWEN_DB_SetCharValue(xa,
-                             GWEN_DB_FLAGS_DEFAULT |
+	GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/value",
-                             v);
-        GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_DEFAULT |
-                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "value/currency", "DEM");
-        *sumDEM+=dd;
+			     "value/currency", "DEM");
+	val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+	if (val==NULL) {
+	  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bad DEM value");
+	  GWEN_Buffer_free(tmp);
+	  return -1;
+	}
+	AB_Value_AddValue(sumDEM, val);
+        AB_Value_free(val);
       }
       else {
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bad DEM value");
@@ -655,7 +628,8 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   /* read number of extension sets */
   GWEN_Buffer_Reset(tmp);
   if (AHB_DTAUS__ReadWord(src, tmp, pos+185, 2)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading number of ext sets at %d", pos+185);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Error reading number of ext sets at %d", pos+185);
     GWEN_Buffer_free(tmp);
     return -1;
   }
@@ -671,7 +645,8 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
   /* read extension sets */
   if (extSets>0) {
     if (AHB_DTAUS__ParseExtSet(src, pos+187, xa)==-1) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in first extension set at %d", pos+187);
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in first extension set at %d", pos+187);
       GWEN_Buffer_free(tmp);
       return -1;
     }
@@ -679,7 +654,8 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
 
   if (extSets>1) {
     if (AHB_DTAUS__ParseExtSet(src, pos+216, xa)==-1) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in second extension set at %d", pos+216);
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in second extension set at %d", pos+216);
       GWEN_Buffer_free(tmp);
       return -1;
     }
@@ -694,9 +670,11 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
     for (j=0; j<4; j++) {
       if (i+j>=extSets)
         break;
-      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Reading extension set %d at %d", i+j, pos+lpos);
+      DBG_DEBUG(AQBANKING_LOGDOMAIN,
+		"Reading extension set %d at %d", i+j, pos+lpos);
       if (AHB_DTAUS__ParseExtSet(src, pos+lpos, xa)==-1) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in extension set %d at %d", i+j, pos+lpos);
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Error in extension set %d at %d", i+j, pos+lpos);
         GWEN_Buffer_free(tmp);
         return -1;
       }
@@ -717,28 +695,31 @@ int AHB_DTAUS__ParseSetC(GWEN_BUFFER *src,
 int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
                          unsigned int pos,
                          unsigned int csets,
-                         double sumEUR,
-                         double sumDEM,
-                         double sumBankCodes,
-                         double sumAccountIds){
+			 AB_VALUE *sumEUR,
+                         AB_VALUE *sumDEM,
+                         AB_VALUE *sumBankCodes,
+                         AB_VALUE *sumAccountIds){
   GWEN_BUFFER *tmp;
-  double dd;
   unsigned int i;
+  AB_VALUE *val;
 
   tmp=GWEN_Buffer_new(0, 128, 0, 1);
 
   if (AHB_DTAUS__ReadWord(src, tmp, pos+10, 7)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading number of C sets at %d", pos+10);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Error reading number of C sets at %d", pos+10);
     GWEN_Buffer_free(tmp);
     return -1;
   }
   if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%ud", &i)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad number of C sets at %d", pos+10);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Bad number of C sets at %d", pos+10);
     GWEN_Buffer_free(tmp);
     return -1;
   }
   if (i!=csets) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad number of C sets (is %d, should be %d)", csets, i);
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Bad number of C sets (is %d, should be %d)", csets, i);
     GWEN_Buffer_free(tmp);
     return -1;
   }
@@ -751,20 +732,27 @@ int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
     return -1;
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "DEM checksum: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "DEM checksum: %s",
+	      GWEN_Buffer_GetStart(tmp));
+    GWEN_Buffer_AppendString(tmp, "/100");
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+17);
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    if (sumDEM!=dd) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DEM checksum (is %.2f, should be %.2f)",
-                sumDEM/100.0, dd/100.0);
+    if (AB_Value_Compare(sumDEM, val)!=0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Bad DEM checksum (is %.2f, should be %.2f)",
+		AB_Value_GetValueAsDouble(sumDEM),
+		AB_Value_GetValueAsDouble(val));
+      AB_Value_free(val);
       GWEN_Buffer_free(tmp);
       return -1;
     }
     else {
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "DEM checksum ok");
+      AB_Value_free(val);
     }
   }
   else {
@@ -779,20 +767,26 @@ int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
     return -1;
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Account id checksum: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	      "Account id checksum: %s", GWEN_Buffer_GetStart(tmp));
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+30);
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    if (sumAccountIds!=dd) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account id checksum (is %f, should be %f)",
-                sumAccountIds, dd);
+    if (AB_Value_Compare(sumAccountIds, val)!=0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Bad account id checksum (is %f, should be %f)",
+		AB_Value_GetValueAsDouble(sumAccountIds),
+		AB_Value_GetValueAsDouble(val));
+      AB_Value_free(val);
       GWEN_Buffer_free(tmp);
       return -1;
     }
     else {
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Account id checksum ok");
+      AB_Value_free(val);
     }
   }
   else {
@@ -807,19 +801,27 @@ int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
     return -1;
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bank code checksum: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+47);
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bank code checksum: %s",
+	      GWEN_Buffer_GetStart(tmp));
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code checksum: %s",
+		GWEN_Buffer_GetStart(tmp));
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    if (sumBankCodes!=dd) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code checksum (is %f, should be %f)",
-                sumBankCodes, dd);
+
+    if (AB_Value_Compare(sumBankCodes, val)!=0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Bad bank code checksum (is %f, should be %f)",
+		AB_Value_GetValueAsDouble(sumBankCodes),
+		AB_Value_GetValueAsDouble(val));
+      AB_Value_free(val);
       GWEN_Buffer_free(tmp);
       return -1;
     }
     else {
+      AB_Value_free(val);
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Bank code checksum ok");
     }
   }
@@ -830,24 +832,32 @@ int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
   /* checksum of EUR values */
   GWEN_Buffer_Reset(tmp);
   if (AHB_DTAUS__ReadWord(src, tmp, pos+64, 13)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading value at %d", pos+17);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading value at %d", pos+64);
     GWEN_Buffer_free(tmp);
     return -1;
   }
   if (GWEN_Buffer_GetUsedBytes(tmp)) {
-    DBG_DEBUG(AQBANKING_LOGDOMAIN, "EUR checksum: %s", GWEN_Buffer_GetStart(tmp));
-    if (1!=sscanf(GWEN_Buffer_GetStart(tmp), "%lf", &dd)) {
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "EUR checksum: %s",
+	      GWEN_Buffer_GetStart(tmp));
+    GWEN_Buffer_AppendString(tmp, "/100");
+    val=AB_Value_fromString(GWEN_Buffer_GetStart(tmp));
+    if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value at %d", pos+64);
       GWEN_Buffer_free(tmp);
       return -1;
     }
-    if (sumEUR!=dd) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad EUR checksum (is %.2f, should be %.2f)",
-                sumEUR/100.0, dd/100.0);
+
+    if (AB_Value_Compare(sumEUR, val)!=0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Bad EUR checksum (is %.2f, should be %.2f)",
+		AB_Value_GetValueAsDouble(sumEUR),
+		AB_Value_GetValueAsDouble(val));
+      AB_Value_free(val);
       GWEN_Buffer_free(tmp);
       return -1;
     }
     else {
+      AB_Value_free(val);
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "EUR checksum ok");
     }
   }
@@ -864,28 +874,27 @@ int AHB_DTAUS__ParseSetE(GWEN_BUFFER *src,
 int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
                             unsigned int pos,
                             GWEN_DB_NODE *cfg) {
-  GWEN_DB_NODE *dcfg;
+  GWEN_DB_NODE *dcfg=0;
   GWEN_DB_NODE *xa;
   int rv;
   unsigned int cSets;
-  double sumEUR;
-  double sumDEM;
-  double sumBankCodes;
-  double sumAccountIds;
+  AB_VALUE *sumEUR;
+  AB_VALUE *sumDEM;
+  AB_VALUE *sumBankCodes;
+  AB_VALUE *sumAccountIds;
   int hasESet;
   int sn;
   int isDebitNote;
   const char *p;
-  GWEN_BUFFER *sumbuf;
 
   /* preset */
   hasESet=0;
   dcfg=0;
   cSets=0;
-  sumEUR=0;
-  sumDEM=0;
-  sumBankCodes=0;
-  sumAccountIds=0;
+  sumEUR=AB_Value_new();
+  sumDEM=AB_Value_new();
+  sumBankCodes=AB_Value_new();
+  sumAccountIds=AB_Value_new();
 
   /* read A set */
   DBG_INFO(AQBANKING_LOGDOMAIN, "Reading A set (pos=%d)", pos);
@@ -894,6 +903,10 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   sn=GWEN_Buffer_PeekByte(src);
   if (sn==-1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few data");
+    AB_Value_free(sumAccountIds);
+    AB_Value_free(sumBankCodes);
+    AB_Value_free(sumDEM);
+    AB_Value_free(sumEUR);
     return -1;
   }
 
@@ -903,6 +916,10 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
     rv=AHB_DTAUS__ParseSetA(src, pos, dcfg);
     if (rv==-1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in A set");
+      AB_Value_free(sumAccountIds);
+      AB_Value_free(sumBankCodes);
+      AB_Value_free(sumDEM);
+      AB_Value_free(sumEUR);
       GWEN_DB_Group_free(dcfg);
       return -1;
     }
@@ -910,7 +927,10 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "DTAUS record does not start with an A set");
-    GWEN_DB_Group_free(dcfg);
+    AB_Value_free(sumAccountIds);
+    AB_Value_free(sumBankCodes);
+    AB_Value_free(sumDEM);
+    AB_Value_free(sumEUR);
     return -1;
   }
 
@@ -923,6 +943,11 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
     sn=GWEN_Buffer_PeekByte(src);
     if (sn==-1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few data");
+      AB_Value_free(sumAccountIds);
+      AB_Value_free(sumBankCodes);
+      AB_Value_free(sumDEM);
+      AB_Value_free(sumEUR);
+      GWEN_DB_Group_free(dcfg);
       return -1;
     }
     if (sn=='C') {
@@ -967,15 +992,19 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       }
 
       rv=AHB_DTAUS__ParseSetC(src, pos, xa,
-                              &sumEUR,
-                              &sumDEM,
-                              &sumBankCodes,
-                              &sumAccountIds);
+			      sumEUR,
+                              sumDEM,
+                              sumBankCodes,
+                              sumAccountIds);
       if (rv==-1) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in C set");
         GWEN_DB_Group_free(xa);
         GWEN_DB_Group_free(dcfg);
-        return -1;
+	AB_Value_free(sumAccountIds);
+	AB_Value_free(sumBankCodes);
+	AB_Value_free(sumDEM);
+	AB_Value_free(sumEUR);
+	return -1;
       }
       DBG_INFO(AQBANKING_LOGDOMAIN, "Size of C set was %d", rv);
       pos+=rv;
@@ -993,7 +1022,11 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       if (rv==-1) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in E set");
         GWEN_DB_Group_free(dcfg);
-        return -1;
+	AB_Value_free(sumAccountIds);
+	AB_Value_free(sumBankCodes);
+	AB_Value_free(sumDEM);
+	AB_Value_free(sumEUR);
+	return -1;
       }
       hasESet=1;
       DBG_INFO(AQBANKING_LOGDOMAIN, "Size of E set was %d", rv);
@@ -1004,6 +1037,10 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown set \"%c\" at %d",
                 sn, pos+4);
       GWEN_DB_Group_free(dcfg);
+      AB_Value_free(sumAccountIds);
+      AB_Value_free(sumBankCodes);
+      AB_Value_free(sumDEM);
+      AB_Value_free(sumEUR);
       return -1;
     }
   } /* for */
@@ -1021,22 +1058,12 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
                       "cSets", cSets);
   GWEN_DB_SetIntValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "isDebitNote", isDebitNote);
-  sumbuf=GWEN_Buffer_new(0, 32, 0, 1);
-  if (GWEN_Text_DoubleToBuffer(sumEUR/100.0, sumbuf)==0)
-    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "sumEUR", GWEN_Buffer_GetStart(sumbuf));
-  GWEN_Buffer_Reset(sumbuf);
-  if (GWEN_Text_DoubleToBuffer(sumDEM/100.0, sumbuf)==0)
-    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "sumDEM", GWEN_Buffer_GetStart(sumbuf));
-  GWEN_Buffer_Reset(sumbuf);
-  if (GWEN_Text_DoubleToBuffer(sumBankCodes, sumbuf)==0)
-    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "sumBankCodes", GWEN_Buffer_GetStart(sumbuf));
-  GWEN_Buffer_Reset(sumbuf);
-  if (GWEN_Text_DoubleToBuffer(sumAccountIds, sumbuf)==0)
-    GWEN_DB_SetCharValue(dcfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "sumAccountIds", GWEN_Buffer_GetStart(sumbuf));
+
+
+  AB_Value_free(sumAccountIds);
+  AB_Value_free(sumBankCodes);
+  AB_Value_free(sumDEM);
+  AB_Value_free(sumEUR);
 
   return pos;
 }
@@ -1044,34 +1071,32 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
 
 
 int AHB_DTAUS__Import(GWEN_DBIO *dbio,
-                      GWEN_BUFFEREDIO *bio,
-                      GWEN_TYPE_UINT32 flags,
+		      GWEN_IO_LAYER *io,
                       GWEN_DB_NODE *data,
-                      GWEN_DB_NODE *cfg){
+		      GWEN_DB_NODE *cfg,
+		      uint32_t flags,
+		      uint32_t guiid,
+		      int msecs) {
   GWEN_BUFFER *src;
   int rv;
   unsigned int pos;
 
   src=GWEN_Buffer_new(0, 1024, 0, 1);
-  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_BIO);
-  GWEN_Buffer_SetSourceBIO(src, bio, 0);
+  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_IO);
+  GWEN_Buffer_SetSourceIoLayer(src, io, 0);
 
   pos=0;
   rv=0;
-  if (GWEN_BufferedIO_CheckEOF(bio)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "End of stream reached");
-    return -1;
-  }
   rv=AHB_DTAUS__ReadDocument(src, pos, data);
-  if (rv==-1) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading DTAUS record");
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading DTAUS record (%d)", rv);
   }
   else {
     GWEN_DB_Dump(data, stderr, 3);
   }
 
   GWEN_Buffer_free(src);
-  return rv==-1;
+  return rv;
 }
 
 
@@ -1117,7 +1142,9 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
 
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio,
-                                                const char *fname) {
+						const char *fname,
+						uint32_t guiid,
+						int msecs) {
   GWEN_BUFFER *src;
   GWEN_DBIO_CHECKFILE_RESULT rv;
   unsigned int pos;

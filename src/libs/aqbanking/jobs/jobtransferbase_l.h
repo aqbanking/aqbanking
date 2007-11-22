@@ -7,7 +7,8 @@
  email       : martin@libchipcard.de
 
  ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
 
@@ -27,14 +28,6 @@ const AB_TRANSACTION_LIMITS *AB_JobTransferBase_GetFieldLimits(AB_JOB *j);
 
 void AB_JobTransferBase_SetFieldLimits(AB_JOB *j,
                                        AB_TRANSACTION_LIMITS *limits);
-
-AB_JOB *AB_JobTransferBase_fromDb(AB_JOB_TYPE jt,
-                                  AB_ACCOUNT *a,
-                                  GWEN_DB_NODE *db);
-int AB_JobTransferBase_toDb(const AB_JOB *j, GWEN_DB_NODE *db);
-
-
-
 
 
 #endif

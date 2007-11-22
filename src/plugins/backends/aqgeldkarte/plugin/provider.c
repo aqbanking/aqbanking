@@ -33,14 +33,14 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/directory.h>
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/gwentime.h>
 
-#include <chipcard3/client/card.h>
-#include <chipcard3/client/cards/geldkarte.h>
-#include <chipcard3/client/cards/geldkarte_values.h>
-#include <chipcard3/client/cards/geldkarte_blog.h>
-#include <chipcard3/client/cards/geldkarte_llog.h>
+#include <chipcard/client/card.h>
+#include <chipcard/client/cards/geldkarte.h>
+#include <chipcard/client/cards/geldkarte_values.h>
+#include <chipcard/client/cards/geldkarte_blog.h>
+#include <chipcard/client/cards/geldkarte_llog.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -117,8 +117,8 @@ int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   if (!GWEN_Logger_IsOpen(AQGELDKARTE_LOGDOMAIN)) {
     GWEN_Logger_Open(AQGELDKARTE_LOGDOMAIN,
 		     "aqgeldkarte", 0,
-		     GWEN_LoggerTypeConsole,
-		     GWEN_LoggerFacilityUser);
+		     GWEN_LoggerType_Console,
+		     GWEN_LoggerFacility_User);
   }
 
   logLevelName=getenv("AQGELDKARTE_LOGLEVEL");
@@ -126,7 +126,7 @@ int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     GWEN_LOGGER_LEVEL ll;
 
     ll=GWEN_Logger_Name2Level(logLevelName);
-    if (ll!=GWEN_LoggerLevelUnknown) {
+    if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(AQGELDKARTE_LOGDOMAIN, ll);
       DBG_WARN(AQGELDKARTE_LOGDOMAIN,
                "Overriding loglevel for AqGeldKarte with \"%s\"",
@@ -179,7 +179,7 @@ int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   dp->chipcardClient=0;
 
   if (errors)
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
 
   return 0;
 }
@@ -216,7 +216,7 @@ int AG_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     DBG_INFO(AQGELDKARTE_LOGDOMAIN,
              "Job not supported (%d)",
              AB_Job_GetType(j));
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
 
@@ -242,7 +242,7 @@ int AG_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *bj){
     DBG_INFO(AQGELDKARTE_LOGDOMAIN,
              "Job not supported (%d)",
              AB_Job_GetType(bj));
-    return AB_ERROR_NOT_SUPPORTED;
+    return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
   /* find card to which to add the job */
@@ -298,15 +298,15 @@ int AG_Provider_GetBalance(AB_PROVIDER *pro,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Reading loaded amount"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Reading loaded amount"));
   val=LC_GeldKarte_Values_new();
   res=LC_GeldKarte_ReadValues(gc, val);
   if (res!=LC_Client_ResultOk) {
     DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not read values");
     LC_GeldKarte_Values_free(val);
-    return AB_ERROR_GENERIC;
+    return GWEN_ERROR_GENERIC;
   }
   else {
     AB_ACCOUNT_STATUS *ast;
@@ -320,7 +320,8 @@ int AG_Provider_GetBalance(AB_PROVIDER *pro,
     ti=GWEN_CurrentTime();
     assert(ti);
     AB_AccountStatus_SetTime(ast, ti);
-    v=AB_Value_new((double)(LC_GeldKarte_Values_GetLoaded(val))/100.0, "EUR");
+    v=AB_Value_fromDouble((double)(LC_GeldKarte_Values_GetLoaded(val))/100.0);
+    AB_Value_SetCurrency(v, "EUR");
     assert(v);
     bal=AB_Balance_new(v, ti);
     assert(bal);
@@ -368,27 +369,27 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
                                          AB_Account_GetAccountNumber(a));
   assert(ai);
 
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Reading business transactions"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Reading business transactions"));
 
   blogs=LC_GeldKarte_BLog_List2_new();
   res=LC_GeldKarte_ReadBLogs(gc, blogs);
   if (res!=LC_Client_ResultOk) {
     if (res==LC_Client_ResultNoData) {
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelNotice,
-			     I18N("No business transactions"));
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Notice,
+			   I18N("No business transactions"));
     }
     else {
       DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not read BLOGS");
       LC_GeldKarte_BLog_List2_freeAll(blogs);
       AB_Job_SetStatus(bj, AB_Job_StatusError);
       AB_Job_SetResultText(bj, "Could not read BLOGs");
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelError,
-			     I18N("Error reading BLOG card transactions"));
-      return AB_ERROR_GENERIC;
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Error reading BLOG card transactions"));
+      return GWEN_ERROR_GENERIC;
     }
   }
 
@@ -423,7 +424,8 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
 	s=I18N("CARD LOADED");
 	break;
       }
-      v=AB_Value_new(val, "EUR");
+      v=AB_Value_fromDouble(val);
+      AB_Value_SetCurrency(v, "EUR");
       AB_Transaction_SetValue(t, v);
       AB_Value_free(v);
 
@@ -446,8 +448,8 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
       AB_Transaction_SetDate(t, LC_GeldKarte_BLog_GetTime(blog));
       AB_Transaction_SetValutaDate(t, LC_GeldKarte_BLog_GetTime(blog));
 
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelInfo,
+      GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Info,
 			     I18N("Adding business transaction"));
       AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
@@ -458,15 +460,15 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
   LC_GeldKarte_BLog_List2_freeAll(blogs);
 
   /* read LLOGs */
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
+  GWEN_Gui_ProgressLog(0,
+                         GWEN_LoggerLevel_Notice,
                          I18N("Reading load/unload transactions"));
   llogs=LC_GeldKarte_LLog_List2_new();
   res=LC_GeldKarte_ReadLLogs(gc, llogs);
   if (res!=LC_Client_ResultOk) {
     if (res==LC_Client_ResultNoData) {
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelNotice,
+      GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Notice,
 			     I18N("No load/unload transactions"));
     }
     else {
@@ -474,10 +476,10 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
       LC_GeldKarte_LLog_List2_freeAll(llogs);
       AB_Job_SetStatus(bj, AB_Job_StatusError);
       AB_Job_SetResultText(bj, "Could not read BLOGs");
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelError,
+      GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
 			     I18N("Error reading BLOG card transactions"));
-      return AB_ERROR_GENERIC;
+      return GWEN_ERROR_GENERIC;
     }
   }
   lit=LC_GeldKarte_LLog_List2_First(llogs);
@@ -513,7 +515,8 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
 	s=I18N("CARD LOADED");
 	break;
       }
-      v=AB_Value_new(val, "EUR");
+      v=AB_Value_fromDouble(val);
+      AB_Value_SetCurrency(v, "EUR");
       AB_Transaction_SetValue(t, v);
       AB_Value_free(v);
 
@@ -552,8 +555,8 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
       AB_Transaction_SetDate(t, LC_GeldKarte_LLog_GetTime(llog));
       AB_Transaction_SetValutaDate(t, LC_GeldKarte_LLog_GetTime(llog));
 
-      AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-			     AB_Banking_LogLevelInfo,
+      GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Info,
                              I18N("Adding load/unload transaction"));
       AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
@@ -564,9 +567,9 @@ int AG_Provider_GetTransactions(AB_PROVIDER *pro,
   LC_GeldKarte_LLog_List2_freeAll(llogs);
 
   AB_Job_SetResultText(bj, "Job exeuted successfully");
-  AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                         AB_Banking_LogLevelNotice,
-                         I18N("Job exeuted successfully"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Job exeuted successfully"));
   AB_Job_SetStatus(bj, AB_Job_StatusFinished);
 
   return 0;
@@ -589,18 +592,17 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro,
   if (ait) {
     AB_JOB *bj;
     LC_CARD *gc;
-    GWEN_TYPE_UINT32 bid;
+    uint32_t bid;
     int rv;
 
-    bid=AB_Banking_ShowBox(AB_Provider_GetBanking(pro),
-                           0,
-                           I18N("Accessing Card"),
-                           I18N("Reading card, please wait..."));
+    bid=GWEN_Gui_ShowBox(0,
+			 I18N("Accessing Card"),
+			 I18N("Reading card, please wait..."));
     rv=AG_Provider_MountCard(pro, AG_Card_GetAccount(card), &gc);
     if (rv || !gc) {
       DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Could not mount card (%d)", rv);
-      AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
-      return AB_ERROR_GENERIC;
+      GWEN_Gui_HideBox(bid);
+      return GWEN_ERROR_GENERIC;
     }
     bj=AB_Job_List2Iterator_Data(ait);
     assert(bj);
@@ -619,13 +621,13 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro,
         abort();
         break;
       }
-      if (rv==AB_ERROR_USER_ABORT) {
+      if (rv==GWEN_ERROR_USER_ABORTED) {
         DBG_ERROR(AQGELDKARTE_LOGDOMAIN,
                   "User aborted, closing card");
         LC_Card_Close(gc);
         LC_Card_free(gc);
         AB_Job_List2Iterator_free(ait);
-        AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
+	GWEN_Gui_HideBox(bid);
         return rv;
       }
       bj=AB_Job_List2Iterator_Next(ait);
@@ -633,7 +635,7 @@ int AG_Provider_ProcessCard(AB_PROVIDER *pro,
     LC_Card_Close(gc);
     LC_Card_free(gc);
     AB_Job_List2Iterator_free(ait);
-    AB_Banking_HideBox(AB_Provider_GetBanking(pro), bid);
+    GWEN_Gui_HideBox(bid);
   } /* if ait */
 
   return 0;
@@ -646,16 +648,19 @@ int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AG_CARD *card;
   int done=0;
   int succeeded=0;
-  GWEN_TYPE_UINT32 pid;
+  uint32_t pid;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AG_PROVIDER, pro);
   assert(dp);
 
-  pid=AB_Banking_ProgressStart(AB_Provider_GetBanking(pro),
-                               I18N("Executing GeldKarte jobs"),
-                               I18N("All GeldKarte jobs are now executed"),
-                               AG_Card_List_GetCount(dp->cards));
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Executing GeldKarte jobs"),
+			     I18N("All GeldKarte jobs are now executed"),
+			     AG_Card_List_GetCount(dp->cards));
 
   card=AG_Card_List_First(dp->cards);
   if (!card) {
@@ -666,27 +671,27 @@ int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
     int rv;
 
     DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Handling card");
-    AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                           AB_Banking_LogLevelNotice,
-                           I18N("Handling job"));
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Handling job"));
     rv=AG_Provider_ProcessCard(pro, ctx, card);
     if (rv) {
       DBG_INFO(AQGELDKARTE_LOGDOMAIN, "Error processing card (%d)", rv);
-      if (rv==AB_ERROR_USER_ABORT) {
-        AB_Banking_ProgressLog(AB_Provider_GetBanking(pro), 0,
-                               AB_Banking_LogLevelNotice,
-                               I18N("User aborted"));
-        AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
-        return rv;
+      if (rv==GWEN_ERROR_USER_ABORTED) {
+	GWEN_Gui_ProgressLog(pid,
+			     GWEN_LoggerLevel_Notice,
+			     I18N("User aborted"));
+	GWEN_Gui_ProgressEnd(pid);
+	return rv;
       }
     }
     else
       succeeded++;
     done++;
-    if (AB_Banking_ProgressAdvance(AB_Provider_GetBanking(pro),
-                                   0, done)) {
+    if (GWEN_ERROR_USER_ABORTED==GWEN_Gui_ProgressAdvance(pid, done)) {
       DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "User aborted via waitcallback");
-      return AB_ERROR_USER_ABORT;
+      GWEN_Gui_ProgressEnd(pid);
+      return GWEN_ERROR_USER_ABORTED;
     }
     card=AG_Card_List_Next(card);
   }
@@ -694,7 +699,7 @@ int AG_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   if (!succeeded && done) {
     DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Not a single job succeeded.");
   }
-  AB_Banking_ProgressEnd(AB_Provider_GetBanking(pro), pid);
+  GWEN_Gui_ProgressEnd(pid);
   return 0;
 }
 
@@ -716,7 +721,7 @@ int AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc,
   res=LC_Client_Start(dp->chipcardClient);
   if (res!=LC_Client_ResultOk) {
     DBG_ERROR(LC_LOGDOMAIN, "Could not send Start request");
-    return GWEN_ERROR_CT_IO_ERROR;
+    return GWEN_ERROR_IO;
   }
 
   first=1;
@@ -736,24 +741,23 @@ int AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc,
       if (res!=LC_Client_ResultOk &&
 	  res!=LC_Client_ResultWait) {
 	DBG_ERROR(LC_LOGDOMAIN, "Error while waiting for card (%d)", res);
-	return GWEN_ERROR_CT_IO_ERROR;
+	return GWEN_ERROR_IO;
       }
     }
     if (!hcard) {
       int mres;
 
-      mres=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-				 AB_BANKING_MSG_FLAGS_TYPE_WARN |
-				 AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-				 AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-				 I18N("Insert Card"),
-				 I18N("Please insert your chipcard into the "
-				      "reader and click OK"
-				      "<html>"
-				      "Please insert your chipcard into the "
-				      "reader and click <i>ok</i>"
-				      "</html>"),
-				 I18N("OK"), I18N("Abort"), 0);
+      mres=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			       GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS |
+			       GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+			       I18N("Insert Card"),
+			       I18N("Please insert your chipcard into the "
+				    "reader and click OK"
+				    "<html>"
+				    "Please insert your chipcard into the "
+				    "reader and click <i>ok</i>"
+				    "</html>"),
+			       I18N("OK"), I18N("Abort"), 0);
       if (mres!=1) {
 	DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
 	LC_Client_Stop(dp->chipcardClient);
@@ -830,22 +834,21 @@ int AG_Provider_MountCard(AB_PROVIDER *pro, AB_ACCOUNT *acc,
 	    DBG_ERROR(LC_LOGDOMAIN,
 		      "Communication error (%d)", res);
 	    LC_Client_Stop(dp->chipcardClient);
-	    return GWEN_ERROR_CT_IO_ERROR;
+	    return GWEN_ERROR_IO;
 	  }
 
-          mres=AB_Banking_MessageBox(AB_Provider_GetBanking(pro),
-                                     AB_BANKING_MSG_FLAGS_TYPE_WARN |
-                                     AB_BANKING_MSG_FLAGS_SEVERITY_DANGEROUS |
-                                     AB_BANKING_MSG_FLAGS_CONFIRM_B1,
-                                     I18N("Insert Card"),
-                                     I18N("Please insert the correct chipcard"
-                                          " into the reader and click OK"
-                                          "<html>"
-                                          "Please insert the <b>correct</b>"
-                                          " chipcard into the reader and "
-                                          "click <i>ok</i>"
-                                          "</html>"),
-				     I18N("OK"), I18N("Abort"), 0);
+	  mres=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+				   GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS |
+				   GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+				   I18N("Insert Card"),
+				   I18N("Please insert the correct chipcard"
+					" into the reader and click OK"
+					"<html>"
+					"Please insert the <b>correct</b>"
+					" chipcard into the reader and "
+					"click <i>ok</i>"
+					"</html>"),
+				   I18N("OK"), I18N("Abort"), 0);
 	  if (mres!=1) {
 	    DBG_ERROR(AQGELDKARTE_LOGDOMAIN, "Error in user interaction");
 	    LC_Client_Stop(dp->chipcardClient);

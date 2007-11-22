@@ -19,25 +19,25 @@
 
 
 struct AH_DIALOG {
-  GWEN_TYPE_UINT32 lastMsgNum;
-  GWEN_TYPE_UINT32 lastReceivedMsgNum;
+  uint32_t lastMsgNum;
+  uint32_t lastReceivedMsgNum;
   char *dialogId;
   AB_USER *dialogOwner;
 
   GWEN_MSGENGINE *msgEngine;
 
-  GWEN_NETLAYER *netLayer;
+  GWEN_IO_LAYER *ioLayer;
+  uint32_t guiid;
 
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
 
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
 
   GWEN_DB_NODE *globalValues;
   char *logName;
 
-  GWEN_TYPE_UINT32 itanMethod;
+  uint32_t itanMethod;
   int itanProcessType;
-
 };
 
 
@@ -45,11 +45,27 @@ struct AH_DIALOG {
 static int AH_Dialog__SetAddress(AH_DIALOG *dlg,
                                  GWEN_INETADDRESS *addr,
                                  const char *bankAddr);
-static int AH_Dialog__CreateNetLayer(AH_DIALOG *dlg);
-
 
 static int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen,
                                  int timeout);
+
+
+static int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg);
+static int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
+				     const char *buf, int blen,
+				     int timeout);
+static int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg,
+				      int timeout);
+
+static int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeout);
+static int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg);
+static int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
+				      const char *buf, int blen,
+				      int timeout);
+static int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout);
+
+
+
 
 
 

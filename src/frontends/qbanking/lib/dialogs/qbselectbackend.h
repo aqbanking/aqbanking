@@ -18,7 +18,7 @@
 class QBanking;
 
 #include "qbselectbackend.ui.h"
-#include <qbanking/banking.h> /* For QBANKING_API */
+#include <qbanking/qbanking.h> /* For QBANKING_API */
 #include <string>
 
 

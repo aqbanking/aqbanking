@@ -25,14 +25,6 @@
     </functions>
   </type>
 
-  <type id="AB_SPLIT_LIST" prefix="AB_Split_List" >
-    <functions>
-      <function type="new" name="AB_Split_List_new" />
-      <function type="dup" name="AB_Split_List_dup" />
-      <function type="free" name="AB_Split_List_free" />
-    </functions>
-  </type>
-
   <type id="AB_TEXTKEY_DESCR_LIST" prefix="AB_TextKeyDescr_List" >
     <functions>
       <function type="new" name="AB_TextKeyDescr_List_new" />
@@ -41,79 +33,13 @@
     </functions>
   </type>
   
-  <type id="GWEN_TYPE_UINT32" dbtype="int" />
+  <type id="uint32_t" basetype="int" />
 
 </typedefs>
 
 
 
 <types>
-
-  <type id="AB_SPLIT" 
-        prefix="AB_Split" 
-        class="Split"
-        access="public"
-        filename="split"
-        inherit="public" 
-        list="public"
-        list2="public" >
-    <descr>
-      This type contains all important information about transaction splits.
-      Please note that all text fields are in UTF-8.
-    </descr>
-    <headers>
-      <header type="sys" >gwenhywfar/types.h</header>
-      <header type="sys" >gwenhywfar/gwentime.h</header>
-      <header type="sys" >gwenhywfar/stringlist.h</header>
-      <header type="sys" >aqbanking/value.h</header>
-    </headers>
-  
-    <group name="Account Info">
-      <descr>
-        This group contains information about the remote account.
-      </descr>
-      <elem name="country" type="char" ptr="1">
-        <descr>
-          This is the two-character ISO country code (as used in toplevel
-          domains). For Germany use "DE".
-        </descr>
-      </elem>
-      <elem name="bankCode" type="char" ptr="1" />
-      <elem name="branchId" type="char" ptr="1">
-        <descr>
-         This is the branch id of the remote bank (OFX only)
-        </descr>
-      </elem>
-      <elem name="accountNumber" type="char" ptr="1" />
-      <elem name="suffix" type="char" ptr="1" />
-      <elem name="name" type="GWEN_STRINGLIST" ptr="1" />
-    </group>
-    
-    <group name="Value">
-      <elem name="value" type="AB_VALUE" ptr="1" />
-    </group>
-
-    <elem name="purpose" type="GWEN_STRINGLIST" ptr="1" >
-      <descr>
-        <p>
-          This string list contains the purpose of the split.
-          Every entry of this list represents a single purpose line.
-        </p>
-      </descr>
-    </elem>
-
-    <elem name="category" type="GWEN_STRINGLIST" ptr="1" >
-      <descr>
-        <p>
-          This string list contains the categories this split
-          belongs to. This element is not used by AqBanking itself but
-          some im/exporter plugins may choose to use these.
-        </p>
-      </descr>
-    </elem>
-
-  </type>
-
 
   <type id="AB_TEXTKEY_DESCR" 
         prefix="AB_TextKeyDescr" 
@@ -582,20 +508,12 @@
     <descr>
       This type contains all important information about transactions.
       All text fields are in UTF-8.
-      Please note: Since version 0.9.9.1 of AqBanking a transaction may 
-      contain splits. 
-      If an AB_TRANSACTION actually does contain splits then some variables
-      (like <i>localCountry</i>) are stored within the AB_SPLITs rather than 
-      in AB_TRANSACTION.
-      So your application should first check for splits and read the 
-      information (marked as <i>in AB_SPLIT</i> below) from them.
     </descr>
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >gwenhywfar/gwentime.h</header>
       <header type="sys" >gwenhywfar/stringlist.h</header>
       <header type="sys" >aqbanking/value.h</header>
-      <header type="sys" >aqbanking/split.h</header>
       <header type="sys" >aqbanking/transactionlimits.h</header>
       <header type="sys" >aqbanking/transactionfns.h</header>
     </headers>
@@ -603,9 +521,6 @@
     <group name="Local Account Info">
       <descr>
         This group contains information about the local account.
-        Functions of this group are also available in AB_SPLIT, please 
-        make your application check for splits first and use the values here
-        as a fallback.
       </descr>
       <elem name="localCountry" type="char" ptr="1">
         <descr>
@@ -655,9 +570,6 @@
     <group name="Remote Account Info">
       <descr>
         This group contains information about the remote account.
-        Functions of this group are also available in AB_SPLIT, please 
-        make your application check for splits first and use the values here
-        as a fallback.
       </descr>
       <elem name="remoteCountry" type="char" ptr="1">
         <descr>
@@ -694,7 +606,7 @@
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
     </group>
     
-    <elem name="uniqueId" type="GWEN_TYPE_UINT32" >
+    <elem name="uniqueId" type="uint32_t" >
       <descr>
         This is a unique id assigned by the application. However, when
         adding a transaction to a job (like JobTransfer) this id is
@@ -720,17 +632,11 @@
 
     <group name="Value">
       <descr>
-        Functions of this group are also available in AB_SPLIT, please 
-        make your application check for splits first and use the values here
-        as a fallback.
       </descr>
       <elem name="value" type="AB_VALUE" ptr="1" />
     </group>
 
     <elem name="fees" type="AB_VALUE" ptr="1" />
-
-    <elem name="splits" type="AB_SPLIT_LIST" ptr="1" mode="list"
-          elemType="AB_SPLIT" const="0" init="1" copy="1" />
 
     <group name="Info Which Is Not Supported by All Backends">
       <descr>
