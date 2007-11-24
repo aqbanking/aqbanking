@@ -99,11 +99,13 @@ AB_BANKINFO_PLUGIN *de_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 					DIRSEP
 					"bankdata.txt",
 					fbuf);
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"File [%s] not found",
-		"libktoblzcheck1"
-		DIRSEP
-		"bankdata.txt");
+      if (rv) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "File [%s] not found",
+		  "libktoblzcheck1"
+		  DIRSEP
+		  "bankdata.txt");
+      }
     }
     GWEN_StringList_free(paths);
     if (rv) {
