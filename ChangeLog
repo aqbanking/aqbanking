@@ -1,4 +1,9 @@
 
+2007/11/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- bankinfo.xml: added fields aux3 and aux4 to be used by OFX DC
+
+
 2007/11/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed misleading error message in de.c

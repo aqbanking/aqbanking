@@ -19,7 +19,11 @@ struct AB_BANKINFO_SERVICE {
   char *mode;
   char *aux1;
   char *aux2;
+  char *aux3;
+  char *aux4;
 };
+
+
 
 
 

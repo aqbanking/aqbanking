@@ -51,6 +51,10 @@ void AB_BankInfoService_free(AB_BANKINFO_SERVICE *st) {
     free(st->aux1);
   if (st->aux2)
     free(st->aux2);
+  if (st->aux3)
+    free(st->aux3);
+  if (st->aux4)
+    free(st->aux4);
   GWEN_LIST_FINI(AB_BANKINFO_SERVICE, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -78,6 +82,10 @@ AB_BANKINFO_SERVICE *AB_BankInfoService_dup(const AB_BANKINFO_SERVICE *d) {
     st->aux1=strdup(d->aux1);
   if (d->aux2)
     st->aux2=strdup(d->aux2);
+  if (d->aux3)
+    st->aux3=strdup(d->aux3);
+  if (d->aux4)
+    st->aux4=strdup(d->aux4);
   return st;
 }
 
@@ -106,6 +114,12 @@ int AB_BankInfoService_toDb(const AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
   if (st->aux2)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "aux2", st->aux2))
       return -1;
+  if (st->aux3)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "aux3", st->aux3))
+      return -1;
+  if (st->aux4)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "aux4", st->aux4))
+      return -1;
   return 0;
 }
 
@@ -120,6 +134,8 @@ int AB_BankInfoService_ReadDb(AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
   AB_BankInfoService_SetMode(st, GWEN_DB_GetCharValue(db, "mode", 0, 0));
   AB_BankInfoService_SetAux1(st, GWEN_DB_GetCharValue(db, "aux1", 0, 0));
   AB_BankInfoService_SetAux2(st, GWEN_DB_GetCharValue(db, "aux2", 0, 0));
+  AB_BankInfoService_SetAux3(st, GWEN_DB_GetCharValue(db, "aux3", 0, 0));
+  AB_BankInfoService_SetAux4(st, GWEN_DB_GetCharValue(db, "aux4", 0, 0));
   return 0;
 }
 
@@ -271,6 +287,46 @@ void AB_BankInfoService_SetAux2(AB_BANKINFO_SERVICE *st, const char *d) {
     st->aux2=strdup(d);
   else
     st->aux2=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_BankInfoService_GetAux3(const AB_BANKINFO_SERVICE *st) {
+  assert(st);
+  return st->aux3;
+}
+
+
+void AB_BankInfoService_SetAux3(AB_BANKINFO_SERVICE *st, const char *d) {
+  assert(st);
+  if (st->aux3)
+    free(st->aux3);
+  if (d && *d)
+    st->aux3=strdup(d);
+  else
+    st->aux3=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_BankInfoService_GetAux4(const AB_BANKINFO_SERVICE *st) {
+  assert(st);
+  return st->aux4;
+}
+
+
+void AB_BankInfoService_SetAux4(AB_BANKINFO_SERVICE *st, const char *d) {
+  assert(st);
+  if (st->aux4)
+    free(st->aux4);
+  if (d && *d)
+    st->aux4=strdup(d);
+  else
+    st->aux4=0;
   st->_modified=1;
 }
 

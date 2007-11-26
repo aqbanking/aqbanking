@@ -90,6 +90,22 @@
         OFX uses this to store the ORG field from the bankinfo file.
       </descr>
     </elem>
+
+    <elem name="aux3" type="char" ptr="1">
+      <descr>
+        This is a multi purpose field to be used by a bankinfo plugin as
+        it sees fit.
+        OFX uses this to store the APPID field from the bankinfo file.
+      </descr>
+    </elem>
+
+    <elem name="aux4" type="char" ptr="1">
+      <descr>
+        This is a multi purpose field to be used by a bankinfo plugin as
+        it sees fit.
+        OFX uses this to store the APPVER field from the bankinfo file.
+      </descr>
+    </elem>
     
   </type>
 

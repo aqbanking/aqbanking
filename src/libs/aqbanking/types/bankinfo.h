@@ -135,7 +135,8 @@ get it with @ref AB_BankInfo_GetWebsite
 @anchor AB_BANKINFO_Services
 <h3>Services</h3>
 <p>
-This is the list of known servises of this bank. This object remains the owner of lists returned via @ref AB_BankInfo_GetServices.</p>
+This is the list of known servises of this bank. This object remains the owner of lists returned via @ref AB_BankInfo_GetServices.
+</p>
 <p>
 Set this property with @ref AB_BankInfo_SetServices, 
 get it with @ref AB_BankInfo_GetServices
