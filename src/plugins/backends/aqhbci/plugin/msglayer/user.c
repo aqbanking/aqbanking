@@ -1021,39 +1021,41 @@ int AH_User_MkPasswdName(const AB_USER *u, GWEN_BUFFER *buf) {
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  if (ue->tokenType && ue->tokenName) {
-    GWEN_Buffer_AppendString(buf, "PASSWORD_");
-    GWEN_Buffer_AppendString(buf, ue->tokenType);
+  if (ue->tokenType==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  if (strcasecmp(ue->tokenType, "pintan")==0) {
+    const char *s;
+
+    GWEN_Buffer_AppendString(buf, "PIN_");
+    s=AB_User_GetBankCode(u);
+    if (s)
+      GWEN_Buffer_AppendString(buf, s);
     GWEN_Buffer_AppendString(buf, "_");
-    GWEN_Buffer_AppendString(buf, ue->tokenName);
+    GWEN_Buffer_AppendString(buf, AB_User_GetUserId(u));
     return 0;
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
-    return GWEN_ERROR_NO_DATA;
+    if (ue->tokenName) {
+      GWEN_Buffer_AppendString(buf, "PASSWORD_");
+      GWEN_Buffer_AppendString(buf, ue->tokenType);
+      GWEN_Buffer_AppendString(buf, "_");
+      GWEN_Buffer_AppendString(buf, ue->tokenName);
+      return 0;
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenName");
+      return GWEN_ERROR_NO_DATA;
+    }
   }
 }
 
 
 
 int AH_User_MkPinName(const AB_USER *u, GWEN_BUFFER *buf) {
-  AH_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  if (ue->tokenType && ue->tokenName) {
-    GWEN_Buffer_AppendString(buf, "PIN_");
-    GWEN_Buffer_AppendString(buf, ue->tokenType);
-    GWEN_Buffer_AppendString(buf, "_");
-    GWEN_Buffer_AppendString(buf, ue->tokenName);
-    return 0;
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
-    return GWEN_ERROR_NO_DATA;
-  }
+  return AH_User_MkPasswdName(u, buf);
 }
 
 
@@ -1171,7 +1173,8 @@ int AH_User_InputPin(AB_USER *u,
   AH_User__MkPrompt(u, I18N("PIN"), pbuf, minLen, maxLen, flags);
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-  AH_User_MkPasswdName(u, nbuf);
+  AH_User_MkPinName(u, nbuf);
+
   rv=GWEN_Gui_GetPassword(flags,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter PIN"),
@@ -1200,6 +1203,7 @@ int AH_User_InputPasswd(AB_USER *u,
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkPasswdName(u, nbuf);
+
   rv=GWEN_Gui_GetPassword(flags,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter Password"),

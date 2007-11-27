@@ -1,4 +1,15 @@
 
+===========================================================================
+MARK: released AqBanking - 3.0.1 (2007-11-27)
+===========================================================================
+
+
+2007/11/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a serious bug in Pin/Tan: Was not constructing the password
+  name correctly, so multiple pin/tan users could not be distinguished
+
+
 2007/11/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - bankinfo.xml: added fields aux3 and aux4 to be used by OFX DC

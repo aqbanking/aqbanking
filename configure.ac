@@ -25,10 +25,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=0
-AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="svn"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -63,7 +63,7 @@ esac
 
 AQBANKING_SO_CURRENT=20
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=0
+AQBANKING_SO_REVISION=1
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -1770,8 +1770,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqyellownet/ui/qt3/Makefile
   src/plugins/backends/aqyellownet/ui/qt3/libs/Makefile
   src/test/Makefile
-  src/tools/Makefile
-  src/tools/aqbanking-tool/Makefile
   tutorials/Makefile
   po/Makefile
   bindings/python/Makefile

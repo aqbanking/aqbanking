@@ -136,8 +136,7 @@ Requires:   %{name} = %{version}
 Requires:   gwenhywfar >= %{_gwenhywfar_version}
 
 %description qt3
-This package contains the aqbanking-tools for aqbanking.
-Necessary for all banking applications.
+This package contains the QT3 setup wizard for AqBanking.
 
 ### Sub-packages for OFX
 %if %have_libofx

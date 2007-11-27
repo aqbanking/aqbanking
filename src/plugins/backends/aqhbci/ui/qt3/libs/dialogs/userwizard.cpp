@@ -53,6 +53,7 @@ bool UserWizard::_handleModePinTan() {
 
   /* create medium */
   wInfo.setCryptMode(AH_CryptMode_Pintan);
+  wInfo.setMediumType("pintan");
 
   /* setup user */
   w=new WizardPinTanNew(_app, &wInfo, _parent, "WizardPinTanNew", TRUE);
