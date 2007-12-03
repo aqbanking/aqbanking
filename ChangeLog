@@ -1,4 +1,11 @@
 
+2007/12/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: When an SSL connection (PIN/TAN) fails because the server
+  shows an error we now log more information (e.g. the content of the
+  "Location:" header for error codes 301, 303, 305 and 307)
+
+
 ===========================================================================
 MARK: released AqBanking - 3.0.1 (2007-11-27)
 ===========================================================================

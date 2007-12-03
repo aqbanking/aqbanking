@@ -303,12 +303,52 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
     if (code<200 || code>299) {
       /* response is only ok for continuation (100) code */
       if (code!=100) {
+	GWEN_DB_NODE *dbHeaderIn;
+
+        dbHeaderIn=GWEN_Io_LayerHttp_GetDbHeaderIn(dlg->ioLayer);
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Got an error response (%d: %s)",
 		  code, text);
 	GWEN_Gui_ProgressLog(dlg->guiid,
 			     GWEN_LoggerLevel_Error,
 			     GWEN_Buffer_GetStart(lbuf));
+	GWEN_Buffer_Reset(lbuf);
+
+	if (code==301 || code==303 || code==305 || code==307) {
+	  /* moved */
+	  if (dbHeaderIn) {
+	    const char *s;
+
+	    s=GWEN_DB_GetCharValue(dbHeaderIn, "Location", 0, 0);
+	    if (s) {
+	      switch(code) {
+	      case 301:
+	      case 303:
+		GWEN_Buffer_AppendString(lbuf,
+					 I18N("HTTP: Moved permanently"));
+		break;
+	      case 305:
+		GWEN_Buffer_AppendString(lbuf,
+					 I18N("HTTP: Use proxy"));
+		break;
+	      case 307:
+		GWEN_Buffer_AppendString(lbuf,
+					 I18N("HTTP: Moved temporarily"));
+		break;
+	      default:
+		GWEN_Buffer_AppendString(lbuf,
+					 I18N("HTTP: Moved"));
+	      } /* switch */
+	      GWEN_Buffer_AppendString(lbuf, " (");
+	      GWEN_Buffer_AppendString(lbuf, s);
+	      GWEN_Buffer_AppendString(lbuf, ")");
+
+	      GWEN_Gui_ProgressLog(dlg->guiid,
+				   GWEN_LoggerLevel_Warning,
+                                   GWEN_Buffer_GetStart(lbuf));
+	    }
+	  }
+	}
       }
       else {
 	GWEN_Gui_ProgressLog(dlg->guiid,

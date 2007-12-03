@@ -43,8 +43,10 @@ srcdoc: Doxyfile listdoc.h
 install-srcdoc: srcdoc
 	test -d "$(DESTDIR)@docpath@/$(PACKAGE)" || \
 	  mkdir -p "$(DESTDIR)@docpath@/$(PACKAGE)"
-	cp apidoc/* "$(DESTDIR)@docpath@/$(PACKAGE)"
-	cp "$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
+	for f in apidoc/html/aqbanking-@AQBANKING_VERSION_RELEASE_STRING@/*; do \
+	  cp $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
+	done
+	cp "apidoc/$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
 	if test -x "$(DESTDIR)@docpath@/$(PACKAGE)/installdox"; then \
 	  cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
 	   ID_OPT="-q" ; \
