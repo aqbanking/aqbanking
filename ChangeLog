@@ -1,4 +1,9 @@
 
+2007/12/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions AB_Value_GetNumerator() and AB_Value_GetDenominator()
+
+
 2007/12/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI: When an SSL connection (PIN/TAN) fails because the server

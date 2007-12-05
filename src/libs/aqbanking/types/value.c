@@ -397,6 +397,19 @@ int AB_Value_Negate(AB_VALUE *v) {
 
 
 
+long int AB_Value_GetNumerator(const AB_VALUE *v) {
+  assert(v);
+  return mpz_get_si(mpq_numref(v->value));
+}
+
+
+
+long int AB_Value_GetDenominator(const AB_VALUE *v) {
+  assert(v);
+  return mpz_get_si(mpq_denref(v->value));
+}
+
+
 void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent) {
   unsigned int i;
 
