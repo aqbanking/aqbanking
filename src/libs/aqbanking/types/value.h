@@ -18,6 +18,7 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/types.h>
 
 #include <aqbanking/error.h>
 
@@ -90,14 +91,14 @@ AQBANKING_API void AB_Value_SetValueFromDouble(AB_VALUE *v, double i);
  * a numerator and a denominator.
  * This functions returns the numerator.
  */
-AQBANKING_API long int AB_Value_GetNumerator(const AB_VALUE *v);
+AQBANKING_API int64_t AB_Value_GetNumerator(const AB_VALUE *v);
 
 /**
  * The value is internally stored as a rationale number onsisting of
  * a numerator and a denominator.
  * This functions returns the denominator.
  */
-AQBANKING_API long int AB_Value_GetDenominator(const AB_VALUE *v);
+AQBANKING_API int64_t AB_Value_GetDenominator(const AB_VALUE *v);
 
 AQBANKING_API void AB_Value_SetZero(AB_VALUE *v);
 

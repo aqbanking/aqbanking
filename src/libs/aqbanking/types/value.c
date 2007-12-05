@@ -397,16 +397,56 @@ int AB_Value_Negate(AB_VALUE *v) {
 
 
 
-long int AB_Value_GetNumerator(const AB_VALUE *v) {
+int64_t AB_Value_GetNumerator(const AB_VALUE *v) {
+  char buf[128];
+  int64_t val;
+  char *p;
+  int rv;
+
   assert(v);
-  return mpz_get_si(mpq_numref(v->value));
+  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zi", mpq_numref(v->value));
+  if (rv<0 || rv>=(sizeof(buf)-1)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Number too high for int64");
+    return GWEN_ERROR_INVALID;
+  }
+  buf[sizeof(buf)-1]=0;
+
+  val=0;
+  p=buf;
+  while(*p) {
+    val*=10;
+    val+=(*(p++)-'0');
+  }
+
+  return val;
 }
 
 
 
-long int AB_Value_GetDenominator(const AB_VALUE *v) {
+int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
+  char buf[128];
+  int64_t val;
+  char *p;
+  int rv;
+
   assert(v);
-  return mpz_get_si(mpq_denref(v->value));
+  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zi", mpq_denref(v->value));
+  if (rv<0 || rv>=(sizeof(buf)-1)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Number too high for int64");
+    return GWEN_ERROR_INVALID;
+  }
+  buf[sizeof(buf)-1]=0;
+
+  val=0;
+  p=buf;
+  while(*p) {
+    val<<=8;
+    val+=(*(p++)-'0');
+  }
+
+  return val;
 }
 
 
