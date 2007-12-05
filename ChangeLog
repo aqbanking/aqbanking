@@ -2,6 +2,7 @@
 2007/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added functions AB_Value_GetNumerator() and AB_Value_GetDenominator()
+- added function AB_Value_GetNumDenomString()
 
 
 2007/12/03: Martin Preuss<martin@libchipcard.de>

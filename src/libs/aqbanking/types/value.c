@@ -253,6 +253,23 @@ void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 
 
 
+int AB_Value_GetNumDenomString(const AB_VALUE *v,
+			       char *buffer,
+			       uint32_t buflen) {
+  int rv;
+
+  assert(v);
+  rv=gmp_snprintf(buffer, buflen, "%Qi", v->value);
+  if (rv<0 || rv>=buflen) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Buffer too small");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  return 0;
+}
+
+
+
 void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
   assert(v);
   AB_Value__toString(v, buf);
@@ -408,7 +425,7 @@ int64_t AB_Value_GetNumerator(const AB_VALUE *v) {
   if (rv<0 || rv>=(sizeof(buf)-1)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Number too high for int64");
-    return GWEN_ERROR_INVALID;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   buf[sizeof(buf)-1]=0;
 
@@ -435,7 +452,7 @@ int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
   if (rv<0 || rv>=(sizeof(buf)-1)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Number too high for int64");
-    return GWEN_ERROR_INVALID;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   buf[sizeof(buf)-1]=0;
 
