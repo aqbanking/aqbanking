@@ -455,7 +455,7 @@ int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
   val=0;
   p=buf;
   while(*p) {
-    val<<=8;
+    val*=10;
     val+=(*(p++)-'0');
   }
 

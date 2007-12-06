@@ -11,6 +11,10 @@ void dumpNumDenom(const char *t, const AB_VALUE *v) {
   else {
     fprintf(stderr, "%s (num/den): Error\n", t);
   }
+  fprintf(stderr, "%s %lld / %lld\n",
+          t,
+	  AB_Value_GetNumerator(v),
+	  AB_Value_GetDenominator(v));
 }
 
 
@@ -20,7 +24,7 @@ int test1(int argc, char **argv) {
   AB_VALUE *v3;
   int rv;
 
-  v1=AB_Value_fromString("266603139355");
+  v1=AB_Value_fromString("266603139355.123");
   if (v1==NULL) {
     fprintf(stderr, "ERROR: v1\n");
     return 1;
@@ -57,7 +61,7 @@ int test1(int argc, char **argv) {
 	  AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("r ", v3);
 
-  if (AB_Value_GetValueAsDouble(v3)!=2666031393550.0) {
+  if (AB_Value_GetValueAsDouble(v3)!=2666031393551230.0) {
     fprintf(stderr, "Bad result : %f\n",
 	    AB_Value_GetValueAsDouble(v3));
     return 1;
