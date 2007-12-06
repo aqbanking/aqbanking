@@ -138,6 +138,8 @@ AB_VALUE *AB_Value_fromString(const char *s) {
       currency=p;
     }
 
+    DBG_ERROR(0, "Setting this: %s%ld/%ld", isNeg?"-":"+", op1, op2);
+
     v=AB_Value_new();
     if (isNeg)
       mpq_set_si(v->value, -op1, op2);
@@ -415,6 +417,7 @@ int64_t AB_Value_GetNumerator(const AB_VALUE *v) {
   int64_t val;
   char *p;
   int rv;
+  int isNeg=0;
 
   assert(v);
   rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zi", mpq_numref(v->value));
@@ -427,11 +430,19 @@ int64_t AB_Value_GetNumerator(const AB_VALUE *v) {
 
   val=0;
   p=buf;
+  if (*p=='-') {
+    isNeg=1;
+    p++;
+  }
+  else if (*p=='+')
+    p++;
   while(*p) {
     val*=10;
-    val+=(*(p++)-'0');
+    val+=((*(p++))-'0');
   }
 
+  if (isNeg)
+    return -val;
   return val;
 }
 
@@ -444,7 +455,7 @@ int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
   int rv;
 
   assert(v);
-  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zi", mpq_denref(v->value));
+  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zu", mpq_denref(v->value));
   if (rv<0 || rv>=(sizeof(buf)-1)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Number too high for int64");
@@ -456,7 +467,7 @@ int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
   p=buf;
   while(*p) {
     val*=10;
-    val+=(*(p++)-'0');
+    val+=((*(p++))-'0');
   }
 
   return val;

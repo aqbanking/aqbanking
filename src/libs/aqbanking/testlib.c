@@ -22,6 +22,7 @@ int test1(int argc, char **argv) {
   AB_VALUE *v1;
   AB_VALUE *v2;
   AB_VALUE *v3;
+  AB_VALUE *v4;
   int rv;
 
   v1=AB_Value_fromString("266603139355.123");
@@ -50,6 +51,15 @@ int test1(int argc, char **argv) {
   fprintf(stderr, "v3          : %f\n",
 	  AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("v3", v3);
+
+  v4=AB_Value_fromString("-1250,");
+  if (v4==NULL) {
+    fprintf(stderr, "ERROR: v4\n");
+    return 1;
+  }
+  fprintf(stderr, "v4          : %f\n",
+	  AB_Value_GetValueAsDouble(v4));
+  dumpNumDenom("v4", v4);
 
   rv=AB_Value_MultValue(v3, v2);
   if (rv) {
