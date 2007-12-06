@@ -270,13 +270,6 @@ int AB_Value_GetNumDenomString(const AB_VALUE *v,
 
 
 
-void AB_Value_Canonicalize(AB_VALUE *v) {
-  assert(v);
-  mpq_canonicalize(v->value);
-}
-
-
-
 void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
   assert(v);
   AB_Value__toString(v, buf);
@@ -419,68 +412,6 @@ int AB_Value_Negate(AB_VALUE *v) {
   return 0;
 }
 
-
-
-int64_t AB_Value_GetNumerator(const AB_VALUE *v) {
-  char buf[128];
-  int64_t val;
-  char *p;
-  int rv;
-  int isNeg=0;
-
-  assert(v);
-  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zi", mpq_numref(v->value));
-  if (rv<0 || rv>=(sizeof(buf)-1)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Number too high for int64");
-    return GWEN_ERROR_BUFFER_OVERFLOW;
-  }
-  buf[sizeof(buf)-1]=0;
-
-  val=0;
-  p=buf;
-  if (*p=='-') {
-    isNeg=1;
-    p++;
-  }
-  else if (*p=='+')
-    p++;
-  while(*p) {
-    val*=10;
-    val+=((*(p++))-'0');
-  }
-
-  if (isNeg)
-    return -val;
-  return val;
-}
-
-
-
-int64_t AB_Value_GetDenominator(const AB_VALUE *v) {
-  char buf[128];
-  int64_t val;
-  char *p;
-  int rv;
-
-  assert(v);
-  rv=gmp_snprintf(buf, sizeof(buf)-1, "%Zu", mpq_denref(v->value));
-  if (rv<0 || rv>=(sizeof(buf)-1)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Number too high for int64");
-    return GWEN_ERROR_BUFFER_OVERFLOW;
-  }
-  buf[sizeof(buf)-1]=0;
-
-  val=0;
-  p=buf;
-  while(*p) {
-    val*=10;
-    val+=((*(p++))-'0');
-  }
-
-  return val;
-}
 
 
 void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent) {

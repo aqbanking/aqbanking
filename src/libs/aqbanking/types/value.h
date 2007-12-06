@@ -87,20 +87,6 @@ AQBANKING_API double AB_Value_GetValueAsDouble(const AB_VALUE *v);
 AQBANKING_API void AB_Value_SetValueFromDouble(AB_VALUE *v, double i);
 
 /**
- * The value is internally stored as a rationale number onsisting of
- * a numerator and a denominator.
- * This functions returns the numerator.
- */
-AQBANKING_API int64_t AB_Value_GetNumerator(const AB_VALUE *v);
-
-/**
- * The value is internally stored as a rationale number onsisting of
- * a numerator and a denominator.
- * This functions returns the denominator.
- */
-AQBANKING_API int64_t AB_Value_GetDenominator(const AB_VALUE *v);
-
-/**
  * Write the value (without the currency) in nominator/denominator
  * form into the given buffer if possibly.
  * This form looks like "12345/6789" (nominator/denominator).
@@ -108,8 +94,6 @@ AQBANKING_API int64_t AB_Value_GetDenominator(const AB_VALUE *v);
 AQBANKING_API int AB_Value_GetNumDenomString(const AB_VALUE *v,
 					     char *buffer,
 					     uint32_t buflen);
-
-AQBANKING_API void AB_Value_Canonicalize(AB_VALUE *v);
 
 AQBANKING_API void AB_Value_SetZero(AB_VALUE *v);
 
