@@ -25,7 +25,7 @@ int test1(int argc, char **argv) {
   AB_VALUE *v4;
   int rv;
 
-  v1=AB_Value_fromString("266603139355.123");
+  v1=AB_Value_fromString("987654321,12345");
   if (v1==NULL) {
     fprintf(stderr, "ERROR: v1\n");
     return 1;
@@ -71,7 +71,7 @@ int test1(int argc, char **argv) {
 	  AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("r ", v3);
 
-  if (AB_Value_GetValueAsDouble(v3)!=2666031393551230.0) {
+  if (AB_Value_GetValueAsDouble(v3)!=66031393551.23) {
     fprintf(stderr, "Bad result : %f\n",
 	    AB_Value_GetValueAsDouble(v3));
     return 1;

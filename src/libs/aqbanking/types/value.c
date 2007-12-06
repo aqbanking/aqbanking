@@ -90,82 +90,91 @@ AB_VALUE *AB_Value_fromDouble(double i) {
 AB_VALUE *AB_Value_fromString(const char *s) {
   AB_VALUE *v;
   const char *currency=NULL;
-  const char *p;
+  int rv;
+  char *tmpString=NULL;
+  char *p;
+  char *t;
+  int isNeg=0;
 
-  p=s;
-  /* skip blanks */
+#ifdef HAVE_SETLOCALE
+  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
+  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
+
+  setlocale(LC_NUMERIC,"C");
+#endif
+
+  tmpString=strdup(s);
+  p=tmpString;
+
   while(*p && *p<33)
     p++;
 
-  if (strchr(p, '.') || strchr(p, ',')) {
-    int isNeg=0;
-    signed long int op1=0;
-    unsigned long int op2=1;
-
-    /* check for sign */
-    if (*p=='-') {
-      isNeg=1;
-      p++;
-    }
-    else if (*p=='+') {
-      p++;
-    }
-
-    /* convert value (before comma) */
-    while(*p>='0' && *p<='9') {
-      op1*=10;
-      op1+=*p-'0';
-      p++;
-    }
-    if (*p=='.' || *p==',') {
-      p++;
-      /* convert value (after comma) */
-      while(*p>='0' && *p<='9') {
-	op1*=10;
-	op1+=*p-'0';
-	op2*=10;
-	p++;
-      }
-    }
-    if (*p) {
-      if (*p!=':') {
-	/* something follows, but it is not the currency */
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value [%s]", s);
-	return NULL;
-      }
-
-      p++;
-      currency=p;
-    }
-
-    DBG_ERROR(0, "Setting this: %s%ld/%ld", isNeg?"-":"+", op1, op2);
-
-    v=AB_Value_new();
-    if (isNeg)
-      mpq_set_si(v->value, -op1, op2);
-    else
-      mpq_set_si(v->value, op1, op2);
-    mpq_canonicalize(v->value);
+  if (*p=='-') {
+    isNeg=1;
+    p++;
   }
-  else {
-    v=AB_Value_new();
-    if (1!=gmp_sscanf(p, "%Qi", v->value)) {
+  else if (*p=='+') {
+    p++;
+  }
+
+  t=strchr(p, ':');
+  if (t) {
+    currency=t+1;
+    *t=0;
+  }
+
+  v=AB_Value_new();
+  t=strchr(p, ',');
+  if (t)
+    *t='.';
+
+  if (strchr(p, '.')) {
+    mpf_t v1;
+
+    mpf_init(v1);
+    /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
+    if (gmp_sscanf(p, "%Ff", v1)!=1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
       AB_Value_free(v);
+#ifdef HAVE_SETLOCALE
+      setlocale(LC_NUMERIC, currentLocale);
+      free(currentLocale);
+#endif
       return NULL;
     }
-
-    /* canonicalize */
-    mpq_canonicalize(v->value);
-
-    p=strchr(s, ':');
-    if (p)
-      currency=p+1;
+    mpq_set_f(v->value, v1);
+    mpf_clear(v1);
+    rv=1;
   }
+  else {
+    /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
+    rv=gmp_sscanf(p, "%Qu", v->value);
+  }
+
+#ifdef HAVE_SETLOCALE
+  setlocale(LC_NUMERIC, currentLocale);
+  free(currentLocale);
+#endif
 
   /* set currency (if any) */
   if (currency)
     v->currency=strdup(currency);
+
+  /* temporary string no longer needed */
+  free(tmpString);
+
+  if (rv!=1) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
+    AB_Value_free(v);
+    return NULL;
+  }
+
+  /* canonicalize */
+  mpq_canonicalize(v->value);
+
+  if (isNeg)
+    mpq_neg(v->value, v->value);
+
 
   return v;
 }
