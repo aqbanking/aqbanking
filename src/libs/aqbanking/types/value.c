@@ -270,6 +270,13 @@ int AB_Value_GetNumDenomString(const AB_VALUE *v,
 
 
 
+void AB_Value_Canonicalize(AB_VALUE *v) {
+  assert(v);
+  mpq_canonicalize(v->value);
+}
+
+
+
 void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
   assert(v);
   AB_Value__toString(v, buf);

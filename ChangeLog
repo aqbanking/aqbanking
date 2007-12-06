@@ -1,4 +1,9 @@
 
+2007/12/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function AB_Value_Canonicalize()
+
+
 2007/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added functions AB_Value_GetNumerator() and AB_Value_GetDenominator()

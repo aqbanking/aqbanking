@@ -109,6 +109,8 @@ AQBANKING_API int AB_Value_GetNumDenomString(const AB_VALUE *v,
 					     char *buffer,
 					     uint32_t buflen);
 
+AQBANKING_API void AB_Value_Canonicalize(AB_VALUE *v);
+
 AQBANKING_API void AB_Value_SetZero(AB_VALUE *v);
 
 AQBANKING_API int AB_Value_IsZero(const AB_VALUE *v);
