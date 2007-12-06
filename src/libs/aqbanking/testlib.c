@@ -2,43 +2,67 @@
 #include "types/value.h"
 
 
+void dumpNumDenom(const char *t, const AB_VALUE *v) {
+  char numbuf[256];
+
+  if (!AB_Value_GetNumDenomString(v, numbuf, sizeof(numbuf))) {
+    fprintf(stderr, "%s (num/den): %s\n", t, numbuf);
+  }
+  else {
+    fprintf(stderr, "%s (num/den): Error\n", t);
+  }
+}
+
+
 int test1(int argc, char **argv) {
   AB_VALUE *v1;
   AB_VALUE *v2;
   AB_VALUE *v3;
   int rv;
 
-  v1=AB_Value_fromString("99999266603139355");
+  v1=AB_Value_fromString("266603139355");
   if (v1==NULL) {
     fprintf(stderr, "ERROR: v1\n");
     return 1;
   }
-  fprintf(stderr, "v1: %f\n",
+  fprintf(stderr, "v1          : %f\n",
 	  AB_Value_GetValueAsDouble(v1));
+  dumpNumDenom("v1", v1);
+
   v2=AB_Value_fromString("10/1");
   if (v2==NULL) {
     fprintf(stderr, "ERROR: v2\n");
     return 1;
   }
-  fprintf(stderr, "v2: %f\n",
+  fprintf(stderr, "v2          : %f\n",
 	  AB_Value_GetValueAsDouble(v2));
+  dumpNumDenom("v2", v2);
+
   v3=AB_Value_dup(v1);
   if (v3==NULL) {
     fprintf(stderr, "ERROR: v3\n");
     return 1;
   }
-  fprintf(stderr, "v3: %f\n",
+  fprintf(stderr, "v3          : %f\n",
 	  AB_Value_GetValueAsDouble(v3));
+  dumpNumDenom("v3", v3);
+
   rv=AB_Value_MultValue(v3, v2);
   if (rv) {
     fprintf(stderr, "ERROR: v3*v2\n");
     return 1;
   }
-  if (AB_Value_GetValueAsDouble(v3)!=12345.0) {
-    fprintf(stderr, "Bad result: %f\n",
+
+  fprintf(stderr, "r           : %f\n",
+	  AB_Value_GetValueAsDouble(v3));
+  dumpNumDenom("r ", v3);
+
+  if (AB_Value_GetValueAsDouble(v3)!=2666031393550.0) {
+    fprintf(stderr, "Bad result : %f\n",
 	    AB_Value_GetValueAsDouble(v3));
     return 1;
   }
+  dumpNumDenom("v3", v3);
 
   fprintf(stderr, "Ok.\n");
   return 0;
@@ -47,7 +71,7 @@ int test1(int argc, char **argv) {
 
 
 int main(int argc, char *argv[]){
-#if 0
+#if 1
   return test1(argc, argv);
 #else
   AB_BANKING *ab;
