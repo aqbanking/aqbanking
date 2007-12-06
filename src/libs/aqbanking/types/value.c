@@ -132,8 +132,7 @@ AB_VALUE *AB_Value_fromString(const char *s) {
     mpf_t v1;
 
     mpf_init(v1);
-    /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
-    if (gmp_sscanf(p, "%Ff", v1)!=1) {
+    if (mpf_set_str(v1, p, 10)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
       AB_Value_free(v);
 #ifdef HAVE_SETLOCALE
