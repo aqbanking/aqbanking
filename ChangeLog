@@ -1,4 +1,9 @@
 
+2008/01/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a double free in imexporter/ofx.c
+
+
 2007/12/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function AB_Value_Canonicalize()

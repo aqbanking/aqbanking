@@ -67,7 +67,7 @@ int test1(int argc, char **argv) {
 	  AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("r ", v3);
 
-  if (AB_Value_GetValueAsDouble(v3)!=66031393551.23) {
+  if (AB_Value_GetValueAsDouble(v3)!=9876543211.2345) {
     fprintf(stderr, "Bad result : %f\n",
 	    AB_Value_GetValueAsDouble(v3));
     return 1;

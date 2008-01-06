@@ -258,12 +258,12 @@ int AB_Value_GetNumDenomString(const AB_VALUE *v,
   int rv;
 
   assert(v);
-  rv=gmp_snprintf(buffer, buflen, "%Qi", v->value);
+
+  rv=gmp_snprintf(buffer, buflen, "%Qu", v->value);
   if (rv<0 || rv>=buflen) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Buffer too small");
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
-
   return 0;
 }
 

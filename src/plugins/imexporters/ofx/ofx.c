@@ -127,7 +127,6 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 #endif
     }
     GWEN_Buffer_free(fbuf);
-    GWEN_StringList_free(paths);
   }
 
   /* read whole stream into buffer */
