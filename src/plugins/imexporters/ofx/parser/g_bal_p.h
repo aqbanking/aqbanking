@@ -10,33 +10,27 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_BAL_P_H
+#define AIO_OFX_G_BAL_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_bal_l.h"
+
+
+typedef struct AIO_OFX_GROUP_BAL AIO_OFX_GROUP_BAL;
+struct AIO_OFX_GROUP_BAL {
+  AB_VALUE *value;
+  GWEN_TIME *date;
+
+  char *currentElement;
+};
+
+void GWENHYWFAR_CB AIO_OfxGroup_BAL_FreeData(void *bp, void *p);
+
+
+int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+int AIO_OfxGroup_BAL_AddData(AIO_OFX_GROUP *g, const char *data);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

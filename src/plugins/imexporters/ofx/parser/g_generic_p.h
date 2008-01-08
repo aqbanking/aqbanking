@@ -10,33 +10,16 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_GENERIC_P_H
+#define AIO_OFX_G_GENERIC_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_generic_l.h"
+
+
+int AIO_OfxGroup_Generic_EndTag(AIO_OFX_GROUP *g, const char *tagName);
+int AIO_OfxGroup_Generic_AddData(AIO_OFX_GROUP *g, const char *data);
+int AIO_OfxGroup_Generic_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

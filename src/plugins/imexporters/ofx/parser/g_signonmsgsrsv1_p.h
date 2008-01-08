@@ -10,33 +10,15 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_SIGNONMSGSRSV1_P_H
+#define AIO_OFX_G_SIGNONMSGSRSV1_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_signonmsgsrsv1_l.h"
+
+
+int AIO_OfxGroup_SIGNONMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
+					 const char *tagName);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

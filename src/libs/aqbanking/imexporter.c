@@ -1052,7 +1052,6 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
   t=iea->nextAccountStatus;
   if (t) {
     iea->nextAccountStatus=AB_AccountStatus_List_Next(t);
-    AB_AccountStatus_List_Del(t);
     return t;
   }
   iea->nextAccountStatus=0;

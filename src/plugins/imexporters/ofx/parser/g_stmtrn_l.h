@@ -10,33 +10,19 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_STMTRN_L_H
+#define AIO_OFX_G_STMTRN_L_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "ofxgroup_l.h"
+
+
+
+AIO_OFX_GROUP *AIO_OfxGroup_STMTRN_new(const char *groupName,
+				       AIO_OFX_GROUP *parent,
+				       GWEN_XML_CONTEXT *ctx);
+
+AB_TRANSACTION *AIO_OfxGroup_STMTRN_TakeTransaction(const AIO_OFX_GROUP *g);
+
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

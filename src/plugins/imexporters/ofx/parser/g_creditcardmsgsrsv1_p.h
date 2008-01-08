@@ -10,33 +10,15 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_CREDITCARDMSGSRSV1_P_H
+#define AIO_OFX_G_CREDITCARDMSGSRSV1_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_creditcardmsgsrsv1_l.h"
+
+
+int AIO_OfxGroup_CREDITCARDMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
+					     const char *tagName);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -10,33 +10,15 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_DOCUMENT_P_H
+#define AIO_OFX_G_DOCUMENT_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_document_l.h"
+
+
+int AIO_OfxGroup_Document_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+int AIO_OfxGroup_Document_AddData(AIO_OFX_GROUP *g, const char *data);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

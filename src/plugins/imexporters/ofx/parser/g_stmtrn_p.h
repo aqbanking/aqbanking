@@ -1,0 +1,37 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ begin       : Mon Jan 07 2008
+ copyright   : (C) 2008 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+
+#ifndef AIO_OFX_G_STMTRN_P_H
+#define AIO_OFX_G_STMTRN_P_H
+
+
+#include "g_stmtrn_l.h"
+
+
+typedef struct AIO_OFX_GROUP_STMTRN AIO_OFX_GROUP_STMTRN;
+struct AIO_OFX_GROUP_STMTRN {
+  char *currentElement;
+  char *currency;
+
+  AB_TRANSACTION *transaction;
+};
+
+void GWENHYWFAR_CB AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p);
+
+
+int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+int AIO_OfxGroup_STMTRN_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data);
+
+#endif
+
+

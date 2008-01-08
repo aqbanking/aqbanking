@@ -10,33 +10,15 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_SONRS_P_H
+#define AIO_OFX_G_SONRS_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_sonrs_l.h"
+
+
+int AIO_OfxGroup_SONRS_StartTag(AIO_OFX_GROUP *g,
+				const char *tagName);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

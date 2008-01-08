@@ -10,33 +10,14 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_OFX_P_H
+#define AIO_OFX_G_OFX_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_ofx_l.h"
+
+
+int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

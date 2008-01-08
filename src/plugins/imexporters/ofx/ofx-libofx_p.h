@@ -1,7 +1,7 @@
 /***************************************************************************
  $RCSfile$
  -------------------
- cvs         : $Id$
+ cvs         : $Id: ofx_p.h 1396 2007-11-22 17:37:27Z martin $
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de

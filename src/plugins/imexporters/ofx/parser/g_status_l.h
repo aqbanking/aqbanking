@@ -10,33 +10,18 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_STATUS_L_H
+#define AIO_OFX_G_STATUS_L_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "ofxgroup_l.h"
+
+
+
+AIO_OFX_GROUP *AIO_OfxGroup_STATUS_new(const char *groupName,
+				       AIO_OFX_GROUP *parent,
+				       GWEN_XML_CONTEXT *ctx,
+				       const char *description);
+
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,22 @@
 
+2008/01/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AB_ImExporterAccountInfo_GetNextAccountStatus(): Was
+  unlinking an account status
+- started working on an internal OFX parser:
+  This parser only uses functions from Gwenhywfar so libofx is not needed
+  for simple importation.
+  This importer now imports balances correctly (the old one did not import
+  balances at all).
+
+  Advantages of this new parser:
+  - translatable OFX error messages
+  - fewer dependencies (no need for LibOFX, OpenSP and LibXML)
+  - uses dynamic buffers internally, so there is in theory no limit on the
+    size of OFX elements
+  - full integration into AqBanking
+
+
 2008/01/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a double free in imexporter/ofx.c

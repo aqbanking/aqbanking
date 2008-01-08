@@ -10,33 +10,15 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_G_STMTTRNRS_P_H
+#define AIO_OFX_G_STMTTRNRS_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "g_stmttrnrs_l.h"
+
+
+int AIO_OfxGroup_STMTTRNRS_StartTag(AIO_OFX_GROUP *g,
+				    const char *tagName);
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -1659,6 +1659,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/ofx/Makefile
   src/plugins/imexporters/ofx/ofx.xml
   src/plugins/imexporters/ofx/ressource.rc
+  src/plugins/imexporters/ofx/parser/Makefile
   src/plugins/imexporters/ofx/profiles/Makefile
   src/plugins/imexporters/ofx/profiles/default.conf
   src/plugins/imexporters/swift/Makefile

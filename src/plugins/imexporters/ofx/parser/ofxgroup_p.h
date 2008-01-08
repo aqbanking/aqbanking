@@ -10,33 +10,28 @@
  ***************************************************************************/
 
 
+#ifndef AIO_OFX_OFXGROUP_P_H
+#define AIO_OFX_OFXGROUP_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include "ofxgroup_l.h"
+
+
+struct AIO_OFX_GROUP {
+  GWEN_INHERIT_ELEMENT(AIO_OFX_GROUP)
+
+  AIO_OFX_GROUP *parent;
+  GWEN_XML_CONTEXT *xmlContext;
+
+  char *groupName;
+
+  AIO_OFX_GROUP_STARTTAG_FN startTagFn;
+  AIO_OFX_GROUP_ENDTAG_FN endTagFn;
+  AIO_OFX_GROUP_ADDDATA_FN addDataFn;
+  AIO_OFX_GROUP_ENDSUBGROUP_FN endSubGroupFn;
+};
+
+
+
 #endif
-
-
-#include "ofx-internal.c"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
