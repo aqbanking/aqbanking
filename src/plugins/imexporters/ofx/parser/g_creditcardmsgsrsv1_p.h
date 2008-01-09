@@ -17,8 +17,8 @@
 #include "g_creditcardmsgsrsv1_l.h"
 
 
-int AIO_OfxGroup_CREDITCARDMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
-					     const char *tagName);
+static int AIO_OfxGroup_CREDITCARDMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
+						    const char *tagName);
 
 #endif
 

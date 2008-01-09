@@ -28,12 +28,12 @@ struct AIO_OFX_GROUP_STATUS {
   AIO_OFX_GROUP_ENDTAG_FN oldEndTagFn;
 };
 
-void GWENHYWFAR_CB AIO_OfxGroup_STATUS_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AIO_OfxGroup_STATUS_FreeData(void *bp, void *p);
 
 
-int AIO_OfxGroup_STATUS_StartTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_STATUS_EndTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_STATUS_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_STATUS_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_STATUS_EndTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_STATUS_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
 

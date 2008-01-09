@@ -17,8 +17,8 @@
 #include "g_document_l.h"
 
 
-int AIO_OfxGroup_Document_StartTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_Document_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_Document_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_Document_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
 

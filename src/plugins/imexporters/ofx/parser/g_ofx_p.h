@@ -17,7 +17,7 @@
 #include "g_ofx_l.h"
 
 
-int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName);
 
 #endif
 

@@ -26,12 +26,12 @@ struct AIO_OFX_GROUP_IGNORE {
 };
 
 
-void GWENHYWFAR_CB AIO_OfxGroup_Ignore_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AIO_OfxGroup_Ignore_FreeData(void *bp, void *p);
 
 
-int AIO_OfxGroup_Ignore_StartTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_Ignore_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_Ignore_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_Ignore_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
 

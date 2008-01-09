@@ -17,9 +17,9 @@
 #include "g_generic_l.h"
 
 
-int AIO_OfxGroup_Generic_EndTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_Generic_AddData(AIO_OFX_GROUP *g, const char *data);
-int AIO_OfxGroup_Generic_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+static int AIO_OfxGroup_Generic_EndTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_Generic_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_Generic_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
 
 #endif
 

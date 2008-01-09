@@ -25,12 +25,12 @@ struct AIO_OFX_GROUP_STMTRN {
   AB_TRANSACTION *transaction;
 };
 
-void GWENHYWFAR_CB AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p);
 
 
-int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g, const char *tagName);
-int AIO_OfxGroup_STMTRN_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
-int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_STMTRN_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+static int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
 
