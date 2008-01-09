@@ -19,7 +19,6 @@
 #include "provider_p.h"
 #include "account.h"
 #include "queues_l.h"
-#include "context_l.h"
 #include "user.h"
 
 #include <aqbanking/account_be.h>
@@ -511,52 +510,91 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
 }
 
 
-#if 0
-int AO_Provider_EncodeJob(AB_PROVIDER *pro,
-                          AO_CONTEXT *ctx,
-                          char **pData) {
-  AB_JOB *j = 0;
-  char *res=0;
+
+int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
+					AB_USER *u,
+					AB_IMEXPORTER_CONTEXT *ictx,
+					uint32_t guiid){
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   assert(pro);
-  assert(ctx);
-  j=AO_Context_GetJob(ctx);
-  assert(j);
-  switch(AB_Job_GetType(j)) {
-  case AB_Job_TypeGetBalance:
-    res=libofx_request_statement(AO_Context_GetFi(ctx),
-                                 AO_Context_GetAi(ctx),
-                                 0);
-    break;
+  assert(ictx);
 
-  case AB_Job_TypeGetTransactions: {
-    const GWEN_TIME *ti;
-    time_t secs=0;
-
-    ti=AB_JobGetTransactions_GetFromTime(j);
-    if (ti)
-      secs=GWEN_Time_toTime_t(ti);
-    res=libofx_request_statement(AO_Context_GetFi(ctx),
-                                 AO_Context_GetAi(ctx),
-                                 secs);
-    break;
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ictx);
+  if (!ai) {
+    DBG_INFO(0, "No accounts");
   }
+  while(ai) {
+    const char *country;
+    const char *bankCode;
+    const char *accountNumber;
 
-  default:
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Unsupported job type (%d)",
-              AB_Job_GetType(j));
-    return GWEN_ERROR_INVALID;
-  }
+    country=AB_User_GetCountry(u);
+    if (!country)
+      country="us";
+    bankCode=AB_ImExporterAccountInfo_GetBankCode(ai);
+    if (!bankCode || !*bankCode)
+      bankCode=AB_User_GetBankCode(u);
+    accountNumber=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+    if (bankCode && accountNumber) {
+      AB_ACCOUNT *a;
+      const char *s;
 
-  if (res==0) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-             "Could not create request for job");
-    return GWEN_ERROR_GENERIC;
-  }
-  *pData=res;
+      a=AB_Banking_FindAccount(AB_Provider_GetBanking(pro),
+                               AQOFXCONNECT_BACKENDNAME,
+                               country, bankCode, accountNumber);
+      if (!a) {
+        char msg[]=I18N_NOOP("Adding account %s to bank %s");
+        char msgbuf[512];
+
+        DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Adding account %s to bank %s",
+                  accountNumber, bankCode);
+
+        /* account does not exist, add it */
+        a=AB_Banking_CreateAccount(AB_Provider_GetBanking(pro),
+                                   AQOFXCONNECT_BACKENDNAME);
+        assert(a);
+        AB_Account_SetCountry(a, country);
+        AB_Account_SetBankCode(a, bankCode);
+        AB_Account_SetAccountNumber(a, accountNumber);
+        AB_Account_SetUser(a, u);
+        s=AB_ImExporterAccountInfo_GetBankName(ai);
+        if (!s)
+          s=bankCode;
+        AB_Account_SetBankName(a, s);
+        AB_Account_SetAccountType(a, AB_ImExporterAccountInfo_GetType(ai));
+
+        snprintf(msgbuf, sizeof(msgbuf), I18N(msg),
+                 accountNumber, bankCode);
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Notice,
+			     msgbuf);
+        AB_Banking_AddAccount(AB_Provider_GetBanking(pro),a );
+      }
+      else {
+        DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
+                  "Account %s at bank %s already exists",
+                  accountNumber, bankCode);
+      }
+      /* update existing account */
+      s=AB_ImExporterAccountInfo_GetBankName(ai);
+      if (s) {
+        AB_Account_SetBankName(a, s);
+      }
+      s=AB_ImExporterAccountInfo_GetAccountName(ai);
+      if (s)
+        AB_Account_SetAccountName(a, s);
+    }
+    else {
+      DBG_WARN(AQOFXCONNECT_LOGDOMAIN,
+                "BankCode or AccountNumber missing (%s/%s)",
+                bankCode, accountNumber);
+    }
+    ai=AB_ImExporterContext_GetNextAccountInfo(ictx);
+  } /* while accounts */
+
   return 0;
 }
-#endif
 
 
 
@@ -564,8 +602,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
 				AB_USER *u,
 				uint32_t guiid) {
   AO_PROVIDER *dp;
-  AO_CONTEXT *ctx;
-  char *msg;
+  GWEN_BUFFER *reqbuf;
   GWEN_BUFFER *rbuf=NULL;
   int rv;
   uint32_t pid;
@@ -593,69 +630,98 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
 			     1,
 			     guiid);
   ictx=AB_ImExporterContext_new();
-  ctx=AO_Context_new(u, 0, ictx);
-  assert(ctx);
-  rv=AO_Context_Update(ctx, guiid);
-  if (rv) {
+
+  reqbuf=GWEN_Buffer_new(0, 2048, 0, 1);
+  GWEN_Buffer_ReserveBytes(reqbuf, 1024);
+
+  /* add actual request */
+  rv=AO_Provider__AddAccountInfoReq(pro, guiid, reqbuf);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Error updating context");
-    AO_Context_free(ctx);
+	      "Error adding request element (%d)", rv);
+    GWEN_Buffer_free(reqbuf);
+    AB_ImExporterContext_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
 
-  msg=libofx_request_accountinfo(AO_Context_GetFi(ctx));
-  if (!msg) {
+  /* wrap message (adds headers etc) */
+  rv=AO_Provider__WrapMessage(pro, u, reqbuf, guiid);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Could not generate getAccounts-request");
-    AO_Context_free(ctx);
+	      "Error adding request element (%d)", rv);
+    GWEN_Buffer_free(reqbuf);
     AB_ImExporterContext_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
-    return GWEN_ERROR_GENERIC;
+    return rv;
   }
 
+  /* exchange mesages */
   rv=AO_Provider_SendAndReceive(pro, u,
-				(const uint8_t*)msg,
-				strlen(msg),
+				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
+				GWEN_Buffer_GetUsedBytes(reqbuf),
 				&rbuf,
 				guiid);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getAccounts-request (%d)", rv);
-    AO_Context_free(ctx);
+    GWEN_Buffer_free(reqbuf);
     AB_ImExporterContext_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
+  else {
+    AB_IMEXPORTER *importer;
+    GWEN_DB_NODE *dbProfile;
 
-  /* parse response */
-  GWEN_Gui_ProgressLog(guiid,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Parsing response"));
-
-  rv=libofx_proc_buffer(AO_Context_GetOfxContext(ctx),
-                        GWEN_Buffer_GetStart(rbuf),
-                        GWEN_Buffer_GetUsedBytes(rbuf));
-  if (rv) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error parsing data: %d", rv);
-    rv=GWEN_ERROR_BAD_DATA;
-  }
-  GWEN_Buffer_free(rbuf);
-
-  if (!rv) {
-    GWEN_Gui_ProgressLog(guiid,
+    /* parse response */
+    GWEN_Buffer_free(reqbuf);
+    GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Info,
-			 I18N("Processing response"));
-    rv=AO_Context_ProcessImporterContext(ctx, guiid);
-    if (rv) {
+			 I18N("Parsing response"));
+
+    /* prepare import */
+    importer=AB_Banking_GetImExporter(AB_Provider_GetBanking(pro), "ofx");
+    if (!importer) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-		"Error pprocessing data: %d", rv);
-      rv=GWEN_ERROR_BAD_DATA;
+		"OFX import module not found");
+      GWEN_Buffer_free(rbuf);
+      AB_ImExporterContext_free(ictx);
+      GWEN_Gui_ProgressEnd(pid);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+
+    GWEN_Buffer_Rewind(rbuf);
+    dbProfile=GWEN_DB_Group_new("profile");
+    /* actually import */
+    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile, pid);
+    GWEN_DB_Group_free(dbProfile);
+    GWEN_Buffer_free(rbuf);
+    if (rv<0) {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+		"Error importing server response (%d)", rv);
+      GWEN_Gui_ProgressLog(pid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Error parsing response"));
+      AB_ImExporterContext_free(ictx);
+      GWEN_Gui_ProgressEnd(pid);
+      return rv;
+    }
+
+    /* create accounts */
+    rv=AO_Provider__ProcessImporterContext(pro, u, ictx, pid);
+    if (rv<0) {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+		"Error importing accounts (%d)", rv);
+      GWEN_Gui_ProgressLog(pid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Error importing accounts"));
+      AB_ImExporterContext_free(ictx);
+      GWEN_Gui_ProgressEnd(pid);
+      return rv;
     }
   }
 
-  AO_Context_free(ctx);
   AB_ImExporterContext_free(ictx);
   GWEN_Gui_ProgressEnd(pid);
   return rv;
@@ -667,8 +733,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 				  AB_IMEXPORTER_CONTEXT *ictx,
 				  uint32_t guiid) {
   AO_PROVIDER *dp;
-  AO_CONTEXT *ctx;
-  char *msg;
+  GWEN_BUFFER *reqbuf;
   GWEN_BUFFER *rbuf=0;
   int rv;
   AB_USER *u;
@@ -694,79 +759,82 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
       t=GWEN_Time_toTime_t(ti);
   }
 
-  /* create and setup context */
-  ctx=AO_Context_new(u, j, ictx);
-  assert(ctx);
-  rv=AO_Context_Update(ctx, guiid);
-  if (rv) {
+  reqbuf=GWEN_Buffer_new(0, 2048, 0, 1);
+  GWEN_Buffer_ReserveBytes(reqbuf, 1024);
+
+  /* add actual request */
+  rv=AO_Provider__AddStatementRequest(pro, j, guiid, reqbuf);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Error updating context");
-    AO_Context_free(ctx);
+	      "Error adding request element (%d)", rv);
+    GWEN_Buffer_free(reqbuf);
     return rv;
   }
 
-#ifdef OfxAccountData
-# warning Have OfxAccountData
-#endif
-
-  /* create request data */
-  msg=libofx_request_statement(AO_Context_GetFi(ctx),
-                               AO_Context_GetAi(ctx),
-                               t);
-  if (!msg) {
+  /* wrap message (adds headers etc) */
+  rv=AO_Provider__WrapMessage(pro, u, reqbuf, guiid);
+  if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Could not generate getStatements-request");
-    AO_Context_free(ctx);
-    return GWEN_ERROR_GENERIC;
+	      "Error adding request element (%d)", rv);
+    GWEN_Buffer_free(reqbuf);
+    return rv;
   }
 
+  /* exchange messages */
   rv=AO_Provider_SendAndReceive(pro, u,
-				(const uint8_t*) msg,
-				strlen(msg),
+				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
+				GWEN_Buffer_GetUsedBytes(reqbuf),
 				&rbuf,
 				guiid);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Error exchanging getStatements-request (%d)", rv);
+	      "Error exchanging getStatements-request (%d)", rv);
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Error parsing server response"));
     GWEN_Buffer_free(rbuf);
-    AO_Context_free(ctx);
+    GWEN_Buffer_free(reqbuf);
     return rv;
   }
+  else {
+    AB_IMEXPORTER *importer;
+    GWEN_DB_NODE *dbProfile;
 
-  /* parse response */
-  GWEN_Gui_ProgressLog(guiid,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Parsing response"));
-
-  rv=libofx_proc_buffer(AO_Context_GetOfxContext(ctx),
-                        GWEN_Buffer_GetStart(rbuf),
-                        GWEN_Buffer_GetUsedBytes(rbuf));
-  if (rv) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error parsing data: %d", rv);
-    rv=GWEN_ERROR_BAD_DATA;
-  }
-  GWEN_Buffer_free(rbuf);
-
-  if (!rv) {
-    if (AO_Context_GetAbort(ctx))
-      rv=GWEN_ERROR_ABORTED;
-  }
-
-  if (!rv) {
+    /* parse response */
+    GWEN_Buffer_free(reqbuf);
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Info,
-			 I18N("Processing response"));
-    rv=AO_Context_ProcessImporterContext(ctx, guiid);
-    if (rv) {
+			 I18N("Parsing response"));
+
+    /* prepare import */
+    importer=AB_Banking_GetImExporter(AB_Provider_GetBanking(pro), "ofx");
+    if (!importer) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-		"Error pprocessing data: %d", rv);
-      rv=GWEN_ERROR_BAD_DATA;
+		"OFX import module not found");
+      GWEN_Buffer_free(rbuf);
+      return GWEN_ERROR_NOT_FOUND;
     }
+
+    GWEN_Buffer_Rewind(rbuf);
+    dbProfile=GWEN_DB_Group_new("profile");
+    /* actually import */
+    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile, guiid);
+    GWEN_DB_Group_free(dbProfile);
+    GWEN_Buffer_free(rbuf);
+    if (rv<0) {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+		"Error importing server response (%d)", rv);
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Error parsing response"));
+      return rv;
+    }
+
+    /* TODO: Maybe create accounts we received here */
+
   }
 
-  AO_Context_free(ctx);
-  return rv;
+  return 0;
 }
 
 
@@ -793,6 +861,9 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
     while(uj) {
       AB_JOB_TYPE jt;
 
+      /* TODO: omit AB_Job_TypeGetBalance if there is
+       * AB_Job_TypeGetTransactions for the same account
+       */
       jt=AB_Job_GetType(uj);
       if (jt==AB_Job_TypeGetBalance || jt==AB_Job_TypeGetTransactions) {
         int rv;
@@ -888,5 +959,6 @@ int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 
 
 #include "network.c"
+#include "request.c"
 
 

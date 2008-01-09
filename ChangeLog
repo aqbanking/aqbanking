@@ -4,6 +4,14 @@
   ------------------------------------------------------------------------
 
 
+2008/01/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started working on a new OFX request creation module which is part of
+  AqOFXConnect. It is now already able to request a list of accounts and
+  account statements from the bank server.
+  So now we no longer need LibOFX
+- removed dependency on LibOFX
+
 
 2008/01/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

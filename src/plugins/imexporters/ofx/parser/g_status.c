@@ -203,12 +203,16 @@ int AIO_OfxGroup_STATUS_StartTag(AIO_OFX_GROUP *g,
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
+  free(xg->currentElement);
+  xg->currentElement=NULL;
+
   if (strcasecmp(tagName, "CODE")==0) {
-    free(xg->currentElement);
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "SEVERITY")==0) {
-    free(xg->currentElement);
+    xg->currentElement=strdup(tagName);
+  }
+  else if (strcasecmp(tagName, "MESSAGE")==0) {
     xg->currentElement=strdup(tagName);
   }
   else {
@@ -267,7 +271,7 @@ int AIO_OfxGroup_STATUS_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
     /* append error description if available */
     if (e && e->description) {
       GWEN_Buffer_AppendString(buf, "\n");
-      GWEN_Buffer_AppendString(buf, e->description);
+      GWEN_Buffer_AppendString(buf, I18N(e->description));
     }
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "%s", GWEN_Buffer_GetStart(buf));

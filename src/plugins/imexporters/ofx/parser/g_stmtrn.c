@@ -237,7 +237,7 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
 	  AB_Transaction_SetTransactionText(t, I18N("Direct deposit"));
 	}
-	else if (strcasecmp(s, "DIRECTDEB")==0) {
+	else if (strcasecmp(s, "DIRECTDEBIT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
 	  AB_Transaction_SetTransactionText(t, I18N("Merchant initiated debit"));
 	}

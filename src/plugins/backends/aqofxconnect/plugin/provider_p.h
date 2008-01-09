@@ -19,7 +19,6 @@
 #define AO_PROVIDER_RECV_TIMEOUT    60
 
 #include "queues_l.h"
-#include "context_l.h"
 #include <aqofxconnect/provider.h>
 #include <aqbanking/transaction.h>
 #include <gwenhywfar/buffer.h>
@@ -83,6 +82,53 @@ static int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
 static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, uint32_t jid);
 
 
+
+
+int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
+					AB_USER *u,
+					AB_IMEXPORTER_CONTEXT *ictx,
+					uint32_t guiid);
+
+
+
+static int AO_Provider__AddHeaders(AB_PROVIDER *pro,
+				   AB_USER *u,
+				   GWEN_BUFFER *buf);
+
+static int AO_Provider__AddSignOn(AB_PROVIDER *pro,
+				  AB_USER *u,
+				  GWEN_BUFFER *buf,
+				  uint32_t guiid);
+
+static int AO_Provider__WrapRequest(AB_PROVIDER *pro,
+				    const char *mTypeName,
+				    const char *tTypeName,
+				    GWEN_BUFFER *buf);
+
+static int AO_Provider__WrapMessage(AB_PROVIDER *pro,
+				    AB_USER *u,
+				    GWEN_BUFFER *buf,
+				    uint32_t guiid);
+
+
+
+static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
+					    uint32_t guiid,
+					    GWEN_BUFFER *buf);
+
+static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
+						  uint32_t guiid,
+						  GWEN_BUFFER *buf);
+
+static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
+					    uint32_t guiid,
+					    GWEN_BUFFER *buf);
+
+
+
+int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
+				   uint32_t guiid,
+				   GWEN_BUFFER *buf);
 
 
 #endif

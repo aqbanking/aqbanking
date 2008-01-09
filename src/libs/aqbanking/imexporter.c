@@ -21,6 +21,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/io_file.h>
+#include <gwenhywfar/io_memory.h>
 #include <gwenhywfar/iomanager.h>
 
 #include <stdlib.h>
@@ -148,6 +149,39 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
 
   rv=GWEN_Io_Manager_RegisterLayer(io);
   if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_free(io);
+    return rv;
+  }
+
+  rv=AB_ImExporter_Import(ie, ctx, io, dbProfile, guiid);
+  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 2000);
+  GWEN_Io_Layer_free(io);
+
+  return rv;
+}
+
+
+
+int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
+			       AB_IMEXPORTER_CONTEXT *ctx,
+			       GWEN_BUFFER *buf,
+			       GWEN_DB_NODE *dbProfile,
+			       uint32_t guiid) {
+  int rv;
+  GWEN_IO_LAYER *io;
+
+  assert(ie);
+  assert(ctx);
+  assert(buf);
+  assert(dbProfile);
+
+  /* create io layer for this file (readonly) */
+  io=GWEN_Io_LayerMemory_new(buf);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
     GWEN_Io_Layer_free(io);
     return rv;

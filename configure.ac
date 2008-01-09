@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=0
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=5
+AQBANKING_VERSION_BUILD=6
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -658,47 +658,6 @@ AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 
 ###-------------------------------------------------------------------------
 #
-# LibOFX
-#
-
-HAVE_OFX_WITH_CONNECT="no"
-AC_MSG_CHECKING(whether OFX should be used)
-AC_ARG_ENABLE(libofx,
-  [  --enable-libofx         use OFX (default=auto)],
-  [ case "${enableval}" in
-    yes) enable_libofx="yes";;
-    no)  enable_libofx="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-libofx);;
-    esac
-  ],
-  enable_libofx="yes")
-AC_MSG_RESULT($enable_libofx)
-  
-if test "$enable_libofx" = "yes"; then
-  pkg_modules="libofx >= 0.8.2"
-  PKG_CHECK_MODULES(LIBOFX, 
-                    [$pkg_modules], 
-                    [have_libofx="yes"], 
-                    [have_libofx="no"])
-  if test "$have_libofx" = "yes"; then
-    HAVE_OFX="yes"
-    HAVE_OFX_WITH_CONNECT="yes"
-    AC_DEFINE(HAVE_OFX, 1, [if LibOFX is available])
-    libofx_includes="$LIBOFX_CFLAGS"
-    libofx_libs="$LIBOFX_LIBS"
-  fi
-else
-  HAVE_OFX="no"
-fi
-
-
-AC_SUBST(libofx_includes)
-AC_SUBST(libofx_libs)
-
-
-
-###-------------------------------------------------------------------------
-#
 # Python
 #
 
@@ -1252,13 +1211,6 @@ dependencies_ok="yes"
 for backend in $aqbanking_backends; do
   case "$backend" in
 
-    aqofxconnect)
-      if test "x$HAVE_OFX_WITH_CONNECT" != "xyes"; then
-        AC_MSG_NOTICE([*** LibOFX>=0.8.0 is required for backend "aqofxconnect". Specify --with-backends="aqhbci aqdtaus aqgeldkarte" to build aqbanking without that backend.])
-	dependencies_ok="no"
-      fi
-      ;;
-
     aqgeldkarte)
       if test "x$have_chipcard_client" != "xyes"; then
         AC_MSG_NOTICE([*** Libchipcard2-client is required for backend "AqGeldKarte". Specify --with-backends="aqhbci aqdtaus aqofxconnect" to build aqbanking without that backend.])
@@ -1805,7 +1757,6 @@ echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
-echo "Use LibOfx              : $HAVE_OFX"
 echo
 echo "You can now run \"make\" (or gmake on FreeBSD) to compile."
 

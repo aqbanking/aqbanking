@@ -1,9 +1,17 @@
-INCLUDES=-I$(top_builddir)/headers $(libofx_includes) $(gwenhywfar_includes)
+INCLUDES=-I$(top_builddir)/headers $(gwenhywfar_includes)
 
 localedir=$(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
 
-EXTRA_DIST=aqofxconnect.xml.in network.c context1.c context2.c
+EXTRA_DIST=\
+  aqofxconnect.xml.in \
+  network.c \
+  context1.c \
+  context2.c \
+  request.c \
+  r_statements.c \
+  r_accountinfo.c
+
 
 plugindir = $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES = aqofxconnect.la
@@ -20,8 +28,6 @@ noinst_HEADERS=\
  account_p.h \
  aqofxconnect_l.h \
  provider_p.h \
- context_l.h \
- context_p.h \
  user_p.h \
  queues_l.h \
  queues_p.h
@@ -37,7 +43,6 @@ iheader_HEADERS=\
 libaqofxconnect_la_SOURCES= \
  account.c \
  provider.c \
- context.c \
  queues.c \
  user.c
 
@@ -46,7 +51,6 @@ aqofxconnect_la_SOURCES= \
 
 libaqofxconnect_la_LIBADD= \
   $(aqbanking_internal_libs) \
-  $(libofx_libs) \
   $(gwenhywfar_libs)
 libaqofxconnect_la_LDFLAGS = -no-undefined \
   -version-info $(AQOFXCONNECT_SO_CURRENT):$(AQOFXCONNECT_SO_REVISION):$(AQOFXCONNECT_SO_AGE)
@@ -54,7 +58,6 @@ libaqofxconnect_la_LDFLAGS = -no-undefined \
 aqofxconnect_la_LIBADD = \
   libaqofxconnect.la \
   $(aqbanking_internal_libs) \
-  $(LIBOFX_LIBS) \
   $(gwenhywfar_libs)
 aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
 
