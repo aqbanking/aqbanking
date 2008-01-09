@@ -1,12 +1,13 @@
 # translation of de.po to deutsch
+#: src/plugins/imexporters/ofx/parser/g_status.c:48
 # Markus Frisch, 2005.
-# Martin Preuss <martin@libchipcard.de>, 2005, 2007.
+# Martin Preuss <martin@libchipcard.de>, 2005, 2007, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-11-10 16:02+0100\n"
-"PO-Revision-Date: 2007-11-10 16:42+0100\n"
+"POT-Creation-Date: 2008-01-09 12:41+0100\n"
+"PO-Revision-Date: 2008-01-09 13:03+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1497,6 +1498,7 @@ msgid "Get Transactions"
 msgstr "Umsatzabruf"
 
 #: src/libs/aqbanking/job.c:274
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:222
 #: src/frontends/qbanking/lib/widgets/qbjoblist.cpp:95
 msgid "Transfer"
 msgstr "Überweisung"
@@ -1608,6 +1610,871 @@ msgstr "Importiere SWIFT-Elemente..."
 msgid "Aborted by user"
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
+#: src/plugins/imexporters/ofx/parser/g_sonrs.c:60
+msgid "Status for signon request"
+msgstr "Status der Anmeldung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:45
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.cpp:60
+msgid "Success"
+msgstr "Erfolgreich"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:45
+msgid "The server successfully processed the request."
+msgstr "Der Auftrag wurde erfolgreich ausgeführt."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:46
+msgid "Client is up-to-date"
+msgstr "Die Benutzerinformationen sind aktuell."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:46
+msgid ""
+"Based on the client timestamp, the client has the latest information. The "
+"response does not supply any additional information."
+msgstr "Die Benutzerdaten sind bereits aktuell, die Antwort des Servers enthält keine weiteren Daten."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:47
+msgid "General error"
+msgstr "Allgemeiner Fehler"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:47
+msgid ""
+"Error other than those specified by the remaining error codes. (Note: "
+"Servers should provide a more specific error whenever possible. Error code "
+"2000 should be reserved for cases in which a more specific code is not "
+"available.)"
+msgstr "Es ist ein allgemeiner Fehler aufgetreten, auf den kein spezieller Fehlercode paßt."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:48
+msgid "Invalid account"
+msgstr "Ungültiges Konto"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:49
+msgid "General account error"
+msgstr "Allgemeiner Kontofehler"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:49
+msgid "Account error not specified by the remaining error codes."
+msgstr "Es ist ein allgemeiner Fehler im Zusammenhang mit einem Konto ausgetreten, der nicht näher spezifiziert ist."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:50
+msgid "Account not found"
+msgstr "Konto nicht vorhanden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:50
+#: src/plugins/imexporters/ofx/parser/g_status.c:53
+#: src/plugins/imexporters/ofx/parser/g_status.c:56
+msgid ""
+"The specified account number does not correspond to one of the user's "
+"accounts."
+msgstr "Das angegebene Konto existiert nicht oder gehört nicht zum aufrufenden Benutzer."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:51
+msgid "Account closed"
+msgstr "Konto geschlossen"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:51
+#: src/plugins/imexporters/ofx/parser/g_status.c:54
+#: src/plugins/imexporters/ofx/parser/g_status.c:57
+msgid "The specified account number corresponds to an account that has been closed."
+msgstr "Das angegebene Konto ist geschlossen."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:52
+msgid "Account not authorized"
+msgstr "Kontozugriff nicht erlaubt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:52
+#: src/plugins/imexporters/ofx/parser/g_status.c:55
+#: src/plugins/imexporters/ofx/parser/g_status.c:58
+msgid ""
+"The user is not authorized to perform this action on the account, or the "
+"server does not allow this type of action to be performed on the account."
+msgstr "Der Benutzer hat keine Berechtigung für diesen Auftrag mit dem angegebenen Konto, oder der Server unterstützt diesen Auftrag nicht mit dem angegebenen Konto."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:53
+msgid "Source account not found"
+msgstr "Quellkonto nicht gefunden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:54
+msgid "Source account closed"
+msgstr "Quellkonto ist geschlossen"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:55
+msgid "Source account not authorized"
+msgstr "Keine Berechtigung für Quellkonto"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:56
+msgid "Destination account not found"
+msgstr "Zielkonto nicht gefunden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:57
+msgid "Destination account closed"
+msgstr "Zielkonto ist geschlossen"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:58
+msgid "Destination account not authorized"
+msgstr "Keine Berechtigung für Zielkonto"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:59
+msgid "Invalid amount"
+msgstr "Ungültiger Betrag"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:59
+msgid ""
+"The specified amount is not valid for this action; for example, the user "
+"specified a negative payment amount."
+msgstr "Der angegebene Betrag ist für diesen Auftrag ungültig (z.B. negativer Betrag bei Überweisungen)"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:60
+msgid "Date too soon"
+msgstr "Datum liegt zu nahe in der Zukunft"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:60
+msgid ""
+"The server cannot process the requested action by the date specified by the "
+"user."
+msgstr "Der Server kann diesen Auftrag nicht bis zum angegebenen Datum ausführen."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:61
+msgid "Date too far in future"
+msgstr "Datum zu weit in der Zukunft"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:61
+msgid "The server cannot accept requests for an action that far in the future."
+msgstr "Der Server akzeptiert keine Aufträge in so weiter Zukunft."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:62
+msgid "Transaction already committed"
+msgstr "Überweisung bereits übermittelt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:62
+msgid ""
+"Transaction has entered the processing loop and cannot be modified/cancelled "
+"using OFX. The transaction may still be cancelled or modified using other "
+"means (for example, a phone call to Customer Service)."
+msgstr "Die Überweisung wird bereits verarbeitet und kann nicht mehr über OFX geändert oder abgebrochen werden (eventuell ist dies aber immer noch telefonisch möglich)."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:63
+msgid "Already canceled"
+msgstr "Überweisung bereits zurückgezogen"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:63
+msgid ""
+"The transaction cannot be canceled or modified because it has already been "
+"canceled."
+msgstr "Die Überweisung kann nicht mehr geändert oder zurückgezogen werden, weil sie bereits zurückgezogen wurde."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:64
+msgid "Unknown server ID"
+msgstr "Unbekannte Serverkennung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:64
+msgid "The specified server ID does not exist or no longer exists."
+msgstr "Die angegebene Serverkennung existiert nicht oder nicht mehr."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:65
+msgid "Duplicate request"
+msgstr "Doppeleinreichung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:65
+msgid "A request with this <TRNUID> has already been received and processed."
+msgstr "Es wurde bereits ein Auftrag mit der gleichen <TRNUID> empfangen."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:66
+msgid "Invalid date"
+msgstr "Ungültiges Datum"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:66
+msgid ""
+"The specified datetime stamp cannot be parsed; for instance, the datetime "
+"stamp specifies 25:00 hours."
+msgstr "Das angegebene Datum ist ungültig (z.B. 25:00 Uhr)"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:67
+msgid "Unsupported version"
+msgstr "Version nicht unterstützt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:67
+msgid ""
+"The server does not support the requested version. The version of the "
+"message set specified by the client is not supported by this server."
+msgstr "Der Server unterstützt die angegebene Version  der Nachricht nicht."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:68
+msgid "Invalid TAN"
+msgstr "Ungültige TAN"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:68
+msgid "The server was unable to validate the TAN sent in the request."
+msgstr "Die angegebene TAN ist ungültig."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:69
+msgid "Unknown FITID"
+msgstr "Unbekannte Transaktionskennung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:69
+msgid ""
+"The specified FITID/BILLID does not exist or no longer exists. [BILLID not "
+"found in the billing message sets]"
+msgstr "Die angegebene Transaktionskennung/Rechnungsnummer existiert nicht (mehr)."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:70
+msgid "Branch ID missing"
+msgstr "Branchenkennung fehlt."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:70
+msgid ""
+"A <BRANCHID> value must be provided in the <BANKACCTFROM> aggregate for this "
+"country system, but this field is missing."
+msgstr "Die Branchenkennung fehlt obwohl sie erforderlich ist."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:71
+msgid "Bank name doesn't match bank ID"
+msgstr "Bankname paßt nicht zur Bankkennung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:71
+msgid ""
+"The value of <BANKNAME> in the <EXTBANKACCTTO> aggregate is inconsistent "
+"with the value of <BANKID> in the <BANKACCTTO> aggregate."
+msgstr "Der angegebene Name der Zielbank stimmt nicht mit der angegebenen Kennung der Bank überein."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:72
+msgid "Invalid date range"
+msgstr "Ungültiger Datumsbereich"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:72
+msgid "Response for non-overlapping dates, date ranges in the future, et cetera."
+msgstr "Der angegebene Datumsbereich ist ungültig (z.B. nicht überlappend, in der Zukunft, o.a.)."
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:73
+msgid "Requested element unknown"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:73
+msgid ""
+"One or more elements of the request were not recognized by the server or the "
+"server (as noted in the FI Profile) does not support the elements. The "
+"server executed the element transactions it understood and supported. For "
+"example, the request file included private tags in a <PMTRQ> but the server "
+"was able to execute the rest of the request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:74
+msgid "<REJECTIFMISSING>Y invalid without <TOKEN>"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:74
+msgid ""
+"This error code may appear <SYNCERROR> element of an <xxxSYNCRS> wrapper (in "
+"<PRESDLVMSGSRSV1> and V2 message set responses) or the <CODE> contained in "
+"any embedded transaction wrappers within a sync response. The corresponding "
+"sync request wrapper included <REJECTIFMISSING>Y with <REFRESH>Y or "
+"<TOKENONLY>Y, which is illegal."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:75
+msgid "Embedded transactions in request failed to process: Out of date"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:75
+msgid ""
+"<REJECTIFMISSING>Y and embedded transactions appeared in the request sync "
+"wrapper and the provided <TOKEN> was out of date. This code should be used "
+"in the <SYNCERROR> of the response sync wrapper."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:76
+msgid "Unable to process embedded transaction due to out-of-date <TOKEN>"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:76
+msgid ""
+"Used in response transaction wrapper for embedded transactions when "
+"<SYNCERROR>6501 appears in the surrounding sync wrapper."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:77
+msgid "Stop check in process"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:77
+msgid "Stop check is already in process."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:78
+msgid "Too many checks to process"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:78
+msgid "The stop-payment request <STPCHKRQ> specifies too many checks."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:79
+#, fuzzy
+msgid "Invalid payee"
+msgstr "Ungültige Eingabe"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:79
+msgid "Payee error not specified by the remainingerror codes."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:80
+#, fuzzy
+msgid "Invalid payee address"
+msgstr "Ungültige Banksignatur"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:80
+msgid "Some portion of the payee's address is incorrect or unknown."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:81
+msgid "Invalid payee account number"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:81
+msgid "The account number <PAYACCT> of the requested payee is invalid."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:82
+msgid "Insufficient funds"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:82
+msgid ""
+"The server cannot process the request because the specified account does not "
+"have enough funds."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:83
+msgid "Cannot modify element"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:83
+msgid ""
+"The server does not allow modifications to one or more values in a "
+"modification request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:84
+msgid "Cannot modify source account"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:84
+#: src/plugins/imexporters/ofx/parser/g_status.c:85
+msgid "Reserved for future use."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:85
+msgid "Cannot modify destination account"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:86
+#, fuzzy
+msgid "Invalid frequency"
+msgstr "Ungültige Eingabe"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:86
+msgid ""
+"The specified frequency <FREQ> does not match one of the accepted "
+"frequencies for recurring transactions."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:87
+msgid "Model already canceled"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:87
+msgid "The server has already canceled the specified recurring model."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:88
+#, fuzzy
+msgid "Invalid payee ID"
+msgstr "Ungültige Eingabe"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:88
+msgid "The specified payee ID does not exist or no longer exists."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:89
+#, fuzzy
+msgid "Invalid payee city"
+msgstr "Ungültige Eingabe"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:89
+msgid "The specified city is incorrect or unknown."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:90
+#, fuzzy
+msgid "Invalid payee state"
+msgstr "Ungültige Banksignatur"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:90
+msgid "The specified state is incorrect or unknown."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:91
+msgid "Invalid payee postal code"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:91
+msgid "The specified postal code is incorrect or unknown."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:92
+msgid "Transaction already processed"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:92
+msgid "Transaction has already been sent or date due is past"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:93
+msgid "Payee not modifiable by client"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:93
+msgid "The server does not allow clients to change payee information."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:94
+msgid "Wire beneficiary invalid"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:94
+msgid "The specified wire beneficiary does not exist or no longer exists."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:95
+#, fuzzy
+msgid "Invalid payee name"
+msgstr "Ungültige Banksignatur"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:95
+msgid "The server does not recognize the specified payee name."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:96
+#, fuzzy
+msgid "Unknown model ID"
+msgstr "Unbekannt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:96
+msgid "The specified model ID does not exist or no longer exists."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:97
+msgid "Invalid payee list ID"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:97
+msgid "The specified payee list ID does not exist or no longer exists."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:98
+#, fuzzy
+msgid "Table type not found"
+msgstr "Datei nicht gefunden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:98
+msgid "The specified table type is not recognized or does not exist."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:99
+msgid "Investment transaction download not supported (WARN)"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:99
+msgid "The server does not support investment transaction download."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:100
+msgid "Investment position download not supported (WARN)"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:100
+msgid "The server does not support investment position download."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:101
+msgid "Investment positions for specified date not available"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:101
+msgid "The server does not support investment positions for the specified date."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:102
+msgid "Investment open order download not supported (WARN)"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:102
+msgid "The server does not support open order download."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:103
+msgid "Investment balances download not supported (WARN)"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:103
+msgid "The server does not support investment balances download."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:104
+msgid "401(k) not available for this account"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:104
+msgid "401(k) information requested from a non-401(k) account."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:105
+msgid "One or more securities not found"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:105
+msgid "The server could not find the requested securities."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:106
+msgid "User ID & password will be sent out-of-band (INFO)"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:106
+msgid ""
+"The server will send the user ID and password via postal mail, e-mail, or "
+"another means. The accompanying message will provide details."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:107
+#, fuzzy
+msgid "Unable to enroll user"
+msgstr "Antwort konnte nicht kodiert werden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:107
+msgid "The server could not enroll the user."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:108
+msgid "User already enrolled"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:108
+msgid "The server has already enrolled the user."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:109
+msgid "Invalid service"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:109
+msgid ""
+"The server does not support the service <SVC> specified in the service-"
+"activation request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:110
+msgid "Cannot change user information"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:110
+msgid "The server does not support the <CHGUSERINFORQ> request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:111
+msgid "<FI> Missing or Invalid in <SONRQ>"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:111
+msgid ""
+"The FI requires the client to provide the <FI> aggregate in the <SONRQ> "
+"request, but either none was provided, or the one provided was invalid."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:112
+#, fuzzy
+msgid "1099 forms not available"
+msgstr "Der DTAUS-Parser ist nicht verfügbar"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:112
+msgid "1099 forms are not yet available for the tax year requested."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:113
+msgid "1099 forms not available for user ID"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:113
+msgid "This user does not have any 1099 forms available."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:114
+#, fuzzy
+msgid "W2 forms not available"
+msgstr "Der DTAUS-Parser ist nicht verfügbar"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:114
+msgid "W2 forms are not yet available for the tax year requested."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:115
+msgid "W2 forms not available for user ID"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:115
+msgid "The user does not have any W2 forms available."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:116
+#, fuzzy
+msgid "1098 forms not available"
+msgstr "Der DTAUS-Parser ist nicht verfügbar"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:116
+msgid "1098 forms are not yet available for the tax year requested."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:117
+msgid "1098 forms not available for user ID"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:117
+msgid "The user does not have any 1098 forms available."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:118
+msgid "Must change USERPASS"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:118
+msgid ""
+"The user must change his or her <USERPASS> number as part of the next OFX "
+"request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:119
+msgid "Signon invalid"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:119
+msgid ""
+"The user cannot signon because he or she entered an invalid user ID or "
+"password."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:120
+msgid "Customer account already in use"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:120
+msgid ""
+"The server allows only one connection at a time, and another user is already "
+"signed on. Please try again later."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:121
+msgid "USERPASS lockout"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:121
+msgid ""
+"The server has received too many failed signon attempts for this user. "
+"Please call the FI's technical support number."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:122
+#, fuzzy
+msgid "Could not change USERPASS"
+msgstr "DTAUS-Objekt konnte nicht erstellt werden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:122
+msgid "The server does not support the <PINCHRQ> request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:123
+#, fuzzy
+msgid "Could not provide random data"
+msgstr "DTAUS-Objekt konnte nicht erstellt werden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:123
+msgid "The server could not generate random data as requested by the <CHALLENGERQ>."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:124
+#, fuzzy
+msgid "Country system not supported"
+msgstr "Noch nicht unterstützt.\n"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:124
+msgid ""
+"The server does not support the country specified in the <COUNTRY> field of "
+"the <SONRQ> aggregate."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:125
+#, fuzzy
+msgid "Empty signon not supported"
+msgstr "Fehler: Mehrfachsignaturen sind bisher noch nicht unterstützt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:125
+msgid ""
+"The server does not support signons not accompanied by some other "
+"transaction."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:126
+msgid "Signon invalid without supporting pin change request"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:126
+msgid ""
+"The OFX block associated with the signon does not contain a pin change "
+"request and should."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:127
+#, fuzzy
+msgid "Transaction not authorized"
+msgstr "Wert für Betrag in Umsatz-Teilbuchung"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:127
+msgid ""
+"Current user is not authorized to perform this action on behalf of the "
+"<USERID>."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:128
+msgid "HTML not allowed"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:128
+msgid "The server does not accept HTML formatting in the request."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:129
+#, fuzzy
+msgid "Unknown mail To:"
+msgstr "Unbekannte Bank"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:129
+msgid "The server was unable to send mail to the specified Internet address."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:130
+#, fuzzy
+msgid "Invalid URL"
+msgstr "Ungültige Eingabe"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:130
+msgid "The server could not parse the URL."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:131
+#, fuzzy
+msgid "Unable to get URL"
+msgstr "Antwort konnte nicht kodiert werden"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:131
+msgid ""
+"The server was unable to retrieve the information at this URL (e.g., an HTTP "
+"400 or 500 series error)."
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:132
+#, fuzzy
+msgid "Unknown code"
+msgstr "Unbekannt"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:132
+#, fuzzy
+msgid "No description for this code"
+msgstr "Beschreibung (optional)"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:250
+msgid "Code"
+msgstr "Code"
+
+#: src/plugins/imexporters/ofx/parser/g_status.c:257
+msgid "severity"
+msgstr ""
+
+#: src/plugins/imexporters/ofx/parser/g_stmttrnrs.c:61
+msgid "Status for transaction statement request"
+msgstr "Status des Umsatzabrufes"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:186
+msgid "Credit"
+msgstr "Credit"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:190
+msgid "Debit"
+msgstr "Debit"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:194
+#, fuzzy
+msgid "Interest"
+msgstr "Einleitung"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:198
+msgid "Dividend"
+msgstr "Dividende"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:202
+msgid "Fee"
+msgstr "Gebühren"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:206
+msgid "Service charge"
+msgstr "Dienstleistungsgebühren"
+
+#. FIXME: not sure
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:210
+msgid "Deposit"
+msgstr "Einzahlung"
+
+#. misc
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:214
+msgid "Cash dispenser"
+msgstr "Geldautomat"
+
+#. misc
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:218
+msgid "Point of sale"
+msgstr "Händler"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:226
+msgid "Check"
+msgstr "Scheck"
+
+#. FIXME: not sure
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:230
+msgid "Electronic payment"
+msgstr "Elektronische Überweisung"
+
+#. FIXME: not sure
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:234
+msgid "Cash"
+msgstr "Bargeld"
+
+#. FIXME: not sure
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:238
+msgid "Direct deposit"
+msgstr ""
+
+#. FIXME: not sure
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:242
+msgid "Merchant initiated debit"
+msgstr "Lastschrift"
+
+#: src/plugins/imexporters/ofx/parser/g_stmtrn.c:246
+msgid "Standing order"
+msgstr "Dauerauftrag"
+
+#: src/plugins/imexporters/ofx/parser/g_acctinfotrnrs.c:61
+msgid "Status for account info request"
+msgstr "Status des Kontenabrufes"
+
 #: src/plugins/imexporters/swift/swift.c:85
 #: src/plugins/imexporters/xmldb/xmldb.c:86
 msgid "Reading file..."
@@ -1702,11 +2569,13 @@ msgid ""
 "</i>.\n"
 "</p></html>"
 msgstr ""
-"Die zuletzt verwendete Version von AqBanking ist zu alt um automatisch angepasst zu werden.\n"
-"Sie sollten daher das Verzeichnis $HOME/.banking\n entfernen und AqBanking vollstaendig neu einrichten.\n"
-"<html>"
-"<p>Die zuletzt verwendete Version von AqBanking ist zu alt um automatisch angepasst zu werden.</p>"
-"<p>Sie sollten daher das Verzeichnis <i>$HOME/.banking</i> entfernen und AqBanking vollstaendig neu einrichten.</p> "
+"Die zuletzt verwendete Version von AqBanking ist zu alt um automatisch "
+"angepasst zu werden.\n"
+"Sie sollten daher das Verzeichnis $HOME/.banking\n"
+" entfernen und AqBanking vollstaendig neu einrichten.\n"
+"<html><p>Die zuletzt verwendete Version von AqBanking ist zu alt um "
+"automatisch angepasst zu werden.</p><p>Sie sollten daher das Verzeichnis <i>"
+"$HOME/.banking</i> entfernen und AqBanking vollstaendig neu einrichten.</p> "
 "</html>"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/hbci-updates.c:280
@@ -1721,11 +2590,11 @@ msgstr "Fehlerhafte Nachrichten-Nummer (ignoriert)"
 msgid "Bad message reference number, ignoring"
 msgstr "Fehlerhafte Nachrichtenreferenz (ignoriert)"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1116
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1118
 msgid " You must only enter numbers, not letters."
 msgstr " Es dürfen nur Zahlen eingegeben werden, keine Buchstaben."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1120
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1122
 #, c-format
 msgid ""
 "Please enter a new %s for \n"
@@ -1737,10 +2606,10 @@ msgstr ""
 "Bitte geben Sie ein neues %s für \n"
 "Benutzer %s bei %s\n"
 "ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html><p>Bitte geben "
-"Sie ein neues %s für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Das Passwort muß mindestens %d Zeichen "
-"lang sein.%s</p></html>"
+"Sie ein neues %s für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Das "
+"Passwort muß mindestens %d Zeichen lang sein.%s</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1141
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1143
 #, c-format
 msgid ""
 "Please enter the %s for \n"
@@ -1749,25 +2618,26 @@ msgid ""
 msgstr ""
 "Bitte geben Sie das %s für \n"
 "Benutzer %s bei %s\n"
-"ein.%s<html>Bitte geben Sie das %s für Benutzer <i>%s</i> bei <i>%s</i> ein.<br>%s</html>"
+"ein.%s<html>Bitte geben Sie das %s für Benutzer <i>%s</i> bei <i>%s</i> ein."
+"<br>%s</html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1171
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1173
 msgid "PIN"
 msgstr "PIN"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1177
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1180
 msgid "Enter PIN"
 msgstr "PIN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1199
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1202
 msgid "password"
 msgstr "Passwort"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1205
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1209
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1244
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1248
 #, c-format
 msgid ""
 "Please enter the next TAN\n"
@@ -1775,14 +2645,15 @@ msgid ""
 "s</i>.</html>"
 msgstr ""
 "Bitte geben Sie die nächste TAN\n"
-"für Benutzer %s bei %s ein <html> Bitte geben Sie die nächste TAN für Benutzer <i>%s</i> bei <i>%s</i> ein. </html>"
+"für Benutzer %s bei %s ein <html> Bitte geben Sie die nächste TAN für "
+"Benutzer <i>%s</i> bei <i>%s</i> ein. </html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1261
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1326
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1265
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1330
 msgid "Enter TAN"
 msgstr "TAN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1301
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1305
 #, c-format
 msgid ""
 "Please enter the TAN\n"
@@ -1796,9 +2667,9 @@ msgstr ""
 "für Benutzer %s bei %s ein.\n"
 "Der Server fragt Sie nach folgendem \n"
 "TAN-Index: %s\n"
-"<html><p>Bitte geben Sie die TAN für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Der Server fragt "
-"Sie nach folgendem TAN-Index:</p><p align=\"center\"><font color=\"blue\">%"
-"s</font></p></html>"
+"<html><p>Bitte geben Sie die TAN für Benutzer <i>%s</i> bei <i>%s</i> ein.</"
+"p><p>Der Server fragt Sie nach folgendem TAN-Index:</p><p align=\"center"
+"\"><font color=\"blue\">%s</font></p></html>"
 
 #: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1497
 msgid "Received account:"
@@ -1809,7 +2680,7 @@ msgid "Bank message received"
 msgstr "Banknachricht erhalten"
 
 #: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1792
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1866
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1870
 msgid "Response without security info (internal)"
 msgstr "Empfangene Antwort hat keine Sicherheitsinformationen (interne Nachricht)"
 
@@ -1817,23 +2688,23 @@ msgstr "Empfangene Antwort hat keine Sicherheitsinformationen (interne Nachricht
 msgid "Response encrypted with invalid key"
 msgstr "Empfangene Antwort ist mit ungültigem Schlüssel verschlüsselt"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1816
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1815
 msgid "Response is not encrypted as expected"
 msgstr "Empfangene Antwort ist auf unerwartete Art verschlüsselt"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1883
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1886
 msgid "Invalid bank signature"
 msgstr "Ungültige Banksignatur"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1900
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1902
 msgid "Response not signed by the bank"
 msgstr "Empfangene Antwort ist von der Bank nicht signiert"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1908
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1910
 msgid "Security Warning"
 msgstr "Sicherheitswarnung"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1910
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1912
 msgid ""
 "The HBCI response of the bank has not been signed by the bank, \n"
 "contrary to what has been expected. This can be the case because the \n"
@@ -1888,15 +2759,15 @@ msgstr ""
 "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
 "</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1935
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1937
 msgid "Accept this time"
 msgstr "Dieses Mal akzeptieren"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1936
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1938
 msgid "Accept always"
 msgstr "Für immer akzeptieren"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1937
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1939
 #: src/plugins/backends/aqdtaus/plugin/provider.c:998
 #: src/plugins/backends/aqdtaus/plugin/provider.c:1062
 #: src/plugins/backends/aqgeldkarte/plugin/provider.c:760
@@ -1908,7 +2779,7 @@ msgstr "Für immer akzeptieren"
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1942
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1943
 msgid "User accepts this unsigned response"
 msgstr "Benutzer hat die unsignierte Antwort akzeptiert"
 
@@ -1916,7 +2787,7 @@ msgstr "Benutzer hat die unsignierte Antwort akzeptiert"
 msgid "User accepts all further unsigned responses"
 msgstr "Benutzer akzeptiert unsignierte Antworten dauerhaft"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1961
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1960
 msgid "Aborted"
 msgstr "Abgebrochen"
 
@@ -2046,22 +2917,22 @@ msgstr "Die Bank benutzt keinen Signaturschlüssel."
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1273
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1425
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1896
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2196
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1886
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2186
 msgid "Error getting crypt token"
 msgstr "Das zuständige CryptToken konnte nicht ermittelt werden."
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1286
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1437
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1908
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2208
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1898
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2198
 msgid "Error opening crypt token"
 msgstr "Das zuständige CryptToken konnte nicht geöffnet werden."
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1299
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1449
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1920
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2220
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1910
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2210
 msgid "User context not found on crypt token"
 msgstr "Der Benutzerkontext wurd auf dem CryptToken nicht gefunden."
 
@@ -2102,39 +2973,39 @@ msgstr "Auftrag nicht unterstützt. Dieser interne Fehler sollte nicht vorkommen
 msgid "Keys sent"
 msgstr "Schlüssel übermittelt."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1609
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1608
 msgid "Getting Certificate"
 msgstr "Abruf des Zertifikats"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1610
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1609
 msgid "We are now asking the server for its SSL certificate"
 msgstr "Jetzt wird das SSL-Zertifikat vom Server abgerufen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1635
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1624
 msgid "Could not connect to server"
 msgstr "Konnte keine Verbindung zum Server herstellen"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1641
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1631
 msgid "Got certificate"
 msgstr "Zertifikat erhalten"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1696
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1686
 msgid "No iTAN modes reported."
 msgstr "Der Server meldet keine iTAN-Methoden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1713
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1703
 msgid "Could not commit result to the system"
 msgstr "Das Ergebnis der Aufträge konnte nicht verarbeitet werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1723
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1713
 msgid "Retrieved iTAN modes, storing."
 msgstr "iTAN-Methoden empfangen, werden gespeichert."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1763
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1753
 msgid "Enter New Banking PIN"
 msgstr "Neue Banking-PIN eingeben"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1764
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1754
 msgid ""
 "Please enter a new banking PIN.\n"
 "You must only enter numbers, not letters.\n"
@@ -2146,17 +3017,17 @@ msgstr ""
 "<html><p>Bitte geben Sie eine neue Banking-PIN ein.</p><p>Sie dürfen nur "
 "Zahlen eingeben, keine Buchstaben.</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1958
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2258
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1948
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2248
 msgid "Server keys missing, please get them first"
 msgstr "Der Serverschlüssel fehlt, diesen bitte zuerst abrufen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1982
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2282
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1972
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2272
 msgid "User keys missing, please generate them first"
 msgstr "Die Schlüssel des Benutzers fehlen, bitte erst generieren."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1993
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1983
 msgid ""
 "\n"
 "\n"
@@ -2170,80 +3041,80 @@ msgstr ""
 "Ini-Brief\n"
 "\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1995
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1985
 msgid "Date           : "
 msgstr "Datum          : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1998
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2300
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1988
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2290
 #: src/plugins/backends/aqdtaus/plugin/provider.c:671
 msgid "YYYY/MM/DD"
 msgstr "DD.MM.YYYY"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2001
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1991
 msgid "Time           : "
 msgstr "Uhrzeit        : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2002
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2302
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1992
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2292
 msgid "hh:mm:ss"
 msgstr "hh:mm:ss"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2007
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1997
 msgid "Bank Code      : "
 msgstr "Bankleitzahl    : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2012
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2002
 msgid "User           : "
 msgstr "Benutzerkennung : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2018
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2008
 msgid "Key number     : "
 msgstr "Schlüsselnummer : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2025
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2015
 msgid "Key version    : "
 msgstr "Schlüsselversion : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2033
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2023
 msgid "Customer system: "
 msgstr "Kundensystem : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2040
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2346
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2030
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2336
 msgid "Public key for electronic signature"
 msgstr "Öffentlicher Schlüssel für die elektronische Signatur"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2045
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2350
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2035
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2340
 msgid "Exponent"
 msgstr "Exponent"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2054
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2090
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2359
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2397
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2044
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2080
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2349
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2387
 msgid "Bad key"
 msgstr "Ungültiger Schlüssel"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2083
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2390
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2073
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2380
 msgid "Modulus"
 msgstr "Modulus"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2118
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2426
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2108
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2416
 msgid "Hash"
 msgstr "Hash"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2139
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2449
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2129
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2439
 msgid "I confirm that I created the above key for my electronic signature.\n"
 msgstr ""
 "Ich bestätige hiermit den obigen öffentlichen Schlüssel für meine "
 "elektronische Signatur.\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2143
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2133
 msgid ""
 "____________________________  ____________________________\n"
 "Place, date                   Signature\n"
@@ -2251,19 +3122,19 @@ msgstr ""
 "____________________________  ____________________________\n"
 "Ort, Datum                    Unterschrift\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2292
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2282
 msgid "INI-Letter"
 msgstr "Ini-Brief"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2296
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2286
 msgid "Date"
 msgstr "Datum"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2301
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2291
 msgid "Time"
 msgstr "Uhrzeit"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2307
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2297
 #: src/frontends/qbanking/lib/dialogs/qbmapaccount.ui.cpp:120
 #: src/frontends/qbanking/lib/dialogs/qbselectbank.ui.cpp:88
 #: src/frontends/qbanking/lib/dialogs/qbselectbank.ui.cpp:153
@@ -2272,28 +3143,28 @@ msgstr "Uhrzeit"
 msgid "Bank Code"
 msgstr "Bankleitzahl (BLZ)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2314
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2304
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:189
 msgid "User"
 msgstr "Benutzerkennung"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2321
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2311
 msgid "Key number"
 msgstr "Schlüsselnummer"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2329
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2319
 msgid "Key version"
 msgstr "Schlüsselversion"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2338
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2328
 msgid "Customer system"
 msgstr "Kundensystem"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2458
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2448
 msgid "Place, date"
 msgstr "Ort, Datum"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2460
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2450
 msgid "Signature"
 msgstr "Unterschrift"
 
@@ -2485,7 +3356,7 @@ msgstr "Abbruch durch den Benutzer."
 #: src/frontends/qbanking/lib/dialogs/qbimporter.cpp:893
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:108
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:120
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:603
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:604
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/iniletter.cpp:127
 #: src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/logmanager.cpp:344
 msgid "Error"
@@ -3274,7 +4145,9 @@ msgid ""
 "\n"
 "Do you want to delete this account?"
 msgstr ""
-"Sie versuchen ein Konto zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden (Sie können aber natürlich später das Konto wieder neu anlegen).\n"
+"Sie versuchen ein Konto zu entfernen. Diese Aktion kann nicht rückgängig "
+"gemacht werden (Sie können aber natürlich später das Konto wieder neu "
+"anlegen).\n"
 "\n"
 "Wollen Sie das Konto wirklich entfernen?"
 
@@ -3297,7 +4170,9 @@ msgstr "Benutzer ist einem Konto zugeordnet"
 msgid ""
 "This user still belongs to an existing account. Please remove the user from "
 "the accounts or delete the account first."
-msgstr "Der Benutzer ist derzeit noch einem Konto zugeordnet. Bitte entfernen Sie ihn erst aus allen Konten oder entfernen Sie die entsprechenden Konten."
+msgstr ""
+"Der Benutzer ist derzeit noch einem Konto zugeordnet. Bitte entfernen Sie "
+"ihn erst aus allen Konten oder entfernen Sie die entsprechenden Konten."
 
 #: src/frontends/qbanking/lib/dialogs/qbcfgtabpageusers.cpp:245
 msgid "Really delete user?"
@@ -3310,7 +4185,9 @@ msgid ""
 "\n"
 "Do you want to delete this user?"
 msgstr ""
-"Sie versuchen einen Benutzer zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden (aber Sie können den Benutzer natürlich später wieder neu anlegen).\n"
+"Sie versuchen einen Benutzer zu entfernen. Diese Aktion kann nicht "
+"rückgängig gemacht werden (aber Sie können den Benutzer natürlich später "
+"wieder neu anlegen).\n"
 "\n"
 "Wollen Sie den Benutzer wirklich entfernen?"
 
@@ -3853,6 +4730,32 @@ msgstr "Information über das gewählte Banking-Modul (Backend)"
 msgid "Select the bank"
 msgstr "Wählen Sie eine Bank aus"
 
+#: src/frontends/qbanking/lib/gui/cppgui.cpp:476
+msgid "Enforce PIN"
+msgstr "PIN erzwingen"
+
+#: src/frontends/qbanking/lib/gui/cppgui.cpp:478
+msgid ""
+"You entered the same PIN twice.\n"
+"The PIN is marked as bad, do you want\n"
+"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is "
+"marked as <b>bad</b>, do you want to use it anyway?</p></html>"
+msgstr ""
+"Sie haben zweimal die gleiche PIN eingegeben.\n"
+"Diese PIN war in früheren Versuchen als falsch erkannt worden.\n"
+"Wollen Sie sie trotzdem verwenden? <html> <p> Sie haben zweimal die gleiche "
+"PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als <b>falsch</"
+"b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? </p> </html>"
+
+#: src/frontends/qbanking/lib/gui/cppgui.cpp:490
+#, fuzzy
+msgid "Use my input"
+msgstr "Fehlende Eingabe"
+
+#: src/frontends/qbanking/lib/gui/cppgui.cpp:491
+msgid "Re-enter"
+msgstr "Neu eingeben"
+
 #: src/frontends/qbanking/lib/gui/qguiinputbox.cpp:147
 msgid "&Input"
 msgstr "Eingabe"
@@ -4040,11 +4943,11 @@ msgstr "iTAN-Methoden abrufen"
 msgid "<p>This page contains HBCI specific account settings.</p>"
 msgstr "<p>Diese Seite enthält HBCI spezifische Konteneinstellungen.</p>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:87
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:88
 msgid "<qt>Checking type of the security medium, please wait...</qt>"
 msgstr "<qt>Medientyp des Sicherheitsmedium wird überprüft. Bitte warten...</qt>"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:94
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/userwizard.cpp:95
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_checkfile.cpp:118
 msgid "Checking Medium"
 msgstr "Prüfen..."
@@ -4106,7 +5009,9 @@ msgstr "Die Verwendung von SSL v3 erzwingen"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.ui.cpp:178
 msgid "<qt>Force the use of <b>SSLv3</b> in <b>Pin/Tan</b> mode</qt>"
-msgstr "<qt>Erzwingt die Verwendung des <b>SSLv3</b>-Protokolles im <b>Pin/TAN</b>-Modus.</qt>"
+msgstr ""
+"<qt>Erzwingt die Verwendung des <b>SSLv3</b>-Protokolles im <b>Pin/TAN</b>-"
+"Modus.</qt>"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/cfgtabpageuserhbci.ui.cpp:179
 msgid "Expert Actions"
@@ -4215,16 +5120,12 @@ msgstr "Mit fabrikneuen RSA-Chipkarten verwenden"
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.cpp:60
-msgid "Success"
-msgstr "Erfolgreich"
-
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.cpp:62
 msgid "Checking..."
 msgstr "Prüfen..."
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:109
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:604
+#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.cpp:605
 msgid "Could not open crypt token"
 msgstr "Das CryptToken konnte nicht geöffnet werden"
 
@@ -4497,12 +5398,21 @@ msgid ""
 "button below the procedure starts. That will open a window showing the "
 "progress in communication with the server.</qt>"
 msgstr ""
-"<qt><font colour=red size=+2>Warnung!</font><br><p> "
-"Bitte erzeugen Sie keine neuen Schlüssel, wenn der Bank bereits Schlüssel von Ihnen vorliegen! Das wäre beispielsweise der Fall, wenn Sie dieses Sicherheitsmedium bereits mit anderen Programmen verwendet hätten.</p><p> "
-"In diesem Fall würden Sie die gültigen Schlüssel zerstören und hätten damit keine Möglichkeit mehr, mit Ihrer Bank HBCI-Nachrichten auszutauschen.</p><p> "
-"Es werden zwei Schlüssel erzeugt:</p> "
-"<ul><li><b>Signierschlüssel:</b> Dieser Schlüssel wird verwendet, um Ihre Nachrichten an die Bank zu signieren. Damit wird sichergestellt, daß die Bank nur Aufträge auführt, die tatsächlich von <b>Ihnen</b> stammen.</li><li><b>Crypto-Schlüssel:</b> Dieser Schlüssel wird von der Bank verwendet um Nachrichten an Sie zu verschlüsseln. Damit sind <b>Sie</b> die einzige Person, die die Nachrichten entschlüsseln kann.</li></ul> "
-"Wenn Sie nun auf den folgenden Knopf drücken, wird diese Aktion ausgeführt. Dabei wird dann ein Fenster geöffnet, mit dem Sie über den Fortschritt informiert werden-</qt> "
+"<qt><font colour=red size=+2>Warnung!</font><br><p> Bitte erzeugen Sie keine "
+"neuen Schlüssel, wenn der Bank bereits Schlüssel von Ihnen vorliegen! Das "
+"wäre beispielsweise der Fall, wenn Sie dieses Sicherheitsmedium bereits mit "
+"anderen Programmen verwendet hätten.</p><p> In diesem Fall würden Sie die "
+"gültigen Schlüssel zerstören und hätten damit keine Möglichkeit mehr, mit "
+"Ihrer Bank HBCI-Nachrichten auszutauschen.</p><p> Es werden zwei Schlüssel "
+"erzeugt:</p> <ul><li><b>Signierschlüssel:</b> Dieser Schlüssel wird "
+"verwendet, um Ihre Nachrichten an die Bank zu signieren. Damit wird "
+"sichergestellt, daß die Bank nur Aufträge auführt, die tatsächlich von "
+"<b>Ihnen</b> stammen.</li><li><b>Crypto-Schlüssel:</b> Dieser Schlüssel wird "
+"von der Bank verwendet um Nachrichten an Sie zu verschlüsseln. Damit sind "
+"<b>Sie</b> die einzige Person, die die Nachrichten entschlüsseln kann.</li></"
+"ul> Wenn Sie nun auf den folgenden Knopf drücken, wird diese Aktion "
+"ausgeführt. Dabei wird dann ein Fenster geöffnet, mit dem Sie über den "
+"Fortschritt informiert werden-</qt> "
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/a_sendkeys.cpp:34
 msgid "Send Public Keys"
@@ -4760,7 +5670,9 @@ msgstr ""
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:196
 msgid "Key id used by the bank. If left blank then the user id is used"
-msgstr "Name des Bankschlüssels. Wenn Sie dieses Feld leerlassen, wird die Benutzerkennung verwendet."
+msgstr ""
+"Name des Bankschlüssels. Wenn Sie dieses Feld leerlassen, wird die "
+"Benutzerkennung verwendet."
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/editctuser.ui.cpp:197
 msgid "Bank Key Id"
@@ -4826,16 +5738,8 @@ msgid "Example"
 msgstr "Beispiel"
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.ui.cpp:141
-msgid "Get the public keys of the bank server now."
-msgstr "Die öffentlichen Schlüssel jetzt abrufen."
-
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.ui.cpp:142
 msgid "Result:"
 msgstr "Ergebnis:"
-
-#: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/actionwidget.ui.cpp:144
-msgid "Result of retrieving the public keys."
-msgstr "Ergebnis des Abrufs der öffentlichen Schlüssel."
 
 #: src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/selectfile.ui.cpp:75
 msgid "Select File"
@@ -5170,7 +6074,10 @@ msgstr "Fehler beim Chipkarten-Zugriff"
 msgid ""
 "<qt><p>Could not read a card.</p><p>Please check the console logs and make "
 "sure that Libchipcard3 is correctly setup.</p></qt>"
-msgstr "<qt><p>Die Karte konnte nicht gelesen werden.</p><p>Bitte prüfen Sie die Konsolenlogs und stellen Sie sicher, daß Libchipcard korrekt installiert und eingerichtet ist.</p></qt>"
+msgstr ""
+"<qt><p>Die Karte konnte nicht gelesen werden.</p><p>Bitte prüfen Sie die "
+"Konsolenlogs und stellen Sie sicher, daß Libchipcard korrekt installiert und "
+"eingerichtet ist.</p></qt>"
 
 #: src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/cfgtabpagk.ui.cpp:60
 msgid ""
@@ -5396,15 +6303,18 @@ msgstr "Italienisch"
 msgid "English"
 msgstr "Englisch"
 
+#~ msgid "Get the public keys of the bank server now."
+#~ msgstr "Die öffentlichen Schlüssel jetzt abrufen."
+
+#~ msgid "Result of retrieving the public keys."
+#~ msgstr "Ergebnis des Abrufs der öffentlichen Schlüssel."
+
 #~ msgid ""
 #~ "Error executing backend's queue.\n"
 #~ "What shall we do?"
 #~ msgstr ""
 #~ "Es gab einen Fehler bei der Verarbeitung des Ausgangskorbs im\n"
 #~ "zuständigen Modul.  Was möchten Sie tun?"
-
-#~ msgid "Unsupported Request"
-#~ msgstr "Auftrag nicht verfügbar"
 
 #~ msgid "The backend for this banking account does not support your request."
 #~ msgstr ""
@@ -5432,27 +6342,8 @@ msgstr "Englisch"
 #~ msgid "The PIN was too long. Please enter the correct PIN."
 #~ msgstr "Die PIN war zu lang. Bitte geben Sie nun die richtige PIN ein."
 
-#~ msgid "Enforce PIN"
-#~ msgstr "PIN erzwingen"
-
-#~ msgid ""
-#~ "You entered the same PIN twice.\n"
-#~ "The PIN is marked as bad, do you want\n"
-#~ "to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN "
-#~ "is marked as <b>bad</b>, do you want to use it anyway?</p></html>"
-#~ msgstr ""
-#~ "Sie haben zweimal die gleiche PIN eingegeben.\n"
-#~ "Diese PIN war in früheren Versuchen als falsch erkannt worden.\n"
-#~ "Wollen Sie sie trotzdem verwenden? <html> <p> Sie haben zweimal die "
-#~ "gleiche PIN eingegeben. </p> <p>Diese PIN war in früheren Versuchen als "
-#~ "<b>falsch</b> erkannt worden. </p> <p>Wollen Sie sie trotzdem verwenden? "
-#~ "</p> </html>"
-
 #~ msgid "Use this"
 #~ msgstr "Trotzdem verwenden"
-
-#~ msgid "Re-enter"
-#~ msgstr "Neu eingeben"
 
 #~ msgid ""
 #~ "The following certificate has been received:\n"
@@ -5612,9 +6503,6 @@ msgstr "Englisch"
 #~ msgid "Closing session"
 #~ msgstr "Beende Sitzung"
 
-#~ msgid "Empty Input"
-#~ msgstr "Fehlende Eingabe"
-
 #~ msgid ""
 #~ "Your input was empty.\n"
 #~ "Do you want to use the default?"
@@ -5738,12 +6626,6 @@ msgstr "Englisch"
 
 #~ msgid "Account statement balance value"
 #~ msgstr "Wert für Saldo in Kontobeschreibung"
-
-#~ msgid "Transaction statement amount value"
-#~ msgstr "Wert für Betrag in Umsatzbuchung"
-
-#~ msgid "Transaction split amount value"
-#~ msgstr "Wert für Betrag in Umsatz-Teilbuchung"
 
 #~ msgid "Parsing file..."
 #~ msgstr "Datei wird verarbeitet..."
@@ -5932,9 +6814,6 @@ msgstr "Englisch"
 #~ msgid "Do you really want to abort?"
 #~ msgstr "Wollen Sie wirklich abbrechen?"
 
-#~ msgid "Not yet supported.\n"
-#~ msgstr "Noch nicht unterstützt.\n"
-
 #~ msgid "Backend Error"
 #~ msgstr "Modul-Fehler"
 
@@ -6063,9 +6942,6 @@ msgstr "Englisch"
 #~ msgstr ""
 #~ "Beschreibung dieses Benutzers. Dieses Feld dient nur zur Merkhilfe für "
 #~ "Sie selber und kann wahlweise auch freigelassen werden."
-
-#~ msgid "Description (optional)"
-#~ msgstr "Beschreibung (optional)"
 
 #~ msgid "HTTP Version"
 #~ msgstr "HTTP-Version"

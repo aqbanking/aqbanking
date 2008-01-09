@@ -4,17 +4,11 @@ SUBDIRS=parser profiles
 # include them twice in the dist target.
 EXTRA_DIST=\
   ofx.c \
-  ofx-libofx.c ofx-libofx_p.h \
   ofx-internal.c ofx-internal_p.h \
   ofx.xml.in
 
 
-#####
-# The complete rest of the file is used only if HAVE_OFX is enabled.
-#####
-if WITH_OFX_PLUGIN
-
-INCLUDES = -I$(top_builddir)/headers $(libofx_includes) $(gwenhywfar_includes) -Iparser
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) -Iparser
 #EXTRA_DIST=README
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
@@ -23,7 +17,6 @@ imexporterplugin_LTLIBRARIES=ofx.la
 imexporterplugin_DATA=ofx.xml
 
 noinst_HEADERS=\
- ofx-libofx_p.h \
  ofx-internal_p.h
 
 ofx_la_SOURCES=\
@@ -51,15 +44,11 @@ endif
 
 
 sources:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d sources; \
+	done
 	for f in $(ofx_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
 
-else
-sources:
-
-endif
-#####
-# WITH_OFX_PLUGIN
-#####

@@ -52,3 +52,8 @@ noinst_HEADERS=\
  g_bankacctinfo_l.h g_bankacctinfo_p.h
 
 
+sources:
+	for f in $(libofxparser_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+

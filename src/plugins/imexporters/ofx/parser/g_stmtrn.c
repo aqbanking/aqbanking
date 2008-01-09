@@ -183,67 +183,67 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
         t=xg->transaction;
 	if (strcasecmp(s, "CREDIT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, "Credit");
+	  AB_Transaction_SetTransactionText(t, I18N("Credit"));
 	}
 	else if (strcasecmp(s, "DEBIT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, "Debit");
+	  AB_Transaction_SetTransactionText(t, I18N("Debit"));
 	}
 	else if (strcasecmp(s, "INT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "INT");
-	  AB_Transaction_SetTransactionText(t, "Interest");
+	  AB_Transaction_SetTransactionText(t, I18N("Interest"));
 	}
 	else if (strcasecmp(s, "DIV")==0) {
 	  AB_Transaction_SetTransactionKey(t, "DIV");
-	  AB_Transaction_SetTransactionText(t, "Dividend");
+	  AB_Transaction_SetTransactionText(t, I18N("Dividend"));
 	}
 	else if (strcasecmp(s, "FEE")==0) {
 	  AB_Transaction_SetTransactionKey(t, "BRF");
-	  AB_Transaction_SetTransactionText(t, "Fee");
+	  AB_Transaction_SetTransactionText(t, I18N("Fee"));
 	}
 	else if (strcasecmp(s, "SRVCHG")==0) {
 	  AB_Transaction_SetTransactionKey(t, "CHG");
-	  AB_Transaction_SetTransactionText(t, "Service charge");
+	  AB_Transaction_SetTransactionText(t, I18N("Service charge"));
 	}
 	else if (strcasecmp(s, "DEP")==0) {
 	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, "Deposit");
+	  AB_Transaction_SetTransactionText(t, I18N("Deposit"));
 	}
 	else if (strcasecmp(s, "ATM")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, "Cash dispenser");
+	  AB_Transaction_SetTransactionText(t, I18N("Cash dispenser"));
 	}
 	else if (strcasecmp(s, "POS")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, "Point of sale");
+	  AB_Transaction_SetTransactionText(t, I18N("Point of sale"));
 	}
 	else if (strcasecmp(s, "XFER")==0) {
 	  AB_Transaction_SetTransactionKey(t, "TRF");
-	  AB_Transaction_SetTransactionText(t, "Transfer");
+	  AB_Transaction_SetTransactionText(t, I18N("Transfer"));
 	}
 	else if (strcasecmp(s, "CHECK")==0) {
 	  AB_Transaction_SetTransactionKey(t, "CHK");
-	  AB_Transaction_SetTransactionText(t, "Check");
+	  AB_Transaction_SetTransactionText(t, I18N("Check"));
 	}
 	else if (strcasecmp(s, "PAYMENT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "TRF"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, "Electronic payment");
+	  AB_Transaction_SetTransactionText(t, I18N("Electronic payment"));
 	}
 	else if (strcasecmp(s, "CASH")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, "Cash");
+	  AB_Transaction_SetTransactionText(t, I18N("Cash"));
 	}
 	else if (strcasecmp(s, "DIRECTDEP")==0) {
 	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, "Direct deposit");
+	  AB_Transaction_SetTransactionText(t, I18N("Direct deposit"));
 	}
 	else if (strcasecmp(s, "DIRECTDEB")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, "Merchant initiated debit");
+	  AB_Transaction_SetTransactionText(t, I18N("Merchant initiated debit"));
 	}
 	else if (strcasecmp(s, "REPEATPMT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "STO");
-	  AB_Transaction_SetTransactionText(t, "Standing order");
+	  AB_Transaction_SetTransactionText(t, I18N("Standing order"));
 	}
 	else if (strcasecmp(s, "OTHER")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");

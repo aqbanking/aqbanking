@@ -130,7 +130,7 @@ I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
 po/$(PACKAGE).pot: i18nsources qtsources $(I18NFILES)
 	if test -n "$(I18NFILES)"; then \
-	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N \
+	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N -kI18S\
 	    -kI18N_NOOP -ktranslate -kaliasLocale \
             -ktr -ktrUtf8 \
 	    '--msgid-bugs-address=openhbci-general@lists.sourceforge.net' \
