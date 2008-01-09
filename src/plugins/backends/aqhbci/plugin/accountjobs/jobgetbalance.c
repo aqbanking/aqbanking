@@ -200,7 +200,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-          AB_AccountStatus_SetBookedBalance(acst, bal);
+	  AB_AccountStatus_SetBookedBalance(acst, bal);
+	  AB_AccountStatus_SetTime(acst, AB_Balance_GetTime(bal));
           AB_Balance_free(bal);
         }
       }
@@ -213,7 +214,9 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-          AB_AccountStatus_SetNotedBalance(acst, bal);
+	  AB_AccountStatus_SetNotedBalance(acst, bal);
+	  if (AB_AccountStatus_GetTime(acst)==NULL)
+	    AB_AccountStatus_SetTime(acst, AB_Balance_GetTime(bal));
           AB_Balance_free(bal);
         }
       }

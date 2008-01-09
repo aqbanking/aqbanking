@@ -173,7 +173,8 @@ void AB_AccountStatus_SetTime(AB_ACCOUNT_STATUS *as,
                               const GWEN_TIME *t){
   assert(as);
   GWEN_Time_free(as->time);
-  as->time=GWEN_Time_dup(t);
+  if (t) as->time=GWEN_Time_dup(t);
+  else as->time=NULL;
 }
 
 
@@ -190,7 +191,8 @@ void AB_AccountStatus_SetBankLine(AB_ACCOUNT_STATUS *as,
                                   const AB_VALUE *v){
   assert(as);
   AB_Value_free(as->bankLine);
-  as->bankLine=AB_Value_dup(v);
+  if (v) as->bankLine=AB_Value_dup(v);
+  else as->bankLine=NULL;
 }
 
 
@@ -207,7 +209,8 @@ void AB_AccountStatus_SetDisposable(AB_ACCOUNT_STATUS *as,
                                     const AB_VALUE *v){
   assert(as);
   AB_Value_free(as->disposable);
-  as->disposable=AB_Value_dup(v);
+  if (v) as->disposable=AB_Value_dup(v);
+  else as->disposable=NULL;
 }
 
 
@@ -224,7 +227,8 @@ void AB_AccountStatus_SetDisposed(AB_ACCOUNT_STATUS *as,
                                   const AB_VALUE *v){
   assert(as);
   AB_Value_free(as->disposed);
-  as->disposed=AB_Value_dup(v);
+  if (v) as->disposed=AB_Value_dup(v);
+  else as->disposed=NULL;
 }
 
 
@@ -241,7 +245,8 @@ void AB_AccountStatus_SetBookedBalance(AB_ACCOUNT_STATUS *as,
                                        const AB_BALANCE *b){
   assert(as);
   AB_Balance_free(as->bookedBalance);
-  as->bookedBalance=AB_Balance_dup(b);
+  if (b) as->bookedBalance=AB_Balance_dup(b);
+  else as->bookedBalance=NULL;
 }
 
 
@@ -258,7 +263,8 @@ void AB_AccountStatus_SetNotedBalance(AB_ACCOUNT_STATUS *as,
                                       const AB_BALANCE *b){
   assert(as);
   AB_Balance_free(as->notedBalance);
-  as->notedBalance=AB_Balance_dup(b);
+  if (b) as->notedBalance=AB_Balance_dup(b);
+  else as->notedBalance=NULL;
 }
 
 
