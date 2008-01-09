@@ -1,5 +1,5 @@
 # norootforbuild
-# neededforbuild gwenhywfar gwenhywfar-devel libofx-devel libofx ktoblzcheck python python-ctypes pyyxml libchipcard2-devel libchipcard2 pkgconfig gettext-devel libacl-devel libacl libattr-devel libattr
+# neededforbuild gwenhywfar gwenhywfar-devel ktoblzcheck python python-ctypes pyyxml libchipcard2-devel libchipcard2 pkgconfig gettext-devel libacl-devel libacl libattr-devel libattr
 
 %define name @PACKAGE@
 %define version @VERSION@
@@ -60,7 +60,6 @@
 # versions of required helper-libraries
 %define _gwenhywfar_version   2.9.15
 %define _libchipcard3_version 3.9.13
-%define _libofx_version       0.8.2
 
 
 ### The standard information fields.
@@ -144,8 +143,6 @@ This package contains the QT3 setup wizard for AqBanking.
 Summary:       Aqbanking tools for Qt3
 Group:         Development/Libraries/C and C++
 Requires:      %{name} = %{version}
-Requires:      libofx >= %{_libofx_version}
-#BuildRequires: libofx-devel >= %{_libofx_version}
 Obsoletes:     %{name}-ofx-qt3
 
 %description ofx
