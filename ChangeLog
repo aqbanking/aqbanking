@@ -1,4 +1,10 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+
 2008/01/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in AB_ImExporterAccountInfo_GetNextAccountStatus(): Was
@@ -26,6 +32,14 @@
 2008/01/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a double free in imexporter/ofx.c
+
+
+2007/12/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed functions again:
+  - AB_Value_Canonicalize()
+  - AB_Value_GetNumerator()
+  - AB_Value_GetDenominator()
 
 
 2007/12/06: Martin Preuss<martin@libchipcard.de>
