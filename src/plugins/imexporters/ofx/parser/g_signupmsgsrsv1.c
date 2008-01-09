@@ -14,15 +14,12 @@
 # include <config.h>
 #endif
 
-#include "g_ofx_p.h"
+#include "g_signupmsgsrsv1_p.h"
 #include "ofxxmlctx_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
-#include "g_signonmsgsrsv1_l.h"
-#include "g_bankmsgsrsv1_l.h"
-#include "g_creditcardmsgsrsv1_l.h"
-#include "g_signupmsgsrsv1_l.h"
+#include "g_acctinfotrnrs_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -30,9 +27,9 @@
 
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
-				    AIO_OFX_GROUP *parent,
-				    GWEN_XML_CONTEXT *ctx) {
+AIO_OFX_GROUP *AIO_OfxGroup_SIGNUPMSGSRSV1_new(const char *groupName,
+					       AIO_OFX_GROUP *parent,
+					       GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -40,14 +37,15 @@ AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
   assert(g);
 
   /* set virtual functions */
-  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_OFX_StartTag);
+  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_SIGNUPMSGSRSV1_StartTag);
 
   return g;
 }
 
 
 
-int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_SIGNUPMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
+					 const char *tagName) {
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -55,16 +53,9 @@ int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
-  if (strcasecmp(tagName, "SIGNONMSGSRSV1")==0)
-    gNew=AIO_OfxGroup_SIGNONMSGSRSV1_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "BANKMSGSRSV1")==0) {
-    gNew=AIO_OfxGroup_BANKMSGSRSV1_new(tagName, g, ctx);
+  if (strcasecmp(tagName, "ACCTINFOTRNRS")==0) {
+    gNew=AIO_OfxGroup_ACCTINFOTRNRS_new(tagName, g, ctx);
   }
-  else if (strcasecmp(tagName, "CREDITCARDMSGSRSV1")==0) {
-    gNew=AIO_OfxGroup_CREDITCARDMSGSRSV1_new(tagName, g, ctx);
-  }
-  else if (strcasecmp(tagName, "SIGNUPMSGSRSV1")==0)
-    gNew=AIO_OfxGroup_SIGNUPMSGSRSV1_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
 	     "Ignoring group [%s]", tagName);

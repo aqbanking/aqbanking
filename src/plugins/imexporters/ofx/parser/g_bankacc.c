@@ -164,12 +164,14 @@ int AIO_OfxGroup_BANKACC_StartTag(AIO_OFX_GROUP *g,
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
+  free(xg->currentElement);
+  xg->currentElement=NULL;
+
   if (strcasecmp(tagName, "BANKID")==0 ||
       strcasecmp(tagName, "ACCTID")==0 ||
       strcasecmp(tagName, "ACCTTYPE")==0 ||
       strcasecmp(tagName, "BRANCHID")==0 ||
       strcasecmp(tagName, "ACCTKEY")==0) {
-    free(xg->currentElement);
     xg->currentElement=strdup(tagName);
   }
   else {

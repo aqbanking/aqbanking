@@ -76,3 +76,43 @@ int AIO_OfxGroup_Generic_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg){
 
 
 
+
+
+
+AB_ACCOUNT_TYPE AIO_OfxGroup_Generic_AccountTypeFromString(const char *s) {
+  AB_ACCOUNT_TYPE t;
+  
+  if (strcasecmp(s, "CHECKING")==0)
+    t=AB_AccountType_Checking;
+  else if (strcasecmp(s, "SAVINGS")==0)
+    t=AB_AccountType_Savings;
+  else if (strcasecmp(s, "MONEYMRKT")==0)
+    t=AB_AccountType_Investment;
+  else if (strcasecmp(s, "CREDITLINE")==0)
+    t=AB_AccountType_Bank;
+  else if (strcasecmp(s, "BANK")==0)       /* not a real code */
+    t=AB_AccountType_Bank;
+  else if (strcasecmp(s, "CREDITCARD")==0) /* not a real code */
+    t=AB_AccountType_CreditCard;
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN,
+	     "Unknown account type [%s], assuming bank account", s);
+    t=AB_AccountType_Bank;
+  }
+
+  return t;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

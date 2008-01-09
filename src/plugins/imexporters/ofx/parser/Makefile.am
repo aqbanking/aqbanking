@@ -19,7 +19,13 @@ libofxparser_la_SOURCES=\
  g_banktranlist.c \
  g_stmtrn.c \
  g_bal.c \
- g_creditcardmsgsrsv1.c
+ g_creditcardmsgsrsv1.c \
+ g_signupmsgsrsv1.c \
+ g_acctinfotrnrs.c \
+ g_acctinfors.c \
+ g_acctinfo.c \
+ g_bankacctinfo.c
+
 
 noinst_HEADERS=\
  ofxxmlctx_l.h ofxxmlctx_p.h \
@@ -38,6 +44,11 @@ noinst_HEADERS=\
  g_banktranlist_l.h g_banktranlist_p.h \
  g_stmtrn_l.h g_stmtrn_p.h \
  g_bal_l.h g_bal_p.h \
- g_creditcardmsgsrsv1_l.h g_creditcardmsgsrsv1_p.h
+ g_creditcardmsgsrsv1_l.h g_creditcardmsgsrsv1_p.h \
+ g_signupmsgsrsv1_l.h g_signupmsgsrsv1_p.h \
+ g_acctinfotrnrs_l.h g_acctinfotrnrs_p.h \
+ g_acctinfors_l.h g_acctinfors_p.h \
+ g_acctinfo_l.h g_acctinfo_p.h \
+ g_bankacctinfo_l.h g_bankacctinfo_p.h
 
 

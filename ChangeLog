@@ -17,6 +17,7 @@
   - full integration into AqBanking
 - accstatus.c: added some checks to setter functions
 - AqHBCI: JobGetBalance now sets the date/time in AccountStatus as well
+- OFX parser: implemented containers for account info responses
 
 
 2008/01/05: Martin Preuss<martin@libchipcard.de>

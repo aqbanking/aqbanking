@@ -211,23 +211,7 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     if (s) {
       AB_ACCOUNT_TYPE t;
 
-      if (strcasecmp(s, "CHECKING")==0)
-	t=AB_AccountType_Checking;
-      else if (strcasecmp(s, "SAVINGS")==0)
-	t=AB_AccountType_Savings;
-      else if (strcasecmp(s, "MONEYMRKT")==0)
-	t=AB_AccountType_Investment;
-      else if (strcasecmp(s, "CREDITLINE")==0)
-	t=AB_AccountType_Bank;
-      else if (strcasecmp(s, "BANK")==0)       /* not a real code */
-	t=AB_AccountType_Bank;
-      else if (strcasecmp(s, "CREDITCARD")==0) /* not a real code */
-	t=AB_AccountType_CreditCard;
-      else {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Unknown account type [%s], assuming bank account", s);
-	t=AB_AccountType_Bank;
-      }
+      t=AIO_OfxGroup_Generic_AccountTypeFromString(s);
       AB_ImExporterAccountInfo_SetType(ai, t);
     }
 
