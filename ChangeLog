@@ -27,6 +27,7 @@
 - unconditionally build OFX plugin (because we only need Gwenhywfar for this
   plugin and gwen is a requirement for ABanking itself)
 - updated po files (there are now about 100 new messages from the OFX plugin)
+- added function AB_Balance_SetValue()
 
 
 2008/01/05: Martin Preuss<martin@libchipcard.de>

@@ -232,7 +232,21 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
 	t=AB_Transaction_List2Iterator_Data(it);
 	while(t) {
-          DBG_INFO(AQBANKING_LOGDOMAIN, "Importing transaction");
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing transaction");
+          /* set currency if missing */
+	  if (xg->currency) {
+	    const AB_VALUE *v;
+
+	    v=AB_Transaction_GetValue(t);
+	    if (v && AB_Value_GetCurrency(v)==NULL) {
+	      AB_VALUE *v2;
+
+	      v2=AB_Value_dup(v);
+	      AB_Value_SetCurrency(v2, xg->currency);
+	      AB_Transaction_SetValue(t, v2);
+              AB_Value_free(v2);
+	    }
+	  }
 	  AB_ImExporterAccountInfo_AddTransaction(xg->accountInfo, t);
 	  t=AB_Transaction_List2Iterator_Next(it);
 	}
@@ -257,6 +271,14 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_AccountStatus_SetTime(ast, ti);
 
       bal=AB_Balance_new(v, ti);
+      if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
+	AB_VALUE *v2;
+
+	v2=AB_Value_dup(v);
+	AB_Value_SetCurrency(v2, xg->currency);
+	AB_Balance_SetValue(bal, v2);
+	AB_Value_free(v2);
+      }
       AB_AccountStatus_SetBookedBalance(ast, bal);
       AB_Balance_free(bal);
 
@@ -278,6 +300,14 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_AccountStatus_SetTime(ast, ti);
 
       bal=AB_Balance_new(v, ti);
+      if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
+	AB_VALUE *v2;
+
+	v2=AB_Value_dup(v);
+	AB_Value_SetCurrency(v2, xg->currency);
+	AB_Balance_SetValue(bal, v2);
+	AB_Value_free(v2);
+      }
       AB_AccountStatus_SetNotedBalance(ast, bal);
       AB_Balance_free(bal);
 

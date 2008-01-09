@@ -113,6 +113,15 @@ const AB_VALUE *AB_Balance_GetValue(const AB_BALANCE *b){
 
 
 
+void AB_Balance_SetValue(AB_BALANCE *b, const AB_VALUE *v) {
+  assert(b);
+  assert(v);
+  AB_Value_free(b->value);
+  b->value=AB_Value_dup(v);
+}
+
+
+
 const GWEN_TIME *AB_Balance_GetTime(const AB_BALANCE *b){
   assert(b);
   return b->time;

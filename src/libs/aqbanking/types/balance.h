@@ -39,6 +39,8 @@ void AB_Balance_free(AB_BALANCE *b);
 AQBANKING_API 
 const AB_VALUE *AB_Balance_GetValue(const AB_BALANCE *b);
 AQBANKING_API 
+void AB_Balance_SetValue(AB_BALANCE *b, const AB_VALUE *v);
+AQBANKING_API 
 const GWEN_TIME *AB_Balance_GetTime(const AB_BALANCE *b);
 
 #ifdef __cplusplus
