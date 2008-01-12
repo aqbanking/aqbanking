@@ -53,7 +53,6 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
 ,_docType(docType)
 ,_descr(descr)
 ,_text(text)
-,_printer(new QPrinter(QPrinter::PrinterResolution))
 ,_fontFamily("Arial")
 ,_fontSize(11)
 ,_fontWeight(QFont::Normal)
@@ -75,7 +74,6 @@ QBPrintDialog::QBPrintDialog(QBanking *app,
                    this, SLOT(slotHelpClicked()));
 
   loadGuiSetup();
-  loadPrinterSetup();
 
   DBG_ERROR(0, "Setting text...");
   textBrowser->setText(QString::fromUtf8(text));
@@ -166,7 +164,7 @@ void QBPrintDialog::saveGuiSetup(){
 
 
 
-void QBPrintDialog::loadPrinterSetup(){
+void QBPrintDialog::loadPrinterSetup(QPrinter *printer){
   GWEN_DB_NODE *db;
   GWEN_BUFFER *dbuf;
   const char *s;
@@ -290,20 +288,20 @@ void QBPrintDialog::loadPrinterSetup(){
       doSet=false;
 
     if (doSet)
-      _printer->setPageSize(ps);
+      printer->setPageSize(ps);
   }
 
   s=GWEN_DB_GetCharValue(db, "Orientation", 0, 0);
   if (s) {
     if (strcasecmp(s, "Portrait")==0)
-      _printer->setOrientation(QPrinter::Portrait);
+      printer->setOrientation(QPrinter::Portrait);
     else if (strcasecmp(s, "LandScape")==0)
-      _printer->setOrientation(QPrinter::Landscape);
+      printer->setOrientation(QPrinter::Landscape);
   }
 
   i=GWEN_DB_GetIntValue(db, "Resolution", 0, -1);
   if (i!=-1)
-    _printer->setResolution(i);
+    printer->setResolution(i);
 
   top=(uint)GWEN_DB_GetIntValue(db, "Top", 0, -1);
   left=(uint)GWEN_DB_GetIntValue(db, "Left", 0, -1);
@@ -312,27 +310,27 @@ void QBPrintDialog::loadPrinterSetup(){
 #if (QT_VERSION < 0x040000)
   // the current Qt4 snapshots don't have QPrinter::setMargins
   if (top!=(uint)-1 && left!=(uint)-1 && bottom!=(uint)-1 && right!=(uint)-1)
-    _printer->setMargins(top, left, bottom, right);
+    printer->setMargins(top, left, bottom, right);
 #endif
 
   s=GWEN_DB_GetCharValue(db, "ColorMode", 0, 0);
   if (s) {
     if (strcasecmp(s, "Color")==0)
-      _printer->setColorMode(QPrinter::Color);
+      printer->setColorMode(QPrinter::Color);
     else if (strcasecmp(s, "GrayScale")==0)
-      _printer->setColorMode(QPrinter::GrayScale);
+      printer->setColorMode(QPrinter::GrayScale);
   }
 
   s=GWEN_DB_GetCharValue(db, "outputFileName", 0, 0);
   if (s)
-    _printer->setOutputFileName(QString::fromUtf8(s));
-  _printer->setOutputToFile(GWEN_DB_GetIntValue(db, "outputToFile", 0, 0));
+    printer->setOutputFileName(QString::fromUtf8(s));
+  printer->setOutputToFile(GWEN_DB_GetIntValue(db, "outputToFile", 0, 0));
 
 }
 
 
 
-void QBPrintDialog::savePrinterSetup() {
+void QBPrintDialog::savePrinterSetup(QPrinter *printer) {
   GWEN_DB_NODE *db;
   GWEN_BUFFER *dbuf;
   const char *s;
@@ -388,14 +386,14 @@ void QBPrintDialog::savePrinterSetup() {
     break;
   }
 
-  QPrinter::Orientation orient=_printer->orientation();
+  QPrinter::Orientation orient=printer->orientation();
   if (orient==QPrinter::Portrait)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "orientation", "portrait");
   else if (orient==QPrinter::Landscape)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "orientation", "landscape");
-  switch(_printer->pageSize()) {
+  switch(printer->pageSize()) {
   case QPrinter::A0: s="A0"; break;
   case QPrinter::A1: s="A1"; break;
   case QPrinter::A2: s="A2"; break;
@@ -438,14 +436,14 @@ void QBPrintDialog::savePrinterSetup() {
                          "PageSize", s);
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "Resolution", _printer->resolution());
-  _printer->margins(&top, &left, &bottom, &right);
+                      "Resolution", printer->resolution());
+  printer->margins(&top, &left, &bottom, &right);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Top", top);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Left", left);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Bottom", bottom);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Right", right);
 
-  switch(_printer->colorMode()) {
+  switch(printer->colorMode()) {
   case QPrinter::Color: s="Color"; break;
   case QPrinter::GrayScale: s="GrayScale"; break;
   default: s=0; break;
@@ -456,8 +454,8 @@ void QBPrintDialog::savePrinterSetup() {
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "outputToFile",
-                      (_printer->outputToFile())?1:0);
-  QString fname = _printer->outputFileName();
+                      (printer->outputToFile())?1:0);
+  QString fname = printer->outputFileName();
   if (!fname.isEmpty())
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "outputFileName", fname.utf8());
@@ -466,7 +464,6 @@ void QBPrintDialog::savePrinterSetup() {
 
 
 void QBPrintDialog::accept(){
-  savePrinterSetup();
   saveGuiSetup();
   QDialog::accept();
 }
@@ -474,7 +471,11 @@ void QBPrintDialog::accept(){
 
 
 void QBPrintDialog::slotSetup(){
-  _printer->setup();
+  QPrinter printer(QPrinter::PrinterResolution);
+
+  loadPrinterSetup(&printer);
+  printer.setup();
+  savePrinterSetup(&printer);
 }
 
 
@@ -498,15 +499,19 @@ void QBPrintDialog::slotFont() {
 
 
 void QBPrintDialog::slotPrint(){
-  QPainter p;
+  QPrinter printer(QPrinter::PrinterResolution);
+
   QFont fnt(_fontFamily, _fontSize, _fontWeight);
   int XMargin;
   int YMargin;
 
-  if (!p.begin(_printer)) {
+  loadPrinterSetup(&printer);
+
+  QPainter p(&printer);
+  if (!p.isActive()) {
     QMessageBox::critical(this,
-                          tr("Print"),
-                          tr("Printing aborted."),
+			  tr("Print"),
+			  tr("Printing aborted."),
 			  QMessageBox::Ok,QMessageBox::NoButton);
     return;
   }
@@ -515,7 +520,7 @@ void QBPrintDialog::slotPrint(){
 
   QPaintDeviceMetrics metrics(p.device());
   XMargin = 0; //(int)((2/2.54)*metrics.logicalDpiX()); // 2 cm margins
-  YMargin = 0; //(int)((2/2.54)*metrics.logicalDpiY()); // 2 cm margins
+  YMargin = 5; //(int)((2/2.54)*metrics.logicalDpiY()); // 2 cm margins
 
   QRect body(XMargin, YMargin,
              metrics.width() - 2*XMargin,
@@ -535,7 +540,6 @@ void QBPrintDialog::slotPrint(){
                                  "Do you want to print it anyway?"),
 			      QMessageBox::Yes,QMessageBox::Abort);
     if (r !=0 && r != QMessageBox::Yes) {
-      p.end();
       return;
     }
   }
@@ -550,13 +554,11 @@ void QBPrintDialog::slotPrint(){
     p.drawText(view.right() - p.fontMetrics().width(QString::number(page)),
                view.bottom() + p.fontMetrics().ascent() + 5,
                QString::number(page));
-    _printer->newPage();
+    printer.newPage();
     if (view.top()>=txt.height())
       break;
     page++;
   } while (TRUE);
-
-  p.end();
 }
 
 

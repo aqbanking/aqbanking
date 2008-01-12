@@ -49,13 +49,12 @@ private:
   const char *_docType;
   const char *_descr;
   const char *_text;
-  QPrinter *_printer;
   QString _fontFamily;
   int _fontSize;
   int _fontWeight;
 
-  void loadPrinterSetup();
-  void savePrinterSetup();
+  void loadPrinterSetup(QPrinter *printer);
+  void savePrinterSetup(QPrinter *printer);
 
   void loadGuiSetup();
   void saveGuiSetup();
