@@ -10,6 +10,7 @@
   last page twice when printing to PS and doesn't print at all to real
   printers). I don't know why that is, because the print routine is the
   same as in the QT examples :-/
+- fixed importer for YellowNet files
 
 
 2008/01/10: Martin Preuss<martin@libchipcard.de>

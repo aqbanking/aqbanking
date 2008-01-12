@@ -481,7 +481,7 @@ int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gui
     GWEN_Io_Layer_free(io);
     return GWEN_ERROR_BAD_DATA;
   }
-  lbuffer[err]=0;
+  lbuffer[sizeof(lbuffer)-1]=0;
 
   p=strstr(lbuffer, "<?xml");
   if (p)
