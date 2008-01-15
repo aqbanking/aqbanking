@@ -6,6 +6,7 @@
 2008/01/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - OFX: improved handling of SONRS (accept some INTU.* fields as well)
+- CSV: added im-/exporter profile for VR NetWorld
 
 
 2008/01/12: Martin Preuss<martin@libchipcard.de>

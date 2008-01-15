@@ -1636,6 +1636,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/spk-steiermark.conf
   src/plugins/imexporters/csv/profiles/tonline-banking.conf
   src/plugins/imexporters/csv/profiles/test.conf
+  src/plugins/imexporters/csv/profiles/vrnetworld.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
