@@ -95,7 +95,9 @@ int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
 
     s=GWEN_StringList_FirstString(xg->openTags);
     if (!s)
+      /* empty and it is not our name, so let tha caller try parents */
       break;
+
     /* remove 1st open tag in any case */
     GWEN_StringList_RemoveString(xg->openTags, s);
     if (strcasecmp(s, tagName)==0)

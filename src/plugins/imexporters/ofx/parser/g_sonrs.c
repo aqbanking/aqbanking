@@ -25,6 +25,8 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
+
 
 
 
@@ -68,6 +70,9 @@ int AIO_OfxGroup_SONRS_StartTag(AIO_OFX_GROUP *g,
   }
   else if (strcasecmp(tagName, "FI")==0) {
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
+  }
+  else if (-1!=GWEN_Text_ComparePattern(tagName, "INTU.*", 0)) {
+    /* simply ignore INTU. stuff */
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,

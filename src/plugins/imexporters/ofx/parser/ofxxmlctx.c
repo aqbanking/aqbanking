@@ -338,7 +338,7 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 	AIO_OFX_GROUP *gParent;
 
 	/* pop current group from stack */
-        g=xctx->currentGroup;
+	g=xctx->currentGroup;
 	gParent=AIO_OfxGroup_GetParent(g);
 	xctx->currentGroup=gParent;
 	if (gParent) {
