@@ -19,7 +19,7 @@ int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
   int rv;
 
   GWEN_Buffer_AppendString(buf, "<ACCTINFORQ>");
-  GWEN_Buffer_AppendString(buf, "<DTACCTUP>197001010000");
+  GWEN_Buffer_AppendString(buf, "<DTACCTUP>19700101000000");
   GWEN_Buffer_AppendString(buf, "</ACCTINFORQ>");
 
   /* wrap into request */

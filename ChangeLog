@@ -7,6 +7,7 @@
 2008/01/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - started implementing securities (e.g. stock, mutual fund etc)
+- add seconds to timespecs in OFX DC requests
 
 
 2008/01/15: Martin Preuss<martin@libchipcard.de>

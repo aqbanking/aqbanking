@@ -73,13 +73,13 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
     ti=AB_JobGetTransactions_GetFromTime(j);
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmm", buf);
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
     }
 
     ti=AB_JobGetTransactions_GetToTime(j);
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmm", buf);
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
     }
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }
@@ -132,13 +132,13 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
     ti=AB_JobGetTransactions_GetFromTime(j);
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmm", buf);
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
     }
 
     ti=AB_JobGetTransactions_GetToTime(j);
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmm", buf);
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
     }
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }

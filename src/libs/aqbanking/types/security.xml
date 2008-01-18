@@ -58,6 +58,12 @@
       </descr>
     </elem>
 
+    <elem name="units" type="AB_VALUE" ptr="1" >
+      <descr>
+        Number of units held (e.g. number of stock units etc)
+      </descr>
+    </elem>
+
     <elem name="unitPriceValue" type="AB_VALUE" ptr="1" >
       <descr>
         Price of a unit as of unitPriceDate.
