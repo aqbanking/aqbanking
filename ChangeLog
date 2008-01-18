@@ -3,6 +3,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2008/01/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started implementing securities (e.g. stock, mutual fund etc)
+
+
 2008/01/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - OFX: improved handling of SONRS (accept some INTU.* fields as well)
