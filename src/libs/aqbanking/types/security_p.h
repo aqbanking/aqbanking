@@ -16,9 +16,11 @@ struct AB_SECURITY {
   char *uniqueId;
   char *nameSpace;
   char *tickerSymbol;
+  AB_VALUE *units;
   AB_VALUE *unitPriceValue;
   GWEN_TIME *unitPriceDate;
 };
+
 
 
 

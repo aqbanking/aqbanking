@@ -8,6 +8,10 @@
 -------------------------------------------------
 - started implementing securities (e.g. stock, mutual fund etc)
 - add seconds to timespecs in OFX DC requests
+- AB_TRANSACTION:
+  - changed type of field "units" from int to AB_VALUE
+  - added fields "unitId" and "unitIdNameSpace"
+  - added field "commission"
 
 
 2008/01/15: Martin Preuss<martin@libchipcard.de>

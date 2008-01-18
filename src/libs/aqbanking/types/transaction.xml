@@ -838,8 +838,11 @@
          It is used by backends and applications but not by AqBanking itself.
         </p>
       </descr>
-      <elem name="units" type="int" />
+      <elem name="unitId" type="char" ptr="1" />
+      <elem name="unitIdNameSpace" type="char" ptr="1" />
+      <elem name="units" type="AB_VALUE" ptr="1" />
       <elem name="unitPrice" type="AB_VALUE" ptr="1" />
+      <elem name="commission" type="AB_VALUE" ptr="1" />
     </group>
 
     

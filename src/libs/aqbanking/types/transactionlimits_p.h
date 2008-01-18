@@ -68,7 +68,8 @@ struct AB_TRANSACTION_LIMITS {
 
 /** @name Issuer Name
  *
-Limits for the issuer name.*/
+Limits for the issuer name.
+*/
 /*@{*/
 
 
@@ -77,7 +78,8 @@ Limits for the issuer name.*/
 
 /** @name Payee Name
  *
-Limits for the payee name.*/
+Limits for the payee name.
+*/
 /*@{*/
 
 
@@ -88,7 +90,8 @@ Limits for the payee name.*/
 
 /** @name Local Bank Code
  *
-Limits for local bank code.*/
+Limits for local bank code.
+*/
 /*@{*/
 
 
@@ -97,7 +100,8 @@ Limits for local bank code.*/
 
 /** @name Local Account Id
  *
-Limits for local account id.*/
+Limits for local account id.
+*/
 /*@{*/
 
 
@@ -106,7 +110,8 @@ Limits for local account id.*/
 
 /** @name Local Account Number
  *
-Limits for local account id suffix.*/
+Limits for local account id suffix.
+*/
 /*@{*/
 
 
@@ -115,7 +120,8 @@ Limits for local account id suffix.*/
 
 /** @name Remote Bank Code
  *
-Limits for remote bank code.*/
+Limits for remote bank code.
+*/
 /*@{*/
 
 
@@ -124,7 +130,8 @@ Limits for remote bank code.*/
 
 /** @name Remote Account Number
  *
-Limits for remote account number.*/
+Limits for remote account number.
+*/
 /*@{*/
 
 
@@ -133,7 +140,8 @@ Limits for remote account number.*/
 
 /** @name Remote Account Number Suffix
  *
-Limits for remote account id suffix.*/
+Limits for remote account id suffix.
+*/
 /*@{*/
 
 
@@ -142,7 +150,8 @@ Limits for remote account id suffix.*/
 
 /** @name Remote IBAN
  *
-Limits for remote IAN.*/
+Limits for remote IAN.
+*/
 /*@{*/
 
 
@@ -151,7 +160,8 @@ Limits for remote IAN.*/
 
 /** @name Text Key
  *
-Limits for textKey.*/
+Limits for textKey.
+*/
 /*@{*/
 
 
@@ -162,7 +172,8 @@ Limits for textKey.*/
 
 /** @name Customer Reference
  *
-Limits for customer reference.*/
+Limits for customer reference.
+*/
 /*@{*/
 
 
@@ -171,7 +182,8 @@ Limits for customer reference.*/
 
 /** @name Bank Reference
  *
-Limits for bank reference.*/
+Limits for bank reference.
+*/
 /*@{*/
 
 
@@ -181,8 +193,13 @@ Limits for bank reference.*/
 /** @name Purpose
  *
 Limits for purpose (called
-<i>memo</i>
-in some apps).*/
+
+<i>
+  memo
+</i>
+
+in some apps).
+*/
 /*@{*/
 
 
@@ -193,7 +210,8 @@ in some apps).*/
 
 /** @name Standing Orders And Dated Transfer
  *
-These limits apply to standing orders and dated transfers only.*/
+These limits apply to standing orders and dated transfers only.
+*/
 /*@{*/
 
 

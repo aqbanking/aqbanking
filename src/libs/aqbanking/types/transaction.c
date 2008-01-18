@@ -332,8 +332,16 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->remoteAddrCity);
   if (st->remotePhone)
     free(st->remotePhone);
+  if (st->unitId)
+    free(st->unitId);
+  if (st->unitIdNameSpace)
+    free(st->unitIdNameSpace);
+  if (st->units)
+    AB_Value_free(st->units);
   if (st->unitPrice)
     AB_Value_free(st->unitPrice);
+  if (st->commission)
+    AB_Value_free(st->commission);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -427,9 +435,16 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteAddrCity=strdup(d->remoteAddrCity);
   if (d->remotePhone)
     st->remotePhone=strdup(d->remotePhone);
-  st->units=d->units;
+  if (d->unitId)
+    st->unitId=strdup(d->unitId);
+  if (d->unitIdNameSpace)
+    st->unitIdNameSpace=strdup(d->unitIdNameSpace);
+  if (d->units)
+    st->units=AB_Value_dup(d->units);
   if (d->unitPrice)
     st->unitPrice=AB_Value_dup(d->unitPrice);
+  if (d->commission)
+    st->commission=AB_Value_dup(d->commission);
   return st;
 }
 
@@ -601,10 +616,20 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->remotePhone)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remotePhone", st->remotePhone))
       return -1;
-  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "units", st->units))
-    return -1;
+  if (st->unitId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "unitId", st->unitId))
+      return -1;
+  if (st->unitIdNameSpace)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "unitIdNameSpace", st->unitIdNameSpace))
+      return -1;
+  if (st->units)
+    if (AB_Value_toDb(st->units, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "units")))
+      return -1;
   if (st->unitPrice)
     if (AB_Value_toDb(st->unitPrice, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "unitPrice")))
+      return -1;
+  if (st->commission)
+    if (AB_Value_toDb(st->commission, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "commission")))
       return -1;
   return 0;
 }
@@ -754,7 +779,18 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetRemoteAddrZipcode(st, GWEN_DB_GetCharValue(db, "remoteAddrZipcode", 0, 0));
   AB_Transaction_SetRemoteAddrCity(st, GWEN_DB_GetCharValue(db, "remoteAddrCity", 0, 0));
   AB_Transaction_SetRemotePhone(st, GWEN_DB_GetCharValue(db, "remotePhone", 0, 0));
-  AB_Transaction_SetUnits(st, GWEN_DB_GetIntValue(db, "units", 0, 0));
+  AB_Transaction_SetUnitId(st, GWEN_DB_GetCharValue(db, "unitId", 0, 0));
+  AB_Transaction_SetUnitIdNameSpace(st, GWEN_DB_GetCharValue(db, "unitIdNameSpace", 0, 0));
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "units");
+    if (dbT) {
+  if (st->units)
+    AB_Value_free(st->units);
+  st->units=AB_Value_fromDb(dbT);
+}
+  }
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
@@ -763,6 +799,16 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->unitPrice)
     AB_Value_free(st->unitPrice);
   st->unitPrice=AB_Value_fromDb(dbT);
+}
+  }
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "commission");
+    if (dbT) {
+  if (st->commission)
+    AB_Value_free(st->commission);
+  st->commission=AB_Value_fromDb(dbT);
 }
   }
   return 0;
@@ -1719,15 +1765,60 @@ void AB_Transaction_SetRemotePhone(AB_TRANSACTION *st, const char *d) {
 
 
 
-int AB_Transaction_GetUnits(const AB_TRANSACTION *st) {
+const char *AB_Transaction_GetUnitId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->unitId;
+}
+
+
+void AB_Transaction_SetUnitId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->unitId)
+    free(st->unitId);
+  if (d && *d)
+    st->unitId=strdup(d);
+  else
+    st->unitId=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetUnitIdNameSpace(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->unitIdNameSpace;
+}
+
+
+void AB_Transaction_SetUnitIdNameSpace(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->unitIdNameSpace)
+    free(st->unitIdNameSpace);
+  if (d && *d)
+    st->unitIdNameSpace=strdup(d);
+  else
+    st->unitIdNameSpace=0;
+  st->_modified=1;
+}
+
+
+
+
+const AB_VALUE *AB_Transaction_GetUnits(const AB_TRANSACTION *st) {
   assert(st);
   return st->units;
 }
 
 
-void AB_Transaction_SetUnits(AB_TRANSACTION *st, int d) {
+void AB_Transaction_SetUnits(AB_TRANSACTION *st, const AB_VALUE *d) {
   assert(st);
-  st->units=d;
+  if (st->units)
+    AB_Value_free(st->units);
+  if (d)
+    st->units=AB_Value_dup(d);
+  else
+    st->units=0;
   st->_modified=1;
 }
 
@@ -1748,6 +1839,26 @@ void AB_Transaction_SetUnitPrice(AB_TRANSACTION *st, const AB_VALUE *d) {
     st->unitPrice=AB_Value_dup(d);
   else
     st->unitPrice=0;
+  st->_modified=1;
+}
+
+
+
+
+const AB_VALUE *AB_Transaction_GetCommission(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->commission;
+}
+
+
+void AB_Transaction_SetCommission(AB_TRANSACTION *st, const AB_VALUE *d) {
+  assert(st);
+  if (st->commission)
+    AB_Value_free(st->commission);
+  if (d)
+    st->commission=AB_Value_dup(d);
+  else
+    st->commission=0;
   st->_modified=1;
 }
 

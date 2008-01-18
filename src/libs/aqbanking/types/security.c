@@ -46,6 +46,8 @@ void AB_Security_free(AB_SECURITY *st) {
     free(st->nameSpace);
   if (st->tickerSymbol)
     free(st->tickerSymbol);
+  if (st->units)
+    AB_Value_free(st->units);
   if (st->unitPriceValue)
     AB_Value_free(st->unitPriceValue);
   if (st->unitPriceDate)
@@ -71,6 +73,8 @@ AB_SECURITY *AB_Security_dup(const AB_SECURITY *d) {
     st->nameSpace=strdup(d->nameSpace);
   if (d->tickerSymbol)
     st->tickerSymbol=strdup(d->tickerSymbol);
+  if (d->units)
+    st->units=AB_Value_dup(d->units);
   if (d->unitPriceValue)
     st->unitPriceValue=AB_Value_dup(d->unitPriceValue);
   if (d->unitPriceDate)
@@ -94,6 +98,9 @@ int AB_Security_toDb(const AB_SECURITY *st, GWEN_DB_NODE *db) {
   if (st->tickerSymbol)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "tickerSymbol", st->tickerSymbol))
       return -1;
+  if (st->units)
+    if (AB_Value_toDb(st->units, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "units")))
+      return -1;
   if (st->unitPriceValue)
     if (AB_Value_toDb(st->unitPriceValue, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "unitPriceValue")))
       return -1;
@@ -111,6 +118,16 @@ int AB_Security_ReadDb(AB_SECURITY *st, GWEN_DB_NODE *db) {
   AB_Security_SetUniqueId(st, GWEN_DB_GetCharValue(db, "uniqueId", 0, 0));
   AB_Security_SetNameSpace(st, GWEN_DB_GetCharValue(db, "nameSpace", 0, 0));
   AB_Security_SetTickerSymbol(st, GWEN_DB_GetCharValue(db, "tickerSymbol", 0, 0));
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "units");
+    if (dbT) {
+  if (st->units)
+    AB_Value_free(st->units);
+  st->units=AB_Value_fromDb(dbT);
+}
+  }
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
@@ -222,6 +239,26 @@ void AB_Security_SetTickerSymbol(AB_SECURITY *st, const char *d) {
     st->tickerSymbol=strdup(d);
   else
     st->tickerSymbol=0;
+  st->_modified=1;
+}
+
+
+
+
+const AB_VALUE *AB_Security_GetUnits(const AB_SECURITY *st) {
+  assert(st);
+  return st->units;
+}
+
+
+void AB_Security_SetUnits(AB_SECURITY *st, const AB_VALUE *d) {
+  assert(st);
+  if (st->units)
+    AB_Value_free(st->units);
+  if (d)
+    st->units=AB_Value_dup(d);
+  else
+    st->units=0;
   st->_modified=1;
 }
 

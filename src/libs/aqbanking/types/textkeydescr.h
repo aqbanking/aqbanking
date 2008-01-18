@@ -6,7 +6,8 @@
 
 /** @page P_AB_TEXTKEY_DESCR_PUBLIC AB_TextKeyDescr (public)
 This page describes the properties of AB_TEXTKEY_DESCR
-This type contains the description of a textkey. Please note that all text fields are in UTF-8.@anchor AB_TEXTKEY_DESCR_Value
+This type contains the description of a textkey. Please note that all text fields are in UTF-8.
+@anchor AB_TEXTKEY_DESCR_Value
 <h3>Value</h3>
 <p>
 </p>
@@ -18,7 +19,8 @@ get it with @ref AB_TextKeyDescr_GetValue
 @anchor AB_TEXTKEY_DESCR_Name
 <h3>Name</h3>
 <p>
-This is the localized name for the text key value given above.</p>
+This is the localized name for the text key value given above.
+</p>
 <p>
 Set this property with @ref AB_TextKeyDescr_SetName, 
 get it with @ref AB_TextKeyDescr_GetName
@@ -27,7 +29,8 @@ get it with @ref AB_TextKeyDescr_GetName
 @anchor AB_TEXTKEY_DESCR_Descr
 <h3>Descr</h3>
 <p>
-This is the localized description for the text key value given above.</p>
+This is the localized description for the text key value given above.
+</p>
 <p>
 Set this property with @ref AB_TextKeyDescr_SetDescr, 
 get it with @ref AB_TextKeyDescr_GetDescr

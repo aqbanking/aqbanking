@@ -46,6 +46,16 @@ Set this property with @ref AB_Security_SetTickerSymbol,
 get it with @ref AB_Security_GetTickerSymbol
 </p>
 
+@anchor AB_SECURITY_Units
+<h3>Units</h3>
+<p>
+Number of units held (e.g. number of stock units etc)
+</p>
+<p>
+Set this property with @ref AB_Security_SetUnits, 
+get it with @ref AB_Security_GetUnits
+</p>
+
 @anchor AB_SECURITY_UnitPriceValue
 <h3>UnitPriceValue</h3>
 <p>
@@ -162,6 +172,15 @@ AQBANKING_API const char *AB_Security_GetTickerSymbol(const AB_SECURITY *el);
 * Set the property @ref AB_SECURITY_TickerSymbol
 */
 AQBANKING_API void AB_Security_SetTickerSymbol(AB_SECURITY *el, const char *d);
+
+/**
+* Returns the property @ref AB_SECURITY_Units
+*/
+AQBANKING_API const AB_VALUE *AB_Security_GetUnits(const AB_SECURITY *el);
+/**
+* Set the property @ref AB_SECURITY_Units
+*/
+AQBANKING_API void AB_Security_SetUnits(AB_SECURITY *el, const AB_VALUE *d);
 
 /**
 * Returns the property @ref AB_SECURITY_UnitPriceValue
