@@ -93,7 +93,16 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
   /* prepare HTTP command line */
   db=GWEN_Io_LayerHttp_GetDbCommandOut(io);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "command", "POST");
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", "HTTP/1.0");
+  if (AH_User_GetHttpVMajor(dlg->dialogOwner)) {
+    char numbuf[32];
+
+    snprintf(numbuf, sizeof(numbuf)-1, "HTTP/%d.%d",
+	     AH_User_GetHttpVMajor(dlg->dialogOwner),
+	     AH_User_GetHttpVMinor(dlg->dialogOwner));
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", numbuf);
+  }
+  else
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", "HTTP/1.0");
 
   if (1) {
     GWEN_BUFFER *pbuf;

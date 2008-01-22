@@ -14,16 +14,16 @@
 # include <config.h>
 #endif
 
-#include "g_ofx_p.h"
+#include "g_invstmttrnrs_p.h"
 #include "ofxxmlctx_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
-#include "g_signonmsgsrsv1_l.h"
-#include "g_bankmsgsrsv1_l.h"
-#include "g_creditcardmsgsrsv1_l.h"
-#include "g_signupmsgsrsv1_l.h"
-#include "g_invstmtmsgsrsv1_l.h"
+
+#include "g_status_l.h"
+#include "g_invstmtrs_l.h"
+
+#include "i18n_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -31,9 +31,9 @@
 
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
-				    AIO_OFX_GROUP *parent,
-				    GWEN_XML_CONTEXT *ctx) {
+AIO_OFX_GROUP *AIO_OfxGroup_INVSTMTTRNRS_new(const char *groupName,
+					     AIO_OFX_GROUP *parent,
+					     GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -41,14 +41,15 @@ AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
   assert(g);
 
   /* set virtual functions */
-  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_OFX_StartTag);
+  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_INVSTMTTRNRS_StartTag);
 
   return g;
 }
 
 
 
-int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_INVSTMTTRNRS_StartTag(AIO_OFX_GROUP *g,
+				       const char *tagName) {
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -56,18 +57,17 @@ int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
-  if (strcasecmp(tagName, "SIGNONMSGSRSV1")==0)
-    gNew=AIO_OfxGroup_SIGNONMSGSRSV1_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "BANKMSGSRSV1")==0) {
-    gNew=AIO_OfxGroup_BANKMSGSRSV1_new(tagName, g, ctx);
+  if (strcasecmp(tagName, "STATUS")==0) {
+    gNew=AIO_OfxGroup_STATUS_new(tagName, g, ctx,
+				 I18N("Status for investment transaction statement request"));
   }
-  else if (strcasecmp(tagName, "CREDITCARDMSGSRSV1")==0) {
-    gNew=AIO_OfxGroup_CREDITCARDMSGSRSV1_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "TRNUID")==0 ||
+	   strcasecmp(tagName, "CLTCOOKIE")==0) {
+    /* some tags, just ignore them here */
   }
-  else if (strcasecmp(tagName, "SIGNUPMSGSRSV1")==0)
-    gNew=AIO_OfxGroup_SIGNUPMSGSRSV1_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "INVSTMTMSGSRSV1")==0)
-    gNew=AIO_OfxGroup_INVSTMTMSGSRSV1_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "INVSTMTRS")==0) {
+    gNew=AIO_OfxGroup_INVSTMTRS_new(tagName, g, ctx);
+  }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
 	     "Ignoring group [%s]", tagName);

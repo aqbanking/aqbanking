@@ -24,7 +24,13 @@ libofxparser_la_SOURCES=\
  g_acctinfotrnrs.c \
  g_acctinfors.c \
  g_acctinfo.c \
- g_bankacctinfo.c
+ g_bankacctinfo.c \
+ g_invstmttrnrs.c \
+ g_invstmtrs.c \
+ g_invstmtmsgsrsv1.c \
+ g_invposlist.c \
+ g_invpos.c \
+ g_secid.c
 
 
 noinst_HEADERS=\
@@ -49,7 +55,13 @@ noinst_HEADERS=\
  g_acctinfotrnrs_l.h g_acctinfotrnrs_p.h \
  g_acctinfors_l.h g_acctinfors_p.h \
  g_acctinfo_l.h g_acctinfo_p.h \
- g_bankacctinfo_l.h g_bankacctinfo_p.h
+ g_bankacctinfo_l.h g_bankacctinfo_p.h \
+ g_invstmttrnrs_l.h g_invstmttrnrs_p.h \
+ g_invstmtrs_l.h g_invstmtrs_p.h \
+ g_invstmtmsgsrsv1_l.h g_invstmtmsgsrsv1_p.h \
+ g_invposlist_l.h g_invposlist_p.h \
+ g_invpos_l.h g_invpos_p.h \
+ g_secid_l.h g_secid_p.h
 
 
 sources:

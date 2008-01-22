@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>562</width>
-            <height>376</height>
+            <height>412</height>
         </rect>
     </property>
     <property name="caption">
@@ -129,14 +129,6 @@
                         <string></string>
                     </property>
                 </widget>
-                <widget class="QLabel" row="3" column="0">
-                    <property name="name">
-                        <cstring>textLabel1_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>HBCI Version</string>
-                    </property>
-                </widget>
                 <widget class="QLabel" row="0" column="0">
                     <property name="name">
                         <cstring>TextLabel1_2_2_2_2_2_2_2</cstring>
@@ -177,6 +169,30 @@
                         <string>...</string>
                     </property>
                 </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>TextLabel1_4_2_3_2_2_2_2_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bank Name</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="3" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>HBCI Version</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="4" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>HTTP Version</string>
+                    </property>
+                </widget>
                 <widget class="QComboBox" row="3" column="1">
                     <item>
                         <property name="text">
@@ -205,6 +221,29 @@
                         </sizepolicy>
                     </property>
                 </widget>
+                <widget class="QComboBox" row="4" column="1">
+                    <item>
+                        <property name="text">
+                            <string>1.0</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>1.1</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>httpVersionCombo</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
                 <spacer row="3" column="2" rowspan="1" colspan="2">
                     <property name="name">
                         <cstring>spacer8</cstring>
@@ -222,14 +261,23 @@
                         </size>
                     </property>
                 </spacer>
-                <widget class="QLabel" row="1" column="0">
+                <spacer row="4" column="2" rowspan="1" colspan="2">
                     <property name="name">
-                        <cstring>TextLabel1_4_2_3_2_2_2_2_2_2</cstring>
+                        <cstring>spacer8_2</cstring>
                     </property>
-                    <property name="text">
-                        <string>Bank Name</string>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
                     </property>
-                </widget>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>220</width>
+                            <height>21</height>
+                        </size>
+                    </property>
+                </spacer>
             </grid>
         </widget>
         <widget class="QGroupBox">
@@ -333,6 +381,7 @@
     <tabstop>bankCodeButton</tabstop>
     <tabstop>serverEdit</tabstop>
     <tabstop>hbciVersionCombo</tabstop>
+    <tabstop>httpVersionCombo</tabstop>
     <tabstop>nameEdit</tabstop>
     <tabstop>userIdEdit</tabstop>
     <tabstop>customerIdEdit</tabstop>

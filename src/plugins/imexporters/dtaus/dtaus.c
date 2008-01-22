@@ -86,8 +86,8 @@ int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
 		      GWEN_PATH_FLAGS_CREATE_GROUP,
 		      guiid,
 		      2000);
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data");
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 "Error importing data");
@@ -99,7 +99,7 @@ int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       "Data imported, transforming to transactions");
   rv=AH_ImExporterDTAUS__ImportFromGroup(ctx, dbData, params);
-  if (rv) {
+  if (rv<0) {
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 "Error importing data");

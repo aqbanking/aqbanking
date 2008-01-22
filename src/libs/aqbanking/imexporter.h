@@ -59,6 +59,7 @@ typedef struct AB_IMEXPORTER_ACCOUNTINFO AB_IMEXPORTER_ACCOUNTINFO;
 #include <aqbanking/banking.h>
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/security.h>
 
 
 #ifdef __cplusplus
@@ -286,6 +287,28 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 AQBANKING_API
 void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
                                          AB_TRANSACTION *t);
+
+
+
+/** @defgroup AB_IMEXPORTER_CONTEXT_SECURITY Securities
+ *
+ * These functions handle stocks, mutual funds etc.
+ */
+/**@{*/
+AQBANKING_API 
+void AB_ImExporterContext_AddSecurity(AB_IMEXPORTER_CONTEXT *iec,
+				      AB_SECURITY *sec);
+
+AQBANKING_API 
+AB_SECURITY*
+AB_ImExporterContext_GetFirstSecurity(AB_IMEXPORTER_CONTEXT *iec);
+
+AQBANKING_API 
+AB_SECURITY*
+AB_ImExporterContext_GetNextSecurity(AB_IMEXPORTER_CONTEXT *iec);
+/**@}*/
+
+
 /*@}*/ /* defgroup */
 
 

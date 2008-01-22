@@ -91,12 +91,16 @@ void EditCtUser::init() {
 
   if (_wInfo->getCryptMode()==AH_CryptMode_Pintan) {
     userCombo->setEnabled(false);
+    hbciVersionCombo->setCurrentItem(2);
     hbciVersionCombo->setEnabled(false);
+    if (!(_wInfo->getHttpVersion().empty()))
+      httpVersionCombo->setCurrentText(_wInfo->getHttpVersion());
   }
   else {
     GWEN_CRYPT_TOKEN *ct;
     uint32_t idCount;
 
+    httpVersionCombo->setEnabled(false);
     ct=_wInfo->getToken();
     assert(ct);
 
@@ -221,6 +225,7 @@ bool EditCtUser::apply(){
   std::string userName;
   std::string fullServerAddr;
   std::string serverAddr;
+  std::string httpVersion;
   std::string peerId;
   int hbciVersion;
 
@@ -246,6 +251,8 @@ bool EditCtUser::apply(){
     qs.truncate(i);
   serverAddr=QBanking::QStringToUtf8String(qs);
   idx=userCombo->currentItem();
+
+  httpVersion=QBanking::QStringToUtf8String(httpVersionCombo->currentText());
 
   /* some sanity checks */
   if (!_checkStringSanity(userId.c_str())) {
@@ -439,6 +446,16 @@ bool EditCtUser::apply(){
 
     AH_User_SetCryptMode(u, cm);
     AH_User_SetHbciVersion(u, hbciVersion);
+
+    if (!(httpVersion.empty())) {
+      int vmajor, vminor;
+
+      if (sscanf(httpVersion.c_str(), "%d.%d", &vmajor, &vminor)==2) {
+        DBG_ERROR(0, "Setting HTTP_Version to %d.%d", vmajor, vminor);
+        AH_User_SetHttpVMajor(u, vmajor);
+        AH_User_SetHttpVMinor(u, vminor);
+      }
+    }
 
     /* set address */
     url=GWEN_Url_fromString(fullServerAddr.c_str());

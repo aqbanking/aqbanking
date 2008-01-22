@@ -43,6 +43,7 @@ private:
   std::string _server;
   std::string _mediumType;
   std::string _mediumName;
+  std::string _httpVersion;
   AH_CRYPT_MODE _cryptMode;
   int _port;
 
@@ -89,6 +90,9 @@ public:
 
   int getPort() const;
   void setPort(int i);
+
+  const std::string &getHttpVersion() const;
+  void setHttpVersion(const std::string &s);
 
   const std::string &getMediumType() const;
   void setMediumType(const std::string &s);

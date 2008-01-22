@@ -3,6 +3,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a field for the HTTP version to the HBCI user edit dialog
+- hbci code now uses the values stored in AH_USER concerning the HTTP version
+
 
 2008/01/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -241,6 +241,10 @@ void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll) {
 
 
 
+
+
+
+
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_GetFirstAccountInfo(AB_IMEXPORTER_CONTEXT *iec){
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -293,6 +297,54 @@ AB_ImExporterContext_AccountInfoForEach(AB_IMEXPORTER_CONTEXT *iec,
   return 0;
 
 }
+
+
+
+
+void AB_ImExporterContext_AddSecurity(AB_IMEXPORTER_CONTEXT *iec,
+				      AB_SECURITY *sec) {
+  assert(iec);
+  assert(sec);
+  AB_Security_List_Add(sec, iec->securityList);
+}
+
+
+
+AB_SECURITY*
+AB_ImExporterContext_GetFirstSecurity(AB_IMEXPORTER_CONTEXT *iec) {
+  AB_SECURITY *sec;
+
+  assert(iec);
+  sec=AB_Security_List_First(iec->securityList);
+  if (sec) {
+    iec->nextSecurity=AB_Security_List_Next(sec);
+    return sec;
+  }
+  iec->nextSecurity=NULL;
+  return NULL;
+}
+
+
+
+AB_SECURITY*
+AB_ImExporterContext_GetNextSecurity(AB_IMEXPORTER_CONTEXT *iec){
+  AB_SECURITY *sec;
+
+  assert(iec);
+  sec=iec->nextSecurity;
+  if (sec) {
+    iec->nextSecurity=AB_Security_List_Next(sec);
+    return sec;
+  }
+  iec->nextSecurity=NULL;
+  return NULL;
+}
+
+
+
+
+
+
 
 
 
@@ -1108,6 +1160,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
 
   GWEN_NEW_OBJECT(AB_IMEXPORTER_CONTEXT, iec);
   iec->accountInfoList=AB_ImExporterAccountInfo_List_new();
+  iec->securityList=AB_Security_List_new();
 
   return iec;
 }
@@ -1116,6 +1169,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
   if (iec) {
+    AB_Security_List_free(iec->securityList);
     AB_ImExporterAccountInfo_List_free(iec->accountInfoList);
     GWEN_FREE_OBJECT(iec);
   }
@@ -1126,6 +1180,7 @@ void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
 int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 			       GWEN_DB_NODE *db){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
+  AB_SECURITY *sec;
 
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   if (iea) {
@@ -1145,6 +1200,27 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
       if (AB_ImExporterAccountInfo_toDb(iea, dbT))
 	return -1;
       iea=AB_ImExporterAccountInfo_List_Next(iea);
+    }
+  }
+
+  sec=AB_Security_List_First(iec->securityList);
+  if (sec) {
+    GWEN_DB_NODE *dbG;
+
+    dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "securityList");
+    assert(dbG);
+
+    while(sec) {
+      GWEN_DB_NODE *dbT;
+
+      dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			   "security");
+      assert(dbT);
+
+      if (AB_Security_toDb(sec, dbT))
+	return -1;
+      sec=AB_Security_List_Next(sec);
     }
   }
 
@@ -1168,6 +1244,20 @@ int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
       assert(iea);
       AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
       dbT=GWEN_DB_FindNextGroup(dbT, "accountInfo");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "securityList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "security");
+    while(dbT) {
+      AB_SECURITY *sec;
+
+      sec=AB_Security_fromDb(dbT);
+      assert(sec);
+      AB_Security_List_Add(sec, iec->securityList);
+      dbT=GWEN_DB_FindNextGroup(dbT, "security");
     }
   }
 

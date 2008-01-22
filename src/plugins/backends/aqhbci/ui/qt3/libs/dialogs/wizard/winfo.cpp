@@ -199,6 +199,18 @@ void WizardInfo::setPort(int i) {
 
 
 
+const std::string &WizardInfo::getHttpVersion() const {
+  return _httpVersion;
+}
+
+
+
+void WizardInfo::setHttpVersion(const std::string &s) {
+  _httpVersion=s;
+}
+
+
+
 const std::string &WizardInfo::getMediumType() const {
   return _mediumType;
 }

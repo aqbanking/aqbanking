@@ -55,6 +55,9 @@ AIO_OFX_GROUP *AIO_OfxGroup_BANKACC_new(const char *groupName,
   if (strcasecmp(groupName, "CCACCTFROM")==0 ||
       strcasecmp(groupName, "CCACCTTO")==0)
     xg->accType=strdup("CREDITCARD");
+  else if (strcasecmp(groupName, "INVACCTFROM")==0 ||
+           strcasecmp(groupName, "INVACCTTO")==0)
+    xg->accType=strdup("MONEYMRKT");
 
   return g;
 }
@@ -171,7 +174,8 @@ int AIO_OfxGroup_BANKACC_StartTag(AIO_OFX_GROUP *g,
       strcasecmp(tagName, "ACCTID")==0 ||
       strcasecmp(tagName, "ACCTTYPE")==0 ||
       strcasecmp(tagName, "BRANCHID")==0 ||
-      strcasecmp(tagName, "ACCTKEY")==0) {
+      strcasecmp(tagName, "ACCTKEY")==0 ||
+      strcasecmp(tagName, "BROKERID")==0) {
     xg->currentElement=strdup(tagName);
   }
   else {
@@ -208,6 +212,8 @@ int AIO_OfxGroup_BANKACC_AddData(AIO_OFX_GROUP *g, const char *data) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
 	       "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "BANKID")==0)
+	AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
+      else if (strcasecmp(xg->currentElement, "BROKERID")==0)
 	AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "ACCTID")==0)
 	AIO_OfxGroup_BANKACC_SetAccId(g, GWEN_Buffer_GetStart(buf));

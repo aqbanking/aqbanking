@@ -49,6 +49,8 @@ struct AB_IMEXPORTER_CONTEXT {
   AB_IMEXPORTER_ACCOUNTINFO_LIST *accountInfoList;
   AB_IMEXPORTER_ACCOUNTINFO *nextAccountInfo;
 
+  AB_SECURITY_LIST *securityList;
+  AB_SECURITY *nextSecurity;
 };
 
 
