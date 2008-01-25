@@ -897,6 +897,21 @@ bool QBImporter::_readFile(const QString &fname){
       }
       DBG_NOTICE(0, "File \"%s\" imported",
 		 fname.local8Bit().data());
+
+#if 0
+      if (1) {
+	GWEN_DB_NODE *dbX;
+
+	dbX=GWEN_DB_Group_new("context");
+	AB_ImExporterContext_toDb(_context, dbX);
+	GWEN_DB_WriteFile(dbX, "/tmp/ctx.out",
+			  GWEN_DB_FLAGS_DEFAULT,
+			  0, 2000);
+        GWEN_DB_Group_free(dbX);
+      }
+#endif
+
+
     } // if open succeeded
   } // if file exists
 

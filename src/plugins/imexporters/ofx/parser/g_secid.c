@@ -136,7 +136,7 @@ int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g,
   free(xg->currentElement);
   xg->currentElement=NULL;
 
-  if (strcasecmp(tagName, "UNIQUE")==0 ||
+  if (strcasecmp(tagName, "UNIQUEID")==0 ||
       strcasecmp(tagName, "UNIQUEIDTYPE")==0) {
     xg->currentElement=strdup(tagName);
   }

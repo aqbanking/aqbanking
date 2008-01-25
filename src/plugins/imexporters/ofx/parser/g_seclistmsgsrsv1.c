@@ -14,27 +14,23 @@
 # include <config.h>
 #endif
 
-#include "g_invposlist_p.h"
+#include "g_seclistmsgsrsv1_p.h"
 #include "ofxxmlctx_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
 
-#include "g_posstock_l.h"
-
-#include "i18n_l.h"
+#include "g_seclist_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/text.h>
 
 
 
 
-
-AIO_OFX_GROUP *AIO_OfxGroup_INVPOSLIST_new(const char *groupName,
-					   AIO_OFX_GROUP *parent,
-					   GWEN_XML_CONTEXT *ctx) {
+AIO_OFX_GROUP *AIO_OfxGroup_SECLISTMSGSRSV1_new(const char *groupName,
+						AIO_OFX_GROUP *parent,
+						GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -42,15 +38,15 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVPOSLIST_new(const char *groupName,
   assert(g);
 
   /* set virtual functions */
-  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_INVPOSLIST_StartTag);
+  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_SECLISTMSGSRSV1_StartTag);
 
   return g;
 }
 
 
 
-int AIO_OfxGroup_INVPOSLIST_StartTag(AIO_OFX_GROUP *g,
-				     const char *tagName) {
+int AIO_OfxGroup_SECLISTMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
+					  const char *tagName) {
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -58,9 +54,8 @@ int AIO_OfxGroup_INVPOSLIST_StartTag(AIO_OFX_GROUP *g,
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
-  if (strcasecmp(tagName, "POSSTOCK")==0 ||
-      strcasecmp(tagName, "POSMF")==0) {
-    gNew=AIO_OfxGroup_POSSTOCK_new(tagName, g, ctx);
+  if (strcasecmp(tagName, "SECLIST")==0) {
+    gNew=AIO_OfxGroup_SECLIST_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,

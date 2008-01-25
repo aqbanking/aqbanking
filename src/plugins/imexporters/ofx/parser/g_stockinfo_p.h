@@ -10,18 +10,16 @@
  ***************************************************************************/
 
 
-#ifndef AIO_OFX_G_POSSTOCK_P_H
-#define AIO_OFX_G_POSSTOCK_P_H
+#ifndef AIO_OFX_G_STOCKINFO_P_H
+#define AIO_OFX_G_STOCKINFO_P_H
 
 
-#include "g_posstock_l.h"
+#include "g_stockinfo_l.h"
 
 
-static int AIO_OfxGroup_POSSTOCK_StartTag(AIO_OFX_GROUP *g,
-					  const char *tagName);
-
-static int AIO_OfxGroup_POSSTOCK_EndSubGroup(AIO_OFX_GROUP *g,
-					     AIO_OFX_GROUP *sg);
+int AIO_OfxGroup_STOCKINFO_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+int AIO_OfxGroup_STOCKINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
 
 #endif
+
 

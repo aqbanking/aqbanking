@@ -24,6 +24,7 @@
 #include "g_creditcardmsgsrsv1_l.h"
 #include "g_signupmsgsrsv1_l.h"
 #include "g_invstmtmsgsrsv1_l.h"
+#include "g_seclistmsgsrsv1_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -68,6 +69,8 @@ int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
     gNew=AIO_OfxGroup_SIGNUPMSGSRSV1_new(tagName, g, ctx);
   else if (strcasecmp(tagName, "INVSTMTMSGSRSV1")==0)
     gNew=AIO_OfxGroup_INVSTMTMSGSRSV1_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "SECLISTMSGSRSV1")==0)
+    gNew=AIO_OfxGroup_SECLISTMSGSRSV1_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
 	     "Ignoring group [%s]", tagName);

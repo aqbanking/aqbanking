@@ -71,13 +71,14 @@ int AIO_OfxGroup_SONRS_StartTag(AIO_OFX_GROUP *g,
   else if (strcasecmp(tagName, "FI")==0) {
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
-  else if (-1!=GWEN_Text_ComparePattern(tagName, "INTU.*", 0)) {
+  else if (-1!=GWEN_Text_ComparePattern(tagName, "INTU.*", 0) ||
+	   -1!=GWEN_Text_ComparePattern(tagName, "AT.*", 0)) {
     /* simply ignore INTU. stuff */
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
-    gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
+	     "Ignoring element [%s]", tagName);
+    /*gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);*/
   }
 
   if (gNew) {

@@ -226,6 +226,10 @@ int AIO_OfxGroup_INVPOS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
   s=AIO_OfxGroup_GetGroupName(sg);
   if (strcasecmp(s, "SECID")==0) {
+    AB_Security_SetUniqueId(xg->security,
+			    AIO_OfxGroup_SECID_GetUniqueId(sg));
+    AB_Security_SetNameSpace(xg->security,
+			     AIO_OfxGroup_SECID_GetNameSpace(sg));
   }
 
   return 0;

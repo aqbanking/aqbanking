@@ -3,6 +3,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- ofx importer: importing securities now basically works
+
+
 2008/01/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added a field for the HTTP version to the HBCI user edit dialog

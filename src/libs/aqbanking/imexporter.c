@@ -342,6 +342,38 @@ AB_ImExporterContext_GetNextSecurity(AB_IMEXPORTER_CONTEXT *iec){
 
 
 
+AB_SECURITY*
+AB_ImExporterContext_FindSecurity(AB_IMEXPORTER_CONTEXT *iec,
+				  const char *nameSpace,
+				  const char *id) {
+  AB_SECURITY *sec;
+
+  assert(iec);
+  if (nameSpace==NULL)
+    nameSpace="";
+  if (id==NULL)
+    id="";
+  sec=AB_Security_List_First(iec->securityList);
+  while(sec) {
+    const char *s1, *s2;
+
+    s1=AB_Security_GetUniqueId(sec);
+    if (s1==NULL)
+      s1="";
+    s2=AB_Security_GetNameSpace(sec);
+    if (s2==NULL)
+      s2="";
+    if (strcasecmp(s2, nameSpace)==0 &&
+	strcasecmp(s1, id)==0)
+      return sec;
+    sec=AB_Security_List_Next(sec);
+  }
+  return NULL;
+}
+
+
+
+
 
 
 

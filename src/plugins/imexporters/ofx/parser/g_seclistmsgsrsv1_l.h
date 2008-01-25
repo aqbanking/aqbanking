@@ -10,18 +10,17 @@
  ***************************************************************************/
 
 
-#ifndef AIO_OFX_G_POSSTOCK_P_H
-#define AIO_OFX_G_POSSTOCK_P_H
+#ifndef AIO_OFX_G_SECLISTMSGSRSV1_L_H
+#define AIO_OFX_G_SECLISTMSGSRSV1_L_H
 
 
-#include "g_posstock_l.h"
+#include "ofxgroup_l.h"
 
 
-static int AIO_OfxGroup_POSSTOCK_StartTag(AIO_OFX_GROUP *g,
-					  const char *tagName);
 
-static int AIO_OfxGroup_POSSTOCK_EndSubGroup(AIO_OFX_GROUP *g,
-					     AIO_OFX_GROUP *sg);
+AIO_OFX_GROUP *AIO_OfxGroup_SECLISTMSGSRSV1_new(const char *groupName,
+						AIO_OFX_GROUP *parent,
+						GWEN_XML_CONTEXT *ctx);
+
 
 #endif
-

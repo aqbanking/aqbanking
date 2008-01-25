@@ -20,9 +20,9 @@
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
+
 #include "g_bankacc_l.h"
-#include "g_banktranlist_l.h"
-#include "g_bal_l.h"
+#include "g_invposlist_l.h"
 
 #include <aqbanking/accstatus.h>
 
@@ -76,7 +76,7 @@ void AIO_OfxGroup_INVSTMTRS_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_INVSTMTRS_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+				    const char *tagName) {
   AIO_OFX_GROUP_INVSTMTRS *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -90,11 +90,15 @@ int AIO_OfxGroup_INVSTMTRS_StartTag(AIO_OFX_GROUP *g,
   free(xg->currentElement);
   xg->currentElement=NULL;
 
-  if (strcasecmp(tagName, "CURDEF")==0) {
+  if (strcasecmp(tagName, "CURDEF")==0 ||
+      strcasecmp(tagName, "DTASOF")==0) {
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "INVACCTFROM")==0) {
     gNew=AIO_OfxGroup_BANKACC_new(tagName, g, ctx);
+  }
+  else if (strcasecmp(tagName, "INVPOSLIST")==0) {
+    gNew=AIO_OfxGroup_INVPOSLIST_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,

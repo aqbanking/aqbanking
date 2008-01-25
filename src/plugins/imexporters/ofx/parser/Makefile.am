@@ -30,7 +30,12 @@ libofxparser_la_SOURCES=\
  g_invstmtmsgsrsv1.c \
  g_invposlist.c \
  g_invpos.c \
- g_secid.c
+ g_secid.c \
+ g_posstock.c \
+ g_secinfo.c \
+ g_seclist.c \
+ g_stockinfo.c \
+ g_seclistmsgsrsv1.c
 
 
 noinst_HEADERS=\
@@ -61,7 +66,12 @@ noinst_HEADERS=\
  g_invstmtmsgsrsv1_l.h g_invstmtmsgsrsv1_p.h \
  g_invposlist_l.h g_invposlist_p.h \
  g_invpos_l.h g_invpos_p.h \
- g_secid_l.h g_secid_p.h
+ g_secid_l.h g_secid_p.h \
+ g_posstock_l.h g_posstock_p.h \
+ g_secinfo_l.h g_secinfo_p.h \
+ g_seclist_l.h g_seclist_p.h \
+ g_stockinfo_l.h g_stockinfo_p.h \
+ g_seclistmsgsrsv1_l.h g_seclistmsgsrsv1_p.h
 
 
 sources:

@@ -306,6 +306,13 @@ AB_ImExporterContext_GetFirstSecurity(AB_IMEXPORTER_CONTEXT *iec);
 AQBANKING_API 
 AB_SECURITY*
 AB_ImExporterContext_GetNextSecurity(AB_IMEXPORTER_CONTEXT *iec);
+
+AQBANKING_API 
+AB_SECURITY*
+AB_ImExporterContext_FindSecurity(AB_IMEXPORTER_CONTEXT *iec,
+				  const char *nameSpace,
+				  const char *id);
+
 /**@}*/
 
 
