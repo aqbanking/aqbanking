@@ -474,11 +474,10 @@ void LogManager::saveFile() {
           continue;
       }
 
-      // IO_Raw doesn't exist in qt4
+      // IO_Raw doesn't exist in qt4, but in latest qt4 this is
+      // correctly replaced by QIODevice::Unbuffered.
       if (!f.open(IO_WriteOnly | IO_Truncate
-#ifdef IO_Raw
 		  | IO_Raw
-#endif
 		 )) {
 	QMessageBox::critical(this,
 			      tr("File Error"),

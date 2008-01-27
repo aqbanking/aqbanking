@@ -37,6 +37,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qwidget.h> // needed for QPointer<QWidget>
 #include <qguardedptr.h>
 
 #include <list>

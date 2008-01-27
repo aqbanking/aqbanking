@@ -94,7 +94,7 @@ void EditCtUser::init() {
     hbciVersionCombo->setCurrentItem(2);
     hbciVersionCombo->setEnabled(false);
     if (!(_wInfo->getHttpVersion().empty()))
-      httpVersionCombo->setCurrentText(_wInfo->getHttpVersion());
+      httpVersionCombo->setCurrentText(QString::fromUtf8(_wInfo->getHttpVersion().c_str()));
   }
   else {
     GWEN_CRYPT_TOKEN *ct;

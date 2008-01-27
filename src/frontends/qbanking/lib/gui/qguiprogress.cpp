@@ -33,7 +33,7 @@ QGuiProgress::QGuiProgress(uint32_t id, const char *title,
 {
   _startTime=time(0);
   if (title)
-    _title=std::string(title);
+    _title=QString::fromUtf8(title);
 }
 
 
