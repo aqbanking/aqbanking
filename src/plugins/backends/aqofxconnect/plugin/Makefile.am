@@ -6,8 +6,6 @@ DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
 EXTRA_DIST=\
   aqofxconnect.xml.in \
   network.c \
-  context1.c \
-  context2.c \
   request.c \
   r_statements.c \
   r_accountinfo.c

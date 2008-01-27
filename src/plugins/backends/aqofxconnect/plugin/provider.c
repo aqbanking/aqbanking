@@ -41,8 +41,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/i18n.h>
 
-#include <libofx/libofx.h>
-
 #include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
