@@ -31,6 +31,8 @@ AH_RESULT *AH_Result_new(int code,
                          int isMsgResult);
 void AH_Result_free(AH_RESULT *r);
 
+AH_RESULT *AH_Result_dup(const AH_RESULT *or);
+
 int AH_Result_GetCode(const AH_RESULT *r);
 const char *AH_Result_GetText(const AH_RESULT *r);
 const char *AH_Result_GetRef(const AH_RESULT *r);

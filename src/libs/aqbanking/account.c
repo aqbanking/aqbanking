@@ -305,14 +305,18 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
 
 void AB_Account_free(AB_ACCOUNT *a){
   if (a) {
-    if (--(a->usage)==0) {
+    assert(a->usage);
+    if (a->usage==1) {
       DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Destroying AB_ACCOUNT");
-      GWEN_INHERIT_FINI(AB_ACCOUNT, a);
       GWEN_LIST_FINI(AB_ACCOUNT, a);
+      GWEN_INHERIT_FINI(AB_ACCOUNT, a);
       free(a->backendName);
       GWEN_DB_Group_free(a->data);
+      a->usage=0;
       GWEN_FREE_OBJECT(a);
     }
+    else
+      a->usage--;
   }
 }
 

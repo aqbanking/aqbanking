@@ -170,6 +170,7 @@ void EditCtUser::init() {
       switch(AH_User_GetHbciVersion(_wInfo->getUser())) {
       case 201: i=0; break;
       case 220: i=2; break;
+      case 300: i=3; break;
       case 210:
       default:  i=1; break;
       }
@@ -234,6 +235,7 @@ bool EditCtUser::apply(){
   switch(hbciVersionCombo->currentItem()) {
   case 0:  hbciVersion=201; break;
   case 2:  hbciVersion=220; break;
+  case 3:  hbciVersion=300; break;
   case 1: 
   default: hbciVersion=210; break;
   }

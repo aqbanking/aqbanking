@@ -67,6 +67,20 @@ void AH_Result_free(AH_RESULT *r){
 
 
 
+AH_RESULT *AH_Result_dup(const AH_RESULT *or) {
+  AH_RESULT *r;
+
+  assert(or);
+  r=AH_Result_new(r->code,
+		  r->text,
+		  r->ref,
+		  r->param,
+		  r->isMsgResult);
+  return r;
+}
+
+
+
 int AH_Result_GetCode(const AH_RESULT *r){
   assert(r);
   return r->code;

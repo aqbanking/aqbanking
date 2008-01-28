@@ -307,6 +307,40 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+  else {
+    const AH_JOB_LIST *qjl;
+
+    /* dispatch results from jTan to all other members of the queue */
+    qjl=AH_JobQueue_GetJobList(qJob);
+    if (qjl) {
+      AH_RESULT_LIST *rl;
+
+      /* segment results */
+      rl=AH_Job_GetSegResults(jTan);
+      if (rl) {
+	AH_RESULT *or;
+
+	or=AH_Result_List_First(rl);
+	while(or) {
+	  AH_JOB *qj;
+
+	  qj=AH_Job_List_First(qjl);
+	  while(qj) {
+	    if (qj!=jTan) {
+	      AH_RESULT *nr;
+
+	      nr=AH_Result_dup(or);
+	      AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+	    }
+	    qj=AH_Job_List_Next(qj);
+	  }
+
+	  or=AH_Result_List_Next(or);
+	} /* while or */
+      } /* if rl */
+    } /* if qjl */
+  }
+
 
   return 0;
 }

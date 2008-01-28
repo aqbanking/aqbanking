@@ -209,6 +209,11 @@
                             <string>HBCI 2.20</string>
                         </property>
                     </item>
+                    <item>
+                        <property name="text">
+                            <string>HBCI 3.00</string>
+                        </property>
+                    </item>
                     <property name="name">
                         <cstring>hbciVersionCombo</cstring>
                     </property>
@@ -242,6 +247,9 @@
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Select the HTTP version to be used in PIN/TAN mode</string>
                     </property>
                 </widget>
                 <spacer row="3" column="2" rowspan="1" colspan="2">

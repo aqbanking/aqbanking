@@ -92,6 +92,7 @@ int addUser(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   const char *server;
+  int hbciVersion;
   uint32_t cid;
   const GWEN_ARGS args[]={
   {
@@ -172,6 +173,17 @@ int addUser(AB_BANKING *ab,
     "Select a context on the medium"  /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
+    GWEN_ArgsType_Int, 
+    "hbciversion",  
+    0,             
+    1,             
+    0,             
+    "hbciversion", 
+    "Select the HBCI version",
+    "Select the HBCI protocol version"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
@@ -228,6 +240,7 @@ int addUser(AB_BANKING *ab,
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
   cid=GWEN_DB_GetIntValue(db, "context", 0, 0);
+  hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
 
   if (1) {
     const char *lbankId;
@@ -380,10 +393,14 @@ int addUser(AB_BANKING *ab,
     AH_User_SetTokenContextId(user, cid);
     AH_User_SetCryptMode(user, cm);
 
-    if (cm==AH_CryptMode_Pintan)
-      AH_User_SetHbciVersion(user, 220);
+    if (hbciVersion==0) {
+      if (cm==AH_CryptMode_Pintan)
+	AH_User_SetHbciVersion(user, 220);
+      else
+	AH_User_SetHbciVersion(user, 210);
+    }
     else
-      AH_User_SetHbciVersion(user, 210);
+      AH_User_SetHbciVersion(user, hbciVersion);
 
     /* try to get server address from database if still unknown */
     if (!lserverAddr || *lserverAddr==0) {
