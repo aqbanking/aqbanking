@@ -124,6 +124,9 @@ int AH_Job_GetMinSignatures(const AH_JOB *j);
 int AH_Job_GetSecurityProfile(const AH_JOB *j);
 int AH_Job_GetJobsPerMsg(const AH_JOB *j);
 
+int AH_Job_GetChallengeClass(const AH_JOB *j);
+void AH_Job_SetChallengeClass(AH_JOB *j, int i);
+
 AB_USER *AH_Job_GetUser(const AH_JOB *j);
 
 GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j);

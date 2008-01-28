@@ -44,8 +44,14 @@ GWEN_INHERIT(AH_JOB, AH_JOB_EUTRANSFER);
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_EuTransfer_new(AB_USER *u,
-                              AB_ACCOUNT *account) {
-  return AH_Job_EuTransferBase_new(u, account, 1);
+			      AB_ACCOUNT *account) {
+  AH_JOB *j;
+
+  j=AH_Job_EuTransferBase_new(u, account, 1);
+  if (j!=NULL)
+    AH_Job_SetChallengeClass(j, 20);
+
+  return j;
 }
 
 

@@ -366,6 +366,22 @@ void AH_Job_free(AH_JOB *j) {
 
 
 
+int AH_Job_GetChallengeClass(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->challengeClass;
+}
+
+
+
+void AH_Job_SetChallengeClass(AH_JOB *j, int i) {
+  assert(j);
+  assert(j->usage);
+  j->challengeClass=i;
+}
+
+
+
 void AH_Job_Attach(AH_JOB *j) {
   assert(j);
   assert(j->usage);

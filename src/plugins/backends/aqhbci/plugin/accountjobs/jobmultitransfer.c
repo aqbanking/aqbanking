@@ -45,7 +45,12 @@ GWEN_INHERIT(AH_JOB, AH_JOB_MULTITRANSFER);
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
                                  AB_ACCOUNT *account) {
-  return AH_Job_MultiTransferBase_new(u, account, 1);
+  AH_JOB *j;
+
+  j=AH_Job_MultiTransferBase_new(u, account, 1);
+  if (j)
+    AH_Job_SetChallengeClass(j, 50);
+  return j;
 }
 
 
@@ -53,7 +58,12 @@ AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *u,
                                   AB_ACCOUNT *account) {
-  return AH_Job_MultiTransferBase_new(u, account, 0);
+  AH_JOB *j;
+
+  j=AH_Job_MultiTransferBase_new(u, account, 0);
+  if (j)
+    AH_Job_SetChallengeClass(j, 50);
+  return j;
 }
 
 

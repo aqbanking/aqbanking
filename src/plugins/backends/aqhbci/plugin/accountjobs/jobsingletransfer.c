@@ -51,8 +51,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_SINGLETRANSFER);
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SingleTransfer_new(AB_USER *u,
-                                  AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeTransfer);
+				  AB_ACCOUNT *account) {
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeTransfer);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -60,7 +65,12 @@ AH_JOB *AH_Job_SingleTransfer_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SingleDebitNote_new(AB_USER *u,
                                    AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeDebitNote);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account, AB_Job_TypeDebitNote);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -68,8 +78,13 @@ AH_JOB *AH_Job_SingleDebitNote_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_CreateStandingOrder_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeCreateStandingOrder);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeCreateStandingOrder);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -77,8 +92,13 @@ AH_JOB *AH_Job_CreateStandingOrder_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_ModifyStandingOrder_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeModifyStandingOrder);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeModifyStandingOrder);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -86,8 +106,13 @@ AH_JOB *AH_Job_ModifyStandingOrder_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_DeleteStandingOrder_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeDeleteStandingOrder);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeDeleteStandingOrder);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -95,8 +120,13 @@ AH_JOB *AH_Job_DeleteStandingOrder_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_CreateDatedTransfer_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeCreateDatedTransfer);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeCreateDatedTransfer);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -104,8 +134,13 @@ AH_JOB *AH_Job_CreateDatedTransfer_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_ModifyDatedTransfer_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeModifyDatedTransfer);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeModifyDatedTransfer);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -113,8 +148,13 @@ AH_JOB *AH_Job_ModifyDatedTransfer_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_DeleteDatedTransfer_new(AB_USER *u,
                                        AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeDeleteDatedTransfer);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeDeleteDatedTransfer);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 
@@ -122,8 +162,13 @@ AH_JOB *AH_Job_DeleteDatedTransfer_new(AB_USER *u,
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_InternalTransfer_new(AB_USER *u,
                                     AB_ACCOUNT *account) {
-  return AH_Job_SingleTransferBase_new(u, account,
-                                       AB_Job_TypeInternalTransfer);
+  AH_JOB *j;
+
+  j=AH_Job_SingleTransferBase_new(u, account,
+				  AB_Job_TypeInternalTransfer);
+  if (j)
+    AH_Job_SetChallengeClass(j, 10);
+  return j;
 }
 
 

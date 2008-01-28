@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 3.1.1 (2008-01-28)
+===========================================================================
+
+This release adds the option "--hbciversion" to the AqHBCI tool. This is 
+used to select the HBCI protocol version to be used. It also tries to fix
+a problem with transfers in 2-step pin/tan mode (in this mode sometimes the
+job result was not available. The QT4-port code has been fixed.
+
+
+===========================================================================
                Released AqBanking - 3.1.0 (2008-01-25)
 ===========================================================================
 

@@ -1,9 +1,16 @@
 
+===========================================================================
+MARK: released AqBanking - 3.1.1 (2008-01-28)
+===========================================================================
+
+
 2008/01/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- AqHBCI: in 2-step pin/tan mode we now dispatch the results of a
-  HKTAN to all members of the job queue covered by a TAN. This way we
-  should catch the results for the original job, too (I hate pin/tan)
+- AqHBCI: 
+  - in 2-step pin/tan mode we now dispatch the results of a
+    HKTAN to all members of the job queue covered by a TAN. This way we
+    should catch the results for the original job, too (I hate pin/tan)
+  - some more work on FinTS3
 - aqhbci-tool: add option "hbciversion" to select the HBCI protocol version
   to be used. If omitted a reasonable default is used.
 - AqHBCI-QT3 wizard: added HBCI 3.00 to the list of supported HBCI versions

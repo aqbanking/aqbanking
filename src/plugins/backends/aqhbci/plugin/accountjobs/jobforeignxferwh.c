@@ -49,6 +49,8 @@ AH_JOB *AH_Job_ForeignTransferWH_new(AB_USER *u, AB_ACCOUNT *account) {
   if (!j)
     return 0;
 
+  AH_Job_SetChallengeClass(j, 60);
+
   GWEN_NEW_OBJECT(AH_JOB_FOREIGNXFERWH, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_FOREIGNXFERWH, j, aj,
                        AH_Job_ForeignTransferWH_FreeData);

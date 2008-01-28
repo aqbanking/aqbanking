@@ -28,6 +28,8 @@ struct AH_JOB {
   char *accountId;
   char *description;
 
+  int challengeClass;
+
   char *expectedSigner;
   char *expectedCrypter;
 
