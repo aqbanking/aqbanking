@@ -52,6 +52,7 @@ void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 
 #include <aqbanking/user.h>
 #include <aqbanking/job.h>
+#include <aqbanking/message.h>
 
 #include <gwenhywfar/db.h>
 
@@ -146,6 +147,8 @@ int AH_Job_HasErrors(const AH_JOB *j);
 
 AH_RESULT_LIST *AH_Job_GetSegResults(const AH_JOB *j);
 AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
+
+AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j);
 
 /*@}*/
 

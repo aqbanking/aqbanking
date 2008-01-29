@@ -11,7 +11,8 @@ typefiles=\
   eutransferinfo.xml \
   user.xml \
   cellphone.xml \
-  security.xml
+  security.xml \
+  message.xml
 
 EXTRA_DIST=$(typefiles)
 
@@ -40,7 +41,9 @@ noinst_HEADERS=\
   cellphoneproduct_l.h \
   cellphoneproduct_p.h \
   security_l.h \
-  security_p.h
+  security_p.h \
+  message_l.h \
+  message_p.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -58,7 +61,8 @@ iheader_HEADERS=\
   userfns.h \
   value.h \
   cellphoneproduct.h \
-  security.h
+  security.h \
+  message.h
 
 libtypes_la_SOURCES=\
   accstatus.c \
@@ -75,7 +79,8 @@ libtypes_la_SOURCES=\
   userfns.c \
   value.c \
   cellphoneproduct.c \
-  security.c
+  security.c \
+  message.c
 
 
 types: $(typefiles)

@@ -126,8 +126,14 @@ AQBANKING_API
 void AB_Account_SetBankName(AB_ACCOUNT *acc, const char *s);
 
 AQBANKING_API 
-const char *AB_Account_GetOwnerName(const AB_ACCOUNT *acc);
+const char *AB_Account_GetIBAN(const AB_ACCOUNT *a);
 AQBANKING_API 
+void AB_Account_SetIBAN(AB_ACCOUNT *a, const char *s);
+
+
+AQBANKING_API 
+const char *AB_Account_GetOwnerName(const AB_ACCOUNT *acc);
+AQBANKING_API
 void AB_Account_SetOwnerName(AB_ACCOUNT *acc, const char *s);
 
 AQBANKING_API 

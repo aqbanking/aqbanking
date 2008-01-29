@@ -328,6 +328,7 @@ AH_JOB *AH_Job_new(const char *name,
 
   j->segResults=AH_Result_List_new();
   j->msgResults=AH_Result_List_new();
+  j->messages=AB_Message_List_new();
 
   AH_Job_Log(j, GWEN_LoggerLevel_Info,
              "HBCI-Job created");
@@ -356,12 +357,21 @@ void AH_Job_free(AH_JOB *j) {
       GWEN_DB_Group_free(j->jobResponses);
       AH_Result_List_free(j->msgResults);
       AH_Result_List_free(j->segResults);
+      AB_Message_List_free(j->messages);
 
       GWEN_LIST_FINI(AH_JOB, j);
       GWEN_INHERIT_FINI(AH_JOB, j);
       GWEN_FREE_OBJECT(j);
     }
   }
+}
+
+
+
+AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->messages;
 }
 
 
@@ -1486,7 +1496,8 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
         const char *userName;
         const char *accountName;
         const char *bankCode;
-        const char *custId;
+	const char *custId;
+        const char *iban;
         AB_ACCOUNT *acc;
         GWEN_DB_NODE *gr;
         AH_BPD *bpd;
@@ -1502,6 +1513,7 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
         assert(accountId);
         accountName=GWEN_DB_GetCharValue(dbRd, "account/name", 0, 0);
         userName=GWEN_DB_GetCharValue(dbRd, "name1", 0, 0);
+	iban=GWEN_DB_GetCharValue(dbRd, "iban", 0, 0);
         bankCode=GWEN_DB_GetCharValue(dbRd, "bankCode", 0, 0);
         assert(bankCode);
         custId=GWEN_DB_GetCharValue(dbRd, "customer", 0, 0);
@@ -1554,7 +1566,9 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
         if (accountName)
           AB_Account_SetAccountName(acc, accountName);
         if (userName)
-          AB_Account_SetOwnerName(acc, userName);
+	  AB_Account_SetOwnerName(acc, userName);
+	if (iban)
+          AB_Account_SetIBAN(acc, iban);
 
         /* set bank name */
         bpd=AH_User_GetBpd(j->user);
@@ -1592,25 +1606,38 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
         const char *text;
 
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found a bank message");
-	GWEN_Gui_ProgressLog(
-                               0,
-                               GWEN_LoggerLevel_Notice,
-                               I18N("Bank message received"));
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Notice,
+			     I18N("Bank message received"));
         subject=GWEN_DB_GetCharValue(dbRd, "subject", 0, "(Kein Betreff)");
         text=GWEN_DB_GetCharValue(dbRd, "text", 0, 0);
         if (subject && text) {
-          GWEN_DB_NODE *dbTmp;
+	  AB_MESSAGE *amsg;
+          GWEN_TIME *ti;
 
-          dbTmp=GWEN_DB_Group_new("bank message");
-          GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "subject", subject);
-          GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "text", text);
-          if (AH_HBCI_SaveMessage(h, j->user, dbTmp)) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save this message:");
-            GWEN_DB_Dump(dbTmp, stderr, 2);
-          }
-          GWEN_DB_Group_free(dbTmp);
+          ti=GWEN_CurrentTime();
+	  amsg=AB_Message_new();
+	  AB_Message_SetSubject(amsg, subject);
+	  AB_Message_SetText(amsg, text);
+	  AB_Message_SetDateReceived(amsg, ti);
+	  GWEN_Time_free(ti);
+	  AB_Message_List_Add(amsg, j->messages);
+
+	  if (1) {
+	    GWEN_DB_NODE *dbTmp;
+
+            /* save message, later this will no longer be necessary */
+	    dbTmp=GWEN_DB_Group_new("bank message");
+	    GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS,
+				 "subject", subject);
+	    GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS,
+				 "text", text);
+	    if (AH_HBCI_SaveMessage(h, j->user, dbTmp)) {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save this message:");
+	      GWEN_DB_Dump(dbTmp, stderr, 2);
+	    }
+	    GWEN_DB_Group_free(dbTmp);
+	  }
 
         } /* if subject and text given */
       } /* if bank msg */

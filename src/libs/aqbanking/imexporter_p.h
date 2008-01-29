@@ -51,6 +51,10 @@ struct AB_IMEXPORTER_CONTEXT {
 
   AB_SECURITY_LIST *securityList;
   AB_SECURITY *nextSecurity;
+
+  AB_MESSAGE_LIST *messageList;
+  AB_MESSAGE *nextMessage;
+
 };
 
 

@@ -1,0 +1,50 @@
+<typedefs>
+  <type id="GWEN_TIME" >
+    <functions>
+      <function type="todb" name="GWEN_Time_toDb" />
+      <function type="fromdb" name="GWEN_Time_fromDb" />
+      <function type="dup" name="GWEN_Time_dup" />
+      <function type="free" name="GWEN_Time_free" />
+    </functions>
+  </type>
+
+</typedefs>
+
+
+<types>
+  <type id="AB_MESSAGE" 
+        prefix="AB_Message" 
+        class="Message"
+        access="public"
+        filename="message"
+        list="public"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >gwenhywfar/gwentime.h</header>
+      <header type="sys" >aqbanking/error.h</header>
+    </headers>
+
+    <elem name="subject" type="char" ptr="1" >
+      <descr>
+        Subject of the message.
+      </descr>
+    </elem>
+
+    <elem name="text" type="char" ptr="1" >
+      <descr>
+        The message itself.
+      </descr>
+    </elem>
+
+    <elem name="dateReceived" type="GWEN_TIME" ptr="1" >
+      <descr>
+        Receiption date and time.
+      </descr>
+    </elem>
+
+  </type>
+</types>
+
+
+

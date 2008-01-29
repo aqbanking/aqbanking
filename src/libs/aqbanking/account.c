@@ -478,6 +478,26 @@ void AB_Account_SetBankName(AB_ACCOUNT *a, const char *s){
 
 
 
+const char *AB_Account_GetIBAN(const AB_ACCOUNT *a){
+  assert(a);
+  assert(a->usage);
+  return GWEN_DB_GetCharValue(a->data, "static/iban", 0, 0);
+}
+
+
+
+void AB_Account_SetIBAN(AB_ACCOUNT *a, const char *s){
+  assert(a);
+  assert(a->usage);
+  if (!s)
+    GWEN_DB_DeleteVar(a->data, "static/iban");
+  else
+    GWEN_DB_SetCharValue(a->data, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "static/iban", s);
+}
+
+
+
 const char *AB_Account_GetOwnerName(const AB_ACCOUNT *a){
   assert(a);
   assert(a->usage);

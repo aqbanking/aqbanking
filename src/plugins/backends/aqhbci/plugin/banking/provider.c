@@ -807,6 +807,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
       const char *s;
       const GWEN_STRINGLIST *sl;
       GWEN_STRINGLISTENTRY *se;
+      AB_MESSAGE_LIST *ml;
 
       mj=AH_Provider__FindMyJob(mjl, AB_Job_GetIdForProvider(bj));
       assert(mj);
@@ -856,6 +857,17 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
         se=GWEN_StringListEntry_Next(se);
       }
 
+      /* copy messages from AH_JOB to imexporter context */
+      ml=AH_Job_GetMessages(mj);
+      if (ml) {
+	AB_MESSAGE *msg;
+
+	msg=AB_Message_List_First(ml);
+	while(msg) {
+	  AB_ImExporterContext_AddMessage(ctx, AB_Message_dup(msg));
+	  msg=AB_Message_List_Next(msg);
+	}
+      }
 
       /* exchange results */
       rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults, guiid);

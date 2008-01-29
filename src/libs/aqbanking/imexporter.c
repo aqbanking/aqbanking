@@ -373,6 +373,47 @@ AB_ImExporterContext_FindSecurity(AB_IMEXPORTER_CONTEXT *iec,
 
 
 
+void AB_ImExporterContext_AddMessage(AB_IMEXPORTER_CONTEXT *iec,
+				      AB_MESSAGE *msg) {
+  assert(iec);
+  assert(msg);
+  AB_Message_List_Add(msg, iec->messageList);
+}
+
+
+
+AB_MESSAGE*
+AB_ImExporterContext_GetFirstMessage(AB_IMEXPORTER_CONTEXT *iec) {
+  AB_MESSAGE *msg;
+
+  assert(iec);
+  msg=AB_Message_List_First(iec->messageList);
+  if (msg) {
+    iec->nextMessage=AB_Message_List_Next(msg);
+    return msg;
+  }
+  iec->nextMessage=NULL;
+  return NULL;
+}
+
+
+
+AB_MESSAGE*
+AB_ImExporterContext_GetNextMessage(AB_IMEXPORTER_CONTEXT *iec){
+  AB_MESSAGE *msg;
+
+  assert(iec);
+  msg=iec->nextMessage;
+  if (msg) {
+    iec->nextMessage=AB_Message_List_Next(msg);
+    return msg;
+  }
+  iec->nextMessage=NULL;
+  return NULL;
+}
+
+
+
 
 
 
@@ -1193,6 +1234,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
   GWEN_NEW_OBJECT(AB_IMEXPORTER_CONTEXT, iec);
   iec->accountInfoList=AB_ImExporterAccountInfo_List_new();
   iec->securityList=AB_Security_List_new();
+  iec->messageList=AB_Message_List_new();
 
   return iec;
 }
@@ -1201,6 +1243,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
   if (iec) {
+    AB_Message_List_free(iec->messageList);
     AB_Security_List_free(iec->securityList);
     AB_ImExporterAccountInfo_List_free(iec->accountInfoList);
     GWEN_FREE_OBJECT(iec);
@@ -1213,6 +1256,7 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 			       GWEN_DB_NODE *db){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   AB_SECURITY *sec;
+  AB_MESSAGE *msg;
 
   iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
   if (iea) {
@@ -1256,6 +1300,27 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
     }
   }
 
+  msg=AB_Message_List_First(iec->messageList);
+  if (msg) {
+    GWEN_DB_NODE *dbG;
+
+    dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "messageList");
+    assert(dbG);
+
+    while(msg) {
+      GWEN_DB_NODE *dbT;
+
+      dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP,
+			   "message");
+      assert(dbT);
+
+      if (AB_Message_toDb(msg, dbT))
+	return -1;
+      msg=AB_Message_List_Next(msg);
+    }
+  }
+
   return 0;
 }
 
@@ -1290,6 +1355,20 @@ int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
       assert(sec);
       AB_Security_List_Add(sec, iec->securityList);
       dbT=GWEN_DB_FindNextGroup(dbT, "security");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+		       "messageList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "message");
+    while(dbT) {
+      AB_MESSAGE *msg;
+
+      msg=AB_Message_fromDb(dbT);
+      assert(msg);
+      AB_Message_List_Add(msg, iec->messageList);
+      dbT=GWEN_DB_FindNextGroup(dbT, "message");
     }
   }
 

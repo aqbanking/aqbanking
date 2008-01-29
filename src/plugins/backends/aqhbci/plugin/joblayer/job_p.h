@@ -72,6 +72,8 @@ struct AH_JOB {
 
   uint32_t id;
 
+  AB_MESSAGE_LIST *messages;
+
   GWEN_STRINGLIST *log;
 };
 

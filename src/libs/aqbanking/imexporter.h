@@ -60,6 +60,7 @@ typedef struct AB_IMEXPORTER_ACCOUNTINFO AB_IMEXPORTER_ACCOUNTINFO;
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
 #include <aqbanking/security.h>
+#include <aqbanking/message.h>
 
 
 #ifdef __cplusplus
@@ -312,6 +313,27 @@ AB_SECURITY*
 AB_ImExporterContext_FindSecurity(AB_IMEXPORTER_CONTEXT *iec,
 				  const char *nameSpace,
 				  const char *id);
+
+/**@}*/
+
+
+
+/** @defgroup AB_IMEXPORTER_CONTEXT_MESSAGE Messages
+ *
+ * These functions handle messages received from a bank.
+ */
+/**@{*/
+AQBANKING_API 
+void AB_ImExporterContext_AddMessage(AB_IMEXPORTER_CONTEXT *iec,
+				     AB_MESSAGE *msg);
+
+AQBANKING_API 
+AB_MESSAGE*
+AB_ImExporterContext_GetFirstMessage(AB_IMEXPORTER_CONTEXT *iec);
+
+AQBANKING_API 
+AB_MESSAGE*
+AB_ImExporterContext_GetNextMessage(AB_IMEXPORTER_CONTEXT *iec);
 
 /**@}*/
 
