@@ -12,7 +12,7 @@
          internal="1"
  >
    <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" />
+   <SEG type="Prepare" name="prepare" version="3" />
  </JOBdef>
 
 
@@ -36,7 +36,7 @@
          nosysid="1"
  >
    <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" />
+   <SEG type="Prepare" name="prepare" version="3" />
 
    <VALUES>
      <VALUE path="ident/customerId">9999999999</VALUE>
@@ -121,7 +121,7 @@
   >
    <MESSAGE name="open" nosysid="1" >
      <SEG type="Ident" name="ident" />
-     <SEG type="Prepare" name="prepare" />
+     <SEG type="Prepare" name="prepare" version="3" />
      <SEG type="Sync" name="sync" />
 
      <VALUES>

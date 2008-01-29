@@ -9,6 +9,8 @@
     - AH_User_GetHttpContentType()
     - AH_User_SetHttpContentType()
   - AqBanking now works with the Apobank, too!
+  - got a first dialog exchange in FinTS3 (nothing special, but the basic
+    exchange worked!)
 - AqHBCI-QT3 wizard: added a groupbox for special settings to the user
   configuration wizard page. This allows to set some special user flags which
   are needed for some banks (e.g. NO_BASE64 etc).
