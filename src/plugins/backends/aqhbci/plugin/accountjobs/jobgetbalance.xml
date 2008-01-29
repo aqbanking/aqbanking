@@ -220,8 +220,7 @@
    <GROUP type="btg" name="available" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="spent" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="overdraft" minnum="0" trustlevel="4" version="1" />
-   <ELEM name="date" type="date" 
-         minsize="8" maxsize="8" minnum="0" leftfill="1" />
+   <GROUP type="timespec" version="1" />
    <ELEM name="duedate" type="date" 
          minsize="8" maxsize="8" minnum="0" leftfill="1" />
    <VALUES>

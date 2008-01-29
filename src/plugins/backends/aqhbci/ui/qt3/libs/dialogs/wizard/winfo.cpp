@@ -32,7 +32,8 @@ WizardInfo::WizardInfo(AB_PROVIDER *pro)
 ,_country(280)
 ,_cryptMode(AH_CryptMode_None)
 ,_port(3000)
-,_flags(0) {
+,_flags(0)
+,_userFlags(0) {
 
 
 }

@@ -415,6 +415,13 @@
      <ELEM name="needChallengeAmount" type="alpha" size="1" />
    </GROUPdef>
 
+
+  <GROUPdef id="timespec" delimiter=":" terminator="" version="1">
+    <!-- Sicherheits-/ Gueltigkeitsdatum und -uhrzeit -->
+    <ELEM name="date" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" />
+  </GROUPdef>
+
 </GROUPs>
 
 
