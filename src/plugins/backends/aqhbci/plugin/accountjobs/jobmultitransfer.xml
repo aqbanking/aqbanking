@@ -138,6 +138,40 @@
  </SEGdef>
 
 
+ <!-- FinTS 3.0 -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="MultiTransfer"
+         code="HKSUB"
+         version="6"
+         delimiter="+" 
+         terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="transfers" type="bin" bintype="dtaus" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HISUBS" version="6"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
 
  <!-- 
   --------------------------------------------------------------------
@@ -273,6 +307,41 @@
  </SEGdef>
 
 
+
+ <!-- FinTS 3.0 -->
+ 
+ <!-- Kundennachricht -->
+ <SEGdef id="MultiDebitNote"
+         code="HKSLA"
+         version="6"
+         delimiter="+" 
+         terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="transfers" type="bin" bintype="dtaus" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HISLAS" version="6"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+   <ELEM name="MaxTransfers" type="num" maxsize="4" />
+   <ELEM name="MaxPurposeLines" type="num" maxsize="2" />
+   <GROUP name="TextKey" delimiter=":" >
+     <ELEM name="key" type="num" maxsize="2" minnum="1" maxnum="99" />
+   </GROUP>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
 </SEGs>
 
 
@@ -336,6 +405,22 @@
  </JOBdef>
 
 
+
+ <!-- FinTS 3.0 -->
+
+ <JOBdef id="JobMultiTransfer"
+         code="HKSUB"
+         params="HISUBS"
+         version="6"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+         needTan="1"
+  >
+   <SEG type="MultiTransfer" version="6" />
+ </JOBdef>
+
+
  <!-- 
   --------------------------------------------------------------------
    Geschaeftsvorfall: Sammellastschrift
@@ -394,6 +479,20 @@
          needBPD="1"
   >
    <SEG type="MultiDebitNote" version="5" />
+ </JOBdef>
+
+
+ <!-- FinTS 3.0 -->
+
+ <JOBdef id="JobMultiDebitNote"
+         code="HKSLA"
+         params="HISLAS"
+         version="6"
+ 		     crypt="1"
+         sign="1" 
+         needBPD="1"
+  >
+   <SEG type="MultiDebitNote" version="6" />
  </JOBdef>
 
 

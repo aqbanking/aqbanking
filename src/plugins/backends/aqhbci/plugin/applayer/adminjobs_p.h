@@ -155,9 +155,11 @@ static int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
  *                             AH_Job_GetItanModes
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
+#define AH_JOB_GETITANMODES_MAXMODES 20
 typedef struct AH_JOB_GETITANMODES AH_JOB_GETITANMODES;
 struct AH_JOB_GETITANMODES {
-  uint32_t modes;
+  int modeList[AH_JOB_GETITANMODES_MAXMODES+1];
+  int modeCount;
 };
 static void GWENHYWFAR_CB AH_Job_GetItanModes_FreeData(void *bp, void *p);
 static int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,

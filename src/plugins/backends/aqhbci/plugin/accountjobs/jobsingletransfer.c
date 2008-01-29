@@ -1555,7 +1555,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       int rcode;
 
       rcode=AH_Result_GetCode(r);
-      if (rcode>=10 && rcode <=19)
+      if (rcode <=19)
 	has10=1;
       else if (rcode>=20 && rcode <=29)
 	has20=1;

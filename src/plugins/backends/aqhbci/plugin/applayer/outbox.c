@@ -832,19 +832,16 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
     if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
-      uint32_t tm;
-
-      tm=AH_User_GetTanMethods(cbox->user);
-      if ((tm & ~AH_USER_TANMETHOD_SINGLE_STEP) &&
-          !(jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)){
-        /* only use itan if any other mode than singleStep is available
-         * and the job queue does not request non-ITAN mode
-         */
-        rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
-        if (rv) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-          return rv;
-        }
+      if (AH_User_HasTanMethodOtherThan(cbox->user, 999) &&
+	  !(jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)) {
+	/* only use itan if any other mode than singleStep is available
+	 * and the job queue does not request non-ITAN mode
+	 */
+	rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
+	if (rv) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
       }
     }
   }

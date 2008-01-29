@@ -1313,8 +1313,6 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
                        AH_Job_GetItanModes_FreeData);
   AH_Job_SetProcessFn(j, AH_Job_GetItanModes_Process);
 
-  jd->modes=0;
-
   /* set arguments */
   args=AH_Job_GetArguments(j);
   assert(args);
@@ -1322,6 +1320,9 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
                       "prepare/bpdversion", 0);
   GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "prepare/updversion", 0);
+
+  jd->modeList[0]=-1;
+  jd->modeCount=0;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetItanModes created");
   return j;
@@ -1349,8 +1350,6 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETITANMODES, j);
   assert(jd);
 
-  jd->modes=0;
-
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
@@ -1375,78 +1374,49 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
         DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found message result (%d)", code);
         if (code==3920) {
           int i;
-          uint32_t tm=0;
 
-          for (i=0; ; i++) {
-            int j;
-  
-            j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
-            if (j==0)
-              break;
-            switch(j) {
-            case 999:
-              tm|=AH_USER_TANMETHOD_SINGLE_STEP;
-              break;
-            case 900:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_00;
-              break;
-            case 990:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_0;
-              break;
-            case 991:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_1;
-              break;
-            case 992:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_2;
-              break;
-            case 993:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_3;
-              break;
-            case 994:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_4;
-              break;
-            case 995:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_5;
-              break;
-            case 996:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_6;
-              break;
-            case 997:
-              tm|=AH_USER_TANMETHOD_TWO_STEP_7;
-              break;
-            default:
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown TAN method %d", j);
-              break;
-            }
-          } /* for */
-          if (i==0) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Bad server response: No TAN method reported");
-            return -1;
-          }
-          jd->modes=tm;
-        } /* if correct result found */
+	  jd->modeList[0]=-1;
+	  jd->modeCount=0;
 
-        dbRes=GWEN_DB_FindNextGroup(dbRes, "result");
+	  for (i=0; ; i++) {
+	    int k;
+
+	    k=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
+	    if (k==0)
+	      break;
+	    if (jd->modeCount<AH_JOB_GETITANMODES_MAXMODES) {
+	      jd->modeList[jd->modeCount++]=k;
+              jd->modeList[jd->modeCount]=-1;
+	    }
+	    else
+              break;
+	  } /* for */
+	  if (i==0) {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN,
+		      "Bad server response: No TAN method reported");
+	    return -1;
+	  }
+	} /* if correct result found */
+
+	dbRes=GWEN_DB_FindNextGroup(dbRes, "result");
       } /* while result */
     }
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
-
 
   return 0;
 }
 
 
 
-uint32_t AH_Job_GetItanModes_GetModes(const AH_JOB *j){
+const int *AH_Job_GetItanModes_GetModes(const AH_JOB *j){
   AH_JOB_GETITANMODES *jd;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETITANMODES, j);
   assert(jd);
 
-  return jd->modes;
+  return jd->modeList;
 }
 
 

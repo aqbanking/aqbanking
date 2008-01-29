@@ -81,7 +81,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
 		       I18N("Reading file..."));
 
   rv=GWEN_DBIO_Import(ieh->dbio,
@@ -94,18 +94,18 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 		      2000);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
 			 I18N("Error importing data"));
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_BAD_DATA;
   }
 
   /* transform DB to transactions */
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
 		       "Data imported, transforming to transactions");
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params, guiid);
   if (rv) {
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
 			 "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;

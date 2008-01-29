@@ -1347,62 +1347,19 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
             if (code==3920) {
               int i;
 
-              AH_User_SetTanMethods(u, 0);
+              AH_User_ClearTanMethodList(u);
               for (i=0; ; i++) {
                 int j;
 
                 j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
-                if (j==0)
-                  break;
-                switch(j) {
-                case 999:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
-                  break;
-                case 900:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_00);
-                  break;
-                case 990:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_0);
-                  break;
-                case 991:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_1);
-                  break;
-                case 992:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_2);
-                  break;
-                case 993:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_3);
-                  break;
-                case 994:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_4);
-                  break;
-                case 995:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_5);
-                  break;
-                case 996:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_6);
-                  break;
-                case 997:
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding tan method %d", j);
-                  AH_User_AddTanMethods(u, AH_USER_TANMETHOD_TWO_STEP_7);
-                  break;
-                default:
-                  DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown TAN method %d", j);
-                  break;
-                }
-              } /* for */
-              if (i==0)
-                AH_User_AddTanMethods(u, AH_USER_TANMETHOD_SINGLE_STEP);
-            }
+		if (j==0)
+		  break;
+		AH_User_AddTanMethod(u, j);
+	      } /* for */
+	      if (i==0)
+                /* add single step if empty list */
+		AH_User_AddTanMethod(u, 999);
+	    }
           } /* if result */
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */

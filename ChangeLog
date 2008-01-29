@@ -18,6 +18,12 @@
     exchange worked!)
   - getting account lists now works in FinTS3
   - bank messages received are now added to the imexporter context
+  - accept even more result codes as 0010 for transfers (one of my banks
+    even uses the code 0000 as a success-flag)
+  - changed the way supported tan methods are stored, so now we are able
+    to accept each and every tan method reported by the bank
+  - fixed a bug in AH_Result_dup()
+  - added FinTS3 segment versions for some jobs
 - AqHBCI-QT3 wizard: added a groupbox for special settings to the user
   configuration wizard page. This allows to set some special user flags which
   are needed for some banks (e.g. NO_BASE64 etc).
@@ -28,6 +34,7 @@
 - added type: AB_MESSAGE. This is used to store messages received from
     a bank
 - added message list to imexporter context (for bank messages received)
+- decreased verbosity of SWIFT importer
 
 
 ===========================================================================

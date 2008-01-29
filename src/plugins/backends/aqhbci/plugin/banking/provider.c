@@ -1658,7 +1658,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   AH_OUTBOX *ob;
   int rv;
   AH_PROVIDER *hp;
-  uint32_t tm=0;
+  const int *tm;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -1691,7 +1691,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   }
 
   tm=AH_Job_GetItanModes_GetModes(job);
-  if (!tm) {
+  if (tm[0]==-1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No iTAN modes reported");
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
@@ -1718,12 +1718,6 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
       AH_HBCI_ClearCryptTokenList(h);
     return rv;
   }
-
-  /* set TAN methods */
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieved iTAN modes, storing."));
-  AH_User_SetTanMethods(u, tm);
 
   AH_Outbox_free(ob);
 

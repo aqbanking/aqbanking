@@ -548,7 +548,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
       rcode=AH_Result_GetCode(r);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found job result: %d", rcode);
-      if (rcode>=10 && rcode <=19)
+      if (rcode<=19)
 	has10=1;
       else if (rcode>=20 && rcode <=29)
 	has20=1;

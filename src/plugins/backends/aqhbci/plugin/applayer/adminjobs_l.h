@@ -171,7 +171,7 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j);
  */
 
 AH_JOB *AH_Job_GetItanModes_new(AB_USER *u);
-uint32_t AH_Job_GetItanModes_GetModes(const AH_JOB *j);
+const int *AH_Job_GetItanModes_GetModes(const AH_JOB *j);
 
 
 

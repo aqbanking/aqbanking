@@ -86,6 +86,15 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       }
     }
 
+    if (oldVersion<((3<<24) | (1<<16) | (1<<8) | 2)) {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Updating user from pre 3.1.1.2");
+      rv=AH_HBCI_UpdateUser_3_1_1_2(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
     /* insert more updates here */
 
 
@@ -350,10 +359,8 @@ int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
-  uint32_t tm;
-
-  tm=AH_USER_TANMETHOD_SINGLE_STEP;
-  AH_User_TanMethods_toDb(db, "tanMethods", tm);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "tanMethods", "singleStep");
   return 0;
 }
 
@@ -439,6 +446,73 @@ int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   return 0;
 }
 
+
+
+int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  int i;
+
+  GWEN_DB_DeleteVar(db, "tanMethodList");
+  for (i=0; ; i++) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, "tanMethods", i, 0);
+    if (!s)
+      break;
+
+    if (strcasecmp(s, "singleStep")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 999);
+    else if (strcasecmp(s, "twoStep0")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 990);
+    else if (strcasecmp(s, "twoStep1")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 991);
+    else if (strcasecmp(s, "twoStep2")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 992);
+    else if (strcasecmp(s, "twoStep3")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 993);
+    else if (strcasecmp(s, "twoStep4")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 994);
+    else if (strcasecmp(s, "twoStep5")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 995);
+    else if (strcasecmp(s, "twoStep6")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 996);
+    else if (strcasecmp(s, "twoStep7")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 997);
+    else if (strcasecmp(s, "twoStep00")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 900);
+    else if (strcasecmp(s, "twoStep01")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 901);
+    else if (strcasecmp(s, "twoStep02")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 902);
+    else if (strcasecmp(s, "twoStep03")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 903);
+    else if (strcasecmp(s, "twoStep04")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 904);
+    else if (strcasecmp(s, "twoStep05")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 905);
+    else if (strcasecmp(s, "twoStep06")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 906);
+    else if (strcasecmp(s, "twoStep07")==0)
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "tanMethodList", 907);
+  }
+  return 0;
+}
 
 
 

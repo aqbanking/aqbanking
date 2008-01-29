@@ -736,10 +736,14 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     has10=0;
     has20=0;
     while(r) {
-      if (AH_Result_GetCode(r)==10)
-        has10=1;
-      else if (AH_Result_GetCode(r)==20)
-        has20=1;
+      int rcode;
+
+      rcode=AH_Result_GetCode(r);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found job result: %d", rcode);
+      if (rcode<=19)
+	has10=1;
+      else if (rcode>=20 && rcode <=29)
+	has20=1;
       r=AH_Result_List_Next(r);
     }
 

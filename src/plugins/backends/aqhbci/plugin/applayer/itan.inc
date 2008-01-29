@@ -258,7 +258,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   AB_USER *u;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod=0;
-  uint32_t fid=0;
+  int fn=0;
   int process=0;
 
   u=cbox->user;
@@ -273,80 +273,48 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     return 0;
   }
 
-  /* find DB_NODE for selected TanMethod */
+  /* find DB_NODE of first supported TanMethod */
   dbParams=AH_Job_GetParams(jTan);
   assert(dbParams);
   dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
   while(dbMethod) {
-    int fn;
-
-    fid=0;
     fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
-    switch(fn) {
-    case 999: fid=AH_USER_TANMETHOD_SINGLE_STEP; break;
-    case 900: fid=AH_USER_TANMETHOD_TWO_STEP_00; break;
-    case 990: fid=AH_USER_TANMETHOD_TWO_STEP_0; break;
-    case 901: fid=AH_USER_TANMETHOD_TWO_STEP_01; break;
-    case 991: fid=AH_USER_TANMETHOD_TWO_STEP_1; break;
-    case 902: fid=AH_USER_TANMETHOD_TWO_STEP_02; break;
-    case 992: fid=AH_USER_TANMETHOD_TWO_STEP_2; break;
-    case 903: fid=AH_USER_TANMETHOD_TWO_STEP_03; break;
-    case 993: fid=AH_USER_TANMETHOD_TWO_STEP_3; break;
-    case 904: fid=AH_USER_TANMETHOD_TWO_STEP_04; break;
-    case 994: fid=AH_USER_TANMETHOD_TWO_STEP_4; break;
-    case 905: fid=AH_USER_TANMETHOD_TWO_STEP_05; break;
-    case 995: fid=AH_USER_TANMETHOD_TWO_STEP_5; break;
-    case 996: fid=AH_USER_TANMETHOD_TWO_STEP_6; break;
-    case 997: fid=AH_USER_TANMETHOD_TWO_STEP_7; break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid tan method %d", fn);
-      fid=0;
-    }
-
-    if (fid) {
-      uint32_t um;
-
-      um=AH_User_GetTanMethods(u);
-      if (
-          (um==0) ||
-          (um==AH_USER_TANMETHOD_SINGLE_STEP) ||
-          (um & fid)) {
-	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-        if (process==1 || process==2) {
-	  const char *s;
-	  const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
-	  char lbuf[256];
-
-          s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
-          if (!s || !*s)
-            s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
-          snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
-          lbuf[sizeof(lbuf)-1]=0;
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
-          GWEN_Gui_ProgressLog(
-                                 0,
-                                 GWEN_LoggerLevel_Info,
-                                 lbuf);
-          break;
-        }
-        else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                     "iTan process type \"%d\" not supported", process);
-        }
+    if (AH_User_HasTanMethod(u, fn) ||
+	AH_User_GetTanMethodCount(u)==0) {
+      process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
+      if (process==1 || process==2) {
+	const char *s;
+	const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
+	char lbuf[256];
+  
+	s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
+	if (!s || !*s)
+	  s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
+	snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
+	lbuf[sizeof(lbuf)-1]=0;
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Info,
+			     lbuf);
+	break;
+      }
+      else {
+	DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		   "iTan process type \"%d\" not supported", process);
       }
     }
 
     dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
   }
 
-  if (!dbMethod || !fid) {
+  if (!dbMethod || !fn) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "No matching iTAN mode found");
     AH_Job_free(jTan);
-    return -1;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
-  AH_Dialog_SetItanMethod(dlg, fid);
+  AH_Dialog_SetItanMethod(dlg, fn);
   AH_Dialog_SetItanProcessType(dlg, process);
 
   AH_Job_free(jTan);

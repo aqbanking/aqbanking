@@ -722,6 +722,25 @@
 
  <SEGdef id="syncresponse" 
          code="HISYN" 
+         version="3"
+         pversion="300"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="systemid" type="ascii" minnum="0" hide="1" trustlevel="3"/>
+   <ELEM name="msgnum" type="num" minnum="0" maxsize="4" />
+   <ELEM name="signum" type="num" minnum="0" maxsize="16" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="syncresponse" 
+         code="HISYN" 
          version="4"
          pversion="300"
          delimiter="+" 

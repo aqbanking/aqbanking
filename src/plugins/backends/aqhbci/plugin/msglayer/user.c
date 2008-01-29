@@ -117,124 +117,6 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
-                             uint32_t m) {
-  GWEN_DB_DeleteVar(db, name);
-  if (m & AH_USER_TANMETHOD_SINGLE_STEP)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "singleStep");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_0)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep0");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_1)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep1");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_2)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep2");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_3)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep3");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_4)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep4");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_5)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep5");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_6)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep6");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_7)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep7");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_00)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep00");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_01)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep01");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_02)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep02");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_03)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep03");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_04)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep04");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_05)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep05");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_06)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep06");
-  if (m & AH_USER_TANMETHOD_TWO_STEP_07)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "twoStep07");
-}
-
-
-
-uint32_t AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
-				   const char *name) {
-  uint32_t fl=0;
-  int i;
-
-  for (i=0; ; i++) {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(db, name, i, 0);
-    if (!s)
-      break;
-    if (strcasecmp(s, "singleStep")==0)
-      fl|=AH_USER_TANMETHOD_SINGLE_STEP;
-    else if (strcasecmp(s, "twoStep0")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_0;
-    else if (strcasecmp(s, "twoStep1")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_1;
-    else if (strcasecmp(s, "twoStep2")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_2;
-    else if (strcasecmp(s, "twoStep3")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_3;
-    else if (strcasecmp(s, "twoStep4")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_4;
-    else if (strcasecmp(s, "twoStep5")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_5;
-    else if (strcasecmp(s, "twoStep6")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_6;
-    else if (strcasecmp(s, "twoStep7")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_7;
-    else if (strcasecmp(s, "twoStep00")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
-    else if (strcasecmp(s, "twoStep00")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_00;
-    else if (strcasecmp(s, "twoStep01")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_01;
-    else if (strcasecmp(s, "twoStep02")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_02;
-    else if (strcasecmp(s, "twoStep03")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_03;
-    else if (strcasecmp(s, "twoStep04")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_04;
-    else if (strcasecmp(s, "twoStep05")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_05;
-    else if (strcasecmp(s, "twoStep06")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_06;
-    else if (strcasecmp(s, "twoStep07")==0)
-      fl|=AH_USER_TANMETHOD_TWO_STEP_07;
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown tan method \"%s\"", s);
-    }
-  }
-
-  return fl;
-}
-
-
-
-
-
-
 
 
 void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
@@ -250,9 +132,13 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     AH_USER *ue;
     const char *s;
     int rv;
+    int i;
 
     GWEN_NEW_OBJECT(AH_USER, ue);
     GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
+
+    ue->tanMethodList[0]=-1;
+    ue->tanMethodCount=0;
 
     ue->hbci=AH_Provider_GetHbci(pro);
     /* update db to latest version */
@@ -340,9 +226,6 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     /* read user flags */
     ue->flags=AH_User_Flags_fromDb(db, "userFlags");
 
-    /* setup tan methods */
-    ue->tanMethods=AH_User_TanMethods_fromDb(db, "tanMethods");
-
     /* setup medium stuff */
     s=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
     if (s)
@@ -355,6 +238,17 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
     /* get rdh type */
     ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
+
+    /* read supported TAN methods */
+    for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
+      int method;
+
+      method=GWEN_DB_GetIntValue(db, "tanMethodList", i, -1);
+      if (method==-1)
+	break;
+      ue->tanMethodList[ue->tanMethodCount++]=method;
+      ue->tanMethodList[ue->tanMethodCount]=-1;
+    }
   }
   else {
     AH_USER *ue;
@@ -366,6 +260,8 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     if (em==AB_ProviderExtendMode_Add) {
     }
     else if (em==AB_ProviderExtendMode_Save) {
+      int i;
+
       GWEN_DB_ClearGroup(db, NULL);
 
       /* save crypt mode */
@@ -436,9 +332,6 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       /* save flags */
       AH_User_Flags_toDb(db, "userFlags", ue->flags);
 
-      /* save tan methods */
-      AH_User_TanMethods_toDb(db, "tanMethods", ue->tanMethods);
-
       /* save crypt token settings */
       if (ue->tokenType)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -450,6 +343,16 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 			  "tokenContextId", ue->tokenContextId);
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "rdhType", ue->rdhType);
+
+      /* store list of supported/allowed tan methods */
+      GWEN_DB_DeleteVar(db, "tanMethodList");
+      for (i=0; i<ue->tanMethodCount; i++) {
+	if (ue->tanMethodList[i]==-1)
+          break;
+	GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			    "tanMethodList",
+			    ue->tanMethodList[i]);
+      }
 
     } /* if save */
   }
@@ -1417,6 +1320,100 @@ void AH_User_SetHttpContentType(AB_USER *u, const char *s) {
   else
     ue->httpContentType=NULL;
 }
+
+
+
+const int *AH_User_GetTanMethodList(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tanMethodList;
+}
+
+
+
+int AH_User_HasTanMethod(const AB_USER *u, int method) {
+  AH_USER *ue;
+  int i;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
+    if (ue->tanMethodList[i]==method)
+      return 1;
+  }
+
+  return 0;
+}
+
+
+
+int AH_User_HasTanMethodOtherThan(const AB_USER *u, int method) {
+  AH_USER *ue;
+  int i;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
+    if (ue->tanMethodList[i]!=method && ue->tanMethodList[i]!=-1)
+      return 1;
+  }
+
+  return 0;
+}
+
+
+
+void AH_User_AddTanMethod(AB_USER *u, int method) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (!AH_User_HasTanMethod(u, method)) {
+    if (ue->tanMethodCount<AH_USER_MAX_TANMETHODS) {
+      ue->tanMethodList[ue->tanMethodCount++]=method;
+      ue->tanMethodList[ue->tanMethodCount]=-1;
+    }
+  }
+}
+
+
+
+void AH_User_ClearTanMethodList(AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->tanMethodList[0]=-1;
+  ue->tanMethodCount=0;
+}
+
+
+
+int AH_User_GetTanMethodCount(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tanMethodCount;
+}
+
+
+
+
 
 
 

@@ -187,35 +187,9 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   if (tm==0)
     tm=AH_Dialog_GetItanMethod(hmsg->dialog);
   if (tm) {
-    int m;
-
-    switch(tm) {
-    case AH_USER_TANMETHOD_SINGLE_STEP: m=999; break;
-    case AH_USER_TANMETHOD_TWO_STEP_0:  m=990; break;
-    case AH_USER_TANMETHOD_TWO_STEP_1:  m=991; break;
-    case AH_USER_TANMETHOD_TWO_STEP_2:  m=992; break;
-    case AH_USER_TANMETHOD_TWO_STEP_3:  m=993; break;
-    case AH_USER_TANMETHOD_TWO_STEP_4:  m=994; break;
-    case AH_USER_TANMETHOD_TWO_STEP_5:  m=995; break;
-    case AH_USER_TANMETHOD_TWO_STEP_6:  m=996; break;
-    case AH_USER_TANMETHOD_TWO_STEP_7:  m=997; break;
-    case AH_USER_TANMETHOD_TWO_STEP_00: m=900; break;
-    case AH_USER_TANMETHOD_TWO_STEP_01: m=901; break;
-    case AH_USER_TANMETHOD_TWO_STEP_02: m=902; break;
-    case AH_USER_TANMETHOD_TWO_STEP_03: m=903; break;
-    case AH_USER_TANMETHOD_TWO_STEP_04: m=904; break;
-    case AH_USER_TANMETHOD_TWO_STEP_05: m=905; break;
-    case AH_USER_TANMETHOD_TWO_STEP_06: m=906; break;
-    case AH_USER_TANMETHOD_TWO_STEP_07: m=907; break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid selected tan mode %x", tm);
-      GWEN_DB_Group_free(cfg);
-      return -1;
-    }
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			"function", m);
+			"function", tm);
   }
-
 
   /* retrieve control reference for sigtail (to be used later) */
   p=GWEN_DB_GetCharValue(cfg, "ctrlref", 0, "");

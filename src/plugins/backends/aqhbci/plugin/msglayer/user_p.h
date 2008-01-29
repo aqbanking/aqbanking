@@ -17,6 +17,8 @@
 
 #include <gwenhywfar/buffer.h>
 
+#define AH_USER_MAX_TANMETHODS 16
+
 
 typedef struct AH_USER AH_USER;
 struct AH_USER {
@@ -50,6 +52,9 @@ struct AH_USER {
   char *tokenName;
   uint32_t tokenContextId;
   int rdhType;
+
+  int tanMethodList[AH_USER_MAX_TANMETHODS+1];
+  int tanMethodCount;
 
   char *prompt;
 };

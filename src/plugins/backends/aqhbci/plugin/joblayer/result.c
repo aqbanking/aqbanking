@@ -71,11 +71,11 @@ AH_RESULT *AH_Result_dup(const AH_RESULT *or) {
   AH_RESULT *r;
 
   assert(or);
-  r=AH_Result_new(r->code,
-		  r->text,
-		  r->ref,
-		  r->param,
-		  r->isMsgResult);
+  r=AH_Result_new(or->code,
+		  or->text,
+		  or->ref,
+		  or->param,
+		  or->isMsgResult);
   return r;
 }
 

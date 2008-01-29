@@ -80,6 +80,24 @@ void AH_JobQueue_Attach(AH_JOBQUEUE *jq){
 
 
 
+AH_JOBQUEUE *AH_JobQueue_fromQueue(AH_JOBQUEUE *oldq){
+  AH_JOBQUEUE *jq;
+
+  assert(oldq);
+
+  jq=AH_JobQueue_new(oldq->user);
+  jq->signers=GWEN_StringList_dup(oldq->signers);
+  jq->secProfile=oldq->secProfile;
+  if (oldq->usedTan)
+    jq->usedTan=strdup(oldq->usedTan);
+  if (oldq->usedPin)
+    jq->usedPin=strdup(oldq->usedPin);
+
+  return jq;
+}
+
+
+
 void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s){
   assert(jq);
   assert(jq->usage);

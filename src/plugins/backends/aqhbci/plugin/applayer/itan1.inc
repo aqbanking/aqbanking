@@ -33,8 +33,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_JOB *jTan;
   AB_USER *u;
   GWEN_DB_NODE *dbParams;
-  GWEN_DB_NODE *dbMethod=0;
-  uint32_t fid=0;
   uint32_t um=0;
   GWEN_BUFFER *bHash;
   AH_JOBQUEUE *jq;
@@ -78,59 +76,10 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   /* find DB_NODE for selected TanMethod */
   dbParams=AH_Job_GetParams(jTan);
   assert(dbParams);
-  dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
-  while(dbMethod) {
-    int fn;
-
-    fid=0;
-    fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
-    switch(fn) {
-    case 999: fid=AH_USER_TANMETHOD_SINGLE_STEP; break;
-    case 990: fid=AH_USER_TANMETHOD_TWO_STEP_0; break;
-    case 991: fid=AH_USER_TANMETHOD_TWO_STEP_1; break;
-    case 992: fid=AH_USER_TANMETHOD_TWO_STEP_2; break;
-    case 993: fid=AH_USER_TANMETHOD_TWO_STEP_3; break;
-    case 994: fid=AH_USER_TANMETHOD_TWO_STEP_4; break;
-    case 995: fid=AH_USER_TANMETHOD_TWO_STEP_5; break;
-    case 996: fid=AH_USER_TANMETHOD_TWO_STEP_6; break;
-    case 997: fid=AH_USER_TANMETHOD_TWO_STEP_7; break;
-    case 900: fid=AH_USER_TANMETHOD_TWO_STEP_00; break;
-    case 901: fid=AH_USER_TANMETHOD_TWO_STEP_01; break;
-    case 902: fid=AH_USER_TANMETHOD_TWO_STEP_02; break;
-    case 903: fid=AH_USER_TANMETHOD_TWO_STEP_03; break;
-    case 904: fid=AH_USER_TANMETHOD_TWO_STEP_04; break;
-    case 905: fid=AH_USER_TANMETHOD_TWO_STEP_05; break;
-    case 906: fid=AH_USER_TANMETHOD_TWO_STEP_06; break;
-    case 907: fid=AH_USER_TANMETHOD_TWO_STEP_07; break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid tan method %d", fn);
-      fid=0;
-    }
-
-    if (fid) {
-      if (um) {
-	if (fid==um)
-	  break;
-      }
-      else {
-	if (AH_User_GetTanMethods(u) & fid)
-	  break;
-      }
-    }
-
-    dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
-  }
-
-  if (!dbMethod || !fid) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "TAN mode %x not found", um);
-    AH_Job_free(jTan);
-    return -1;
-  }
 
   /* calculate the job's hash */
   msg1=AH_Msg_new(dlg);
-  AH_Msg_SetItanMethod(msg1, fid);
+  AH_Msg_SetItanMethod(msg1, um);
   AH_Msg_SetItanHashMode(msg1,
 			 GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
   rv=AH_Outbox__CBox_JobToMessage(j, msg1);
@@ -173,10 +122,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(
-			 0,
-			 GWEN_LoggerLevel_Info,
-			 I18N("Encoding queue"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 0);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
@@ -219,7 +167,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_JobQueue_free(jq);
     return rv;
   }
-
 
   /* get challenge */
   rv=AH_Job_Process(jTan, cbox->outbox->context, cbox->guiid);

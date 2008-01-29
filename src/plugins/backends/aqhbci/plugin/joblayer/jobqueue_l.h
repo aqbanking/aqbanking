@@ -54,6 +54,8 @@ AH_JOBQUEUE *AH_JobQueue_new(AB_USER *u);
 void AH_JobQueue_free(AH_JOBQUEUE *jq);
 void AH_JobQueue_Attach(AH_JOBQUEUE *jq);
 
+AH_JOBQUEUE *AH_JobQueue_fromQueue(AH_JOBQUEUE *oldq);
+
 AB_USER *AH_JobQueue_GetUser(const AH_JOBQUEUE *jq);
 
 AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,

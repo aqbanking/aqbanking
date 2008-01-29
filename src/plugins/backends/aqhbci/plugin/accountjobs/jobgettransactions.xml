@@ -243,6 +243,70 @@
    </VALUES>
  </SEGdef>
 
+
+
+ <!-- 
+   ***********************************************************************
+                                FinTS3.0
+   ***********************************************************************
+ -->
+ <!-- Kundennachricht -->
+  <SEGdef id="GetTransactions" 
+          code="HKKAZ"
+          version="6" 
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM name="allAccounts" type="an" maxsize="1" />
+   <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="toDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="allAccounts">N</VALUE>
+   </VALUES>
+  </SEGdef>
+
+
+  <SEGdef id="Transactions" 
+          code="HIKAZ" 
+          version="6"
+          delimiter="+" 
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="booked" 
+         type="bin" bintype="swift" binsubtype="mt940"
+         trustlevel="2" 
+         readbin="0" />
+   <ELEM name="noted" type="bin" bintype="swift" binsubtype="mt942"
+         minnum="0" trustlevel="2" readbin="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIKAZS" version="6"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+   <ELEM name="StoreDays" type="num" maxsize="4" />
+   <ELEM name="MaxEntryAllowed" type="an" maxsize="1" />
+   <ELEM name="AllAccountsAllowed" type="an" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
 </SEGs>
 
 
@@ -322,6 +386,33 @@
     single="1"
  >
    <SEG type="GetTransactions" version="5" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="allAccounts">N</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+ <!-- 
+   ***********************************************************************
+                                FinTS 3.0
+   ***********************************************************************
+ -->
+ <JOBdef 
+ 		id="JobGetTransactions" 
+    code="HKKAZ" params="HIKAZS"
+    version="6" 
+ 		crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="Transactions"
+    attachable="1"
+    single="1"
+ >
+   <SEG type="GetTransactions" version="6" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

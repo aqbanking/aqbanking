@@ -23,8 +23,8 @@
 
 int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
                           AH_DIALOG *dlg,
-                          AH_JOBQUEUE *qJob,
-                          int timeout){
+			  AH_JOBQUEUE *qJob,
+			  int timeout){
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -34,6 +34,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_JOB *jTan2;
   AB_USER *u;
   const char *challenge;
+  AH_JOBQUEUE *qJob2=NULL;
 
   jl=AH_JobQueue_GetJobList(qJob);
   assert(jl);
@@ -95,10 +96,9 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 
   /* encode message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(
-                         0,
-                         GWEN_LoggerLevel_Info,
-                         I18N("Encoding queue"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg1, 0);
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {
@@ -160,6 +160,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   challenge=AH_Job_Tan_GetChallenge(jTan1);
 
   /* prepare second message (the one with the TAN) */
+  qJob2=AH_JobQueue_fromQueue(qJob);
   msg2=AH_Msg_new(dlg);
   AH_Msg_SetNeedTan(msg2, 1);
   AH_Msg_SetItanMethod(msg2, 0);
@@ -207,6 +208,9 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+      AH_Job_free(jTan2);
+      AH_Msg_free(msg2);
+      AH_JobQueue_free(qJob2);
       return GWEN_ERROR_INVALID;
     }
     while(se) {
@@ -215,11 +219,12 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     } /* while */
   }
 
-  rv=AH_JobQueue_AddJob(qJob, jTan2);
+  rv=AH_JobQueue_AddJob(qJob2, jTan2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(jTan2);
     AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
     return rv;
   }
 
@@ -227,20 +232,21 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
     return rv;
   }
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(
-			 0,
-			 GWEN_LoggerLevel_Info,
-			 I18N("Encoding queue"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
     return rv;
   }
 
@@ -261,21 +267,32 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
     return rv;
   }
   AH_Msg_free(msg2);
   AH_Job_SetStatus(jTan2, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_JobQueue_free(qJob2);
     return rv;
   }
   else {
     const AH_JOB_LIST *qjl;
 
+    rv=AH_Job_Process(jTan2, cbox->outbox->context, cbox->guiid);
+    if (rv) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AH_JobQueue_free(qJob2);
+      return rv;
+    }
+
     /* dispatch results from jTan2 to all members of the queue */
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Dispatching results for HKTAN to queue jobs");
     qjl=AH_JobQueue_GetJobList(qJob);
     if (qjl) {
       AH_RESULT_LIST *rl;
@@ -286,6 +303,10 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 	AH_RESULT *or;
 
 	or=AH_Result_List_First(rl);
+	if (or==NULL) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN,
+		   "No segment result in job HKTAN");
+	}
 	while(or) {
 	  AH_JOB *qj;
 
@@ -295,7 +316,15 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 	      AH_RESULT *nr;
 
 	      nr=AH_Result_dup(or);
+	      DBG_ERROR(AQHBCI_LOGDOMAIN,
+			"Adding result %d to job %s",
+			AH_Result_GetCode(or),
+			AH_Job_GetName(qj));
 	      AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+	    }
+	    else {
+	      DBG_INFO(AQHBCI_LOGDOMAIN,
+                       "Not adding result to the same job");
 	    }
 	    qj=AH_Job_List_Next(qj);
 	  }
@@ -303,6 +332,10 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 	  or=AH_Result_List_Next(or);
 	} /* while or */
       } /* if rl */
+      else {
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "No segment results in HKTAN");
+      }
 
       /* msg results */
       rl=AH_Job_GetMsgResults(jTan2);
@@ -325,9 +358,17 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 	  or=AH_Result_List_Next(or);
 	} /* while or */
       } /* if rl */
-
+      else {
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+		 "No message results in HKTAN");
+      }
     } /* if qjl */
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "No job list");
+    }
   }
+  AH_JobQueue_free(qJob2);
 
   return 0;
 }

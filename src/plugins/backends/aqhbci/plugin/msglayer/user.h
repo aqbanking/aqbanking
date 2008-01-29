@@ -63,47 +63,6 @@ extern "C" {
 
 
 
-/** @name HBCI TAN Methods
- *
- */
-/*@{*/
-/** single step PIN/TAN */
-#define AH_USER_TANMETHOD_SINGLE_STEP        0x00000001
-/** two step PIN/TAN, method 0 (990) */
-#define AH_USER_TANMETHOD_TWO_STEP_0         0x00000002
-/** two step PIN/TAN, method 1 (991) */
-#define AH_USER_TANMETHOD_TWO_STEP_1         0x00000004
-/** two step PIN/TAN, method 2 (992) */
-#define AH_USER_TANMETHOD_TWO_STEP_2         0x00000008
-/** two step PIN/TAN, method 3 (993) */
-#define AH_USER_TANMETHOD_TWO_STEP_3         0x00000010
-/** two step PIN/TAN, method 4 (994) */
-#define AH_USER_TANMETHOD_TWO_STEP_4         0x00000020
-/** two step PIN/TAN, method 5 (995) */
-#define AH_USER_TANMETHOD_TWO_STEP_5         0x00000040
-/** two step PIN/TAN, method 6 (996) */
-#define AH_USER_TANMETHOD_TWO_STEP_6         0x00000060
-/** two step PIN/TAN, method 7 (997) */
-#define AH_USER_TANMETHOD_TWO_STEP_7         0x00000080
-/** two step PIN/TAN, method 0 (900)  */
-#define AH_USER_TANMETHOD_TWO_STEP_00        0x00000100
-/** two step PIN/TAN, method 0 (901)  */
-#define AH_USER_TANMETHOD_TWO_STEP_01        0x00000400
-/** two step PIN/TAN, method 0 (902)  */
-#define AH_USER_TANMETHOD_TWO_STEP_02        0x00000800
-/** two step PIN/TAN, method 0 (903)  */
-#define AH_USER_TANMETHOD_TWO_STEP_03        0x00001000
-/** two step PIN/TAN, method 0 (904)  */
-#define AH_USER_TANMETHOD_TWO_STEP_04        0x00002000
-/** two step PIN/TAN, method 0 (905)  */
-#define AH_USER_TANMETHOD_TWO_STEP_05        0x00004000
-/** two step PIN/TAN, method 0 (906)  */
-#define AH_USER_TANMETHOD_TWO_STEP_06        0x00008000
-/** two step PIN/TAN, method 0 (907)  */
-#define AH_USER_TANMETHOD_TWO_STEP_07        0x00010000
-/*@}*/
-
-
 /** @name Functions for Flags and Status
  *
  */
@@ -114,15 +73,6 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                         uint32_t flags);
 AQHBCI_API
 uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
-
-
-AQHBCI_API
-void AH_User_TanMethods_toDb(GWEN_DB_NODE *db, const char *name,
-                             uint32_t m);
-
-AQHBCI_API
-uint32_t AH_User_TanMethods_fromDb(GWEN_DB_NODE *db,
-                                           const char *name);
 
 
 typedef enum {
@@ -168,8 +118,9 @@ void AH_User_SubFlags(AB_USER *u, uint32_t flags);
  *
  */
 /*@{*/
+#if 0
 AQHBCI_API
-uint32_t AH_User_GetTanMethods(const AB_USER *u);
+  uint32_t AH_User_GetTanMethods(const AB_USER *u);
 
 AQHBCI_API
 void AH_User_SetTanMethods(AB_USER *u, uint32_t m);
@@ -179,6 +130,23 @@ void AH_User_AddTanMethods(AB_USER *u, uint32_t m);
 
 AQHBCI_API
 void AH_User_SubTanMethods(AB_USER *u, uint32_t m);
+#endif
+
+
+
+AQHBCI_API
+const int *AH_User_GetTanMethodList(const AB_USER *u);
+AQHBCI_API
+int AH_User_GetTanMethodCount(const AB_USER *u);
+AQHBCI_API
+int AH_User_HasTanMethod(const AB_USER *u, int method);
+AQHBCI_API
+int AH_User_HasTanMethodOtherThan(const AB_USER *u, int method);
+AQHBCI_API
+void AH_User_AddTanMethod(AB_USER *u, int method);
+AQHBCI_API
+void AH_User_ClearTanMethodList(AB_USER *u);
+
 
 AQHBCI_API
 const char *AH_User_GetHttpContentType(const AB_USER *u);

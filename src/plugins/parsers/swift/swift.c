@@ -543,7 +543,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       return rv;
     }
 
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
 			 I18N("Reading SWIFT document"));
 
     /* skip lines at the beginning if requested */
@@ -575,7 +575,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 	break;
     }
 
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
 			 I18N("Parsing SWIFT data"));
     rv=AHB_SWIFT_ReadDocument(fb, tl, 0);
     if (rv<0) {
@@ -601,7 +601,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
     }
 
     /* now all tags have been read, transform them */
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
 			 I18N("Importing SWIFT data"));
     rv=AHB_SWIFT940_Import(tl, data, cfg, flags, guiid, msecs);
     if (rv) {
@@ -612,7 +612,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       AHB_SWIFT_Tag_List_free(tl);
       return rv;
     }
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info,
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
 			 I18N("Swift document successfully imported"));
     docsImported++;
   } /* for */
