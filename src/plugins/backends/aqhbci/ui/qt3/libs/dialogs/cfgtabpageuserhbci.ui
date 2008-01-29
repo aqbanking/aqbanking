@@ -140,7 +140,7 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
+                <widget class="QCheckBox" row="1" column="0">
                     <property name="name">
                         <cstring>bankCounterCheck</cstring>
                     </property>
@@ -162,6 +162,20 @@
                     </property>
                     <property name="text">
                         <string>Force SSLv3</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Force the use of SSLv3</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;Force the use of &lt;b&gt;SSLv3&lt;/b&gt; in &lt;b&gt;Pin/Tan&lt;/b&gt; mode&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>noBase64Check</cstring>
+                    </property>
+                    <property name="text">
+                        <string>No BASE64 Encoding</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Force the use of SSLv3</string>
@@ -262,6 +276,7 @@
     <tabstop>bankSignCheck</tabstop>
     <tabstop>bankCounterCheck</tabstop>
     <tabstop>forceSsl3Check</tabstop>
+    <tabstop>noBase64Check</tabstop>
     <tabstop>getServerKeysButton</tabstop>
     <tabstop>getSysIdButton</tabstop>
     <tabstop>getAccountsButton</tabstop>

@@ -56,6 +56,9 @@ extern "C" {
 
 /** forces use of SSLv3 for Pin/TAN mode */
 #define AH_USER_FLAGS_FORCE_SSL3              0x00000040
+
+/** do not encode message in BASE64 (needed for APO bank) */
+#define AH_USER_FLAGS_NO_BASE64               0x00000080
 /*@}*/
 
 

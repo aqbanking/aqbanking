@@ -78,6 +78,9 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_USER_FLAGS_FORCE_SSL3)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
 			 "forceSsl3");
+  if (flags & AH_USER_FLAGS_NO_BASE64)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+			 "noBase64");
 }
 
 
@@ -102,6 +105,8 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_IGNORE_UPD;
     else if (strcasecmp(s, "forceSsl3")==0)
       fl|=AH_USER_FLAGS_FORCE_SSL3;
+    else if (strcasecmp(s, "noBase64")==0)
+      fl|=AH_USER_FLAGS_NO_BASE64;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }

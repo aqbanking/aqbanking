@@ -159,6 +159,9 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 			       const char *buf, int blen,
 			       int timeout) {
   int rv;
+  uint32_t fl;
+
+  fl=AH_User_GetFlags(dlg->dialogOwner);
 
   /* first connect to server */
   GWEN_Gui_ProgressLog(dlg->guiid,
@@ -166,7 +169,6 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 		       I18N("Connecting to bank..."));
   rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0, dlg->guiid, 30000);
   if (rv==GWEN_ERROR_SSL) {
-    uint32_t fl;
     GWEN_IO_LAYER *ioTls;
 
     /* try again with alternated SSLv3 flag */
@@ -178,7 +180,6 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
     ioTls=GWEN_Io_Layer_FindBaseLayerByType(dlg->ioLayer, GWEN_IO_LAYER_TLS_TYPE);
     assert(ioTls);
 
-    fl=AH_User_GetFlags(dlg->dialogOwner);
     if (fl & AH_USER_FLAGS_FORCE_SSL3) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
       GWEN_Gui_ProgressLog(dlg->guiid,
@@ -223,16 +224,22 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
     tbuf=GWEN_Buffer_new(0, blen, 0, 1);
-    rv=GWEN_Base64_Encode((const unsigned char*)buf, blen, tbuf, 0);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not BASE64 encode data (%d)", rv);
-      GWEN_Buffer_free(tbuf);
-      GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
-                                          GWEN_IO_REQUEST_FLAGS_FORCE,
-					  dlg->guiid, 2000);
-      return rv;
+    if (fl & AH_USER_FLAGS_NO_BASE64) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Not encoding message using BASE64");
+      GWEN_Buffer_AppendBytes(tbuf, buf, blen);
     }
-    GWEN_Buffer_AppendString(tbuf, "\r\n");
+    else {
+      rv=GWEN_Base64_Encode((const unsigned char*)buf, blen, tbuf, 0);
+      if (rv<0) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Could not BASE64 encode data (%d)", rv);
+	GWEN_Buffer_free(tbuf);
+	GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
+					    GWEN_IO_REQUEST_FLAGS_FORCE,
+					    dlg->guiid, 2000);
+	return rv;
+      }
+      GWEN_Buffer_AppendString(tbuf, "\r\n");
+    }
 
     db=GWEN_Io_LayerHttp_GetDbHeaderOut(dlg->ioLayer);
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,

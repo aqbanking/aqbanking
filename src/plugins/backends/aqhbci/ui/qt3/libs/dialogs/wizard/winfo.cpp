@@ -259,6 +259,30 @@ void WizardInfo::subFlags(uint32_t fl) {
 
 
 
+uint32_t WizardInfo::getUserFlags() const {
+  return _userFlags;
+}
+
+
+
+void WizardInfo::setUserFlags(uint32_t fl) {
+  _userFlags=fl;
+}
+
+
+
+void WizardInfo::addUserFlags(uint32_t fl) {
+  _userFlags|=fl;
+}
+
+
+
+void WizardInfo::subUserFlags(uint32_t fl) {
+  _userFlags&=~fl;
+}
+
+
+
 void WizardInfo::releaseData() {
   // handle user
   if (_user) {

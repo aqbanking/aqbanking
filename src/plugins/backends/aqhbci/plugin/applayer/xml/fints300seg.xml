@@ -564,6 +564,31 @@
    </VALUES>
  </SEGdef>
 
+ <SEGdef id="Prepare" 
+         code="HKVVB" 
+         version="3"
+         pversion="300"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="bpdVersion" type="num" maxsize="3" hide="1" topdown="1" />
+   <ELEM name="updVersion" type="num" maxsize="3" hide="1" topdown="1" />
+   <ELEM name="lang" type="num" maxsize="3" />
+   <ELEM name="product" type="an" maxsize="25" />
+   <ELEM name="version" type="an" maxsize="5" version="1" />
+   
+   <VALUES>
+     <VALUE path="head/code" overwrite="1" >%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="bpdversion">?bpdversion</VALUE>
+     <VALUE path="updversion">?updversion</VALUE>
+     <VALUE path="lang">1</VALUE>
+     <VALUE path="product">?product</VALUE>
+     <VALUE path="version">?productversion</VALUE>
+   </VALUES>
+ </SEGdef>
+
 
 
  <SEGdef id="DialogEnd" 

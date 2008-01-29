@@ -49,6 +49,8 @@ private:
 
   uint32_t _flags;
 
+  uint32_t _userFlags;
+
 public:
   WizardInfo(AB_PROVIDER *pro);
   ~WizardInfo();
@@ -104,6 +106,11 @@ public:
   void setFlags(uint32_t fl);
   void addFlags(uint32_t fl);
   void subFlags(uint32_t fl);
+
+  uint32_t getUserFlags() const;
+  void setUserFlags(uint32_t fl);
+  void addUserFlags(uint32_t fl);
+  void subUserFlags(uint32_t fl);
 
   void releaseData();
 

@@ -27,6 +27,8 @@
 #include <qcombobox.h>
 #include <qtextbrowser.h>
 #include <qlabel.h>
+#include <qgroupbox.h>
+#include <qcheckbox.h>
 
 #include <qlineedit.h>
 #include <qmessagebox.h>
@@ -56,6 +58,10 @@ EditCtUser::EditCtUser(QBanking *qb,
 ,_bankInfo(0)
 ,_dataIsOk(false)
 ,_idCount(0) {
+
+  showSpecialCheck->setChecked(FALSE);
+  specialGroup->hide();
+
   connect(bankCodeButton, SIGNAL(clicked()),
           this, SLOT(slotBankCodeClicked()));
   connect(bankCodeEdit, SIGNAL(lostFocus()),
@@ -64,7 +70,8 @@ EditCtUser::EditCtUser(QBanking *qb,
           this, SLOT(slotBankCodeChanged(const QString&)));
   connect(userCombo, SIGNAL(activated(int)),
           this, SLOT(slotContextActivated(int)));
-
+  connect(showSpecialCheck, SIGNAL(toggled(bool)),
+          this, SLOT(slotSpecialToggled(bool)));
 }
 
 
@@ -79,6 +86,7 @@ void EditCtUser::init() {
   uint32_t idx;
   int i;
   bool fromContextCalled=false;
+  uint32_t userFlags;
 
   userCombo->clear();
 
@@ -180,6 +188,12 @@ void EditCtUser::init() {
     hbciVersionCombo->setCurrentItem(i);
   }
 
+  userFlags=_wInfo->getUserFlags();
+  bankSignCheck->setChecked(!(userFlags & AH_USER_FLAGS_BANK_DOESNT_SIGN));
+  bankCounterCheck->setChecked(userFlags & AH_USER_FLAGS_BANK_USES_SIGNSEQ);
+  forceSsl3Check->setChecked(userFlags & AH_USER_FLAGS_FORCE_SSL3);
+  noBase64Check->setChecked(userFlags & AH_USER_FLAGS_NO_BASE64);
+
   /* validate server address in edit field */
   _getServerAddr();
 }
@@ -229,6 +243,7 @@ bool EditCtUser::apply(){
   std::string httpVersion;
   std::string peerId;
   int hbciVersion;
+  uint32_t userFlags;
 
   /* do user data page */
 
@@ -419,6 +434,21 @@ bool EditCtUser::apply(){
   }
   GWEN_InetAddr_free(addr);
 
+  /* handle user flags */
+  userFlags=0;
+
+  if (!(bankSignCheck->isChecked()))
+    userFlags|=AH_USER_FLAGS_BANK_DOESNT_SIGN;
+
+  if (bankCounterCheck->isChecked())
+    userFlags|=AH_USER_FLAGS_BANK_USES_SIGNSEQ;
+
+  if (forceSsl3Check->isChecked())
+    userFlags|=AH_USER_FLAGS_FORCE_SSL3;
+
+  if (noBase64Check->isChecked())
+    userFlags|=AH_USER_FLAGS_NO_BASE64;
+  _wInfo->setUserFlags(userFlags);
 
   /* select or create user */
   u=AB_Banking_FindUser(_app->getCInterface(),
@@ -448,6 +478,8 @@ bool EditCtUser::apply(){
 
     AH_User_SetCryptMode(u, cm);
     AH_User_SetHbciVersion(u, hbciVersion);
+
+    AH_User_AddFlags(u, userFlags);
 
     if (!(httpVersion.empty())) {
       int vmajor, vminor;
@@ -676,6 +708,14 @@ void EditCtUser::slotContextActivated(int i) {
   _fromContext(i);
 }
 
+
+
+void EditCtUser::slotSpecialToggled(bool on) {
+  if (on)
+    specialGroup->show();
+  else
+    specialGroup->hide();
+}
 
 
 

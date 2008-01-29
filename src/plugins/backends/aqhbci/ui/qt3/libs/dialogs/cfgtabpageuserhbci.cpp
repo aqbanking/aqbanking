@@ -176,6 +176,8 @@ bool CfgTabPageUserHbci::toGui() {
                                           AH_USER_FLAGS_BANK_USES_SIGNSEQ);
   _realPage->forceSsl3Check->setChecked(AH_User_GetFlags(u) &
 					AH_USER_FLAGS_FORCE_SSL3);
+  _realPage->noBase64Check->setChecked(AH_User_GetFlags(u) &
+				       AH_USER_FLAGS_NO_BASE64);
 
   return true;
 }
@@ -249,6 +251,11 @@ bool CfgTabPageUserHbci::fromGui() {
     AH_User_AddFlags(u, AH_USER_FLAGS_FORCE_SSL3);
   else
     AH_User_SubFlags(u, AH_USER_FLAGS_FORCE_SSL3);
+
+  if (_realPage->noBase64Check->isChecked())
+    AH_User_AddFlags(u, AH_USER_FLAGS_NO_BASE64);
+  else
+    AH_User_SubFlags(u, AH_USER_FLAGS_NO_BASE64);
 
   return true;
 }

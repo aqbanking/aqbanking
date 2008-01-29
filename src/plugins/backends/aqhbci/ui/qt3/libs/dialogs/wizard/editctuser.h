@@ -55,6 +55,7 @@ public slots:
   void slotBankCodeChanged(const QString&);
   void slotBankCodeClicked();
   void slotContextActivated(int i);
+  void slotSpecialToggled(bool on);
 
 };
 

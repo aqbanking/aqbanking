@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>562</width>
-            <height>412</height>
+            <height>551</height>
         </rect>
     </property>
     <property name="caption">
@@ -91,7 +91,7 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLineEdit" row="2" column="1" rowspan="1" colspan="3">
+                <widget class="QLineEdit" row="2" column="1">
                     <property name="name">
                         <cstring>serverEdit</cstring>
                     </property>
@@ -107,7 +107,7 @@
                         <string>Server</string>
                     </property>
                 </widget>
-                <widget class="QLabel" row="1" column="1" rowspan="1" colspan="3">
+                <widget class="QLabel" row="1" column="1">
                     <property name="name">
                         <cstring>bankNameLabel</cstring>
                     </property>
@@ -145,30 +145,6 @@
                         <string>Bank Code</string>
                     </property>
                 </widget>
-                <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>bankCodeEdit</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>2</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Enter the bank code (BLZ) of your bank</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton" row="0" column="3">
-                    <property name="name">
-                        <cstring>bankCodeButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>...</string>
-                    </property>
-                </widget>
                 <widget class="QLabel" row="1" column="0">
                     <property name="name">
                         <cstring>TextLabel1_4_2_3_2_2_2_2_2_2</cstring>
@@ -177,115 +153,40 @@
                         <string>Bank Name</string>
                     </property>
                 </widget>
-                <widget class="QLabel" row="3" column="0">
+                <widget class="QLayoutWidget" row="0" column="1">
                     <property name="name">
-                        <cstring>textLabel1_2</cstring>
+                        <cstring>layout11</cstring>
                     </property>
-                    <property name="text">
-                        <string>HBCI Version</string>
-                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>bankCodeEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>2</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Enter the bank code (BLZ) of your bank</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>bankCodeButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
                 </widget>
-                <widget class="QLabel" row="4" column="0">
-                    <property name="name">
-                        <cstring>textLabel1_2_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>HTTP Version</string>
-                    </property>
-                </widget>
-                <widget class="QComboBox" row="3" column="1">
-                    <item>
-                        <property name="text">
-                            <string>HBCI 2.01</string>
-                        </property>
-                    </item>
-                    <item>
-                        <property name="text">
-                            <string>HBCI 2.10</string>
-                        </property>
-                    </item>
-                    <item>
-                        <property name="text">
-                            <string>HBCI 2.20</string>
-                        </property>
-                    </item>
-                    <item>
-                        <property name="text">
-                            <string>HBCI 3.00</string>
-                        </property>
-                    </item>
-                    <property name="name">
-                        <cstring>hbciVersionCombo</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                </widget>
-                <widget class="QComboBox" row="4" column="1">
-                    <item>
-                        <property name="text">
-                            <string>1.0</string>
-                        </property>
-                    </item>
-                    <item>
-                        <property name="text">
-                            <string>1.1</string>
-                        </property>
-                    </item>
-                    <property name="name">
-                        <cstring>httpVersionCombo</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Select the HTTP version to be used in PIN/TAN mode</string>
-                    </property>
-                </widget>
-                <spacer row="3" column="2" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>spacer8</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>81</width>
-                            <height>21</height>
-                        </size>
-                    </property>
-                </spacer>
-                <spacer row="4" column="2" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>spacer8_2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>220</width>
-                            <height>21</height>
-                        </size>
-                    </property>
-                </spacer>
             </grid>
         </widget>
         <widget class="QGroupBox">
@@ -363,23 +264,254 @@
                         <string>Name</string>
                     </property>
                 </widget>
-                <widget class="QLineEdit" row="3" column="1">
-                    <property name="name">
-                        <cstring>peerIdEdit</cstring>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Key id used by the bank. If left blank then the user id is used</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="3" column="0">
-                    <property name="name">
-                        <cstring>TextLabelDescription</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Bank Key Id</string>
-                    </property>
-                </widget>
             </grid>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>showSpecialCheck</cstring>
+            </property>
+            <property name="text">
+                <string>Show Special Settings</string>
+            </property>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>specialGroup</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="title">
+                <string>Special Settings</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout9</cstring>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit" row="2" column="2">
+                            <property name="name">
+                                <cstring>peerIdEdit</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Key id used by the bank. If left blank then the user id is used</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget" row="1" column="1" rowspan="1" colspan="2">
+                            <property name="name">
+                                <cstring>layout8</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QComboBox">
+                                    <item>
+                                        <property name="text">
+                                            <string>HBCI 2.01</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>HBCI 2.10</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>HBCI 2.20</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>HBCI 3.00</string>
+                                        </property>
+                                    </item>
+                                    <property name="name">
+                                        <cstring>hbciVersionCombo</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer8</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>220</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </hbox>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>HTTP Version</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>HBCI Version</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget" row="0" column="1" rowspan="1" colspan="2">
+                            <property name="name">
+                                <cstring>layout7</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QComboBox">
+                                    <item>
+                                        <property name="text">
+                                            <string>1.0</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>1.1</string>
+                                        </property>
+                                    </item>
+                                    <property name="name">
+                                        <cstring>httpVersionCombo</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Select the HTTP version to be used in PIN/TAN mode</string>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer8_2</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>220</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </hbox>
+                        </widget>
+                        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+                            <property name="name">
+                                <cstring>TextLabelDescription</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Bank Key Id</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+                <widget class="Line">
+                    <property name="name">
+                        <cstring>line1</cstring>
+                    </property>
+                    <property name="frameShape">
+                        <enum>HLine</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout10</cstring>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox" row="0" column="1">
+                            <property name="name">
+                                <cstring>forceSsl3Check</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Force SSLv3</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Force the use of SSLv3</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;Force the use of &lt;b&gt;SSLv3&lt;/b&gt; in &lt;b&gt;Pin/Tan&lt;/b&gt; mode&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox" row="0" column="0">
+                            <property name="name">
+                                <cstring>bankSignCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Bank signs its messages</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox" row="1" column="1">
+                            <property name="name">
+                                <cstring>noBase64Check</cstring>
+                            </property>
+                            <property name="text">
+                                <string>No BASE64 Encoding</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Force the use of SSLv3</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;Force the use of &lt;b&gt;SSLv3&lt;/b&gt; in &lt;b&gt;Pin/Tan&lt;/b&gt; mode&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox" row="1" column="0">
+                            <property name="name">
+                                <cstring>bankCounterCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Bank uses signature counter</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+            </vbox>
         </widget>
     </vbox>
 </widget>
@@ -388,12 +520,17 @@
     <tabstop>bankCodeEdit</tabstop>
     <tabstop>bankCodeButton</tabstop>
     <tabstop>serverEdit</tabstop>
-    <tabstop>hbciVersionCombo</tabstop>
-    <tabstop>httpVersionCombo</tabstop>
     <tabstop>nameEdit</tabstop>
     <tabstop>userIdEdit</tabstop>
     <tabstop>customerIdEdit</tabstop>
+    <tabstop>showSpecialCheck</tabstop>
+    <tabstop>httpVersionCombo</tabstop>
+    <tabstop>hbciVersionCombo</tabstop>
     <tabstop>peerIdEdit</tabstop>
+    <tabstop>bankSignCheck</tabstop>
+    <tabstop>bankCounterCheck</tabstop>
+    <tabstop>forceSsl3Check</tabstop>
+    <tabstop>noBase64Check</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
