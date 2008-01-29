@@ -35,6 +35,8 @@ struct AH_USER {
   char *peerId;
   char *systemId;
 
+  char *httpContentType;
+
   int updVersion;
 
   int httpVMajor;

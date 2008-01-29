@@ -180,6 +180,11 @@ void AH_User_AddTanMethods(AB_USER *u, uint32_t m);
 AQHBCI_API
 void AH_User_SubTanMethods(AB_USER *u, uint32_t m);
 
+AQHBCI_API
+const char *AH_User_GetHttpContentType(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetHttpContentType(AB_USER *u, const char *s);
+
 /*@}*/
 
 

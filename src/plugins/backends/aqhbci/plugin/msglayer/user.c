@@ -333,6 +333,10 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       ue->httpVMinor=0;
     }
 
+    s=GWEN_DB_GetCharValue(db, "httpContentType", 0, 0);
+    if (s)
+      ue->httpContentType=strdup(s);
+
     /* read user flags */
     ue->flags=AH_User_Flags_fromDb(db, "userFlags");
 
@@ -376,6 +380,12 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "hbciVersion", ue->hbciVersion);
+
+      if (ue->httpContentType)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "httpContentType", ue->httpContentType);
+      else
+	GWEN_DB_DeleteVar(db, "httpContentType");
 
       /* save URL */
       if (ue->serverUrl) {
@@ -1379,6 +1389,38 @@ int AH_User_SetPinStatus(AB_USER *u,
   GWEN_Buffer_free(nbuf);
   return rv;
 }
+
+
+
+const char *AH_User_GetHttpContentType(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->httpContentType;
+}
+
+
+
+void AH_User_SetHttpContentType(AB_USER *u, const char *s) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->httpContentType);
+  if (s)
+    ue->httpContentType=strdup(s);
+  else
+    ue->httpContentType=NULL;
+}
+
+
+
+
 
 
 

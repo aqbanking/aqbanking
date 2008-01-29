@@ -1,8 +1,14 @@
 
 2008/01/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- AqHBCI: added user flags NO_BASE64 to disable BASE64 encoding of outbound
-  messages. This might solve the problem with some banks (namely the APO bank)
+- AqHBCI: 
+  - added user flags NO_BASE64 to disable BASE64 encoding of outbound
+    messages. This might solve the problem with some banks (namely the APO 
+    bank)
+  - added functions: 
+    - AH_User_GetHttpContentType()
+    - AH_User_SetHttpContentType()
+  - AqBanking now works with the Apobank, too!
 - AqHBCI-QT3 wizard: added a groupbox for special settings to the user
   configuration wizard page. This allows to set some special user flags which
   are needed for some banks (e.g. NO_BASE64 etc).

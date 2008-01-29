@@ -173,7 +173,7 @@ int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
   } /* for */
   *buffer=0;
 
-  /*GWEN_Text_DumpString(obuffer, buffer-obuffer+1, stderr, 2); */
+  /*GWEN_Text_DumpString(obuffer, buffer-obuffer+1, stderr, 2);*/
 
   return 0;
 }

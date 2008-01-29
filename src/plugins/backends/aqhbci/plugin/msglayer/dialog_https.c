@@ -129,9 +129,12 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
 		       "Pragma", "no-cache");
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "Cache-control", "no cache");
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "Content-type",
-		       "application/x-www-form-urlencoded");
+  s=AH_User_GetHttpContentType(dlg->dialogOwner);
+  if (s)
+    /* previous value was: "application/x-www-form-urlencoded" */
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "Content-type", s);
+
   s=AH_User_GetHttpUserAgent(dlg->dialogOwner);
   if (s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
