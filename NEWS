@@ -1,5 +1,16 @@
 
 ===========================================================================
+               Released AqBanking - 3.2.0 (2008-01-29)
+===========================================================================
+
+This release now finally works with APO Bank (their server is quite special).
+The user settings page of the AqHBCI setup wizard now offers some advanced
+settings. Informational bank messages are now stored in the imexporter 
+context. This release has preliminary support for FinTS 3.0 (the successor
+of HBCI). Some bugs have been fixed.
+
+
+===========================================================================
                Released AqBanking - 3.1.1 (2008-01-28)
 ===========================================================================
 

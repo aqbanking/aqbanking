@@ -228,11 +228,6 @@ http://gwenhywfar.sf.net/, is absolutely required
 - "GMP", the GNU MP Bignum Library available from 
   http://gmplib.org/index.html is required for calculations
 
-- "LibOFX" > 0.8.0 from http://sf.net/projects/libofx is required
-for the ofx parts, otherwise the ofx parts will not be compiled.
-For the OFX Direct Connect backend even a newer version of LibOFX is needed
-(at least >=0.8.1)
-
 - "KtoBlzCheck" >= 1.0 from http://sf.net/projects/ktoblzcheck is
 required for the German bank account number checking, otherwise
 the account number checking will not be compiled.

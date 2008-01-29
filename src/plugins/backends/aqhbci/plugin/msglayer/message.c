@@ -1469,6 +1469,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
               "No log file, logging disabled for this dialog");
     return;
   }
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Logging to file [%s]", logFile);
 
   db=GWEN_DB_Group_new("header");
   u=AH_Dialog_GetDialogOwner(msg->dialog);
@@ -1503,7 +1504,8 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "size",
                       GWEN_Buffer_GetUsedBytes(buf));
-  if (GWEN_Directory_GetPath(logFile, GWEN_PATH_FLAGS_VARIABLE)) {
+  if (GWEN_Directory_GetPath(logFile,
+			     GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Path \"%s\" is not available, cannot log",
               logFile);

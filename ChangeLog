@@ -3,6 +3,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released AqBanking - 3.2.0 (2008-01-29)
+===========================================================================
+
 
 2008/01/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -31,10 +35,15 @@
 - added functions:
   - AB_Account_GetIBAN()
   - AB_Account_SetIBAN()
+  - AB_Account_GetBIC()
+  - AB_Account_SetBIC()
+  - AB_ImExporterAccountInfo_GetBic()
+  - AB_ImExporterAccountInfo_SetBic()
 - added type: AB_MESSAGE. This is used to store messages received from
     a bank
 - added message list to imexporter context (for bank messages received)
 - decreased verbosity of SWIFT importer
+- README: Removed Libofx from the list of required packages
 
 
 ===========================================================================

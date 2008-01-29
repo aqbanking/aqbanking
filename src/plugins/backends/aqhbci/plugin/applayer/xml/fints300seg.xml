@@ -411,7 +411,6 @@
   <SEGdef id="UserData" 
           code="HIUPA" 
           version="3"
-          pversion="300"
           delimiter="+" 
           terminator="'"
   >
@@ -432,7 +431,6 @@
   <SEGdef id="UserData" 
           code="HIUPA" 
           version="4"
-          pversion="300"
           delimiter="+" 
           terminator="'"
   >
@@ -996,7 +994,7 @@
          delimiter="+" terminator="'" isbpdjob="1" >
    <GROUP type="SegHead" name="head" />
    <ELEM name="jobspermsg" type="num" maxsize="3" />
-   <ELEM name="minsigs" type="num" maxsize="3" />
+   <ELEM name="minsigs" type="num" maxsize="1" />
 
    <ELEM name="securityClass" type="num" size="1" />
    
@@ -1004,10 +1002,9 @@
      <ELEM name="singleStepAllowed" type="alpha" size="1" />
      <ELEM name="multiJobAllowed" type="alpha" size="1" />
      <ELEM name="hashMethod" type="num" size="1" />
-     <ELEM name="secProfile" type="num" size="1" />
     
      <GROUP type="tanMethod" version="2" name="tanMethod" 
-            minnum="1" maxnum="99"
+            minnum="1" maxnum="98"
             delimiter=":" terminator="" />
    </GROUP>
 

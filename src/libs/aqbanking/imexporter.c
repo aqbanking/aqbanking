@@ -447,6 +447,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     free(iea->accountNumber);
     free(iea->accountName);
     free(iea->iban);
+    free(iea->bic);
     free(iea->owner);
     free(iea->currency);
     free(iea->description);
@@ -478,6 +479,7 @@ AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
   COPY_CHAR(accountNumber);
   COPY_CHAR(accountName);
   COPY_CHAR(iban);
+  COPY_CHAR(bic);
   COPY_CHAR(owner);
   COPY_CHAR(currency);
   COPY_CHAR(description);
@@ -512,6 +514,7 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
   STORE_CHAR(accountNumber);
   STORE_CHAR(accountName);
   STORE_CHAR(iban);
+  STORE_CHAR(bic);
   STORE_CHAR(owner);
   STORE_CHAR(currency);
   STORE_CHAR(description);
@@ -686,6 +689,7 @@ AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
   RESTORE_CHAR(bankName);
   RESTORE_CHAR(accountNumber);
   RESTORE_CHAR(iban);
+  RESTORE_CHAR(bic);
   RESTORE_CHAR(owner);
   RESTORE_CHAR(currency);
   RESTORE_CHAR(description);
@@ -1087,6 +1091,24 @@ void AB_ImExporterAccountInfo_SetIban(AB_IMEXPORTER_ACCOUNTINFO *iea,
   free(iea->iban);
   if (s) iea->iban=strdup(s);
   else iea->iban=0;
+}
+
+
+
+const char*
+AB_ImExporterAccountInfo_GetBic(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return iea->bic;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetBic(AB_IMEXPORTER_ACCOUNTINFO *iea,
+				     const char *s) {
+  assert(iea);
+  free(iea->bic);
+  if (s) iea->bic=strdup(s);
+  else iea->bic=0;
 }
 
 

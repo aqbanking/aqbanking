@@ -402,30 +402,9 @@
 
 
 
-  <SEGdef id="UserData" 
-          code="HIUPA" 
-          version="2"
-          pversion="220"
-          delimiter="+" 
-          terminator="'"
-  >
-   <GROUP type="SegHead" name="head" />
-   <ELEM name="userid" type="ascii" maxsize="65" trustlevel="3" />
-   <ELEM name="version" type="num" maxsize="3" />
-   <ELEM name="ignoreUPDJobs" type="num" maxsize="1" />
-
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
-  </SEGdef>
-
-
-
   <SEGdef id="AccountData" 
           code="HIUPD" 
           version="4"
-          pversion="220"
           delimiter="+"
           terminator="'"
   >

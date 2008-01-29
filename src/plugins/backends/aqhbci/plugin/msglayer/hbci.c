@@ -364,25 +364,16 @@ int AH_HBCI_AddDefinitions(AH_HBCI *hbci, GWEN_XMLNODE *node) {
 
 
 void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf) {
-  char buffer[64];
-  time_t currentTime;
-  struct tm *currentTimeTm;
-  int rv;
+  char buffer[16];
+  GWEN_TIME *ti;
 
-  currentTime=time(0);
-  currentTimeTm=localtime(&currentTime);
-  assert(currentTimeTm);
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", nbuf);
+  GWEN_Time_free(ti);
 
-  rv=snprintf(buffer,
-              sizeof(buffer)-1, "%04d%02d%02d-%02d%02d%02d-%d",
-              currentTimeTm->tm_year+1900,
-              currentTimeTm->tm_mon+1,
-              currentTimeTm->tm_mday,
-              currentTimeTm->tm_hour,
-              currentTimeTm->tm_min,
-              currentTimeTm->tm_sec,
-              ++(hbci->counter));
-  assert(rv>0 && rv<sizeof(buffer));
+  snprintf(buffer, sizeof(buffer), "%03d", ++(hbci->counter));
+  GWEN_Buffer_AppendString(nbuf, "-");
   GWEN_Buffer_AppendString(nbuf, buffer);
 }
 

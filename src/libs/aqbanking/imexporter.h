@@ -428,6 +428,17 @@ AQBANKING_API
 void AB_ImExporterAccountInfo_SetIban(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                       const char *s);
 
+
+/**
+ * BIC.
+ */
+AQBANKING_API 
+const char*
+AB_ImExporterAccountInfo_GetBic(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+AQBANKING_API 
+void AB_ImExporterAccountInfo_SetBic(AB_IMEXPORTER_ACCOUNTINFO *iea,
+				     const char *s);
+
 /**
  * Account currency
  */

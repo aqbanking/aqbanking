@@ -66,6 +66,7 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   char *accountNumber;
   char *accountName;
   char *iban;
+  char *bic;
   char *owner;
   char *currency;
   char *description;

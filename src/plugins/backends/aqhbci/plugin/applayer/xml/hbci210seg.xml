@@ -360,7 +360,6 @@
   <SEGdef id="UserData" 
           code="HIUPA" 
           version="2"
-          pversion="210"
           delimiter="+" 
           terminator="'"
   >
@@ -380,7 +379,6 @@
   <SEGdef id="AccountData" 
           code="HIUPD" 
           version="3"
-          pversion="210"
           delimiter="+"
           terminator="'"
   >
