@@ -330,9 +330,9 @@ means it does *not* obey the --prefix argument.
 6.4. Notes on porting the qt parts to Qt-4: 
 ------------------------------------------
 
-The Qt4 library is now available as GPL on Linux *and* Windows,
-which means this online banking programm is available on windows
-as well, which is a GOOD THING!
+The Qt4 library is available as GPL on Linux *and* Windows, which
+means this online banking programm is available on windows as well,
+which is a GOOD THING!
 
 But qt4 is not at all source compatible to qt3, see
 http://doc.trolltech.com/4.0/porting4.html. Trolltech provides a
@@ -373,9 +373,13 @@ or on Windows/mingw32
 7. Windows Registry Keys Used
 =============================
 
-AqBanking uses registry keys below HKEY_CURRENT_USER.  Currently
-the following keys are used. These keys are created by the setup.exe which
+AqBanking uses registry keys below HKEY_CURRENT_USER.  Currently the
+following keys are used. These keys are created by the setup.exe which
 contains the binary package for WIN32 platforms.
+
+ Note: Additionally in Sept/Oct 2007 a relocatable mode of aqbanking
+ has been introduced. This might mean that those registry keys are not
+ needed anymore. (FIXME: Need to clarify this.)
 
 
 7.1. Software\\AqBanking\\Paths\\pkgdatadir
