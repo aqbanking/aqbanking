@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 3.2.1 (2008-02-08)
+===========================================================================
+
+This release fixes two bugs: One in the HBCI backend and the other in the 
+OFX parser. The AqHBCI user wizard now automatically sets the NO_BASE64
+flag for "Dt. Apotheker- und Aerztebank".
+
+
+===========================================================================
                Released AqBanking - 3.2.0 (2008-01-29)
 ===========================================================================
 

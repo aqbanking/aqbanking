@@ -587,10 +587,22 @@ void EditCtUser::slotBankCodeLostFocus() {
 
 
 void EditCtUser::slotBankCodeChanged(const QString&) {
+  std::string s;
+
   if (_bankInfo) {
     DBG_ERROR(0, "Deleting current bank info");
     AB_BankInfo_free(_bankInfo);
     _bankInfo=0;
+  }
+
+  s=QBanking::QStringToUtf8String(bankCodeEdit->text());
+  if (!s.empty()) {
+    if (strcasecmp(s.c_str(), "30060601")==0) {
+      /* special handling of DT. Apotheker and Aerztebank: use
+       * NO_BASE64 */
+      noBase64Check->setChecked(true);
+      _wInfo->addUserFlags(AH_USER_FLAGS_NO_BASE64);
+    }
   }
 }
 

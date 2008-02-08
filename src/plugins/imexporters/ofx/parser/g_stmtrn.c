@@ -140,8 +140,10 @@ int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
-    gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
+	     "Ignoring tag [%s]", tagName);
+    /*gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);*/
+    free(xg->currentElement);
+    xg->currentElement=strdup(tagName);
   }
 
   if (gNew) {

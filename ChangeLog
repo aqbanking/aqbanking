@@ -1,4 +1,17 @@
 
+===========================================================================
+MARK: released AqBanking - 3.2.1 (2008-02-08)
+===========================================================================
+
+
+2008/02/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- OFX parser: fixed parsing of STMTRN (now ignores any unknown element and
+  handles it as an unknown data element instead of an unknown group.
+- AqHBCI user wizard: now automatically set the NO_BASE64 flag for 
+  "Dt. Apotheker- und Aerztebank"
+
+
 2008/01/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI: 
