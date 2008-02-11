@@ -57,12 +57,12 @@ QBPickStartDate::QBPickStartDate(QBanking *qb,
     lastUpdateLabel->setText(_lastUpdate.toString());
     lastUpdateButton->setEnabled(true);
     lastUpdateLabel->setEnabled(true);
-    if (defaultChoice==2)
-      defaultChoice=1;
   }
   else {
     lastUpdateButton->setEnabled(false);
     lastUpdateLabel->setEnabled(false);
+    if (defaultChoice==2)
+      defaultChoice=1;
   }
 
   if (_firstPossible.isValid()) {
