@@ -337,11 +337,11 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gu
 
 
 
-int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
-                            AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_IO_LAYER *io,
-			    GWEN_DB_NODE *params,
-			    uint32_t guiid){
+int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
+					 AB_IMEXPORTER_CONTEXT *ctx,
+					 GWEN_IO_LAYER *io,
+					 GWEN_DB_NODE *params,
+					 uint32_t guiid){
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -514,6 +514,213 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
   return 0;
 }
 
+
+
+int AH_ImExporterCSV__ExportNotedTransactions(AB_IMEXPORTER *ie,
+					      AB_IMEXPORTER_CONTEXT *ctx,
+					      GWEN_IO_LAYER *io,
+					      GWEN_DB_NODE *params,
+					      uint32_t guiid){
+  AH_IMEXPORTER_CSV *ieh;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbSubParams;
+  int rv;
+  const char *dateFormat;
+  int inUtc;
+  int usePosNegField;
+  int defaultIsPositive;
+  const char *posNegFieldName;
+
+  assert(ie);
+  ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie);
+  assert(ieh);
+  assert(ieh->dbio);
+
+  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                               "params");
+  dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0,
+				  "YYYY/MM/DD");
+  inUtc=GWEN_DB_GetIntValue(params, "utc", 0, 0);
+  usePosNegField=GWEN_DB_GetIntValue(params, "usePosNegField", 0, 0);
+  defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
+  posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
+				       "posNeg");
+
+  /* create db, store transactions in it */
+  dbData=GWEN_DB_Group_new("transactions");
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  while(ai) {
+    const AB_TRANSACTION *t;
+
+    t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(ai);
+    while(t) {
+      GWEN_DB_NODE *dbTransaction;
+      const GWEN_TIME *ti;
+
+      dbTransaction=GWEN_DB_Group_new("transaction");
+      rv=AB_Transaction_toDb(t, dbTransaction);
+      if (rv) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Could not transform transaction to db");
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			     "Error transforming data to db");
+        GWEN_DB_Group_free(dbData);
+        GWEN_DB_Group_free(dbTransaction);
+        return GWEN_ERROR_GENERIC;
+      }
+
+      /* transform dates */
+      GWEN_DB_DeleteGroup(dbTransaction, "date");
+      GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
+
+      ti=AB_Transaction_GetDate(t);
+      if (ti) {
+	GWEN_BUFFER *tbuf;
+        int rv;
+
+	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	if (inUtc)
+	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
+	else
+	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
+	if (rv) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+	}
+	else
+	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			       "date", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
+      }
+
+      ti=AB_Transaction_GetValutaDate(t);
+      if (ti) {
+	GWEN_BUFFER *tbuf;
+
+	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	if (inUtc)
+	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
+	else
+	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
+	if (rv) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+	}
+	else
+	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			       "valutaDate", GWEN_Buffer_GetStart(tbuf));
+	GWEN_Buffer_free(tbuf);
+      }
+
+      /* possibly transform value */
+      if (usePosNegField) {
+	const AB_VALUE *v;
+        const char *s;
+
+	v=AB_Transaction_GetValue(t);
+	if (v) {
+          if (!AB_Value_IsNegative(v)) {
+	    s=GWEN_DB_GetCharValue(params, "positiveValues", 0, 0);
+	    if (s) {
+	      GWEN_DB_SetCharValue(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   posNegFieldName,
+				   s);
+	    }
+	    else {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                        "No value for \"positiveValues\" in params");
+	      GWEN_DB_Group_free(dbData);
+	      return GWEN_ERROR_GENERIC;
+	    }
+	  }
+	  else {
+	    s=GWEN_DB_GetCharValue(params, "negativeValues", 0, 0);
+	    if (s) {
+	      AB_VALUE *nv;
+              GWEN_DB_NODE *dbV;
+
+	      GWEN_DB_SetCharValue(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   posNegFieldName,
+				   s);
+	      nv=AB_Value_dup(v);
+	      AB_Value_Negate(nv);
+	      dbV=GWEN_DB_GetGroup(dbTransaction,
+				   GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+				   "value");
+	      assert(dbV);
+	      if (AB_Value_toDb(nv, dbV)) {
+		DBG_ERROR(AQBANKING_LOGDOMAIN,
+			  "Could not store value to DB");
+		GWEN_DB_Group_free(dbData);
+		return GWEN_ERROR_GENERIC;
+	      }
+	    }
+	    else {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN,
+			"No value for \"negativeValues\" in params");
+	      GWEN_DB_Group_free(dbData);
+	      return GWEN_ERROR_GENERIC;
+	    }
+	  }
+	}
+      }
+
+      /* add transaction db */
+      GWEN_DB_AddGroup(dbData, dbTransaction);
+      t=AB_ImExporterAccountInfo_GetNextNotedTransaction(ai);
+    }
+    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+  }
+
+
+  rv=GWEN_DBIO_Export(ieh->dbio,
+		      io,
+		      dbData,
+		      dbSubParams,
+		      GWEN_DB_FLAGS_DEFAULT,
+		      guiid,
+                      2000);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
+    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+			 "Error exporting data");
+    GWEN_DB_Group_free(dbData);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_DB_Group_free(dbData);
+
+  return 0;
+}
+
+
+
+int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_IO_LAYER *io,
+			    GWEN_DB_NODE *params,
+			    uint32_t guiid){
+  AH_IMEXPORTER_CSV *ieh;
+  const char *subject;
+
+  assert(ie);
+  ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie);
+  assert(ieh);
+  assert(ieh->dbio);
+
+  subject=GWEN_DB_GetCharValue(params, "subject", 0,
+			       "transactions");
+  if (strcasecmp(subject, "transactions")==0)
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, io, params, guiid);
+  else if (strcasecmp(subject, "notedTransactions")==0)
+    return AH_ImExporterCSV__ExportNotedTransactions(ie, ctx, io,
+						     params, guiid);
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to export unknown subject \"%s\"", subject);
+    return GWEN_ERROR_INVALID;
+  }
+}
 
 
 

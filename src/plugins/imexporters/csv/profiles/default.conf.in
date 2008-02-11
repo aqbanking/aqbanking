@@ -11,6 +11,12 @@ char groupNames="transaction", "transfer", "debitnote", "line"
 char dateFormat="YYYY/MM/DD"
 int utc="0"
 
+# Valid subjects are:
+# - transactions: This exports booked transactions (default)
+# - notedTransactions: Exports noted transactions
+#
+char subject="transactions"
+
 # The following vars are used when there is an additional field within a
 # record which defines the sign of the amount.
 # Some banks use "C" (positive) and "D" (negative) or "Af" (negative) and

@@ -2,6 +2,7 @@
 2008/02/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a minor bug in QBPickStartDate
+- CSV exporter is now able to export noted transactions as well
 
 
 ===========================================================================

@@ -25,31 +25,56 @@ struct AH_IMEXPORTER_CSV {
 };
 
 
+static
 AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+
+static
 void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p);
 
+static
 int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_IO_LAYER *io,
 			    GWEN_DB_NODE *params,
 			    uint32_t guiid);
+
+static
 int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_IO_LAYER *io,
 			    GWEN_DB_NODE *params,
 			    uint32_t guiid);
 
+static
 int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 
+static
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
 				      GWEN_DB_NODE *dbParams,
 				      uint32_t guiid);
 
+static
 int AH_ImExporterCSV__Transform_Var(GWEN_DB_NODE *db, int level);
 
+static
 int AH_ImExporterCSV__Transform_Group(GWEN_DB_NODE *db, int level);
+
+
+static
+int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
+					 AB_IMEXPORTER_CONTEXT *ctx,
+					 GWEN_IO_LAYER *io,
+					 GWEN_DB_NODE *params,
+					 uint32_t guiid);
+
+static
+int AH_ImExporterCSV__ExportNotedTransactions(AB_IMEXPORTER *ie,
+					      AB_IMEXPORTER_CONTEXT *ctx,
+					      GWEN_IO_LAYER *io,
+					      GWEN_DB_NODE *params,
+					      uint32_t guiid);
 
 
 #endif /* AQHBCI_IMEX_CSV_P_H */
