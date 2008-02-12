@@ -1,4 +1,9 @@
 
+2008/02/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- applied a patch by Thomas Baumgart which improves the pickStartDate dialog
+
+
 2008/02/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a minor bug in QBPickStartDate

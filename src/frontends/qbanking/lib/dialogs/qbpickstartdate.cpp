@@ -26,6 +26,7 @@
 #include <qradiobutton.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qbuttongroup.h>
 
 
 
@@ -86,6 +87,7 @@ QBPickStartDate::QBPickStartDate(QBanking *qb,
 
   pickDateEdit->setDate(QDate::currentDate());
 
+  buttonGroup->setFocus();
 }
 
 
@@ -125,6 +127,8 @@ QDate QBPickStartDate::getDate() {
     return _firstPossible;
   else if (pickDateButton->isChecked())
     return pickDateEdit->date();
+  else if (lastUpdateButton->isChecked())
+    return _lastUpdate;
   else {
     DBG_ERROR(0, "Unknown date state");
     return QDate();

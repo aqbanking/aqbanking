@@ -47,7 +47,7 @@ If you specify no date then the bank will choose one.
         </widget>
         <widget class="QButtonGroup">
             <property name="name">
-                <cstring>buttonGroup1</cstring>
+                <cstring>buttonGroup</cstring>
             </property>
             <property name="title">
                 <string>Start Date</string>
@@ -158,10 +158,10 @@ If you specify no date then the bank will choose one.
                         <string></string>
                     </property>
                     <property name="autoDefault">
-                        <bool>true</bool>
+                        <bool>false</bool>
                     </property>
                     <property name="default">
-                        <bool>true</bool>
+                        <bool>false</bool>
                     </property>
                 </widget>
                 <spacer>
@@ -209,7 +209,7 @@ If you specify no date then the bank will choose one.
                         <string></string>
                     </property>
                     <property name="autoDefault">
-                        <bool>true</bool>
+                        <bool>false</bool>
                     </property>
                 </widget>
             </hbox>
