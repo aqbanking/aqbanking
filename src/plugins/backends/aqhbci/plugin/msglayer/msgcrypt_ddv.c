@@ -143,10 +143,10 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
   uFlags=AH_User_GetFlags(su);
 
   /* get crypt token of signer */
-  rv=AH_HBCI_GetCryptToken(h,
-			   AH_User_GetTokenType(su),
-			   AH_User_GetTokenName(su),
-			   &ct);
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
+			      AH_User_GetTokenType(su),
+			      AH_User_GetTokenName(su),
+			      &ct);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not get crypt token for user \"%s\" (%d)",
@@ -439,7 +439,7 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg) {
     peerId=AB_User_GetUserId(u);
 
   /* get crypt token of signer */
-  rv=AH_HBCI_GetCryptToken(h,
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
 			   AH_User_GetTokenType(u),
 			   AH_User_GetTokenName(u),
 			   &ct);
@@ -702,7 +702,7 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr){
     peerId=AB_User_GetUserId(u);
 
   /* get crypt token of signer */
-  rv=AH_HBCI_GetCryptToken(h,
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
 			   AH_User_GetTokenType(u),
 			   AH_User_GetTokenName(u),
 			   &ct);
@@ -887,7 +887,7 @@ int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   gid=AH_Dialog_GetGuiId(hmsg->dialog);
 
   /* get crypt token of signer */
-  rv=AH_HBCI_GetCryptToken(h,
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
 			   AH_User_GetTokenType(u),
 			   AH_User_GetTokenName(u),
 			   &ct);

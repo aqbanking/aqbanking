@@ -19,6 +19,8 @@
 #include <aqbanking/user.h>
 #include <aqbanking/job.h>
 
+#include <gwenhywfar/ct.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,6 +263,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 AQBANKING_API
 int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 /*@}*/
+
 
 
 

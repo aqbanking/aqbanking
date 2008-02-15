@@ -19,6 +19,7 @@
 
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
+#include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 
 #include <unistd.h>
@@ -66,10 +67,10 @@ bool ActionCreateFile::apply() {
   pro=wInfo->getProvider();
   assert(pro);
 
-  rv=AH_Provider_GetCryptToken(pro,
-			       wInfo->getMediumType().c_str(),
-			       wInfo->getMediumName().c_str(),
-			       &ct);
+  rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
+			      wInfo->getMediumType().c_str(),
+			      wInfo->getMediumName().c_str(),
+			      &ct);
 
   if (rv) {
     DBG_ERROR(0, "Error creating CryptToken object (%d)", rv);
@@ -81,7 +82,7 @@ bool ActionCreateFile::apply() {
   rv=GWEN_Crypt_Token_Create(ct, 0);
   if (rv) {
     DBG_ERROR(0, "Error creating CryptToken (%d)", rv);
-    AH_Provider_ClearCryptTokenList(pro);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
     return false;
   }
 
@@ -112,7 +113,7 @@ bool ActionCreateFile::undo() {
   ct=wInfo->getToken();
   if (ct) {
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
-      AH_Provider_ClearCryptTokenList(pro);
+      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }
     wInfo->setToken(NULL);

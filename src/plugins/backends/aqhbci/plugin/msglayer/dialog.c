@@ -335,7 +335,6 @@ int AH_Dialog__SetAddress(AH_DIALOG *dlg,
     }
     else {
       char addrBuf[256];
-      int err;
 
       err=GWEN_InetAddr_GetAddress(addr, addrBuf, sizeof(addrBuf)-1);
       addrBuf[sizeof(addrBuf)-1]=0;

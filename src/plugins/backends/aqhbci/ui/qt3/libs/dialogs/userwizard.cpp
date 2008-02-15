@@ -25,6 +25,7 @@
 
 #include <aqhbci/provider.h>
 #include <aqhbci/user.h>
+#include <aqbanking/banking_be.h>
 #include <qbanking/qbanking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
@@ -97,11 +98,11 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
 			     GWEN_GUI_PROGRESS_NONE,
 			     0);
 
-  rv=AH_Provider_CheckCryptToken(_provider,
-				 GWEN_Crypt_Token_Device_Card,
-				 mtypeName,
-				 mediumName,
-				 0);
+  rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(_provider),
+				GWEN_Crypt_Token_Device_Card,
+				mtypeName,
+				mediumName,
+				pid);
   GWEN_Gui_ProgressEnd(pid);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -110,10 +111,10 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
     return false;
   }
 
-  rv=AH_Provider_GetCryptToken(_provider,
-			       GWEN_Buffer_GetStart(mtypeName),
-			       GWEN_Buffer_GetStart(mediumName),
-                               &ct);
+  rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(_provider),
+			      GWEN_Buffer_GetStart(mtypeName),
+			      GWEN_Buffer_GetStart(mediumName),
+			      &ct);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
@@ -157,7 +158,7 @@ bool UserWizard::_handleModeImportCard() {
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
-    AH_Provider_ClearCryptTokenList(wInfo.getProvider());
+    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     wInfo.setUser(NULL);
@@ -185,7 +186,7 @@ bool UserWizard::_handleModeImportFile() {
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
-    AH_Provider_ClearCryptTokenList(_provider);
+    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
 
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
@@ -213,7 +214,7 @@ bool UserWizard::_handleModeCreateFile() {
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
-    AH_Provider_ClearCryptTokenList(wInfo.getProvider());
+    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     wInfo.setUser(NULL);
@@ -282,7 +283,7 @@ bool UserWizard::finishUser(QBanking *qb,
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
-    AH_Provider_ClearCryptTokenList(pro);
+    AB_Banking_ClearCryptTokenList(qb->getCInterface(), 0);
   }
   else {
     DBG_NOTICE(0, "Rejected");

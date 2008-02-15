@@ -363,6 +363,13 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   AH_USER *ue;
 
   ue=(AH_USER*)p;
+  free(ue->peerId);
+  free(ue->systemId);
+  free(ue->httpContentType);
+  free(ue->httpUserAgent);
+  free(ue->tokenType);
+  free(ue->tokenName);
+  free(ue->prompt);
   GWEN_Url_free(ue->serverUrl);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);

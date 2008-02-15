@@ -174,6 +174,7 @@ AQHBCI_API
 int AH_HBCI_CheckStringSanity(const char *s);
 
 
+#if 0
 AQHBCI_API
 int AH_HBCI_GetCryptToken(AH_HBCI *hbci,
 			  const char *tname,
@@ -182,6 +183,7 @@ int AH_HBCI_GetCryptToken(AH_HBCI *hbci,
 
 AQHBCI_API
 void AH_HBCI_ClearCryptTokenList(AH_HBCI *hbci);
+#endif
 
 
 #endif /* GWHBCI_HBCI_L_H */

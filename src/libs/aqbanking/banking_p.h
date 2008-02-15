@@ -82,6 +82,8 @@ struct AB_BANKING {
 
   AB_JOB_LIST2 *currentJobs;
 
+  GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
+
 };
 
 

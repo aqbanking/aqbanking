@@ -23,6 +23,7 @@
 
 #include <qbanking/qbanking.h>
 #include <aqhbci/provider.h>
+#include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/ctplugin.h>
@@ -120,11 +121,11 @@ void ActionCheckFile::slotButtonClicked() {
 			     GWEN_GUI_PROGRESS_NONE,
 			     0);
 
-  rv=AH_Provider_CheckCryptToken(pro,
-				 GWEN_Crypt_Token_Device_File,
-				 mtypeName,
-				 mediumName,
-				 0);
+  rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(pro),
+				GWEN_Crypt_Token_Device_File,
+				mtypeName,
+				mediumName,
+				pid);
   GWEN_Gui_ProgressEnd(pid);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -139,10 +140,10 @@ void ActionCheckFile::slotButtonClicked() {
   GWEN_Buffer_free(mtypeName);
 
   /* create crypt token */
-  rv=AH_Provider_GetCryptToken(pro,
-			       wInfo->getMediumType().c_str(),
-			       wInfo->getMediumName().c_str(),
-			       &ct);
+  rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
+			      wInfo->getMediumType().c_str(),
+			      wInfo->getMediumName().c_str(),
+			      &ct);
   if (rv) {
     DBG_ERROR(0, "Error creating CryptToken object (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
@@ -156,7 +157,7 @@ void ActionCheckFile::slotButtonClicked() {
     DBG_ERROR(0, "Error mounting medium (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
     if (created)
-      AH_Provider_ClearCryptTokenList(pro);
+      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
     return;
   }
 
@@ -190,7 +191,7 @@ bool ActionCheckFile::undo() {
 
   ct=wInfo->getToken();
   if (ct) {
-    AH_Provider_ClearCryptTokenList(pro);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }

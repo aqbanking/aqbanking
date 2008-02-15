@@ -39,6 +39,7 @@
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/dbio.h>
+#include <gwenhywfar/ctplugin.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -196,6 +197,8 @@ AB_BANKING *AB_Banking_new(const char *appName,
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
   ab->appName=strdup(appName);
   ab->activeProviders=GWEN_StringList_new();
+  ab->cryptTokenList=GWEN_Crypt_Token_List2_new();
+
   GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
   ab->data=GWEN_DB_Group_new("BankingData");
   GWEN_Buffer_free(nbuf);
@@ -233,6 +236,8 @@ void AB_Banking_free(AB_BANKING *ab){
 
     GWEN_INHERIT_FINI(AB_BANKING, ab);
 
+    AB_Banking_ClearCryptTokenList(ab, 0);
+    GWEN_Crypt_Token_List2_free(ab->cryptTokenList);
     AB_Account_List_free(ab->accounts);
     AB_User_List_free(ab->users);
     AB_Provider_List_free(ab->providers);

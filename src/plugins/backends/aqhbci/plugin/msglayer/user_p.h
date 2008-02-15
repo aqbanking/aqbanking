@@ -37,13 +37,12 @@ struct AH_USER {
   char *peerId;
   char *systemId;
 
-  char *httpContentType;
-
   int updVersion;
 
   int httpVMajor;
   int httpVMinor;
   char *httpUserAgent;
+  char *httpContentType;
 
   uint32_t flags;
   uint32_t tanMethods;

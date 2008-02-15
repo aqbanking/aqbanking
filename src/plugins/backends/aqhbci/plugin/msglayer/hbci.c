@@ -82,8 +82,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   hbci->transferTimeout=AH_HBCI_DEFAULT_TRANSFER_TIMEOUT;
   hbci->connectTimeout=AH_HBCI_DEFAULT_CONNECT_TIMEOUT;
 
-  hbci->cryptTokenList=GWEN_Crypt_Token_List2_new();
-
   return hbci;
 }
 
@@ -97,9 +95,6 @@ void AH_HBCI_free(AH_HBCI *hbci){
     free(hbci->productVersion);
 
     GWEN_XMLNode_free(hbci->defs);
-
-    AH_HBCI_ClearCryptTokenList(hbci);
-    GWEN_Crypt_Token_List2_free(hbci->cryptTokenList);
 
     GWEN_FREE_OBJECT(hbci);
     GWEN_Logger_Close(AQHBCI_LOGDOMAIN);
@@ -728,105 +723,5 @@ uint32_t AH_HBCI_GetLastVersion(const AH_HBCI *hbci) {
   return hbci->lastVersion;
 }
 
-
-
-int AH_HBCI_GetCryptToken(AH_HBCI *hbci,
-			  const char *tname,
-			  const char *cname,
-			  GWEN_CRYPT_TOKEN **pCt) {
-  GWEN_CRYPT_TOKEN *ct=NULL;
-  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
-
-  assert(hbci);
-  assert(hbci->cryptTokenList);
-
-  assert(pCt);
-  assert(tname);
-  assert(cname);
-
-  it=GWEN_Crypt_Token_List2_First(hbci->cryptTokenList);
-  if (it) {
-    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
-    assert(ct);
-    while(ct) {
-      const char *s1;
-      const char *s2;
-
-      s1=GWEN_Crypt_Token_GetTypeName(ct);
-      s2=GWEN_Crypt_Token_GetTokenName(ct);
-      assert(s1);
-      assert(s2);
-      if (strcasecmp(s1, tname)==0 &&
-	  strcasecmp(s2, cname)==0)
-	break;
-      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
-    }
-  }
-
-  if (ct==NULL) {
-    GWEN_PLUGIN_MANAGER *pm;
-    GWEN_PLUGIN *pl;
-
-    /* get crypt token */
-    pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
-    if (pm==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "CryptToken plugin manager not found");
-      return GWEN_ERROR_INTERNAL;
-    }
-  
-    pl=GWEN_PluginManager_GetPlugin(pm, tname);
-    if (pl==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin \"%s\" not found", tname);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-
-    ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, cname);
-    if (ct==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
-      return GWEN_ERROR_IO;
-    }
-
-    /* add to internal list */
-    GWEN_Crypt_Token_List2_PushBack(hbci->cryptTokenList, ct);
-  }
-
-  *pCt=ct;
-  return 0;
-}
-
-
-
-void AH_HBCI_ClearCryptTokenList(AH_HBCI *hbci) {
-  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
-
-  assert(hbci);
-  assert(hbci->cryptTokenList);
-
-  it=GWEN_Crypt_Token_List2_First(hbci->cryptTokenList);
-  if (it) {
-    GWEN_CRYPT_TOKEN *ct;
-
-    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
-    assert(ct);
-    while(ct) {
-      while(GWEN_Crypt_Token_IsOpen(ct)) {
-	int rv;
-
-	rv=GWEN_Crypt_Token_Close(ct, 0, 0);
-	if (rv) {
-	  DBG_WARN(AQHBCI_LOGDOMAIN,
-		   "Could not close crypt token [%s:%s], abandoning (%d)",
-		   GWEN_Crypt_Token_GetTypeName(ct),
-		   GWEN_Crypt_Token_GetTokenName(ct),
-		   rv);
-	  GWEN_Crypt_Token_Close(ct, 1, 0);
-	}
-      }
-      GWEN_Crypt_Token_free(ct);
-      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
-    }
-  }
-  GWEN_Crypt_Token_List2_Clear(hbci->cryptTokenList);
-}
 
 

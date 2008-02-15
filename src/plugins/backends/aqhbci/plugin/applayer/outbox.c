@@ -1960,14 +1960,13 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
   rv=AH_Outbox__Execute(ob);
   /* unmount currently mounted medium */
   if (!nounmount)
-    AH_HBCI_ClearCryptTokenList(ob->hbci);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(ob->hbci), pid);
   if (withProgress) {
     GWEN_Gui_ProgressEnd(pid);
   }
   ob->context=0;
   return rv;
 }
-
 
 
 AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,

@@ -46,8 +46,6 @@ struct AH_HBCI {
   int transferTimeout;
   int connectTimeout;
 
-  GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
-
   uint32_t lastVersion;
 
 };

@@ -40,6 +40,7 @@
 #include <gwenhywfar/io_file.h>
 
 #include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/directory.h>

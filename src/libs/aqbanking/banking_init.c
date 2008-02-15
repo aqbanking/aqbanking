@@ -556,6 +556,9 @@ int AB_Banking_OnlineFini(AB_BANKING *ab) {
   }
 
   if (ab->onlineInitCount==1) {
+    /* clear all active crypt token */
+    AB_Banking_ClearCryptTokenList(ab, 0);
+
     /* deinit all providers */
     pro=AB_Provider_List_First(ab->providers);
     while(pro) {
@@ -619,6 +622,8 @@ void AB_Banking_ActivateAllProviders(AB_BANKING*ab){
     GWEN_PluginDescription_List2_free(descrs);
   }
 }
+
+
 
 
 #ifdef OS_WIN32

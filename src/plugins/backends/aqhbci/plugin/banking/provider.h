@@ -54,23 +54,6 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 /*@}*/
 
 
-AQHBCI_API
-int AH_Provider_GetCryptToken(AB_PROVIDER *pro,
-			      const char *tname,
-			      const char *cname,
-			      GWEN_CRYPT_TOKEN **pCt);
-
-AQHBCI_API
-void AH_Provider_ClearCryptTokenList(AB_PROVIDER *pro);
-
-
-AQHBCI_API
-int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
-				GWEN_CRYPT_TOKEN_DEVICE devt,
-				GWEN_BUFFER *typeName,
-				GWEN_BUFFER *tokenName,
-				uint32_t guiid);
-
 
 /** @name Server Interactive Functions
  *

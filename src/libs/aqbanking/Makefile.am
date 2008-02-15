@@ -42,7 +42,8 @@ noinst_HEADERS=\
  job_p.h \
  provider_l.h \
  provider_p.h \
- msgengine_p.h
+ msgengine_p.h \
+ httpsession_p.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -66,7 +67,8 @@ iheader_HEADERS=\
  job_be.h \
  provider.h \
  provider_be.h\
- msgengine.h
+ msgengine.h \
+ httpsession.h
 
 
 libaqbanking_la_SOURCES=\
@@ -77,7 +79,8 @@ libaqbanking_la_SOURCES=\
  imexporter.c \
  job.c \
  provider.c \
- msgengine.c
+ msgengine.c \
+ httpsession.c
 
 
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \

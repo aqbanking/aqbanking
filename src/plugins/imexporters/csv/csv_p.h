@@ -25,7 +25,7 @@ struct AH_IMEXPORTER_CSV {
 };
 
 
-static
+AQBANKING_EXPORT
 AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 static
@@ -54,13 +54,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
 				      GWEN_DB_NODE *dbParams,
 				      uint32_t guiid);
-
-static
-int AH_ImExporterCSV__Transform_Var(GWEN_DB_NODE *db, int level);
-
-static
-int AH_ImExporterCSV__Transform_Group(GWEN_DB_NODE *db, int level);
-
 
 static
 int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,

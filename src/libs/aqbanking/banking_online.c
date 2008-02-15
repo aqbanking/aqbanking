@@ -208,6 +208,7 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
 		       I18N("Sending jobs to the bank(s)"));
   rv=AB_Banking__ExecuteQueue(ab, jl2, ctx, pid);
+  AB_Banking_ClearCryptTokenList(ab, guiid);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
   }
@@ -880,4 +881,137 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
 
   return pro;
 }
+
+
+
+int AB_Banking_GetCryptToken(AB_BANKING *ab,
+			     const char *tname,
+			     const char *cname,
+			     GWEN_CRYPT_TOKEN **pCt) {
+  GWEN_CRYPT_TOKEN *ct=NULL;
+  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
+
+  assert(ab);
+
+  assert(pCt);
+  assert(tname);
+  assert(cname);
+
+  it=GWEN_Crypt_Token_List2_First(ab->cryptTokenList);
+  if (it) {
+    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
+    assert(ct);
+    while(ct) {
+      const char *s1;
+      const char *s2;
+
+      s1=GWEN_Crypt_Token_GetTypeName(ct);
+      s2=GWEN_Crypt_Token_GetTokenName(ct);
+      assert(s1);
+      assert(s2);
+      if (strcasecmp(s1, tname)==0 &&
+	  strcasecmp(s2, cname)==0)
+	break;
+      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
+    }
+  }
+
+  if (ct==NULL) {
+    GWEN_PLUGIN_MANAGER *pm;
+    GWEN_PLUGIN *pl;
+
+    /* get crypt token */
+    pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+    if (pm==0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "CryptToken plugin manager not found");
+      return GWEN_ERROR_INTERNAL;
+    }
+  
+    pl=GWEN_PluginManager_GetPlugin(pm, tname);
+    if (pl==0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin \"%s\" not found", tname);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+
+    ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, cname);
+    if (ct==0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create crypt token");
+      return GWEN_ERROR_IO;
+    }
+
+    /* add to internal list */
+    GWEN_Crypt_Token_List2_PushBack(ab->cryptTokenList, ct);
+  }
+
+  *pCt=ct;
+  return 0;
+}
+
+
+
+void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid) {
+  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
+
+  assert(ab);
+  assert(ab->cryptTokenList);
+
+  it=GWEN_Crypt_Token_List2_First(ab->cryptTokenList);
+  if (it) {
+    GWEN_CRYPT_TOKEN *ct;
+
+    ct=GWEN_Crypt_Token_List2Iterator_Data(it);
+    assert(ct);
+    while(ct) {
+      while(GWEN_Crypt_Token_IsOpen(ct)) {
+	int rv;
+
+	rv=GWEN_Crypt_Token_Close(ct, 0, guiid);
+	if (rv) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN,
+		   "Could not close crypt token [%s:%s], abandoning (%d)",
+		   GWEN_Crypt_Token_GetTypeName(ct),
+		   GWEN_Crypt_Token_GetTokenName(ct),
+		   rv);
+	  GWEN_Crypt_Token_Close(ct, 1, guiid);
+	}
+      }
+      GWEN_Crypt_Token_free(ct);
+      ct=GWEN_Crypt_Token_List2Iterator_Next(it);
+    }
+  }
+  GWEN_Crypt_Token_List2_Clear(ab->cryptTokenList);
+}
+
+
+
+int AB_Banking_CheckCryptToken(AB_BANKING *ab,
+			       GWEN_CRYPT_TOKEN_DEVICE devt,
+			       GWEN_BUFFER *typeName,
+			       GWEN_BUFFER *tokenName,
+			       uint32_t guiid) {
+  GWEN_PLUGIN_MANAGER *pm;
+  int rv;
+
+  /* get crypt token */
+  pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+  if (pm==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "CryptToken plugin manager not found");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  /* try to determine the type and name */
+  rv=GWEN_Crypt_Token_PluginManager_CheckToken(pm,
+					       devt,
+					       typeName,
+					       tokenName,
+					       guiid);
+  if (rv) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
 

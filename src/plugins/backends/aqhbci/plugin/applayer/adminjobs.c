@@ -23,6 +23,8 @@
 #include "hbci_l.h"
 #include <aqhbci/provider.h>
 
+#include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
@@ -121,10 +123,10 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
   h=AH_Job_GetHbci(j);
   u=AH_Job_GetUser(j);
-  rv=AH_HBCI_GetCryptToken(h,
-			   AH_User_GetTokenType(u),
-			   AH_User_GetTokenName(u),
-			   &ct);
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
+			      AH_User_GetTokenType(u),
+			      AH_User_GetTokenName(u),
+			      &ct);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

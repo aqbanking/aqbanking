@@ -18,6 +18,8 @@
 #include "winfo.h"
 #include <aqhbci/provider.h>
 
+#include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <unistd.h>
 
@@ -300,7 +302,7 @@ void WizardInfo::releaseData() {
 
   if (_token && (_flags & WIZARDINFO_FLAGS_MEDIUM_CREATED)) {
     DBG_INFO(0, "Deleting medium");
-    AH_Provider_ClearCryptTokenList(_provider);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(_provider), 0);
     _flags&=~WIZARDINFO_FLAGS_MEDIUM_CREATED;
     _token=NULL;
   }

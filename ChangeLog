@@ -1,4 +1,14 @@
 
+2008/02/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some memory leaks ion AqHBCI (user.c)
+- reactivated src/libs/aqbanking/httpsession.c: It is now an extension
+  of the new GWEN_HTTP_SESSION
+- moved administration of CryptToken lists from AqHBCI to AqBanking.
+  This allows for new backends using GWEN_CryptTokens without having to 
+  duplicate code which already worked in AqHBCI.
+
+
 2008/02/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - applied a patch by Thomas Baumgart which improves the pickStartDate dialog

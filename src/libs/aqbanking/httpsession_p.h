@@ -18,32 +18,17 @@
 #include "httpsession.h"
 
 #include <aqbanking/user.h>
-#include <gwenhywfar/netlayer.h>
-#include <gwenhywfar/url.h>
 
 
 
-struct AB_HTTPSESSION {
-  GWEN_INHERIT_ELEMENT(AB_HTTPSESSION)
-  GWEN_LIST_ELEMENT(AB_HTTPSESSION)
+typedef struct AB_HTTP_SESSION AB_HTTP_SESSION;
+struct AB_HTTP_SESSION {
   AB_PROVIDER *provider;
   AB_USER *user;
-  GWEN_NETLAYER *netLayer;
-  GWEN_URL *lastUrl;
-  char *logFolder;
-  uint32_t sessionId;
-
-  uint32_t flags;
-  int connectTimeout;
-  int transferTimeout;
-  GWEN_NETLAYER_HTTP_VERSION httpVersion;
 };
 
 
-static int AB_HttpSession__EnsureConnection(AB_HTTPSESSION *dlg,
-                                            const GWEN_URL *url);
-static void AB_HttpSession__AddPeerCertFolder(AB_HTTPSESSION *hc,
-                                              GWEN_BUFFER *nbuf);
+static void AB_HttpSession_FreeData(void *bp, void *p);
 
 
 

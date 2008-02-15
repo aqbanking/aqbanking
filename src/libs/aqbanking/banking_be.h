@@ -21,6 +21,8 @@
 
 #include <aqbanking/banking.h>
 
+
+
 /** @addtogroup G_AB_BE_BANKING
  */
 /*@{*/
@@ -62,8 +64,33 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs();
 /*@}*/
 
 
+
+/** @name Administration of Crypt Token List
+ *
+ */
+/*@{*/
+AQBANKING_API 
+int AB_Banking_GetCryptToken(AB_BANKING *ab,
+			     const char *tname,
+			     const char *cname,
+			     GWEN_CRYPT_TOKEN **pCt);
+
+AQBANKING_API 
+void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid);
+
+AQBANKING_API 
+int AB_Banking_CheckCryptToken(AB_BANKING *ab,
+			       GWEN_CRYPT_TOKEN_DEVICE devt,
+			       GWEN_BUFFER *typeName,
+			       GWEN_BUFFER *tokenName,
+			       uint32_t guiid);
+
+/*@}*/
+
+
 AQBANKING_API
 int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
+
 
 
 #ifdef __cplusplus
