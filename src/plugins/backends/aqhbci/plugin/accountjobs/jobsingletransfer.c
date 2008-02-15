@@ -560,6 +560,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
 	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
+	GWEN_Text_CondenseBuffer(tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
 	if (l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -617,6 +618,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
         AB_ImExporter_Utf8ToDta(p, -1, tbuf);
+	GWEN_Text_CondenseBuffer(tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
 	if (l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,

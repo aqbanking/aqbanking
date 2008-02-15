@@ -153,6 +153,8 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       AB_User_SetCountry(u, "de");
 
     ue->msgEngine=AH_MsgEngine_new();
+    GWEN_MsgEngine_SetEscapeChar(ue->msgEngine, '?');
+    GWEN_MsgEngine_SetCharsToEscape(ue->msgEngine, ":+\'");
     AH_MsgEngine_SetUser(ue->msgEngine, u);
     GWEN_MsgEngine_SetDefinitions(ue->msgEngine,
                                   AH_HBCI_GetDefinitions(ue->hbci),

@@ -7,6 +7,10 @@
 - moved administration of CryptToken lists from AqHBCI to AqBanking.
   This allows for new backends using GWEN_CryptTokens without having to 
   duplicate code which already worked in AqHBCI.
+- AqHBCI: 
+  - call GWEN_Text_CondenseBuffer() in jobsingletransfer.c to remove
+    trailing blanks from purpose lines and remote names
+  - call GWEN_MsgEngine_SetEscapeChar() to '?' (as required by HBCI)
 
 
 2008/02/12: Martin Preuss<martin@libchipcard.de>
