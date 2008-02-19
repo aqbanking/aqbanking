@@ -396,6 +396,7 @@ std::string CppGui::_getPasswordHash(const char *token, const char *pin) {
 		GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
 
+  GWEN_MDigest_free(md);
   return s;
 }
 

@@ -31,7 +31,10 @@
 
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
+  const char *s;
   const char *cmd;
+  const char *pinFile;
+  int nonInteractive=0;
   int rv;
   AB_BANKING *ab;
   GWEN_GUI *gui;
@@ -46,6 +49,41 @@ int main(int argc, char **argv) {
     "cfgfile",                    /* long option */
     "Specify the configuration file",     /* short description */
     "Specify the configuration file"      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "pinfile",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "P",                          /* short option */
+    "pinfile",                    /* long option */
+    "Specify the PIN file",       /* short description */
+    "Specify the PIN file"        /* long description */
+  },
+  {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "nonInteractive",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "n",                          /* short option */
+    "noninteractive",             /* long option */
+    "Select non-interactive mode",/* short description */
+    "Select non-interactive mode.\n"        /* long description */
+    "This automatically returns a confirmative answer to any non-critical\n"
+    "message."
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "charset",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "charset",                    /* long option */
+    "Specify the output character set",       /* short description */
+    "Specify the output character set"        /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -153,7 +191,6 @@ int main(int argc, char **argv) {
   }
 
   /*GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, GWEN_LoggerLevelInfo); */
-
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
   if (!cmd) {
     fprintf(stderr, "ERROR: Command needed.\n");
@@ -161,7 +198,25 @@ int main(int argc, char **argv) {
   }
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
+  s=GWEN_DB_GetCharValue(db, "charset", 0, "ISO-8859-15");
+  GWEN_Gui_CGui_SetCharSet(gui, s);
+  nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
+  GWEN_Gui_CGui_SetIsNonInteractive(gui, nonInteractive);
+  pinFile=GWEN_DB_GetCharValue(db, "pinFile", 0, NULL);
+  if (pinFile) {
+    GWEN_DB_NODE *dbPins;
+
+    dbPins=GWEN_DB_Group_new("pins");
+    if (GWEN_DB_ReadFile(dbPins, pinFile,
+			 GWEN_DB_FLAGS_DEFAULT |
+			 GWEN_PATH_FLAGS_CREATE_GROUP,
+			 0, 20000)) {
+      fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
+      return 2;
+    }
+    /* set argument "persistent" to one in non-interactive mode */
+    GWEN_Gui_CGui_SetPasswordDb(gui, dbPins, nonInteractive);
+  }
   GWEN_Gui_SetGui(gui);
 
   ab=AB_Banking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0),
