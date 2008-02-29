@@ -280,8 +280,21 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   d1a+=2000;
   d2a=((p[2]-'0')*10) + (p[3]-'0');
   d3a=((p[4]-'0')*10) + (p[5]-'0');
-  ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
-  assert(ti);
+
+  if (d3a==30 && d2a==2) {
+    /* date is Feb 30, this date is invalid. However, some banks use this
+     * to indicate the last day of February, so we move along */
+    d3a=1;
+    d2a=3;
+    ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
+    assert(ti);
+    /* subtract a day to get the last day in FEB */
+    GWEN_Time_SubSeconds(ti, 60*60*24);
+  }
+  else {
+    ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
+    assert(ti);
+  }
   if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
                                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                                           "valutadate"))) {
@@ -290,7 +303,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   p+=6;
   bleft-=6;
 
-  /* booking data (K) */
+  /* booking date (K) */
   if (*p && isdigit(*p)) {
     if (bleft<4) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
@@ -406,7 +419,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   }
   memmove(buffer, p, 3);
   buffer[3]=0;
-  AHB_SWIFT__SetCharValue(data, flags, "key", buffer);
+  AHB_SWIFT__SetCharValue(data, flags, "transactionKey", buffer);
   p+=3;
   bleft-=3;
 
@@ -775,13 +788,11 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 			uint32_t guiid,
 			int msecs) {
   AHB_SWIFT_TAG *tg;
-  GWEN_DB_NODE *dbDay;
-  GWEN_DB_NODE *dbTemplate;
-  GWEN_DB_NODE *dbTransaction;
+  GWEN_DB_NODE *dbDay=NULL;
+  GWEN_DB_NODE *dbTemplate=NULL;
+  GWEN_DB_NODE *dbTransaction=NULL;
+  GWEN_DB_NODE *dbDate=NULL;
   uint32_t progressId;
-
-  dbDay=0;
-  dbTransaction=0;
 
   dbTemplate=GWEN_DB_Group_new("template");
 
@@ -827,13 +838,16 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 	GWEN_Gui_ProgressEnd(progressId);
         return -1;
       }
+      else {
+	dbDate=GWEN_DB_GetGroup(dbSaldo, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+				"date");
+      }
 
       curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
       if (curr) {
 	AHB_SWIFT__SetCharValue(dbTemplate, flags,
 				"value/currency", curr);
       }
-
     }
     else if (strcasecmp(id, "62F")==0) { /* EndSaldo */
       GWEN_DB_NODE *dbSaldo;
@@ -866,6 +880,16 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
       dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                      "transaction");
       GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
+      if (dbDate) {
+	GWEN_DB_NODE *dbT;
+
+	/* dbDate is set upon parsing of tag 60F, use it as a default
+	 * if possible */
+	dbT=GWEN_DB_GetGroup(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			     "date");
+        assert(dbT);
+	GWEN_DB_AddGroupChildren(dbT, dbDate);
+      }
       if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
         GWEN_DB_Group_free(dbTemplate);

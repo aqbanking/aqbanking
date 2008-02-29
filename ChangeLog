@@ -2,6 +2,18 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/02/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- SWIFT MT940 parser: 
+  - fixed a bug (was not setting the transactionKey because
+    of a typo)
+  - introduced a workaround for banks which send a valuta date of Feb 30
+    (in this case they actually mean the last day of Feb, so we follows
+    this logic)
+  - use date from tag 60F as a default date for new transactions
+- added new folder for CryptToken plugins provided by AqBanking
+- started working on a plugin for RDH2 keyfiles (not finished)
+
 
 2008/02/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

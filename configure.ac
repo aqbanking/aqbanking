@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=6
+AQBANKING_VERSION_BUILD=8
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -1722,6 +1722,10 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqyellownet/ui/Makefile
   src/plugins/backends/aqyellownet/ui/qt3/Makefile
   src/plugins/backends/aqyellownet/ui/qt3/libs/Makefile
+  src/plugins/crypttoken/Makefile
+  src/plugins/crypttoken/rdh2/Makefile
+  src/plugins/crypttoken/rdh2/ressource.rc
+  src/plugins/crypttoken/rdh2/rdh2.xml
   src/test/Makefile
   tutorials/Makefile
   po/Makefile
