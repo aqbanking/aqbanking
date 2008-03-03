@@ -2,6 +2,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2008/03/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in AH_Provider_GetServerKeys() which occurred when a server
+  does not send a sign key (some servers don't sign their own messages so they
+  don't need a signature key)
+
+
 2008/02/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - SWIFT MT940 parser: 

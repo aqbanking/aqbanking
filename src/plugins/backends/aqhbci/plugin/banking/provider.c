@@ -1215,11 +1215,11 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     return GWEN_ERROR_GENERIC;
   }
 
-  if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(0, "Job has errors");
+  if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL) {
+    DBG_ERROR(0, "No crypt key received");
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
-			 I18N("Job contains errors."));
+			 I18N("No crypt key received."));
     AH_Outbox_free(ob);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
