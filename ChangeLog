@@ -2,6 +2,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/03/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI: ignore result of AH_User_SetPinStatus() when notifying the
+  application about the status of a TAN.
+
+
+2008/03/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- export function AB_Banking_GetUniqueId() to backends
+
 
 2008/03/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -16,7 +26,7 @@
   - fixed a bug (was not setting the transactionKey because
     of a typo)
   - introduced a workaround for banks which send a valuta date of Feb 30
-    (in this case they actually mean the last day of Feb, so we follows
+    (in this case they actually mean the last day of Feb, so we follow
     this logic)
   - use date from tag 60F as a default date for new transactions
 - added new folder for CryptToken plugins provided by AqBanking

@@ -91,6 +91,8 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 AQBANKING_API
 int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
 
+AQBANKING_API
+uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 
 #ifdef __cplusplus

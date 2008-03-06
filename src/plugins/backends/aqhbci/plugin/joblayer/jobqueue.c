@@ -505,8 +505,8 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
       }
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Error adjusting TAN status (%d)", rv);
-        return rv;
+                  "Error adjusting TAN status (%d), ignoring", rv);
+	/*return rv;*/
       }
     } /* if tan */
     j=AH_Job_List_Next(j);

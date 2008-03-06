@@ -22,8 +22,6 @@
 
 
 
-uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab);
-
 /**
  * This copies the name of the folder for AqBanking's backend data into
  * the given GWEN_Buffer (not including the provider's name).
