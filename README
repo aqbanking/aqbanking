@@ -258,6 +258,7 @@ These applications fully or partially support AqBanking:
  - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://kmymoney2.sf.net/)
  - (partially) Grisbi (http://sourceforge.net/projects/grisbi)
+ - OrgaMon (http://orgamon.org/)
 
 The aqbanking package also includes several command-line tools
 (aqbanking-tool, aqhbci-tool) and GUI tools (qt3-wizard etc)

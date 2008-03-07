@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/03/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added OrgaMon as supporting application
+
+
 2008/03/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - AqHBCI: ignore result of AH_User_SetPinStatus() when notifying the
