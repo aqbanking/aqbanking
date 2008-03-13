@@ -92,9 +92,21 @@ int addUser(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   const char *server;
+  const char *userName;
   int hbciVersion;
   uint32_t cid;
   const GWEN_ARGS args[]={
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "userName",                   /* name */
+    1,                            /* minnum */
+    1,                            /* maxnum */
+    "N",                          /* short option */
+    "username",                   /* long option */
+    "Specify the user name", /* short description */
+    "Specify the user name (not the userid!)"  /* long description */
+  },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
@@ -241,6 +253,8 @@ int addUser(AB_BANKING *ab,
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
   cid=GWEN_DB_GetIntValue(db, "context", 0, 0);
   hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
+  userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
+  assert(userName);
 
   if (1) {
     const char *lbankId;
@@ -342,12 +356,6 @@ int addUser(AB_BANKING *ab,
 	return 3;
       }
 
-      rv=GWEN_Crypt_Token_Close(ct, 0, 0);
-      if (rv) {
-	DBG_ERROR(0, "Could not close token (%d)", rv);
-	return 3;
-      }
-
       algo=GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki);
       if (algo==GWEN_Crypt_CryptAlgoId_Des3K)
 	cm=AH_CryptMode_Ddv;
@@ -358,6 +366,13 @@ int addUser(AB_BANKING *ab,
 		  "Unexpected crypt algorithm \"%s\", "
 		  "unable to determine crypt mode",
 		  GWEN_Crypt_CryptAlgoId_toString(algo));
+	GWEN_Crypt_Token_Close(ct, 1, 0);
+	return 3;
+      }
+
+      rv=GWEN_Crypt_Token_Close(ct, 0, 0);
+      if (rv) {
+	DBG_ERROR(0, "Could not close token (%d)", rv);
 	return 3;
       }
 
@@ -384,6 +399,7 @@ int addUser(AB_BANKING *ab,
     user=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);
     assert(user);
 
+    AB_User_SetUserName(user, userName);
     AB_User_SetCountry(user, "de");
     AB_User_SetBankCode(user, lbankId);
     AB_User_SetUserId(user, luserId);

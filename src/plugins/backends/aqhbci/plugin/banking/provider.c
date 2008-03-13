@@ -2466,6 +2466,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	      "Error getting the user's crypt token (%d)", rv);
     return rv;
   }
+
+  /* we always use 65537 as public exponent */
+  GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_EXP_65537);
   
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,

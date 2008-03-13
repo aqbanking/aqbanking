@@ -2,6 +2,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/03/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AqHBCI:
+  - fixed a bug in aqhbci-tool (was using a keyinfo after closing the
+    CryptToken
+  - added mandatory option "-N" to "aqhbci-tool3 adduser"
+  - always use exponent 65537 when creating keys (as required by the specs)
+
+
 2008/03/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added OrgaMon as supporting application

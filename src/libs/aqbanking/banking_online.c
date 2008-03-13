@@ -779,7 +779,7 @@ int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name){
                        GWEN_PATH_FLAGS_CREATE_GROUP |
 		       GWEN_DB_FLAGS_LOCKFILE, 0, 2000)) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Could not load config file \"%s\", creating it later",
+	     "Old config file \"%s\", not found",
 	     GWEN_Buffer_GetStart(pbuf));
     GWEN_Buffer_free(pbuf);
     return 0;
