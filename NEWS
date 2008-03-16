@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 3.3.0 (2008-03-16)
+===========================================================================
+
+This release fixes many bugs especially in the HBCI code. AqBanking now 
+starts to manage CryptToken (because this is now used in two backends).
+This release requires Gwenhywfar 3.2.0 or better.
+
+
+===========================================================================
                Released AqBanking - 3.2.1 (2008-02-08)
 ===========================================================================
 

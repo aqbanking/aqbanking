@@ -1,6 +1,13 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released AqBanking - 3.3.0 (2008-03-16)
+===========================================================================
+
+
+2008/03/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- moved unfinished code for RDH2 to its own branch
+
 
 2008/03/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
