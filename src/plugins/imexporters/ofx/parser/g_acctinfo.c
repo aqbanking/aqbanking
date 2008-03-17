@@ -142,13 +142,17 @@ int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "BANKACCTINFO")==0 ||
-	   strcasecmp(tagName, "CCACCTINFO")==0) {
+	   strcasecmp(tagName, "CCACCTINFO")==0 ||
+	   strcasecmp(tagName, "INVACCTINFO")==0) {
     gNew=AIO_OfxGroup_BANKACCTINFO_new(tagName, g, ctx);
+  }
+  else if (strcasecmp(tagName, "DESC")==0) {
+    xg->currentElement=strdup(tagName);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
-    gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
+	     "Ignoring tag [%s]", tagName);
+    xg->currentElement=strdup(tagName);
   }
 
   if (gNew) {
@@ -216,7 +220,8 @@ int AIO_OfxGroup_ACCTINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
   s=AIO_OfxGroup_GetGroupName(sg);
   if (strcasecmp(s, "BANKACCTINFO")==0 ||
-      strcasecmp(s, "CCACCTINFO")==0) {
+      strcasecmp(s, "CCACCTINFO")==0 ||
+      strcasecmp(s, "INVACCTINFO")==0) {
     const char *s;
 
     s=AIO_OfxGroup_BANKACCTINFO_GetBankId(sg);

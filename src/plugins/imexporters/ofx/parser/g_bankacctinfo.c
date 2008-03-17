@@ -124,20 +124,25 @@ int AIO_OfxGroup_BANKACCTINFO_StartTag(AIO_OFX_GROUP *g,
   free(xg->currentElement);
   xg->currentElement=NULL;
 
-  if (strcasecmp(tagName, "SUPTXDL")==0 ||
+  if (strcasecmp(tagName, "USPRODUCTTYPE")==0 ||
+      strcasecmp(tagName, "CHECKING")==0 ||
+      strcasecmp(tagName, "OPTIONLEVEL")==0 ||
+      strcasecmp(tagName, "SUPTXDL")==0 ||
       strcasecmp(tagName, "XFERSRC")==0 ||
       strcasecmp(tagName, "XFERDEST")==0 ||
+      strcasecmp(tagName, "INVACCTTYPE")==0 ||
       strcasecmp(tagName, "SVCSTATUS")==0) {
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "BANKACCTFROM")==0 ||
-	   strcasecmp(tagName, "CCACCTFROM")==0) {
+	   strcasecmp(tagName, "CCACCTFROM")==0 ||
+	   strcasecmp(tagName, "INVACCTFROM")==0) {
     gNew=AIO_OfxGroup_BANKACC_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
-    gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
+	     "Ignoring tag [%s]", tagName);
+    xg->currentElement=strdup(tagName);
   }
 
   if (gNew) {
@@ -210,7 +215,8 @@ int AIO_OfxGroup_BANKACCTINFO_EndSubGroup(AIO_OFX_GROUP *g,
 
   s=AIO_OfxGroup_GetGroupName(sg);
   if (strcasecmp(s, "BANKACCTFROM")==0 ||
-      strcasecmp(s, "CCACCTFROM")==0) {
+      strcasecmp(s, "CCACCTFROM")==0 ||
+      strcasecmp(s, "INVACCTFROM")==0) {
     const char *s;
 
     s=AIO_OfxGroup_BANKACC_GetBankId(sg);
