@@ -35,9 +35,14 @@ qgui_internal_libs=
 endif
 
 qtfrontend_SOURCES=qtfrontend.cpp
+
+if WITH_QBANKING
 qtfrontend_LDADD=\
   $(top_builddir)/src/libs/aqbanking/libaqbanking.la \
   $(qbanking_internal_libs) \
   $(gwenhywfar_libs) $(qt3_libs)
+else
+qtfrontend_LDADD=
+endif
 
 

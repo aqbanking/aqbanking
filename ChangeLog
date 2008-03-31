@@ -1,4 +1,10 @@
 
+2008/03/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug (was trying to build the qt-related tutorial even if qt wasn't
+  desired)
+
+
 2008/03/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in OFX parser: Now also imports investment accounts

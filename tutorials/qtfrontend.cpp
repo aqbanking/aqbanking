@@ -27,7 +27,7 @@
 #include <aqbanking/banking.h>
 #include <aqbanking/jobgetbalance.h>
 
-#ifdef HAVE_QT3
+#ifdef WITH_QBANKING
 # include <qbanking/qbgui.h>
 # include <qbanking/qbanking.h>
 # include <qapplication.h>
@@ -35,7 +35,7 @@
 
 
 int main(int argc, char *argv[]){
-#ifdef BUILD_QBANKING_FRONTEND
+#ifdef WITH_QBANKING
   QApplication a(argc, argv);
   QBanking *qb;
   AB_BANKING *ab;

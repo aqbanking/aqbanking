@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=3
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -698,7 +698,6 @@ AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 QT3TO4="NO"
 UIC3="NO"
 QT_BINDIR=""
-FRONTENDS_INCLUDES_QBANKING="NO"
 
 case "$aqbanking_frontends" in 
   *qbanking*)
@@ -737,6 +736,7 @@ case "$aqbanking_frontends" in
       AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
     fi
     AC_DEFINE(BUILD_QBANKING_FRONTEND, 1, [if qbanking frontend is built])
+    with_qbanking="yes"
     ;;
   *)
     qbanking_internal_libs=""
@@ -746,6 +746,7 @@ esac
 dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
+AM_CONDITIONAL(WITH_QBANKING, [test "$with_qbanking" = "yes"])
 
 
 ###-------------------------------------------------------------------------
