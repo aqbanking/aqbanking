@@ -565,9 +565,7 @@ void AB_ImExporterAccountInfo_AddAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea,
 /**
  * Returns the first account status stored within the context and removes
  * it.
- * The caller becomes the new owner of the account status returned (if any)
- * which makes him/her responsible for freeing it using
- * @ref AB_AccountStatus_free.
+ * The context remains the owner of the object returned.
  */
 AQBANKING_API 
 AB_ACCOUNT_STATUS*
@@ -575,9 +573,7 @@ AB_ImExporterAccountInfo_GetFirstAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
  * Returns the next account status stored within the context and removes it
- * The caller becomes the new owner of the account status returned (if any)
- * which makes him/her responsible for freeing it using
- * @ref AB_AccountStatus_free.
+ * The context remains the owner of the object returned.
  */
 AQBANKING_API 
 AB_ACCOUNT_STATUS*
