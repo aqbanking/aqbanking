@@ -1,4 +1,10 @@
 
+2008/04/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in SWIFT parser: Was too strict for some files (did accept 
+  neither "{HMAC:" not "{CHK:" as valid block introductions)
+
+
 2008/03/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug (was trying to build the qt-related tutorial even if qt wasn't

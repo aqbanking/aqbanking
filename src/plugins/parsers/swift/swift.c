@@ -461,11 +461,12 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 	  DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
 	  return err;
         }
-        if (swhead[2]!=':') {
+#if 0
+	if (swhead[2]!=':') {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
           return GWEN_ERROR_BAD_DATA;
         }
-  
+#endif
         /* skip block */
         for (;;) {
 	  GWEN_FASTBUFFER_READBYTE(fb, c);
