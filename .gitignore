@@ -88,4 +88,5 @@ src/plugins/bankinfo/generic/mkdeinfo
 src/test/abtest
 tutorials/tutorial?
 tutorials/qtfrontend
-
+po/*.mo
+po/*.qm
