@@ -4,11 +4,14 @@
 *.kdevses
 *.la
 *.lo
+*.a
+*.o
 *.obj
 *.sln
 *.vcproj
 *~
 .deps
+.libs
 
 autom4te.cache
 config.guess
