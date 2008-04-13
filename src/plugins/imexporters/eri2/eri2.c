@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -49,7 +46,24 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_ERI2)
 
 
 
-AB_IMEXPORTER *eri2_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=AB_Plugin_ImExporter_new(pm, name, fileName);
+  assert(pl);
+
+  AB_Plugin_ImExporter_SetFactoryFn(pl, AB_Plugin_ImExporterERI2_Factory);
+
+  return pl;
+}
+
+
+
+AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,
+						AB_BANKING *ab,
+						GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_STRINGLIST *paths;

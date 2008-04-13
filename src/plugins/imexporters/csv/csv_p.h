@@ -26,7 +26,15 @@ struct AH_IMEXPORTER_CSV {
 
 
 AQBANKING_EXPORT
-AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+GWEN_PLUGIN *imexporters_csv_factory(GWEN_PLUGIN_MANAGER *pm,
+				     const char *name,
+				     const char *fileName);
+
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
+					       AB_BANKING *ab,
+					       GWEN_DB_NODE *db);
 
 static
 void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p);

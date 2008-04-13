@@ -32,36 +32,64 @@ struct AB_IMEXPORTER_ERI2 {
 };
 
 
-AB_IMEXPORTER *eri2_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+AQBANKING_EXPORT
+GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName);
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,
+						AB_BANKING *ab,
+						GWEN_DB_NODE *db);
+
+static
 void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p);
+
+static
 int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
 			     GWEN_IO_LAYER *bio,
 			     GWEN_DB_NODE *params,
 			     uint32_t guiid);
+
+static
 int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 				       GWEN_DB_NODE *db,
 				       GWEN_DB_NODE *dbParams,
 				       uint32_t guiid);
+
+static
 int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
                                   AB_TRANSACTION *t);
+
+static
 int AB_ImExporterERI2__HandleRec2(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
                                   AB_TRANSACTION *t);
+
+static
 int AB_ImExporterERI2__HandleRec3(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
                                   AB_TRANSACTION *t);
+
+static
 int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
                                   AB_TRANSACTION *t);
 
+static
 void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s);
+
+static
 void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
                                        AB_TRANSACTION *t,
                                        GWEN_DB_NODE *params);
 
+static
 int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
+
+static
 int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              GWEN_IO_LAYER *io,

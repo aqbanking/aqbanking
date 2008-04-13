@@ -1173,11 +1173,11 @@ AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab,
               "bankinfo");
     return 0;
   }
-  pl=GWEN_PluginManager_LoadPlugin(pm, modname);
+  pl=GWEN_PluginManager_GetPlugin(pm, modname);
   if (!pl) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load %s plugin for \"%s\"",
-              "bankinfo", modname);
+	      "Could not load %s plugin for \"%s\"",
+	      "bankinfo", modname);
     return 0;
   }
   ll=GWEN_Plugin_GetLibLoader(pl);
@@ -1475,93 +1475,32 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
 
 AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
                                                 const char *modname){
-  GWEN_LIBLOADER *ll;
-  AB_IMEXPORTER *ie;
-  AB_IMEXPORTER_FACTORY_FN fn;
-  void *p;
-  const char *s;
-  int err = 0;
-  GWEN_BUFFER *mbuf;
-  GWEN_DB_NODE *db;
-  GWEN_PLUGIN_MANAGER *pm;
-  GWEN_STRINGLISTENTRY *sentry;
-  const char *dirpath = 0;
+  GWEN_PLUGIN *pl;
 
-  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-  modname=GWEN_Buffer_GetStart(mbuf);
+  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerImExporter, modname);
+  if (pl) {
+    AB_IMEXPORTER *ie;
+    GWEN_DB_NODE *db;
 
-  /* New loading code -- use path list from PluginManager but don't
-     use its loading code */
-  pm = GWEN_PluginManager_FindPluginManager("imexporters");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "imexporters");
-    return 0;
-  }
+    db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+			"banking/imexporters");
+    assert(db);
+    db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+    assert(db);
 
-  ll = GWEN_LibLoader_new();
-  sentry = GWEN_StringList_FirstEntry(GWEN_PluginManager_GetPaths(pm));
-  while (sentry) {
-    dirpath = GWEN_StringListEntry_Data(sentry);
-    assert(dirpath);
-    err = GWEN_LibLoader_OpenLibraryWithPath(ll, dirpath, modname);
-    if (!err)
-      break;
-    else {
-      /* DBG_INFO_ERR(AQBANKING_LOGDOMAIN, err); */
+    ie=AB_Plugin_ImExporter_Factory(pl, ab, db);
+    if (!ie) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in plugin [%s]: No im/exporter created",
+		modname);
+      return NULL;
     }
-    sentry = GWEN_StringListEntry_Next(sentry);
+    return ie;
   }
-
-  if (err) {
-    DBG_INFO_ERR(AQBANKING_LOGDOMAIN, err);
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not load provider plugin \"%s\"",
-              modname);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
+    return NULL;
   }
-
-  /* create name of init function */
-  GWEN_Buffer_AppendString(mbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (err) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(mbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(mbuf);
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "banking/imexporters");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
-  assert(db);
-
-  fn=(AB_IMEXPORTER_FACTORY_FN)p;
-  assert(fn);
-  ie=fn(ab, db);
-  if (!ie) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error in plugin [%s]: No im/exporter created",
-              dirpath);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_ImExporter_SetLibLoader(ie, ll);
-
-  return ie;
 }
 
 

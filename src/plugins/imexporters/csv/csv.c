@@ -16,6 +16,9 @@
 
 #include "csv_p.h"
 #include "i18n_l.h"
+
+#include "imexporter_be.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
@@ -24,7 +27,24 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_CSV);
 
 
-AB_IMEXPORTER *csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+GWEN_PLUGIN *imexporters_csv_factory(GWEN_PLUGIN_MANAGER *pm,
+				     const char *name,
+				     const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=AB_Plugin_ImExporter_new(pm, name, fileName);
+  assert(pl);
+
+  AB_Plugin_ImExporter_SetFactoryFn(pl, AB_Plugin_ImExporterCSV_Factory);
+
+  return pl;
+}
+
+
+
+AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
+					       AB_BANKING *ab,
+					       GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_CSV *ieh;
 

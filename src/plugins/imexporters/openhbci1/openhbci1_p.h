@@ -26,23 +26,37 @@ struct AH_IMEXPORTER_OPENHBCI1 {
 };
 
 
-AB_IMEXPORTER* csv_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+AQBANKING_EXPORT
+GWEN_PLUGIN *imexporters_openhbci1_factory(GWEN_PLUGIN_MANAGER *pm,
+					   const char *name,
+					   const char *fileName);
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterOpenHBCI1_Factory(GWEN_PLUGIN *pl,
+						     AB_BANKING *ab,
+						     GWEN_DB_NODE *db);
+
+static
 void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p);
 
+static
 int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CONTEXT *ctx,
                                   GWEN_IO_LAYER *bio,
 				  GWEN_DB_NODE *params,
 				  uint32_t guiid);
+
+static
 int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CONTEXT *ctx,
                                   GWEN_IO_LAYER *io,
 				  GWEN_DB_NODE *params,
 				  uint32_t guiid);
 
+static
 int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
-
+static
 int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                             GWEN_DB_NODE *db,
 					    GWEN_DB_NODE *dbParams,

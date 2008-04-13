@@ -22,6 +22,8 @@
 
 #include <aqbanking/imexporter.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/plugin.h>
+
 
 /** @defgroup G_AB_BE_IMEXPORTER Generic Im- and Exporter
  * @ingroup G_AB_BE_INTERFACE
@@ -94,6 +96,32 @@ void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie,
 AQBANKING_API
 void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CHECKFILE_FN f);
+
+/*@}*/
+
+
+
+
+/** @name Handling of ImExporter Plugins
+ *
+ */
+/*@{*/
+
+typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl,
+							  AB_BANKING *ab,
+							  GWEN_DB_NODE *db);
+
+
+GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName);
+
+AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
+					    AB_BANKING *ab,
+					    GWEN_DB_NODE *db);
+
+void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
+				       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn);
 
 /*@}*/
 

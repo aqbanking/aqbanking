@@ -38,6 +38,9 @@ GWEN_INHERIT_FUNCTIONS(AB_IMEXPORTER)
 GWEN_LIST_FUNCTIONS(AB_IMEXPORTER, AB_ImExporter)
 GWEN_LIST_FUNCTIONS(AB_IMEXPORTER_ACCOUNTINFO, AB_ImExporterAccountInfo)
 
+GWEN_INHERIT(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER)
+
+
 
 
 AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name){
@@ -1886,6 +1889,64 @@ void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
     iea=nextIea;
   }
   AB_ImExporterContext_free(toAdd);
+}
+
+
+
+
+
+
+
+
+
+GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName) {
+  GWEN_PLUGIN *pl;
+  AB_PLUGIN_IMEXPORTER *xpl;
+
+  pl=GWEN_Plugin_new(pm, name, fileName);
+  GWEN_NEW_OBJECT(AB_PLUGIN_IMEXPORTER, xpl);
+  GWEN_INHERIT_SETDATA(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER, pl, xpl,
+		       AB_Plugin_ImExporter_FreeData);
+
+  return pl;
+}
+
+
+
+void AB_Plugin_ImExporter_FreeData(void *bp, void *p) {
+  AB_PLUGIN_IMEXPORTER *xpl;
+
+  xpl=(AB_PLUGIN_IMEXPORTER*)p;
+  GWEN_FREE_OBJECT(xpl);
+}
+
+
+
+AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
+					    AB_BANKING *ab,
+					    GWEN_DB_NODE *db) {
+  AB_PLUGIN_IMEXPORTER *xpl;
+
+  assert(pl);
+  xpl=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER, pl);
+  assert(xpl);
+
+  assert(xpl->pluginFactoryFn);
+  return xpl->pluginFactoryFn(pl, ab, db);
+}
+
+
+void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
+				       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn) {
+  AB_PLUGIN_IMEXPORTER *xpl;
+
+  assert(pl);
+  xpl=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER, pl);
+  assert(xpl);
+
+  xpl->pluginFactoryFn=fn;
 }
 
 

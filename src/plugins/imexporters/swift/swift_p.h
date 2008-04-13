@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -26,18 +23,32 @@ struct AH_IMEXPORTER_SWIFT {
 };
 
 
-AB_IMEXPORTER* swift_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+AQBANKING_EXPORT
+GWEN_PLUGIN *imexporters_swift_factory(GWEN_PLUGIN_MANAGER *pm,
+				       const char *name,
+				       const char *fileName);
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterSWIFT_Factory(GWEN_PLUGIN *pl,
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db);
+
+
+static
 void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p);
 
+static
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
 			      GWEN_IO_LAYER *io,
 			      GWEN_DB_NODE *params,
 			      uint32_t guiid);
 
+static
 int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 
+static
 int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
 					GWEN_DB_NODE *dbParams,

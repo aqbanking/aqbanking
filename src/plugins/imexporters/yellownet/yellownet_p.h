@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: openhbci1_p.h 168 2004-11-26 21:01:00Z aquamaniac $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -25,39 +22,62 @@ struct AB_IMEXPORTER_YELLOWNET {
 };
 
 
+AQBANKING_EXPORT
+GWEN_PLUGIN *imexporters_yellownet_factory(GWEN_PLUGIN_MANAGER *pm,
+					   const char *name,
+					   const char *fileName);
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterYellowNet_Factory(GWEN_PLUGIN *pl,
+						     AB_BANKING *ab,
+						     GWEN_DB_NODE *db);
+
+
+static
 AB_IMEXPORTER* yellownet_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+
+static
 void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p);
 
+static
 int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
                            AB_IMEXPORTER_CONTEXT *ctx,
                            GWEN_IO_LAYER *io,
 			   GWEN_DB_NODE *params,
 			   uint32_t guiid);
 
+static
 int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 
+static
 AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
                                      GWEN_XMLNODE *node,
                                      int value);
 
+static
 GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
                                      GWEN_XMLNODE *node,
                                      int value);
 
+static
 AB_IMEXPORTER_ACCOUNTINFO*
   AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    GWEN_XMLNODE *doc);
 
 
+static
 AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
                                              GWEN_XMLNODE *node);
 
+static
 int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
                                       AB_IMEXPORTER_ACCOUNTINFO *ai,
                                       GWEN_XMLNODE *doc);
+
+static
 int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_ACCOUNTINFO *ai,
                                        GWEN_XMLNODE *doc);

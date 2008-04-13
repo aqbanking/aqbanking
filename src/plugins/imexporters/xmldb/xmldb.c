@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: xmldb.c 1009 2006-05-11 19:59:20Z martin $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -30,7 +27,25 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_XMLDB);
 
 
-AB_IMEXPORTER *xmldb_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+
+GWEN_PLUGIN *imexporters_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
+				       const char *name,
+				       const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=AB_Plugin_ImExporter_new(pm, name, fileName);
+  assert(pl);
+
+  AB_Plugin_ImExporter_SetFactoryFn(pl, AB_Plugin_ImExporterXMLDB_Factory);
+
+  return pl;
+}
+
+
+
+AB_IMEXPORTER *AB_Plugin_ImExporterXMLDB_Factory(GWEN_PLUGIN *pl,
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_XMLDB *ieh;
 

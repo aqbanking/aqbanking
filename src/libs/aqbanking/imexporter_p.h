@@ -99,6 +99,14 @@ static int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level);
 
 
 
+typedef struct AB_PLUGIN_IMEXPORTER AB_PLUGIN_IMEXPORTER;
+struct AB_PLUGIN_IMEXPORTER {
+  AB_PLUGIN_IMEXPORTER_FACTORY_FN pluginFactoryFn;
+};
+
+static void AB_Plugin_ImExporter_FreeData(void *bp, void *p);
+
+
 #endif /* AQBANKING_IMEXPORTER_P_H */
 
 

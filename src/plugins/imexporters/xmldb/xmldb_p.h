@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: xmldb_p.h 566 2005-08-23 06:25:03Z aquamaniac $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -26,21 +23,36 @@ struct AH_IMEXPORTER_XMLDB {
 };
 
 
-AB_IMEXPORTER* xmldb_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+AQBANKING_EXPORT
+GWEN_PLUGIN *imexporters_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
+				       const char *name,
+				       const char *fileName);
+
+static
+AB_IMEXPORTER *AB_Plugin_ImExporterXMLDB_Factory(GWEN_PLUGIN *pl,
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db);
+
+
+static
 void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p);
 
+
+static
 int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
 			      GWEN_IO_LAYER *io,
 			      GWEN_DB_NODE *params,
 			      uint32_t guiid);
 
+static
 int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               GWEN_IO_LAYER *io,
 			      GWEN_DB_NODE *params,
 			      uint32_t guiid);
 
+static
 int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 

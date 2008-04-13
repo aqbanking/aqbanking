@@ -36,7 +36,25 @@
 GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET);
 
 
-AB_IMEXPORTER *yellownet_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+
+GWEN_PLUGIN *imexporters_yellownet_factory(GWEN_PLUGIN_MANAGER *pm,
+					   const char *name,
+					   const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=AB_Plugin_ImExporter_new(pm, name, fileName);
+  assert(pl);
+
+  AB_Plugin_ImExporter_SetFactoryFn(pl, AB_Plugin_ImExporterYellowNet_Factory);
+
+  return pl;
+}
+
+
+
+AB_IMEXPORTER *AB_Plugin_ImExporterYellowNet_Factory(GWEN_PLUGIN *pl,
+						     AB_BANKING *ab,
+						     GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_YELLOWNET *ieh;
 
