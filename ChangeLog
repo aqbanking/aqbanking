@@ -16,6 +16,8 @@
 - src/plugins/backends/aqhbci/: removed media folder (isn't used anyway)
 - src/plugins/imexporters: removed eri importer (was not built anyway since
   there is eri2)
+- imexporter plugins are now real GWEN plugins (this makes them available
+  for static linking, no need to resolve symbols in AqBanking)
 
 
 2008/04/09: Martin Preuss<martin@libchipcard.de>
