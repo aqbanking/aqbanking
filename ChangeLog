@@ -1,3 +1,22 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/04/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed backends AqDTAUS, AqGeldKarte and AqYellowNet since they haven't
+  been ported anyway
+- configure.ac:
+  - removed unneeded lines and checks
+  - added options to specify which plugins to build
+  - added option to disable dynamic plugin loading (as needed for static-only builds)
+- src/plugins/*: build convenience libraries against which the plugins are
+  linked. This allows for static linking of the plugins
+- src/plugins/backends/aqhbci/: removed media folder (isn't used anyway)
+- src/plugins/imexporters: removed eri importer (was not built anyway since
+  there is eri2)
+
 
 2008/04/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
