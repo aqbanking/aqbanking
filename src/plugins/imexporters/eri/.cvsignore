@@ -1,9 +1,0 @@
-eri.c.ReadRawStable
-eri.c.ReadRawForcedStable
-eri.c.ReadRawForcedLogStable
-eri_try.c
-eri.xml
-ressource.rc
-*.dll
-*.def
-*.lib

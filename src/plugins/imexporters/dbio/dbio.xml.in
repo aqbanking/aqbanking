@@ -1,9 +1,0 @@
-<plugin name="dbio" type="none" import="0" export="0" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <descr>
-    This plugin has been removed (it is now split into DTAUS and SWIFT)
-  </descr>
-</plugin>
-
-

@@ -4,26 +4,25 @@ INCLUDES = \
 
 EXTRA_DIST=README
 
-dbioplugindir = $(gwenhywfar_plugins)/dbio
-if IS_WINDOWS
-dbioplugin_DATA=swift.xml 
-else
-dbioplugin_DATA=swift.xml
-endif
-
-dbioplugin_LTLIBRARIES=swift.la
 noinst_HEADERS=\
   swift.h \
   swift_l.h \
   swift_p.h \
   swift940_l.h \
   swift940_p.h
-
-swift_la_SOURCES=\
+noinst_LTLIBRARIES=libparser_swift.la
+libparser_swift_la_SOURCES=\
  swift.c \
  swift940.c
 
+
+dbioplugindir = $(gwenhywfar_plugins)/dbio
+dbioplugin_DATA=swift.xml
+dbioplugin_LTLIBRARIES=swift.la
+swift_la_SOURCES=dummy.c
+
 swift_la_LIBADD = \
+  libparser_swift.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) 
 
@@ -31,8 +30,7 @@ swift_la_LDFLAGS = -no-undefined $(STRIPALL) -module -omit-version
 
 
 # Add the linker flags for windows resource file
-swift_la_DEPENDENCIES = \
- $(aqbanking_internal_libs)
+swift_la_DEPENDENCIES = libparser_swift.la $(aqbanking_internal_libs)
 # if IS_WINDOWS
 if IS_WINDOWS
 swift_la_DEPENDENCIES += ressource.o
@@ -45,6 +43,6 @@ endif
 
 
 sources:
-	for f in $(swift_la_SOURCES); do \
+	for f in $(libparser_swift_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done

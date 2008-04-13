@@ -12,19 +12,15 @@ EXTRA_DIST=aqnone.xml.in
 
 plugindir=@aqbanking_plugindir@/providers
 plugin_LTLIBRARIES=aqnone.la
-if IS_WINDOWS
 plugin_DATA=aqnone.xml
-else
-plugin_DATA=aqnone.xml
-endif
 
 
 lib_LTLIBRARIES=libaqnone.la 
 
 noinst_HEADERS=provider_l.h provider_p.h
 
-libaqnone_la_SOURCES=provider.c
-aqnone_la_SOURCES=aqnone-plugin.c
+libaqnone_la_SOURCES=provider.c aqnone-plugin.c
+aqnone_la_SOURCES=dummy.c
 
 libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 libaqnone_la_LDFLAGS = -no-undefined -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@

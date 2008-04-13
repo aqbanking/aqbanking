@@ -10,17 +10,15 @@ bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
 
 #DEFS += -DPLUGIN_DATADIR=\"$(bankinfodatadir)\"
 
-noinst_LTLIBRARIES=libbankinfo.la
-
+noinst_LTLIBRARIES=libbankinfo_generic.la
 noinst_HEADERS=\
  generic_p.h \
  generic_l.h
 
-libbankinfo_la_SOURCES=\
- generic.c
+libbankinfo_generic_la_SOURCES=generic.c
 
-libbankinfo_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-libbankinfo_la_LDFLAGS = $(STRIPALL)
+libbankinfo_generic_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+libbankinfo_generic_la_LDFLAGS = $(STRIPALL)
 
 at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
 ch_files=ch/blz.idx ch/bic.idx ch/namloc.idx ch/banks.data

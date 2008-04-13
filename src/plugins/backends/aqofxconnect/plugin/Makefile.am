@@ -13,11 +13,7 @@ EXTRA_DIST=\
 
 plugindir = $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES = aqofxconnect.la
-if IS_WINDOWS
-plugin_DATA = aqofxconnect.xml 
-else
 plugin_DATA = aqofxconnect.xml
-endif
 
 
 lib_LTLIBRARIES=libaqofxconnect.la 
@@ -39,13 +35,13 @@ iheader_HEADERS=\
  user.h
 
 libaqofxconnect_la_SOURCES= \
+ aqofxconnect-plugin.c \
  account.c \
  provider.c \
  queues.c \
  user.c
 
-aqofxconnect_la_SOURCES= \
- aqofxconnect-plugin.c
+aqofxconnect_la_SOURCES=dummy.c
 
 libaqofxconnect_la_LIBADD= \
   $(aqbanking_internal_libs) \

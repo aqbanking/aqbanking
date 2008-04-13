@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=3
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -75,25 +75,10 @@ AQHBCI_SO_AGE=0
 AQHBCI_SO_REVISION=0
 AQHBCI_SO_EFFECTIVE="`echo \$(($AQHBCI_SO_CURRENT-$AQHBCI_SO_AGE))`"
 
-AQDTAUS_SO_CURRENT=4
-AQDTAUS_SO_AGE=0
-AQDTAUS_SO_REVISION=0
-AQDTAUS_SO_EFFECTIVE="`echo \$(($AQDTAUS_SO_CURRENT-$AQDTAUS_SO_AGE))`"
-
-AQGELDKARTE_SO_CURRENT=5
-AQGELDKARTE_SO_AGE=0
-AQGELDKARTE_SO_REVISION=0
-AQGELDKARTE_SO_EFFECTIVE="`echo \$(($AQGELDKARTE_SO_CURRENT-$AQGELDKARTE_SO_AGE))`"
-
 AQOFXCONNECT_SO_CURRENT=4
 AQOFXCONNECT_SO_AGE=0
 AQOFXCONNECT_SO_REVISION=0
 AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
-
-AQYELLOWNET_SO_CURRENT=4
-AQYELLOWNET_SO_AGE=0
-AQYELLOWNET_SO_REVISION=0
-AQYELLOWNET_SO_EFFECTIVE="`echo \$(($AQYELLOWNET_SO_CURRENT-$AQYELLOWNET_SO_AGE))`"
 
 #
 # frontends
@@ -564,32 +549,199 @@ AC_SUBST(aqbanking_frontends)
 #
 
 AC_ARG_WITH(backends, 
-  [  --with-backends=list      space separated list of backends (default:GPL)],
+  [  --with-backends=list      space separated list of backends (default:all)],
   [aqbanking_backends="$withval"],
-  [aqbanking_backends="GPL"]
+  [aqbanking_backends="all"]
 )
 
+if test "$aqbanking_backends" == "all"; then
+  aqbanking_backends="aqhbci aqnone aqofxconnect"
+fi
 
-tmp_backends=""
 for f in ${aqbanking_backends}; do
-  if test "x${f}" = "xGPL" -o "x${f}" = "xgpl"; then
-    tmp_backends="${tmp_backends} aqhbci aqofxconnect"
-  else
-    tmp_backends="${tmp_backends} ${f}"
-  fi
+  case "$f" in
+    aqhbci)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqhbci"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/plugin/libaqhbci.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
+      ;;
+    aqnone)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
+      ;;
+    aqofxconnect)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/plugin/libaqofxconnect.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      ;;
+  esac
 done
-aqbanking_backends="${tmp_backends}"
 
-case "${aqbanking_backends}" in *aqyellownet*)
-  AC_MSG_NOTICE([
-  
-    *** The backend aqyellownet is NOT licensed under the GPL. 
-    Please see src/plugins/backends/aqyellownet/plugin/COPYING for details.
-    ])
-  ;;
-esac
+AC_SUBST(aqbanking_plugins_backends_dirs)
+AC_SUBST(aqbanking_plugins_backends_libs)
 
-AC_SUBST(aqbanking_backends)
+
+
+###-------------------------------------------------------------------------
+#
+# ImExporters. Those do not have a required ordering.
+#
+
+AC_ARG_WITH(imexporters, 
+  [  --with-imexporters=list      space separated list of im-/exporters (default:all)],
+  [aqbanking_imexporters="$withval"],
+  [aqbanking_imexporters="all"]
+)
+
+if test "$aqbanking_imexporters" == "all"; then
+  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet"
+fi
+
+for f in ${aqbanking_imexporters}; do
+  case "$f" in
+    csv)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs csv"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs csv/libio_csv.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV, 1, [plugin availability])
+      ;;
+    dtaus)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs dtaus"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs dtaus/libio_dtaus.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_DTAUS, 1, [plugin availability])
+      ;;
+    eri2)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs eri2"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs eri2/libio_eri2.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_ERI2, 1, [plugin availability])
+      ;;
+    ofx)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ofx"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ofx/libio_ofx.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OFX, 1, [plugin availability])
+      ;;
+    openhbci1)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs openhbci1"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs openhbci1/libio_openhbci1.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1, 1, [plugin availability])
+      ;;
+    swift)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs swift"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs swift/libio_swift.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SWIFT, 1, [plugin availability])
+      ;;
+    xmldb)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs xmldb"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs xmldb/libio_xmldb.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XMLDB, 1, [plugin availability])
+      ;;
+    yellownet)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs yellownet"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs yellownet/libio_yellownet.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_YELLOWNET, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      ;;
+  esac
+done
+
+AC_SUBST(aqbanking_plugins_imexporters_dirs)
+AC_SUBST(aqbanking_plugins_imexporters_libs)
+
+
+
+###-------------------------------------------------------------------------
+#
+# Parsers. Those do not have a required ordering.
+#
+
+AC_ARG_WITH(parsers, 
+  [  --with-parsers=list      space separated list of parsers (default:all)],
+  [aqbanking_parsers="$withval"],
+  [aqbanking_parsers="all"]
+)
+
+if test "$aqbanking_parsers" == "all"; then
+  aqbanking_parsers="dtaus swift"
+fi
+
+for f in ${aqbanking_parsers}; do
+  case "$f" in
+    dtaus)
+      aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs dtaus"
+      aqbanking_plugins_parsers_libs="$aqbanking_plugins_parsers_libs dtaus/libparser_dtaus.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_PARSERS_DTAUS, 1, [plugin availability])
+      ;;
+    swift)
+      aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
+      aqbanking_plugins_parsers_libs="$aqbanking_plugins_parsers_libs swift/libparser_swift.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_PARSERS_SWIFT, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      ;;
+  esac
+done
+
+AC_SUBST(aqbanking_plugins_parsers_dirs)
+AC_SUBST(aqbanking_plugins_parsers_libs)
+
+
+
+###-------------------------------------------------------------------------
+#
+# Bankinfo plugins. Those do not have a required ordering.
+#
+
+AC_ARG_WITH(bankinfos, 
+  [  --with-bankinfos=list      space separated list of bankinfo (default:all)],
+  [aqbanking_bankinfos="$withval"],
+  [aqbanking_bankinfos="all"]
+)
+
+if test "$aqbanking_bankinfos" == "all"; then
+  aqbanking_bankinfos="at ca ch de us"
+fi
+
+for f in ${aqbanking_bankinfos}; do
+  case "$f" in
+    at)
+      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs at"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs at/libbankinfo_at.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_AT, 1, [plugin availability])
+      ;;
+    ca)
+      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ca"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs ca/libbankinfo_ca.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_CA, 1, [plugin availability])
+      ;;
+    ch)
+      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ch"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs ch/libbankinfo_ch.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_CH, 1, [plugin availability])
+      ;;
+    de)
+      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs de"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs de/libbankinfo_de.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
+      ;;
+    us)
+      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs us"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs us/libbankinfo_us.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_US, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      ;;
+  esac
+done
+
+AC_SUBST(aqbanking_plugins_bankinfo_dirs)
+AC_SUBST(aqbanking_plugins_bankinfo_libs)
 
 
 
@@ -614,25 +766,6 @@ AC_ARG_WITH(xmlmerge, [  --with-xmlmerge=PATH path and name of tool xmlmerge],
 AC_SUBST(XMLMERGE)
 AC_MSG_RESULT($XMLMERGE)
 
-
-
-###-------------------------------------------------------------------------
-#
-# Check for LibChipcard4
-#
-
-case "$aqbanking_backends" in *aqgeldkarte*)
-  AC_CHIPCARD_CLIENT(4,0,0)
-  AC_MSG_CHECKING([if chipcard_client is useable])
-  if test "x$have_chipcard_client" == "xyes"; then
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-  fi
-  
-  all_includes="$all_includes $chipcard_client_includes"
-  ;;
-esac
 
 
 ###-------------------------------------------------------------------------
@@ -1206,21 +1339,9 @@ AC_SUBST(DOXYGEN_TAGFILES)
 ###-------------------------------------------------------------------------
 #
 # check for dependencies of backends
-#
+#  (nothing to check for right now)
 
 dependencies_ok="yes"
-for backend in $aqbanking_backends; do
-  case "$backend" in
-
-    aqgeldkarte)
-      if test "x$have_chipcard_client" != "xyes"; then
-        AC_MSG_NOTICE([*** Libchipcard2-client is required for backend "AqGeldKarte". Specify --with-backends="aqhbci aqdtaus aqofxconnect" to build aqbanking without that backend.])
-	dependencies_ok="no"
-      fi
-      ;;
-
-  esac
-done
 
 
 
@@ -1312,64 +1433,6 @@ AC_MSG_RESULT($aqhbci_datadir)
 
 ###-------------------------------------------------------------------------
 #
-# Configure stuff for backend AqDTAUS
-#
-
-# Common settings
-aqdtaus_internal_libs="${abs_top_builddir}/src/plugins/backends/aqdtaus/plugin/libaqdtaus.la"
-aqdtaus_includes="-I\${includedir}"
-aqdtaus_libs="-L\${libdir} -laqdtaus"
-
-case "$aqbanking_backends" in *aqdtaus*)
-  case "$OS_TYPE" in
-      posix)
-          ;;
-      windows)
-          AC_DEFINE_UNQUOTED(BUILDING_AQDTAUS_DLL,1, [Define if DLL is built])
-          ;;
-  esac
-  ;;
-esac
-
-AS_SCRUB_INCLUDE(aqdtaus_includes)
-AC_SUBST(aqdtaus_includes)
-AC_SUBST(aqdtaus_internal_libs)
-AC_SUBST(aqdtaus_libs)
-#AC_DEFINE_UNQUOTED(AQDTAUS_DATA, "${aqdtaus_data}", [data dir])
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for backend AqGeldKarte
-#
-
-# Common settings
-aqgeldkarte_internal_libs="${abs_top_builddir}/src/plugins/backends/aqgeldkarte/plugin/libaqgeldkarte.la"
-aqgeldkarte_includes="-I\${includedir}"
-aqgeldkarte_libs="-L\${libdir} -laqgeldkarte"
-
-case "$aqbanking_backends" in *aqgeldkarte*)
-  case "$OS_TYPE" in
-      posix)
-          ;;
-      windows)
-          AC_DEFINE_UNQUOTED(BUILDING_AQGELDKARTE_DLL,1, [Define if DLL is built])
-          ;;
-  esac
-  ;;
-esac
-
-AS_SCRUB_INCLUDE(aqgeldkarte_includes)
-AC_SUBST(aqgeldkarte_includes)
-AC_SUBST(aqgeldkarte_internal_libs)
-AC_SUBST(aqgeldkarte_libs)
-#AC_DEFINE_UNQUOTED(AQGELDKARTE_DATA, "${aqgeldkarte_data}", [data dir])
-
-
-
-###-------------------------------------------------------------------------
-#
 # Configure stuff for backend AqOfxConnect
 #
 
@@ -1394,34 +1457,6 @@ AC_SUBST(aqofxconnect_includes)
 AC_SUBST(aqofxconnect_internal_libs)
 AC_SUBST(aqofxconnect_libs)
 #AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for backend AqYellowNew
-#
-
-# Common settings
-aqyellownet_internal_libs="${abs_top_builddir}/src/plugins/backends/aqyellownet/plugin/aqyellownet.la"
-aqyellownet_includes="-I\${includedir}"
-aqyellownet_libs="-L\${libdir} -laqyellownet"
-
-case "$aqbanking_backends" in *aqyellownet*)
-  case "$OS_TYPE" in
-      posix)
-          ;;
-      windows)
-          ;;
-  esac
-  ;;
-esac
-
-AS_SCRUB_INCLUDE(aqyellownet_includes)
-AC_SUBST(aqyellownet_includes)
-AC_SUBST(aqyellownet_internal_libs)
-AC_SUBST(aqyellownet_libs)
-#AC_DEFINE_UNQUOTED(AQYELLOWNET_DATA, "${aqyellownet_data}", [data dir])
 
 
 
@@ -1591,18 +1626,11 @@ AC_CONFIG_FILES([
   src/plugins/bankinfo/us/us.xml
   src/plugins/bankinfo/generic/Makefile
   src/plugins/imexporters/Makefile
-  src/plugins/imexporters/dbio/Makefile
-  src/plugins/imexporters/dbio/dbio.xml
   src/plugins/imexporters/dtaus/Makefile
   src/plugins/imexporters/dtaus/dtaus.xml
   src/plugins/imexporters/dtaus/ressource.rc
   src/plugins/imexporters/dtaus/profiles/Makefile
   src/plugins/imexporters/dtaus/profiles/default.conf
-  src/plugins/imexporters/eri/Makefile
-  src/plugins/imexporters/eri/eri.xml
-  src/plugins/imexporters/eri/ressource.rc
-  src/plugins/imexporters/eri/profiles/Makefile
-  src/plugins/imexporters/eri/profiles/default.conf
   src/plugins/imexporters/eri2/Makefile
   src/plugins/imexporters/eri2/eri2.xml
   src/plugins/imexporters/eri2/ressource.rc
@@ -1689,23 +1717,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
-  src/plugins/backends/aqdtaus/Makefile
-  src/plugins/backends/aqdtaus/version.h
-  src/plugins/backends/aqdtaus/plugin/Makefile
-  src/plugins/backends/aqdtaus/plugin/aqdtaus.xml
-  src/plugins/backends/aqdtaus/plugin/ressource.rc
-  src/plugins/backends/aqdtaus/ui/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/libs/Makefile
-  src/plugins/backends/aqdtaus/ui/qt3/libs/dialogs/Makefile
-  src/plugins/backends/aqgeldkarte/Makefile
-  src/plugins/backends/aqgeldkarte/version.h
-  src/plugins/backends/aqgeldkarte/plugin/Makefile
-  src/plugins/backends/aqgeldkarte/plugin/aqgeldkarte.xml
-  src/plugins/backends/aqgeldkarte/ui/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/libs/Makefile
-  src/plugins/backends/aqgeldkarte/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/plugin/Makefile
@@ -1717,12 +1728,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc
-  src/plugins/backends/aqyellownet/Makefile
-  src/plugins/backends/aqyellownet/plugin/Makefile
-  src/plugins/backends/aqyellownet/plugin/aqyellownet.xml
-  src/plugins/backends/aqyellownet/ui/Makefile
-  src/plugins/backends/aqyellownet/ui/qt3/Makefile
-  src/plugins/backends/aqyellownet/ui/qt3/libs/Makefile
   src/test/Makefile
   tutorials/Makefile
   po/Makefile
@@ -1751,14 +1756,23 @@ echo
 echo "Summary"
 echo "----------------------------------------------------"
 echo "AqBanking version       : $AQBANKING_VERSION_FULL_STRING"
-echo "Supported backends      :$aqbanking_backends"
-echo "Supported frontends     :$aqbanking_frontends"
 echo "Local Installation Mode : $enable_local_install"
+echo "Supported frontends     :$aqbanking_frontends"
 echo "Cfg Search Folder       : $aqbanking_cfg_searchdir"
 echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
+echo
+
+echo
+echo "Plugins"
+echo "----------------------------------------------------"
+echo "  Backends              : $aqbanking_backends"
+echo "  Im-/Exporters         : $aqbanking_imexporters"
+echo "  Parsers               : $aqbanking_parsers"
+echo "  Bank Infos            : $aqbanking_bankinfos"
+
 echo
 echo "You can now run \"make\" (or gmake on FreeBSD) to compile."
 

@@ -4,27 +4,24 @@ INCLUDES = \
 
 EXTRA_DIST=README
 
-dbioplugindir = $(gwenhywfar_plugins)/dbio
-
-dbioplugin_LTLIBRARIES=dtaus.la
-if IS_WINDOWS
-dbioplugin_DATA=dtaus.xml 
-else
-dbioplugin_DATA=dtaus.xml
-endif
-
+noinst_LTLIBRARIES=libparser_dtaus.la
+libparser_dtaus_la_SOURCES=\
+ dtaus.c \
+ dtaus-import.c \
+ dtaus-export.c
 noinst_HEADERS=\
  dtaus.h \
  dtaus_p.h \
  dtaus-import_p.h \
  dtaus-export_p.h
 
-dtaus_la_SOURCES=\
- dtaus.c \
- dtaus-import.c \
- dtaus-export.c
 
+dbioplugindir = $(gwenhywfar_plugins)/dbio
+dbioplugin_LTLIBRARIES=dtaus.la
+dbioplugin_DATA=dtaus.xml
+dtaus_la_SOURCES=dummy.c
 dtaus_la_LIBADD = \
+  libparser_dtaus.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) 
 
@@ -32,8 +29,7 @@ dtaus_la_LDFLAGS = -no-undefined $(STRIPALL) -module -omit-version
 
 
 # Add the linker flags for windows resource file
-dtaus_la_DEPENDENCIES = \
- $(aqbanking_internal_libs)
+dtaus_la_DEPENDENCIES = libparser_dtaus.la $(aqbanking_internal_libs)
 # if IS_WINDOWS
 if IS_WINDOWS
 dtaus_la_DEPENDENCIES += ressource.o
@@ -47,7 +43,7 @@ endif
 
 
 sources:
-	for f in $(dtaus_la_SOURCES); do \
+	for f in $(libparser_dtaus_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 

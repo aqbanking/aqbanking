@@ -21,7 +21,7 @@ iheader_HEADERS=aqhbci.h
 noinst_HEADERS = aqhbci_l.h
 
 lib_LTLIBRARIES=libaqhbci.la
-libaqhbci_la_SOURCES=aqhbci.c
+libaqhbci_la_SOURCES=aqhbci.c aqhbci-plugin.c
 
 noinst_PROGRAMS=testlib
 
@@ -53,7 +53,7 @@ libaqhbci_la_LDFLAGS = -no-undefined \
   -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
 
 
-aqhbci_la_SOURCES=aqhbci-plugin.c
+aqhbci_la_SOURCES=dummy.c
 aqhbci_la_LIBADD = \
   libaqhbci.la \
   $(aqbanking_internal_libs) \

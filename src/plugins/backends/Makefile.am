@@ -1,5 +1,9 @@
-SUBDIRS = $(aqbanking_backends) aqnone
-DIST_SUBDIRS = aqhbci aqdtaus aqgeldkarte aqofxconnect aqyellownet aqnone
+SUBDIRS = $(aqbanking_plugins_backends_dirs)
+DIST_SUBDIRS = aqhbci aqofxconnect aqnone
+
+noinst_LTLIBRARIES=libbackends.la
+libbackends_la_SOURCES=dummy.c
+libbackends_la_LIBADD=$(aqbanking_plugins_backends_libs)
 
 sources:
 	for d in $(DIST_SUBDIRS); do \
