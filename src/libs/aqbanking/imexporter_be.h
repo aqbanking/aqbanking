@@ -112,14 +112,17 @@ typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl,
 							  GWEN_DB_NODE *db);
 
 
+AQBANKING_API
 GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
 				      const char *name,
 				      const char *fileName);
 
+AQBANKING_API
 AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
 					    AB_BANKING *ab,
 					    GWEN_DB_NODE *db);
 
+AQBANKING_API
 void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
 				       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn);
 

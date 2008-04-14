@@ -34,9 +34,6 @@ AB_IMEXPORTER *AB_Plugin_ImExporterYellowNet_Factory(GWEN_PLUGIN *pl,
 
 
 static
-AB_IMEXPORTER* yellownet_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
-
-static
 void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p);
 
 static

@@ -1154,72 +1154,33 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 
 
 AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab,
-                                                   const char *modname){
-  GWEN_LIBLOADER *ll;
-  AB_BANKINFO_PLUGIN *bip;
-  AB_BANKINFO_PLUGIN_FACTORY_FN fn;
-  void *p;
-  const char *s;
-  int err;
-  GWEN_BUFFER *mbuf;
-  GWEN_DB_NODE *db;
+						   const char *modname){
   GWEN_PLUGIN *pl;
-  GWEN_PLUGIN_MANAGER *pm;
 
-  pm=GWEN_PluginManager_FindPluginManager("bankinfo");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "bankinfo");
-    return 0;
+  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerBankInfo, modname);
+  if (pl) {
+    AB_BANKINFO_PLUGIN *bip;
+    GWEN_DB_NODE *db;
+
+    db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+			"banking/bankinfoplugins");
+    assert(db);
+    db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT, modname);
+    assert(db);
+
+    bip=AB_Plugin_BankInfo_Factory(pl, ab, db);
+    if (!bip) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in plugin [%s]: No bank info created",
+		modname);
+      return NULL;
+    }
+    return bip;
   }
-  pl=GWEN_PluginManager_GetPlugin(pm, modname);
-  if (!pl) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not load %s plugin for \"%s\"",
-	      "bankinfo", modname);
-    return 0;
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
+    return NULL;
   }
-  ll=GWEN_Plugin_GetLibLoader(pl);
-
-  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-
-  /* create name of init function */
-  GWEN_Buffer_AppendString(mbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (err) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(mbuf);
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-  GWEN_Buffer_free(mbuf);
-
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      "banking/bankinfoplugins");
-  assert(db);
-  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
-                      modname);
-  assert(db);
-
-  fn=(AB_BANKINFO_PLUGIN_FACTORY_FN)p;
-  assert(fn);
-  bip=fn(ab, db);
-  if (!bip) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error in plugin: No bankinfoplugin created");
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_BankInfoPlugin_SetPlugin(bip, pl);
-
-  return bip;
 }
 
 

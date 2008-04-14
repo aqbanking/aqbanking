@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -24,7 +21,17 @@ struct AB_BANKINFO_PLUGIN_AT {
 };
 
 
+static
 void GWENHYWFAR_CB AB_BankInfoPluginAT_FreeData(void *bp, void *p);
+
+static
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoAT_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab, GWEN_DB_NODE *db);
+
+
+AQBANKING_EXPORT
+GWEN_PLUGIN *bankinfo_at_factory(GWEN_PLUGIN_MANAGER *pm,
+				 const char *name,
+				 const char *fileName);
 
 
 #endif /* AQBANKING_BANKINFO_AT_P_H */

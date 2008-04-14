@@ -28,6 +28,8 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKINFO_PLUGIN)
 GWEN_LIST_FUNCTIONS(AB_BANKINFO_PLUGIN, AB_BankInfoPlugin)
 GWEN_LIST2_FUNCTIONS(AB_BANKINFO_PLUGIN, AB_BankInfoPlugin)
 
+GWEN_INHERIT(GWEN_PLUGIN, AB_PLUGIN_BANKINFO)
+
 
 
 AB_BANKINFO_PLUGIN *AB_BankInfoPlugin_new(const char *country){
@@ -155,6 +157,63 @@ void AB_BankInfoPlugin_SetPlugin(AB_BANKINFO_PLUGIN *bip,
   assert(bip->usage);
 
   bip->plugin=pl;
+}
+
+
+
+
+
+
+
+GWEN_PLUGIN *AB_Plugin_BankInfo_new(GWEN_PLUGIN_MANAGER *pm,
+				    const char *name,
+				    const char *fileName) {
+  GWEN_PLUGIN *pl;
+  AB_PLUGIN_BANKINFO *xpl;
+
+  pl=GWEN_Plugin_new(pm, name, fileName);
+  GWEN_NEW_OBJECT(AB_PLUGIN_BANKINFO, xpl);
+  GWEN_INHERIT_SETDATA(GWEN_PLUGIN, AB_PLUGIN_BANKINFO, pl, xpl,
+		       AB_Plugin_BankInfo_FreeData);
+
+  return pl;
+}
+
+
+
+void AB_Plugin_BankInfo_FreeData(void *bp, void *p) {
+  AB_PLUGIN_BANKINFO *xpl;
+
+  xpl=(AB_PLUGIN_BANKINFO*)p;
+  GWEN_FREE_OBJECT(xpl);
+}
+
+
+
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfo_Factory(GWEN_PLUGIN *pl,
+					       AB_BANKING *ab,
+					       GWEN_DB_NODE *db) {
+  AB_PLUGIN_BANKINFO *xpl;
+
+  assert(pl);
+  xpl=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, AB_PLUGIN_BANKINFO, pl);
+  assert(xpl);
+
+  assert(xpl->pluginFactoryFn);
+  return xpl->pluginFactoryFn(pl, ab, db);
+}
+
+
+
+void AB_Plugin_BankInfo_SetFactoryFn(GWEN_PLUGIN *pl,
+				     AB_PLUGIN_BANKINFO_FACTORY_FN fn) {
+  AB_PLUGIN_BANKINFO *xpl;
+
+  assert(pl);
+  xpl=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, AB_PLUGIN_BANKINFO, pl);
+  assert(xpl);
+
+  xpl->pluginFactoryFn=fn;
 }
 
 
