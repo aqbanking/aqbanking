@@ -62,7 +62,13 @@ sources:
 
 # Build rules for the files that come from the .ui file
 %.ui.cpp: %.ui
-	$(UIC3) $< -impl $<.h -o $@
+	$(UIC3) $< -impl $(@:.ui.cpp=.ui.h) -o $@.tmp && \
+	echo "#ifdef HAVE_CONFIG_H" >$@ && \
+	echo "# include <config.h>" >>$@ && \
+	echo "#endif" >>$@ && \
+	cat $@.tmp >>$@ && \
+	rm $@.tmp && \
+	echo "#include \"`basename $<`.moc.cpp\"" >>$@
 %.ui.h: %.ui
 	$(UIC3) $< -o $@
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp

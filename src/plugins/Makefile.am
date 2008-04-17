@@ -10,7 +10,7 @@ libaqb_plugins_la_LIBADD=\
   bankinfo/libbankinfo.la \
   imexporters/libimexporters.la \
   parsers/libparsers.la
-
+noinst_HEADERS=aqbanking_plugins.h
 
 sources:
 	for d in $(SUBDIRS); do \

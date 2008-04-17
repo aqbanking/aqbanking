@@ -65,7 +65,7 @@ sources:
 	echo "#endif" >>$@ && \
 	cat $@.tmp >>$@ && \
 	rm $@.tmp && \
-	echo "#include \"$<.moc\"" >>$@
+	echo "#include \"`basename $<`.moc\"" >>$@
 
 
 %.ui.h: %.ui
