@@ -1,10 +1,9 @@
 SUBDIRS=wizard
 
-INCLUDES = \
+INCLUDES = $(gwenhywfar_includes) $(qt3_includes) \
   -I$(top_builddir)/headers \
   -I$(srcdir)/.. -I$(srcdir)/wizard \
-  -I.. -Iwizard \
-  $(all_includes)
+  -I.. -Iwizard
 
 
 UI_FILES= \
@@ -29,9 +28,9 @@ noinst_HEADERS=\
 
 
 nodist_libdialogs_la_SOURCES=\
- cfgtabpageuserhbci.ui.cpp cfgtabpageuserhbci.ui.moc.cpp cfgtabpageuserhbci.moc.cpp \
- cfgtabpageaccounthbci.ui.cpp cfgtabpageaccounthbci.ui.moc.cpp cfgtabpageaccounthbci.moc.cpp \
- selectmode.ui.cpp selectmode.ui.moc.cpp
+ cfgtabpageuserhbci.ui.cpp \
+ cfgtabpageaccounthbci.ui.cpp \
+ selectmode.ui.cpp
 
 
 libdialogs_la_SOURCES=\
@@ -40,11 +39,19 @@ libdialogs_la_SOURCES=\
  selectmode.cpp \
  userwizard.cpp
 
+MOC_FILES=\
+ cfgtabpageaccounthbci.moc \
+ cfgtabpageaccounthbci.ui.moc \
+ cfgtabpageuserhbci.moc \
+ cfgtabpageuserhbci.ui.moc \
+ selectmode.ui.moc
+ 
 
 libdialogs_la_LIBADD=wizard/libwizard.la
 
-BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES)
-CLEANFILES = $(nodist_libdialogs_la_SOURCES) $(nodist_noinst_HEADERS)
+
+BUILT_SOURCES = $(nodist_libdialogs_la_SOURCES) $(nodist_noinst_HEADERS) $(MOC_FILES)
+CLEANFILES = $(BUILT_SOURCES)
 
 
 sources:
@@ -56,7 +63,7 @@ sources:
 	done
 
 
-%.moc.cpp: %.h
+%.moc: %.h
 	@qt3_moc@ -o $@ $<
 
 
@@ -68,7 +75,7 @@ sources:
 	echo "#endif" >>$@ && \
 	cat $@.tmp >>$@ && \
 	rm $@.tmp && \
-	echo "#include \"`basename $<`.moc.cpp\"" >>$@
+	echo "#include \"`basename $<`.moc\"" >>$@
 %.ui.h: %.ui
 	$(UIC3) $< -o $@
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp

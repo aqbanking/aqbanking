@@ -373,62 +373,25 @@ const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab) {
 
 AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
                                             const char *modname){
-  GWEN_LIBLOADER *ll;
-  AB_PROVIDER *pro;
-  AB_PROVIDER_FACTORY_FN fn;
-  void *p;
-  const char *s;
-  int err;
-  GWEN_BUFFER *mbuf;
   GWEN_PLUGIN *pl;
-  GWEN_PLUGIN_MANAGER *pm;
 
-  pm=GWEN_PluginManager_FindPluginManager("provider");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not find plugin manager for \"%s\"",
-              "provider");
-    return 0;
+  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
+  if (pl) {
+    AB_PROVIDER *pro;
+
+    pro=AB_Plugin_Provider_Factory(pl, ab);
+    if (!pro) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in plugin [%s]: No provider created",
+		modname);
+      return NULL;
+    }
+    return pro;
   }
-  pl=GWEN_PluginManager_LoadPlugin(pm, modname);
-  if (!pl) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not load %s plugin for \"%s\"",
-	      "provider", modname);
-    return 0;
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
+    return NULL;
   }
-  ll=GWEN_Plugin_GetLibLoader(pl);
-
-  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(mbuf, tolower(*(s++)));
-
-  /* create name of init function */
-  GWEN_Buffer_AppendString(mbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(mbuf), &p);
-  if (err) {
-    DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-    GWEN_Buffer_free(mbuf);
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-  GWEN_Buffer_free(mbuf);
-
-  fn=(AB_PROVIDER_FACTORY_FN)p;
-  assert(fn);
-  pro=fn(ab);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin: No provider created");
-    GWEN_Plugin_free(pl);
-    return 0;
-  }
-
-  /* store libloader */
-  AB_Provider_SetPlugin(pro, pl);
-
-  return pro;
 }
 
 

@@ -136,5 +136,5 @@ void ActionGetAccounts::slotButtonClicked() {
 
 
 
-
+#include "a_getaccounts.moc"
 

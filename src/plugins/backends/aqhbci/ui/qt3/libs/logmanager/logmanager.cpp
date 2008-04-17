@@ -522,7 +522,7 @@ void LogManager::saveFile() {
 
 
 
-
+#include "logmanager.moc"
 
 
 

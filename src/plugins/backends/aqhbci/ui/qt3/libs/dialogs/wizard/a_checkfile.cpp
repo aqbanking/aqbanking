@@ -202,6 +202,6 @@ bool ActionCheckFile::undo() {
 }
 
 
-
+#include "a_checkfile.moc"
 
 

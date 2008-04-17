@@ -87,10 +87,6 @@ struct AB_BANKING {
 };
 
 
-static int AB_Banking__BaseInit(void);
-static int AB_Banking__BaseFini(void);
-
-
 static void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
                                                     const char *dname);
 

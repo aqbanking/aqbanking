@@ -106,6 +106,6 @@ void ActionBankIniLetter::slotPrint() {
 
 
 
-
+#include "a_bankiniletter.moc"
 
 

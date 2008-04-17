@@ -128,5 +128,6 @@ void ActionSendKeys::slotButtonClicked() {
 
 
 
+#include "a_sendkeys.moc"
 
 

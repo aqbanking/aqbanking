@@ -22,6 +22,8 @@
 #include <aqbanking/provider.h>
 #include <aqbanking/user.h>
 
+#include <gwenhywfar/plugin.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,21 +34,6 @@ extern "C" {
  *
  */
 /*@{*/
-
-/**
- * <p>
- * This is the prototype for the provider factory function expected in
- * provider plugins.
- * Every provider plugin must have at least this function which returns
- * a new provider object.
- * </p>
- * <p>
- * This function must contain the name of the provider in all-lowercase
- * letters. For AqHBCI this function is called "aqhbci_factory".
- * </p>
- * @param ab AqBanking main object
- */
-typedef AB_PROVIDER* (*AB_PROVIDER_FACTORY_FN)(AB_BANKING *ab);
 
 /**
  * This type is used with @ref AB_Provider_ExtendAccount and
@@ -301,6 +288,28 @@ void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f);
 
 
 /*@}*/
+
+
+
+
+typedef AB_PROVIDER* (*AB_PLUGIN_PROVIDER_FACTORY_FN)(GWEN_PLUGIN *pl,
+						      AB_BANKING *ab);
+
+
+AQBANKING_API
+GWEN_PLUGIN *AB_Plugin_Provider_new(GWEN_PLUGIN_MANAGER *pm,
+				    const char *name,
+				    const char *fileName);
+
+
+AQBANKING_API
+AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
+
+AQBANKING_API
+void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl,
+				     AB_PLUGIN_PROVIDER_FACTORY_FN fn);
+
+
 
 
 /*@}*/ /* defgroup */

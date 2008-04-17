@@ -123,5 +123,6 @@ void ActionGetSysId::slotButtonClicked() {
 
 
 
+#include "a_getsysid.moc"
 
 

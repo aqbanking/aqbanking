@@ -88,7 +88,7 @@ void ActionUserIniLetter::slotPrint() {
 
 
 
-
+#include "a_useriniletter.moc"
 
 
 

@@ -14,6 +14,7 @@
 #endif
 
 #include "aqbanking_plugins.h"
+#include "banking_l.h"
 #include <gwenhywfar/plugin.h>
 
 
@@ -102,6 +103,9 @@ int AB_Plugins_Init() {
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *p;
 
+  /* initialize AqBanking's plugin system (register plugin managers etc) */
+  AB_Banking_PluginSystemInit();
+
   /* providers */
   pm=GWEN_PluginManager_FindPluginManager("provider");
   if (pm) {
@@ -111,12 +115,12 @@ int AB_Plugins_Init() {
       GWEN_PluginManager_AddPlugin(pm, p);
 #endif
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQNONE
-    p=provider_aqhbci_factory(pm, "aqnone", NULL);
+    p=provider_aqnone_factory(pm, "aqnone", NULL);
     if (p)
       GWEN_PluginManager_AddPlugin(pm, p);
 #endif
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
-    p=provider_aqhbci_factory(pm, "aqofxconnect", NULL);
+    p=provider_aqofxconnect_factory(pm, "aqofxconnect", NULL);
     if (p)
       GWEN_PluginManager_AddPlugin(pm, p);
 #endif

@@ -122,7 +122,7 @@ bool ActionSelectFile::apply() {
 
 
 
-
+#include "a_selectfile.moc"
 
 
 

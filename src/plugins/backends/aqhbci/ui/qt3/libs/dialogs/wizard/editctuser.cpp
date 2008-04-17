@@ -731,7 +731,7 @@ void EditCtUser::slotSpecialToggled(bool on) {
 
 
 
-
+#include "editctuser.moc"
 
 
 

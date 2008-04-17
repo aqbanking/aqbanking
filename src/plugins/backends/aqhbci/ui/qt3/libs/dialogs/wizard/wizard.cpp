@@ -195,7 +195,7 @@ void Wizard::setBackEnabled(WizardAction *a, bool b) {
 
 
 
-
+#include "wizard.moc"
 
 
 

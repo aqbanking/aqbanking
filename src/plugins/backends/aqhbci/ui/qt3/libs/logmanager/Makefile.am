@@ -23,7 +23,7 @@ noinst_HEADERS=\
   loganalyzer.h
 
 nodist_liblogmanager_la_SOURCES=\
- logmanager.ui.cpp logmanager.ui.moc.cpp logmanager.moc.cpp
+ logmanager.ui.cpp
 
 liblogmanager_la_SOURCES=\
   logmanager.cpp \
@@ -33,8 +33,13 @@ liblogmanager_la_SOURCES=\
 liblogmanager_la_LIBADD = $(qbanking_internal_libs) $(aqhbci_internal_libs) \
   -L$(top_builddir)/src/plugins/backends/aqhbci/plugin
 
-BUILT_SOURCES = $(nodist_liblogmanager_la_SOURCES)
-CLEANFILES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS)
+MOC_FILES=\
+  logmanager.moc \
+  logmanager.ui.moc
+
+
+BUILT_SOURCES = $(nodist_liblogmanager_la_SOURCES) $(nodist_noinst_HEADERS) $(MOC_FILES)
+CLEANFILES = $(BUILT_SOURCES)
 
 
 sources:
@@ -46,7 +51,7 @@ sources:
 	done
 
 
-%.moc.cpp: %.h
+%.moc: %.h
 	@qt3_moc@ -o $@ $<
 
 
@@ -58,7 +63,7 @@ sources:
 	echo "#endif" >>$@ && \
 	cat $@.tmp >>$@ && \
 	rm $@.tmp && \
-	echo "#include \"`basename $<`.moc.cpp\"" >>$@
+	echo "#include \"`basename $<`.moc\"" >>$@
 %.ui.h: %.ui
 	$(UIC3) $< -o $@
 SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp

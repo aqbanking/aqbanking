@@ -46,5 +46,8 @@ GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
 
 int AB_Banking_IsOnlineInit(const AB_BANKING *ab);
 
+int AB_Banking_PluginSystemInit(void);
+int AB_Banking_PluginSystemFini(void);
+
 
 #endif /* AQBANKING_BANKING_L_H */

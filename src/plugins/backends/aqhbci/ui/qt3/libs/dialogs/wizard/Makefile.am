@@ -53,20 +53,11 @@ noinst_HEADERS=\
 
 
 nodist_libwizard_la_SOURCES=\
- editctuser.ui.cpp editctuser.ui.moc.cpp editctuser.moc.cpp \
- wizard.ui.cpp wizard.ui.moc.cpp wizard.moc.cpp \
- actionwidget.ui.cpp actionwidget.ui.moc.cpp \
- iniletter.ui.cpp iniletter.ui.moc.cpp iniletter.moc.cpp \
- selectfile.ui.cpp selectfile.ui.moc.cpp \
- a_selectfile.moc.cpp \
- a_checkfile.moc.cpp \
- a_getkeys.moc.cpp \
- a_mkkeys.moc.cpp \
- a_getaccounts.moc.cpp \
- a_getsysid.moc.cpp \
- a_bankiniletter.moc.cpp \
- a_useriniletter.moc.cpp \
- a_sendkeys.moc.cpp
+ editctuser.ui.cpp \
+ wizard.ui.cpp \
+ actionwidget.ui.cpp \
+ iniletter.ui.cpp \
+ selectfile.ui.cpp
 
 libwizard_la_SOURCES=\
  waction.cpp \
@@ -95,9 +86,28 @@ libwizard_la_SOURCES=\
  w_rdh_new.cpp \
  w_rdh_new2.cpp
 
+MOC_FILES=\
+ a_bankiniletter.moc \
+ a_checkfile.moc \
+ a_getaccounts.moc \
+ a_getkeys.moc \
+ a_getsysid.moc \
+ a_mkkeys.moc \
+ a_selectfile.moc \
+ a_sendkeys.moc \
+ a_useriniletter.moc \
+ actionwidget.ui.moc \
+ editctuser.moc \
+ editctuser.ui.moc \
+ iniletter.moc \
+ iniletter.ui.moc \
+ selectfile.ui.moc \
+ wizard.moc \
+ wizard.ui.moc
 
-BUILT_SOURCES = $(nodist_libwizard_la_SOURCES)
-CLEANFILES = $(nodist_libwizard_la_SOURCES) $(nodist_noinst_HEADERS)
+
+BUILT_SOURCES = $(nodist_libwizard_la_SOURCES) $(MOC_FILES) $(nodist_iheader_HEADERS)
+CLEANFILES = $(BUILT_SOURCES)
 
 
 sources:
@@ -109,7 +119,7 @@ sources:
 	done
 
 
-%.moc.cpp: %.h
+%.moc: %.h
 	@qt3_moc@ -o $@ $<
 
 
@@ -121,7 +131,7 @@ sources:
 	echo "#endif" >>$@ && \
 	cat $@.tmp >>$@ && \
 	rm $@.tmp && \
-	echo "#include \"`basename $<`.moc.cpp\"" >>$@
+	echo "#include \"`basename $<`.moc\"" >>$@
 
 %.ui.h: %.ui
 	$(UIC3) $< -o $@

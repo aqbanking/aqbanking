@@ -22,19 +22,21 @@
 #include <gwenhywfar/plugin.h>
 
 
-/* interface to gwens plugin loader */
-AQBANKING_EXPORT
-GWEN_PLUGIN *provider_aqnone_factory(GWEN_PLUGIN_MANAGER *pm,
-                                     const char *name,
-                                     const char *fileName) {
-  return GWEN_Plugin_new(pm, name, fileName);
+
+static AB_PROVIDER *AB_Plugin_ProviderNone_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
+  return AN_Provider_new(ab);
 }
 
 
+/* interface to gwens plugin loader */
+AQBANKING_EXPORT GWEN_PLUGIN *provider_aqnone_factory(GWEN_PLUGIN_MANAGER *pm,
+						      const char *name,
+						      const char *fileName) {
+  GWEN_PLUGIN *pl;
 
-AQBANKING_EXPORT
-AB_PROVIDER *aqnone_factory(AB_BANKING *ab){
-  return AN_Provider_new(ab);
+  pl=AB_Plugin_Provider_new(pm, name, fileName);
+  AB_Plugin_Provider_SetFactoryFn(pl, AB_Plugin_ProviderNone_Factory);
+  return pl;
 }
 
 

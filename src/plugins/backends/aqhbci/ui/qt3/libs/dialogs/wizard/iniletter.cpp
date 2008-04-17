@@ -136,4 +136,6 @@ void IniLetter::_createIniLetter() {
 }
 
 
+#include "iniletter.moc"
+
 

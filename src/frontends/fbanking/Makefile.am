@@ -5,3 +5,4 @@ sources:
 	  $(MAKE) -C $$d sources; \
 	done
 
+built-sources:

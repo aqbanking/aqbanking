@@ -493,6 +493,7 @@ void CfgTabPageUserHbci::slotFinishUser() {
 
 
 
+#include "cfgtabpageuserhbci.moc"
 
 
 

@@ -123,5 +123,5 @@ void ActionCreateKeys::slotButtonClicked() {
 
 
 
-
+#include "a_mkkeys.moc"
 

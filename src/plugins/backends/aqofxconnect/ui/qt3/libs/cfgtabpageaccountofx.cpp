@@ -99,7 +99,7 @@ bool CfgTabPageAccountOfx::checkGui() {
 }
 
 
-
+#include "cfgtabpageaccountofx.moc"
 
 
 

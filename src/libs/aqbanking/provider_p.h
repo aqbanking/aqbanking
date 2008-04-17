@@ -53,4 +53,13 @@ struct AB_PROVIDER {
 
 
 
+typedef struct AB_PLUGIN_PROVIDER AB_PLUGIN_PROVIDER;
+struct AB_PLUGIN_PROVIDER {
+  AB_PLUGIN_PROVIDER_FACTORY_FN pluginFactoryFn;
+};
+
+static void AB_Plugin_Provider_FreeData(void *bp, void *p);
+
+
+
 #endif /* AQBANKING_PROVIDER_P_H */

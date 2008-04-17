@@ -132,5 +132,5 @@ void ActionGetKeys::slotButtonClicked() {
 
 
 
-
+#include "a_getkeys.moc"
 

@@ -287,6 +287,7 @@ void CfgTabPageUserOfx::slotGetAccounts() {
 }
 
 
+#include "cfgtabpageuserofx.moc"
 
 
 

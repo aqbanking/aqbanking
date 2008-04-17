@@ -18,11 +18,7 @@ aqofxconnect_la_SOURCES=\
 
 nodist_aqofxconnect_la_SOURCES=\
  cfgtabpageaccountofx.ui.cpp \
- cfgtabpageaccountofx.ui.moc.cpp \
- cfgtabpageaccountofx.moc.cpp \
- cfgtabpageuserofx.ui.cpp \
- cfgtabpageuserofx.ui.moc.cpp \
- cfgtabpageuserofx.moc.cpp
+ cfgtabpageuserofx.ui.cpp
 
 noinst_HEADERS=\
  cfgmoduleofx_p.h \
@@ -41,16 +37,22 @@ aqofxconnect_la_LIBADD=\
   $(qbanking_internal_libs) \
   $(gwenhywfar_libs) $(qt3_libs)
 
+MOC_FILES=\
+ cfgtabpageaccountofx.ui.moc \
+ cfgtabpageaccountofx.moc \
+ cfgtabpageuserofx.ui.moc \
+ cfgtabpageuserofx.moc
 
-BUILT_SOURCES = $(nodist_aqofxconnect_la_SOURCES)
-CLEANFILES = $(nodist_aqofxconnect_la_SOURCES) $(nodist_noinst_HEADERS)
+
+BUILT_SOURCES = $(nodist_aqofxconnect_la_SOURCES) $(MOC_FILES)
+CLEANFILES = $(BUILT_SOURCES);
 
 sources:
 	for f in $(aqofxconnect_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 
-%.moc.cpp: %.h
+%.moc: %.h
 	@qt3_moc@ -o $@ $<
 
 # Build rules for the files that come from the .ui file
@@ -61,10 +63,10 @@ sources:
 	echo "#endif" >>$@ && \
 	cat $@.tmp >>$@ && \
 	rm $@.tmp && \
-	echo "#include \"`basename $<`.moc.cpp\"" >>$@
+	echo "#include \"`basename $<`.moc\"" >>$@
 %.ui.h: %.ui
 	$(UIC3) $< -o $@
-SUFFIXES = .ui .ui.h .ui.cpp .moc.cpp
+SUFFIXES = .ui .ui.h .ui.cpp .moc
 
 # This section is for a qt4 environment
 qt4-port:

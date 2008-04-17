@@ -13,6 +13,10 @@ INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) -Iparser -I$(srcdir)
 
 noinst_LTLIBRARIES=libio_ofx.la
 libio_ofx_la_SOURCES=ofx.c
+libio_ofx_la_LIBADD=\
+  parser/libofxparser.la \
+  $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+
 noinst_HEADERS=ofx-internal_p.h
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
@@ -22,8 +26,7 @@ imexporterplugin_DATA=ofx.xml
 ofx_la_SOURCES=dummy.c
 ofx_la_LIBADD=\
   libio_ofx.la \
-  parser/libofxparser.la \
-  $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+  $(aqbanking_internal_libs) $(gwenhywfar_libs)
 ofx_la_LDFLAGS = -no-undefined @STRIPALL@ \
   -module -omit-version
 
