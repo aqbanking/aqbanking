@@ -1,5 +1,24 @@
 
 ===========================================================================
+MARK: released AqBanking - 3.4.1 (2008-04-25)
+===========================================================================
+
+
+2008/04/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- imexporter.{c,h}: added some more convenience functions
+  - AqHBCI:
+    - added argument AH_IMEXPORTER_CONTEXT to AH_Job_Exchange() function
+    - transfer jobs now add transactions (with status) to the IMEXPORTER context
+    - fixed jobsingletransfer.c (was not working correctly when transaction
+      limits were missing)
+- fixed a problem in the SWIFT importer (was not accepting some weird
+  formatted SWIFT MT940 files)
+- decreased verbosity
+- added function AB_Banking_GetVersion()
+
+
+===========================================================================
 MARK: released AqBanking - 3.4.0 (2008-04-22)
 ===========================================================================
 

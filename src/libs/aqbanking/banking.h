@@ -165,6 +165,14 @@ AB_BANKING *AB_Banking_new(const char *appName,
 AQBANKING_API 
 void AB_Banking_free(AB_BANKING *ab);
 
+
+AQBANKING_API 
+void AB_Banking_GetVersion(int *major,
+			   int *minor,
+			   int *patchlevel,
+			   int *build);
+
+
 /**
  * Initializes AqBanking. This actually reads the configuration file,
  * thus loading account settings and backends as needed.

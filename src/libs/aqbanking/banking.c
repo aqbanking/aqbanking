@@ -1709,6 +1709,20 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs() {
 
 
 
+void AB_Banking_GetVersion(int *major,
+			   int *minor,
+			   int *patchlevel,
+			   int *build) {
+  if (major)
+    *major=AQBANKING_VERSION_MAJOR;
+  if (minor)
+    *minor=AQBANKING_VERSION_MINOR;
+  if (patchlevel)
+    *patchlevel=AQBANKING_VERSION_PATCHLEVEL;
+  if (build)
+    *build=AQBANKING_VERSION_BUILD;
+}
+
 
 
 
