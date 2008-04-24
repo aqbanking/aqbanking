@@ -87,6 +87,7 @@ typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
 typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, uint32_t guiid);
 typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 				  AH_JOB_EXCHANGE_MODE m,
+				  AB_IMEXPORTER_CONTEXT *ctx,
 				  uint32_t guiid);
 /**
  * This function is called on multi-message jobs and should return:
@@ -163,6 +164,7 @@ int AH_Job_Commit(AH_JOB *j, uint32_t guiid);
  */
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 		    AH_JOB_EXCHANGE_MODE m,
+		    AB_IMEXPORTER_CONTEXT *ctx,
 		    uint32_t guiid);
 
 /**

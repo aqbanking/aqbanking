@@ -532,6 +532,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
     maxs=AB_TransactionLimits_GetMaxLenPurpose(lim);
   }
   else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No transaction limits");
     maxn=0;
     maxs=0;
   }
@@ -562,7 +563,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
 	GWEN_Text_CondenseBuffer(tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
-	if (l>maxs) {
+	if (maxs && l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
 	  GWEN_StringList_free(nsl);
@@ -922,6 +923,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 				   AH_JOB_EXCHANGE_MODE m,
+				   AB_IMEXPORTER_CONTEXT *ctx,
 				   uint32_t guiid){
   AH_JOB_SINGLETRANSFER *aj;
 
@@ -1540,6 +1542,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     int has10;
     int has20;
     const AB_TRANSACTION *ot;
+    AB_TRANSACTION_STATUS tStatus;
 
     rl=AH_Job_GetSegResults(j);
     assert(rl);
@@ -1596,10 +1599,47 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       AB_Job_SetStatus(bj, AB_Job_StatusError);
     }
 
+    if (has20)
+      tStatus=AB_Transaction_StatusAccepted;
+    else if (has10)
+      tStatus=AB_Transaction_StatusPending;
+    else
+      tStatus=AB_Transaction_StatusRejected;
+
     switch(aj->jobType) {
     case AB_Job_TypeTransfer:
+      ot=AB_JobSingleTransfer_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+	AB_Transaction_SetStatus(t, tStatus);
+	AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
+	AB_ImExporterContext_AddTransfer(ctx, t);
+      }
+      break;
+
     case AB_Job_TypeDebitNote:
+      ot=AB_JobSingleDebitNote_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+	AB_Transaction_SetStatus(t, tStatus);
+	AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+	AB_ImExporterContext_AddTransfer(ctx, t);
+      }
+      break;
+
     case AB_Job_TypeInternalTransfer:
+      ot=AB_JobInternalTransfer_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+	AB_Transaction_SetStatus(t, tStatus);
+	AB_ImExporterContext_AddTransfer(ctx, t);
+      }
       break;
 
     case AB_Job_TypeCreateStandingOrder:
@@ -1609,7 +1649,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
+	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobCreateStandingOrder_SetTransaction(bj, t);
+        AB_Transaction_free(t);
       }
       break;
 
@@ -1620,7 +1662,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
+	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobModifyStandingOrder_SetTransaction(bj, t);
+	AB_Transaction_free(t);
       }
       break;
 
@@ -1634,7 +1678,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
+	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobCreateDatedTransfer_SetTransaction(bj, t);
+        AB_Transaction_free(t);
       }
       break;
 
@@ -1645,7 +1691,9 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
+	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobModifyDatedTransfer_SetTransaction(bj, t);
+        AB_Transaction_free(t);
       }
       break;
 

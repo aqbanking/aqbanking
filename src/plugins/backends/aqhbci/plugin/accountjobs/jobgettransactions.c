@@ -376,6 +376,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 				    AH_JOB_EXCHANGE_MODE m,
+				    AB_IMEXPORTER_CONTEXT *ctx,
 				    uint32_t guiid){
   AH_JOB_GETTRANSACTIONS *aj;
 

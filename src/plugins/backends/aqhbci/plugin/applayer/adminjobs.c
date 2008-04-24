@@ -1036,6 +1036,7 @@ int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
 int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 			      AH_JOB_EXCHANGE_MODE m,
+			      AB_IMEXPORTER_CONTEXT *ctx,
 			      uint32_t guiid){
   AH_JOB_GETSTATUS *aj;
 
@@ -1169,6 +1170,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
 int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
 			AH_JOB_EXCHANGE_MODE m,
+			AB_IMEXPORTER_CONTEXT *ctx,
 			uint32_t guiid){
   AH_JOB_TAN *aj;
 

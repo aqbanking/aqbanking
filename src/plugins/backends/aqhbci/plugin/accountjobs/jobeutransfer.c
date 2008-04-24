@@ -362,6 +362,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AH_JOB_EXCHANGE_MODE m,
+			       AB_IMEXPORTER_CONTEXT *ctx,
 			       uint32_t guiid){
   AH_JOB_EUTRANSFER *aj;
   AB_BANKING *ab;

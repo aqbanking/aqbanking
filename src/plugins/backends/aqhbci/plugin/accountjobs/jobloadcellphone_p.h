@@ -26,12 +26,15 @@ struct AH_JOB_LOADCELLPHONE {
 static void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p);
 
 static int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
+					       AB_IMEXPORTER_CONTEXT *ctx,
 					       uint32_t guiid);
 static int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
+					     AB_IMEXPORTER_CONTEXT *ctx,
 					     uint32_t guiid);
 
 static int AH_Job_LoadCellPhone_Exchange(AH_JOB *j, AB_JOB *bj,
 					 AH_JOB_EXCHANGE_MODE m,
+					 AB_IMEXPORTER_CONTEXT *ctx,
 					 uint32_t guiid);
 
 

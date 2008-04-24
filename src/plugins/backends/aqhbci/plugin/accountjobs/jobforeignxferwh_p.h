@@ -36,6 +36,7 @@ static int AH_Job_ForeignTransferWH_Process(AH_JOB *j,
 
 static int AH_Job_ForeignTransferWH_Exchange(AH_JOB *j, AB_JOB *bj,
 					     AH_JOB_EXCHANGE_MODE m,
+					     AB_IMEXPORTER_CONTEXT *ctx,
 					     uint32_t guiid);
 
 

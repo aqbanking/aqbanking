@@ -434,7 +434,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   }
 
   /* exchange parameters */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, guiid);
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, NULL, guiid);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
     AH_Job_free(mj);
@@ -691,7 +691,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   }
 
   /* exchange arguments */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, guiid);
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL, guiid);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
     AH_Job_free(mj);
@@ -844,7 +844,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
       }
 
       /* exchange results */
-      rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults, guiid);
+      rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults, ctx, guiid);
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging results");
         AB_Job_SetStatus(bj, AB_Job_StatusError);

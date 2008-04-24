@@ -80,6 +80,7 @@ void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
+					AB_IMEXPORTER_CONTEXT *ctx,
 					uint32_t guiid) {
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbParams;
@@ -197,7 +198,9 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, uint32_t guiid) {
+int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
+				      AB_IMEXPORTER_CONTEXT *ctx,
+				      uint32_t guiid) {
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
   const AB_CELLPHONE_PRODUCT *cp;
@@ -321,6 +324,7 @@ int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, uint32_t guiid) {
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_LoadCellPhone_Exchange(AH_JOB *j, AB_JOB *bj,
 				  AH_JOB_EXCHANGE_MODE m,
+				  AB_IMEXPORTER_CONTEXT *ctx,
 				  uint32_t guiid){
   AH_JOB_LOADCELLPHONE *aj;
 
@@ -337,9 +341,9 @@ int AH_Job_LoadCellPhone_Exchange(AH_JOB *j, AB_JOB *bj,
 
   switch(m) {
   case AH_Job_ExchangeModeParams:
-    return AH_Job_LoadCellPhone_ExchangeParams(j, bj, guiid);
+    return AH_Job_LoadCellPhone_ExchangeParams(j, bj, ctx, guiid);
   case AH_Job_ExchangeModeArgs:
-    return AH_Job_LoadCellPhone_ExchangeArgs(j, bj, guiid);
+    return AH_Job_LoadCellPhone_ExchangeArgs(j, bj, ctx, guiid);
   case AH_Job_ExchangeModeResults:
     return 0;
   default:

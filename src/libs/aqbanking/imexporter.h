@@ -290,6 +290,32 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
                                          AB_TRANSACTION *t);
 
 
+/**
+ * This is just a convenience function. It takes the bank code and
+ * account number from the account, and then calls
+ * @ref AB_ImExporterContext_GetAccountInfo and
+ * @ref AB_ImExporterAccountInfo_AddTransfer.
+ * If you want to add many transfers which are sorted by account
+ * it is much faster to avoid this function and to select the appropriate
+ * account info object once before importing all transactions for this
+ * particular account. This would save you the additional lookup before
+ * every transaction.
+ */
+AQBANKING_API
+void AB_ImExporterContext_AddTransfer(AB_IMEXPORTER_CONTEXT *iec,
+				      AB_TRANSACTION *t);
+
+
+AQBANKING_API
+void AB_ImExporterContext_AddStandingOrder(AB_IMEXPORTER_CONTEXT *iec,
+					   AB_TRANSACTION *t);
+
+
+AQBANKING_API
+void AB_ImExporterContext_AddDatedTransfer(AB_IMEXPORTER_CONTEXT *iec,
+					   AB_TRANSACTION *t);
+
+
 
 /** @defgroup AB_IMEXPORTER_CONTEXT_SECURITY Securities
  *

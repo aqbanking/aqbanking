@@ -1530,6 +1530,51 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
 
 
 
+void AB_ImExporterContext_AddTransfer(AB_IMEXPORTER_CONTEXT *iec,
+				      AB_TRANSACTION *t){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterContext_GetAccountInfo
+    (iec,
+     AB_Transaction_GetLocalBankCode(t),
+     AB_Transaction_GetLocalAccountNumber(t)
+    );
+  assert(iea);
+  AB_ImExporterAccountInfo_AddTransfer(iea, t);
+}
+
+
+
+void AB_ImExporterContext_AddDatedTransfer(AB_IMEXPORTER_CONTEXT *iec,
+					   AB_TRANSACTION *t){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterContext_GetAccountInfo
+    (iec,
+     AB_Transaction_GetLocalBankCode(t),
+     AB_Transaction_GetLocalAccountNumber(t)
+    );
+  assert(iea);
+  AB_ImExporterAccountInfo_AddDatedTransfer(iea, t);
+}
+
+
+
+void AB_ImExporterContext_AddStandingOrder(AB_IMEXPORTER_CONTEXT *iec,
+					   AB_TRANSACTION *t){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterContext_GetAccountInfo
+    (iec,
+     AB_Transaction_GetLocalBankCode(t),
+     AB_Transaction_GetLocalAccountNumber(t)
+    );
+  assert(iea);
+  AB_ImExporterAccountInfo_AddStandingOrder(iea, t);
+}
+
+
+
 
 void AB_ImExporter_Utf8ToDta(const char *p,
                              int size,

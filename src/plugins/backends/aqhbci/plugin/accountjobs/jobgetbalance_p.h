@@ -28,6 +28,7 @@ static int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 				     uint32_t guiid);
 static int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
 				      AH_JOB_EXCHANGE_MODE m,
+				      AB_IMEXPORTER_CONTEXT *ctx,
 				      uint32_t guiid);
 
 static AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT);

@@ -32,6 +32,7 @@ static int AH_Job_MultiTransfer_Process(AH_JOB *j,
 					uint32_t guiid);
 static int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 					 AH_JOB_EXCHANGE_MODE m,
+					 AB_IMEXPORTER_CONTEXT *ctx,
 					 uint32_t guiid);
 
 

@@ -853,6 +853,7 @@ int AH_Job_Commit(AH_JOB *j, uint32_t guiid){
 
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 		    AH_JOB_EXCHANGE_MODE m,
+		    AB_IMEXPORTER_CONTEXT *ctx,
 		    uint32_t guiid){
   GWEN_DB_NODE *db;
 
@@ -909,7 +910,7 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
   } /* switch */
 
   if (j->exchangeFn)
-    return j->exchangeFn(j, bj, m, guiid);
+    return j->exchangeFn(j, bj, m, ctx, guiid);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No exchangeFn set");
     return GWEN_ERROR_NOT_SUPPORTED;

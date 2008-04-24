@@ -267,11 +267,26 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
 	}
       }
 
+      /* check whether the line starts with a new tag (:123x:) */
+      if (buffer[0]==':') {
+	const char *s;
+
+	s=buffer+1;
+	while(*s && isdigit(*s))
+	  s++;
+	if (isalpha(*s))
+	  s++;
+	if (*s==':') {
+	  DBG_DEBUG(AQBANKING_LOGDOMAIN, "End of tag reached");
+	  break;
+	}
+      }
+
       /* check whether the line starts with a ":" or "-" */
-      if (buffer[0]==':' || (buffer[0]=='-' && buffer[1]==0)) {
-        /* it does, so the buffer contains the next line, go handle the
+      if (buffer[0]=='-' && buffer[1]==0) {
+	/* it does, so the buffer contains the next line, go handle the
          * previous line */
-        DBG_DEBUG(0, "End of tag reached");
+	DBG_DEBUG(AQBANKING_LOGDOMAIN, "End of doc reached");
         break;
       }
 
@@ -304,8 +319,8 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
     if (*p2!=':') {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Error in SWIFT data: incomplete tag name");
-      /*GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
-                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);*/
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
+			   GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
       GWEN_Buffer_free(lbuf);
       return -1;
     }
