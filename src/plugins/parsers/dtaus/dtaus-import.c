@@ -176,8 +176,8 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   tmp=GWEN_Buffer_new(0, 128, 0, 1);
 
   /* read transaction type */
-  DBG_ERROR(AQBANKING_LOGDOMAIN,
-            "Reading transaction type at %d", pos+5);
+  DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	    "Reading transaction type at %d", pos+5);
   if (AHB_DTAUS__ReadWord(src, tmp, pos+5, 2)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Error reading transaction type at %d", pos+5);
