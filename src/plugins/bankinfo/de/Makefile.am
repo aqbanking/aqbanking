@@ -3,8 +3,7 @@ INCLUDES = -I$(top_builddir)/headers $(all_includes)
 noinst_LTLIBRARIES=libbankinfo_de.la
 noinst_HEADERS=de_p.h
 libbankinfo_de_la_SOURCES=de.c
-libbankinfo_de_la_LIBADD= $(aqbanking_internal_libs) \
-  ../generic/libbankinfo_generic.la @ktoblzcheck_libs@ $(gwenhywfar_libs)
+libbankinfo_de_la_LIBADD= @ktoblzcheck_libs@
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 bankinfoplugin_LTLIBRARIES=de.la

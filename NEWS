@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 3.4.0 (2008-04-22)
+===========================================================================
+
+This is a bugfix and cleanup release. Obsolete code has been removed
+and some bugs in the SWIFT parser have been fixed. All plugins are now
+loaded using GWEN's plugin framework. The OFX parser is now able to import
+investment accounts. Support for static linking has been improved.
+
+
+===========================================================================
                Released AqBanking - 3.3.0 (2008-03-16)
 ===========================================================================
 
