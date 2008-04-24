@@ -1092,7 +1092,7 @@ int AHB_DTAUS__Import(GWEN_DBIO *dbio,
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading DTAUS record (%d)", rv);
   }
   else {
-    GWEN_DB_Dump(data, stderr, 3);
+    /*GWEN_DB_Dump(data, stderr, 3);*/
   }
 
   GWEN_Buffer_free(src);
