@@ -100,6 +100,7 @@ GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 int AB_Plugins_Init() {
+#ifdef AQBANKING_ENABLE_INIT_PLUGINS
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *p;
 
@@ -216,6 +217,10 @@ int AB_Plugins_Init() {
 #endif
   }
 
+#else
+  /* only initialize AqBanking's plugin system */
+  AB_Banking_PluginSystemInit();
+#endif
   return 0;
 }
 

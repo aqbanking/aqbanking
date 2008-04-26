@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=4
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="svn"
 
 
 
@@ -1525,6 +1525,41 @@ AC_SUBST(fbanking_data)
 #
 
 AC_SUBST(qt3_ui)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for plugin init
+#
+AC_MSG_CHECKING(if plugin init is wanted)
+AC_ARG_ENABLE(init-plugins,
+  [  --enable-init-plugins             enable plugin init (default=yes)],
+  enable_init_plugins="$enableval",
+  enable_init_plugins="yes")
+AC_MSG_RESULT($enable_init_plugins)
+
+if test "$enable_init_plugins" != "no"; then
+  AC_DEFINE(AQBANKING_ENABLE_INIT_PLUGINS, 1, [if plugin init is wanted])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether aqbanking is a subproject to another one
+#
+
+AC_MSG_CHECKING(if AqBanking is a subproject)
+AC_ARG_ENABLE(aqb-subproject,
+  [  --enable-aqb-subproject         make gwen only a subproject (default=no)],
+  enable_aqb_subproject="$enableval",
+  enable_aqb_subproject="no")
+AC_MSG_RESULT($enable_aqb_subproject)
+
+if test "$enable_aqb_subproject" != "no"; then
+  AC_DEFINE(AQBANKING_IS_SUBPROJECT, 1, [whether aqb is a subproject])
+fi
 
 
 
