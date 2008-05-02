@@ -107,7 +107,13 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
   dbio=GWEN_DBIO_GetPlugin("swift");
   if (!dbio) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not supported");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not found");
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Plugin \"SWIFT\" not found.\n"
+			      "If you are using Debian/Ubuntu then you are "
+			      "probably missing the package "
+			      "\"libaqbanking-plugins-libgwenhywfar\""));
     return AB_ERROR_PLUGIN_MISSING;
   }
 
