@@ -1514,7 +1514,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
     return;
   }
   fd=open(logFile,
-          O_RDWR | O_CREAT | O_APPEND);
+          O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
   if (fd==-1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "open(%s): %s",
