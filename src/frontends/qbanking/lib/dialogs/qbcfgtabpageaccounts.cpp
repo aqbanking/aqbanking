@@ -204,7 +204,7 @@ void QBCfgTabPageAccounts::slotAccountDel() {
   AB_ACCOUNT *a = al.front();
   int r = QMessageBox::warning(this,
 				tr("Really delete account?"),
-				tr("You are about to delete an accout. This action will "
+				tr("You are about to delete an account. This action will "
 				   "take effect immediately and cannot be undone. "
 				   "(You can add the account later again, of course.)\n\n"
 				   "Do you want to delete this account?"),
