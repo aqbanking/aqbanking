@@ -369,11 +369,13 @@ void QBSelectBank::accept() {
 void QBSelectBank::slotDoubleClicked(QListViewItem *lv,
                                    const QPoint &,
                                    int) {
-  bankCodeEdit->setText(lv->text(0));
-  bankNameEdit->setText(lv->text(1));
-  locationEdit->setText(lv->text(2));
-  swiftCodeEdit->setText(lv->text(3));
-  accept();
+  if (lv) {
+    bankCodeEdit->setText(lv->text(0));
+    bankNameEdit->setText(lv->text(1));
+    locationEdit->setText(lv->text(2));
+    swiftCodeEdit->setText(lv->text(3));
+    accept();
+  }
 }
 
 
