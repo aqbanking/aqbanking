@@ -32,7 +32,7 @@ aqhbci_tool3_LDADD = \
   $(aqhbci_internal_libs) \
   $(cbanking_internal_libs) \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) 
+  $(gwenhywfar_libs) $(aqb_static_plugins) $(aqb_extra_libs)
 
 
 if IS_WINDOWS

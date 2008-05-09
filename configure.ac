@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=4
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -1560,6 +1560,35 @@ AC_MSG_RESULT($enable_aqb_subproject)
 if test "$enable_aqb_subproject" != "no"; then
   AC_DEFINE(AQBANKING_IS_SUBPROJECT, 1, [whether aqb is a subproject])
 fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for static plugins to be compiled into static exes
+#
+AC_ARG_WITH(static-plugins, 
+  [  --with-static-plugins      list of static plugins to link in],
+  [aqb_static_plugins="$withval"],
+  [aqb_static_plugins=""]
+)
+if test -n "$aqb_static_plugins"; then
+  AC_DEFINE(WITH_STATIC_PLUGINS, 1, [static plugins are used])
+fi
+AC_SUBST(aqb_static_plugins)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for extra libs for static exes
+#
+AC_ARG_WITH(extra-libs, 
+  [  --with-extra-libs      list of additional libraries],
+  [aqb_extra_libs="$withval"],
+  [aqb_extra_libs=""]
+)
+AC_SUBST(aqb_extra_libs)
 
 
 

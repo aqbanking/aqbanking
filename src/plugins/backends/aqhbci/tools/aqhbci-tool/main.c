@@ -26,6 +26,11 @@
 
 #include "globals.h"
 
+#ifdef WITH_STATIC_PLUGINS
+int GWEN_Plugins_Init();
+int AB_Plugins_Init();
+int LC_Plugins_Init();
+#endif
 
 
 
@@ -189,6 +194,24 @@ int main(int argc, char **argv) {
     argc-=rv-1;
     argv+=rv-1;
   }
+
+#ifdef WITH_STATIC_PLUGINS
+  rv=GWEN_Plugins_Init();
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Unable to init GWEN plugins (%d).\n", rv);
+    return 1;
+  }
+  rv=LC_Plugins_Init();
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Unable to init Libchipcard plugins (%d).\n", rv);
+    return 1;
+  }
+  rv=AB_Plugins_Init();
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Unable to init AqBanking plugins (%d).\n", rv);
+    return 1;
+  }
+#endif
 
   /*GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, GWEN_LoggerLevelInfo); */
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
