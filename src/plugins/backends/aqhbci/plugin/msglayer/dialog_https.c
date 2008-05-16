@@ -278,7 +278,7 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
   int code;
 
   /* recv packet (this reads the HTTP body) */
-  rv=GWEN_Io_Layer_ReadPacketToBuffer(dlg->ioLayer, buf, 0, dlg->guiid, 30000);
+  rv=GWEN_Io_Layer_ReadPacketToBuffer(dlg->ioLayer, buf, 0, dlg->guiid, timeout);
   if (rv<0) {
     if (GWEN_Buffer_GetUsedBytes(buf)) {
       /* data received, check for common error codes */
