@@ -225,7 +225,7 @@
          single="1"
          pversion="300"
  >
-   <SEG type="Tan" version="1" />
+   <SEG type="Tan" version="2" />
  </JOBdef>
 
 
