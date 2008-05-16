@@ -1547,7 +1547,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 		       0,
 		       2000);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
 					0, 2000);
@@ -1562,7 +1562,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 			     0,
 			     2000);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
 					0, 2000);
@@ -1589,7 +1589,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 				   0,
 				   2000);
 	if (rv<0) {
-	  DBG_INFO(0, "here (%d)", rv);
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					      GWEN_IO_REQUEST_FLAGS_FORCE,
 					      0, 2000);
@@ -1603,6 +1603,24 @@ void AH_Msg_LogMessage(AH_MSG *msg,
       }
       else {
 	segEnd=strchr(p, '\'');
+	if (segEnd==NULL) {
+	  /* no segment end found, write rest of the buffer */
+	  rv=GWEN_Io_Layer_WriteBytes(io, (const uint8_t*)p, bleft,
+				      GWEN_IO_REQUEST_FLAGS_WRITEALL,
+				      0,
+				      2000);
+	  if (rv<0) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+						GWEN_IO_REQUEST_FLAGS_FORCE,
+						0, 2000);
+	    GWEN_Io_Layer_free(io);
+	    GWEN_DB_Group_free(db);
+	    return;
+	  }
+	  break;
+	}
+
 	assert(segEnd);
 	slen=segEnd-p+1;
 	assert(slen);
@@ -1622,7 +1640,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 				      2000);
 	}
 	if (rv<0) {
-	  DBG_INFO(0, "here (%d)", rv);
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					      GWEN_IO_REQUEST_FLAGS_FORCE,
 					      0, 2000);
@@ -1634,7 +1652,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 	bleft-=slen;
 	p=segEnd+1;
       }
-    }
+    } /* while bleft */
   }
   else {
     rv=GWEN_Io_Layer_WriteBytes(io,
@@ -1644,7 +1662,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 				0,
 				2000);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
 					  0, 2000);
@@ -1660,7 +1678,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 			     0,
 			     2000);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
 					0, 2000);
