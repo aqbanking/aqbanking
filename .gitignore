@@ -85,6 +85,7 @@ src/plugins/backends/aqhbci/ui/qt3/qt3_debug/aqhbci-qt3-debug
 src/plugins/bankinfo/generic/??/banks.data
 src/plugins/bankinfo/generic/??/*.idx
 src/plugins/bankinfo/generic/mkdeinfo
+src/plugins/bankinfo/generic/data
 src/test/abtest
 tutorials/tutorial?
 tutorials/qtfrontend

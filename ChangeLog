@@ -5,6 +5,7 @@
 - imexporters/dtaus: implemented export function
 - parsers/dtaus/README: documented params used from profile files
 - parsers/dtaus/dtaus-export.c: also check for group name "transaction"
+- updated German bankinfo files
 
 
 ===========================================================================
