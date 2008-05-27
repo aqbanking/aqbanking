@@ -44,6 +44,13 @@ int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
 			      uint32_t guiid);
 
 static
+int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid);
+
+static
 int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
 static

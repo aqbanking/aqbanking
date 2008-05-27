@@ -1,5 +1,5 @@
 <PluginDescr>
-  <plugin name="dtaus" type="imexporter" import="1" export="0" >
+  <plugin name="dtaus" type="imexporter" import="1" export="1" >
     <version>@AQBANKING_VERSION_STRING@</version>
     <author>Martin Preuss(martin@libchipcard.de)</author>
     <short>DTAUS</short>

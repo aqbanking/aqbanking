@@ -19,6 +19,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/cgui.h>
 
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/debug.h>
 #include <aqbanking/banking.h>
@@ -102,6 +103,12 @@ int main(int argc, char **argv) {
     "Show this help screen. For help on commands, run aqhbci-tool <COMMAND> --help."       /* long description */
   }
   };
+
+  rv=GWEN_Init();
+  if (rv) {
+    fprintf(stderr, "ERROR: Unable to init Gwen.\n");
+    exit(2);
+  }
 
   GWEN_Logger_Open("aqhbci-tool", "aqhbci-tool", 0,
 		   GWEN_LoggerType_Console,

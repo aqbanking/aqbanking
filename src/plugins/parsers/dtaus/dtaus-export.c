@@ -785,10 +785,15 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   /* create C sets */
   gr=GWEN_DB_GetFirstGroup(data);
   while(gr) {
-    if ((isDebitNote && strcasecmp(GWEN_DB_GroupName(gr), "debitnote")==0) ||
-        (!isDebitNote && strcasecmp(GWEN_DB_GroupName(gr), "transfer")==0)){
+    const char *gn;
+
+    gn=GWEN_DB_GroupName(gr);
+    if ((isDebitNote && strcasecmp(gn, "debitnote")==0) ||
+	(!isDebitNote &&
+	 (strcasecmp(gn, "transfer")==0 ||
+	  strcasecmp(gn, "transaction")==0))){
       if (AHB_DTAUS__CreateSetC(dst, cfg, gr,
-                                sumEUR, sumDEM,
+				sumEUR, sumDEM,
 				sumBankCodes, sumAccountIds)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating C set from this data:");
         GWEN_DB_Dump(gr, stderr, 2);
@@ -801,6 +806,10 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
       }
       cSets++;
     } /* if group matches */
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Ignoring group [%s]",
+		GWEN_DB_GroupName(gr));
+    }
     gr=GWEN_DB_GetNextGroup(gr);
   } /* while */
 

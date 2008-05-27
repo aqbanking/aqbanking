@@ -1,4 +1,12 @@
 
+2008/05/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- aqhbci-tool: Now calls GWEN_Init()
+- imexporters/dtaus: implemented export function
+- parsers/dtaus/README: documented params used from profile files
+- parsers/dtaus/dtaus-export.c: also check for group name "transaction"
+
+
 ===========================================================================
 MARK: released AqBanking - 3.4.1 (2008-04-25)
 ===========================================================================

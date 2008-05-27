@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(top_builddir)/headers $(all_includes) -I$(top_srcdir)/src/libs/aqbanking
 EXTRA_DIST=README
 
 noinst_LTLIBRARIES=libio_dtaus.la

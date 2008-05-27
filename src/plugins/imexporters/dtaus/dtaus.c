@@ -15,6 +15,8 @@
 #endif
 
 #include "dtaus_p.h"
+#include "i18n_l.h"
+
 #include <aqbanking/banking.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -62,6 +64,7 @@ AB_IMEXPORTER *AB_Plugin_ImExporterDTAUS_Factory(GWEN_PLUGIN *pl,
   }
 
   AB_ImExporter_SetImportFn(ie, AH_ImExporterDTAUS_Import);
+  AB_ImExporter_SetExportFn(ie, AH_ImExporterDTAUS_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterDTAUS_CheckFile);
   return ie;
 }
@@ -216,6 +219,149 @@ int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t 
 
 
 
+
+int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      GWEN_IO_LAYER *io,
+			      GWEN_DB_NODE *params,
+			      uint32_t guiid){
+  AH_IMEXPORTER_DTAUS *ieh;
+  GWEN_DB_NODE *dbSubParams;
+  int rv;
+  const char *groupName;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+  assert(ie);
+  ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_DTAUS, ie);
+  assert(ieh);
+  assert(ieh->dbio);
+
+  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			       "params");
+
+  groupName=GWEN_DB_GetCharValue(params, "groupNames", 0, "transfer");
+
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  while(ai) {
+    GWEN_DB_NODE *dbTransfers;
+    const char *aiBankCode;
+    const char *aiAccNum;
+    const AB_TRANSACTION *t;
+    GWEN_DB_NODE *dbCfg;
+    const char *localBankCode=NULL;
+    const char *localAccountNumber=NULL;
+    const char *localName=NULL;
+
+    aiBankCode=AB_ImExporterAccountInfo_GetBankCode(ai);
+    aiAccNum=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+
+    localBankCode=aiBankCode;
+    localAccountNumber=aiAccNum;
+
+    /* get values for dbCfg from transactions, check for deviations */
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    while(t) {
+      const char *tlocalBankCode;
+      const char *tlocalAccountNumber;
+      const char *tlocalName;
+
+      tlocalBankCode=AB_Transaction_GetLocalBankCode(t);
+      tlocalAccountNumber=AB_Transaction_GetLocalAccountNumber(t);
+      tlocalName=AB_Transaction_GetLocalName(t);
+
+      if (tlocalBankCode && !localBankCode)
+	localBankCode=tlocalBankCode;
+      if (tlocalAccountNumber && !localAccountNumber)
+	localAccountNumber=tlocalAccountNumber;
+      if (tlocalName && !localName)
+	localName=tlocalName;
+
+      if (tlocalBankCode &&
+	  localBankCode &&
+	  strcasecmp(tlocalBankCode, localBankCode)!=0) {
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Transactions with multiple bank codes found"));
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Transactions with multiple bank codes found");
+	return GWEN_ERROR_BAD_DATA;
+      }
+
+      if (tlocalAccountNumber &&
+	  localAccountNumber &&
+	  strcasecmp(tlocalAccountNumber, localAccountNumber)!=0) {
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Transactions with multiple account numbers found"));
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Transactions with multiple account numbers found");
+	return GWEN_ERROR_BAD_DATA;
+      }
+
+      if (tlocalName &&
+	  localName &&
+	  strcasecmp(tlocalName, localName)!=0) {
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Transactions with multiple local names found"));
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Transactions with multiple local names found");
+	return GWEN_ERROR_BAD_DATA;
+      }
+
+      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+    }
+
+    if (!localBankCode || !localAccountNumber || !localName) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Missing local account/name specification");
+      return GWEN_ERROR_BAD_DATA;
+    }
+
+    /* now create and setup dbCfg */
+    if (dbSubParams)
+      dbCfg=GWEN_DB_Group_dup(dbSubParams);
+    else
+      dbCfg=GWEN_DB_Group_new("config");
+    GWEN_DB_SetCharValue(dbCfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "bankCode", localBankCode);
+    GWEN_DB_SetCharValue(dbCfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "accountId", localAccountNumber);
+    GWEN_DB_SetCharValue(dbCfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "name", localName);
+
+    /* export transactions to DB */
+    dbTransfers=GWEN_DB_Group_new("transfers");
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    while(t) {
+      GWEN_DB_NODE *dbTransfer;
+
+      dbTransfer=GWEN_DB_Group_new(groupName);
+      AB_Transaction_toDb(t, dbTransfer);
+      GWEN_DB_AddGroup(dbTransfers, dbTransfer);
+      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+    }
+
+    /* export transactions to IO */
+    rv=GWEN_DBIO_Export(ieh->dbio, io,
+			dbTransfers, dbCfg,
+			GWEN_DB_FLAGS_DEFAULT,
+			guiid, 2000);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating DTAUS object");
+      GWEN_DB_Group_free(dbTransfers);
+      GWEN_DB_Group_free(dbCfg);
+      return rv;
+    }
+
+    GWEN_DB_Group_free(dbTransfers);
+    GWEN_DB_Group_free(dbCfg);
+    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+  } /* while ai */
+
+  return 0;
+
+}
 
 
 

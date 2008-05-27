@@ -1,3 +1,39 @@
 This folder contains a parser for the German finance transaction format
 DTAUS.
 
+
+1. Variables read from a configuration
+
+1.1. char type
+
+This variable contains the type of transactions to export. Possibly values are:
+  - transfer
+  - debitnote
+(default: "transfer")
+
+
+1.2. char currency
+
+This variable holds the currency (default: "EUR")
+
+
+1.3. char bankCode
+
+Bank code of the issuers bank account.
+
+
+1.4. char accountId
+
+Account id of the issuers bank account.
+
+
+1.5. char name
+
+Name of the issuer.
+
+
+1.6. char custref
+
+Customer referenece (A-set)
+
+
