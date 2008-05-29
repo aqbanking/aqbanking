@@ -135,8 +135,12 @@ int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
 
     GWEN_FASTBUFFER_PEEKBYTE(fb, c);
     if (c<0) {
-      if (c==GWEN_ERROR_EOF)
-        break;
+      if (c==GWEN_ERROR_EOF) {
+	if (*obuffer==0) {
+	  return GWEN_ERROR_EOF;
+	}
+	break;
+      }
       else  {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading from stream");
         *buffer=0;
@@ -199,6 +203,10 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
   for (;;) {
     rv=AHB_SWIFT_ReadLine(fb, buffer, sizeof(buffer)-1);
     if (rv<0) {
+      if (rv==GWEN_ERROR_EOF) {
+	GWEN_Buffer_free(lbuf);
+	return 1;
+      }
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading from stream (%d)", rv);
       GWEN_Buffer_free(lbuf);
       return rv;

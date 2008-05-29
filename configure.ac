@@ -773,20 +773,17 @@ AC_MSG_RESULT($XMLMERGE)
 # KtoBlzCheck
 #
 
-have_ktoblzcheck="yes"
-AC_CHECK_LIB(ktoblzcheck, AccountNumberCheck_new,
-             [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
-AC_CHECK_HEADERS(ktoblzcheck.h, [], [have_ktoblzcheck="no"])
-if test "$have_ktoblzcheck" != "yes"; then
-  ktoblzcheck_libs=""
-else
-  ktoblzcheck_libs="-lktoblzcheck"
-  AC_DEFINE_UNQUOTED(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
+pkg_modules="ktoblzcheck >= 1.10"
+PKG_CHECK_MODULES(ktoblzcheck, [$pkg_modules], [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
+if test "$have_ktoblzcheck" = "yes"; then
+  AC_DEFINE(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
+  ktoblzcheck_includes="$ktoblzcheck_CFLAGS"
+  ktoblzcheck_libs="$ktoblzcheck_LIBS"
 fi
-AC_SUBST(ktoblzcheck_libs)
 
 AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
-
+AC_SUBST(ktoblzcheck_libs)
+AC_SUBST(ktoblzcheck_includes)
 
 
 ###-------------------------------------------------------------------------

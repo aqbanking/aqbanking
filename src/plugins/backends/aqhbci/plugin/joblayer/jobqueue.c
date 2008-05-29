@@ -494,13 +494,17 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_TANUSED) {
         DBG_INFO(AQHBCI_LOGDOMAIN,
 		 "TAN \"%s\" used", tan);
-	rv=AH_User_SetPinStatus(jq->user, jq->usedPin,
+	rv=AH_User_SetTanStatus(jq->user,
+				NULL, /* no challenge here */
+				tan,
 				GWEN_Gui_PasswordStatus_Used);
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN,
                  "TAN \"%s\" not used", tan);
-	rv=AH_User_SetPinStatus(jq->user, jq->usedPin,
+	rv=AH_User_SetTanStatus(jq->user,
+				NULL, /* no challenge here */
+				tan,
 				GWEN_Gui_PasswordStatus_Unused);
       }
       if (rv) {
