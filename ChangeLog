@@ -1,4 +1,12 @@
 
+
+2008/05/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- use pkgconfig to check for KtoBlzCheck
+- AqHBCI: fixed a bug in jobqueue.c
+- parsers/swift: fixed a bug
+
+
 ===========================================================================
 MARK: released AqBanking - 3.4.2 (2008-05-27)
 ===========================================================================
