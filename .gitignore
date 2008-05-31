@@ -12,6 +12,7 @@
 *~
 .deps
 .libs
+core
 
 autom4te.cache
 config.guess
