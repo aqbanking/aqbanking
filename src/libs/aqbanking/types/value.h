@@ -57,8 +57,13 @@ AQBANKING_API AB_VALUE *AB_Value_fromString(const char *s);
 AQBANKING_API void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf);
 
 AQBANKING_API void AB_Value_toHumanReadableString(const AB_VALUE *v,
-                                            GWEN_BUFFER *buf,
-                                            int prec);
+						  GWEN_BUFFER *buf,
+						  int prec);
+
+AQBANKING_API void AB_Value_toHumanReadableString2(const AB_VALUE *v,
+						   GWEN_BUFFER *buf,
+						   int prec,
+						   int withCurrency);
 
 AQBANKING_API AB_VALUE *AB_Value_fromDouble(double i);
 

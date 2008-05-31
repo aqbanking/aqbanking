@@ -202,6 +202,9 @@ static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
                                           AH_DIALOG *dlg);
 
 
+static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
+						    const AH_JOB_LIST *qjl);
+
 
 #endif /* AH_OUTBOX_P_H */
 

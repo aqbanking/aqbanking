@@ -832,9 +832,7 @@
      <ELEM name="singleStepAllowed" type="alpha" size="1" />
      <ELEM name="multiJobAllowed" type="alpha" size="1" />
      <ELEM name="hashMethod" type="num" size="1" />
-
      <ELEM name="secProfile" type="num" size="1" />
-    
      <GROUP type="tanMethod" version="1" name="tanMethod" 
             minnum="1" maxnum="99"
             delimiter=":" terminator="" />

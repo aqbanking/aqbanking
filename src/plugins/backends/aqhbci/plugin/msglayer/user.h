@@ -118,21 +118,6 @@ void AH_User_SubFlags(AB_USER *u, uint32_t flags);
  *
  */
 /*@{*/
-#if 0
-AQHBCI_API
-  uint32_t AH_User_GetTanMethods(const AB_USER *u);
-
-AQHBCI_API
-void AH_User_SetTanMethods(AB_USER *u, uint32_t m);
-
-AQHBCI_API
-void AH_User_AddTanMethods(AB_USER *u, uint32_t m);
-
-AQHBCI_API
-void AH_User_SubTanMethods(AB_USER *u, uint32_t m);
-#endif
-
-
 
 AQHBCI_API
 const int *AH_User_GetTanMethodList(const AB_USER *u);
@@ -146,6 +131,11 @@ AQHBCI_API
 void AH_User_AddTanMethod(AB_USER *u, int method);
 AQHBCI_API
 void AH_User_ClearTanMethodList(AB_USER *u);
+
+AQHBCI_API
+int AH_User_GetSelectedTanMethod(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetSelectedTanMethod(AB_USER *u, int i);
 
 
 AQHBCI_API

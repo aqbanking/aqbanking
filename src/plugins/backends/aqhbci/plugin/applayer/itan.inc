@@ -273,38 +273,57 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     return 0;
   }
 
-  /* find DB_NODE of first supported TanMethod */
+  fn=AH_User_GetSelectedTanMethod(u);
   dbParams=AH_Job_GetParams(jTan);
   assert(dbParams);
-  dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
-  while(dbMethod) {
-    fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
-    if (AH_User_HasTanMethod(u, fn) ||
-	AH_User_GetTanMethodCount(u)==0) {
-      process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-      if (process==1 || process==2) {
-	const char *s;
-	const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
-	char lbuf[256];
-  
-	s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
-	if (!s || !*s)
-	  s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
-	snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
-	lbuf[sizeof(lbuf)-1]=0;
-	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Info,
-			     lbuf);
-	break;
+
+  if (fn && AH_User_HasTanMethod(u, fn)) {
+    /* find DB_NODE of selected TanMethod */
+    dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
+    while(dbMethod) {
+      if (GWEN_DB_GetIntValue(dbMethod, "function", 0, 0)==fn) {
+	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
+	if (process==1 || process==2) {
+	  break;
+	}
+	else {
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		     "iTan process type \"%d\" not supported", process);
+	  /* selected mode is not supported, choose another one later */
+	  fn=0;
+	  break;
+	}
       }
-      else {
-	DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		   "iTan process type \"%d\" not supported", process);
-      }
+
+      dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
     }
 
-    dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
+    if (fn==0) {
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Warning,
+			   I18N("TAN method selected by user is no longer valid,"
+				"please choose another one"));
+    }
+  }
+
+  if (fn==0) {
+    /* find DB_NODE of first supported TanMethod */
+    dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
+    while(dbMethod) {
+      fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
+      if (AH_User_HasTanMethod(u, fn) ||
+	  AH_User_GetTanMethodCount(u)==0) {
+	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
+	if (process==1 || process==2)
+	  break;
+	else {
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		     "iTan process type \"%d\" not supported", process);
+	}
+      }
+
+      dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
+    }
   }
 
   if (!dbMethod || !fn) {
@@ -313,13 +332,60 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     AH_Job_free(jTan);
     return GWEN_ERROR_NOT_FOUND;
   }
+  else {
+    const char *s;
+    const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
+    char lbuf[256];
 
-  AH_Dialog_SetItanMethod(dlg, fn);
-  AH_Dialog_SetItanProcessType(dlg, process);
+    s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
+    if (!s || !*s)
+      s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
+    snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
+    lbuf[sizeof(lbuf)-1]=0;
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Info,
+			 lbuf);
+    AH_Dialog_SetItanMethod(dlg, fn);
+    AH_Dialog_SetItanProcessType(dlg, process);
 
-  AH_Job_free(jTan);
+    AH_Job_free(jTan);
+    return 0;
+  }
+}
 
-  return 0;
+
+
+void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
+					     const AH_JOB_LIST *qjl) {
+  /* dispatch results from jTan to all other members of the queue */
+  if (qjl) {
+    AH_RESULT_LIST *rl;
+  
+    /* segment results */
+    rl=AH_Job_GetSegResults(j);
+    if (rl) {
+      AH_RESULT *or;
+  
+      or=AH_Result_List_First(rl);
+      while(or) {
+        AH_JOB *qj;
+  
+        qj=AH_Job_List_First(qjl);
+        while(qj) {
+	  if (qj!=j) {
+            AH_RESULT *nr;
+  
+            nr=AH_Result_dup(or);
+            AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+          }
+          qj=AH_Job_List_Next(qj);
+        }
+  
+        or=AH_Result_List_Next(or);
+      } /* while or */
+    } /* if rl */
+  } /* if qjl */
 }
 
 

@@ -62,6 +62,7 @@ struct AH_JOB {
 
   AH_JOB_PROCESS_FN processFn;
   AH_JOB_COMMIT_FN commitFn;
+  AH_JOB_PREPARE_FN prepareFn;
 
   AH_JOB_EXCHANGE_FN exchangeFn;
 
@@ -75,6 +76,9 @@ struct AH_JOB {
   AB_MESSAGE_LIST *messages;
 
   GWEN_STRINGLIST *log;
+
+  GWEN_STRINGLIST *challengeParams;
+  AB_VALUE *challengeValue;
 };
 
 

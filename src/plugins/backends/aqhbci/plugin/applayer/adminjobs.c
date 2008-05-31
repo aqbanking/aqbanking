@@ -1168,6 +1168,30 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
+int AH_Job_Tan_GetTanMethod(const AH_JOB *j) {
+  AH_JOB_TAN *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  return aj->tanMethod;
+}
+
+
+
+void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i) {
+  AH_JOB_TAN *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  aj->tanMethod=i;
+}
+
+
+
 int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
 			AH_JOB_EXCHANGE_MODE m,
 			AB_IMEXPORTER_CONTEXT *ctx,
@@ -1288,6 +1312,103 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j) {
 
   return aj->reference;
 }
+
+
+
+int AH_Job_Tan_FinishSetup(AH_JOB *j) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *args;
+  GWEN_DB_NODE *dbParams;
+  GWEN_DB_NODE *dbMethod;
+  GWEN_STRINGLIST *sl;
+  const char *s;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  args=AH_Job_GetArguments(j);
+  assert(args);
+  
+  dbParams=AH_Job_GetParams(j);
+  assert(dbParams);
+  
+  /* get data for the selected tan method */
+  dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
+  while(dbMethod) {
+    int tm;
+  
+    tm=GWEN_DB_GetIntValue(dbMethod, "function", 0, -1);
+    if (tm!=-1 && tm==aj->tanMethod)
+      break;
+  
+    dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
+  }
+  
+  if (!dbMethod) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No info for the selected iTAN method");
+    return GWEN_ERROR_GENERIC;
+  }
+  
+  /* set challenge class */
+  s=GWEN_DB_GetCharValue(dbMethod, "needChallengeClass", 0, "N");
+  if (strcasecmp(s, "J")==0)
+    GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			"challengeClass", AH_Job_GetChallengeClass(j));
+  
+  /* add challenge params */
+  sl=AH_Job_GetChallengeParams(j);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *e;
+  
+    e=GWEN_StringList_FirstEntry(sl);
+    while(e) {
+      GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_DEFAULT,
+			   "challengeParams/param",
+			   GWEN_StringListEntry_Data(e));
+      e=GWEN_StringListEntry_Next(e);
+    }
+  }
+  
+  /* set challenge value if required */
+  s=GWEN_DB_GetCharValue(dbMethod, "needChallengeAmount", 0, "N");
+  if (strcasecmp(s, "J")==0) {
+    const AB_VALUE *v;
+
+    v=AH_Job_GetChallengeValue(j);
+    if (!v) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing challenge value");
+      return GWEN_ERROR_GENERIC;
+    }
+  
+    else {
+      GWEN_BUFFER *btmp;
+  
+      btmp=GWEN_Buffer_new(0, 32, 0, 1);
+      AH_Job_ValueToChallengeString(v, btmp);
+      DBG_ERROR(0, "Setting challenge amount [%s]", GWEN_Buffer_GetStart(btmp));
+      GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_DEFAULT,
+			   "challengeParams/param",
+			   GWEN_Buffer_GetStart(btmp));
+      GWEN_Buffer_free(btmp);
+      s=AB_Value_GetCurrency(v);
+      if (!s)
+	s="EUR";
+      if (s)
+	GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_DEFAULT,
+			     "challengeParams/param",
+			     s);
+    }
+  }
+  else {
+    DBG_ERROR(0, "Challenge amount not needed");
+  }
+
+  return 0;
+}
+
+
+
 
 
 

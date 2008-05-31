@@ -17,25 +17,25 @@
 typedef struct AH_JOB AH_JOB;
 
 
-#define AH_JOB_FLAGS_NOITAN         0x00002000
-#define AH_JOB_FLAGS_TANUSED        0x00004000
-#define AH_JOB_FLAGS_NOSYSID        0x00008000
-#define AH_JOB_FLAGS_NEEDCRYPT      0x00010000
-#define AH_JOB_FLAGS_NEEDSIGN       0x00020000
-#define AH_JOB_FLAGS_ATTACHABLE     0x00040000
-#define AH_JOB_FLAGS_SINGLE         0x00080000
-#define AH_JOB_FLAGS_DLGJOB         0x00100000
-#define AH_JOB_FLAGS_CRYPT          0x00200000
-#define AH_JOB_FLAGS_SIGN           0x00400000
-#define AH_JOB_FLAGS_MULTIMSG       0x00800000
-#define AH_JOB_FLAGS_HASATTACHPOINT 0x01000000
-#define AH_JOB_FLAGS_HASMOREMSGS    0x02000000
-#define AH_JOB_FLAGS_HASWARNINGS    0x04000000
-#define AH_JOB_FLAGS_HASERRORS      0x08000000
-#define AH_JOB_FLAGS_PROCESSED      0x10000000
-#define AH_JOB_FLAGS_COMMITTED      0x20000000
-#define AH_JOB_FLAGS_NEEDTAN        0x40000000
-#define AH_JOB_FLAGS_OUTBOX         0x80000000
+#define AH_JOB_FLAGS_NOITAN               0x00002000
+#define AH_JOB_FLAGS_TANUSED              0x00004000
+#define AH_JOB_FLAGS_NOSYSID              0x00008000
+#define AH_JOB_FLAGS_NEEDCRYPT            0x00010000
+#define AH_JOB_FLAGS_NEEDSIGN             0x00020000
+#define AH_JOB_FLAGS_ATTACHABLE           0x00040000
+#define AH_JOB_FLAGS_SINGLE               0x00080000
+#define AH_JOB_FLAGS_DLGJOB               0x00100000
+#define AH_JOB_FLAGS_CRYPT                0x00200000
+#define AH_JOB_FLAGS_SIGN                 0x00400000
+#define AH_JOB_FLAGS_MULTIMSG             0x00800000
+#define AH_JOB_FLAGS_HASATTACHPOINT       0x01000000
+#define AH_JOB_FLAGS_HASMOREMSGS          0x02000000
+#define AH_JOB_FLAGS_HASWARNINGS          0x04000000
+#define AH_JOB_FLAGS_HASERRORS            0x08000000
+#define AH_JOB_FLAGS_PROCESSED            0x10000000
+#define AH_JOB_FLAGS_COMMITTED            0x20000000
+#define AH_JOB_FLAGS_NEEDTAN              0x40000000
+#define AH_JOB_FLAGS_OUTBOX               0x80000000
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
@@ -89,6 +89,8 @@ typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 				  AH_JOB_EXCHANGE_MODE m,
 				  AB_IMEXPORTER_CONTEXT *ctx,
 				  uint32_t guiid);
+typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j, uint32_t guiid);
+
 /**
  * This function is called on multi-message jobs and should return:
  * <ul>
@@ -195,6 +197,9 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid);
  * It calls @ref AH_Job_CommitSystemData.
  */
 int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid);
+
+int AH_Job_Prepare(AH_JOB *j, uint32_t guiid);
+
 /*@}*/
 
 
@@ -206,6 +211,7 @@ void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f);
 void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f);
 void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f);
 void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
+void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f);
 /*@}*/
 
 
@@ -265,6 +271,16 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s);
 
 void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt);
 
+
+GWEN_STRINGLIST *AH_Job_GetChallengeParams(const AH_JOB *j);
+void AH_Job_AddChallengeParam(AH_JOB *j, const char *s);
+void AH_Job_ClearChallengeParams(AH_JOB *j);
+const AB_VALUE *AH_Job_GetChallengeValue(const AH_JOB *j);
+void AH_Job_SetChallengeValue(AH_JOB *j, const AB_VALUE *v);
+int AH_Job_GetChallengeClass(const AH_JOB *j);
+void AH_Job_SetChallengeClass(AH_JOB *j, int i);
+
+void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf);
 
 #endif /* AH_JOB_L_H */
 

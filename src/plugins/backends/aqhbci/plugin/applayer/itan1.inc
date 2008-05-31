@@ -37,6 +37,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   GWEN_BUFFER *bHash;
   AH_JOBQUEUE *jq;
   const char *challenge;
+  GWEN_STRINGLIST *sl;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 1");
 
   jl=AH_JobQueue_GetJobList(qJob);
   assert(jl);
@@ -57,6 +60,32 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
   }
+
+  AH_Job_Tan_SetTanMethod(jTan, um);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Setting up HKTAN from job [%s]",
+           AH_Job_GetName(j));
+
+  /* copy challenge params */
+  sl=AH_Job_GetChallengeParams(j);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *e;
+
+    e=GWEN_StringList_FirstEntry(sl);
+    while(e) {
+      AH_Job_AddChallengeParam(jTan, GWEN_StringListEntry_Data(e));
+      e=GWEN_StringListEntry_Next(e);
+    }
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No challenge params");
+  }
+
+  /* copy challenge amount */
+  AH_Job_SetChallengeValue(jTan, AH_Job_GetChallengeValue(j));
+
+  /* copy challenge class */
+  AH_Job_SetChallengeClass(jTan, AH_Job_GetChallengeClass(j));
 
   /* copy signers */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
@@ -101,6 +130,15 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_Tan_SetHash(jTan,
 		     (const unsigned char*)GWEN_Buffer_GetStart(bHash),
 		     GWEN_Buffer_GetUsedBytes(bHash));
+
+  rv=AH_Job_Tan_FinishSetup(jTan);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg1);
+    AH_Job_free(jTan);
+    return rv;
+  }
+
   jq=AH_JobQueue_new(u);
   rv=AH_JobQueue_AddJob(jq, jTan);
   if (rv) {
@@ -163,10 +201,12 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
     AH_Msg_free(msg1);
     AH_JobQueue_free(jq);
     return rv;
   }
+  AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
   rv=AH_Job_Process(jTan, cbox->outbox->context, cbox->guiid);
@@ -206,14 +246,14 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   AH_JobQueue_free(jq);
+  jq=NULL;
 
   /* now handle the real job */
   /* encode job message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(
-			 0,
-			 GWEN_LoggerLevel_Info,
-			 I18N("Encoding queue"));
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Encoding queue"));
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -254,40 +294,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  else {
-    const AH_JOB_LIST *qjl;
-
-    /* dispatch results from jTan to all other members of the queue */
-    qjl=AH_JobQueue_GetJobList(qJob);
-    if (qjl) {
-      AH_RESULT_LIST *rl;
-
-      /* segment results */
-      rl=AH_Job_GetSegResults(jTan);
-      if (rl) {
-	AH_RESULT *or;
-
-	or=AH_Result_List_First(rl);
-	while(or) {
-	  AH_JOB *qj;
-
-	  qj=AH_Job_List_First(qjl);
-	  while(qj) {
-	    if (qj!=jTan) {
-	      AH_RESULT *nr;
-
-	      nr=AH_Result_dup(or);
-	      AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
-	    }
-	    qj=AH_Job_List_Next(qj);
-	  }
-
-	  or=AH_Result_List_Next(or);
-	} /* while or */
-      } /* if rl */
-    } /* if qjl */
-  }
-
 
   return 0;
 }

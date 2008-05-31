@@ -55,6 +55,8 @@ struct AH_USER {
   int tanMethodList[AH_USER_MAX_TANMETHODS+1];
   int tanMethodCount;
 
+  int selectedTanMethod;
+
   char *prompt;
 };
 

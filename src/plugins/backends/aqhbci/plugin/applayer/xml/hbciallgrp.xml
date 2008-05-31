@@ -422,6 +422,10 @@
     <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" />
   </GROUPdef>
 
+  <GROUPdef id="challengeParams" delimiter=":" terminator="" version="1">
+    <ELEM name="param" type="ascii" maxsize="999" minnum="0" maxnum="99"/>
+  </GROUPdef>
+
 </GROUPs>
 
 

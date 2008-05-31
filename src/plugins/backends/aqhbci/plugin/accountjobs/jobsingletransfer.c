@@ -1527,6 +1527,10 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         break;
       } /* switch */
 
+      /* set challenge stuff */
+      AH_Job_SetChallengeClass(j, 10);
+      AH_Job_AddChallengeParam(j, AB_Transaction_GetRemoteAccountNumber(t));
+      AH_Job_SetChallengeValue(j, AB_Transaction_GetValue(t));
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");

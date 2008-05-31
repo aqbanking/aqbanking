@@ -38,6 +38,10 @@
 #include <ctype.h>
 
 
+/*#define CHALLENGE_ADD_ONLY_PREKOMMA_VALUES*/
+
+
+
 GWEN_INHERIT(AH_JOB, AH_JOB_MULTITRANSFER);
 
 
@@ -88,9 +92,13 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j, aj,
                        AH_Job_MultiTransfer_FreeData);
   aj->isTransfer=isTransfer;
+  aj->sumRemoteAccountId=AB_Value_new();
+  aj->sumValues=AB_Value_new();
+
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_MultiTransfer_Process);
   AH_Job_SetExchangeFn(j, AH_Job_MultiTransfer_Exchange);
+  AH_Job_SetPrepareFn(j, AH_Job_MultiTransfer_Prepare);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -134,6 +142,9 @@ void GWENHYWFAR_CB AH_Job_MultiTransfer_FreeData(void *bp, void *p){
   AH_JOB_MULTITRANSFER *aj;
 
   aj=(AH_JOB_MULTITRANSFER*)p;
+
+  AB_Value_free(aj->sumValues);
+  AB_Value_free(aj->sumRemoteAccountId);
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -515,8 +526,47 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       /* store transaction */
       if (AB_Transaction_toDb(t, dbT)) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error storing transaction to db");
+	AB_Transaction_free(t);
         return GWEN_ERROR_BAD_DATA;
       }
+      else {
+	const char *s;
+	char tbuf[11];
+        AB_VALUE *tv;
+
+	s=AB_Transaction_GetRemoteAccountNumber(t);
+	assert(s);
+        tbuf[0]=0;
+	strncat(tbuf, s, 10);
+	tv=AB_Value_fromString(tbuf);
+	assert(tv);
+	AB_Value_AddValue(aj->sumRemoteAccountId, tv);
+	AB_Value_free(tv);
+
+#ifdef CHALLENGE_ADD_ONLY_PREKOMMA_VALUES
+	if (1) {
+	  GWEN_BUFFER *tbuf;
+	  char *p;
+	  AB_VALUE *tv;
+
+	  tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	  AB_Value_toHumanReadableString2(AB_Transaction_GetValue(t),
+					  tbuf, 0, 0);
+	  p=strchr(GWEN_Buffer_GetStart(tbuf), ',');
+	  if (p)
+	    *p=0;
+	  tv=AB_Value_fromString(GWEN_Buffer_GetStart(tbuf));
+	  assert(tv);
+	  AB_Value_AddValue(aj->sumValues, tv);
+	  AB_Value_free(tv);
+          GWEN_Buffer_free(tbuf);
+	}
+#else
+	AB_Value_AddValue(aj->sumValues, AB_Transaction_GetValue(t));
+#endif
+      }
+      AB_Transaction_free(t);
+
       aj->transferCount++;
     }
     else {
@@ -577,6 +627,37 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode %d", m);
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
+}
+
+
+
+int AH_Job_MultiTransfer_Prepare(AH_JOB *j, uint32_t guiid){
+  AH_JOB_MULTITRANSFER *aj;
+  GWEN_BUFFER *tbuf;
+  char *p;
+
+  DBG_ERROR(0, "Prepare function called");
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
+  assert(aj);
+
+  AH_Job_SetChallengeClass(j, 50);
+
+  tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+
+  /* set challenge parameter */
+  AB_Value_toHumanReadableString2(aj->sumRemoteAccountId,
+				  tbuf, 0, 0);
+  p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
+  if (p)
+    *p=0;
+  AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  AH_Job_SetChallengeValue(j, aj->sumValues);
+
+  return 0;
 }
 
 

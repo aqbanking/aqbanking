@@ -314,6 +314,41 @@ void AB_Value_toHumanReadableString(const AB_VALUE *v,
 
 
 
+void AB_Value_toHumanReadableString2(const AB_VALUE *v,
+				     GWEN_BUFFER *buf,
+				     int prec,
+				     int withCurrency) {
+  char numbuf[128];
+  double num;
+  int rv;
+#ifdef HAVE_SETLOCALE
+  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
+  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
+  setlocale(LC_NUMERIC, "C");
+#endif
+
+  num=AB_Value_GetValueAsDouble(v);
+  rv=snprintf(numbuf, sizeof(numbuf), "%.*lf",
+	      prec, num);
+
+#ifdef HAVE_SETLOCALE
+  setlocale(LC_NUMERIC, currentLocale);
+  free(currentLocale);
+#endif
+
+  if (rv<1 || rv>=sizeof(numbuf)) {
+    assert(0);
+  }
+  GWEN_Buffer_AppendString(buf, numbuf);
+
+  if (v->currency && withCurrency) {
+    GWEN_Buffer_AppendString(buf, " ");
+    GWEN_Buffer_AppendString(buf, v->currency);
+  }
+}
+
+
+
 double AB_Value_GetValueAsDouble(const AB_VALUE *v) {
   assert(v);
   return mpq_get_d(v->value);

@@ -251,6 +251,8 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       ue->tanMethodList[ue->tanMethodCount++]=method;
       ue->tanMethodList[ue->tanMethodCount]=-1;
     }
+
+    ue->selectedTanMethod=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
   }
   else {
     AH_USER *ue;
@@ -356,6 +358,9 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 			    ue->tanMethodList[i]);
       }
 
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			  "selectedTanMethod",
+                          ue->selectedTanMethod);
     } /* if save */
   }
 }
@@ -1418,6 +1423,30 @@ int AH_User_GetTanMethodCount(const AB_USER *u) {
   assert(ue);
 
   return ue->tanMethodCount;
+}
+
+
+
+int AH_User_GetSelectedTanMethod(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->selectedTanMethod;
+}
+
+
+
+void AH_User_SetSelectedTanMethod(AB_USER *u, int i) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->selectedTanMethod=i;
 }
 
 

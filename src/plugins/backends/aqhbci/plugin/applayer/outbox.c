@@ -417,6 +417,37 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
 
   errors=0;
 
+  /* call AH_Job_Prepare() for all jobs */
+  j=AH_Job_List_First(cbox->todoJobs);
+  while(j) {
+    AH_JOB_STATUS st;
+    AH_JOB *next;
+
+    next=AH_Job_List_Next(j);
+    st=AH_Job_GetStatus(j);
+    if (st==AH_JobStatusToDo) {
+      int rv=AH_Job_Prepare(j, cbox->guiid);
+      if (rv<0 && rv!=GWEN_ERROR_NOT_SUPPORTED) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	AH_Job_SetStatus(j, AH_JobStatusError);
+	AH_Job_List_Del(j);
+	AH_Job_List_Add(j, cbox->finishedJobs);
+	errors++;
+      }
+    } /* if status TODO */
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Skip job \"%s\" for its status \"%s\" (%d)",
+	       AH_Job_GetName(j), AH_Job_StatusName(st), st);
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      AH_Job_List_Del(j);
+      AH_Job_List_Add(j, cbox->finishedJobs);
+      errors++;
+    }
+
+    j=next;
+  } /* while */
+
+
   /* add JobGetStatus if there are any pending jobs for this customer */
   if (AB_Job_List2_GetSize(cbox->pendingJobs)) {
     AH_JOB *sj;

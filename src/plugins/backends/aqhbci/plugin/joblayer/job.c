@@ -72,6 +72,8 @@ AH_JOB *AH_Job_new(const char *name,
   j->signers=GWEN_StringList_new();
   j->log=GWEN_StringList_new();
 
+  j->challengeParams=GWEN_StringList_new();
+
   /* get job descriptions */
 
   e=AH_User_GetMsgEngine(u);
@@ -343,6 +345,8 @@ void AH_Job_free(AH_JOB *j) {
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
+      AB_Value_free(j->challengeValue);
+      GWEN_StringList_free(j->challengeParams);
       GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
       free(j->name);
@@ -860,6 +864,8 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
   assert(j);
   assert(j->usage);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging %d (%s)", m, j->name);
+
   db=AB_Job_GetProviderData(bj, AH_HBCI_GetProvider(AH_Job_GetHbci(j)));
   assert(db);
 
@@ -919,6 +925,19 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+int AH_Job_Prepare(AH_JOB *j, uint32_t guiid){
+  assert(j);
+  assert(j->usage);
+  if (j->prepareFn)
+    return j->prepareFn(j, guiid);
+  else {
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No prepareFn set");
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+}
+
+
+
 void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f){
   assert(j);
   assert(j->usage);
@@ -947,6 +966,14 @@ void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f){
   assert(j);
   assert(j->usage);
   j->nextMsgFn=f;
+}
+
+
+
+void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f) {
+  assert(j);
+  assert(j->usage);
+  j->prepareFn=f;
 }
 
 
@@ -2055,6 +2082,60 @@ const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j) {
   return j->log;
 }
 
+
+
+GWEN_STRINGLIST *AH_Job_GetChallengeParams(const AH_JOB *j) {
+  assert(j);
+  return j->challengeParams;
+}
+
+
+
+void AH_Job_ClearChallengeParams(AH_JOB *j) {
+  assert(j);
+  GWEN_StringList_Clear(j->challengeParams);
+}
+
+
+
+void AH_Job_AddChallengeParam(AH_JOB *j, const char *s) {
+  assert(j);
+  GWEN_StringList_AppendString(j->challengeParams, s, 0, 0);
+}
+
+
+
+const AB_VALUE *AH_Job_GetChallengeValue(const AH_JOB *j) {
+  assert(j);
+  return j->challengeValue;
+}
+
+
+
+void AH_Job_SetChallengeValue(AH_JOB *j, const AB_VALUE *v) {
+  assert(j);
+  AB_Value_free(j->challengeValue);
+  if (v) j->challengeValue=AB_Value_dup(v);
+  else j->challengeValue=NULL;
+}
+
+
+
+void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+  char *p;
+  uint32_t pos;
+
+  pos=GWEN_Buffer_GetPos(buf);
+  AB_Value_toHumanReadableString2(v, buf, 2, 0);
+  p=GWEN_Buffer_GetStart(buf)+pos;
+  while(*p) {
+    if (*p=='.') {
+      *p=',';
+      break;
+    }
+    p++;
+  }
+}
 
 
 

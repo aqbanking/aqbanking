@@ -162,6 +162,10 @@ void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p);
 const char *AH_Job_Tan_GetChallenge(const AH_JOB *j);
 const char *AH_Job_Tan_GetReference(const AH_JOB *j);
 
+int AH_Job_Tan_GetTanMethod(const AH_JOB *j);
+void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i);
+
+int AH_Job_Tan_FinishSetup(AH_JOB *j);
 
 
 /* __________________________________________________________________________
