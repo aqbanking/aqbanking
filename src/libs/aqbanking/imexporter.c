@@ -417,6 +417,38 @@ AB_ImExporterContext_GetNextMessage(AB_IMEXPORTER_CONTEXT *iec){
 
 
 
+void AB_ImExporterContext_AddLog(AB_IMEXPORTER_CONTEXT *iec,
+				 const char *s) {
+  assert(iec);
+  if (s) {
+    size_t l=strlen(s);
+    if (s) {
+      GWEN_Buffer_AppendString(iec->logs, s);
+      if (s[l-1]!='\n')
+        GWEN_Buffer_AppendByte(iec->logs, '\n');
+    }
+  }
+}
+
+
+
+const char *AB_ImExporterContext_GetLog(const AB_IMEXPORTER_CONTEXT *iec) {
+  assert(iec);
+  if (GWEN_Buffer_GetUsedBytes(iec->logs))
+    return GWEN_Buffer_GetStart(iec->logs);
+  else
+    return NULL;
+}
+
+
+
+void AB_ImExporterContext_ClearLog(AB_IMEXPORTER_CONTEXT *iec) {
+  assert(iec);
+  GWEN_Buffer_Reset(iec->logs);
+}
+
+
+
 
 
 
@@ -463,6 +495,44 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
     GWEN_FREE_OBJECT(iea);
   }
+}
+
+
+
+void AB_ImExporterAccountInfo_FillFromAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
+					      const AB_ACCOUNT *a) {
+  const char *s;
+  AB_ACCOUNT_TYPE at;
+
+  assert(iea);
+  assert(a);
+
+  s=AB_Account_GetBankCode(a);
+  AB_ImExporterAccountInfo_SetBankCode(iea, s);
+
+  s=AB_Account_GetBankName(a);
+  AB_ImExporterAccountInfo_SetBankName(iea, s);
+
+  s=AB_Account_GetAccountNumber(a);
+  AB_ImExporterAccountInfo_SetAccountNumber(iea, s);
+
+  s=AB_Account_GetAccountName(a);
+  AB_ImExporterAccountInfo_SetAccountName(iea, s);
+
+  s=AB_Account_GetIBAN(a);
+  AB_ImExporterAccountInfo_SetIban(iea, s);
+
+  s=AB_Account_GetBIC(a);
+  AB_ImExporterAccountInfo_SetBic(iea, s);
+
+  s=AB_Account_GetCurrency(a);
+  AB_ImExporterAccountInfo_SetCurrency(iea, s);
+
+  s=AB_Account_GetOwnerName(a);
+  AB_ImExporterAccountInfo_SetOwner(iea, s);
+
+  at=AB_Account_GetAccountType(a);
+  AB_ImExporterAccountInfo_SetType(iea, at);
 }
 
 
@@ -1260,6 +1330,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
   iec->accountInfoList=AB_ImExporterAccountInfo_List_new();
   iec->securityList=AB_Security_List_new();
   iec->messageList=AB_Message_List_new();
+  iec->logs=GWEN_Buffer_new(0, 128, 0, 1);
 
   return iec;
 }
@@ -1268,6 +1339,7 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
 
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
   if (iec) {
+    GWEN_Buffer_free(iec->logs);
     AB_Message_List_free(iec->messageList);
     AB_Security_List_free(iec->securityList);
     AB_ImExporterAccountInfo_List_free(iec->accountInfoList);
@@ -1346,6 +1418,21 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
     }
   }
 
+  GWEN_DB_DeleteVar(db, "logs");
+  if (GWEN_Buffer_GetUsedBytes(iec->logs)) {
+    const char *s;
+
+    s=GWEN_Buffer_GetStart(iec->logs);
+    while(*s) {
+      char buf[64];
+
+      buf[0]=0;
+      strncat(buf, s, sizeof(buf));
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "logs", buf);
+      s+=strlen(buf);
+    }
+  }
+
   return 0;
 }
 
@@ -1354,6 +1441,7 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
                                 GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbT;
+  int i;
 
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 		       "accountInfoList");
@@ -1396,7 +1484,14 @@ int AB_ImExporterContext_ReadDb(AB_IMEXPORTER_CONTEXT *iec,
       dbT=GWEN_DB_FindNextGroup(dbT, "message");
     }
   }
+  for (i=0; ; i++) {
+    const char *s;
 
+    s=GWEN_DB_GetCharValue(db, "logs", i, NULL);
+    if (!s)
+      break;
+    GWEN_Buffer_AppendString(iec->logs, s);
+  }
   return 0;
 }
 
@@ -1933,6 +2028,8 @@ void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
     AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
     iea=nextIea;
   }
+
+  GWEN_Buffer_AppendBuffer(iec->logs, toAdd->logs);
   AB_ImExporterContext_free(toAdd);
 }
 

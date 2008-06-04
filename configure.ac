@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=4
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -1692,6 +1692,8 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/dtaus/ressource.rc
   src/plugins/imexporters/dtaus/profiles/Makefile
   src/plugins/imexporters/dtaus/profiles/default.conf
+  src/plugins/imexporters/dtaus/profiles/debitnote.conf
+  src/plugins/imexporters/dtaus/profiles/transfer.conf
   src/plugins/imexporters/eri2/Makefile
   src/plugins/imexporters/eri2/eri2.xml
   src/plugins/imexporters/eri2/ressource.rc

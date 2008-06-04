@@ -1726,5 +1726,151 @@ void AB_Banking_GetVersion(int *major,
 
 
 
+int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+				 const char *exporterName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_IO_LAYER *io,
+				 uint32_t guiid) {
+  AB_IMEXPORTER *exporter;
+  GWEN_DB_NODE *dbProfiles;
+  GWEN_DB_NODE *dbProfile;
+  int rv;
+
+  exporter=AB_Banking_GetImExporter(ab, exporterName);
+  if (!exporter) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Export module \"%s\" not found",
+	      exporterName);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  /* get profiles */
+  if (profileFile) {
+    dbProfiles=GWEN_DB_Group_new("profiles");
+    if (GWEN_DB_ReadFile(dbProfiles, profileFile,
+                         GWEN_DB_FLAGS_DEFAULT |
+			 GWEN_PATH_FLAGS_CREATE_GROUP,
+			 0,
+			 2000)) {
+      DBG_ERROR(0, "Error reading profiles from \"%s\"",
+                profileFile);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+  else {
+    dbProfiles=AB_Banking_GetImExporterProfiles(ab, exporterName);
+  }
+
+  /* select profile */
+  dbProfile=GWEN_DB_GetFirstGroup(dbProfiles);
+  while(dbProfile) {
+    const char *name;
+
+    name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
+    assert(name);
+    if (strcasecmp(name, profileName)==0)
+      break;
+    dbProfile=GWEN_DB_GetNextGroup(dbProfile);
+  }
+  if (!dbProfile) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Profile \"%s\" for exporter \"%s\" not found",
+	      profileName, exporterName);
+    GWEN_DB_Group_free(dbProfiles);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  rv=AB_ImExporter_Export(exporter,
+			  ctx,
+			  io,
+			  dbProfile,
+			  guiid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbProfiles);
+    return rv;
+  }
+
+  GWEN_DB_Group_free(dbProfiles);
+  return 0;
+}
+
+
+
+int AB_Banking_ImportWithProfile(AB_BANKING *ab,
+				 const char *importerName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_IO_LAYER *io,
+				 uint32_t guiid) {
+  AB_IMEXPORTER *importer;
+  GWEN_DB_NODE *dbProfiles;
+  GWEN_DB_NODE *dbProfile;
+  int rv;
+
+  importer=AB_Banking_GetImExporter(ab, importerName);
+  if (!importer) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Import module \"%s\" not found",
+	      importerName);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  /* get profiles */
+  if (profileFile) {
+    dbProfiles=GWEN_DB_Group_new("profiles");
+    if (GWEN_DB_ReadFile(dbProfiles, profileFile,
+                         GWEN_DB_FLAGS_DEFAULT |
+			 GWEN_PATH_FLAGS_CREATE_GROUP,
+			 0,
+			 2000)) {
+      DBG_ERROR(0, "Error reading profiles from \"%s\"",
+                profileFile);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+  else {
+    dbProfiles=AB_Banking_GetImExporterProfiles(ab, importerName);
+  }
+
+  /* select profile */
+  dbProfile=GWEN_DB_GetFirstGroup(dbProfiles);
+  while(dbProfile) {
+    const char *name;
+
+    name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
+    assert(name);
+    if (strcasecmp(name, profileName)==0)
+      break;
+    dbProfile=GWEN_DB_GetNextGroup(dbProfile);
+  }
+  if (!dbProfile) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Profile \"%s\" for importer \"%s\" not found",
+	      profileName, importerName);
+    GWEN_DB_Group_free(dbProfiles);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  rv=AB_ImExporter_Import(importer,
+			  ctx,
+			  io,
+			  dbProfile,
+			  guiid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbProfiles);
+    return rv;
+  }
+
+  GWEN_DB_Group_free(dbProfiles);
+  return 0;
+}
+
+
+
 
 

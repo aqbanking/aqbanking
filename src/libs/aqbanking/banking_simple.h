@@ -69,6 +69,27 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
 AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
                                          const char *alias);
+
+
+AQBANKING_API 
+int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+				 const char *exporterName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_IO_LAYER *io,
+				 uint32_t guiid);
+
+AQBANKING_API 
+int AB_Banking_ImportWithProfile(AB_BANKING *ab,
+				 const char *importerName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_IO_LAYER *io,
+				 uint32_t guiid);
+
+
 /*@}*/
 
 

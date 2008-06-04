@@ -1,3 +1,40 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/06/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions 
+  - AB_Banking_ExportWithProfile()
+  - AB_Banking_ImportWithProfile()
+  - AB_ImExporterContext_AddLog()
+  - AB_ImExporterContext_GetLog()
+  - AB_ImExporterContext_ClearLog()
+  - Ab_HttpSession_AddLog()
+  - AB_HttpSession_GetLog()
+  - AB_HttpSession_ClearLog()
+
+
+2008/05/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_VALUE: added function AB_Value_toHumanReadableString2()
+- AqHBCI:
+  - implemented job HKTAN version 2 (needed some operations inside the guts
+    of AqHBCI's structure):
+    Single and multitransfer jobs already work with this!
+  - added SelectedTanMethod to AH_USER, so later a user might choose from
+    a list of allowed 2-step TAN methods (currently AqHBCI determines the
+    TAN method automatically, but maybe the user wants to choose for
+    himself whether he wants to use iTAN, mTAN or sm@rtTan)
+  - AH_JOB: added virtual function AH_Prepare (this is called to setup
+    TAN-challenge stuff for a job. This can't be done in the Exchange-function
+    since at the time of that call at least multi transfer jobs aren't ready
+    to prepare the challenge parameters)
+  - fixed a serious bug in iTAN1 handling (could segfault)
+  - improved AH_Job_Tan
+  - fixed a memory leak
+  - AH_JOB: added some TAN-challenge-related functions
 
 
 2008/05/29: Martin Preuss<martin@libchipcard.de>

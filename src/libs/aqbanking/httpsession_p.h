@@ -25,6 +25,7 @@ typedef struct AB_HTTP_SESSION AB_HTTP_SESSION;
 struct AB_HTTP_SESSION {
   AB_PROVIDER *provider;
   AB_USER *user;
+  GWEN_BUFFER *logs;
 };
 
 

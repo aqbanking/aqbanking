@@ -55,6 +55,7 @@ struct AB_IMEXPORTER_CONTEXT {
   AB_MESSAGE_LIST *messageList;
   AB_MESSAGE *nextMessage;
 
+  GWEN_BUFFER *logs;
 };
 
 

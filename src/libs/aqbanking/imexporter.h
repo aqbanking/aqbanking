@@ -363,6 +363,24 @@ AB_ImExporterContext_GetNextMessage(AB_IMEXPORTER_CONTEXT *iec);
 
 /**@}*/
 
+/** @defgroup AB_IMEXPORTER_CONTEXT_LOGS Logs
+ *
+ * These functions handle logs written by the backends.
+ * Such logs are meant to be read and interpreted by a human user.
+ */
+/**@{*/
+
+AQBANKING_API
+void AB_ImExporterContext_AddLog(AB_IMEXPORTER_CONTEXT *iec,
+				 const char *s);
+
+AQBANKING_API
+const char *AB_ImExporterContext_GetLog(const AB_IMEXPORTER_CONTEXT *iec);
+
+AQBANKING_API
+void AB_ImExporterContext_ClearLog(AB_IMEXPORTER_CONTEXT *iec);
+
+/**@}*/
 
 /*@}*/ /* defgroup */
 
@@ -385,6 +403,10 @@ AQBANKING_API
 AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new();
 AQBANKING_API 
 void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+void AB_ImExporterAccountInfo_FillFromAccount(AB_IMEXPORTER_ACCOUNTINFO *iea,
+					      const AB_ACCOUNT *a);
 
 /**
  * Returns a copy of the given account info. Please note that only the data
@@ -878,6 +900,7 @@ AQBANKING_API
 GWEN_TIME *AB_ImExporter_DateFromString(const char *p,
                                         const char *tmpl,
                                         int inUtc);
+
 
 /*@}*/
 
