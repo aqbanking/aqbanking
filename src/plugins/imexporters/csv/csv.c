@@ -372,6 +372,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   int usePosNegField;
   int defaultIsPositive;
   const char *posNegFieldName;
+  const char *valueFormat;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie);
@@ -387,6 +388,8 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
 				       "posNeg");
+  valueFormat=GWEN_DB_GetCharValue(params, "valueFormat", 0, "float");
+
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
@@ -503,6 +506,24 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 	      GWEN_DB_Group_free(dbData);
 	      return GWEN_ERROR_GENERIC;
 	    }
+	  }
+	}
+      }
+
+      if (strcasecmp(valueFormat, "float")==0) {
+	GWEN_DB_NODE *dbV;
+
+	dbV=GWEN_DB_GetGroup(dbTransaction,
+			     GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			     "value");
+	if (dbV) {
+	  AB_VALUE *v;
+
+	  v=AB_Value_fromDb(dbV);
+	  if (v) {
+	    GWEN_DB_ClearGroup(dbV, 0);
+	    AB_Value_toDbFloat(v, dbV);
+            AB_Value_free(v);
 	  }
 	}
       }

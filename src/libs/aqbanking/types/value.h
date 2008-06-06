@@ -74,6 +74,8 @@ AQBANKING_API AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db);
 /** Write the given value into the given GWEN_DB. */
 AQBANKING_API int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db);
 
+/** Write the given value into the given GWEN_DB (uses float instead of rational). */
+AQBANKING_API int AB_Value_toDbFloat(const AB_VALUE *v, GWEN_DB_NODE *db);
 
 /**
  * This function returns the value as a double.

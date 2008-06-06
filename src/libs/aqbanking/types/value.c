@@ -235,6 +235,22 @@ int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
 
 
 
+int AB_Value_toDbFloat(const AB_VALUE *v, GWEN_DB_NODE *db) {
+  GWEN_BUFFER *buf;
+
+  buf=GWEN_Buffer_new(0, 128, 0, 1);
+  AB_Value_toHumanReadableString2(v, buf, 2, 0);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "value", GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
+  if (v->currency)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "currency", v->currency);
+  return 0;
+}
+
+
+
 void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
   int rv;
   uint32_t size;

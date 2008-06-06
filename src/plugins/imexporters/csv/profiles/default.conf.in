@@ -27,6 +27,8 @@ char posNegFieldName="posNeg"
 #char negativeValues="Af", "D"
 int defaultIsPositive="1"
 
+# default is "float", other values: "rational"
+char valueFormat="float"
 
 params {
   # if 1 then values are quoted
