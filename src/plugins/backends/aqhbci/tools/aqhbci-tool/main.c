@@ -244,8 +244,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
       return 2;
     }
-    /* set argument "persistent" to one in non-interactive mode */
-    GWEN_Gui_CGui_SetPasswordDb(gui, dbPins, nonInteractive);
+    GWEN_Gui_CGui_SetPasswordDb(gui, dbPins, 1);
   }
   GWEN_Gui_SetGui(gui);
 

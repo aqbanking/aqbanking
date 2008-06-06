@@ -163,14 +163,13 @@ int mkPinList(AB_BANKING *ab,
             GWEN_BUFFER *obuf;
 
 	    obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-	    if (GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(nbuf),
-					 obuf)) {
+	    if (GWEN_Text_EscapeToBufferTolerant(GWEN_Buffer_GetStart(nbuf),
+						 obuf)) {
 	      DBG_ERROR(0, "Error escaping name to buffer");
 	      return 3;
 	    }
-	    GWEN_BufferedIO_Write(bio, "\"");
             GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(obuf));
-            GWEN_BufferedIO_WriteLine(bio, "\" = \"\"");
+            GWEN_BufferedIO_WriteLine(bio, " = \"\"");
 
             GWEN_Buffer_free(obuf);
           }
