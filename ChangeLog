@@ -1,6 +1,12 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released AqBanking - 3.5.0 (2008-06-06)
+===========================================================================
+
+2008/06/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- AB_Value: added function AB_Value_toDbFloat (write float values instead
+  of rationals)
 
 
 2008/06/04: Martin Preuss<martin@libchipcard.de>

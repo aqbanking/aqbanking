@@ -1,5 +1,16 @@
 
 ===========================================================================
+               Released AqBanking - 3.5.0 (2008-06-06)
+===========================================================================
+
+This release improves support for FinTS3 (now transfers/debit notes work in
+Pin/Tan mode of FinTS3). The TAN method can now be choosen by the user (no 
+GUI yet). Some bugs have been fixed and the CSV exporter now exports values
+in floating point format instead of rationals (however, rationals are still
+supported here).
+
+
+===========================================================================
                Released AqBanking - 3.4.2 (2008-05-27)
 ===========================================================================
 
