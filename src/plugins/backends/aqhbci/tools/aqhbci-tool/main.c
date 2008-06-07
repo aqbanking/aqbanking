@@ -31,6 +31,9 @@
 int GWEN_Plugins_Init();
 int AB_Plugins_Init();
 int LC_Plugins_Init();
+#ifdef ENABLE_EBICS_PLUGINS
+int EBC_Plugins_Init();
+#endif
 #endif
 
 
@@ -218,6 +221,14 @@ int main(int argc, char **argv) {
     fprintf(stderr, "ERROR: Unable to init AqBanking plugins (%d).\n", rv);
     return 1;
   }
+
+#ifdef ENABLE_EBICS_PLUGINS
+  rv=EBC_Plugins_Init();
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Unable to init AqEBICS plugins (%d).\n", rv);
+    return 1;
+  }
+#endif
 #endif
 
   /*GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, GWEN_LoggerLevelInfo); */

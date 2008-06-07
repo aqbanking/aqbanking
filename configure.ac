@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=5
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="svn"
 
 
 
@@ -1591,6 +1591,27 @@ AC_SUBST(aqb_extra_libs)
 
 ###-------------------------------------------------------------------------
 #
+# check whether EBICS support should be linked-in
+#
+# This is used when statically linking plugins (especially for gct-tool)
+#
+
+AC_MSG_CHECKING(whether EBICS support is wanted)
+AC_ARG_ENABLE(ebics-plugins,
+  [  --ebics-plugins         allow EBICS plugins (default=no)],
+  enable_ebics_plugins="$enableval",
+  enable_ebics_plugins="no")
+AC_MSG_RESULT($enable_ebics_plugins)
+
+if test "$enable_ebics_plugins" != "no"; then
+  AC_DEFINE(ENABLE_EBICS_PLUGINS, 1, [whether EBICS plugins are supported])
+fi
+AM_CONDITIONAL(ENABLE_EBICS_PLUGINS, [test "$enable_ebics_plugins" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
 # check whether tutorials are to be built
 #
 
@@ -1826,6 +1847,7 @@ echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
+echo "Allow EBICS plugins     : $enable_ebics_plugins"
 echo
 
 echo

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/headers $(all_includes) -I$(ktoblzcheck_includes)
+INCLUDES = -I$(top_builddir)/headers $(all_includes) $(ktoblzcheck_includes)
 
 noinst_LTLIBRARIES=libbankinfo_de.la
 noinst_HEADERS=de_p.h
