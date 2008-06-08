@@ -582,6 +582,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     AH_RESULT *r;
     int has10;
     int has20;
+    AB_TRANSACTION_STATUS tStatus;
 
     rl=AH_Job_GetSegResults(j);
     assert(rl);
@@ -616,10 +617,44 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     }
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Can't determine the status (neither 0010 nor 0020)");
+	       "Error status (neither 0010 nor 0020)");
       AB_Job_SetStatus(bj, AB_Job_StatusError);
-      return GWEN_ERROR_NO_DATA;
     }
+
+    if (has20)
+      tStatus=AB_Transaction_StatusAccepted;
+    else if (has10)
+      tStatus=AB_Transaction_StatusPending;
+    else
+      tStatus=AB_Transaction_StatusRejected;
+
+    if (aj->isTransfer) {
+      const AB_TRANSACTION *ot;
+
+      ot=AB_JobSingleTransfer_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+	AB_Transaction_SetStatus(t, tStatus);
+	AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
+	AB_ImExporterContext_AddTransfer(ctx, t);
+      }
+    }
+    else {
+      const AB_TRANSACTION *ot;
+
+      ot=AB_JobSingleDebitNote_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+	AB_Transaction_SetStatus(t, tStatus);
+	AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+	AB_ImExporterContext_AddTransfer(ctx, t);
+      }
+    }
+
     return 0;
   }
 
