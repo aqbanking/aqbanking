@@ -1206,15 +1206,6 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
-  if (AH_Job_GetKeys_GetCryptKeyInfo(job)==0) {
-    GWEN_Gui_ProgressLog(guiid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("No crypt key received."));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-    return GWEN_ERROR_GENERIC;
-  }
-
   if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL) {
     DBG_ERROR(0, "No crypt key received");
     GWEN_Gui_ProgressLog(guiid,
