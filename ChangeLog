@@ -1,7 +1,32 @@
 
 ===========================================================================
+MARK: released AqBanking - 3.5.1 (2008-06-11)
+===========================================================================
+
+
+2008/06/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- always ask for the pin if the CONFIRM flag is set
+
+
+2008/06/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed unneeded code
+
+
+2008/06/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added check for EBICS plugin
+- enable EBICS plugin when static plugins are to be used
+- fixed a bug in a Makefile.am (bad CFLAGS for ktoblzcheck)
+- AqHBCI: multi-transfers/debitnotes now also create transfers in the
+  ImExperterContext
+
+
+===========================================================================
 MARK: released AqBanking - 3.5.0 (2008-06-06)
 ===========================================================================
+
 
 2008/06/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -1,5 +1,15 @@
 
 ===========================================================================
+               Released AqBanking - 3.5.1 (2008-06-11)
+===========================================================================
+
+This release fixes some more bugs and allows to be build with the special
+version of aqbanking-cli with EBICS support.
+When a new pin is to be entered for any reason (e.g. changing the password
+of a key file) the user is now always asked (no pin caching in this case).
+
+
+===========================================================================
                Released AqBanking - 3.5.0 (2008-06-06)
 ===========================================================================
 
