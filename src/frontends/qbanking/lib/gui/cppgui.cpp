@@ -427,17 +427,19 @@ int CppGui::getPassword(uint32_t flags,
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Text_EscapeToBufferTolerant(token, buf);
   
-    s=GWEN_DB_GetCharValue(_dbPasswords,
-			   GWEN_Buffer_GetStart(buf),
-			   0, NULL);
-    if (s) {
-      int i;
-  
-      i=strlen(s);
-      if (i>=minLen && i<=maxLen) {
-	memmove(buffer, s, i+1);
-	GWEN_Buffer_free(buf);
-	return 0;
+    if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
+      s=GWEN_DB_GetCharValue(_dbPasswords,
+			     GWEN_Buffer_GetStart(buf),
+			     0, NULL);
+      if (s) {
+	int i;
+
+	i=strlen(s);
+	if (i>=minLen && i<=maxLen) {
+	  memmove(buffer, s, i+1);
+	  GWEN_Buffer_free(buf);
+	  return 0;
+	}
       }
     }
   
