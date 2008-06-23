@@ -218,6 +218,9 @@ public:
    * or similar, then this will return false. */
   static QBANKING_API bool isPure7BitAscii(const QString &s);
 
+  static QString sanitizedNumber(const QString &qs);
+  static QString sanitizedAlphaNum(const QString &qs);
+
 };
 
 

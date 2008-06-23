@@ -117,6 +117,13 @@ bool QBCfgTabPageAccountGeneral::toGui() {
   if (s)
     _realPage->bankNameEdit->setText(QString::fromUtf8(s));
 
+  s=AB_Account_GetIBAN(getAccount());
+  if (s)
+    _realPage->ibanEdit->setText(QString::fromUtf8(s));
+  s=AB_Account_GetBIC(getAccount());
+  if (s)
+    _realPage->bicEdit->setText(QString::fromUtf8(s));
+
   selectCountryInCombo(_realPage->countryCombo,
                        AB_Account_GetCountry(getAccount()));
 
@@ -141,7 +148,7 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   a=getAccount();
   assert(a);
 
-  s=QBanking::QStringToUtf8String(_realPage->accountIdEdit->text());
+  s=QBanking::QStringToUtf8String(QBanking::sanitizedNumber(_realPage->accountIdEdit->text()));
   if (s.empty())
     AB_Account_SetAccountNumber(a, 0);
   else
@@ -159,7 +166,7 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   else
     AB_Account_SetOwnerName(a, s.c_str());
 
-  s=QBanking::QStringToUtf8String(_realPage->bankIdEdit->text());
+  s=QBanking::QStringToUtf8String(QBanking::sanitizedNumber(_realPage->bankIdEdit->text()));
   if (s.empty())
     AB_Account_SetBankCode(a, 0);
   else
@@ -170,6 +177,18 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
     AB_Account_SetBankName(a, 0);
   else
     AB_Account_SetBankName(a, s.c_str());
+
+  s=QBanking::QStringToUtf8String(QBanking::sanitizedAlphaNum(_realPage->ibanEdit->text()));
+  if (s.empty())
+    AB_Account_SetIBAN(a, 0);
+  else
+    AB_Account_SetIBAN(a, s.c_str());
+
+  s=QBanking::QStringToUtf8String(QBanking::sanitizedAlphaNum(_realPage->bicEdit->text()));
+  if (s.empty())
+    AB_Account_SetBIC(a, 0);
+  else
+    AB_Account_SetBIC(a, s.c_str());
 
   s=QBanking::QStringToUtf8String(_realPage->countryCombo->currentText());
   assert(!s.empty());
@@ -195,6 +214,8 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
 
 
 bool QBCfgTabPageAccountGeneral::checkGui() {
+  std::string s;
+
   if (_realPage->accountIdEdit->text().isEmpty() &&
       _realPage->accountNameEdit->text().isEmpty()) {
     QMessageBox::critical(this,
@@ -215,6 +236,20 @@ bool QBCfgTabPageAccountGeneral::checkGui() {
                              "</qt>"),
                           tr("Dismiss"));
     return false;
+  }
+
+  s=QBanking::QStringToUtf8String(QBanking::sanitizedAlphaNum(_realPage->ibanEdit->text()));
+  if (!s.empty()) {
+    if (AB_Banking_CheckIban(s.c_str())) {
+      QMessageBox::critical(this,
+			    tr("Input Error"),
+			    tr("<qt>"
+			       "The IBAN you entered is invalid. "
+			       "Please correct."
+			       "</qt>"),
+			    tr("Dismiss"));
+      return false;
+    }
   }
 
   if (_realPage->bankIdEdit->text().isEmpty() &&
@@ -299,6 +334,9 @@ void QBCfgTabPageAccountGeneral::slotBankIdButtonClicked() {
       t=AB_BankInfo_GetBankName(bi);
       if (t)
         _realPage->bankNameEdit->setText(QString::fromUtf8(t));
+      t=AB_BankInfo_GetBic(bi);
+      if (t)
+        _realPage->bicEdit->setText(QString::fromUtf8(t));
 
       AB_BankInfo_free(bi);
     }

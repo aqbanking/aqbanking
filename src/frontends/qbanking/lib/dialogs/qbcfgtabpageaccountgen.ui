@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>627</width>
-            <height>445</height>
+            <height>317</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,47 +19,84 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>groupBox1</cstring>
+                <cstring>layout8</cstring>
             </property>
-            <property name="title">
-                <string>Account Settings</string>
-            </property>
-            <grid>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLabel" row="3" column="0">
+                <widget class="QGroupBox">
                     <property name="name">
-                        <cstring>textLabel2</cstring>
+                        <cstring>groupBox1</cstring>
                     </property>
-                    <property name="text">
-                        <string>Account Number</string>
+                    <property name="title">
+                        <string>Account Settings</string>
                     </property>
-                </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel4</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Account Name</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="4" column="0">
-                    <property name="name">
-                        <cstring>textLabel5</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Owner Name</string>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="4" column="1">
-                    <property name="name">
-                        <cstring>ownerNameEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>&lt;qt&gt;
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel" row="3" column="0">
+                            <property name="name">
+                                <cstring>textLabel5</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Owner Name</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="2" column="0">
+                            <property name="name">
+                                <cstring>textLabel2_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>IBAN</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>textLabel4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Name</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Number</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="0" column="1">
+                            <property name="name">
+                                <cstring>accountNameEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+Freely selectable name for your account. This field is not used by AqDTAUS.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="1">
+                            <property name="name">
+                                <cstring>accountIdEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
+This is the account number. An account is identified by bank code and
+this account number.
+&lt;/qt&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="3" column="1">
+                            <property name="name">
+                                <cstring>ownerNameEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
 &lt;p&gt;
 Name of the owner of the account.
 &lt;/p&gt;
@@ -67,90 +104,95 @@ Name of the owner of the account.
 You should enter the name exactly as you would on a paper transfer.
 &lt;/p&gt;
 &lt;/qt&gt;</string>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="3" column="1">
-                    <property name="name">
-                        <cstring>accountIdEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>&lt;qt&gt;
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="2" column="1">
+                            <property name="name">
+                                <cstring>ibanEdit</cstring>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>&lt;qt&gt;
 This is the account number. An account is identified by bank code and
 this account number.
 &lt;/qt&gt;</string>
-                    </property>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
-                <widget class="QLineEdit" row="2" column="1">
+                <widget class="QGroupBox">
                     <property name="name">
-                        <cstring>accountNameEdit</cstring>
+                        <cstring>groupBox7</cstring>
                     </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>&lt;qt&gt;
-Freely selectable name for your account. This field is not used by AqDTAUS.
-&lt;/qt&gt;</string>
+                    <property name="title">
+                        <string>Bank Settings</string>
                     </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit" row="3" column="1">
+                            <property name="name">
+                                <cstring>bankNameEdit</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="1">
+                            <property name="name">
+                                <cstring>bankIdEdit</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="0" column="1">
+                            <property name="name">
+                                <cstring>countryCombo</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="2" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_4_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>BIC</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="3" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_4_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Name</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="2" column="1">
+                            <property name="name">
+                                <cstring>bicEdit</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Code</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>textLabel2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Country</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton" row="1" column="2">
+                            <property name="name">
+                                <cstring>bankIdButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
-            </grid>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox7</cstring>
-            </property>
-            <property name="title">
-                <string>Bank Settings</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QComboBox" row="0" column="1" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>countryCombo</cstring>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="0" column="0">
-                    <property name="name">
-                        <cstring>textLabel2_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Country</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel1_4_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Bank Name</string>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="1" column="1">
-                    <property name="name">
-                        <cstring>bankIdEdit</cstring>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="2" column="1">
-                    <property name="name">
-                        <cstring>bankNameEdit</cstring>
-                    </property>
-                </widget>
-                <widget class="QPushButton" row="1" column="2" rowspan="2" colspan="1">
-                    <property name="name">
-                        <cstring>bankIdButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>...</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="1" column="0">
-                    <property name="name">
-                        <cstring>textLabel1_4</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Bank Id</string>
-                    </property>
-                </widget>
-            </grid>
+            </hbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -397,14 +439,20 @@ Freely selectable name for your account. This field is not used by AqDTAUS.
 <tabstops>
     <tabstop>accountNameEdit</tabstop>
     <tabstop>accountIdEdit</tabstop>
+    <tabstop>ibanEdit</tabstop>
     <tabstop>ownerNameEdit</tabstop>
     <tabstop>countryCombo</tabstop>
     <tabstop>bankIdEdit</tabstop>
-    <tabstop>bankNameEdit</tabstop>
     <tabstop>bankIdButton</tabstop>
+    <tabstop>bicEdit</tabstop>
+    <tabstop>bankNameEdit</tabstop>
     <tabstop>allUsersCheck</tabstop>
     <tabstop>rightButton</tabstop>
     <tabstop>leftButton</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>qbanking/qbuserlist.h</includehint>
+    <includehint>qbanking/qbuserlist.h</includehint>
+</includehints>
 </UI>

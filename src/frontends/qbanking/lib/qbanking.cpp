@@ -698,6 +698,37 @@ int QBanking::print(const QString &docTitle,
 
 
 
+QString QBanking::sanitizedNumber(const QString &qs) {
+  if (!qs.isEmpty()) {
+    QString qs2;
+    unsigned int i;
+
+    for (i=0; i<qs.length(); i++) {
+      if (qs[i].isDigit())
+	qs2+=qs[i];
+    }
+    return qs2;
+  }
+  else
+    return qs;
+}
+
+
+
+QString QBanking::sanitizedAlphaNum(const QString &qs) {
+  if (!qs.isEmpty()) {
+    QString qs2;
+    unsigned int i;
+
+    for (i=0; i<qs.length(); i++) {
+      if (qs[i].isLetterOrNumber())
+	qs2+=qs[i];
+    }
+    return qs2;
+  }
+  else
+    return qs;
+}
 
 
 
