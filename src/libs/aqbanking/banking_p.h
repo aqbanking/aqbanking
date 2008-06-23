@@ -163,5 +163,7 @@ static int AB_Banking__LoadData(AB_BANKING *ab,
 
 static void AB_Banking_ActivateAllProviders(AB_BANKING*ab);
 
+static void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a);
+
 
 #endif /* AQBANKING_BANKING_P_H */

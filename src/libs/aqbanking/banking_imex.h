@@ -94,6 +94,19 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 /*@}*/
 
 
+/**
+ * This function tries to fill missing fields in a given imexporter context.
+ * It tries to find the online banking accounts for all account info objects in
+ * the context and copies missing information (like IBAN, BIC, owner name etc).
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param iec pointer to the imexporter context to fill
+ * @return 0 if all accounts were found, 1 if there was at least 1 unknown account
+ */
+AQBANKING_API
+int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
+
+
 /*@}*/ /* addtogroup */
 
 #ifdef __cplusplus

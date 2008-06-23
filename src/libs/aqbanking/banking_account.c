@@ -259,7 +259,7 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
   AB_ACCOUNT *a;
   const char *our_bankCode, *our_accountId;
 
-  if ((bankCode == NULL) || (accountId == NULL))
+  if (accountId==NULL)
     return NULL;
   assert(ab);
   if (AB_Account_List_GetCount(ab->accounts)==0) {
@@ -311,6 +311,34 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
       } /* while */
     }
   }
+
+  return a;
+}
+
+
+
+AB_ACCOUNT *AB_Banking_GetAccountByIban(const AB_BANKING *ab,
+					const char *iban){
+  AB_ACCOUNT *a;
+  const char *our_iban;
+
+  if (iban==NULL)
+    return NULL;
+  assert(ab);
+  if (AB_Account_List_GetCount(ab->accounts)==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+    return 0;
+  }
+  a=AB_Account_List_First(ab->accounts);
+  assert(a);
+  while(a) {
+    if (iban) {
+      our_iban=AB_Account_GetIBAN(a);
+      if (our_iban && strcasecmp(our_iban, iban)==0)
+	break;
+    }
+    a=AB_Account_List_Next(a);
+  } /* while */
 
   return a;
 }

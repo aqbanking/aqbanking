@@ -542,7 +542,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
  * The context remains the owner of the object returned.
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
@@ -550,7 +550,7 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
  * The context remains the owner of the object returned.
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /** Callback function type for
@@ -592,7 +592,7 @@ typedef const AB_TRANSACTION *
  * returns NULL.
  */
 AQBANKING_API
-const AB_TRANSACTION *
+const AB_TRANSACTION*
 AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
 					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
 					     void* user_data);
@@ -663,7 +663,7 @@ void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
@@ -680,7 +680,7 @@ AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /*@}*/
 
@@ -724,7 +724,7 @@ void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
@@ -743,7 +743,7 @@ AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /*@}*/
 
@@ -782,7 +782,7 @@ void AB_ImExporterAccountInfo_AddDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
@@ -799,7 +799,7 @@ AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /*@}*/
 
@@ -837,7 +837,7 @@ void AB_ImExporterAccountInfo_AddNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
@@ -854,7 +854,7 @@ AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea
  * </p>
  */
 AQBANKING_API 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /*@}*/
 

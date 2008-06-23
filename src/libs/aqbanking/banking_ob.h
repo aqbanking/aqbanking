@@ -202,6 +202,27 @@ AB_ACCOUNT *AB_Banking_GetAccountByCodeAndNumber(const AB_BANKING *ab,
                                                  const char *accountId);
 
 /**
+ * This function does an account lookup based on the given IBAN.
+ * No wildards or jokers allowed.
+ *
+ * AqBanking remains the owner of the object returned (if any), so you must
+ * not free it.
+ *
+ * Please also note that the object returned is only valid until
+ * @ref AB_Banking_Fini() has been called (or until the corresponding backend
+ * for this particular account has been deactivated).
+ *
+ * @return The account, or NULL if it is not found.
+ * @param ab pointer to the AB_BANKING object
+ * @param bankCode bank code (use 0 if your country does not use bank codes)
+ * @param accountId account number
+ */
+AQBANKING_API 
+AB_ACCOUNT *AB_Banking_GetAccountByIban(const AB_BANKING *ab,
+					const char *iban);
+
+
+/**
  * This function returns the first account which matches the given parameters.
  * For all parameters wildcards ("*") and joker ("?") are allowed.
  */

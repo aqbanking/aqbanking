@@ -1,0 +1,10 @@
+
+char name="default"
+char shortDescr="default profile"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="This profile supports transfers"
+int import="0"
+int export="1"
+
+char type="ccm"
+

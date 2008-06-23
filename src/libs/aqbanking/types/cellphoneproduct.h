@@ -9,7 +9,8 @@ This page describes the properties of AB_CELLPHONE_PRODUCT
 @anchor AB_CELLPHONE_PRODUCT_Id
 <h3>Id</h3>
 <p>
-Id assigned by the backend.</p>
+Id assigned by the backend.
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetId, 
 get it with @ref AB_CellPhoneProduct_GetId
@@ -18,7 +19,8 @@ get it with @ref AB_CellPhoneProduct_GetId
 @anchor AB_CELLPHONE_PRODUCT_ProviderName
 <h3>ProviderName</h3>
 <p>
-Name of the provider.</p>
+Name of the provider.
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetProviderName, 
 get it with @ref AB_CellPhoneProduct_GetProviderName
@@ -27,7 +29,8 @@ get it with @ref AB_CellPhoneProduct_GetProviderName
 @anchor AB_CELLPHONE_PRODUCT_ProductName
 <h3>ProductName</h3>
 <p>
-Name of the product.</p>
+Name of the product.
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetProductName, 
 get it with @ref AB_CellPhoneProduct_GetProductName
@@ -45,7 +48,8 @@ get it with @ref AB_CellPhoneProduct_GetAllowFreeValue
 @anchor AB_CELLPHONE_PRODUCT_MinimumValue
 <h3>MinimumValue</h3>
 <p>
-This field contains the minimum value which can be loaded onto the prepaid card. This value can be empty (or non-existent) for some backends and banks.</p>
+This field contains the minimum value which can be loaded onto the prepaid card. This value can be empty (or non-existent) for some backends and banks.
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetMinimumValue, 
 get it with @ref AB_CellPhoneProduct_GetMinimumValue
@@ -54,7 +58,8 @@ get it with @ref AB_CellPhoneProduct_GetMinimumValue
 @anchor AB_CELLPHONE_PRODUCT_MaximumValue
 <h3>MaximumValue</h3>
 <p>
-This field contains the maximum value which can be loaded onto the prepaid card. This value can be empty (or non-existent) for some backends and banks.</p>
+This field contains the maximum value which can be loaded onto the prepaid card. This value can be empty (or non-existent) for some backends and banks.
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetMaximumValue, 
 get it with @ref AB_CellPhoneProduct_GetMaximumValue
@@ -63,7 +68,8 @@ get it with @ref AB_CellPhoneProduct_GetMaximumValue
 @anchor AB_CELLPHONE_PRODUCT_Values
 <h3>Values</h3>
 <p>
-This is the list of allowed values. This list might be empty!</p>
+This is the list of allowed values. This list might be empty!
+</p>
 <p>
 Set this property with @ref AB_CellPhoneProduct_SetValues, 
 get it with @ref AB_CellPhoneProduct_GetValues

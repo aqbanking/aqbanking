@@ -978,3 +978,92 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 
 
 
+void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a) {
+  const char *s;
+
+  s=AB_Transaction_GetLocalName(t);
+  if (!s)
+    AB_Transaction_SetLocalName(t, AB_Account_GetOwnerName(a));
+  s=AB_Transaction_GetLocalBankCode(t);
+  if (!s)
+    AB_Transaction_SetLocalBankCode(t, AB_Account_GetBankCode(a));
+  s=AB_Transaction_GetLocalAccountNumber(t);
+  if (!s)
+    AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
+  s=AB_Transaction_GetLocalIban(t);
+  if (!s)
+    AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(a));
+  s=AB_Transaction_GetLocalBic(t);
+  if (!s)
+    AB_Transaction_SetLocalBic(t, AB_Account_GetBIC(a));
+}
+
+
+
+int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  int notFounds=0;
+
+  assert(iec);
+  iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
+  while(iea) {
+    AB_ACCOUNT *a;
+
+    a=AB_Banking_GetAccountByCodeAndNumber(ab,
+					   AB_ImExporterAccountInfo_GetBankCode(iea),
+					   AB_ImExporterAccountInfo_GetAccountNumber(iea));
+    if (!a)
+      a=AB_Banking_GetAccountByIban(ab, AB_ImExporterAccountInfo_GetIban(iea));
+    if (a) {
+      AB_TRANSACTION *t;
+
+      AB_ImExporterAccountInfo_FillFromAccount(iea, a);
+
+      /* fill transactions */
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+      while(t) {
+	AB_Banking__fillTransactionFromAccount(t, a);
+	t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
+      }
+
+      /* fill standing orders */
+      t=AB_ImExporterAccountInfo_GetFirstStandingOrder(iea);
+      while(t) {
+	AB_Banking__fillTransactionFromAccount(t, a);
+	t=AB_ImExporterAccountInfo_GetNextStandingOrder(iea);
+      }
+
+      /* fill transfers */
+      t=AB_ImExporterAccountInfo_GetFirstTransfer(iea);
+      while(t) {
+	AB_Banking__fillTransactionFromAccount(t, a);
+	t=AB_ImExporterAccountInfo_GetNextTransfer(iea);
+      }
+
+      /* fill dated transfers */
+      t=AB_ImExporterAccountInfo_GetFirstDatedTransfer(iea);
+      while(t) {
+	AB_Banking__fillTransactionFromAccount(t, a);
+	t=AB_ImExporterAccountInfo_GetNextDatedTransfer(iea);
+      }
+
+      /* fill noted transactions */
+      t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(iea);
+      while(t) {
+	AB_Banking__fillTransactionFromAccount(t, a);
+	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(iea);
+      }
+    }
+    else
+      notFounds++;
+
+    iea=AB_ImExporterContext_GetNextAccountInfo(iec);
+  }
+
+  return (notFounds==0)?0:1;
+}
+
+
+
+
+

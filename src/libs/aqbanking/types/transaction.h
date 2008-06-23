@@ -131,6 +131,16 @@ Set this property with @ref AB_Transaction_SetLocalName,
 get it with @ref AB_Transaction_GetLocalName
 </p>
 
+@anchor AB_TRANSACTION_LocalBic
+<h4>LocalBic</h4>
+<p>
+This is the SWIFT id of the local bank.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetLocalBic, 
+get it with @ref AB_Transaction_GetLocalBic
+</p>
+
 <h3>Remote Account Info</h3>
 <p>
 This group contains information about the remote account.
@@ -263,6 +273,16 @@ get it with @ref AB_Transaction_GetRemoteIban
 <p>
 Set this property with @ref AB_Transaction_SetRemoteName, 
 get it with @ref AB_Transaction_GetRemoteName
+</p>
+
+@anchor AB_TRANSACTION_RemoteBic
+<h4>RemoteBic</h4>
+<p>
+This is the SWIFT id of the local bank.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetRemoteBic, 
+get it with @ref AB_Transaction_GetRemoteBic
 </p>
 
 @anchor AB_TRANSACTION_UniqueId
@@ -960,6 +980,15 @@ AQBANKING_API const char *AB_Transaction_GetLocalName(const AB_TRANSACTION *el);
 */
 AQBANKING_API void AB_Transaction_SetLocalName(AB_TRANSACTION *el, const char *d);
 
+/**
+* Returns the property @ref AB_TRANSACTION_LocalBic
+*/
+AQBANKING_API const char *AB_Transaction_GetLocalBic(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_LocalBic
+*/
+AQBANKING_API void AB_Transaction_SetLocalBic(AB_TRANSACTION *el, const char *d);
+
 /*@}*/
 
 /** @name Remote Account Info
@@ -1052,6 +1081,15 @@ AQBANKING_API void AB_Transaction_AddRemoteName(AB_TRANSACTION *st, const char *
 AQBANKING_API void AB_Transaction_RemoveRemoteName(AB_TRANSACTION *st, const char *d);
 AQBANKING_API void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st);
 AQBANKING_API int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_RemoteBic
+*/
+AQBANKING_API const char *AB_Transaction_GetRemoteBic(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_RemoteBic
+*/
+AQBANKING_API void AB_Transaction_SetRemoteBic(AB_TRANSACTION *el, const char *d);
 
 /*@}*/
 

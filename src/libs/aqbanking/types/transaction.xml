@@ -565,6 +565,11 @@
         </descr>
       </elem>
       <elem name="localName" type="char" ptr="1" />
+      <elem name="localBic" type="char" ptr="1">
+        <descr>
+          This is the SWIFT id of the local bank.
+        </descr>
+      </elem>
     </group>
 
     <group name="Remote Account Info">
@@ -604,6 +609,11 @@
         </descr>
       </elem>
       <elem name="remoteName" type="GWEN_STRINGLIST" ptr="1" />
+      <elem name="remoteBic" type="char" ptr="1">
+        <descr>
+          This is the SWIFT id of the local bank.
+        </descr>
+      </elem>
     </group>
     
     <elem name="uniqueId" type="uint32_t" >

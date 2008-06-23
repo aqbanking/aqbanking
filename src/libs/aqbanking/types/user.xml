@@ -55,7 +55,7 @@
     <elem name="lastSessionId" type="uint32_t" />
     
     <elem name="data" type="GWEN_DB_NODE" ptr="1" 
-          access="private" const="0" preset='GWEN_DB_Group_new("data")'/>
+          access="private" const="0" preset="GWEN_DB_Group_new(data)"/>
     <elem name="banking" type="AB_BANKING" ptr="1" const="0" volatile="1"
           takeOver="0" copy="0" />
     

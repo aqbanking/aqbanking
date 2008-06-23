@@ -40,6 +40,7 @@ int addAccount(AB_BANKING *ab,
   const char *accountName;
   const char *accountId;
   const char *customerId;
+  const char *ownerName;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -54,6 +55,17 @@ int addAccount(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "userId",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "u",                          /* short option */
+    "user",                       /* long option */
+    "Specify the user id (Benutzerkennung)",    /* short description */
+    "Specify the user id (Benutzerkennung)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
     "customerId",                 /* name */
     1,                            /* minnum */
@@ -62,6 +74,17 @@ int addAccount(AB_BANKING *ab,
     "customer",                   /* long option */
     "Specify the customer id (Kundennummer)",    /* short description */
     "Specify the customer id (Kundennummer)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "ownerName",                  /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "owner",                      /* long option */
+    "Specify the owner name",     /* short description */
+    "Specify the owner name"      /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -140,6 +163,7 @@ int addAccount(AB_BANKING *ab,
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
   accountName=GWEN_DB_GetCharValue(db, "accountName", 0, "Account");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
+  ownerName=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
 
   ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
                           "de", bankId, userId, customerId);
@@ -183,40 +207,42 @@ int addAccount(AB_BANKING *ab,
     }
 
     bit=AB_BankInfo_List2_First(bl);
-    if (bit)
-    {
+    if (bit) {
       bi=AB_BankInfo_List2Iterator_Data(bit);
       assert(bi);
       AB_BankInfo_List2Iterator_free(bit);
     }
-    else
-    {
-      bi = 0;
+    else {
+      bi=NULL;
       fprintf(stderr, "Could not find bank with id %s\n", bankId);
     }
     AB_BankInfo_List2_free(bl);
 
 
-    account = AB_Banking_CreateAccount( ab, "aqhbci" );
+    account=AB_Banking_CreateAccount(ab, "aqhbci");
     assert(account);
 
-    AB_Account_SetAccountNumber( account, accountId );
-    if( accountName )
-      AB_Account_SetAccountName( account, accountName );
-    AB_Account_SetBankCode( account, bankId );
-    if( bi )
-      AB_Account_SetBankName( account, AB_BankInfo_GetBankName(bi) );
-    AB_Account_SetUser( account, u );
-    AB_Account_SetSelectedUser( account, u );
+    if (!ownerName)
+      AB_Account_SetOwnerName(account, AB_User_GetUserName(u));
+    else
+      AB_Account_SetOwnerName(account, ownerName);
+
+    AB_Account_SetAccountNumber(account, accountId);
+    if (accountName)
+      AB_Account_SetAccountName(account, accountName);
+    AB_Account_SetBankCode(account, bankId);
+    if (bi)
+      AB_Account_SetBankName(account, AB_BankInfo_GetBankName(bi));
+    AB_Account_SetUser(account, u);
+    AB_Account_SetSelectedUser(account, u);
 
 
-    rv = AB_Banking_AddAccount( ab, account );
+    rv=AB_Banking_AddAccount(ab, account);
     if (rv) {
       DBG_ERROR(0, "Error adding account (%d)", rv);
       AB_Banking_Fini(ab);
       return 3;
     }
-
   }
 
   rv=AB_Banking_OnlineFini(ab);

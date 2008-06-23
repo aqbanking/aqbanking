@@ -6,7 +6,8 @@
 
 /** @page P_AB_USER_PUBLIC AB_User (public)
 This page describes the properties of AB_USER
-This group represents a user within AqBanking.@anchor AB_USER_UniqueId
+This group represents a user within AqBanking.
+@anchor AB_USER_UniqueId
 <h3>UniqueId</h3>
 <p>
 </p>

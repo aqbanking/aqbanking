@@ -20,6 +20,7 @@ struct AB_TRANSACTION {
   char *localSuffix;
   char *localIban;
   char *localName;
+  char *localBic;
   char *remoteCountry;
   char *remoteBankName;
   char *remoteBankLocation;
@@ -29,6 +30,7 @@ struct AB_TRANSACTION {
   char *remoteSuffix;
   char *remoteIban;
   GWEN_STRINGLIST *remoteName;
+  char *remoteBic;
   uint32_t uniqueId;
   GWEN_TIME *valutaDate;
   GWEN_TIME *date;
@@ -81,6 +83,7 @@ This group contains information about the local account.
 
 
 
+
 /*@}*/
 
 /** @name Remote Account Info
@@ -88,6 +91,7 @@ This group contains information about the local account.
 This group contains information about the remote account.
 */
 /*@{*/
+
 
 
 

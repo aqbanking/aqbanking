@@ -6,7 +6,8 @@
 
 /** @page P_AB_USER_LIB AB_User (lib)
 This page describes the properties of AB_USER
-This group represents a user within AqBanking.*/
+This group represents a user within AqBanking.
+*/
 #include <gwenhywfar/misc.h>
 #include "user.h"
 #include <gwenhywfar/misc.h>

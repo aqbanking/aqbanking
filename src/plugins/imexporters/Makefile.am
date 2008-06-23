@@ -1,5 +1,5 @@
 SUBDIRS=$(aqbanking_plugins_imexporters_dirs)
-DIST_SUBDIRS=qif dtaus ofx swift csv openhbci1 eri2 yellownet xmldb
+DIST_SUBDIRS=qif dtaus ofx swift csv openhbci1 eri2 yellownet xmldb sepa
 
 
 noinst_LTLIBRARIES=libimexporters.la

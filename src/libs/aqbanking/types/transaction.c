@@ -276,6 +276,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->localIban);
   if (st->localName)
     free(st->localName);
+  if (st->localBic)
+    free(st->localBic);
   if (st->remoteCountry)
     free(st->remoteCountry);
   if (st->remoteBankName)
@@ -294,6 +296,8 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->remoteIban);
   if (st->remoteName)
     GWEN_StringList_free(st->remoteName);
+  if (st->remoteBic)
+    free(st->remoteBic);
   if (st->valutaDate)
     GWEN_Time_free(st->valutaDate);
   if (st->date)
@@ -369,6 +373,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->localIban=strdup(d->localIban);
   if (d->localName)
     st->localName=strdup(d->localName);
+  if (d->localBic)
+    st->localBic=strdup(d->localBic);
   if (d->remoteCountry)
     st->remoteCountry=strdup(d->remoteCountry);
   if (d->remoteBankName)
@@ -387,6 +393,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteIban=strdup(d->remoteIban);
   if (d->remoteName)
     st->remoteName=GWEN_StringList_dup(d->remoteName);
+  if (d->remoteBic)
+    st->remoteBic=strdup(d->remoteBic);
   st->uniqueId=d->uniqueId;
   if (d->valutaDate)
     st->valutaDate=GWEN_Time_dup(d->valutaDate);
@@ -473,6 +481,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->localName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localName", st->localName))
       return -1;
+  if (st->localBic)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "localBic", st->localBic))
+      return -1;
   if (st->remoteCountry)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteCountry", st->remoteCountry))
       return -1;
@@ -513,6 +524,9 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
         se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
+  if (st->remoteBic)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic", st->remoteBic))
+      return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
     return -1;
   if (st->valutaDate)
@@ -645,6 +659,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetLocalSuffix(st, GWEN_DB_GetCharValue(db, "localSuffix", 0, 0));
   AB_Transaction_SetLocalIban(st, GWEN_DB_GetCharValue(db, "localIban", 0, 0));
   AB_Transaction_SetLocalName(st, GWEN_DB_GetCharValue(db, "localName", 0, 0));
+  AB_Transaction_SetLocalBic(st, GWEN_DB_GetCharValue(db, "localBic", 0, 0));
   AB_Transaction_SetRemoteCountry(st, GWEN_DB_GetCharValue(db, "remoteCountry", 0, 0));
   AB_Transaction_SetRemoteBankName(st, GWEN_DB_GetCharValue(db, "remoteBankName", 0, 0));
   AB_Transaction_SetRemoteBankLocation(st, GWEN_DB_GetCharValue(db, "remoteBankLocation", 0, 0));
@@ -665,6 +680,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       AB_Transaction_AddRemoteName(st, s, 0);
     } /* for */
   }
+  AB_Transaction_SetRemoteBic(st, GWEN_DB_GetCharValue(db, "remoteBic", 0, 0));
   AB_Transaction_SetUniqueId(st, GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
@@ -968,6 +984,26 @@ void AB_Transaction_SetLocalName(AB_TRANSACTION *st, const char *d) {
 
 
 
+const char *AB_Transaction_GetLocalBic(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->localBic;
+}
+
+
+void AB_Transaction_SetLocalBic(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->localBic)
+    free(st->localBic);
+  if (d && *d)
+    st->localBic=strdup(d);
+  else
+    st->localBic=0;
+  st->_modified=1;
+}
+
+
+
+
 const char *AB_Transaction_GetRemoteCountry(const AB_TRANSACTION *st) {
   assert(st);
   return st->remoteCountry;
@@ -1172,6 +1208,26 @@ void AB_Transaction_ClearRemoteName(AB_TRANSACTION *st) {
 
 int AB_Transaction_HasRemoteName(const AB_TRANSACTION *st, const char *d) {
   return GWEN_StringList_HasString(st->remoteName, d);
+}
+
+
+
+
+const char *AB_Transaction_GetRemoteBic(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->remoteBic;
+}
+
+
+void AB_Transaction_SetRemoteBic(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->remoteBic)
+    free(st->remoteBic);
+  if (d && *d)
+    st->remoteBic=strdup(d);
+  else
+    st->remoteBic=0;
+  st->_modified=1;
 }
 
 

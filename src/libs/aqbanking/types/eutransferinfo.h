@@ -9,7 +9,8 @@ This page describes the properties of AB_EUTRANSFER_INFO
 @anchor AB_EUTRANSFER_INFO_CountryCode
 <h3>CountryCode</h3>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use &quot;DE&quot;.</p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use "DE".
+</p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetCountryCode, 
 get it with @ref AB_EuTransferInfo_GetCountryCode
@@ -18,7 +19,8 @@ get it with @ref AB_EuTransferInfo_GetCountryCode
 @anchor AB_EUTRANSFER_INFO_FieldLimits
 <h3>FieldLimits</h3>
 <p>
-This is the list of known field limits for an AB_TRANSACTION. This object remains the owner of lists returned via @ref AB_JobEuTransferInfo_GetFieldLimits.</p>
+This is the list of known field limits for an AB_TRANSACTION. This object remains the owner of lists returned via @ref AB_JobEuTransferInfo_GetFieldLimits.
+</p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetFieldLimits, 
 get it with @ref AB_EuTransferInfo_GetFieldLimits
@@ -27,7 +29,8 @@ get it with @ref AB_EuTransferInfo_GetFieldLimits
 @anchor AB_EUTRANSFER_INFO_LimitLocalValue
 <h3>LimitLocalValue</h3>
 <p>
-Optional limit for a transfer in local currency.</p>
+Optional limit for a transfer in local currency.
+</p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetLimitLocalValue, 
 get it with @ref AB_EuTransferInfo_GetLimitLocalValue
@@ -36,7 +39,8 @@ get it with @ref AB_EuTransferInfo_GetLimitLocalValue
 @anchor AB_EUTRANSFER_INFO_LimitForeignValue
 <h3>LimitForeignValue</h3>
 <p>
-Optional limit for a transfer in foreign currency.</p>
+Optional limit for a transfer in foreign currency.
+</p>
 <p>
 Set this property with @ref AB_EuTransferInfo_SetLimitForeignValue, 
 get it with @ref AB_EuTransferInfo_GetLimitForeignValue

@@ -872,7 +872,7 @@ void AB_ImExporterAccountInfo_AddTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -888,7 +888,7 @@ AB_ImExporterAccountInfo_GetFirstTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -938,7 +938,7 @@ void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -954,7 +954,7 @@ AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -980,7 +980,7 @@ void AB_ImExporterAccountInfo_AddDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -996,7 +996,7 @@ AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -1022,7 +1022,7 @@ void AB_ImExporterAccountInfo_AddNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -1038,7 +1038,7 @@ AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -1064,7 +1064,7 @@ void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -1080,7 +1080,7 @@ AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-const AB_TRANSACTION*
+AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
   AB_TRANSACTION *t;
 
@@ -2032,6 +2032,7 @@ void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
   GWEN_Buffer_AppendBuffer(iec->logs, toAdd->logs);
   AB_ImExporterContext_free(toAdd);
 }
+
 
 
 
