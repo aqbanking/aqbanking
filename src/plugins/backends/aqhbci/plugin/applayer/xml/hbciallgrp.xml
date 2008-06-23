@@ -53,6 +53,25 @@
     <GROUP type="kik" />
   </GROUPdef>
 
+  <GROUPdef id="kti" delimiter=":" version="1">
+    <!-- "Kontoverbindung international" -->
+    <ELEM name="iban" type="ascii" minnum="0" />
+    <ELEM name="bic" type="ascii" minnum="0" />
+    <ELEM name="accountid" type="ascii" minnum="0" />
+    <ELEM name="accountsubid" type="ascii" minnum="0" />
+    <GROUP type="kik" />
+  </GROUPdef>
+
+  <GROUPdef id="ktz" delimiter=":" version="1">
+    <!-- "Kontoverbindung ZV international" -->
+    <ELEM name="sepa" type="alpha" maxsize="1" />
+    <ELEM name="iban" type="ascii" minnum="0" />
+    <ELEM name="bic" type="ascii" minnum="0" />
+    <ELEM name="accountid" type="ascii" minnum="0" />
+    <ELEM name="accountsubid" type="ascii" minnum="0" />
+    <GROUP type="kik" />
+  </GROUPdef>
+
   
   <GROUPdef id="saldo" delimiter=":" version="1">
     <!-- "Saldo" -->

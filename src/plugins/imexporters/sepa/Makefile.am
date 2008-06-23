@@ -2,7 +2,10 @@ SUBDIRS=profiles
 
 INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(top_builddir)/headers $(all_includes)
 
-EXTRA_DIST=README
+extra_sources=\
+  sepa_exp_ccm.c
+
+EXTRA_DIST=README $(extra_sources)
 
 noinst_HEADERS=sepa_p.h
 noinst_LTLIBRARIES=libio_sepa.la
