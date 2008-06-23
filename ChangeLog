@@ -1,3 +1,20 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/06/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started implementing exporter for SEPA
+- added function AB_Banking_GetAccountByIban()
+- added function AB_Banking_FillGapsInImExporterContext()
+- all functions AB_ImExporterAccountInfo_Get{First,Next}*() now return
+  non-const objects. This allows for modifying transactions in place
+- added fields for local/remote bic to AB_TRANSACTION
+- aqhbci-tool: added option "-u" to command "addaccount" (allows for
+  selecting the user for the newly created account) and option "-N" (allows
+  for stating the owner name)
+
 
 ===========================================================================
 MARK: released AqBanking - 3.5.1 (2008-06-11)
