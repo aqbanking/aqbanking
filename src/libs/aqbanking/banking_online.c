@@ -115,27 +115,12 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
                  AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro, ctx, pid);
       if (rv) {
-        int lrv;
-
 	if (rv==GWEN_ERROR_USER_ABORTED) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
           ab->currentJobs=0;
           return rv;
         }
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
-        lrv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-				GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-				GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-				I18N("Error"),
-				I18N("Error executing backend's queue.\n"
-				     "What shall we do?"),
-				I18N("Continue"), I18N("Abort"), 0,
-				pid);
-	if (lrv!=1) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-	  ab->currentJobs=0;
-	  return GWEN_ERROR_USER_ABORTED;
-	}
       }
       else {
 	rv=AB_Banking_ExecutionProgress(ab, pid);
