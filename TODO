@@ -1,6 +1,4 @@
 
-- initialize paths in first init of AB_BANKING object
-- correctly implement iTAN modes (900 to 998)
 - let aqhbci remove unneeded data from settings.conf (after migrating to
   1.9.x)
 
