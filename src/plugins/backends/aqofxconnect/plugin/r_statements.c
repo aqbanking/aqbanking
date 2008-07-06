@@ -161,6 +161,73 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 
 
 
+int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
+				    uint32_t guiid,
+				    GWEN_BUFFER *buf) {
+  const char *s;
+  AB_ACCOUNT *a;
+  AB_USER *u;
+  int rv;
+
+  a=AB_Job_GetAccount(j);
+  assert(a);
+  u=AB_Account_GetFirstUser(a);
+  assert(u);
+
+  GWEN_Buffer_AppendString(buf, "<INVSTMTRQ>");
+  GWEN_Buffer_AppendString(buf, "<INVACCTFROM>");
+  s=AB_Account_GetAccountNumber(a);
+  if (s) {
+    GWEN_Buffer_AppendString(buf, "<ACCTID>");
+    GWEN_Buffer_AppendString(buf, s);
+  }
+  s=AO_User_GetBrokerId(u);
+  if (s) {
+    GWEN_Buffer_AppendString(buf, "<BROKERID>");
+    GWEN_Buffer_AppendString(buf, s);
+  }
+  GWEN_Buffer_AppendString(buf, "</INVACCTFROM>");
+
+  /* add INCTRAN element */
+  GWEN_Buffer_AppendString(buf, "<INCTRAN>");
+  if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
+    const GWEN_TIME *ti;
+
+    ti=AB_JobGetTransactions_GetFromTime(j);
+    if (ti) {
+      GWEN_Buffer_AppendString(buf, "<DTSTART>");
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+    }
+
+    ti=AB_JobGetTransactions_GetToTime(j);
+    if (ti) {
+      GWEN_Buffer_AppendString(buf, "<DTEND>");
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+    }
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+  }
+  else {
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>N");
+  }
+  GWEN_Buffer_AppendString(buf, "</INCTRAN>");
+
+  GWEN_Buffer_AppendString(buf, "<INCOO>Y");
+  GWEN_Buffer_AppendString(buf, "<INCBAL>Y");
+
+  GWEN_Buffer_AppendString(buf, "</INVSTMTRQ>");
+
+  /* wrap into request */
+  rv=AO_Provider__WrapRequest(pro, "INVSTMT", "INVSTMT", buf);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
 				     uint32_t guiid,
 				     GWEN_BUFFER *buf) {
@@ -176,7 +243,9 @@ int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
     break;
 
   case AB_AccountType_Investment:
-    /* TODO */
+    rv=AO_Provider__AddInvStatementReq(pro, j, guiid, buf);
+    break;
+
   case AB_AccountType_Checking:
   case AB_AccountType_Savings:
   case AB_AccountType_Bank:

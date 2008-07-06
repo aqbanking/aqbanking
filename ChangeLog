@@ -1,4 +1,10 @@
 
+2008/07/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- possibly fixed problem with requesting OFX statements for investment
+  accounts (reported by David Reiser)
+
+
 ===========================================================================
 MARK: released AqBanking - 3.6.0 (2008-07-01)
 ===========================================================================

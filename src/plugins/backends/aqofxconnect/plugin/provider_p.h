@@ -120,6 +120,10 @@ static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 						  uint32_t guiid,
 						  GWEN_BUFFER *buf);
 
+static int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
+					   uint32_t guiid,
+					   GWEN_BUFFER *buf);
+
 static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
 					    uint32_t guiid,
 					    GWEN_BUFFER *buf);
