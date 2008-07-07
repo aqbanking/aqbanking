@@ -62,12 +62,6 @@ struct AH_USER {
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
 
-static void AH_User__MkPrompt(AB_USER *u,
-			      const char *t,
-			      GWEN_BUFFER *pbuf,
-			      int minLen, int maxLen,
-			      int flags);
-
 
 
 #endif /* AH_USER_P_H */

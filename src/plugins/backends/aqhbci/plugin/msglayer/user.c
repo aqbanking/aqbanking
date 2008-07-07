@@ -1020,11 +1020,12 @@ int AH_User_MkTanName(const AB_USER *u,
 
 
 
-void AH_User__MkPrompt(AB_USER *u,
-		       const char *t,
-		       GWEN_BUFFER *pbuf,
-		       int minLen, int maxLen,
-		       int flags){
+int AH_User_InputPin(AB_USER *u,
+		     char *pwbuffer,
+		     int minLen, int maxLen,
+		     int flags){
+  GWEN_BUFFER *nbuf;
+  int rv;
   const char *numeric_warning = "";
   char buffer[512];
   const char *un;
@@ -1051,58 +1052,43 @@ void AH_User__MkPrompt(AB_USER *u,
   }
   if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
     snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please enter a new %s for \n"
+	     I18N("Please enter a new PIN for \n"
 		  "user %s at %s\n"
 		  "The input must be at least %d characters long.%s"
 		  "<html>"
 		  "<p>"
-		  "Please enter a new %s for user <i>%s</i> at "
+		  "Please enter a new PIN for user <i>%s</i> at "
 		  "<i>%s</i>."
 		  "</p>"
 		  "<p>"
 		  "The input must be at least %d characters long.%s"
 		  "</p>"
 		  "</html>"),
-	     t, un, bn,
+	     un, bn,
 	     minLen,
 	     numeric_warning,
-	     t, un, bn,
+	     un, bn,
 	     minLen,
 	     numeric_warning);
   }
   else {
     snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please enter the %s for \n"
+	     I18N("Please enter the PIN for \n"
 		  "user %s at %s\n"
 		  "%s"
 		  "<html>"
-		  "Please enter the %s for user <i>%s</i> at"
+		  "Please enter the PIN for user <i>%s</i> at"
 		  "<i>%s</i>.<br>"
 		  "%s"
 		  "</html>"),
-	     t, un, bn,
+	     un, bn,
 	     numeric_warning,
-	     t, un, bn,
+	     un, bn,
 	     numeric_warning);
   }
   buffer[sizeof(buffer)-1]=0;
 
-  GWEN_Buffer_AppendString(pbuf, buffer);
   AB_BankInfo_free(bi);
-}
-
-
-
-int AH_User_InputPin(AB_USER *u,
-		     char *pwbuffer,
-		     int minLen, int maxLen,
-		     int flags){
-  GWEN_BUFFER *pbuf;
-  GWEN_BUFFER *nbuf;
-  int rv;
-
-  pbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-  AH_User__MkPrompt(u, I18N("PIN"), pbuf, minLen, maxLen, flags);
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkPinName(u, nbuf);
@@ -1110,13 +1096,13 @@ int AH_User_InputPin(AB_USER *u,
   rv=GWEN_Gui_GetPassword(flags,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter PIN"),
-			  GWEN_Buffer_GetStart(pbuf),
+                          buffer,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
 			  0);
   GWEN_Buffer_free(nbuf);
-  GWEN_Buffer_free(pbuf);
+
   return rv;
 }
 
@@ -1126,12 +1112,71 @@ int AH_User_InputPasswd(AB_USER *u,
 			char *pwbuffer,
 			int minLen, int maxLen,
 			int flags){
-  GWEN_BUFFER *pbuf;
   GWEN_BUFFER *nbuf;
   int rv;
+  const char *numeric_warning = "";
+  char buffer[512];
+  const char *un;
+  const char *bn=NULL;
+  AB_BANKINFO *bi;
 
-  pbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-  AH_User__MkPrompt(u, I18N("password"), pbuf, minLen, maxLen, flags);
+  assert(u);
+  un=AB_User_GetUserId(u);
+
+  /* find bank name */
+  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
+			    "de",
+                            "*",
+			    AB_User_GetBankCode(u));
+  if (bi)
+    bn=AB_BankInfo_GetBankName(bi);
+  if (!bn)
+    AB_User_GetBankCode(u);
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+  if (flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) {
+    numeric_warning = I18N(" You must only enter numbers, not letters.");
+  }
+  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
+    snprintf(buffer, sizeof(buffer)-1,
+	     I18N("Please enter a new password for \n"
+		  "user %s at %s\n"
+		  "The input must be at least %d characters long.%s"
+		  "<html>"
+		  "<p>"
+		  "Please enter a new password for user <i>%s</i> at "
+		  "<i>%s</i>."
+		  "</p>"
+		  "<p>"
+		  "The input must be at least %d characters long.%s"
+		  "</p>"
+		  "</html>"),
+	     un, bn,
+	     minLen,
+	     numeric_warning,
+	     un, bn,
+	     minLen,
+	     numeric_warning);
+  }
+  else {
+    snprintf(buffer, sizeof(buffer)-1,
+	     I18N("Please enter the password for \n"
+		  "user %s at %s\n"
+		  "%s"
+		  "<html>"
+		  "Please enter the password for user <i>%s</i> at"
+		  "<i>%s</i>.<br>"
+		  "%s"
+		  "</html>"),
+	     un, bn,
+	     numeric_warning,
+	     un, bn,
+	     numeric_warning);
+  }
+  buffer[sizeof(buffer)-1]=0;
+
+  AB_BankInfo_free(bi);
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkPasswdName(u, nbuf);
@@ -1139,13 +1184,13 @@ int AH_User_InputPasswd(AB_USER *u,
   rv=GWEN_Gui_GetPassword(flags,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter Password"),
-			  GWEN_Buffer_GetStart(pbuf),
+			  buffer,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
 			  0);
   GWEN_Buffer_free(nbuf);
-  GWEN_Buffer_free(pbuf);
+
   return rv;
 }
 
