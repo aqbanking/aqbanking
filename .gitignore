@@ -71,6 +71,7 @@ system.h
 *.rc
 *.xml
 *.conf
+*.pot
 
 testlib
 *.moc
