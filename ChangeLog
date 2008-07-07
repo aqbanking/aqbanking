@@ -10,6 +10,8 @@
     the user flags
 - allow choosing HBCI version for PIN/TAN, too (but only accept 220 or higher)
 - allow setting the account type in the general account tab
+- started preparing transition from all-config-in-one-file to multifile 
+  configuration
 
 
 2008/07/06: Martin Preuss<martin@libchipcard.de>

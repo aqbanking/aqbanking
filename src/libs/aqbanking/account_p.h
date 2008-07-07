@@ -34,6 +34,23 @@ struct AB_ACCOUNT {
   AB_PROVIDER *provider;
   char *backendName;
   GWEN_DB_NODE *data;
+
+  char *accountNumber;
+  char *bankCode;
+  char *accountName;
+  char *bankName;
+  char *iban;
+  char *bic;
+  char *ownerName;
+  char *currency;
+  char *country;
+
+  GWEN_STRINGLIST *userIds;
+  char *selectedUser;
+
+  GWEN_DB_NODE *appData;
+  GWEN_DB_NODE *providerData;
+
 };
 
 static AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData);

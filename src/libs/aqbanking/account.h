@@ -95,7 +95,7 @@ const char *AB_Account_GetBackendName(const AB_ACCOUNT *acc);
 AQBANKING_API 
 AB_PROVIDER *AB_Account_GetProvider(const AB_ACCOUNT *acc);
 
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 GWEN_DB_NODE *AB_Account_GetAppData(const AB_ACCOUNT *acc);
 AQBANKING_API 
 GWEN_DB_NODE *AB_Account_GetProviderData(const AB_ACCOUNT *acc);

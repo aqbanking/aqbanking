@@ -57,6 +57,8 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   GWEN_DB_NODE *dbT;
   const char *pname;
   AB_PROVIDER *pro;
+  const char *s;
+  int i;
 
   assert(ab);
   pname=GWEN_DB_GetCharValue(db, "provider", 0, 0);
@@ -87,6 +89,103 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
 
   /* mark DB not-dirty */
   GWEN_DB_ModifyBranchFlagsDown(a->data, 0, GWEN_DB_NODE_FLAGS_DIRTY);
+
+  i=GWEN_DB_GetIntValue(db, "accountType", 0, 1);
+  a->accountType=i;
+
+  a->uniqueId=GWEN_DB_GetIntValue(db, "uniqueId", 0, 1);
+
+  free(a->accountNumber);
+  s=GWEN_DB_GetCharValue(db, "accountNumber", 0, NULL);
+  if (s)
+    a->accountNumber=strdup(s);
+  else
+    a->accountNumber=NULL;
+
+  free(a->bankCode);
+  s=GWEN_DB_GetCharValue(db, "bankCode", 0, NULL);
+  if (s)
+    a->bankCode=strdup(s);
+  else
+    a->bankCode=NULL;
+
+  free(a->accountName);
+  s=GWEN_DB_GetCharValue(db, "accountName", 0, NULL);
+  if (s)
+    a->accountName=strdup(s);
+  else
+    a->accountName=NULL;
+
+  free(a->bankName);
+  s=GWEN_DB_GetCharValue(db, "bankName", 0, NULL);
+  if (s)
+    a->bankName=strdup(s);
+  else
+    a->bankName=NULL;
+
+  free(a->iban);
+  s=GWEN_DB_GetCharValue(db, "iban", 0, NULL);
+  if (s)
+    a->iban=strdup(s);
+  else
+    a->iban=NULL;
+
+  free(a->bic);
+  s=GWEN_DB_GetCharValue(db, "bic", 0, NULL);
+  if (s)
+    a->bic=strdup(s);
+  else
+    a->bic=NULL;
+
+  free(a->ownerName);
+  s=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
+  if (s)
+    a->ownerName=strdup(s);
+  else
+    a->ownerName=NULL;
+
+  free(a->currency);
+  s=GWEN_DB_GetCharValue(db, "currency", 0, NULL);
+  if (s)
+    a->currency=strdup(s);
+  else
+    a->currency=NULL;
+
+  free(a->country);
+  s=GWEN_DB_GetCharValue(db, "country", 0, NULL);
+  if (s)
+    a->country=strdup(s);
+  else
+    a->country=NULL;
+
+  GWEN_StringList_Clear(a->userIds);
+  for (i=0; i<100; i++) {
+    s=GWEN_DB_GetCharValue(db, "user", i, NULL);
+    if (!s)
+      break;
+    GWEN_StringList_AppendString(a->userIds, s, 0, 1);
+  }
+
+  free(a->selectedUser);
+  s=GWEN_DB_GetCharValue(db, "selectedUser", 0, NULL);
+  if (s)
+    a->selectedUser=strdup(s);
+  else
+    a->selectedUser=NULL;
+
+  GWEN_DB_Group_free(a->appData);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "apps");
+  if (dbT)
+    a->appData=GWEN_DB_Group_dup(dbT);
+  else
+    a->appData=GWEN_DB_Group_new("apps");
+
+  GWEN_DB_Group_free(a->providerData);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "provider");
+  if (dbT)
+    a->providerData=GWEN_DB_Group_dup(dbT);
+  else
+    a->providerData=GWEN_DB_Group_new("provider");
 
   return a;
 }
@@ -312,6 +411,22 @@ void AB_Account_free(AB_ACCOUNT *a){
       GWEN_INHERIT_FINI(AB_ACCOUNT, a);
       free(a->backendName);
       GWEN_DB_Group_free(a->data);
+
+      free(a->accountNumber);
+      free(a->bankCode);
+      free(a->accountName);
+      free(a->bankName);
+      free(a->iban);
+      free(a->bic);
+      free(a->ownerName);
+      free(a->currency);
+      free(a->country);
+      GWEN_StringList_free(a->userIds);
+      free(a->selectedUser);
+
+      GWEN_DB_Group_free(a->appData);
+      GWEN_DB_Group_free(a->providerData);
+
       a->usage=0;
       GWEN_FREE_OBJECT(a);
     }
