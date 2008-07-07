@@ -27,7 +27,9 @@ aqhbci_tool3_SOURCES=main.c \
  test.c \
  addaccount.c \
  getcert.c \
- sethbciversion.c
+ sethbciversion.c \
+ adduserflags.c \
+ subuserflags.c
 
 aqhbci_tool3_LDADD = \
   $(aqhbci_internal_libs) \

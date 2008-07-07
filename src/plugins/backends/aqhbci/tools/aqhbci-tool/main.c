@@ -307,6 +307,12 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "sethbciversion")==0) {
     rv=setHbciVersion(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "adduserflags")==0) {
+    rv=addUserFlags(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "subuserflags")==0) {
+    rv=subUserFlags(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1(ab, db, argc, argv);
   }

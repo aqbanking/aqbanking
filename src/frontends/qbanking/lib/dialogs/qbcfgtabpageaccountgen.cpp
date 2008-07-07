@@ -94,6 +94,8 @@ bool QBCfgTabPageAccountGeneral::toGui() {
   const char *s;
   AB_USER_LIST2 *ulAll;
   AB_USER_LIST2 *ulSel;
+  AB_ACCOUNT_TYPE at;
+  int idx;
 
   a=getAccount();
   assert(a);
@@ -127,6 +129,20 @@ bool QBCfgTabPageAccountGeneral::toGui() {
   selectCountryInCombo(_realPage->countryCombo,
                        AB_Account_GetCountry(getAccount()));
 
+  idx=0;
+  at=AB_Account_GetAccountType(a);
+  switch(at) {
+  case AB_AccountType_Unknown:     idx=1; break; /* unknown->bank */
+  case AB_AccountType_Bank:        idx=1; break;
+  case AB_AccountType_CreditCard:  idx=2; break;
+  case AB_AccountType_Checking:    idx=3; break;
+  case AB_AccountType_Savings:     idx=4; break;
+  case AB_AccountType_Investment:  idx=5; break;
+  case AB_AccountType_Cash:        idx=6; break;
+  }
+  _realPage->accountTypeCombo->setCurrentItem(idx);
+
+
   ulAll=AB_Account_GetUsers(a);
   ulSel=AB_Account_GetSelectedUsers(a);
   _addUsersToLists(ulAll, ulSel);
@@ -144,6 +160,7 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   const char *cs;
   const AB_COUNTRY *ci;
   AB_USER_LIST2 *ul;
+  AB_ACCOUNT_TYPE at;
 
   a=getAccount();
   assert(a);
@@ -207,6 +224,18 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
       AB_Account_SetUsers(a, ul);
     AB_User_List2_free(ul);
   }
+
+  switch(_realPage->accountTypeCombo->currentItem()) {
+  case 0:  at=AB_AccountType_Unknown; break;
+  case 1:  at=AB_AccountType_Bank; break;
+  case 2:  at=AB_AccountType_CreditCard; break;
+  case 3:  at=AB_AccountType_Checking; break;
+  case 4:  at=AB_AccountType_Savings; break;
+  case 5:  at=AB_AccountType_Investment; break;
+  case 6:  at=AB_AccountType_Cash; break;
+  default: at=AB_AccountType_Unknown; break;
+  }
+  AB_Account_SetAccountType(a, at);
 
   return true;
 }

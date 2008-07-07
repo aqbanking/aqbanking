@@ -6,7 +6,10 @@
   - added command "sethbciversion"
   - added argument "-u" to all commands (was checked for but
     not accepted from the command line)
+  - added commands adduserflags and subuserflags to allow influencing
+    the user flags
 - allow choosing HBCI version for PIN/TAN, too (but only accept 220 or higher)
+- allow setting the account type in the general account tab
 
 
 2008/07/06: Martin Preuss<martin@libchipcard.de>

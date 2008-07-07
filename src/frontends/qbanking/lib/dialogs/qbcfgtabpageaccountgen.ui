@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>627</width>
-            <height>317</height>
+            <width>628</width>
+            <height>362</height>
         </rect>
     </property>
     <property name="caption">
@@ -21,7 +21,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout8</cstring>
+                <cstring>layout7</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -117,80 +117,222 @@ this account number.
 &lt;/qt&gt;</string>
                             </property>
                         </widget>
+                        <widget class="QLabel" row="4" column="0">
+                            <property name="name">
+                                <cstring>textLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Type</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="4" column="1">
+                            <item>
+                                <property name="text">
+                                    <string>unknown</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Bank Account</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Credit Card</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Checkings</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Savings</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Investment</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Cash</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>accountTypeCombo</cstring>
+                            </property>
+                        </widget>
                     </grid>
                 </widget>
-                <widget class="QGroupBox">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>groupBox7</cstring>
+                        <cstring>layout6</cstring>
                     </property>
-                    <property name="title">
-                        <string>Bank Settings</string>
-                    </property>
-                    <grid>
+                    <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLineEdit" row="3" column="1">
+                        <widget class="QGroupBox">
                             <property name="name">
-                                <cstring>bankNameEdit</cstring>
+                                <cstring>groupBox7</cstring>
                             </property>
+                            <property name="title">
+                                <string>Bank Settings</string>
+                            </property>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>bankNameEdit</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>61</x>
+                                        <y>105</y>
+                                        <width>197</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>bankIdEdit</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>61</x>
+                                        <y>50</y>
+                                        <width>197</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                            </widget>
+                            <widget class="QComboBox">
+                                <property name="name">
+                                    <cstring>countryCombo</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>61</x>
+                                        <y>22</y>
+                                        <width>197</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel1_4_3</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>11</x>
+                                        <y>78</y>
+                                        <width>44</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                                <property name="text">
+                                    <string>BIC</string>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel1_4_2</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>11</x>
+                                        <y>105</y>
+                                        <width>44</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                                <property name="text">
+                                    <string>Name</string>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>bicEdit</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>61</x>
+                                        <y>78</y>
+                                        <width>197</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel1_4</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>11</x>
+                                        <y>49</y>
+                                        <width>44</width>
+                                        <height>23</height>
+                                    </rect>
+                                </property>
+                                <property name="text">
+                                    <string>Code</string>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel2_2</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>11</x>
+                                        <y>22</y>
+                                        <width>44</width>
+                                        <height>21</height>
+                                    </rect>
+                                </property>
+                                <property name="text">
+                                    <string>Country</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>bankIdButton</cstring>
+                                </property>
+                                <property name="geometry">
+                                    <rect>
+                                        <x>264</x>
+                                        <y>49</y>
+                                        <width>23</width>
+                                        <height>23</height>
+                                    </rect>
+                                </property>
+                                <property name="text">
+                                    <string>...</string>
+                                </property>
+                            </widget>
                         </widget>
-                        <widget class="QLineEdit" row="1" column="1">
+                        <spacer>
                             <property name="name">
-                                <cstring>bankIdEdit</cstring>
+                                <cstring>spacer6</cstring>
                             </property>
-                        </widget>
-                        <widget class="QComboBox" row="0" column="1">
-                            <property name="name">
-                                <cstring>countryCombo</cstring>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
                             </property>
-                        </widget>
-                        <widget class="QLabel" row="2" column="0">
-                            <property name="name">
-                                <cstring>textLabel1_4_3</cstring>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
                             </property>
-                            <property name="text">
-                                <string>BIC</string>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>5</width>
+                                    <height>5</height>
+                                </size>
                             </property>
-                        </widget>
-                        <widget class="QLabel" row="3" column="0">
-                            <property name="name">
-                                <cstring>textLabel1_4_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Name</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit" row="2" column="1">
-                            <property name="name">
-                                <cstring>bicEdit</cstring>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" row="1" column="0">
-                            <property name="name">
-                                <cstring>textLabel1_4</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Code</string>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" row="0" column="0">
-                            <property name="name">
-                                <cstring>textLabel2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Country</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton" row="1" column="2">
-                            <property name="name">
-                                <cstring>bankIdButton</cstring>
-                            </property>
-                            <property name="text">
-                                <string>...</string>
-                            </property>
-                        </widget>
-                    </grid>
+                        </spacer>
+                    </vbox>
                 </widget>
             </hbox>
         </widget>
@@ -441,6 +583,7 @@ this account number.
     <tabstop>accountIdEdit</tabstop>
     <tabstop>ibanEdit</tabstop>
     <tabstop>ownerNameEdit</tabstop>
+    <tabstop>accountTypeCombo</tabstop>
     <tabstop>countryCombo</tabstop>
     <tabstop>bankIdEdit</tabstop>
     <tabstop>bankIdButton</tabstop>
