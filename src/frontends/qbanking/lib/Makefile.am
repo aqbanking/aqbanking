@@ -48,7 +48,7 @@ libqbanking_la_LIBADD=\
  dialogs/libdialogs.la \
  views/libviews.la \
  gui/libqgui.la \
- $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
+ $(i18n_libs) $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
 
 libqbanking_la_LDFLAGS = -no-undefined \
  -version-info @QBANKING_SO_CURRENT@:@QBANKING_SO_REVISION@:@QBANKING_SO_AGE@
@@ -84,9 +84,9 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib checklib
 testlib_SOURCES = testlib.cpp
-testlib_LDADD = libqbanking.la $(aqbanking_internal_libs)
+testlib_LDADD = libqbanking.la $(aqbanking_internal_libs) $(qt3_libs)
 checklib_SOURCES = checklib.cpp
-checklib_LDADD = libqbanking.la $(aqbanking_internal_libs)
+checklib_LDADD = libqbanking.la $(aqbanking_internal_libs) $(qt3_libs)
 TESTS = checklib
 clean-local:
 	-rm -rf testfolder
