@@ -181,6 +181,7 @@ GWEN_PLUGIN *AB_Plugin_BankInfo_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+GWENHYWFAR_CB
 void AB_Plugin_BankInfo_FreeData(void *bp, void *p) {
   AB_PLUGIN_BANKINFO *xpl;
 

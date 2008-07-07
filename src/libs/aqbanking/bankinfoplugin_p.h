@@ -41,7 +41,7 @@ struct AB_PLUGIN_BANKINFO {
   AB_PLUGIN_BANKINFO_FACTORY_FN pluginFactoryFn;
 };
 
-static void AB_Plugin_BankInfo_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_Plugin_BankInfo_FreeData(void *bp, void *p);
 
 
 #endif /* AQBANKING_BANKINFOPLUGIN_P_H */
