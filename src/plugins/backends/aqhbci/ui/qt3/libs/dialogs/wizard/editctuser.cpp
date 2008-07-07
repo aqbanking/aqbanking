@@ -99,8 +99,8 @@ void EditCtUser::init() {
 
   if (_wInfo->getCryptMode()==AH_CryptMode_Pintan) {
     userCombo->setEnabled(false);
-    hbciVersionCombo->setCurrentItem(2);
-    hbciVersionCombo->setEnabled(false);
+    hbciVersionCombo->setCurrentItem(3);
+    //hbciVersionCombo->setEnabled(false);
     if (!(_wInfo->getHttpVersion().empty()))
       httpVersionCombo->setCurrentText(QString::fromUtf8(_wInfo->getHttpVersion().c_str()));
   }
@@ -368,6 +368,26 @@ bool EditCtUser::apply(){
     return false;
   }
 
+  if (cm==AH_CryptMode_Pintan) {
+    /* PIN/TAN only works with HBCI version >=2.20. It might work with
+     * other versions as well but this is not defined in the specs. */
+    if (hbciVersion<220) {
+      QMessageBox::critical(this,
+			    tr("Invalid Input"),
+			    tr("<qt>"
+			       "<p>"
+			       "PIN/TAN is only allowed with HBCI versions "
+			       "greater or equal 2.20."
+			       "</p>"
+			       "<p>"
+			       "Please choose either of them."
+			       "</p>"),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+      hbciVersionCombo->setFocus();
+      return false;
+    }
+  }
+
   /* get bank info */
   if (!_bankInfo) {
     std::string s;
@@ -530,12 +550,6 @@ bool EditCtUser::apply(){
     _wInfo->setUser(0);
     _wInfo->subFlags(WIZARDINFO_FLAGS_USER_CREATED);
     return false;
-  }
-
-  if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
-    /* PIN/TAN only works with HBCI version 2.20. It might work with
-     * other versions as well but this is not defined in the specs. */
-    AH_User_SetHbciVersion(u, 220);
   }
 
   return true;
