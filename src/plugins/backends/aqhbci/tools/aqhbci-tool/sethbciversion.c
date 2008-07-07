@@ -1,7 +1,7 @@
 /***************************************************************************
  $RCSfile$
  -------------------
- cvs         : $Id$
+ cvs         : $Id: getsysid.c 1288 2007-08-11 16:53:57Z martin $
  begin       : Tue May 03 2005
  copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de
@@ -19,6 +19,8 @@
 
 #include <gwenhywfar/text.h>
 
+#include <aqhbci/user.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -26,10 +28,10 @@
 #include <errno.h>
 
 
-int getKeys(AB_BANKING *ab,
-            GWEN_DB_NODE *dbArgs,
-            int argc,
-            char **argv) {
+int setHbciVersion(AB_BANKING *ab,
+		   GWEN_DB_NODE *dbArgs,
+		   int argc,
+		   char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AB_USER_LIST2 *ul;
@@ -38,6 +40,7 @@ int getKeys(AB_BANKING *ab,
   const char *bankId;
   const char *userId;
   const char *customerId;
+  const char *hbciVersion;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -71,6 +74,17 @@ int getKeys(AB_BANKING *ab,
     "customer",                   /* long option */
     "Specify the customer id (Kundennummer)",    /* short description */
     "Specify the customer id (Kundennummer)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "hbciVersion",                 /* name */
+    1,                            /* minnum */
+    1,                            /* maxnum */
+    0,                          /* short option */
+    "hbciversion",                   /* long option */
+    "Specify the HBCI version (201, 210, 220, 300)",    /* short description */
+    "Specify the HBCI version (201, 210, 220, 300)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -125,13 +139,13 @@ int getKeys(AB_BANKING *ab,
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
+  hbciVersion=GWEN_DB_GetCharValue(db, "hbciVersion", 0, "220");
 
-  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "de", bankId,
-                          userId, customerId);
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "de",
+                          bankId, userId, customerId);
   if (ul) {
     if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
-      AB_Banking_Fini(ab);
       return 3;
     }
     else {
@@ -146,20 +160,17 @@ int getKeys(AB_BANKING *ab,
   }
   if (!u) {
     DBG_ERROR(0, "No matching customer");
-    AB_Banking_Fini(ab);
     return 3;
   }
   else {
-    AB_IMEXPORTER_CONTEXT *ctx;
+    int v;
 
-    ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetServerKeys(pro, u, ctx, 0, 0);
-    AB_ImExporterContext_free(ctx);
-    if (rv) {
-      DBG_ERROR(0, "Error getting server keys (%d)", rv);
-      AB_Banking_Fini(ab);
-      return 3;
+    v=atoi(hbciVersion);
+    if (v<200 || v>399) {
+      DBG_ERROR(0, "Invalid HBCI version \"%s\"", hbciVersion);
+      return 1;
     }
+    AH_User_SetHbciVersion(u, v);
   }
 
   rv=AB_Banking_OnlineFini(ab);

@@ -26,7 +26,8 @@ aqhbci_tool3_SOURCES=main.c \
  changepin.c \
  test.c \
  addaccount.c \
- getcert.c
+ getcert.c \
+ sethbciversion.c
 
 aqhbci_tool3_LDADD = \
   $(aqhbci_internal_libs) \

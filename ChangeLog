@@ -2,6 +2,10 @@
 2008/07/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - split password dialogs for PIN and password
+- aqhbci-tool:
+  - added command "sethbciversion"
+  - added argument "-u" to all commands (was checked for but
+    not accepted from the command line)
 
 
 2008/07/06: Martin Preuss<martin@libchipcard.de>

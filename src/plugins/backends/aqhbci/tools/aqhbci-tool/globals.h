@@ -110,6 +110,11 @@ int getCert(AB_BANKING *ab,
 	    int argc,
 	    char **argv);
 
+int setHbciVersion(AB_BANKING *ab,
+		   GWEN_DB_NODE *dbArgs,
+		   int argc,
+		   char **argv);
+
 
 
 int test1(AB_BANKING *ab,

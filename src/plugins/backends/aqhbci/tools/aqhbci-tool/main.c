@@ -304,6 +304,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "changepin")==0) {
     rv=changePin(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "sethbciversion")==0) {
+    rv=setHbciVersion(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1(ab, db, argc, argv);
   }

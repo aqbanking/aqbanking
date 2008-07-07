@@ -56,6 +56,17 @@ int resetKeys(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
+    "userId",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "u",                          /* short option */
+    "user",                       /* long option */
+    "Specify the user id (Benutzerkennung)",    /* short description */
+    "Specify the user id (Benutzerkennung)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
     "customerId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
