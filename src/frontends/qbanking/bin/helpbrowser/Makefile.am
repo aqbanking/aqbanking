@@ -2,10 +2,10 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   $(qt3_includes) $(all_includes)
 
-DEFS = -DPKGDATADIR=\"$(pkgdatadir)\" \
+DEFS += -DPKGDATADIR=\"$(pkgdatadir)\" \
        -DQBANKING_HELPDIR=\"@qbanking_helpdir@\"
 
-noinst_LTLIBRARIES=libqbhelp.la
+#noinst_LTLIBRARIES=libqbhelp.la
 
 UI_FILES=\
  qbhelpbrowser.ui
@@ -20,15 +20,16 @@ MOC_FILES=\
  qbhelpbrowser.moc \
  qbhelpbrowser.ui.moc
 
-libqbhelp_la_SOURCES=qbhelpbrowser.cpp
+#libqbhelp_la_SOURCES=qbhelpbrowser.cpp
 
-nodist_libqbhelp_la_SOURCES=\
- qbhelpbrowser.ui.cpp
+#nodist_libqbhelp_la_SOURCES=\
+# qbhelpbrowser.ui.cpp
 
 
 bin_PROGRAMS = qb-help@QBANKING_SO_EFFECTIVE@
-qb_help@QBANKING_SO_EFFECTIVE@_SOURCES = qb_help.cpp
-qb_help@QBANKING_SO_EFFECTIVE@_LDADD= libqbhelp.la \
+qb_help@QBANKING_SO_EFFECTIVE@_SOURCES = qb_help.cpp qbhelpbrowser.cpp
+nodist_qb_help@QBANKING_SO_EFFECTIVE@_SOURCES = qbhelpbrowser.ui.cpp
+qb_help@QBANKING_SO_EFFECTIVE@_LDADD= \
   $(qt3_libs) \
   $(gwenhywfar_libs)
 
