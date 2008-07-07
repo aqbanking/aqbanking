@@ -176,14 +176,14 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 
   GWEN_Buffer_AppendString(buf, "<INVSTMTRQ>");
   GWEN_Buffer_AppendString(buf, "<INVACCTFROM>");
-  s=AB_Account_GetAccountNumber(a);
-  if (s) {
-    GWEN_Buffer_AppendString(buf, "<ACCTID>");
-    GWEN_Buffer_AppendString(buf, s);
-  }
   s=AO_User_GetBrokerId(u);
   if (s) {
     GWEN_Buffer_AppendString(buf, "<BROKERID>");
+    GWEN_Buffer_AppendString(buf, s);
+  }
+  s=AB_Account_GetAccountNumber(a);
+  if (s) {
+    GWEN_Buffer_AppendString(buf, "<ACCTID>");
     GWEN_Buffer_AppendString(buf, s);
   }
   GWEN_Buffer_AppendString(buf, "</INVACCTFROM>");
@@ -212,6 +212,20 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   GWEN_Buffer_AppendString(buf, "</INCTRAN>");
 
   GWEN_Buffer_AppendString(buf, "<INCOO>Y");
+
+  GWEN_Buffer_AppendString(buf, "<INCPOS>");
+  if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
+    GWEN_TIME *ti;
+
+    ti=GWEN_CurrentTime();
+    if (ti) {
+      GWEN_Buffer_AppendString(buf, "<DTASOF>");
+      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+    }
+    GWEN_Time_free(ti);
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+  }
+
   GWEN_Buffer_AppendString(buf, "<INCBAL>Y");
 
   GWEN_Buffer_AppendString(buf, "</INVSTMTRQ>");
