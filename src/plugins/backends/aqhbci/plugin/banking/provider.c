@@ -243,7 +243,6 @@ int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 
 int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbAccount;
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
   AB_USER *mu;
@@ -255,9 +254,6 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
-
-  dbAccount=AB_Account_GetProviderData(AB_Job_GetAccount(j));
-  assert(dbAccount);
 
   dbJob=AB_Job_GetProviderData(j, pro);
   assert(dbJob);
@@ -452,7 +448,6 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 
 int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbAccount;
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
   uint32_t jid;
@@ -490,9 +485,6 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
               "Jobs has already been sent to this backend, rejecting");
     return GWEN_ERROR_INVALID;
   }
-
-  dbAccount=AB_Account_GetProviderData(AB_Job_GetAccount(j));
-  assert(dbAccount);
 
   ma=AB_Job_GetAccount(j);
   assert(ma);
@@ -922,16 +914,18 @@ int AH_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 int AH_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                           AB_PROVIDER_EXTEND_MODE em) {
-  AH_User_Extend(u, pro, em);
+			   AB_PROVIDER_EXTEND_MODE em,
+			   GWEN_DB_NODE *db) {
+  AH_User_Extend(u, pro, em, db);
   return 0;
 }
 
 
 
 int AH_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                              AB_PROVIDER_EXTEND_MODE em){
-  AH_Account_Extend(a, pro, em);
+			      AB_PROVIDER_EXTEND_MODE em,
+			      GWEN_DB_NODE *db){
+  AH_Account_Extend(a, pro, em, db);
   return 0;
 }
 

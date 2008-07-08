@@ -936,16 +936,18 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 
 
 int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                           AB_PROVIDER_EXTEND_MODE em) {
-  AO_User_Extend(u, pro, em);
+			   AB_PROVIDER_EXTEND_MODE em,
+			   GWEN_DB_NODE *db) {
+  AO_User_Extend(u, pro, em, db);
   return 0;
 }
 
 
 
 int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                              AB_PROVIDER_EXTEND_MODE em){
-  AO_Account_Extend(a, pro, em);
+			      AB_PROVIDER_EXTEND_MODE em,
+			      GWEN_DB_NODE *db){
+  AO_Account_Extend(a, pro, em, db);
   return 0;
 }
 

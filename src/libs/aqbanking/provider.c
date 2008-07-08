@@ -296,7 +296,8 @@ int AB_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                           AB_PROVIDER_EXTEND_MODE em) {
+			   AB_PROVIDER_EXTEND_MODE em,
+			   GWEN_DB_NODE *db) {
   assert(pro);
   assert(u);
   if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
@@ -305,7 +306,7 @@ int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
   }
 
   if (pro->extendUserFn)
-    return pro->extendUserFn(pro, u, em);
+    return pro->extendUserFn(pro, u, em, db);
   DBG_INFO(AQBANKING_LOGDOMAIN, "No extendUser function set");
   return 0;
 }
@@ -313,7 +314,8 @@ int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
 
 
 int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                              AB_PROVIDER_EXTEND_MODE em) {
+			      AB_PROVIDER_EXTEND_MODE em,
+			      GWEN_DB_NODE *db) {
   assert(pro);
   assert(a);
   if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
@@ -322,7 +324,7 @@ int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
   }
 
   if (pro->extendAccountFn)
-    return pro->extendAccountFn(pro, a, em);
+    return pro->extendAccountFn(pro, a, em, db);
   DBG_INFO(AQBANKING_LOGDOMAIN, "No extendAccount function set");
   return 0;
 }

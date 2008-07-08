@@ -27,13 +27,13 @@ struct AB_ACCOUNT {
   GWEN_INHERIT_ELEMENT(AB_ACCOUNT)
   GWEN_LIST_ELEMENT(AB_ACCOUNT)
   uint32_t usage;
+
   uint32_t uniqueId;
   AB_ACCOUNT_TYPE accountType;
 
   AB_BANKING *banking;
   AB_PROVIDER *provider;
   char *backendName;
-  GWEN_DB_NODE *data;
 
   char *accountNumber;
   char *bankCode;
@@ -46,7 +46,7 @@ struct AB_ACCOUNT {
   char *country;
 
   GWEN_STRINGLIST *userIds;
-  char *selectedUser;
+  GWEN_STRINGLIST *selectedUserIds;
 
   GWEN_DB_NODE *appData;
   GWEN_DB_NODE *providerData;

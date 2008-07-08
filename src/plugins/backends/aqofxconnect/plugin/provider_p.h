@@ -48,9 +48,11 @@ static int AO_Provider_Execute(AB_PROVIDER *pro,
 			       uint32_t guiid);
 static int AO_Provider_ResetQueue(AB_PROVIDER *pro);
 static int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                                  AB_PROVIDER_EXTEND_MODE em);
+				  AB_PROVIDER_EXTEND_MODE em,
+				  GWEN_DB_NODE *dbBackend);
 static int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                                     AB_PROVIDER_EXTEND_MODE em);
+				     AB_PROVIDER_EXTEND_MODE em,
+				     GWEN_DB_NODE *dbBackend);
 
 
 #if 0

@@ -120,19 +120,13 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-                    AB_PROVIDER_EXTEND_MODE em) {
-  GWEN_DB_NODE *db;
-  GWEN_DB_NODE *gr;
-
-  db=AB_User_GetProviderData(u);
-  assert(db);
-
+		    AB_PROVIDER_EXTEND_MODE em,
+		    GWEN_DB_NODE *db) {
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
     AH_USER *ue;
     const char *s;
     int rv;
-    int i;
 
     GWEN_NEW_OBJECT(AH_USER, ue);
     GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
@@ -160,103 +154,16 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                                   AH_HBCI_GetDefinitions(ue->hbci),
                                   0);
 
-    s=GWEN_DB_GetCharValue(db, "cryptMode", 0, "unknown");
-    ue->cryptMode=AH_CryptMode_fromString(s);
-
-    s=GWEN_DB_GetCharValue(db, "status", 0, "unknown");
-    ue->status=AH_User_Status_fromString(s);
-
-    ue->hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 210);
-
-    /* load server address */
-    s=GWEN_DB_GetCharValue(db, "server", 0, 0);
-    if (s) {
-      ue->serverUrl=GWEN_Url_fromString(s);
-      assert(ue->serverUrl);
-      if (GWEN_Url_GetPort(ue->serverUrl)==0) {
-        if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
-          GWEN_Url_SetPort(ue->serverUrl, 443);
-          GWEN_Url_SetProtocol(ue->serverUrl, "https");
-        }
-        else {
-          GWEN_Url_SetProtocol(ue->serverUrl, "hbci");
-          GWEN_Url_SetPort(ue->serverUrl, 3000);
-	}
-      }
-    }
-
-    /* load BPD */
-    gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
-    if (gr) {
-      ue->bpd=AH_Bpd_FromDb(gr);
-      assert(ue->bpd);
-    }
-    else
+    if (em==AB_ProviderExtendMode_Create) {
+      ue->hbciVersion=210;
       ue->bpd=AH_Bpd_new();
-
-    /* load UPD */
-    gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "upd");
-    if (gr)
-      ue->dbUpd=GWEN_DB_Group_dup(gr);
-    else
       ue->dbUpd=GWEN_DB_Group_new("upd");
-
-    /* get peer id */
-    s=GWEN_DB_GetCharValue(db, "peerId", 0, 0);
-    if (s)
-      ue->peerId=strdup(s);
-
-    /* get system id */
-    s=GWEN_DB_GetCharValue(db, "systemId", 0, 0);
-    if (s)
-      ue->systemId=strdup(s);
-
-    ue->updVersion=GWEN_DB_GetIntValue(db, "updVersion", 0, 0);
-
-    /* setup HTTP version */
-    ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
-    ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
-    if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
-      ue->httpVMajor=1;
-      ue->httpVMinor=0;
     }
-
-    s=GWEN_DB_GetCharValue(db, "httpContentType", 0, 0);
-    if (s)
-      ue->httpContentType=strdup(s);
-
-    /* read user flags */
-    ue->flags=AH_User_Flags_fromDb(db, "userFlags");
-
-    /* setup medium stuff */
-    s=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
-    if (s)
-      ue->tokenType=strdup(s);
-    s=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
-    if (s)
-      ue->tokenName=strdup(s);
-
-    ue->tokenContextId=GWEN_DB_GetIntValue(db, "tokenContextId", 0, 1);
-
-    /* get rdh type */
-    ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
-
-    /* read supported TAN methods */
-    for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
-      int method;
-
-      method=GWEN_DB_GetIntValue(db, "tanMethodList", i, -1);
-      if (method==-1)
-	break;
-      ue->tanMethodList[ue->tanMethodCount++]=method;
-      ue->tanMethodList[ue->tanMethodCount]=-1;
-    }
-
-    ue->selectedTanMethod=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
+    else
+      AH_User_ReadDb(u, db);
   }
   else {
     AH_USER *ue;
-    const char *s;
 
     ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
     assert(ue);
@@ -264,103 +171,7 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     if (em==AB_ProviderExtendMode_Add) {
     }
     else if (em==AB_ProviderExtendMode_Save) {
-      int i;
-
-      GWEN_DB_ClearGroup(db, NULL);
-
-      /* save crypt mode */
-      s=AH_CryptMode_toString(ue->cryptMode);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "cryptMode", s);
-
-      /* save status */
-      s=AH_User_Status_toString(ue->status);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "status", s);
-
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "hbciVersion", ue->hbciVersion);
-
-      if (ue->httpContentType)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "httpContentType", ue->httpContentType);
-      else
-	GWEN_DB_DeleteVar(db, "httpContentType");
-
-      /* save URL */
-      if (ue->serverUrl) {
-	GWEN_BUFFER *nbuf;
-
-	nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	if (GWEN_Url_toString(ue->serverUrl, nbuf)) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not store url");
-	  GWEN_Buffer_free(nbuf);
-	  assert(0);
-	}
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "server", GWEN_Buffer_GetStart(nbuf));
-	GWEN_Buffer_free(nbuf);
-      } /* if serverUrl */
-
-      /* save UPD */
-      assert(ue->bpd);
-      gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
-      assert(gr);
-      AH_Bpd_ToDb(ue->bpd, gr);
-
-      /* save BPD */
-      gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
-      assert(gr);
-      GWEN_DB_AddGroupChildren(gr, ue->dbUpd);
-
-      if (ue->peerId)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "peerId", ue->peerId);
-
-      if (ue->systemId)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "systemId", ue->systemId);
-
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "updVersion", ue->updVersion);
-
-      /* save http settings */
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "httpVMajor", ue->httpVMajor);
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "httpVMinor", ue->httpVMinor);
-      if (ue->httpUserAgent)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "httpUserAgent", ue->httpUserAgent);
-
-      /* save flags */
-      AH_User_Flags_toDb(db, "userFlags", ue->flags);
-
-      /* save crypt token settings */
-      if (ue->tokenType)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "tokenType", ue->tokenType);
-      if (ue->tokenName)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "tokenName", ue->tokenName);
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "tokenContextId", ue->tokenContextId);
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "rdhType", ue->rdhType);
-
-      /* store list of supported/allowed tan methods */
-      GWEN_DB_DeleteVar(db, "tanMethodList");
-      for (i=0; i<ue->tanMethodCount; i++) {
-	if (ue->tanMethodList[i]==-1)
-          break;
-	GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			    "tanMethodList",
-			    ue->tanMethodList[i]);
-      }
-
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "selectedTanMethod",
-                          ue->selectedTanMethod);
+      AH_User_toDb(u, db);
     } /* if save */
   }
 }
@@ -381,6 +192,232 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   GWEN_FREE_OBJECT(ue);
+}
+
+
+
+void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+  AH_USER *ue;
+  const char *s;
+  GWEN_DB_NODE *gr;
+  int i;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  s=GWEN_DB_GetCharValue(db, "cryptMode", 0, "unknown");
+  ue->cryptMode=AH_CryptMode_fromString(s);
+  
+  s=GWEN_DB_GetCharValue(db, "status", 0, "unknown");
+  ue->status=AH_User_Status_fromString(s);
+  
+  ue->hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 210);
+  
+  /* load server address */
+  GWEN_Url_free(ue->serverUrl);
+  s=GWEN_DB_GetCharValue(db, "server", 0, 0);
+  if (s) {
+    ue->serverUrl=GWEN_Url_fromString(s);
+    assert(ue->serverUrl);
+    if (GWEN_Url_GetPort(ue->serverUrl)==0) {
+      if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+	GWEN_Url_SetPort(ue->serverUrl, 443);
+	GWEN_Url_SetProtocol(ue->serverUrl, "https");
+      }
+      else {
+	GWEN_Url_SetProtocol(ue->serverUrl, "hbci");
+	GWEN_Url_SetPort(ue->serverUrl, 3000);
+      }
+    }
+  }
+  else
+    ue->serverUrl=NULL;
+  
+  /* load BPD */
+  AH_Bpd_free(ue->bpd);
+  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
+  if (gr) {
+    ue->bpd=AH_Bpd_FromDb(gr);
+    assert(ue->bpd);
+  }
+  else
+    ue->bpd=AH_Bpd_new();
+  
+  /* load UPD */
+  if (ue->dbUpd)
+    GWEN_DB_Group_free(ue->dbUpd);
+  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "upd");
+  if (gr)
+    ue->dbUpd=GWEN_DB_Group_dup(gr);
+  else
+    ue->dbUpd=GWEN_DB_Group_new("upd");
+  
+  /* get peer id */
+  free(ue->peerId);
+  s=GWEN_DB_GetCharValue(db, "peerId", 0, 0);
+  if (s) ue->peerId=strdup(s);
+  else ue->peerId=NULL;
+  
+  /* get system id */
+  free(ue->systemId);
+  s=GWEN_DB_GetCharValue(db, "systemId", 0, 0);
+  if (s) ue->systemId=strdup(s);
+  else ue->systemId=NULL;
+  
+  ue->updVersion=GWEN_DB_GetIntValue(db, "updVersion", 0, 0);
+  
+  /* setup HTTP version */
+  ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
+  ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
+  if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
+    ue->httpVMajor=1;
+    ue->httpVMinor=0;
+  }
+  
+  free(ue->httpContentType);
+  s=GWEN_DB_GetCharValue(db, "httpContentType", 0, 0);
+  if (s) ue->httpContentType=strdup(s);
+  else ue->httpContentType=NULL;
+  
+  /* read user flags */
+  ue->flags=AH_User_Flags_fromDb(db, "userFlags");
+  
+  /* setup medium stuff */
+  free(ue->tokenType);
+  s=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
+  if (s) ue->tokenType=strdup(s);
+  else ue->tokenType=NULL;
+  
+  free(ue->tokenName);
+  s=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
+  if (s) ue->tokenName=strdup(s);
+  else ue->tokenName=NULL;
+  
+  ue->tokenContextId=GWEN_DB_GetIntValue(db, "tokenContextId", 0, 1);
+  
+  /* get rdh type */
+  ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
+  
+  /* read supported TAN methods */
+  for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
+    int method;
+  
+    method=GWEN_DB_GetIntValue(db, "tanMethodList", i, -1);
+    if (method==-1)
+      break;
+    ue->tanMethodList[ue->tanMethodCount++]=method;
+    ue->tanMethodList[ue->tanMethodCount]=-1;
+  }
+  
+  ue->selectedTanMethod=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
+}
+
+
+
+void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
+  AH_USER *ue;
+  int i;
+  GWEN_DB_NODE *gr;
+  const char *s;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  /* save crypt mode */
+  s=AH_CryptMode_toString(ue->cryptMode);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "cryptMode", s);
+  
+  /* save status */
+  s=AH_User_Status_toString(ue->status);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "status", s);
+  
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "hbciVersion", ue->hbciVersion);
+  
+  if (ue->httpContentType)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "httpContentType", ue->httpContentType);
+  else
+    GWEN_DB_DeleteVar(db, "httpContentType");
+  
+  /* save URL */
+  if (ue->serverUrl) {
+    GWEN_BUFFER *nbuf;
+  
+    nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Url_toString(ue->serverUrl, nbuf)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not store url");
+      GWEN_Buffer_free(nbuf);
+      assert(0);
+    }
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "server", GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+  } /* if serverUrl */
+  
+  /* save UPD */
+  assert(ue->bpd);
+  gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
+  assert(gr);
+  AH_Bpd_ToDb(ue->bpd, gr);
+  
+  /* save BPD */
+  gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
+  assert(gr);
+  GWEN_DB_AddGroupChildren(gr, ue->dbUpd);
+  
+  if (ue->peerId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "peerId", ue->peerId);
+  
+  if (ue->systemId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "systemId", ue->systemId);
+  
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "updVersion", ue->updVersion);
+  
+  /* save http settings */
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "httpVMajor", ue->httpVMajor);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "httpVMinor", ue->httpVMinor);
+  if (ue->httpUserAgent)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "httpUserAgent", ue->httpUserAgent);
+  
+  /* save flags */
+  AH_User_Flags_toDb(db, "userFlags", ue->flags);
+  
+  /* save crypt token settings */
+  if (ue->tokenType)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "tokenType", ue->tokenType);
+  if (ue->tokenName)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "tokenName", ue->tokenName);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "tokenContextId", ue->tokenContextId);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "rdhType", ue->rdhType);
+  
+  /* store list of supported/allowed tan methods */
+  GWEN_DB_DeleteVar(db, "tanMethodList");
+  for (i=0; i<ue->tanMethodCount; i++) {
+    if (ue->tanMethodList[i]==-1)
+      break;
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+			"tanMethodList",
+			ue->tanMethodList[i]);
+  }
+  
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+		      "selectedTanMethod",
+		      ue->selectedTanMethod);
 }
 
 

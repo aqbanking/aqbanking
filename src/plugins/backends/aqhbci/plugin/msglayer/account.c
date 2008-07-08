@@ -33,12 +33,11 @@ GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
 void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-                       AB_PROVIDER_EXTEND_MODE em) {
+		       AB_PROVIDER_EXTEND_MODE em,
+		       GWEN_DB_NODE *dbBackend) {
   AH_ACCOUNT *ae;
-  GWEN_DB_NODE *db;
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
+  assert(a);
 
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
@@ -50,7 +49,7 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
     ae->hbci=AH_Provider_GetHbci(pro);
 
     /* update db to latest version */
-    rv=AH_HBCI_UpdateDbAccount(ae->hbci, db);
+    rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
       assert(0);
@@ -58,8 +57,12 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 
     if (em==AB_ProviderExtendMode_Create)
       ae->flags=AH_BANK_FLAGS_DEFAULT;
-    else
-      ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
+    else {
+      AH_Account_ReadDb(a, dbBackend);
+    }
+  }
+  else if (em==AB_ProviderExtendMode_Save) {
+    AH_Account_toDb(a, dbBackend);
   }
 }
 
@@ -69,7 +72,44 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
   AH_ACCOUNT *ae;
 
   ae=(AH_ACCOUNT*) p;
+  free(ae->suffix);
+  ae->suffix=(char*) -1;
   GWEN_FREE_OBJECT(ae);
+}
+
+
+
+void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+  const char *s;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
+  
+  free(ae->suffix);
+  s=GWEN_DB_GetCharValue(db, "suffix", 0, NULL);
+  if (s)
+    ae->suffix=strdup(s);
+  else
+    ae->suffix=NULL;
+}
+
+
+
+void AH_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  AH_Account_Flags_toDb(db, "accountFlags", ae->flags);
+  if (ae->suffix)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "suffix", ae->suffix);
 }
 
 
@@ -86,24 +126,30 @@ AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a) {
 
 
 const char *AH_Account_GetSuffix(const AB_ACCOUNT *a){
-  GWEN_DB_NODE *db;
+  AH_ACCOUNT *ae;
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
-  return GWEN_DB_GetCharValue(db, "suffix", 0, 0);
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  return ae->suffix;
 }
 
 
 
 void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s){
-  GWEN_DB_NODE *db;
+  AH_ACCOUNT *ae;
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  free(ae->suffix);
   if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "suffix", s);
+    ae->suffix=strdup(s);
   else
-    GWEN_DB_DeleteVar(db, "suffix");
+    ae->suffix=NULL;
+
 }
 
 
@@ -147,16 +193,11 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a) {
   AH_ACCOUNT *ae;
-  GWEN_DB_NODE *db;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
-
-  ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
   return ae->flags;
 }
 
@@ -164,17 +205,12 @@ uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a) {
 
 void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
   AH_ACCOUNT *ae;
-  GWEN_DB_NODE *db;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  db=AB_Account_GetProviderData(a);
-  assert(db);
-
   ae->flags=flags;
-  AH_Account_Flags_toDb(db, "accountFlags", ae->flags);
 }
 
 
@@ -186,7 +222,7 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  AH_Account_SetFlags(a, ae->flags | flags);
+  ae->flags|=flags;
 }
 
 
@@ -198,7 +234,7 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  AH_Account_SetFlags(a, ae->flags & ~flags);
+  ae->flags&=~flags;
 }
 
 

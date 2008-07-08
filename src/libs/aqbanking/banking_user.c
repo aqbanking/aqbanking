@@ -201,7 +201,7 @@ AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName) {
   uid=AB_Banking_GetUniqueId(ab);
   assert(uid);
   AB_User_SetUniqueId(u, uid);
-  rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Create);
+  rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Create, NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error extending user (%d)", rv);
     AB_User_free(u);
@@ -231,7 +231,8 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
   }
 
   rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
-                            AB_ProviderExtendMode_Add);
+			    AB_ProviderExtendMode_Add,
+			    NULL);
   if (rv)
     return rv;
   AB_User_List_Add(u, ab->users);
@@ -284,7 +285,8 @@ int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u) {
   }
 
   rv = AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
-			      AB_ProviderExtendMode_Remove);
+			      AB_ProviderExtendMode_Remove,
+			      NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of user (%d)", rv);
     return rv;

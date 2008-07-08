@@ -23,9 +23,14 @@ typedef struct AH_ACCOUNT AH_ACCOUNT;
 struct AH_ACCOUNT {
   AH_HBCI *hbci;
   uint32_t flags;
+
+  char *suffix;
 };
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);
+
+static void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+static void AH_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 #endif /* AH_ACCOUNT_P_H */

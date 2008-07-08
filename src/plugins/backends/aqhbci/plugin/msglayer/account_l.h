@@ -21,7 +21,8 @@
 
 
 void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-                       AB_PROVIDER_EXTEND_MODE um);
+		       AB_PROVIDER_EXTEND_MODE um,
+		       GWEN_DB_NODE *db);
 
 AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);
 

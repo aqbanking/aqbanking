@@ -52,6 +52,8 @@ void AB_User_free(AB_USER *st) {
     free(st->country);
   if (st->bankCode)
     free(st->bankCode);
+  if (st->fileLock)
+    GWEN_FSLock_free(st->fileLock);
   if (st->data)
     GWEN_DB_Group_free(st->data);
   GWEN_LIST_FINI(AB_USER, st)
@@ -269,6 +271,26 @@ uint32_t AB_User_GetLastSessionId(const AB_USER *st) {
 void AB_User_SetLastSessionId(AB_USER *st, uint32_t d) {
   assert(st);
   st->lastSessionId=d;
+  st->_modified=1;
+}
+
+
+
+
+GWEN_FSLOCK *AB_User_GetFileLock(const AB_USER *st) {
+  assert(st);
+  return st->fileLock;
+}
+
+
+void AB_User_SetFileLock(AB_USER *st, GWEN_FSLOCK *d) {
+  assert(st);
+  if (st->fileLock)
+    GWEN_FSLock_free(st->fileLock);
+  if (d)
+    st->fileLock=d;
+  else
+    st->fileLock=0;
   st->_modified=1;
 }
 

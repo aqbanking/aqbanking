@@ -7,6 +7,15 @@
 /** @page P_AB_USER_LIB AB_User (lib)
 This page describes the properties of AB_USER
 This group represents a user within AqBanking.
+@anchor AB_USER_FileLock
+<h3>FileLock</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_User_SetFileLock, 
+get it with @ref AB_User_GetFileLock
+</p>
+
 */
 #include <gwenhywfar/misc.h>
 #include "user.h"
@@ -29,6 +38,15 @@ GWEN_LIST_FUNCTION_DEFS(AB_USER, AB_User)
 
 
 
+
+/**
+* Returns the property @ref AB_USER_FileLock
+*/
+AQBANKING_API GWEN_FSLOCK *AB_User_GetFileLock(const AB_USER *el);
+/**
+* Set the property @ref AB_USER_FileLock
+*/
+AQBANKING_API void AB_User_SetFileLock(AB_USER *el, GWEN_FSLOCK *d);
 
 
 

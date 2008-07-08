@@ -62,6 +62,8 @@ struct AH_USER {
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
 
+static void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
+static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
 
 
 #endif /* AH_USER_P_H */

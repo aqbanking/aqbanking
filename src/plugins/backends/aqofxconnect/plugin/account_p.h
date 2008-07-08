@@ -15,5 +15,13 @@
 
 #include "account.h"
 
+typedef struct AO_ACCOUNT AO_ACCOUNT;
+struct AO_ACCOUNT {
+  int maxPurposeLines;
+  int debitAllowed;
+};
+
+static void AO_Account_freeData(void *bp, void *p);
+
 
 #endif

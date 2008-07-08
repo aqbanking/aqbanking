@@ -104,6 +104,7 @@ typedef struct AB_USER AB_USER;
 #include <gwenhywfar/list2.h>
 /* pre-headers */
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/fslock.h>
 #include <aqbanking/error.h>
 
 #ifdef __cplusplus
@@ -215,6 +216,7 @@ AQBANKING_API uint32_t AB_User_GetLastSessionId(const AB_USER *el);
 * Set the property @ref AB_USER_LastSessionId
 */
 AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, uint32_t d);
+
 
 
 /**

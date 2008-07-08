@@ -473,8 +473,11 @@ int AB_Banking_OnlineInit(AB_BANKING *ab) {
 	    }
 	    else {
 	      int rv;
+              GWEN_DB_NODE *dbP;
 
-	      rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Extend);
+	      dbP=GWEN_DB_GetGroup(dbU, GWEN_DB_FLAGS_DEFAULT,
+				   "data/backend");
+	      rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Extend, dbP);
 	      if (rv) {
 		DBG_INFO(AQBANKING_LOGDOMAIN, "here");
 		AB_User_free(u);
@@ -501,9 +504,14 @@ int AB_Banking_OnlineInit(AB_BANKING *ab) {
 	  a=AB_Account_fromDb(ab, dbA);
 	  if (a) {
 	    int rv;
+	    GWEN_DB_NODE *dbP;
+
+	    dbP=GWEN_DB_GetGroup(dbA, GWEN_DB_FLAGS_DEFAULT,
+				 "provider");
 
 	    rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
-					 AB_ProviderExtendMode_Extend);
+					 AB_ProviderExtendMode_Extend,
+					 dbP);
 	    if (rv) {
 	      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
 	    }

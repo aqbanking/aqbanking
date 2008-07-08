@@ -23,7 +23,8 @@ extern "C" {
 
 
 AQOFXCONNECT_API void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-                                        AB_PROVIDER_EXTEND_MODE em);
+					AB_PROVIDER_EXTEND_MODE em,
+					GWEN_DB_NODE *dbBackend);
 
 AQOFXCONNECT_API int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a);
 AQOFXCONNECT_API void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i);

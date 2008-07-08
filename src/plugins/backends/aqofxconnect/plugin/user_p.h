@@ -19,6 +19,16 @@
 typedef struct AO_USER AO_USER;
 struct AO_USER {
   uint32_t flags;
+
+  char *brokerId;
+  char *org;
+  char *fid;
+  AO_USER_SERVERTYPE serverType;
+  char *serverAddr;
+  int serverPort;
+  char *appId;
+  char *appVer;
+  char *headerVer;
 };
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);

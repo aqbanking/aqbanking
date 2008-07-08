@@ -184,7 +184,8 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
 
   a=AB_Account_new(ab, pro);
   AB_Account_SetUniqueId(a, uid);
-  rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Create);
+
+  rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Create, NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
     AB_Account_free(a);
@@ -202,7 +203,8 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   assert(ab);
   assert(a);
   rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
-                               AB_ProviderExtendMode_Add);
+			       AB_ProviderExtendMode_Add,
+			       NULL);
   if (rv)
     return rv;
   AB_Account_List_Add(a, ab->accounts);
@@ -224,7 +226,8 @@ int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   }
 
   rv = AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
-				 AB_ProviderExtendMode_Remove);
+				 AB_ProviderExtendMode_Remove,
+				 NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of account (%d)", rv);
     return rv;

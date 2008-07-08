@@ -51,6 +51,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdio.h>
 
 /* includes for high level API */
 #include "jobgetbalance.h"
@@ -703,10 +704,29 @@ int AB_Banking_Save(AB_BANKING *ab) {
     int rv;
     AB_PROVIDER *pro;
 
+    /* store user data */
+    dbTdst=GWEN_DB_GetGroup(db,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_PATH_FLAGS_CREATE_GROUP,
+                            "users/user");
+    assert(dbTdst);
+
+    rv=AB_User_toDb(u, dbTdst);
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving user \"%08x\"",
+                AB_User_GetUniqueId(u));
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+
     /* let provider store not yet stored data */
     pro=AB_User_GetProvider(u);
     if (pro) {
-      rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Save);
+      GWEN_DB_NODE *dbP;
+
+      dbP=GWEN_DB_GetGroup(dbTdst, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "data/backend");
+      rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Save, dbP);
       if (rv) {
         DBG_WARN(AQBANKING_LOGDOMAIN, "Error extending user (%d)", rv);
       }
@@ -716,19 +736,6 @@ int AB_Banking_Save(AB_BANKING *ab) {
                AB_User_GetUniqueId(u));
     }
 
-    /* store user data */
-    dbTdst=GWEN_DB_GetGroup(db,
-                            GWEN_DB_FLAGS_DEFAULT |
-                            GWEN_PATH_FLAGS_CREATE_GROUP,
-                            "users/user");
-    assert(dbTdst);
-    rv=AB_User_toDb(u, dbTdst);
-    if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving user \"%08x\"",
-                AB_User_GetUniqueId(u));
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
     u=AB_User_List_Next(u);
   } /* while */
 
@@ -739,20 +746,12 @@ int AB_Banking_Save(AB_BANKING *ab) {
     int rv;
     AB_PROVIDER *pro;
 
-    /* let provider store not yet stored data */
-    pro=AB_Account_GetProvider(a);
-    if (pro) {
-      rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Save);
-      if (rv) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
-      }
-    }
-
     dbTdst=GWEN_DB_GetGroup(db,
                             GWEN_DB_FLAGS_DEFAULT |
                             GWEN_PATH_FLAGS_CREATE_GROUP,
                             "accounts/account");
     assert(dbTdst);
+
     rv=AB_Account_toDb(a, dbTdst);
     if (rv) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving account \"%08x\"",
@@ -760,6 +759,20 @@ int AB_Banking_Save(AB_BANKING *ab) {
       GWEN_DB_Group_free(db);
       return rv;
     }
+
+    /* let provider store not yet stored data */
+    pro=AB_Account_GetProvider(a);
+    if (pro) {
+      GWEN_DB_NODE *dbP;
+
+      dbP=GWEN_DB_GetGroup(dbTdst, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			   "provider");
+      rv=AB_Provider_ExtendAccount(pro, a, AB_ProviderExtendMode_Save, dbP);
+      if (rv) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Error extending account (%d)", rv);
+      }
+    }
+
     a=AB_Account_List_Next(a);
   } /* while */
 

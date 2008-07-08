@@ -57,8 +57,9 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 AQOFXCONNECT_API
-  void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-                      AB_PROVIDER_EXTEND_MODE em);
+void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
+		    AB_PROVIDER_EXTEND_MODE em,
+		    GWEN_DB_NODE *dbBackend);
 
 AQOFXCONNECT_API
 const char *AO_User_GetBrokerId(const AB_USER *u);

@@ -23,6 +23,7 @@
 #include <aqbanking/user.h>
 
 #include <gwenhywfar/plugin.h>
+#include <gwenhywfar/db.h>
 
 
 #ifdef __cplusplus
@@ -58,7 +59,12 @@ typedef enum {
    * initialized, so you should not call any other provider function (or call
    * @ref AB_Provider_IsInit to see whether the backend still is initialized).
    */
-  AB_ProviderExtendMode_Save
+  AB_ProviderExtendMode_Save,
+
+  /** This mode tells the backend to reload its configuration from the given
+   * DB.
+   */
+  AB_ProviderExtendMode_Reload
 } AB_PROVIDER_EXTEND_MODE;
 
 
@@ -106,7 +112,8 @@ typedef int (*AB_PROVIDER_RESETQUEUE_FN)(AB_PROVIDER *pro);
  * See @ref AB_Provider_ExtendUser.
  */
 typedef int (*AB_PROVIDER_EXTEND_USER_FN)(AB_PROVIDER *pro, AB_USER *u,
-                                          AB_PROVIDER_EXTEND_MODE um);
+					  AB_PROVIDER_EXTEND_MODE um,
+					  GWEN_DB_NODE *db);
 
 
 /**
@@ -114,7 +121,8 @@ typedef int (*AB_PROVIDER_EXTEND_USER_FN)(AB_PROVIDER *pro, AB_USER *u,
  */
 typedef int (*AB_PROVIDER_EXTEND_ACCOUNT_FN)(AB_PROVIDER *pro,
                                              AB_ACCOUNT *a,
-                                             AB_PROVIDER_EXTEND_MODE um);
+					     AB_PROVIDER_EXTEND_MODE um,
+					     GWEN_DB_NODE *db);
 
 typedef int (*AB_PROVIDER_UPDATE_FN)(AB_PROVIDER *pro,
                                      uint32_t lastVersion,
@@ -229,7 +237,8 @@ int AB_Provider_ResetQueue(AB_PROVIDER *pro);
  */
 AQBANKING_API
 int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-                           AB_PROVIDER_EXTEND_MODE em);
+			   AB_PROVIDER_EXTEND_MODE em,
+			   GWEN_DB_NODE *db);
 
 
 /**
@@ -238,7 +247,8 @@ int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
  */
 AQBANKING_API
 int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                              AB_PROVIDER_EXTEND_MODE em);
+			      AB_PROVIDER_EXTEND_MODE em,
+			      GWEN_DB_NODE *db);
 
 
 /**
