@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 3.6.1 (2008-07-08)
+===========================================================================
+
+This release fixes some minor bugs. It allows for the HBCI version to be
+selected even in PIN/TAN mode. The account type can now also be set from 
+within the graphical setup dialogs.
+
+
+===========================================================================
                Released AqBanking - 3.6.0 (2008-07-01)
 ===========================================================================
 
