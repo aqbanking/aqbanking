@@ -47,6 +47,8 @@ AB_ACCOUNT *AB_Account_new(AB_BANKING *ab,
   a->backendName=strdup(AB_Provider_GetName(pro));
   a->data=GWEN_DB_Group_new("Data");
 
+  a->userIds=GWEN_StringList_new();
+
   return a;
 }
 
