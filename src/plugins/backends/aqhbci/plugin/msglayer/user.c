@@ -135,12 +135,6 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     ue->tanMethodCount=0;
 
     ue->hbci=AH_Provider_GetHbci(pro);
-    /* update db to latest version */
-    rv=AH_HBCI_UpdateDbUser(ue->hbci, db);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update user db (%d)", rv);
-      assert(0);
-    }
 
     s=AB_User_GetCountry(u);
     if (!s || !*s)
@@ -159,8 +153,15 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       ue->bpd=AH_Bpd_new();
       ue->dbUpd=GWEN_DB_Group_new("upd");
     }
-    else
+    else {
+      /* update db to latest version */
+      rv=AH_HBCI_UpdateDbUser(ue->hbci, db);
+      if (rv) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update user db (%d)", rv);
+	assert(0);
+      }
       AH_User_ReadDb(u, db);
+    }
   }
   else {
     AH_USER *ue;
@@ -359,17 +360,19 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
     GWEN_Buffer_free(nbuf);
   } /* if serverUrl */
   
-  /* save UPD */
+  /* save BPD */
   assert(ue->bpd);
   gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
   assert(gr);
   AH_Bpd_ToDb(ue->bpd, gr);
   
-  /* save BPD */
-  gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
-  assert(gr);
-  GWEN_DB_AddGroupChildren(gr, ue->dbUpd);
-  
+  /* save UPD */
+  if (ue->dbUpd) {
+    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
+    assert(gr);
+    GWEN_DB_AddGroupChildren(gr, ue->dbUpd);
+  }
+
   if (ue->peerId)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "peerId", ue->peerId);
@@ -603,12 +606,12 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  if (n) {
+  if (ue->dbUpd)
     GWEN_DB_Group_free(ue->dbUpd);
+  if (n)
     ue->dbUpd=GWEN_DB_Group_dup(n);
-  }
   else
-    GWEN_DB_ClearGroup(ue->dbUpd, NULL);
+    ue->dbUpd=GWEN_DB_Group_new("upd");
 }
 
 

@@ -48,16 +48,15 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
                          AH_Account_freeData);
     ae->hbci=AH_Provider_GetHbci(pro);
 
-    /* update db to latest version */
-    rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
-      assert(0);
-    }
-
     if (em==AB_ProviderExtendMode_Create)
       ae->flags=AH_BANK_FLAGS_DEFAULT;
     else {
+      /* update db to latest version */
+      rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
+      if (rv) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
+	assert(0);
+      }
       AH_Account_ReadDb(a, dbBackend);
     }
   }

@@ -225,6 +225,7 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
     GWEN_Time_free(ti);
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }
+  GWEN_Buffer_AppendString(buf, "</INCPOS>");
 
   GWEN_Buffer_AppendString(buf, "<INCBAL>Y");
 

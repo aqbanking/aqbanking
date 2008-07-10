@@ -775,7 +775,7 @@ int AB_Banking_Save(AB_BANKING *ab) {
 
     a=AB_Account_List_Next(a);
   } /* while */
-
+#if 0
   /* store bad pins */
   dbT=GWEN_DB_GetGroup(ab->data,
                        GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -801,7 +801,7 @@ int AB_Banking_Save(AB_BANKING *ab) {
                             "certificates");
     GWEN_DB_AddGroupChildren(dbTdst, dbT);
   }
-
+#endif
   /* store backends */
   dbT=GWEN_DB_GetGroup(ab->data,
                        GWEN_PATH_FLAGS_NAMEMUSTEXIST,
