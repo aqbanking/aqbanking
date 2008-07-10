@@ -1,4 +1,14 @@
 
+===========================================================================
+MARK: released AqBanking - 3.6.2 (2008-07-09)
+===========================================================================
+
+
+2008/07/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed another serious bug (crash when saving an account without app data)
+
+
 2008/07/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a serious bug (crash when creating the first user)

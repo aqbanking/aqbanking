@@ -535,13 +535,17 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
     se=GWEN_StringListEntry_Next(se);
   }
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "apps");
-  assert(dbT);
-  GWEN_DB_AddGroupChildren(dbT, a->appData);
+  if (a->appData) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "apps");
+    assert(dbT);
+    GWEN_DB_AddGroupChildren(dbT, a->appData);
+  }
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "provider");
-  assert(dbT);
-  GWEN_DB_AddGroupChildren(dbT, a->providerData);
+  if (a->providerData) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "provider");
+    assert(dbT);
+    GWEN_DB_AddGroupChildren(dbT, a->providerData);
+  }
 
   return 0;
 }
