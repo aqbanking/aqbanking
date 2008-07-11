@@ -69,7 +69,6 @@ sl-headers
 system.h
 *.pc
 *.rc
-*.xml
 *.conf
 *.pot
 
@@ -93,3 +92,27 @@ tutorials/tutorial?
 tutorials/qtfrontend
 po/*.mo
 po/*.qm
+src/frontends/qbanking/bin/wizard/qt3_wizard.xml
+src/plugins/backends/aqhbci/plugin/accountjobs/accountjobs.xml
+src/plugins/backends/aqhbci/plugin/applayer/xml/base.xml
+src/plugins/backends/aqhbci/plugin/aqhbci.xml
+src/plugins/backends/aqhbci/plugin/hbci.xml
+src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
+src/plugins/backends/aqnone/aqnone.xml
+src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
+src/plugins/bankinfo/*/*.xml
+src/plugins/imexporters/csv/csv.xml
+src/plugins/imexporters/dtaus/dtaus.xml
+src/plugins/imexporters/eri2/eri2.xml
+src/plugins/imexporters/ofx/ofx.xml
+src/plugins/imexporters/openhbci1/openhbci1.xml
+src/plugins/imexporters/qif/qif.xml
+src/plugins/imexporters/sepa/sepa.xml
+src/plugins/imexporters/swift/swift.xml
+src/plugins/imexporters/xmldb/xmldb.xml
+src/plugins/imexporters/yellownet/yellownet.xml
+src/plugins/parsers/dtaus/dtaus.xml
+src/plugins/parsers/swift/swift.xml
+
+
+

@@ -1,0 +1,348 @@
+
+<SEGs>
+
+
+  <SEGdef id="MsgHead" 
+          code="HNHBK" 
+          version="2"
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Nachrichtenkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+    <ELEM name="hversion" type="num" maxsize="3" />
+    <ELEM name="dialogId" type="ascii" maxsize="128" />
+    <ELEM name="msgnum" type="num" maxsize="4" />
+    <GROUP type="msgref" name="msgref" minnum="0" version="1" 
+           addemtpymode="none"/>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="hversion">%pversion</VALUE>
+      <VALUE path="msgnum">$MessageNumber</VALUE>
+      <VALUE path="dialogId">$DialogId</VALUE>
+    </VALUES>
+  </SEGdef>
+
+  <SEGdef id="MsgHead" 
+          code="HNHBK" 
+          version="3"
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Nachrichtenkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+    <ELEM name="hversion" type="num" maxsize="3" />
+    <ELEM name="dialogId" type="ascii" maxsize="128" />
+    <ELEM name="msgnum" type="num" maxsize="4" />
+    <GROUP type="msgref" name="msgref" minnum="0" version="1" 
+           addemtpymode="none"/>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="hversion">%pversion</VALUE>
+      <VALUE path="msgnum">$MessageNumber</VALUE>
+      <VALUE path="dialogId">$DialogId</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="MsgHeadShort" version="2" delimiter="+" >
+    <!-- "Nachrichtenkopf"beim Einlesen der Groesse
+         Beachte: Kein Terminator angegeben, weil das Segment ja nicht ganz
+         gelesen wird !!
+    -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+  <SEGdef id="MsgHeadShort" version="3" delimiter="+" >
+    <!-- "Nachrichtenkopf"beim Einlesen der Groesse
+         Beachte: Kein Terminator angegeben, weil das Segment ja nicht ganz
+         gelesen wird !!
+    -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="MsgTail" 
+          code="HNHBS" 
+          version="1" 
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Nachrichtenabschluss" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="msgnum" type="num" maxsize="4" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="msgnum">$MessageNumber</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+  <SEGdef id="SigHead" 
+          version="3" 
+          code="HNSHK" 
+          mode="DDV"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <!-- "Signaturkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="area" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails"  />
+    <ELEM name="signseq" type="num" maxsize="16" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="hashalgo" name="HashAlgo" version="1" />
+    <GROUP type="SignAlgo" version="1" name="SignAlgo" />
+    <GROUP type="signkeyname" name="key" version="1" trustlevel="3" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="function">2</VALUE>
+      <VALUE path="area">1</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?signkeynumber</VALUE>
+      <VALUE path="key/keyversion">?signkeyversion</VALUE>
+      <VALUE path="key/keytype">S</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="SigHead" 
+          version="3" 
+          code="HNSHK" 
+          mode="RDH"
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Signaturkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="area" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails"  />
+    <ELEM name="signseq" type="num" maxsize="16" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="hashalgo" name="HashAlgo" version="1" />
+    <GROUP type="SignAlgo" version="1" name="SignAlgo" />
+    <GROUP type="signkeyname" name="key" version="1" trustlevel="3" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="function">1</VALUE>
+      <VALUE path="area">1</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?signkeynumber</VALUE>
+      <VALUE path="key/keyversion">?signkeyversion</VALUE>
+      <VALUE path="key/keytype">S</VALUE>
+    </VALUES>
+  </SEGdef>
+
+  <SEGdef id="SigHead" 
+          version="3" 
+          code="HNSHK" 
+          mode="PINTAN"
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Signaturkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="area" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails"  />
+    <ELEM name="signseq" type="num" maxsize="16" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="hashalgo" name="HashAlgo" version="1" />
+    <GROUP type="SignAlgo" version="1" name="SignAlgo" />
+    <GROUP type="signkeyname" name="key" version="1" trustlevel="3" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="function">999</VALUE>
+      <VALUE path="area">1</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">1</VALUE>
+      <VALUE path="key/keyversion">1</VALUE>
+      <VALUE path="key/keytype">S</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="SigTail" 
+          code="HNSHA" 
+          version="1" 
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Signaturabschluss" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="signature" type="bin" maxsize="512" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="CryptHead" 
+          code="HNVSK" 
+          version="2" 
+          delimiter="+" 
+          terminator="'" 
+          mode="DDV"
+  >
+    <!-- "Verschluesselungskopf fuer DDV" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="CryptAlgo" name="CryptAlgo" version="1" />
+    <GROUP type="CryptKeyName" name="key" version="1" trustlevel="3" />
+    <ELEM name="compress" type="an" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="head/seq">998</VALUE>
+      <VALUE path="function">4</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="compress">0</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?cryptkeynumber</VALUE>
+      <VALUE path="key/keyversion">?cryptkeyversion</VALUE>
+      <VALUE path="key/keytype">V</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="CryptHead" 
+          code="HNVSK" 
+          version="2" 
+          delimiter="+"
+          terminator="'"
+          mode="RDH"
+  >
+    <!-- "Verschluesselungskopf fuer RDH" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="CryptAlgo" name="CryptAlgo" version="1" />
+    <GROUP type="CryptKeyName" name="key" version="1" trustlevel="3" />
+    <ELEM name="compress" type="an" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="head/seq">998</VALUE>
+      <VALUE path="function">4</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="compress">0</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?cryptkeynumber</VALUE>
+      <VALUE path="key/keyversion">?cryptkeyversion</VALUE>
+      <VALUE path="key/keytype">V</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+  <SEGdef id="CryptHead" 
+          code="HNVSK" 
+          version="2" 
+          delimiter="+"
+          terminator="'"
+          mode="PINTAN"
+  >
+    <!-- "Verschluesselungskopf fuer PIN/TAN" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="CryptAlgo" name="CryptAlgo" version="1" />
+    <GROUP type="CryptKeyName" name="key" version="1" trustlevel="3" />
+    <ELEM name="compress" type="an" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="head/seq">998</VALUE>
+      <VALUE path="function">998</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="compress">0</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">1</VALUE>
+      <VALUE path="key/keyversion">1</VALUE>
+      <VALUE path="key/keytype">V</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="CryptData" 
+          code="HNVSD" 
+          version="1"
+          delimiter="+"
+          terminator="'"
+  >
+    <!-- "Verschluesselte Daten" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="CryptData" type="bin" trustlevel="3" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="head/seq">999</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+
+</SEGs>
+
+
