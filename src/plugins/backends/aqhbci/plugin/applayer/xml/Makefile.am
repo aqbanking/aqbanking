@@ -9,7 +9,9 @@ xmlfiles=\
  $(srcdir)/hbci220seg.xml \
  $(srcdir)/hbci220job.xml \
  $(srcdir)/fints300seg.xml \
- $(srcdir)/fints300job.xml
+ $(srcdir)/fints300job.xml \
+ $(srcdir)/hbciallseg.xml
+ 
 
 EXTRA_DIST=$(xmlfiles)
 

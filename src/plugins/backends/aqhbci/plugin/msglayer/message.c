@@ -215,11 +215,11 @@ int AH_Msg_AddMsgTail(AH_MSG *hmsg){
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "MsgTail");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "MsgTail");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"MsgTail\" not found");
     return -1;
@@ -258,11 +258,11 @@ int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "MsgHead");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "MsgHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"MsgHead\"not found");
     return -1;

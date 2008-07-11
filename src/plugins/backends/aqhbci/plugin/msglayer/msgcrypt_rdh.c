@@ -194,11 +194,11 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "SigHead");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "SigHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"SigHead\" not found");
     return GWEN_ERROR_INTERNAL;
@@ -353,11 +353,11 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
 		       "ctrlref", ctrlref);
 
   /* get node */
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "SigTail");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "SigTail");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"SigTail\"not found");
     GWEN_Buffer_free(hbuf);
@@ -545,11 +545,11 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
   GWEN_Crypt_Key_free(sk);
 
   /* create crypt head */
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "CryptHead");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "CryptHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptHead\" not found");
     GWEN_Buffer_free(mbuf);
@@ -621,11 +621,11 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
                       GWEN_Buffer_GetUsedBytes(mbuf));
   GWEN_Buffer_free(mbuf);
 
-  node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                         "SEG",
-                                         "id",
-                                         0,
-                                         "CryptData");
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
+						    "SEG",
+						    "id",
+						    0,
+						    "CryptData");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptData\"not found");
     GWEN_Buffer_free(hbuf);

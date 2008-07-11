@@ -1,4 +1,11 @@
 
+2008/07/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a problem with banks which return other MsgHead/CryptHead/SigHead
+  versions than they receive (fixes FinTS3 with Hamburger Sparkasse)
+  CAVE: This requires the latest SVN version of GWEN
+
+
 ===========================================================================
 MARK: released AqBanking - 3.6.2 (2008-07-09)
 ===========================================================================
