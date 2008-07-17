@@ -24,9 +24,11 @@ int AN_Provider_Execute(AB_PROVIDER *pro,
 			AB_IMEXPORTER_CONTEXT *ctx,
 			uint32_t guiid);
 int AN_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-			   AB_PROVIDER_EXTEND_MODE em);
+			   AB_PROVIDER_EXTEND_MODE em,
+			   GWEN_DB_NODE *dbBackend);
 int AN_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-			      AB_PROVIDER_EXTEND_MODE em);
+			      AB_PROVIDER_EXTEND_MODE em,
+			      GWEN_DB_NODE *dbBackend);
 
 #endif
 
