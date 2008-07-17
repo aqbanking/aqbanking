@@ -31,6 +31,7 @@ void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 		       AB_PROVIDER_EXTEND_MODE em,
 		       GWEN_DB_NODE *db) {
   AO_ACCOUNT *ae;
+  assert(a);
 
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
@@ -51,6 +52,8 @@ void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 
   }
   else if (em==AB_ProviderExtendMode_Save) {
+    ae = GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
+    assert(ae);
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			"maxPurposeLines", ae->maxPurposeLines);
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
