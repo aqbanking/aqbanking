@@ -97,6 +97,7 @@ src/plugins/backends/aqhbci/plugin/accountjobs/accountjobs.xml
 src/plugins/backends/aqhbci/plugin/applayer/xml/base.xml
 src/plugins/backends/aqhbci/plugin/aqhbci.xml
 src/plugins/backends/aqhbci/plugin/hbci.xml
+src/plugins/backends/aqhbci/plugin/header.xml
 src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
 src/plugins/backends/aqnone/aqnone.xml
 src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
