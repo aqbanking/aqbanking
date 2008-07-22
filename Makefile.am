@@ -6,7 +6,7 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.iss.in aqbanking.iss \
  Doxyfile.in version.h.in system.h.in \
  i18nsources qtsources \
- mksymlinks.sh.in mksymlinks.sh
+ mksymlinks.sh.in mksymlinks.sh Makefile.cvs
 
 idatadir=${datadir}/doc/aqbanking
 idata_DATA=AUTHORS COPYING ChangeLog README
