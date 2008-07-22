@@ -21,7 +21,7 @@ struct AO_ACCOUNT {
   int debitAllowed;
 };
 
-static void AO_Account_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB AO_Account_freeData(void *bp, void *p);
 
 
 #endif

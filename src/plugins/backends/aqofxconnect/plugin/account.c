@@ -63,7 +63,7 @@ void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 
 
 
-void AO_Account_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_Account_freeData(void *bp, void *p) {
   AO_ACCOUNT *ae;
 
   ae=(AO_ACCOUNT*) p;

@@ -2058,7 +2058,7 @@ GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void AB_Plugin_ImExporter_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_Plugin_ImExporter_FreeData(void *bp, void *p) {
   AB_PLUGIN_IMEXPORTER *xpl;
 
   xpl=(AB_PLUGIN_IMEXPORTER*)p;

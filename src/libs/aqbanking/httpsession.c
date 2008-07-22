@@ -58,7 +58,7 @@ GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-void AB_HttpSession_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_HttpSession_FreeData(void *bp, void *p) {
   AB_HTTP_SESSION *xsess;
 
   xsess=(AB_HTTP_SESSION*)p;

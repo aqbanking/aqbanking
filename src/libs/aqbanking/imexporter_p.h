@@ -105,7 +105,7 @@ struct AB_PLUGIN_IMEXPORTER {
   AB_PLUGIN_IMEXPORTER_FACTORY_FN pluginFactoryFn;
 };
 
-static void AB_Plugin_ImExporter_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_Plugin_ImExporter_FreeData(void *bp, void *p);
 
 
 #endif /* AQBANKING_IMEXPORTER_P_H */

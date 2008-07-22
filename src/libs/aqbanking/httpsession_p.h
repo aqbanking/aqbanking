@@ -29,7 +29,7 @@ struct AB_HTTP_SESSION {
 };
 
 
-static void AB_HttpSession_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_HttpSession_FreeData(void *bp, void *p);
 
 
 
