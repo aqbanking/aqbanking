@@ -14,7 +14,7 @@ noinst_HEADERS=openhbci1_p.h
 
 openhbci1_la_SOURCES=dummy.c
 openhbci1_la_LIBADD=libio_openhbci1.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-openhbci1_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+openhbci1_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 openhbci1_la_DEPENDENCIES = libio_openhbci1.la $(aqbanking_internal_libs)

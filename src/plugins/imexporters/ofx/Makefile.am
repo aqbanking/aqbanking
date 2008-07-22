@@ -28,7 +28,7 @@ ofx_la_LIBADD=\
   libio_ofx.la \
   $(aqbanking_internal_libs) $(gwenhywfar_libs)
 ofx_la_LDFLAGS = -no-undefined @STRIPALL@ \
-  -module -omit-version
+  -module -avoid-version
 
 # Add the linker flags for windows resource file
 ofx_la_DEPENDENCIES = libio_ofx.la $(aqbanking_internal_libs)

@@ -11,7 +11,7 @@ bankinfoplugin_DATA=de.xml
 
 de_la_SOURCES=dummy.c
 de_la_LIBADD= libbankinfo_de.la $(aqbanking_internal_libs) ../generic/libbankinfo_generic.la @ktoblzcheck_libs@ $(gwenhywfar_libs) 
-de_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+de_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 
 sources:

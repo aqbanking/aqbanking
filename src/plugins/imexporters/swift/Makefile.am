@@ -16,7 +16,7 @@ imexporterplugin_DATA=swift.xml
 
 swift_la_SOURCES=dummy.c
 swift_la_LIBADD=libio_swift.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-swift_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+swift_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 swift_la_DEPENDENCIES = libio_swift.la $(aqbanking_internal_libs)

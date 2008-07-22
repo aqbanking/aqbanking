@@ -17,7 +17,7 @@ imexporterplugin_DATA=csv.xml
 csv_la_SOURCES=dummy.c
 
 csv_la_LIBADD=libio_csv.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-csv_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+csv_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 csv_la_DEPENDENCIES = libio_csv.la $(aqbanking_internal_libs)

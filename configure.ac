@@ -562,17 +562,17 @@ for f in ${aqbanking_backends}; do
   case "$f" in
     aqhbci)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqhbci"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/plugin/libaqhbci.la"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/plugin/libaqhbciplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
       ;;
     aqnone)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnoneplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
       ;;
     aqofxconnect)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/plugin/libaqofxconnect.la"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/plugin/libaqofxconnectplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
       ;;
     *)

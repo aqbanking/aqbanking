@@ -12,11 +12,8 @@ EXTRA_DIST=\
 
 
 plugindir = $(aqbanking_plugindir)/providers
-plugin_LTLIBRARIES = aqofxconnect.la
 plugin_DATA = aqofxconnect.xml
 
-
-lib_LTLIBRARIES=libaqofxconnect.la 
 
 noinst_HEADERS=\
  account_p.h \
@@ -34,41 +31,39 @@ iheader_HEADERS=\
  provider.h \
  user.h
 
+# library
+lib_LTLIBRARIES=libaqofxconnect.la 
 libaqofxconnect_la_SOURCES= \
- aqofxconnect-plugin.c \
  account.c \
  provider.c \
  queues.c \
  user.c
-
-aqofxconnect_la_SOURCES=dummy.c
-
 libaqofxconnect_la_LIBADD= \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 libaqofxconnect_la_LDFLAGS = -no-undefined \
   -version-info $(AQOFXCONNECT_SO_CURRENT):$(AQOFXCONNECT_SO_REVISION):$(AQOFXCONNECT_SO_AGE)
 
-aqofxconnect_la_LIBADD = \
+
+# static plugin library
+noinst_LTLIBRARIES=libaqofxconnectplugin.la 
+libaqofxconnectplugin_la_SOURCES= \
+ aqofxconnect-plugin.c
+libaqofxconnectplugin_la_LIBADD= \
   libaqofxconnect.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
+libaqofxconnectplugin_la_LDFLAGS = -no-undefined
 
-# Add the linker flags for windows resource file
-libaqofxconnect_la_DEPENDENCIES = $(aqbanking_internal_libs)
-aqofxconnect_la_DEPENDENCIES = libaqofxconnect.la $(aqbanking_internal_libs)
-# if IS_WINDOWS
-if IS_WINDOWS
-libaqofxconnect_la_DEPENDENCIES += ressource.o
-aqofxconnect_la_DEPENDENCIES += ressource.o
-libaqofxconnect_la_LDFLAGS += -Wl,ressource.o
-aqofxconnect_la_LDFLAGS += -Wl,ressource.o
-ressource.o: ressource.rc
-	$(RC) -o $@ $<
-endif
-# IS_WINDOWS
-# End of linker flags for windows resource file
+
+# dynamic plugin
+plugin_LTLIBRARIES = aqofxconnect.la
+aqofxconnect_la_SOURCES=dummy.c
+aqofxconnect_la_LIBADD = \
+  libaqofxconnectplugin.la \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
 
 
 sources:

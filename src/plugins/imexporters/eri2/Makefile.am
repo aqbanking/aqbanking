@@ -17,7 +17,7 @@ dist_imexporterdata_DATA=eriformat.xml
 
 eri2_la_SOURCES=dummy.c
 eri2_la_LIBADD=libio_eri2.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-eri2_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+eri2_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 eri2_la_DEPENDENCIES = libio_eri2.la $(aqbanking_internal_libs)

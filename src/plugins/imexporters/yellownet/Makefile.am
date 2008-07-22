@@ -13,7 +13,7 @@ imexporterplugin_DATA=yellownet.xml
 
 yellownet_la_SOURCES=dummy.c
 yellownet_la_LIBADD=libio_yellownet.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-yellownet_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+yellownet_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 yellownet_la_DEPENDENCIES = libio_yellownet.la $(aqbanking_internal_libs)

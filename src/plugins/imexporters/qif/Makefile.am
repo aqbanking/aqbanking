@@ -19,7 +19,7 @@ qif_la_SOURCES=\
  qif.c
 
 qif_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 
-qif_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+qif_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 qif_la_DEPENDENCIES = \

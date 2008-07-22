@@ -10,7 +10,7 @@ bankinfoplugin_DATA=us.xml
 
 us_la_SOURCES=dummy.c
 us_la_LIBADD= libbankinfo_us.la $(aqbanking_internal_libs) ../generic/libbankinfo_generic.la $(gwenhywfar_libs) 
-us_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+us_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 
 sources:

@@ -14,7 +14,7 @@ imexporterplugin_DATA=xmldb.xml
 
 xmldb_la_SOURCES=dummy.c
 xmldb_la_LIBADD=libio_xmldb.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-xmldb_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+xmldb_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 xmldb_la_DEPENDENCIES = libio_xmldb.la $(aqbanking_internal_libs)

@@ -17,7 +17,7 @@ imexporterplugin_DATA=sepa.xml
 
 sepa_la_SOURCES=dummy.c
 sepa_la_LIBADD=libio_sepa.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-sepa_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+sepa_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 sepa_la_DEPENDENCIES = libio_sepa.la $(aqbanking_internal_libs)

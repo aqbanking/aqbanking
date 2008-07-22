@@ -14,7 +14,7 @@ imexporterplugin_DATA=dtaus.xml
 
 dtaus_la_SOURCES=dummy.c
 dtaus_la_LIBADD=libio_dtaus.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
-dtaus_la_LDFLAGS = -no-undefined @STRIPALL@ -module -omit-version
+dtaus_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 # Add the linker flags for windows resource file
 dtaus_la_DEPENDENCIES = libio_dtaus.la $(aqbanking_internal_libs)

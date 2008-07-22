@@ -90,20 +90,6 @@ libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
 libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
-# Add the linker flags for windows resource file
-libaqbanking_la_DEPENDENCIES = \
- jobs/libjobs.la \
- types/libtypes.la
-# if IS_WINDOWS
-if IS_WINDOWS
-libaqbanking_la_DEPENDENCIES += ressource.o
-libaqbanking_la_LDFLAGS += -Wl,ressource.o
-ressource.o: ressource.rc
-	$(RC) -o $@ $<
-endif
-# IS_WINDOWS
-# End of linker flags for windows resource file
-
 sources:
 	for f in $(libaqbanking_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
@@ -116,5 +102,5 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib
 testlib_SOURCES = testlib.c
-testlib_LDADD = libaqbanking.la
+testlib_LDADD = libaqbanking.la $(gwenhywfar_libs)
 TESTS = testlib
