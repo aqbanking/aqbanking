@@ -1,4 +1,10 @@
 
+2008/07/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a CSV profile for Landesbank Berlin for the Amazon.de Credit Card
+  provided by anonymous
+
+
 2008/07/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a problem with banks which return other MsgHead/CryptHead/SigHead
