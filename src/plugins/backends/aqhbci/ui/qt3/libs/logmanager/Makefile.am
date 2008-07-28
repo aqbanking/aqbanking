@@ -30,8 +30,7 @@ liblogmanager_la_SOURCES=\
   error.cpp \
   loganalyzer.cpp
 
-liblogmanager_la_LIBADD = $(qbanking_internal_libs) $(aqhbci_internal_libs) \
-  -L$(top_builddir)/src/plugins/backends/aqhbci/plugin
+liblogmanager_la_LIBADD = $(qbanking_internal_libs) $(aqhbci_internal_libs)
 
 MOC_FILES=\
   logmanager.moc \

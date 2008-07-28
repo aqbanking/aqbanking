@@ -17,7 +17,7 @@ noinst_HEADERS=\
 
 libbankinfo_generic_la_SOURCES=generic.c
 
-libbankinfo_generic_la_LIBADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+libbankinfo_generic_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 libbankinfo_generic_la_LDFLAGS = $(STRIPALL)
 
 at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
@@ -148,7 +148,7 @@ noinst_PROGRAMS=
 else
 noinst_PROGRAMS=mkdeinfo
 mkdeinfo_SOURCES=mkdeinfo.c
-mkdeinfo_LDADD = -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) $(gwenhywfar_libs)
+mkdeinfo_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 endif
 # IS_WINDOWS
 

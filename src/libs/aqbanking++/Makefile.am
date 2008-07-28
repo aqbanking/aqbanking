@@ -20,7 +20,7 @@ libaqbankingpp_la_SOURCES=\
  bprogress.cpp
 
 libaqbankingpp_la_LIBADD = \
- -L$(top_builddir)/src/libs/aqbanking $(aqbanking_internal_libs) \
+ $(aqbanking_internal_libs) \
  $(gwenhywfar_libs) $(i18n_libs)
 libaqbankingpp_la_LDFLAGS =
 
