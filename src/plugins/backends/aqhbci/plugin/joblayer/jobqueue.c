@@ -772,20 +772,24 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 	  while(dbResult) {
 	    int rcode;
 	    const char *p;
-  
+
 	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
 	    p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
 	    if (rcode>=9000 && rcode<10000) {
 	      DBG_INFO(AQHBCI_LOGDOMAIN,
 		       "Segment result: Error (%d: %s)", rcode, p);
-	      AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
-	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+	      if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+		AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
+		AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+	      }
 	    }
 	    else if (rcode>=3000 && rcode<4000) {
 	      DBG_INFO(AQHBCI_LOGDOMAIN,
 		       "Segment result: Warning (%d: %s)", rcode, p);
-	      AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
-	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+	      if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+		AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
+		AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+	      }
 	    }
 	    else {
 	      DBG_INFO(AQHBCI_LOGDOMAIN,

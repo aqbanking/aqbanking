@@ -487,6 +487,11 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
     else
       j->flags&=~AH_JOB_FLAGS_NOITAN;
 
+    if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "ignerrors", "0"))!=0)
+      j->flags|=AH_JOB_FLAGS_IGNORE_ERROR;
+    else
+      j->flags&=~AH_JOB_FLAGS_IGNORE_ERROR;
+
     j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
     return 1;
   }
