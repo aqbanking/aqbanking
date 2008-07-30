@@ -129,7 +129,7 @@
      </VALUES>
    </MESSAGE>
 
-   <MESSAGE name="close" sign="1" crypt="0" ignerrors="1" >
+   <MESSAGE name="close" ignerrors="1" >
      <SEG type="DialogEnd" />
    </MESSAGE>
    

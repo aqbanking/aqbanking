@@ -1098,9 +1098,16 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
           return rv;
         }
 
-	GWEN_Gui_ProgressLog(guiid,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Retrying to get system id."));
+	rv=GWEN_Gui_ProgressLog(guiid,
+				GWEN_LoggerLevel_Error,
+				I18N("Retrying to get system id."));
+	if (rv) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in progress log, maybe user aborted?");
+	  AH_Outbox_free(ob);
+	  if (!nounmount)
+	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  return rv;
+	}
       }
       else {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");

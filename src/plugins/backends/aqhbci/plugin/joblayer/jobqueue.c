@@ -862,8 +862,10 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           st=AH_Job_GetStatus(j);
           if (st==AH_JobStatusSent ||
               st==AH_JobStatusAnswered) {
-	    AH_Job_AddFlags(j, plusFlags);
-            AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbResponse));
+	    if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+	      AH_Job_AddFlags(j, plusFlags);
+	      AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbResponse));
+	    }
             AH_Job_SetStatus(j, AH_JobStatusAnswered);
           }
           else {
@@ -915,10 +917,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         st=AH_Job_GetStatus(j);
         if (st==AH_JobStatusSent ||
             st==AH_JobStatusAnswered) {
-          AH_Job_AddFlags(j, plusFlags);
-          AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbResponse));
-          AH_Job_SetStatus(j, AH_JobStatusAnswered);
-        }
+	  if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+	    AH_Job_AddFlags(j, plusFlags);
+	    AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbResponse));
+	  }
+	  AH_Job_SetStatus(j, AH_JobStatusAnswered);
+	}
         j=AH_Job_List_Next(j);
       } /* while */
       GWEN_DB_Group_free(dbResponse);
