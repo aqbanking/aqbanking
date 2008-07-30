@@ -533,6 +533,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   int rv;
   int dialogAborted=0;
   int abortQueue=0;
+  int badPin=0;
   GWEN_STRINGLISTENTRY *se;
 
   assert(jq);
@@ -616,10 +617,25 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           else
             GWEN_Buffer_AppendString(logmsg, " (S)");
         }
-	GWEN_Gui_ProgressLog(0,
+	GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
 			     level,
 			     GWEN_Buffer_GetStart(logmsg));
 	GWEN_Buffer_free(logmsg);
+
+	/* check for bad pins here */
+	if (rcode==9340 || rcode==9942) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+		    "Bad PIN flagged: %d", rcode);
+	  badPin=1;
+	  if (jq->usedPin) {
+	    GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+				 GWEN_LoggerLevel_Error,
+				 I18N("PIN seems to be invalid"));
+	    AH_User_SetPinStatus(jq->user, jq->usedPin,
+				 GWEN_Gui_PasswordStatus_Bad);
+	  }
+	}
+
         dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
       } /* while results */
     }
@@ -815,26 +831,33 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         /* add response to all jobs (as queue response) and to queue */
         plusFlags=0;
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0) {
-          int rcode;
-          const char *p;
-          /* FIXME: This code will never be used, I guess, since
-           * a MsgResult wil most likely not have a reference segment... */
-          rcode=GWEN_DB_GetIntValue(dbCurr, "result/resultcode", 0, 0);
-          p=GWEN_DB_GetCharValue(dbCurr, "result/text", 0, "");
-          if (rcode>=9000 && rcode<10000) {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Error (%d: %s)", rcode, p);
-            plusFlags|=AH_JOB_FLAGS_HASERRORS;
-            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
-          }
-          else if (rcode>=3000 && rcode<4000) {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Warning (%d: %s)", rcode, p);
-            plusFlags|=AH_JOB_FLAGS_HASWARNINGS;
-            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
-          }
-          else {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Ok (%d: %s)", rcode, p);
-          }
-        }
+          GWEN_DB_NODE *dbResult;
+
+          dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
+          while(dbResult) {
+	    int rcode;
+	    const char *p;
+
+	    /* FIXME: This code will never be used, I guess, since
+	     * a MsgResult wil most likely not have a reference segment... */
+	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+	    p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+	    if (rcode>=9000 && rcode<10000) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Error (%d: %s)", rcode, p);
+	      plusFlags|=AH_JOB_FLAGS_HASERRORS;
+	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+	    }
+	    else if (rcode>=3000 && rcode<4000) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Warning (%d: %s)", rcode, p);
+	      plusFlags|=AH_JOB_FLAGS_HASWARNINGS;
+	      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+	    }
+	    else {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Ok (%d: %s)", rcode, p);
+	    }
+	    dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+	  }
+	}
         else if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
           GWEN_DB_NODE *dbResult;
 
@@ -842,18 +865,11 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           while(dbResult) {
             int rcode;
 
-            rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
-            if (rcode==9340) {
-              DBG_ERROR(AQHBCI_LOGDOMAIN,
-                        "Found a segresult: %d", rcode);
-	      if (jq->usedPin) {
-		AH_User_SetPinStatus(jq->user, jq->usedPin,
-				     GWEN_Gui_PasswordStatus_Bad);
-	      }
-            }
-            dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
-          } /* while */
-        } /* if segresult */
+	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+	    /* nothing to do right now */
+	    dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+	  } /* while */
+	} /* if segresult */
 
         j=AH_Job_List_First(jq->jobs);
         while(j) {
@@ -890,24 +906,30 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       /* add response to all jobs (as queue response) and to queue */
       plusFlags=0;
       if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0) {
-        int rcode;
-        const char *p;
+        GWEN_DB_NODE *dbResult;
 
-        rcode=GWEN_DB_GetIntValue(dbCurr, "result/resultcode", 0, 0);
-        p=GWEN_DB_GetCharValue(dbCurr, "result/text", 0, "");
-        if (rcode>=9000 && rcode<10000) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Error (%d: %s)", rcode, p);
-          plusFlags|=AH_JOB_FLAGS_HASERRORS;
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
-        }
-        else if (rcode>=3000 && rcode<4000) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Warning (%d: %s)", rcode, p);
-          plusFlags|=AH_JOB_FLAGS_HASWARNINGS;
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
-        }
-        else {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Ok (%d: %s)", rcode, p);
-        }
+	dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
+	while(dbResult) {
+	  int rcode;
+	  const char *p;
+
+	  rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+	  p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+	  if (rcode>=9000 && rcode<10000) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Error (%d: %s)", rcode, p);
+	    plusFlags|=AH_JOB_FLAGS_HASERRORS;
+	    AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+	  }
+	  else if (rcode>=3000 && rcode<4000) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Warning (%d: %s)", rcode, p);
+	    plusFlags|=AH_JOB_FLAGS_HASWARNINGS;
+	    AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+	  }
+	  else {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Msg result: Ok (%d: %s)", rcode, p);
+	  }
+          dbResult=GWEN_DB_FindNextGroup(dbResult, "Result");
+	}
       }
 
       j=AH_Job_List_First(jq->jobs);
@@ -971,6 +993,18 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
 	       "Aborting queue");
     return GWEN_ERROR_ABORTED;
+  }
+
+  if (!badPin) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Dialog not aborted, assuming correct PIN");
+    if (jq->usedPin) {
+      GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+			   GWEN_LoggerLevel_Info,
+			   I18N("Dialog not aborted, assuming PIN is ok"));
+      AH_User_SetPinStatus(jq->user, jq->usedPin,
+			   GWEN_Gui_PasswordStatus_Ok);
+    }
   }
 
   return rv;

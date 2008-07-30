@@ -501,9 +501,11 @@ int CppGui::getPassword(uint32_t flags,
 	}
       }
     }
-  
+
+#if 0
     GWEN_DB_SetCharValue(_dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 GWEN_Buffer_GetStart(buf), buffer);
+#endif
     GWEN_Buffer_free(buf);
     return 0;
   }
@@ -564,7 +566,11 @@ int CppGui::setPasswordStatus(const char *token,
     GWEN_DB_ClearGroup(_dbPasswords, NULL);
   }
   else {
+    GWEN_BUFFER *buf;
     std::string s;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Text_EscapeToBufferTolerant(token, buf);
 
     s=_getPasswordHash(token, pin);
     if (status==GWEN_Gui_PasswordStatus_Bad) {
@@ -576,11 +582,18 @@ int CppGui::setPasswordStatus(const char *token,
 	   it++) {
 	if (*it==s) {
 	  /* bad password already in list */
+	  GWEN_Buffer_free(buf);
 	  return 0;
 	}
       }
       _badPasswords.push_back(s);
     }
+    else if (status==GWEN_Gui_PasswordStatus_Ok) {
+      /* only store passwords of which we know that they are ok */
+      GWEN_DB_SetCharValue(_dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   GWEN_Buffer_GetStart(buf), pin);
+    }
+    GWEN_Buffer_free(buf);
   }
 
   return 0;
