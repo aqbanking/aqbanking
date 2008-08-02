@@ -1,6 +1,5 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
-  -I$(builddir) \
   -I$(srcdir)/.. -I$(srcdir)/../dialogs \
   -I.. -I../dialogs \
   $(gwenhywfar_includes) $(qt3_includes)
