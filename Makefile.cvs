@@ -155,3 +155,6 @@ mp-w32:
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge
 
+git-log:
+	git-log --pretty="format:%ad %an%n%s%n%b" --since="2008-07-09"
+

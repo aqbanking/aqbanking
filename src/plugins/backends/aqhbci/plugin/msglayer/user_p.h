@@ -58,12 +58,16 @@ struct AH_USER {
   int selectedTanMethod;
 
   char *prompt;
+
+  AH_TAN_METHOD_LIST *tanMethodDescriptions;
 };
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
 
 static void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
 static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
+
+static void AH_User_LoadTanMethods(AB_USER *u);
 
 
 #endif /* AH_USER_P_H */

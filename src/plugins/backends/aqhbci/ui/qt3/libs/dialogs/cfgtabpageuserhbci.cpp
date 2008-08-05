@@ -146,6 +146,8 @@ bool CfgTabPageUserHbci::toGui() {
   _realPage->getItanModesButton->setEnabled(false);
 
   if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+    const AH_TAN_METHOD_LIST *tml;
+
     _withHttp=true;
     _realPage->httpVersionCombo->insertItem(tr("1.0"));
     _realPage->httpVersionCombo->insertItem(tr("1.1"));
@@ -159,6 +161,45 @@ bool CfgTabPageUserHbci::toGui() {
 
     _realPage->getSysIdButton->setEnabled(true);
     _realPage->getItanModesButton->setEnabled(true);
+
+    tml=AH_User_GetTanMethodDescriptions(u);
+    if (tml) {
+      AH_TAN_METHOD *tm;
+      QString selectedItanString;
+      int selectedItanInt;
+
+      selectedItanInt=AH_User_GetSelectedTanMethod(u);
+
+      tm=AH_TanMethod_List_First(tml);
+      while(tm) {
+        const char *s;
+
+	qs=QString::number(AH_TanMethod_GetFunction(tm));
+	s=AH_TanMethod_GetMethodId(tm);
+	if (s) {
+	  qs+=" - ";
+	  qs+=QString::fromUtf8(s);
+	}
+
+	s=AH_TanMethod_GetMethodName(tm);
+	if (s) {
+	  qs+=" - ";
+	  qs+=QString::fromUtf8(s);
+	}
+
+	if (selectedItanInt &&
+	    selectedItanInt==AH_TanMethod_GetFunction(tm))
+	  selectedItanString=qs;
+
+	_realPage->itanModeCombo->insertItem(qs);
+	tm=AH_TanMethod_List_Next(tm);
+      }
+
+      if (!selectedItanString.isEmpty())
+	_setComboTextIfPossible(_realPage->itanModeCombo,
+				selectedItanString);
+
+    }
   }
   else {
     _withHttp=false;
@@ -218,6 +259,8 @@ bool CfgTabPageUserHbci::fromGui() {
 
   if (_withHttp) {
     std::string s;
+    const AH_TAN_METHOD_LIST *tml;
+    AH_TAN_METHOD *tm;
 
     s=QBanking::QStringToUtf8String(_realPage->httpVersionCombo->currentText());
     if (strcasecmp(s.c_str(), "1.0")==0) {
@@ -235,6 +278,17 @@ bool CfgTabPageUserHbci::fromGui() {
     else
       AH_User_SetHttpUserAgent(u, s.c_str());
 
+    /* get selected iTAN method */
+    tml=AH_User_GetTanMethodDescriptions(u);
+    if (tml) {
+      int idx=_realPage->itanModeCombo->currentItem();
+
+      tm=AH_TanMethod_List_First(tml);
+      while(tm && idx--)
+	tm=AH_TanMethod_List_Next(tm);
+      assert(tm);
+      AH_User_SetSelectedTanMethod(u, AH_TanMethod_GetFunction(tm));
+    }
   }
 
   if (_realPage->bankSignCheck->isChecked())

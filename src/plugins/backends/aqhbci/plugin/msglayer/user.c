@@ -21,7 +21,9 @@
 #include "provider_l.h"
 #include "hbci-updates_l.h"
 #include "msgengine_l.h"
+#include "tanmethod_l.h"
 #include <aqhbci/provider.h>
+#include "adminjobs_l.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -135,6 +137,7 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     ue->tanMethodCount=0;
 
     ue->hbci=AH_Provider_GetHbci(pro);
+    ue->tanMethodDescriptions=AH_TanMethod_List_new();
 
     s=AB_User_GetCountry(u);
     if (!s || !*s)
@@ -161,6 +164,7 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	assert(0);
       }
       AH_User_ReadDb(u, db);
+      AH_User_LoadTanMethods(u);
     }
   }
   else {
@@ -192,6 +196,7 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   GWEN_Url_free(ue->serverUrl);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
+  AH_TanMethod_List_free(ue->tanMethodDescriptions);
   GWEN_FREE_OBJECT(ue);
 }
 
@@ -1536,6 +1541,56 @@ void AH_User_SetSelectedTanMethod(AB_USER *u, int i) {
 
 
 
+void AH_User_LoadTanMethods(AB_USER *u) {
+  AH_USER *ue;
+  AH_JOB *jTan;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  jTan=AH_Job_Tan_new(u, 1);
+  if (!jTan) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
+  }
+  else {
+    GWEN_DB_NODE *db;
+    GWEN_DB_NODE *dbT;
+
+    db=AH_Job_GetParams(jTan);
+    assert(db);
+
+    dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
+    while(dbT) {
+      AH_TAN_METHOD *tm;
+
+      tm=AH_TanMethod_fromDb(dbT);
+      if (tm)
+	AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
+      else {
+	DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
+	GWEN_DB_Dump(dbT, stderr, 2);
+      }
+
+      dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
+    }
+
+    AH_Job_free(jTan);
+  }
+}
+
+
+
+
+const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tanMethodDescriptions;
+}
 
 
 

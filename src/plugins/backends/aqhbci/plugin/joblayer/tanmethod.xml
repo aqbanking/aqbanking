@@ -1,0 +1,33 @@
+
+
+<types>
+  <type id="AH_TAN_METHOD" 
+        prefix="AH_TanMethod" 
+        class="AH_TanMethod"
+        access="public"
+        filename="tanmethod"
+        inherit="public"
+        list="public"
+        list2="public" >
+    <descr>
+      This group represents a TAN method within AqHBCI.
+    </descr>
+
+    <pre-headers>
+      <header type="sys" >aqhbci/aqhbci.h</header>
+    </pre-headers>
+
+    <elem name="function" type="int" />
+    <elem name="process" type="int" />
+    <elem name="methodId" type="char" ptr="1" />
+    <elem name="methodName" type="char" ptr="1" />
+    <elem name="tanMaxLen" type="int" />
+    <elem name="formatId" type="char" ptr="1" />
+    <elem name="prompt" type="char" ptr="1" />
+    <elem name="returnMaxLen" type="int" />
+    <elem name="maxActiveLists" type="int" />
+  </type>
+  
+  
+  
+</types>

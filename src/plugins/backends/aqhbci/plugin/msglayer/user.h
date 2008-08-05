@@ -14,6 +14,7 @@
 #define AH_USER_H
 
 #include <aqhbci/aqhbci.h>
+#include <aqhbci/tanmethod.h>
 #include <gwenhywfar/misc.h>
 
 
@@ -246,6 +247,9 @@ AQHBCI_API
 int AH_User_MkTanName(const AB_USER *u,
 		      const char *challenge,
 		      GWEN_BUFFER *buf);
+
+AQHBCI_API
+const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(const AB_USER *u);
 
 
 /*@}*/

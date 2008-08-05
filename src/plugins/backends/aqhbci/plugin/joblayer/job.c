@@ -99,7 +99,8 @@ AH_JOB *AH_Job_new(const char *name,
                                          0,
                                          name);
   if (!node) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"%s\" not supported by local XML files", name);
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Job \"%s\" not supported by local XML files", name);
     AH_Job_free(j);
     return 0;
   }

@@ -2,6 +2,8 @@
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 INCLUDES = -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../banking \
+  -I$(srcdir)/../applayer \
+  -I$(srcdir)/../joblayer \
   -I$(top_builddir)/headers $(all_includes) \
   -I$(top_srcdir)/src/libs/aqbanking
 

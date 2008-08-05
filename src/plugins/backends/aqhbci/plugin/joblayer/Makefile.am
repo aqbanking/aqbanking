@@ -4,6 +4,10 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 INCLUDES = -I$(top_builddir)/headers $(all_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/..
 
+typefiles=tanmethod.xml
+
+EXTRA_DIST=$(typefiles)
+
 noinst_LTLIBRARIES=libhbcijob.la
 
 noinst_HEADERS=\
@@ -12,12 +16,19 @@ noinst_HEADERS=\
   jobqueue_l.h \
   jobqueue_p.h \
   result_l.h \
-  result_p.h
+  result_p.h \
+  tanmethod_l.h \
+  tanmethod_p.h
 
 libhbcijob_la_SOURCES=\
   job.c \
   jobqueue.c \
-  result.c
+  result.c \
+  tanmethod.c
+
+
+types: $(typefiles)
+	$(gwenhywfar_bindir)/typemaker -d AQHBCI_API $(typefiles)
 
 sources:
 	for f in $(libhbcijob_la_SOURCES); do \
