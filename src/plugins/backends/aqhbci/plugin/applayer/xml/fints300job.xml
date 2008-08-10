@@ -42,8 +42,8 @@
      <VALUE path="ident/customerId">9999999999</VALUE>
      <VALUE path="ident/systemId">0</VALUE>
      <VALUE path="ident/status">0</VALUE>
-     <VALUE path="prepare/bpdversion">999</VALUE>
-     <VALUE path="prepare/updversion">999</VALUE>
+     <VALUE path="prepare/bpdversion">0</VALUE>
+     <VALUE path="prepare/updversion">0</VALUE>
    </VALUES>
  </JOBdef>
 
@@ -185,8 +185,8 @@
      <SEG type="Prepare" name="prepare" version="3" />
 
      <VALUES>
-       <VALUE path="prepare/bpdversion">999</VALUE>
-       <VALUE path="prepare/updversion">999</VALUE>
+       <VALUE path="prepare/bpdversion">0</VALUE>
+       <VALUE path="prepare/updversion">0</VALUE>
      </VALUES>
    </MESSAGE>
    <MESSAGE name="close" sign="1" crypt="1" >
