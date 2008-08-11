@@ -1,5 +1,18 @@
 
 ===========================================================================
+               Released AqBanking - 3.7.0 (2008-08-11)
+===========================================================================
+
+This release fixes many HBCI-related problems, features a safer PIN 
+handling and provides improved support for WIN32 platforms.
+Error responses to segment HKEND with HBCI job HKSYNC are now ignored,
+a CSV profil for LBB Berlin has been added and the build system was cleaned
+up. The iTAN mode to be used can now be chosen by the user.
+
+This release needs at least Gwenhywfar 3.4.0.
+
+
+===========================================================================
                Released AqBanking - 3.6.2 (2008-07-09)
 ===========================================================================
 
