@@ -20,6 +20,10 @@ noinst_HEADERS=\
   tanmethod_l.h \
   tanmethod_p.h
 
+iheaderdir=${includedir}/aqhbci
+iheader_HEADERS=\
+  tanmethod.h
+
 libhbcijob_la_SOURCES=\
   job.c \
   jobqueue.c \
