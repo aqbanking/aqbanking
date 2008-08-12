@@ -236,6 +236,15 @@ int AIO_OfxGroup_STATUS_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
+  assert(tagName);
+  if (strcasecmp(tagName, AIO_OfxGroup_GetGroupName(g))!=0) {
+    /* tag does not close this one */
+    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+	      "Tag [%s] does not close [%s], ignoring",
+	      tagName, AIO_OfxGroup_GetGroupName(g));
+    return 0;
+  }
+
   /* show status message */
   if (xg->description) {
     GWEN_BUFFER *buf;

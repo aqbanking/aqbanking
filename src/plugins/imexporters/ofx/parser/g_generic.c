@@ -47,9 +47,10 @@ int AIO_OfxGroup_Generic_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
 
   if (strcasecmp(AIO_OfxGroup_GetGroupName(g), tagName)!=0) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Tag [%s] does not close [%s]",
+	     "Tag [%s] does not close [%s], ignoring",
 	     tagName, AIO_OfxGroup_GetGroupName(g));
-    return GWEN_ERROR_BAD_DATA;
+    /*return GWEN_ERROR_BAD_DATA;*/
+    return 0;
   }
 
   /* always end this tag */
