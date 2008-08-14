@@ -736,15 +736,27 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 }
 
 
+
 int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 			    uint32_t guiid){
   AH_JOB_GETSYSID *jd;
+  int rv;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETSYSID, j);
   assert(jd);
 
-  return AH_Job_GetSysId_ExtractSysId(j);
+  rv=AH_Job_GetSysId_ExtractSysId(j);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Setting system id [%s]", jd->sysId);
+    AH_User_SetSystemId(AH_Job_GetUser(j), jd->sysId);
+  }
+
+  return rv;
 }
 
 

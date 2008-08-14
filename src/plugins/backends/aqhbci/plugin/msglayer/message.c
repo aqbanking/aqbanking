@@ -892,6 +892,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   AB_USER *u;
   const char *mode;
   uint32_t expMsgNum;
+  uint32_t guiid;
 
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
@@ -899,6 +900,8 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   /* set mode */
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
+
+  guiid=AH_Dialog_GetGuiId(hmsg->dialog);
 
   mode=AH_CryptMode_toString(AH_User_GetCryptMode(u));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Mode is: %s", mode);
@@ -985,24 +988,36 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a message reference");
     p=GWEN_DB_GetCharValue(n2, "dialogid", 0, 0);
     if (!p) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No reference dialog id in message");
-      return GWEN_ERROR_BAD_DATA;
+      DBG_WARN(AQHBCI_LOGDOMAIN,
+	       "No reference dialog id in message, ignoring");
+      /*return GWEN_ERROR_BAD_DATA;*/
     }
-    if (strcasecmp(AH_Dialog_GetDialogId(hmsg->dialog), p)!=0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Dialog id does not match current dialog id !");
-      return GWEN_ERROR_BAD_DATA;
-    }
-    hmsg->refMsgNum=GWEN_DB_GetIntValue(n2, "msgnum", 0, 0);
-    if (hmsg->refMsgNum!=expMsgNum) {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message reference number, ignoring");
-      GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Warning,
-			   I18N("Bad message reference number, ignoring"));
-      hmsg->refMsgNum=expMsgNum;
+    else {
+      if (strcasecmp(AH_Dialog_GetDialogId(hmsg->dialog), p)!=0) {
+	/* some servers send error responses with invalid dialog id and
+	 * message number 9999; we don't rely on the correct id anyway, so
+	 * we might as well ignore that error here */
+	DBG_WARN(AQHBCI_LOGDOMAIN, "Dialog id does not match current dialog id, ignoring");
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Warning,
+			     I18N("Dialog id does not match, ignoring"));
+	/*return GWEN_ERROR_BAD_DATA;*/
+      }
+      hmsg->refMsgNum=GWEN_DB_GetIntValue(n2, "msgnum", 0, 0);
+      if (hmsg->refMsgNum!=expMsgNum) {
+	DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message reference number, ignoring");
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Warning,
+			     I18N("Bad message reference number, ignoring"));
+	hmsg->refMsgNum=expMsgNum;
+      }
     }
   }
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No message reference found");
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Warning,
+			 I18N("No message reference found, ignoring"));
   }
 
   /* find Crypt head */
