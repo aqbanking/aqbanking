@@ -915,7 +915,9 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
       GWEN_Gui_ProgressLog(cbox->guiid,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Adjusting to iTAN modes of the server"));
-      rv=AH_Job_CommitSystemData(jDlgOpen, cbox->guiid);
+      /* do not call AH_Job_CommitSystemData() here, the iTAN modes have already
+       * been caught by AH_JobQueue_DispatchMessage()
+        AH_Job_CommitSystemData(jDlgOpen, cbox->guiid); */
       AH_JobQueue_free(jqDlgOpen);
       return 1;
     }

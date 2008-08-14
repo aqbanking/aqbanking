@@ -583,7 +583,23 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
 		   "Result: Warning (%d: %s)", rcode, p);
           if (rcode==3910)
-            tanRecycle=1;
+	    tanRecycle=1;
+	  else if (rcode==3920) {
+	    int i;
+
+	    AH_User_ClearTanMethodList(jq->user);
+	    for (i=0; ; i++) {
+	      int j;
+
+	      j=GWEN_DB_GetIntValue(dbResult, "param", i, 0);
+	      if (j==0)
+		break;
+	      AH_User_AddTanMethod(jq->user, j);
+	    } /* for */
+	    if (i==0)
+	      /* add single step if empty list */
+	      AH_User_AddTanMethod(jq->user, 999);
+	  }
 	  level=GWEN_LoggerLevel_Warning;
         }
         else {
