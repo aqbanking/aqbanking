@@ -146,6 +146,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   const char *dateFormat;
   int inUtc;
   int usePosNegField;
+  int splitValueInOut;
   int defaultIsPositive;
   const char *posNegFieldName;
   uint32_t progressId;
@@ -156,6 +157,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0,
 				       "posNeg");
+  splitValueInOut=GWEN_DB_GetIntValue(dbParams, "splitValueInOut", 0, 0);
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -194,6 +196,48 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     }
 
     if (matches) {
+      DBG_ERROR(0, "Found entry:");
+      GWEN_DB_Dump(dbT, stderr, 2);
+      /* possibly merge in/out values */
+      if (splitValueInOut) {
+	AB_VALUE *tv=NULL;
+	const char *s;
+        const char *tc;
+
+	tc=GWEN_DB_GetCharValue(dbT, "value/currency", 0, NULL);
+	s=GWEN_DB_GetCharValue(dbT, "valueIn/value", 0, 0);
+	if (s && *s) {
+	  GWEN_DB_NODE *dbV;
+
+	  dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valueIn");
+	  tv=AB_Value_fromDb(dbV);
+	}
+	else {
+	  s=GWEN_DB_GetCharValue(dbT, "valueOut/value", 0, 0);
+	  if (s && *s) {
+	    GWEN_DB_NODE *dbV;
+
+	    dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valueOut");
+	    if (dbV) {
+	      tv=AB_Value_fromDb(dbV);
+	      if (!AB_Value_IsNegative(tv))
+		/* outgoing but positive, negate */
+		AB_Value_Negate(tv);
+	    }
+	  }
+	}
+
+	if (tv) {
+	  GWEN_DB_NODE *dbTV;
+
+	  if (tc)
+	    AB_Value_SetCurrency(tv, tc);
+	  dbTV=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
+	  AB_Value_toDb(tv, dbTV);
+	  AB_Value_free(tv);
+	}
+      }
+
       if (GWEN_DB_GetCharValue(dbT, "value/value", 0, 0)) {
         AB_TRANSACTION *t;
         const char *p;
@@ -371,6 +415,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   int inUtc;
   int usePosNegField;
   int defaultIsPositive;
+  int splitValueInOut;
   const char *posNegFieldName;
   const char *valueFormat;
 
@@ -388,8 +433,9 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
 				       "posNeg");
-  valueFormat=GWEN_DB_GetCharValue(params, "valueFormat", 0, "float");
+  splitValueInOut=GWEN_DB_GetIntValue(params, "splitValueInOut", 0, 0);
 
+  valueFormat=GWEN_DB_GetCharValue(params, "valueFormat", 0, "float");
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
@@ -509,6 +555,30 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 	  }
 	}
       }
+      else if (splitValueInOut) {
+	const AB_VALUE *v;
+
+	v=AB_Transaction_GetValue(t);
+	if (v) {
+	  const char *gn;
+	  GWEN_DB_NODE *dbV;
+
+	  if (AB_Value_IsNegative(v))
+	    gn="valueOut";
+          else
+	    gn="valueIn";
+	  dbV=GWEN_DB_GetGroup(dbTransaction,
+			       GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			       gn);
+	  assert(dbV);
+	  if (strcasecmp(valueFormat, "float")==0)
+	    AB_Value_toDbFloat(v, dbV);
+	  else
+	    AB_Value_toDb(v, dbV);
+
+	  GWEN_DB_ClearGroup(dbTransaction, "value");
+	}
+      }
 
       if (strcasecmp(valueFormat, "float")==0) {
 	GWEN_DB_NODE *dbV;
@@ -534,7 +604,6 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
     }
     ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
   }
-
 
   rv=GWEN_DBIO_Export(ieh->dbio,
 		      io,
