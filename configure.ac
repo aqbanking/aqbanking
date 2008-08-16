@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=7
-AQBANKING_VERSION_PATCHLEVEL=0
+AQBANKING_VERSION_PATCHLEVEL=1
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -63,7 +63,7 @@ esac
 
 AQBANKING_SO_CURRENT=27
 AQBANKING_SO_AGE=7
-AQBANKING_SO_REVISION=0
+AQBANKING_SO_REVISION=1
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -755,7 +755,7 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(3,3,5,1)
+AC_GWENHYWFAR(3,4,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -1757,6 +1757,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/vrnetworld.conf
   src/plugins/imexporters/csv/profiles/lbbberlin.conf
   src/plugins/imexporters/csv/profiles/bankaustria.conf
+  src/plugins/imexporters/csv/profiles/psk.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
