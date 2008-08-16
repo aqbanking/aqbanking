@@ -1,5 +1,14 @@
 
 ===========================================================================
+               Released AqBanking - 3.7.1 (2008-08-16)
+===========================================================================
+
+This release features workarounds for recently discovered problems with
+HBCI, improves the CSV importer and adds two CSV profiles. The OFX parser
+is now more tolerant (thanks to David Reiser for providing test files).
+
+
+===========================================================================
                Released AqBanking - 3.7.0 (2008-08-11)
 ===========================================================================
 
