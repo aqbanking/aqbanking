@@ -230,15 +230,21 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
   }
 
   /* store system id */
-  p=AH_User_GetSystemId(su);
-  if (p==NULL)
-    p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-  if (p)
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			 "SecDetails/SecId", p);
-  else {
+  if (hmsg->noSysId) {
     GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
 			 "SecDetails/SecId", "0");
+  }
+  else {
+    p=AH_User_GetSystemId(su);
+    if (p==NULL)
+      p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+    if (p)
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			   "SecDetails/SecId", p);
+    else {
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			   "SecDetails/SecId", "0");
+    }
 #if 0
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "No system id on RDH medium, should not happen (%d)", rv);
@@ -571,24 +577,30 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
   }
 
   /* store system id */
-  p=AH_User_GetSystemId(u);
-  if (p==NULL)
-    p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-  if (p)
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			 "SecDetails/SecId", p);
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "No System id on RDH medium, using default");
+  if (hmsg->noSysId) {
     GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
 			 "SecDetails/SecId", "0");
+  }
+  else {
+    p=AH_User_GetSystemId(u);
+    if (p==NULL)
+      p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+    if (p)
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			   "SecDetails/SecId", p);
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "No System id on RDH medium, using default");
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			   "SecDetails/SecId", "0");
 #if 0
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "No system id on RDH medium, should not happen (%d)", rv);
-    GWEN_DB_Group_free(cfg);
-    GWEN_Buffer_free(mbuf);
-    return GWEN_ERROR_INTERNAL;
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"No system id on RDH medium, should not happen (%d)", rv);
+      GWEN_DB_Group_free(cfg);
+      GWEN_Buffer_free(mbuf);
+      return GWEN_ERROR_INTERNAL;
 #endif
+    }
   }
 
   /* store encrypted message key */

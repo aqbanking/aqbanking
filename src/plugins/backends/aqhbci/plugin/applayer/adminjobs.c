@@ -349,14 +349,16 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
     return 0;
   }
 
-  dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
-			 GWEN_DB_FLAGS_DEFAULT,
-			 "authKey");
-  assert(dbKey);
-  if (AH_Job_SendKeys_PrepareKey(j, dbKey, authKeyInfo, 2)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare authkey");
-    AH_Job_free(j);
-    return 0;
+  if (authKeyInfo) {
+    dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
+			   GWEN_DB_FLAGS_DEFAULT,
+			   "authKey");
+    assert(dbKey);
+    if (AH_Job_SendKeys_PrepareKey(j, dbKey, authKeyInfo, 2)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare authkey");
+      AH_Job_free(j);
+      return 0;
+    }
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobSendKeys created");
