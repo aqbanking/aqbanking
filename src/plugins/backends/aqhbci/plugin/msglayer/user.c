@@ -1122,7 +1122,7 @@ int AH_User_InputPin(AB_USER *u,
 		  "user %s at %s\n"
 		  "%s"
 		  "<html>"
-		  "Please enter the PIN for user <i>%s</i> at"
+		  "Please enter the PIN for user <i>%s</i> at "
 		  "<i>%s</i>.<br>"
 		  "%s"
 		  "</html>"),
