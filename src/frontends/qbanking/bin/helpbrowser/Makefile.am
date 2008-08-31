@@ -65,7 +65,7 @@ sources:
 
 # This section is for a qt4 environment
 qt4-port:
-	for A in $(libqbhelp_la_SOURCES) $(noinst_HEADERS); do \
+	for A in $(libqbhelp_la_SOURCES) $(noinst_HEADERS) qb_help.cpp qbhelpbrowser.cpp; do \
 	 $(YES) | $(QT3TO4) $$A; \
 	done
 #	rm $(BUILT_SOURCES)
