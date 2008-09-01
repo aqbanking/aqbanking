@@ -575,6 +575,15 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/plugin/libaqofxconnectplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
       ;;
+    aqgeldkarte)
+      AC_MSG_ERROR("ERROR: Plugin \"$f\" has been removed in aqbanking-3.0.0 due to low interest")
+      ;;
+    aqdtaus)
+      AC_MSG_ERROR("ERROR: Plugin \"$f\" has been removed in aqbanking-3.0.0 due to low interest")
+      ;;
+    aqyellownet)
+      AC_MSG_ERROR("ERROR: Plugin \"$f\" has been removed in aqbanking-3.0.0 due to low interest")
+      ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
       ;;
