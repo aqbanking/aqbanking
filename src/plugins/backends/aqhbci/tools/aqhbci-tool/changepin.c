@@ -155,7 +155,7 @@ int changePin(AB_BANKING *ab,
     rv=AH_Provider_ChangePin(pro, u, ctx, 0, 0);
     AB_ImExporterContext_free(ctx);
     if (rv) {
-      DBG_ERROR(0, "Error getting list of supported iTAN modes (%d)", rv);
+      DBG_ERROR(0, "Error while changing the PIN (%d)", rv);
       AB_Banking_Fini(ab);
       return 3;
     }
