@@ -144,6 +144,7 @@ int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
   }
   else if (strcasecmp(tagName, "BANKACCTINFO")==0 ||
 	   strcasecmp(tagName, "CCACCTINFO")==0 ||
+	   strcasecmp(tagName, "BPACCTINFO")==0 ||
 	   strcasecmp(tagName, "INVACCTINFO")==0) {
     gNew=AIO_OfxGroup_BANKACCTINFO_new(tagName, g, ctx);
   }
@@ -222,6 +223,7 @@ int AIO_OfxGroup_ACCTINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   s=AIO_OfxGroup_GetGroupName(sg);
   if (strcasecmp(s, "BANKACCTINFO")==0 ||
       strcasecmp(s, "CCACCTINFO")==0 ||
+      strcasecmp(s, "BPACCTINFO")==0 ||
       strcasecmp(s, "INVACCTINFO")==0) {
     const char *s;
 
