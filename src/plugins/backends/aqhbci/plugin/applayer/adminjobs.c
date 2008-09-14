@@ -1384,10 +1384,10 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j) {
 
     v=AH_Job_GetChallengeValue(j);
     if (!v) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing challenge value");
-      return GWEN_ERROR_GENERIC;
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "Missing challenge amount value, ignoring");
+      /*return GWEN_ERROR_GENERIC; */
     }
-  
     else {
       GWEN_BUFFER *btmp;
   
@@ -1408,7 +1408,7 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j) {
     }
   }
   else {
-    DBG_ERROR(0, "Challenge amount not needed");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Challenge amount not needed");
   }
 
   return 0;
