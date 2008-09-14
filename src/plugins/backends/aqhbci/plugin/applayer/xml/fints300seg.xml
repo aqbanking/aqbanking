@@ -227,7 +227,7 @@
     <!-- "Signaturabschluss" -->
     <GROUP type="SegHead" name="head" />
     <ELEM name="ctrlref" type="ascii" maxsize="14" />
-    <ELEM name="signature" type="bin" maxsize="512" />
+    <ELEM name="signature_unused" type="bin" maxsize="512" minnum="0" />
     <GROUP delimiter=":" >
       <!-- maxsize should be 6 here and type should be AN, but then the 
            logmanager has problems -->
