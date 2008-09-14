@@ -62,7 +62,7 @@
      <SEG type="Prepare" name="prepare" version="3" />
      <SEG type="getKey" name="cryptkey" />
      <SEG type="getKey" name="signKey" />
-     <SEG type="getKey" name="authKey" />
+   <!--  <SEG type="getKey" name="authKey" /> -->
      <VALUES>
        <VALUE path="ident/customerId">9999999999</VALUE>
        <!-- No system id is needed in this special case -->
