@@ -92,7 +92,7 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   else
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
 			"secProfile/version",
-			(hmsg->itanMethod==998)?1:2);
+			(hmsg->itanMethod==999)?1:2);
 
   return 0;
 }
