@@ -149,6 +149,15 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
     return GWEN_ERROR_INTERNAL;
   }
 
+  /* for iTAN mode: set selected mode (Sicherheitsfunktion, kodiert) */
+  tm=AH_Msg_GetItanMethod(hmsg);
+  if (tm==0) {
+    tm=AH_Dialog_GetItanMethod(hmsg->dialog);
+    if (tm)
+      /* this is needed by AH_MsgPinTan_PrepareCryptoSeg */
+      AH_Msg_SetItanMethod(hmsg, tm);
+  }
+
   /* prepare config for segment */
   cfg=GWEN_DB_Group_new("sighead");
   rv=AH_MsgPinTan_PrepareCryptoSeg(hmsg, su, cfg, 0, 1);
@@ -182,10 +191,6 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
     p="0";
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
 
-  /* for iTAN mode: set selected mode (Sicherheitsfunktion, kodiert) */
-  tm=AH_Msg_GetItanMethod(hmsg);
-  if (tm==0)
-    tm=AH_Dialog_GetItanMethod(hmsg->dialog);
   if (tm) {
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
 			"function", tm);
