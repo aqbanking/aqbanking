@@ -29,6 +29,7 @@
 #include "jobs/jobsingletransfer_l.h"
 #include "jobs/jobsingledebitnote_l.h"
 #include "jobs/jobeutransfer_l.h"
+#include "jobs/jobsepatransfer_l.h"
 #include "jobs/jobcreatesto_l.h"
 #include "jobs/jobmodifysto_l.h"
 #include "jobs/jobdeletesto_l.h"
@@ -256,6 +257,8 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeDeleteDatedTransfer: s="deletedatedtransfer"; break;
   case AB_Job_TypeInternalTransfer:    s="internaltransfer"; break;
   case AB_Job_TypeLoadCellPhone:       s="loadCellPhone"; break;
+  case AB_Job_TypeSepaTransfer:        s="sepaTransfer"; break;
+  case AB_Job_TypeSepaDebitNote:       s="sepaDebitNote"; break;
   default:
   case AB_Job_TypeUnknown:             s="unknown"; break;
   }
@@ -284,6 +287,8 @@ const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i) {
   case AB_Job_TypeDeleteDatedTransfer: s=I18N("Delete Dated Transfer"); break;
   case AB_Job_TypeInternalTransfer:    s=I18N("Internal Transfer"); break;
   case AB_Job_TypeLoadCellPhone:       s=I18N("Load Cellphone"); break;
+  case AB_Job_TypeSepaTransfer:        s=I18N("SEPA Transfer"); break;
+  case AB_Job_TypeSepaDebitNote:       s=I18N("SEPA Debit Note"); break;
   default:
   case AB_Job_TypeUnknown:             s=I18N("unknown"); break;
   }
@@ -297,12 +302,18 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
   AB_JOB_TYPE i;
 
   if (strcasecmp(s, "getbalance")==0) i=AB_Job_TypeGetBalance;
-  else if (strcasecmp(s, "gettransactions")==0) i=AB_Job_TypeGetTransactions;
-  else if (strcasecmp(s, "transfer")==0) i=AB_Job_TypeTransfer;
-  else if (strcasecmp(s, "debitnote")==0) i=AB_Job_TypeDebitNote;
-  else if (strcasecmp(s, "eutransfer")==0) i=AB_Job_TypeEuTransfer;
-  else if (strcasecmp(s, "getstandingorders")==0) i=AB_Job_TypeGetStandingOrders;
-  else if (strcasecmp(s, "getdatedtransfers")==0) i=AB_Job_TypeGetDatedTransfers;
+  else if (strcasecmp(s, "gettransactions")==0)
+    i=AB_Job_TypeGetTransactions;
+  else if (strcasecmp(s, "transfer")==0)
+    i=AB_Job_TypeTransfer;
+  else if (strcasecmp(s, "debitnote")==0)
+    i=AB_Job_TypeDebitNote;
+  else if (strcasecmp(s, "eutransfer")==0)
+    i=AB_Job_TypeEuTransfer;
+  else if (strcasecmp(s, "getstandingorders")==0)
+    i=AB_Job_TypeGetStandingOrders;
+  else if (strcasecmp(s, "getdatedtransfers")==0)
+    i=AB_Job_TypeGetDatedTransfers;
   else if (strcasecmp(s, "createstandingorder")==0)
     i=AB_Job_TypeCreateStandingOrder;
   else if (strcasecmp(s, "modifystandingorder")==0)
@@ -319,6 +330,8 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
     i=AB_Job_TypeInternalTransfer;
   else if (strcasecmp(s, "loadCellPhone")==0)
     i=AB_Job_TypeLoadCellPhone;
+  else if (strcasecmp(s, "sepaTransfer")==0) i=AB_Job_TypeSepaTransfer;
+  else if (strcasecmp(s, "sepaDebitNote")==0) i=AB_Job_TypeSepaDebitNote;
 
   else i=AB_Job_TypeUnknown;
 

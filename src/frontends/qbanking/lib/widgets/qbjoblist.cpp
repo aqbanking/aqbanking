@@ -81,57 +81,7 @@ void QBJobListViewItem::_populate() {
   setText(i++, QString::number(AB_Job_GetJobId(_job)));
 
   // job type
-  switch(AB_Job_GetType(_job)) {
-  case AB_Job_TypeGetBalance:
-    tmp=QWidget::tr("Get Balance");
-    break;
-  case AB_Job_TypeGetTransactions:
-    tmp=QWidget::tr("Get Transactions");
-    break;
-  case AB_Job_TypeGetStandingOrders:
-    tmp=QWidget::tr("Get Standing Orders");
-    break;
-  case AB_Job_TypeTransfer:
-    tmp=QWidget::tr("Transfer");
-    break;
-  case AB_Job_TypeDebitNote:
-    tmp=QWidget::tr("Debit Note");
-    break;
-  case AB_Job_TypeEuTransfer:
-    tmp=QWidget::tr("EU-Transfer");
-    break;
-  case AB_Job_TypeGetDatedTransfers:
-    tmp=QWidget::tr("Get Dated Transfers");
-    break;
-  case AB_Job_TypeCreateStandingOrder:
-    tmp=QWidget::tr("Create Standing Order");
-    break;
-  case AB_Job_TypeModifyStandingOrder:
-    tmp=QWidget::tr("Modify Standing Order");
-    break;
-  case AB_Job_TypeDeleteStandingOrder:
-    tmp=QWidget::tr("Delete Standing Order");
-    break;
-  case AB_Job_TypeCreateDatedTransfer:
-    tmp=QWidget::tr("Create Dated Transfer");
-    break;
-  case AB_Job_TypeModifyDatedTransfer:
-    tmp=QWidget::tr("Modify Dated Transfer");
-    break;
-  case AB_Job_TypeDeleteDatedTransfer:
-    tmp=QWidget::tr("Delete Dated Transfer");
-    break;
-  case AB_Job_TypeInternalTransfer:
-    tmp=QWidget::tr("Internal Transfer");
-    break;
-  case AB_Job_TypeLoadCellPhone:
-    tmp=QWidget::tr("Load Cellphone");
-    break;
-
-  case AB_Job_TypeUnknown:
-    tmp=QWidget::tr("(unknown)");
-    break;
-  }
+  tmp=QString::fromUtf8(AB_Job_Type2LocalChar(AB_Job_GetType(_job)));
   setText(i++, tmp);
 
   // bank name

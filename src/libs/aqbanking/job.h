@@ -54,7 +54,9 @@ extern "C" {
   /** @defgroup G_AB_JOBS_XFER_INTERNAL Internal Transfer
    * @ingroup G_AB_JOBS_XFERS
    */
-
+  /** @defgroup G_AB_JOBS_XFER_SEPA_TRANSFER SEPA Transfer
+   * @ingroup G_AB_JOBS_XFERS
+   */
 
   /** @defgroup G_AB_JOBS_DATED_TRANSFER Dated Transfers
    * @ingroup G_AB_JOB
@@ -176,7 +178,11 @@ typedef enum {
   /* internal transfer between two accounts at the same bank */
   AB_Job_TypeInternalTransfer,
   /** Load a prepaid card from a bank account */
-  AB_Job_TypeLoadCellPhone
+  AB_Job_TypeLoadCellPhone,
+  /** SEPA transfer */
+  AB_Job_TypeSepaTransfer,
+  /** SEPA debit note */
+  AB_Job_TypeSepaDebitNote
 } AB_JOB_TYPE;
 
 

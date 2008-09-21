@@ -21,6 +21,8 @@ noinst_HEADERS=\
  jobtransferbase_l.h \
  jobsingletransfer_l.h \
  jobsingledebitnote_l.h \
+ jobsepatransfer_l.h \
+ jobsepadebitnote_l.h \
  jobgetdatedtransfers_l.h \
  jobmodifysto_l.h \
  jobdeletesto_l.h \
@@ -46,6 +48,10 @@ iheader_HEADERS= \
  jobsingletransfer_be.h \
  jobsingledebitnote.h \
  jobsingledebitnote_be.h \
+ jobsepatransfer.h \
+ jobsepatransfer_be.h \
+ jobsepadebitnote.h \
+ jobsepadebitnote_be.h \
  jobgetdatedtransfers.h \
  jobgetdatedtransfers_be.h \
  jobcreatesto.h \
@@ -75,6 +81,8 @@ libjobs_la_SOURCES=\
  jobtransferbase.c \
  jobsingletransfer.c \
  jobsingledebitnote.c \
+ jobsepatransfer.c \
+ jobsepadebitnote.c \
  jobcreatesto.c \
  jobmodifysto.c \
  jobdeletesto.c \
