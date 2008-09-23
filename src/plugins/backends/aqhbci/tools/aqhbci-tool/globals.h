@@ -50,6 +50,11 @@ int addUser(AB_BANKING *ab,
             int argc,
             char **argv);
 
+int delUser(AB_BANKING *ab,
+            GWEN_DB_NODE *dbArgs,
+            int argc,
+            char **argv);
+
 int getAccounts(AB_BANKING *ab,
                 GWEN_DB_NODE *dbArgs,
                 int argc,
@@ -124,6 +129,12 @@ int subUserFlags(AB_BANKING *ab,
 		 GWEN_DB_NODE *dbArgs,
 		 int argc,
 		 char **argv);
+
+int addsubAccountFlags(AB_BANKING *ab,
+		 GWEN_DB_NODE *dbArgs,
+		 int argc,
+		 char **argv,
+     int is_add );
 
 
 

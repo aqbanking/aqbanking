@@ -14,6 +14,8 @@ noinst_HEADERS=globals.h
 aqhbci_tool3_SOURCES=main.c \
  mkpinlist.c \
  adduser.c \
+ deluser.c \
+ addsubaccountflags.c \
  getsysid.c \
  getkeys.c \
  createkeys.c \

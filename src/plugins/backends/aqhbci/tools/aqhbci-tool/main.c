@@ -156,6 +156,9 @@ int main(int argc, char **argv) {
                                   "    Adds a user "
                                   "(-> setup HBCI for a bank)\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  deluser:\n"
+                                  "    Deletes a user.\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  getkeys:\n"
                                   "    Requests the server's key\n\n"));
     GWEN_Buffer_AppendString(ubuf,
@@ -268,6 +271,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=addUser(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "deluser")==0) {
+    rv=delUser(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "getaccounts")==0) {
     rv=getAccounts(ab, db, argc, argv);
   }
@@ -312,6 +318,12 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "subuserflags")==0) {
     rv=subUserFlags(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "addaccountflags")==0) {
+    rv=addsubAccountFlags(ab, db, argc, argv, 1);
+  }
+  else if (strcasecmp(cmd, "subaccountflags")==0) {
+    rv=addsubAccountFlags(ab, db, argc, argv, 0);
   }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1(ab, db, argc, argv);
