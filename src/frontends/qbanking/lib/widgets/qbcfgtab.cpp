@@ -29,9 +29,14 @@
 
 QBCfgTab::QBCfgTab(QBanking *qb, QWidget *parent, const char *name, WFlags f)
 :QBCfgTabUi(parent, name, f)
-,_qbanking(qb) {
+,_qbanking(qb)
+,_allowApply(true)
+ {
   connect(buttonHelp, SIGNAL(clicked()),
           SLOT(slotHelp()));
+
+  connect(buttonApply, SIGNAL(clicked()),
+	  SLOT(slotApply()));
 
 }
 
@@ -214,6 +219,31 @@ void QBCfgTab::slotHelp() {
 
 void QBCfgTab::languageChange() {
   QBCfgTabUi::languageChange();
+}
+
+
+
+void QBCfgTab::slotApply() {
+  if (_allowApply) {
+    if (checkGui()) {
+      fromGui();
+      toGui();
+    }
+  }
+}
+
+
+
+void QBCfgTab::setAllowApply(bool b) {
+  _allowApply=b;
+  if (!b) {
+    if (buttonApply->isVisible())
+      buttonApply->hide();
+  }
+  else {
+    if (!buttonApply->isVisible())
+      buttonApply->show();
+  }
 }
 
 

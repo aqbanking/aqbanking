@@ -42,6 +42,7 @@ QBCfgTabSettings::QBCfgTabSettings(QBanking *qb,
   setHelpContext("QBCfgTabSettings");
   setDescription(tr("This dialog allows adjusting the settings of "
                     "<b>AqBanking</b>."));
+  setAllowApply(false);
   resize(720, 400);
 }
 

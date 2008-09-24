@@ -56,17 +56,11 @@
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>Layout1</cstring>
+                <cstring>layout2</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
                 </property>
                 <widget class="QPushButton">
                     <property name="name">
@@ -94,7 +88,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>20</width>
+                            <width>120</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -113,6 +107,20 @@
                         <bool>true</bool>
                     </property>
                     <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonApply</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Apply</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+A</string>
+                    </property>
+                    <property name="autoDefault">
                         <bool>true</bool>
                     </property>
                 </widget>
@@ -148,5 +156,13 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>tabWidget</tabstop>
+    <tabstop>introBrowser</tabstop>
+    <tabstop>buttonHelp</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonApply</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

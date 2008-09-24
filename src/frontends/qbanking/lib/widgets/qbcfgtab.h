@@ -34,6 +34,7 @@ private:
   QString _description;
   QString _fullDescription;
   QString _helpContext;
+  bool _allowApply;
 
 protected:
   void accept();
@@ -63,8 +64,11 @@ public:
 
   int exec();
 
+  void setAllowApply(bool b);
+
 public slots:
-  void slotHelp();
+  virtual void slotHelp();
+  virtual void slotApply();
 
   virtual void languageChange();
 
