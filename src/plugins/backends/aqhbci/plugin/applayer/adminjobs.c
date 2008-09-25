@@ -1573,6 +1573,9 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
     return 0;
   }
 
+  /* set challenge class */
+  AH_Job_SetChallengeClass(j, 90);
+
   /* set arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
