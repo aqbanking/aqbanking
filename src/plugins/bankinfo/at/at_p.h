@@ -17,7 +17,6 @@
 typedef struct AB_BANKINFO_PLUGIN_AT AB_BANKINFO_PLUGIN_AT;
 struct AB_BANKINFO_PLUGIN_AT {
   AB_BANKING *banking;
-  GWEN_DB_NODE *dbData;
 };
 
 
@@ -25,7 +24,7 @@ static
 void GWENHYWFAR_CB AB_BankInfoPluginAT_FreeData(void *bp, void *p);
 
 static
-AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoAT_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab, GWEN_DB_NODE *db);
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoAT_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
 
 AQBANKING_EXPORT

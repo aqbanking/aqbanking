@@ -18,8 +18,7 @@
 
 
 AB_BANKINFO_PLUGIN *AB_BankInfoPluginGENERIC_new(AB_BANKING *ab,
-                                                 GWEN_DB_NODE *db,
-                                                 const char *country);
+						 const char *country);
 
 
 

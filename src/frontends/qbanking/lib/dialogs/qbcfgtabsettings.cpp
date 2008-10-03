@@ -103,36 +103,60 @@ void QBCfgTabSettings::slotUpdate() {
 
 
 bool QBCfgTabSettings::toGui() {
-  GWEN_DB_NODE *dbSettings;
-  int w, h;
+  GWEN_DB_NODE *dbConfig=NULL;
+  int rv;
 
-  dbSettings=getBanking()->getSharedData("qbanking");
-  assert(dbSettings);
-  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
-                              "settings");
-  assert(dbSettings);
-  w=GWEN_DB_GetIntValue(dbSettings, "gui/width", 0, -1);
-  h=GWEN_DB_GetIntValue(dbSettings, "gui/height", 0, -1);
-  if (w>100 && h>100)
-    resize(w, h);
-  return QBCfgTab::toGui();
+  rv=getBanking()->loadSharedSubConfig("qbanking",
+				       "settings/gui/generic",
+				       &dbConfig);
+  if (rv==0) {
+    int w, h;
+
+    assert(dbConfig);
+
+    w=GWEN_DB_GetIntValue(dbConfig, "width", 0, -1);
+    h=GWEN_DB_GetIntValue(dbConfig, "height", 0, -1);
+    if (w>100 && h>100)
+      resize(w, h);
+    GWEN_DB_Group_free(dbConfig);
+
+    return QBCfgTab::toGui();
+  }
+  else {
+    DBG_INFO(0, "here (%d)", rv);
+    return false;
+  }
 }
 
 
 
 bool QBCfgTabSettings::fromGui() {
-  GWEN_DB_NODE *dbSettings;
+  GWEN_DB_NODE *dbConfig;
+  int rv;
 
-  dbSettings=getBanking()->getSharedData("qbanking");
-  assert(dbSettings);
-  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
-                              "settings");
-  assert(dbSettings);
-  GWEN_DB_SetIntValue(dbSettings, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "gui/width", width());
-  GWEN_DB_SetIntValue(dbSettings, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "gui/height", height());
-  return QBCfgTab::fromGui();
+  dbConfig=GWEN_DB_Group_new("config");
+  assert(dbConfig);
+
+  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "gui/width", width());
+  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "gui/height", height());
+  if (!QBCfgTab::fromGui()) {
+    DBG_INFO(0, "here");
+    GWEN_DB_Group_free(dbConfig);
+    return false;
+  }
+
+  rv=getBanking()->saveSharedSubConfig("qbanking",
+				       "settings/gui/generic",
+				       dbConfig);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_DB_Group_free(dbConfig);
+    return false;
+  }
+  GWEN_DB_Group_free(dbConfig);
+  return true;
 }
 
 

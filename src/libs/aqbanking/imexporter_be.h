@@ -35,8 +35,7 @@
 extern "C" {
 #endif
 
-typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab,
-                                                   GWEN_DB_NODE *db);
+typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab);
 
 
 /** @name Construction and Destruction
@@ -108,8 +107,7 @@ void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
 /*@{*/
 
 typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl,
-							  AB_BANKING *ab,
-							  GWEN_DB_NODE *db);
+							  AB_BANKING *ab);
 
 
 AQBANKING_API
@@ -119,8 +117,7 @@ GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
 
 AQBANKING_API
 AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
-					    AB_BANKING *ab,
-					    GWEN_DB_NODE *db);
+					    AB_BANKING *ab);
 
 AQBANKING_API
 void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,

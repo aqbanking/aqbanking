@@ -23,12 +23,6 @@
  */
 /*@{*/
 
-/**
- * This update sets the bpdVersion and updVersion of all customers
- * to zero. Therefore upon next connect with the bank server the UPD and BPD
- * will be updated automatically.
- */
-static int AH_HBCI_Update_Any(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
 /*@}*/
 
@@ -80,28 +74,6 @@ static int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
 static int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db);
 /*@}*/
 
-
-/** @name Newer Update Functions
- *
- * Functions of this group are called from AB_Provider_Update after any of
- * the init update functions have been called.
- */
-/*@{*/
-
-
-/**
- * This function just aborts with a message.
- */
-static int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-
-/**
- * This function removes the "media" section of the configuration file
- * since AqHBCI no longer uses media.
- */
-static int AH_HBCI_Update2_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/*@}*/
 
 #endif
 

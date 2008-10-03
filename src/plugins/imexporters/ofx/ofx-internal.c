@@ -64,8 +64,7 @@ GWEN_PLUGIN *imexporters_ofx_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterOFX_Factory(GWEN_PLUGIN *pl,
-					       AB_BANKING *ab,
-					       GWEN_DB_NODE *db){
+					       AB_BANKING *ab){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_OFX *ieh;
 
@@ -73,8 +72,6 @@ AB_IMEXPORTER *AB_Plugin_ImExporterOFX_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_OFX, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie, ieh,
 		       AH_ImExporterOFX_FreeData);
-  ieh->dbData=db;
-
   AB_ImExporter_SetImportFn(ie, AH_ImExporterOFX_Import);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterOFX_CheckFile);
   return ie;

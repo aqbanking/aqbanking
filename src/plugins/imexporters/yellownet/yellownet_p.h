@@ -18,7 +18,7 @@
 
 typedef struct AB_IMEXPORTER_YELLOWNET AB_IMEXPORTER_YELLOWNET;
 struct AB_IMEXPORTER_YELLOWNET {
-  GWEN_DB_NODE *dbData;
+  int dummy;
 };
 
 
@@ -29,8 +29,7 @@ GWEN_PLUGIN *imexporters_yellownet_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterYellowNet_Factory(GWEN_PLUGIN *pl,
-						     AB_BANKING *ab,
-						     GWEN_DB_NODE *db);
+						     AB_BANKING *ab);
 
 
 static

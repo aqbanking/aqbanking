@@ -18,7 +18,6 @@
 
 typedef struct AH_IMEXPORTER_XMLDB AH_IMEXPORTER_XMLDB;
 struct AH_IMEXPORTER_XMLDB {
-  GWEN_DB_NODE *dbData;
   GWEN_DBIO *dbio;
 };
 
@@ -30,8 +29,7 @@ GWEN_PLUGIN *imexporters_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterXMLDB_Factory(GWEN_PLUGIN *pl,
-						 AB_BANKING *ab,
-						 GWEN_DB_NODE *db);
+						 AB_BANKING *ab);
 
 
 static

@@ -135,16 +135,25 @@ QBImporter::QBImporter(QBanking *kb,
 
 QBImporter::~QBImporter(){
   AB_ImExporterContext_free(_context);
+  GWEN_DB_Group_free(_dbData);
+  _dbData=NULL;
 }
 
 
 bool QBImporter::init() {
-  GWEN_DB_NODE *db;
+  int rv;
 
-  db=_app->getSharedData("qbanking");
-  assert(db);
-  _dbData=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-			   "gui/dlgs/importer");
+  GWEN_DB_Group_free(_dbData);
+  _dbData=NULL;
+
+  rv=_app->loadSharedSubConfig("qbanking",
+			       "gui/dlgs/importer",
+			       &_dbData);
+  if (rv<0) {
+    DBG_INFO(0, "Could not load shared config");
+    return false;
+  }
+
   return _updateImporterList();
 }
 
@@ -173,6 +182,8 @@ void QBImporter::save() {
 
 
 bool QBImporter::fini() {
+  int rv;
+
   if (_importerList)
     GWEN_PluginDescription_List2_freeAll(_importerList);
   _importerList=0;
@@ -180,6 +191,16 @@ bool QBImporter::fini() {
   GWEN_DB_Group_free(_profiles);
   _profiles=0;
   _profile=0;
+
+  rv=_app->saveSharedSubConfig("qbanking",
+			       "gui/dlgs/importer",
+			       _dbData);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+  }
+
+  GWEN_DB_Group_free(_dbData);
+  _dbData=NULL;
 
   return true;
 }

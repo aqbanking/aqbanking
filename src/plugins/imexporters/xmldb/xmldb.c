@@ -44,8 +44,7 @@ GWEN_PLUGIN *imexporters_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterXMLDB_Factory(GWEN_PLUGIN *pl,
-						 AB_BANKING *ab,
-						 GWEN_DB_NODE *db){
+						 AB_BANKING *ab){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_XMLDB *ieh;
 
@@ -53,7 +52,6 @@ AB_IMEXPORTER *AB_Plugin_ImExporterXMLDB_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_XMLDB, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_XMLDB, ie, ieh,
                        AH_ImExporterXMLDB_FreeData);
-  ieh->dbData=db;
   ieh->dbio=GWEN_DBIO_GetPlugin("xmldb");
   if (!ieh->dbio) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,

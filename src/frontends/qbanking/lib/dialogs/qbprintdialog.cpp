@@ -90,42 +90,45 @@ QBPrintDialog::~QBPrintDialog(){
 
 
 void QBPrintDialog::loadGuiSetup(){
-  GWEN_DB_NODE *db;
-  GWEN_BUFFER *dbuf;
-  int x, y;
+  GWEN_DB_NODE *dbConfig=NULL;
+  int rv;
 
-  db=_banking->getSharedData("qbanking");
-  assert(db);
-
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "gui/dlgs/printdialog");
-  if (!db)
-    return;
-  dbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
-    DBG_ERROR(0, "Internal error.");
-    abort();
+  rv=_banking->loadSharedSubConfig("qbanking",
+			       "gui/dlgs/printdialog",
+			       &dbConfig);
+  if (rv<0) {
+    DBG_INFO(0, "Could not load shared config");
   }
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      GWEN_Buffer_GetStart(dbuf));
-  GWEN_Buffer_free(dbuf);
-  if (!db)
-    return;
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "gui");
-  if (!db)
-    return;
+  else {
+    GWEN_DB_NODE *db;
+    GWEN_BUFFER *dbuf;
 
-  x=GWEN_DB_GetIntValue(db, "width", 0, -1);
-  y=GWEN_DB_GetIntValue(db, "height", 0, -1);
-  if (x!=-1 && y!=-1) {
-    DBG_ERROR(0, "Resizing to %d/%d", x, y);
-    resize(x, y);
+    dbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
+      DBG_ERROR(0, "Internal error.");
+      abort();
+    }
+    db=GWEN_DB_GetGroup(dbConfig, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    if (db) {
+      db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			  "gui");
+      if (db) {
+	int x, y;
+
+	x=GWEN_DB_GetIntValue(db, "width", 0, -1);
+	y=GWEN_DB_GetIntValue(db, "height", 0, -1);
+	if (x!=-1 && y!=-1)
+	  resize(x, y);
+	x=GWEN_DB_GetIntValue(db, "x", 0, -1);
+	y=GWEN_DB_GetIntValue(db, "y", 0, -1);
+	if (x!=-1 && y!=-1)
+	  move(x, y);
+      }
+    }
+    GWEN_DB_Group_free(dbConfig);
   }
-  x=GWEN_DB_GetIntValue(db, "x", 0, -1);
-  y=GWEN_DB_GetIntValue(db, "y", 0, -1);
-  if (x!=-1 && y!=-1)
-    move(x, y);
 }
 
 
@@ -133,199 +136,207 @@ void QBPrintDialog::loadGuiSetup(){
 void QBPrintDialog::saveGuiSetup(){
   GWEN_DB_NODE *db;
   GWEN_BUFFER *dbuf;
+  int rv;
 
-  db=_banking->getSharedData("qbanking");
+  db=GWEN_DB_Group_new("config");
   assert(db);
 
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      "gui/dlgs/printdialog");
-  assert(db);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "x", x());
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "y", y());
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "width", width());
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "height", height());
+
+  /* save config */
   dbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(dbuf, "gui/dlgs/printdialog/");
   if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
     DBG_ERROR(0, "Internal error.");
     abort();
   }
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      GWEN_Buffer_GetStart(dbuf));
-  assert(db);
+  GWEN_Buffer_AppendString(dbuf, "/gui");
+
+  rv=_banking->saveSharedSubConfig("qbanking",
+			       GWEN_Buffer_GetStart(dbuf),
+			       db);
   GWEN_Buffer_free(dbuf);
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                      "gui");
-  assert(db);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "x", x());
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "y", y());
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "width", width());
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "height", height());
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+  }
+  GWEN_DB_Group_free(db);
 }
 
 
 
 void QBPrintDialog::loadPrinterSetup(QPrinter *printer){
-  GWEN_DB_NODE *db;
-  GWEN_BUFFER *dbuf;
-  const char *s;
-  uint top, left, bottom, right;
-  int i;
+  GWEN_DB_NODE *dbConfig=NULL;
+  int rv;
 
-  db=_banking->getSharedData("qbanking");
-  assert(db);
-
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "gui/dlgs/printdialog");
-  if (!db)
-    return;
-  dbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
-    DBG_ERROR(0, "Internal error.");
-    abort();
+  rv=_banking->loadSharedSubConfig("qbanking",
+			       "gui/dlgs/printdialog",
+			       &dbConfig);
+  if (rv<0) {
+    DBG_INFO(0, "Could not load shared config");
   }
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      GWEN_Buffer_GetStart(dbuf));
-  GWEN_Buffer_free(dbuf);
-  if (!db)
-    return;
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "printer");
-  if (!db)
-    return;
+  else {
+    GWEN_DB_NODE *db;
+    GWEN_BUFFER *dbuf;
 
-  s=GWEN_DB_GetCharValue(db, "FontFamily", 0, "Arial");
-  if (s)
-    _fontFamily=QString::fromUtf8(s);
-  _fontSize=GWEN_DB_GetIntValue(db, "FontSize", 0, 11);
-  _fontWeight=QFont::Normal;
-  s=GWEN_DB_GetCharValue(db, "FontWeight", 0, "Normal");
-  _fontWeight=QFont::Normal;
-  if (s) {
-    if (strcasecmp(s, "Light")==0)
-      _fontWeight=QFont::Light;
-    else if (strcasecmp(s, "Normal")==0)
-      _fontWeight=QFont::Normal;
-    else if (strcasecmp(s, "DemiBold")==0)
-      _fontWeight=QFont::DemiBold;
-    else if (strcasecmp(s, "Bold")==0)
-      _fontWeight=QFont::Bold;
-    else if (strcasecmp(s, "Black")==0)
-      _fontWeight=QFont::Black;
-    else {
-      DBG_WARN(0, "Unknown FontWeight \"%s\"", s);
+    dbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
+      DBG_ERROR(0, "Internal error.");
+      abort();
     }
+    db=GWEN_DB_GetGroup(dbConfig, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    if (db) {
+      const char *s;
+      int i;
+      unsigned int top, left, bottom, right;
+
+      db=GWEN_DB_GetGroup(db,
+			  GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			  "printer");
+      s=GWEN_DB_GetCharValue(db, "FontFamily", 0, "Arial");
+      if (s)
+	_fontFamily=QString::fromUtf8(s);
+      _fontSize=GWEN_DB_GetIntValue(db, "FontSize", 0, 11);
+      _fontWeight=QFont::Normal;
+      s=GWEN_DB_GetCharValue(db, "FontWeight", 0, "Normal");
+      _fontWeight=QFont::Normal;
+      if (s) {
+	if (strcasecmp(s, "Light")==0)
+	  _fontWeight=QFont::Light;
+	else if (strcasecmp(s, "Normal")==0)
+	  _fontWeight=QFont::Normal;
+	else if (strcasecmp(s, "DemiBold")==0)
+	  _fontWeight=QFont::DemiBold;
+	else if (strcasecmp(s, "Bold")==0)
+	  _fontWeight=QFont::Bold;
+	else if (strcasecmp(s, "Black")==0)
+	  _fontWeight=QFont::Black;
+	else {
+	  DBG_WARN(0, "Unknown FontWeight \"%s\"", s);
+	}
+      }
+      textBrowser->setFont(QFont(_fontFamily, _fontSize, _fontWeight));
+    
+      s=GWEN_DB_GetCharValue(db, "PageSize", 0, 0);
+      if (s) {
+	QPrinter::PageSize ps=QPrinter::A4;
+	bool doSet;
+    
+	doSet=true;
+    
+	if (strcasecmp(s, "A0")==0)
+	  ps=QPrinter::A0;
+	else if (strcasecmp(s, "A1")==0)
+	  ps=QPrinter::A1;
+	else if (strcasecmp(s, "A2")==0)
+	  ps=QPrinter::A2;
+	else if (strcasecmp(s, "A3")==0)
+	  ps=QPrinter::A3;
+	else if (strcasecmp(s, "A4")==0)
+	  ps=QPrinter::A4;
+	else if (strcasecmp(s, "A5")==0)
+	  ps=QPrinter::A5;
+	else if (strcasecmp(s, "A6")==0)
+	  ps=QPrinter::A6;
+	else if (strcasecmp(s, "A7")==0)
+	  ps=QPrinter::A7;
+	else if (strcasecmp(s, "A8")==0)
+	  ps=QPrinter::A8;
+	else if (strcasecmp(s, "A9")==0)
+	  ps=QPrinter::A9;
+	else if (strcasecmp(s, "B0")==0)
+	  ps=QPrinter::B0;
+	else if (strcasecmp(s, "B1")==0)
+	  ps=QPrinter::B1;
+	else if (strcasecmp(s, "B2")==0)
+	  ps=QPrinter::B2;
+	else if (strcasecmp(s, "B3")==0)
+	  ps=QPrinter::B3;
+	else if (strcasecmp(s, "B4")==0)
+	  ps=QPrinter::B4;
+	else if (strcasecmp(s, "B5")==0)
+	  ps=QPrinter::B5;
+	else if (strcasecmp(s, "B6")==0)
+	  ps=QPrinter::B6;
+	else if (strcasecmp(s, "B7")==0)
+	  ps=QPrinter::B7;
+	else if (strcasecmp(s, "B8")==0)
+	  ps=QPrinter::B8;
+	else if (strcasecmp(s, "B9")==0)
+	  ps=QPrinter::B9;
+	else if (strcasecmp(s, "B10")==0)
+	  ps=QPrinter::B10;
+	else if (strcasecmp(s, "C5E")==0)
+	  ps=QPrinter::C5E;
+	else if (strcasecmp(s, "DLE")==0)
+	  ps=QPrinter::DLE;
+	else if (strcasecmp(s, "Comm10E")==0)
+	  ps=QPrinter::Comm10E;
+	else if (strcasecmp(s, "Executive")==0)
+	  ps=QPrinter::Executive;
+	else if (strcasecmp(s, "Folio")==0)
+	  ps=QPrinter::Folio;
+	else if (strcasecmp(s, "Ledger")==0)
+	  ps=QPrinter::Ledger;
+	else if (strcasecmp(s, "Legal")==0)
+	  ps=QPrinter::Legal;
+	else if (strcasecmp(s, "Letter")==0)
+	  ps=QPrinter::Letter;
+	else if (strcasecmp(s, "Tabloid")==0)
+	  ps=QPrinter::Tabloid;
+	else
+	  doSet=false;
+    
+	if (doSet)
+	  printer->setPageSize(ps);
+      }
+    
+      s=GWEN_DB_GetCharValue(db, "Orientation", 0, 0);
+      if (s) {
+	if (strcasecmp(s, "Portrait")==0)
+	  printer->setOrientation(QPrinter::Portrait);
+	else if (strcasecmp(s, "LandScape")==0)
+	  printer->setOrientation(QPrinter::Landscape);
+      }
+    
+      i=GWEN_DB_GetIntValue(db, "Resolution", 0, -1);
+      if (i!=-1)
+	printer->setResolution(i);
+    
+      top=(uint)GWEN_DB_GetIntValue(db, "Top", 0, -1);
+      left=(uint)GWEN_DB_GetIntValue(db, "Left", 0, -1);
+      bottom=(uint)GWEN_DB_GetIntValue(db, "Bottom", 0, -1);
+      right=(uint)GWEN_DB_GetIntValue(db, "Right", 0, -1);
+    #if (QT_VERSION < 0x040000)
+      // the current Qt4 snapshots don't have QPrinter::setMargins
+      if (top!=(uint)-1 && left!=(uint)-1 && bottom!=(uint)-1 && right!=(uint)-1)
+	printer->setMargins(top, left, bottom, right);
+    #endif
+    
+      s=GWEN_DB_GetCharValue(db, "ColorMode", 0, 0);
+      if (s) {
+	if (strcasecmp(s, "Color")==0)
+	  printer->setColorMode(QPrinter::Color);
+	else if (strcasecmp(s, "GrayScale")==0)
+	  printer->setColorMode(QPrinter::GrayScale);
+      }
+    
+      s=GWEN_DB_GetCharValue(db, "outputFileName", 0, 0);
+      if (s)
+	printer->setOutputFileName(QString::fromUtf8(s));
+      printer->setOutputToFile(GWEN_DB_GetIntValue(db, "outputToFile", 0, 0));
+    }
+
+    GWEN_DB_Group_free(dbConfig);
   }
-  textBrowser->setFont(QFont(_fontFamily, _fontSize, _fontWeight));
-
-  s=GWEN_DB_GetCharValue(db, "PageSize", 0, 0);
-  if (s) {
-    QPrinter::PageSize ps=QPrinter::A4;
-    bool doSet;
-
-    doSet=true;
-
-    if (strcasecmp(s, "A0")==0)
-      ps=QPrinter::A0;
-    else if (strcasecmp(s, "A1")==0)
-      ps=QPrinter::A1;
-    else if (strcasecmp(s, "A2")==0)
-      ps=QPrinter::A2;
-    else if (strcasecmp(s, "A3")==0)
-      ps=QPrinter::A3;
-    else if (strcasecmp(s, "A4")==0)
-      ps=QPrinter::A4;
-    else if (strcasecmp(s, "A5")==0)
-      ps=QPrinter::A5;
-    else if (strcasecmp(s, "A6")==0)
-      ps=QPrinter::A6;
-    else if (strcasecmp(s, "A7")==0)
-      ps=QPrinter::A7;
-    else if (strcasecmp(s, "A8")==0)
-      ps=QPrinter::A8;
-    else if (strcasecmp(s, "A9")==0)
-      ps=QPrinter::A9;
-    else if (strcasecmp(s, "B0")==0)
-      ps=QPrinter::B0;
-    else if (strcasecmp(s, "B1")==0)
-      ps=QPrinter::B1;
-    else if (strcasecmp(s, "B2")==0)
-      ps=QPrinter::B2;
-    else if (strcasecmp(s, "B3")==0)
-      ps=QPrinter::B3;
-    else if (strcasecmp(s, "B4")==0)
-      ps=QPrinter::B4;
-    else if (strcasecmp(s, "B5")==0)
-      ps=QPrinter::B5;
-    else if (strcasecmp(s, "B6")==0)
-      ps=QPrinter::B6;
-    else if (strcasecmp(s, "B7")==0)
-      ps=QPrinter::B7;
-    else if (strcasecmp(s, "B8")==0)
-      ps=QPrinter::B8;
-    else if (strcasecmp(s, "B9")==0)
-      ps=QPrinter::B9;
-    else if (strcasecmp(s, "B10")==0)
-      ps=QPrinter::B10;
-    else if (strcasecmp(s, "C5E")==0)
-      ps=QPrinter::C5E;
-    else if (strcasecmp(s, "DLE")==0)
-      ps=QPrinter::DLE;
-    else if (strcasecmp(s, "Comm10E")==0)
-      ps=QPrinter::Comm10E;
-    else if (strcasecmp(s, "Executive")==0)
-      ps=QPrinter::Executive;
-    else if (strcasecmp(s, "Folio")==0)
-      ps=QPrinter::Folio;
-    else if (strcasecmp(s, "Ledger")==0)
-      ps=QPrinter::Ledger;
-    else if (strcasecmp(s, "Legal")==0)
-      ps=QPrinter::Legal;
-    else if (strcasecmp(s, "Letter")==0)
-      ps=QPrinter::Letter;
-    else if (strcasecmp(s, "Tabloid")==0)
-      ps=QPrinter::Tabloid;
-    else
-      doSet=false;
-
-    if (doSet)
-      printer->setPageSize(ps);
-  }
-
-  s=GWEN_DB_GetCharValue(db, "Orientation", 0, 0);
-  if (s) {
-    if (strcasecmp(s, "Portrait")==0)
-      printer->setOrientation(QPrinter::Portrait);
-    else if (strcasecmp(s, "LandScape")==0)
-      printer->setOrientation(QPrinter::Landscape);
-  }
-
-  i=GWEN_DB_GetIntValue(db, "Resolution", 0, -1);
-  if (i!=-1)
-    printer->setResolution(i);
-
-  top=(uint)GWEN_DB_GetIntValue(db, "Top", 0, -1);
-  left=(uint)GWEN_DB_GetIntValue(db, "Left", 0, -1);
-  bottom=(uint)GWEN_DB_GetIntValue(db, "Bottom", 0, -1);
-  right=(uint)GWEN_DB_GetIntValue(db, "Right", 0, -1);
-#if (QT_VERSION < 0x040000)
-  // the current Qt4 snapshots don't have QPrinter::setMargins
-  if (top!=(uint)-1 && left!=(uint)-1 && bottom!=(uint)-1 && right!=(uint)-1)
-    printer->setMargins(top, left, bottom, right);
-#endif
-
-  s=GWEN_DB_GetCharValue(db, "ColorMode", 0, 0);
-  if (s) {
-    if (strcasecmp(s, "Color")==0)
-      printer->setColorMode(QPrinter::Color);
-    else if (strcasecmp(s, "GrayScale")==0)
-      printer->setColorMode(QPrinter::GrayScale);
-  }
-
-  s=GWEN_DB_GetCharValue(db, "outputFileName", 0, 0);
-  if (s)
-    printer->setOutputFileName(QString::fromUtf8(s));
-  printer->setOutputToFile(GWEN_DB_GetIntValue(db, "outputToFile", 0, 0));
-
 }
 
 
@@ -333,26 +344,11 @@ void QBPrintDialog::loadPrinterSetup(QPrinter *printer){
 void QBPrintDialog::savePrinterSetup(QPrinter *printer) {
   GWEN_DB_NODE *db;
   GWEN_BUFFER *dbuf;
+  int rv;
   const char *s;
-  uint top, left, bottom, right;
+  unsigned int top, left, bottom, right;
 
-  db=_banking->getSharedData("qbanking");
-  assert(db);
-
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      "gui/dlgs/printdialog");
-  assert(db);
-  dbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
-    DBG_ERROR(0, "Internal error.");
-    abort();
-  }
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-                      GWEN_Buffer_GetStart(dbuf));
-  assert(db);
-  GWEN_Buffer_free(dbuf);
-  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                      "printer");
+  db=GWEN_DB_Group_new("config");
   assert(db);
 
   if (!_fontFamily.isEmpty())
@@ -460,6 +456,23 @@ void QBPrintDialog::savePrinterSetup(QPrinter *printer) {
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "outputFileName", fname.utf8());
 
+  /* save config */
+  dbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(dbuf, "gui/dlgs/printdialog/");
+  if (GWEN_Text_EscapeToBuffer(_docType, dbuf)) {
+    DBG_ERROR(0, "Internal error.");
+    abort();
+  }
+  GWEN_Buffer_AppendString(dbuf, "/printer");
+
+  rv=_banking->saveSharedSubConfig("qbanking",
+				   GWEN_Buffer_GetStart(dbuf),
+				   db);
+  GWEN_Buffer_free(dbuf);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+  }
+  GWEN_DB_Group_free(db);
 }
 
 
