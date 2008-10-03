@@ -19,12 +19,6 @@
 #include <aqbanking/banking.h>
 
 
-#define AB_CFG_GROUP_BACKENDS   "backends"
-#define AB_CFG_GROUP_BANKINFO   "bankinfo"
-#define AB_CFG_GROUP_IMEXPORTER "imexporter"
-
-
-
 /** @addtogroup G_AB_BE_BANKING
  */
 /*@{*/
@@ -127,7 +121,7 @@ AQBANKING_API
 int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
 
 AQBANKING_API
-int AB_Banking_GetUniqueId(AB_BANKING *ab);
+uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 
 /**

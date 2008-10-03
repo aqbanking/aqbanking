@@ -183,6 +183,8 @@ AQBANKING_API
 void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u);
 
 
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -54,65 +54,6 @@ AQBANKING_API
 int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
 
 
-
-AQBANKING_API
-int AB_Banking_BeginExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a);
-
-AQBANKING_API
-int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon);
-
-
-
-AQBANKING_API
-int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u);
-
-AQBANKING_API
-int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon);
-
-
-
-/** @name Checking Configuration for AqBanking4
- *
- */
-/*@{*/
-AQBANKING_API
-int AB_Banking_HasConf4(AB_BANKING *ab);
-/*@}*/
-
-
-/** @name Importing Configuration from AqBanking3
- *
- */
-/*@{*/
-
-AQBANKING_API
-int AB_Banking_HasConf3(AB_BANKING *ab);
-
-/**
- * This function imports the configuration of AqBanking3.
- */
-AQBANKING_API
-int AB_Banking_ImportConf3(AB_BANKING *ab);
-/*@}*/
-
-
-/** @name Importing Configuration from AqBanking3
- *
- */
-/*@{*/
-
-AQBANKING_API
-int AB_Banking_HasConf2(AB_BANKING *ab);
-
-/**
- * This function imports the configuration of AqBanking2.
- */
-AQBANKING_API
-int AB_Banking_ImportConf2(AB_BANKING *ab);
-
-/*@}*/
-
-
 #ifdef __cplusplus
 }
 #endif

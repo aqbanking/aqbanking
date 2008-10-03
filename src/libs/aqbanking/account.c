@@ -570,8 +570,6 @@ void AB_Account_free(AB_ACCOUNT *a){
       free(a->ownerName);
       free(a->currency);
       free(a->country);
-      free(a->dbId);
-
       GWEN_StringList_free(a->userIds);
       GWEN_StringList_free(a->selectedUserIds);
 
@@ -846,6 +844,7 @@ void AB_Account_SetCountry(AB_ACCOUNT *a, const char *s){
 
 
 
+
 void AB_Account_SetProvider(AB_ACCOUNT *a, AB_PROVIDER *pro){
   assert(a);
   assert(a->usage);
@@ -854,26 +853,6 @@ void AB_Account_SetProvider(AB_ACCOUNT *a, AB_PROVIDER *pro){
 
   free(a->backendName);
   a->backendName=strdup(AB_Provider_GetName(pro));
-}
-
-
-
-const char *AB_Account_GetDbId(const AB_ACCOUNT *a) {
-  assert(a);
-  assert(a->usage);
-
-  return a->dbId;
-}
-
-
-
-void AB_Account_SetDbId(AB_ACCOUNT *a, const char *s) {
-  assert(a);
-  assert(a->usage);
-
-  free(a->dbId);
-  if (s) a->dbId=strdup(s);
-  else a->dbId=NULL;
 }
 
 

@@ -10,148 +10,6 @@
 
 
 
-int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
-  GWEN_BUFFER *buf;
-  char home[256];
-
-  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not determine home directory, aborting.");
-    abort();
-  }
-
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  if (dname) {
-    /* setup data dir */
-    ab->dataDir=strdup(dname);
-
-    /* determine config manager URL */
-    GWEN_Buffer_AppendString(buf, "dir://");
-    GWEN_Buffer_AppendString(buf, dname);
-    GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, "settings");
-  }
-  else {
-    const char *s;
-    uint32_t pos;
-
-
-    GWEN_Buffer_AppendString(buf, "dir://");
-    pos=GWEN_Buffer_GetPos(buf);
-
-    /* determine config directory */
-    s=getenv("AQBANKING_HOME");
-    if (s && !*s)
-      s=0;
-    if (s)
-      GWEN_Buffer_AppendString(buf, s);
-    else {
-      /* use default */
-      GWEN_Buffer_AppendString(buf, home);
-      GWEN_Buffer_AppendString(buf, DIRSEP);
-      GWEN_Buffer_AppendString(buf, AB_BANKING_USERDATADIR);
-    }
-
-    /* as we are at it: store default data dir */
-    ab->dataDir=strdup(GWEN_Buffer_GetStart(buf)+pos);
-
-    /* continue with settings folder */
-    GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, "settings");
-
-  }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Using data folder [%s]",
-	   ab->dataDir);
-  DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Using ConfigManager [%s]",
-	   GWEN_Buffer_GetStart(buf));
-
-  ab->configMgr=GWEN_ConfigMgr_Factory(GWEN_Buffer_GetStart(buf));
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not create ConfigMgr[%s]. "
-	      "Maybe the gwenhywfar plugins are not installed?",
-	      GWEN_Buffer_GetStart(buf));
-    GWEN_Buffer_free(buf);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* done */
-  GWEN_Buffer_free(buf);
-  return 0;
-}
-
-
-
-int AB_Banking_HasConf4(AB_BANKING *ab) {
-  int rv;
-  GWEN_DB_NODE *db=NULL;
-  int backends=0;
-  int users=0;
-  int accounts=0;
-  GWEN_STRINGLIST *sl;
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* load main group, check version */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
-    return rv;
-  }
-  GWEN_DB_Group_free(db);
-
-  sl=GWEN_StringList_new();
-
-  /* count backends */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_BACKENDS, sl);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list backend groups (%d)", rv);
-    GWEN_StringList_free(sl);
-    return rv;
-  }
-  backends=GWEN_StringList_Count(sl);
-  GWEN_StringList_Clear(sl);
-
-  /* count users */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_USERS, sl);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list user groups (%d)", rv);
-    GWEN_StringList_free(sl);
-    return rv;
-  }
-  users=GWEN_StringList_Count(sl);
-  GWEN_StringList_Clear(sl);
-
-  /* count accounts */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, sl);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list account groups (%d)", rv);
-    GWEN_StringList_free(sl);
-    return rv;
-  }
-  accounts=GWEN_StringList_Count(sl);
-
-  GWEN_StringList_free(sl);
-
-  if (users)
-    return 0;
-  if (backends || accounts)
-    return GWEN_ERROR_PARTIAL;
-
-  return GWEN_ERROR_NO_DATA;
-}
-
-
-
 int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb) {
   assert(ab);
   assert(ab->appName);
@@ -484,7 +342,6 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab) {
 	  const char *s;
 	  AB_PROVIDER *pro;
 
-	  AB_User_SetDbId(u, t);
 	  s=AB_User_GetBackendName(u);
 	  assert(s && *s);
 	  pro=AB_Banking_GetProvider(ab, s);
@@ -517,7 +374,6 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab) {
 	    const char *s;
 	    AB_PROVIDER *pro;
   
-	    AB_User_SetDbId(u, t);
 	    s=AB_User_GetBackendName(u);
 	    assert(s && *s);
 	    pro=AB_Banking_GetProvider(ab, s);
@@ -597,7 +453,6 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab) {
 	  const char *s;
 	  AB_PROVIDER *pro;
 
-          AB_Account_SetDbId(a, t);
 	  s=AB_Account_GetBackendName(a);
 	  assert(s && *s);
 	  pro=AB_Banking_GetProvider(ab, s);
@@ -632,7 +487,6 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab) {
 	    const char *s;
 	    AB_PROVIDER *pro;
   
-	    AB_Account_SetDbId(a, t);
 	    s=AB_Account_GetBackendName(a);
 	    assert(s && *s);
 	    pro=AB_Banking_GetProvider(ab, s);
@@ -800,7 +654,6 @@ int AB_Banking_SaveConfig(AB_BANKING *ab) {
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
     return rv;
   }
 
@@ -911,290 +764,6 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
   GWEN_Buffer_AppendString(buf, DIRSEP "data");
   return 0;
 }
-
-
-
-int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
-				   AB_ACCOUNT *a) {
-  GWEN_DB_NODE *db=NULL;
-  int rv;
-
-  assert(ab);
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* lock group */
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_ACCOUNTS,
-			      AB_Account_GetDbId(a));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
-    return rv;
-  }
-
-  /* load group (is locked now) */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
-			     AB_CFG_GROUP_ACCOUNTS,
-			     AB_Account_GetDbId(a),
-			     &db);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load account group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_ACCOUNTS,
-			       AB_Account_GetDbId(a));
-    return rv;
-  }
-
-  AB_Account_ReadDb(a, db);
-
-  GWEN_DB_Group_free(db);
-
-  return 0;
-}
-
-
-
-int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
-				 AB_ACCOUNT *a,
-				 int abandon) {
-  int rv;
-
-  if (!abandon) {
-    GWEN_DB_NODE *db=GWEN_DB_Group_new("account");
-
-    AB_Account_toDb(a, db);
-
-    /* save group (still locked) */
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			       AB_CFG_GROUP_ACCOUNTS,
-			       AB_Account_GetDbId(a),
-			       db);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save account group (%d)", rv);
-      GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				 AB_CFG_GROUP_ACCOUNTS,
-				 AB_Account_GetDbId(a));
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
-    GWEN_DB_Group_free(db);
-  }
-
-  /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_ACCOUNTS,
-				AB_Account_GetDbId(a));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock account group (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int AB_Banking_BeginExclUseUser(AB_BANKING *ab,
-				AB_USER *u) {
-  GWEN_DB_NODE *db=NULL;
-  int rv;
-
-  assert(ab);
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* lock group */
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_USERS,
-			      AB_User_GetDbId(u));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
-    return rv;
-  }
-
-  /* load group (is locked now) */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
-			     AB_CFG_GROUP_USERS,
-			     AB_User_GetDbId(u),
-			     &db);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load account group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_USERS,
-			       AB_User_GetDbId(u));
-    return rv;
-  }
-
-  AB_User_ReadDb(u, db);
-  GWEN_DB_Group_free(db);
-
-  return 0;
-}
-
-
-
-int AB_Banking_EndExclUseUser(AB_BANKING *ab,
-			      AB_USER *u,
-			      int abandon) {
-  int rv;
-
-  if (!abandon) {
-    GWEN_DB_NODE *db=GWEN_DB_Group_new("user");
-
-    AB_User_toDb(u, db);
-
-    /* save group (still locked) */
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			       AB_CFG_GROUP_USERS,
-			       AB_User_GetDbId(u),
-			       db);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
-      GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				 AB_CFG_GROUP_USERS,
-				 AB_User_GetDbId(u));
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
-    GWEN_DB_Group_free(db);
-  }
-
-  /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_USERS,
-				AB_User_GetDbId(u));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock user group (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-#if 0
-int AB_Banking_SaveAccount(AB_BANKING *ab, const AB_ACCOUNT *a) {
-  GWEN_DB_NODE *db;
-  int rv;
-
-  assert(ab);
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* lock group */
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_ACCOUNTS,
-			      AB_Account_GetDbId(a));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
-    return rv;
-  }
-
-  db=GWEN_DB_Group_new("account");
-  AB_Account_toDb(a, db);
-
-  /* save group (still locked) */
-  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			     AB_CFG_GROUP_ACCOUNTS,
-			     AB_Account_GetDbId(a),
-			     db);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save account group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_ACCOUNTS,
-			       AB_Account_GetDbId(a));
-    GWEN_DB_Group_free(db);
-    return rv;
-  }
-  GWEN_DB_Group_free(db);
-
-  /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_ACCOUNTS,
-				AB_Account_GetDbId(a));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock account group (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-
-
-
-int AB_Banking_SaveUser(AB_BANKING *ab, const AB_USER *u) {
-  GWEN_DB_NODE *db;
-  int rv;
-
-  assert(ab);
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* lock group */
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_USERS,
-			      AB_User_GetDbId(u));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock user config group (%d)", rv);
-    return rv;
-  }
-
-  db=GWEN_DB_Group_new("user");
-  AB_User_toDb(u, db);
-
-  /* save group (still locked) */
-  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			     AB_CFG_GROUP_USERS,
-			     AB_User_GetDbId(u),
-			     db);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_USERS,
-			       AB_User_GetDbId(u));
-    GWEN_DB_Group_free(db);
-    return rv;
-  }
-  GWEN_DB_Group_free(db);
-
-  /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_USERS,
-				AB_User_GetDbId(u));
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock user group (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-#endif
-
-
 
 
 

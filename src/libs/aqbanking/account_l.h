@@ -35,8 +35,4 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
 int AB_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
-const char *AB_Account_GetDbId(const AB_ACCOUNT *a);
-void AB_Account_SetDbId(AB_ACCOUNT *a, const char *s);
-
-
 #endif /* AQBANKING_ACCOUNT_L_H */

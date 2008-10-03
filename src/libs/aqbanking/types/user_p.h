@@ -24,7 +24,6 @@ struct AB_USER {
   GWEN_FSLOCK *fileLock;
   GWEN_DB_NODE *data;
   AB_BANKING *banking;
-  char *dbId;
 };
 
 AB_USER *AB_User__new();
@@ -49,7 +48,6 @@ AQBANKING_API GWEN_DB_NODE *AB_User_GetData(const AB_USER *el);
 * Set the property @ref AB_USER_Data
 */
 AQBANKING_API void AB_User_SetData(AB_USER *el, GWEN_DB_NODE *d);
-
 
 
 

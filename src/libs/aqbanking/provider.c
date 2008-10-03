@@ -110,9 +110,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
     int rv;
     GWEN_DB_NODE *dbData=NULL;
 
-    rv=AB_Banking_LoadPluginConfig(pro->banking,
-				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData);
+    rv=AB_Banking_LoadPluginConfig(pro->banking, "provider", pro->name, &dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -145,22 +143,16 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
     int rv;
     GWEN_DB_NODE *dbData;
 
-    rv=AB_Banking_LockPluginConfig(pro->banking,
-                                   AB_CFG_GROUP_BACKENDS,
-				   pro->name);
+    rv=AB_Banking_LockPluginConfig(pro->banking, "provider", pro->name);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
 
-    rv=AB_Banking_LoadPluginConfig(pro->banking,
-                                   AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData);
+    rv=AB_Banking_LoadPluginConfig(pro->banking, "provider", pro->name, &dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_UnlockPluginConfig(pro->banking,
-                                    AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
       return rv;
     }
 
@@ -168,28 +160,20 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
     rv=pro->finiFn(pro, dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_UnlockPluginConfig(pro->banking,
-				    AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
-    rv=AB_Banking_SavePluginConfig(pro->banking,
-				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, dbData);
+    rv=AB_Banking_SavePluginConfig(pro->banking, "provider", pro->name, dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_UnlockPluginConfig(pro->banking,
-				    AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
-    rv=AB_Banking_UnlockPluginConfig(pro->banking,
-				     AB_CFG_GROUP_BACKENDS,
-				     pro->name);
+    rv=AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_DB_Group_free(dbData);

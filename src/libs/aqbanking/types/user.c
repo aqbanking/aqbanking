@@ -56,8 +56,6 @@ void AB_User_free(AB_USER *st) {
     GWEN_FSLock_free(st->fileLock);
   if (st->data)
     GWEN_DB_Group_free(st->data);
-  if (st->dbId)
-    free(st->dbId);
   GWEN_LIST_FINI(AB_USER, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -96,9 +94,6 @@ int AB_User_toDb(const AB_USER *st, GWEN_DB_NODE *db) {
   if (st->data)
     if (AB_User__dbToDb(st->data, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data")))
       return -1;
-  if (st->dbId)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dbId", st->dbId))
-      return -1;
   return 0;
 }
 
@@ -124,7 +119,6 @@ int AB_User_ReadDb(AB_USER *st, GWEN_DB_NODE *db) {
   st->data=GWEN_DB_Group_dup(dbT);
 }
   }
-  AB_User_SetDbId(st, GWEN_DB_GetCharValue(db, "dbId", 0, 0));
   return 0;
 }
 
@@ -335,26 +329,6 @@ void AB_User_SetBanking(AB_USER *st, AB_BANKING *d) {
     st->banking=d;
   else
     st->banking=0;
-  st->_modified=1;
-}
-
-
-
-
-const char *AB_User_GetDbId(const AB_USER *st) {
-  assert(st);
-  return st->dbId;
-}
-
-
-void AB_User_SetDbId(AB_USER *st, const char *d) {
-  assert(st);
-  if (st->dbId)
-    free(st->dbId);
-  if (d && *d)
-    st->dbId=strdup(d);
-  else
-    st->dbId=0;
   st->_modified=1;
 }
 
