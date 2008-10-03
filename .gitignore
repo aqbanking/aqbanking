@@ -77,8 +77,8 @@ testlib
 *.moc.cpp
 *.ui.cpp
 *.ui.h
-src/frontends/qbanking/bin/helpbrowser/qb-help5
-src/frontends/qbanking/bin/helpbrowser/qb-help6
+src/frontends/qbanking/bin/helpbrowser/qb-help?
+src/frontends/qbanking/bin/helpbrowser/qb-help??
 src/frontends/qbanking/bin/wizard/qt3-wizard
 src/frontends/qbanking/lib/checklib
 src/plugins/backends/aqhbci/tools/aqhbci-tool/aqhbci-tool3
