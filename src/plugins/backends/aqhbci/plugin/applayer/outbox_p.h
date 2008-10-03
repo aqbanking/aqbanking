@@ -56,6 +56,8 @@ struct AH_OUTBOX__CBOX {
 
   uint32_t guiid;
 
+  int isLocked;
+
   uint32_t usage;
 };
 
@@ -204,6 +206,10 @@ static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
 static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
 						    const AH_JOB_LIST *qjl);
+
+
+static int AH_Outbox_LockUsers(AH_OUTBOX *ob);
+static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon);
 
 
 #endif /* AH_OUTBOX_P_H */

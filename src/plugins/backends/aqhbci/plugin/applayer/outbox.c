@@ -1553,6 +1553,79 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob){
 
 
 
+int AH_Outbox_LockUsers(AH_OUTBOX *ob){
+  AH_OUTBOX__CBOX *cbox;
+  AB_BANKING *ab;
+
+  assert(ob);
+
+  ab=AH_HBCI_GetBankingApi(ob->hbci);
+
+  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
+  while(cbox) {
+    AB_USER *u;
+    int rv;
+
+    u=AH_Outbox__CBox_GetUser(cbox);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%s\"",
+	     AB_User_GetCustomerId(u));
+    rv=AB_Banking_BeginExclUseUser(ab, u);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "Could not lock customer [%s] (%d)",
+	       AB_User_GetCustomerId(u), rv);
+      AH_Outbox_UnlockUsers(ob, 1); /* abandon */
+      return rv;
+    }
+    cbox->isLocked=1;
+
+    cbox=AH_Outbox__CBox_List_Next(cbox);
+  } /* while */
+
+  return 0;
+}
+
+
+
+int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon){
+  AH_OUTBOX__CBOX *cbox;
+  int errors=0;
+  AB_BANKING *ab;
+
+  assert(ob);
+
+  ab=AH_HBCI_GetBankingApi(ob->hbci);
+
+  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
+  while(cbox) {
+    AB_USER *u;
+    int rv;
+
+    u=AH_Outbox__CBox_GetUser(cbox);
+    if (cbox->isLocked) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
+	       AB_User_GetCustomerId(u));
+      rv=AB_Banking_EndExclUseUser(ab, u, abandon);
+      cbox->isLocked=0;
+      if (rv<0) {
+	DBG_WARN(AQHBCI_LOGDOMAIN,
+		 "Could not unlock customer [%s] (%d)",
+		 AB_User_GetCustomerId(u), rv);
+	errors++;
+      }
+    }
+
+    cbox=AH_Outbox__CBox_List_Next(cbox);
+  } /* while */
+
+  if (errors)
+    return GWEN_ERROR_GENERIC;
+
+  return 0;
+}
+
+
+
 static AH_OUTBOX__CBOX *AH_Outbox__FindCBox(const AH_OUTBOX *ob,
                                             const AB_USER *u) {
   AH_OUTBOX__CBOX *cbox;
@@ -1986,20 +2059,43 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 			       I18N("Now the jobs are send via their "
 				    "backends to the credit institutes."),
 			       AH_Outbox_CountTodoJobs(ob),
-			       0);
+			       ob->guiid);
   }
 
   ob->context=ctx;
-  rv=AH_Outbox__Execute(ob);
+
+  GWEN_Gui_ProgressLog(ob->guiid,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Locking users"));
+  rv=AH_Outbox_LockUsers(ob);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_ProgressLog(ob->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Unable to lock users"));
+  }
+  else {
+    GWEN_Gui_ProgressLog(ob->guiid,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Executing HBCI jobs"));
+    rv=AH_Outbox__Execute(ob);
+    GWEN_Gui_ProgressLog(ob->guiid,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Unlocking users"));
+    AH_Outbox_UnlockUsers(ob, 0);
+  }
+
   /* unmount currently mounted medium */
   if (!nounmount)
     AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(ob->hbci), pid);
   if (withProgress) {
     GWEN_Gui_ProgressEnd(pid);
   }
+
   ob->context=0;
   return rv;
 }
+
 
 
 AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,

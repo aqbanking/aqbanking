@@ -109,6 +109,9 @@ int listUsers(AB_BANKING *ab,
     }
     AB_User_List2_free(ul);
   }
+  else {
+    fprintf(stderr, "No users found.\n");
+  }
 
   rv=AB_Banking_OnlineFini(ab);
   if (rv) {

@@ -271,7 +271,6 @@ int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
   assert(ab);
   assert(name);
   if (name) {
-    GWEN_DB_NODE *db=NULL;
     int rv;
 
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, db);
@@ -465,7 +464,7 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab) {
       t=GWEN_StringListEntry_Data(se);
       assert(t);
 
-      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_BACKENDS, t, &db);
+      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_USERS, t, &db);
       if (rv<0) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
 		 "Could not load user group [%s] (%d), ignoring",
@@ -543,11 +542,17 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab) {
 	      }
 	    }
 	  }
+	  else {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load user from DB");
+	  }
 	}
         GWEN_DB_Group_free(db);
       }
       se=GWEN_StringListEntry_Next(se);
     }
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No users");
   }
   GWEN_StringList_free(sl);
 
@@ -578,7 +583,7 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab) {
       t=GWEN_StringListEntry_Data(se);
       assert(t);
 
-      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_BACKENDS, t, &db);
+      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, t, &db);
       if (rv<0) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
 		 "Could not load account group [%s] (%d), ignoring",
