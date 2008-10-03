@@ -2068,8 +2068,7 @@ void GWENHYWFAR_CB AB_Plugin_ImExporter_FreeData(void *bp, void *p) {
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
-					    AB_BANKING *ab,
-					    GWEN_DB_NODE *db) {
+					    AB_BANKING *ab) {
   AB_PLUGIN_IMEXPORTER *xpl;
 
   assert(pl);
@@ -2077,7 +2076,7 @@ AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
   assert(xpl);
 
   assert(xpl->pluginFactoryFn);
-  return xpl->pluginFactoryFn(pl, ab, db);
+  return xpl->pluginFactoryFn(pl, ab);
 }
 
 

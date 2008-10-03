@@ -156,8 +156,10 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
 
-  hp->dbConfig=dbData;
-  rv=AH_HBCI_Init(hp->hbci);
+  rv=AH_HBCI_Init(hp->hbci, dbData);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
 
   return rv;
 }
@@ -179,9 +181,8 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AH_Outbox_free(hp->outbox);
   hp->outbox=0;
 
-  rv=AH_HBCI_Fini(hp->hbci);
+  rv=AH_HBCI_Fini(hp->hbci, dbData);
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
-  hp->dbConfig=0;
 
   return rv;
 }
@@ -933,14 +934,43 @@ int AH_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 
 int AH_Provider_Update(AB_PROVIDER *pro,
                        uint32_t lastVersion,
-                       uint32_t currentVersion) {
-  AH_PROVIDER *hp;
+		       uint32_t currentVersion) {
+  if (lastVersion<((1<<24) | (8<<16) | (1<<8) | 3)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Version is too old, can't autoupgrade");
 
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("AqHBCI-Notice"),
+			I18N(
+    "The version of AqBanking/AqHBCI previously used is too old to be\n"
+    "upgraded automatically.\n"
+    "Therefore you should delete the settings file and setup AqBanking\n"
+    "completely from scratch.\n"
+    "The settings file usually is\n"
+     "  $HOME/.banking/settings.conf\n"
+     "<html>"
+    "<p>"
+    "The version of AqBanking/AqHBCI previously used is too old to be\n"
+    "upgraded automatically.\n"
+    "</p>"
+    "<p>"
+    "Therefore you should delete the settings file and setup AqBanking\n"
+    "completely from scratch.\n"
+    "</p>"
+    "<p>"
+    "The settings file usually is: \n"
+    "<i>"
+    "$HOME/.banking/settings.conf\n"
+    "</i>.\n"
+     "</p>"
+     "</html>"
+			    ),
+			I18N("Continue"), 0, 0, 0);
+    return GWEN_ERROR_INTERNAL;
+  }
 
-  return AH_HBCI_Update(hp->hbci, lastVersion, currentVersion);
+  return 0;
 }
 
 

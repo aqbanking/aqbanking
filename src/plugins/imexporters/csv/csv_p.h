@@ -20,7 +20,6 @@
 
 typedef struct AH_IMEXPORTER_CSV AH_IMEXPORTER_CSV;
 struct AH_IMEXPORTER_CSV {
-  GWEN_DB_NODE *dbData;
   GWEN_DBIO *dbio;
 };
 
@@ -33,8 +32,7 @@ GWEN_PLUGIN *imexporters_csv_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
-					       AB_BANKING *ab,
-					       GWEN_DB_NODE *db);
+					       AB_BANKING *ab);
 
 static
 void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p);

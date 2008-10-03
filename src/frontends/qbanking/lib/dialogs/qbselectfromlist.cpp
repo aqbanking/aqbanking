@@ -68,19 +68,22 @@ QBSelectFromList::~QBSelectFromList(){
 
 
 void QBSelectFromList::init(){
-  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbConfig=NULL;
   const char *s;
+  int rv;
 
   s=name();
-  db=_app->getSharedData("qbanking");
-  assert(db);
-  db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "gui/dlgs/QBSelectFromList");
-  if (db) {
+  rv=_app->loadSharedSubConfig("qbanking",
+			       "gui/dlgs/QBSelectFromList",
+			       &dbConfig);
+  if (rv==0) {
+    GWEN_DB_NODE *db;
+
+    assert(dbConfig);
     if (s)
-      db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
+      db=GWEN_DB_GetGroup(dbConfig, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
     else
-      db=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "generic");
+      db=GWEN_DB_GetGroup(dbConfig, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "generic");
     if (db) {
       int i, j;
       const char *p;
@@ -89,56 +92,56 @@ void QBSelectFromList::init(){
       x=GWEN_DB_GetIntValue(db, "width", 0, -1);
       y=GWEN_DB_GetIntValue(db, "height", 0, -1);
       if (x!=-1 && y!=-1) {
-        DBG_ERROR(0, "Resizing to %d/%d", x, y);
-        resize(x, y);
+	DBG_ERROR(0, "Resizing to %d/%d", x, y);
+	resize(x, y);
       }
       x=GWEN_DB_GetIntValue(db, "x", 0, -1);
       y=GWEN_DB_GetIntValue(db, "y", 0, -1);
       if (x!=-1 && y!=-1)
-        move(x, y);
+	move(x, y);
 
       p=GWEN_DB_GetCharValue(db, "sortOrder", 0, "ascending");
       if (p) {
-        if (strcasecmp(p, "ascending")==0)
-          listView->setSortOrder(Qt::Ascending);
-        else
-          if (strcasecmp(p, "descending")==0)
-            listView->setSortOrder(Qt::Descending);
+	if (strcasecmp(p, "ascending")==0)
+	  listView->setSortOrder(Qt::Ascending);
+	else
+	  if (strcasecmp(p, "descending")==0)
+	    listView->setSortOrder(Qt::Descending);
       }
       i=GWEN_DB_GetIntValue(db, "sortColumn", 0, -1);
       if (i!=-1)
-        listView->setSortColumn(i);
+	listView->setSortColumn(i);
 
       /* found settings */
       for (i=0; i<listView->columns(); i++) {
-        listView->setColumnWidthMode(i, QListView::Manual);
-        j=GWEN_DB_GetIntValue(db, "columns", i, -1);
-        if (j!=-1)
-          listView->setColumnWidth(i, j);
+	listView->setColumnWidthMode(i, QListView::Manual);
+	j=GWEN_DB_GetIntValue(db, "columns", i, -1);
+	if (j!=-1)
+	  listView->setColumnWidth(i, j);
       } /* for */
     }
-  } /* if settings */
+    GWEN_DB_Group_free(dbConfig);
+  }
 }
 
 
 
 void QBSelectFromList::fini(){
+  GWEN_DB_NODE *dbConfig;
   GWEN_DB_NODE *db;
   int i, j;
   const char *s;
+  int rv;
 
-  db=_app->getSharedData("qbanking");
-  assert(db);
-  db=GWEN_DB_GetGroup(db,
-                      GWEN_DB_FLAGS_DEFAULT,
-                      "gui/dlgs/QBSelectFromList");
-  assert(db);
+  dbConfig=GWEN_DB_Group_new("config");
+  assert(dbConfig);
   s=name();
   if (s)
-    db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, s);
+    db=GWEN_DB_GetGroup(dbConfig, GWEN_DB_FLAGS_OVERWRITE_GROUPS, s);
   else
-    db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "generic");
+    db=GWEN_DB_GetGroup(dbConfig, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "generic");
   assert(db);
+
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "x", x());
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -169,6 +172,13 @@ void QBSelectFromList::fini(){
                         "columns", j);
   } /* for */
 
+  rv=_app->saveSharedSubConfig("qbanking",
+			       "gui/dlgs/QBSelectFromList",
+			       dbConfig);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+  }
+  GWEN_DB_Group_free(dbConfig);
 }
 
 

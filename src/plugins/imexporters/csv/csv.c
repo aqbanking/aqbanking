@@ -43,8 +43,7 @@ GWEN_PLUGIN *imexporters_csv_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
-					       AB_BANKING *ab,
-					       GWEN_DB_NODE *db){
+					       AB_BANKING *ab){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_CSV *ieh;
 
@@ -52,7 +51,6 @@ AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_CSV, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie, ieh,
                        AH_ImExporterCSV_FreeData);
-  ieh->dbData=db;
   ieh->dbio=GWEN_DBIO_GetPlugin("csv");
   if (!ieh->dbio) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,

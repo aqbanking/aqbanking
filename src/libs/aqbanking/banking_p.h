@@ -40,6 +40,15 @@
 #define AB_BANKING_CONFIGFILE     "settings.conf"
 #define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
 
+
+#define AB_CFG_GROUP_BACKENDS "backends"
+#define AB_CFG_GROUP_USERS    "users"
+#define AB_CFG_GROUP_ACCOUNTS "accounts"
+#define AB_CFG_GROUP_MAIN     "aqbanking"
+#define AB_CFG_GROUP_APPS     "apps"
+#define AB_CFG_GROUP_SHARED   "shared"
+
+
 #include "banking_l.h"
 #include "provider_l.h"
 #include "account_l.h"
@@ -68,12 +77,8 @@ struct AB_BANKING {
 
   GWEN_STRINGLIST *activeProviders;
 
-  char *configFile;
-
   char *startFolder;
 
-  GWEN_DB_NODE *data;
-  GWEN_DB_NODE *dbTempConfig;
   GWEN_DB_NODE *dbProfiles;
 
   AB_PROVIDER_LIST *providers;
@@ -84,11 +89,11 @@ struct AB_BANKING {
 
   GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
 
+  GWEN_CONFIGMGR *configMgr;
 };
 
 
-static void AB_Banking__GetConfigFileNameAndDataDir(AB_BANKING *ab,
-                                                    const char *dname);
+static int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname);
 
 
 static AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
@@ -109,24 +114,6 @@ static AB_BANKINFO_PLUGIN*
                                  const char *modname);
 static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab,
                                                          const char *country);
-
-
-static int AB_Banking___LoadData(AB_BANKING *ab,
-                                 const char *prefix,
-                                 const char *name);
-static int AB_Banking__LoadData(AB_BANKING *ab,
-                                const char *prefix,
-                                const char *name);
-static int AB_Banking___SaveData(AB_BANKING *ab,
-                                 const char *prefix,
-                                 const char *name);
-static int AB_Banking__SaveData(AB_BANKING *ab,
-                                const char *prefix,
-                                const char *name);
-static int AB_Banking__LoadAppData(AB_BANKING *ab);
-static int AB_Banking__LoadSharedData(AB_BANKING *ab, const char *name);
-static int AB_Banking__SaveExternalData(AB_BANKING *ab);
-
 
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
@@ -155,15 +142,18 @@ static int AB_Banking__TransformIban(const char *iban, int len,
 
 static uint64_t AB_Banking__char2uint64(const char *accountId);
 
-static int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name);
-
-static int AB_Banking__LoadData(AB_BANKING *ab,
-                                const char *prefix,
-                                const char *name);
-
 static void AB_Banking_ActivateAllProviders(AB_BANKING*ab);
 
 static void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a);
+
+
+static int AB_Banking_LoadAllUsers(AB_BANKING *ab);
+
+static int AB_Banking_LoadAllAccounts(AB_BANKING *ab);
+
+static int AB_Banking_LoadConfig(AB_BANKING *ab);
+static int AB_Banking_UnloadConfig(AB_BANKING *ab);
+static int AB_Banking_SaveConfig(AB_BANKING *ab);
 
 
 #endif /* AQBANKING_BANKING_P_H */

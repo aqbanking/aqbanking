@@ -43,6 +43,7 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/banking_info.h>
 #include <aqbanking/banking_ob.h>
 #include <aqbanking/banking_simple.h>
+#include <aqbanking/banking_cfg.h>
 
 #include <aqbanking/provider.h>
 
@@ -138,7 +139,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * @param dname Path for the directory containing the user data of
  * AqBanking. You should in most cases present a NULL for this
  * parameter, which means AqBanking will choose the default user
- * data folder which is "$HOME/.banking".  The configuration file
+ * data folder which is "$HOME/.aqbanking".  The configuration file
  * "settings.conf" file is searched for in this folder. NOTE:
  * Versions of AqBanking before 1.2.0.16 used this argument to
  * specify the path and name (!) of the configuration file,
@@ -148,7 +149,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * configuration file was "$HOME/.aqbanking.conf". This file is
  * now also searched for, but if it exists it will be moved to the
  * new default path and name upon AB_Banking_Fini. The new path
- * will be "$HOME/.banking/settings.conf".
+ * will be "$HOME/.aqbanking/settings.conf".
 
  */
 AQBANKING_API
@@ -200,15 +201,6 @@ AQBANKING_API
 int AB_Banking_OnlineFini(AB_BANKING *ab);
 
 
-/**
- * Saves all data. You may call this function periodically (especially
- * after doing setup stuff).
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab banking interface
- */
-AQBANKING_API 
-int AB_Banking_Save(AB_BANKING *ab);
-
 /*@}*/
 
 
@@ -226,29 +218,11 @@ int AB_Banking_Save(AB_BANKING *ab);
  *    get a list of available backends (@ref AB_Banking_GetActiveProviders)
  *  </li>
  *  <li>
- *    present this list to the user, let him select which backend(s) to
- *    activate/deactivate
- *  </li>
- *  <li>
- *    activate (@ref AB_Banking_ActivateProvider) or
- *    deactivate (@ref AB_Banking_DeactivateProvider) the backends
- *    accordingly
- *  </li>
- *  <li>
  *    optionally: allow the user to setup a selected backend
  *    (@ref AB_Banking_FindWizard to get the required setup wizard) and
  *    then run that wizard)
  *  </li>
  * </ul>
- * </p>
- * <p>
- * Please note that for security reasons a backend is only used when
- * it has explicitly been activated. So if any backend is added to AqBanking
- * by installing it you will still need to activate it to make use of it.
- * </p>
- * <p>
- * However, the activation state is preserved across shutdowns of
- * AqBanking, so a backend remains active until it is explicitly deactivated.
  * </p>
  */
 /*@{*/
@@ -258,52 +232,6 @@ int AB_Banking_Save(AB_BANKING *ab);
  */
 AQBANKING_API 
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
-
-/**
- * <p>
- * Activates a backend. It remains active (even across shutdowns of
- * AqBanking) until it is explicitly deactivated (using
- * @ref AB_Banking_DeactivateProvider).
- * </p>
- * <p>
- * This function automatically imports all accounts presented by the
- * backend.
- * </p>
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab banking interface
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a backend either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *backend);
-
-/**
- * Deactivates a backend. This is the default state for backends until they
- * have explicitly been activated by @ref AB_Banking_ActivateProvider.
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- * @param ab banking interface
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *backend);
-
-
-/**
- * <p>
- * This function checks whether the given backend is currently active.
- * It returns 0 if the backend is inactive.
- *
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend);
-
 
 /**
  * This function simpifies wizard handling. It searches for a wizard for
@@ -412,30 +340,8 @@ AQBANKING_API
 const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab);
 
 /**
- * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
- * the currently running application. The group returned MUST NOT be
- * freed !
- * AqBanking is able to separate and store the data for every application.
- * @param ab pointer to the AB_BANKING object
- */
-AQBANKING_API 
-GWEN_DB_NODE *AB_Banking_GetAppData(AB_BANKING *ab);
-
-/**
- * Returns a GWEN_DB_NODE which can be used to store/retrieve data shared
- * across multiple applications.
- * @param ab pointer to the AB_BANKING object
- * @param name name of the share. Special names are those of frontends and
- * backends, so these names MUST NOT be used for applications (but they may be
- * used by the corresponding frontends, e.g. the QT frontend QBanking used
- * "qbanking" to store some frontend specific settings).
- */
-AQBANKING_API 
-GWEN_DB_NODE *AB_Banking_GetSharedData(AB_BANKING *ab, const char *name);
-
-/**
  * Returns the name of the user folder for AqBanking's data.
- * Normally this is something like "/home/me/.banking".
+ * Normally this is something like "/home/me/.aqbanking".
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  * @param ab pointer to the AB_BANKING object
  * @param buf GWEN_BUFFER to append the path name to
@@ -445,7 +351,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 /**
  * Returns the name of the user folder for application data.
- * Normally this is something like "/home/me/.banking/apps".
+ * Normally this is something like "/home/me/.aqbanking/apps".
  * Your application may choose to create folders below this one to store
  * user data. If you only add AqBanking to an existing program to add
  * home banking support you will most likely use your own folders and thus

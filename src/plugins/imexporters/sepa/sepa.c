@@ -44,8 +44,7 @@ GWEN_PLUGIN *imexporters_sepa_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterSEPA_Factory(GWEN_PLUGIN *pl,
-						AB_BANKING *ab,
-						GWEN_DB_NODE *db){
+						AB_BANKING *ab){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_SEPA *ieh;
 
@@ -53,8 +52,6 @@ AB_IMEXPORTER *AB_Plugin_ImExporterSEPA_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_SEPA, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_SEPA, ie, ieh,
 		       AH_ImExporterSEPA_FreeData);
-  ieh->dbData=db;
-
   AB_ImExporter_SetImportFn(ie, AH_ImExporterSEPA_Import);
   AB_ImExporter_SetExportFn(ie, AH_ImExporterSEPA_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterSEPA_CheckFile);

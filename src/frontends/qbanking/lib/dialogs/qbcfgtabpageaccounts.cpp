@@ -74,49 +74,63 @@ void QBCfgTabPageAccounts::_accountRescan(){
 
 
 bool QBCfgTabPageAccounts::toGui() {
-  GWEN_DB_NODE *dbSettings;
-  int i, j;
+  GWEN_DB_NODE *dbConfig=NULL;
+  int rv;
 
-  dbSettings=getBanking()->getSharedData("qbanking");
-  assert(dbSettings);
-  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
-                              "settings");
-  assert(dbSettings);
+  rv=getBanking()->loadSharedSubConfig("qbanking",
+				       "settings/gui/accountList",
+				       &dbConfig);
+  if (rv==0) {
+    int i, j;
 
-  /* setup account list view */
-  _realPage->accountList->setResizeMode(QListView::NoColumn);
-  for (i=0; i<_realPage->accountList->columns(); i++) {
-    _realPage->accountList->setColumnWidthMode(i, QListView::Manual);
-    j=GWEN_DB_GetIntValue(dbSettings, "gui/accountList/columns", i, -1);
-    if (j!=-1)
-      _realPage->accountList->setColumnWidth(i, j);
-  } /* for */
-  _realPage->accountList->setSelectionMode(QListView::Single);
+    assert(dbConfig);
 
-  _accountRescan();
-  return true;
+    /* setup account list view */
+    _realPage->accountList->setResizeMode(QListView::NoColumn);
+    for (i=0; i<_realPage->accountList->columns(); i++) {
+      _realPage->accountList->setColumnWidthMode(i, QListView::Manual);
+      j=GWEN_DB_GetIntValue(dbConfig, "columns", i, -1);
+      if (j!=-1)
+	_realPage->accountList->setColumnWidth(i, j);
+    } /* for */
+    _realPage->accountList->setSelectionMode(QListView::Single);
+
+    _accountRescan();
+    GWEN_DB_Group_free(dbConfig);
+    return true;
+  }
+  else {
+    DBG_INFO(0, "here (%d)", rv);
+    return false;
+  }
 }
 
 
 
 bool QBCfgTabPageAccounts::fromGui() {
-  GWEN_DB_NODE *dbSettings;
+  GWEN_DB_NODE *dbConfig;
   int i, j;
+  int rv;
 
-  dbSettings=getBanking()->getSharedData("qbanking");
-  assert(dbSettings);
-  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
-                              "settings");
-  assert(dbSettings);
+  dbConfig=GWEN_DB_Group_new("config");
+  assert(dbConfig);
 
   /* save account list view settings */
-  GWEN_DB_DeleteVar(dbSettings, "gui/accountList/columns");
   for (i=0; i<_realPage->accountList->columns(); i++) {
     j=_realPage->accountList->columnWidth(i);
-    GWEN_DB_SetIntValue(dbSettings, GWEN_DB_FLAGS_DEFAULT,
-                        "gui/accountList/columns", j);
+    GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT,
+			"columns", j);
   } /* for */
 
+  rv=getBanking()->saveSharedSubConfig("qbanking",
+				       "settings/gui/accountList",
+				       dbConfig);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_DB_Group_free(dbConfig);
+    return false;
+  }
+  GWEN_DB_Group_free(dbConfig);
   return true;
 }
 

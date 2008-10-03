@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -22,7 +19,6 @@
 #include <aqbanking/banking.h>
 
 
-
 /** @addtogroup G_AB_BE_BANKING
  */
 /*@{*/
@@ -41,7 +37,7 @@ extern "C" {
 /**
  * Loads a backend with the given name. You can use
  * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
- * backends. Such a backend can then be asked to return an account list.
+ * backends.
  */
 AQBANKING_API 
 AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
@@ -88,12 +84,57 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 /*@}*/
 
 
+/** @name Configuration Data Handling for Plugins
+ *
+ */
+/*@{*/
+
+AQBANKING_API 
+int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name,
+				GWEN_DB_NODE **pDb);
+
+AQBANKING_API 
+int AB_Banking_SavePluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name,
+				GWEN_DB_NODE *db);
+
+AQBANKING_API 
+int AB_Banking_LockPluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name);
+
+AQBANKING_API 
+int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
+				  const char *pluginName,
+				  const char *name);
+/*@}*/
+
+
+
+
+
+
 AQBANKING_API
 int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
 
 AQBANKING_API
 uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab);
 
+
+/**
+ * This copies the name of the folder for AqBanking's backend data into
+ * the given GWEN_Buffer (not including the provider's name).
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab pointer to the AB_BANKING object
+ * @param buf buffer to append the path name to
+ */
+AQBANKING_API
+int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
+                                      const char *name,
+                                      GWEN_BUFFER *buf);
 
 #ifdef __cplusplus
 }

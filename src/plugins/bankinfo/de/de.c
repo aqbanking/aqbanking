@@ -56,7 +56,7 @@ GWEN_PLUGIN *bankinfo_de_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 /* interface to bankinfo plugin */
-AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab, GWEN_DB_NODE *db){
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
   AB_BANKINFO_PLUGIN *bip;
   AB_BANKINFO_PLUGIN_DE *bde;
 #ifdef HAVE_KTOBLZCHECK
@@ -64,13 +64,12 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
   GWEN_STRINGLIST *paths;
 #endif
 
-  bip=AB_BankInfoPluginGENERIC_new(ab, db, "de");
+  bip=AB_BankInfoPluginGENERIC_new(ab, "de");
   GWEN_NEW_OBJECT(AB_BANKINFO_PLUGIN_DE, bde);
   GWEN_INHERIT_SETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_DE,
                        bip, bde, AB_BankInfoPluginDE_FreeData);
 
   bde->banking=ab;
-  bde->dbData=db;
 #ifdef HAVE_KTOBLZCHECK
   s=AccountNumberCheck_libraryVersion();
   if (s && GWEN_Text_ComparePattern(s, "1.8*", 0)!=-1) {

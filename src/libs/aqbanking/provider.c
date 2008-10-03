@@ -108,18 +108,27 @@ int AB_Provider_Init(AB_PROVIDER *pro){
   }
   if (pro->initFn) {
     int rv;
-    GWEN_DB_NODE *dbData;
+    GWEN_DB_NODE *dbData=NULL;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro);
-    assert(dbData);
+    rv=AB_Banking_LoadPluginConfig(pro->banking, "provider", pro->name, &dbData);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      assert(dbData);
 
-    rv=pro->initFn(pro, dbData);
-    if (!rv)
-      pro->isInit=1;
-    return rv;
+      rv=pro->initFn(pro, dbData);
+      if (!rv)
+	pro->isInit=1;
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
   }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
-  return GWEN_ERROR_NOT_IMPLEMENTED;
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+  }
 }
 
 
@@ -131,17 +140,53 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
     return GWEN_ERROR_INVALID;
   }
   if (pro->finiFn) {
+    int rv;
     GWEN_DB_NODE *dbData;
 
-    dbData=AB_Banking_GetProviderData(pro->banking, pro);
-    assert(dbData);
+    rv=AB_Banking_LockPluginConfig(pro->banking, "provider", pro->name);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    rv=AB_Banking_LoadPluginConfig(pro->banking, "provider", pro->name, &dbData);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
+      return rv;
+    }
 
     pro->isInit=0;
-    return pro->finiFn(pro, dbData);
+    rv=pro->finiFn(pro, dbData);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+
+    rv=AB_Banking_SavePluginConfig(pro->banking, "provider", pro->name, dbData);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+
+    rv=AB_Banking_UnlockPluginConfig(pro->banking, "provider", pro->name);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+    GWEN_DB_Group_free(dbData);
+    return 0;
   }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
-  pro->isInit=0;
-  return GWEN_ERROR_NOT_IMPLEMENTED;
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
+    pro->isInit=0;
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+  }
 }
 
 
@@ -374,17 +419,6 @@ int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf){
                                            pro->escName,
                                            buf);
 }
-
-
-
-GWEN_DB_NODE *AB_Provider_GetData(AB_PROVIDER *pro) {
-  assert(pro);
-  assert(pro->banking);
-  assert(pro->escName);
-
-  return AB_Banking_GetProviderData(pro->banking, pro);
-}
-
 
 
 
