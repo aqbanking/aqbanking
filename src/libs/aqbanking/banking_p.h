@@ -41,7 +41,6 @@
 #define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
 
 
-#define AB_CFG_GROUP_BACKENDS "backends"
 #define AB_CFG_GROUP_USERS    "users"
 #define AB_CFG_GROUP_ACCOUNTS "accounts"
 #define AB_CFG_GROUP_MAIN     "aqbanking"
@@ -101,9 +100,6 @@ static AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name);
 static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab,
                                                 const char *name);
 
-static int AB_Banking__OpenFile(const char *s, int wr);
-static int AB_Banking__CloseFile(int fd);
-
 
 static AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
                                                    const char *modname);
@@ -155,5 +151,11 @@ static int AB_Banking_LoadConfig(AB_BANKING *ab);
 static int AB_Banking_UnloadConfig(AB_BANKING *ab);
 static int AB_Banking_SaveConfig(AB_BANKING *ab);
 
+/* only for import of older configurations */
+static int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid);
+
+static int AB_Banking__ImportConfDir(AB_BANKING *ab,
+				     const char *path,
+				     const char *groupName);
 
 #endif /* AQBANKING_BANKING_P_H */

@@ -229,6 +229,7 @@ AQBANKING_API AB_BANKING *AB_User_GetBanking(const AB_USER *el);
 AQBANKING_API void AB_User_SetBanking(AB_USER *el, AB_BANKING *d);
 
 
+
 #ifdef __cplusplus
 } /* __cplusplus */
 #endif

@@ -16,6 +16,15 @@ Set this property with @ref AB_User_SetFileLock,
 get it with @ref AB_User_GetFileLock
 </p>
 
+@anchor AB_USER_DbId
+<h3>DbId</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_User_SetDbId, 
+get it with @ref AB_User_GetDbId
+</p>
+
 */
 #include <gwenhywfar/misc.h>
 #include "user.h"
@@ -49,6 +58,15 @@ AQBANKING_API GWEN_FSLOCK *AB_User_GetFileLock(const AB_USER *el);
 AQBANKING_API void AB_User_SetFileLock(AB_USER *el, GWEN_FSLOCK *d);
 
 
+
+/**
+* Returns the property @ref AB_USER_DbId
+*/
+AQBANKING_API const char *AB_User_GetDbId(const AB_USER *el);
+/**
+* Set the property @ref AB_USER_DbId
+*/
+AQBANKING_API void AB_User_SetDbId(AB_USER *el, const char *d);
 
 
 #ifdef __cplusplus
