@@ -184,113 +184,107 @@ void AB_Banking_free(AB_BANKING *ab){
 
 
 
-uint32_t AB_Banking_GetUniqueId(AB_BANKING *ab){
-  GWEN_BUFFER *nbuf;
-  uint32_t uniqueId;
-  int fd;
+int AB_Banking_GetUniqueId(AB_BANKING *ab){
+  int rv;
+  int uid=0;
+  GWEN_DB_NODE *dbConfig=NULL;
 
-  assert(ab);
-  uniqueId=0;
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AB_Banking_GetUserDataDir(ab, nbuf)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-    GWEN_Buffer_free(nbuf);
-    return 0;
-  }
-  GWEN_Buffer_AppendString(nbuf, DIRSEP "uniqueid");
-
-  fd=AB_Banking__OpenFile(GWEN_Buffer_GetStart(nbuf), 1);
-  if (fd!=-1) {
-    GWEN_BUFFEREDIO *bio;
-    char buffer[256];
-    int err;
-    unsigned long int i;
-
-    buffer[0]=0;
-    bio=GWEN_BufferedIO_File_new(fd);
-    GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
-    GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-    if (!GWEN_BufferedIO_CheckEOF(bio)) {
-      err=GWEN_BufferedIO_ReadLine(bio, buffer, sizeof(buffer)-1);
-      if (err) {
-	DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-	GWEN_BufferedIO_free(bio);
-	AB_Banking__CloseFile(fd);
-	GWEN_Buffer_free(nbuf);
-	return 0;
-      }
-      if (strlen(buffer)) {
-        if (1!=sscanf(buffer, "%lu", &i)) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Bad value in file (%s)",
-                    buffer);
-          GWEN_BufferedIO_free(bio);
-          AB_Banking__CloseFile(fd);
-          GWEN_Buffer_free(nbuf);
-          return 0;
-        }
-      }
-      else
-        i=0;
-    }
-    else {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "File is empty");
-      i=0;
-    }
-    GWEN_BufferedIO_free(bio);
-
-    uniqueId=++i;
-    buffer[0]=0;
-    snprintf(buffer, sizeof(buffer)-1, "%lu", i);
-    if (ftruncate(fd, 0)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"ftruncate(%s, 0): %s",
-		GWEN_Buffer_GetStart(nbuf), strerror(errno));
-      GWEN_BufferedIO_free(bio);
-      return 0;
-    }
-    if (lseek(fd, 0, SEEK_SET)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"lseek(%s, 0): %s",
-		GWEN_Buffer_GetStart(nbuf), strerror(errno));
-      GWEN_BufferedIO_free(bio);
-      return 0;
-    }
-
-    bio=GWEN_BufferedIO_File_new(fd);
-    GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
-    GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-    err=GWEN_BufferedIO_WriteLine(bio, buffer);
-    if (err) {
-      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-      GWEN_BufferedIO_free(bio);
-      AB_Banking__CloseFile(fd);
-      GWEN_Buffer_free(nbuf);
-      return 0;
-    }
-    err=GWEN_BufferedIO_Flush(bio);
-    if (err) {
-      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-      GWEN_BufferedIO_free(bio);
-      AB_Banking__CloseFile(fd);
-      GWEN_Buffer_free(nbuf);
-      return 0;
-    }
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Could not open file.");
-    uniqueId=1;
+  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
+			      AB_CFG_GROUP_MAIN,
+			      "uniqueId");
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
+    return rv;
   }
 
-  if (AB_Banking__CloseFile(fd)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Error closing file \"%s\"",
-	     GWEN_Buffer_GetStart(nbuf));
-    uniqueId=0;
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
+			     AB_CFG_GROUP_MAIN,
+			     "uniqueId",
+			     &dbConfig);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
+    return rv;
   }
 
-  GWEN_Buffer_free(nbuf);
-  return uniqueId;
+  uid=GWEN_DB_GetIntValue(dbConfig, "uniqueId", 0, 0);
+  uid++;
+  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "uniqueId", uid);
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
+			     AB_CFG_GROUP_MAIN,
+			     "uniqueId",
+			     dbConfig);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+			       AB_CFG_GROUP_MAIN,
+			       "uniqueId");
+    GWEN_DB_Group_free(dbConfig);
+    return rv;
+  }
+  GWEN_DB_Group_free(dbConfig);
+
+  /* unlock */
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+				AB_CFG_GROUP_MAIN,
+				"uniqueId");
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
+    return rv;
+  }
+
+  return uid;
+}
+
+
+
+int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
+  int rv;
+  GWEN_DB_NODE *dbConfig=NULL;
+
+  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
+			      AB_CFG_GROUP_MAIN,
+                              "uniqueId");
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
+			     AB_CFG_GROUP_MAIN,
+			     "uniqueId",
+			     &dbConfig);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
+    return rv;
+  }
+
+  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "uniqueId", uid);
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
+			     AB_CFG_GROUP_MAIN,
+			     "uniqueId",
+			     dbConfig);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+			       AB_CFG_GROUP_MAIN,
+			       "uniqueId");
+    GWEN_DB_Group_free(dbConfig);
+    return rv;
+  }
+  GWEN_DB_Group_free(dbConfig);
+
+  /* unlock */
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+				AB_CFG_GROUP_MAIN,
+				"uniqueId");
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
+    return rv;
+  }
+
+  return 0;
 }
 
 
@@ -651,96 +645,6 @@ int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
                            DIRSEP);
   s=backend;
   while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
-
-  return 0;
-}
-
-
-
-int AB_Banking__OpenFile(const char *s, int wr) {
-#ifndef OS_WIN32
-  struct flock fl;
-#endif
-  int fd;
-
-  if (wr) {
-    if (GWEN_Directory_GetPath(s,
-			       GWEN_DB_FLAGS_DEFAULT |
-			       GWEN_PATH_FLAGS_VARIABLE)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create path \"%s\"", s);
-      return -1;
-    }
-    fd=open(s,
-	    O_RDWR | O_CREAT,
-	    S_IRUSR | S_IWUSR);
-  }
-  else {
-    fd=open(s, O_RDONLY);
-  }
-
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s", s, strerror(errno));
-    return -1;
-  }
-
-#ifndef OS_WIN32
-  /* lock file for reading or writing */
-  memset(&fl, 0, sizeof(fl));
-  fl.l_type=wr?F_WRLCK:F_RDLCK;
-  fl.l_whence=SEEK_SET;
-  fl.l_start=0;
-  fl.l_len=0;
-  if (fcntl(fd, F_SETLKW, &fl)) {
-# ifdef ENOLCK
-    if (errno!=ENOLCK) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"fcntl(%s, F_SETLKW): %s", s, strerror(errno));
-      close(fd);
-      return -1;
-    }
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Advisory locking is not supported at this file location.");
-# else
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "fcntl(%s, F_SETLKW): %s", s, strerror(errno));
-    close(fd);
-    return -1;
-# endif
-  }
-#endif
-
-  return fd;
-}
-
-
-
-int AB_Banking__CloseFile(int fd){
-#ifndef OS_WIN32
-  struct flock fl;
-#endif
-
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "File is not open");
-    return -1;
-  }
-
-#ifndef OS_WIN32
-  /* unlock file */
-  memset(&fl, 0, sizeof(fl));
-  fl.l_type=F_UNLCK;
-  fl.l_whence=SEEK_SET;
-  fl.l_start=0;
-  fl.l_len=0;
-  if (fcntl(fd, F_SETLK, &fl)) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "fcntl(%d, F_SETLK): %s",
-	     fd, strerror(errno));
-  }
-#endif
-
-  if (close(fd)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "close(%d): %s", fd, strerror(errno));
-    return -1;
-  }
 
   return 0;
 }

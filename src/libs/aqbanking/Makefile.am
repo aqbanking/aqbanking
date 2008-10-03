@@ -10,6 +10,8 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 EXTRA_DIST=\
  banking_account.c \
+ banking_cfg.c \
+ banking_deprec.c \
  banking_init.c \
  banking_online.c \
  banking_user.c
@@ -52,6 +54,7 @@ iheader_HEADERS=\
  account_be.h \
  banking.h \
  banking_be.h \
+ banking_cfg.h \
  banking_imex.h \
  banking_info.h \
  banking_ob.h \

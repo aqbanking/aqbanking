@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -51,6 +48,7 @@ struct AB_ACCOUNT {
   GWEN_DB_NODE *appData;
   GWEN_DB_NODE *providerData;
 
+  char *dbId;
 };
 
 static AB_ACCOUNT *AB_Account__freeAll_cb(AB_ACCOUNT *a, void *userData);
