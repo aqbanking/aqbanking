@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
+  rv=AB_Banking_OnlineInit(ab, 0);
   if (rv) {
     fprintf(stderr, "Error on OnlineInit (%d)\n", rv);
     return 2;

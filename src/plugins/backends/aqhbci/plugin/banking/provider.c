@@ -754,13 +754,13 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
     return 0;
   }
 
-  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1);
+  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, guiid);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox.");
     rv=GWEN_ERROR_GENERIC;
   }
 
-  mjl=AH_Outbox_GetFinishedJobs(hp->outbox);
+  mjl=AH_Outbox_GetFinishedJobs(hp->outbox, guiid);
   /* copy job results to Banking-job, set status etc */
   jit=AB_Job_List2_First(hp->bankingJobs);
   if (jit) {
@@ -1022,7 +1022,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h, guiid);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     if (!nounmount)
@@ -1106,7 +1106,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     ob=AH_Outbox_new(h, guiid);
     AH_Outbox_AddJob(ob, job);
 
-    rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+    rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
     if (rv) {
       DBG_ERROR(0, "Could not execute outbox.\n");
       if (!nounmount)
@@ -1227,7 +1227,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h, guiid);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
@@ -1536,7 +1536,7 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_AddJob(ob, job);
 
   /* execute queue */
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
@@ -1676,7 +1676,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h, guiid);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     if (!nounmount)
@@ -1774,7 +1774,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
   ob=AH_Outbox_new(h, guiid);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     if (!nounmount)
@@ -2637,7 +2637,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
   ob=AH_Outbox_new(h, guiid);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, 1, 1);
+  rv=AH_Outbox_Execute(ob, ctx, 1, 1, guiid);
   if (rv) {
     DBG_ERROR(0, "Could not execute outbox.\n");
     if (!nounmount)

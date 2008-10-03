@@ -179,7 +179,7 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
     return 0;
   }
 
-  uid=AB_Banking_GetUniqueId(ab);
+  uid=AB_Banking_GetUniqueId(ab, 0);
   assert(uid);
 
   a=AB_Account_new(ab, pro);
@@ -199,6 +199,8 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
 
 int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   int rv;
+  char groupName[32];
+  GWEN_DB_NODE *db;
 
   assert(ab);
   assert(a);
@@ -207,6 +209,62 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 			       NULL);
   if (rv)
     return rv;
+
+  rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
+				AB_CFG_GROUP_ACCOUNTS,
+				groupName, sizeof(groupName)-1,
+				0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to create a unique id for account [%08x] (%d)",
+	      AB_Account_GetUniqueId(a), rv);
+    return rv;
+  }
+  groupName[sizeof(groupName)-1]=0;
+
+  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
+			      AB_CFG_GROUP_ACCOUNTS,
+			      groupName,
+			      0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to lock account config [%08x] (%d)",
+	      AB_Account_GetUniqueId(a), rv);
+    return rv;
+  }
+
+  db=GWEN_DB_Group_new("account");
+  AB_Account_toDb(a, db);
+
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
+			     AB_CFG_GROUP_ACCOUNTS,
+			     groupName,
+			     db,
+			     0);
+  GWEN_DB_Group_free(db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to save account config [%08x] (%d)",
+	      AB_Account_GetUniqueId(a), rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+			       AB_CFG_GROUP_ACCOUNTS,
+			       groupName,
+			       0);
+    return rv;
+  }
+
+  /* unlock */
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+				AB_CFG_GROUP_ACCOUNTS,
+				groupName,
+				0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to unlock account config [%08x] (%d)",
+	      AB_Account_GetUniqueId(a), rv);
+    return rv;
+  }
+
   AB_Account_List_Add(a, ab->accounts);
   return 0;
 }

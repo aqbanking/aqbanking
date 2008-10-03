@@ -67,12 +67,12 @@ public:
   /**
    * See @ref AB_Banking_OnlineInit
    */
-  int onlineInit();
+  int onlineInit(uint32_t guiid);
 
   /**
    * See @ref AB_Banking_OnlineFini
    */
-  int onlineFini();
+  int onlineFini(uint32_t guiid);
 
   /**
    * Loads a backend with the given name. You can use
@@ -116,18 +116,20 @@ public:
   int getUserDataDir(GWEN_BUFFER *buf) const ;
   int getAppUserDataDir(GWEN_BUFFER *buf) const ;
 
-  int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb);
-  int saveSharedConfig(const char *name, GWEN_DB_NODE *db);
-  int lockSharedConfig(const char *name);
-  int unlockSharedConfig(const char *name);
+  int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb, uint32_t guiid);
+  int saveSharedConfig(const char *name, GWEN_DB_NODE *db, uint32_t guiid);
+  int lockSharedConfig(const char *name, uint32_t guiid);
+  int unlockSharedConfig(const char *name, uint32_t guiid);
 
   int loadSharedSubConfig(const char *name,
 			  const char *subGroup,
-			  GWEN_DB_NODE **pDb);
+			  GWEN_DB_NODE **pDb,
+			  uint32_t guiid);
 
   int saveSharedSubConfig(const char *name,
 			  const char *subGroup,
-			  GWEN_DB_NODE *dbSrc);
+			  GWEN_DB_NODE *dbSrc,
+			  uint32_t guiid);
 
   /** @name Plugin Handling
    *

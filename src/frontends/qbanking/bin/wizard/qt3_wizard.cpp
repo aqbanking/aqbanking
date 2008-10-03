@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     return 2;
   }
 
-  if (ab->onlineInit()) {
+  if (ab->onlineInit(0)) {
     DBG_ERROR(0, "Error on QBanking::onlineInit");
     return 2;
   }
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 
   ab->setupDialog();
 
-  if (ab->onlineFini()) {
+  if (ab->onlineFini(0)) {
     DBG_ERROR(0, "Error on QBanking::onlineFini");
   }
   if (ab->fini()) {

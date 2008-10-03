@@ -24,7 +24,8 @@
 int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 			  AH_DIALOG *dlg,
 			  AH_JOBQUEUE *qJob,
-			  int timeout){
+			  int timeout,
+                          uint32_t guiid){
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -186,7 +187,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send HKTAN message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2, timeout);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2, timeout, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -198,7 +199,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(jTan, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
@@ -209,7 +210,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
-  rv=AH_Job_Process(jTan, cbox->outbox->context, cbox->guiid);
+  rv=AH_Job_Process(jTan, cbox->outbox->context, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -279,7 +280,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send job message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1, timeout);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1, timeout, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -289,7 +290,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(j, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

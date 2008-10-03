@@ -24,7 +24,8 @@
 int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
                           AH_DIALOG *dlg,
 			  AH_JOBQUEUE *qJob,
-			  int timeout){
+			  int timeout,
+			  uint32_t guiid){
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -133,7 +134,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1, timeout);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1, timeout, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -145,14 +146,14 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(jTan1, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   /* get challenge */
-  rv=AH_Job_Process(jTan1, cbox->outbox->context, cbox->guiid);
+  rv=AH_Job_Process(jTan1, cbox->outbox->context, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -263,7 +264,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send HKTAN message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2, timeout);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2, timeout, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -274,7 +275,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(jTan2, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob2);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob2, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(qJob2);
@@ -283,7 +284,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   else {
     const AH_JOB_LIST *qjl;
 
-    rv=AH_Job_Process(jTan2, cbox->outbox->context, cbox->guiid);
+    rv=AH_Job_Process(jTan2, cbox->outbox->context, guiid);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(qJob2);

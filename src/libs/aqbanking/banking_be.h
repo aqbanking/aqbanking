@@ -99,23 +99,27 @@ AQBANKING_API
 int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE **pDb);
+				GWEN_DB_NODE **pDb,
+				uint32_t guiid);
 
 AQBANKING_API 
 int AB_Banking_SavePluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE *db);
+				GWEN_DB_NODE *db,
+				uint32_t guiid);
 
 AQBANKING_API 
 int AB_Banking_LockPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
-				const char *name);
+				const char *name,
+				uint32_t guiid);
 
 AQBANKING_API 
 int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
 				  const char *pluginName,
-				  const char *name);
+				  const char *name,
+				  uint32_t guiid);
 /*@}*/
 
 
@@ -127,7 +131,7 @@ AQBANKING_API
 int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
 
 AQBANKING_API
-int AB_Banking_GetUniqueId(AB_BANKING *ab);
+int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid);
 
 
 /**

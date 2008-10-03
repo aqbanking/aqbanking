@@ -606,16 +606,16 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
 
 
 
-int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
-  return AB_Provider_Init(pro);
+int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid) {
+  return AB_Provider_Init(pro, guiid);
 }
 
 
 
-int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
+int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid) {
   int rv;
 
-  rv=AB_Provider_Fini(pro);
+  rv=AB_Provider_Fini(pro, guiid);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv);
   }
@@ -651,7 +651,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
     return pro;
   pro=AB_Banking__LoadProviderPlugin(ab, name);
   if (pro) {
-    if (AB_Banking_InitProvider(ab, pro)) {
+    if (AB_Banking_InitProvider(ab, pro, 0)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not init provider \"%s\"", name);
       AB_Provider_free(pro);
       return 0;

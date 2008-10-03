@@ -198,7 +198,7 @@ AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName) {
 
   u=AB_User_new(ab);
   AB_User_SetBackendName(u, AB_Provider_GetName(pro));
-  uid=AB_Banking_GetUniqueId(ab);
+  uid=AB_Banking_GetUniqueId(ab, 0);
   assert(uid);
   AB_User_SetUniqueId(u, uid);
   rv=AB_Provider_ExtendUser(pro, u, AB_ProviderExtendMode_Create, NULL);
@@ -216,6 +216,8 @@ AB_USER *AB_Banking_CreateUser(AB_BANKING *ab, const char *backendName) {
 int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
   int rv;
   AB_USER *uTmp;
+  char groupName[32];
+  GWEN_DB_NODE *db;
 
   assert(ab);
   assert(u);
@@ -235,6 +237,62 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
 			    NULL);
   if (rv)
     return rv;
+
+  rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
+				AB_CFG_GROUP_USERS,
+				groupName, sizeof(groupName)-1,
+				0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to create a unique id for user [%08x] (%d)",
+	      AB_User_GetUniqueId(u), rv);
+    return rv;
+  }
+  groupName[sizeof(groupName)-1]=0;
+
+  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
+			      AB_CFG_GROUP_USERS,
+			      groupName,
+			      0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to lock user config [%08x] (%d)",
+	      AB_User_GetUniqueId(u), rv);
+    return rv;
+  }
+
+  db=GWEN_DB_Group_new("user");
+  AB_User_toDb(u, db);
+
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
+			     AB_CFG_GROUP_USERS,
+			     groupName,
+			     db,
+			     0);
+  GWEN_DB_Group_free(db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to save user config [%08x] (%d)",
+	      AB_User_GetUniqueId(u), rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+			       AB_CFG_GROUP_USERS,
+			       groupName,
+			       0);
+    return rv;
+  }
+
+  /* unlock */
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+				AB_CFG_GROUP_USERS,
+				groupName,
+				0);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Unable to unlock user config [%08x] (%d)",
+	      AB_User_GetUniqueId(u), rv);
+    return rv;
+  }
+
   AB_User_List_Add(u, ab->users);
   return 0;
 }

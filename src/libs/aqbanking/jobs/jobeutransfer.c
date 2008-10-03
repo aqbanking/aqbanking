@@ -205,7 +205,7 @@ int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
 
     jd->transaction=AB_Transaction_dup(t);
     /* assign unique id */
-    AB_Transaction_SetUniqueId(jd->transaction, AB_Banking_GetUniqueId(ba));
+    AB_Transaction_SetUniqueId(jd->transaction, AB_Banking_GetUniqueId(ba, 0));
   }
   else
     jd->transaction=0;

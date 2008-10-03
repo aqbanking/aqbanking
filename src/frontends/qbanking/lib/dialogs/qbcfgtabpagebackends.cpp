@@ -69,7 +69,8 @@ bool QBCfgTabPageBackends::toGui() {
 
   rv=getBanking()->loadSharedSubConfig("qbanking",
 				       "settings/gui/backendList",
-				       &dbConfig);
+				       &dbConfig,
+				       0);
   if (rv==0) {
     int i, j;
 
@@ -114,7 +115,8 @@ bool QBCfgTabPageBackends::fromGui() {
 
   rv=getBanking()->saveSharedSubConfig("qbanking",
 				       "settings/gui/backendList",
-				       dbConfig);
+				       dbConfig,
+				       0);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
     GWEN_DB_Group_free(dbConfig);

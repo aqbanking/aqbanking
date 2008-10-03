@@ -96,9 +96,6 @@ int AB_User_toDb(const AB_USER *st, GWEN_DB_NODE *db) {
   if (st->data)
     if (AB_User__dbToDb(st->data, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data")))
       return -1;
-  if (st->dbId)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dbId", st->dbId))
-      return -1;
   return 0;
 }
 
@@ -124,7 +121,6 @@ int AB_User_ReadDb(AB_USER *st, GWEN_DB_NODE *db) {
   st->data=GWEN_DB_Group_dup(dbT);
 }
   }
-  AB_User_SetDbId(st, GWEN_DB_GetCharValue(db, "dbId", 0, 0));
   return 0;
 }
 

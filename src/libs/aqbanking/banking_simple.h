@@ -48,7 +48,8 @@ extern "C" {
  */
 AQBANKING_API 
 void AB_Banking_SetAccountAlias(AB_BANKING *ab,
-                                AB_ACCOUNT *a, const char *alias);
+				AB_ACCOUNT *a, const char *alias,
+				uint32_t guiid);
 
 /**
  * This function returns the AqBanking account to which the given
@@ -68,7 +69,8 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
  */
 AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-                                         const char *alias);
+					 const char *alias,
+					 uint32_t guiid);
 
 
 AQBANKING_API 

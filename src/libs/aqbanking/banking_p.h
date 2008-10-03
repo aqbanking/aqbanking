@@ -117,8 +117,8 @@ static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                                               GWEN_DB_NODE *db);
 
 
-static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro);
-static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro);
+static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid);
+static int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid);
 
 static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
                                     AB_IMEXPORTER_CONTEXT *ctx,
@@ -126,7 +126,8 @@ static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 
 
 static AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
-                                          const char *accountId);
+					  const char *accountId,
+					  uint32_t guiid);
 
 static int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
                                        const char *backend,
@@ -138,24 +139,25 @@ static int AB_Banking__TransformIban(const char *iban, int len,
 
 static uint64_t AB_Banking__char2uint64(const char *accountId);
 
-static void AB_Banking_ActivateAllProviders(AB_BANKING*ab);
+static void AB_Banking_ActivateAllProviders(AB_BANKING *ab, uint32_t guiid);
 
 static void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a);
 
 
-static int AB_Banking_LoadAllUsers(AB_BANKING *ab);
+static int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid);
 
-static int AB_Banking_LoadAllAccounts(AB_BANKING *ab);
+static int AB_Banking_LoadAllAccounts(AB_BANKING *ab, uint32_t guiid);
 
-static int AB_Banking_LoadConfig(AB_BANKING *ab);
-static int AB_Banking_UnloadConfig(AB_BANKING *ab);
-static int AB_Banking_SaveConfig(AB_BANKING *ab);
+static int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid);
+static int AB_Banking_UnloadConfig(AB_BANKING *ab, uint32_t guiid);
+static int AB_Banking_SaveConfig(AB_BANKING *ab, uint32_t guiid);
 
 /* only for import of older configurations */
-static int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid);
+static int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid);
 
 static int AB_Banking__ImportConfDir(AB_BANKING *ab,
 				     const char *path,
-				     const char *groupName);
+				     const char *groupName,
+				     uint32_t guiid);
 
 #endif /* AQBANKING_BANKING_P_H */

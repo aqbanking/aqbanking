@@ -69,7 +69,7 @@
     <elem name="banking" type="AB_BANKING" ptr="1" const="0" volatile="1"
           takeOver="0" copy="0" />
     
-    <elem name="dbId" type="char" ptr="1" access="lib" />
+    <elem name="dbId" type="char" ptr="1" access="lib" volatile="1" />
   </type>
   
   

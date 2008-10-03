@@ -75,7 +75,8 @@ void QBSelectFromList::init(){
   s=name();
   rv=_app->loadSharedSubConfig("qbanking",
 			       "gui/dlgs/QBSelectFromList",
-			       &dbConfig);
+			       &dbConfig,
+			       0);
   if (rv==0) {
     GWEN_DB_NODE *db;
 
@@ -174,7 +175,8 @@ void QBSelectFromList::fini(){
 
   rv=_app->saveSharedSubConfig("qbanking",
 			       "gui/dlgs/QBSelectFromList",
-			       dbConfig);
+			       dbConfig,
+			       0);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
   }

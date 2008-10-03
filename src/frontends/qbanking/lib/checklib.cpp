@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
   if (rv) {
     qFatal("Error on QBanking::init: %d", rv);
   } 
-  rv=qb->onlineInit();
+  rv=qb->onlineInit(0);
   if (rv) {
     qFatal("Error on AB_Banking::onlineInit: %d", rv);
   } 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
   // maybe insert QBanking testcases here...
 
   // and delete it again
-  if (qb->onlineFini()) {
+  if (qb->onlineFini(0)) {
     qFatal("Error on AB_Banking::onlineFini: %d", rv);
   }
   if (qb->fini()) {

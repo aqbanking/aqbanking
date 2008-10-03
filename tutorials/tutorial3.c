@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   /* This function loads the settings file of AqBanking so the users and
    * accounts become available after this function successfully returns.
    */
-  rv=AB_Banking_OnlineInit(ab);
+  rv=AB_Banking_OnlineInit(ab, 0);
   if (rv) {
     fprintf(stderr, "Error on init of online modules (%d)\n", rv);
     return 2;
@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
   /* This function MUST be called in order to let AqBanking save the changes
    * to the users and accounts (like they occur after executing jobs).
    */
-  rv=AB_Banking_OnlineFini(ab);
+  rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit online modules (%d)\n", rv);
     return 3;

@@ -100,7 +100,7 @@ void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
 
 
 
-int AB_Provider_Init(AB_PROVIDER *pro){
+int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid){
   assert(pro);
   if (pro->isInit) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider already is initialized");
@@ -112,7 +112,8 @@ int AB_Provider_Init(AB_PROVIDER *pro){
 
     rv=AB_Banking_LoadPluginConfig(pro->banking,
 				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData);
+				   pro->name, &dbData,
+				   guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -135,7 +136,7 @@ int AB_Provider_Init(AB_PROVIDER *pro){
 
 
 
-int AB_Provider_Fini(AB_PROVIDER *pro){
+int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
@@ -147,7 +148,8 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
 
     rv=AB_Banking_LockPluginConfig(pro->banking,
                                    AB_CFG_GROUP_BACKENDS,
-				   pro->name);
+				   pro->name,
+				   guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -155,12 +157,14 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
 
     rv=AB_Banking_LoadPluginConfig(pro->banking,
                                    AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData);
+				   pro->name, &dbData,
+				   guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
                                     AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+				    pro->name,
+				    guiid);
       return rv;
     }
 
@@ -170,26 +174,28 @@ int AB_Provider_Fini(AB_PROVIDER *pro){
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
 				    AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+				    pro->name,
+				    guiid);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
     rv=AB_Banking_SavePluginConfig(pro->banking,
 				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, dbData);
+				   pro->name, dbData, guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
 				    AB_CFG_GROUP_BACKENDS,
-				    pro->name);
+				    pro->name,
+				    guiid);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
     rv=AB_Banking_UnlockPluginConfig(pro->banking,
 				     AB_CFG_GROUP_BACKENDS,
-				     pro->name);
+				     pro->name, guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_DB_Group_free(dbData);

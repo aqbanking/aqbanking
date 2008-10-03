@@ -63,8 +63,6 @@ AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
   cbox->hbci=hbci;
   cbox->outbox=ob;
 
-  cbox->guiid=ob->guiid;
-
   return cbox;
 }
 
@@ -407,7 +405,7 @@ GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox) {
 
 
 
-int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
+int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox, uint32_t guiid){
   AH_JOB *j;
   unsigned int errors;
   AH_JOBQUEUE *jq;
@@ -426,7 +424,7 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
     next=AH_Job_List_Next(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusToDo) {
-      int rv=AH_Job_Prepare(j, cbox->guiid);
+      int rv=AH_Job_Prepare(j, guiid);
       if (rv<0 && rv!=GWEN_ERROR_NOT_SUPPORTED) {
 	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	AH_Job_SetStatus(j, AH_JobStatusError);
@@ -678,31 +676,32 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
 
 int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
 			      AH_DIALOG *dlg,
-			      AH_JOBQUEUE *jq){
+			      AH_JOBQUEUE *jq,
+			      uint32_t guiid){
   AH_MSG *msg;
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Encoding queue"));
   msg=AH_JobQueue_ToMessage(jq, dlg);
   if (!msg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode queue");
-    GWEN_Gui_ProgressLog(cbox->guiid,
+    GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to encode"));
     return GWEN_ERROR_GENERIC;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Sending queue"));
 
   rv=AH_Dialog_SendMessage(dlg, msg);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    GWEN_Gui_ProgressLog(cbox->guiid,
+    GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to send (network error)"));
     return rv;
@@ -716,14 +715,15 @@ int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
 int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
 			      int timeout,
 			      AH_DIALOG *dlg,
-			      AH_JOBQUEUE *jq){
+			      AH_JOBQUEUE *jq,
+			      uint32_t guiid){
   AH_MSG *msg;
   GWEN_DB_NODE *rsp;
   int rv;
 
   assert(cbox);
 
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Waiting for response"));
 
@@ -731,14 +731,14 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "No message within specified timeout, giving up");
-    GWEN_Gui_ProgressLog(cbox->guiid,
+    GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No response (timeout)"));
     return AB_ERROR_NETWORK;
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Got a message");
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Response received"));
 
@@ -748,7 +748,7 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
     AH_Msg_Dump(msg, stderr, 2);
     GWEN_DB_Group_free(rsp);
-    GWEN_Gui_ProgressLog(cbox->guiid,
+    GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Bad response (unable to decode)"));
     return GWEN_ERROR_GENERIC;
@@ -764,7 +764,7 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
     GWEN_DB_Dump(rsp, stderr, 2);
     GWEN_DB_Group_free(rsp);
     AH_Msg_free(msg);
-    GWEN_Gui_ProgressLog(cbox->guiid,
+    GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Bad response (bad message reference)"));
     return GWEN_ERROR_GENERIC;
@@ -774,13 +774,13 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   if (rv) {
     if (rv==GWEN_ERROR_ABORTED) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog aborted by server");
-      GWEN_Gui_ProgressLog(cbox->guiid,
+      GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Dialog aborted by server"));
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not dispatch response");
-      GWEN_Gui_ProgressLog(cbox->guiid,
+      GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Bad response (unable to dispatch)"));
     }
@@ -800,14 +800,15 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
 int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 				     int timeout,
 				     AH_DIALOG *dlg,
-				     AH_JOBQUEUE *jq){
+				     AH_JOBQUEUE *jq,
+				     uint32_t guiid){
   int rv;
 
   if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
       AH_Dialog_GetItanProcessType(dlg)!=0) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "iTAN mode");
 
-    rv=AH_Outbox__CBox_Itan(cbox, dlg, jq, timeout);
+    rv=AH_Outbox__CBox_Itan(cbox, dlg, jq, timeout, guiid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -815,7 +816,7 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
   }
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Normal mode");
-    rv=AH_Outbox__CBox_SendQueue(cbox, timeout, dlg, jq);
+    rv=AH_Outbox__CBox_SendQueue(cbox, timeout, dlg, jq, guiid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
       return rv;
@@ -824,7 +825,7 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
     AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded,
                                     AH_JobStatusSent);
 
-    rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq);
+    rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq, guiid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
       return rv;
@@ -839,7 +840,8 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
 			       AH_DIALOG *dlg,
-			       uint32_t jqFlags) {
+			       uint32_t jqFlags,
+			       uint32_t guiid) {
   AH_JOBQUEUE *jqDlgOpen;
   AH_JOB *jDlgOpen;
   int rv;
@@ -887,7 +889,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
   }
 
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Opening dialog"));
   jqDlgOpen=AH_JobQueue_new(cbox->user);
@@ -901,7 +903,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgOpen);
+  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgOpen, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
     AH_JobQueue_free(jqDlgOpen);
@@ -912,12 +914,12 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     if (AH_Job_HasItanResult(jDlgOpen)) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
 		 "Adjusting to iTAN modes of the server");
-      GWEN_Gui_ProgressLog(cbox->guiid,
+      GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Adjusting to iTAN modes of the server"));
       /* do not call AH_Job_CommitSystemData() here, the iTAN modes have already
        * been caught by AH_JobQueue_DispatchMessage()
-        AH_Job_CommitSystemData(jDlgOpen, cbox->guiid); */
+        AH_Job_CommitSystemData(jDlgOpen, guiid); */
       AH_JobQueue_free(jqDlgOpen);
       return 1;
     }
@@ -928,7 +930,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     }
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done");
-  rv=AH_Job_CommitSystemData(jDlgOpen, cbox->guiid);
+  rv=AH_Job_CommitSystemData(jDlgOpen, guiid);
   AH_JobQueue_free(jqDlgOpen);
   return rv;
 }
@@ -938,14 +940,15 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
 int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
 				int timeout,
 				AH_DIALOG *dlg,
-				uint32_t jqFlags) {
+				uint32_t jqFlags,
+				uint32_t guiid) {
   AH_JOBQUEUE *jqDlgClose;
   AH_JOB *jDlgClose;
   GWEN_DB_NODE *db;
   uint32_t dlgFlags;
   int rv;
 
-  GWEN_Gui_ProgressLog(cbox->guiid,
+  GWEN_Gui_ProgressLog(guiid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Closing dialog"));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
@@ -983,14 +986,14 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgClose);
+  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jqDlgClose, guiid);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
     AH_JobQueue_free(jqDlgClose);
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog closed");
-  rv=AH_Job_CommitSystemData(jDlgClose, cbox->guiid);
+  rv=AH_Job_CommitSystemData(jDlgClose, guiid);
   AH_JobQueue_free(jqDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not commit system data");
@@ -1030,7 +1033,8 @@ void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
 int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 				 AH_DIALOG *dlg,
 				 AH_JOBQUEUE *jq,
-				 int timeout) {
+				 int timeout,
+				 uint32_t guiid) {
   int jobsTodo;
   int rv;
 
@@ -1125,7 +1129,7 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
       break;
 
     /* jq now contains all jobs to be executed */
-    rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jq);
+    rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, timeout, dlg, jq, guiid);
     if (rv) {
       AH_Outbox__CBox_HandleQueueError(cbox, jq,
                                        "Error performing queue");
@@ -1141,7 +1145,8 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
 					   int timeout,
-					   AH_JOBQUEUE_LIST *jql){
+					   AH_JOBQUEUE_LIST *jql,
+					   uint32_t guiid){
   AH_DIALOG *dlg;
   AH_JOBQUEUE *jq;
   int rv=0;
@@ -1155,7 +1160,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   }
 
   for(i=0; i<2; i++) {
-    dlg=AH_Dialog_new(cbox->user, cbox->guiid);
+    dlg=AH_Dialog_new(cbox->user, guiid);
     rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1173,7 +1178,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     jqflags=AH_JobQueue_GetFlags(jq);
   
     /* open dialog */
-    rv=AH_Outbox__CBox_OpenDialog(cbox, timeout, dlg, jqflags);
+    rv=AH_Outbox__CBox_OpenDialog(cbox, timeout, dlg, jqflags, guiid);
     if (rv==0)
       break;
     else if (rv<0) {
@@ -1207,7 +1212,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   rv=0;
   while((jq=AH_JobQueue_List_First(jql))) {
     AH_JobQueue_List_Del(jq);
-    rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout);
+    rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout, guiid);
     if (rv)
       break;
   } /* while */
@@ -1222,7 +1227,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   }
 
   /* close dialog */
-  rv=AH_Outbox__CBox_CloseDialog(cbox, timeout, dlg, jqflags);
+  rv=AH_Outbox__CBox_CloseDialog(cbox, timeout, dlg, jqflags, guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Could not close dialog, ignoring");
@@ -1242,12 +1247,13 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
 				       int timeout,
-				       AH_JOBQUEUE *jq){
+				       AH_JOBQUEUE *jq,
+				       uint32_t guiid){
   AH_DIALOG *dlg;
   int rv;
 
   /* open connection */
-  dlg=AH_Dialog_new(cbox->user, cbox->guiid);
+  dlg=AH_Dialog_new(cbox->user, guiid);
   rv=AH_Dialog_Connect(dlg, AH_HBCI_GetConnectTimeout(cbox->hbci));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1272,7 +1278,7 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   }
 
   /* handle queue */
-  rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout);
+  rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq, timeout, guiid);
   if (rv) {
     AH_Dialog_Disconnect(dlg, 2);
     AH_Dialog_free(dlg);
@@ -1326,7 +1332,8 @@ void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
 
 
 int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
-					    int timeout) {
+					    int timeout,
+					    uint32_t guiid) {
   AH_JOBQUEUE_LIST *jqlWanted;
   AH_JOBQUEUE_LIST *jqlRest;
   int rv;
@@ -1345,7 +1352,7 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
 
     /* there are matching queues, handle them */
     while((jq=AH_JobQueue_List_First(jqlWanted))) {
-      rv=AH_Outbox__CBox_PerformDialogQueue(cbox, timeout, jq);
+      rv=AH_Outbox__CBox_PerformDialogQueue(cbox, timeout, jq, guiid);
       if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Error performing queue (%d)", rv);
@@ -1369,7 +1376,8 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
 int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
 					int timeout,
 					uint32_t jqflags,
-					uint32_t jqmask){
+					uint32_t jqmask,
+					uint32_t guiid){
   AH_JOBQUEUE_LIST *jqlWanted;
   AH_JOBQUEUE_LIST *jqlRest;
   int rv;
@@ -1383,7 +1391,7 @@ int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
   cbox->todoQueues=jqlRest;
   if (AH_JobQueue_List_GetCount(jqlWanted)) {
     /* there are matching queues, handle them */
-    rv=AH_Outbox__CBox_PerformNonDialogQueues(cbox, timeout, jqlWanted);
+    rv=AH_Outbox__CBox_PerformNonDialogQueues(cbox, timeout, jqlWanted, guiid);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error performing queue (%d)", rv);
@@ -1401,11 +1409,11 @@ int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
+int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout, uint32_t guiid){
   int rv;
 
   /* dialog queues */
-  rv=AH_Outbox__CBox_SendAndRecvDialogQueues(cbox, timeout);
+  rv=AH_Outbox__CBox_SendAndRecvDialogQueues(cbox, timeout, guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing dialog queues (%d)", rv);
     return rv;
@@ -1416,7 +1424,8 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
 					 0,
 					 AH_JOBQUEUE_FLAGS_ISDIALOG |
 					 AH_JOBQUEUE_FLAGS_SIGN |
-					 AH_JOBQUEUE_FLAGS_CRYPT);
+					 AH_JOBQUEUE_FLAGS_CRYPT,
+					 guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (-S, -C: %d)", rv);
     return rv;
@@ -1427,7 +1436,8 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
 					 AH_JOBQUEUE_FLAGS_CRYPT,
 					 AH_JOBQUEUE_FLAGS_ISDIALOG |
 					 AH_JOBQUEUE_FLAGS_SIGN |
-					 AH_JOBQUEUE_FLAGS_CRYPT);
+					 AH_JOBQUEUE_FLAGS_CRYPT,
+					 guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (-S, +C: %d)", rv);
     return rv;
@@ -1438,7 +1448,8 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
 					 AH_JOBQUEUE_FLAGS_SIGN,
 					 AH_JOBQUEUE_FLAGS_ISDIALOG |
 					 AH_JOBQUEUE_FLAGS_SIGN |
-					 AH_JOBQUEUE_FLAGS_CRYPT);
+					 AH_JOBQUEUE_FLAGS_CRYPT,
+					 guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (+S, -C: %d)", rv);
     return rv;
@@ -1450,7 +1461,8 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout){
 					 AH_JOBQUEUE_FLAGS_CRYPT,
 					 AH_JOBQUEUE_FLAGS_ISDIALOG |
 					 AH_JOBQUEUE_FLAGS_SIGN |
-					 AH_JOBQUEUE_FLAGS_CRYPT);
+					 AH_JOBQUEUE_FLAGS_CRYPT,
+					 guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (+S, +C: %d)", rv);
     return rv;
@@ -1488,7 +1500,6 @@ AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci, uint32_t guiid) {
   ob->hbci=hbci;
   ob->userBoxes=AH_Outbox__CBox_List_new();
   ob->finishedJobs=AH_Job_List_new();
-  ob->guiid=guiid;
   ob->usage=1;
   return ob;
 }
@@ -1518,7 +1529,7 @@ void AH_Outbox_Attach(AH_OUTBOX *ob){
 
 
 
-int AH_Outbox_Prepare(AH_OUTBOX *ob){
+int AH_Outbox_Prepare(AH_OUTBOX *ob, uint32_t guiid){
   AH_OUTBOX__CBOX *cbox;
   unsigned int errors;
 
@@ -1532,7 +1543,7 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob){
     u=AH_Outbox__CBox_GetUser(cbox);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"",
              AB_User_GetCustomerId(u));
-    if (AH_Outbox__CBox_Prepare(cbox)) {
+    if (AH_Outbox__CBox_Prepare(cbox, guiid)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
       errors++;
     }
@@ -1553,7 +1564,7 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob){
 
 
 
-int AH_Outbox_LockUsers(AH_OUTBOX *ob){
+int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid){
   AH_OUTBOX__CBOX *cbox;
   AB_BANKING *ab;
 
@@ -1569,12 +1580,12 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob){
     u=AH_Outbox__CBox_GetUser(cbox);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%s\"",
 	     AB_User_GetCustomerId(u));
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
 	       AB_User_GetCustomerId(u), rv);
-      AH_Outbox_UnlockUsers(ob, 1); /* abandon */
+      AH_Outbox_UnlockUsers(ob, 1, guiid); /* abandon */
       return rv;
     }
     cbox->isLocked=1;
@@ -1587,7 +1598,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob){
 
 
 
-int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon){
+int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon, uint32_t guiid){
   AH_OUTBOX__CBOX *cbox;
   int errors=0;
   AB_BANKING *ab;
@@ -1605,7 +1616,7 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon){
     if (cbox->isLocked) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
 	       AB_User_GetCustomerId(u));
-      rv=AB_Banking_EndExclUseUser(ab, u, abandon);
+      rv=AB_Banking_EndExclUseUser(ab, u, abandon, guiid);
       cbox->isLocked=0;
       if (rv<0) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
@@ -1714,13 +1725,13 @@ void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj){
 
 
 
-int AH_Outbox_StartSending(AH_OUTBOX *ob) {
-  return AH_Outbox_Prepare(ob);
+int AH_Outbox_StartSending(AH_OUTBOX *ob, uint32_t guiid) {
+  return AH_Outbox_Prepare(ob, guiid);
 }
 
 
 
-void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
+void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox, uint32_t guiid){
   AH_JOB_LIST *jl;
   AH_JOB *j;
 
@@ -1737,7 +1748,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     AH_Job_List_Del(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusAnswered) {
-      rv=AH_Job_Process(j, ob->context, cbox->guiid);
+      rv=AH_Job_Process(j, ob->context, guiid);
       if (rv) {
         char buf[256];
 
@@ -1751,10 +1762,9 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
                  AH_Job_GetName(j));
 	AH_Job_SetStatus(j, AH_JobStatusError);
 
-        GWEN_Gui_ProgressLog(
-                               0,
-                               GWEN_LoggerLevel_Error,
-                               buf);
+        GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     buf);
       }
     }
     else {
@@ -1765,16 +1775,40 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     AH_Job_List_Add(j, ob->finishedJobs);
   } /* while */
   AH_Job_List_free(jl);
+
+  /* unlock customer if necessary */
+  if (cbox->isLocked) {
+    if (cbox->isLocked) {
+      int rv;
+
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Info,
+			   I18N("Locking users"));
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "Unlocking customer \"%s\"",
+	       AB_User_GetCustomerId(cbox->user));
+      rv=AB_Banking_EndExclUseUser(AH_HBCI_GetBankingApi(cbox->hbci),
+				   cbox->user,
+				   0,
+				   guiid);
+      cbox->isLocked=0;
+      if (rv<0) {
+	DBG_WARN(AQHBCI_LOGDOMAIN,
+		 "Could not unlock customer [%s] (%d)",
+		 AB_User_GetCustomerId(cbox->user), rv);
+      }
+    }
+  }
 }
 
 
 
-static void AH_Outbox__FinishOutbox(AH_OUTBOX *ob) {
+static void AH_Outbox__FinishOutbox(AH_OUTBOX *ob, uint32_t guiid) {
   AH_OUTBOX__CBOX *cbox;
 
   assert(ob);
   while((cbox=AH_Outbox__CBox_List_First(ob->userBoxes))) {
-    AH_Outbox__FinishCBox(ob, cbox);
+    AH_Outbox__FinishCBox(ob, cbox, guiid);
     AH_Outbox__CBox_List_Del(cbox);
     AH_Outbox__CBox_free(cbox);
   } /* while */
@@ -1782,7 +1816,7 @@ static void AH_Outbox__FinishOutbox(AH_OUTBOX *ob) {
 
 
 
-int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout){
+int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout, uint32_t guiid){
   AH_OUTBOX__CBOX *cbox;
   int rv;
   int errors;
@@ -1796,33 +1830,33 @@ int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout){
              "Sending next message for customer \"%s\"",
              AB_User_GetCustomerId(u));
 
-    rv=AH_Outbox__CBox_SendAndRecvBox(cbox, timeout);
-    AH_Outbox__FinishCBox(ob, cbox);
+    rv=AH_Outbox__CBox_SendAndRecvBox(cbox, timeout, guiid);
+    AH_Outbox__FinishCBox(ob, cbox, guiid);
     AH_Outbox__CBox_List_Del(cbox);
     AH_Outbox__CBox_free(cbox);
     if (rv)
       errors++;
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      AH_Outbox__FinishOutbox(ob);
+      AH_Outbox__FinishOutbox(ob, guiid);
       return rv;
     }
   } /* while */
 
-  AH_Outbox__FinishOutbox(ob);
+  AH_Outbox__FinishOutbox(ob, guiid);
   return 0;
 }
 
 
 
-AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob){
+AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob, uint32_t guiid){
   assert(ob);
-  AH_Outbox__FinishOutbox(ob);
+  AH_Outbox__FinishOutbox(ob, guiid);
   return ob->finishedJobs;
 }
 
 
 
-void AH_Outbox_Commit(AH_OUTBOX *ob){
+void AH_Outbox_Commit(AH_OUTBOX *ob, uint32_t guiid){
   AH_JOB *j;
 
   assert(ob);
@@ -1831,7 +1865,7 @@ void AH_Outbox_Commit(AH_OUTBOX *ob){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_Commit(j, ob->guiid);
+      AH_Job_Commit(j, guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -1839,7 +1873,7 @@ void AH_Outbox_Commit(AH_OUTBOX *ob){
 
 
 
-void AH_Outbox_CommitSystemData(AH_OUTBOX *ob){
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, uint32_t guiid){
   AH_JOB *j;
 
   assert(ob);
@@ -1848,7 +1882,7 @@ void AH_Outbox_CommitSystemData(AH_OUTBOX *ob){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_DefaultCommitHandler(j, ob->guiid);
+      AH_Job_DefaultCommitHandler(j, guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -1856,7 +1890,7 @@ void AH_Outbox_CommitSystemData(AH_OUTBOX *ob){
 
 
 
-void AH_Outbox_Process(AH_OUTBOX *ob){
+void AH_Outbox_Process(AH_OUTBOX *ob, uint32_t guiid){
   AH_JOB *j;
 
   assert(ob);
@@ -1868,7 +1902,7 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
       /* only process answered jobs */
       DBG_DEBUG(AQHBCI_LOGDOMAIN,
 		"Processing job \"%s\"", AH_Job_GetName(j));
-      rv=AH_Job_Process(j, ob->context, ob->guiid);
+      rv=AH_Job_Process(j, ob->context, guiid);
       if (rv) {
 	char buf[256];
 
@@ -1999,7 +2033,7 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob){
 
 
 
-int AH_Outbox__Execute(AH_OUTBOX *ob){
+int AH_Outbox__Execute(AH_OUTBOX *ob, uint32_t guiid){
   unsigned int loop;
   unsigned int jobCount;
   int rv;
@@ -2015,14 +2049,14 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
 		       GWEN_LoggerLevel_Notice,
 		       I18N("AqHBCI started"));
 
-  rv=AH_Outbox_StartSending(ob);
+  rv=AH_Outbox_StartSending(ob, guiid);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not start sending outbox.");
     return rv;
   }
 
   loop=0;
-  rv=AH_Outbox_SendAndRecv(ob, AH_HBCI_GetTransferTimeout(ob->hbci));
+  rv=AH_Outbox_SendAndRecv(ob, AH_HBCI_GetTransferTimeout(ob->hbci), guiid);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
     return rv;
@@ -2031,7 +2065,7 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
   rv=AB_Banking_ExecutionProgress(AH_HBCI_GetBankingApi(ob->hbci), 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted");
-    AH_Outbox__FinishOutbox(ob);
+    AH_Outbox__FinishOutbox(ob, guiid);
     return rv;
   }
 
@@ -2045,11 +2079,13 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
-                      int withProgress, int nounmount) {
+		      int withProgress, int nounmount,
+		      uint32_t guiid) {
   int rv;
   uint32_t pid=0;
 
   assert(ob);
+
   if (withProgress) {
     pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 			       GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -2059,30 +2095,28 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 			       I18N("Now the jobs are send via their "
 				    "backends to the credit institutes."),
 			       AH_Outbox_CountTodoJobs(ob),
-			       ob->guiid);
+			       guiid);
   }
+  else
+    pid=guiid;
 
   ob->context=ctx;
 
-  GWEN_Gui_ProgressLog(ob->guiid,
+  GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Locking users"));
-  rv=AH_Outbox_LockUsers(ob);
+  rv=AH_Outbox_LockUsers(ob, pid);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Gui_ProgressLog(ob->guiid,
+    GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
   }
   else {
-    GWEN_Gui_ProgressLog(ob->guiid,
+    GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Info,
 			 I18N("Executing HBCI jobs"));
-    rv=AH_Outbox__Execute(ob);
-    GWEN_Gui_ProgressLog(ob->guiid,
-			 GWEN_LoggerLevel_Info,
-			 I18N("Unlocking users"));
-    AH_Outbox_UnlockUsers(ob, 0);
+    rv=AH_Outbox__Execute(ob, pid);
   }
 
   /* unmount currently mounted medium */

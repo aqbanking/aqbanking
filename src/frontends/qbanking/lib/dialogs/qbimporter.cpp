@@ -148,7 +148,8 @@ bool QBImporter::init() {
 
   rv=_app->loadSharedSubConfig("qbanking",
 			       "gui/dlgs/importer",
-			       &_dbData);
+			       &_dbData,
+			       0);
   if (rv<0) {
     DBG_INFO(0, "Could not load shared config");
     return false;
@@ -194,7 +195,8 @@ bool QBImporter::fini() {
 
   rv=_app->saveSharedSubConfig("qbanking",
 			       "gui/dlgs/importer",
-			       _dbData);
+			       _dbData,
+			       0);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
   }

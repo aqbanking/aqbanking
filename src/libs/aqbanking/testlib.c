@@ -104,21 +104,21 @@ int test2(int argc, char **argv) {
 
   ab=AB_Banking_new("testlib", NULL, 0);
 
-  rv=AB_Banking_HasConf4(ab);
+  rv=AB_Banking_HasConf4(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 4 found\n");
     return 0;
   }
   fprintf(stderr, "Config for AqBanking 4 not found (%d)\n", rv);
 
-  rv=AB_Banking_HasConf3(ab);
+  rv=AB_Banking_HasConf3(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 3 found\n");
     return 0;
   }
   fprintf(stderr, "Config for AqBanking 3 not found (%d)\n", rv);
 
-  rv=AB_Banking_HasConf2(ab);
+  rv=AB_Banking_HasConf2(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 2 found\n");
     return 0;
@@ -146,17 +146,17 @@ int test3(int argc, char **argv) {
 
   ab=AB_Banking_new("testlib", NULL, 0);
 
-  rv=AB_Banking_HasConf4(ab);
+  rv=AB_Banking_HasConf4(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 4 found\n");
     return 0;
   }
   fprintf(stderr, "Config for AqBanking 4 not found (%d)\n", rv);
 
-  rv=AB_Banking_HasConf3(ab);
+  rv=AB_Banking_HasConf3(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 3 found, importing\n");
-    rv=AB_Banking_ImportConf3(ab);
+    rv=AB_Banking_ImportConf3(ab, 0);
     if (rv<0) {
       fprintf(stderr, "Error importing configuration (%d)\n", rv);
       return 2;
@@ -165,10 +165,10 @@ int test3(int argc, char **argv) {
   }
   fprintf(stderr, "Config for AqBanking 3 not found (%d)\n", rv);
 
-  rv=AB_Banking_HasConf2(ab);
+  rv=AB_Banking_HasConf2(ab, 0);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 2 found, importing\n");
-    rv=AB_Banking_ImportConf3(ab);
+    rv=AB_Banking_ImportConf3(ab, 0);
     if (rv<0) {
       fprintf(stderr, "Error importing configuration (%d)\n", rv);
       return 2;

@@ -112,7 +112,7 @@ int addsubAccountFlags(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
+  rv=AB_Banking_OnlineInit(ab, 0);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -161,7 +161,7 @@ int addsubAccountFlags(AB_BANKING *ab,
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab);
+  rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

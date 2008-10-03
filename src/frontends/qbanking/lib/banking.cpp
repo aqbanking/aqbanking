@@ -53,14 +53,14 @@ int AB_Banking::fini(){
 
 
 
-int AB_Banking::onlineInit(){
-  return AB_Banking_OnlineInit(_banking);
+int AB_Banking::onlineInit(uint32_t guiid){
+  return AB_Banking_OnlineInit(_banking, guiid);
 }
 
 
 
-int AB_Banking::onlineFini(){
-  return AB_Banking_OnlineFini(_banking);
+int AB_Banking::onlineFini(uint32_t guiid){
+  return AB_Banking_OnlineFini(_banking, guiid);
 }
 
 
@@ -262,37 +262,38 @@ int AB_Banking::executeJobs(AB_JOB_LIST2 *jl, AB_IMEXPORTER_CONTEXT *ctx, uint32
 
 
 
-int AB_Banking::loadSharedConfig(const char *name, GWEN_DB_NODE **pDb) {
-  return AB_Banking_LoadSharedConfig(_banking, name, pDb);
+int AB_Banking::loadSharedConfig(const char *name, GWEN_DB_NODE **pDb, uint32_t guiid) {
+  return AB_Banking_LoadSharedConfig(_banking, name, pDb, guiid);
 }
 
 
 
-int AB_Banking::saveSharedConfig(const char *name, GWEN_DB_NODE *db) {
-  return AB_Banking_SaveSharedConfig(_banking, name, db);
+int AB_Banking::saveSharedConfig(const char *name, GWEN_DB_NODE *db, uint32_t guiid) {
+  return AB_Banking_SaveSharedConfig(_banking, name, db, guiid);
 }
 
 
 
-int AB_Banking::lockSharedConfig(const char *name) {
-  return AB_Banking_LockSharedConfig(_banking, name);
+int AB_Banking::lockSharedConfig(const char *name, uint32_t guiid) {
+  return AB_Banking_LockSharedConfig(_banking, name, guiid);
 }
 
 
 
-int AB_Banking::unlockSharedConfig(const char *name) {
-  return AB_Banking_UnlockSharedConfig(_banking, name);
+int AB_Banking::unlockSharedConfig(const char *name, uint32_t guiid) {
+  return AB_Banking_UnlockSharedConfig(_banking, name, guiid);
 }
 
 
 
 int AB_Banking::loadSharedSubConfig(const char *name,
 				    const char *subGroup,
-				    GWEN_DB_NODE **pDb) {
+				    GWEN_DB_NODE **pDb,
+				    uint32_t guiid) {
   GWEN_DB_NODE *dbShared=NULL;
   int rv;
 
-  rv=loadSharedConfig(name, &dbShared);
+  rv=loadSharedConfig(name, &dbShared, guiid);
   if (rv<0) {
     DBG_ERROR(0, "Unable to load config (%d)", rv);
     GWEN_DB_Group_free(dbShared);
@@ -320,17 +321,18 @@ int AB_Banking::loadSharedSubConfig(const char *name,
 
 int AB_Banking::saveSharedSubConfig(const char *name,
 				    const char *subGroup,
-				    GWEN_DB_NODE *dbSrc) {
+				    GWEN_DB_NODE *dbSrc,
+				    uint32_t guiid) {
   GWEN_DB_NODE *dbShared=NULL;
   int rv;
 
-  rv=lockSharedConfig(name);
+  rv=lockSharedConfig(name, guiid);
   if (rv<0) {
     DBG_ERROR(0, "Unable to lock config");
     return rv;
   }
   else {
-    rv=loadSharedConfig(name, &dbShared);
+    rv=loadSharedConfig(name, &dbShared, guiid);
     if (rv<0) {
       DBG_ERROR(0, "Unable to load config (%d)", rv);
       GWEN_DB_Group_free(dbShared);
@@ -345,7 +347,7 @@ int AB_Banking::saveSharedSubConfig(const char *name,
       assert(dbDst);
       if (dbSrc)
 	GWEN_DB_AddGroupChildren(dbDst, dbSrc);
-      rv=saveSharedConfig(name, dbShared);
+      rv=saveSharedConfig(name, dbShared, guiid);
       if (rv<0) {
 	DBG_ERROR(0, "Unable to store config (%d)", rv);
 	GWEN_DB_Group_free(dbShared);
@@ -354,7 +356,7 @@ int AB_Banking::saveSharedSubConfig(const char *name,
       GWEN_DB_Group_free(dbShared);
     }
 
-    rv=unlockSharedConfig(name);
+    rv=unlockSharedConfig(name, guiid);
     if (rv<0) {
       DBG_ERROR(0, "Unable to unlock config (%d)", rv);
       return rv;

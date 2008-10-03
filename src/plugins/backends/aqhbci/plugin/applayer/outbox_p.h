@@ -54,8 +54,6 @@ struct AH_OUTBOX__CBOX {
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
 
-  uint32_t guiid;
-
   int isLocked;
 
   uint32_t usage;
@@ -84,7 +82,7 @@ static GWEN_TIME*
 static GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox);
 
 
-static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
+static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox, uint32_t guiid);
 
 static int AH_Outbox__CBox__Hash(int mode,
 				 const uint8_t *p,
@@ -100,36 +98,38 @@ struct AH_OUTBOX {
   AH_JOB_LIST *finishedJobs;
   AB_IMEXPORTER_CONTEXT *context;
 
-  uint32_t guiid;
-
   uint32_t usage;
 };
 
 
 
-static int AH_Outbox_Prepare(AH_OUTBOX *ob);
+static int AH_Outbox_Prepare(AH_OUTBOX *ob, uint32_t guiid);
 
 static void AH_Outbox__FinishCBox(AH_OUTBOX *ob,
-                                  AH_OUTBOX__CBOX *cbox);
+				  AH_OUTBOX__CBOX *cbox,
+				  uint32_t guiid);
 
-static int AH_Outbox__Execute(AH_OUTBOX *ob);
+static int AH_Outbox__Execute(AH_OUTBOX *ob, uint32_t guiid);
 
 
-static int AH_Outbox_StartSending(AH_OUTBOX *ob);
+static int AH_Outbox_StartSending(AH_OUTBOX *ob, uint32_t guiid);
 
 static unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl);
 
 
 static int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox, int timeout,
                                      AH_DIALOG *dlg,
-                                     AH_JOBQUEUE *jq);
+				     AH_JOBQUEUE *jq,
+				     uint32_t guiid);
 static int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox, int timeout,
                                      AH_DIALOG *dlg,
-                                     AH_JOBQUEUE *jq);
+				     AH_JOBQUEUE *jq,
+				     uint32_t guiid);
 static int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
                                         AH_DIALOG *dlg,
                                         AH_JOBQUEUE *jq,
-                                        int timeout);
+					int timeout,
+					uint32_t guiid);
 static void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
                                              AH_JOBQUEUE *jq,
                                              const char *logStr);
@@ -140,22 +140,27 @@ static void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
 static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
                                             int timeout,
                                             AH_DIALOG *dlg,
-                                            AH_JOBQUEUE *jq);
+					    AH_JOBQUEUE *jq,
+					    uint32_t guiid);
 
 static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
-                                      AH_DIALOG *dlg,
-                                      uint32_t jqFlags);
+				      AH_DIALOG *dlg,
+				      uint32_t jqFlags,
+				      uint32_t guiid);
 static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, int timeout,
                                        AH_DIALOG *dlg,
-                                       uint32_t jqFlags);
+				       uint32_t jqFlags,
+				       uint32_t guiid);
 
 static int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
                                                   int timeout,
-                                                  AH_JOBQUEUE_LIST *jql);
+						  AH_JOBQUEUE_LIST *jql,
+						  uint32_t guiid);
 
 static int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
-                                              int timeout,
-                                              AH_JOBQUEUE *jq);
+					      int timeout,
+					      AH_JOBQUEUE *jq,
+					      uint32_t guiid);
 
 static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
                                                   AH_JOBQUEUE_LIST *jqlWanted,
@@ -165,14 +170,16 @@ static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
 static int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
                                                int timeout,
                                                uint32_t jqflags,
-                                               uint32_t jqmask);
+					       uint32_t jqmask,
+					       uint32_t guiid);
 
 static int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
-                                                   int timeout);
+						   int timeout,
+						   uint32_t guiid);
 
-static int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout);
+static int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox, int timeout, uint32_t guiid);
 
-static int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout);
+static int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout, uint32_t guiid);
 
 static AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
                                                         AB_USER *u,
@@ -184,21 +191,25 @@ static int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg);
 static int AH_Outbox__CBox_Itan_SendMsg(AH_OUTBOX__CBOX *cbox,
                                         AH_DIALOG *dlg,
                                         AH_MSG *msg,
-                                        int timeout);
+					int timeout,
+					uint32_t guiid);
 static int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
                                  AH_DIALOG *dlg,
                                  AH_JOBQUEUE *jq,
-                                 int timeout);
+				 int timeout,
+				 uint32_t guiid);
 
 static int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
                                  AH_DIALOG *dlg,
                                  AH_JOBQUEUE *qJob,
-                                 int timeout);
+				 int timeout,
+				 uint32_t guiid);
 
 static int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
                                 AH_DIALOG *dlg,
                                 AH_JOBQUEUE *qJob,
-                                int timeout);
+				int timeout,
+				uint32_t guiid);
 
 static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
                                           AH_DIALOG *dlg);
@@ -208,8 +219,8 @@ static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
 						    const AH_JOB_LIST *qjl);
 
 
-static int AH_Outbox_LockUsers(AH_OUTBOX *ob);
-static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon);
+static int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid);
+static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon, uint32_t guiid);
 
 
 #endif /* AH_OUTBOX_P_H */

@@ -159,7 +159,7 @@ int AB_Provider_IsInit(const AB_PROVIDER *pro);
  *   is a group inside AqBankings config database.
  */
 AQBANKING_API
-int AB_Provider_Init(AB_PROVIDER *pro);
+int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid);
 
 /**
  * Allow the backend to deinitialize itself.
@@ -169,7 +169,7 @@ int AB_Provider_Init(AB_PROVIDER *pro);
  *   is a group inside AqBankings config database.
  */
 AQBANKING_API
-int AB_Provider_Fini(AB_PROVIDER *pro);
+int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid);
 
 /**
  * This function should check for the availability of the given job and

@@ -184,14 +184,15 @@ void AB_Banking_free(AB_BANKING *ab){
 
 
 
-int AB_Banking_GetUniqueId(AB_BANKING *ab){
+int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
   int rv;
   int uid=0;
   GWEN_DB_NODE *dbConfig=NULL;
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_MAIN,
-			      "uniqueId");
+			      "uniqueId",
+			      guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     return rv;
@@ -200,7 +201,8 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     &dbConfig);
+			     &dbConfig,
+			     guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
     return rv;
@@ -213,12 +215,14 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     dbConfig);
+			     dbConfig,
+			     guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_MAIN,
-			       "uniqueId");
+			       "uniqueId",
+			       guiid);
     GWEN_DB_Group_free(dbConfig);
     return rv;
   }
@@ -227,7 +231,8 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_MAIN,
-				"uniqueId");
+				"uniqueId",
+				guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     return rv;
@@ -238,13 +243,14 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
 
 
 
-int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
+int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid){
   int rv;
   GWEN_DB_NODE *dbConfig=NULL;
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_MAIN,
-                              "uniqueId");
+			      "uniqueId",
+			      guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     return rv;
@@ -253,7 +259,8 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     &dbConfig);
+			     &dbConfig,
+			     guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
     return rv;
@@ -264,12 +271,14 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     dbConfig);
+			     dbConfig,
+			     guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_MAIN,
-			       "uniqueId");
+			       "uniqueId",
+			       guiid);
     GWEN_DB_Group_free(dbConfig);
     return rv;
   }
@@ -278,7 +287,8 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_MAIN,
-				"uniqueId");
+				"uniqueId",
+				guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     return rv;
@@ -736,11 +746,11 @@ AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
 
 
 
-AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
+AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId, uint32_t guiid){
   int rv;
   GWEN_DB_NODE *dbData=NULL;
 
-  rv=AB_Banking_LoadAppConfig(ab, &dbData);
+  rv=AB_Banking_LoadAppConfig(ab, &dbData, guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to load app config");
@@ -780,28 +790,30 @@ AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
 
 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-                                         const char *accountId){
-  return AB_Banking__GetAccount(ab, accountId);
+					 const char *accountId,
+					 uint32_t guiid){
+  return AB_Banking__GetAccount(ab, accountId, guiid);
 }
 
 
 
 void AB_Banking_SetAccountAlias(AB_BANKING *ab,
-				AB_ACCOUNT *a, const char *alias){
+				AB_ACCOUNT *a, const char *alias,
+				uint32_t guiid){
   int rv;
   GWEN_DB_NODE *dbConfig=NULL;
   GWEN_DB_NODE *db;
 
-  rv=AB_Banking_LockAppConfig(ab);
+  rv=AB_Banking_LockAppConfig(ab, guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return;
   }
 
-  rv=AB_Banking_LoadAppConfig(ab, &dbConfig);
+  rv=AB_Banking_LoadAppConfig(ab, &dbConfig, guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab);
+    AB_Banking_UnlockAppConfig(ab, guiid);
     return;
   }
 
@@ -810,14 +822,14 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
 		      alias,
 		      AB_Account_GetUniqueId(a));
 
-  rv=AB_Banking_SaveAppConfig(ab, dbConfig);
+  rv=AB_Banking_SaveAppConfig(ab, dbConfig, guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab);
+    AB_Banking_UnlockAppConfig(ab, guiid);
     return;
   }
 
-  rv=AB_Banking_UnlockAppConfig(ab);
+  rv=AB_Banking_UnlockAppConfig(ab, guiid);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return;

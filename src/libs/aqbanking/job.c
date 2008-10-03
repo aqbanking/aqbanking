@@ -71,7 +71,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   GWEN_INHERIT_INIT(AB_JOB, j);
   GWEN_LIST_INIT(AB_JOB, j);
 
-  j->jobId=AB_Banking_GetUniqueId(ab);
+  j->jobId=AB_Banking_GetUniqueId(ab, 0);
   j->jobType=jt;
   j->account=a;
 

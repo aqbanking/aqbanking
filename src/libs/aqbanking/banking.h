@@ -194,11 +194,11 @@ int AB_Banking_Fini(AB_BANKING *ab);
 
 
 AQBANKING_API 
-int AB_Banking_OnlineInit(AB_BANKING *ab);
+int AB_Banking_OnlineInit(AB_BANKING *ab, uint32_t guiid);
 
 
 AQBANKING_API 
-int AB_Banking_OnlineFini(AB_BANKING *ab);
+int AB_Banking_OnlineFini(AB_BANKING *ab, uint32_t guiid);
 
 
 /*@}*/
