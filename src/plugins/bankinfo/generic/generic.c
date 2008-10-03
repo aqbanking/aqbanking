@@ -44,6 +44,7 @@ GWEN_INHERIT(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC)
 
 
 AB_BANKINFO_PLUGIN *AB_BankInfoPluginGENERIC_new(AB_BANKING *ab,
+                                                 GWEN_DB_NODE *db,
                                                  const char *country){
   AB_BANKINFO_PLUGIN *bip;
   AB_BANKINFO_PLUGIN_GENERIC *bde;
@@ -55,6 +56,7 @@ AB_BANKINFO_PLUGIN *AB_BankInfoPluginGENERIC_new(AB_BANKING *ab,
                        bip, bde, AB_BankInfoPluginGENERIC_FreeData);
 
   bde->banking=ab;
+  bde->dbData=db;
   bde->country=strdup(country);
   AB_BankInfoPlugin_SetGetBankInfoFn(bip, AB_BankInfoPluginGENERIC_GetBankInfo);
   AB_BankInfoPlugin_SetGetBankInfoByTemplateFn(bip,

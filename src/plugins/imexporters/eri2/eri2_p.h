@@ -27,6 +27,7 @@
 
 typedef struct AB_IMEXPORTER_ERI2 AB_IMEXPORTER_ERI2;
 struct AB_IMEXPORTER_ERI2 {
+  GWEN_DB_NODE *dbData;
   GWEN_MSGENGINE *msgEngine;
 };
 
@@ -38,7 +39,8 @@ GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,
-						AB_BANKING *ab);
+						AB_BANKING *ab,
+						GWEN_DB_NODE *db);
 
 static
 void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p);

@@ -29,6 +29,16 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db);
  */
 int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
+/**
+ * This function is called from AB_Provider_Update after AH_HBCI_UpdateDb
+ * has been called.
+ */
+int AH_HBCI_Update2(AH_HBCI *hbci,
+                    GWEN_DB_NODE *db,
+                    uint32_t oldVersion,
+                    uint32_t currentVersion);
+
+
 
 #endif
 

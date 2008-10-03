@@ -18,6 +18,7 @@
 
 typedef struct AH_IMEXPORTER_SWIFT AH_IMEXPORTER_SWIFT;
 struct AH_IMEXPORTER_SWIFT {
+  GWEN_DB_NODE *dbData;
   GWEN_DBIO *dbio;
 };
 
@@ -29,7 +30,8 @@ GWEN_PLUGIN *imexporters_swift_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterSWIFT_Factory(GWEN_PLUGIN *pl,
-						 AB_BANKING *ab);
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db);
 
 
 static

@@ -18,6 +18,7 @@
 
 typedef struct AH_IMEXPORTER_DTAUS AH_IMEXPORTER_DTAUS;
 struct AH_IMEXPORTER_DTAUS {
+  GWEN_DB_NODE *dbData;
   GWEN_DBIO *dbio;
 };
 
@@ -29,7 +30,8 @@ GWEN_PLUGIN *imexporters_dtaus_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterDTAUS_Factory(GWEN_PLUGIN *pl,
-						 AB_BANKING *ab);
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db);
 
 static
 void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p);

@@ -20,6 +20,7 @@
 
 typedef struct AH_IMEXPORTER_OFX AH_IMEXPORTER_OFX;
 struct AH_IMEXPORTER_OFX {
+  GWEN_DB_NODE *dbData;
   AB_IMEXPORTER_CONTEXT *context;
   AB_IMEXPORTER_ACCOUNTINFO *lastAccountInfo;
 };

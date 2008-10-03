@@ -143,6 +143,166 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
+int AH_HBCI_Update2(AH_HBCI *hbci,
+                    GWEN_DB_NODE *db,
+                    uint32_t oldVersion,
+                    uint32_t currentVersion) {
+  int rv;
+
+  if (0==GWEN_DB_Groups_Count(db) &&
+      0==GWEN_DB_Variables_Count(db)) {
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Initial setup, nothing to upgrade");
+    return 0;
+  }
+
+  if (currentVersion>oldVersion) {
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "Updating from %d.%d.%d.%d",
+             (oldVersion>>24) & 0xff,
+             (oldVersion>>16) & 0xff,
+             (oldVersion>>8) & 0xff,
+             oldVersion & 0xff);
+
+    if (oldVersion < ((1<<24) | (8<<16) | (1<<8) | 3)) {
+      rv=AH_HBCI_Update2_1_8_1_3(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
+    if (oldVersion < ((2<<24) | (9<<16) | (3<<8) | 3)) {
+      rv=AH_HBCI_Update2_2_9_3_3(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
+    /* insert more updates here */
+
+
+    /* this should follow any version-specific update */
+    rv=AH_HBCI_Update_Any(hbci, db);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  } /* if update */
+
+  return 0;
+}
+
+
+
+int AH_HBCI_Update_Any(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_DB_NODE *dbBanks;
+
+  dbBanks=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "banks");
+  if (dbBanks) {
+    GWEN_DB_NODE *dbBank;
+
+    dbBank=GWEN_DB_FindFirstGroup(dbBanks, "bank");
+    while(dbBank) {
+      GWEN_DB_NODE *dbUsers;
+
+      dbUsers=GWEN_DB_GetGroup(dbBank,
+                               GWEN_PATH_FLAGS_NAMEMUSTEXIST, "users");
+      if (dbUsers) {
+        GWEN_DB_NODE *dbUser;
+
+        dbUser=GWEN_DB_FindFirstGroup(dbUsers, "user");
+        while(dbUser) {
+          GWEN_DB_NODE *dbCustomers;
+    
+          dbCustomers=GWEN_DB_GetGroup(dbUser,
+                                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                                       "customers");
+          if (dbCustomers) {
+            GWEN_DB_NODE *dbCustomer;
+
+            dbCustomer=GWEN_DB_FindFirstGroup(dbCustomers,
+                                              "customer");
+            while(dbCustomer) {
+              GWEN_DB_NODE *dbBpd;
+
+              GWEN_DB_SetIntValue(dbCustomer, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                  "updVersion", 0);
+
+              dbBpd=GWEN_DB_GetGroup(dbCustomer,
+                                     GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                                     "bpd");
+              if (dbBpd) {
+                GWEN_DB_SetIntValue(dbBpd,
+                                    GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                    "bpdVersion", 0);
+              }
+              dbCustomer=GWEN_DB_FindNextGroup(dbCustomer,
+                                               "customer");
+            } /* if customer */
+          } /* if customers */
+
+          dbUser=GWEN_DB_FindNextGroup(dbUser, "user");
+        } /* if user */
+      } /* if users */
+      dbBank=GWEN_DB_FindNextGroup(dbBank, "bank");
+    } /* if bank */
+  } /* if banks */
+
+  return 0;
+}
+
+
+
+int AH_HBCI_Update2_1_8_1_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Version is too old, can't autoupgrade");
+
+  GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
+		      GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+		      GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+		      I18N("AqHBCI-Notice"),
+		      I18N(
+  "The version of AqBanking/AqHBCI previously used is too old to be\n"
+  "upgraded automatically.\n"
+  "Therefore you should delete the settings file and setup AqBanking\n"
+  "completely from scratch.\n"
+  "The settings file usually is\n"
+   "  $HOME/.banking/settings.conf\n"
+   "<html>"
+  "<p>"
+  "The version of AqBanking/AqHBCI previously used is too old to be\n"
+  "upgraded automatically.\n"
+  "</p>"
+  "<p>"
+  "Therefore you should delete the settings file and setup AqBanking\n"
+  "completely from scratch.\n"
+  "</p>"
+  "<p>"
+  "The settings file usually is: \n"
+  "<i>"
+  "$HOME/.banking/settings.conf\n"
+  "</i>.\n"
+   "</p>"
+   "</html>"
+			  ),
+		      I18N("Continue"), 0, 0, 0);
+  return GWEN_ERROR_INTERNAL;
+}
+
+
+
+int AH_HBCI_Update2_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  GWEN_DB_ClearGroup(db, "media");
+
+  return 0;
+}
+
+
+
+
+
+
 int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbT;
   
@@ -213,12 +373,15 @@ int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   mediumId=GWEN_DB_GetIntValue(db, "medium", 0, 0);
   if (mediumId) {
     AB_PROVIDER *pro;
+    GWEN_DB_NODE *dbPro;
     GWEN_DB_NODE *dbMedia;
 
     pro=AH_HBCI_GetProvider(hbci);
     assert(pro);
+    dbPro=AB_Provider_GetData(pro);
+    assert(dbPro);
 
-    dbMedia=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+    dbMedia=GWEN_DB_GetGroup(dbPro, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 			     "media");
     if (dbMedia) {
       GWEN_DB_NODE *dbT;

@@ -45,7 +45,8 @@ GWEN_PLUGIN *imexporters_dtaus_factory(GWEN_PLUGIN_MANAGER *pm,
 /** @TODO: Need to prepare transactions befor exporting them... */
 
 AB_IMEXPORTER *AB_Plugin_ImExporterDTAUS_Factory(GWEN_PLUGIN *pl,
-						 AB_BANKING *ab){
+						 AB_BANKING *ab,
+						 GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_DTAUS *ieh;
 
@@ -53,6 +54,7 @@ AB_IMEXPORTER *AB_Plugin_ImExporterDTAUS_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_DTAUS, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_DTAUS, ie, ieh,
                        AH_ImExporterDTAUS_FreeData);
+  ieh->dbData=db;
   ieh->dbio=GWEN_DBIO_GetPlugin("dtaus");
   if (!ieh->dbio) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,

@@ -74,63 +74,49 @@ void QBCfgTabPageUsers::_userRescan(){
 
 
 bool QBCfgTabPageUsers::toGui() {
-  GWEN_DB_NODE *dbConfig=NULL;
-  int rv;
+  GWEN_DB_NODE *dbSettings;
+  int i, j;
 
-  rv=getBanking()->loadSharedSubConfig("qbanking",
-				       "settings/gui/userList",
-				       &dbConfig);
-  if (rv==0) {
-    int i, j;
+  dbSettings=getBanking()->getSharedData("qbanking");
+  assert(dbSettings);
+  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
+                              "settings");
+  assert(dbSettings);
 
-    assert(dbConfig);
+  /* setup user list view */
+  _realPage->userList->setResizeMode(QListView::NoColumn);
+  for (i=0; i<_realPage->userList->columns(); i++) {
+    _realPage->userList->setColumnWidthMode(i, QListView::Manual);
+    j=GWEN_DB_GetIntValue(dbSettings, "gui/userList/columns", i, -1);
+    if (j!=-1)
+      _realPage->userList->setColumnWidth(i, j);
+  } /* for */
+  _realPage->userList->setSelectionMode(QListView::Single);
 
-    /* setup user list view */
-    _realPage->userList->setResizeMode(QListView::NoColumn);
-    for (i=0; i<_realPage->userList->columns(); i++) {
-      _realPage->userList->setColumnWidthMode(i, QListView::Manual);
-      j=GWEN_DB_GetIntValue(dbConfig, "columns", i, -1);
-      if (j!=-1)
-	_realPage->userList->setColumnWidth(i, j);
-    } /* for */
-    _realPage->userList->setSelectionMode(QListView::Single);
-
-    _userRescan();
-    GWEN_DB_Group_free(dbConfig);
-    return true;
-  }
-  else {
-    DBG_INFO(0, "here (%d)", rv);
-    return false;
-  }
+  _userRescan();
+  return true;
 }
 
 
 
 bool QBCfgTabPageUsers::fromGui() {
-  GWEN_DB_NODE *dbConfig;
+  GWEN_DB_NODE *dbSettings;
   int i, j;
-  int rv;
 
-  dbConfig=GWEN_DB_Group_new("config");
-  assert(dbConfig);
+  dbSettings=getBanking()->getSharedData("qbanking");
+  assert(dbSettings);
+  dbSettings=GWEN_DB_GetGroup(dbSettings, GWEN_DB_FLAGS_DEFAULT,
+                              "settings");
+  assert(dbSettings);
 
-  /* save account list view settings */
+  /* save user list view settings */
+  GWEN_DB_DeleteVar(dbSettings, "gui/userList/columns");
   for (i=0; i<_realPage->userList->columns(); i++) {
     j=_realPage->userList->columnWidth(i);
-    GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT,
-			"columns", j);
+    GWEN_DB_SetIntValue(dbSettings, GWEN_DB_FLAGS_DEFAULT,
+                        "gui/userList/columns", j);
   } /* for */
 
-  rv=getBanking()->saveSharedSubConfig("qbanking",
-				       "settings/gui/userList",
-				       dbConfig);
-  if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
-    GWEN_DB_Group_free(dbConfig);
-    return false;
-  }
-  GWEN_DB_Group_free(dbConfig);
   return true;
 }
 

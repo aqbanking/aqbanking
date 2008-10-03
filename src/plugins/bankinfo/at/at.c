@@ -48,16 +48,17 @@ GWEN_PLUGIN *bankinfo_at_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 /* interface to bankinfo plugin */
-AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoAT_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoAT_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab, GWEN_DB_NODE *db){
   AB_BANKINFO_PLUGIN *bip;
   AB_BANKINFO_PLUGIN_AT *bde;
 
-  bip=AB_BankInfoPluginGENERIC_new(ab, "at");
+  bip=AB_BankInfoPluginGENERIC_new(ab, db, "at");
   GWEN_NEW_OBJECT(AB_BANKINFO_PLUGIN_AT, bde);
   GWEN_INHERIT_SETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_AT,
                        bip, bde, AB_BankInfoPluginAT_FreeData);
 
   bde->banking=ab;
+  bde->dbData=db;
   return bip;
 }
 

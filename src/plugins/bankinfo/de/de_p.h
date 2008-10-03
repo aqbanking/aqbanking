@@ -25,13 +25,14 @@ struct AB_BANKINFO_PLUGIN_DE {
 #ifdef HAVE_KTOBLZCHECK
   AccountNumberCheck *checker;
 #endif
+  GWEN_DB_NODE *dbData;
 };
 
 static
 void GWENHYWFAR_CB AB_BankInfoPluginDE_FreeData(void *bp, void *p);
 
 static
-AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab, GWEN_DB_NODE *db);
 
 
 static AB_BANKINFO_CHECKRESULT

@@ -103,12 +103,15 @@ void AH_HBCI_free(AH_HBCI *hbci){
 
 
 
-int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_Init(AH_HBCI *hbci) {
   GWEN_XMLNODE *node;
+  GWEN_DB_NODE *db;
 
   assert(hbci);
 
   /* load and update config data */
+  db=AB_Provider_GetData(hbci->provider);
+
   hbci->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
 
   GWEN_PathManager_DefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
@@ -157,7 +160,8 @@ int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_Fini(AH_HBCI *hbci) {
+  GWEN_DB_NODE *db;
   uint32_t currentVersion;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Deinitializing AH_HBCI");
@@ -170,6 +174,7 @@ int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     AQHBCI_VERSION_BUILD;
 
   /* save configuration */
+  db=AB_Provider_GetData(hbci->provider);
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting version %08x",
              currentVersion);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -192,6 +197,25 @@ int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   GWEN_XMLNode_free(hbci->defs);
   hbci->defs=0;
+
+  return 0;
+}
+
+
+
+int AH_HBCI_Update(AH_HBCI *hbci,
+                   uint32_t lastVersion,
+                   uint32_t currentVersion) {
+  GWEN_DB_NODE *db;
+  int rv;
+
+  db=AB_Provider_GetData(hbci->provider);
+  assert(db);
+  rv=AH_HBCI_Update2(hbci, db, lastVersion, currentVersion);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   return 0;
 }

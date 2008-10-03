@@ -21,6 +21,7 @@
 
 typedef struct AH_IMEXPORTER_OPENHBCI1 AH_IMEXPORTER_OPENHBCI1;
 struct AH_IMEXPORTER_OPENHBCI1 {
+  GWEN_DB_NODE *dbData;
   GWEN_DBIO *dbio;
 };
 
@@ -32,7 +33,8 @@ GWEN_PLUGIN *imexporters_openhbci1_factory(GWEN_PLUGIN_MANAGER *pm,
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterOpenHBCI1_Factory(GWEN_PLUGIN *pl,
-						     AB_BANKING *ab);
+						     AB_BANKING *ab,
+						     GWEN_DB_NODE *db);
 
 static
 void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p);

@@ -70,6 +70,11 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf);
 GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci);
 
 
+int AH_HBCI_Update(AH_HBCI *hbci,
+                   uint32_t lastVersion,
+                   uint32_t currentVersion);
+
+
 uint32_t AH_HBCI_GetLastVersion(const AH_HBCI *hbci);
 
 
@@ -110,9 +115,9 @@ AB_PROVIDER *AH_HBCI_GetProvider(const AH_HBCI *hbci);
 
 
 AQHBCI_API
-int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db);
+int AH_HBCI_Init(AH_HBCI *hbci);
 AQHBCI_API
-int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db);
+int AH_HBCI_Fini(AH_HBCI *hbci);
 
 
 

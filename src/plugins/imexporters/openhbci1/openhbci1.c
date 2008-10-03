@@ -43,7 +43,8 @@ GWEN_PLUGIN *imexporters_openhbci1_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterOpenHBCI1_Factory(GWEN_PLUGIN *pl,
-						     AB_BANKING *ab){
+						     AB_BANKING *ab,
+						     GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_OPENHBCI1 *ieh;
 
@@ -51,6 +52,7 @@ AB_IMEXPORTER *AB_Plugin_ImExporterOpenHBCI1_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AH_IMEXPORTER_OPENHBCI1, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OPENHBCI1, ie, ieh,
                        AH_ImExporterOpenHBCI1_FreeData);
+  ieh->dbData=db;
   ieh->dbio=GWEN_DBIO_GetPlugin("olddb");
   if (!ieh->dbio) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,

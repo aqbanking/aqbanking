@@ -4,6 +4,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
   -Idialogs -Iwidgets -Iviews \
+  -I$(top_srcdir)/src/libs/aqbanking++ \
   $(all_includes)
 
 DEFS += -DBUILDING_QBANKING \

@@ -19,7 +19,6 @@
 
 #include "banking.h"
 #include <aqbanking/banking_be.h>
-#include <aqbanking/banking_cfg.h>
 #include <assert.h>
 
 #include <gwenhywfar/inherit.h>
@@ -123,6 +122,18 @@ std::list<AB_USER*> AB_Banking::getUsers() {
     AB_User_List2_free(ll);
   }
   return rl;
+}
+
+
+
+GWEN_DB_NODE *AB_Banking::getAppData(){
+  return AB_Banking_GetAppData(_banking);
+}
+
+
+
+GWEN_DB_NODE *AB_Banking::getSharedData(const char *name) {
+  return AB_Banking_GetSharedData(_banking, name);
 }
 
 
@@ -262,105 +273,17 @@ int AB_Banking::executeJobs(AB_JOB_LIST2 *jl, AB_IMEXPORTER_CONTEXT *ctx, uint32
 
 
 
-int AB_Banking::loadSharedConfig(const char *name, GWEN_DB_NODE **pDb) {
-  return AB_Banking_LoadSharedConfig(_banking, name, pDb);
-}
 
 
 
-int AB_Banking::saveSharedConfig(const char *name, GWEN_DB_NODE *db) {
-  return AB_Banking_SaveSharedConfig(_banking, name, db);
-}
 
 
 
-int AB_Banking::lockSharedConfig(const char *name) {
-  return AB_Banking_LockSharedConfig(_banking, name);
-}
 
 
 
-int AB_Banking::unlockSharedConfig(const char *name) {
-  return AB_Banking_UnlockSharedConfig(_banking, name);
-}
 
 
 
-int AB_Banking::loadSharedSubConfig(const char *name,
-				    const char *subGroup,
-				    GWEN_DB_NODE **pDb) {
-  GWEN_DB_NODE *dbShared=NULL;
-  int rv;
-
-  rv=loadSharedConfig(name, &dbShared);
-  if (rv<0) {
-    DBG_ERROR(0, "Unable to load config (%d)", rv);
-    GWEN_DB_Group_free(dbShared);
-    return rv;
-  }
-  else {
-    GWEN_DB_NODE *dbSrc;
-
-    dbSrc=GWEN_DB_GetGroup(dbShared,
-			   GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			   subGroup);
-    if (dbSrc) {
-      *pDb=GWEN_DB_Group_dup(dbSrc);
-    }
-    else {
-      *pDb=GWEN_DB_Group_new("config");
-    }
-    GWEN_DB_Group_free(dbShared);
-
-    return 0;
-  }
-}
-
-
-
-int AB_Banking::saveSharedSubConfig(const char *name,
-				    const char *subGroup,
-				    GWEN_DB_NODE *dbSrc) {
-  GWEN_DB_NODE *dbShared=NULL;
-  int rv;
-
-  rv=lockSharedConfig(name);
-  if (rv<0) {
-    DBG_ERROR(0, "Unable to lock config");
-    return rv;
-  }
-  else {
-    rv=loadSharedConfig(name, &dbShared);
-    if (rv<0) {
-      DBG_ERROR(0, "Unable to load config (%d)", rv);
-      GWEN_DB_Group_free(dbShared);
-      return rv;
-    }
-    else {
-      GWEN_DB_NODE *dbDst;
-
-      dbDst=GWEN_DB_GetGroup(dbShared,
-			     GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-			     subGroup);
-      assert(dbDst);
-      if (dbSrc)
-	GWEN_DB_AddGroupChildren(dbDst, dbSrc);
-      rv=saveSharedConfig(name, dbShared);
-      if (rv<0) {
-	DBG_ERROR(0, "Unable to store config (%d)", rv);
-	GWEN_DB_Group_free(dbShared);
-	return rv;
-      }
-      GWEN_DB_Group_free(dbShared);
-    }
-
-    rv=unlockSharedConfig(name);
-    if (rv<0) {
-      DBG_ERROR(0, "Unable to unlock config (%d)", rv);
-      return rv;
-    }
-  }
-  return 0;
-}
 
 

@@ -148,6 +148,16 @@ uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro);
 AQBANKING_API
 int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf);
 
+/**
+ * Store backend specific data with AqBanking. This data is not specific
+ * to an application, it will rather be used with every application (since
+ * it doesn't depend on the application but on the backend).
+ * @param pro pointer to the backend for which the data is to be returned
+ */
+AQBANKING_API
+GWEN_DB_NODE *AB_Provider_GetData(AB_PROVIDER *pro);
+
+
 
 /*@}*/ /* defgroup */
 

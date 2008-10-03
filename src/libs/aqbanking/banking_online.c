@@ -175,6 +175,9 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
     AB_Job_List2Iterator_free(jit);
   }
 
+  /* clear temporarily accepted certificates */
+  GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
+
   /* execute jobs */
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
 			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
@@ -194,6 +197,9 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
   }
+
+  /* clear temporarily accepted certificates again */
+  GWEN_DB_ClearGroup(ab->dbTempConfig, "certificates");
 
   /* clear queue */
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
@@ -250,6 +256,93 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
   GWEN_Gui_ProgressEnd(pid);
 
   return rv;
+}
+
+
+
+int AB_Banking_ActivateProvider(AB_BANKING *ab, const char *pname) {
+  AB_PROVIDER *pro;
+
+  if (GWEN_StringList_HasString(ab->activeProviders, pname)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Provider already active");
+    return GWEN_ERROR_FOUND;
+  }
+
+  pro=AB_Banking_GetProvider(ab, pname);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not load backend \"%s\"", pname);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  GWEN_StringList_AppendString(ab->activeProviders, pname, 0, 1);
+  return 0;
+}
+
+
+
+int AB_Banking_DeactivateProvider(AB_BANKING *ab, const char *pname) {
+  AB_ACCOUNT *a;
+  AB_USER *u;
+  AB_PROVIDER *pro;
+
+  if (!GWEN_StringList_HasString(ab->activeProviders, pname)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Provider not active");
+    return GWEN_ERROR_INVALID;
+  }
+
+  pro=AB_Banking_FindProvider(ab, pname);
+  if (pro)
+    AB_Banking_FiniProvider(ab, pro);
+
+  GWEN_StringList_RemoveString(ab->activeProviders, pname);
+
+  /* delete accounts which use this backend */
+  a=AB_Account_List_First(ab->accounts);
+  while(a) {
+    AB_ACCOUNT *na;
+
+    na=AB_Account_List_Next(a);
+    pro=AB_Account_GetProvider(a);
+    assert(pro);
+    if (strcasecmp(AB_Provider_GetName(pro), pname)==0) {
+      AB_Account_List_Del(a);
+      AB_Account_free(a);
+    }
+    a=na;
+  }
+
+  /* delete users which use this backend */
+  u=AB_User_List_First(ab->users);
+  while(u) {
+    AB_USER *nu;
+    const char *s;
+
+    nu=AB_User_List_Next(u);
+    s=AB_User_GetBackendName(u);
+    assert(s && *s);
+    if (strcasecmp(s, pname)==0) {
+      AB_User_List_Del(u);
+      AB_User_free(u);
+    }
+    u=nu;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking_IsProviderActive(AB_BANKING *ab, const char *backend){
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking_FindProvider(ab, backend);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider \"%s\" not found", backend);
+    return 0;
+  }
+
+  return AB_Provider_IsInit(pro);
 }
 
 
@@ -602,6 +695,81 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
 
   GWEN_Buffer_free(pbuf);
   return wdl;
+}
+
+
+
+int AB_Banking__LoadOldProviderData(AB_BANKING *ab, const char *name){
+  GWEN_BUFFER *pbuf;
+  GWEN_DB_NODE *db;
+
+  assert(ab);
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (AB_Banking_GetUserDataDir(ab, pbuf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir");
+    GWEN_Buffer_free(pbuf);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "backends" DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, name);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP "settings.conf");
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "banking/backends");
+  assert(db);
+  db=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, name);
+  assert(db);
+  DBG_INFO(AQBANKING_LOGDOMAIN,
+           "Reading file \"%s\"", GWEN_Buffer_GetStart(pbuf));
+  if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(pbuf),
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_CREATE_GROUP |
+		       GWEN_DB_FLAGS_LOCKFILE, 0, 2000)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Old config file \"%s\", not found",
+	     GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_free(pbuf);
+    return 0;
+  }
+  GWEN_Buffer_free(pbuf);
+
+  /* sucessfully read */
+  return 0;
+}
+
+
+
+GWEN_DB_NODE *AB_Banking_GetProviderData(AB_BANKING *ab,
+                                         AB_PROVIDER *pro) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbT;
+
+  assert(ab);
+  assert(pro);
+
+  db=GWEN_DB_GetGroup(ab->data, GWEN_DB_FLAGS_DEFAULT,
+                      "banking/backends");
+  assert(db);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       AB_Provider_GetEscapedName(pro));
+  if (!dbT && ab->lastVersion < ((1<<24) | (8<<16) | (1<<8) | 3)) {
+    int rv;
+
+    /* load separate file for older releases */
+    rv=AB_Banking__LoadOldProviderData(ab, AB_Provider_GetEscapedName(pro));
+    if (rv) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Could not load settings for backend \"%s\"",
+                AB_Provider_GetName(pro));
+      abort();
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+                       AB_Provider_GetEscapedName(pro));
+  assert(dbT);
+  return dbT;
 }
 
 

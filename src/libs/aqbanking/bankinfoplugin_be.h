@@ -35,7 +35,8 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_BANKINFO_PLUGIN,
 
 
 typedef AB_BANKINFO_PLUGIN*
-  (*AB_BANKINFO_PLUGIN_FACTORY_FN)(AB_BANKING *ab);
+  (*AB_BANKINFO_PLUGIN_FACTORY_FN)(AB_BANKING *ab,
+                                   GWEN_DB_NODE *db);
 
 
 
@@ -129,7 +130,8 @@ void AB_BankInfoPlugin_SetCheckAccountFn(AB_BANKINFO_PLUGIN *bip,
 
 
 typedef AB_BANKINFO_PLUGIN* (*AB_PLUGIN_BANKINFO_FACTORY_FN)(GWEN_PLUGIN *pl,
-							     AB_BANKING *ab);
+							     AB_BANKING *ab,
+							     GWEN_DB_NODE *db);
 
 
 AQBANKING_API
@@ -139,7 +141,9 @@ GWEN_PLUGIN *AB_Plugin_BankInfo_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 AQBANKING_API
-AB_BANKINFO_PLUGIN *AB_Plugin_BankInfo_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
+AB_BANKINFO_PLUGIN *AB_Plugin_BankInfo_Factory(GWEN_PLUGIN *pl,
+					       AB_BANKING *ab,
+					       GWEN_DB_NODE *db);
 
 AQBANKING_API
 void AB_Plugin_BankInfo_SetFactoryFn(GWEN_PLUGIN *pl,

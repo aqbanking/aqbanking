@@ -25,6 +25,7 @@ struct AH_PROVIDER {
   AH_HBCI *hbci;
   AB_JOB_LIST2 *bankingJobs;
   AH_OUTBOX *outbox;
+  GWEN_DB_NODE *dbConfig;
   GWEN_DB_NODE *dbTempConfig;
 };
 static void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p);

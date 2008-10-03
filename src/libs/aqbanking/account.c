@@ -634,6 +634,29 @@ AB_PROVIDER *AB_Account_GetProvider(const AB_ACCOUNT *a) {
 
 
 
+GWEN_DB_NODE *AB_Account_GetAppData(const AB_ACCOUNT *a){
+  GWEN_DB_NODE *n;
+  const char *appName;
+
+  assert(a);
+  assert(a->usage);
+  appName=AB_Banking_GetEscapedAppName(a->banking);
+  assert(appName);
+  n=GWEN_DB_GetGroup(a->appData, GWEN_DB_FLAGS_DEFAULT, appName);
+  return n;
+}
+
+
+
+GWEN_DB_NODE *AB_Account_GetProviderData(const AB_ACCOUNT *a){
+  assert(a);
+  assert(a->usage);
+
+  return a->providerData;
+}
+
+
+
 const char *AB_Account_GetAccountNumber(const AB_ACCOUNT *a){
   assert(a);
   assert(a->usage);

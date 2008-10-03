@@ -113,21 +113,19 @@ public:
    */
   std::list<AB_USER*> getUsers();
 
+  /**
+   * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
+   * the currently running application. The group returned MUST NOT be
+   * freed.
+   * AqBanking is able to separate and store the data for every application.
+   */
+  GWEN_DB_NODE *getAppData();
+
+  GWEN_DB_NODE *getSharedData(const char *name);
+
   int getUserDataDir(GWEN_BUFFER *buf) const ;
   int getAppUserDataDir(GWEN_BUFFER *buf) const ;
 
-  int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb);
-  int saveSharedConfig(const char *name, GWEN_DB_NODE *db);
-  int lockSharedConfig(const char *name);
-  int unlockSharedConfig(const char *name);
-
-  int loadSharedSubConfig(const char *name,
-			  const char *subGroup,
-			  GWEN_DB_NODE **pDb);
-
-  int saveSharedSubConfig(const char *name,
-			  const char *subGroup,
-			  GWEN_DB_NODE *dbSrc);
 
   /** @name Plugin Handling
    *

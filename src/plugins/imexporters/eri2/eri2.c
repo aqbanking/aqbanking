@@ -62,7 +62,8 @@ GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,
-						AB_BANKING *ab){
+						AB_BANKING *ab,
+						GWEN_DB_NODE *db){
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_STRINGLIST *paths;
@@ -71,6 +72,8 @@ AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,
   GWEN_NEW_OBJECT(AB_IMEXPORTER_ERI2, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AB_IMEXPORTER_ERI2, ie, ieh,
 		       AB_ImExporterERI2_FreeData);
+  ieh->dbData=db;
+
   paths=AB_Banking_GetGlobalDataDirs();
   if (paths) {
     GWEN_BUFFER *fbuf;
