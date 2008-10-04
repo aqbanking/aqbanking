@@ -906,21 +906,78 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
   int errors=0;
   int oks=0;
   int rv;
+  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   uq=AO_Queue_FirstUserQueue(dp->queue);
   while(uq) {
-    rv=AO_Provider_ExecUserQueue(pro, ctx, uq, guiid);
-    if (rv)
+    AB_USER *u;
+    char tbuf[256];
+
+    u=AO_UserQueue_GetUser(uq);
+    assert(u);
+    snprintf(tbuf, sizeof(tbuf)-1,
+	     I18N("Locking user %s"),
+	     AB_User_GetUserId(u));
+    tbuf[sizeof(tbuf)-1]=0;
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Info,
+			 tbuf);
+    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    if (rv<0) {
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
+	       "Could not lock customer [%s] (%d)",
+	       AB_User_GetCustomerId(u), rv);
+      snprintf(tbuf, sizeof(tbuf)-1,
+	       I18N("Could not lock user %s (%d)"),
+	       AB_User_GetUserId(u), rv);
+      tbuf[sizeof(tbuf)-1]=0;
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Error,
+			   tbuf);
+      AB_Banking_EndExclUseUser(ab, u, 1, guiid);  /* abandon */
       errors++;
-    else
-      oks++;
-    if (rv==GWEN_ERROR_USER_ABORTED) {
-      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
-      return rv;
+      if (rv==GWEN_ERROR_USER_ABORTED)
+	return rv;
+    }
+    else {
+      rv=AO_Provider_ExecUserQueue(pro, ctx, uq, guiid);
+      if (rv)
+	errors++;
+      else
+	oks++;
+      if (rv==GWEN_ERROR_USER_ABORTED) {
+	DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
+	AB_Banking_EndExclUseUser(ab, u, 1, guiid);  /* abandon */
+	return rv;
+      }
+
+      snprintf(tbuf, sizeof(tbuf)-1,
+	       I18N("Unlocking user %s"),
+	       AB_User_GetUserId(u));
+      tbuf[sizeof(tbuf)-1]=0;
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Info,
+			   tbuf);
+      rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+      if (rv<0) {
+	snprintf(tbuf, sizeof(tbuf)-1,
+		 I18N("Could not unlock user %s (%d)"),
+		 AB_User_GetUserId(u), rv);
+	tbuf[sizeof(tbuf)-1]=0;
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     tbuf);
+	errors++;
+	if (rv==GWEN_ERROR_USER_ABORTED)
+          return rv;
+      }
     }
     uq=AO_UserQueue_List_Next(uq);
   } /* while */
