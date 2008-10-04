@@ -335,7 +335,7 @@ int AB_Banking::saveSharedSubConfig(const char *name,
     rv=loadSharedConfig(name, &dbShared, guiid);
     if (rv<0) {
       DBG_ERROR(0, "Unable to load config (%d)", rv);
-      GWEN_DB_Group_free(dbShared);
+      unlockSharedConfig(name, guiid);
       return rv;
     }
     else {
@@ -350,6 +350,7 @@ int AB_Banking::saveSharedSubConfig(const char *name,
       rv=saveSharedConfig(name, dbShared, guiid);
       if (rv<0) {
 	DBG_ERROR(0, "Unable to store config (%d)", rv);
+	unlockSharedConfig(name, guiid);
 	GWEN_DB_Group_free(dbShared);
 	return rv;
       }
@@ -364,5 +365,114 @@ int AB_Banking::saveSharedSubConfig(const char *name,
   }
   return 0;
 }
+
+
+int AB_Banking::loadAppConfig(GWEN_DB_NODE **pDb, uint32_t guiid) {
+  return AB_Banking_LoadAppConfig(_banking, pDb, guiid);
+}
+
+
+
+int AB_Banking::saveAppConfig(GWEN_DB_NODE *db, uint32_t guiid) {
+  return AB_Banking_SaveAppConfig(_banking, db, guiid);
+}
+
+
+
+int AB_Banking::lockAppConfig(uint32_t guiid) {
+  return AB_Banking_LockAppConfig(_banking, guiid);
+}
+
+
+
+int AB_Banking::unlockAppConfig(uint32_t guiid) {
+  return AB_Banking_UnlockAppConfig(_banking, guiid);
+}
+
+
+
+int AB_Banking::loadAppSubConfig(const char *subGroup,
+				 GWEN_DB_NODE **pDb,
+				 uint32_t guiid) {
+  GWEN_DB_NODE *dbApp=NULL;
+  int rv;
+
+  rv=loadAppConfig(&dbApp, guiid);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to load config (%d)", rv);
+    GWEN_DB_Group_free(dbApp);
+    return rv;
+  }
+  else {
+    GWEN_DB_NODE *dbSrc;
+
+    dbSrc=GWEN_DB_GetGroup(dbApp,
+			   GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			   subGroup);
+    if (dbSrc) {
+      *pDb=GWEN_DB_Group_dup(dbSrc);
+    }
+    else {
+      *pDb=GWEN_DB_Group_new("config");
+    }
+    GWEN_DB_Group_free(dbApp);
+
+    return 0;
+  }
+}
+
+
+
+int AB_Banking::saveAppSubConfig(const char *subGroup,
+				 GWEN_DB_NODE *dbSrc,
+				 uint32_t guiid) {
+  GWEN_DB_NODE *dbApp=NULL;
+  int rv;
+
+  rv=lockAppConfig(guiid);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to lock config");
+    return rv;
+  }
+  else {
+    rv=loadAppConfig(&dbApp, guiid);
+    if (rv<0) {
+      DBG_ERROR(0, "Unable to load config (%d)", rv);
+      unlockAppConfig(guiid);
+      return rv;
+    }
+    else {
+      GWEN_DB_NODE *dbDst;
+
+      dbDst=GWEN_DB_GetGroup(dbApp,
+			     GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			     subGroup);
+      assert(dbDst);
+      if (dbSrc)
+	GWEN_DB_AddGroupChildren(dbDst, dbSrc);
+      rv=saveAppConfig(dbApp, guiid);
+      if (rv<0) {
+	DBG_ERROR(0, "Unable to store config (%d)", rv);
+	unlockAppConfig(guiid);
+	GWEN_DB_Group_free(dbApp);
+	return rv;
+      }
+      GWEN_DB_Group_free(dbApp);
+    }
+
+    rv=unlockAppConfig(guiid);
+    if (rv<0) {
+      DBG_ERROR(0, "Unable to unlock config (%d)", rv);
+      return rv;
+    }
+  }
+  return 0;
+}
+
+
+
+
+
+
 
 

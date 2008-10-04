@@ -116,6 +116,20 @@ public:
   int getUserDataDir(GWEN_BUFFER *buf) const ;
   int getAppUserDataDir(GWEN_BUFFER *buf) const ;
 
+  int loadAppConfig(GWEN_DB_NODE **pDb, uint32_t guiid);
+  int saveAppConfig(GWEN_DB_NODE *db, uint32_t guiid);
+  int lockAppConfig(uint32_t guiid);
+  int unlockAppConfig(uint32_t guiid);
+
+  int loadAppSubConfig(const char *subGroup,
+		       GWEN_DB_NODE **pDb,
+		       uint32_t guiid);
+
+  int saveAppSubConfig(const char *subGroup,
+		       GWEN_DB_NODE *dbSrc,
+		       uint32_t guiid);
+
+
   int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb, uint32_t guiid);
   int saveSharedConfig(const char *name, GWEN_DB_NODE *db, uint32_t guiid);
   int lockSharedConfig(const char *name, uint32_t guiid);
