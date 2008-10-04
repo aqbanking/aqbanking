@@ -163,9 +163,32 @@ int addUserFlags(AB_BANKING *ab,
   else {
     uint32_t flags;
 
+    /* lock user */
+    rv=AB_Banking_BeginExclUseUser(ab, u, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+
+    /* modify user */
     flags=AH_User_Flags_fromDb(db, "flags");
     fprintf(stderr, "Adding flags: %08x\n", flags);
     AH_User_AddFlags(u, flags);
+
+    /* unlock user */
+    rv=AB_Banking_EndExclUseUser(ab, u, 0, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not unlock user (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
   }
 
   rv=AB_Banking_OnlineFini(ab, 0);

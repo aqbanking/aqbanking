@@ -148,16 +148,37 @@ int addsubAccountFlags(AB_BANKING *ab,
   else {
     uint32_t flags;
 
+    /* lock account */
+    rv=AB_Banking_BeginExclUseAccount(ab, a, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not lock account, maybe it is used in another application? (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+
+    /* modify account */
     flags=AH_Account_Flags_fromDb(db, "flags");
-    if( is_add )
-    {
+    if( is_add ) {
       fprintf(stderr, "Adding flags: %08x\n", flags);
       AH_Account_AddFlags(a, flags);
     }
-    else
-    {
+    else {
       fprintf(stderr, "Removing flags: %08x\n", flags);
       AH_Account_SubFlags(a, flags);
+    }
+
+    /* unlock account */
+    rv=AB_Banking_EndExclUseAccount(ab, a, 0, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not unlock account (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
     }
   }
 

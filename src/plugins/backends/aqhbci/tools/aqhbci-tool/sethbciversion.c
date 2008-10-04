@@ -170,7 +170,31 @@ int setHbciVersion(AB_BANKING *ab,
       DBG_ERROR(0, "Invalid HBCI version \"%s\"", hbciVersion);
       return 1;
     }
+
+    /* lock user */
+    rv=AB_Banking_BeginExclUseUser(ab, u, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+
+    /* modify user */
     AH_User_SetHbciVersion(u, v);
+
+    /* unlock user */
+    rv=AB_Banking_EndExclUseUser(ab, u, 0, 0);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR: Could not unlock user (%d)\n",
+	      rv);
+      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
   }
 
   rv=AB_Banking_OnlineFini(ab, 0);
