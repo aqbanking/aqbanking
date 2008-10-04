@@ -1576,15 +1576,29 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid){
   while(cbox) {
     AB_USER *u;
     int rv;
+    char tbuf[256];
 
-    u=AH_Outbox__CBox_GetUser(cbox);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%s\"",
-	     AB_User_GetCustomerId(u));
+	     AB_User_GetCustomerId(cbox->user));
+    snprintf(tbuf, sizeof(tbuf)-1,
+	     I18N("Locking user %s"),
+	     AB_User_GetUserId(cbox->user));
+    tbuf[sizeof(tbuf)-1]=0;
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Info,
+			 tbuf);
     rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
 	       AB_User_GetCustomerId(u), rv);
+      snprintf(tbuf, sizeof(tbuf)-1,
+	       I18N("Could not lock user %s (%d)"),
+	       AB_User_GetUserId(cbox->user), rv);
+      tbuf[sizeof(tbuf)-1]=0;
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Error,
+			   tbuf);
       AH_Outbox_UnlockUsers(ob, 1, guiid); /* abandon */
       return rv;
     }
@@ -1780,10 +1794,15 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox, uint32_t guiid)
   if (cbox->isLocked) {
     if (cbox->isLocked) {
       int rv;
+      char tbuf[256];
 
+      snprintf(tbuf, sizeof(tbuf)-1,
+	       I18N("Unlocking user %s"),
+	       AB_User_GetUserId(cbox->user));
+      tbuf[sizeof(tbuf)-1]=0;
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Info,
-			   I18N("Locking users"));
+                           tbuf);
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Unlocking customer \"%s\"",
 	       AB_User_GetCustomerId(cbox->user));
