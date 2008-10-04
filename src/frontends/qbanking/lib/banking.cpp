@@ -470,6 +470,28 @@ int AB_Banking::saveAppSubConfig(const char *subGroup,
 }
 
 
+int AB_Banking::beginExclUseAccount(AB_ACCOUNT *a, uint32_t guiid) {
+  return AB_Banking_BeginExclUseAccount(_banking, a, guiid);
+}
+
+
+
+int AB_Banking::endExclUseAccount(AB_ACCOUNT *a, int abandon, uint32_t guiid) {
+  return AB_Banking_EndExclUseAccount(_banking, a, abandon, guiid);
+}
+
+
+
+int AB_Banking::beginExclUseUser(AB_USER *u, uint32_t guiid) {
+  return AB_Banking_BeginExclUseUser(_banking, u, guiid);
+}
+
+
+
+int AB_Banking::endExclUseUser(AB_USER *u, int abandon, uint32_t guiid) {
+  return AB_Banking_EndExclUseUser(_banking, u, abandon, guiid);
+}
+
 
 
 

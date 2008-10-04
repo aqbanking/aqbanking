@@ -145,6 +145,13 @@ public:
 			  GWEN_DB_NODE *dbSrc,
 			  uint32_t guiid);
 
+  int beginExclUseAccount(AB_ACCOUNT *a, uint32_t guiid);
+  int endExclUseAccount(AB_ACCOUNT *a, int abandon, uint32_t guiid);
+
+  int beginExclUseUser(AB_USER *u, uint32_t guiid);
+  int endExclUseUser(AB_USER *u, int abandon, uint32_t guiid);
+
+
   /** @name Plugin Handling
    *
    */

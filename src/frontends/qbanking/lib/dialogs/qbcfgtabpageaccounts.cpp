@@ -185,6 +185,7 @@ void QBCfgTabPageAccounts::slotAccountNew() {
 void QBCfgTabPageAccounts::slotAccountEdit() {
   std::list<AB_ACCOUNT*> al;
   AB_ACCOUNT *a;
+  int rv;
 
   al=_realPage->accountList->getSelectedAccounts();
   if (al.empty()) {
@@ -195,12 +196,34 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
     return;
   }
   a=al.front();
+
+  rv=getBanking()->beginExclUseAccount(a, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Could not lock account");
+    QMessageBox::critical(this,
+			  tr("Error"),
+			  tr("Could not lock account data. "
+			     "Maybe this account is still used by another application?"),
+			  QMessageBox::Ok,QMessageBox::NoButton);
+    return;
+  }
+
   if (QBEditAccount::editAccount(getBanking(), a, this)) {
     DBG_INFO(0, "Accepted");
+    rv=getBanking()->endExclUseAccount(a, 0, 0);
+    if (rv<0) {
+      DBG_ERROR(0, "Could not unlock account");
+      QMessageBox::critical(this,
+			    tr("Internal Error"),
+			    tr("Could not unlock account data."),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+    }
   }
   else {
     DBG_INFO(0, "Rejected");
+    getBanking()->endExclUseAccount(a, 1, 0); /* abandon changes */
   }
+
   emit signalUpdate();
   updateView();
 }
