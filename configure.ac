@@ -511,7 +511,6 @@ AC_STRUCT_TM
 #
 # Checks for library functions.
 #
-AC_FUNC_MALLOC
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([memmove memset strcasecmp strdup strerror snprintf])
 AC_CHECK_FUNCS([setlocale])
