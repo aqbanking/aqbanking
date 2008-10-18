@@ -852,6 +852,7 @@
  <!-- Kundennachricht -->
  <SEGdef id="ChangePin"
          code="DKPAE"
+         pversion="220"
          version="1"
          delimiter="+" 
          terminator="'" 
