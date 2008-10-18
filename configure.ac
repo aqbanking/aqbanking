@@ -537,6 +537,10 @@ case "$aqbanking_frontends" in *fbanking*)
   tmp_frontends="${tmp_frontends} fbanking"
   ;;
 esac
+case "$aqbanking_frontends" in *wbanking*)
+  tmp_frontends="${tmp_frontends} wbanking"
+  ;;
+esac
 aqbanking_frontends="${tmp_frontends}"
 AC_SUBST(aqbanking_frontends)
 
@@ -1707,6 +1711,9 @@ AC_CONFIG_FILES([
   src/frontends/qbanking/help/Makefile
   src/frontends/qbanking/help/de/Makefile
   src/frontends/qbanking/help/de/images/Makefile
+  src/frontends/wbanking/Makefile
+  src/frontends/wbanking/lib/Makefile
+  src/frontends/wbanking/lib/widgets/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile

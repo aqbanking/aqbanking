@@ -151,7 +151,7 @@ mp-w32:
 	  --with-gwen-dir=$(MINGW32_PREFIX) \
 	  --with-chipcard-client-dir=$(MINGW32_PREFIX) \
 	  --with-backends="aqhbci aqofxconnect" \
-	  --with-frontends="" \
+	  --with-frontends="wbanking" \
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge
 
