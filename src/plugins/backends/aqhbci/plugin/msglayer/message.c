@@ -1642,7 +1642,8 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   
 	if (strncasecmp(p, "HNSHA:", 6)==0)
 	  rv=AH_Msg__AnonHnsha(p, slen, io);
-	else if (strncasecmp(p, "HKPAE:", 6)==0)
+	else if (strncasecmp(p, "HKPAE:", 6)==0 ||
+		 strncasecmp(p, "DKPAE:", 6)==0)
 	  rv=AH_Msg__AnonHkpae(p, slen, io);
 	/* add more segments with confidential data here */
 	else {
