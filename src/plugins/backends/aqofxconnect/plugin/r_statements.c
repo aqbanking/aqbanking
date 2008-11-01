@@ -91,7 +91,7 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   GWEN_Buffer_AppendString(buf, "</STMTRQ>");
 
   /* wrap into request */
-  rv=AO_Provider__WrapRequest(pro, "BANK", "STMT", buf);
+  rv=AO_Provider__WrapRequest(pro, u, "BANK", "STMT", buf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -150,7 +150,7 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   GWEN_Buffer_AppendString(buf, "</CCSTMTRQ>");
 
   /* wrap into request */
-  rv=AO_Provider__WrapRequest(pro, "CREDITCARD", "CCSTMT", buf);
+  rv=AO_Provider__WrapRequest(pro, u, "CREDITCARD", "CCSTMT", buf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -232,7 +232,7 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   GWEN_Buffer_AppendString(buf, "</INVSTMTRQ>");
 
   /* wrap into request */
-  rv=AO_Provider__WrapRequest(pro, "INVSTMT", "INVSTMT", buf);
+  rv=AO_Provider__WrapRequest(pro, u, "INVSTMT", "INVSTMT", buf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     return rv;

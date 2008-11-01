@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>418</width>
-            <height>437</height>
+            <width>385</width>
+            <height>551</height>
         </rect>
     </property>
     <property name="caption">
@@ -169,13 +169,13 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
                 <cstring>groupBox8</cstring>
             </property>
             <property name="title">
-                <string>Server Options</string>
+                <string>Server Capabilities</string>
             </property>
             <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="3">
+                <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="2">
                     <property name="name">
                         <cstring>layout4</cstring>
                     </property>
@@ -217,7 +217,7 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
                         <string>Supports Statement Download</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="2" column="0">
+                <widget class="QCheckBox" row="1" column="1">
                     <property name="name">
                         <cstring>investmentCheck</cstring>
                     </property>
@@ -225,7 +225,28 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
                         <string>Supports Investments</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="1" column="1" rowspan="1" colspan="2">
+                <widget class="QCheckBox" row="2" column="0">
+                    <property name="name">
+                        <cstring>billPayCheck</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Supports Bill Pay</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox5</cstring>
+            </property>
+            <property name="title">
+                <string>Server Options</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox" row="0" column="0">
                     <property name="name">
                         <cstring>emptyBankIdCheck</cstring>
                     </property>
@@ -241,7 +262,7 @@ Use this if your bank does not allow sending a bank id (even if there is such an
 &lt;/qt&gt;</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="2" column="1">
+                <widget class="QCheckBox" row="1" column="0">
                     <property name="name">
                         <cstring>emptyFidCheck</cstring>
                     </property>
@@ -257,7 +278,7 @@ Use this if your bank does not allow sending a FID (even if there is such an id)
 &lt;/qt&gt;</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="3" column="1">
+                <widget class="QCheckBox" row="1" column="1">
                     <property name="name">
                         <cstring>forceSsl3Check</cstring>
                     </property>
@@ -273,12 +294,20 @@ Use this if you have problems connecting to your bank.
 &lt;/qt&gt;</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="3" column="0">
+                <widget class="QCheckBox" row="0" column="1">
                     <property name="name">
-                        <cstring>billPayCheck</cstring>
+                        <cstring>sendShortDateCheck</cstring>
                     </property>
                     <property name="text">
-                        <string>Supports Bill Pay</string>
+                        <string>Send Short Date</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Force use of  SSL v3</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Use this if you have problems connecting to your bank.
+&lt;/qt&gt;</string>
                     </property>
                 </widget>
             </grid>
@@ -310,14 +339,6 @@ Use this if you have problems connecting to your bank.
                         <string>APPVER</string>
                     </property>
                 </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel5_2_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Header Version</string>
-                    </property>
-                </widget>
                 <widget class="QLineEdit" row="0" column="1">
                     <property name="name">
                         <cstring>appIdEdit</cstring>
@@ -338,9 +359,35 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
 &lt;/qt&gt;</string>
                     </property>
                 </widget>
+                <widget class="QLabel" row="2" column="0">
+                    <property name="name">
+                        <cstring>textLabel5_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Header Version</string>
+                    </property>
+                </widget>
                 <widget class="QLineEdit" row="2" column="1">
                     <property name="name">
                         <cstring>headerVerEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
+Freely selectable name for your account. This field is not used by AqOfxConnect.
+&lt;/qt&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="3" column="0">
+                    <property name="name">
+                        <cstring>textLabel5_2_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>CLIENTUID</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="3" column="1">
+                    <property name="name">
+                        <cstring>clientUidEdit</cstring>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>&lt;qt&gt;
@@ -379,14 +426,16 @@ Freely selectable name for your account. This field is not used by AqOfxConnect.
     <tabstop>accountListCheck</tabstop>
     <tabstop>getAccountsButton</tabstop>
     <tabstop>statementCheck</tabstop>
-    <tabstop>emptyBankIdCheck</tabstop>
     <tabstop>investmentCheck</tabstop>
-    <tabstop>emptyFidCheck</tabstop>
     <tabstop>billPayCheck</tabstop>
+    <tabstop>emptyBankIdCheck</tabstop>
+    <tabstop>sendShortDateCheck</tabstop>
+    <tabstop>emptyFidCheck</tabstop>
     <tabstop>forceSsl3Check</tabstop>
     <tabstop>appIdEdit</tabstop>
     <tabstop>appVerEdit</tabstop>
     <tabstop>headerVerEdit</tabstop>
+    <tabstop>clientUidEdit</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

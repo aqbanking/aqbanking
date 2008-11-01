@@ -65,7 +65,10 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(buf, "<SIGNONMSGSRQV1>");
   GWEN_Buffer_AppendString(buf, "<SONRQ>");
   GWEN_Buffer_AppendString(buf, "<DTCLIENT>");
-  GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+  if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
+    GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+  else
+    GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
 
   s=AB_User_GetUserId(u);
   if (s) {
@@ -144,6 +147,13 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(buf, "<APPVER>");
   GWEN_Buffer_AppendString(buf, s);
 
+  /* add CLIENTUID, if known */
+  s=AO_User_GetClientUid(u);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(buf, "<CLIENTUID>");
+    GWEN_Buffer_AppendString(buf, s);
+  }
+
   /* close elements */
   GWEN_Buffer_AppendString(buf, "</SONRQ>");
   GWEN_Buffer_AppendString(buf, "</SIGNONMSGSRQV1>");
@@ -157,6 +167,7 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 
 
 int AO_Provider__WrapRequest(AB_PROVIDER *pro,
+                             AB_USER *u,
 			     const char *mTypeName,
 			     const char *tTypeName,
 			     GWEN_BUFFER *buf) {
@@ -177,7 +188,10 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro,
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Buffer_AppendString(tbuf, "<TRNUID>");
-  GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", tbuf);
+  if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
+    GWEN_Time_toString(ti, "YYYYMMDDhhmmss", tbuf);
+  else
+    GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", tbuf);
   GWEN_Buffer_AppendString(tbuf, "<CLTCOOKIE>1");
 
   /* append ends of elements to original buffer */

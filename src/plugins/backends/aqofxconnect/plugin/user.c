@@ -75,6 +75,8 @@ uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       f|=AO_USER_FLAGS_EMPTY_FID;
     else if (strcasecmp(s, "forceSsl3")==0)
       f|=AO_USER_FLAGS_FORCE_SSL3;
+    else if (strcasecmp(s, "sendShortDate")==0)
+      f|=AO_USER_FLAGS_SEND_SHORT_DATE;
     else {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
                 "Unknown user flag \"%s\"", s);
@@ -109,6 +111,9 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (f & AO_USER_FLAGS_FORCE_SSL3)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
 			 "forceSsl3");
+  if (f & AO_USER_FLAGS_SEND_SHORT_DATE)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+			 "sendShortDate");
 }
 
 
@@ -184,6 +189,13 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	ue->headerVer=strdup(s);
       else
 	ue->headerVer=NULL;
+
+      free(ue->clientUid);
+      s=GWEN_DB_GetCharValue(db, "clientUid", 0, NULL);
+      if (s)
+	ue->clientUid=strdup(s);
+      else
+	ue->clientUid=NULL;
     }
 
   }
@@ -230,6 +242,9 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       if (ue->headerVer)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "headerVer", ue->headerVer);
+      if (ue->clientUid)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "clientUid", ue->clientUid);
     }
   }
 }
@@ -248,6 +263,7 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
   free(ue->appId);
   free(ue->appVer);
   free(ue->headerVer);
+  free(ue->clientUid);
 
   GWEN_FREE_OBJECT(ue);
 }
@@ -525,6 +541,32 @@ void AO_User_SetHeaderVer(AB_USER *u, const char *s) {
   free(ue->headerVer);
   if (s) ue->headerVer=strdup(s);
   else ue->headerVer=NULL;
+}
+
+
+
+const char *AO_User_GetClientUid(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->clientUid;
+}
+
+
+
+void AO_User_SetClientUid(AB_USER *u, const char *s) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  free(ue->clientUid);
+  if (s) ue->clientUid=strdup(s);
+  else ue->clientUid=NULL;
 }
 
 

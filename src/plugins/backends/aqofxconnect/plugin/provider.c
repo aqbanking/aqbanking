@@ -627,7 +627,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   GWEN_Buffer_ReserveBytes(reqbuf, 1024);
 
   /* add actual request */
-  rv=AO_Provider__AddAccountInfoReq(pro, guiid, reqbuf);
+  rv=AO_Provider__AddAccountInfoReq(pro, u, guiid, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);

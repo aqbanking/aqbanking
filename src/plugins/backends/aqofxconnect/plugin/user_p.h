@@ -29,6 +29,7 @@ struct AO_USER {
   char *appId;
   char *appVer;
   char *headerVer;
+  char *clientUid;
 };
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);

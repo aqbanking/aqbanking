@@ -115,6 +115,12 @@ bool CfgTabPageUserOfx::fromGui() {
   else
     AO_User_SetHeaderVer(u, s.c_str());
 
+  s=QBanking::QStringToUtf8String(_realPage->clientUidEdit->text());
+  if (s.empty())
+    AO_User_SetClientUid(u, 0);
+  else
+    AO_User_SetClientUid(u, s.c_str());
+
   s=QBanking::QStringToUtf8String(_realPage->urlEdit->text());
   url=GWEN_Url_fromString(s.c_str());
   t=GWEN_Url_GetProtocol(url);
@@ -141,6 +147,8 @@ bool CfgTabPageUserOfx::fromGui() {
     f|=AO_USER_FLAGS_EMPTY_FID;
   if (_realPage->forceSsl3Check->isChecked())
     f|=AO_USER_FLAGS_FORCE_SSL3;
+  if (_realPage->sendShortDateCheck->isChecked())
+    f|=AO_USER_FLAGS_SEND_SHORT_DATE;
   AO_User_SetFlags(u, f);
 
   return true;
@@ -179,6 +187,9 @@ bool CfgTabPageUserOfx::toGui() {
   s=AO_User_GetHeaderVer(u);
   if (s)
     _realPage->headerVerEdit->setText(QString::fromUtf8(s));
+  s=AO_User_GetClientUid(u);
+  if (s)
+    _realPage->clientUidEdit->setText(QString::fromUtf8(s));
 
   f=AO_User_GetFlags(u);
   _realPage->accountListCheck->setChecked(f & AO_USER_FLAGS_ACCOUNT_LIST);
@@ -189,6 +200,7 @@ bool CfgTabPageUserOfx::toGui() {
   _realPage->emptyBankIdCheck->setChecked(f & AO_USER_FLAGS_EMPTY_BANKID);
   _realPage->emptyFidCheck->setChecked(f & AO_USER_FLAGS_EMPTY_FID);
   _realPage->forceSsl3Check->setChecked(f & AO_USER_FLAGS_FORCE_SSL3);
+  _realPage->sendShortDateCheck->setChecked(f & AO_USER_FLAGS_SEND_SHORT_DATE);
 
   return true;
 }

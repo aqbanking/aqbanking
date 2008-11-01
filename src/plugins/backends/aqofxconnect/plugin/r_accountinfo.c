@@ -14,6 +14,7 @@
 
 
 int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
+                                   AB_USER *u,
 				   uint32_t guiid,
 				   GWEN_BUFFER *buf) {
   int rv;
@@ -23,7 +24,7 @@ int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(buf, "</ACCTINFORQ>");
 
   /* wrap into request */
-  rv=AO_Provider__WrapRequest(pro, "SIGNUP", "ACCTINFO", buf);
+  rv=AO_Provider__WrapRequest(pro, u, "SIGNUP", "ACCTINFO", buf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     return rv;

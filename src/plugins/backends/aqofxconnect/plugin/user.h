@@ -20,13 +20,14 @@
 #include <gwenhywfar/db.h>
 
 
-#define AO_USER_FLAGS_ACCOUNT_LIST 0x00000001
-#define AO_USER_FLAGS_STATEMENTS   0x00000002
-#define AO_USER_FLAGS_INVESTMENT   0x00000004
-#define AO_USER_FLAGS_BILLPAY      0x00000008
-#define AO_USER_FLAGS_EMPTY_BANKID 0x00000010
-#define AO_USER_FLAGS_EMPTY_FID    0x00000020
-#define AO_USER_FLAGS_FORCE_SSL3   0x00000040
+#define AO_USER_FLAGS_ACCOUNT_LIST     0x00000001
+#define AO_USER_FLAGS_STATEMENTS       0x00000002
+#define AO_USER_FLAGS_INVESTMENT       0x00000004
+#define AO_USER_FLAGS_BILLPAY          0x00000008
+#define AO_USER_FLAGS_EMPTY_BANKID     0x00000010
+#define AO_USER_FLAGS_EMPTY_FID        0x00000020
+#define AO_USER_FLAGS_FORCE_SSL3       0x00000040
+#define AO_USER_FLAGS_SEND_SHORT_DATE  0x00000080
 
 
 
@@ -128,6 +129,12 @@ const char *AO_User_GetHeaderVer(const AB_USER *u);
 
 AQOFXCONNECT_API
 void AO_User_SetHeaderVer(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
+const char *AO_User_GetClientUid(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetClientUid(AB_USER *u, const char *s);
 
 
 #ifdef __cplusplus

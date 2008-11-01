@@ -103,6 +103,7 @@ static int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 				  uint32_t guiid);
 
 static int AO_Provider__WrapRequest(AB_PROVIDER *pro,
+                                    AB_USER *u,
 				    const char *mTypeName,
 				    const char *tTypeName,
 				    GWEN_BUFFER *buf);
@@ -133,6 +134,7 @@ static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
 
 
 int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
+                                   AB_USER *u,
 				   uint32_t guiid,
 				   GWEN_BUFFER *buf);
 
