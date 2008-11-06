@@ -198,6 +198,9 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  addaccount:\n"
                                   "    Manually add account \n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  delaccount:\n"
+                                  "    Deletes account \n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
@@ -279,6 +282,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "addaccount")==0) {
     rv=addAccount(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "delaccount")==0) {
+    rv=delAccount(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "getsysid")==0) {
     rv=getSysId(ab, db, argc, argv);

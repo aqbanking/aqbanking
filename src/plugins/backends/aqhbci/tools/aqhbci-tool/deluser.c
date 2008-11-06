@@ -39,9 +39,11 @@ int delUser(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   const char *userName;
+  int uninitialized = -1;
   uint32_t delAll = 0;
   uint32_t delAccounts = 0;
   uint32_t pretend = 0;
+  uint32_t userUniqueId = 0;
   AB_USER_LIST2 *ul;
   AB_USER_LIST2 *matches;
   AB_USER_LIST2_ITERATOR *uit;
@@ -93,6 +95,28 @@ int delUser(AB_BANKING *ab,
     "customer",                   /* long option */
     "Specify the customer id (Kundennummer)",    /* short description */
     "Specify the customer id (Kundennummer)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "uniqueId",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                          /* short option */
+    "user-unique",                   /* long option */
+    "Specify the user unique id",    /* short description */
+    "Specify the user unique id"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,           /* type */
+    "uninitialized",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "uninitialized",                   /* long option */
+    "Match uninitialized users (PARAM=1) or initialized users (PARAM=0)",    /* short description */
+    "Match uninitialized users (PARAM=1) or initialized users (PARAM=0)"     /* long description */
   },
   {
     0, /* flags */
@@ -181,9 +205,17 @@ int delUser(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, 0);
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
+  uninitialized=GWEN_DB_GetIntValue(db, "uninitialized", 0, -1);
   delAll=GWEN_DB_GetIntValue(db, "all", 0, 0);
   delAccounts=GWEN_DB_GetIntValue(db, "withAccounts", 0, 0);
   pretend=GWEN_DB_GetIntValue(db, "pretend", 0, 0);
+  userUniqueId=GWEN_DB_GetIntValue(db, "userUniqueId", 0, 0);
+
+  if( uninitialized != 0 && uninitialized != 1  && uninitialized != -1 )
+  {
+    fprintf( stderr, "Please specify either 0 or 1 for --uninitialized\n" );
+    return 1;
+  }
 
   matches = AB_User_List2_new();
 
@@ -223,6 +255,18 @@ int delUser(AB_BANKING *ab,
           s=AB_User_GetUserName(u);
           if (!s || !*s || -1==GWEN_Text_ComparePattern(s, userName, 0))
             match=0;
+        }
+
+        if (match && userUniqueId) {
+          uint32_t id = AB_User_GetUniqueId(u);
+          if ( userUniqueId != id )
+            match=0;
+        }
+
+        if (match && uninitialized != -1) {
+          s=AH_User_GetSystemId(u);
+          if( (uninitialized == 1 && s != NULL) || (uninitialized == 0 && s == NULL) )
+            match = 0;
         }
 
         if( match )

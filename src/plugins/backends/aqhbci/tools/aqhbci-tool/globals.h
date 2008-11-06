@@ -61,9 +61,14 @@ int getAccounts(AB_BANKING *ab,
                 char **argv);
 
 int addAccount(AB_BANKING *ab,
-	       GWEN_DB_NODE *dbArgs,
-	       int argc,
-	       char **argv);
+             GWEN_DB_NODE *dbArgs,
+             int argc,
+             char **argv);
+
+int delAccount(AB_BANKING *ab,
+             GWEN_DB_NODE *dbArgs,
+             int argc,
+             char **argv);
 
 int getSysId(AB_BANKING *ab,
              GWEN_DB_NODE *dbArgs,

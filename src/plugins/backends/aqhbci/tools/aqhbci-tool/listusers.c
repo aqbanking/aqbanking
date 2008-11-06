@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
  copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de
@@ -33,8 +30,21 @@ int listUsers(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   int rv;
+  int xml=0;
   AB_USER_LIST2 *ul;
+
   const GWEN_ARGS args[]={
+  {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,             /* type */
+    "xml",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "xml",                /* long option */
+    "Export as xml",  /* short description */
+    0
+  },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
@@ -82,8 +92,15 @@ int listUsers(AB_BANKING *ab,
     return 2;
   }
 
+  xml=GWEN_DB_VariableExists(db, "xml");
+
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
+
+  if( xml ) {
+    fprintf( stdout, "<?xml version=\"1.0\"?>\n" );
+    fprintf( stdout, "<users>\n" );
+  }
 
   ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
   if (ul) {
@@ -97,12 +114,29 @@ int listUsers(AB_BANKING *ab,
       u=AB_User_List2Iterator_Data(uit);
       assert(u);
       while(u) {
-        fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s\n",
-                i++,
-                AB_User_GetCountry(u),
-                AB_User_GetBankCode(u),
-                AB_User_GetUserId(u),
-                AB_User_GetCustomerId(u));
+        if( !xml ) {
+          fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s\n",
+                  i++,
+                  AB_User_GetCountry(u),
+                  AB_User_GetBankCode(u),
+                  AB_User_GetUserId(u),
+                  AB_User_GetCustomerId(u));
+        }
+        else {
+          const char *name = AB_User_GetUserName(u);
+          fprintf( stdout, "  <user>\n" );
+          fprintf( stdout, "    <userUniqueId>%d</userUniqueId>\n", AB_User_GetUniqueId(u) );
+          if( !name )
+            fprintf( stdout, "    <UserName></UserName>\n" );
+          else
+            fprintf( stdout, "    <UserName><![CDATA[%s]]></UserName>\n", name );
+          fprintf( stdout, "    <UserId>%s</UserId>\n", AB_User_GetUserId(u) );
+          fprintf( stdout, "    <CustomerId>%s</CustomerId>\n", AB_User_GetCustomerId(u) );
+          fprintf( stdout, "    <BankCode>%s</BankCode>\n", AB_User_GetBankCode(u) );
+          fprintf( stdout, "    <Country>%s</Country>\n", AB_User_GetCountry(u) );
+          fprintf( stdout, "    <LastSessionId>%d</LastSessionId>\n", AB_User_GetLastSessionId(u) );
+          fprintf( stdout, "  </user>\n\n" );
+        }
         u=AB_User_List2Iterator_Next(uit);
       }
       AB_User_List2Iterator_free(uit);
@@ -112,6 +146,12 @@ int listUsers(AB_BANKING *ab,
   else {
     fprintf(stderr, "No users found.\n");
   }
+
+
+  if( xml ) {
+    fprintf( stdout, "</users>\n" );
+  }
+
 
   rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {

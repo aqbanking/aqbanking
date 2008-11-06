@@ -28,6 +28,7 @@ aqhbci_tool3_SOURCES=main.c \
  changepin.c \
  test.c \
  addaccount.c \
+ delaccount.c \
  getcert.c \
  sethbciversion.c \
  adduserflags.c \
