@@ -1,5 +1,81 @@
 
 ===========================================================================
+MARK: released AqBanking - 3.7.2 (2008-08-26)
+===========================================================================
+
+
+Tue Aug 19 13:21:03 2008 +0200 Martin Preuss
+Added local .gitignore.
+
+Mon Aug 18 18:02:11 2008 +0000 martin
+Don't even send the system id in HNSHK/HNVSK when nosysid=1.
+This fixes the occasional problem when requesting the
+system id for RDH users.
+
+
+Sat Aug 16 11:58:10 2008 +0000 martin
+Started using git-log for ChangeLog generation.
+
+Sat Aug 16 11:48:27 2008 +0000 martin
+Prepared release 3.7.1.
+- added CSV profile for PSK (Austrian Postbank, provided by
+   Erwin Gaubitzer)
+
+
+===========================================================================
+MARK: released AqBanking - 3.7.1 (2008-08-16)
+===========================================================================
+
+
+Sat Aug 16 11:48:27 2008 +0000 martin
+Prepared release 3.7.1.
+- added CSV profile for PSK (Austrian Postbank, provided by
+   Erwin Gaubitzer)
+
+Fri Aug 15 19:31:28 2008 +0000 martin
+Improved CSV importer.
+- added profile option "splitValueInOut"; this option
+  allows for two fields instead of one for transaction
+  amounts(one in, one out, groups "valueIn" and
+  "valueOut")
+- added CSV profile for Bank Austria using this new mechanism
+
+
+Thu Aug 14 17:39:15 2008 +0000 martin
+Fixed a potential problem.
+AH_Job_CommitSystemData() might be too much when we
+only want to retrieve allowed iTAN modes. Also, this
+didn't retrieve iTAN modes for dialog-jobs.
+
+
+Thu Aug 14 17:14:27 2008 +0000 martin
+Fixed AH_JobGetSysId.
+
+Thu Aug 14 17:14:18 2008 +0000 martin
+Fixed a problem with AH_Job_GetSysId.
+This patch also makes AqHBCI more tolerant against incorrect
+server messages.
+
+
+Thu Aug 14 17:14:09 2008 +0000 martin
+HBCI-fix.
+- set nosysid="0" for HKEND
+
+
+Tue Aug 12 13:39:24 2008 +0000 martin
+Relaxed OFX parser (now also ignores unexpected closing elementens)
+
+Mon Aug 11 20:59:44 2008 +0000 christian
+Remove unused files from SVN
+
+Mon Aug 11 15:08:11 2008 +0000 martin
+Makefile fix.
+
+Mon Aug 11 13:05:45 2008 +0000 martin
+Prepared release 3.7.0.
+
+
+===========================================================================
 MARK: released AqBanking - 3.7.0 (2008-08-11)
 ===========================================================================
 

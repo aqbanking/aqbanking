@@ -267,3 +267,7 @@ py-check:
 code-cleanup:
 	-admin/fixuifiles
 	-admin/glade-fixup
+
+ChangeLog:
+	git-log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog
+
