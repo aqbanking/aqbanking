@@ -625,6 +625,13 @@
       </descr>
     </elem>
 
+    <elem name="idForApplication" type="uint32_t" >
+      <descr>
+        This is a unique id assigned by the application only.
+        This id is never changed by AqBanking.
+      </descr>
+    </elem>
+
     <group name="Dates">
       <elem name="valutaDate" type="GWEN_TIME" ptr="1" >
         <descr>

@@ -295,6 +295,16 @@ Set this property with @ref AB_Transaction_SetUniqueId,
 get it with @ref AB_Transaction_GetUniqueId
 </p>
 
+@anchor AB_TRANSACTION_IdForApplication
+<h3>IdForApplication</h3>
+<p>
+This is a unique id assigned by the application only. This id is never changed by AqBanking.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetIdForApplication, 
+get it with @ref AB_Transaction_GetIdForApplication
+</p>
+
 <h3>Dates</h3>
 <p>
 </p>
@@ -1101,6 +1111,15 @@ AQBANKING_API uint32_t AB_Transaction_GetUniqueId(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_UniqueId
 */
 AQBANKING_API void AB_Transaction_SetUniqueId(AB_TRANSACTION *el, uint32_t d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_IdForApplication
+*/
+AQBANKING_API uint32_t AB_Transaction_GetIdForApplication(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_IdForApplication
+*/
+AQBANKING_API void AB_Transaction_SetIdForApplication(AB_TRANSACTION *el, uint32_t d);
 
 /** @name Dates
 */

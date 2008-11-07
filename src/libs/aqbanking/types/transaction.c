@@ -396,6 +396,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
   if (d->remoteBic)
     st->remoteBic=strdup(d->remoteBic);
   st->uniqueId=d->uniqueId;
+  st->idForApplication=d->idForApplication;
   if (d->valutaDate)
     st->valutaDate=GWEN_Time_dup(d->valutaDate);
   if (d->date)
@@ -528,6 +529,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic", st->remoteBic))
       return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "idForApplication", st->idForApplication))
     return -1;
   if (st->valutaDate)
     if (GWEN_Time_toDb(st->valutaDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "valutaDate")))
@@ -682,6 +685,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   }
   AB_Transaction_SetRemoteBic(st, GWEN_DB_GetCharValue(db, "remoteBic", 0, 0));
   AB_Transaction_SetUniqueId(st, GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
+  AB_Transaction_SetIdForApplication(st, GWEN_DB_GetIntValue(db, "idForApplication", 0, 0));
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
@@ -1242,6 +1246,21 @@ uint32_t AB_Transaction_GetUniqueId(const AB_TRANSACTION *st) {
 void AB_Transaction_SetUniqueId(AB_TRANSACTION *st, uint32_t d) {
   assert(st);
   st->uniqueId=d;
+  st->_modified=1;
+}
+
+
+
+
+uint32_t AB_Transaction_GetIdForApplication(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->idForApplication;
+}
+
+
+void AB_Transaction_SetIdForApplication(AB_TRANSACTION *st, uint32_t d) {
+  assert(st);
+  st->idForApplication=d;
   st->_modified=1;
 }
 
