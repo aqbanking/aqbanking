@@ -502,6 +502,8 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	AB_Job_SetStatus(bj, AB_Job_StatusError);
 	return GWEN_ERROR_INVALID;
       }
+      AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
+
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
       if (aj->isTransfer)

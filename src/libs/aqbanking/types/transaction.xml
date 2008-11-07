@@ -474,6 +474,26 @@
               The transfer is still pending.
             </descr>
           </value>
+          <value>sending
+            <descr>
+              The transfer is being sent.
+            </descr>
+          </value>
+          <value>autoReconciled
+            <descr>
+              The transfer has automatically been reconciled.
+            </descr>
+          </value>
+          <value>manuallyReconciled
+            <descr>
+              The transfer has automatically been reconciled.
+            </descr>
+          </value>
+          <value>revoked
+            <descr>
+              The transfer has been revoked.
+            </descr>
+          </value>
         </values>
       </type>
 
@@ -629,6 +649,15 @@
       <descr>
         This is a unique id assigned by the application only.
         This id is never changed by AqBanking.
+      </descr>
+    </elem>
+
+    <elem name="groupId" type="uint32_t" >
+      <descr>
+        This id is assigned by a backend when sending mutliple transfer 
+        jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending
+        multi-transfer requests; in this case every every transfer which goes
+        into the same DTAUS file receives the same id).
       </descr>
     </elem>
 

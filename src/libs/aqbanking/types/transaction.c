@@ -181,6 +181,14 @@ AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s) {
       return AB_Transaction_StatusRejected;
     else if (strcasecmp(s, "pending")==0)
       return AB_Transaction_StatusPending;
+    else if (strcasecmp(s, "sending")==0)
+      return AB_Transaction_StatusSending;
+    else if (strcasecmp(s, "autoReconciled")==0)
+      return AB_Transaction_StatusAutoReconciled;
+    else if (strcasecmp(s, "manuallyReconciled")==0)
+      return AB_Transaction_StatusManuallyReconciled;
+    else if (strcasecmp(s, "revoked")==0)
+      return AB_Transaction_StatusRevoked;
   }
   return AB_Transaction_StatusUnknown;
 }
@@ -199,6 +207,18 @@ const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v) {
 
     case AB_Transaction_StatusPending:
       return "pending";
+
+    case AB_Transaction_StatusSending:
+      return "sending";
+
+    case AB_Transaction_StatusAutoReconciled:
+      return "autoReconciled";
+
+    case AB_Transaction_StatusManuallyReconciled:
+      return "manuallyReconciled";
+
+    case AB_Transaction_StatusRevoked:
+      return "revoked";
 
     default:
       return "unknown";
@@ -397,6 +417,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteBic=strdup(d->remoteBic);
   st->uniqueId=d->uniqueId;
   st->idForApplication=d->idForApplication;
+  st->groupId=d->groupId;
   if (d->valutaDate)
     st->valutaDate=GWEN_Time_dup(d->valutaDate);
   if (d->date)
@@ -531,6 +552,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", st->uniqueId))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "idForApplication", st->idForApplication))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "groupId", st->groupId))
     return -1;
   if (st->valutaDate)
     if (GWEN_Time_toDb(st->valutaDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "valutaDate")))
@@ -686,6 +709,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetRemoteBic(st, GWEN_DB_GetCharValue(db, "remoteBic", 0, 0));
   AB_Transaction_SetUniqueId(st, GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
   AB_Transaction_SetIdForApplication(st, GWEN_DB_GetIntValue(db, "idForApplication", 0, 0));
+  AB_Transaction_SetGroupId(st, GWEN_DB_GetIntValue(db, "groupId", 0, 0));
   if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
@@ -1261,6 +1285,21 @@ uint32_t AB_Transaction_GetIdForApplication(const AB_TRANSACTION *st) {
 void AB_Transaction_SetIdForApplication(AB_TRANSACTION *st, uint32_t d) {
   assert(st);
   st->idForApplication=d;
+  st->_modified=1;
+}
+
+
+
+
+uint32_t AB_Transaction_GetGroupId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->groupId;
+}
+
+
+void AB_Transaction_SetGroupId(AB_TRANSACTION *st, uint32_t d) {
+  assert(st);
+  st->groupId=d;
   st->_modified=1;
 }
 

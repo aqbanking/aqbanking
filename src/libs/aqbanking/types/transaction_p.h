@@ -33,6 +33,7 @@ struct AB_TRANSACTION {
   char *remoteBic;
   uint32_t uniqueId;
   uint32_t idForApplication;
+  uint32_t groupId;
   GWEN_TIME *valutaDate;
   GWEN_TIME *date;
   AB_VALUE *value;
@@ -104,6 +105,7 @@ This group contains information about the remote account.
 
 
 /*@}*/
+
 
 
 

@@ -305,6 +305,16 @@ Set this property with @ref AB_Transaction_SetIdForApplication,
 get it with @ref AB_Transaction_GetIdForApplication
 </p>
 
+@anchor AB_TRANSACTION_GroupId
+<h3>GroupId</h3>
+<p>
+This id is assigned by a backend when sending mutliple transfer jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending multi-transfer requests; in this case every every transfer which goes into the same DTAUS file receives the same id).
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetGroupId, 
+get it with @ref AB_Transaction_GetGroupId
+</p>
+
 <h3>Dates</h3>
 <p>
 </p>
@@ -858,7 +868,19 @@ typedef enum {
   AB_Transaction_StatusRejected,
   /** The transfer is still pending.
   */
-  AB_Transaction_StatusPending
+  AB_Transaction_StatusPending,
+  /** The transfer is being sent.
+  */
+  AB_Transaction_StatusSending,
+  /** The transfer has automatically been reconciled.
+  */
+  AB_Transaction_StatusAutoReconciled,
+  /** The transfer has automatically been reconciled.
+  */
+  AB_Transaction_StatusManuallyReconciled,
+  /** The transfer has been revoked.
+  */
+  AB_Transaction_StatusRevoked
 } AB_TRANSACTION_STATUS;
 
 AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
@@ -1120,6 +1142,15 @@ AQBANKING_API uint32_t AB_Transaction_GetIdForApplication(const AB_TRANSACTION *
 * Set the property @ref AB_TRANSACTION_IdForApplication
 */
 AQBANKING_API void AB_Transaction_SetIdForApplication(AB_TRANSACTION *el, uint32_t d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_GroupId
+*/
+AQBANKING_API uint32_t AB_Transaction_GetGroupId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_GroupId
+*/
+AQBANKING_API void AB_Transaction_SetGroupId(AB_TRANSACTION *el, uint32_t d);
 
 /** @name Dates
 */
