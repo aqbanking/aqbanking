@@ -503,6 +503,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	return GWEN_ERROR_INVALID;
       }
       AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
+      DBG_ERROR(0, "Setting groupID to %d", AH_Job_GetId(j));
 
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */

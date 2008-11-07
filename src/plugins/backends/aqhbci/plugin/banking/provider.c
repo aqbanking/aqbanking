@@ -683,14 +683,6 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
     }
   }
 
-  /* exchange arguments */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL, guiid);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
-    AH_Job_free(mj);
-    return rv;
-  }
-
   /* store HBCI job, link both jobs */
   if (AH_Job_GetId(mj)==0) {
     jid=AB_Job_GetJobId(j);
@@ -699,6 +691,14 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
     AH_Job_SetId(mj, jid);
   }
   AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
+
+  /* exchange arguments */
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL, guiid);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
+    AH_Job_free(mj);
+    return rv;
+  }
 
   if (jobIsNew) {
     /* prevent outbox from freeing this job */
