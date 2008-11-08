@@ -253,7 +253,39 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	*p2=0;
 	p2++;
       }
-      AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
+      if (-1!=GWEN_Text_ComparePattern(p1, "*KTO/BLZ */*", 0)) {
+	char *p3;
+	char *kto;
+
+	p3=p1;
+	while(*p3) {
+	  *p3=toupper(*p3);
+          p3++;
+	}
+	kto=strstr(p1, "KTO/BLZ ");
+	if (kto) {
+	  char *blz;
+
+          kto+=8;
+	  blz=strchr(kto, '/');
+	  if (blz) {
+	    *blz=0;
+            blz++;
+	  }
+	  p3=blz;
+	  while(*p3 && isdigit(*p3))
+	    p3++;
+	  *p3=0;
+
+	  AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", blz);
+	  AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", kto);
+	}
+	else {
+	  AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
+	}
+      }
+      else
+	AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
       p1=p2;
     }
     free(pcopy);
