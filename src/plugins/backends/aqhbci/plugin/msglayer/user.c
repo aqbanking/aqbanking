@@ -1281,7 +1281,7 @@ int AH_User_InputTan(AB_USER *u,
   AH_User_MkTanName(u, NULL, nbuf);
 
   rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
-			  GWEN_GUI_INPUT_FLAGS_NUMERIC |
+			  /*GWEN_GUI_INPUT_FLAGS_NUMERIC |*/
 			  GWEN_GUI_INPUT_FLAGS_SHOW,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter TAN"),
@@ -1346,7 +1346,7 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkTanName(u, challenge, nbuf);
   rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
-			  GWEN_GUI_INPUT_FLAGS_NUMERIC |
+			  /*GWEN_GUI_INPUT_FLAGS_NUMERIC |*/
 			  GWEN_GUI_INPUT_FLAGS_SHOW,
 			  GWEN_Buffer_GetStart(nbuf),
 			  I18N("Enter TAN"),
