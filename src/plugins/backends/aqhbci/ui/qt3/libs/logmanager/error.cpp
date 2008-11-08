@@ -30,7 +30,9 @@
 #include <config.h>
 #endif
 
-#include "assert.h"
+#include <cstdio>
+#include <assert.h>
+
 #include "error.h"
 
 namespace HBCI {
