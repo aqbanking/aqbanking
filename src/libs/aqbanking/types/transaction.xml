@@ -494,6 +494,11 @@
               The transfer has been revoked.
             </descr>
           </value>
+          <value>aborted
+            <descr>
+              The transfer has been aborted.
+            </descr>
+          </value>
         </values>
       </type>
 

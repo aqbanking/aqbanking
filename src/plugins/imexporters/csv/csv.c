@@ -194,8 +194,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     }
 
     if (matches) {
-      DBG_ERROR(0, "Found entry:");
-      GWEN_DB_Dump(dbT, stderr, 2);
       /* possibly merge in/out values */
       if (splitValueInOut) {
 	AB_VALUE *tv=NULL;

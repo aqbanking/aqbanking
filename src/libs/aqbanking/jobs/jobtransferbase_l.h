@@ -22,7 +22,7 @@
 AB_JOB *AB_JobTransferBase_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
 
 int AB_JobTransferBase_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
-const AB_TRANSACTION *AB_JobTransferBase_GetTransaction(const AB_JOB *j);
+AB_TRANSACTION *AB_JobTransferBase_GetTransaction(const AB_JOB *j);
 
 const AB_TRANSACTION_LIMITS *AB_JobTransferBase_GetFieldLimits(AB_JOB *j);
 

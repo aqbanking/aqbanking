@@ -240,8 +240,23 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     } /* while */
   } /* if structured */
   else {
-    /* unstructured :86:, simply store as purpose line */
-    AHB_SWIFT__SetCharValue(data, flags, "purpose", p);
+    char *pcopy=strdup(p);
+    char *p1;
+
+    /* unstructured :86:, simply store as mutliple purpose lines */
+    p1=pcopy;
+    while(p1 && *p1) {
+      char *p2;
+
+      p2=strchr(p1, 10);
+      if (p2) {
+	*p2=0;
+	p2++;
+      }
+      AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
+      p1=p2;
+    }
+    free(pcopy);
   }
 
   return 0;
