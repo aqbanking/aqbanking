@@ -1,5 +1,19 @@
 
 ===========================================================================
+               Released AqBanking - 3.99.0 (2008-11-08)
+===========================================================================
+
+This is the first beta release of AqBanking4. Now multiple applications can
+use AqBanking concurrently without interference. This was archieved by 
+implementing a lock-and-reload mechanism which makes sure that the latest
+configuration is used in any case. AqBanking4 facilitates import of previous
+configurations by the application. The SWIFT parser has yet again been 
+improved.
+
+This release requires Gwenhywfar 3.5.2 or better.
+
+
+===========================================================================
                Released AqBanking - 3.7.2 (2008-08-26)
 ===========================================================================
 
