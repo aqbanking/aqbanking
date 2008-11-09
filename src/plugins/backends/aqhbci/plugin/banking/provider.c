@@ -369,6 +369,14 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
     }
     break;
 
+  case AB_Job_TypeInternalTransfer:
+    mj=AH_Job_InternalTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
   case AB_Job_TypeCreateStandingOrder:
     mj=AH_Job_CreateStandingOrder_new(mu, ma);
     if (!mj) {
