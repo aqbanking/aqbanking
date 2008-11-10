@@ -293,6 +293,7 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
     return rv;
   }
 
+  AB_User_SetDbId(u, groupName);
   AB_User_List_Add(u, ab->users);
   return 0;
 }

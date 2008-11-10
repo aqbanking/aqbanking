@@ -265,6 +265,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
     return rv;
   }
 
+  AB_Account_SetDbId(a, groupName);
   AB_Account_List_Add(a, ab->accounts);
   return 0;
 }
