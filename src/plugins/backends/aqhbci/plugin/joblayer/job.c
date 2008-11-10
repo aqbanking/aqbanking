@@ -2050,9 +2050,17 @@ const char *AH_Job_GetUsedTan(const AH_JOB *j){
 void AH_Job_SetUsedTan(AH_JOB *j, const char *s){
   assert(j);
   assert(j->usage);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Changing TAN in job [%s](%08x) from [%s] to [%s]",
+	   j->name, j->id,
+	   (j->usedTan)?(j->usedTan):"(empty)",
+	   s?s:"(empty)");
   free(j->usedTan);
-  if (s) j->usedTan=strdup(s);
-  else j->usedTan=0;
+  if (s) {
+    j->usedTan=strdup(s);
+  }
+  else
+    j->usedTan=0;
 }
 
 

@@ -39,7 +39,7 @@ struct AH_JOBQUEUE {
 
 static void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s);
 static void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s);
-static int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq);
+static int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq, uint32_t guiid);
 
 
 #endif /* AH_JOBQUEUE_P_H */

@@ -475,7 +475,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
 
 
 
-int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
+int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq, uint32_t guiid){
   AH_JOB *j;
 
   assert(jq);
@@ -492,16 +492,24 @@ int AH_JobQueue__CheckTans(AH_JOBQUEUE *jq){
       int rv;
 
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_TANUSED) {
-        DBG_INFO(AQHBCI_LOGDOMAIN,
+	char tbuf[256];
+
+	DBG_INFO(AQHBCI_LOGDOMAIN,
 		 "TAN \"%s\" used", tan);
+	snprintf(tbuf, sizeof(tbuf)-1,
+		 I18N("TAN \"%s\" has been used, please strike it out."),
+		 tan);
+	tbuf[sizeof(tbuf)-1]=0;
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Notice,
+			     tbuf);
 	rv=AH_User_SetTanStatus(jq->user,
 				NULL, /* no challenge here */
 				tan,
 				GWEN_Gui_PasswordStatus_Used);
       }
       else {
-        DBG_INFO(AQHBCI_LOGDOMAIN,
-                 "TAN \"%s\" not used", tan);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "TAN not used");
 	rv=AH_User_SetTanStatus(jq->user,
 				NULL, /* no challenge here */
 				tan,
@@ -535,6 +543,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   int abortQueue=0;
   int badPin=0;
   GWEN_STRINGLISTENTRY *se;
+  uint32_t guiid;
 
   assert(jq);
   assert(jq->usage);
@@ -543,6 +552,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
   dlg=AH_Msg_GetDialog(msg);
   assert(dlg);
+  guiid=AH_Dialog_GetGuiId(dlg);
 
   /* log all results */
   tanRecycle=0;
@@ -990,13 +1000,14 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       }
     }
     else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "No TAN");
+      DBG_WARN(AQHBCI_LOGDOMAIN, "No TAN in job [%s]",
+	       AH_Job_GetName(j));
     }
     j=AH_Job_List_Next(j);
   } /* while */
 
   /* tell the application/medium about used and unused TANs */
-  rv=AH_JobQueue__CheckTans(jq);
+  rv=AH_JobQueue__CheckTans(jq, guiid);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error checking TANs (%d)", rv);
   }

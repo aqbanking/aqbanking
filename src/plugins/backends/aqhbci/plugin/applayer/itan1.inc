@@ -262,6 +262,11 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
+  /* store used TAN in original job (if any) */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]",
+	   AH_Job_GetName(j));
+  AH_Job_SetUsedTan(j, AH_Msg_GetTan(msg1));
+
   if (AH_Job_GetStatus(j)==AH_JobStatusEncoded) {
     const char *s;
 
@@ -273,10 +278,6 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     if (s) AH_Job_SetExpectedSigner(j, s);
     s=AH_Msg_GetExpectedCrypter(msg1);
     if (s) AH_Job_SetExpectedCrypter(j, s);
-
-    /* store used TAN (if any) */
-    s=AH_Msg_GetTan(msg1);
-    if (s) AH_Job_SetUsedTan(j, s);
   }
 
   /* send job message */
