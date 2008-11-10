@@ -463,7 +463,9 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
   case AH_Job_ExchangeModeArgs: {
     GWEN_DB_NODE *dbArgs;
     const AB_TRANSACTION *ot;
+    char groupIdBuf[10];
 
+    groupIdBuf[0]=0;
     dbArgs=AH_Job_GetArguments(j);
     assert(dbArgs);
     if (aj->isTransfer)
@@ -484,6 +486,10 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       }
       AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
       DBG_ERROR(0, "Setting groupID to %d", AH_Job_GetId(j));
+      if (groupIdBuf[0]==0) {
+	snprintf(groupIdBuf, sizeof(groupIdBuf)-1, "%08x", AH_Job_GetId(j));
+        groupIdBuf[sizeof(groupIdBuf)-1]=0;
+      }
 
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
@@ -495,6 +501,11 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       dbT=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                            "transfers");
       assert(dbT);
+      /* store customer reference */
+      GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "custref",
+			   groupIdBuf);
+
       dbT=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_DEFAULT,
 			   "transactions");
       assert(dbT);
