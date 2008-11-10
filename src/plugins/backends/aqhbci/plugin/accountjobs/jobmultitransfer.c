@@ -225,15 +225,12 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   n=0;
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
     const char *p;
 
-    nsl=GWEN_StringList_new();
     se=GWEN_StringList_FirstEntry(sl);
     while(se) {
       p=GWEN_StringListEntry_Data(se);
       if (p && *p) {
-	char *np;
 	int l;
 	GWEN_BUFFER *tbuf;
 
@@ -241,27 +238,20 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 	if (maxn && n>maxn) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many purpose lines (%d>%d)", n, maxn);
-	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
 	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
+	GWEN_Buffer_free(tbuf);
 	if (l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
-	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)GWEN_Memory_malloc(l+1);
-	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
-	GWEN_Buffer_free(tbuf);
-	/* let string list take the newly alllocated string */
-	GWEN_StringList_AppendString(nsl, np, 1, 0);
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
-    AB_Transaction_SetPurpose(t, nsl);
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No purpose lines");
@@ -281,15 +271,12 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   n=0;
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
     const char *p;
 
-    nsl=GWEN_StringList_new();
     se=GWEN_StringList_FirstEntry(sl);
     while(se) {
       p=GWEN_StringListEntry_Data(se);
       if (p && *p) {
-	char *np;
 	int l;
         GWEN_BUFFER *tbuf;
 
@@ -298,28 +285,21 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many remote name lines (%d>%d)",
 		    n, maxn);
-          GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
 	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
         AB_ImExporter_Utf8ToDta(p, -1, tbuf);
 	l=GWEN_Buffer_GetUsedBytes(tbuf);
+	GWEN_Buffer_free(tbuf);
 	if (l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		   "Too many chars in remote name line %d (%d>%d)",
 		   n, l, maxs);
-          GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)GWEN_Memory_malloc(l+1);
-	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
-	GWEN_Buffer_free(tbuf);
-	/* let string list take the newly alllocated string */
-	GWEN_StringList_AppendString(nsl, np, 1, 0);
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
-    AB_Transaction_SetRemoteName(t, nsl);
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote name lines");
