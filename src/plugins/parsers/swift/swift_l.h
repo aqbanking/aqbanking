@@ -32,7 +32,7 @@ const char *AHB_SWIFT_Tag_GetId(const AHB_SWIFT_TAG *tg);
 const char *AHB_SWIFT_Tag_GetData(const AHB_SWIFT_TAG *tg);
 
 
-int AHB_SWIFT_Condense(char *buffer);
+int AHB_SWIFT_Condense(char *buffer, int keepDoubleBlanks);
 
 
 #endif /* AQHBCIBANK_SWIFT_L_H */

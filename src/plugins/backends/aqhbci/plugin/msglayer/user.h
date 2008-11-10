@@ -42,24 +42,29 @@ extern "C" {
  */
 /*@{*/
 /** bank doesn't sign its messages */
-#define AH_USER_FLAGS_BANK_DOESNT_SIGN        0x00000001
+#define AH_USER_FLAGS_BANK_DOESNT_SIGN         0x00000001
 /** bank uses correct signature sequence counters for its messages */
-#define AH_USER_FLAGS_BANK_USES_SIGNSEQ       0x00000002
-#define AH_USER_FLAGS_RESERVED1               0x00000004
-#define AH_USER_FLAGS_RESERVED2               0x00000008
+#define AH_USER_FLAGS_BANK_USES_SIGNSEQ        0x00000002
+#define AH_USER_FLAGS_RESERVED1                0x00000004
+#define AH_USER_FLAGS_RESERVED2                0x00000008
 /** for pin/tan mode: keep HTTP connections alive (reuse for multiple
  * requests) */
-#define AH_USER_FLAGS_KEEPALIVE               0x00000010
+#define AH_USER_FLAGS_KEEPALIVE                0x00000010
 /** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
  * indicates that some jobs are supported even when there is no UPD job
  * description for it */
-#define AH_USER_FLAGS_IGNORE_UPD              0x00000020
+#define AH_USER_FLAGS_IGNORE_UPD               0x00000020
 
 /** forces use of SSLv3 for Pin/TAN mode */
-#define AH_USER_FLAGS_FORCE_SSL3              0x00000040
+#define AH_USER_FLAGS_FORCE_SSL3               0x00000040
 
 /** do not encode message in BASE64 (needed for APO bank) */
-#define AH_USER_FLAGS_NO_BASE64               0x00000080
+#define AH_USER_FLAGS_NO_BASE64                0x00000080
+
+/** Normally the SWIFT parser removed double blanks, with this flag set it
+ * no longer does (as requested by Andreas Filsinger).
+ */
+#define AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS     0x00000100
 /*@}*/
 
 

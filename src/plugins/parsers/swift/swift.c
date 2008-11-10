@@ -39,32 +39,48 @@ GWEN_LIST_FUNCTIONS(AHB_SWIFT_TAG, AHB_SWIFT_Tag);
 
 
 
-int AHB_SWIFT_Condense(char *buffer) {
+int AHB_SWIFT_Condense(char *buffer, int keepMultipleBlanks) {
   char *src;
   char *dst;
-  int lastWasBlank;
 
-  src=buffer;
-  while(*src && isspace(*src)) src++;
-  dst=buffer;
-  lastWasBlank=0;
-  while(*src) {
-    if (isspace(*src) && (*src!=10)) {
-      if (!lastWasBlank) {
-        *dst=' ';
-        dst++;
-        lastWasBlank=1;
-      }
-    }
-    else {
-      lastWasBlank=0;
+  if (keepMultipleBlanks) {
+    src=buffer;
+    dst=buffer;
+
+    /* only remove line feed */
+    while(*src) {
       if (*src!=10) {
 	*dst=*src;
 	dst++;
       }
-    }
-    src++;
-  } /* while */
+      src++;
+    } /* while */
+  }
+  else {
+    int lastWasBlank;
+
+    src=buffer;
+    while(*src && isspace(*src)) src++;
+    dst=buffer;
+    lastWasBlank=0;
+    while(*src) {
+      if (isspace(*src) && (*src!=10)) {
+	if (!lastWasBlank) {
+	  *dst=' ';
+	  dst++;
+	  lastWasBlank=1;
+	}
+      }
+      else {
+	lastWasBlank=0;
+	if (*src!=10) {
+	  *dst=*src;
+	  dst++;
+	}
+      }
+      src++;
+    } /* while */
+  }
   *dst=0;
   return 0;
 }

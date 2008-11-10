@@ -124,6 +124,12 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   dbParams=GWEN_DB_Group_new("params");
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "type", docType);
+  if (AH_User_GetFlags(u) & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
+    GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			"keepMultipleBlanks", 1);
+  else
+    GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			"keepMultipleBlanks", 0);
 
   rv=GWEN_DBIO_Import(dbio, io,
 		      db, dbParams,

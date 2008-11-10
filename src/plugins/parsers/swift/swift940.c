@@ -118,7 +118,9 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   const char *p;
   int isStructured;
   int code;
+  int keepMultipleBlanks;
 
+  keepMultipleBlanks=GWEN_DB_GetIntValue(cfg, "keepMultipleBlanks", 0, 1);
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
   isStructured=0;
@@ -180,7 +182,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
-      AHB_SWIFT_Condense(s);
+      AHB_SWIFT_Condense(s, keepMultipleBlanks);
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Current field is %02d (%s)", id, s);
       /* now id is the field id, s points to the field content */
       if (*s) {
@@ -471,14 +473,17 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   bleft-=3;
 
   /* customer reference (M) */
-  if (bleft>1) {
-    if (*p=='/' && p[1]!='/') {
-      p++;
-      bleft--;
+  if (bleft>0) {
+    if (bleft>1) {
+      if (*p=='/' && p[1]!='/') {
+	p++;
+	bleft--;
+      }
     }
 
     p2=p;
-    while(*p2 && *p2!='/' && *p2!=10) p2++;
+    while(*p2 && *p2!='/' && *p2!=10)
+      p2++;
 
     if (p2==p) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s)", p);
