@@ -702,6 +702,15 @@ int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid) {
   ab->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
   GWEN_DB_Group_free(db);
 
+  if (ab->lastVersion==0) {
+    /* first start */
+    ab->lastVersion=
+      (AQBANKING_VERSION_MAJOR<<24) |
+      (AQBANKING_VERSION_MINOR<<16) |
+      (AQBANKING_VERSION_PATCHLEVEL<<8) |
+      AQBANKING_VERSION_BUILD;
+  }
+
   /* init all providers */
   AB_Banking_ActivateAllProviders(ab, guiid);
 
