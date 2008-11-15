@@ -76,6 +76,14 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
     GWEN_Buffer_AppendString(buf, s);
     GWEN_Buffer_AppendString(buf, "\r\n");
   }
+  else {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
+	      "Missing user id, should not happen");
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Missing user id, should not happen"));
+    return GWEN_ERROR_INTERNAL;
+  }
 
   /* get password */
   userpass[0]=0;
