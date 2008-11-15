@@ -219,9 +219,17 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
   char groupName[32];
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbP;
+  const char *s;
 
   assert(ab);
   assert(u);
+
+  s=AB_User_GetUserId(u);
+  if (!s || *s==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Missing user id");
+    return GWEN_ERROR_INVALID;
+  }
 
   uTmp=AB_User_List_First(ab->users);
   while(uTmp) {
