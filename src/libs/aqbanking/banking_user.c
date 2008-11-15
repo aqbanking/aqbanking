@@ -218,6 +218,7 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
   AB_USER *uTmp;
   char groupName[32];
   GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbP;
 
   assert(ab);
   assert(u);
@@ -238,6 +239,19 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
   if (rv)
     return rv;
 
+  db=GWEN_DB_Group_new("user");
+  AB_User_toDb(u, db);
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+		       "data/backend");
+  rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
+			    AB_ProviderExtendMode_Save,
+			    dbP);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+
   rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				AB_CFG_GROUP_USERS,
 				groupName, sizeof(groupName)-1,
@@ -246,6 +260,7 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to create a unique id for user [%08x] (%d)",
 	      AB_User_GetUniqueId(u), rv);
+    GWEN_DB_Group_free(db);
     return rv;
   }
   groupName[sizeof(groupName)-1]=0;
@@ -258,11 +273,9 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to lock user config [%08x] (%d)",
 	      AB_User_GetUniqueId(u), rv);
+    GWEN_DB_Group_free(db);
     return rv;
   }
-
-  db=GWEN_DB_Group_new("user");
-  AB_User_toDb(u, db);
 
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_USERS,
@@ -299,16 +312,23 @@ int AB_Banking_AddUser(AB_BANKING *ab, AB_USER *u) {
 }
 
 
+
 static AB_USER *checkusers_fn(AB_USER *item, void *user_data) {
   AB_USER *u = user_data;
   return (item == u) ? item : NULL;
 }
+
+
+
 static AB_ACCOUNT *checkaccounts_fn(AB_ACCOUNT *item, void *user_data) {
   AB_USER_LIST2 *userlist = AB_Account_GetUsers(item);
   AB_USER *u = AB_User_List2_ForEach(userlist, checkusers_fn, user_data);
   AB_User_List2_free(userlist);
   return u ? item : NULL;
 }
+
+
+
 AB_ACCOUNT *AB_Banking_FindFirstAccountOfUser(AB_BANKING *ab, AB_USER *u) {
   AB_ACCOUNT_LIST2 *acclist;
   AB_ACCOUNT *result;
@@ -322,33 +342,51 @@ AB_ACCOUNT *AB_Banking_FindFirstAccountOfUser(AB_BANKING *ab, AB_USER *u) {
   return result;
 }
 
+
+
 int AB_Banking_DeleteUser(AB_BANKING *ab, AB_USER *u) {
   int rv;
   AB_ACCOUNT *acc_rv;
+  const char *groupName;
 
   assert(ab);
   assert(u);
 
-  acc_rv = AB_Banking_FindFirstAccountOfUser(ab, u);
+  acc_rv=AB_Banking_FindFirstAccountOfUser(ab, u);
   if (acc_rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing user: Still belongs to an account (bankcode %s, accountnumber %s). Delete the account first.",
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Error on removing user: Still belongs to an account (bankcode %s, accountnumber %s). Delete the account first.",
 	      AB_Account_GetBankCode(acc_rv),
 	      AB_Account_GetAccountNumber(acc_rv));
-    return -10;
+    return GWEN_ERROR_INVALID;
   }
 
-  rv = AB_User_List_Del(u);
+  rv=AB_User_List_Del(u);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing user from list (%d)", rv);
     return rv;
   }
 
-  rv = AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
-			      AB_ProviderExtendMode_Remove,
-			      NULL);
+  rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
+			    AB_ProviderExtendMode_Remove,
+			    NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of user (%d)", rv);
     return rv;
+  }
+
+  groupName=AB_User_GetDbId(u);
+  if (groupName) {
+    rv=GWEN_ConfigMgr_DeleteGroup(ab->configMgr,
+				  AB_CFG_GROUP_USERS,
+				  groupName,
+				  0);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Unable to delete user config [%08x] (%d)",
+		AB_User_GetUniqueId(u), rv);
+      return rv;
+    }
   }
 
   AB_User_free(u);

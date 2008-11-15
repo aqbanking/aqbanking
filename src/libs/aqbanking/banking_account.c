@@ -201,6 +201,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   int rv;
   char groupName[32];
   GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbP;
 
   assert(ab);
   assert(a);
@@ -210,6 +211,19 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   if (rv)
     return rv;
 
+  db=GWEN_DB_Group_new("account");
+  AB_Account_toDb(a, db);
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+		       "data/backend");
+  rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+			       AB_ProviderExtendMode_Save,
+			       dbP);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+
   rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				AB_CFG_GROUP_ACCOUNTS,
 				groupName, sizeof(groupName)-1,
@@ -218,6 +232,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to create a unique id for account [%08x] (%d)",
 	      AB_Account_GetUniqueId(a), rv);
+    GWEN_DB_Group_free(db);
     return rv;
   }
   groupName[sizeof(groupName)-1]=0;
@@ -230,11 +245,9 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to lock account config [%08x] (%d)",
 	      AB_Account_GetUniqueId(a), rv);
+    GWEN_DB_Group_free(db);
     return rv;
   }
-
-  db=GWEN_DB_Group_new("account");
-  AB_Account_toDb(a, db);
 
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_ACCOUNTS,
@@ -274,22 +287,37 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
 int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   int rv;
+  const char *groupName;
 
   assert(ab);
   assert(a);
 
-  rv = AB_Account_List_Del(a);
+  rv=AB_Account_List_Del(a);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on removing account from list (%d)", rv);
     return rv;
   }
 
-  rv = AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
-				 AB_ProviderExtendMode_Remove,
-				 NULL);
+  rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+			       AB_ProviderExtendMode_Remove,
+			       NULL);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error on remove extension of account (%d)", rv);
     return rv;
+  }
+
+  groupName=AB_Account_GetDbId(a);
+  if (groupName) {
+    rv=GWEN_ConfigMgr_DeleteGroup(ab->configMgr,
+				  AB_CFG_GROUP_ACCOUNTS,
+				  groupName,
+				  0);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Unable to delete account config [%08x] (%d)",
+		AB_Account_GetUniqueId(a), rv);
+      return rv;
+    }
   }
 
   AB_Account_free(a);
