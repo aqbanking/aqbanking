@@ -276,16 +276,20 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   }
 
   fn=AH_User_GetSelectedTanMethod(u);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
   dbParams=AH_Job_GetParams(jTan);
   assert(dbParams);
 
   if (fn && AH_User_HasTanMethod(u, fn)) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching DB node fro selected TAN method %d", fn);
     /* find DB_NODE of selected TanMethod */
     dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
     while(dbMethod) {
       if (GWEN_DB_GetIntValue(dbMethod, "function", 0, 0)==fn) {
 	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
 	if (process==1 || process==2) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found DB for selected TAN method %d (process: %d)",
+		   fn, process);
 	  break;
 	}
 	else {
@@ -301,7 +305,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     }
 
     if (fn==0) {
-      GWEN_Gui_ProgressLog(0,
+      GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
 			   GWEN_LoggerLevel_Warning,
 			   I18N("TAN method selected by user is no longer valid,"
 				"please choose another one"));
@@ -309,6 +313,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   }
 
   if (fn==0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0");
     /* find DB_NODE of first supported TanMethod */
     dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
     while(dbMethod) {

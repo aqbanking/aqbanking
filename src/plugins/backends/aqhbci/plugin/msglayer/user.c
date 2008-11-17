@@ -129,6 +129,7 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 		    AB_PROVIDER_EXTEND_MODE em,
 		    GWEN_DB_NODE *db) {
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Extending user with mode %d", em);
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
     AH_USER *ue;
@@ -316,6 +317,10 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
   
   /* read supported TAN methods */
+  for (i=0; i<AH_USER_MAX_TANMETHODS; i++)
+    ue->tanMethodList[i]=-1;
+  ue->tanMethodCount=0;
+
   for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
     int method;
   
@@ -1462,6 +1467,7 @@ int AH_User_HasTanMethod(const AB_USER *u, int method) {
       return 1;
   }
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "TAN method %d not available", method);
   return 0;
 }
 
@@ -1559,6 +1565,8 @@ void AH_User_LoadTanMethods(AB_USER *u) {
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
+  AH_TanMethod_List_Clear(ue->tanMethodDescriptions);
+
   jTan=AH_Job_Tan_new(u, 1);
   if (!jTan) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
@@ -1571,12 +1579,19 @@ void AH_User_LoadTanMethods(AB_USER *u) {
     assert(db);
 
     dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
+    if (!dbT) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No tanmethod found");
+    }
     while(dbT) {
       AH_TAN_METHOD *tm;
 
       tm=AH_TanMethod_fromDb(dbT);
-      if (tm)
+      if (tm) {
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+		 "Adding TAN method [%s]",
+		 AH_TanMethod_GetMethodId(tm));
 	AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
+      }
       else {
 	DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
 	GWEN_DB_Dump(dbT, stderr, 2);
