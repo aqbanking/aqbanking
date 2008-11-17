@@ -98,7 +98,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid);
 /*@}*/
 
 
-/** @name Importing Configuration from AqBanking3
+/** @name Importing Configuration from AqBanking2
  *
  */
 /*@{*/

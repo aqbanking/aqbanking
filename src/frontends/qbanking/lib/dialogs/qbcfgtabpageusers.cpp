@@ -220,31 +220,11 @@ void QBCfgTabPageUsers::slotUserEdit() {
 
   u=ul.front();
 
-  rv=getBanking()->beginExclUseUser(u, 0);
-  if (rv<0) {
-    DBG_ERROR(0, "Could not lock user");
-    QMessageBox::critical(this,
-			  tr("Error"),
-			  tr("Could not lock user data. "
-			     "Maybe this user is still used by another application?"),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return;
-  }
-
   if (QBEditUser::editUser(getBanking(), u, this)) {
     DBG_INFO(0, "Accepted");
-    rv=getBanking()->endExclUseUser(u, 0, 0);
-    if (rv<0) {
-      DBG_ERROR(0, "Could not unlock user");
-      QMessageBox::critical(this,
-			    tr("Internal Error"),
-			    tr("Could not unlock user data."),
-			    QMessageBox::Ok,QMessageBox::NoButton);
-    }
   }
   else {
     DBG_INFO(0, "Rejected");
-    getBanking()->endExclUseUser(u, 1, 0); /* abandon changes */
   }
 
   updateView();

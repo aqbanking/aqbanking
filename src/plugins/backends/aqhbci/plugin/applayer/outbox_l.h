@@ -60,7 +60,7 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob);
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
-		      int withProgress, int nounmount,
+		      int withProgress, int nounmount, int doLock,
 		      uint32_t guiid);
 
 

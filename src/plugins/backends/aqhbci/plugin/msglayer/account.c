@@ -60,6 +60,9 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
       AH_Account_ReadDb(a, dbBackend);
     }
   }
+  else if (em==AB_ProviderExtendMode_Reload) {
+    AH_Account_ReadDb(a, dbBackend);
+  }
   else if (em==AB_ProviderExtendMode_Save) {
     AH_Account_toDb(a, dbBackend);
   }

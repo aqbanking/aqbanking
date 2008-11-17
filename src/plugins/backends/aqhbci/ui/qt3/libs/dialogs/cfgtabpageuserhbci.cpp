@@ -19,6 +19,7 @@
 #include "userwizard.h"
 
 #include <qbanking/qbanking.h>
+#include <qbanking/qbcfgtab.h>
 
 #include <qpushbutton.h>
 #include <qcombobox.h>
@@ -286,8 +287,14 @@ bool CfgTabPageUserHbci::fromGui() {
       tm=AH_TanMethod_List_First(tml);
       while(tm && idx--)
 	tm=AH_TanMethod_List_Next(tm);
-      assert(tm);
-      AH_User_SetSelectedTanMethod(u, AH_TanMethod_GetFunction(tm));
+      if (tm) {
+	AH_User_SetSelectedTanMethod(u, AH_TanMethod_GetFunction(tm));
+      }
+      else {
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+		  "Tan method idx %d not found",
+		  _realPage->itanModeCombo->currentItem());
+      }
     }
   }
 
@@ -346,148 +353,93 @@ void CfgTabPageUserHbci::_setComboTextIfPossible(QComboBox *qb,
 
 
 void CfgTabPageUserHbci::slotGetServerKeys() {
-  AB_USER *u;
-  QBanking *qb;
-  AB_PROVIDER *pro;
-  int rv;
-  uint32_t pid;
-  AB_IMEXPORTER_CONTEXT *ctx;
-  QGui *gui;
-
-  qb=getBanking();
-  assert(qb);
-  pro=_provider;
-  assert(pro);
-  u=getUser();
-  assert(u);
-
-  DBG_ERROR(0, "Retrieving server keys");
-  gui=qb->getGui();
-  if (gui)
-    gui->pushParentWidget(this);
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     tr("Getting Server Keys").utf8(),
-			     NULL,
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, pid);
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    DBG_ERROR(0, "Error getting server keys");
+  if (getCfgTab()->fromGui()) {
+    AB_USER *u;
+    QBanking *qb;
+    AB_PROVIDER *pro;
+    int rv;
+    uint32_t pid;
+    AB_IMEXPORTER_CONTEXT *ctx;
+    QGui *gui;
+  
+    qb=getBanking();
+    assert(qb);
+    pro=_provider;
+    assert(pro);
+    u=getUser();
+    assert(u);
+  
+    DBG_ERROR(0, "Retrieving server keys");
+    gui=qb->getGui();
+    if (gui)
+      gui->pushParentWidget(this);
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			       GWEN_GUI_PROGRESS_KEEP_OPEN |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       tr("Getting Server Keys").utf8(),
+			       NULL,
+			       GWEN_GUI_PROGRESS_NONE,
+			       0);
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, pid);
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      DBG_ERROR(0, "Error getting server keys");
+      GWEN_Gui_ProgressEnd(pid);
+      if (gui)
+	gui->popParentWidget();
+      return;
+    }
+  
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 tr("Keys saved.").utf8());
     GWEN_Gui_ProgressEnd(pid);
     if (gui)
       gui->popParentWidget();
-    return;
   }
-
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       tr("Keys saved.").utf8());
-  GWEN_Gui_ProgressEnd(pid);
-  if (gui)
-    gui->popParentWidget();
 }
 
 
 
 void CfgTabPageUserHbci::slotGetSysId() {
-  AB_USER *u;
-  QBanking *qb;
-  AB_PROVIDER *pro;
-  int rv;
-  uint32_t pid;
-  AB_IMEXPORTER_CONTEXT *ctx;
-  QGui *gui;
-
-  qb=getBanking();
-  assert(qb);
-  pro=_provider;
-  assert(pro);
-  u=getUser();
-  assert(u);
-
-  DBG_ERROR(0, "Retrieving system id");
-  gui=qb->getGui();
-  if (gui)
-    gui->pushParentWidget(this);
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     tr("Retrieving System Id").utf8(),
-			     NULL,
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(pro, u, ctx, 1, pid);
-  GWEN_Gui_ProgressEnd(pid);
-  if (gui)
-    gui->popParentWidget();
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    DBG_ERROR(0, "Error getting sysid (%d)", rv);
-    return;
-  }
-}
-
-
-
-void CfgTabPageUserHbci::slotGetAccounts() {
-  AB_USER *u;
-  QBanking *qb;
-  AB_PROVIDER *pro;
-  int rv;
-  uint32_t pid;
-  AB_IMEXPORTER_CONTEXT *ctx;
-  QGui *gui;
-
-  qb=getBanking();
-  assert(qb);
-  pro=_provider;
-  assert(pro);
-  u=getUser();
-  assert(u);
-
-  DBG_INFO(0, "Retrieving accounts");
-  gui=qb->getGui();
-  if (gui)
-    gui->pushParentWidget(this);
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     tr("Getting List of Accounts").utf8(),
-			     NULL,
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(pro, u, ctx, 1, pid);
-  GWEN_Gui_ProgressEnd(pid);
-  if (gui)
-    gui->popParentWidget();
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    if (rv==GWEN_ERROR_NO_DATA) {
-      QMessageBox::information(this,
-                               tr("No Account List"),
-                               tr("<qt>"
-                                  "<p>"
-                                  "Your bank does not send a list of "
-                                  "accounts."
-                                  "</p>"
-                                  "<p>"
-                                  "You will have to setup the accounts for "
-                                  "this user manually."
-                                  "</p>"
-                                  "</qt>"),
-                               QMessageBox::Ok,QMessageBox::NoButton);
-    }
-    else {
-      DBG_ERROR(0, "Error getting accounts");
+  if (getCfgTab()->fromGui()) {
+    AB_USER *u;
+    QBanking *qb;
+    AB_PROVIDER *pro;
+    int rv;
+    uint32_t pid;
+    AB_IMEXPORTER_CONTEXT *ctx;
+    QGui *gui;
+  
+    qb=getBanking();
+    assert(qb);
+    pro=_provider;
+    assert(pro);
+    u=getUser();
+    assert(u);
+  
+    DBG_ERROR(0, "Retrieving system id");
+    gui=qb->getGui();
+    if (gui)
+      gui->pushParentWidget(this);
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			       GWEN_GUI_PROGRESS_KEEP_OPEN |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       tr("Retrieving System Id").utf8(),
+			       NULL,
+			       GWEN_GUI_PROGRESS_NONE,
+			       0);
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetSysId(pro, u, ctx, 1, pid);
+    GWEN_Gui_ProgressEnd(pid);
+    if (gui)
+      gui->popParentWidget();
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      DBG_ERROR(0, "Error getting sysid (%d)", rv);
       return;
     }
   }
@@ -495,54 +447,119 @@ void CfgTabPageUserHbci::slotGetAccounts() {
 
 
 
+void CfgTabPageUserHbci::slotGetAccounts() {
+  if (getCfgTab()->fromGui()) {
+    AB_USER *u;
+    QBanking *qb;
+    AB_PROVIDER *pro;
+    int rv;
+    uint32_t pid;
+    AB_IMEXPORTER_CONTEXT *ctx;
+    QGui *gui;
+  
+    qb=getBanking();
+    assert(qb);
+    pro=_provider;
+    assert(pro);
+    u=getUser();
+    assert(u);
+  
+    DBG_INFO(0, "Retrieving accounts");
+    gui=qb->getGui();
+    if (gui)
+      gui->pushParentWidget(this);
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			       GWEN_GUI_PROGRESS_KEEP_OPEN |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       tr("Getting List of Accounts").utf8(),
+			       NULL,
+			       GWEN_GUI_PROGRESS_NONE,
+			       0);
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetAccounts(pro, u, ctx, 1, pid);
+    GWEN_Gui_ProgressEnd(pid);
+    if (gui)
+      gui->popParentWidget();
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      if (rv==GWEN_ERROR_NO_DATA) {
+	QMessageBox::information(this,
+				 tr("No Account List"),
+				 tr("<qt>"
+				    "<p>"
+				    "Your bank does not send a list of "
+				    "accounts."
+				    "</p>"
+				    "<p>"
+				    "You will have to setup the accounts for "
+				    "this user manually."
+				    "</p>"
+				    "</qt>"),
+				 QMessageBox::Ok,QMessageBox::NoButton);
+      }
+      else {
+	DBG_ERROR(0, "Error getting accounts");
+	return;
+      }
+    }
+  }
+}
+
+
+
 void CfgTabPageUserHbci::slotGetItanModes() {
-  AB_USER *u;
-  QBanking *qb;
-  AB_PROVIDER *pro;
-  int rv;
-  uint32_t pid;
-  AB_IMEXPORTER_CONTEXT *ctx;
-  QGui *gui;
-
-  qb=getBanking();
-  assert(qb);
-  pro=_provider;
-  assert(pro);
-  u=getUser();
-  assert(u);
-
-  DBG_ERROR(0, "Retrieving List of Allowed iTAN Modes");
-  gui=qb->getGui();
-  if (gui)
-    gui->pushParentWidget(this);
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     tr("Retrieving iTAN Modes").utf8(),
-			     NULL,
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetItanModes(pro, u, ctx, 1, pid);
-  GWEN_Gui_ProgressEnd(pid);
-  if (gui)
-    gui->popParentWidget();
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    DBG_ERROR(0, "Error getting iTAN Modes (%d)", rv);
-    return;
+  if (getCfgTab()->fromGui()) {
+    AB_USER *u;
+    QBanking *qb;
+    AB_PROVIDER *pro;
+    int rv;
+    uint32_t pid;
+    AB_IMEXPORTER_CONTEXT *ctx;
+    QGui *gui;
+  
+    qb=getBanking();
+    assert(qb);
+    pro=_provider;
+    assert(pro);
+    u=getUser();
+    assert(u);
+  
+    DBG_ERROR(0, "Retrieving List of Allowed iTAN Modes");
+    gui=qb->getGui();
+    if (gui)
+      gui->pushParentWidget(this);
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			       GWEN_GUI_PROGRESS_KEEP_OPEN |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       tr("Retrieving iTAN Modes").utf8(),
+			       NULL,
+			       GWEN_GUI_PROGRESS_NONE,
+			       0);
+    ctx=AB_ImExporterContext_new();
+    rv=AH_Provider_GetItanModes(pro, u, ctx, 1, pid);
+    GWEN_Gui_ProgressEnd(pid);
+    if (gui)
+      gui->popParentWidget();
+    AB_ImExporterContext_free(ctx);
+    if (rv) {
+      DBG_ERROR(0, "Error getting iTAN Modes (%d)", rv);
+      return;
+    }
   }
 }
 
 
 
 void CfgTabPageUserHbci::slotFinishUser() {
-  UserWizard::finishUser(getBanking(),
-                         _provider,
-                         getUser(),
-                         this);
-  toGui();
+  if (getCfgTab()->fromGui()) {
+    UserWizard::finishUser(getBanking(),
+			   _provider,
+			   getUser(),
+			   this);
+    toGui();
+  }
 }
 
 

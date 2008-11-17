@@ -219,8 +219,9 @@ static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
 						    const AH_JOB_LIST *qjl);
 
 
-static int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid);
-static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon, uint32_t guiid);
+static int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, uint32_t guiid);
+static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers,
+				 int abandon, uint32_t guiid);
 
 
 #endif /* AH_OUTBOX_P_H */

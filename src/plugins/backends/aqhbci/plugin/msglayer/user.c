@@ -172,6 +172,11 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       AH_User_LoadTanMethods(u);
     }
   }
+  else if (em==AB_ProviderExtendMode_Reload) {
+    /* just reload user */
+    AH_User_ReadDb(u, db);
+    AH_User_LoadTanMethods(u);
+  }
   else {
     AH_USER *ue;
 
@@ -428,7 +433,7 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
 			ue->tanMethodList[i]);
   }
   
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "selectedTanMethod",
 		      ue->selectedTanMethod);
 }

@@ -1564,7 +1564,7 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob, uint32_t guiid){
 
 
 
-int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid){
+int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, uint32_t guiid){
   AH_OUTBOX__CBOX *cbox;
   AB_BANKING *ab;
 
@@ -1598,10 +1598,11 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid){
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AH_Outbox_UnlockUsers(ob, 1, guiid); /* abandon */
+      AH_Outbox_UnlockUsers(ob, lockedUsers, 1, guiid); /* abandon */
       return rv;
     }
     cbox->isLocked=1;
+    AB_User_List2_PushBack(lockedUsers, cbox->user);
 
     cbox=AH_Outbox__CBox_List_Next(cbox);
   } /* while */
@@ -1611,36 +1612,36 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, uint32_t guiid){
 
 
 
-int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, int abandon, uint32_t guiid){
-  AH_OUTBOX__CBOX *cbox;
+int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers,
+			  int abandon, uint32_t guiid){
   int errors=0;
   AB_BANKING *ab;
+  AB_USER_LIST2_ITERATOR *it;
 
   assert(ob);
 
   ab=AH_HBCI_GetBankingApi(ob->hbci);
-
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
-  while(cbox) {
+  it=AB_User_List2_First(lockedUsers);
+  if (it) {
     AB_USER *u;
-    int rv;
 
-    u=AH_Outbox__CBox_GetUser(cbox);
-    if (cbox->isLocked) {
+    u=AB_User_List2Iterator_Data(it);
+    while(u) {
+      int rv;
+
       DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
 	       AB_User_GetCustomerId(u));
       rv=AB_Banking_EndExclUseUser(ab, u, abandon, guiid);
-      cbox->isLocked=0;
       if (rv<0) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "Could not unlock customer [%s] (%d)",
 		 AB_User_GetCustomerId(u), rv);
 	errors++;
       }
+      u=AB_User_List2Iterator_Next(it);
     }
-
-    cbox=AH_Outbox__CBox_List_Next(cbox);
-  } /* while */
+    AB_User_List2Iterator_free(it);
+  }
 
   if (errors)
     return GWEN_ERROR_GENERIC;
@@ -1789,6 +1790,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox, uint32_t guiid)
   } /* while */
   AH_Job_List_free(jl);
 
+#if 0
   /* unlock customer if necessary */
   if (cbox->isLocked) {
     if (cbox->isLocked) {
@@ -1817,6 +1819,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox, uint32_t guiid)
       }
     }
   }
+#endif
 }
 
 
@@ -2097,10 +2100,11 @@ int AH_Outbox__Execute(AH_OUTBOX *ob, uint32_t guiid){
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
-		      int withProgress, int nounmount,
+		      int withProgress, int nounmount, int doLock,
 		      uint32_t guiid) {
   int rv;
   uint32_t pid=0;
+  AB_USER_LIST2 *lockedUsers;
 
   assert(ob);
 
@@ -2120,21 +2124,43 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 
   ob->context=ctx;
 
-  GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Locking users"));
-  rv=AH_Outbox_LockUsers(ob, pid);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  if (doLock) {
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unable to lock users"));
+			 GWEN_LoggerLevel_Info,
+			 I18N("Locking users"));
+    lockedUsers=AB_User_List2_new();
+    rv=AH_Outbox_LockUsers(ob, lockedUsers, pid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Gui_ProgressLog(pid,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Unable to lock users"));
+    }
   }
-  else {
+  else
+    rv=0;
+
+  if (rv==0) {
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Info,
 			 I18N("Executing HBCI jobs"));
     rv=AH_Outbox__Execute(ob, pid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    }
+    if (doLock) {
+      int rv2;
+
+      rv2=AH_Outbox_UnlockUsers(ob, lockedUsers, 0, pid);
+      if (rv2<0) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Gui_ProgressLog(pid,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Unable to unlock users"));
+      }
+      if (rv==0 && rv2!=0)
+	rv=rv2;
+    }
   }
 
   /* unmount currently mounted medium */
