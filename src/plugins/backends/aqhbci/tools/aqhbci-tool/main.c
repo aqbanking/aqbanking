@@ -24,7 +24,6 @@
 #include <gwenhywfar/debug.h>
 #include <aqbanking/banking.h>
 
-
 #include "globals.h"
 
 #ifdef WITH_STATIC_PLUGINS
@@ -35,6 +34,28 @@ int LC_Plugins_Init();
 int EBC_Plugins_Init();
 #endif
 #endif
+
+
+
+static void showVersions() {
+  int vmajor, vminor, vpatchLevel, vbuild;
+
+  fprintf(stdout, "Versions:\n");
+  GWEN_Version(&vmajor,
+	       &vminor,
+	       &vpatchLevel,
+	       &vbuild);
+  fprintf(stdout, " Gwenhywfar   : %d.%d.%d.%d\n",
+	  vmajor, vminor, vpatchLevel, vbuild);
+
+  AB_Banking_GetVersion(&vmajor,
+			&vminor,
+			&vpatchLevel,
+			&vbuild);
+  fprintf(stdout, " AqBanking    : %d.%d.%d.%d\n",
+	  vmajor, vminor, vpatchLevel, vbuild);
+
+}
 
 
 
@@ -330,6 +351,10 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "subaccountflags")==0) {
     rv=addsubAccountFlags(ab, db, argc, argv, 0);
+  }
+  else if (strcasecmp(cmd, "versions")==0) {
+    showVersions();
+    rv=0;
   }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1(ab, db, argc, argv);
