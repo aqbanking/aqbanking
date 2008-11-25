@@ -32,7 +32,9 @@ aqhbci_tool3_SOURCES=main.c \
  getcert.c \
  sethbciversion.c \
  adduserflags.c \
- subuserflags.c
+ subuserflags.c \
+ listitanmodes.c \
+ setitanmode.c
 
 aqhbci_tool3_LDADD = \
   $(aqhbci_internal_libs) \

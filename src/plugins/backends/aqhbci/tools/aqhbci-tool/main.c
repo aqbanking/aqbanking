@@ -334,6 +334,12 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "getitanmodes")==0) {
     rv=getItanModes(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "listitanmodes")==0) {
+    rv=listItanModes(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "setitanmode")==0) {
+    rv=setItanMode(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "changepin")==0) {
     rv=changePin(ab, db, argc, argv);
   }
