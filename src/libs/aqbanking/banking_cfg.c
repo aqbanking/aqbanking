@@ -938,6 +938,7 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
 				   AB_ACCOUNT *a,
 				   uint32_t guiid) {
   GWEN_DB_NODE *db=NULL;
+  GWEN_DB_NODE *dbP;
   int rv;
 
   assert(ab);
@@ -975,6 +976,19 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
   }
 
   AB_Account_ReadDb(a, db);
+  /* let provider also reload account data */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a, AB_ProviderExtendMode_Reload, dbP);
+  if (rv<0) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Could not extend account [%s/%s] (%d)",
+	     AB_Account_GetBankCode(a), AB_Account_GetAccountNumber(a), rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
+			       AB_CFG_GROUP_ACCOUNTS,
+			       AB_Account_GetDbId(a),
+			       guiid);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
 
   GWEN_DB_Group_free(db);
 
@@ -991,8 +1005,18 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
 
   if (!abandon) {
     GWEN_DB_NODE *db=GWEN_DB_Group_new("account");
+    GWEN_DB_NODE *dbP;
 
     AB_Account_toDb(a, db);
+    dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+    rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
+				 AB_ProviderExtendMode_Save,
+				 dbP);
+    if (rv) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
 
     /* save group (still locked) */
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
