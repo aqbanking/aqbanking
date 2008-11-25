@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: tutorial3.c 1144 2007-01-24 14:09:32Z christian $
  begin       : Tue May 03 2005
  copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de

@@ -1,4 +1,4 @@
-                                                                    2007/04/05
+                                                                    2008/11/25
 
                                 Content
                                 =======
@@ -12,16 +12,14 @@
                4.   Supported Backends
                4.1.   HBCI
                4.2.   OFX Direct Connect
-               4.3.   YellowNet
-               4.4.   DTAUS
-               4.5.   GeldKarte
-               4.6.   None
+               4.3.   EBICS
+               4.4.   None
                5.   What Do I Need ?
                5.1.   Required Packages
                5.2.   Applications
                6.   Building AqBanking
                6.1.   Building from the Tar File
-               6.2.   Building from CVS
+               6.2.   Building from CVS/SVN
                6.3.   Building the API Documentation
                6.4.   Notes on porting the qt parts to Qt-4: 
                7.   Windows Registry Keys Used
@@ -177,35 +175,14 @@ This backend provides support for an online banking protocol used in the
 United States, Canada and maybe in the United Kingdom.
 
 
-4.3. YellowNet
+4.3. EBICS
 --------------
 
-AqYellowNet provides support for the online banking protocol used by the
-Suisse "Post Finance" credit institute.
-This bank required me to sign a nondisclosure agreement so the module is
-available binary-only.
-
-To use YellowNet with AqBanking you must tell your bank to provide you with
-SWIFT files for download instead of XML.
+EBICS is the successor of the German banking protocol FTAM. It is used in commercial
+environments. The tool AqBanking-CLI comes with optional support for this protocol.
 
 
-4.4. DTAUS
-----------
-
-DTAUS is an offline protocol which uses floppy discs to transfer data between
-customers and a credit institute. The bank expects the disc to contain a file
-of a well defined format which is created by this backend.
-
-
-4.5. GeldKarte
---------------
-
-A GeldKarte is a kind of cash card used in Germany. Such a card stores a
-balance and a number of transactions. This information is made available to
-accounting programs via this backend.
-
-
-4.6. None
+4.4. None
 ---------
 
 This is a fallback module which can be used by applications for accounts which
@@ -222,7 +199,7 @@ are not managed by any online banking backend.
 
 AqBanking has several direct dependencies:
 
-- "Gwenhywfar" >= 2.9.0, available from
+- "Gwenhywfar" >= 3.5.2, available from
 http://gwenhywfar.sf.net/, is absolutely required
 
 - "GMP", the GNU MP Bignum Library available from 
@@ -232,7 +209,7 @@ http://gwenhywfar.sf.net/, is absolutely required
 required for the German bank account number checking, otherwise
 the account number checking will not be compiled.
 
-- "libchipcard" >= 3.1.0 from http://www.libchipcard.de is
+- "libchipcard" >= 4.0.0 from http://www.libchipcard.de is
 required for the aqgeldkarte backend, otherwise the geldkarte
 parts cannot be compiled
 
@@ -240,11 +217,6 @@ parts cannot be compiled
 required for the python wrappers of aqbanking. The python wrappers
 are installed by default (to disable it, use --disable-python),
 but they cannot be used unless "ctypes" is installed.
-
-In aqbanking versions earlier than 1.3.0, the backends (e.g.
-"aqhbci") were available in separate packages, but since 1.3.0
-these have now been integrated into the aqbanking package. For
-details, see the NEWS entry of the 1.3.0 release.
 
 (Note: Further information in German can be found on
 http://linuxwiki.de/AqBanking )
@@ -305,8 +277,8 @@ Compilation hints for specific platforms:
   ./configure qt3_libs="-L/opt/qt/lib -lqt-mt"
 
 
-6.2. Building from CVS
-----------------------
+6.2. Building from CVS/SVN
+--------------------------
 
 #>make -fMakefile.cvs
 
@@ -501,5 +473,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2007/11/11
+Martin Preuss, Hamburg/Germany, 2008/11/25
 

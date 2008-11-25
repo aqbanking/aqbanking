@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
  copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de
@@ -51,7 +48,7 @@ int main(int argc, char **argv) {
    *
    * The second argument is the folder in which the AqBanking settings are
    * stored. You should in most cases provide NULL here which makes AqBanking
-   * choose the default path ($HOME/.banking).
+   * choose the default path ($HOME/.aqbanking).
    * If this folder doesn't exist it will be created as soon as AqBanking has
    * something to store (in most cases when closing the application).
    */
