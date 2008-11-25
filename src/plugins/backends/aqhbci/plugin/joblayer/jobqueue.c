@@ -88,6 +88,7 @@ AH_JOBQUEUE *AH_JobQueue_fromQueue(AH_JOBQUEUE *oldq){
   jq=AH_JobQueue_new(oldq->user);
   jq->signers=GWEN_StringList_dup(oldq->signers);
   jq->secProfile=oldq->secProfile;
+  jq->secClass=oldq->secClass;
   if (oldq->usedTan)
     jq->usedTan=strdup(oldq->usedTan);
   if (oldq->usedPin)
@@ -217,6 +218,17 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
       return AH_JobQueueAddResultJobLimit;
     }
 
+    /* check security class */
+    if (jq->secClass==0)
+      jq->secClass=AH_Job_GetSecurityClass(j);
+    else {
+      if (jq->secClass!=AH_Job_GetSecurityClass(j)) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Job's security class doesn't match that of the queue (%d != %d)",
+		 jq->secClass, AH_Job_GetSecurityClass(j));
+	return AH_JobQueueAddResultJobLimit;
+      }
+    }
+
     /* check for signers */
     if (!jobCount && !GWEN_StringList_Count(jq->signers)) {
       const GWEN_STRINGLIST *sl;
@@ -324,6 +336,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
   msg=AH_Msg_new(dlg);
   AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(jq->user));
   AH_Msg_SetSecurityProfile(msg, jq->secProfile);
+  AH_Msg_SetSecurityClass(msg, jq->secClass);
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");

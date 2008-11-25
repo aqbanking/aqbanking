@@ -204,6 +204,20 @@ void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i) {
 
 
 
+int AH_Msg_GetSecurityClass(const AH_MSG *hmsg) {
+  assert(hmsg);
+  return hmsg->secClass;
+}
+
+
+
+void AH_Msg_SetSecurityClass(AH_MSG *hmsg, int i) {
+  assert(hmsg);
+  hmsg->secClass=i;
+}
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_AddMsgTail(AH_MSG *hmsg){
   GWEN_XMLNODE *node;
@@ -1846,6 +1860,10 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
 
 
 #include "msgcrypt_ddv.c"
+#include "msgcrypt_rdh1.c"
+#include "msgcrypt_rdh2.c"
+#include "msgcrypt_rdh3.c"
+#include "msgcrypt_rdh5.c"
 #include "msgcrypt_rdh.c"
 #include "msgcrypt_pintan.c"
 #include "msgcrypt.inc"

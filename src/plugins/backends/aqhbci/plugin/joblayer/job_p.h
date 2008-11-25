@@ -54,6 +54,7 @@ struct AH_JOB {
   uint32_t flags;
   int minSigs;
   int secProfile;
+  int secClass;
   int jobsPerMsg;
 
   GWEN_MSGENGINE *msgEngine;

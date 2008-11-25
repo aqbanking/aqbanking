@@ -200,6 +200,7 @@ AH_JOB *AH_Job_new(const char *name,
       /* sample some variables from BPD jobs */
       j->minSigs=GWEN_DB_GetIntValue(jobBPD, "minsigs", 0, 0);
       j->secProfile=GWEN_DB_GetIntValue(jobBPD, "secProfile", 0, 1);
+      j->secClass=GWEN_DB_GetIntValue(jobBPD, "securityClass", 0, 0);
       j->jobsPerMsg=GWEN_DB_GetIntValue(jobBPD, "jobspermsg", 0, 0);
     }
   } /* if paramName */
@@ -543,6 +544,14 @@ int AH_Job_GetSecurityProfile(const AH_JOB *j){
   assert(j);
   assert(j->usage);
   return j->secProfile;
+}
+
+
+
+int AH_Job_GetSecurityClass(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->secClass;
 }
 
 

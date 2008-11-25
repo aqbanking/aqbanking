@@ -127,6 +127,7 @@ const char *AH_Job_GetDescription(const AH_JOB *j);
 
 int AH_Job_GetMinSignatures(const AH_JOB *j);
 int AH_Job_GetSecurityProfile(const AH_JOB *j);
+int AH_Job_GetSecurityClass(const AH_JOB *j);
 int AH_Job_GetJobsPerMsg(const AH_JOB *j);
 
 int AH_Job_GetChallengeClass(const AH_JOB *j);

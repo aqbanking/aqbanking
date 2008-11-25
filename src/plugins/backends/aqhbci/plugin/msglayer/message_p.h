@@ -39,6 +39,7 @@ struct AH_MSG {
 
   unsigned int hbciVersion;
   int secProfile;
+  int secClass;
 
   unsigned int nodes;
   unsigned int firstSegment;
@@ -96,6 +97,31 @@ static int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
 
+static int AH_Msg_SignRdh(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+static int AH_Msg_SignRdh1(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh1(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+static int AH_Msg_SignRdh2(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh2(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+static int AH_Msg_SignRdh3(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh3(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh3(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh3(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+
+static int AH_Msg_SignRdh5(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh5(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
 static int AH_Msg__AnonHnsha(const char *psegment,

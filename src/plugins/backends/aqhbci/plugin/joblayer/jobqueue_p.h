@@ -31,6 +31,7 @@ struct AH_JOBQUEUE {
   uint32_t flags;
 
   int secProfile;
+  int secClass;
 
   char *usedTan;
   char *usedPin;

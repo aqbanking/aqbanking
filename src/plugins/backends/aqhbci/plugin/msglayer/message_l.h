@@ -69,6 +69,9 @@ void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i);
 int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg);
 void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i);
 
+int AH_Msg_GetSecurityClass(const AH_MSG *hmsg);
+void AH_Msg_SetSecurityClass(AH_MSG *hmsg, int i);
+
 const char *AH_Msg_GetTan(const AH_MSG *hmsg);
 void AH_Msg_SetTan(AH_MSG *hmsg, const char *s);
 

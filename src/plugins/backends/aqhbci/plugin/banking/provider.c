@@ -2553,6 +2553,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   uint32_t keyId;
+  int ksize;
   GWEN_CRYPT_CRYPTALGO *algo;
   int rv;
   AH_HBCI *h;
@@ -2584,8 +2585,26 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,
 				GWEN_Crypt_CryptMode_None);
-  GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 96);
-  
+  switch(AH_User_GetRdhType(u)) {
+  case 0:
+  case 1:
+    ksize=96;  /* 768 bits */
+    break;
+  case 2:
+    ksize=256; /* 2048 bits */
+    break;
+  case 3:
+    ksize=256; /* 2048 bits */
+    break;
+  case 5:
+    ksize=256; /* 2048 bits */
+    break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH %d not supported", AH_User_GetRdhType(u));
+    return GWEN_ERROR_INVALID;
+  }
+  GWEN_Crypt_CryptAlgo_SetChunkSize(algo, ksize);
+
   /* open token for admin */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
     rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
