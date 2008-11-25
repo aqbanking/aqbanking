@@ -207,7 +207,6 @@ void QBCfgTabPageUsers::slotUserNew() {
 void QBCfgTabPageUsers::slotUserEdit() {
   std::list<AB_USER*> ul;
   AB_USER *u;
-  int rv;
 
   ul=_realPage->userList->getSelectedUsers();
   if (ul.empty()) {
