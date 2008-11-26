@@ -1411,6 +1411,26 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
 	/* TODO: Read the key received and ask the user to accept it */
       }
 
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SecurityMethods")==0){
+        GWEN_DB_NODE *dbT;
+
+        dbT=GWEN_DB_FindFirstGroup(dbRd, "SecProfile");
+	while(dbT) {
+	  const char *code;
+          int version;
+  
+	  code=GWEN_DB_GetCharValue(dbT, "code", 0, NULL);
+	  version=GWEN_DB_GetIntValue(dbT, "version", 0, -1);
+	  if (code && (version>0)) {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN,
+		      "Bank supports mode %s %d",
+		      code, version);
+	    /* TODO: store possible modes */
+	  }
+	  dbT=GWEN_DB_FindNextGroup(dbT, "SecProfile");
+	} /* while */
+      }
+
       else {
         GWEN_XMLNODE *bpdn;
         int segver;

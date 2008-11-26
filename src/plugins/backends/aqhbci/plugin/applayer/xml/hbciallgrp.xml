@@ -356,8 +356,8 @@
   <GROUPdef id="SecDetails" delimiter=":" version="1" mode="RDH" >
     <!-- Sicherheitsidentifikation, Details -->
     <ELEM name="dir" type="num" maxsize=3 />
-    <ELEM type="an" addemptymode="none"/>
-    <ELEM name="SecId" type="ascii" maxsize="256" minnum="1" />
+    <ELEM name="CID" type="bin" maxsize="256" minnum="0" trustlevel="3" />
+    <ELEM name="SecId" type="ascii" maxsize="256" minnum="0" />
   </GROUPdef>
 
 

@@ -225,21 +225,31 @@ int AH_Msg_SignRdh5(AH_MSG *hmsg,
   }
 
   /* store system id */
-  if (hmsg->noSysId) {
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			 "SecDetails/SecId", "0");
+  p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+  if (p) {
+    GWEN_BUFFER *idBuf;
+
+    idBuf=GWEN_Buffer_new(0, 128, 0, 1);
+    rv=GWEN_Text_FromHexBuffer(p, idBuf);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"Bad system id on RDH medium, should not happen (%d)", rv);
+      GWEN_Buffer_free(idBuf);
+      GWEN_DB_Group_free(cfg);
+      return rv;
+    }
+
+    GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			"SecDetails/CID",
+			GWEN_Buffer_GetStart(idBuf),
+			GWEN_Buffer_GetUsedBytes(idBuf));
+    GWEN_Buffer_free(idBuf);
   }
   else {
-    p=AH_User_GetSystemId(su);
-    if (p==NULL)
-      p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-    if (p)
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "SecDetails/SecId", p);
-    else {
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "SecDetails/SecId", "0");
-    }
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "No system id on RDH medium, should not happen.");
+    GWEN_DB_Group_free(cfg);
+    return GWEN_ERROR_INTERNAL;
   }
 
   /* retrieve control reference for sigtail (to be used later) */
@@ -566,23 +576,31 @@ int AH_Msg_EncryptRdh5(AH_MSG *hmsg) {
   }
 
   /* store system id */
-  if (hmsg->noSysId) {
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			 "SecDetails/SecId", "0");
+  p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+  if (p) {
+    GWEN_BUFFER *idBuf;
+
+    idBuf=GWEN_Buffer_new(0, 128, 0, 1);
+    rv=GWEN_Text_FromHexBuffer(p, idBuf);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"Bad system id on RDH medium, should not happen (%d)", rv);
+      GWEN_Buffer_free(idBuf);
+      GWEN_DB_Group_free(cfg);
+      return rv;
+    }
+
+    GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+			"SecDetails/CID",
+			GWEN_Buffer_GetStart(idBuf),
+			GWEN_Buffer_GetUsedBytes(idBuf));
+    GWEN_Buffer_free(idBuf);
   }
   else {
-    p=AH_User_GetSystemId(u);
-    if (p==NULL)
-      p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-    if (p)
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "SecDetails/SecId", p);
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-	       "No System id on RDH medium, using default");
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "SecDetails/SecId", "0");
-    }
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "No system id on RDH medium, should not happen.");
+    GWEN_DB_Group_free(cfg);
+    return GWEN_ERROR_INTERNAL;
   }
 
   /* store encrypted message key */

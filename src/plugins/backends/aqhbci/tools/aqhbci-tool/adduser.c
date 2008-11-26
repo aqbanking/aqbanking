@@ -94,6 +94,7 @@ int addUser(AB_BANKING *ab,
   const char *server;
   const char *userName;
   int hbciVersion;
+  int rdhType;
   uint32_t cid;
   const GWEN_ARGS args[]={
   {
@@ -196,6 +197,17 @@ int addUser(AB_BANKING *ab,
     "Select the HBCI protocol version"
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
+    GWEN_ArgsType_Int, 
+    "rdhType",
+    0,
+    1,             
+    0,             
+    "rdhtype",
+    "Select the RDH profile type (1, 2, 3, 5, 10)",
+    "Select the RDH profile type (1, 2, 3, 5, 10)"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
@@ -253,6 +265,7 @@ int addUser(AB_BANKING *ab,
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
   cid=GWEN_DB_GetIntValue(db, "context", 0, 0);
   hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
+  rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, 1);
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
   assert(userName);
 
@@ -408,12 +421,18 @@ int addUser(AB_BANKING *ab,
     AH_User_SetTokenName(user, tokenName);
     AH_User_SetTokenContextId(user, cid);
     AH_User_SetCryptMode(user, cm);
+    if (rdhType>0)
+      AH_User_SetRdhType(user, rdhType);
 
     if (hbciVersion==0) {
       if (cm==AH_CryptMode_Pintan)
 	AH_User_SetHbciVersion(user, 220);
-      else
-	AH_User_SetHbciVersion(user, 210);
+      else {
+        if (rdhType>1)
+	  AH_User_SetHbciVersion(user, 300);
+        else
+	  AH_User_SetHbciVersion(user, 210);
+      }
     }
     else
       AH_User_SetHbciVersion(user, hbciVersion);

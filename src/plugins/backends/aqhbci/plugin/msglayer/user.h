@@ -180,7 +180,10 @@ AH_CRYPT_MODE AH_User_GetCryptMode(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetCryptMode(AB_USER *u, AH_CRYPT_MODE m);
 
+AQHBCI_API
 int AH_User_GetRdhType(const AB_USER *u);
+
+AQHBCI_API
 void AH_User_SetRdhType(AB_USER *u, int i);
 
 AQHBCI_API
