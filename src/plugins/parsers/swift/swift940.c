@@ -145,6 +145,8 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     GWEN_DB_SetIntValue(data, flags, "textkey", code);
 
     while(*p) {
+      int intVal;
+
       if (strlen(p)<3) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
 	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
@@ -224,7 +226,14 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
           AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
           break;
     
-        case 34: /* Textschluesselergaenzung */
+	case 34: /* Textschluesselergaenzung */
+	  if (1==sscanf(s, "%d", &intVal)) {
+	    GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
+	  }
+	  else {
+	    DBG_WARN(AQBANKING_LOGDOMAIN,
+                     "Value [%s] is not a number (textkeyext)", s);
+	  }
 	  break;
 
 	case 38: /* IBAN */

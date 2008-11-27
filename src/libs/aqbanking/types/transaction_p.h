@@ -39,6 +39,7 @@ struct AB_TRANSACTION {
   AB_VALUE *value;
   AB_VALUE *fees;
   int textKey;
+  int textKeyExt;
   char *transactionKey;
   char *customerReference;
   char *bankReference;
@@ -140,6 +141,7 @@ This group contains information about the remote account.
 </p>
 */
 /*@{*/
+
 
 
 

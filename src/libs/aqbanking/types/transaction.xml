@@ -712,6 +712,18 @@
           </p>
         </descr>
       </elem>
+      <elem name="textKeyExt" type="int" >
+        <descr>
+          <p>
+            An extension to the text key (Textschluesselergaenzung, SWIFT Feld 34)
+          </p>
+          <p>
+            For a normal transfer you should set it to 51. For debit notes
+            the values 04 or 05 may be used. For other values please refer to
+            your credit institute. (HBCI only)
+          </p>
+        </descr>
+      </elem>
       <elem name="transactionKey" type="char" ptr="1">
         <descr>
           this is the transaction id that tells you more about the type

@@ -189,6 +189,8 @@ AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s) {
       return AB_Transaction_StatusManuallyReconciled;
     else if (strcasecmp(s, "revoked")==0)
       return AB_Transaction_StatusRevoked;
+    else if (strcasecmp(s, "aborted")==0)
+      return AB_Transaction_StatusAborted;
   }
   return AB_Transaction_StatusUnknown;
 }
@@ -219,6 +221,9 @@ const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v) {
 
     case AB_Transaction_StatusRevoked:
       return "revoked";
+
+    case AB_Transaction_StatusAborted:
+      return "aborted";
 
     default:
       return "unknown";
@@ -427,6 +432,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
   if (d->fees)
     st->fees=AB_Value_dup(d->fees);
   st->textKey=d->textKey;
+  st->textKeyExt=d->textKeyExt;
   if (d->transactionKey)
     st->transactionKey=strdup(d->transactionKey);
   if (d->customerReference)
@@ -568,6 +574,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
     if (AB_Value_toDb(st->fees, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "fees")))
       return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "textKey", st->textKey))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "textKeyExt", st->textKeyExt))
     return -1;
   if (st->transactionKey)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "transactionKey", st->transactionKey))
@@ -751,6 +759,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
 }
   }
   AB_Transaction_SetTextKey(st, GWEN_DB_GetIntValue(db, "textKey", 0, 0));
+  AB_Transaction_SetTextKeyExt(st, GWEN_DB_GetIntValue(db, "textKeyExt", 0, 0));
   AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
   AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
   AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
@@ -1395,6 +1404,21 @@ int AB_Transaction_GetTextKey(const AB_TRANSACTION *st) {
 void AB_Transaction_SetTextKey(AB_TRANSACTION *st, int d) {
   assert(st);
   st->textKey=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_Transaction_GetTextKeyExt(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->textKeyExt;
+}
+
+
+void AB_Transaction_SetTextKeyExt(AB_TRANSACTION *st, int d) {
+  assert(st);
+  st->textKeyExt=d;
   st->_modified=1;
 }
 

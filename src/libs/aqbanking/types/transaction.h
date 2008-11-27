@@ -389,6 +389,22 @@ Set this property with @ref AB_Transaction_SetTextKey,
 get it with @ref AB_Transaction_GetTextKey
 </p>
 
+@anchor AB_TRANSACTION_TextKeyExt
+<h4>TextKeyExt</h4>
+<p>
+<p>
+  An extension to the text key (Textschluesselergaenzung, SWIFT Feld 34)
+</p>
+
+<p>
+  For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
+</p>
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetTextKeyExt, 
+get it with @ref AB_Transaction_GetTextKeyExt
+</p>
+
 @anchor AB_TRANSACTION_TransactionKey
 <h4>TransactionKey</h4>
 <p>
@@ -880,7 +896,10 @@ typedef enum {
   AB_Transaction_StatusManuallyReconciled,
   /** The transfer has been revoked.
   */
-  AB_Transaction_StatusRevoked
+  AB_Transaction_StatusRevoked,
+  /** The transfer has been aborted.
+  */
+  AB_Transaction_StatusAborted
 } AB_TRANSACTION_STATUS;
 
 AQBANKING_API AB_TRANSACTION_STATUS AB_Transaction_Status_fromString(const char *s);
@@ -1224,6 +1243,15 @@ AQBANKING_API int AB_Transaction_GetTextKey(const AB_TRANSACTION *el);
 * Set the property @ref AB_TRANSACTION_TextKey
 */
 AQBANKING_API void AB_Transaction_SetTextKey(AB_TRANSACTION *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_TextKeyExt
+*/
+AQBANKING_API int AB_Transaction_GetTextKeyExt(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_TextKeyExt
+*/
+AQBANKING_API void AB_Transaction_SetTextKeyExt(AB_TRANSACTION *el, int d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_TransactionKey
