@@ -255,7 +255,7 @@ make install-strip \
 %{imex_datadir}/xmldb
 %{imex_datadir}/yellownet
 ### The aqhbci files
-%{_bindir}/aqhbci-tool3
+%{_bindir}/aqhbci-tool@QBANKING_SO_EFFECTIVE@
 %{_libdir}/libaqhbci.so.*
 %{aq_plugindir}/providers/aqhbci.*
 #%{_datadir}/doc/aqhbci
