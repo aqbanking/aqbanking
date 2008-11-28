@@ -94,7 +94,7 @@ libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 sources:
-	for f in $(libaqbanking_la_SOURCES); do \
+	for f in $(libaqbanking_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
