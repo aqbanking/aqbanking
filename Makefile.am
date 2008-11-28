@@ -95,7 +95,7 @@ I18NFILES=$(shell cat $(srcdir)/i18nsources $(srcdir)/qtsources)
 # Current build rule:
 sources:
 	rm -f $(srcdir)/i18nsources $(srcdir)/qtsources
-	$(MAKE) -C $(top_srcdir)/src sources
+	$(MAKE) -C $(top_builddir)/src sources
 $(srcdir)/i18nsources $(srcdir)/qtsources:
 	$(MAKE) sources
 
