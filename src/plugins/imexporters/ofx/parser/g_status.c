@@ -45,7 +45,7 @@ static AIO_OFX_GROUP_STATUS_ERROR error_msg_list[] = {
 {0,    I18S("Success"), I18S("The server successfully processed the request.")},
 {1,    I18S("Client is up-to-date"), I18S("Based on the client timestamp, the client has the latest information. The response does not supply any additional information.")},
 {2000, I18S("General error"), I18S("Error other than those specified by the remaining error codes. (Note: Servers should provide a more specific error whenever possible. Error code 2000 should be reserved for cases in which a more specific code is not available.)")},
-{2001, I18S("Invalid account"), I18S("")},
+{2001, I18S("Invalid account"), I18S("The account was invalid (whatever that means)")},
 {2002, I18S("General account error"), I18S("Account error not specified by the remaining error codes.")},
 {2003, I18S("Account not found"), I18S("The specified account number does not correspond to one of the user's accounts.")},
 {2004, I18S("Account closed"), I18S("The specified account number corresponds to an account that has been closed.")},
