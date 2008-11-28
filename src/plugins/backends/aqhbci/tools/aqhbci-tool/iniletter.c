@@ -40,6 +40,7 @@ int iniLetter(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   int bankKey;
+  int html;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -84,6 +85,17 @@ int iniLetter(AB_BANKING *ab,
     "bankkey",                    /* long option */
     "Show iniletter of bank keys",/* short description */
     "Show iniletter of bank keys" /* long description */
+  },
+  {
+    0, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "html",                       /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "html",                    /* long option */
+    "HTML output",/* short description */
+    "HTML output" /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -139,6 +151,7 @@ int iniLetter(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
   bankKey=GWEN_DB_VariableExists(db, "bankKey");
+  html=GWEN_DB_VariableExists(db, "html");
 
   ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
                           "de", bankId, userId, customerId);
@@ -167,11 +180,18 @@ int iniLetter(AB_BANKING *ab,
     GWEN_BUFFER *lbuf;
 
     lbuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    rv=AH_Provider_GetIniLetterTxt(pro,
-				   u,
-				   bankKey,
-				   lbuf,
-				   0, 0);
+    if (html)
+      rv=AH_Provider_GetIniLetterHtml(pro,
+				      u,
+				      bankKey,
+				      lbuf,
+				      0, 0);
+    else
+      rv=AH_Provider_GetIniLetterTxt(pro,
+				     u,
+				     bankKey,
+				     lbuf,
+				     0, 0);
     if (rv) {
       DBG_ERROR(0, "Could not create ini letter (%d)", rv);
       return 3;

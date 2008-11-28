@@ -59,6 +59,32 @@ static int AH_Provider_Update(AB_PROVIDER *pro,
                               uint32_t lastVersion,
                               uint32_t currentVersion);
 
+static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
+					AB_USER *u,
+					int useBankKey,
+					GWEN_BUFFER *lbuf,
+					int nounmount,
+					uint32_t guiid);
+static int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
+					 AB_USER *u,
+					 int useBankKey,
+					 GWEN_BUFFER *lbuf,
+					 int nounmount,
+					 uint32_t guiid);
+
+static int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
+					AB_USER *u,
+					int useBankKey,
+					GWEN_BUFFER *lbuf,
+					int nounmount,
+					uint32_t guiid);
+static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
+					 AB_USER *u,
+					 int useBankKey,
+					 GWEN_BUFFER *lbuf,
+					 int nounmount,
+					 uint32_t guiid);
+
 /*@}*/
 
 #endif /* AH_PROVIDER_P_H */

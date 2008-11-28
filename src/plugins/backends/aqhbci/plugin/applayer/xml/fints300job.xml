@@ -99,8 +99,8 @@
   >
    <MESSAGE name="open" crypt="1" sign="1" >
      <SEG name="ident" type="Ident" />
-     <SEG type="sendsignKey" name="signKey" />
-     <SEG type="sendcryptKey" name="cryptkey" />
+     <SEG type="sendsignKey" name="signKey" version="3" />
+     <SEG type="sendcryptKey" name="cryptkey" version="3" />
      <VALUES>
        <VALUE path="cryptkey/key/keytype">V</VALUE>
        <VALUE path="signkey/key/keytype">S</VALUE>

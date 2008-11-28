@@ -53,6 +53,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
   AH_JOB *j;
   AH_JOB_GETKEYS *jd;
   GWEN_DB_NODE *args;
+  int version;
 
   assert(u);
   j=AH_Job_new("JobGetKeys", u, 0);
@@ -81,7 +82,19 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
                       0);
   GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "open/ident/systemId",
-                       "0");
+		       "0");
+
+  version=AH_User_GetRdhType(u);
+  if (version==0)
+    version=1;
+  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "open/cryptKey/secprofile/code", "RDH");
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "open/cryptKey/secprofile/version", version);
+  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "open/signKey/secprofile/code", "RDH");
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "open/signKey/secprofile/version", version);
 
   return j;
 }
@@ -318,7 +331,9 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
   AH_JOB *j;
+  GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbKey;
+  int version;
 
   assert(u);
 
@@ -329,9 +344,10 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
   }
 
   /* set arguments */
-  dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
-                         GWEN_DB_FLAGS_DEFAULT,
-                         "cryptKey");
+  dbArgs=AH_Job_GetArguments(j);
+  dbKey=GWEN_DB_GetGroup(dbArgs,
+			 GWEN_DB_FLAGS_DEFAULT,
+			 "cryptKey");
   assert(dbKey);
   if (AH_Job_SendKeys_PrepareKey(j, dbKey, cryptKeyInfo, 0)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare cryptkey");
@@ -339,7 +355,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
     return 0;
   }
 
-  dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
+  dbKey=GWEN_DB_GetGroup(dbArgs,
                          GWEN_DB_FLAGS_DEFAULT,
                          "signKey");
   assert(dbKey);
@@ -350,7 +366,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
   }
 
   if (authKeyInfo) {
-    dbKey=GWEN_DB_GetGroup(AH_Job_GetArguments(j),
+    dbKey=GWEN_DB_GetGroup(dbArgs,
 			   GWEN_DB_FLAGS_DEFAULT,
 			   "authKey");
     assert(dbKey);
@@ -360,6 +376,23 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
       return 0;
     }
   }
+
+  version=AH_User_GetRdhType(u);
+  if (version==0)
+    version=1;
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "cryptKey/secprofile/code", "RDH");
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "cryptKey/secprofile/version", version);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "signKey/secprofile/code", "RDH");
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "signKey/secprofile/version", version);
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "authKey/secprofile/code", "RDH");
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "authKey/secprofile/version", version);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobSendKeys created");
   return j;
