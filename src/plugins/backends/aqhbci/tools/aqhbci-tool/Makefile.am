@@ -1,7 +1,7 @@
 EXTRA_DIST=README
 
 INCLUDES = -I$(top_builddir)/headers $(all_includes)
-bin_PROGRAMS=aqhbci-tool3
+bin_PROGRAMS=aqhbci-tool4
 
 idatadir=$(datadir)/doc/aqhbci/aqhbci-tool
 idata_DATA=README
@@ -11,7 +11,7 @@ DEFS += -DLOCALEDIR=\"$(localedir)\"
 
 noinst_HEADERS=globals.h
 
-aqhbci_tool3_SOURCES=main.c \
+aqhbci_tool4_SOURCES=main.c \
  mkpinlist.c \
  adduser.c \
  deluser.c \
@@ -36,7 +36,7 @@ aqhbci_tool3_SOURCES=main.c \
  listitanmodes.c \
  setitanmode.c
 
-aqhbci_tool3_LDADD = \
+aqhbci_tool4_LDADD = \
   $(aqhbci_internal_libs) \
   $(cbanking_internal_libs) \
   $(aqbanking_internal_libs) \
@@ -45,7 +45,7 @@ aqhbci_tool3_LDADD = \
 
 if IS_WINDOWS
 
-aqhbci_tool3_LDFLAGS=-mconsole
+aqhbci_tool4_LDFLAGS=-mconsole
 
 endif
 
