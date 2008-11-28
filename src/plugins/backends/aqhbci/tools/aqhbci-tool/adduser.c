@@ -263,7 +263,7 @@ int addUser(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, 0);
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, 0);
-  cid=GWEN_DB_GetIntValue(db, "context", 0, 0);
+  cid=GWEN_DB_GetIntValue(db, "context", 0, 1);
   hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
   rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, 1);
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);

@@ -81,7 +81,7 @@ int addAccount(AB_BANKING *ab,
     "ownerName",                  /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    0,                            /* short option */
+    "N"                           /* short option */
     "owner",                      /* long option */
     "Specify the owner name",     /* short description */
     "Specify the owner name"      /* long description */
