@@ -152,6 +152,7 @@ int AH_Msg_SignRdh2(AH_MSG *hmsg,
 
   /* open CryptToken if necessary */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
+    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
     rv=GWEN_Crypt_Token_Open(ct, 0, gid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -440,6 +441,7 @@ int AH_Msg_EncryptRdh2(AH_MSG *hmsg) {
 
   /* open CryptToken if necessary */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
+    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
     rv=GWEN_Crypt_Token_Open(ct, 0, gid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -698,6 +700,7 @@ int AH_Msg_DecryptRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* open CryptToken if necessary */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
+    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
     rv=GWEN_Crypt_Token_Open(ct, 0, gid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -896,6 +899,7 @@ int AH_Msg_VerifyRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
 
   /* open CryptToken if necessary */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
+    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
     rv=GWEN_Crypt_Token_Open(ct, 0, gid);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
