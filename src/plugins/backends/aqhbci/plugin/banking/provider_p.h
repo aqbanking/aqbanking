@@ -33,6 +33,7 @@ static void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p);
 static AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid);
 
 static int AH_Provider__HashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf);
+static int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf);
 
 
 /** @name Overwritten Virtual Functions

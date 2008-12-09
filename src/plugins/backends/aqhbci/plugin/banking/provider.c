@@ -319,6 +319,9 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 		 "using single-job");
       }
     }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers single jobs");
+    }
 
     if (mj) {
       GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -346,6 +349,9 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 		 "Multi-job not supported with this account, "
 		 "using single-job");
       }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers single jobs");
     }
     if (mj) {
       GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -1929,6 +1935,35 @@ int AH_Provider__HashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf) {
 
 
 
+int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf) {
+  GWEN_MDIGEST *md;
+  int rv;
+
+  md=GWEN_MDigest_Sha256_new();
+  assert(md);
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_Update(md, p, l);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+
+  memmove(buf, GWEN_MDigest_GetDigestPtr(md), GWEN_MDigest_GetDigestSize(md));
+  GWEN_MDigest_free(md);
+  return 0;
+}
+
+
+
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,
@@ -2619,7 +2654,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   int i;
   GWEN_TIME *ti;
   char numbuf[32];
-  char hashbuffer[21];
+  char hashbuffer[33];
   AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
@@ -2874,9 +2909,34 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, "\n");
   GWEN_Buffer_AppendString(lbuf, "  ");
   GWEN_Buffer_AppendString(lbuf,
-                           I18N("Hash"));
+                           I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
   rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
+			     GWEN_Buffer_GetUsedBytes(keybuf),
+			     (uint8_t*)hashbuffer);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
+    abort();
+  }
+
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer, 10, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "\n  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer+10, 10, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "\n");
+
+  GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  GWEN_Buffer_AppendString(lbuf,
+                           I18N("Hash (SHA-256)"));
+  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  rv=AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
 			     GWEN_Buffer_GetUsedBytes(keybuf),
 			     (uint8_t*)hashbuffer);
   if (rv) {
@@ -2886,7 +2946,12 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_free(keybuf);
 
   GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
+  if (GWEN_Text_ToHexBuffer(hashbuffer, 16, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "\n  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer+16, 16, lbuf, 2, ' ', 0)) {
     DBG_ERROR(0, "Error converting to hex??");
     abort();
   }
@@ -3246,6 +3311,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   AH_HBCI *h;
   const GWEN_CRYPT_TOKEN_KEYINFO *oki;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
+  int rdhType;
 
   h=AH_Provider_GetHbci(pro);
   assert(h);
@@ -3256,6 +3322,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	      "Key generation not supported with this token");
     return GWEN_ERROR_INVALID;
   }
+
+  rdhType=AH_User_GetRdhType(u);
+  if (rdhType==0)
+    rdhType=1;
 
   /* get token */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
@@ -3274,8 +3344,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,
 				GWEN_Crypt_CryptMode_None);
-  switch(AH_User_GetRdhType(u)) {
-  case 0:
+  switch(rdhType) {
   case 1:
     ksize=96;  /* 768 bits */
     break;
@@ -3346,7 +3415,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     return rv;
   }
   ki=GWEN_Crypt_Token_KeyInfo_dup(oki);
-  GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 1);
+  if (rdhType>1)
+    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, rdhType);
+  else
+    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 1);
   GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, 1);
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
@@ -3389,7 +3461,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     return rv;
   }
   ki=GWEN_Crypt_Token_KeyInfo_dup(oki);
-  GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 2);
+  if (rdhType>1)
+    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, rdhType);
+  else
+    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 2);
   GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, 1);
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
@@ -3426,7 +3501,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       return rv;
     }
     ki=GWEN_Crypt_Token_KeyInfo_dup(oki);
-    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 3);
+    if (rdhType>1)
+      GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, rdhType);
+    else
+      GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 3);
     GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, 1);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
