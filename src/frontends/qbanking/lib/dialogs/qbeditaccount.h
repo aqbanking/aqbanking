@@ -31,6 +31,8 @@ public:
                 WFlags fl=0);
   ~QBEditAccount();
 
+  bool fromGui();
+
   static bool editAccount(QBanking *kb, AB_ACCOUNT *a, QWidget* parent=0);
 
 };

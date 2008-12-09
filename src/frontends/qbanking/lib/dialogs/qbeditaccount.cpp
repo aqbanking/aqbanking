@@ -20,6 +20,9 @@
 #include "qbcfgmodule.h"
 #include "qbanking.h"
 
+// QT includes
+#include <qmessagebox.h>
+
 // Gwenhywfar includes
 #include <gwenhywfar/debug.h>
 
@@ -72,6 +75,40 @@ QBEditAccount::QBEditAccount(QBanking *kb,
 
 
 QBEditAccount::~QBEditAccount() {
+}
+
+
+
+bool QBEditAccount::fromGui() {
+  int rv;
+
+  rv=getBanking()->beginExclUseAccount(_account, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Could not lock account");
+    QMessageBox::critical(this,
+			  tr("Error"),
+			  tr("Could not lock account data. "
+			     "Maybe this account is still used by another application?"),
+			  QMessageBox::Ok,QMessageBox::NoButton);
+    return false;
+  }
+
+  if (!QBCfgTab::fromGui()) {
+    getBanking()->endExclUseAccount(_account, 1, 0); /* abandon changes */
+    return false;
+  }
+
+  rv=getBanking()->endExclUseAccount(_account, 0, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Could not unlock account");
+    QMessageBox::critical(this,
+			  tr("Internal Error"),
+			  tr("Could not unlock account data."),
+			  QMessageBox::Ok,QMessageBox::NoButton);
+    return false;
+  }
+
+  return true;
 }
 
 

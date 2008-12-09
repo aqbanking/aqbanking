@@ -220,7 +220,7 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   ul=_realPage->userList2->getSortedUsersList2();
   if (ul) {
     AB_Account_SetSelectedUsers(a, ul);
-    if (AB_Account_GetFirstUser(a)==0)
+    //if (AB_Account_GetFirstUser(a)==0)
       AB_Account_SetUsers(a, ul);
     AB_User_List2_free(ul);
   }
