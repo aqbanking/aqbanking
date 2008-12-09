@@ -55,7 +55,7 @@ int AB_JobSepaTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
  * transaction.
  */
 AQBANKING_API 
-const AB_TRANSACTION *AB_JobSepaTransfer_GetTransaction(const AB_JOB *j);
+AB_TRANSACTION *AB_JobSepaTransfer_GetTransaction(const AB_JOB *j);
 /*@}*/
 
 

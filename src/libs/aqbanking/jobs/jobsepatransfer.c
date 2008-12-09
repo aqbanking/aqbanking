@@ -49,7 +49,7 @@ int AB_JobSepaTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
 
 
 
-const AB_TRANSACTION *AB_JobSepaTransfer_GetTransaction(const AB_JOB *j){
+AB_TRANSACTION *AB_JobSepaTransfer_GetTransaction(const AB_JOB *j){
   return AB_JobTransferBase_GetTransaction(j);
 }
 
