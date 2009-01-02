@@ -2104,7 +2104,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 		      uint32_t guiid) {
   int rv;
   uint32_t pid=0;
-  AB_USER_LIST2 *lockedUsers;
+  AB_USER_LIST2 *lockedUsers = NULL;
 
   assert(ob);
 
