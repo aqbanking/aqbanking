@@ -58,8 +58,6 @@ GWEN_DB_NODE *AB_Job_GetProviderData(AB_JOB *j, AB_PROVIDER *pro);
 
 AQBANKING_API
 void AB_Job_SetResultText(AB_JOB *j, const char *s);
-AQBANKING_API
-void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 
 AQBANKING_API
 void AB_Job_SetUsedTan(AB_JOB *j, const char *s);

@@ -558,6 +558,7 @@ AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
   COPY_CHAR(description);
   iea->accountType=oi->accountType;
 #undef COPY_CHAR
+  iea->accountId=oi->accountId;
 
   iea->accStatusList=AB_AccountStatus_List_dup(oi->accStatusList);
   iea->transactions=AB_Transaction_List_dup(oi->transactions);
@@ -579,9 +580,8 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, \
                          __STRING(NAME), iea->NAME)
 #define STORE_INT(NAME) \
-  if (iea->NAME) \
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, \
-                        __STRING(NAME), iea->NAME)
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, \
+                      __STRING(NAME), iea->NAME)
   STORE_CHAR(bankCode);
   STORE_CHAR(bankName);
   STORE_CHAR(accountNumber);
@@ -592,6 +592,7 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
   STORE_CHAR(currency);
   STORE_CHAR(description);
   STORE_INT(accountType);
+  STORE_INT(accountId);
 #undef STORE_CHAR
 #undef STORE_INT
 
@@ -767,6 +768,7 @@ AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
   RESTORE_CHAR(currency);
   RESTORE_CHAR(description);
   RESTORE_INT(accountType, AB_AccountType_Bank);
+  RESTORE_INT(accountId, 0);
 #undef RESTORE_CHAR
 #undef RESTORE_INT
 
@@ -928,6 +930,14 @@ AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
 }
 
 
+
+int AB_ImExporterAccountInfo_GetTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return AB_Transaction_List_GetCount(iea->transactions);
+}
+
+
+
 void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                                AB_TRANSACTION *t){
   assert(iea);
@@ -966,6 +976,13 @@ AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea){
   }
   iea->nextStandingOrder=0;
   return 0;
+}
+
+
+
+int AB_ImExporterAccountInfo_GetStandingOrderCount(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return AB_Transaction_List_GetCount(iea->standingOrders);
 }
 
 
@@ -1012,6 +1029,13 @@ AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
+int AB_ImExporterAccountInfo_GetDatedTransferCount(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return AB_Transaction_List_GetCount(iea->datedTransfers);
+}
+
+
+
 void AB_ImExporterAccountInfo_AddNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                                AB_TRANSACTION *t){
   assert(iea);
@@ -1054,6 +1078,13 @@ AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea)
 
 
 
+int AB_ImExporterAccountInfo_GetNotedTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return AB_Transaction_List_GetCount(iea->notedTransactions);
+}
+
+
+
 void AB_ImExporterAccountInfo_AddTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                              AB_TRANSACTION *t){
   assert(iea);
@@ -1092,6 +1123,13 @@ AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea){
   }
   iea->nextTransfer=0;
   return 0;
+}
+
+
+
+int AB_ImExporterAccountInfo_GetTransferCount(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return AB_Transaction_List_GetCount(iea->transfers);
 }
 
 
@@ -1269,6 +1307,20 @@ void AB_ImExporterAccountInfo_SetDescription(AB_IMEXPORTER_ACCOUNTINFO *iea,
   free(iea->description);
   if (s) iea->description=strdup(s);
   else iea->description=0;
+}
+
+
+
+uint32_t AB_ImExporterAccountInfo_GetAccountId(const AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  return iea->accountId;
+}
+
+
+
+void AB_ImExporterAccountInfo_SetAccountId(AB_IMEXPORTER_ACCOUNTINFO *iea, uint32_t id) {
+  assert(iea);
+  iea->accountId=id;
 }
 
 
@@ -1606,6 +1658,13 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
     AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
   }
   return iea;
+}
+
+
+
+int AB_ImExporterContext_GetAccountInfoCount(const AB_IMEXPORTER_CONTEXT *iec) {
+  assert(iec);
+  return AB_ImExporterAccountInfo_List_GetCount(iec->accountInfoList);
 }
 
 

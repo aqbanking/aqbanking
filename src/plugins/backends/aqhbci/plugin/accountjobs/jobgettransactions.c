@@ -191,7 +191,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
         if (noted)
 	  AB_ImExporterAccountInfo_AddNotedTransaction(ai, t);
 	else
-        AB_ImExporterAccountInfo_AddTransaction(ai, t);
+          AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
 
       if (GWEN_ERROR_USER_ABORTED==
@@ -323,6 +323,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
                                          AB_Account_GetBankCode(a),
                                          AB_Account_GetAccountNumber(a));
   assert(ai);
+  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
   /* read booked transactions */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {

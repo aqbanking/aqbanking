@@ -362,16 +362,22 @@ AB_ACCOUNT *AB_Job_GetAccount(const AB_JOB *j){
 
 
 
-AB_JOB *AB_Job__freeAll_cb(AB_JOB *j, void *userData) {
+void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl){
+  AB_Job_List2_ClearAll(jl);
+  AB_Job_List2_free(jl);
+}
+
+
+
+AB_JOB *AB_Job__clearAll_cb(AB_JOB *j, void *userData) {
   AB_Job_free(j);
   return 0;
 }
 
 
-
-void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl){
-  AB_Job_List2_ForEach(jl, AB_Job__freeAll_cb, 0);
-  AB_Job_List2_free(jl);
+void AB_Job_List2_ClearAll(AB_JOB_LIST2 *jl){
+  AB_Job_List2_ForEach(jl, AB_Job__clearAll_cb, 0);
+  AB_Job_List2_Clear(jl);
 }
 
 

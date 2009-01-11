@@ -246,7 +246,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
   /* handle pin */
   memset(pin, 0, sizeof(pin));
-  rv=AH_User_InputPin(su, pin, 4, sizeof(pin), 0);
+  rv=AH_User_InputPin(su, pin, 4, sizeof(pin), 0, gid);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error getting pin from medium (%d)", rv);
@@ -274,7 +274,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
       memset(tan, 0, sizeof(tan));
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Asking for TAN");
-      rv=AH_User_InputTan(su, tan, 4, sizeof(tan));
+      rv=AH_User_InputTan(su, tan, 4, sizeof(tan), gid);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
 	GWEN_DB_Group_free(cfg);

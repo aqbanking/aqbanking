@@ -72,6 +72,7 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   char *currency;
   char *description;
   AB_ACCOUNT_TYPE accountType;
+  uint32_t accountId;
 
   AB_TRANSACTION_LIST *transactions;
   AB_TRANSACTION *nextTransaction;

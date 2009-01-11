@@ -735,11 +735,10 @@ AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
 
   assert(mjl);
 
-  /* FIXME: This used to be DBG_ERROR, but isn't DBG_NOTICE sufficient? */
-  DBG_WARN(AQHBCI_LOGDOMAIN, "Looking for id %08x", jid);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for id %08x", jid);
   mj=AH_Job_List_First(mjl);
   while(mj) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Comparing %08x", AH_Job_GetId(mj));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing %08x", AH_Job_GetId(mj));
     if (AH_Job_GetId(mj)==jid)
       break;
     mj=AH_Job_List_Next(mj);
@@ -774,7 +773,11 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
     rv=GWEN_ERROR_GENERIC;
   }
 
+  /* fill gaps */
+  AB_Banking_FillGapsInImExporterContext(AB_Provider_GetBanking(pro), ctx);
+
   mjl=AH_Outbox_GetFinishedJobs(hp->outbox, guiid);
+  assert(mjl);
   /* copy job results to Banking-job, set status etc */
   jit=AB_Job_List2_First(hp->bankingJobs);
   if (jit) {

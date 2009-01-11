@@ -107,10 +107,14 @@ typedef struct AB_JOB AB_JOB;
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_JOB, AB_Job, AQBANKING_API)
 
-/** This function frees all jobs contained in the given list. */
+/** This function frees all jobs contained in the given list and the list itself. */
 AQBANKING_API
 void AB_Job_List2_FreeAll(AB_JOB_LIST2 *jl);
 
+/** This function frees all jobs contained in the given list but does not destroy
+ * the list itself */
+AQBANKING_API
+void AB_Job_List2_ClearAll(AB_JOB_LIST2 *jl);
 
 /** The status of a job. */
 typedef enum {
@@ -257,6 +261,10 @@ int AB_Job_CheckAvailability(AB_JOB *j, uint32_t guiid);
  */
 AQBANKING_API
 AB_JOB_STATUS AB_Job_GetStatus(const AB_JOB *j);
+
+
+AQBANKING_API
+void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 
 /**
  * Returns the time when the status of this job changed last.

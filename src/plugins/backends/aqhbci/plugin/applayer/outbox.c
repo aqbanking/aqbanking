@@ -266,6 +266,7 @@ void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox){
 
   assert(cbox);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Finishing customer box");
   while((jq=AH_JobQueue_List_First(cbox->finishedQueues))) {
     AH_JOB_LIST *jl;
     AH_JOB *j;
@@ -296,6 +297,18 @@ void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox){
     } /* while */
     AH_JobQueue_free(jq);
   } /* while */
+
+  if (AH_Job_List_GetCount(cbox->todoJobs)) {
+    AH_JOB *j;
+
+    while((j=AH_Job_List_First(cbox->todoJobs))) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Moving job \"%s\" from todo queue to finished jobs",
+               AH_Job_GetName(j));
+      AH_Job_List_Del(j);
+      AH_Job_List_Add(j, cbox->finishedJobs);
+    } /* while */
+  }
+
 
   /* check for results for pending jobs */
   AH_Outbox__CBox_CheckPending(cbox);
@@ -1871,6 +1884,7 @@ int AH_Outbox_SendAndRecv(AH_OUTBOX *ob, int timeout, uint32_t guiid){
 
 AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob, uint32_t guiid){
   assert(ob);
+  assert(ob->usage);
   AH_Outbox__FinishOutbox(ob, guiid);
   return ob->finishedJobs;
 }

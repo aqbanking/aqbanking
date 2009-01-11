@@ -274,6 +274,9 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
                                     const char *bankCode,
                                     const char *accountNumber);
 
+AQBANKING_API
+int AB_ImExporterContext_GetAccountInfoCount(const AB_IMEXPORTER_CONTEXT *iec);
+
 /**
  * This is just a convenience function. It takes the bank code and
  * account number from the account, and then calls
@@ -522,7 +525,17 @@ const char*
 AB_ImExporterAccountInfo_GetDescription(const AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 void AB_ImExporterAccountInfo_SetDescription(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                       const char *s);
+					     const char *s);
+
+/**
+ * This field is not used by AqBanking but might be used by applications.
+ */
+AQBANKING_API 
+uint32_t AB_ImExporterAccountInfo_GetAccountId(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+void AB_ImExporterAccountInfo_SetAccountId(AB_IMEXPORTER_ACCOUNTINFO *iea, uint32_t id);
+
 /*@}*/
 
 
@@ -596,6 +609,10 @@ const AB_TRANSACTION*
 AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
 					     AB_TRANSACTION_CONSTLIST2_FOREACH func,
 					     void* user_data);
+
+AQBANKING_API
+int AB_ImExporterAccountInfo_GetTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 
@@ -682,6 +699,10 @@ AB_ImExporterAccountInfo_GetFirstStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+int AB_ImExporterAccountInfo_GetStandingOrderCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 
@@ -745,6 +766,10 @@ AB_ImExporterAccountInfo_GetFirstTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+int AB_ImExporterAccountInfo_GetTransferCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 
@@ -801,6 +826,10 @@ AB_ImExporterAccountInfo_GetFirstDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
 AQBANKING_API 
 AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextDatedTransfer(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+int AB_ImExporterAccountInfo_GetDatedTransferCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 
@@ -856,6 +885,10 @@ AB_ImExporterAccountInfo_GetFirstNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea
 AQBANKING_API 
 AB_TRANSACTION*
 AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+AQBANKING_API 
+int AB_ImExporterAccountInfo_GetNotedTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 
