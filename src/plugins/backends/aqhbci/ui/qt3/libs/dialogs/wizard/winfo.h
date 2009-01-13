@@ -51,6 +51,8 @@ private:
 
   uint32_t _userFlags;
 
+  int _rdhVersion;
+
 public:
   WizardInfo(AB_PROVIDER *pro);
   ~WizardInfo();
@@ -111,6 +113,9 @@ public:
   void setUserFlags(uint32_t fl);
   void addUserFlags(uint32_t fl);
   void subUserFlags(uint32_t fl);
+
+  int getRdhVersion() const { return _rdhVersion;};
+  void setRdhVersion(int v);
 
   void releaseData();
 

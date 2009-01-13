@@ -35,8 +35,8 @@ WizardInfo::WizardInfo(AB_PROVIDER *pro)
 ,_cryptMode(AH_CryptMode_None)
 ,_port(3000)
 ,_flags(0)
-,_userFlags(0) {
-
+,_userFlags(0)
+,_rdhVersion(1) {
 
 }
 
@@ -282,6 +282,12 @@ void WizardInfo::addUserFlags(uint32_t fl) {
 
 void WizardInfo::subUserFlags(uint32_t fl) {
   _userFlags&=~fl;
+}
+
+
+
+void WizardInfo::setRdhVersion(int v) {
+  _rdhVersion=v;
 }
 
 

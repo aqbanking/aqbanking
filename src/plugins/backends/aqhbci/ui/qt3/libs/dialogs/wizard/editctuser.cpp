@@ -169,6 +169,14 @@ void EditCtUser::init() {
       }
     }
 
+    if (_wInfo->getCryptMode()==AH_CryptMode_Rdh) {
+      i=_wInfo->getRdhVersion();
+      if (i>0)
+        rdhVersionCombo->setCurrentItem(i-1);
+    }
+    else
+      rdhVersionCombo->setEnabled(false);
+
     if (!fromContextCalled) {
       DBG_ERROR(0, "Reading context now");
       _fromContext(0, false);
@@ -244,6 +252,7 @@ bool EditCtUser::apply(){
   std::string peerId;
   int hbciVersion;
   uint32_t userFlags;
+  int rdhMode;
 
   /* do user data page */
 
@@ -254,6 +263,8 @@ bool EditCtUser::apply(){
   case 1: 
   default: hbciVersion=210; break;
   }
+
+  rdhMode=rdhVersionCombo->currentItem()+1;
 
   /* read ids */
   bankId=QBanking::QStringToUtf8String(bankCodeEdit->text());
@@ -500,6 +511,8 @@ bool EditCtUser::apply(){
     AH_User_SetHbciVersion(u, hbciVersion);
 
     AH_User_AddFlags(u, userFlags);
+
+    AH_User_SetRdhType(u, rdhMode);
 
     if (!(httpVersion.empty())) {
       int vmajor, vminor;
