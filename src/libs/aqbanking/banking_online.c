@@ -817,6 +817,66 @@ void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT 
 
 
 
+void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
+  const GWEN_STRINGLIST *sl;
+
+  sl=AB_Transaction_GetPurpose(t);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (-1!=GWEN_Text_ComparePattern(s, "KTO* BLZ*", 0)) {
+	char *cpy;
+	char *p;
+	char *kto;
+	char *blz;
+
+	cpy=strdup(s);
+	p=cpy;
+
+	/* skip "KTO", position to account number */
+	while(*p && !isdigit(*p))
+	  p++;
+	kto=p;
+
+	/* skip account number */
+	while(*p && isdigit(*p))
+	  p++;
+	/* terminate account number */
+	*(p++)=0;
+
+	/* skip "BLZ", position to account number */
+	while(*p && !isdigit(*p))
+	  p++;
+	blz=p;
+
+	/* skip bank code */
+	while(*p && isdigit(*p))
+	  p++;
+	/* terminate bank code */
+	*p=0;
+
+	if (*kto && *blz) {
+	  AB_Transaction_SetRemoteAccountNumber(t, kto);
+	  AB_Transaction_SetRemoteBankCode(t, blz);
+	  free(cpy);
+	  break;
+	}
+	else
+	  free(cpy);
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+}
+
+
+
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   int notFounds=0;
@@ -840,6 +900,9 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
       t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
       while(t) {
 	AB_Banking__fillTransactionFromAccount(t, a);
+	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
+	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
+	  AB_Banking__fillTransactionRemoteInfo(t);
 	t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
       }
 
