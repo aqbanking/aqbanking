@@ -67,15 +67,9 @@ static
 int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 					 AB_IMEXPORTER_CONTEXT *ctx,
 					 GWEN_IO_LAYER *io,
-					 GWEN_DB_NODE *params,
+                                         GWEN_DB_NODE *params,
+                                         int noted,
 					 uint32_t guiid);
-
-static
-int AH_ImExporterCSV__ExportNotedTransactions(AB_IMEXPORTER *ie,
-					      AB_IMEXPORTER_CONTEXT *ctx,
-					      GWEN_IO_LAYER *io,
-					      GWEN_DB_NODE *params,
-					      uint32_t guiid);
 
 
 #endif /* AQHBCI_IMEX_CSV_P_H */
