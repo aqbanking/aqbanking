@@ -25,10 +25,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=7
+AQBANKING_VERSION_PATCHLEVEL=8
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="rc1"
+AQBANKING_VERSION_TAG="rc2"
 
 
 
@@ -746,39 +746,6 @@ fi
 AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 AC_SUBST(ktoblzcheck_libs)
 AC_SUBST(ktoblzcheck_includes)
-
-
-###-------------------------------------------------------------------------
-#
-# Python
-#
-
-AC_ARG_ENABLE(python,
-  [  --enable-python         install python bindings (default=no)],
-  [ case "${enableval}" in
-    yes) enable_python="yes";;
-    no)  enable_python="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-python);;
-    esac
-  ],
-  enable_python="no")
-
-# Check for python interpreter unless it is explicitly disabled
-if test "x$enable_python" = "xyes"; then
-  # Make sure at least version 2.3 is available (otherwise ctypes
-  # won't work)
-  AM_PATH_PYTHON( [2.3], [enable_python="yes"], [enable_python="no"] )
-fi
-
-AC_MSG_CHECKING(whether to install python-bindings)
-if test "x$enable_python" = "xyes"; then
-  AC_MSG_RESULT(yes)
-  # Check for python ctypes module, otherwise terminate
-  #AC_PYTHON_MODULE( [ctypes], [required] )
-else
-  AC_MSG_RESULT(no)
-fi
-AM_CONDITIONAL(PYTHON_USE, [test "$enable_python" = "yes"])
 
 
 
@@ -1726,8 +1693,6 @@ AC_CONFIG_FILES([
   src/test/Makefile
   tutorials/Makefile
   po/Makefile
-  bindings/python/Makefile
-  bindings/Makefile
   Doxyfile
   Makefile
   aqbanking-config.in

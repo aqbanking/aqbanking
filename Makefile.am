@@ -1,5 +1,5 @@
-SUBDIRS=admin doc m4 src bindings po @TUTORIALS@
-DIST_SUBDIRS=admin doc m4 src bindings po tutorials
+SUBDIRS=admin doc m4 src po @TUTORIALS@
+DIST_SUBDIRS=admin doc m4 src po tutorials
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
@@ -255,12 +255,6 @@ symlinks: mksymlinks.sh
 sl-headers: mksymlinks.sh
 	$(MAKE) -C src built_sources
 	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
-
-# Call aqbanking's testcases plus the unittests from the
-# moneysplash module
-py-check:
-	cd ../moneysplash/unittests && \
-	  PYTHONPATH=$(pyexecdir) $(PYTHON) test_1.py
 
 # Call this to have Qt's uic files and glade files cleaned up from
 # bad elements
