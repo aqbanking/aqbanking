@@ -89,11 +89,6 @@ QBANKING_SO_REVISION=0
 QBANKING_SO_AGE=0
 QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
 
-FBANKING_SO_CURRENT=2
-FBANKING_SO_REVISION=0
-FBANKING_SO_AGE=0
-FBANKING_SO_EFFECTIVE="`echo \$(($FBANKING_SO_CURRENT-$FBANKING_SO_AGE))`"
-
 
 
 ###-------------------------------------------------------------------------
@@ -140,14 +135,6 @@ QBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 QBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 QBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 QBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
-
-FBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-FBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-FBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-FBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-FBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-FBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-FBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 
 
@@ -388,40 +375,6 @@ AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
                    [effective SO version])
 
 
-#
-# same for FBanking
-#
-
-AC_SUBST(FBANKING_VERSION_MAJOR)
-AC_SUBST(FBANKING_VERSION_MINOR)
-AC_SUBST(FBANKING_VERSION_PATCHLEVEL)
-AC_SUBST(FBANKING_VERSION_BUILD)
-AC_SUBST(FBANKING_VERSION_TAG)
-AC_SUBST(FBANKING_VERSION_FULL_STRING)
-AC_SUBST(FBANKING_VERSION_STRING)
-AC_SUBST(FBANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_MAJOR,$FBANKING_VERSION_MAJOR, 
-                   [major version])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_MINOR,$FBANKING_VERSION_MINOR, 
-                   [minor version])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_PATCHLEVEL,$FBANKING_VERSION_PATCHLEVEL, 
-                   [patchlevel])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_BUILD,$FBANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_STRING,"$FBANKING_VERSION_STRING", 
-                   [version string])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_FULL_STRING,"$FBANKING_VERSION_FULL_STRING",
-                   [full version string])
-AC_DEFINE_UNQUOTED(FBANKING_VERSION_TAG,$FBANKING_VERSION_TAG, [tag])
-
-AC_SUBST(FBANKING_SO_CURRENT)
-AC_SUBST(FBANKING_SO_REVISION)
-AC_SUBST(FBANKING_SO_AGE)
-AC_SUBST(FBANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(FBANKING_SO_EFFECTIVE_STR, "$FBANKING_SO_EFFECTIVE",
-                   [effective SO version])
-
-
 ###-------------------------------------------------------------------------
 #
 # determine operating system
@@ -531,10 +484,6 @@ AC_ARG_WITH(frontends,
 # the correct ordering here:
 case "$aqbanking_frontends" in *qbanking*)
   tmp_frontends="${tmp_frontends} qbanking"
-  ;;
-esac
-case "$aqbanking_frontends" in *fbanking*)
-  tmp_frontends="${tmp_frontends} fbanking"
   ;;
 esac
 aqbanking_frontends="${tmp_frontends}"
@@ -890,25 +839,6 @@ dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 AM_CONDITIONAL(WITH_QBANKING, [test "$with_qbanking" = "yes"])
-
-
-###-------------------------------------------------------------------------
-#
-# Check for fox toolkit
-#
-
-case "$aqbanking_frontends" in *fbanking*)
-  pkg_modules="fox >= 1.6.0"
-  PKG_CHECK_MODULES(FOX, [$pkg_modules], [have_fox="yes"], [have_fox="no"])
-  if test "$have_fox" = "yes"; then
-    AC_DEFINE(HAVE_FOX, 1, [if Fox Toolkit is available])
-    fox_includes="$FOX_CFLAGS"
-    fox_libs="$FOX_LIBS"
-  fi
-  ;;
-esac
-AC_SUBST(fox_includes)
-AC_SUBST(fox_libs)
 
 
 
@@ -1371,15 +1301,6 @@ for frontend in $aqbanking_frontends; do
       qt3_ui="qt3"
       with_qbanking="yes"
       ;;
-    fbanking)
-      if test "x$have_fox" != "xyes"; then
-        AC_MSG_NOTICE([
-*** Fox Toolkit is required for FOX-frontend "fbanking". 
-*** Specify --with-frontends="qbanking" to build 
-*** aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      ;;
   esac
 done
 
@@ -1498,34 +1419,6 @@ AC_SUBST(qbanking_libs)
 AC_SUBST(qbanking_data)
 AC_SUBST(qbanking_plugindir)
 AC_SUBST(qbanking_helpdir)
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for frontend fbanking
-#
-
-# Common settings
-fbanking_internal_libs="${abs_top_builddir}/src/frontends/fbanking/libfbanking.la"
-fbanking_includes="-I\${includedir}"
-fbanking_data="\${datadir}/aqbanking/frontends/fbanking"
-
-case "$OS_TYPE" in
-    posix)
-        fbanking_libs="-L\${libdir} -lfbanking"
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_FBANKING_DLL,1, [Define if DLL is built])
-        fbanking_libs="-L\${libdir} -lfbanking"
-	all_includes="$all_includes -mms-bitfields"
-    	;;
-esac
-
-AC_SUBST(fbanking_includes)
-AC_SUBST(fbanking_internal_libs)
-AC_SUBST(fbanking_libs)
-AC_SUBST(fbanking_data)
 
 
 
@@ -1685,13 +1578,6 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking++/Makefile
   src/frontends/Makefile
-  src/frontends/fbanking/Makefile
-  src/frontends/fbanking/lib/Makefile
-  src/frontends/fbanking/lib/fbanking.pc
-  src/frontends/fbanking/lib/ressource.rc
-  src/frontends/fbanking/lib/base-widgets/Makefile
-  src/frontends/fbanking/lib/ext-widgets/Makefile
-  src/frontends/fbanking/lib/dialogs/Makefile
   src/frontends/qbanking/Makefile
   src/frontends/qbanking/lib/Makefile
   src/frontends/qbanking/lib/dialogs/Makefile
