@@ -1,6 +1,6 @@
 
-char name="test"
-char shortDescr="test profile"
+char name="full"
+char shortDescr="full profile"
 char version="@AQBANKING_VERSION_STRING@"
 char longDescr="This profile supports the CSV format"
 int import="1"
@@ -11,16 +11,24 @@ char groupNames="transaction", "transfer", "debitnote", "line"
 char dateFormat="YYYY/MM/DD"
 int utc="0"
 
+# Valid subjects are:
+# - transactions: This exports booked transactions (default)
+# - notedTransactions: Exports noted transactions
+#
+char subject="transactions"
+
 # The following vars are used when there is an additional field within a
 # record which defines the sign of the amount.
 # Some banks use "C" (positive) and "D" (negative) or "Af" (negative) and
 # "Bij" (positive)
-int usePosNegField="1"
+int usePosNegField="0"
 char posNegFieldName="posNeg"
-char positiveValues="Bij", "C"
-char negativeValues="Af", "D"
+#char positiveValues="Bij", "C"
+#char negativeValues="Af", "D"
 int defaultIsPositive="1"
 
+# default is "float", other values: "rational"
+char valueFormat="rational"
 
 params {
   # if 1 then values are quoted
@@ -75,7 +83,9 @@ params {
     30="category[5]"
     31="category[6]"
     32="category[7]"
-    33="posNeg"
+    33="groupId"
+    34="status"
+    35="type"
   } # columns
 
 } # params

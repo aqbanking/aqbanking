@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=8
-AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_PATCHLEVEL=2
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -63,7 +63,7 @@ esac
 
 AQBANKING_SO_CURRENT=28
 AQBANKING_SO_AGE=8
-AQBANKING_SO_REVISION=1
+AQBANKING_SO_REVISION=2
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -1766,6 +1766,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/lbbberlin.conf
   src/plugins/imexporters/csv/profiles/bankaustria.conf
   src/plugins/imexporters/csv/profiles/psk.conf
+  src/plugins/imexporters/csv/profiles/full.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
