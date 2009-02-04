@@ -793,6 +793,16 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
   GWEN_DB_NODE *dbTransaction=NULL;
   GWEN_DB_NODE *dbDate=NULL;
   uint32_t progressId;
+  const char *acceptTag20="*";
+  const char *rejectTag20=NULL;
+  int ignoreCurrentReport=0;
+
+  acceptTag20=GWEN_DB_GetCharValue(cfg, "acceptTag20", 0, NULL);
+  if (acceptTag20 && *acceptTag20==0)
+    acceptTag20=NULL;
+  rejectTag20=GWEN_DB_GetCharValue(cfg, "rejectTag20", 0, NULL);
+  if (rejectTag20 && *rejectTag20==0)
+    rejectTag20=NULL;
 
   dbTemplate=GWEN_DB_Group_new("template");
 
@@ -812,116 +822,149 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
     id=AHB_SWIFT_Tag_GetId(tg);
     assert(id);
 
-    if (strcasecmp(id, "25")==0) { /* LocalAccount */
-      if (AHB_SWIFT940_Parse_25(tg, flags, dbTemplate, cfg)) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-        GWEN_DB_Group_free(dbTemplate);
-	GWEN_Gui_ProgressEnd(progressId);
-        return -1;
+    if (strcasecmp(id, "20")==0) {
+      if (acceptTag20 || rejectTag20) {
+	const char *p;
+
+	p=AHB_SWIFT_Tag_GetData(tg);
+	assert(p);
+	if (rejectTag20) {
+	  if (-1!=GWEN_Text_ComparePattern(p, rejectTag20, 0)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring report [%s]", p);
+	    ignoreCurrentReport=1;
+	  }
+	  else {
+	    ignoreCurrentReport=0;
+	  }
+	}
+	else if (acceptTag20) {
+	  if (-1==GWEN_Text_ComparePattern(p, acceptTag20, 0)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN,
+		     "Ignoring report [%s] (not matching [%s])",
+		     p, acceptTag20);
+	    ignoreCurrentReport=1;
+	  }
+	  else {
+	    ignoreCurrentReport=0;
+	  }
+	}
+
       }
     }
-    else if (strcasecmp(id, "60F")==0) { /* StartSaldo */
-      GWEN_DB_NODE *dbSaldo;
-      const char *curr;
-
-      /* start a new day */
-      dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
-
-      dbTransaction=0;
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Starting new day");
-      dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
-                               "StartSaldo");
-      GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
-      if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-        GWEN_DB_Group_free(dbTemplate);
-	GWEN_Gui_ProgressEnd(progressId);
-        return -1;
-      }
-      else {
-	dbDate=GWEN_DB_GetGroup(dbSaldo, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				"date");
-      }
-
-      curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
-      if (curr) {
-	AHB_SWIFT__SetCharValue(dbTemplate, flags,
-				"value/currency", curr);
-      }
-    }
-    else if (strcasecmp(id, "62F")==0) { /* EndSaldo */
-      GWEN_DB_NODE *dbSaldo;
-
-      /* end current day */
-      dbTransaction=0;
-      if (!dbDay) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
-        dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
-      }
-      dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
-                               "EndSaldo");
-      GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
-      if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-        GWEN_DB_Group_free(dbTemplate);
-	GWEN_Gui_ProgressEnd(progressId);
-        return -1;
-      }
-      dbDay=0;
-    }
-    else if (strcasecmp(id, "61")==0) {
-      if (!dbDay) {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Your bank does not send an opening saldo");
-        dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
-      }
-
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Creating new transaction");
-      dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
-                                     "transaction");
-      GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
-      if (dbDate) {
-	GWEN_DB_NODE *dbT;
-
-	/* dbDate is set upon parsing of tag 60F, use it as a default
-	 * if possible */
-	dbT=GWEN_DB_GetGroup(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-			     "date");
-        assert(dbT);
-	GWEN_DB_AddGroupChildren(dbT, dbDate);
-      }
-      if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-        GWEN_DB_Group_free(dbTemplate);
-	GWEN_Gui_ProgressEnd(progressId);
-        return -1;
-      }
-    }
-    else if (strcasecmp(id, "86")==0) {
-      if (!dbTransaction) {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Bad sequence of tags (86 before 61), ignoring");
-      }
-      else {
-        if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
-          DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-          GWEN_DB_Group_free(dbTemplate);
-	  GWEN_Gui_ProgressEnd(progressId);
-          return -1;
-        }
-      }
-    }
-    else if (strcasecmp(id, "NS")==0) {
-      if (!dbTransaction) {
-	DBG_DEBUG(AQBANKING_LOGDOMAIN,
-		  "Ignoring NS tags outside transactions");
-      }
-      else {
-	if (AHB_SWIFT940_Parse_NS(tg, flags, dbTransaction, cfg)) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
-	  GWEN_DB_Group_free(dbTemplate);
-	  GWEN_Gui_ProgressEnd(progressId);
-	  return -1;
+    else {
+      if (!ignoreCurrentReport) {
+	if (strcasecmp(id, "25")==0) { /* LocalAccount */
+	  if (AHB_SWIFT940_Parse_25(tg, flags, dbTemplate, cfg)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	    GWEN_DB_Group_free(dbTemplate);
+	    GWEN_Gui_ProgressEnd(progressId);
+	    return -1;
+	  }
+	}
+	else if (strcasecmp(id, "60F")==0) { /* StartSaldo */
+	  GWEN_DB_NODE *dbSaldo;
+	  const char *curr;
+    
+	  /* start a new day */
+	  dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
+    
+	  dbTransaction=0;
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Starting new day");
+	  dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
+				   "StartSaldo");
+	  GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
+	  if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	    GWEN_DB_Group_free(dbTemplate);
+	    GWEN_Gui_ProgressEnd(progressId);
+	    return -1;
+	  }
+	  else {
+	    dbDate=GWEN_DB_GetGroup(dbSaldo, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+				    "date");
+	  }
+    
+	  curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
+	  if (curr) {
+	    AHB_SWIFT__SetCharValue(dbTemplate, flags,
+				    "value/currency", curr);
+	  }
+	}
+	else if (strcasecmp(id, "62F")==0) { /* EndSaldo */
+	  GWEN_DB_NODE *dbSaldo;
+    
+	  /* end current day */
+	  dbTransaction=0;
+	  if (!dbDay) {
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
+	    dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
+	  }
+	  dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
+				   "EndSaldo");
+	  GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
+	  if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	    GWEN_DB_Group_free(dbTemplate);
+	    GWEN_Gui_ProgressEnd(progressId);
+	    return -1;
+	  }
+	  dbDay=0;
+	}
+	else if (strcasecmp(id, "61")==0) {
+	  if (!dbDay) {
+	    DBG_WARN(AQBANKING_LOGDOMAIN,
+		     "Your bank does not send an opening saldo");
+	    dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
+	  }
+    
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Creating new transaction");
+	  dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
+					 "transaction");
+	  GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
+	  if (dbDate) {
+	    GWEN_DB_NODE *dbT;
+    
+	    /* dbDate is set upon parsing of tag 60F, use it as a default
+	     * if possible */
+	    dbT=GWEN_DB_GetGroup(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+				 "date");
+	    assert(dbT);
+	    GWEN_DB_AddGroupChildren(dbT, dbDate);
+	  }
+	  if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	    GWEN_DB_Group_free(dbTemplate);
+	    GWEN_Gui_ProgressEnd(progressId);
+	    return -1;
+	  }
+	}
+	else if (strcasecmp(id, "86")==0) {
+	  if (!dbTransaction) {
+	    DBG_WARN(AQBANKING_LOGDOMAIN,
+		     "Bad sequence of tags (86 before 61), ignoring");
+	  }
+	  else {
+	    if (AHB_SWIFT940_Parse_86(tg, flags, dbTransaction, cfg)) {
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	      GWEN_DB_Group_free(dbTemplate);
+	      GWEN_Gui_ProgressEnd(progressId);
+	      return -1;
+	    }
+	  }
+	}
+	else if (strcasecmp(id, "NS")==0) {
+	  if (!dbTransaction) {
+	    DBG_DEBUG(AQBANKING_LOGDOMAIN,
+		      "Ignoring NS tags outside transactions");
+	  }
+	  else {
+	    if (AHB_SWIFT940_Parse_NS(tg, flags, dbTransaction, cfg)) {
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
+	      GWEN_DB_Group_free(dbTemplate);
+	      GWEN_Gui_ProgressEnd(progressId);
+	      return -1;
+	    }
+	  }
 	}
       }
     }
