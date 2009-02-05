@@ -3135,7 +3135,12 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
     }
   }
 
+#if 0
   modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+#else
+  /* use the real modulus length */
+  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+#endif
 
   keybuf=GWEN_Buffer_new(0, 257, 0, 1);
 
