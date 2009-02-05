@@ -103,17 +103,17 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
 					"bankdata.txt",
 					fbuf);
       if (rv) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "File [%s] not found",
-		  "libktoblzcheck1"
-		  DIRSEP
-		  "bankdata.txt");
+	DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "File [%s] not found, falling back to default",
+                 "libktoblzcheck1"
+                 DIRSEP
+                 "bankdata.txt");
       }
     }
     GWEN_StringList_free(paths);
     if (rv) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Bank data for KtoBlzCheck not found (%d)", rv);
+      DBG_WARN(AQBANKING_LOGDOMAIN,
+               "Bank data for KtoBlzCheck not found (%d), falling back to default", rv);
     }
     else {
       bde->checker=AccountNumberCheck_new_file(GWEN_Buffer_GetStart(fbuf));
