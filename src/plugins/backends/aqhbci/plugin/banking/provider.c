@@ -1970,53 +1970,70 @@ int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf) {
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,
+                                int variant,
                                 GWEN_BUFFER *lbuf,
 				int nounmount,
 				uint32_t guiid) {
-  switch(AH_User_GetRdhType(u)) {
-  case 0:
-  case 1:
-    return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount, guiid);
-  case 2:
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-  case 7:
-  case 8:
-  case 9:
-  case 10:
-    return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount, guiid);
+  if (variant==0) {
+    switch(AH_User_GetRdhType(u)) {
+    case 0:
+    case 1: variant=1; break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10: variant=2; break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
+      return GWEN_ERROR_INVALID;
+    }
+  }
+
+  switch(variant) {
+  case 1: return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount, guiid);
+  case 2: return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount, guiid);
   default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
   }
 }
 
 
-
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 				 AB_USER *u,
 				 int useBankKey,
+				 int variant,
 				 GWEN_BUFFER *lbuf,
 				 int nounmount,
 				 uint32_t guiid) {
-  switch(AH_User_GetRdhType(u)) {
-  case 0:
-  case 1:
-    return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount, guiid);
-  case 2:
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-  case 7:
-  case 8:
-  case 9:
-  case 10:
-    return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount, guiid);
+  if (variant==0) {
+    switch(AH_User_GetRdhType(u)) {
+    case 0:
+    case 1: variant=1; break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10: variant=2; break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
+      return GWEN_ERROR_INVALID;
+    }
+  }
+
+  switch(variant) {
+  case 1: return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount, guiid);
+  case 2: return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount, guiid);
   default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
   }
 }
@@ -2777,7 +2794,12 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
     }
   }
 
+#if 0
   modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+#else
+  /* use the real modulus length */
+  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+#endif
 
   keybuf=GWEN_Buffer_new(0, (modLen*2)+1, 0, 1);
 

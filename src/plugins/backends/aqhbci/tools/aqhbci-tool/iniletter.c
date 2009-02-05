@@ -41,6 +41,7 @@ int iniLetter(AB_BANKING *ab,
   const char *customerId;
   int bankKey;
   int html;
+  int variant;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -98,6 +99,17 @@ int iniLetter(AB_BANKING *ab,
     "HTML output" /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "variant",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                          /* short option */
+    "variant",                    /* long option */
+    "Choose the variant of the iniletter (0, 1, 2)",/* short description */
+    "Choose the variant of the iniletter (0 for auto, 1 for RDH1, 2 for RDH2 and above)"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
     "help",                       /* name */
@@ -152,6 +164,7 @@ int iniLetter(AB_BANKING *ab,
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
   bankKey=GWEN_DB_VariableExists(db, "bankKey");
   html=GWEN_DB_VariableExists(db, "html");
+  variant=GWEN_DB_GetIntValue(db, "variant", 0, 0);
 
   ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
                           "de", bankId, userId, customerId);
@@ -183,13 +196,15 @@ int iniLetter(AB_BANKING *ab,
     if (html)
       rv=AH_Provider_GetIniLetterHtml(pro,
 				      u,
-				      bankKey,
+                                      bankKey,
+                                      variant,
 				      lbuf,
 				      0, 0);
     else
       rv=AH_Provider_GetIniLetterTxt(pro,
 				     u,
-				     bankKey,
+                                     bankKey,
+                                     variant,
 				     lbuf,
 				     0, 0);
     if (rv) {

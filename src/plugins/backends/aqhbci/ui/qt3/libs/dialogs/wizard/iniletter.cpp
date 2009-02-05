@@ -118,7 +118,8 @@ void IniLetter::_createIniLetter() {
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=AH_Provider_GetIniLetterHtml(_provider, _user,
-				  _isUserKey?0:1,
+                                  _isUserKey?0:1,
+                                  0,
 				  buf,
 				  1,
 				  0);

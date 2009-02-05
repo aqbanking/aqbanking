@@ -175,11 +175,19 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 /**
  * Creates a text version of the INI letter. This function needs to mount
  * the medium so the user will be ask for the pin.
+ * @param pro provider
+ * @param u user for which the iniletter is to be created
+ * @param useBankKey if !=0 create an iniletter for the bank key
+ * @param variant use 1 for RDH1, 2 for RDH2-10 (or 0 for autoselection)
+ * @param lbuf buffer to write the iniletter to
+ * @param nounmount if !=0 the CryptToken will not be unmounted after use
+ * @param guiid GUI id in whose context the function is called (for GWEN_Gui_ProgressLog etc)
  */
 AQHBCI_API
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,
+                                int variant,
                                 GWEN_BUFFER *lbuf,
 				int nounmount,
 				uint32_t guiid);
@@ -187,11 +195,19 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 /**
  * Creates a HTML version of the INI letter. This function needs to mount
  * the medium so the user will be ask for the pin.
+ * @param pro provider
+ * @param u user for which the iniletter is to be created
+ * @param useBankKey if !=0 create an iniletter for the bank key
+ * @param variant use 1 for RDH1, 2 for RDH2-10 (or 0 for autoselection)
+ * @param lbuf buffer to write the iniletter to
+ * @param nounmount if !=0 the CryptToken will not be unmounted after use
+ * @param guiid GUI id in whose context the function is called (for GWEN_Gui_ProgressLog etc)
  */
 AQHBCI_API
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  AB_USER *u,
                                  int useBankKey,
+                                 int variant,
                                  GWEN_BUFFER *lbuf,
 				 int nounmount,
 				 uint32_t guiid);
