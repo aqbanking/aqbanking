@@ -316,7 +316,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* compute number of extension sets */
   extSets=0;
   /* add purpose */
-  for (i=1; ; i++) {
+  for (i=1; i<14; i++) { /* max 13 extsets for purpose */
     if (GWEN_DB_GetCharValue(xa, "purpose", i, 0)==0)
       break;
     if (i>14) {
@@ -327,7 +327,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   } /* for */
 
   /* add name */
-  for (i=1; ; i++) {
+  for (i=1; i<2; i++) { /* max 1 extset for local name */
     if (GWEN_DB_GetCharValue(xa, "localName", i, 0)==0)
       break;
     if (i>1) {
@@ -338,7 +338,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   } /* for */
 
   /* add other name */
-  for (i=1; ; i++) {
+  for (i=1; i<2; i++) { /* max 1 extset for remote name */
     if (GWEN_DB_GetCharValue(xa, "remoteName", i, 0)==0)
       break;
     if (i>1) {
@@ -364,18 +364,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   GWEN_Buffer_AppendByte(dst, 'C');
 
   /* field 3: acting bank code */
-  if (AHB_DTAUS__AddNum(dst, 8,
-                        GWEN_DB_GetCharValue(cfg,
-                                             "bankCode",
-                                             0, ""))) {
+  if (AHB_DTAUS__AddNum(dst, 8, GWEN_DB_GetCharValue(cfg, "bankCode", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 4: destination bank code */
-  p=GWEN_DB_GetCharValue(xa,
-                         "remoteBankCode",
-                         0, 0);
+  p=GWEN_DB_GetCharValue(xa, "remoteBankCode", 0, 0);
   if (p) {
     val=AB_Value_fromString(p);
     if (val==NULL) {
@@ -395,9 +390,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   }
 
   /* field 5: destination account id */
-  p=GWEN_DB_GetCharValue(xa,
-                         "remoteAccountNumber",
-                         0, 0);
+  p=GWEN_DB_GetCharValue(xa, "remoteAccountNumber", 0, 0);
   if (p) {
     val=AB_Value_fromString(p);
     if (val==NULL) {
@@ -420,16 +413,14 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=0; i<13; i++) GWEN_Buffer_AppendByte(dst, '0');
 
   /* field 7a: text key */
-  snprintf(buffer, sizeof(buffer), "%02d",
-           GWEN_DB_GetIntValue(xa, "textkey", 0, isDebitNote?5:51));
+  snprintf(buffer, sizeof(buffer), "%02d", GWEN_DB_GetIntValue(xa, "textkey", 0, isDebitNote?5:51));
   if (AHB_DTAUS__AddNum(dst, 2, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 7b: text key extension */
-  snprintf(buffer, sizeof(buffer), "%03d",
-           GWEN_DB_GetIntValue(xa, "textkeyext", 0, 0));
+  snprintf(buffer, sizeof(buffer), "%03d", GWEN_DB_GetIntValue(xa, "textkeyext", 0, 0));
   if (AHB_DTAUS__AddNum(dst, 3, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
@@ -440,17 +431,14 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 9: value in DEM */
   if (!isEuro) {
-    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa,
-						 "value/value",
-						 0, "0,0"));
+    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa, "value/value", 0, "0,0"));
     if (val==NULL || AB_Value_IsZero(val)) {
       AB_Value_free(val);
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DEM value:");
       return -1;
     }
     AB_Value_AddValue(sumDEM, val);
-    snprintf(buffer, sizeof(buffer), "%011.0lf",
-	     AB_Value_GetValueAsDouble(val)*100.0);
+    snprintf(buffer, sizeof(buffer), "%011.0lf", AB_Value_GetValueAsDouble(val)*100.0);
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -492,17 +480,14 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* field 12: value in EUR */
   if (isEuro) {
-    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa,
-						 "value/value",
-						 0, "0,0"));
+    val=AB_Value_fromString(GWEN_DB_GetCharValue(xa, "value/value", 0, "0,0"));
     if (val==NULL || AB_Value_IsZero(val)) {
       AB_Value_free(val);
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DUR value:");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad EUR value:");
       return -1;
     }
     AB_Value_AddValue(sumEUR, val);
-    snprintf(buffer, sizeof(buffer), "%011.0lf",
-	     AB_Value_GetValueAsDouble(val)*100.0);
+    snprintf(buffer, sizeof(buffer), "%011.0lf", AB_Value_GetValueAsDouble(val)*100.0);
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
@@ -520,10 +505,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=0; i<3; i++) GWEN_Buffer_AppendByte(dst, ' ');
 
   /* field 14a: peer name */
-  if (AHB_DTAUS__AddWord(dst, 27,
-                           GWEN_DB_GetCharValue(xa,
-                                                "remoteName",
-                                                0, ""))) {
+  if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "remoteName", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
@@ -532,19 +514,13 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   for (i=0; i<8; i++) GWEN_Buffer_AppendByte(dst, ' ');
 
   /* field 15: name */
-  if (AHB_DTAUS__AddWord(dst, 27,
-                         GWEN_DB_GetCharValue(xa,
-                                              "localname",
-                                              0, ""))) {
+  if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "localname", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
 
   /* field 16: purpose */
-  if (AHB_DTAUS__AddWord(dst, 27,
-                         GWEN_DB_GetCharValue(xa,
-                                              "purpose",
-                                              0, ""))) {
+  if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "purpose", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
     return -1;
   }
@@ -565,108 +541,87 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     return -1;
   }
 
-  /* really append extension sets */
-  extSets=0;
+  if (extSets) {
+    unsigned int writtenExtSets=0;
 
-  /* add peer name lines */
-  for (i=1; ; i++) {
-    unsigned int j;
+    /* now append extension sets */
 
-    p=GWEN_DB_GetCharValue(xa, "remoteName", i, 0);
-    if (!p)
-      break;
+    /* add peer name lines */
+    for (i=1; i<2; i++) { /* max: 1 extset */
+      unsigned int j;
 
-    /* append extension set */
-    GWEN_Buffer_AppendString(dst, "01");
-    if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
-      return -1;
-    }
+      p=GWEN_DB_GetCharValue(xa, "remoteName", i, 0);
+      if (!p)
+	break;
 
-    extSets++;
-    if (extSets==2) {
-      for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
-    }
-    else if (extSets>2) {
-      if (((extSets-2)%4)==0) {
-        for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      /* append extension set */
+      GWEN_Buffer_AppendString(dst, "01");
+      if (AHB_DTAUS__AddWord(dst, 27, p)) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	return -1;
       }
-    }
-  } /* for */
+      writtenExtSets++;
 
-  /* add purpose lines */
-  for (i=1; ; i++) {
-    unsigned int j;
+      if (writtenExtSets==2)
+	/* 2 ext sets written, so we need to align "C 2.Satzabschnitt" to 128 now */
+	for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      else if (writtenExtSets>2 && ((writtenExtSets-2) % 4)==0)
+	/* "C 3-5.Satzabschnitt" complete, align to 128 bytes */
+	for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+    } /* for */
 
-    p=GWEN_DB_GetCharValue(xa, "purpose", i, 0);
-    if (!p)
-      break;
+    /* add purpose lines */
+    for (i=1; i<14; i++) { /* max: 13 extsets */
+      unsigned int j;
 
-    /* append extension set */
-    GWEN_Buffer_AppendString(dst, "02");
-    if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
-      return -1;
-    }
+      p=GWEN_DB_GetCharValue(xa, "purpose", i, 0);
+      if (!p)
+	break;
 
-    extSets++;
-    if (extSets==2) {
-      for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
-    }
-    else if (extSets>2) {
-      if (((extSets-2)%4)==0) {
-        for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      /* append extension set */
+      GWEN_Buffer_AppendString(dst, "02");
+      if (AHB_DTAUS__AddWord(dst, 27, p)) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	return -1;
       }
-    }
-  } /* for */
+      writtenExtSets++;
 
-  /* add name lines */
-  for (i=1; ; i++) {
-    unsigned int j;
+      if (writtenExtSets==2)
+	/* 2 ext sets written, so we need to align "C 2.Satzabschnitt" to 128 now */
+	for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      else if (writtenExtSets>2 && ((writtenExtSets-2) % 4)==0)
+	/* "C 3-5.Satzabschnitt" complete, align to 128 bytes */
+	for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+    } /* for */
 
-    p=GWEN_DB_GetCharValue(xa, "localname", i, 0);
-    if (!p)
-      break;
+    /* add name lines */
+    for (i=1; i<2; i++) { /* max: 1 extset */
+      unsigned int j;
 
-    /* append extension set */
-    GWEN_Buffer_AppendString(dst, "03");
-    if (AHB_DTAUS__AddWord(dst, 27, p)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
-      return -1;
-    }
+      p=GWEN_DB_GetCharValue(xa, "localname", i, 0);
+      if (!p)
+	break;
 
-    extSets++;
-    if (extSets==2) {
-      for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
-    }
-    else if (extSets>2) {
-      if (((extSets-2)%4)==0) {
-        for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      /* append extension set */
+      GWEN_Buffer_AppendString(dst, "03");
+      if (AHB_DTAUS__AddWord(dst, 27, p)) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	return -1;
       }
-    }
-  } /* for */
+      writtenExtSets++;
 
-
-  if (extSets<=2) {
-    unsigned int size;
-    unsigned int j;
-
-    /* align buffer to 256 */
-    size=(GWEN_Buffer_GetPos(dst)-startPos);
-    assert(size<=256);
-    j=256-size;
-    for (i=0; i<j; i++) GWEN_Buffer_AppendByte(dst, ' ');
+      if (writtenExtSets==2)
+	/* 2 ext sets written, so we need to align "C 2.Satzabschnitt" to 128 now */
+	for (j=0; j<11; j++) GWEN_Buffer_AppendByte(dst, ' ');
+      else if (writtenExtSets>2 && ((writtenExtSets-2) % 4)==0)
+	/* "C 3-5.Satzabschnitt" complete, align to 128 bytes */
+	for (j=0; j<12; j++) GWEN_Buffer_AppendByte(dst, ' ');
+    } /* for */
   }
-  else {
-    /* align buffer to 128 */
-    unsigned int size;
-    unsigned int j;
 
-    size=(GWEN_Buffer_GetPos(dst)-startPos)-256;
-    j=((size+127)&~127)-size;
-    if (j)
-      for (i=0; i<j; i++) GWEN_Buffer_AppendByte(dst, ' ');
-  }
+  i=((GWEN_Buffer_GetUsedBytes(dst)+127) & ~127)-GWEN_Buffer_GetUsedBytes(dst);
+  while(i--)
+    GWEN_Buffer_AppendByte(dst, ' ');
 
   return 0;
 }
