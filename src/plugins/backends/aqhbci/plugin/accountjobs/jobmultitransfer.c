@@ -487,7 +487,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
       DBG_ERROR(0, "Setting groupID to %d", AH_Job_GetId(j));
       if (groupIdBuf[0]==0) {
-	snprintf(groupIdBuf, sizeof(groupIdBuf)-1, "%08x", AH_Job_GetId(j));
+	snprintf(groupIdBuf, sizeof(groupIdBuf)-1, "%08d", AH_Job_GetId(j));
         groupIdBuf[sizeof(groupIdBuf)-1]=0;
       }
 
