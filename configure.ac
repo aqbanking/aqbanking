@@ -712,7 +712,7 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(3,4,0,0)
+AC_GWENHYWFAR(3,5,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
