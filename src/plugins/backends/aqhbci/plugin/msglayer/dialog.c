@@ -291,7 +291,7 @@ int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
 			   GWEN_Buffer_GetUsedBytes(mbuf),
 			   GWEN_TIMEOUT_FOREVER);
   if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog (%d)", rv);
     return rv;
   }
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message sent");
