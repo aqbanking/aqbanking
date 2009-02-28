@@ -187,10 +187,20 @@ AH_JOB *AH_Job_new(const char *name,
 
     if (!jobBPD) {
       if (needsBPD) {
-	/* no BPD when needed, error */
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Job \"%s\" not supported by your bank",
-                  name);
+	if (AH_User_GetCryptMode(u)!=AH_CryptMode_Pintan &&
+	    strcasecmp(name, "JobTan")==0) {
+	  /* lower loglevel for JobTan in non-PINTAN mode because this is
+	   * often confusing */
+	  DBG_INFO(AQHBCI_LOGDOMAIN,
+		   "Job \"%s\" not supported by your bank",
+		   name);
+	}
+	else {
+	  /* no BPD when needed, error */
+	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+		    "Job \"%s\" not supported by your bank",
+		    name);
+	}
 	AH_Job_free(j);
 	return 0;
       }
