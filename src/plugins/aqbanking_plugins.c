@@ -70,6 +70,10 @@ GWEN_PLUGIN *imexporters_sepa_factory(GWEN_PLUGIN_MANAGER *pm,
 				      const char *name,
 				      const char *fileName);
 
+GWEN_PLUGIN *imexporters_ctxfile_factory(GWEN_PLUGIN_MANAGER *pm,
+					 const char *name,
+					 const char *fileName);
+
 
 
 GWEN_PLUGIN *bankinfo_at_factory(GWEN_PLUGIN_MANAGER *pm,
@@ -176,6 +180,11 @@ int AB_Plugins_Init() {
 #endif
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA
     p=imexporters_sepa_factory(pm, "sepa", NULL);
+    if (p)
+      GWEN_PluginManager_AddPlugin(pm, p);
+#endif
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE
+    p=imexporters_ctxfile_factory(pm, "ctxfile", NULL);
     if (p)
       GWEN_PluginManager_AddPlugin(pm, p);
 #endif

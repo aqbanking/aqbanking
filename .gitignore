@@ -115,6 +115,7 @@ src/plugins/imexporters/sepa/sepa.xml
 src/plugins/imexporters/swift/swift.xml
 src/plugins/imexporters/xmldb/xmldb.xml
 src/plugins/imexporters/yellownet/yellownet.xml
+src/plugins/imexporters/ctxfile/ctxfile.xml
 src/plugins/parsers/dtaus/dtaus.xml
 src/plugins/parsers/swift/swift.xml
 m4/libtool.m4

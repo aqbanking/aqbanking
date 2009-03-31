@@ -555,7 +555,7 @@ AC_ARG_WITH(imexporters,
 )
 
 if test "$aqbanking_imexporters" == "all"; then
-  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa"
+  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile"
 fi
 
 for f in ${aqbanking_imexporters}; do
@@ -604,6 +604,11 @@ for f in ${aqbanking_imexporters}; do
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs sepa"
       aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs sepa/libio_sepa.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA, 1, [plugin availability])
+      ;;
+    ctxfile)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ctxfile"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ctxfile/libio_ctxfile.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -1648,6 +1653,11 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/profiles/Makefile
   src/plugins/imexporters/sepa/profiles/default.conf
   src/plugins/imexporters/sepa/profiles/ccm.conf
+  src/plugins/imexporters/ctxfile/Makefile
+  src/plugins/imexporters/ctxfile/ctxfile.xml
+  src/plugins/imexporters/ctxfile/ressource.rc
+  src/plugins/imexporters/ctxfile/profiles/Makefile
+  src/plugins/imexporters/ctxfile/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml
