@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=11
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="rc5"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -1625,6 +1625,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/bankaustria.conf
   src/plugins/imexporters/csv/profiles/psk.conf
   src/plugins/imexporters/csv/profiles/diba.conf
+  src/plugins/imexporters/csv/profiles/dkb.conf
   src/plugins/imexporters/csv/profiles/sparda.conf
   src/plugins/imexporters/csv/profiles/full.conf
   src/plugins/imexporters/openhbci1/Makefile

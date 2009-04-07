@@ -4,12 +4,12 @@ EXTRA_DIST=default.conf.in aqmoney1.conf.in aqmoney2.conf.in \
   spk-aachen.conf.in tonline-banking.conf.in \
   amex.conf.in oko.conf.in spk-steiermark.conf.in \
   vrnetworld.conf.in lbbberlin.conf.in bankaustria.conf.in psk.conf.in \
-  diba.conf.in sparda.conf.in full.conf.in
+  diba.conf.in sparda.conf.in full.conf.in dkb.conf.in
 
 profilesdir = $(aqbanking_pkgdatadir)/imexporters/csv/profiles
 profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   comdirect.conf mijnpostbank.conf \
   spk-aachen.conf tonline-banking.conf amex.conf oko.conf spk-steiermark.conf \
   vrnetworld.conf lbbberlin.conf bankaustria.conf psk.conf \
-  diba.conf sparda.conf full.conf
+  diba.conf sparda.conf full.conf dkb.conf
 
