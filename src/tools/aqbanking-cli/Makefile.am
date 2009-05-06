@@ -1,6 +1,6 @@
 #EXTRA_DIST=
 
-INCLUDES = $(gwenhywfar_includes) $(aqbanking_includes) $(aqbcli_extra_includes) $(chipcard_client_includes) $(aqfinance_includes)
+INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) $(aqfinance_includes)
 
 AM_CFLAGS=@visibility_cflags@
 
@@ -9,19 +9,17 @@ bin_PROGRAMS=aqbanking-cli
 if WITH_AQFINANCE
 
 aqbanking_cli_LDADD= \
-  $(aqhbci_libs) \
-  $(aqbanking_libs) \
+  $(aqhbci_internal_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) \
-  $(chipcard_client_libs) \
   $(aqfinance_libs)
 
 else
 
 aqbanking_cli_LDADD= \
-  $(aqhbci_libs) \
-  $(aqbanking_libs) \
-  $(gwenhywfar_libs) \
-  $(chipcard_client_libs)
+  $(aqhbci_internal_libs) \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
 endif
 
 aqbanking_cli_SOURCES= \
