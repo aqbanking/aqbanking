@@ -35,8 +35,13 @@ libofxparser_la_SOURCES=\
  g_secinfo.c \
  g_seclist.c \
  g_stockinfo.c \
- g_seclistmsgsrsv1.c
-
+ g_seclistmsgsrsv1.c \
+ g_income.c \
+ g_invbuy.c \
+ g_buystock.c \
+ g_invtranlist.c \
+ g_invtran.c \
+ g_invacc.c
 
 noinst_HEADERS=\
  ofxxmlctx_l.h ofxxmlctx_p.h \
@@ -71,8 +76,13 @@ noinst_HEADERS=\
  g_secinfo_l.h g_secinfo_p.h \
  g_seclist_l.h g_seclist_p.h \
  g_stockinfo_l.h g_stockinfo_p.h \
- g_seclistmsgsrsv1_l.h g_seclistmsgsrsv1_p.h
-
+ g_seclistmsgsrsv1_l.h g_seclistmsgsrsv1_p.h \
+ g_income_l.h g_income_p.h \
+ g_invbuy_l.h g_invbuy_p.h \
+ g_buystock_l.h g_buystock_p.h \
+ g_invtranlist_l.h g_invtranlist_p.h \
+ g_invtran_l.h g_invtran_p.h \
+ g_invacc_l.h g_invacc_p.h
 
 sources:
 	for f in $(libofxparser_la_SOURCES); do \

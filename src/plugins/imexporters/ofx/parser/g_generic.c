@@ -87,8 +87,8 @@ AB_ACCOUNT_TYPE AIO_OfxGroup_Generic_AccountTypeFromString(const char *s) {
     t=AB_AccountType_Checking;
   else if (strcasecmp(s, "SAVINGS")==0)
     t=AB_AccountType_Savings;
-  else if (strcasecmp(s, "MONEYMRKT")==0)
-    t=AB_AccountType_Investment;
+  else if (strcasecmp(s, "MONEYMRKT")==0 ||
+           strcasecmp(s, "INVESTMENT")==0) t=AB_AccountType_Investment; /*INVESTMENT String added by SRB 4/23/09*/
   else if (strcasecmp(s, "CREDITLINE")==0)
     t=AB_AccountType_Bank;
   else if (strcasecmp(s, "BANK")==0)       /* not a real code */
