@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=11
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="git"
 
@@ -834,6 +834,17 @@ AC_SUBST(gmp_libs)
 
 
 ###-------------------------------------------------------------------------
+# Check for AqFinance
+
+AC_AQFINANCE(0,1,0)
+AM_CONDITIONAL(WITH_AQFINANCE, [test "$have_aqfinance" = "yes"])
+if test "$have_aqfinance" = "yes"; then
+  AC_DEFINE(WITH_AQFINANCE, 1, [if support for AqFinance enabled])
+fi
+
+
+
+###-------------------------------------------------------------------------
 #
 # OS dependant settings
 #
@@ -856,6 +867,22 @@ case "$OS_TYPE" in
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether aqbanking-cli is enabled
+#
+
+AC_MSG_CHECKING(whether aqbanking-cli is wanted)
+AC_ARG_ENABLE(cli,
+  [  --enable-cli         build aqbanking-cli (default=yes)],
+  enable_cli="$enableval",
+  enable_cli="yes")
+AC_MSG_RESULT($enable_cli)
+
+AM_CONDITIONAL(ENABLE_CLI, [test "$enable_cli" = "yes"])
 
 
 
@@ -1469,27 +1496,6 @@ AC_SUBST(aqb_extra_libs)
 
 ###-------------------------------------------------------------------------
 #
-# check whether EBICS support should be linked-in
-#
-# This is used when statically linking plugins (especially for gct-tool)
-#
-
-AC_MSG_CHECKING(whether EBICS support is wanted)
-AC_ARG_ENABLE(ebics-plugins,
-  [  --ebics-plugins         allow EBICS plugins (default=no)],
-  enable_ebics_plugins="$enableval",
-  enable_ebics_plugins="no")
-AC_MSG_RESULT($enable_ebics_plugins)
-
-if test "$enable_ebics_plugins" != "no"; then
-  AC_DEFINE(ENABLE_EBICS_PLUGINS, 1, [whether EBICS plugins are supported])
-fi
-AM_CONDITIONAL(ENABLE_EBICS_PLUGINS, [test "$enable_ebics_plugins" = "yes"])
-
-
-
-###-------------------------------------------------------------------------
-#
 # check whether tutorials are to be built
 #
 
@@ -1702,6 +1708,8 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc
   src/test/Makefile
+  src/tools/Makefile
+  src/tools/aqbanking-cli/Makefile
   tutorials/Makefile
   po/Makefile
   Doxyfile
@@ -1734,7 +1742,8 @@ echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
-echo "Allow EBICS plugins     : $enable_ebics_plugins"
+echo "Use AqFinance           : $have_aqfinance"
+echo "Build AqBanking-CLI     : $enable_cli"
 echo
 
 echo

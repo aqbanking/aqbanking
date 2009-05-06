@@ -1,4 +1,9 @@
-SUBDIRS=libs frontends plugins tools test
+DIST_SUBDIRS=aqbanking-cli
+
+if ENABLE_CLI
+SUBDIRS=aqbanking-cli
+endif
+
 
 sources:
 	for d in $(SUBDIRS); do \
