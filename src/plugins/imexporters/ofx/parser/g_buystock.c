@@ -29,12 +29,14 @@
 
 GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK)
 
-char * BUYSTOCK_DataTags[ibuystocklastdatum]={"BUYTYPE", "SELLTYPE"};
-char * BUYSTOCK_GroupTags[ibuystocklastgroup]={"INVBUY","INVSELL"};
+const char * BUYSTOCK_DataTags[ibuystocklastdatum]={"BUYTYPE", "SELLTYPE"};
+const char * BUYSTOCK_GroupTags[ibuystocklastgroup]={"INVBUY","INVSELL"};
+
+
 
 AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+					 AIO_OFX_GROUP *parent,
+					 GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BUYSTOCK *xg;
 
@@ -47,7 +49,7 @@ AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
   GWEN_INHERIT_SETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g, xg, AIO_OfxGroup_BUYSTOCK_FreeData);
   xg->transaction=AB_Transaction_new();
 
-/*We know that the transaction type will be AB_Transaction_TypeTransaction, so set this now.*/
+  /*We know that the transaction type will be AB_Transaction_TypeTransaction, so set this now.*/
   AB_Transaction_SetType(xg->transaction, AB_Transaction_TypeTransaction);
 
   /* set virtual functions */
@@ -56,6 +58,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
   AIO_OfxGroup_SetEndSubGroupFn(g, AIO_OfxGroup_BUYSTOCK_EndSubGroup);
   return g;
 }
+
+
 
 GWENHYWFAR_CB
 void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
@@ -68,34 +72,40 @@ void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
   GWEN_FREE_OBJECT(xg);
 }
 
+
+
 /*Note that we allow the superior group to "take" the transaction - i.e., the taker is now responsible for
  destroying the object!!*/
-
 AB_TRANSACTION *AIO_OfxGroup_BUYSTOCK_TakeTransaction(const AIO_OFX_GROUP *g){
   AIO_OFX_GROUP_BUYSTOCK *xg;
   AB_TRANSACTION *t;
+
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
   assert(xg);
+
   t=xg->transaction;
   xg->transaction=NULL;
   return t;
 }
 
+
+
 /*BUYSTOCK object can represent either the <BUYSTOCK> or <SELLSTOCK> groups. Thus is has 1 datum
  (<BUYTYPE> or <SELLTYPE>) and one group (<INVBUY> or <INVSELL>). In a sense this is redundant data.
  Well formed data should always place either "buy" or "sell" in the data of <BUYTYPE> and <SELLTYPE>,
  respectively. So I test for this and set the sub-group accordingly.*/
-
 int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   AIO_OFX_GROUP_BUYSTOCK *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
+  int ct;
+
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
   assert(xg);
   ctx=AIO_OfxGroup_GetXmlContext(g);
-  int ct;
+
   ct=AIO_OfxGroup_BUYSTOCK_SortTag(tagName, BUYSTOCK_DataTags, ibuystocklastdatum);
   
   if(ct<0) {
@@ -104,7 +114,8 @@ int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Ignoring group [%s]", tagName);
       gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
     }
-    else gNew=AIO_OfxGroup_INVBUY_new(tagName, g, ctx);
+    else
+      gNew=AIO_OfxGroup_INVBUY_new(tagName, g, ctx);
     if (gNew) {
       AIO_OfxXmlCtx_SetCurrentGroup(ctx, gNew);
       GWEN_XmlCtx_IncDepth(ctx);
@@ -116,6 +127,8 @@ int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   }
   return 0;
 }
+
+
 
 /*Here when the data for either BUYTYPE or SELLTYPE arrives. We simply stuff it into the correct part of the
  AB_TRANSACTION record.*/
@@ -129,15 +142,15 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
 
   if (xg->currentElement) {
     int ce;
+    GWEN_BUFFER *buf;
+    int rv;
+    const char *s;
+
     ce=AIO_OfxGroup_BUYSTOCK_SortTag(xg->currentElement, BUYSTOCK_DataTags, ibuystocklastdatum);
     if (ce<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown elements [%s]", xg->currentElement);
       return 0;       /*Unknown data tag.*/
     }
-
-    GWEN_BUFFER *buf;
-    int rv;
-    const char *s;
 
     buf=GWEN_Buffer_new(0, strlen(data), 0, 1);
     rv=AIO_OfxXmlCtx_SanitizeData(AIO_OfxGroup_GetXmlContext(g), data, buf);
@@ -150,15 +163,20 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "TransactionSubType: %s", s);
       AB_TRANSACTION_SUBTYPE SubType;
-      if (strcasecmp(s,"BUY")==0) SubType=AB_Transaction_SubTypeBuy;
-      else if (strcasecmp(s,"SELL")==0) SubType=AB_Transaction_SubTypeSell;
-      else SubType=AB_Transaction_SubTypeUnknown;
+      if (strcasecmp(s,"BUY")==0)
+	SubType=AB_Transaction_SubTypeBuy;
+      else if (strcasecmp(s,"SELL")==0)
+	SubType=AB_Transaction_SubTypeSell;
+      else
+	SubType=AB_Transaction_SubTypeUnknown;
       AB_Transaction_SetSubType(xg->transaction, SubType);
     }
     GWEN_Buffer_free(buf);
   }
   return 0;
 }
+
+
 
 /*Come here on </INVBUY>, </INVSELL> This is where most of the work is done. We have to map all the various
  OFX items into the Transaction Structure. Here is the working model of the translation table:
@@ -187,60 +205,65 @@ int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
   AIO_OFX_GROUP_BUYSTOCK *xg;
   GWEN_XML_CONTEXT *ctx;
+  GWEN_TIME *ti;
 
-/*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
+  /*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
   assert(xg);
 
-/*Fetch a copy of this groups context - and it better be valid too.*/
+  /*Fetch a copy of this groups context - and it better be valid too.*/
   ctx=AIO_OfxGroup_GetXmlContext(g);
   assert(ctx);
 
-/*We need to look at the group name to see if it's recognized. Simply return, ignoring it if we can't use it.*/
+  /*We need to look at the group name to see if it's recognized. Simply return, ignoring it if we can't use it.*/
 
-  if (0>AIO_OfxGroup_BUYSTOCK_SortTag(AIO_OfxGroup_GetGroupName(sg), BUYSTOCK_GroupTags, ibuystocklastgroup)) return 0;
+  if (0>AIO_OfxGroup_BUYSTOCK_SortTag(AIO_OfxGroup_GetGroupName(sg), BUYSTOCK_GroupTags, ibuystocklastgroup))
+    return 0;
 
-/*Both the INVBUY and INVSELL groups do the same thing.*/
+  /*Both the INVBUY and INVSELL groups do the same thing.*/
 
   AIO_OfxGroup_BUYSTOCK_SetABValue(sg, &AB_Transaction_SetUnits,  xg->transaction, iunits);
   AIO_OfxGroup_BUYSTOCK_SetABValue(sg, &AB_Transaction_SetUnitPrice, xg->transaction,  iunitprice);
   AIO_OfxGroup_BUYSTOCK_SetABValue(sg, &AB_Transaction_SetCommission, xg->transaction, icommission);
   AIO_OfxGroup_BUYSTOCK_SetABValue(sg, &AB_Transaction_SetValue, xg->transaction, itotal);
 
-/*AIO_OfxGroup_INVBUY_TakeDatum(sg, i)  char *subacctsec;         No equivalent*/
+  /*AIO_OfxGroup_INVBUY_TakeDatum(sg, i)  char *subacctsec;         No equivalent*/
 
-/*Maybe Try this?*/
+  /*Maybe Try this?*/
   AB_Transaction_SetLocalSuffix(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, isubacctfund));
   AB_Transaction_SetUnitId(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, iuniqueid));
   AB_Transaction_SetUnitIdNameSpace(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, iuniqueidtype));
   AB_Transaction_SetFiId(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, ifitid));
-/*   AB_Transaction_SetTransactionText(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, imemo)); */
+  /*   AB_Transaction_SetTransactionText(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, imemo)); */
   AB_Transaction_AddPurpose(xg->transaction, AIO_OfxGroup_INVBUY_GetDatum(sg, imemo), 1);
 
-/*Finally, do the date. This is a bit of a guess. The ValutaDate description is the more correct one:
- "The date when the transaction was really executed".  But the Date is used in stmtrn. It's description is
- less convincing: "The date when the transaction was booked (but sometimes it is unused)". Mostly, I suspect
- that it depends upon how the backend uses the data. I'll have to see what happens when I run it from GnuCash.*/
+  /*Finally, do the date. This is a bit of a guess. The ValutaDate description is the more correct one:
+   * "The date when the transaction was really executed".  But the Date is used in stmtrn. It's description is
+   less convincing: "The date when the transaction was booked (but sometimes it is unused)". Mostly, I suspect
+   that it depends upon how the backend uses the data. I'll have to see what happens when I run it from GnuCash.*/
 
-	GWEN_TIME *ti;
-	ti=GWEN_Time_fromString(AIO_OfxGroup_INVBUY_GetDatum(sg, idttrade), "YYYYMMDD");
-	if (ti==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid data for DTTRADE: [%s]", AIO_OfxGroup_INVBUY_GetDatum(sg, idttrade));
+  ti=GWEN_Time_fromString(AIO_OfxGroup_INVBUY_GetDatum(sg, idttrade), "YYYYMMDD");
+  if (ti==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid data for DTTRADE: [%s]", AIO_OfxGroup_INVBUY_GetDatum(sg, idttrade));
     return GWEN_ERROR_BAD_DATA;
-	}
+  }
   AB_Transaction_SetValutaDate(xg->transaction, ti);
 
-/*Just to be safe, if the date is not otherwise set, set it to the DTTRADE value.*/
+  /*Just to be safe, if the date is not otherwise set, set it to the DTTRADE value.*/
 
-  if (AB_Transaction_GetDate(xg->transaction)==NULL) AB_Transaction_SetDate(xg->transaction,ti);
+  if (AB_Transaction_GetDate(xg->transaction)==NULL)
+    AB_Transaction_SetDate(xg->transaction,ti);
   GWEN_Time_free(ti);
   return 0;
 }
 
-void   AIO_OfxGroup_BUYSTOCK_SetABValue(const AIO_OFX_GROUP *sg, AB_Transaction_Set_Value_Func F, AB_TRANSACTION *t, int index){
+
+
+void AIO_OfxGroup_BUYSTOCK_SetABValue(const AIO_OFX_GROUP *sg, AB_Transaction_Set_Value_Func F, AB_TRANSACTION *t, int index){
   AB_VALUE * ab_val;
+
   ab_val=AB_Value_fromString(AIO_OfxGroup_INVBUY_GetDatum(sg, index));
   if (ab_val==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -254,11 +277,18 @@ void   AIO_OfxGroup_BUYSTOCK_SetABValue(const AIO_OFX_GROUP *sg, AB_Transaction_
   return;
 }
 
+
+
 /*Routine that converts string tag into index number. Return -1 if no tag found.*/
 
-int AIO_OfxGroup_BUYSTOCK_SortTag(const char * s, char ** sTags, int max) {
+int AIO_OfxGroup_BUYSTOCK_SortTag(const char * s, const char ** sTags, int max) {
   int i;
-  for (i=0; i<max; i++) if (strcasecmp(s, sTags[i])==0) return i;
+
+  for (i=0; i<max; i++)
+    if (strcasecmp(s, sTags[i])==0)
+      return i;
   return -1;
 }
+
+
 

@@ -31,6 +31,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+
+
 /*This code parallels the code in g_stmttrnrs. Since there are no data items that we are interested in,
  we only need to deal with sub-group creation. Hence there is only a virtual function for filtering
  start tags.*/
@@ -50,6 +52,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVSTMTTRNRS_new(const char *groupName,
   return g;
 }
 
+
+
 /*There are 4 data items and subgroups here. We are only interested in the STATUS and INVSTMTRS
  groups. The TRNUID and CLTCOOKIE datums are ignored.*/
 
@@ -61,29 +65,22 @@ int AIO_OfxGroup_INVSTMTTRNRS_StartTag(AIO_OFX_GROUP *g,
   assert(g);
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
-/*If this is a STATUS subgroup, define it*/
-
+  /*If this is a STATUS subgroup, define it*/
   if (strcasecmp(tagName, "STATUS")==0) {
     gNew=AIO_OfxGroup_STATUS_new(tagName, g, ctx,
 				 I18N("Status for investment transaction statement request"));
   }
-
-/*Or, if it's the TRNUID or CLTCOOKIE data, just ignore them. These are really easy since
- no subgroup Ignore trap is needed.*/
-
+  /*Or, if it's the TRNUID or CLTCOOKIE data, just ignore them. These are really easy since
+   no subgroup Ignore trap is needed.*/
   else if (strcasecmp(tagName, "TRNUID")==0 ||
 	   strcasecmp(tagName, "CLTCOOKIE")==0) {
     /* some tags, just ignore them here */
   }
-
-/*If this is the Investment Statement Request, define it's subgroup*/
-
+  /*If this is the Investment Statement Request, define it's subgroup*/
   else if (strcasecmp(tagName, "INVSTMTRS")==0) {
     gNew=AIO_OfxGroup_INVSTMTRS_new(tagName, g, ctx);
   }
-
 /*All other sub-groups pass on to the ignore trap.*/
-
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
 	     "Ignoring group [%s]", tagName);
@@ -100,4 +97,6 @@ int AIO_OfxGroup_INVSTMTTRNRS_StartTag(AIO_OFX_GROUP *g,
 
   return 0;
 }
+
+
 

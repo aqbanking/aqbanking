@@ -40,7 +40,7 @@ typedef enum {
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVBUY_new(const char *groupName, AIO_OFX_GROUP *parent, GWEN_XML_CONTEXT *ctx);
 
-char *AIO_OfxGroup_INVBUY_GetDatum(const AIO_OFX_GROUP *g, int index);
-char *AIO_OfxGroup_INVBUY_DatumName(int index);
+const char *AIO_OfxGroup_INVBUY_GetDatum(const AIO_OFX_GROUP *g, int index);
+const char *AIO_OfxGroup_INVBUY_DatumName(int index);
 
 #endif

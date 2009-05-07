@@ -35,7 +35,7 @@ struct AIO_OFX_GROUP_BUYSTOCK {
 typedef void (*AB_Transaction_Set_Value_Func)(AB_TRANSACTION *st, const AB_VALUE *d);
 
 void  AIO_OfxGroup_BUYSTOCK_SetABValue(const AIO_OFX_GROUP *sg, AB_Transaction_Set_Value_Func F, AB_TRANSACTION *t, int index);
-int AIO_OfxGroup_BUYSTOCK_SortTag(const char * s, char ** sTags, int max);
+int AIO_OfxGroup_BUYSTOCK_SortTag(const char * s, const char ** sTags, int max);
 
 static void GWENHYWFAR_CB AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p);
 static int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g, const char *tagName);

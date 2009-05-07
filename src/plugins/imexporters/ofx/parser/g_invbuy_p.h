@@ -27,7 +27,7 @@ static int AIO_OfxGroup_INVBUY_StartTag(AIO_OFX_GROUP *g, const char *tagName);
 static int AIO_OfxGroup_INVBUY_AddData(AIO_OFX_GROUP *g, const char *data);
 static int AIO_OfxGroup_INVBUY_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
 
-int AIO_OfxGroup_INVBUY_SortTag(const char * s, char ** sTags, int max);
+int AIO_OfxGroup_INVBUY_SortTag(const char * s, const char ** sTags, int max);
 
 #endif
 

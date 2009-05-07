@@ -27,6 +27,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+
+
 /*This code parallels the code in BANKMSGSRSV1. First order of business is the object constructor.
  After setting up the base group object, all we need to do is watch for the arrival of the INVSTMTTRNRS
  tag, so we set up a virtual function to intercept future tags.*/
@@ -46,9 +48,10 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVSTMTMSGSRSV1_new(const char *groupName,
   return g;
 }
 
+
+
 /*The goal here is to filter all the tags in this group until we find a the INVSTMTTRNRS tag. At that
  point we create a new group (the INVSTMTTRNRS group) and let it handle all the tags for that group.*/
-
 int AIO_OfxGroup_INVSTMTMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
 					  const char *tagName) {
   AIO_OFX_GROUP *gNew=NULL;
@@ -67,9 +70,8 @@ int AIO_OfxGroup_INVSTMTMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);          /*All other groups are ignored!*/
   }
 
-/*OK, so we have a new group - even if it's going to be just the ignore group. So we set that
- new group into the context and bump the depth counter.*/
-
+  /*OK, so we have a new group - even if it's going to be just the ignore group. So we set that
+   new group into the context and bump the depth counter.*/
   if (gNew) {
     AIO_OfxXmlCtx_SetCurrentGroup(ctx, gNew);
     GWEN_XmlCtx_IncDepth(ctx);

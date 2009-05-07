@@ -31,9 +31,10 @@
 
 GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRANLIST)
 
+
 AIO_OFX_GROUP *AIO_OfxGroup_INVTRANLIST_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+					    AIO_OFX_GROUP *parent,
+					    GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INVTRANLIST *xg;
 
@@ -55,6 +56,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVTRANLIST_new(const char *groupName,
   return g;
 }
 
+
+
 GWENHYWFAR_CB
 void AIO_OfxGroup_INVTRANLIST_FreeData(void *bp, void *p) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
@@ -67,23 +70,29 @@ void AIO_OfxGroup_INVTRANLIST_FreeData(void *bp, void *p) {
   GWEN_FREE_OBJECT(xg);
 }
 
+
+
 AB_TRANSACTION_LIST2* AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
   AB_TRANSACTION_LIST2 *tl;
+
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRANLIST, g);
   assert(xg);
+
   tl=xg->transactionList;
   xg->transactionList=NULL;
   return tl;
 }
+
+
 
 /*The INVTRANLIST has 2 data and at least 4 groups. The BUYSTOCK, SELLSTOCK, and INCOME are similar
 enough to be handled using a single subgroup and some steering logic. The INVBANKTRAN is essentially
 identical to the Bank equivalent, so we use the STMTTRN group for it.*/
 
 int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+				      const char *tagName) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -100,9 +109,12 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "BUYSTOCK")==0 ||
-           strcasecmp(tagName, "SELLSTOCK")==0) gNew=AIO_OfxGroup_BUYSTOCK_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "INCOME")==0) gNew=AIO_OfxGroup_INCOME_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "INVBANKTRAN")==0) gNew=AIO_OfxGroup_STMTRN_new(tagName, g, ctx);
+	   strcasecmp(tagName, "SELLSTOCK")==0)
+    gNew=AIO_OfxGroup_BUYSTOCK_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "INCOME")==0)
+    gNew=AIO_OfxGroup_INCOME_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "INVBANKTRAN")==0)
+    gNew=AIO_OfxGroup_STMTRN_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
@@ -115,8 +127,9 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
   return 0;
 }
 
-/*Here when the data for either DTSTART or DTEND arrives*/
 
+
+/*Here when the data for either DTSTART or DTEND arrives*/
 int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
 
@@ -140,14 +153,16 @@ int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "DTSTART")==0) {
-	      free(xg->dtstart);
-	      xg->dtstart=strdup(s);
+	free(xg->dtstart);
+	xg->dtstart=strdup(s);
       }
       else if (strcasecmp(xg->currentElement, "DTEND")==0) {
-	      free(xg->dtend);
-	      xg->dtend=strdup(s);
+	free(xg->dtend);
+	xg->dtend=strdup(s);
       }
-      else DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown elements [%s]", xg->currentElement);
+      else {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown elements [%s]", xg->currentElement);
+      }
     }
     GWEN_Buffer_free(buf);
   }
@@ -155,40 +170,46 @@ int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
 }
 
 
+
 /*Come here when the </BUYSTOCK>, </SELLSTOCK>, </INCOME> or <INVBANKTRAN> tags are encountered.*/
-
 int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
-
   AIO_OFX_GROUP_INVTRANLIST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
 
-/*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
+  /*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRANLIST, g);
   assert(xg);
 
-/*Fetch a copy of this groups context - and it better be valid too.*/
+  /*Fetch a copy of this groups context - and it better be valid too.*/
   ctx=AIO_OfxGroup_GetXmlContext(g);
   assert(ctx);
 
-/*We need to look at the group name to see what to do. Then call the appropriate routine to take the transaction
-and push it into the transaction list.*/
+  /*We need to look at the group name to see what to do. Then call the appropriate routine to take the transaction
+   and push it into the transaction list.*/
 
   s=AIO_OfxGroup_GetGroupName(sg);
   AB_TRANSACTION *t;
   if (strcasecmp(s, "BUYSTOCK")==0 ||
-      strcasecmp(s, "SELLSTOCK")==0) t=AIO_OfxGroup_BUYSTOCK_TakeTransaction(sg);
-  else if (strcasecmp(s, "INCOME")==0) t=AIO_OfxGroup_INCOME_TakeTransaction(sg);
-  else if (strcasecmp(s, "INVBANKTRAN")==0) t=AIO_OfxGroup_STMTRN_TakeTransaction(sg);
-  else return 0;
+      strcasecmp(s, "SELLSTOCK")==0)
+    t=AIO_OfxGroup_BUYSTOCK_TakeTransaction(sg);
+  else if (strcasecmp(s, "INCOME")==0)
+    t=AIO_OfxGroup_INCOME_TakeTransaction(sg);
+  else if (strcasecmp(s, "INVBANKTRAN")==0)
+    t=AIO_OfxGroup_STMTRN_TakeTransaction(sg);
+  else
+    return 0;
 
-/*If one of the groups matches, then post a message about adding the new transaction to the list*/
+  /*If one of the groups matches, then post a message about adding the new transaction to the list*/
   if (t) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
     AB_Transaction_List2_PushBack(xg->transactionList, t);
   }
   return 0;
 }
+
+
+
 

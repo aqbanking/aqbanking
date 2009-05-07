@@ -24,7 +24,7 @@ static void GWENHYWFAR_CB AIO_OfxGroup_INCOME_FreeData(void *bp, void *p);
 static int AIO_OfxGroup_INCOME_StartTag(AIO_OFX_GROUP *g, const char *tagName);
 static int AIO_OfxGroup_INCOME_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
 static int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data);
-int AIO_OfxGroup_INCOME_SortTag(const char * s, char ** sTags, int max);
+int AIO_OfxGroup_INCOME_SortTag(const char * s, const char ** sTags, int max);
 
 #endif
 
