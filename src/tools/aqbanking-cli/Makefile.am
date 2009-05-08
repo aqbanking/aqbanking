@@ -48,7 +48,6 @@ EXTRA_DIST=\
   transfers.c \
   util.c \
   versions.c \
-  plugins.c \
   af_utils.c \
   dbinit.c \
   dbrecontrans.c \

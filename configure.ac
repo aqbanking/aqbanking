@@ -25,10 +25,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=3
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=11
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_PATCHLEVEL=12
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="git"
+AQBANKING_VERSION_TAG="rc6"
 
 
 
@@ -872,22 +872,6 @@ AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
 ###-------------------------------------------------------------------------
 #
-# check whether aqbanking-cli is enabled
-#
-
-AC_MSG_CHECKING(whether aqbanking-cli is wanted)
-AC_ARG_ENABLE(cli,
-  [  --enable-cli         build aqbanking-cli (default=yes)],
-  enable_cli="$enableval",
-  enable_cli="yes")
-AC_MSG_RESULT($enable_cli)
-
-AM_CONDITIONAL(ENABLE_CLI, [test "$enable_cli" = "yes"])
-
-
-
-###-------------------------------------------------------------------------
-#
 # check whether local installation mode is enabled
 #
 
@@ -1491,6 +1475,22 @@ AC_ARG_WITH(extra-libs,
   [aqb_extra_libs=""]
 )
 AC_SUBST(aqb_extra_libs)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether aqbanking-cli is enabled
+#
+
+AC_MSG_CHECKING(whether aqbanking-cli is wanted)
+AC_ARG_ENABLE(cli,
+  [  --enable-cli         build aqbanking-cli (default=yes)],
+  enable_cli="$enableval",
+  enable_cli="yes")
+AC_MSG_RESULT($enable_cli)
+
+AM_CONDITIONAL(ENABLE_CLI, [test "$enable_cli" = "yes"])
 
 
 

@@ -14,7 +14,6 @@
 #include "globals.h"
 #include <gwenhywfar/gwenhywfar.h>
 #include <aqbanking/banking.h>
-#include <chipcard/client/switch.h>
 
 #ifdef WITH_AQFINANCE
 # include <aqfinance/version.h>
