@@ -81,7 +81,8 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="qbanking"
+	    --with-frontends="qbanking" \
+	    --enable-aqfinance
 	make sources
 
 mp-priv:

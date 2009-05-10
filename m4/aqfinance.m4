@@ -22,9 +22,9 @@ if test -z "$4"; then vbld="0"; else vbld="$4"; fi
 
 AC_MSG_CHECKING(if aqfinance support desired)
 AC_ARG_ENABLE(aqfinance,
-  [  --enable-aqfinance      enable aqfinance support (default=yes)],
+  [  --enable-aqfinance      enable aqfinance support (default=no)],
   enable_aqfinance="$enableval",
-  enable_aqfinance="yes")
+  enable_aqfinance="no")
 AC_MSG_RESULT($enable_aqfinance)
 
 have_aqfinance="no"
