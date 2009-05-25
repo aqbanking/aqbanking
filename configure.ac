@@ -28,7 +28,7 @@ AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=13
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="rc7"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -1634,6 +1634,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/dkb.conf
   src/plugins/imexporters/csv/profiles/sparda.conf
   src/plugins/imexporters/csv/profiles/full.conf
+  src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
