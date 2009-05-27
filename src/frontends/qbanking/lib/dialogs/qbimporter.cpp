@@ -850,7 +850,9 @@ bool QBImporter::_readFile(const QString &fname){
     // conversion operator "QCString::operator const char * ()
     // const" that will correctly convert the QCString to the
     // const char*
-    fd=open(fname.local8Bit().data(), O_RDONLY);
+    fd = ::open(fname.local8Bit().data(), O_RDONLY);
+    // Note: We need to write ::open() to avoid an ambiguity with
+    // QDialog::open().
     if (fd==-1) {
       qs=QWidget::tr("Could not open file \"%1\": %2")
 	.arg(fname)
