@@ -31,9 +31,11 @@ public:
                 WFlags fl=0);
   ~QBEditAccount();
 
-  bool fromGui();
+  bool fromGui(bool doLock);
 
-  static bool editAccount(QBanking *kb, AB_ACCOUNT *a, QWidget* parent=0);
+  static bool editAccount(QBanking *kb, AB_ACCOUNT *a,
+			  bool doLock,
+			  QWidget* parent=0);
 
 };
 
