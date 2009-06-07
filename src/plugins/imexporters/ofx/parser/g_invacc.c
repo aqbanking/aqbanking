@@ -162,6 +162,7 @@ int AIO_OfxGroup_INVACC_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   free(xg->currentElement);
   xg->currentElement=NULL;
   if (strcasecmp(tagName, "BANKID")==0 ||
+      strcasecmp(tagName, "BROKERID")==0 ||
       strcasecmp(tagName, "ACCTID")==0)
     xg->currentElement=strdup(tagName);
   else {
@@ -194,7 +195,8 @@ int AIO_OfxGroup_INVACC_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "AddData: %s=[%s]", xg->currentElement, s);
-      if (strcasecmp(xg->currentElement, "BROKERID")==0)
+      if (strcasecmp(xg->currentElement, "BROKERID")==0 ||
+	  strcasecmp(xg->currentElement, "BANKID")==0)
 	AIO_OfxGroup_INVACC_SetBrokerId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "ACCTID")==0)
 	AIO_OfxGroup_INVACC_SetAccId(g, GWEN_Buffer_GetStart(buf));

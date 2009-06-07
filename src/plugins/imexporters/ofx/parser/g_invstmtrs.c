@@ -105,9 +105,12 @@ int AIO_OfxGroup_INVSTMTRS_StartTag(AIO_OFX_GROUP *g,
 /*Then handle the groups.*/
 
   else if (strcasecmp(tagName, "INVACCTFROM")==0 ||
-           strcasecmp(tagName, "INVACCTTO")==0) gNew=AIO_OfxGroup_INVACC_new(tagName, g, ctx);
-  else if (strcasecmp(tagName, "INVTRANLIST")==0) gNew=AIO_OfxGroup_INVTRANLIST_new(tagName, g, ctx); /*SRB 4/22/09*/
-  else if (strcasecmp(tagName, "INVPOSLIST")==0) gNew=AIO_OfxGroup_INVPOSLIST_new(tagName, g, ctx);
+	   strcasecmp(tagName, "INVACCTTO")==0)
+    gNew=AIO_OfxGroup_INVACC_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "INVTRANLIST")==0)
+    gNew=AIO_OfxGroup_INVTRANLIST_new(tagName, g, ctx); /*SRB 4/22/09*/
+  else if (strcasecmp(tagName, "INVPOSLIST")==0)
+    gNew=AIO_OfxGroup_INVPOSLIST_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,"Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
@@ -118,6 +121,8 @@ int AIO_OfxGroup_INVSTMTRS_StartTag(AIO_OFX_GROUP *g,
   }
   return 0;
 }
+
+
 
 /*Even though we look for the DTASOF tag above (we must, so that it can be distinguished from a group),
  nothing is done with the data. The only tag we preocess is the currency definition.*/
@@ -189,9 +194,11 @@ int AIO_OfxGroup_INVSTMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     ai=AB_ImExporterAccountInfo_new();                        /*Create the AccountInfo Structure*/
     assert(ai);                                               /*Validate creation*/
     s=AIO_OfxGroup_INVACC_GetBrokerId(sg);
-    if (s) AB_ImExporterAccountInfo_SetBankCode(ai, s);       /*Install Broker ID*/
+    if (s)
+      AB_ImExporterAccountInfo_SetBankCode(ai, s);       /*Install Broker ID*/
     s=AIO_OfxGroup_INVACC_GetAccId(sg);
-    if (s) AB_ImExporterAccountInfo_SetAccountNumber(ai, s);  /*And account number*/
+    if (s)
+      AB_ImExporterAccountInfo_SetAccountNumber(ai, s);  /*And account number*/
 
 /* and set currency if there is one */
 

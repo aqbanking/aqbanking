@@ -161,8 +161,9 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
     }
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "TransactionSubType: %s", s);
       AB_TRANSACTION_SUBTYPE SubType;
+
+      DBG_INFO(AQBANKING_LOGDOMAIN, "TransactionSubType: %s", s);
       if (strcasecmp(s,"BUY")==0)
 	SubType=AB_Transaction_SubTypeBuy;
       else if (strcasecmp(s,"SELL")==0)
