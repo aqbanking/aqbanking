@@ -1,4 +1,4 @@
-SUBDIRS=types jobs
+SUBDIRS=types jobs gui
 
 INCLUDES = \
   -I$(top_builddir)/headers \
@@ -14,7 +14,8 @@ EXTRA_DIST=\
  banking_deprec.c \
  banking_init.c \
  banking_online.c \
- banking_user.c
+ banking_user.c \
+ banking_imex.c
 
 
 # We define those here because within the configure script the variables 
@@ -88,7 +89,8 @@ libaqbanking_la_SOURCES=\
 
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  jobs/libjobs.la \
- types/libtypes.la
+ types/libtypes.la \
+ gui/libabgui.la
 
 libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
