@@ -44,6 +44,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
 				  AB_JOB_TYPE jobType) {
   AH_JOB *j;
   AH_JOB_SINGLESEPA *aj;
+  GWEN_DB_NODE *dbArgs;
 
   switch(jobType) {
   case AB_Job_TypeSepaTransfer
@@ -58,7 +59,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   }
 
   if (!j)
-    return 0;
+    return NULL;
 
   GWEN_NEW_OBJECT(AH_JOB_SINGLETRANSFER, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_SINGLESEPA, j, aj,
@@ -67,6 +68,25 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_SingleSepa_Process);
   AH_Job_SetExchangeFn(j, AH_Job_SingleSepa_Exchange);
+
+  /* preset some arguments */
+  dbArgs=AH_Job_GetArguments(j);
+
+  /* TODO: set "ktz" */
+
+  switch(jobType) {
+  case AB_Job_TypeSepaTransfer:
+    GWEN_DB_SetCharValue(dbArgs,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "descriptor"
+			 "sepade:xsd:pain.001.001.02.xsd");
+    break;
+  case AB_Job_TypeSepaDebitNote:
+    break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", jobType);
+    abort();
+  }
 
   return j;
 }
@@ -138,12 +158,16 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AB_IMEXPORTER_CONTEXT *ctx,
 			       uint32_t guiid) {
   AH_JOB_SINGLESEPA *aj;
+  AB_BANKING *ab;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_SINGLESEPA, j);
   assert(aj);
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
 
   if (aj->jobType!=AB_Job_GetType(bj)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -181,6 +205,69 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
   }
 
   case AH_Job_ExchangeModeArgs: {
+    const AB_TRANSACTION_LIMITS *lim=NULL;
+    AB_TRANSACTION *t=NULL;
+    int rv;
+    GWEN_DB_NODE *dbArgs;
+    const char *profileName=NULL;
+
+    dbArgs=AH_Job_GetArguments(j);
+
+    /* get limits and transaction */
+    switch(aj->jobType) {
+    case AB_Job_TypeSepaTransfer:
+      lim=AB_JobSepaTransfer_GetFieldLimits(bj);
+      t=AB_JobSepaTransfer_GetTransaction(bj);
+      profileName="ccm";
+      break;
+    case AB_Job_TypeSepaDebitNote:
+      lim=AB_JobSepaDebitNote_GetFieldLimits(bj);
+      t=AB_JobSepaDebitNote_GetTransaction(bj);
+      /* profileName="ccm"; insert correct name */
+      break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", aj->jobType);
+      return GWEN_ERROR_INVALID;
+      break;
+    }
+
+    if (t==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+      return GWEN_ERROR_INVALID;
+    }
+
+    /* validate transaction */
+    rv=AH_Provider_ValidateTransfer(t, bj, lim);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      AB_IMEXPORTER_CONTEXT *ioc;
+      AB_TRANSACTION *cpy;
+      GWEN_BUFFER *dbuf;
+
+      ioc=AB_ImExporterContext_new();
+      cpy=AB_Transaction_dup(t);
+      AB_ImExporterContext_AddTransaction(ioc, cpy);
+
+      dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName);
+      AB_ImExporterContext_free(ioc);
+      if (rv<0) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(dbuf);
+	return rv;
+      }
+
+      GWEN_DB_SetBinValue(dbArgs,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "transfer",
+			  GWEN_Buffer_GetStart(dbuf),
+			  GWEN_Buffer_GetUsedBytes(dbuf));
+      GWEN_Buffer_free(dbuf);
+    }
+
     break;
   }
 
@@ -193,6 +280,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
+  return 0;
 }
 
 
@@ -206,11 +294,13 @@ int AH_Job_SingleSepa__ValidateTransfer(AB_JOB *bj,
 
 
 AH_JOB *AH_Job_SingleSepaTransfer_new(AB_USER *u, AB_ACCOUNT *account) {
+  return AH_Job_SingleSepaBase_new(u, account, AB_Job_TypeSepaTransfer);
 }
 
 
 
 AH_JOB *AH_Job_SingleSepaDebitNote_new(AB_USER *u, AB_ACCOUNT *account) {
+  return AH_Job_SingleSepaBase_new(u, account, AB_Job_TypeSepaDebitNote);
 }
 
 

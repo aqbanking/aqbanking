@@ -29,6 +29,10 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 			  int nounmount,
 			  uint32_t guiid);
 
+int AH_Provider_ValidateTransfer(AB_TRANSACTION *t,
+				 AB_JOB *j,
+				 const AB_TRANSACTION_LIMITS *lim);
+
 
 #endif
 

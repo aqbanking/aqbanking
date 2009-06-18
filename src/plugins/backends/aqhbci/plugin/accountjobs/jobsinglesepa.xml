@@ -19,7 +19,7 @@
    <GROUP type="SegHead" name="head" />
    <GROUP type="ktz" version="2" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
-   <ELEM name="transfer" type="bin" bintype="sepa" trustlevel="4" />
+   <ELEM name="transfer" type="bin" trustlevel="4" />
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
