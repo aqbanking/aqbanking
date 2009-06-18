@@ -107,6 +107,15 @@ AQBANKING_API
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
 
 
+AQBANKING_API
+int AB_Banking_ExportToBuffer(AB_BANKING *ab,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      const char *exporterName,
+                              const char *profileName,
+			      GWEN_BUFFER *buf,
+			      uint32_t guiid);
+
+
 /*@}*/ /* addtogroup */
 
 #ifdef __cplusplus

@@ -123,6 +123,13 @@ int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
 			       GWEN_DB_NODE *dbProfile,
 			       uint32_t guiid);
 
+AQBANKING_API
+int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 GWEN_BUFFER *buf,
+				 GWEN_DB_NODE *dbProfile,
+				 uint32_t guiid);
+
 
 /**
  * This function checks whether the given importer supports the given file.
