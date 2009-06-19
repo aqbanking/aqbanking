@@ -25,57 +25,6 @@
 
 
 
-void initDbCerts(AB_BANKING *ab) {
-  GWEN_DB_NODE *dbCerts=NULL;
-  int rv;
-
-  rv=AB_Banking_LockSharedConfig(ab, "certs", 0);
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Could not lock certs db (%d)\n", rv);
-  }
-  else {
-    rv=AB_Banking_LoadSharedConfig(ab, "certs", &dbCerts, 0);
-    if (rv<0) {
-      fprintf(stderr, "ERROR: Could not load certs (%d)\n", rv);
-    }
-    else {
-      GWEN_Gui_CGui_SetCertDb(GWEN_Gui_GetGui(), dbCerts);
-    }
-    rv=AB_Banking_UnlockSharedConfig(ab, "certs", 0);
-    if (rv<0) {
-      fprintf(stderr, "ERROR: Could not unlock certs db (%d)\n", rv);
-    }
-  }
-}
-
-
-
-void finiDbCerts(AB_BANKING *ab) {
-  GWEN_DB_NODE *dbGuiCerts;
-
-  dbGuiCerts=GWEN_Gui_CGui_GetCertDb(GWEN_Gui_GetGui());
-  if (dbGuiCerts) {
-    int rv;
-
-    rv=AB_Banking_LockSharedConfig(ab, "certs", 0);
-    if (rv<0) {
-      fprintf(stderr, "ERROR: Could not lock certs db (%d)\n", rv);
-    }
-    else {
-      rv=AB_Banking_SaveSharedConfig(ab, "certs", dbGuiCerts, 0);
-      if (rv<0) {
-	fprintf(stderr, "ERROR: Could not save certs (%d)\n", rv);
-      }
-      rv=AB_Banking_UnlockSharedConfig(ab, "certs", 0);
-      if (rv<0) {
-	fprintf(stderr, "ERROR: Could not unlock certs db (%d)\n", rv);
-      }
-    }
-  }
-}
-
-
-
 int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist) {

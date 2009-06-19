@@ -325,8 +325,6 @@ int sendDtazv(AB_BANKING *ab,
     return 2;
   }
 
-  initDbCerts(ab);
-
   pro=AB_Banking_GetProvider(ab, AH_PROVIDER_NAME);
   assert(pro);
 
@@ -396,8 +394,6 @@ int sendDtazv(AB_BANKING *ab,
   }
 
   GWEN_Buffer_free(dtazv);
-
-  finiDbCerts(ab);
 
   rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {

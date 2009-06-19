@@ -266,8 +266,6 @@ int debitNote(AB_BANKING *ab,
     return 2;
   }
 
-  initDbCerts(ab);
-
   /* get account */
   al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId);
   if (AB_Account_List2_GetSize(al)==0) {
@@ -413,7 +411,6 @@ int debitNote(AB_BANKING *ab,
       if (rv<0) {
 	DBG_ERROR(0, "Error writing context to db (%d)", rv);
 	GWEN_DB_Group_free(dbCtx);
-	finiDbCerts(ab);
 	AB_Banking_OnlineFini(ab, 0);
 	AB_Banking_Fini(ab);
 	return 4;
@@ -428,7 +425,6 @@ int debitNote(AB_BANKING *ab,
 	GWEN_DB_Group_free(dbCtx);
 	if (ctxFile)
 	  close(fd);
-	finiDbCerts(ab);
 	AB_Banking_OnlineFini(ab, 0);
 	AB_Banking_Fini(ab);
 	return 4;
@@ -438,7 +434,6 @@ int debitNote(AB_BANKING *ab,
 	if (close(fd)) {
 	  DBG_ERROR(0, "Error writing context (%d)", rv);
 	  GWEN_DB_Group_free(dbCtx);
-	  finiDbCerts(ab);
 	  AB_Banking_OnlineFini(ab, 0);
 	  AB_Banking_Fini(ab);
 	  return 4;
@@ -453,8 +448,6 @@ int debitNote(AB_BANKING *ab,
 
 
   /* that's it */
-  finiDbCerts(ab);
-
   rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);

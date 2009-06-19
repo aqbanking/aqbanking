@@ -34,10 +34,6 @@ int readContext(const char *ctxFile,
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx);
 AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
-void initDbCerts(AB_BANKING *ab);
-void finiDbCerts(AB_BANKING *ab);
-
-
 
 
 

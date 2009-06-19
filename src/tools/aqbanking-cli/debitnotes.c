@@ -235,8 +235,6 @@ int debitNotes(AB_BANKING *ab,
     return 2;
   }
 
-  initDbCerts(ab);
-
   /* get import module */
   importer=AB_Banking_GetImExporter(ab, importerName);
   if (!importer) {
@@ -527,7 +525,6 @@ int debitNotes(AB_BANKING *ab,
 	DBG_ERROR(0, "Error writing context to db (%d)", rv);
 	GWEN_DB_Group_free(dbCtx);
 	AB_ImExporterContext_free(ctx);
-	finiDbCerts(ab);
 	AB_Banking_OnlineFini(ab, 0);
 	AB_Banking_Fini(ab);
 	return 4;
@@ -543,7 +540,6 @@ int debitNotes(AB_BANKING *ab,
 	GWEN_DB_Group_free(dbCtx);
 	if (ctxFile)
 	  close(fd);
-	finiDbCerts(ab);
 	AB_Banking_OnlineFini(ab, 0);
 	AB_Banking_Fini(ab);
 	return 4;
@@ -554,7 +550,6 @@ int debitNotes(AB_BANKING *ab,
 	  DBG_ERROR(0, "Error writing context (%d)", rv);
 	  AB_ImExporterContext_free(ctx);
 	  GWEN_DB_Group_free(dbCtx);
-	  finiDbCerts(ab);
 	  AB_Banking_OnlineFini(ab, 0);
 	  AB_Banking_Fini(ab);
 	  return 4;
@@ -577,8 +572,6 @@ int debitNotes(AB_BANKING *ab,
   AB_ImExporterContext_free(ctx);
 
   /* that's is */
-  finiDbCerts(ab);
-
   rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);

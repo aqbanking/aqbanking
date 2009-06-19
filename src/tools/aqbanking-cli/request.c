@@ -275,8 +275,6 @@ int request(AB_BANKING *ab,
     return 2;
   }
 
-  initDbCerts(ab);
-
   jobList=AB_Job_List2_new();
   al=AB_Banking_GetAccounts(ab);
   if (al) {
@@ -445,7 +443,6 @@ int request(AB_BANKING *ab,
 	if (rv<0) {
 	  DBG_ERROR(0, "Error writing context to db (%d)", rv);
 	  GWEN_DB_Group_free(dbCtx);
-	  finiDbCerts(ab);
 	  AB_Banking_OnlineFini(ab, 0);
 	  AB_Banking_Fini(ab);
 	  return 4;
@@ -460,7 +457,6 @@ int request(AB_BANKING *ab,
 	  GWEN_DB_Group_free(dbCtx);
 	  if (ctxFile)
 	    close(fd);
-	  finiDbCerts(ab);
 	  AB_Banking_OnlineFini(ab, 0);
 	  AB_Banking_Fini(ab);
 	  return 4;
@@ -470,7 +466,6 @@ int request(AB_BANKING *ab,
 	  if (close(fd)) {
 	    DBG_ERROR(0, "Error writing context (%d)", rv);
 	    GWEN_DB_Group_free(dbCtx);
-	    finiDbCerts(ab);
 	    AB_Banking_OnlineFini(ab, 0);
 	    AB_Banking_Fini(ab);
 	    return 4;
@@ -493,13 +488,10 @@ int request(AB_BANKING *ab,
   }
   else {
     DBG_ERROR(0, "No requests created");
-    finiDbCerts(ab);
     AB_Banking_OnlineFini(ab, 0);
     AB_Banking_Fini(ab);
     return 4;
   }
-
-  finiDbCerts(ab);
 
   rv=AB_Banking_OnlineFini(ab, 0);
   if (rv) {
