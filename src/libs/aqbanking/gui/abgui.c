@@ -54,6 +54,22 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab) {
 
 
 
+void AB_Gui_Unextend(GWEN_GUI *gui) {
+  AB_GUI *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  /* reset callbacks which point into AB_GUI */
+  GWEN_Gui_SetCheckCertFn(gui, xgui->checkCertFn);
+
+  /* unlink from GWEN_GUI object */
+  GWEN_INHERIT_UNLINK(GWEN_GUI, AB_GUI, gui);
+}
+
+
+
 void AB_Gui_FreeData(void *bp, void *p) {
   AB_GUI *xgui;
 
