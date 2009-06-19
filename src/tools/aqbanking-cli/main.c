@@ -19,8 +19,9 @@
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/debug.h>
-#include <aqbanking/banking.h>
 #include <gwenhywfar/directory.h>
+#include <aqbanking/banking.h>
+#include <aqbanking/abgui.h>
 
 #include "globals.h"
 
@@ -213,7 +214,10 @@ int main(int argc, char **argv) {
 
   gui=GWEN_Gui_CGui_new();
   GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
-  GWEN_Gui_CGui_SetIsNonInteractive(gui, nonInteractive);
+  if (nonInteractive)
+    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
+  else
+    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
 
   pinFile=GWEN_DB_GetCharValue(db, "pinFile", 0, NULL);
   if (pinFile) {
@@ -233,6 +237,7 @@ int main(int argc, char **argv) {
   GWEN_Gui_SetGui(gui);
 
   ab=AB_Banking_new("aqbanking-cli", cfgDir, 0);
+  AB_Gui_Extend(gui, ab);
 
   if (strcasecmp(cmd, "senddtazv")==0) {
     rv=sendDtazv(ab, db, argc, argv);

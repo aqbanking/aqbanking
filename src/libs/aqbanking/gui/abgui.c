@@ -117,9 +117,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
   hbuf=GWEN_Buffer_new(0, 64, 0, 1);
   AB_Gui__HashPair(hash, status, hbuf);
 
-  DBG_ERROR(0, "Looking for cert %s", GWEN_Buffer_GetStart(hbuf));
-
-  DBG_ERROR(0, "Locking certs");
+  /* lock certificate data */
   rv=AB_Banking_LockSharedConfig(xgui->banking, "certs", guiid);
   if (rv<0) {
     /* fallback */
@@ -129,7 +127,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
   else {
     int i;
 
-    DBG_ERROR(0, "Loading certs");
+    /* load certificate data */
     rv=AB_Banking_LoadSharedConfig(xgui->banking, "certs", &dbCerts, guiid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load certs (%d)", rv);
@@ -137,7 +135,6 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
     }
 
     /* lookup cert or ask */
-    DBG_ERROR(0, "Looking up cert");
     i=GWEN_DB_GetIntValue(dbCerts, GWEN_Buffer_GetStart(hbuf), 0, 1);
     if (i==0) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
@@ -146,7 +143,42 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
       result=0;
     }
     else {
-      DBG_ERROR(0, "Asking user (intvalue was: %d)", i);
+      /* no info in the cert cache.
+       * If in non-interactive mode we check whether the certificate is valid. If so
+       * and the GUI flags allow us to accept valid certs we do so. Otherwise we ask the
+       * user (only if not in non-interactive mode)
+       */
+      if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
+	uint32_t fl;
+
+	fl=GWEN_SslCertDescr_GetStatusFlags(cd);
+	if (fl==GWEN_SSL_CERT_FLAGS_OK) {
+	  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
+	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		       "Automatically accepting valid new certificate [%s]",
+		       hash);
+	    GWEN_Buffer_free(hbuf);
+	    return 0;
+	  }
+	  else {
+	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		       "Automatically rejecting certificate [%s] (noninteractive)",
+		       hash);
+	    GWEN_Buffer_free(hbuf);
+	    return GWEN_ERROR_USER_ABORTED;
+	  }
+	} /* if cert is valid */
+	else {
+	  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
+	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+		       "Automatically rejecting invalid certificate [%s] (noninteractive)",
+		       hash);
+	    GWEN_Buffer_free(hbuf);
+	    return GWEN_ERROR_USER_ABORTED;
+	  }
+	}
+      } /* if non-interactive */
+
       if (xgui->checkCertFn) {
 	result=xgui->checkCertFn(gui, cd, io, guiid);
 	if (result==0) {

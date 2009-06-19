@@ -22,6 +22,8 @@
 
 #include <qwidget.h>
 
+#include <aqbanking/abgui.h>
+
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/mdigest.h>
 #include <gwenhywfar/debug.h>
@@ -33,6 +35,7 @@
 QBGui::QBGui(QBanking *qb)
 :QGui()
 ,_qbanking(qb)  {
+  AB_Gui_Extend(getCInterface(), qb->getCInterface());
 }
 
 

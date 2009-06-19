@@ -516,31 +516,7 @@ int CppGui::getPassword(uint32_t flags,
 int CppGui::checkCert(const GWEN_SSLCERTDESCR *cd,
 		      GWEN_IO_LAYER *io,
 		      uint32_t guiid) {
-  const char *hash;
-  const char *status;
-  std::string s;
-  int i;
-
-  DBG_ERROR(0, "Checking cert");
-
-  hash=GWEN_SslCertDescr_GetFingerPrint(cd);
-  status=GWEN_SslCertDescr_GetStatusText(cd);
-
-  s=_getPasswordHash(hash, status);
-
-  i=GWEN_DB_GetIntValue(_dbCerts, s.c_str(), 0, -1);
-  if (i==0) {
-    DBG_NOTICE(0, "Automatically accepting certificate [%s]", hash);
-    return 0;
-  }
-
-  i=checkCertBuiltIn(cd, io, guiid);
-  if (i==0) {
-    GWEN_DB_SetIntValue(_dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			s.c_str(), i);
-  }
-
-  return i;
+  return checkCertBuiltIn(cd, io, guiid);
 }
 
 

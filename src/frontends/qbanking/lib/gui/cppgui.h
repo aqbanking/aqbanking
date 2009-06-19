@@ -50,10 +50,10 @@ public:
 
   GWEN_GUI *getCInterface();
 
-  GWEN_DB_NODE *getDbCerts();
+  DEPRECATED GWEN_DB_NODE *getDbCerts();
 
   /** Takes over ownership of the DB */
-  void setDbCerts(GWEN_DB_NODE *db);
+  DEPRECATED void setDbCerts(GWEN_DB_NODE *db);
 
 protected:
   /** @name User Interaction

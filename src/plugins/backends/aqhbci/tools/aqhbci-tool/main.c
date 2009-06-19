@@ -23,6 +23,7 @@
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/debug.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/abgui.h>
 
 #include "globals.h"
 
@@ -269,7 +270,10 @@ int main(int argc, char **argv) {
   s=GWEN_DB_GetCharValue(db, "charset", 0, "ISO-8859-15");
   GWEN_Gui_CGui_SetCharSet(gui, s);
   nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
-  GWEN_Gui_CGui_SetIsNonInteractive(gui, nonInteractive);
+  if (nonInteractive)
+    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
+  else
+    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
   pinFile=GWEN_DB_GetCharValue(db, "pinFile", 0, NULL);
   if (pinFile) {
     GWEN_DB_NODE *dbPins;
@@ -288,6 +292,7 @@ int main(int argc, char **argv) {
 
   ab=AB_Banking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0),
 		    0);
+  AB_Gui_Extend(gui, ab);
 
   if (strcasecmp(cmd, "mkpinlist")==0) {
     rv=mkPinList(ab, db, argc, argv);
