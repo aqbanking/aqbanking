@@ -139,6 +139,7 @@ bool QBCfgTabPageAccountGeneral::toGui() {
   case AB_AccountType_Savings:     idx=4; break;
   case AB_AccountType_Investment:  idx=5; break;
   case AB_AccountType_Cash:        idx=6; break;
+  case AB_AccountType_MoneyMarket: idx=7; break;
   }
   _realPage->accountTypeCombo->setCurrentItem(idx);
 
@@ -233,6 +234,7 @@ bool QBCfgTabPageAccountGeneral::fromGui() {
   case 4:  at=AB_AccountType_Savings; break;
   case 5:  at=AB_AccountType_Investment; break;
   case 6:  at=AB_AccountType_Cash; break;
+  case 7:  at=AB_AccountType_MoneyMarket; break;
   default: at=AB_AccountType_Unknown; break;
   }
   AB_Account_SetAccountType(a, at);

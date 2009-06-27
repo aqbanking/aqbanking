@@ -55,6 +55,9 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   case AB_AccountType_Bank:
     GWEN_Buffer_AppendString(buf, "CREDITLINE");
     break;
+  case AB_AccountType_MoneyMarket:
+    GWEN_Buffer_AppendString(buf, "MONEYMRKT");
+    break;
   case AB_AccountType_CreditCard:
   case AB_AccountType_Investment:
   case AB_AccountType_Cash:

@@ -53,7 +53,8 @@ typedef enum {
   AB_AccountType_Checking,
   AB_AccountType_Savings,
   AB_AccountType_Investment,
-  AB_AccountType_Cash
+  AB_AccountType_Cash,
+  AB_AccountType_MoneyMarket
 } AB_ACCOUNT_TYPE;
 
 #ifdef __cplusplus

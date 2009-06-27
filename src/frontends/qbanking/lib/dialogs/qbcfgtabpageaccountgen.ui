@@ -161,6 +161,11 @@ this account number.
                                     <string>Cash</string>
                                 </property>
                             </item>
+                            <item>
+                                <property name="text">
+                                    <string>Money Market</string>
+                                </property>
+                            </item>
                             <property name="name">
                                 <cstring>accountTypeCombo</cstring>
                             </property>
