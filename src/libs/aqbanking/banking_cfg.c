@@ -487,16 +487,19 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid) {
 	if (u) {
 	  /* user already exists, reload existing user */
 	  const char *s;
-	  AB_PROVIDER *pro;
+	  AB_PROVIDER *pro=NULL;
 
+	  DBG_INFO(AQBANKING_LOGDOMAIN,
+		   "Loading established user [%08x]",
+		   (unsigned int) uid);
 	  AB_User_SetDbId(u, t);
 	  s=AB_User_GetBackendName(u);
-	  assert(s && *s);
-	  pro=AB_Banking_GetProvider(ab, s);
+          if (s && *s)
+	    pro=AB_Banking_GetProvider(ab, s);
 	  if (!pro) {
 	    DBG_WARN(AQBANKING_LOGDOMAIN,
 		     "Provider \"%s\" not found, ignoring user [%s]",
-		     s, AB_User_GetUserId(u));
+		     s?s:"(null)", AB_User_GetUserId(u));
 	  }
 	  else {
 	    int rv;
@@ -517,15 +520,18 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid) {
 	}
 	else {
           /* user is new, load and add it */
+	  DBG_INFO(AQBANKING_LOGDOMAIN,
+		   "Loading new user [%08x]",
+		   (unsigned int) uid);
 	  u=AB_User_fromDb(ab, db);
 	  if (u) {
 	    const char *s;
-	    AB_PROVIDER *pro;
-  
+	    AB_PROVIDER *pro=NULL;
+
 	    AB_User_SetDbId(u, t);
 	    s=AB_User_GetBackendName(u);
-	    assert(s && *s);
-	    pro=AB_Banking_GetProvider(ab, s);
+	    if (s && *s)
+	      pro=AB_Banking_GetProvider(ab, s);
 	    if (!pro) {
 	      DBG_WARN(AQBANKING_LOGDOMAIN,
 		       "Provider \"%s\" not found, ignoring user [%s]",
