@@ -27,7 +27,7 @@ class QBanking;
 class QBCfgTabPage;
 
 
-class QBANKING_API QBCfgTab: protected QBCfgTabUi {
+class QBANKING_API QBCfgTab: public QBCfgTabUi {
   Q_OBJECT
 private:
   QBanking *_qbanking;
