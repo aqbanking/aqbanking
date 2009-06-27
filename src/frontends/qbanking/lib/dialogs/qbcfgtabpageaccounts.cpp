@@ -167,7 +167,7 @@ void QBCfgTabPageAccounts::slotAccountNew() {
     a=AB_Banking_CreateAccount(getBanking()->getCInterface(),
                                s.c_str());
     assert(a);
-    if (QBEditAccount::editAccount(getBanking(), a, true, this)) {
+    if (QBEditAccount::editAccount(getBanking(), a, false, this)) {
       DBG_INFO(0, "Accepted, adding account");
       AB_Banking_AddAccount(getBanking()->getCInterface(), a);
       updateView();
@@ -196,7 +196,7 @@ void QBCfgTabPageAccounts::slotAccountEdit() {
   }
   a=al.front();
 
-  if (QBEditAccount::editAccount(getBanking(), a, false, this)) {
+  if (QBEditAccount::editAccount(getBanking(), a, true, this)) {
     DBG_INFO(0, "Accepted");
   }
   else {
