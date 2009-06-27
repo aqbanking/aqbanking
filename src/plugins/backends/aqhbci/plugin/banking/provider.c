@@ -687,7 +687,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
     if (sigs) {
       if (sigs>1) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
-	GWEN_Gui_ProgressLog(0,
+	GWEN_Gui_ProgressLog(guiid,
 			     GWEN_LoggerLevel_Error,
 			     I18N("ERROR: Multiple signatures not "
 				  "yet supported"));
@@ -3335,13 +3335,13 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   uint32_t keyId;
-  int ksize;
   GWEN_CRYPT_CRYPTALGO *algo;
   int rv;
   AH_HBCI *h;
   const GWEN_CRYPT_TOKEN_KEYINFO *oki;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
   int rdhType;
+  int maxServerKeySizeInBits=0;
 
   h=AH_Provider_GetHbci(pro);
   assert(h);
@@ -3374,24 +3374,6 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,
 				GWEN_Crypt_CryptMode_None);
-  switch(rdhType) {
-  case 1:
-    ksize=96;  /* 768 bits */
-    break;
-  case 2:
-    ksize=256; /* 2048 bits */
-    break;
-  case 3:
-    ksize=256; /* 2048 bits */
-    break;
-  case 5:
-    ksize=256; /* 2048 bits */
-    break;
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH %d not supported", AH_User_GetRdhType(u));
-    return GWEN_ERROR_INVALID;
-  }
-  GWEN_Crypt_CryptAlgo_SetChunkSize(algo, ksize);
 
   /* open token for admin */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
@@ -3412,9 +3394,104 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
+  if (rdhType==10) {
+    /* the specs say that for RDH-10 we must not create keys longer than the server's
+     * sign key (or, if absent, the server's encipher key) */
+    uint32_t skeyId;
+    const GWEN_CRYPT_TOKEN_KEYINFO *ski;
+
+    skeyId=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
+    if (skeyId==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"No verify key id specified (internal error)");
+      GWEN_Crypt_CryptAlgo_free(algo);
+      return GWEN_ERROR_INVALID;
+    }
+
+    ski=GWEN_Crypt_Token_GetKeyInfo(ct, skeyId,
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
+				    guiid);
+    if (ski==NULL) {
+      skeyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
+      if (skeyId==0) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+		  "No encipher key id specified (internal error)");
+	GWEN_Crypt_CryptAlgo_free(algo);
+	return GWEN_ERROR_INVALID;
+      }
+      ski=GWEN_Crypt_Token_GetKeyInfo(ct, skeyId,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
+				      guiid);
+    }
+
+    if (ski) {
+      const uint8_t *modPtr;
+      uint32_t modLen;
+
+      modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ski);
+      modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski);
+      if (modPtr && modLen) {
+	int nbits;
+
+        nbits=modLen*8;
+	while(modLen && *modPtr==0) {
+	  nbits-=8;
+	}
+	if (modLen) {
+	  int i;
+	  uint8_t mask=0x80;
+	  uint8_t b=*modPtr;
+
+	  for (i=0; i<8; i++) {
+	    if (b & mask)
+	      break;
+	    nbits--;
+            mask>>=1;
+	  }
+	}
+	maxServerKeySizeInBits=nbits;
+      }
+    }
+  }
+
+  switch(rdhType) {
+  case 1:
+    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 96);
+    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 768);
+    break;
+  case 2:
+    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+    break;
+  case 3:
+    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+    break;
+  case 5:
+    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+    break;
+  case 10:
+    if (maxServerKeySizeInBits) {
+      int n=maxServerKeySizeInBits/8;
+      if (maxServerKeySizeInBits%8)
+	n++;
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
+    }
+    else {
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 512);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 4096);
+    }
+    break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH %d not supported", AH_User_GetRdhType(u));
+    return GWEN_ERROR_INVALID;
+  }
+
   fprintf(stderr, "Creating keys, please wait...\n");
-  
+
   /* get cipher key id */
   keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
   if (keyId==0) {

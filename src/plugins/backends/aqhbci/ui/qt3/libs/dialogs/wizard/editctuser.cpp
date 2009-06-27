@@ -45,6 +45,11 @@
 #include <gwenhywfar/gui.h>
 
 
+#define RDH_VERSION_1  0
+#define RDH_VERSION_2  1
+#define RDH_VERSION_10 2
+
+
 
 EditCtUser::EditCtUser(QBanking *qb,
                        WizardInfo *wi,
@@ -61,6 +66,11 @@ EditCtUser::EditCtUser(QBanking *qb,
 
   showSpecialCheck->setChecked(FALSE);
   specialGroup->hide();
+
+  rdhVersionCombo->clear();
+  rdhVersionCombo->insertItem("1");
+  rdhVersionCombo->insertItem("2");
+  rdhVersionCombo->insertItem("10");
 
   connect(bankCodeButton, SIGNAL(clicked()),
           this, SLOT(slotBankCodeClicked()));
@@ -171,8 +181,18 @@ void EditCtUser::init() {
 
     if (_wInfo->getCryptMode()==AH_CryptMode_Rdh) {
       i=_wInfo->getRdhVersion();
-      if (i>0)
-        rdhVersionCombo->setCurrentItem(i-1);
+      switch(i) {
+      case 0:
+      case 1:
+	rdhVersionCombo->setCurrentItem(RDH_VERSION_1);
+	break;
+      case 2:
+	rdhVersionCombo->setCurrentItem(RDH_VERSION_2);
+	break;
+      case 10:
+	rdhVersionCombo->setCurrentItem(RDH_VERSION_10);
+	break;
+      }
     }
     else
       rdhVersionCombo->setEnabled(false);
@@ -264,7 +284,18 @@ bool EditCtUser::apply(){
   default: hbciVersion=210; break;
   }
 
-  rdhMode=rdhVersionCombo->currentItem()+1;
+  switch(rdhVersionCombo->currentItem()) {
+  case RDH_VERSION_2:
+    rdhMode=2;
+    break;
+  case RDH_VERSION_10:
+    rdhMode=10;
+    break;
+  case RDH_VERSION_1:
+  default:
+    rdhMode=1;
+    break;
+  }
 
   /* read ids */
   bankId=QBanking::QStringToUtf8String(bankCodeEdit->text());

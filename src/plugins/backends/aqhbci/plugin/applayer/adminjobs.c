@@ -178,7 +178,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
                                    "data/GetKeyResponse");
     if (dbKeyResponse) {
       unsigned int bs;
-      const void *p;
+      const uint8_t *p;
 
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got this key response:");
       if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
@@ -197,15 +197,18 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 	int keySize;
 	uint32_t flags=0;
 
-        /* calculate key size in bytes */
-	if (bs>256)       /* >2048 bits? */
-	  keySize=512;    /*  -> 4096 */
-	else if (bs>128)  /* >1024 bits? */
-	  keySize=256;    /*  -> 2048 */
-	else if (bs>96)   /* >768 bits? */
-	  keySize=128;    /*  -> 1024 bits */
-	else
-	  keySize=96;     /* otherwise 768 bits */
+	/* skip zero bytes if any */
+	while(bs && *p==0) {
+	  p++;
+	  bs--;
+	}
+
+	/* calculate key size in bytes */
+	if (bs<=96)
+	  keySize=96;
+	else {
+	  keySize=bs;
+	}
 
 	s=GWEN_DB_GetCharValue(dbKeyResponse,
 			       "keyname/keytype", 0,
