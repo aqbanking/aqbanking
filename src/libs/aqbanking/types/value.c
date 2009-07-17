@@ -90,7 +90,7 @@ AB_VALUE *AB_Value_fromDouble(double i) {
 AB_VALUE *AB_Value_fromString(const char *s) {
   AB_VALUE *v;
   const char *currency=NULL;
-  int rv;
+  int conversion_succeeded = 1;	// assume conversion will succeed
   char *tmpString=NULL;
   char *p;
   char *t;
@@ -128,26 +128,30 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   if (t)
     *t='.';
 
-  if (strchr(p, '.')) {
-    mpf_t v1;
+  t=strchr(p, '.');
+  if (t) {
+    // remove comma and calculate denominator
+    unsigned long denominator = 1;
+    char *next;
+    do {
+      next=t+1;
+      *t=*next;
+      if (*next != 0)
+        denominator *= 10;
+      t++;
+    } while (*next);
 
-    mpf_init(v1);
-    if (mpf_set_str(v1, p, 10)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
-      AB_Value_free(v);
-#ifdef HAVE_SETLOCALE
-      setlocale(LC_NUMERIC, currentLocale);
-      free(currentLocale);
-#endif
-      return NULL;
+    // set denominator to the calculated value
+    mpz_set_ui(mpq_denref(v->value), denominator);
+
+    // set numerator to the resulting integer string without comma
+    if (mpz_set_str(mpq_numref(v->value), p, 10) == -1) {
+      conversion_succeeded = 0;
     }
-    mpq_set_f(v->value, v1);
-    mpf_clear(v1);
-    rv=1;
   }
   else {
     /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
-    rv=gmp_sscanf(p, "%Qu", v->value);
+    conversion_succeeded = (gmp_sscanf(p, "%Qu", v->value) == 1);
   }
 
 #ifdef HAVE_SETLOCALE
@@ -162,14 +166,11 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   /* temporary string no longer needed */
   free(tmpString);
 
-  if (rv!=1) {
+  if (!conversion_succeeded) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
     AB_Value_free(v);
     return NULL;
   }
-
-  /* canonicalize */
-  mpq_canonicalize(v->value);
 
   if (isNeg)
     mpq_neg(v->value, v->value);
@@ -299,33 +300,7 @@ void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 void AB_Value_toHumanReadableString(const AB_VALUE *v,
                                      GWEN_BUFFER *buf,
                                      int prec) {
-  char numbuf[128];
-  double num;
-  int rv;
-#ifdef HAVE_SETLOCALE
-  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
-  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
-  setlocale(LC_NUMERIC, "C");
-#endif
-
-  num=AB_Value_GetValueAsDouble(v);
-  rv=snprintf(numbuf, sizeof(numbuf), "%.*lf",
-              prec?prec:2, num);
-
-#ifdef HAVE_SETLOCALE
-  setlocale(LC_NUMERIC, currentLocale);
-  free(currentLocale);
-#endif
-
-  if (rv<1 || rv>=sizeof(numbuf)) {
-    assert(0);
-  }
-  GWEN_Buffer_AppendString(buf, numbuf);
-
-  if (v->currency) {
-    GWEN_Buffer_AppendString(buf, " ");
-    GWEN_Buffer_AppendString(buf, v->currency);
-  }
+  AB_Value_toHumanReadableString2(v, buf, prec?prec:2, 0);
 }
 
 

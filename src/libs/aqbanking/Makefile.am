@@ -105,7 +105,11 @@ sources:
 
 
 # Build and link a test program to verify the linker flags
-noinst_PROGRAMS = testlib
+noinst_PROGRAMS = testlib ab_value_test
 testlib_SOURCES = testlib.c
 testlib_LDADD = libaqbanking.la $(gwenhywfar_libs)
-TESTS = testlib
+
+# Another test program to verify the parsing of decimal numbers
+ab_value_test_SOURCES = ab-value-test.c
+ab_value_test_LDADD = libaqbanking.la $(gwenhywfar_libs)
+TESTS = testlib ab_value_test
