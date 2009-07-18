@@ -5,14 +5,15 @@ All contributions from Christian Stimming,  Patrick Prasse Stephen R.
 Besch and G. Paul Ziemba are licensed under the "Modified BSD-License" 
 (see at the end of this document).
 
+All contributions from Mich Lenk are licensed under the GPL and the
+"Modified BSD-License".
+
 All contributions from Martin Preuss are licensed under GPL.
 Hence, the full package is licensed under GPL. 
+
 If you are interested in another licensing option, please contact Martin
 Preuss (martin@libchipcard.de) and ask for other available licenses, some of 
 which will be available commercially.
-
-The banking backend "AqYellowNet" is currently only available binary-only
-because of a nondisclosure agreement.
 
 As the copyright holder of AqBanking, Martin Preuss grants the following
 license exceptions:
