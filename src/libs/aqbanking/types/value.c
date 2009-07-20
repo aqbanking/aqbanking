@@ -96,13 +96,6 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   char *t;
   int isNeg=0;
 
-#ifdef HAVE_SETLOCALE
-  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
-  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
-
-  setlocale(LC_NUMERIC,"C");
-#endif
-
   tmpString=strdup(s);
   p=tmpString;
 
@@ -153,11 +146,6 @@ AB_VALUE *AB_Value_fromString(const char *s) {
     /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
     conversion_succeeded = (gmp_sscanf(p, "%Qu", v->value) == 1);
   }
-
-#ifdef HAVE_SETLOCALE
-  setlocale(LC_NUMERIC, currentLocale);
-  free(currentLocale);
-#endif
 
   /* set currency (if any) */
   if (currency)
