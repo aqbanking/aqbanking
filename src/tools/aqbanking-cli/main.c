@@ -192,6 +192,55 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
 			     I18N("   Check an IBAN\n"));
 
+    GWEN_Buffer_AppendString(ubuf, " import\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Import a file into an import context file\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " transfer\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Issue a single transfer (data from command line)\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " transfers\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Issue a number of transfers (data from a file)\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " debitnote\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Issue a single debit note (data from command line)\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " transfers\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Issue a number of debit notes (data from a file)\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " addtrans\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Add a transfer to an existing import context file\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " fillgaps\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Fill gaps in an import context file from configuration settings\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " updateconf\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Update configuration from previous AqBanking versions\n"));
+
+#ifdef WITH_AQFINANCE
+    GWEN_Buffer_AppendString(ubuf, " dbinit\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Initialize AqFinance database\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " dbrecon\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("   Reconcile transfers using transactions (both from AqFinance database)\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " dblisttrans\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("  Export transactions from the AqFinance database\n"));
+
+    GWEN_Buffer_AppendString(ubuf, " dblisttransfers\n");
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("  Export transfers from the AqFinance database\n"));
+#endif
     GWEN_Buffer_AppendString(ubuf, "\n");
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
