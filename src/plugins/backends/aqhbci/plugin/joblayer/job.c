@@ -1539,12 +1539,15 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
                    "Job contains account data");
 
         /* account data found */
-        accountId=GWEN_DB_GetCharValue(dbRd, "accountId", 0, 0);
-        assert(accountId);
+	accountId=GWEN_DB_GetCharValue(dbRd, "accountId", 0, 0);
+	if (accountId==NULL)
+	  accountId=I18N("AH_JOB|-- no account id --");
         accountName=GWEN_DB_GetCharValue(dbRd, "account/name", 0, 0);
         userName=GWEN_DB_GetCharValue(dbRd, "name1", 0, 0);
 	iban=GWEN_DB_GetCharValue(dbRd, "iban", 0, 0);
-        bankCode=GWEN_DB_GetCharValue(dbRd, "bankCode", 0, 0);
+	bankCode=GWEN_DB_GetCharValue(dbRd, "bankCode", 0, 0);
+	if (bankCode==NULL)
+	  bankCode=I18N("AH_JOB|-- no bank code --");
         assert(bankCode);
         custId=GWEN_DB_GetCharValue(dbRd, "customer", 0, 0);
         assert(custId);
