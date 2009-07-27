@@ -432,7 +432,7 @@ int debitNotes(AB_BANKING *ab,
 
 	/* update transaction */
 	if (AB_Transaction_GetTextKey(t)==0)
-	  AB_Transaction_SetTextKey(t, 51);
+	  AB_Transaction_SetTextKey(t, 5);
 
 	j=AB_JobSingleDebitNote_new(a);
 	rv=AB_Job_CheckAvailability(j, 0);

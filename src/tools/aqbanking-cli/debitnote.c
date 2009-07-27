@@ -157,8 +157,8 @@ int debitNote(AB_BANKING *ab,
     1,                            /* maxnum */
     "t",                          /* short option */
     "textkey",                    /* long option */
-    "Specify the text key (51 for normal transfer)",  /* short description */
-    "Specify the text key (51 for normal transfer)"   /* long description */
+    "Specify the text key (5 for normal debit notes)",  /* short description */
+    "Specify the text key (5 for normal debit notes)"   /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
