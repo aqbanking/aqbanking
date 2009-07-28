@@ -690,10 +690,11 @@ int QBanking::print(const QString &docTitle,
                     const QString &docType,
                     const QString &descr,
                     const QString &text) {
-  return print(QStringToUtf8String(docTitle).c_str(),
-               QStringToUtf8String(docType).c_str(),
-               QStringToUtf8String(descr).c_str(),
-               QStringToUtf8String(text).c_str());
+  return GWEN_Gui_Print(QStringToUtf8String(docTitle).c_str(),
+			QStringToUtf8String(docType).c_str(),
+			QStringToUtf8String(descr).c_str(),
+			QStringToUtf8String(text).c_str(),
+			0);
 }
 
 
