@@ -105,7 +105,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			      uint32_t guiid);
 
 /**
- * Retrieve the public keys of the given user. This is only needed for
+ * Send the public keys of the given user. This is only needed for
  * PIN/TAN and for RDH mode.
  * @param pro pointer to the HBCI provider
  * @param u user for which the public keys are to be sent
@@ -117,6 +117,23 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
 			     int nounmount,
 			     uint32_t guiid);
+
+/**
+ * Send the public keys of the given user. This is only needed for
+ * PIN/TAN and for RDH mode.
+ * In addition to @ref AH_Provider_SendUserKeys this function also sends the
+ * authentication key if requested.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the public keys are to be sent
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+AQHBCI_API
+int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      int withAuthKey,
+			      int nounmount,
+			      uint32_t guiid);
 
 /**
  * Retrieve the SSL certificate for the given user. This is only needed for

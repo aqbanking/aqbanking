@@ -340,7 +340,10 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
 
   assert(u);
 
-  j=AH_Job_new("JobSendKeys", u, 0);
+  if (authKeyInfo)
+    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0);
+  else
+    j=AH_Job_new("JobSendKeys", u, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
     return NULL;
@@ -352,6 +355,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
 			 GWEN_DB_FLAGS_DEFAULT,
 			 "cryptKey");
   assert(dbKey);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing crypt key");
   if (AH_Job_SendKeys_PrepareKey(j, dbKey, cryptKeyInfo, 0)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare cryptkey");
     AH_Job_free(j);
@@ -362,6 +366,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
                          GWEN_DB_FLAGS_DEFAULT,
                          "signKey");
   assert(dbKey);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing sign key");
   if (AH_Job_SendKeys_PrepareKey(j, dbKey, signKeyInfo, 1)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare signkey");
     AH_Job_free(j);
@@ -373,11 +378,15 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
 			   GWEN_DB_FLAGS_DEFAULT,
 			   "authKey");
     assert(dbKey);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing auth key");
     if (AH_Job_SendKeys_PrepareKey(j, dbKey, authKeyInfo, 2)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not prepare authkey");
       AH_Job_free(j);
       return 0;
     }
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No auth key info");
   }
 
   version=AH_User_GetRdhType(u);
@@ -467,17 +476,54 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   /* set key */
   if (kn==0) { /* crypt key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "key/purpose", 5);
-
+			"key/purpose", 5);
+    switch(AH_User_GetRdhType(u)) {
+    case 10:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 2);
+      break;
+    case 5:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 18);
+      break;
+    case 2:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 2);
+      break;
+    case 0:
+    case 1:
+    default:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 2);
+      break;
+    }
   }
-  else { /* sign key */
+  else {
+    /* sign key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "key/purpose", 6);
+			"key/purpose", 6);
+    switch(AH_User_GetRdhType(u)) {
+    case 10:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 19);
+      break;
+    case 5:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 18);
+      break;
+    case 2:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 17);
+      break;
+    case 0:
+    case 1:
+    default:
+      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "key/opmode", 16);
+      break;
+    }
   }
-  /* TODO: set purpose for auth key */
 
-  GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "key/opmode", 16);
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "key/type", 10);
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,

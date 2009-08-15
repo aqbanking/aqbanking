@@ -1449,10 +1449,11 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-			     int nounmount,
-			     uint32_t guiid) {
+int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      int withAuthKey,
+			      int nounmount,
+			      uint32_t guiid) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1537,6 +1538,9 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
       return GWEN_ERROR_NOT_FOUND;
     }
   }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No sign key id");
+  }
 
   /* get crypt key info */
   kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(cctx);
@@ -1557,24 +1561,32 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
       return GWEN_ERROR_NOT_FOUND;
     }
   }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No decipher key id");
+  }
 
   /* get auth sign key info */
-  kid=GWEN_Crypt_Token_Context_GetAuthSignKeyId(cctx);
-  if (kid) {
-    authKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					    guiid);
-    if (authKeyInfo==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Auth key info not found on crypt token");
-      GWEN_Gui_ProgressLog(guiid,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Auth key info not found on crypt token"));
-      if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      return GWEN_ERROR_NOT_FOUND;
+  if (withAuthKey) {
+    kid=GWEN_Crypt_Token_Context_GetAuthSignKeyId(cctx);
+    if (kid) {
+      authKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+					      guiid);
+      if (authKeyInfo==NULL) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Auth key info not found on crypt token");
+	GWEN_Gui_ProgressLog(guiid,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Auth key info not found on crypt token"));
+	if (!nounmount)
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	return GWEN_ERROR_NOT_FOUND;
+      }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No auth key id");
     }
   }
 
@@ -1641,6 +1653,15 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
     AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
 
   return 0;
+}
+
+
+
+int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
+			     AB_IMEXPORTER_CONTEXT *ctx,
+			     int nounmount,
+			     uint32_t guiid) {
+  return AH_Provider_SendUserKeys2(pro, u, ctx, 0, nounmount, guiid);
 }
 
 
@@ -3450,7 +3471,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
             mask>>=1;
 	  }
 	}
-	maxServerKeySizeInBits=nbits;
+        if (nbits>1)
+	  maxServerKeySizeInBits=nbits-1;
+	else
+	  maxServerKeySizeInBits=nbits;
       }
     }
   }
@@ -3479,6 +3503,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	n++;
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
       GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
+      /*DBG_ERROR(0, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);*/
     }
     else {
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 512);

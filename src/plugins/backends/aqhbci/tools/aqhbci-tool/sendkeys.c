@@ -39,6 +39,7 @@ int sendKeys(AB_BANKING *ab,
   const char *bankId;
   const char *userId;
   const char *customerId;
+  int withAuthKey=0;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -61,6 +62,17 @@ int sendKeys(AB_BANKING *ab,
     "customer",                   /* long option */
     "Specify the customer id (Kundennummer)",    /* short description */
     "Specify the customer id (Kundennummer)"     /* long description */
+  },
+  {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "authkey",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "A",                          /* short option */
+    "authkey",                    /* long option */
+    "Also send the authentication key",    /* short description */
+    "Also send the authentication key"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -116,6 +128,8 @@ int sendKeys(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
 
+  withAuthKey=GWEN_DB_GetIntValue(db, "authKey", 0, 0);
+
   ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
                           "de", bankId, userId, customerId);
   if (ul) {
@@ -143,7 +157,7 @@ int sendKeys(AB_BANKING *ab,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_SendUserKeys(pro, u, ctx, 0, 0);
+    rv=AH_Provider_SendUserKeys2(pro, u, ctx, withAuthKey, 0, 0);
     AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error sending user keys (%d)", rv);

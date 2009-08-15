@@ -880,6 +880,30 @@
  </SEGdef>
 
 
+ <SEGdef id="SendAuthKey" 
+         code="HKSAK" 
+         version="3"
+         pversion="300"
+         mode="RDH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP type="SecProfile" name="secProfile" />
+   <GROUP name="keyname" type="signkeyname" />
+   <GROUP name="key" type="signkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
  <!-- 
   --------------------------------------------------------------------
     PIN-TAN-spezifische BPD-Erweiterung
