@@ -92,12 +92,15 @@ int AH_MsgRdh_PrepareCryptoSeg2(AH_MSG *hmsg,
 		      "secProfile/version",
 		      AH_User_GetRdhType(u));
   if (crypt) {
-    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cryptAlgo/algo", 13); /* RSA */
-    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cryptAlgo/mode", 2); /* CBC (0-Padding) */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", 4);        /* crypt */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cryptAlgo/algo", 13); /* 2-KEY-TRIPLE-DES */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cryptAlgo/mode", 2);  /* CBC (0-Padding) */
   }
   else {
-    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/algo", 10); /* RSA */
-    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/mode", 17); /* ISO-9796-2 */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", 2);        /* sign with signature key */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/algo", 10);  /* RSA */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/mode", 17);  /* ISO-9796-2 */
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "hashAlgo/algo", 999); /* RMD160 */
   }
 
   return 0;
