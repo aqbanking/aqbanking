@@ -25,10 +25,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=1
-AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="git"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -617,7 +617,7 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(3,9,0,1)
+AC_GWENHYWFAR(3,10,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
