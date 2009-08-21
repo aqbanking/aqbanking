@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=1
 AQBANKING_VERSION_PATCHLEVEL=2
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="svn"
 
 
 
@@ -1542,6 +1542,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/sparda.conf
   src/plugins/imexporters/csv/profiles/full.conf
   src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
+  src/plugins/imexporters/csv/profiles/postbankffm.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
