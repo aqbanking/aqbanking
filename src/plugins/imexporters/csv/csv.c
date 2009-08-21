@@ -146,6 +146,8 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   int usePosNegField;
   int splitValueInOut;
   int defaultIsPositive;
+  int switchLocalRemote;
+  int switchOnNegative;
   const char *posNegFieldName;
   uint32_t progressId;
 
@@ -156,6 +158,9 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0,
 				       "posNeg");
   splitValueInOut=GWEN_DB_GetIntValue(dbParams, "splitValueInOut", 0, 0);
+
+  switchLocalRemote=GWEN_DB_GetIntValue(dbParams, "switchLocalRemote", 0, 0);
+  switchOnNegative=GWEN_DB_GetIntValue(dbParams, "switchOnNegative", 0, 1);
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -338,6 +343,46 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	  }
 
         } /* if usePosNegField */
+
+	else if (switchLocalRemote) {
+	  const AB_VALUE *pv;
+
+	  /* value must be negated, because default is negative */
+	  pv=AB_Transaction_GetValue(t);
+	  if (pv) {
+	    if (!(AB_Value_IsNegative(pv) ^ (switchOnNegative!=0))) {
+	      const GWEN_STRINGLIST *csl;
+	      GWEN_BUFFER *b1;
+	      GWEN_BUFFER *b2;
+
+	      /* need to switch local/remote name */
+	      b1=GWEN_Buffer_new(0, 64, 0, 1);
+	      b2=GWEN_Buffer_new(0, 64, 0, 1);
+
+	      /* get data */
+	      csl=AB_Transaction_GetRemoteName(t);
+	      if (csl && GWEN_StringList_Count(csl))
+		GWEN_Buffer_AppendString(b1, GWEN_StringList_FirstString(csl));
+	      if (AB_Transaction_GetLocalName(t))
+		GWEN_Buffer_AppendString(b2, AB_Transaction_GetLocalName(t));
+
+              /* clear */
+	      AB_Transaction_ClearRemoteName(t);
+	      AB_Transaction_SetLocalName(t, NULL);
+
+              /* set reversed */
+	      if (GWEN_Buffer_GetUsedBytes(b2))
+		AB_Transaction_AddRemoteName(t, GWEN_Buffer_GetStart(b2), 0);
+
+	      if (GWEN_Buffer_GetUsedBytes(b1))
+		AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(b1));
+
+	      /* cleanup */
+              GWEN_Buffer_free(b2);
+	      GWEN_Buffer_free(b1);
+	    }
+	  }
+	}
 
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
         AB_ImExporterContext_AddTransaction(ctx, t);
