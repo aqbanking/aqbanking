@@ -84,33 +84,38 @@ QBEditUser::~QBEditUser() {
 
 
 
-bool QBEditUser::fromGui() {
+bool QBEditUser::fromGui(bool doLock) {
   int rv;
 
-  rv=getBanking()->beginExclUseUser(_user, 0);
-  if (rv<0) {
-    DBG_ERROR(0, "Could not lock user");
-    QMessageBox::critical(this,
-			  tr("Error"),
-			  tr("Could not lock user data. "
-			     "Maybe this user is still used by another application?"),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
+  if (doLock) {
+    rv=getBanking()->beginExclUseUser(_user, 0);
+    if (rv<0) {
+      DBG_ERROR(0, "Could not lock user");
+      QMessageBox::critical(this,
+			    tr("Error"),
+			    tr("Could not lock user data. "
+			       "Maybe this user is still used by another application?"),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+      return false;
+    }
   }
 
   if (!QBCfgTab::fromGui()) {
-    getBanking()->endExclUseUser(_user, 1, 0); /* abandon changes */
+    if (doLock)
+      getBanking()->endExclUseUser(_user, 1, 0); /* abandon changes */
     return false;
   }
 
-  rv=getBanking()->endExclUseUser(_user, 0, 0);
-  if (rv<0) {
-    DBG_ERROR(0, "Could not unlock user");
-    QMessageBox::critical(this,
-			  tr("Internal Error"),
-			  tr("Could not unlock user data."),
-			  QMessageBox::Ok,QMessageBox::NoButton);
-    return false;
+  if (doLock) {
+    rv=getBanking()->endExclUseUser(_user, 0, 0);
+    if (rv<0) {
+      DBG_ERROR(0, "Could not unlock user");
+      QMessageBox::critical(this,
+			    tr("Internal Error"),
+			    tr("Could not unlock user data."),
+			    QMessageBox::Ok,QMessageBox::NoButton);
+      return false;
+    }
   }
 
   return true;
@@ -118,14 +123,16 @@ bool QBEditUser::fromGui() {
 
 
 
-bool QBEditUser::editUser(QBanking *kb, AB_USER *u, QWidget* parent) {
+bool QBEditUser::editUser(QBanking *kb, AB_USER *u,
+			  bool doLock,
+			  QWidget* parent) {
   QBEditUser eu(kb, u, parent);
 
   if (!eu.toGui())
     return false;
   if (eu.exec()!=QDialog::Accepted)
     return false;
-  if (!eu.fromGui())
+  if (!eu.fromGui(doLock))
     return false;
   return true;
 }

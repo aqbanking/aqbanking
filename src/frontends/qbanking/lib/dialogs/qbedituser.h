@@ -37,9 +37,9 @@ public:
              WFlags fl=0);
   ~QBEditUser();
 
-  bool fromGui();
+  bool fromGui(bool doLock);
 
-  static bool editUser(QBanking *kb, AB_USER *u, QWidget* parent=0);
+  static bool editUser(QBanking *kb, AB_USER *u, bool doLock, QWidget* parent=0);
 
 };
 

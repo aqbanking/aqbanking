@@ -183,7 +183,7 @@ void QBCfgTabPageUsers::slotUserNew() {
         u=AB_Banking_CreateUser(getBanking()->getCInterface(),
                                 s.c_str());
         assert(u);
-        if (QBEditUser::editUser(getBanking(), u, this)) {
+        if (QBEditUser::editUser(getBanking(), u, false, this)) {
           DBG_INFO(0, "Accepted, adding user");
           AB_Banking_AddUser(getBanking()->getCInterface(), u);
         }
@@ -219,7 +219,7 @@ void QBCfgTabPageUsers::slotUserEdit() {
 
   u=ul.front();
 
-  if (QBEditUser::editUser(getBanking(), u, this)) {
+  if (QBEditUser::editUser(getBanking(), u, true, this)) {
     DBG_INFO(0, "Accepted");
   }
   else {
