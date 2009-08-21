@@ -30,7 +30,7 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlabel.h>
-
+#include <qlocale.h>
 
 
 
@@ -106,6 +106,7 @@ bool QBCfgTabPageUserGeneral::toGui() {
   const char *s;
   const AB_COUNTRY *ci;
   QString qs;
+  std::string stds;
 
   qs=getUserIdLabel();
   if (!qs.isEmpty())
@@ -131,6 +132,20 @@ bool QBCfgTabPageUserGeneral::toGui() {
     _realPage->bankIdEdit->setText(QString::fromUtf8(s));
 
   s=AB_User_GetCountry(getUser());
+  if (!s){
+    /* derive default country name from the current locale */
+    QLocale locale=QLocale::system();
+    QString lname=locale.name();
+    int pos;
+
+    pos=lname.find('_');
+    if (pos>=0) {
+      QString l=lname.mid(uint(pos+1));
+      stds=QBanking::QStringToUtf8String(l);
+      if (!stds.empty())
+	s=stds.c_str();
+    }
+  }
   if (!s)
     s="de";
 
