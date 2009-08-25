@@ -318,7 +318,7 @@ want to use this package in qt4, do the following two steps:
 
 1. Call ./configure with qt3_libs and qt3_includes set so that the
    Qt4 libraries are found
-2. Call "make qt4-port"
+2. Call "make qt4-all"
 3. As usual call "make"
 
 An example for 1. is this for Linux/g++:

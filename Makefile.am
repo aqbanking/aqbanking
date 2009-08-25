@@ -246,6 +246,12 @@ else
 	@exit 1
 endif
 
+# One consolidated make target for running all steps of qt4 building
+qt4-all: $(BUILT_SOURCES) config.h
+	$(MAKE) $(AM_MAKEFLAGS) clean
+	$(MAKE) $(AM_MAKEFLAGS) qt4-port
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+
 BUILT_SOURCES = $(iheader_HEADERS) sl-headers
 CLEANFILES += $(BUILT_SOURCES)
 
