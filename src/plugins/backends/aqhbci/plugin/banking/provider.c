@@ -3035,7 +3035,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   int i;
   GWEN_TIME *ti;
   char numbuf[32];
-  char hashbuffer[21];
+  char hashbuffer[33];
   AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
@@ -3305,7 +3305,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, "<br>\n");
 
   GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Hash"));
+  GWEN_Buffer_AppendString(lbuf, I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
   rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
@@ -3315,7 +3315,6 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
   }
-  GWEN_Buffer_free(keybuf);
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
@@ -3324,6 +3323,28 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   }
   GWEN_Buffer_AppendString(lbuf, "</font>\n");
   GWEN_Buffer_AppendString(lbuf, "<br>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<h4>");
+  GWEN_Buffer_AppendString(lbuf, I18N("Hash (SHA-256)"));
+  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
+  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
+  rv=AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
+			     GWEN_Buffer_GetUsedBytes(keybuf),
+			     (uint8_t*)hashbuffer);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
+    abort();
+  }
+  GWEN_Buffer_free(keybuf);
+
+  GWEN_Buffer_AppendString(lbuf, "  ");
+  if (GWEN_Text_ToHexBuffer(hashbuffer, 32, lbuf, 2, ' ', 0)) {
+    DBG_ERROR(0, "Error converting to hex??");
+    abort();
+  }
+  GWEN_Buffer_AppendString(lbuf, "</font>\n");
+  GWEN_Buffer_AppendString(lbuf, "<br>\n");
+
 
   if (!useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
