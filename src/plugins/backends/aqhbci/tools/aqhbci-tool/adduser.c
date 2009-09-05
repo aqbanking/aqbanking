@@ -269,6 +269,50 @@ int addUser(AB_BANKING *ab,
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
   assert(userName);
 
+  /* generic check for some arguments */
+  if (hbciVersion>0 && rdhType>1) {
+    if (hbciVersion<300 && rdhType>1) {
+      DBG_ERROR(0, "RDH Types 2 and above only work with HBCI version 300 or later");
+      return 1;
+    }
+  }
+
+  if (hbciVersion>0) {
+    switch(hbciVersion) {
+    case 201:
+    case 210:
+    case 220:
+    case 300:
+      /* supported */
+      break;
+
+    default:
+      DBG_ERROR(0, "HBCI/FinTS version %d not supported", hbciVersion);
+      return 1;
+    }
+  }
+
+  if (rdhType>0) {
+    switch(rdhType) {
+    case 1:
+    case 2:
+    case 10:
+      /* supported */
+      break;
+
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    default:
+      DBG_ERROR(0, "RDH type %d not supported", rdhType);
+      return 1;
+    }
+  }
+
   if (1) {
     const char *lbankId;
     const char *luserId;
@@ -434,8 +478,9 @@ int addUser(AB_BANKING *ab,
 	  AH_User_SetHbciVersion(user, 210);
       }
     }
-    else
+    else {
       AH_User_SetHbciVersion(user, hbciVersion);
+    }
 
     /* try to get server address from database if still unknown */
     if (!lserverAddr || *lserverAddr==0) {
