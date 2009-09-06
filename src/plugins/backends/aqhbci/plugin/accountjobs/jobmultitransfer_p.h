@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2009 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,7 +11,7 @@
 #ifndef AH_JOBMULTITRANSFER_P_H
 #define AH_JOBMULTITRANSFER_P_H
 
-#define AH_JOBMULTITRANSFER_MAXTRANS 16
+#define AH_JOBMULTITRANSFER_MAXTRANS 64
 
 #include "jobmultitransfer_l.h"
 #include <gwenhywfar/db.h>

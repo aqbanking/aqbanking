@@ -1509,6 +1509,15 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "mode",
                        AH_CryptMode_toString(AH_User_GetCryptMode(u)));
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "rdhtype",
+		      AH_User_GetRdhType(u));
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "hbciVersion",
+		      AH_User_GetHbciVersion(u));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "tokenType",
+		       AH_User_GetTokenType(u));
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "crypt",
@@ -1517,10 +1526,11 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        "sender",
                        rec?"bank":"user");
   GWEN_Version(&vmajor, &vminor, &vpatchlevel, &vbuild);
-  snprintf(vbuf, sizeof(vbuf), "%d.%d.%d.%d",
-           vmajor, vminor, vpatchlevel, vbuild);
+  snprintf(vbuf, sizeof(vbuf)-1, "%d.%d.%d.%d",
+	   vmajor, vminor, vpatchlevel, vbuild);
+  vbuf[sizeof(vbuf)-1]=0;
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "gwenhywfar", vbuf);
+		       "gwenhywfar", vbuf);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "aqhbci",
@@ -1530,10 +1540,10 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        AH_HBCI_GetProductName(h));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "appversion",
-                       AH_HBCI_GetProductVersion(h));
+		       AH_HBCI_GetProductVersion(h));
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "size",
-                      GWEN_Buffer_GetUsedBytes(buf));
+		      "size",
+		      GWEN_Buffer_GetUsedBytes(buf));
   if (GWEN_Directory_GetPath(logFile,
 			     GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
