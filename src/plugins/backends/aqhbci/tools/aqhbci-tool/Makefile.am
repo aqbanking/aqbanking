@@ -34,7 +34,9 @@ aqhbci_tool4_SOURCES=main.c \
  adduserflags.c \
  subuserflags.c \
  listitanmodes.c \
- setitanmode.c
+ setitanmode.c \
+ setmaxtransfers.c
+
 
 aqhbci_tool4_LDADD = \
   $(aqhbci_internal_libs) \

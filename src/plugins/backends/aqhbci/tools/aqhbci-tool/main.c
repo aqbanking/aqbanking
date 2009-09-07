@@ -224,6 +224,10 @@ int main(int argc, char **argv) {
                              I18N("  delaccount:\n"
                                   "    Deletes account \n\n"));
 
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  setMaxTransfers:\n"
+                                  "    Set the maximum number of transfers/debit notes per job \n\n"));
+
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return 0;
@@ -362,6 +366,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "subaccountflags")==0) {
     rv=addsubAccountFlags(ab, db, argc, argv, 0);
+  }
+  else if (strcasecmp(cmd, "setmaxtransfers")==0) {
+    rv=setMaxTransfers(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();

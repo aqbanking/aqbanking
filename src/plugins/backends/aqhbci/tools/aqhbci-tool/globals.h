@@ -146,11 +146,17 @@ int subUserFlags(AB_BANKING *ab,
 		 char **argv);
 
 int addsubAccountFlags(AB_BANKING *ab,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv,
-     int is_add );
+		       GWEN_DB_NODE *dbArgs,
+		       int argc,
+		       char **argv,
+		       int is_add );
 
+
+
+int setMaxTransfers(AB_BANKING *ab,
+		    GWEN_DB_NODE *dbArgs,
+		    int argc,
+		    char **argv);
 
 
 int test1(AB_BANKING *ab,

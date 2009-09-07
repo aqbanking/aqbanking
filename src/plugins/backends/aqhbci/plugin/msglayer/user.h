@@ -263,6 +263,13 @@ const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(const AB_USER *u);
 /*@}*/
 
 
+AQHBCI_API int AH_User_GetMaxTransfersPerJob(const AB_USER *u);
+AQHBCI_API void AH_User_SetMaxTransfersPerJob(AB_USER *u, int i);
+AQHBCI_API int AH_User_GetMaxDebitNotesPerJob(const AB_USER *u);
+AQHBCI_API void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i);
+
+
+
 
 
 

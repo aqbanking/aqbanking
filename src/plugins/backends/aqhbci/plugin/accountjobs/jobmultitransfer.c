@@ -82,6 +82,7 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
   GWEN_DB_NODE *dbT;
   GWEN_DB_NODE *dbParams;
   const char *s;
+  int userMaxTrans;
 
   j=AH_AccountJob_new(isTransfer?"JobMultiTransfer":"JobMultiDebitNote",
                       u, account);
@@ -128,9 +129,13 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
 		       isTransfer?"transfer":"debitNote");
 
   dbParams=AH_Job_GetParams(j);
+  if (isTransfer)
+    userMaxTrans=AH_User_GetMaxTransfersPerJob(u);
+  else
+    userMaxTrans=AH_User_GetMaxDebitNotesPerJob(u);
   aj->maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
-  if (aj->maxTransfers==0 || aj->maxTransfers>AH_JOBMULTITRANSFER_MAXTRANS)
-    aj->maxTransfers=AH_JOBMULTITRANSFER_MAXTRANS;
+  if (aj->maxTransfers==0 || aj->maxTransfers>userMaxTrans)
+    aj->maxTransfers=userMaxTrans;
 
   return j;
 }

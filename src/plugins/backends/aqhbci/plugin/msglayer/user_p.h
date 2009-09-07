@@ -19,6 +19,9 @@
 
 #define AH_USER_MAX_TANMETHODS 16
 
+#define AH_USER_MAX_TRANSFERS_PER_JOB  64
+#define AH_USER_MAX_DEBITNOTES_PER_JOB 64
+
 
 typedef struct AH_USER AH_USER;
 struct AH_USER {
@@ -60,6 +63,9 @@ struct AH_USER {
   char *prompt;
 
   AH_TAN_METHOD_LIST *tanMethodDescriptions;
+
+  int maxTransfersPerJob;
+  int maxDebitNotesPerJob;
 };
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);

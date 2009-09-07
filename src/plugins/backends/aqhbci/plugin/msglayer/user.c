@@ -161,6 +161,8 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       ue->hbciVersion=210;
       ue->bpd=AH_Bpd_new();
       ue->dbUpd=GWEN_DB_Group_new("upd");
+      ue->maxTransfersPerJob=AH_USER_MAX_TRANSFERS_PER_JOB;
+      ue->maxDebitNotesPerJob=AH_USER_MAX_DEBITNOTES_PER_JOB;
     }
     else {
       /* update db to latest version */
@@ -332,6 +334,10 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   }
   
   ue->selectedTanMethod=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
+
+  /* read some settings */
+  ue->maxTransfersPerJob=GWEN_DB_GetIntValue(db, "maxTransfersPerJob", 0, AH_USER_MAX_TRANSFERS_PER_JOB);
+  ue->maxDebitNotesPerJob=GWEN_DB_GetIntValue(db, "maxDebitNotesPerJob", 0, AH_USER_MAX_DEBITNOTES_PER_JOB);
 }
 
 
@@ -441,6 +447,15 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "selectedTanMethod",
 		      ue->selectedTanMethod);
+
+  /* store some settings */
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "maxTransfersPerJob",
+		      ue->maxTransfersPerJob);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "maxDebitNotesPerJob",
+		      ue->maxDebitNotesPerJob);
+
 }
 
 
@@ -1622,6 +1637,52 @@ const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(const AB_USER *u) {
 }
 
 
+
+int AH_User_GetMaxTransfersPerJob(const AB_USER *u){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->maxTransfersPerJob;
+}
+
+
+
+void AH_User_SetMaxTransfersPerJob(AB_USER *u, int i){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->maxTransfersPerJob=i;
+}
+
+
+
+int AH_User_GetMaxDebitNotesPerJob(const AB_USER *u){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->maxDebitNotesPerJob;
+}
+
+
+
+void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->maxDebitNotesPerJob=i;
+}
 
 
 
