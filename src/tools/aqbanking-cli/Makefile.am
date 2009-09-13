@@ -27,7 +27,7 @@ aqbanking_cli_SOURCES= \
 aqbanking_cli_LDFLAGS=
 #-Wl,-static
 
-DEFS += -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
 
 noinst_HEADERS=globals.h
 EXTRA_DIST=\

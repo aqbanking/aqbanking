@@ -121,7 +121,6 @@ QBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 QBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 
-
 ###-------------------------------------------------------------------------
 #
 # datetime
@@ -279,6 +278,8 @@ AC_SUBST(QBANKING_SO_AGE)
 AC_SUBST(QBANKING_SO_EFFECTIVE)
 AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
                    [effective SO version])
+
+
 
 
 ###-------------------------------------------------------------------------
@@ -1398,6 +1399,13 @@ AC_MSG_RESULT($enable_cli)
 
 AM_CONDITIONAL(ENABLE_CLI, [test "$enable_cli" = "yes"])
 
+AC_ARG_WITH(cli-version-string, 
+  [  --with-cli-version-string      list of additional libraries],
+  [AQBANKING_CLI_VERSION_STRING="$withval"],
+  [AQBANKING_CLI_VERSION_STRING="$AQBANKING_VERSION_STRING"]
+)
+
+AC_SUBST(AQBANKING_CLI_VERSION_STRING)
 
 
 ###-------------------------------------------------------------------------
@@ -1443,6 +1451,8 @@ case "$OS_TYPE" in
 	LDFLAGS="${LDFLAGS} -no-undefined -mwindows"
     ;;
 esac
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -1653,6 +1663,7 @@ echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
 echo "Use AqFinance           : $have_aqfinance"
 echo "Build AqBanking-CLI     : $enable_cli"
+echo "CLI Version String      : $AQBANKING_CLI_VERSION_STRING"
 echo
 
 echo

@@ -28,11 +28,8 @@ int versions(AB_BANKING *ab,
   int vmajor, vminor, vpatchLevel, vbuild;
 
   fprintf(stdout, "Versions:\n");
-  fprintf(stdout, " AqBanking-CLI: %d.%d.%d.%d\n",
-	  AQBANKING_VERSION_MAJOR,
-	  AQBANKING_VERSION_MINOR,
-	  AQBANKING_VERSION_PATCHLEVEL,
-	  AQBANKING_VERSION_BUILD);
+  fprintf(stdout, " AqBanking-CLI: %s\n",
+	  AQBANKING_CLI_VERSION_STRING);
   GWEN_Version(&vmajor,
 	       &vminor,
 	       &vpatchLevel,
