@@ -317,6 +317,18 @@ GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j){
 
 
 
+const char *AH_Job_GetKeys_GetPeerId(const AH_JOB *j) {
+  AH_JOB_GETKEYS *jd;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETKEYS, j);
+  assert(jd);
+
+  return jd->peerId;
+}
+
+
+
 
 
 

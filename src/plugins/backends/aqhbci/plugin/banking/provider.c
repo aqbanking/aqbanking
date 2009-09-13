@@ -1265,6 +1265,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
+  const char *s;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -1325,6 +1326,21 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Bank does not use a sign key."));
+  }
+
+  s=AH_User_GetPeerId(u);
+  if (!s || !*s) {
+    s=AH_Job_GetKeys_GetPeerId(job);
+    if (s && *s) {
+      char tbuf[256];
+
+      snprintf(tbuf, sizeof(tbuf)-1, I18N("Setting peer ID to \"%s\")"), s);
+      tbuf[sizeof(tbuf)-1]=0;
+      GWEN_Gui_ProgressLog(guiid,
+			   GWEN_LoggerLevel_Notice,
+			   tbuf);
+      AH_User_SetPeerId(u, s);
+    }
   }
 
   /* get crypt token */
