@@ -28,7 +28,6 @@ int listUsers(AB_BANKING *ab,
               int argc,
               char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   int rv;
   int xml=0;
   AB_USER_LIST2 *ul;
@@ -93,9 +92,6 @@ int listUsers(AB_BANKING *ab,
   }
 
   xml=GWEN_DB_VariableExists(db, "xml");
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
-  assert(pro);
 
   if( xml ) {
     fprintf( stdout, "<?xml version=\"1.0\"?>\n" );

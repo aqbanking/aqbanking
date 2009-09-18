@@ -31,7 +31,6 @@ int listAccounts(AB_BANKING *ab,
                  int argc,
                  char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   int rv;
   AB_ACCOUNT_LIST2 *al;
   const GWEN_ARGS args[]={
@@ -81,9 +80,6 @@ int listAccounts(AB_BANKING *ab,
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
-  assert(pro);
 
   al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de", "*", "*");
   if (al) {
