@@ -1,20 +1,5 @@
 SUBDIRS=parsers imexporters bankinfo backends
 
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes)\
- -I$(top_srcdir)/src/libs/aqbanking
-
-
-noinst_LTLIBRARIES=libaqb_plugins.la
-libaqb_plugins_la_SOURCES=aqbanking_plugins.c
-libaqb_plugins_la_LIBADD=\
-  backends/libbackends.la \
-  bankinfo/libbankinfo.la \
-  imexporters/libimexporters.la \
-  parsers/libparsers.la
-
-iheaderdir=${includedir}/aqbanking
-iheader_HEADERS=aqbanking_plugins.h
-
 sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \

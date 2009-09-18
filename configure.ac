@@ -1358,35 +1358,6 @@ fi
 
 ###-------------------------------------------------------------------------
 #
-# check for static plugins to be compiled into static exes
-#
-AC_ARG_WITH(static-plugins, 
-  [  --with-static-plugins      list of static plugins to link in],
-  [aqb_static_plugins="$withval"],
-  [aqb_static_plugins=""]
-)
-if test -n "$aqb_static_plugins"; then
-  AC_DEFINE(WITH_STATIC_PLUGINS, 1, [static plugins are used])
-fi
-AC_SUBST(aqb_static_plugins)
-
-
-
-###-------------------------------------------------------------------------
-#
-# check for extra libs for static exes
-#
-AC_ARG_WITH(extra-libs, 
-  [  --with-extra-libs      list of additional libraries],
-  [aqb_extra_libs="$withval"],
-  [aqb_extra_libs=""]
-)
-AC_SUBST(aqb_extra_libs)
-
-
-
-###-------------------------------------------------------------------------
-#
 # check whether aqbanking-cli is enabled
 #
 
