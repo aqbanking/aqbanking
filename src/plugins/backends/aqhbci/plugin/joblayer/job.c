@@ -1734,7 +1734,7 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
   }
 
   /* commit data */
-  rv2=AH_Job__CommitSystemData(j, guiid);
+  rv2=AH_Job__CommitSystemData(j, doLock, guiid);
 
   if (doLock) {
     /* unlock user */
