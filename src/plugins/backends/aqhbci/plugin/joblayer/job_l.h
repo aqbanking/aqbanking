@@ -184,7 +184,7 @@ int AH_Job_HasItanResult(AH_JOB *j);
  * additionally let the job do some basic stuff (like saving UPD, BPD,
  * messages etc).
  */
-int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid);
+int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid);
 
 
 /**

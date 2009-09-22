@@ -1202,7 +1202,7 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
 
 
-int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
+int AH_Job__CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
   GWEN_DB_NODE *dbCurr;
   AB_USER *u;
   AB_BANKING *ab;
@@ -1532,7 +1532,9 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
         GWEN_DB_NODE *gr;
         AH_BPD *bpd;
         GWEN_DB_NODE *dbUpd;
-        int accCreated;
+	int accCreated;
+	int mayModifyAcc=1;
+        int rv;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Found AccountData");
         AH_Job_Log(j, GWEN_LoggerLevel_Info,
@@ -1573,15 +1575,27 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
                                    "de", /* TODO: get country */
                                    bankCode,
                                    accountId);
-        if (acc) {
+	if (acc) {
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Account \"%s\" already exists",
                      accountId);
-          accCreated=0;
-        }
+	  accCreated=0;
+	  if (doLock) {
+	    rv=AB_Banking_BeginExclUseAccount(ab, acc, guiid);
+	    if (rv<0) {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	      mayModifyAcc=0;
+	    }
+	    else
+	      mayModifyAcc=1;
+	  }
+          else
+	    mayModifyAcc=1;
+	}
         else {
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\"", accountId);
-          accCreated=1;
+	  accCreated=1;
+	  mayModifyAcc=1;
           acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
           assert(acc);
           AB_Account_SetCountry(acc, "de");
@@ -1595,42 +1609,55 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
           AB_Account_SetSelectedUser(acc, j->user);
         }
 
-        /* modify account */
-        if (accountName)
-          AB_Account_SetAccountName(acc, accountName);
-        if (userName)
-	  AB_Account_SetOwnerName(acc, userName);
-	if (iban)
-          AB_Account_SetIBAN(acc, iban);
+	if (mayModifyAcc) {
+	  /* modify account */
+	  if (accountName)
+	    AB_Account_SetAccountName(acc, accountName);
+	  if (userName)
+	    AB_Account_SetOwnerName(acc, userName);
+	  if (iban)
+	    AB_Account_SetIBAN(acc, iban);
 
-        /* set bank name */
-        bpd=AH_User_GetBpd(j->user);
-        if (bpd) {
-          const char *s;
+	  /* set bank name */
+	  bpd=AH_User_GetBpd(j->user);
+	  if (bpd) {
+	    const char *s;
 
-          s=AH_Bpd_GetBankName(bpd);
-          if (s)
-            AB_Account_SetBankName(acc, s);
-        }
+	    s=AH_Bpd_GetBankName(bpd);
+	    if (s)
+	      AB_Account_SetBankName(acc, s);
+	  }
 
-        /* get UPD jobs */
-        dbUpd=AH_User_GetUpd(j->user);
-        assert(dbUpd);
-        dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                               accountId);
-        assert(dbUpd);
-        gr=GWEN_DB_GetFirstGroup(dbRd);
-        while(gr) {
-          if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
-            /* found an upd job */
-            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding UPD job");
-            GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
-          }
-          gr=GWEN_DB_GetNextGroup(gr);
-        } /* while */
+	  /* get UPD jobs */
+	  dbUpd=AH_User_GetUpd(j->user);
+	  assert(dbUpd);
+	  dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+				 accountId);
+	  assert(dbUpd);
+	  gr=GWEN_DB_GetFirstGroup(dbRd);
+	  while(gr) {
+	    if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
+	      /* found an upd job */
+	      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding UPD job");
+	      GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
+	    }
+	    gr=GWEN_DB_GetNextGroup(gr);
+	  } /* while */
+	}
 
         if (accCreated)
-          AB_Banking_AddAccount(ab, acc);
+	  AB_Banking_AddAccount(ab, acc);
+	else {
+	  if (mayModifyAcc) {
+	    if (doLock) {
+	      rv=AB_Banking_EndExclUseAccount(ab, acc, 0, guiid);
+	      if (rv<0) {
+		DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+		AB_Banking_EndExclUseAccount(ab, acc, 1, guiid); /* abort */
+	      }
+	    }
+	  }
+	}
         modCust=1;
       } /* if accountData */
 
@@ -1682,6 +1709,44 @@ int AH_Job_CommitSystemData(AH_JOB *j, uint32_t guiid) {
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
   return 0;
+}
+
+
+
+int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
+  AB_USER *u;
+  AB_BANKING *ab;
+  int rv, rv2;
+
+  u=j->user;
+  assert(u);
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  /* lock user */
+  if (doLock) {
+    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* commit data */
+  rv2=AH_Job__CommitSystemData(j, guiid);
+
+  if (doLock) {
+    /* unlock user */
+    rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AB_Banking_EndExclUseUser(ab, u, 1, guiid); /* abandon */
+      return rv;
+    }
+  }
+
+  return rv2;
 }
 
 
@@ -1749,7 +1814,7 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid){
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already committed job \"%s\"", j->name);
     return 0;
   }
-  rv=AH_Job_CommitSystemData(j, guiid);
+  rv=AH_Job_CommitSystemData(j, 1, guiid); /* doLock=1 */
   j->flags|=AH_JOB_FLAGS_COMMITTED;
   return rv;
 }

@@ -943,7 +943,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, int timeout,
     }
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done");
-  rv=AH_Job_CommitSystemData(jDlgOpen, guiid);
+  rv=AH_Job_CommitSystemData(jDlgOpen, 0, guiid);
   AH_JobQueue_free(jqDlgOpen);
   return rv;
 }
@@ -1006,7 +1006,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog closed");
-  rv=AH_Job_CommitSystemData(jDlgClose, guiid);
+  rv=AH_Job_CommitSystemData(jDlgClose, 0, guiid);
   AH_JobQueue_free(jqDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not commit system data");

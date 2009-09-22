@@ -267,8 +267,9 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   if (ue->dbUpd)
     GWEN_DB_Group_free(ue->dbUpd);
   gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "upd");
-  if (gr)
+  if (gr) {
     ue->dbUpd=GWEN_DB_Group_dup(gr);
+  }
   else
     ue->dbUpd=GWEN_DB_Group_new("upd");
   
@@ -643,8 +644,9 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
 
   if (ue->dbUpd)
     GWEN_DB_Group_free(ue->dbUpd);
-  if (n)
+  if (n) {
     ue->dbUpd=GWEN_DB_Group_dup(n);
+  }
   else
     ue->dbUpd=GWEN_DB_Group_new("upd");
 }
