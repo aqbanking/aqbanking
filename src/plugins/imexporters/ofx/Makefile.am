@@ -18,7 +18,7 @@ imexporterplugin_LTLIBRARIES=ofx.la
 imexporterplugin_DATA=ofx.xml
 
 ofx_la_SOURCES=ofx.c
-ofx_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs)
+ofx_la_LIBADD = parser/libofxparser.la $(aqbanking_internal_libs) $(gwenhywfar_libs)
 ofx_la_LDFLAGS = -no-undefined @STRIPALL@ -module -avoid-version
 
 
