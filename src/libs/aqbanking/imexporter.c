@@ -1511,8 +1511,8 @@ int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
     while(*s) {
       char buf[64];
 
-      buf[0]=0;
-      strncat(buf, s, sizeof(buf));
+      strncpy(buf, s, sizeof(buf)-1);
+      buf[sizeof(buf)-1]=0;
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "logs", buf);
       s+=strlen(buf);
     }
