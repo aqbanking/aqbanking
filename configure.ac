@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=1
-AQBANKING_VERSION_PATCHLEVEL=8
+AQBANKING_VERSION_PATCHLEVEL=9
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -1524,6 +1524,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/full.conf
   src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
   src/plugins/imexporters/csv/profiles/postbankffm.conf
+  src/plugins/imexporters/csv/profiles/cli-transfers.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
