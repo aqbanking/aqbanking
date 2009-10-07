@@ -1891,7 +1891,7 @@ AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob, uint32_t guiid){
 
 
 
-void AH_Outbox_Commit(AH_OUTBOX *ob, uint32_t guiid){
+void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock, uint32_t guiid){
   AH_JOB *j;
 
   assert(ob);
@@ -1900,7 +1900,7 @@ void AH_Outbox_Commit(AH_OUTBOX *ob, uint32_t guiid){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_Commit(j, guiid);
+      AH_Job_Commit(j, doLock, guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */
@@ -1908,7 +1908,7 @@ void AH_Outbox_Commit(AH_OUTBOX *ob, uint32_t guiid){
 
 
 
-void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, uint32_t guiid){
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock, uint32_t guiid){
   AH_JOB *j;
 
   assert(ob);
@@ -1917,7 +1917,7 @@ void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, uint32_t guiid){
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* only commit answered jobs */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_DefaultCommitHandler(j, guiid);
+      AH_Job_DefaultCommitHandler(j, doLock, guiid);
     }
     j=AH_Job_List_Next(j);
   } /* while */

@@ -85,7 +85,7 @@ typedef enum {
 typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 uint32_t guiid);
-typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, uint32_t guiid);
+typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, int doLock, uint32_t guiid);
 typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 				  AH_JOB_EXCHANGE_MODE m,
 				  AB_IMEXPORTER_CONTEXT *ctx,
@@ -163,7 +163,7 @@ AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j);
  */
 /*@{*/
 int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid);
-int AH_Job_Commit(AH_JOB *j, uint32_t guiid);
+int AH_Job_Commit(AH_JOB *j, int doLock, uint32_t guiid);
 /** exchanges data between the HBCI job and the banking job
  */
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
@@ -198,7 +198,7 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid);
  * You can use this from the Commit function of the inheriting class.
  * It calls @ref AH_Job_CommitSystemData.
  */
-int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid);
+int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock, uint32_t guiid);
 
 int AH_Job_Prepare(AH_JOB *j, uint32_t guiid);
 

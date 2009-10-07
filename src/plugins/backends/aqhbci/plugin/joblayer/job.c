@@ -867,14 +867,14 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid){
 
 
 
-int AH_Job_Commit(AH_JOB *j, uint32_t guiid){
+int AH_Job_Commit(AH_JOB *j, int doLock, uint32_t guiid){
   assert(j);
   assert(j->usage);
   if (j->commitFn)
-    return j->commitFn(j, guiid);
+    return j->commitFn(j, doLock, guiid);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No commitFn set");
-    return AH_Job_DefaultCommitHandler(j, guiid);
+    return AH_Job_DefaultCommitHandler(j, doLock, guiid);
   }
 }
 
@@ -1805,7 +1805,7 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid){
 
 
 
-int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid){
+int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock, uint32_t guiid){
   int rv;
 
   assert(j);
@@ -1814,7 +1814,7 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, uint32_t guiid){
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already committed job \"%s\"", j->name);
     return 0;
   }
-  rv=AH_Job_CommitSystemData(j, 1, guiid); /* doLock=1 */
+  rv=AH_Job_CommitSystemData(j, doLock, guiid);
   j->flags|=AH_JOB_FLAGS_COMMITTED;
   return rv;
 }

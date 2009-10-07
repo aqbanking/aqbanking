@@ -40,7 +40,7 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
 void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj);
 
 /* makes all jobs commit their data */
-void AH_Outbox_Commit(AH_OUTBOX *ob, uint32_t guiid);
+void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock, uint32_t guiid);
 
 
 /* makes all jobs process their data */
@@ -51,7 +51,7 @@ void AH_Outbox_Process(AH_OUTBOX *ob, uint32_t guiid);
  * like account data, bank parameter data etc according to the flags in
  * @ref AH_HBCIClient).
  */
-void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, uint32_t guiid);
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock, uint32_t guiid);
 
 
 unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob);
