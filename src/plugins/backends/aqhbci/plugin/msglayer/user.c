@@ -318,7 +318,9 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   
   /* get rdh type */
   ue->rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
-  
+  if (ue->rdhType<1)
+    ue->rdhType=1;
+
   /* read supported TAN methods */
   for (i=0; i<AH_USER_MAX_TANMETHODS; i++)
     ue->tanMethodList[i]=-1;
