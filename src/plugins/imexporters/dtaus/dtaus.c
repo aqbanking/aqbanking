@@ -176,7 +176,9 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	return GWEN_ERROR_GENERIC;
       }
       if (strcasecmp(GWEN_DB_GroupName(dbT), "debitnote")==0)
-        AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+	AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+      else
+	AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
 
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
       AB_ImExporterContext_AddTransaction(ctx, t);
