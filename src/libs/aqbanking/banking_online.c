@@ -674,8 +674,14 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
   assert(ab);
 
   assert(pCt);
-  assert(tname);
-  assert(cname);
+
+  if (!tname || !cname) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	     "Error in your configuration: TokenType \"%s\" or TokenName \"%s\" is NULL. Maybe you need to remove your configuration and create it again? Aborting.",
+	      tname ? tname : "NULL",
+	      cname ? cname : "NULL");
+    return GWEN_ERROR_IO;
+  }
 
   it=GWEN_Crypt_Token_List2_First(ab->cryptTokenList);
   if (it) {
