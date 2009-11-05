@@ -324,16 +324,16 @@ want to use this package in qt4, do the following two steps:
 An example for 1. is this for Linux/g++:
 
 DIR4=/usr/local/qt4
-LIBS4=-L$(DIR4)/lib -lQtCore -lQtGui -lQt3Support
-INCS4=-I$(DIR4)/include -I$(DIR4)/include/Qt -I$(DIR4)/include/QtCore
-INCS4+=-I$(DIR4)/include/QtGui -I$(DIR4)/include/Qt3Support
-TO4=$(DIR4)/bin/qt3to4
+LIBS4=-L${DIR4}/lib -lQtCore -lQtGui -lQt3Support
+INCS4=-I${DIR4}/include -I${DIR4}/include/Qt -I${DIR4}/include/QtCore
+INCS4+=-I${DIR4}/include/QtGui -I${DIR4}/include/Qt3Support
+TO4=${DIR4}/bin/qt3to4
 
     ./configure --prefix=/my/prefix \
     --enable-debug=yes --enable-qt3=yes \
-    QTDIR=$(DIR4) QT3TO4=$(TO4) \
-    qt3_libs="$(LIBS4)" \
-    qt3_includes="$(INCS4)"
+    QTDIR=${DIR4} QT3TO4=${TO4} \
+    qt3_libs="${LIBS4}" \
+    qt3_includes="${INCS4}"
 
 or on Windows/mingw32
 
