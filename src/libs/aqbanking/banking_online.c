@@ -725,6 +725,12 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
       return GWEN_ERROR_IO;
     }
 
+    if (GWEN_Gui_GetFlags(GWEN_Gui_GetGui()) & GWEN_GUI_FLAGS_NONINTERACTIVE)
+      /* in non-interactive mode, so don't use the secure pin input of card readers because
+       * that wouldn't give us a chance to inject the pin via a pinfile
+       */
+      GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_FORCE_PIN_ENTRY);
+
     /* add to internal list */
     GWEN_Crypt_Token_List2_PushBack(ab->cryptTokenList, ct);
   }

@@ -71,7 +71,7 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs();
  *
  */
 /*@{*/
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_GetCryptToken(AB_BANKING *ab,
 			     const char *tname,
 			     const char *cname,
