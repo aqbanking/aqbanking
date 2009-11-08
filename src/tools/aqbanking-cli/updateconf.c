@@ -14,6 +14,46 @@
 #include "globals.h"
 
 
+static int _getConfig(AB_BANKING *ab) {
+  int rv;
+
+  rv=AB_Banking_HasConf4(ab, 0);
+  if (!rv) {
+    fprintf(stderr, "Config for AqBanking 4 found, no update needed.\n");
+    return 0;
+  }
+  fprintf(stderr, "Config for AqBanking 4 not found, update needed (%d)\n", rv);
+
+  rv=AB_Banking_HasConf3(ab, 0);
+  if (!rv) {
+    fprintf(stderr, "Config for AqBanking 3 found, importing\n");
+    rv=AB_Banking_ImportConf3(ab, 0);
+    if (rv<0) {
+      fprintf(stderr, "Error importing configuration (%d)\n", rv);
+      return rv;
+    }
+    return 3;
+  }
+  fprintf(stderr, "Config for AqBanking 3 not found (%d)\n", rv);
+
+  rv=AB_Banking_HasConf2(ab, 0);
+  if (!rv) {
+    fprintf(stderr, "Config for AqBanking 2 found, importing\n");
+    rv=AB_Banking_ImportConf2(ab, 0);
+    if (rv<0) {
+      fprintf(stderr, "Error importing configuration (%d)\n", rv);
+      return rv;
+    }
+    return 2;
+  }
+
+  fprintf(stderr,
+	  "Config for AqBanking 2 not found (%d), "
+	  "no usable configuration found to update.\n",
+	  rv);
+  return -1;
+}
+
 
 static int updateConf(AB_BANKING *ab,
 		      GWEN_DB_NODE *dbArgs,
@@ -57,41 +97,44 @@ static int updateConf(AB_BANKING *ab,
     return 0;
   }
 
-  rv=AB_Banking_HasConf4(ab, 0);
-  if (!rv) {
-    fprintf(stderr, "Config for AqBanking 4 found, no update needed.\n");
-    return 0;
-  }
-  fprintf(stderr, "Config for AqBanking 4 not found, update needed (%d)\n", rv);
+  rv=_getConfig(ab);
+  if (rv<0)
+    return 2;
 
-  rv=AB_Banking_HasConf3(ab, 0);
-  if (!rv) {
-    fprintf(stderr, "Config for AqBanking 3 found, importing\n");
-    rv=AB_Banking_ImportConf3(ab, 0);
-    if (rv<0) {
-      fprintf(stderr, "Error importing configuration (%d)\n", rv);
+  if (rv>=2) {
+    /* init to check whether the new configuration works */
+    rv=AB_Banking_Init(ab);
+    if (rv) {
+      fprintf(stderr, "Error while loading the newly imported configuration (1:%d)\n", rv);
       return 2;
     }
-    return 0;
-  }
-  fprintf(stderr, "Config for AqBanking 3 not found (%d)\n", rv);
-
-  rv=AB_Banking_HasConf2(ab, 0);
-  if (!rv) {
-    fprintf(stderr, "Config for AqBanking 2 found, importing\n");
-    rv=AB_Banking_ImportConf2(ab, 0);
-    if (rv<0) {
-      fprintf(stderr, "Error importing configuration (%d)\n", rv);
+  
+    rv=AB_Banking_OnlineInit(ab, 0);
+    if (rv) {
+      AB_Banking_Fini(ab);
+      fprintf(stderr, "Error while loading the newly imported configuration (2:%d)\n", rv);
       return 2;
     }
-    return 0;
-  }
-  fprintf(stderr,
-	  "Config for AqBanking 2 not found (%d), "
-	  "no usable configuration found to update.\n",
-	  rv);
 
-  return 2;
+    /* uninit immediately */
+    rv=AB_Banking_OnlineFini(ab, 0);
+    if (rv) {
+      fprintf(stderr, "Error on deinit (1:%d)\n", rv);
+      AB_Banking_Fini(ab);
+      return 2;
+    }
+  
+    rv=AB_Banking_Fini(ab);
+    if (rv) {
+      fprintf(stderr, "Error on deinit (2:%d)\n", rv);
+      return 2;
+    }
+
+  }
+
+  fprintf(stdout, "Your configuration seems to be ok.\n");
+
+  return 0;
 }
 
 
