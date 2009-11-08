@@ -120,6 +120,14 @@ int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
 				  const char *pluginName,
 				  const char *name,
 				  uint32_t guiid);
+
+AQBANKING_API 
+int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock);
+
+AQBANKING_API 
+int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock);
+
+
 /*@}*/
 
 

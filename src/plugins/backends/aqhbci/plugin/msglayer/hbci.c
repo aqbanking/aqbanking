@@ -91,6 +91,8 @@ void AH_HBCI_free(AH_HBCI *hbci){
   if (hbci) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_HBCI");
 
+    GWEN_DB_Group_free(hbci->dbProviderConfig);
+
     free(hbci->productName);
     free(hbci->productVersion);
 
@@ -107,6 +109,10 @@ int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   GWEN_XMLNODE *node;
 
   assert(hbci);
+
+  /* store config */
+  GWEN_DB_Group_free(hbci->dbProviderConfig);
+  hbci->dbProviderConfig=GWEN_DB_Group_dup(db);
 
   /* load and update config data */
   hbci->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
@@ -201,6 +207,13 @@ int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 AB_BANKING *AH_HBCI_GetBankingApi(const AH_HBCI *hbci){
   assert(hbci);
   return hbci->banking;
+}
+
+
+
+GWEN_DB_NODE *AH_HBCI_GetProviderDb(const AH_HBCI *hbci) {
+  assert(hbci);
+  return hbci->dbProviderConfig;
 }
 
 

@@ -48,6 +48,7 @@ struct AH_HBCI {
 
   uint32_t lastVersion;
 
+  GWEN_DB_NODE *dbProviderConfig;
 };
 
 

@@ -98,9 +98,12 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     /* insert more updates here */
 
 
+    /* updated! */
+    return 1;
   } /* if update */
-
-  return 0;
+  else
+    /* not updated */
+    return 0;
 }
 
 
@@ -136,9 +139,12 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     /* insert more updates here */
 
 
+    /* updated! */
+    return 1;
   } /* if update */
-
-  return 0;
+  else
+    /* not updated */
+    return 0;
 }
 
 
@@ -207,43 +213,45 @@ int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
-  int mediumId;
   int i;
 
-  mediumId=GWEN_DB_GetIntValue(db, "medium", 0, 0);
-  if (mediumId) {
-    AB_PROVIDER *pro;
+  /* adjust token settings */
+  if (GWEN_DB_GetCharValue(db, "tokenType", 0, NULL)==NULL) {
     GWEN_DB_NODE *dbMedia;
 
-    pro=AH_HBCI_GetProvider(hbci);
-    assert(pro);
+    dbMedia=AH_HBCI_GetProviderDb(hbci);
 
-    dbMedia=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			     "media");
+    if (dbMedia)
+      dbMedia=GWEN_DB_GetGroup(dbMedia, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "media");
     if (dbMedia) {
-      GWEN_DB_NODE *dbT;
+      int mediumId;
 
-      dbT=GWEN_DB_FindFirstGroup(dbMedia, "medium");
-      while(dbT) {
-	i=GWEN_DB_GetIntValue(dbT, "uniqueId", 0, 0);
-	if (i) {
-	  if (i==mediumId) {
-	    const char *typeName;
-	    const char *name;
+      mediumId=GWEN_DB_GetIntValue(db, "medium", 0, 0);
+      if (mediumId) {
+	GWEN_DB_NODE *dbT;
 
-	    name=GWEN_DB_GetCharValue(dbT, "mediumName", 0, 0);
-	    assert(name);
-	    typeName=GWEN_DB_GetCharValue(dbT, "mediumTypeName", 0, 0);
-	    assert(typeName);
+	dbT=GWEN_DB_FindFirstGroup(dbMedia, "medium");
+	while(dbT) {
+	  i=GWEN_DB_GetIntValue(dbT, "uniqueId", 0, 0);
+	  if (i) {
+	    if (i==mediumId) {
+	      const char *typeName;
+	      const char *name;
 
-	    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				 "tokenType", typeName);
-	    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				 "tokenName", name);
-	    break;
+	      name=GWEN_DB_GetCharValue(dbT, "mediumName", 0, 0);
+	      assert(name);
+	      typeName=GWEN_DB_GetCharValue(dbT, "mediumTypeName", 0, 0);
+	      assert(typeName);
+
+	      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   "tokenType", typeName);
+	      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+				   "tokenName", name);
+	      break;
+	    }
 	  }
+	  dbT=GWEN_DB_FindNextGroup(dbT, "medium");
 	}
-	dbT=GWEN_DB_FindNextGroup(dbT, "medium");
       }
     }
   }
@@ -255,7 +263,7 @@ int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
   /* adjust rdh type */
   i=GWEN_DB_GetIntValue(db, "rdhType", 0, -1);
-  if (i==-1) {
+  if (i<1) {
     const char *s;
 
     s=GWEN_DB_GetCharValue(db, "cryptMode", 0, 0);

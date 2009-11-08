@@ -72,6 +72,8 @@ GWEN_XMLNODE *AH_HBCI_GetDefinitions(const AH_HBCI *hbci);
 
 uint32_t AH_HBCI_GetLastVersion(const AH_HBCI *hbci);
 
+GWEN_DB_NODE *AH_HBCI_GetProviderDb(const AH_HBCI *hbci);
+
 
 
 

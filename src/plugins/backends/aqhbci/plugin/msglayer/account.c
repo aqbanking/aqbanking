@@ -21,6 +21,8 @@
 #include "hbci-updates_l.h"
 #include <aqhbci/provider.h>
 
+#include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
@@ -53,11 +55,19 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
     else {
       /* update db to latest version */
       rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
-      if (rv) {
+      if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
 	assert(0);
       }
       AH_Account_ReadDb(a, dbBackend);
+      if (rv==1) {
+	/* updated config, write it now */
+	rv=AB_Banking_SaveAccountConfig(AB_Provider_GetBanking(pro), a, 1);
+	if (rv<0) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save account db (%d)", rv);
+	  assert(0);
+	}
+      }
     }
   }
   else if (em==AB_ProviderExtendMode_Reload) {
