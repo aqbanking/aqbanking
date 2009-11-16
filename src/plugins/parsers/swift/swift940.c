@@ -922,7 +922,12 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 	    return -1;
 	  }
 	}
-	else if (strcasecmp(id, "60F")==0) { /* StartSaldo */
+	else if (strcasecmp(id, "28C")==0) {
+	  /* Sequence/Statement Number - currently ignored */
+	  /* PostFinance statements don't have a correctly incrementing count... */
+	}
+	else if (strcasecmp(id, "60M")==0 || /* Interim StartSaldo */
+	         strcasecmp(id, "60F")==0) { /* StartSaldo */
 	  GWEN_DB_NODE *dbSaldo;
 	  const char *curr;
     
@@ -951,7 +956,8 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 				    "value/currency", curr);
 	  }
 	}
-	else if (strcasecmp(id, "62F")==0) { /* EndSaldo */
+	else if (strcasecmp(id, "62M")==0 || /* Interim EndSaldo */
+	         strcasecmp(id, "62F")==0) { /* EndSaldo */
 	  GWEN_DB_NODE *dbSaldo;
     
 	  /* end current day */
@@ -1027,6 +1033,11 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 	    }
 	  }
 	}
+	else {
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unexpected tag '%s' found.", id)
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "To debug set environment variable AQBANKING_LOGLEVEL=info and rerun");
+	}
+
       }
     }
 
