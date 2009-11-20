@@ -490,7 +490,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	return GWEN_ERROR_INVALID;
       }
       AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
-      DBG_NOTICE(0, "Setting groupID to %d", AH_Job_GetId(j));
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Setting groupID to %d", AH_Job_GetId(j));
       if (groupIdBuf[0]==0) {
 	snprintf(groupIdBuf, sizeof(groupIdBuf)-1, "%08d", AH_Job_GetId(j));
         groupIdBuf[sizeof(groupIdBuf)-1]=0;
@@ -670,7 +670,7 @@ int AH_Job_MultiTransfer_Prepare(AH_JOB *j, uint32_t guiid){
   GWEN_BUFFER *tbuf;
   char *p;
 
-  DBG_DEBUG(0, "Prepare function called");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Prepare function called");
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);

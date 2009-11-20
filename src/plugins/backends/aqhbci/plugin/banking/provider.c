@@ -1031,7 +1031,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 
   job=AH_Job_UpdateBank_new(u);
   if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -1041,7 +1041,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 
   rv=AH_Outbox_Execute(ob, ctx, 1, 1, 1, guiid);
   if (rv) {
-    DBG_ERROR(0, "Could not execute outbox.\n");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
     return rv;
@@ -1116,7 +1116,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   for (i=0; ; i++) {
     job=AH_Job_GetSysId_new(u);
     if (!job) {
-      DBG_ERROR(0, "Job not supported, should not happen");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
       AB_Banking_EndExclUseUser(ab, u, 1, guiid);
       return GWEN_ERROR_GENERIC;
     }
@@ -1127,7 +1127,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
     rv=AH_Outbox_Execute(ob, ctx, 1, 1, 0, guiid);
     if (rv) {
-      DBG_ERROR(0, "Could not execute outbox.\n");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
       return rv;
@@ -1289,7 +1289,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   }
 
   if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL) {
-    DBG_ERROR(0, "No crypt key received");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt key received");
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No crypt key received."));
@@ -1301,7 +1301,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   else {
     rv=AH_Job_Commit(job, 1, guiid);
     if (rv) {
-      DBG_ERROR(0, "Could not commit result.\n");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Could not commit result"));
@@ -1653,7 +1653,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 
   /* check result */
   if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(0, "Job has errors");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
     GWEN_Gui_ProgressLog(guiid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Job contains errors."));
@@ -1665,7 +1665,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   else {
     rv=AH_Job_Commit(job, 1, guiid);
     if (rv) {
-      DBG_ERROR(0, "Could not commit result.\n");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Could not commit result"));
@@ -1737,7 +1737,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
   AH_Dialog_free(dialog);
 
   if (rv) {
-    DBG_ERROR(0, "Could not connect to server (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not connect to server (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not connect to server"));
@@ -1797,7 +1797,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 
   job=AH_Job_GetItanModes_new(u);
   if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -1917,7 +1917,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 
   job=AH_Job_ChangePin_new(u, pwbuf);
   if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -1927,7 +1927,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 
   rv=AH_Outbox_Execute(ob, ctx, 1, 1, 1, guiid);
   if (rv) {
-    DBG_ERROR(0, "Could not execute outbox.\n");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
     return rv;
@@ -2195,7 +2195,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "Server keys missing, please get them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
@@ -2219,7 +2219,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "User keys missing, please generate them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
@@ -2308,7 +2308,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=16;
@@ -2344,7 +2344,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=16;
@@ -2371,7 +2371,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "\n");
@@ -2496,7 +2496,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "Server keys missing, please get them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
@@ -2520,7 +2520,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "User keys missing, please generate them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
@@ -2615,7 +2615,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=16;
@@ -2653,7 +2653,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=16;
@@ -2681,7 +2681,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "</font>\n");
@@ -2814,7 +2814,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "Server keys missing, please get them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
@@ -2838,7 +2838,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "User keys missing, please generate them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
@@ -2937,7 +2937,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=rl;
@@ -2974,7 +2974,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=rl;
@@ -2999,12 +2999,12 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 10, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "\n  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer+10, 10, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "\n");
@@ -3025,12 +3025,12 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 16, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "\n  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer+16, 16, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "\n");
@@ -3155,7 +3155,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "Server keys missing, please get them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
@@ -3179,7 +3179,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
-      DBG_ERROR(0, "User keys missing, please generate them first");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(guiid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
@@ -3285,7 +3285,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=rl;
@@ -3324,7 +3324,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
     GWEN_Buffer_AppendString(lbuf, "  ");
     if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(0, "Error converting to hex??");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
     p+=rl;
@@ -3350,7 +3350,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "</font>\n");
@@ -3371,7 +3371,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(lbuf, "  ");
   if (GWEN_Text_ToHexBuffer(hashbuffer, 32, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(0, "Error converting to hex??");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
     abort();
   }
   GWEN_Buffer_AppendString(lbuf, "</font>\n");
@@ -3556,7 +3556,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	n++;
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
       GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
-      /*DBG_ERROR(0, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);*/
+      /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);*/
     }
     else {
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 512);
@@ -3756,7 +3756,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 
   job=AH_Job_ForeignTransferWH_new(u, a);
   if (!job) {
-    DBG_ERROR(0, "Job not supported, should not happen");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -3774,7 +3774,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 
   rv=AH_Outbox_Execute(ob, ctx, 1, 1, 1, guiid);
   if (rv) {
-    DBG_ERROR(0, "Could not execute outbox.\n");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
     AH_Job_free(job);
@@ -3833,7 +3833,7 @@ static int AH_Provider_Test1(AB_PROVIDER *pro) {
 
       i=fread(buffer, 1, sizeof(buffer), f);
       if (i<1) {
-	DBG_ERROR(0, "Error on read: %d (%s)",
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on read: %d (%s)",
 		  errno, strerror(errno));
         return -1;
       }
@@ -3930,7 +3930,7 @@ static int AH_Provider_Test3(AB_PROVIDER *pro) {
 
       i=fread(buffer, 1, sizeof(buffer), f);
       if (i<1) {
-	DBG_ERROR(0, "Error on read: %d (%s)",
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on read: %d (%s)",
 		  errno, strerror(errno));
         return -1;
       }
