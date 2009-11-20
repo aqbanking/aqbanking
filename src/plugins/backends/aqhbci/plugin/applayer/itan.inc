@@ -26,7 +26,7 @@ int AH_Outbox__CBox__Hash(int mode,
   int rv;
   GWEN_BUFFER *hbuf;
 
-  DBG_ERROR(0, "HAshmode: %d", mode);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Hashmode: %d", mode);
 
   switch(mode) {
   case 0:

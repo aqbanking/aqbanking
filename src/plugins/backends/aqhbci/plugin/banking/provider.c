@@ -566,7 +566,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 	/* create new job */
 	mj=AH_Job_MultiTransfer_new(mu, ma);
 	if (!mj) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+	  DBG_WARN(AQHBCI_LOGDOMAIN,
 		    "Multi-job not supported with this account, "
 		    "using single-job");
 	}

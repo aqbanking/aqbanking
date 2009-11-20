@@ -648,7 +648,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   if (!s) {
     AB_ACCOUNT *a;
 
-    DBG_WARN(AQHBCI_LOGDOMAIN,
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
 	     "No local name, filling in");
     a=AB_Job_GetAccount(bj);
     assert(a);

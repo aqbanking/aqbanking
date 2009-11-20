@@ -1013,7 +1013,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
       }
     }
     else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "No TAN in job [%s]",
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "No TAN in job [%s]",
 	       AH_Job_GetName(j));
     }
     j=AH_Job_List_Next(j);

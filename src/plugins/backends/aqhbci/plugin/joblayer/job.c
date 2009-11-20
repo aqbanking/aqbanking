@@ -197,7 +197,7 @@ AH_JOB *AH_Job_new(const char *name,
 	}
 	else {
 	  /* no BPD when needed, error */
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
+	  DBG_WARN(AQHBCI_LOGDOMAIN,
 		    "Job \"%s\" not supported by your bank",
 		    name);
 	}
