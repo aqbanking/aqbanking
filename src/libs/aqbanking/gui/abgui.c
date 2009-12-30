@@ -205,14 +205,14 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
     }
 
     /* write new certs */
-    DBG_ERROR(0, "Saving certs");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Saving certs");
     rv=AB_Banking_SaveSharedConfig(xgui->banking, "certs", dbCerts, guiid);
     if (rv<0) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
     }
 
     /* unlock certs */
-    DBG_ERROR(0, "Unlocking certs");
+    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Unlocking certs");
     rv=AB_Banking_UnlockSharedConfig(xgui->banking, "certs", guiid);
     if (rv<0) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
@@ -221,7 +221,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 
   GWEN_Buffer_free(hbuf);
 
-  DBG_ERROR(0, "Returning %d", result);
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Returning %d", result);
 
   return result;
 }
