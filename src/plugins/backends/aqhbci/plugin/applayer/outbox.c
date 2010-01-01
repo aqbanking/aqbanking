@@ -1367,8 +1367,8 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox,
     while((jq=AH_JobQueue_List_First(jqlWanted))) {
       rv=AH_Outbox__CBox_PerformDialogQueue(cbox, timeout, jq, guiid);
       if (rv) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Error performing queue (%d)", rv);
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+		 "Error performing queue (%d)", rv);
         AH_Outbox__CBox_HandleQueueListError(cbox, jqlWanted,
                                              "Could not perform "
                                              "dialog queue");
