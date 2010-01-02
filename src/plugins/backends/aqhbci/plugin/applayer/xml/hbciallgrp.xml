@@ -427,11 +427,14 @@
      <ELEM name="returnMaxLen" type="num" maxsize="3" />
      <ELEM name="maxActiveLists" type="num" size="1" minnum="0" />
      <ELEM name="multiTanAllowed" type="alpha" size="1" />
-     <ELEM name="timeShiftAllowed" type="alpha" size="1" />
-     <ELEM name="tanListMode" type="alpha" size="1" />
+     <ELEM name="timeShiftAllowed" type="num" size="3" />
+     <ELEM name="tanListMode" type="num" size="1" />
      <ELEM name="stornoAllowed" type="alpha" size="1" />
      <ELEM name="needChallengeClass" type="alpha" size="1" />
      <ELEM name="needChallengeAmount" type="alpha" size="1" />
+     <ELEM name="initMode" type="num" size="3" />
+     <ELEM name="tanMediumIdNeeded" type="num" size="3" />
+     <ELEM name="maxActiveMedia" type="num" size="1" minnum="0" />
    </GROUPdef>
 
 
