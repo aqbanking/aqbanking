@@ -86,8 +86,10 @@ void AIO_OfxGroup_INVBUY_FreeData(void *bp, void *p) {
 
 /*Here to get the data*/
 const char *AIO_OfxGroup_INVBUY_GetDatum(const AIO_OFX_GROUP *g, int index) {
-  if (index < 0 || index > iinvbuylastget) return NULL;
   AIO_OFX_GROUP_INVBUY *xg;
+
+  if (index < 0 || index > iinvbuylastget)
+    return NULL;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_INVBUY, g);

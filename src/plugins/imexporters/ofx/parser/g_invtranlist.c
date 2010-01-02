@@ -176,6 +176,7 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
+  AB_TRANSACTION *t;
 
   /*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
 
@@ -191,7 +192,6 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
    and push it into the transaction list.*/
 
   s=AIO_OfxGroup_GetGroupName(sg);
-  AB_TRANSACTION *t;
   if (strcasecmp(s, "BUYSTOCK")==0 ||
       strcasecmp(s, "SELLSTOCK")==0)
     t=AIO_OfxGroup_BUYSTOCK_TakeTransaction(sg);

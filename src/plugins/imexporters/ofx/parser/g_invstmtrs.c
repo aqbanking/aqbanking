@@ -220,18 +220,18 @@ int AIO_OfxGroup_INVSTMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   }
 
   else if (strcasecmp(s, "INVTRANLIST") == 0) {
-
-/*Here when we finish an Investment transaction list. Uncommented and extended by SRB*/
-
+    /*Here when we finish an Investment transaction list. Uncommented and extended by SRB*/
     AB_TRANSACTION_LIST2 *tl;
+    AB_TRANSACTION_LIST2_ITERATOR *it;
+
     tl=AIO_OfxGroup_INVTRANLIST_TakeTransactionList(sg);
     if (!tl) return 0;                                  /*No list - just return*/
 
-    AB_TRANSACTION_LIST2_ITERATOR *it;
     it=AB_Transaction_List2_First(tl);
 
     if (it) {
       AB_TRANSACTION *t;
+
       t=AB_Transaction_List2Iterator_Data(it);
 /*      int transactionCount=0;
       char st[20]; */
