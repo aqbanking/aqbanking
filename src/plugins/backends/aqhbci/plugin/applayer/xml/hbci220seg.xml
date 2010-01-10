@@ -809,9 +809,9 @@
    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
    <ELEM name="challenge" type="ascii" maxsize="256" minnum="0" />
-   <GROUP minnum="0">
-     <ELEM name="expireDate" type="ascii" minnum="0" />
-     <ELEM name="expireTime" type="ascii" minnum="0" />
+   <GROUP minnum="0" delimiter=":" terminator="" >
+     <ELEM name="expireDate" type="ascii" minnum="0" size="8" />
+     <ELEM name="expireTime" type="ascii" minnum="0" size="6" />
    </GROUP>
    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
