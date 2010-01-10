@@ -212,7 +212,7 @@
   <GROUPdef id="SecProfile" delimiter=":" version="1">
     <!-- Sicherheitsprofil, ab FinTS3 -->
     <ELEM name="code" type="an" maxsize="16" />
-    <ELEM name="version" type="num" maxsize="3" />
+    <ELEM name="version" type="num" maxsize="3" maxnum="9" />
   </GROUPdef>
 
 
