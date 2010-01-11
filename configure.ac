@@ -1525,6 +1525,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
   src/plugins/imexporters/csv/profiles/postbankffm.conf
   src/plugins/imexporters/csv/profiles/cli-transfers.conf
+  src/plugins/imexporters/csv/profiles/sns.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
