@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QBCfgTabPageAccountGeneralUi</class>
+ <widget class="QWidget" name="QBCfgTabPageAccountGeneralUi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>628</width>
+    <height>362</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Account Settings</string>
+  </property>
+  <layout class="QVBoxLayout">
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <widget class="Q3GroupBox" name="groupBox1">
+       <property name="title">
+        <string>Account Settings</string>
+       </property>
+       <layout class="QGridLayout">
+        <item row="3" column="0">
+         <widget class="QLabel" name="textLabel5">
+          <property name="text">
+           <string>Owner Name</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="textLabel2_3">
+          <property name="text">
+           <string>IBAN</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="textLabel4">
+          <property name="text">
+           <string>Name</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="textLabel2">
+          <property name="text">
+           <string>Number</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="accountNameEdit">
+          <property name="whatsThis">
+           <string>&lt;qt&gt;
+Freely selectable name for your account. This field is not used by AqDTAUS.
+&lt;/qt&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="accountIdEdit">
+          <property name="whatsThis">
+           <string>&lt;qt&gt;
+This is the account number. An account is identified by bank code and
+this account number.
+&lt;/qt&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="ownerNameEdit">
+          <property name="whatsThis">
+           <string>&lt;qt&gt;
+&lt;p&gt;
+Name of the owner of the account.
+&lt;/p&gt;
+&lt;p&gt;
+You should enter the name exactly as you would on a paper transfer.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="ibanEdit">
+          <property name="whatsThis">
+           <string>&lt;qt&gt;
+This is the account number. An account is identified by bank code and
+this account number.
+&lt;/qt&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="textLabel1">
+          <property name="text">
+           <string>Type</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="accountTypeCombo">
+          <item>
+           <property name="text">
+            <string>unknown</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Bank Account</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Credit Card</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Checkings</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Savings</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Investment</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cash</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Money Market</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="Q3GroupBox" name="groupBox7">
+         <property name="title">
+          <string>Bank Settings</string>
+         </property>
+         <widget class="QLineEdit" name="bankNameEdit">
+          <property name="geometry">
+           <rect>
+            <x>61</x>
+            <y>105</y>
+            <width>197</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="bankIdEdit">
+          <property name="geometry">
+           <rect>
+            <x>61</x>
+            <y>50</y>
+            <width>197</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="countryCombo">
+          <property name="geometry">
+           <rect>
+            <x>61</x>
+            <y>22</y>
+            <width>197</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="textLabel1_4_3">
+          <property name="geometry">
+           <rect>
+            <x>11</x>
+            <y>78</y>
+            <width>44</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>BIC</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="textLabel1_4_2">
+          <property name="geometry">
+           <rect>
+            <x>11</x>
+            <y>105</y>
+            <width>44</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Name</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="bicEdit">
+          <property name="geometry">
+           <rect>
+            <x>61</x>
+            <y>78</y>
+            <width>197</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="textLabel1_4">
+          <property name="geometry">
+           <rect>
+            <x>11</x>
+            <y>49</y>
+            <width>44</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Code</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="textLabel2_2">
+          <property name="geometry">
+           <rect>
+            <x>11</x>
+            <y>22</y>
+            <width>44</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Country</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="bankIdButton">
+          <property name="geometry">
+           <rect>
+            <x>264</x>
+            <y>49</y>
+            <width>23</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>5</width>
+           <height>5</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="Q3GroupBox" name="groupBox6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Available Users</string>
+         </property>
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QBUserListView" name="userList1" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="allUsersCheck">
+            <property name="text">
+             <string>All users of this backend</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>241</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+       <item>
+        <spacer name="spacer11_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>21</width>
+           <height>16</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="rightButton">
+         <property name="text">
+          <string>&gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer11">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>21</width>
+           <height>16</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="leftButton">
+         <property name="text">
+          <string>&lt;&lt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer11_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>21</width>
+           <height>16</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="Q3GroupBox" name="groupBox7_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Selected Users</string>
+         </property>
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QBUserListView" name="userList2" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer4_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>241</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QBUserListView</class>
+   <extends>QWidget</extends>
+   <header location="global">q4banking/qbuserlist.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>accountNameEdit</tabstop>
+  <tabstop>accountIdEdit</tabstop>
+  <tabstop>ibanEdit</tabstop>
+  <tabstop>ownerNameEdit</tabstop>
+  <tabstop>accountTypeCombo</tabstop>
+  <tabstop>countryCombo</tabstop>
+  <tabstop>bankIdEdit</tabstop>
+  <tabstop>bankIdButton</tabstop>
+  <tabstop>bicEdit</tabstop>
+  <tabstop>bankNameEdit</tabstop>
+  <tabstop>allUsersCheck</tabstop>
+  <tabstop>rightButton</tabstop>
+  <tabstop>leftButton</tabstop>
+ </tabstops>
+ <includes>
+  <include location="local">q4banking/qbuserlist.h</include>
+  <include location="local">q4banking/qbuserlist.h</include>
+ </includes>
+ <resources/>
+ <connections/>
+</ui>

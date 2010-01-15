@@ -8,5 +8,6 @@ EXTRA_DIST=\
  kde3.m4 \
  os.m4 \
  qt3.m4 \
+ qt4.m4 \
  searchfiles.m4 \
  fox.pc

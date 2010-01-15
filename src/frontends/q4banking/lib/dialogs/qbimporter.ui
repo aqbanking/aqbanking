@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QBImporterUi</class>
+ <widget class="Q3Wizard" name="QBImporterUi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>313</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Import Wizard</string>
+  </property>
+  <widget class="QWidget" name="startPage">
+   <attribute name="title">
+    <string>Start</string>
+   </attribute>
+   <layout class="QHBoxLayout">
+    <item>
+     <widget class="QLabel" name="textLabel2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&lt;qt&gt;
+&lt;p&gt;
+This wizard lets you import financial data files and/or directories into
+your database.
+&lt;/p&gt;
+&lt;p&gt;
+The following pages will allow you to:
+&lt;ul&gt;
+  &lt;li&gt;select a file to import&lt;/li&gt;
+  &lt;li&gt;select a predefined profile for the import&lt;/li&gt;
+  &lt;li&gt;actually import the data&lt;/li&gt;
+&lt;/p&gt;
+&lt;p&gt;
+This wizard will try to determine the type of the selected
+file automatically.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="selectSourcePage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Select Source</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="textLabel3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&lt;qt&gt;
+&lt;p&gt;
+Please select the file you want to import.
+&lt;/p&gt;
+&lt;p&gt;
+The next page will check for the type of the selected file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Q3GroupBox" name="groupBox4">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QHBoxLayout">
+       <item>
+        <widget class="QLabel" name="textLabel1_3">
+         <property name="text">
+          <string>File</string>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="selectFileEdit"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="selectFileButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="selectImporterPage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Check File Type</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="textLabel4_9">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&lt;qt&gt;
+The file type has been determined. The next page will allow you to
+choose an importer profile.
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="spacer4">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="Q3GroupBox" name="groupBox5">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout">
+       <item row="1" column="1">
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="checkFileTypeLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
+           </property>
+           <property name="text">
+            <string>--type--</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="checkFileNameLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="text">
+          <string>--filename --</string>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="textLabel4_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>File Type</string>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="textLabel2_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>File</string>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="selectProfilePage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Select Profile</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="textLabel4">
+      <property name="text">
+       <string>&lt;qt&gt;
+Please select the profile from the list below.
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Q3GroupBox" name="groupBox2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Profiles</string>
+      </property>
+      <layout class="QHBoxLayout">
+       <item>
+        <widget class="Q3ListView" name="profileList">
+         <property name="selectionMode">
+          <enum>Q3ListView::Single</enum>
+         </property>
+         <property name="allColumnsShowFocus">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+          <property name="clickable">
+           <bool>true</bool>
+          </property>
+          <property name="resizable">
+           <bool>true</bool>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Description</string>
+          </property>
+          <property name="clickable">
+           <bool>true</bool>
+          </property>
+          <property name="resizable">
+           <bool>true</bool>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout">
+         <item>
+          <widget class="QPushButton" name="profileDetailsButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Details</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="profileEditButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Edit</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>41</width>
+             <height>220</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="workingPage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Read File</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="textLabel1">
+      <property name="text">
+       <string>&lt;qt&gt;
+&lt;p&gt;
+The file type has been determined and the profile is selected.
+&lt;/p&gt;
+&lt;p&gt;
+Please click &lt;i&gt;next&lt;/i&gt; to let the determined import module read the file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="importPage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Import</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="readLabel">
+      <property name="text">
+       <string>&lt;qt&gt;
+&lt;p&gt;
+The file has been successfully read.
+&lt;/p&gt;
+&lt;p&gt;
+The next page will allow your application to import the data read from this file.
+&lt;/p&gt;
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="finishPage">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <attribute name="title">
+    <string>Finished</string>
+   </attribute>
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QLabel" name="finishedLabel">
+      <property name="text">
+       <string>&lt;qt&gt;
+The file has been successfully imported into the application.
+&lt;/qt&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Q3Frame</class>
+   <extends>QFrame</extends>
+   <header>Qt3Support/Q3Frame</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Q3Wizard</class>
+   <extends>QDialog</extends>
+   <header>q3wizard.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Q3ListView</class>
+   <extends>Q3Frame</extends>
+   <header>q3listview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

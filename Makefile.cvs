@@ -81,7 +81,7 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="qbanking" \
+	    --with-frontends="q4banking" \
 	    --enable-aqfinance
 	make sources
 
@@ -97,7 +97,7 @@ mpn:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="qbanking" \
+	    --with-frontends="q4banking" \
 	    --disable-aqfinance
 	make sources
 

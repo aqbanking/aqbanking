@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+
+<html>
+
+<head>
+<!-- copyright (c) 2006 by martin -->
+<meta name="generator" content="FTE 0.49.13-cvs" />
+<meta name="revised" content="martin,2006-01-20" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta name="author" content="Martin Preuss" />
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<title>Einstellungen</title>
+</head>
+
+
+<body>
+
+
+<a name="none">
+<h1>Kontoeinstellungen ändern </h1>
+</a>
+
+<p>
+  Dieser Dialog ermöglicht die Konfiguration eines Kontos.
+</p>
+
+<p>
+  Dieser Dialog enthält verschiedene Seiten:
+  <ul>
+    <li>
+      <b>Einleitung</b> (enthält allgemeine Hinweise zum Dialog)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      <a href="#QBCfgTabPageAccountGeneral">
+        <b>Grundeinstellungen</b>
+      </a>
+      (allgemeine Einstellungen zum Konto)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      eine optionale Anwendungs-Seite (z.B. <b>QBankManager</b>, hier können
+      Sie - falls diese Seite vorhanden ist - Anwendungs-spezifische
+      Einstellungen vornehmen)
+    </li>
+    <li>
+      eine optionale Seite des Banking-Moduls, welches für das bearbeitete
+      Konto zuständig ist, z.B.:
+      <ul>
+        <li>
+          <a href="#QBCfgTabPageAccountHbci">
+          <b>HBCI</b>
+          </a>
+          (HBCI-spezifische Einstellungen)
+        </li>
+        <li>
+          <a href="#CfgTabPageAccountDtaus">
+          <b>DTAUS</b>
+          </a>
+           (Einstellungen zu <i>DTAUS</i>)
+        </li>
+      </ul>
+
+    </li>
+  </ul>
+</p>
+
+
+
+<!-- 
+                        Generelle Konto-Einstellungen 
+-->
+
+<hr>
+
+<a name="QBCfgTabPageAccountGeneral">
+<h2>Generelle Konto-Einstellungen</h2>
+</a>
+<a href="#none">(zum Seitenanfang)</a>
+
+<p>
+  Hier können Sie generelle Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+<br>
+<img src="images/qbeditaccount-1.png" />
+<br>
+
+
+<h3>Kontoeinstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Kontoname</td>
+    <td>Frei wählbarer Name des Kontos</td>
+  </tr>
+  <tr>
+    <td>Kontonummer</td>
+    <td>Kontonummer wie Sie sie auf Ihren Kontoauszügen finden</td>
+  </tr>
+  <tr>
+    <td>Name des Kontoinhabers</td>
+    <td>
+      Hier sollten Sie Ihren Namen so eintragen wie er bei der Bank hinterlegt
+      ist. Der Eintrag hier wird beispielsweise bei Überweisungen verwendet.
+    </td>
+  </tr>
+</table>
+
+
+<h3>Bank-Einstellungen</h3>
+
+Hier werden Einstellungen bezüglich der Bank vorgenommen.
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Staat</td>
+    <td>Wählen Sie den Staat, in dem die Bank ihren Sitz hat.</td>
+  </tr>
+  <tr>
+    <td>Bankleitzahl</td>
+    <td>
+     Geben Sie hier für deutsche Banken die Bankleitzahl ein.
+     Für Staaten, in denen keine Bankleitzahlen üblich sind (bzw. falls Sie
+     sie nicht kennen), geben Sie hier <i>00000000</i> ein.
+    </td>
+  </tr>
+  <tr>
+    <td>Bankname</td>
+    <td>
+      Hier können Sie den Namen der Bank eingeben. Dieses Feld dient Ihnen
+      später beispielweise bei Berichten zur besseren Identifizierung der
+      Bank.
+    </td>
+  </tr>
+</table>
+
+
+<h3>Verfügbare Benutzer / ausgewählte Benutzer</h3>
+
+<p>
+  Manche Banking-Module arbeiten Benutzer-orientiert (wie HBCI, OFX etc).
+  Diese Module müssen wissen, unter welchem Benutzer Sie sich bei der Bank
+  anmelden wollen, wenn Sie Aufträge ausführen wollen.
+</p>
+<p>
+  Auf der linken Seite (<i>verfügbare Benutzer</i>) finden Sie die Benutzer,
+  die Sie dem Konto zuordnen können.
+</p>
+
+<p>
+  Auf der rechten Seite finden Sie die Benutzer, die bereits dem Konto
+  zugeordnet wurden (entweder durch Sie oder automatisch durch das
+  Banking-Modul).
+</p>
+
+
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
+
+
+<!-- 
+                        HBCI-Einstellungen 
+-->
+
+<a name="CfgTabPageAccountHbci">
+<h2>Konto-Einstellungen für HBCI</h2>
+</a>
+
+<br>
+<img src="images/qbeditaccount-2.png" />
+<br>
+
+<p>
+  Hier können Sie HBCI-spezifische Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+
+<h3>Allgemeine Einstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      <i>Einzelüberweisung anstelle Sammelüberweisung bevorzugen</i>
+    </td>
+    <td>
+      <p>
+        Wenn dieses Feld markiert ist, werden bei Überweisungen immer
+        Einzelaufträge erzeugt, andernfalls Sammelaufträge.
+      </p>
+      <p>
+        Sammelaufträge sind bei manchen Banken preiswerter als 
+        Einzelaufträge. Allerdings haben Sammelaufträge den Nachteil, daß
+        man je nach Bank oft nur einen Gesamtposten in seinen Kontoauszügen 
+        findet, wodurch die Zuordnung der Umsätze zu den einzelnen
+        Überweisungen unmöglich wird.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <i>Einzellastschrift anstelle Sammellastschrift bevorzugen</i>
+    </td>
+    <td>
+      Wie das obige Feld, allerdings für Lastschriften.
+    </td>
+  </tr>
+</table>
+
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
+
+
+<!-- 
+                        DTAUS-Einstellungen 
+-->
+
+
+<br>
+<img src="images/qbeditaccount-3.png" />
+<br>
+
+<a name="CfgTabPageAccountDtaus">
+<h2>Konto-Einstellungen für DTAUS</h2>
+</a>
+
+<p>
+  Hier können Sie DTAUS-spezifische Einstellungen an Ihrem Konto vornehmen.
+</p>
+
+
+<h3>DTAUS Einstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      Maximale Anzahl Verwendungszweckzeilen
+    </td>
+    <td>
+      Zulässig sind meistens 2-6.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Lastschriften erlauben
+    </td>
+    <td>
+      Markieren Sie dieses Feld, falls Ihre Bank Ihnen das Einziehen von
+      Lastschriften erlaubt und Sie dies tun möchten.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Alle Umsätze ausdrucken
+    </td>
+    <td>
+      Falls dieses Feld markiert ist, werden auf dem Begleitzettel zur
+      <i>DTAUS-Diskette</i> <b>alle</b> Überweisungen ausgedruckt.
+      Andernfalls wird nur eine Übersicht ausgedruckt.
+    </td>
+  </tr>
+</table>
+
+<h3>Ablage-Einstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>
+      Zielverzeichnis
+    </td>
+    <td>
+      <p>
+        Geben Sie hier das Verzeichnis an, in das Sie die <i>DTAUS-Dateien</i>
+        speichern wollen.
+      </p>
+      <p>
+        Falls Sie direkt DTAUS-Disketten erstellen wollen - statt die
+        Dateien auf der Festplatte abzulegen - sollten Sie hier den
+        Pfad angeben, unter dem das Diskettenlaufwerk zu finden ist.
+        Meist ist dies <i>/floppy</i>, <i>/mnt/floppy</i> oder
+        <i>/media/floppy<i> (je nach System).
+      </p>
+      <p>
+        Klicken Sie auf den Knopf neben dem Eingabefeld um einen Datei-Dialog
+        zu erhalten.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Diskette verwenden
+    </td>
+    <td>
+      Markieren Sie dieses Feld, falls Sie direkt Disketten beschreiben
+      wollen. In diesem Fall stellt das Modul sicher, daß sich in dem 
+      angegebenen Verzeichnis am Ende nur eine einzige Datei befindet, die
+      außerdem den von DTAUS vorgeschriebenen Namen trägt.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Einbinden erlauben
+    </td>
+    <td>
+      <p>
+        Das Modul kann automatisch Disketten im Laufwerk einbinden.
+      </p>
+      <p>
+        Die eingelegt Diskette muß im MS-DOS-Format formatiert und leer sein.
+      </p>
+      <p>
+        Falls dieses Feld markiert ist, müssen Sie die Kommandos zum Einbinden
+        in den nächsten Feldern eingeben.
+      </p>
+      <p>
+        Bitte beachten Sie, daß dieses Feld ausgeschaltet sein muß, falls Ihr
+        System einen <b>automounter</b> verwendet.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Kommando zum Einbinden
+    </td>
+    <td>
+      <p>
+        Hier geben Sie nun das Kommando zum Einbinden einer Diskette im 
+        Laufwerkes an. Die nötige Eingabe hängt von Ihrem System ab.
+      </p>
+      <p>
+        Für Linux müssen Sie hier das folgende Kommando eingeben:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          mount <i>Zielverzeichnis wie oben angegeben</i>
+        </td></tr>
+      </table>
+      <br>
+      </p>
+        Falls Sie also oben <i>/floppy</i> eingegeben haben, lautet das
+        korrekte Kommando:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          mount /floppy
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Lösen der Einbindung
+    </td>
+    <td>
+      <p>
+        Geben Sie hier analog zum vorigen Feld das Kommando zum Lösen der
+        Einbindung der Diskette ein.
+      </p>
+      <p>
+        Für Linux müssen Sie hier das folgende Kommando eingeben:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          umount <i>Zielverzeichnis wie oben angegeben</i>
+        </td></tr>
+      </table>
+      <br>
+      </p>
+        Falls Sie also oben <i>/floppy</i> eingegeben haben, lautet das
+        korrekte Kommando:
+      </p>
+      <table border="1">
+        <tr><td bgcolor="light yellow">
+          umount /floppy
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+</table>
+
+
+
+<hr>
+<a href="#none">(zum Seitenanfang)</a>
+
+
+
+</body>
+
+</html>
