@@ -90,6 +90,12 @@ QBANKING_SO_AGE=0
 QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
 
 
+Q4BANKING_SO_CURRENT=1
+Q4BANKING_SO_REVISION=0
+Q4BANKING_SO_AGE=0
+Q4BANKING_SO_EFFECTIVE="`echo \$(($Q4BANKING_SO_CURRENT-$Q4BANKING_SO_AGE))`"
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -119,6 +125,14 @@ QBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 QBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
 QBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 QBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
+
+Q4BANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+Q4BANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+Q4BANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+Q4BANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+Q4BANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
+Q4BANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
+Q4BANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 
 ###-------------------------------------------------------------------------
@@ -153,6 +167,7 @@ AQDTAUS_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQGELDKARTE_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQOFXCONNECT_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 QBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
+Q4BANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 
 
 
@@ -281,6 +296,41 @@ AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
 
 
 
+#
+# same for Q4Banking
+#
+
+AC_SUBST(Q4BANKING_VERSION_MAJOR)
+AC_SUBST(Q4BANKING_VERSION_MINOR)
+AC_SUBST(Q4BANKING_VERSION_PATCHLEVEL)
+AC_SUBST(Q4BANKING_VERSION_BUILD)
+AC_SUBST(Q4BANKING_VERSION_TAG)
+AC_SUBST(Q4BANKING_VERSION_FULL_STRING)
+AC_SUBST(Q4BANKING_VERSION_STRING)
+AC_SUBST(Q4BANKING_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_MAJOR,$Q4BANKING_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_MINOR,$Q4BANKING_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_PATCHLEVEL,$Q4BANKING_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_BUILD,$Q4BANKING_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_STRING,"$Q4BANKING_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_FULL_STRING,"$Q4BANKING_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_TAG,$Q4BANKING_VERSION_TAG, [tag])
+
+AC_SUBST(Q4BANKING_SO_CURRENT)
+AC_SUBST(Q4BANKING_SO_REVISION)
+AC_SUBST(Q4BANKING_SO_AGE)
+AC_SUBST(QBANKING_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(Q4BANKING_SO_EFFECTIVE_STR, "$Q4BANKING_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -392,6 +442,10 @@ AC_ARG_WITH(frontends,
 )
 # The ordering is important due to linker dependencies, so force
 # the correct ordering here:
+case "$aqbanking_frontends" in *q4banking*)
+  tmp_frontends="${tmp_frontends} q4banking"
+  ;;
+esac
 case "$aqbanking_frontends" in *qbanking*)
   tmp_frontends="${tmp_frontends} qbanking"
   ;;
@@ -718,6 +772,44 @@ dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
 AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 AM_CONDITIONAL(WITH_QBANKING, [test "$with_qbanking" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# QT4
+#
+
+UIC4="NO"
+QT4_BINDIR=""
+
+case "$aqbanking_frontends" in 
+  *q4banking*)
+    AQ_CHECK_QT4
+    if test "$have_qt4" = "yes"; then
+      # Define this macro to disable the cast from QString to const char
+      # which implicitly uses latin1()!
+      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+    fi
+    
+    dnl windows/mingw doesnt have the yes program, so add this emulation
+    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+    
+    dnl Store the bin dir for the windows dlls
+    QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
+    UIC4="${qt4_uic}"
+  
+    AC_DEFINE(BUILD_Q4BANKING_FRONTEND, 1, [if qbanking frontend is built])
+    with_q4banking="yes"
+    ;;
+  *)
+    q4banking_internal_libs=""
+    ;;
+esac
+
+dnl Store the bin dir for the windows dlls
+AC_SUBST(QT4_BINDIR)
+AM_CONDITIONAL(WITH_Q4BANKING, [test "$with_q4banking" = "yes"])
 
 
 
@@ -1314,6 +1406,37 @@ AC_SUBST(qbanking_helpdir)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for frontend q4banking
+#
+
+# Common settings
+q4banking_internal_libs="${abs_top_builddir}/src/frontends/q4banking/lib/libq4banking.la"
+q4banking_includes="-I\${includedir}"
+q4banking_libs="-L\${libdir} -lq4banking"
+q4banking_data="\${datadir}/q4banking"
+q4banking_plugindir="\${aqbanking_plugindir}/frontends/q4banking"
+q4banking_helpdir="\${datadir}/aqbanking/frontends/q4banking/help"
+
+case "$OS_TYPE" in
+    posix)
+    	;;
+    windows)
+        AC_DEFINE_UNQUOTED(BUILDING_Q4BANKING_DLL,1, [Define if DLL is built])
+	all_includes="$all_includes -mms-bitfields"
+    	;;
+esac
+
+AC_SUBST(q4banking_includes)
+AC_SUBST(q4banking_internal_libs)
+AC_SUBST(q4banking_libs)
+AC_SUBST(q4banking_data)
+AC_SUBST(q4banking_plugindir)
+AC_SUBST(q4banking_helpdir)
+
+
+
+###-------------------------------------------------------------------------
+#
 # subst selected UIs
 #
 
@@ -1459,6 +1582,21 @@ AC_CONFIG_FILES([
   src/frontends/qbanking/help/Makefile
   src/frontends/qbanking/help/de/Makefile
   src/frontends/qbanking/help/de/images/Makefile
+  src/frontends/q4banking/Makefile
+  src/frontends/q4banking/lib/Makefile
+  src/frontends/q4banking/lib/dialogs/Makefile
+  src/frontends/q4banking/lib/views/Makefile
+  src/frontends/q4banking/lib/widgets/Makefile
+  src/frontends/q4banking/lib/gui/Makefile
+  src/frontends/q4banking/lib/version.h
+  src/frontends/q4banking/lib/ressource.rc
+  src/frontends/q4banking/bin/Makefile
+  src/frontends/q4banking/bin/wizard/Makefile
+  src/frontends/q4banking/bin/wizard/qt4_wizard.xml
+  src/frontends/q4banking/bin/helpbrowser/Makefile
+  src/frontends/q4banking/help/Makefile
+  src/frontends/q4banking/help/de/Makefile
+  src/frontends/q4banking/help/de/images/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile
@@ -1642,6 +1780,7 @@ echo
 echo
 echo "Plugins"
 echo "----------------------------------------------------"
+echo "  Frontends             : $aqbanking_frontends"
 echo "  Backends              : $aqbanking_backends"
 echo "  Im-/Exporters         : $aqbanking_imexporters"
 echo "  Parsers               : $aqbanking_parsers"

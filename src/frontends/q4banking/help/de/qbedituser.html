@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C/DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd">
+
+<html>
+
+<head>
+<!-- copyright (c) 2006 by martin -->
+<meta name="generator" content="FTE 0.49.13-cvs" />
+<meta name="revised" content="martin,2006-01-22" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta name="author" content="martin" />
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<title>qbedituser</title>
+</head>
+
+<body>
+
+<a name="none">
+<h1>Benutzereinstellungen ändern </h1>
+</a>
+
+
+<p>
+  Dieser Dialog ermöglicht die Konfiguration eines Benutzers.
+</p>
+
+<p>
+  Er enthält verschiedene Seiten:
+  <ul>
+    <li>
+      <b>Einleitung</b> (enthält allgemeine Hinweise zum Dialog)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      <a href="#QBCfgTabPageAccountGeneral">
+        <b>Allgemein</b>
+      </a>
+      (allgemeine Einstellungen zum Benutzer)
+      [<i>immer vorhanden</i>]
+    </li>
+    <li>
+      eine optionale Anwendungs-Seite (z.B. <b>QBankManager</b>, hier können
+      Sie - falls diese Seite vorhanden ist - Anwendungs-spezifische
+      Einstellungen vornehmen)
+    </li>
+    <li>
+      eine optionale Seite des Banking-Moduls, welches für den bearbeiteten
+      Benutzer zuständig ist, z.B.:
+      <ul>
+        <li>
+          <a href="#QBCfgTabPageUserHbci">
+          <b>HBCI</b>
+          </a>
+          (HBCI-spezifische Einstellungen)
+        </li>
+        <li>
+          <a href="#CfgTabPageAccountOfx">
+          <b>OFX DirectConnect</b>
+          </a>
+           (Einstellungen zu <i>OFX DirectConnect</i>)
+        </li>
+      </ul>
+
+    </li>
+  </ul>
+</p>
+
+
+<!-- 
+                        Generelle Benutzer-Einstellungen 
+-->
+
+<hr>
+
+<a name="QBCfgTabPageUserGeneral">
+<h2>Generelle Benutzer-Einstellungen</h2>
+</a>
+<a href="#none"><p align="right"> (zum Seitenanfang)</p></a>
+
+<p>
+  Hier können Sie generelle Einstellungen an einem Benutzer vornehmen.
+</p>
+
+<br>
+<img src="images/qbedituser-1.png" />
+<br>
+
+
+<h3>Benutzer-Einstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Benutzername</td>
+    <td>
+      Frei wählbarer Name des Benutzer (im Normalfall also <b>Ihr</b> 
+      Name)
+    </td>
+  </tr>
+  <tr>
+    <td>Id</td>
+    <td>
+      Benutzerkennung (wird beispielweise für HBCI benötigt).
+    </td>
+  </tr>
+  <tr>
+    <td>Kundenkennung</td>
+    <td>
+      <p>
+        Manche Banking-Module (z.B. <b>HBCI</b>) können zusätzlich die
+        Verwendung einer <i>Kundenkennung</i> vorschreiben. Dies tun
+        allerdings nur wenige Banken, und dann steht es auch auf dem Brief 
+        Ihrer Bank, in dem Ihnen die Freischaltung des Zuganges bestätigt 
+        wird.
+      </p>
+      <p>
+        Wenn in Ihren Unterlagen keine Anhaben zu einer eventuellen 
+        Kundenkennung zu finden sind, tragen Sie hier einfach die Eingabe
+        aus dem Feld <b>Id</b> ein.
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+<h3>Bank-Einstellungen</h3>
+
+Hier werden Einstellungen bezüglich der Bank vorgenommen.
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Staat</td>
+    <td>Wählen Sie den Staat, in dem die Bank ihren Sitz hat.</td>
+  </tr>
+  <tr>
+    <td>Bankleitzahl</td>
+    <td>
+      <p>
+        Geben Sie hier für deutsche Banken die Bankleitzahl ein.
+        Für Staaten, in denen keine Bankleitzahlen üblich sind (bzw. falls Sie
+        sie nicht kennen), geben Sie hier <i>00000000</i> ein.
+      </p>
+      <p>
+        Rechts von diesem Feld finden Sie einen Knopf, der Sie zu einem Dialog
+        führt, der die Auswahl einer Bank erlaubt.
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+<hr>
+
+<a name="QBCfgTabPageUserHbci">
+<h2>Benutzer-Einstellungen für HBCI</h2>
+</a>
+<a href="#none"><p align="right"> (zum Seitenanfang)</p></a>
+
+<br>
+<img src="images/qbedituser-2.png" />
+<br>
+
+
+<h3>Allgemeine Einstellungen</h3>
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td>Benutzer-Status</td>
+    <td>
+      <p>
+        Hier finden Sie den aktuellen Status des Benutzers. Normalerweise
+        sollten Sie diesen nicht selbst ändern müssen.
+      </p>
+      Die folgenden Möglichkeiten gibt es hier:
+      <ul>
+        <li>
+          <b>Neu</b>: Benutzer wurde neu angelegt, die Konfiguration ist
+          aber noch nicht abgeschlossen.
+        </li>
+        <li>
+          <b>Aktiv</b>: Benutzer ist bereits aktiv und für HBCI komplett
+          eingerichtet.
+        </li>
+        <li>
+          <b>Unvollständig</b>: Benutzer wurde bereits konfiguriert, ist
+          aber noch nicht vollständig eingerichtet. Dies ist beispielsweise
+          im <i>RDH</i>-Modus der Fall: Hier wird zunächst ein Benutzer
+          angelegt, es werden die öffentlichen Schlüssel des Benutzers an
+          die Bank übertragen und ein sogenannter <b>Ini-Brief</b> per Post
+          and die Bank geschickt. Sobald die Bank nun die Daten auf dem
+          Brief mit den gesendeten Schlüssel verglichen hat, wird sie den
+          HBCI-Zugang freischalten. Erst dann können weitere nötige Daten
+          vom Server abgefragt werden, um die Einrichtung des Benutzers
+          abzuschließen (dazu dient dann der <b>Abgeschlossen</b>-Knopf 
+          rechts vom Status).
+        </li>
+        <li>
+          <b>Inaktiv</b>: Benutzer wurde deaktiviert (dieser Status wird 
+          derzeit nicht verwendet, sollte daher also nicht eingestellt werden)
+        </li>
+        <li>
+          <b>Unbekannt</b>: Unbekannter Status, zeigt einen Fehler im Programm
+          oder in AqBanking an.
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>Server-URL</td>
+    <td>
+      <p>
+        Dies ist die Adresse des HBCI-Servers. Sie können hier die IP-Adresse
+        des Servers (z.B. im Format <i>192.168.1.1</i>) angeben, oder dessen
+        Namen (z.B. <i>www.meine-bank.de</i>).
+      </p>
+      <p>
+        Für den <b>Pin/Tan</b>-Modus sieht die URL meist in etwa so aus:
+        <i>www.mein-bank.de/pintan/servlet.php</i> (oder ähnlich).
+      </p>
+      <p>
+        Sie müssen hier natürlich nur dann Angaben machen, wenn es sich auch
+        um ein Banking-Modul handelt, das direkt Kontakt mit einem Bankserver
+        aufnimmt. Das <b>DTAUS</b>-Modul beispielsweise erzeugt nur Disketten,
+        die Sie direkt zur Bank bringen müssen. In diesem Fall ist also die
+        Angabe eines Bank-Servers nicht nötig.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>Beschreibender Medium-Name</td>
+    <td>
+      <p>
+        Sobald AqBanking auf Ihr Sicherheitsmedium zugreifen will, wird es Sie
+        nach der zugehörigen Pin fragen. Dazu wird Ihnen dann Die Eingabe aus 
+        diesem Feld präsentiert, damit Sie wissen, um welches Medium es geht.
+      </p>
+      <p>
+        Bewährte Namen sind z.B. <i>Sparkasse WHV</i> oder 
+        <i>Hamburger Sparkasse</i>.
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+
+<h3>Experten-Einstellungen</h3>
+
+Änderungen hier sind normalerweise nicht nötig, können aber in speziellen
+Fällen eventuell doch helfen.
+
+<table border="1">
+  <tr>
+    <th>Feld</th>
+    <th>Erläuterung</th>
+  </tr>
+  <tr>
+    <td><i>Bank signiert ihre Nachrichten</i></td>
+    <td>
+      <p>
+        Nicht alle Banken tun dies. Dadurch können Sie genaugenommen nie
+        sicher sein, ob eine Nachricht nun von der Bank kommt oder nicht.
+      </p>
+      <p>
+        In der Praxis ist dies allerdings nicht besonders relevant, da zum
+        einen ein Angreifer hier Ihre öffentlichen Schlüssel benötigen würde,
+        um Ihnen eine Nachricht unterschieben zu können (unmöglich ist aber 
+        auch das nicht). Zum anderen sendet die Bank Ihnen lediglich
+        Informationen bzw. Antworten auf Anfragen von Ihnen.
+      </p>
+      <p>
+        Im schlimmsten Fall könnte ein Angreifer Ihnen also falsche
+        Status-Informationen (Kontoauszüge, Kontostände etc) vortäuschen,
+        aber keine direkten Änderungen an Ihrem Konto vornehmen.
+      </p>
+      <p>
+        Dieses Feld ist normalerweise markiert.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td><i>Bank verwendet Signaturzähler</i></td>
+    <td>
+      <p>
+        Ein Signaturzähler dient dazu Doppeleinreichungen festzustellen.
+        Die Bank zählt beispielsweise Ihre Signaturen mit, um dadurch einen
+        sogenannten <i>Replay-Angriff</i> zu verhindern.
+      </p>
+      <p>
+        Genauso könnte allerdings auch die Anwendung die Nachrichten des
+        Servers überprüfen.
+      </p>
+      <p>
+        Nicht alle Banken erzeugen verwertbare Signaturzähler, so daß diese
+        Option standardmässig ausgeschaltet ist.
+      </p>
+      <p>
+        Manche Banken verwenden hier auch so grosse Zahlen, daß diese in
+        AqBanking nicht mehr ausgewertet werden können.
+      </p>
+      <p>
+        Sie sollten dieses Feld darher unmarkiert lassen.
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+<h3>Experten-Aktionen</h3>
+
+<p>
+ Abhängig vom verwendeten Sicherheitsmedium - <i>DDV</i>, <i>RDH</i> oder
+ <i>Pin/Tan</i> können hier unterschiedliche Aktionen ausgeführt werden.
+</p>
+<p>
+  Normalerweise müssen Sie diese Aktionen nicht ausführen. Die Verwendung
+  sollte Experten vorbehalten bleiben (bzw. vom Benutzer im Rahmen der 
+  Problemlösung auf Anfrage der Autoren von AqBanking verwendet werden).
+</p>
+
+Die folgenden Aktionen sind möglich:
+<ul>
+ <li>
+   Server-Schlüssel abrufen (nur RDH): Ruft die öffentlichen Schlüssel des
+   Bankservers ab und speichert diese im Sicherheitsmedium (meist in einer
+   Datei oder auf einer Chipkarte)
+ </li>
+ <li>
+   Systemkennung abrufen (nur RDH und Pin/Tan): AqBanking benötigt eine
+   sogenannte <i>Systemkennung</i>, mittels der es sich bei der Bank
+   vorstellt. Über diese Kennung werden dann spezielle Sicherheitsparameter
+   gesteuert.
+ </li>
+ <li>
+   Kontenliste abrufen: Befragt den Bankserver nach einer Liste der
+   Konten, die über HBCI administriert werden können.
+ </li>
+</ul>
+
+
+<hr>
+<a href="#none"><p align="right"> (zum Seitenanfang)</p></a>
+
+
+
+</body>
+
+</html>

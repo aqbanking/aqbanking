@@ -1,0 +1,5 @@
+
+This folder contains an implementation of GWEN_GUI using QT.
+The code in this folder does not depend on AqBanking, so you can use it in
+your own application.
+
