@@ -1,5 +1,5 @@
-SUBDIRS=@qt3_ui@
-DIST_SUBDIRS = qt3
+SUBDIRS=@qt3_ui@ @qt4_ui@
+DIST_SUBDIRS = qt3 qt4
 
 sources:
 	for d in $(SUBDIRS); do \
