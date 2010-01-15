@@ -1283,6 +1283,14 @@ for frontend in $aqbanking_frontends; do
       qt3_ui="qt3"
       with_qbanking="yes"
       ;;
+    q4banking)
+      if test "x$have_qt4" != "xyes"; then
+        AC_MSG_NOTICE([*** QT4 is required for QT-frontend "q4banking". Specify --with-frontends="" to build aqbanking without that frontend.])
+	dependencies_ok="no"
+      fi
+      qt4_ui="qt4"
+      with_q4banking="yes"
+      ;;
   esac
 done
 
@@ -1295,6 +1303,7 @@ if test "x$dependencies_ok" != "xyes"; then
 fi
 
 AC_SUBST(with_qbanking)
+AC_SUBST(with_q4banking)
 
 
 
@@ -1441,6 +1450,7 @@ AC_SUBST(q4banking_helpdir)
 #
 
 AC_SUBST(qt3_ui)
+AC_SUBST(qt4_ui)
 
 
 
@@ -1726,6 +1736,13 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/Makefile
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/qt_debug.xml
+  src/plugins/backends/aqhbci/ui/qt4/libs/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/wizard/Makefile
+  src/plugins/backends/aqhbci/ui/qt4/libs/logmanager/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/plugin/Makefile
@@ -1734,6 +1751,8 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/ui/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/Makefile
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt4/Makefile
+  src/plugins/backends/aqofxconnect/ui/qt4/libs/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc
