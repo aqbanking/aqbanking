@@ -1,4 +1,4 @@
-helpdir=@qbanking_helpdir@/de/images
+helpdir=@q4banking_helpdir@/de/images
 dist_help_DATA=\
  qbcfgtabsettings-1.png \
  qbcfgtabsettings-2.png \
