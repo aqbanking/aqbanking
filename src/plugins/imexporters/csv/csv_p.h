@@ -69,5 +69,9 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
                                          int noted,
 					 uint32_t guiid);
 
+static AB_VALUE *AH_ImExporterCSV__ValueFromDb(GWEN_DB_NODE *dbV,
+					       int commaThousands,
+					       int commaDecimal);
+
 
 #endif /* AQHBCI_IMEX_CSV_P_H */

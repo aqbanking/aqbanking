@@ -136,6 +136,51 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 
 
 
+AB_VALUE *AH_ImExporterCSV__ValueFromDb(GWEN_DB_NODE *dbV, int commaThousands, int commaDecimal) {
+  const char *sv;
+  const char *sc;
+  char *cbuf=NULL;
+  AB_VALUE *val;
+
+  sv=GWEN_DB_GetCharValue(dbV, "value", 0, 0);
+  sc=GWEN_DB_GetCharValue(dbV, "currency", 0, "EUR");
+  if (commaThousands || commaDecimal) {
+    const char *pSrc;
+    char *pDst;
+
+    cbuf=(char*) malloc(strlen(sv)+1);
+    pSrc=sv;
+    pDst=cbuf;
+
+    /* copy all but thousands commas to new buffer */
+    while(*pSrc) {
+      if (commaThousands && *pSrc==commaThousands) {
+	/* skip thousands comma */
+      }
+      else if (commaDecimal && *pSrc==commaDecimal)
+        /* replace whatever is given by a recognizable decimal point */
+	*(pDst++)='.';
+      else
+	*(pDst++)=*pSrc;
+      pSrc++;
+    }
+    /* add trailing 0 to end the string */
+    *pDst=0;
+
+    sv=(const char*) cbuf;
+  }
+
+  val=AB_Value_fromString(sv);
+  if (cbuf)
+    free(cbuf);
+  if (val && sc)
+    AB_Value_SetCurrency(val, sc);
+
+  return val;
+}
+
+
+
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
 				      GWEN_DB_NODE *dbParams,
@@ -149,7 +194,10 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   int switchLocalRemote;
   int switchOnNegative;
   const char *posNegFieldName;
+  int commaThousands=0;
+  int commaDecimal=0;
   uint32_t progressId;
+  const char *s;
 
   dateFormat=GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYYY/MM/DD");
   inUtc=GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
@@ -161,6 +209,13 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
   switchLocalRemote=GWEN_DB_GetIntValue(dbParams, "switchLocalRemote", 0, 0);
   switchOnNegative=GWEN_DB_GetIntValue(dbParams, "switchOnNegative", 0, 1);
+
+  s=GWEN_DB_GetCharValue(dbParams, "commaThousands", 0, 0);
+  if (s)
+    commaThousands=*s;
+  s=GWEN_DB_GetCharValue(dbParams, "commaDecimal", 0, 0);
+  if (s)
+    commaDecimal=*s;
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -211,7 +266,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	  GWEN_DB_NODE *dbV;
 
 	  dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valueIn");
-	  tv=AB_Value_fromDb(dbV);
+	  tv=AH_ImExporterCSV__ValueFromDb(dbV, commaThousands, commaDecimal);
 	}
 	else {
 	  s=GWEN_DB_GetCharValue(dbT, "valueOut/value", 0, 0);
@@ -220,7 +275,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 	    dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "valueOut");
 	    if (dbV) {
-	      tv=AB_Value_fromDb(dbV);
+	      tv=AH_ImExporterCSV__ValueFromDb(dbV, commaThousands, commaDecimal);
 	      if (!AB_Value_IsNegative(tv))
 		/* outgoing but positive, negate */
 		AB_Value_Negate(tv);
