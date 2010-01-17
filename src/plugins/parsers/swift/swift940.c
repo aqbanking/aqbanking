@@ -137,6 +137,235 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   }
 
   if (isStructured) {
+#if 1
+    AHB_SWIFT_SUBTAG_LIST *stlist;
+    int rv;
+
+    stlist=AHB_SWIFT_SubTag_List_new();
+    rv=AHB_SWIFT_ParseSubTags(p, stlist);
+    if (rv<0) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Handling tag :86: as unstructured (%d)", rv);
+      isStructured=0;
+    }
+    else {
+      if (code>99 && code<200) {
+	AHB_SWIFT_SUBTAG *stg;
+	char identifier[6];
+	GWEN_BUFFER *tbuf=NULL;
+
+	/* SEPA transaction, needs special handling */
+	identifier[0]=0;
+	stg=AHB_SWIFT_SubTag_List_First(stlist);
+	while(stg) {
+	  const char *s;
+          int id;
+	  int intVal;
+
+          id=AHB_SWIFT_SubTag_GetId(stg);
+	  s=AHB_SWIFT_SubTag_GetData(stg);
+	  switch(id) {
+	  case 0: /* Buchungstext */
+	    AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
+	    break;
+	  case 10: /* Primanota */
+	    AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+	    break;
+      
+	  case 20:
+	  case 21:
+	  case 22:
+	  case 23:
+	  case 24:
+	  case 25:
+	  case 26:
+	  case 27:
+	  case 28:
+	  case 29:
+	  case 60:
+	  case 61:
+	  case 62:
+	  case 63: /* Verwendungszweck */
+	    if (strlen(s)>4 && s[4]=='+') {
+	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
+		/* close previous identifier */
+		if (strcasecmp(identifier, "EREF+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "KREF+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "MREF+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "mandateReference", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "CRED+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "creditorIdentifier", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "DEBT+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "SVWZ+")==0) {
+		  AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+		}
+		else if (strcasecmp(identifier, "ABWA+")==0) {
+		}
+	      }
+
+	      /* start of an identifier */
+	      strncpy(identifier, s, 5);
+	      identifier[5]=0;
+	      if (tbuf==NULL)
+		tbuf=GWEN_Buffer_new(0, 54, 0, 1);
+	      else
+		GWEN_Buffer_Reset(tbuf);
+	      GWEN_Buffer_AppendString(tbuf, s+4);
+	    }
+	    else {
+	      /* no identifier here */
+	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
+		/* continuation of previous identifier, add to buffer */
+		GWEN_Buffer_AppendString(tbuf, s);
+	      }
+	      else {
+		AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+	      }
+	    }
+	    break;
+      
+	  case 30: /* BLZ Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+	    break;
+      
+	  case 31: /* Kontonummer Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+	    break;
+      
+	  case 32: 
+	  case 33: /* Name Auftraggeber */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+	    break;
+      
+	  case 34: /* Textschluesselergaenzung */
+	    if (1==sscanf(s, "%d", &intVal)) {
+	      GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
+	    }
+	    else {
+	      DBG_WARN(AQBANKING_LOGDOMAIN,
+		       "Value [%s] is not a number (textkeyext)", s);
+	    }
+	    break;
+  
+	  case 38: /* IBAN */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
+	    break;
+  
+	  default: /* ignore all other fields (if any) */
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+		     AHB_SWIFT_Tag_GetData(tg));
+	    break;
+	  } /* switch */
+	  stg=AHB_SWIFT_SubTag_List_Next(stg);
+	} /* while */
+
+	/* close possibly open identifieres */
+	if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
+	  /* close previous identifier */
+	  if (strcasecmp(identifier, "EREF+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "KREF+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "MREF+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "mandateReference", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "CRED+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "creditorIdentifier", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "DEBT+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "SVWZ+")==0) {
+	    AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+	  }
+	  else if (strcasecmp(identifier, "ABWA+")==0) {
+	  }
+	}
+	GWEN_Buffer_free(tbuf);
+      } /* if sepa */
+      else {
+	AHB_SWIFT_SUBTAG *stg;
+
+	/* non-sepa */
+	stg=AHB_SWIFT_SubTag_List_First(stlist);
+	while(stg) {
+          int id;
+	  const char *s;
+          int intVal;
+
+          id=AHB_SWIFT_SubTag_GetId(stg);
+	  s=AHB_SWIFT_SubTag_GetData(stg);
+	  switch(id) {
+	  case 0: /* Buchungstext */
+	    AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
+	    break;
+	  case 10: /* Primanota */
+	    AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+	    break;
+      
+	  case 20:
+	  case 21:
+	  case 22:
+	  case 23:
+	  case 24:
+	  case 25:
+	  case 26:
+	  case 27:
+	  case 28:
+	  case 29:
+	  case 60:
+	  case 61:
+	  case 62:
+	  case 63: /* Verwendungszweck */
+	    AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+	    break;
+
+	  case 30: /* BLZ Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+	    break;
+      
+	  case 31: /* Kontonummer Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+	    break;
+      
+	  case 32: 
+	  case 33: /* Name Auftraggeber */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+	    break;
+      
+	  case 34: /* Textschluesselergaenzung */
+	    if (1==sscanf(s, "%d", &intVal)) {
+	      GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
+	    }
+	    else {
+	      DBG_WARN(AQBANKING_LOGDOMAIN,
+		       "Value [%s] is not a number (textkeyext)", s);
+	    }
+	    break;
+  
+	  case 38: /* IBAN */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
+	    break;
+  
+	  default: /* ignore all other fields (if any) */
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+		     AHB_SWIFT_Tag_GetData(tg));
+	    break;
+	  } /* switch */
+	  stg=AHB_SWIFT_SubTag_List_Next(stg);
+	} /* while */
+      }
+    } /* if really structured */
+#else
     const char *p2;
     char *s;
     int id;
@@ -249,8 +478,10 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       p=p2;
       free(s);
     } /* while */
+#endif
   } /* if structured */
-  else {
+
+  if (!isStructured) {
     char *pcopy=strdup(p);
     char *p1;
 

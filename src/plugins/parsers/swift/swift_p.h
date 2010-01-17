@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004,2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,6 +32,17 @@ struct AHB_SWIFT_TAG {
 AHB_SWIFT_TAG *AHB_SWIFT_Tag_new(const char *id,
 				 const char *content);
 void AHB_SWIFT_Tag_free(AHB_SWIFT_TAG *tg);
+
+
+
+struct AHB_SWIFT_SUBTAG {
+  GWEN_LIST_ELEMENT(AHB_SWIFT_SUBTAG);
+  int id;
+  char *content;
+};
+
+
+
 
 /**
  * This function reads a line from a buffered IO stream. It stops when either
