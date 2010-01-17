@@ -337,6 +337,14 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->customerReference);
   if (st->bankReference)
     free(st->bankReference);
+  if (st->endToEndReference)
+    free(st->endToEndReference);
+  if (st->mandateReference)
+    free(st->mandateReference);
+  if (st->creditorIdentifier)
+    free(st->creditorIdentifier);
+  if (st->originatorIdentifier)
+    free(st->originatorIdentifier);
   if (st->transactionText)
     free(st->transactionText);
   if (st->primanota)
@@ -439,6 +447,14 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->customerReference=strdup(d->customerReference);
   if (d->bankReference)
     st->bankReference=strdup(d->bankReference);
+  if (d->endToEndReference)
+    st->endToEndReference=strdup(d->endToEndReference);
+  if (d->mandateReference)
+    st->mandateReference=strdup(d->mandateReference);
+  if (d->creditorIdentifier)
+    st->creditorIdentifier=strdup(d->creditorIdentifier);
+  if (d->originatorIdentifier)
+    st->originatorIdentifier=strdup(d->originatorIdentifier);
   st->transactionCode=d->transactionCode;
   if (d->transactionText)
     st->transactionText=strdup(d->transactionText);
@@ -585,6 +601,18 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->bankReference)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankReference", st->bankReference))
+      return -1;
+  if (st->endToEndReference)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "endToEndReference", st->endToEndReference))
+      return -1;
+  if (st->mandateReference)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "mandateReference", st->mandateReference))
+      return -1;
+  if (st->creditorIdentifier)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "creditorIdentifier", st->creditorIdentifier))
+      return -1;
+  if (st->originatorIdentifier)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originatorIdentifier", st->originatorIdentifier))
       return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "transactionCode", st->transactionCode))
     return -1;
@@ -763,6 +791,10 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetTransactionKey(st, GWEN_DB_GetCharValue(db, "transactionKey", 0, 0));
   AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
   AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
+  AB_Transaction_SetEndToEndReference(st, GWEN_DB_GetCharValue(db, "endToEndReference", 0, 0));
+  AB_Transaction_SetMandateReference(st, GWEN_DB_GetCharValue(db, "mandateReference", 0, 0));
+  AB_Transaction_SetCreditorIdentifier(st, GWEN_DB_GetCharValue(db, "creditorIdentifier", 0, 0));
+  AB_Transaction_SetOriginatorIdentifier(st, GWEN_DB_GetCharValue(db, "originatorIdentifier", 0, 0));
   AB_Transaction_SetTransactionCode(st, GWEN_DB_GetIntValue(db, "transactionCode", 0, 0));
   AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
   AB_Transaction_SetPrimanota(st, GWEN_DB_GetCharValue(db, "primanota", 0, 0));
@@ -1479,6 +1511,86 @@ void AB_Transaction_SetBankReference(AB_TRANSACTION *st, const char *d) {
     st->bankReference=strdup(d);
   else
     st->bankReference=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetEndToEndReference(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->endToEndReference;
+}
+
+
+void AB_Transaction_SetEndToEndReference(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->endToEndReference)
+    free(st->endToEndReference);
+  if (d && *d)
+    st->endToEndReference=strdup(d);
+  else
+    st->endToEndReference=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetMandateReference(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->mandateReference;
+}
+
+
+void AB_Transaction_SetMandateReference(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->mandateReference)
+    free(st->mandateReference);
+  if (d && *d)
+    st->mandateReference=strdup(d);
+  else
+    st->mandateReference=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetCreditorIdentifier(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->creditorIdentifier;
+}
+
+
+void AB_Transaction_SetCreditorIdentifier(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->creditorIdentifier)
+    free(st->creditorIdentifier);
+  if (d && *d)
+    st->creditorIdentifier=strdup(d);
+  else
+    st->creditorIdentifier=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetOriginatorIdentifier(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->originatorIdentifier;
+}
+
+
+void AB_Transaction_SetOriginatorIdentifier(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->originatorIdentifier)
+    free(st->originatorIdentifier);
+  if (d && *d)
+    st->originatorIdentifier=strdup(d);
+  else
+    st->originatorIdentifier=0;
   st->_modified=1;
 }
 

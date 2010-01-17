@@ -744,6 +744,26 @@
           has given one. Otherwise empty. (Bankreferenz)
         </descr>
       </elem>
+      <elem name="endToEndReference" type="char" ptr="1" >
+        <descr>
+          This is a reference provided by the issuer of a SEPA transfer.
+        </descr>
+      </elem>
+      <elem name="mandateReference" type="char" ptr="1" >
+        <descr>
+          This is a reference provided by the issuer of a SEPA transfer.
+        </descr>
+      </elem>
+      <elem name="creditorIdentifier" type="char" ptr="1" >
+        <descr>
+          Used for SEPA transfers.
+        </descr>
+      </elem>
+      <elem name="originatorIdentifier" type="char" ptr="1" >
+        <descr>
+          Used for SEPA transfers.
+        </descr>
+      </elem>
       <elem name="transactionCode" type="int" >
         <descr>
           A 3 digit numerical transaction code, defined for all kinds of

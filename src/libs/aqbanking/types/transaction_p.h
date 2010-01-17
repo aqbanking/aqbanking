@@ -43,6 +43,10 @@ struct AB_TRANSACTION {
   char *transactionKey;
   char *customerReference;
   char *bankReference;
+  char *endToEndReference;
+  char *mandateReference;
+  char *creditorIdentifier;
+  char *originatorIdentifier;
   int transactionCode;
   char *transactionText;
   char *primanota;
@@ -141,6 +145,10 @@ This group contains information about the remote account.
 </p>
 */
 /*@{*/
+
+
+
+
 
 
 

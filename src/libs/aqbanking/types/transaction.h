@@ -435,6 +435,46 @@ Set this property with @ref AB_Transaction_SetBankReference,
 get it with @ref AB_Transaction_GetBankReference
 </p>
 
+@anchor AB_TRANSACTION_EndToEndReference
+<h4>EndToEndReference</h4>
+<p>
+This is a reference provided by the issuer of a SEPA transfer.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetEndToEndReference, 
+get it with @ref AB_Transaction_GetEndToEndReference
+</p>
+
+@anchor AB_TRANSACTION_MandateReference
+<h4>MandateReference</h4>
+<p>
+This is a reference provided by the issuer of a SEPA transfer.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetMandateReference, 
+get it with @ref AB_Transaction_GetMandateReference
+</p>
+
+@anchor AB_TRANSACTION_CreditorIdentifier
+<h4>CreditorIdentifier</h4>
+<p>
+Used for SEPA transfers.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetCreditorIdentifier, 
+get it with @ref AB_Transaction_GetCreditorIdentifier
+</p>
+
+@anchor AB_TRANSACTION_OriginatorIdentifier
+<h4>OriginatorIdentifier</h4>
+<p>
+Used for SEPA transfers.
+</p>
+<p>
+Set this property with @ref AB_Transaction_SetOriginatorIdentifier, 
+get it with @ref AB_Transaction_GetOriginatorIdentifier
+</p>
+
 @anchor AB_TRANSACTION_TransactionCode
 <h4>TransactionCode</h4>
 <p>
@@ -1279,6 +1319,42 @@ AQBANKING_API const char *AB_Transaction_GetBankReference(const AB_TRANSACTION *
 * Set the property @ref AB_TRANSACTION_BankReference
 */
 AQBANKING_API void AB_Transaction_SetBankReference(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_EndToEndReference
+*/
+AQBANKING_API const char *AB_Transaction_GetEndToEndReference(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_EndToEndReference
+*/
+AQBANKING_API void AB_Transaction_SetEndToEndReference(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_MandateReference
+*/
+AQBANKING_API const char *AB_Transaction_GetMandateReference(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_MandateReference
+*/
+AQBANKING_API void AB_Transaction_SetMandateReference(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_CreditorIdentifier
+*/
+AQBANKING_API const char *AB_Transaction_GetCreditorIdentifier(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_CreditorIdentifier
+*/
+AQBANKING_API void AB_Transaction_SetCreditorIdentifier(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_OriginatorIdentifier
+*/
+AQBANKING_API const char *AB_Transaction_GetOriginatorIdentifier(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_OriginatorIdentifier
+*/
+AQBANKING_API void AB_Transaction_SetOriginatorIdentifier(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_TransactionCode
