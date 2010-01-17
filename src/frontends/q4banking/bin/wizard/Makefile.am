@@ -21,7 +21,7 @@ qt4_wizard_SOURCES = qt4_wizard.cpp
 qt4_wizard_LDADD = \
   $(q4banking_internal_libs) \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) $(qt4_libs)
+  $(gwenhywfar_libs) $(qt4_libs) -lQtCore
 
 
 CLEANFILES=qt4_wizard.xml

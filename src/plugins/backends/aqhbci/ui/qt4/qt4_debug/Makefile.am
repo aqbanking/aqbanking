@@ -20,7 +20,7 @@ aqhbci_qt4_debug_LDADD = \
   $(aqbanking_internal_libs) \
   $(q4banking_internal_libs) \
   $(aqhbci_internal_libs) \
-  $(gwenhywfar_libs) $(qt3_libs)
+  $(gwenhywfar_libs) $(qt3_libs) -lQtCore
 
 
 CLEANFILES=qt4_debug.xml

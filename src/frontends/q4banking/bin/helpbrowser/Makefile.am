@@ -20,11 +20,10 @@ MOC_FILES=\
  qbhelpbrowser.moc
 
 
-bin_PROGRAMS = q4b-help@QBANKING_SO_EFFECTIVE@
-q4b_help@QBANKING_SO_EFFECTIVE@_SOURCES = qb_help.cpp qbhelpbrowser.cpp
-nodist_qb_help@QBANKING_SO_EFFECTIVE@_SOURCES =
-q4b_help@QBANKING_SO_EFFECTIVE@_LDADD= \
-  $(qt4_libs) -lQt3Support \
+bin_PROGRAMS = q4b-help@Q4BANKING_SO_EFFECTIVE@
+q4b_help@Q4BANKING_SO_EFFECTIVE@_SOURCES = qb_help.cpp qbhelpbrowser.cpp
+q4b_help@Q4BANKING_SO_EFFECTIVE@_LDADD= \
+  $(qt4_libs) -lQtCore -lQt3Support \
   $(gwenhywfar_libs)
 
 BUILT_SOURCES = $(MOC_FILES) $(nodist_libqbhelp_la_SOURCES) $(nodist_noinst_HEADERS)

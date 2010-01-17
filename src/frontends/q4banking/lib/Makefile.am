@@ -83,9 +83,9 @@ sources:
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib checklib
 testlib_SOURCES = testlib.cpp
-testlib_LDADD = libq4banking.la $(aqbanking_internal_libs) $(qt4_libs) -lQt3Support
+testlib_LDADD = libq4banking.la $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt4_libs) -lQtCore -lQt3Support
 checklib_SOURCES = checklib.cpp
-checklib_LDADD = libq4banking.la $(aqbanking_internal_libs) $(qt4_libs) -lQt3Support
+checklib_LDADD = libq4banking.la $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt4_libs) -lQtCore -lQt3Support
 TESTS = checklib
 clean-local:
 	-rm -rf testfolder
