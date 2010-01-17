@@ -443,7 +443,7 @@ AC_ARG_WITH(frontends,
 # The ordering is important due to linker dependencies, so force
 # the correct ordering here:
 case "$aqbanking_frontends" in *q4banking*)
-  tmp_frontends="${tmp_frontends} q4banking"
+  tmp_frontends="q4banking"
   ;;
 esac
 case "$aqbanking_frontends" in *qbanking*)
@@ -1738,7 +1738,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
   src/plugins/backends/aqhbci/ui/qt4/Makefile
   src/plugins/backends/aqhbci/ui/qt4/qt4_debug/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/qt_debug.xml
+  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/qt4_debug.xml
   src/plugins/backends/aqhbci/ui/qt4/libs/Makefile
   src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/Makefile
   src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/wizard/Makefile
@@ -1785,7 +1785,7 @@ echo "Summary"
 echo "----------------------------------------------------"
 echo "AqBanking version       : $AQBANKING_VERSION_FULL_STRING"
 echo "Local Installation Mode : $enable_local_install"
-echo "Supported frontends     :$aqbanking_frontends"
+echo "Supported frontends     : $aqbanking_frontends"
 echo "Cfg Search Folder       : $aqbanking_cfg_searchdir"
 echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
@@ -1799,7 +1799,6 @@ echo
 echo
 echo "Plugins"
 echo "----------------------------------------------------"
-echo "  Frontends             : $aqbanking_frontends"
 echo "  Backends              : $aqbanking_backends"
 echo "  Im-/Exporters         : $aqbanking_imexporters"
 echo "  Parsers               : $aqbanking_parsers"

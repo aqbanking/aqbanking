@@ -6,11 +6,11 @@ INCLUDES = \
 
 DEFS += -DPKGDATADIR=\"$(pkgdatadir)\"
 
-EXTRA_DIST=qt_debug.xml.in
+EXTRA_DIST=qt4_debug.xml.in
 
 plugindir = $(aqbanking_plugindir)/debugger/aqhbci
 plugin_PROGRAMS = aqhbci-qt4-debug
-plugin_DATA = qt_debug.xml
+plugin_DATA = qt4_debug.xml
 
 #noinst_HEADERS=
 
@@ -23,7 +23,7 @@ aqhbci_qt4_debug_LDADD = \
   $(gwenhywfar_libs) $(qt3_libs)
 
 
-CLEANFILES=qt_debug.xml
+CLEANFILES=qt4_debug.xml
 
 
 sources:

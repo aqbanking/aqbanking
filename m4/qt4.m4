@@ -1,6 +1,6 @@
 # $Id$
 # (c) 2010 Martin Preuss<martin@libchipcard.de>
-# These functions search for QT 4
+# These functions search for QT4
 
 
 AC_DEFUN([AQ_CHECK_QT4],[
@@ -21,7 +21,6 @@ dnl   Defines:
 dnl     HAVE_QT4
 
 lforce="$1"
-lsd="$2"
 
 AC_MSG_CHECKING(if QT4 is allowed)
 AC_ARG_ENABLE(qt4,
@@ -111,8 +110,8 @@ AC_ARG_WITH(qt4-libs,
         /usr/local/lib/qt/lib${libdirsuffix} \
         /usr/lib${libdirsuffix} \
         /usr/lib${libdirsuffix}/qt4/lib \
-        /usr/lib${libdirsuffix}/qt-3.3/lib \
-        /usr/lib${libdirsuffix}/qt-3.2/lib \
+        /usr/lib${libdirsuffix}/qt-4.5/lib \
+        /usr/lib${libdirsuffix}/qt-4.6/lib \
         /usr/local/lib${libdirsuffix} \
         /opt/qt/lib${libdirsuffix} \
         /usr/X11R6/lib${libdirsuffix} \
