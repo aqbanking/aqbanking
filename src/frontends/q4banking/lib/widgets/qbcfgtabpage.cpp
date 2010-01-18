@@ -36,7 +36,7 @@ QBCfgTabPage::QBCfgTabPage(QBanking *qb,
 			   const char *name,
 			   Qt::WFlags f)
 :QWidget(parent, name, f), _qbanking(qb), _title(title), _cfgTab(0) {
-  _pageLayout=new Q3VBoxLayout(this, 11, 6, "pageLayout");
+  //_pageLayout=new Q3VBoxLayout(this, 11, 6, "pageLayout");
 
 }
 

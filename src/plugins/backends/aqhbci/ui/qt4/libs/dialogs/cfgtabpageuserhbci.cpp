@@ -89,8 +89,9 @@ CfgTabPageUserHbci::CfgTabPageUserHbci(QBanking *qb,
           SIGNAL(activated(int)),
           this,
           SLOT(slotStatusChanged(int)));
-
-  QTimer::singleShot(0, this, SLOT(adjustSize()));
+  if (parent)
+    parent->adjustSize();
+  //QTimer::singleShot(0, this, SLOT(adjustSize()));
 }
 
 

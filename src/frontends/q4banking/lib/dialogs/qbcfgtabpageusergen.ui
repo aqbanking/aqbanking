@@ -19,10 +19,7 @@
      <property name="title">
       <string>User Settings</string>
      </property>
-     <layout class="QGridLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="userNameEdit"/>
-      </item>
+     <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="textLabel1_2">
         <property name="text">
@@ -32,6 +29,9 @@
          <bool>false</bool>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="userNameEdit"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="userIdLabel">
@@ -67,7 +67,17 @@
      <property name="title">
       <string>Bank Settings</string>
      </property>
-     <layout class="QGridLayout">
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="textLabel2">
+        <property name="text">
+         <string>Country</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="countryCombo"/>
       </item>
@@ -75,16 +85,6 @@
        <widget class="QLabel" name="textLabel1_4">
         <property name="text">
          <string>Bank Id</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="textLabel2">
-        <property name="text">
-         <string>Country</string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>

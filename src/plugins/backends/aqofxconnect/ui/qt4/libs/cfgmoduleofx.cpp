@@ -53,14 +53,14 @@ QBCfgTabPageUser *CfgModuleOfx::getEditUserPage(AB_USER *u,
 
 extern "C" {
   GWEN_PLUGIN*
-    qbanking_cfg_module_aqofxconnect_factory(GWEN_PLUGIN_MANAGER *pm,
-					     const char *name,
-					     const char *fileName) {
+    q4banking_cfg_module_aqofxconnect_factory(GWEN_PLUGIN_MANAGER *pm,
+					      const char *name,
+					      const char *fileName) {
       return GWEN_Plugin_new(pm, name, fileName);
     }
 
 
-  QBCfgModule *qbanking_cfg_module_aqofxconnect_modfactory(QBanking *qb) {
+  QBCfgModule *q4banking_cfg_module_aqofxconnect_modfactory(QBanking *qb) {
     return new CfgModuleOfx(qb, CFGMODULEOFX_NAME);
   }
 }
