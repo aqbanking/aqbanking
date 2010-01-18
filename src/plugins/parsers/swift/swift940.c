@@ -141,6 +141,9 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     AHB_SWIFT_SUBTAG_LIST *stlist;
     int rv;
 
+    /* store code */
+    GWEN_DB_SetIntValue(data, flags, "textkey", code);
+
     stlist=AHB_SWIFT_SubTag_List_new();
     rv=AHB_SWIFT_ParseSubTags(p, stlist);
     if (rv<0) {
