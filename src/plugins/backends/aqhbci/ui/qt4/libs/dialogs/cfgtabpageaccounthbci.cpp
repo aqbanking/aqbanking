@@ -47,7 +47,10 @@ CfgTabPageAccountHbci::CfgTabPageAccountHbci(QBanking *qb,
   setDescription(tr("<p>This page contains HBCI specific "
                     "account settings.</p>"));
 
-  QTimer::singleShot(0, this, SLOT(adjustSize()));
+  if (parent)
+    parent->adjustSize();
+  else
+    adjustSize();
 }
 
 

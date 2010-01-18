@@ -76,6 +76,11 @@ QBCfgTabPageAccountGeneral::QBCfgTabPageAccountGeneral(QBanking *qb,
           SLOT(slotAllUsersToggled(bool)));
 
   fillCountryCombo(_realPage.countryCombo);
+
+  if (parent)
+    parent->adjustSize();
+  else
+    adjustSize();
 }
 
 

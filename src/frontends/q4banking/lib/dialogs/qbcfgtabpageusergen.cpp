@@ -82,6 +82,10 @@ QBCfgTabPageUserGeneral::QBCfgTabPageUserGeneral(QBanking *qb,
     AB_Country_ConstList2_free(cl);
   }
 
+  if (parent)
+    parent->adjustSize();
+  else
+    adjustSize();
 }
 
 
