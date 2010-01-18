@@ -64,16 +64,14 @@ int AHB_SWIFT_Condense(char *buffer, int keepMultipleBlanks) {
     while(*src) {
       if (isspace(*src) && (*src!=10)) {
 	if (!lastWasBlank) {
-	  *dst=' ';
-	  dst++;
+	  *(dst++)=' ';
 	  lastWasBlank=1;
 	}
       }
       else {
 	lastWasBlank=0;
 	if (*src!=10) {
-	  *dst=*src;
-	  dst++;
+	  *(dst++)=*src;
 	}
       }
       src++;
@@ -238,7 +236,7 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr) {
 
 
 
-int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist) {
+int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist, int keepMultipleBlanks) {
   while(*s) {
     int rv;
     AHB_SWIFT_SUBTAG *stg=NULL;
@@ -248,6 +246,7 @@ int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+    AHB_SWIFT_SubTag_Condense(stg, keepMultipleBlanks);
     AHB_SWIFT_SubTag_List_Add(stg, stlist);
   }
 

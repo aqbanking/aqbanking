@@ -145,7 +145,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     GWEN_DB_SetIntValue(data, flags, "textkey", code);
 
     stlist=AHB_SWIFT_SubTag_List_new();
-    rv=AHB_SWIFT_ParseSubTags(p, stlist);
+    rv=AHB_SWIFT_ParseSubTags(p, stlist, keepMultipleBlanks);
     if (rv<0) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Handling tag :86: as unstructured (%d)", rv);
       isStructured=0;
