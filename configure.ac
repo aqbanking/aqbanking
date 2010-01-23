@@ -438,7 +438,7 @@ AC_CHECK_FUNCS([setlocale])
 AC_ARG_WITH(frontends, 
   [  --with-frontends=list      space separated list of frontends (default:all)],
   [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="qbanking"]
+  [aqbanking_frontends="q4banking qbanking"]
 )
 # The ordering is important due to linker dependencies, so force
 # the correct ordering here:

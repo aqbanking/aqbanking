@@ -70,6 +70,7 @@ if test -z "$qt4_includes"; then
                     case $lv1 in
                     *4.*)
                   	qt4_includes="-I$i -I$i/Qt -I$i/Qt3Support -I$i/QtCore -I$i/QtGui"
+                        qt4_dir=`echo $i | ${SED} 's-/include*--'`
                         break;
                         ;;
                     esac
@@ -98,6 +99,7 @@ AC_ARG_WITH(qt4-libs,
   [  --with-qt4-libs=DIR      uses qt4 libs from given dir],
   [local_qt4_libs="$withval"],
   [local_qt4_libs="\
+        $qt4_dir/lib${libdirsuffix} \
   	$QTDIR/lib${libdirsuffix} \
         /usr/lib/qt4 \
         /usr/local/lib/qt4 \
@@ -168,6 +170,7 @@ fi
 
 if test -z "$qt4_moc"; then
   searchdir="\
+    $qt4_dir/bin \
     $QTDIR/bin \
     /usr/lib/qt4/bin \
     /usr/local/lib/qt4/bin \
@@ -217,6 +220,7 @@ if test -z "$qt4_uic"; then
   )
   
   searchdir="\
+    $qt4_dir/bin \
     $QTDIR/bin \
     /usr/lib/qt4/bin \
     /usr/local/lib/qt4/bin \

@@ -70,6 +70,7 @@ if test -z "$qt3_includes"; then
                     case $lv1 in
                     *3.*)
                   	qt3_includes="-I$i"
+                        qt3_dir=`echo $i | ${SED} 's-/include*--'`
                         break;
                         ;;
                     esac
@@ -107,6 +108,7 @@ AC_ARG_WITH(qt3-libs,
   [  --with-qt3-libs=DIR      uses qt3 libs from given dir],
   [local_qt3_libs="$withval"],
   [local_qt3_libs="\
+  	$qt3_dir/lib${libdirsuffix} \
   	$QTDIR/lib${libdirsuffix} \
         /usr/lib/qt3 \
         /usr/local/lib/qt3 \
@@ -182,6 +184,7 @@ fi
 
 if test -z "$qt3_moc"; then
   searchdir="\
+    $qt3_dir/bin \
     $QTDIR/bin \
     /usr/lib/qt3/bin \
     /usr/local/lib/qt3/bin \
@@ -201,6 +204,17 @@ if test -z "$qt3_moc"; then
       break
     fi
   done
+
+# fall back to "moc"
+  if test -z "$qt3_moc"; then
+    for f in $searchdir; do
+      if test -x $f/moc; then
+        qt3_moc="$f/moc"
+        break
+      fi
+    done
+  fi
+
 fi
 
 if test -n "$qt3_moc"; then
@@ -221,6 +235,7 @@ if test -z "$qt3_uic"; then
   )
   
   searchdir="\
+    $qt3_dir/bin \
     $QTDIR/bin \
     /usr/lib/qt3/bin \
     /usr/local/lib/qt3/bin \
@@ -240,6 +255,16 @@ if test -z "$qt3_uic"; then
       break
     fi
   done
+
+# fall back to "uic"
+  if test -z "$qt3_uic"; then
+    for f in $searchdir; do
+      if test -x $f/uic; then
+        qt3_uic="$f/uic"
+        break
+      fi
+    done
+  fi
 fi
 
 if test -n "$qt3_uic"; then
