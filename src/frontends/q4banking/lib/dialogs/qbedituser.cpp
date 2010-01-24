@@ -48,7 +48,6 @@ QBEditUser::QBEditUser(QBanking *kb,
   /* add general page */
   uPage=new QBCfgTabPageUserGeneral(kb, u, this, "GeneralUserPage");
   addPage(uPage);
-  uPage->show();
   generalPage=uPage;
 
   /* add application specific page, if any */
@@ -57,7 +56,6 @@ QBEditUser::QBEditUser(QBanking *kb,
     uPage=mod->getEditUserPage(u, this);
     if (uPage) {
       addPage(uPage);
-      uPage->show();
     }
   }
 
@@ -72,7 +70,6 @@ QBEditUser::QBEditUser(QBanking *kb,
       generalPage->setCustomerIdInfo(uPage->getCustomerIdLabel(), "");
 
       addPage(uPage);
-      uPage->show();
     }
   }
 }

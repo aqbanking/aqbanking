@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>534</width>
-    <height>489</height>
+    <width>501</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,11 +15,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="Q3GroupBox" name="groupBox9">
+    <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>General HBCI Settings</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
+     <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <widget class="QLabel" name="textLabel6">
         <property name="text">
@@ -75,11 +75,11 @@
     </widget>
    </item>
    <item>
-    <widget class="Q3GroupBox" name="httpBox">
+    <widget class="QGroupBox" name="httpBox">
      <property name="title">
       <string>PIN/TAN Settings</string>
      </property>
-     <layout class="QFormLayout" name="formLayout_2">
+     <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="textLabel2">
         <property name="text">
@@ -123,11 +123,11 @@
     </widget>
    </item>
    <item>
-    <widget class="Q3GroupBox" name="groupBox2">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Expert Settings</string>
      </property>
-     <layout class="QFormLayout" name="formLayout_3">
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QCheckBox" name="bankSignCheck">
         <property name="text">
@@ -172,11 +172,11 @@
     </widget>
    </item>
    <item>
-    <widget class="Q3GroupBox" name="expertActionsBox">
+    <widget class="QGroupBox" name="expertActionsBox">
      <property name="title">
       <string>Expert Actions</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="getServerKeysButton">
         <property name="text">
@@ -185,16 +185,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="getSysIdButton">
+       <widget class="QPushButton" name="getAccountsButton">
         <property name="text">
-         <string>Get System Id</string>
+         <string>Get Accounts</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="getAccountsButton">
+       <widget class="QPushButton" name="getSysIdButton">
         <property name="text">
-         <string>Get Accounts</string>
+         <string>Get System Id</string>
         </property>
        </widget>
       </item>
@@ -215,8 +215,8 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>20</width>
-          <height>21</height>
+          <width>7</width>
+          <height>18</height>
          </size>
         </property>
        </spacer>
@@ -244,29 +244,9 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>Q3GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>Qt3Support/Q3GroupBox</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>userStatusCombo</tabstop>
   <tabstop>finishUserButton</tabstop>
-  <tabstop>serverEdit</tabstop>
-  <tabstop>httpVersionCombo</tabstop>
-  <tabstop>userAgentEdit</tabstop>
-  <tabstop>itanModeCombo</tabstop>
-  <tabstop>bankSignCheck</tabstop>
-  <tabstop>bankCounterCheck</tabstop>
-  <tabstop>forceSsl3Check</tabstop>
-  <tabstop>noBase64Check</tabstop>
-  <tabstop>getServerKeysButton</tabstop>
-  <tabstop>getSysIdButton</tabstop>
-  <tabstop>getAccountsButton</tabstop>
-  <tabstop>getItanModesButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

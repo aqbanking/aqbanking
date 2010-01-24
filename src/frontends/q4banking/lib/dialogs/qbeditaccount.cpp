@@ -47,7 +47,6 @@ QBEditAccount::QBEditAccount(QBanking *kb,
   /* add general page */
   uPage=new QBCfgTabPageAccountGeneral(kb, a, this, "GeneralAccountPage");
   addPage(uPage);
-  uPage->show();
 
   /* add application specific page, if any */
   mod=kb->getConfigModule(0);
@@ -55,7 +54,6 @@ QBEditAccount::QBEditAccount(QBanking *kb,
     uPage=mod->getEditAccountPage(a, this);
     if (uPage) {
       addPage(uPage);
-      uPage->show();
     }
   }
 
@@ -67,7 +65,6 @@ QBEditAccount::QBEditAccount(QBanking *kb,
     uPage=mod->getEditAccountPage(a, this);
     if (uPage) {
       addPage(uPage);
-      uPage->show();
     }
   }
 }
