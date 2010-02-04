@@ -352,7 +352,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
    */
   purposeList=GWEN_StringList_new();
   /* cut purpose lines into manageable portions (max 27 chars) */
-  for (i=1; ; i++) {
+  for (i=0; ; i++) {
     int slen;
     GWEN_BUFFER *nbuf;
 
@@ -405,8 +405,10 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
 
   /* compute number of extension sets */
   extSets=0;
+
   /* add purpose */
-  extSets+=GWEN_StringList_Count(purposeList);
+  if (GWEN_StringList_Count(purposeList))
+    extSets+=GWEN_StringList_Count(purposeList)-1;
 
   /* add name */
   for (i=1; i<2; i++) { /* max 1 extset for local name */
