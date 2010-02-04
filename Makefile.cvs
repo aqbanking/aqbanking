@@ -82,23 +82,8 @@ mp:
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
 	    --with-frontends="q4banking qbanking" \
-	    --enable-aqfinance
-	make sources
-
-mpn:
-	libtoolize -f --automake
-	aclocal -I ./m4
-	autoheader
-	if test ! -f i18nsources; then echo > i18nsources; fi
-	automake --add-missing
-	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" \
-	  CXXFLAGS="-ggdb -Wall" \
-	  CFLAGS="$(MP_CFLAGS)" \
-	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="q4banking qbanking" \
-	    --disable-aqfinance
+	    --disable-aqfinance \
+	    --disable-cli
 	make sources
 
 mp-priv:
