@@ -32,6 +32,12 @@
 #endif
 
 
+/* TODO: AHB_DTAUS__AddWord transforms a given word into the DTA charset.
+ * This might change the size of the word in bytes, so this transformation
+ * should really be left to the caller...
+ */
+
+
 int AHB_DTAUS__ToDTA(int c) {
   if (isdigit(c))
     return c;
@@ -93,6 +99,44 @@ int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
       GWEN_Buffer_AppendByte(dst, ' ');
   } /* for */
   GWEN_Buffer_free(nbuf);
+  return 0;
+}
+
+
+
+int AHB_DTAUS__AddDtaWord(GWEN_BUFFER *dst,
+			  unsigned int size,
+			  const char *s) {
+  unsigned int i;
+  unsigned int ssize;
+
+  assert(dst);
+  assert(size);
+  assert(s);
+
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding DTA word: %s", s);
+
+  ssize=strlen(s);
+  if (ssize>size) {
+    /* Error out here because e.g. truncated accountid will lead to failed jobs. */
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Word \"%s\" too long: Has length %d but must not be longer than %d characters",
+	      s, ssize, size);
+    return -1;
+  }
+
+  for (i=0; i<size; i++) {
+    char c;
+
+    if (i>=ssize)
+      c=0;
+    else
+      c=s[i];
+
+    if (c)
+      GWEN_Buffer_AppendByte(dst, c);
+    else
+      GWEN_Buffer_AppendByte(dst, ' ');
+  } /* for */
   return 0;
 }
 
@@ -299,12 +343,58 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   unsigned int extSets;
   unsigned int startPos;
   AB_VALUE *val;
+  GWEN_STRINGLIST *purposeList;
 
   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Creating C set");
 
   /* ______________________________________________________________________
    * preparations
    */
+  purposeList=GWEN_StringList_new();
+  /* cut purpose lines into manageable portions (max 27 chars) */
+  for (i=1; ; i++) {
+    int slen;
+    GWEN_BUFFER *nbuf;
+
+    p=GWEN_DB_GetCharValue(xa, "purpose", i, 0);
+    if (p==NULL)
+      break;
+    if (i>14) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many purpose lines (maxmimum is 14)");
+      GWEN_StringList_free(purposeList);
+      return -1;
+    }
+
+    slen=strlen(p);
+    nbuf=GWEN_Buffer_new(0, slen+1, 0, 1);
+    AB_ImExporter_Utf8ToDta(p, -1, nbuf);
+    p=GWEN_Buffer_GetStart(nbuf);
+
+    while(*p) {
+      while(*p>0 && *p<33)
+	p++;
+      slen=strlen(p);
+      if (slen==0)
+        break;
+      else if (slen>27) {
+	char *ns;
+
+	ns=(char*) malloc(28);
+	assert(ns);
+	memmove(ns, p, 27);
+	ns[27]=0;
+	/* let stringlist take over ownership of the the string */
+	GWEN_StringList_AppendString(purposeList, ns, 1, 0);
+	p+=27;
+      }
+      else {
+	GWEN_StringList_AppendString(purposeList, p, 0, 0);
+	break;
+      }
+    }
+    GWEN_Buffer_free(nbuf);
+  } /* for */
+
   startPos=GWEN_Buffer_GetPos(dst);
   GWEN_Buffer_AllocRoom(dst, 256);
 
@@ -316,15 +406,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* compute number of extension sets */
   extSets=0;
   /* add purpose */
-  for (i=1; i<14; i++) { /* max 13 extsets for purpose */
-    if (GWEN_DB_GetCharValue(xa, "purpose", i, 0)==0)
-      break;
-    if (i>14) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many purpose lines (maxmimum is 14)");
-      return -1;
-    }
-    extSets++;
-  } /* for */
+  extSets+=GWEN_StringList_Count(purposeList);
 
   /* add name */
   for (i=1; i<2; i++) { /* max 1 extset for local name */
@@ -332,6 +414,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
       break;
     if (i>1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many name lines (maxmimum is 2)");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     extSets++;
@@ -343,6 +426,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
       break;
     if (i>1) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many peer name lines (maxmimum is 2)");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     extSets++;
@@ -351,6 +435,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* check number of extension sets */
   if (extSets>15) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many extension sets (%d)", extSets);
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -366,6 +451,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* field 3: acting bank code */
   if (AHB_DTAUS__AddNum(dst, 8, GWEN_DB_GetCharValue(cfg, "bankCode", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -375,17 +461,20 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     val=AB_Value_fromString(p);
     if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     AB_Value_AddValue(sumBankCodes, val);
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 8, p)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Peer bank code missing");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -395,17 +484,20 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     val=AB_Value_fromString(p);
     if (val==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account id");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     AB_Value_AddValue(sumAccountIds, val);
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 10, p)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Peer account id missing");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -416,6 +508,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   snprintf(buffer, sizeof(buffer), "%02d", GWEN_DB_GetIntValue(xa, "textkey", 0, isDebitNote?5:51));
   if (AHB_DTAUS__AddNum(dst, 2, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -423,6 +516,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   snprintf(buffer, sizeof(buffer), "%03d", GWEN_DB_GetIntValue(xa, "textkeyext", 0, 0));
   if (AHB_DTAUS__AddNum(dst, 3, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -435,6 +529,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     if (val==NULL || AB_Value_IsZero(val)) {
       AB_Value_free(val);
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad DEM value:");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     AB_Value_AddValue(sumDEM, val);
@@ -442,12 +537,14 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
   else {
     if (AHB_DTAUS__AddNum(dst, 11, "0")) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
@@ -458,10 +555,12 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     p=GWEN_DB_GetCharValue(cfg, "bankCode", 0, 0);
   if (!p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No local bank code");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
   if (AHB_DTAUS__AddNum(dst, 8, p)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -471,10 +570,12 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     GWEN_DB_GetCharValue(cfg, "accountId", 0, 0);
   if (!p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No local account number");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
   if (AHB_DTAUS__AddNum(dst, 10, p)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -484,6 +585,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     if (val==NULL || AB_Value_IsZero(val)) {
       AB_Value_free(val);
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad EUR value:");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
     AB_Value_AddValue(sumEUR, val);
@@ -491,12 +593,14 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     AB_Value_free(val);
     if (AHB_DTAUS__AddNum(dst, 11, buffer)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
   else {
     if (AHB_DTAUS__AddNum(dst, 11, "0")) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+      GWEN_StringList_free(purposeList);
       return -1;
     }
   }
@@ -507,6 +611,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* field 14a: peer name */
   if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "remoteName", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -516,12 +621,17 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   /* field 15: name */
   if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "localname", 0, ""))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
   /* field 16: purpose */
-  if (AHB_DTAUS__AddWord(dst, 27, GWEN_DB_GetCharValue(xa, "purpose", 0, ""))) {
+  p=GWEN_StringList_FirstString(purposeList);
+  if (p==NULL)
+    p="";
+  if (AHB_DTAUS__AddWord(dst, 27, p)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -538,6 +648,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   snprintf(buffer, sizeof(buffer), "%02d", extSets);
   if (AHB_DTAUS__AddNum(dst, 2, buffer)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+    GWEN_StringList_free(purposeList);
     return -1;
   }
 
@@ -558,6 +669,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
       GWEN_Buffer_AppendString(dst, "01");
       if (AHB_DTAUS__AddWord(dst, 27, p)) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	GWEN_StringList_free(purposeList);
 	return -1;
       }
       writtenExtSets++;
@@ -571,17 +683,19 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     } /* for */
 
     /* add purpose lines */
-    for (i=1; i<14; i++) { /* max: 13 extsets */
+    for (i=1; i<GWEN_StringList_Count(purposeList); i++) {
       unsigned int j;
 
-      p=GWEN_DB_GetCharValue(xa, "purpose", i, 0);
+      p=GWEN_StringList_StringAt(purposeList, i);
       if (!p)
 	break;
 
       /* append extension set */
       GWEN_Buffer_AppendString(dst, "02");
-      if (AHB_DTAUS__AddWord(dst, 27, p)) {
+      /* strings in the list are already in DTA charset */
+      if (AHB_DTAUS__AddDtaWord(dst, 27, p)) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	GWEN_StringList_free(purposeList);
 	return -1;
       }
       writtenExtSets++;
@@ -606,6 +720,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
       GWEN_Buffer_AppendString(dst, "03");
       if (AHB_DTAUS__AddWord(dst, 27, p)) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing to buffer");
+	GWEN_StringList_free(purposeList);
 	return -1;
       }
       writtenExtSets++;
@@ -623,6 +738,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   while(i--)
     GWEN_Buffer_AppendByte(dst, ' ');
 
+  GWEN_StringList_free(purposeList);
   return 0;
 }
 

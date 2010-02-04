@@ -24,6 +24,10 @@ int AHB_DTAUS__ToDTA(int c);
 int AHB_DTAUS__AddWord(GWEN_BUFFER *dst,
                        unsigned int size,
                        const char *s);
+int AHB_DTAUS__AddDtaWord(GWEN_BUFFER *dst,
+			  unsigned int size,
+			  const char *s);
+
 int AHB_DTAUS__AddNum(GWEN_BUFFER *dst,
                       unsigned int size,
                       const char *s);
