@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: adminjobs.c 950 2006-02-22 19:39:02Z aquamaniac $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -281,7 +278,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   assert(dbParams);
 
   if (fn && AH_User_HasTanMethod(u, fn)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching DB node fro selected TAN method %d", fn);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching DB node for selected TAN method %d", fn);
     /* find DB_NODE of selected TanMethod */
     dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
     while(dbMethod) {
@@ -313,7 +310,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   }
 
   if (fn==0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0, looking for a usable method");
     /* find DB_NODE of first supported TanMethod */
     dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
     while(dbMethod) {
@@ -328,6 +325,9 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 		     "iTan process type \"%d\" not supported", process);
 	}
       }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "TAN method %d not allowed for this user", fn);
+      }
 
       dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
     }
@@ -335,7 +335,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
   if (!dbMethod || !fn) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "No matching iTAN mode found");
+	      "No matching iTAN mode found (fn=%d)", fn);
     AH_Job_free(jTan);
     return GWEN_ERROR_NOT_FOUND;
   }

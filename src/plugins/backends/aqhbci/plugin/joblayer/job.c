@@ -168,7 +168,7 @@ AH_JOB *AH_Job_new(const char *name,
       version=atoi(GWEN_DB_GroupName(jobBPD));
       if (version>highestVersion) {
         /* now get the correct version of the JOB */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for Job %s (%d)",
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
                  name, version);
         node=GWEN_MsgEngine_FindNodeByProperty(e,
                                                "JOB",
@@ -206,6 +206,7 @@ AH_JOB *AH_Job_new(const char *name,
       }
     }
     else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Highest version is %d", highestVersion);
       GWEN_DB_AddGroupChildren(j->jobParams, jobBPD);
       /* sample some variables from BPD jobs */
       j->minSigs=GWEN_DB_GetIntValue(jobBPD, "minsigs", 0, 0);
