@@ -1042,6 +1042,31 @@
    </VALUES>
  </SEGdef>
 
+ <!-- Kundennachricht -->
+ <SEGdef id="Tan"
+         code="HKTAN"
+         version="3"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="process" type="num" size="1" />
+   <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+   <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+   <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+   <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
+   <ELEM name="challengeClass" type="num" size="2" minnum="0" />
+   <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
+   <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
  <SEGdef id="TanResponse" code="HITAN" version="3" delimiter="+"
          terminator="'">
    <GROUP type="SegHead" name="head" />
