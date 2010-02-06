@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="svn"
 
 
 
@@ -1102,7 +1102,7 @@ ACX_COMPILE_WARN()
 AC_MSG_CHECKING(if symbol visibility is supported)
 visibility_cflags=""
 case `basename $CC` in 
-  gcc*)
+  *gcc*)
      dnl Determine version number (watch out: the outside square
      dnl parenteses are vitally important here!)
      gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
