@@ -249,6 +249,21 @@
    <SEG type="Tan" version="2" />
  </JOBdef>
 
+ <!--  Geschaeftsvorfall: TAN einreichen (Version 3) -->
+ <JOBdef id="JobTan" 
+         code="HKTAN"
+         params="HITANS"
+         version="3" 
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="TanResponse"
+         single="1"
+         pversion="300"
+ >
+   <SEG type="Tan" version="2" />
+ </JOBdef>
 
 
  <!--  Geschaeftsvorfall: Pin aendern (Version 1) -->
