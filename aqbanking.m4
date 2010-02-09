@@ -92,7 +92,7 @@ if test "$enable_aqbanking" != "no"; then
 
       AC_MSG_CHECKING(whether QBanking is supported)
       have_qbanking="`$aqbanking_dir/bin/aqbanking-config --has-qbanking`"
-      AC_MSG_RESULT(have_qbanking)
+      AC_MSG_RESULT($have_qbanking)
 
       AC_MSG_CHECKING(for qbanking libs)
       qbanking_libs="`$aqbanking_dir/bin/aqbanking-config --qbanking-libraries`"
