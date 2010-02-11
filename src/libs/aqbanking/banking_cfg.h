@@ -57,17 +57,35 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name, uint32_t gui
 
 
 
+/**
+ * Before making any permanent changes to an account this function must be called.
+ * It reloads the current configuration and locks the given account. While this
+ * lock is in place no other application can make any changes to the account.
+ */
 AQBANKING_API
 int AB_Banking_BeginExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, uint32_t guiid);
 
+/**
+ * This function writes the configuration of the given account to the database and
+ * releases the given account so that other applications can access it.
+ */
 AQBANKING_API
 int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon, uint32_t guiid);
 
 
 
+/**
+ * Before making any permanent changes to an user this function must be called.
+ * It reloads the current configuration and locks the given user. While this
+ * lock is in place no other application can make any changes to the user.
+ */
 AQBANKING_API
 int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u, uint32_t guiid);
 
+/**
+ * This function writes the configuration of the given user to the database and
+ * releases the given user so that other applications can access it.
+ */
 AQBANKING_API
 int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon, uint32_t guiid);
 

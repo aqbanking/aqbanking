@@ -29,6 +29,12 @@
  * @brief This group represents accounts.
  *
  * Accounts are only created by AB_PROVIDERs, not by the application.
+ *
+ * Please note: Changing any of the attributes of an account permanently requires
+ * calling @ref AB_Banking_BeginExclUseAccount() before the modifications
+ * and @ref AB_Banking_EndExclUseAccount() afterwards.
+ * This locking makes sure that concurrent access to the settings doesn't corrupt
+ * the configuration database.
  */
 /*@{*/
 
