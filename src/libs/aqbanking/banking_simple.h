@@ -91,6 +91,15 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 GWEN_IO_LAYER *io,
 				 uint32_t guiid);
 
+AQBANKING_API 
+int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
+				     const char *importerName,
+				     AB_IMEXPORTER_CONTEXT *ctx,
+				     const char *profileName,
+				     const char *profileFile,
+                                     const char *inputFileName,
+				     uint32_t guiid);
+
 
 /*@}*/
 

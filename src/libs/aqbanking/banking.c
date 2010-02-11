@@ -41,6 +41,8 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/ctplugin.h>
 #include <gwenhywfar/configmgr.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -1175,6 +1177,63 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 
   GWEN_DB_Group_free(dbProfiles);
   return 0;
+}
+
+
+
+int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
+				     const char *importerName,
+				     AB_IMEXPORTER_CONTEXT *ctx,
+				     const char *profileName,
+				     const char *profileFile,
+                                     const char *inputFileName,
+				     uint32_t guiid) {
+  int fd;
+
+  fd=open(inputFileName, O_RDONLY);
+  if (fd<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Error opening input file [%s]: %s",
+	      inputFileName, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+  else {
+    GWEN_IO_LAYER *io;
+    int rv;
+  
+    io=GWEN_Io_LayerFile_new(fd, -1);
+    GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_FLAGS_DONTCLOSE);
+    rv=GWEN_Io_Manager_RegisterLayer(io);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Io_Layer_free(io);
+      close(fd);
+      return rv;
+    }
+    rv=AB_Banking_ImportWithProfile(ab,
+				    importerName,
+				    ctx,
+				    profileName,
+				    profileFile,
+				    io,
+				    guiid);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Io_Layer_free(io);
+      close(fd);
+      return rv;
+    }
+
+    rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 2000);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Io_Layer_free(io);
+      close(fd);
+      return rv;
+    }
+
+    return 0;
+  }
 }
 
 
