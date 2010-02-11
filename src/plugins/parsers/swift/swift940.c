@@ -188,7 +188,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  case 61:
 	  case 62:
 	  case 63: /* Verwendungszweck */
-	    if (strlen(s)>4 && s[4]=='+') {
+	    if (strlen(s)>5 && s[4]=='+') {
 	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
 		/* close previous identifier */
 		if (strcasecmp(identifier, "EREF+")==0) {
@@ -220,7 +220,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		tbuf=GWEN_Buffer_new(0, 54, 0, 1);
 	      else
 		GWEN_Buffer_Reset(tbuf);
-	      GWEN_Buffer_AppendString(tbuf, s+4);
+	      GWEN_Buffer_AppendString(tbuf, s+5);
 	    }
 	    else {
 	      /* no identifier here */
