@@ -174,6 +174,9 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
 AQBANKING_API
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
 
+AQBANKING_API
+void AB_ImExporterContext_Clear(AB_IMEXPORTER_CONTEXT *iec);
+
 /** Stores a complete import/export context to a GWEN_DB.
  *
  */

@@ -1434,6 +1434,16 @@ void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec){
 
 
 
+void AB_ImExporterContext_Clear(AB_IMEXPORTER_CONTEXT *iec){
+  assert(iec);
+  GWEN_Buffer_Reset(iec->logs);
+  AB_Message_List_Clear(iec->messageList);
+  AB_Security_List_Clear(iec->securityList);
+  AB_ImExporterAccountInfo_List_Clear(iec->accountInfoList);
+}
+
+
+
 int AB_ImExporterContext_toDb(const AB_IMEXPORTER_CONTEXT *iec,
 			       GWEN_DB_NODE *db){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
