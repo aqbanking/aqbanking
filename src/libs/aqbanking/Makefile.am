@@ -1,4 +1,4 @@
-SUBDIRS=types jobs gui
+SUBDIRS=types jobs gui dialogs
 
 INCLUDES = \
   -I$(top_builddir)/headers \
@@ -90,7 +90,8 @@ libaqbanking_la_SOURCES=\
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  jobs/libjobs.la \
  types/libtypes.la \
- gui/libabgui.la
+ gui/libabgui.la \
+ dialogs/libabdialogs.la
 
 libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
