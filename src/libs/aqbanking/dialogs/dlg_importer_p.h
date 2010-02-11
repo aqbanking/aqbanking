@@ -21,6 +21,7 @@ typedef struct AB_IMPORTER_DIALOG AB_IMPORTER_DIALOG;
 struct AB_IMPORTER_DIALOG {
   AB_BANKING *banking;
   AB_IMEXPORTER_CONTEXT *context;
+  const char *finishedMessage;
 
   char *fileName;
   char *importerName;

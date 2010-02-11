@@ -25,7 +25,9 @@ extern "C" {
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *ctx);
+AQBANKING_API GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
+						 AB_IMEXPORTER_CONTEXT *ctx,
+						 const char *finishedMessage);
 
 
 #ifdef __cplusplus

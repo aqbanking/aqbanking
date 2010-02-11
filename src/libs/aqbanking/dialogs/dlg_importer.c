@@ -44,7 +44,9 @@ GWEN_INHERIT(GWEN_DIALOG, AB_IMPORTER_DIALOG)
 
 
 
-GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *ctx) {
+GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
+				   AB_IMEXPORTER_CONTEXT *ctx,
+				   const char *finishedMessage) {
   GWEN_DIALOG *dlg;
   AB_IMPORTER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -80,6 +82,7 @@ GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *ctx) {
 
   xdlg->banking=ab;
   xdlg->context=ctx;
+  xdlg->finishedMessage=finishedMessage;
 
   /* done */
   return dlg;
@@ -183,6 +186,7 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
   int rv;
   int i;
+  int j;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
@@ -268,6 +272,22 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 			     GWEN_Dialog_SelectionMode_Single,
 			     0);
 
+  /* setup extro page */
+  if (xdlg->finishedMessage && *(xdlg->finishedMessage))
+    GWEN_Dialog_SetCharProperty(dlg,
+				"wiz_end_label",
+				GWEN_DialogProperty_Title,
+				0,
+				xdlg->finishedMessage,
+				0);
+  else
+    GWEN_Dialog_SetCharProperty(dlg,
+				"wiz_end_label",
+				GWEN_DialogProperty_Title,
+				0,
+				I18N("The file has been successfully imported."),
+				0);
+
   /* read width */
   i=GWEN_DB_GetIntValue(xdlg->dbParams, "dialog_width", 0, -1);
   if (i<DIALOG_MINWIDTH)
@@ -282,23 +302,29 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 
   /* read importer column widths */
   for (i=0; i<2; i++) {
-    int j;
-
     j=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_columns", i, -1);
     if (j<IMPORTER_LIST_MINCOLWIDTH)
       j=IMPORTER_LIST_MINCOLWIDTH;
     GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ColumnWidth, i, j, 0);
   }
+  /* get sort column */
+  i=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_sortbycolumn", 0, -1);
+  j=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_sortdir", 0, -1);
+  if (i>=0 && j>=0)
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_SortDirection, i, j, 0);
 
   /* read profile column widths */
   for (i=0; i<2; i++) {
-    int j;
-
     j=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_columns", i, -1);
     if (j<PROFILE_LIST_MINCOLWIDTH)
       j=PROFILE_LIST_MINCOLWIDTH;
     GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ColumnWidth, i, j, 0);
   }
+  /* get sort column */
+  i=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_sortbycolumn", 0, -1);
+  j=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_sortdir", 0, -1);
+  if (i>=0 && j>=0)
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_SortDirection, i, j, 0);
 
   /* disable next and previous buttons */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
@@ -348,6 +374,28 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
 			"importer_list_columns",
 			j);
   }
+  /* store column sorting */
+  GWEN_DB_SetIntValue(xdlg->dbParams,
+		      GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "importer_list_sortbycolumn",
+		      -1);
+  for (i=0; i<2; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_SortDirection, i,
+				 GWEN_DialogSortDirection_None);
+    if (j!=GWEN_DialogSortDirection_None) {
+      GWEN_DB_SetIntValue(xdlg->dbParams,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "importer_list_sortbycolumn",
+			  i);
+      GWEN_DB_SetIntValue(xdlg->dbParams,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "importer_list_sortdir",
+			  (j==GWEN_DialogSortDirection_Up)?1:0);
+      break;
+    }
+  }
 
   /* store column widths of profile list */
   GWEN_DB_DeleteVar(xdlg->dbParams, "profile_list_columns");
@@ -361,6 +409,28 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
 			GWEN_DB_FLAGS_DEFAULT,
 			"profile_list_columns",
 			j);
+  }
+  /* store column sorting */
+  GWEN_DB_SetIntValue(xdlg->dbParams,
+		      GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "profile_list_sortbycolumn",
+		      -1);
+  for (i=0; i<2; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_SortDirection, i,
+				 GWEN_DialogSortDirection_None);
+    if (j!=GWEN_DialogSortDirection_None) {
+      GWEN_DB_SetIntValue(xdlg->dbParams,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "profile_list_sortbycolumn",
+			  i);
+      GWEN_DB_SetIntValue(xdlg->dbParams,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "profile_list_sortdir",
+			  (j==GWEN_DialogSortDirection_Up)?1:0);
+      break;
+    }
   }
 
 
@@ -436,6 +506,7 @@ void AB_ImporterDialog_UpdateImporterList(GWEN_DIALOG *dlg) {
     }
     GWEN_PluginDescription_List2_free(il);
   }
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Sort, 0, 0, 0);
 }
 
 
@@ -490,51 +561,248 @@ int AB_ImporterDialog_DetermineSelectedImporter(GWEN_DIALOG *dlg) {
 
 
 
-int AB_ImporterDialog_Next(GWEN_DIALOG *dlg) {
+void AB_ImporterDialog_UpdateProfileList(GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
-  int page;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ClearChoices, 0, 0, 0);
+  if (xdlg->importerName && *(xdlg->importerName)) {
+    GWEN_DB_NODE *db;
+
+    db=AB_Banking_GetImExporterProfiles(xdlg->banking, xdlg->importerName);
+    if (db) {
+      GWEN_DB_NODE *dbProfile;
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      dbProfile=GWEN_DB_GetFirstGroup(db);
+      while(dbProfile) {
+	const char *s;
+
+	s=GWEN_DB_GetCharValue(dbProfile, "name", 0, NULL);
+	if (s && *s) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, "\t");
+
+	  s=GWEN_DB_GetCharValue(dbProfile, "shortDescr", 0, NULL);
+	  if (s && *s)
+	    GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Dialog_SetCharProperty(dlg,
+				      "wiz_profile_list",
+				      GWEN_DialogProperty_AddChoice,
+				      0,
+				      GWEN_Buffer_GetStart(tbuf),
+				      0);
+	  GWEN_Buffer_Reset(tbuf);
+	}
+
+	dbProfile=GWEN_DB_GetNextGroup(dbProfile);
+      }
+      GWEN_Buffer_free(tbuf);
+      GWEN_DB_Group_free(db);
+    }
+  }
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Sort, 0, 0, 0);
+}
+
+
+
+int AB_ImporterDialog_DetermineSelectedProfile(GWEN_DIALOG *dlg) {
+  AB_IMPORTER_DIALOG *xdlg;
   int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
-  switch(page) {
+  /* preset */
+  free(xdlg->profileName);
+  xdlg->profileName=NULL;
 
+  /* get current value */
+  rv=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, -1);
+  DBG_ERROR(0, "Selected value: %d", rv);
+  if (rv!=-1) {
+    const char *s;
+
+    s=GWEN_Dialog_GetCharProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, rv, NULL);
+    if (s && *s) {
+      const char *p;
+
+      p=strchr(s, '\t');
+      if (p) {
+	int len;
+
+	len=(int) (p-s);
+	if (len) {
+	  xdlg->profileName=(char*) malloc(len+1);
+	  assert(xdlg->profileName);
+	  memmove(xdlg->profileName, s, len);
+	  xdlg->profileName[len]=0;
+	}
+      }
+      else
+	/* no tab, use the whole line */
+	xdlg->profileName=strdup(s);
+
+      if (xdlg->profileName) {
+	DBG_ERROR(0, "Selected profile [%s]", xdlg->profileName);
+        return 0;
+      }
+    }
+  }
+
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+int AB_ImporterDialog_DetermineFilename(GWEN_DIALOG *dlg) {
+  AB_IMPORTER_DIALOG *xdlg;
+  const char *s;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->fileName);
+  xdlg->fileName=NULL;
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "wiz_file_edit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    xdlg->fileName=strdup(s);
+    return 0;
+  }
+
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+
+int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+  AB_IMPORTER_DIALOG *xdlg;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  switch(page) {
   case PAGE_BEGIN:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_FILE, 0);
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_FILE:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_IMPORTER, 0);
-    AB_ImporterDialog_UpdateImporterList(dlg);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    /* TODO: check for valid file name */
+    rv=AB_ImporterDialog_DetermineFilename(dlg);
+    if (rv<0)
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    else
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_IMPORTER:
+    if (forwards) {
+      AB_ImporterDialog_DetermineFilename(dlg);
+      AB_ImporterDialog_UpdateImporterList(dlg);
+    }
     rv=AB_ImporterDialog_DetermineSelectedImporter(dlg);
     if (rv<0) {
       /* TODO: show error message */
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     }
     else {
-      GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_PROFILE, 0);
+      /* we have a selected importer, enable "next" button */
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_PROFILE:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_END, 0);
-    GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Finish"), 0);
+    if (forwards) {
+      AB_ImporterDialog_DetermineSelectedImporter(dlg);
+      AB_ImporterDialog_UpdateProfileList(dlg);
+    }
+    rv=AB_ImporterDialog_DetermineSelectedProfile(dlg);
+    if (rv<0) {
+      /* TODO: show error message */
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    }
+    else {
+      /* we have a selected importer, enable "next" button */
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    }
+    GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Next"), 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_END:
-    return GWEN_DialogEvent_ResultAccept;
+    if (forwards){
+      rv=AB_ImporterDialog_DetermineSelectedProfile(dlg);
+      if (rv<0) {
+	/* no profile... */
+        DBG_ERROR(0, "No profile");
+      }
+      else {
+	rv=AB_Banking_ImportFileWithProfile(xdlg->banking,
+					    xdlg->importerName,
+					    xdlg->context,
+					    xdlg->profileName,
+					    NULL,
+					    xdlg->fileName,
+					    0);
+	if (rv<0) {
+	  /* TODO: show error message */
+	  DBG_ERROR(0, "Error importing file: %d", rv);
+	  AB_ImExporterContext_Clear(xdlg->context);
+	}
+	else {
+	  DBG_ERROR(0, "Import ok.");
+	  /* no way back */
+	  GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+	  GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+	  GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Finished"), 0);
+	  GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+      }
+    }
+    return GWEN_DialogEvent_ResultHandled;
 
   default:
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown page %d", page);
     return GWEN_DialogEvent_ResultHandled;
   }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AB_ImporterDialog_Next(GWEN_DIALOG *dlg) {
+  AB_IMPORTER_DIALOG *xdlg;
+  int page;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
+
+  if (page<PAGE_END) {
+    page++;
+    return AB_ImporterDialog_EnterPage(dlg, page, 1);
+  }
+  else if (page==PAGE_END)
+    return GWEN_DialogEvent_ResultAccept;
+
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
@@ -548,33 +816,12 @@ int AB_ImporterDialog_Previous(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
-  switch(page) {
-
-  case PAGE_BEGIN:
-    return GWEN_DialogEvent_ResultHandled;
-
-  case PAGE_FILE:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_BEGIN, 0);
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
-    return GWEN_DialogEvent_ResultHandled;
-
-  case PAGE_IMPORTER:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_FILE, 0);
-    return GWEN_DialogEvent_ResultHandled;
-
-  case PAGE_PROFILE:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_IMPORTER, 0);
-    return GWEN_DialogEvent_ResultHandled;
-
-  case PAGE_END:
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, PAGE_PROFILE, 0);
-    GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Next"), 0);
-    return GWEN_DialogEvent_ResultHandled;
-
-  default:
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown page %d", page);
-    return GWEN_DialogEvent_ResultHandled;
+  if (page>PAGE_BEGIN) {
+    page--;
+    return AB_ImporterDialog_EnterPage(dlg, page, 0);
   }
+
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
@@ -587,6 +834,17 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   else if (strcasecmp(sender, "wiz_abort_button")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "wiz_help_button")==0) {
+    /* TODO: open a help dialog */
+  }
+
+  else if (strcasecmp(sender, "wiz_profile_edit_button")==0) {
+    /* TODO: get appropriate profile editor */
+  }
+  else if (strcasecmp(sender, "wiz_profile_new_button")==0) {
+    /* TODO: get appropriate profile editor */
+  }
+  else if (strcasecmp(sender, "wiz_profile_del_button")==0) {
+    /* TODO: get appropriate profile editor */
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
@@ -598,6 +856,18 @@ int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender,
 					 int intVal,
 					 const char *charVal,
 					 void *ptrVal) {
+  if (strcasecmp(sender, "wiz_file_edit")==0) {
+    int rv;
+
+    rv=AB_ImporterDialog_DetermineFilename(dlg);
+    if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_FILE) {
+      if (rv<0)
+	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+      else
+	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    }
+    return GWEN_DialogEvent_ResultHandled;
+  }
   return GWEN_DialogEvent_ResultNotHandled;
 }
 
