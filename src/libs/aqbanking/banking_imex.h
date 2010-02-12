@@ -62,14 +62,21 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
  * <p>
  * Local profiles overwrite global ones, allowing the user to customize the
  * profiles. Local profiles are expected in a folder below the user
- * local folder (e.g. "$HOME/.banking"). The local profile folder for the
- * CSV plugin is in "$HOME/.banking/imexporters/csv/profiles".
+ * local folder (e.g. "$HOME/.aqbanking"). The local profile folder for the
+ * CSV plugin is in "$HOME/.aqbanking/imexporters/csv/profiles".
  * </p>
  * <p>
  * The GWEN_DB returned contains one group for every loaded profile. Every
  * group has the name of the profile it contains. Every group contains at
- * least a variable called <i>name</i> which contains the name of the
- * profile, too. The remaining content of each group is completely defined by
+ * least three variables:
+ * <ul>
+ *   <li>char "name": name of the profile</li>
+ *   <li>int "isGlobal": this is 0 for profiles loaded from the users home directory and
+ *       1 otherwise.</li>
+ *   <li>char "fileName": name of the loaded file (without path, so it can be used for
+ *       @ref AB_Banking_SaveLocalImExporterProfile)</li>
+ * </ul>
+ * The remaining content of each group is completely defined by
  * the importer/exporter.
  * </p>
  * <p>
@@ -91,6 +98,29 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
 AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
                                                const char *name);
+
+/**
+ * Save the given profile in the local user folder of the given im-/exporter
+ * module. After that this profile will appear in the list returned by
+ * @ref AB_Banking_GetImExporterProfiles.
+ * Existing profiles with the same file name (argument @c fname) will be overwritten.
+ * It is best practice to use the name of the profile plus ".conf" as file name
+ * (e.g. "testprofile.conf"). The caller has to make sure that the name of the profile
+ * is unique among all profiles of the given im-/exporter module, otherwise some
+ * profiles can not be loaded.
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param imexporterName name of the im-/exporter whose profile is to be written
+ * @param dbProfile DB group containing the profile
+ * @param fname name of the file to write without path (e.g. "testprofile.conf")
+ * (the path is determined by AqBanking using the given name of the im-/exporter).
+ */
+AQBANKING_API
+int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
+                                          const char *imexporterName,
+					  GWEN_DB_NODE *dbProfile,
+					  const char *fname);
+
 /*@}*/
 
 

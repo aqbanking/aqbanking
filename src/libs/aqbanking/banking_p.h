@@ -114,7 +114,8 @@ static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab,
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                                               const char *path,
-                                              GWEN_DB_NODE *db);
+					      GWEN_DB_NODE *db,
+					      int isGlobal);
 
 
 static int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid);
