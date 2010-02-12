@@ -699,7 +699,6 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
   case PAGE_FILE:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    /* TODO: check for valid file name */
     rv=AB_ImporterDialog_DetermineFilename(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
@@ -712,6 +711,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     if (forwards) {
       AB_ImporterDialog_DetermineFilename(dlg);
       AB_ImporterDialog_UpdateImporterList(dlg);
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Value, 0, 0, 0);
     }
     rv=AB_ImporterDialog_DetermineSelectedImporter(dlg);
     if (rv<0) {
@@ -729,6 +729,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     if (forwards) {
       AB_ImporterDialog_DetermineSelectedImporter(dlg);
       AB_ImporterDialog_UpdateProfileList(dlg);
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, 0, 0);
     }
     rv=AB_ImporterDialog_DetermineSelectedProfile(dlg);
     if (rv<0) {
@@ -835,6 +836,38 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
+  }
+
+  else if (strcasecmp(sender, "wiz_file_button")==0) {
+    int rv;
+    const char *s;
+    GWEN_BUFFER *pathBuffer;
+
+    pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+    s=GWEN_Dialog_GetCharProperty(dlg, "wiz_file_edit", GWEN_DialogProperty_Value, 0, NULL);
+    if (s && *s)
+      GWEN_Buffer_AppendString(pathBuffer, s);
+    rv=GWEN_Gui_GetFileName(I18N("Select File to Import"),
+			    GWEN_Gui_FileNameType_OpenFileName,
+			    0,
+			    I18N("All Files (*)\tCSV Files (*csv;*.CSV)\t*.sta"),
+			    pathBuffer,
+			    GWEN_Dialog_GetGuiId(dlg));
+    if (rv==0) {
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_file_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  GWEN_Buffer_GetStart(pathBuffer),
+				  0);
+      rv=AB_ImporterDialog_DetermineFilename(dlg);
+      if (rv<0)
+	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+      else
+	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    }
+    GWEN_Buffer_free(pathBuffer);
+    return GWEN_DialogEvent_ResultNotHandled;
   }
 
   else if (strcasecmp(sender, "wiz_profile_edit_button")==0) {
