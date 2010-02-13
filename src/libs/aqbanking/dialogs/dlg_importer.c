@@ -887,8 +887,7 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender,
 					 int intVal,
-					 const char *charVal,
-					 void *ptrVal) {
+					 const char *charVal) {
   if (strcasecmp(sender, "wiz_file_edit")==0) {
     int rv;
 
@@ -910,8 +909,7 @@ int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
 				    GWEN_DIALOG_EVENTTYPE t,
 				    const char *sender,
 				    int intVal,
-				    const char *charVal,
-				    void *ptrVal) {
+				    const char *charVal) {
   AB_IMPORTER_DIALOG *xdlg;
 
   assert(dlg);
@@ -928,7 +926,7 @@ int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    return AB_ImporterDialog_HandleValueChanged(dlg, sender, intVal, charVal, ptrVal);
+    return AB_ImporterDialog_HandleValueChanged(dlg, sender, intVal, charVal);
 
   case GWEN_DialogEvent_TypeActivated:
     return AB_ImporterDialog_HandleActivated(dlg, sender);
