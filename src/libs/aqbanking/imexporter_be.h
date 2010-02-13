@@ -97,8 +97,7 @@ typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
  */
 typedef int (*AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN)(AB_IMEXPORTER *ie,
 						       GWEN_DB_NODE *params,
-						       GWEN_IO_LAYER *ioTestData,
-						       uint32_t guiid,
+						       const char *testFileName,
 						       GWEN_DIALOG **pDlg);
 
 /*@}*/

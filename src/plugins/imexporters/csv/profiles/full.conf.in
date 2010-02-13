@@ -131,7 +131,7 @@ params {
     78="commission/value"
     79="commission/currency"
     80="bankAccountId"
-    81="groupId"
+    81="groupId"               # double entry
 
   } # columns
 

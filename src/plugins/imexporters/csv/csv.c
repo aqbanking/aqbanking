@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,6 +12,7 @@
 #endif
 
 #include "csv_p.h"
+#include "csv_editprofile_l.h"
 #include "i18n_l.h"
 
 #include "imexporter_be.h"
@@ -63,6 +61,9 @@ AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
   AB_ImExporter_SetExportFn(ie, AH_ImExporterCSV_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterCSV_CheckFile);
   AB_ImExporter_SetGetEditProfileDialogFn(ie, AH_ImExporterCSV_GetEditProfileDialog);
+
+  /* announce special features */
+  AB_ImExporter_AddFlags(ie, AB_IMEXPORTER_FLAGS_GETPROFILEEDITOR_SUPPORTED);
 
   return ie;
 }
@@ -760,11 +761,18 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterCSV_GetEditProfileDialog(AB_IMEXPORTER *ie,
-					  GWEN_DB_NODE *params,
-                                          GWEN_IO_LAYER *ioTestData,
-					  uint32_t guiid,
+					  GWEN_DB_NODE *dbProfile,
+					  const char *testFileName,
 					  GWEN_DIALOG **pDlg) {
-  return GWEN_ERROR_NOT_IMPLEMENTED;
+  GWEN_DIALOG *dlg;
+
+  dlg=AB_CSV_EditProfileDialog_new(ie, dbProfile, testFileName);
+  if (dlg==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Unable to create the dialog");
+    return GWEN_ERROR_INTERNAL;
+  }
+  *pDlg=dlg;
+  return 0;
 }
 
 

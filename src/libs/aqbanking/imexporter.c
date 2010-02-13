@@ -155,14 +155,13 @@ int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 
 int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 				       GWEN_DB_NODE *dbProfile,
-				       GWEN_IO_LAYER *ioTestData,
-				       uint32_t guiid,
+				       const char *testFileName,
 				       GWEN_DIALOG **pDlg) {
   assert(ie);
   assert(dbProfile);
 
   if (ie->getEditProfileDialogFn)
-    return ie->getEditProfileDialogFn(ie, dbProfile, ioTestData, guiid, pDlg);
+    return ie->getEditProfileDialogFn(ie, dbProfile, testFileName, pDlg);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }

@@ -136,8 +136,6 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
  * @param dbProfile configuration data for the exporter. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  *
- * @param guiid guiid to be used as parent dialog/window in @ref GWEN_Dialog_new().
- *
  * @param pDlg pointer to a dialog pointer (receives the created dialog if any)
  *
  * @return 0 on success, error code otherwise
@@ -145,8 +143,7 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
 AQBANKING_API
 int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 				       GWEN_DB_NODE *dbProfile,
-				       GWEN_IO_LAYER *ioTestData,
-				       uint32_t guiid,
+				       const char *testFileName,
 				       GWEN_DIALOG **pDlg);
 
 
