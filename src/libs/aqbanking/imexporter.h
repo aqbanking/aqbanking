@@ -19,6 +19,8 @@
 #include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/dialog.h>
+
 #include <aqbanking/error.h>
 #include <aqbanking/accstatus.h>
 
@@ -41,6 +43,21 @@
  * </p>
  */
 /*@{*/
+
+
+
+/** @name Flags returned by @ref AB_ImExporter_GetFlags
+ *
+ */
+/*@{*/
+
+/** This module supports the function @ref AB_ImExporter_GetEditProfileDialog */
+#define AB_IMEXPORTER_FLAGS_GETPROFILEEDITOR_SUPPORTED 0x00000001
+
+
+/*@}*/
+
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,6 +124,33 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
 			 uint32_t guiid);
 
 /**
+ * This function should return a dialog (see @ref GWEN_DIALOG) which
+ * allows editing of the given profile.
+ * You can use @ref AB_ImExporter_GetFlags to determine beforehand whether
+ * this function is supported (look for
+ * @ref AB_IMEXPORTER_FLAGS_GETPROFILEEDITOR_SUPPORTED).
+ * (introduced in AqBanking 4.3.0)
+ *
+ * @param ie pointer to the importer/exporter
+ *
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ *
+ * @param guiid guiid to be used as parent dialog/window in @ref GWEN_Dialog_new().
+ *
+ * @param pDlg pointer to a dialog pointer (receives the created dialog if any)
+ *
+ * @return 0 on success, error code otherwise
+ */
+AQBANKING_API
+int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
+				       GWEN_DB_NODE *dbProfile,
+				       GWEN_IO_LAYER *ioTestData,
+				       uint32_t guiid,
+				       GWEN_DIALOG **pDlg);
+
+
+/**
  * This is just a convenience function for @ref AB_ImExporter_Import.
  */
 AQBANKING_API
@@ -155,6 +199,14 @@ AQBANKING_API
 const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
+/**
+ * Returns the flags if this im/exporter which specify the supported
+ * features.
+ */
+AQBANKING_API
+uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie);
+
+
 /*@}*/ /* defgroup */
 
 
@@ -174,6 +226,10 @@ AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
 AQBANKING_API
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
 
+/**
+ * This function clears the context (e.g. removes all transactions etc).
+ * (introduced in AqBanking 4.3.0)
+ */
 AQBANKING_API
 void AB_ImExporterContext_Clear(AB_IMEXPORTER_CONTEXT *iec);
 

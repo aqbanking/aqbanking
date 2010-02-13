@@ -75,6 +75,34 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie){
 
 
 
+uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie) {
+  assert(ie);
+  return ie->flags;
+}
+
+
+
+void AB_ImExporter_SetFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+  assert(ie);
+  ie->flags=flags;
+}
+
+
+
+void AB_ImExporter_AddFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+  assert(ie);
+  ie->flags|=flags;
+}
+
+
+
+void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+  assert(ie);
+  ie->flags&=~flags;
+}
+
+
+
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
 			 GWEN_IO_LAYER *io,
@@ -119,6 +147,22 @@ int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 
   if (ie->checkFileFn)
     return ie->checkFileFn(ie, fname, guiid);
+  else
+    return GWEN_ERROR_NOT_SUPPORTED;
+}
+
+
+
+int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
+				       GWEN_DB_NODE *dbProfile,
+				       GWEN_IO_LAYER *ioTestData,
+				       uint32_t guiid,
+				       GWEN_DIALOG **pDlg) {
+  assert(ie);
+  assert(dbProfile);
+
+  if (ie->getEditProfileDialogFn)
+    return ie->getEditProfileDialogFn(ie, dbProfile, ioTestData, guiid, pDlg);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -252,6 +296,14 @@ void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CHECKFILE_FN f){
   assert(ie);
   ie->checkFileFn=f;
+}
+
+
+
+void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie,
+					     AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f) {
+  assert(ie);
+  ie->getEditProfileDialogFn=f;
 }
 
 

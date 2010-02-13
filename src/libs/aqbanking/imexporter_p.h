@@ -37,11 +37,13 @@ struct AB_IMEXPORTER {
 
   AB_BANKING *banking;
   char *name;
+  uint32_t flags;
 
   GWEN_LIBLOADER *libLoader;
   AB_IMEXPORTER_IMPORT_FN importFn;
   AB_IMEXPORTER_EXPORT_FN exportFn;
   AB_IMEXPORTER_CHECKFILE_FN checkFileFn;
+  AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN getEditProfileDialogFn;
 };
 
 

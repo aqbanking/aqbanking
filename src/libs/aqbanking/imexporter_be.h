@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -47,6 +44,24 @@ AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab,
                                  const char *name);
 AQBANKING_API 
 void AB_ImExporter_free(AB_IMEXPORTER *ie);
+
+
+/*@}*/
+
+
+
+/** @name Manipulation of the Flags
+ *
+ */
+/*@{*/
+AQBANKING_API
+void AB_ImExporter_SetFlags(AB_IMEXPORTER *ie, uint32_t flags);
+
+AQBANKING_API 
+void AB_ImExporter_AddFlags(AB_IMEXPORTER *ie, uint32_t flags);
+
+AQBANKING_API 
+void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags);
 /*@}*/
 
 
@@ -75,6 +90,17 @@ typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
 					  uint32_t guiid);
 
 
+/**
+ * This function should return a dialog (see @ref GWEN_DIALOG) which
+ * allows editing of the given profile.
+ * (introduced in AqBanking 4.3.0)
+ */
+typedef int (*AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN)(AB_IMEXPORTER *ie,
+						       GWEN_DB_NODE *params,
+						       GWEN_IO_LAYER *ioTestData,
+						       uint32_t guiid,
+						       GWEN_DIALOG **pDlg);
+
 /*@}*/
 
 
@@ -96,6 +122,9 @@ AQBANKING_API
 void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CHECKFILE_FN f);
 
+AQBANKING_API
+void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie,
+					     AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f);
 /*@}*/
 
 

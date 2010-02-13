@@ -91,6 +91,10 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 GWEN_IO_LAYER *io,
 				 uint32_t guiid);
 
+/**
+ * Another convenience function to import a given file.
+ * (introduced in AqBanking 4.3.0)
+ */
 AQBANKING_API 
 int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
 				     const char *importerName,

@@ -62,6 +62,8 @@ AB_IMEXPORTER *AB_Plugin_ImExporterCSV_Factory(GWEN_PLUGIN *pl,
   AB_ImExporter_SetImportFn(ie, AH_ImExporterCSV_Import);
   AB_ImExporter_SetExportFn(ie, AH_ImExporterCSV_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterCSV_CheckFile);
+  AB_ImExporter_SetGetEditProfileDialogFn(ie, AH_ImExporterCSV_GetEditProfileDialog);
+
   return ie;
 }
 
@@ -754,6 +756,17 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
     return GWEN_ERROR_INVALID;
   }
 }
+
+
+
+int AH_ImExporterCSV_GetEditProfileDialog(AB_IMEXPORTER *ie,
+					  GWEN_DB_NODE *params,
+                                          GWEN_IO_LAYER *ioTestData,
+					  uint32_t guiid,
+					  GWEN_DIALOG **pDlg) {
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
 
 
 

@@ -54,6 +54,12 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 static
 int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
 
+static
+int AH_ImExporterCSV_GetEditProfileDialog(AB_IMEXPORTER *ie,
+					  GWEN_DB_NODE *params,
+                                          GWEN_IO_LAYER *ioTestData,
+					  uint32_t guiid,
+					  GWEN_DIALOG **pDlg);
 
 static
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
