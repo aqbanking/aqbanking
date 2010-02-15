@@ -88,13 +88,13 @@ QBanking::~QBanking(){
 
 
 
-QGui *QBanking::getGui() const {
+QBGui *QBanking::getGui() const {
   return _gui;
 }
 
 
 
-void QBanking::setGui(QGui *g) {
+void QBanking::setGui(QBGui *g) {
   _gui=g;
 }
 

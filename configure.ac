@@ -760,6 +760,10 @@ case "$aqbanking_frontends" in
           "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
       AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
     fi
+
+    PKG_CHECK_MODULES([GWENGUI_QT3], [gwengui-qt3])
+
+
     AC_DEFINE(BUILD_QBANKING_FRONTEND, 1, [if qbanking frontend is built])
     with_qbanking="yes"
     ;;
@@ -1583,7 +1587,6 @@ AC_CONFIG_FILES([
   src/frontends/qbanking/lib/dialogs/Makefile
   src/frontends/qbanking/lib/views/Makefile
   src/frontends/qbanking/lib/widgets/Makefile
-  src/frontends/qbanking/lib/gui/Makefile
   src/frontends/qbanking/lib/version.h
   src/frontends/qbanking/lib/ressource.rc
   src/frontends/qbanking/bin/Makefile

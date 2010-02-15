@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: kbanking.h 406 2007-04-30 18:13:29Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -33,7 +30,7 @@
 
 
 QBGui::QBGui(QBanking *qb)
-:QGui()
+:QT3_Gui()
 ,_qbanking(qb)  {
   AB_Gui_Extend(getCInterface(), qb->getCInterface());
 }

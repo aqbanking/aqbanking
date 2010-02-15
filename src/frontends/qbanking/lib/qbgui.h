@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: kbanking.h 406 2007-04-30 18:13:29Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,13 +12,13 @@
 
 
 #include <qbanking/qbanking.h>
-#include <qbanking/qgui.h>
+#include <gwen-gui-qt3/qt3_gui.hpp>
 
 #include <gwenhywfar/gui.h>
 
 
 
-class QBANKING_API QBGui: public QGui {
+class QBANKING_API QBGui: public QT3_Gui {
 private:
   QBanking *_qbanking;
 

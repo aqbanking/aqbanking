@@ -1,9 +1,9 @@
-SUBDIRS=widgets dialogs views gui
+SUBDIRS=widgets dialogs views
 
 INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
-  -Idialogs -Iwidgets -Iviews \
+  -Idialogs -Iwidgets -Iviews $(GWENGUI_QT3_CFLAGS) \
   $(all_includes)
 
 DEFS += -DBUILDING_QBANKING \
@@ -46,8 +46,7 @@ libqbanking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- gui/libqgui.la \
- $(i18n_libs) $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs)
+ $(i18n_libs) $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt3_libs) $(GWENGUI_QT3_LIBS)
 
 libqbanking_la_LDFLAGS = -no-undefined \
  -version-info @QBANKING_SO_CURRENT@:@QBANKING_SO_REVISION@:@QBANKING_SO_AGE@
@@ -57,7 +56,6 @@ libqbanking_la_DEPENDENCIES = \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- gui/libqgui.la \
  $(aqbanking_internal_libs)
 # if IS_WINDOWS
 if IS_WINDOWS
