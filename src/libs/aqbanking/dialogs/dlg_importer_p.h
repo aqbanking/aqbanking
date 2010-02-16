@@ -45,9 +45,7 @@ void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s);
 
 GWENHYWFAR_CB int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
 						  GWEN_DIALOG_EVENTTYPE t,
-						  const char *sender,
-						  int intVal,
-						  const char *charVal);
+						  const char *sender);
 
 
 #endif

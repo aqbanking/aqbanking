@@ -796,6 +796,7 @@ int AB_ImporterDialog_Next(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
+  DBG_ERROR(0, "Value of wiz_stack: %d", page);
 
   if (page<PAGE_END) {
     page++;
@@ -979,9 +980,7 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender,
-					 int intVal,
-					 const char *charVal) {
+int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "wiz_file_edit")==0) {
     int rv;
 
@@ -1001,9 +1000,7 @@ int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender,
 
 int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
 				    GWEN_DIALOG_EVENTTYPE t,
-				    const char *sender,
-				    int intVal,
-				    const char *charVal) {
+				    const char *sender) {
   AB_IMPORTER_DIALOG *xdlg;
 
   assert(dlg);
@@ -1020,7 +1017,7 @@ int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    return AB_ImporterDialog_HandleValueChanged(dlg, sender, intVal, charVal);
+    return AB_ImporterDialog_HandleValueChanged(dlg, sender);
 
   case GWEN_DialogEvent_TypeActivated:
     return AB_ImporterDialog_HandleActivated(dlg, sender);

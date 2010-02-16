@@ -66,8 +66,8 @@
               <widget type="comboBox" name="amountFormatCombo" columns="20" flags="fillX readOnly" />
             </widget>
           </widget>
+          <widget type="vspacer" flags="fillY" />
         </widget>
-        <widget type="vspacer" flags="fillY" />
       </widget>
   
   

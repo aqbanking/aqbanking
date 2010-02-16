@@ -773,9 +773,7 @@ int AB_CSV_EditProfileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sende
 
 
 
-int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender,
-						int intVal,
-						const char *charVal){
+int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender){
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -796,9 +794,7 @@ int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *se
 
 int AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
 					   GWEN_DIALOG_EVENTTYPE t,
-					   const char *sender,
-					   int intVal,
-					   const char *charVal) {
+					   const char *sender) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -815,7 +811,7 @@ int AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    return AB_CSV_EditProfileDialog_HandleValueChanged(dlg, sender, intVal, charVal);
+    return AB_CSV_EditProfileDialog_HandleValueChanged(dlg, sender);
 
   case GWEN_DialogEvent_TypeActivated:
     return AB_CSV_EditProfileDialog_HandleActivated(dlg, sender);
