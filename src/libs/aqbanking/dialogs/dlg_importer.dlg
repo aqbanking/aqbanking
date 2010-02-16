@@ -35,7 +35,7 @@
             <widget type="pushButton" text="Edit"     name="wiz_profile_edit_button" />
             <widget type="pushButton" text="New"      name="wiz_profile_new_button" />
             <widget type="pushButton" text="Delete"   name="wiz_profile_del_button" />
-            <widget type="hspacer" flags="fillY" />
+            <widget type="vspacer" flags="fillY" />
           </widget>
         </widget>
       </widget>

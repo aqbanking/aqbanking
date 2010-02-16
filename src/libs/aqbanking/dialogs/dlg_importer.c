@@ -923,6 +923,7 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
 
 
 int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return AB_ImporterDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
@@ -960,6 +961,9 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     }
     GWEN_Buffer_free(pathBuffer);
     return GWEN_DialogEvent_ResultNotHandled;

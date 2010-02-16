@@ -204,6 +204,8 @@
       </widget>
     </widget>
 
+    <widget type="vspacer" flags="fillY" />
+
     <widget type="hLine" flags="fillX" />
     <widget type="groupBox" text="First Data Line" flags="fillX" >
       <widget type="lineEdit" name="dataEdit" columns="80" flags="fillX" />

@@ -302,11 +302,10 @@ static int readTestData(GWEN_DIALOG *dlg) {
   else if (strcasecmp(delimiter, "SPACE")==0)
     delimiter=" ";
 
-  DBG_ERROR(0, "Ignoring %d lines", ignoreLines);
   for (i=0; i<ignoreLines; i++) {
     rv=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, dbuf, GWEN_Dialog_GetGuiId(dlg), 2000);
     if (rv<0) {
-      DBG_ERROR(0, "Error reading: %d", rv);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading: %d", rv);
       GWEN_Buffer_free(dbuf);
       return rv;
     }
@@ -314,14 +313,12 @@ static int readTestData(GWEN_DIALOG *dlg) {
   }
 
   /* read single data line */
-  DBG_ERROR(0, "Reading line:");
   rv=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, dbuf, GWEN_Dialog_GetGuiId(dlg), 2000);
   if (rv<0) {
-    DBG_ERROR(0, "Error reading: %d", rv);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading: %d", rv);
     GWEN_Buffer_free(dbuf);
     return rv;
   }
-  DBG_ERROR(0, "Line: [%s]", GWEN_Buffer_GetStart(dbuf));
 
   GWEN_Dialog_SetCharProperty(dlg, "dataEdit", GWEN_DialogProperty_Value, 0,
 			      GWEN_Buffer_GetStart(dbuf), 0);
@@ -570,7 +567,6 @@ void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup date format combo box */
   s=GWEN_DB_GetCharValue(xdlg->dbProfile, "dateFormat", 0, NULL);
-  DBG_ERROR(0, "dateFormat: [%s]", s?s:"(none)");
   setUpComboFromSingleStrings(dlg, "dateFormatCombo", csv_dateFormats, s);
 
   /* setup amount format combo box */
