@@ -26,8 +26,6 @@ struct AB_IMPORTER_DIALOG {
   char *fileName;
   char *importerName;
   char *profileName;
-  GWEN_DB_NODE *dbParams;
-
 };
 
 

@@ -225,7 +225,6 @@ void AB_CSV_EditProfileDialog_FreeData(void *bp, void *p) {
   assert(xdlg);
 
   GWEN_Buffer_free(xdlg->dataBuffer);
-  GWEN_DB_Group_free(xdlg->dbParams);
 
   GWEN_FREE_OBJECT(xdlg);
 }
@@ -374,19 +373,19 @@ static void setUpComboFromSingleStrings(GWEN_DIALOG *dlg,
   int j;
   const char *t;
 
-  GWEN_Dialog_SetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_ClearChoices, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_ClearValues, 0, 0, 0);
   j=-1;
   for (i=0; ; i++) {
     t=strings[i];
     if (t==NULL)
       break;
-    GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddChoice, 0, t, 0);
+    GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddValue, 0, t, 0);
     if (s && *s && strcmp(s, t)==0)
       j=i;
   }
   if (j==-1) {
     if (s && *s) {
-      GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddChoice, 0, s, 0);
+      GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddValue, 0, s, 0);
       j=i;
     }
     else
@@ -406,20 +405,20 @@ static void setUpComboFromDoubleStrings(GWEN_DIALOG *dlg,
   const char *t1;
   const char *t2;
 
-  GWEN_Dialog_SetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_ClearChoices, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_ClearValues, 0, 0, 0);
   j=-1;
   for (i=0; ; i+=2) {
     t1=strings[i];
     if (t1==NULL)
       break;
     t2=strings[i+1];
-    GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddChoice, 0, I18N(t2), 0);
+    GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddValue, 0, I18N(t2), 0);
     if (s && *s && strcasecmp(s, t1)==0)
       j=i/2;
   }
   if (j==-1) {
     if (s && *s) {
-      GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddChoice, 0, s, 0);
+      GWEN_Dialog_SetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_AddValue, 0, s, 0);
       j=i/2;
     }
     else
@@ -485,33 +484,25 @@ static int setColumnValueFromCombo(GWEN_DIALOG *dlg,
 
 void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
-  int rv;
   int i;
   const char *s;
+  GWEN_DB_NODE *dbPrefs;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG, dlg);
   assert(xdlg);
 
   /* setup dialog size */
-  GWEN_DB_Group_free(xdlg->dbParams);
-  rv=AB_Banking_LoadSharedConfig(xdlg->banking,
-				 GWEN_Dialog_GetId(dlg),
-				 &(xdlg->dbParams),
-				 0);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    xdlg->dbParams=GWEN_DB_Group_new("params");
-  }
+  dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* read width */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "dialog_width", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "dialog_height", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
@@ -598,17 +589,19 @@ void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
 void AB_CSV_EditProfileDialog_Fini(GWEN_DIALOG *dlg) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
   int i;
-  int rv;
+  GWEN_DB_NODE *dbPrefs;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG, dlg);
   assert(xdlg);
 
+  dbPrefs=GWEN_Dialog_GetPreferences(dlg);
+
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_width",
 		      i);
@@ -617,33 +610,10 @@ void AB_CSV_EditProfileDialog_Fini(GWEN_DIALOG *dlg) {
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",
 		      i);
-
-  /* lock configuration */
-  rv=AB_Banking_LockSharedConfig(xdlg->banking,
-				 GWEN_Dialog_GetId(dlg),
-				 0);
-  if (rv==0) {
-    /* save configuration */
-    rv=AB_Banking_SaveSharedConfig(xdlg->banking,
-				   GWEN_Dialog_GetId(dlg),
-				   xdlg->dbParams,
-				   0);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    }
-
-    /* unlock configuration */
-    rv=AB_Banking_UnlockSharedConfig(xdlg->banking,
-				     GWEN_Dialog_GetId(dlg),
-				     0);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    }
-  }
 }
 
 

@@ -35,6 +35,8 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab) {
 
   xgui->banking=ab;
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
+  GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
+  GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
 
   return gui;
 }
@@ -50,6 +52,8 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab) {
 
   xgui->banking=ab;
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
+  GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
+  GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
 }
 
 
@@ -225,5 +229,104 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 
   return result;
 }
+
+
+
+int AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
+			   const char *groupName,
+			   const char *altName,
+			   GWEN_DB_NODE **pDb) {
+  AB_GUI *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  if (groupName && *groupName) {
+    int rv;
+    const char *s;
+    GWEN_DB_NODE *db;
+    GWEN_BUFFER *nbuf;
+
+    nbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    s=GWEN_Gui_GetName();
+    if (s && *s) {
+      GWEN_Buffer_AppendString(nbuf, s);
+      GWEN_Buffer_AppendString(nbuf, "_");
+    }
+    GWEN_Buffer_AppendString(nbuf, groupName);
+
+    rv=AB_Banking_LoadSharedConfig(xgui->banking,
+                                   GWEN_Buffer_GetStart(nbuf),
+				   &db,
+				   0);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(nbuf);
+      return rv;
+    }
+    *pDb=db;
+    GWEN_Buffer_free(nbuf);
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No groupName");
+    return GWEN_ERROR_NO_DATA;
+  }
+}
+
+
+
+int AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
+			    const char *groupName,
+			    GWEN_DB_NODE *db) {
+  AB_GUI *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  if (groupName && *groupName && db) {
+    int rv;
+    const char *s;
+    GWEN_BUFFER *nbuf;
+
+    nbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    s=GWEN_Gui_GetName();
+    if (s && *s) {
+      GWEN_Buffer_AppendString(nbuf, s);
+      GWEN_Buffer_AppendString(nbuf, "_");
+    }
+    GWEN_Buffer_AppendString(nbuf, groupName);
+
+    /* lock configuration */
+    rv=AB_Banking_LockSharedConfig(xgui->banking,
+                                   GWEN_Buffer_GetStart(nbuf),
+				   0);
+    if (rv==0) {
+      /* save configuration */
+      rv=AB_Banking_SaveSharedConfig(xgui->banking,
+				     GWEN_Buffer_GetStart(nbuf),
+				     db,
+				     0);
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      }
+
+      /* unlock configuration */
+      rv=AB_Banking_UnlockSharedConfig(xgui->banking,
+				       GWEN_Buffer_GetStart(nbuf),
+				       0);
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      }
+    }
+    GWEN_Buffer_free(nbuf);
+  }
+
+  return 0;
+}
+
+
 
 

@@ -22,7 +22,6 @@ struct AB_CSV_EDIT_PROFILE_DIALOG {
   const char *testFileName;
   GWEN_DB_NODE *dbProfile;
 
-  GWEN_DB_NODE *dbParams;
   GWEN_BUFFER *dataBuffer;
   GWEN_STRINGLIST *columns;
 

@@ -30,6 +30,15 @@ static int AB_Gui_CheckCert(GWEN_GUI *gui,
 			    const GWEN_SSLCERTDESCR *cd,
 			    GWEN_IO_LAYER *io, uint32_t guiid);
 
+static int AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
+				   const char *groupName,
+				   GWEN_DB_NODE *db);
+
+static int AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
+				  const char *groupName,
+				  const char *altName,
+				  GWEN_DB_NODE **pDb);
+
 
 
 #endif

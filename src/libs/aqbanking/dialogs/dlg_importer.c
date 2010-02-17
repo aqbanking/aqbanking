@@ -98,7 +98,6 @@ void AB_ImporterDialog_FreeData(void *bp, void *p) {
   free(xdlg->fileName);
   free(xdlg->importerName);
   free(xdlg->profileName);
-  GWEN_DB_Group_free(xdlg->dbParams);
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -185,7 +184,7 @@ void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s) {
 
 void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
-  int rv;
+  GWEN_DB_NODE *dbPrefs;
   int i;
   int j;
 
@@ -193,15 +192,7 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  GWEN_DB_Group_free(xdlg->dbParams);
-  rv=AB_Banking_LoadSharedConfig(xdlg->banking,
-				 GWEN_Dialog_GetId(dlg),
-				 &(xdlg->dbParams),
-				 0);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    xdlg->dbParams=GWEN_DB_Group_new("params");
-  }
+  dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
 			      "",
@@ -290,40 +281,40 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 				0);
 
   /* read width */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "dialog_width", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "dialog_height", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read importer column widths */
   for (i=0; i<2; i++) {
-    j=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_columns", i, -1);
+    j=GWEN_DB_GetIntValue(dbPrefs, "importer_list_columns", i, -1);
     if (j<IMPORTER_LIST_MINCOLWIDTH)
       j=IMPORTER_LIST_MINCOLWIDTH;
     GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ColumnWidth, i, j, 0);
   }
   /* get sort column */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(xdlg->dbParams, "importer_list_sortdir", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "importer_list_sortbycolumn", 0, -1);
+  j=GWEN_DB_GetIntValue(dbPrefs, "importer_list_sortdir", 0, -1);
   if (i>=0 && j>=0)
     GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_SortDirection, i, j, 0);
 
   /* read profile column widths */
   for (i=0; i<2; i++) {
-    j=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_columns", i, -1);
+    j=GWEN_DB_GetIntValue(dbPrefs, "profile_list_columns", i, -1);
     if (j<PROFILE_LIST_MINCOLWIDTH)
       j=PROFILE_LIST_MINCOLWIDTH;
     GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ColumnWidth, i, j, 0);
   }
   /* get sort column */
-  i=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(xdlg->dbParams, "profile_list_sortdir", 0, -1);
+  i=GWEN_DB_GetIntValue(dbPrefs, "profile_list_sortbycolumn", 0, -1);
+  j=GWEN_DB_GetIntValue(dbPrefs, "profile_list_sortdir", 0, -1);
   if (i>=0 && j>=0)
     GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_SortDirection, i, j, 0);
 
@@ -336,18 +327,20 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 
 void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
-  int rv;
   int i;
+  GWEN_DB_NODE *dbPrefs;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
+  dbPrefs=GWEN_Dialog_GetPreferences(dlg);
+
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_width",
 		      i);
@@ -356,27 +349,27 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",
 		      i);
 
 
   /* store column widths of importer list */
-  GWEN_DB_DeleteVar(xdlg->dbParams, "importer_list_columns");
+  GWEN_DB_DeleteVar(dbPrefs, "importer_list_columns");
   for (i=0; i<2; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ColumnWidth, i, -1);
     if (j<IMPORTER_LIST_MINCOLWIDTH)
       j=IMPORTER_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(xdlg->dbParams,
+    GWEN_DB_SetIntValue(dbPrefs,
 			GWEN_DB_FLAGS_DEFAULT,
 			"importer_list_columns",
 			j);
   }
   /* store column sorting */
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "importer_list_sortbycolumn",
 		      -1);
@@ -386,11 +379,11 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
     j=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_SortDirection, i,
 				 GWEN_DialogSortDirection_None);
     if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(xdlg->dbParams,
+      GWEN_DB_SetIntValue(dbPrefs,
 			  GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "importer_list_sortbycolumn",
 			  i);
-      GWEN_DB_SetIntValue(xdlg->dbParams,
+      GWEN_DB_SetIntValue(dbPrefs,
 			  GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "importer_list_sortdir",
 			  (j==GWEN_DialogSortDirection_Up)?1:0);
@@ -399,20 +392,20 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
   }
 
   /* store column widths of profile list */
-  GWEN_DB_DeleteVar(xdlg->dbParams, "profile_list_columns");
+  GWEN_DB_DeleteVar(dbPrefs, "profile_list_columns");
   for (i=0; i<2; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ColumnWidth, i, -1);
     if (j<PROFILE_LIST_MINCOLWIDTH)
       j=PROFILE_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(xdlg->dbParams,
+    GWEN_DB_SetIntValue(dbPrefs,
 			GWEN_DB_FLAGS_DEFAULT,
 			"profile_list_columns",
 			j);
   }
   /* store column sorting */
-  GWEN_DB_SetIntValue(xdlg->dbParams,
+  GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "profile_list_sortbycolumn",
 		      -1);
@@ -422,39 +415,15 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
     j=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_SortDirection, i,
 				 GWEN_DialogSortDirection_None);
     if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(xdlg->dbParams,
+      GWEN_DB_SetIntValue(dbPrefs,
 			  GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "profile_list_sortbycolumn",
 			  i);
-      GWEN_DB_SetIntValue(xdlg->dbParams,
+      GWEN_DB_SetIntValue(dbPrefs,
 			  GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "profile_list_sortdir",
 			  (j==GWEN_DialogSortDirection_Up)?1:0);
       break;
-    }
-  }
-
-
-  /* lock configuration */
-  rv=AB_Banking_LockSharedConfig(xdlg->banking,
-				 GWEN_Dialog_GetId(dlg),
-				 0);
-  if (rv==0) {
-    /* save configuration */
-    rv=AB_Banking_SaveSharedConfig(xdlg->banking,
-				   GWEN_Dialog_GetId(dlg),
-				   xdlg->dbParams,
-				   0);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    }
-
-    /* unlock configuration */
-    rv=AB_Banking_UnlockSharedConfig(xdlg->banking,
-				     GWEN_Dialog_GetId(dlg),
-				     0);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     }
   }
 }
@@ -469,7 +438,7 @@ void AB_ImporterDialog_UpdateImporterList(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ClearChoices, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   il=AB_Banking_GetImExporterDescrs(xdlg->banking);
   if (il) {
     GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *ilit;
@@ -493,7 +462,7 @@ void AB_ImporterDialog_UpdateImporterList(GWEN_DIALOG *dlg) {
 	    GWEN_Buffer_AppendString(tbuf, s);
 	  GWEN_Dialog_SetCharProperty(dlg,
 				      "wiz_importer_list",
-				      GWEN_DialogProperty_AddChoice,
+				      GWEN_DialogProperty_AddValue,
 				      0,
 				      GWEN_Buffer_GetStart(tbuf),
 				      0);
@@ -569,7 +538,7 @@ void AB_ImporterDialog_UpdateProfileList(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ClearChoices, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   if (xdlg->importerName && *(xdlg->importerName)) {
     GWEN_DB_NODE *db;
 
@@ -593,7 +562,7 @@ void AB_ImporterDialog_UpdateProfileList(GWEN_DIALOG *dlg) {
 	    GWEN_Buffer_AppendString(tbuf, s);
 	  GWEN_Dialog_SetCharProperty(dlg,
 				      "wiz_profile_list",
-				      GWEN_DialogProperty_AddChoice,
+				      GWEN_DialogProperty_AddValue,
 				      0,
 				      GWEN_Buffer_GetStart(tbuf),
 				      0);
