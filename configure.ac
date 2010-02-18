@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=2
+AQBANKING_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="svn"
 
@@ -672,7 +672,7 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(3,10,0,0)
+AC_GWENHYWFAR(3,11,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -802,6 +802,8 @@ case "$aqbanking_frontends" in
     dnl Store the bin dir for the windows dlls
     QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
     UIC4="${qt4_uic}"
+
+    PKG_CHECK_MODULES([GWENGUI_QT4], [gwengui-qt4])
   
     AC_DEFINE(BUILD_Q4BANKING_FRONTEND, 1, [if qbanking frontend is built])
     with_q4banking="yes"
@@ -1601,7 +1603,6 @@ AC_CONFIG_FILES([
   src/frontends/q4banking/lib/dialogs/Makefile
   src/frontends/q4banking/lib/views/Makefile
   src/frontends/q4banking/lib/widgets/Makefile
-  src/frontends/q4banking/lib/gui/Makefile
   src/frontends/q4banking/lib/version.h
   src/frontends/q4banking/lib/ressource.rc
   src/frontends/q4banking/bin/Makefile

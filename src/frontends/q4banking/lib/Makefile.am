@@ -1,4 +1,4 @@
-SUBDIRS=widgets dialogs views gui
+SUBDIRS=widgets dialogs views
 
 INCLUDES = \
   -I$(top_builddir)/headers \
@@ -46,8 +46,7 @@ libq4banking_la_LIBADD=\
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- gui/libqgui.la \
- $(i18n_libs) $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt4_libs) -lQt3Support
+ $(i18n_libs) $(aqbanking_internal_libs) $(gwenhywfar_libs) $(qt4_libs) -lQt3Support $(GWENGUI_QT4_LIBS)
 
 libq4banking_la_LDFLAGS = -no-undefined \
  -version-info @Q4BANKING_SO_CURRENT@:@Q4BANKING_SO_REVISION@:@Q4BANKING_SO_AGE@
@@ -57,7 +56,6 @@ libq4banking_la_DEPENDENCIES = \
  widgets/libwidgets.la \
  dialogs/libdialogs.la \
  views/libviews.la \
- gui/libqgui.la \
  $(aqbanking_internal_libs)
 # if IS_WINDOWS
 if IS_WINDOWS

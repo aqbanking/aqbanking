@@ -47,16 +47,16 @@
 class QTranslator;
 
 class QBanking;
+class QBGui;
 
 #include <q4banking/banking.h>
 #include <q4banking/qbflagstaff.h>
-#include <q4banking/qgui.h>
+#include <q4banking/qbgui.h>
 
 #include <gwenhywfar/plugin.h>
 
 
 class QBCfgModule;
-class QGui;
 
 
 class Q4BANKING_API QBanking: public AB_Banking {
@@ -66,7 +66,7 @@ private:
   QBFlagStaff *_flagStaff;
   QTranslator *_translator;
 
-  QGui *_gui;
+  QBGui *_gui;
 
   GWEN_PLUGIN_MANAGER *_pluginManagerCfgModules;
   QBCfgModule *_appCfgModule;
@@ -89,8 +89,8 @@ public:
   int init();
   int fini();
 
-  QGui *getGui() const;
-  void setGui(QGui *g);
+  QBGui *getGui() const;
+  void setGui(QBGui *g);
 
   QWidget *getParentWidget() const { return _parentWidget;};
   void setParentWidget(QWidget *w) { _parentWidget=w;};

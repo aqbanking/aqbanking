@@ -359,7 +359,7 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
     int rv;
     uint32_t pid;
     AB_IMEXPORTER_CONTEXT *ctx;
-    QGui *gui;
+    QBGui *gui;
   
     qb=getBanking();
     assert(qb);
@@ -410,7 +410,7 @@ void CfgTabPageUserHbci::slotGetSysId() {
     int rv;
     uint32_t pid;
     AB_IMEXPORTER_CONTEXT *ctx;
-    QGui *gui;
+    QBGui *gui;
   
     qb=getBanking();
     assert(qb);
@@ -454,7 +454,7 @@ void CfgTabPageUserHbci::slotGetAccounts() {
     int rv;
     uint32_t pid;
     AB_IMEXPORTER_CONTEXT *ctx;
-    QGui *gui;
+    QBGui *gui;
   
     qb=getBanking();
     assert(qb);
@@ -515,7 +515,7 @@ void CfgTabPageUserHbci::slotGetItanModes() {
     int rv;
     uint32_t pid;
     AB_IMEXPORTER_CONTEXT *ctx;
-    QGui *gui;
+    QBGui *gui;
   
     qb=getBanking();
     assert(qb);
