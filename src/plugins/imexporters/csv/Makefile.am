@@ -2,8 +2,6 @@ SUBDIRS=profiles
 
 INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(top_builddir)/headers $(all_includes)
 
-EXTRA_DIST=README
-
 imexporterplugindir = $(aqbanking_plugindir)/imexporters
 imexporterplugin_LTLIBRARIES=csv.la
 imexporterplugin_DATA=csv.xml 
@@ -19,6 +17,7 @@ noinst_HEADERS=\
   csv_p.h \
   csv_editprofile_l.h csv_editprofile_p.h
 
+EXTRA_DIST=README $(dialogdata_DATA)
 
 
 csv_la_LIBADD=$(aqbanking_internal_libs) $(gwenhywfar_libs) 

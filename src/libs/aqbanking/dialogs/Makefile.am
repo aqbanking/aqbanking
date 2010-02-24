@@ -4,8 +4,6 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 noinst_LTLIBRARIES=libabdialogs.la
 
-EXTRA_DIST=$(typefiles)
-
 iheaderdir=${includedir}/aqbanking
 iheader_HEADERS=\
   dlg_importer.h
@@ -20,6 +18,8 @@ libabdialogs_la_SOURCES=\
 dlgdatadir=$(aqbanking_pkgdatadir)/dialogs
 dlgdata_DATA=\
   dlg_importer.dlg
+
+EXTRA_DIST=$(typefiles) $(dlgdata_DATA)
 
 
 sources:
