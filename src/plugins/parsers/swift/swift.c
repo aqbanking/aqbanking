@@ -199,10 +199,20 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr) {
 
   s=*sptr;
   if (*s=='?') {
-    /* we check for >3 because empty fields are also treated as "no subtag" */
-    if (strlen(s)>3 && isdigit(s[1]) && isdigit(s[2])) {
-      id=((s[1]-'0')*10)+(s[2]-'0');
-      s+=3;
+    const char *t;
+
+    t=s;
+    t++;
+    if (*t==0x0a)
+      t++;
+    if (*t && isdigit(*t)) {
+      id=(*(t++)-'0')*10;
+      if (*t==0x0a)
+	t++;
+      if (*t && isdigit(*t)) {
+	id+=*(t++)-'0';
+	s=t;
+      }
     }
   }
   content=s;
@@ -211,11 +221,25 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr) {
   for (;;) {
     while(*s && *s!='?')
       s++;
-    if (*s=='?' && strlen(s)>3 && isdigit(s[1]) && isdigit(s[2])) {
-      nextId=((s[1]-'0')*10)+(s[2]-'0');
-      /* TODO: check nextId */
-      /* s is the beginning of a new subtag, so the end has been found */
-      break;
+
+    if (*s=='?') {
+      const char *t;
+  
+      t=s;
+      t++;
+      if (*t==0x0a)
+	t++;
+      if (*t && isdigit(*t)) {
+	nextId=(*(t++)-'0')*10;
+	if (*t==0x0a)
+	  t++;
+	if (*t && isdigit(*t)) {
+	  nextId+=*(t++)-'0';
+	  /* TODO: check nextId */
+	  /* s is the beginning of a new subtag, so the end has been found */
+	  break;
+	}
+      }
     }
     else if (*s)
       /* not the beginning of a new tag, continue */
