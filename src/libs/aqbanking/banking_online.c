@@ -114,7 +114,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
       DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
       rv=AB_Provider_Execute(pro, ctx, pid);
-      if (rv) {
+      if (rv<0) {
 	if (rv==GWEN_ERROR_USER_ABORTED) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
           ab->currentJobs=0;
