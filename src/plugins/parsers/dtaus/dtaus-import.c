@@ -186,7 +186,8 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
   }
 
   /* check transaction type */
-  if (strcasecmp(GWEN_Buffer_GetStart(tmp), "GK")==0) {
+  if (strcasecmp(GWEN_Buffer_GetStart(tmp), "GK")==0 ||
+      strcasecmp(GWEN_Buffer_GetStart(tmp), "GB")==0) {
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "This DTAUS record contains transactions");
     GWEN_DB_SetCharValue(xa, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "type", "transfer");
@@ -199,10 +200,9 @@ int AHB_DTAUS__ParseSetA(GWEN_BUFFER *src,
     GWEN_DB_GroupRename(xa, "debitnote");
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction type \"%s\" not supported",
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction type \"%s\" not supported, assuming GK",
 	      GWEN_Buffer_GetStart(tmp));
-    GWEN_Buffer_free(tmp);
-    return -1;
+    GWEN_DB_GroupRename(xa, "transaction");
   }
 
   /* bank code */
