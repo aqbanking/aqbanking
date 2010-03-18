@@ -676,6 +676,12 @@ AB_ImExporterAccountInfo_TransactionsForEach(AB_IMEXPORTER_ACCOUNTINFO *iea,
 AQBANKING_API
 int AB_ImExporterAccountInfo_GetTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
 
+/**
+ * Clear all transactions stored in the given account info.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_ClearTransactions(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
 /*@}*/
 
 

@@ -1022,6 +1022,14 @@ int AB_ImExporterAccountInfo_GetTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO
 
 
 
+void AB_ImExporterAccountInfo_ClearTransactions(AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  assert(iea);
+  iea->nextTransaction=NULL;
+  AB_Transaction_List_Clear(iea->transactions);
+}
+
+
+
 void AB_ImExporterAccountInfo_AddStandingOrder(AB_IMEXPORTER_ACCOUNTINFO *iea,
                                                AB_TRANSACTION *t){
   assert(iea);
