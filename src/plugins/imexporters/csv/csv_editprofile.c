@@ -625,6 +625,17 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
   s=GWEN_Dialog_GetCharProperty(dlg, "nameEdit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
+  else {
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("Input Error"),
+			I18N("Please enter a name for the profile."),
+			I18N("Continue"), 0, 0, 0);
+    /* change focus */
+    GWEN_Dialog_SetIntProperty(dlg, "nameEdit", GWEN_DialogProperty_Focus, 0, 1, 0);
+    return GWEN_ERROR_BAD_DATA;
+  }
 
   s=GWEN_Dialog_GetCharProperty(dlg, "versionEdit", GWEN_DialogProperty_Value, 0, "");
   if (s && *s)
@@ -649,6 +660,12 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
 
   i=setDbValueFromDoubleStringsCombo(dlg, db, "params/delimiter", "delimiterCombo", csv_delimiters);
   if (i<0) {
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("Input Error"),
+			I18N("Please select a field delimiter."),
+			I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "delimiterCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -663,6 +680,12 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
 
   s=GWEN_Dialog_GetCharProperty(dlg, "dateFormatCombo", GWEN_DialogProperty_Value, 0, "");
   if (!(s && *s)) {
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("Input Error"),
+			I18N("Please select a date format."),
+			I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "dateFormatCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -671,6 +694,12 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
 
   i=setDbValueFromDoubleStringsCombo(dlg, db, "valueFormat", "amountFormatCombo", csv_amountFormats);
   if (i<0) {
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			I18N("Input Error"),
+			I18N("Please select a value format."),
+			I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "amountFormatCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -694,6 +723,12 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
 
     rv=setColumnValueFromCombo(dlg, db, varName, comboName, csv_columns);
     if (rv<0) {
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			  GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+			  I18N("Input Error"),
+			  I18N("Please select a valid column type."),
+			  I18N("Continue"), 0, 0, 0);
       GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, comboName, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_BAD_DATA;
