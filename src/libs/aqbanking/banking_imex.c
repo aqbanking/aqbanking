@@ -432,7 +432,39 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
     return rv;
   }
   GWEN_Buffer_AppendString(buf, DIRSEP "profiles" DIRSEP);
-  GWEN_Buffer_AppendString(buf, fname);
+  if (fname && *fname)
+    GWEN_Buffer_AppendString(buf, fname);
+  else {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(dbProfile, "name", 0, NULL);
+    if (s && *s) {
+      FILE *f;
+
+      rv=GWEN_Text_EscapeToBufferTolerant(s, buf);
+      if (rv<0) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Bad profile name (%d)", rv);
+	GWEN_Buffer_free(buf);
+	return rv;
+      }
+      GWEN_Buffer_AppendString(buf, ".conf");
+
+      f=fopen(GWEN_Buffer_GetStart(buf), "r");
+      if (f) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "There already is a profile of that name");
+	GWEN_Buffer_free(buf);
+	fclose(f);
+	return GWEN_ERROR_INVALID;
+      }
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Missing profile name");
+      GWEN_Buffer_free(buf);
+      return GWEN_ERROR_INVALID;
+    }
+  }
 
   rv=GWEN_DB_WriteFile(dbProfile,
 		       GWEN_Buffer_GetStart(buf),

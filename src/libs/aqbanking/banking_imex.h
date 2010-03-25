@@ -113,7 +113,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
  * @param imexporterName name of the im-/exporter whose profile is to be written
  * @param dbProfile DB group containing the profile
  * @param fname name of the file to write without path (e.g. "testprofile.conf")
- * (the path is determined by AqBanking using the given name of the im-/exporter).
+ * (if NULL then the path is determined by AqBanking using the given name of the im-/exporter).
  */
 AQBANKING_API
 int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
