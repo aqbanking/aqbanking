@@ -103,6 +103,7 @@ void AB_ImporterDialog_FreeData(void *bp, void *p) {
 
 
 
+#if 0
 const char *AB_ImporterDialog_GetFileName(const GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
 
@@ -178,7 +179,7 @@ void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s) {
   if (s) xdlg->profileName=strdup(s);
   else xdlg->profileName=NULL;
 }
-
+#endif
 
 
 
@@ -809,7 +810,7 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
     AB_IMEXPORTER *ie;
     GWEN_DB_NODE *dbProfiles;
     GWEN_DB_NODE *dbT;
-    GWEN_DIALOG *dlg=NULL;
+    GWEN_DIALOG *edlg=NULL;
     const char *s;
     char *fileNameCopy=NULL;
     int rv;
@@ -853,7 +854,7 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
     }
     fileNameCopy=strdup(s);
 
-    rv=AB_ImExporter_GetEditProfileDialog(ie, dbT, xdlg->fileName, &dlg);
+    rv=AB_ImExporter_GetEditProfileDialog(ie, dbT, xdlg->fileName, &edlg);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "ImExporter [%s] has no EditProfileDialog", xdlg->importerName);
       free(fileNameCopy);
@@ -861,10 +862,11 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
       return GWEN_DialogEvent_ResultHandled;
     }
 
-    rv=GWEN_Gui_ExecDialog(dlg, 0);
+    rv=GWEN_Gui_ExecDialog(edlg, 0);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       free(fileNameCopy);
+      GWEN_Dialog_free(edlg);
       GWEN_DB_Group_free(dbProfiles);
       return GWEN_DialogEvent_ResultHandled;
     }
@@ -878,14 +880,72 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
       if (rv<0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	free(fileNameCopy);
+	GWEN_Dialog_free(edlg);
 	GWEN_DB_Group_free(dbProfiles);
 	return GWEN_DialogEvent_ResultHandled;
       }
     }
 
+    GWEN_Dialog_free(edlg);
     free(fileNameCopy);
     GWEN_DB_Group_free(dbProfiles);
   }
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg) {
+  AB_IMPORTER_DIALOG *xdlg;
+  AB_IMEXPORTER *ie;
+  GWEN_DB_NODE *dbProfile;
+  GWEN_DIALOG *edlg=NULL;
+  char *fileNameCopy=NULL;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  ie=AB_Banking_GetImExporter(xdlg->banking, xdlg->importerName);
+  if (ie==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "ImExporter [%s] not found", xdlg->importerName);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  dbProfile=GWEN_DB_Group_new("profile");
+
+  rv=AB_ImExporter_GetEditProfileDialog(ie, dbProfile, xdlg->fileName, &edlg);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "ImExporter [%s] has no EditProfileDialog", xdlg->importerName);
+    GWEN_DB_Group_free(dbProfile);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ExecDialog(edlg, 0);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Dialog_free(edlg);
+    GWEN_DB_Group_free(dbProfile);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  if (rv==1) {
+    /* accepted */
+    DBG_ERROR(0, "Accepted, writing profile");
+    rv=AB_Banking_SaveLocalImExporterProfile(xdlg->banking,
+					     xdlg->importerName,
+					     dbProfile,
+					     fileNameCopy);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Dialog_free(edlg);
+      GWEN_DB_Group_free(dbProfile);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+  }
+
+  GWEN_Dialog_free(edlg);
+  GWEN_DB_Group_free(dbProfile);
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -942,7 +1002,7 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return AB_ImporterDialog_EditProfile(dlg);
   }
   else if (strcasecmp(sender, "wiz_profile_new_button")==0) {
-    /* TODO: get appropriate profile editor */
+    return AB_ImporterDialog_NewProfile(dlg);
   }
   else if (strcasecmp(sender, "wiz_profile_del_button")==0) {
     /* TODO: get appropriate profile editor */

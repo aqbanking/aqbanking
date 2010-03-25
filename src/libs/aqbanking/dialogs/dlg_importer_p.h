@@ -29,21 +29,26 @@ struct AB_IMPORTER_DIALOG {
 };
 
 
-GWENHYWFAR_CB void AB_ImporterDialog_FreeData(void *bp, void *p);
+static GWENHYWFAR_CB void AB_ImporterDialog_FreeData(void *bp, void *p);
 
-const char *AB_ImporterDialog_GetFileName(const GWEN_DIALOG *dlg);
-void AB_ImporterDialog_SetFileName(GWEN_DIALOG *dlg, const char *s);
+#if 0
+static const char *AB_ImporterDialog_GetFileName(const GWEN_DIALOG *dlg);
+static void AB_ImporterDialog_SetFileName(GWEN_DIALOG *dlg, const char *s);
 
-const char *AB_ImporterDialog_GetImporterName(const GWEN_DIALOG *dlg);
-void AB_ImporterDialog_SetImporterName(GWEN_DIALOG *dlg, const char *s);
+static const char *AB_ImporterDialog_GetImporterName(const GWEN_DIALOG *dlg);
+static void AB_ImporterDialog_SetImporterName(GWEN_DIALOG *dlg, const char *s);
 
-const char *AB_ImporterDialog_GetProfileName(const GWEN_DIALOG *dlg);
-void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s);
+static const char *AB_ImporterDialog_GetProfileName(const GWEN_DIALOG *dlg);
+static void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s);
+#endif
+
+static int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg);
+static int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg);
 
 
-GWENHYWFAR_CB int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
-						  GWEN_DIALOG_EVENTTYPE t,
-						  const char *sender);
+static GWENHYWFAR_CB int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
+							 GWEN_DIALOG_EVENTTYPE t,
+							 const char *sender);
 
 
 #endif
