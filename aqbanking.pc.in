@@ -23,18 +23,12 @@ aqhbci_includes=@aqhbci_includes@
 aqhbci_libs=@aqhbci_ldflags@ @aqhbci_libs@
 aqhbci_plugindir=@aqhbci_plugindir@
 aqhbci_datadir=@aqhbci_data@
-g2banking_includes=@g2banking_includes@
-g2banking_libs=@g2banking_libs@
-g2banking_datadir=@g2banking_data@
-kbanking_includes=@kbanking_includes@
-kbanking_libs=@kbanking_libs@
-kbanking_datadir=@kbanking_data@
 qbanking_includes=@qbanking_includes@
 qbanking_libs=@qbanking_libs@
 qbanking_datadir=@qbanking_data@
-cbanking_includes=@cbanking_includes@
-cbanking_libs=@cbanking_libs@
-cbanking_datadir=@cbanking_data@
+q4banking_includes=@q4banking_includes@
+q4banking_libs=@q4banking_libs@
+q4banking_datadir=@q4banking_data@
 
 # Human-readable name
 Name: AqBanking
