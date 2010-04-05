@@ -203,10 +203,17 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab){
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
+  assert(ab);
+  if (ab_pluginManagerImExporter) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
 
-  l=GWEN_LoadPluginDescrs(AQBANKING_PLUGINS DIRSEP AB_IMEXPORTER_FOLDER);
-  return l;
+    l=GWEN_PluginManager_GetPluginDescrs(ab_pluginManagerImExporter);
+    return l;
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No plugin manager for imexporters");
+    return NULL;
+  }
 }
 
 

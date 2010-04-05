@@ -244,7 +244,7 @@ int AB_Banking_PluginSystemInit(void) {
 
     /* create imexporters plugin manager */
     DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
-    pm=GWEN_PluginManager_new("imexporters", AB_PM_LIBNAME);
+    pm=GWEN_PluginManager_new("imexporter", AB_PM_LIBNAME);
     if (GWEN_PluginManager_Register(pm)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not register imexporters plugin manager");
