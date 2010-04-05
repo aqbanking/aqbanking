@@ -23,9 +23,9 @@ struct AB_IMEXPORTER_YELLOWNET {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_yellownet_factory(GWEN_PLUGIN_MANAGER *pm,
-					   const char *name,
-					   const char *fileName);
+GWEN_PLUGIN *imexporter_yellownet_factory(GWEN_PLUGIN_MANAGER *pm,
+					  const char *name,
+					  const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterYellowNet_Factory(GWEN_PLUGIN *pl,

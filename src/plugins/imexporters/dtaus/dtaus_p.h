@@ -23,9 +23,9 @@ struct AH_IMEXPORTER_DTAUS {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_dtaus_factory(GWEN_PLUGIN_MANAGER *pm,
-				       const char *name,
-				       const char *fileName);
+GWEN_PLUGIN *imexporter_dtaus_factory(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterDTAUS_Factory(GWEN_PLUGIN *pl,

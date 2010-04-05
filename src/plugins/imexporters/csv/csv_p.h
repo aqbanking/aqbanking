@@ -25,9 +25,9 @@ struct AH_IMEXPORTER_CSV {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_csv_factory(GWEN_PLUGIN_MANAGER *pm,
-				     const char *name,
-				     const char *fileName);
+GWEN_PLUGIN *imexporter_csv_factory(GWEN_PLUGIN_MANAGER *pm,
+				    const char *name,
+				    const char *fileName);
 
 
 static

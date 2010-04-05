@@ -48,9 +48,9 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_OFX);
 
 
 
-GWEN_PLUGIN *imexporters_ofx_factory(GWEN_PLUGIN_MANAGER *pm,
-				     const char *name,
-				     const char *fileName) {
+GWEN_PLUGIN *imexporter_ofx_factory(GWEN_PLUGIN_MANAGER *pm,
+				    const char *name,
+				    const char *fileName) {
   GWEN_PLUGIN *pl;
 
   pl=AB_Plugin_ImExporter_new(pm, name, fileName);

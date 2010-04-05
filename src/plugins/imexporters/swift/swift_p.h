@@ -23,9 +23,9 @@ struct AH_IMEXPORTER_SWIFT {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_swift_factory(GWEN_PLUGIN_MANAGER *pm,
-				       const char *name,
-				       const char *fileName);
+GWEN_PLUGIN *imexporter_swift_factory(GWEN_PLUGIN_MANAGER *pm,
+				      const char *name,
+				      const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterSWIFT_Factory(GWEN_PLUGIN *pl,

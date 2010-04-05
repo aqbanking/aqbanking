@@ -25,9 +25,9 @@ struct AH_IMEXPORTER_OFX {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_ofx_factory(GWEN_PLUGIN_MANAGER *pm,
-				     const char *name,
-				     const char *fileName);
+GWEN_PLUGIN *imexporter_ofx_factory(GWEN_PLUGIN_MANAGER *pm,
+				    const char *name,
+				    const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterOFX_Factory(GWEN_PLUGIN *pl,

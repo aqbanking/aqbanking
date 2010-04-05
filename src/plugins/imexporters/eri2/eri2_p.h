@@ -32,9 +32,9 @@ struct AB_IMEXPORTER_ERI2 {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
-				      const char *name,
-				      const char *fileName);
+GWEN_PLUGIN *imexporter_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
+				     const char *name,
+				     const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterERI2_Factory(GWEN_PLUGIN *pl,

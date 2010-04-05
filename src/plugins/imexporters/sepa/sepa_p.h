@@ -22,9 +22,9 @@ struct AH_IMEXPORTER_SEPA {
 
 
 AQBANKING_EXPORT
-GWEN_PLUGIN *imexporters_sepa_factory(GWEN_PLUGIN_MANAGER *pm,
-				      const char *name,
-				      const char *fileName);
+GWEN_PLUGIN *imexporter_sepa_factory(GWEN_PLUGIN_MANAGER *pm,
+				     const char *name,
+				     const char *fileName);
 
 static
 AB_IMEXPORTER *AB_Plugin_ImExporterSEPA_Factory(GWEN_PLUGIN *pl,

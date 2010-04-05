@@ -46,9 +46,9 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_ERI2)
 
 
 
-GWEN_PLUGIN *imexporters_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
-				      const char *name,
-				      const char *fileName) {
+GWEN_PLUGIN *imexporter_eri2_factory(GWEN_PLUGIN_MANAGER *pm,
+				     const char *name,
+				     const char *fileName) {
   GWEN_PLUGIN *pl;
 
   pl=AB_Plugin_ImExporter_new(pm, name, fileName);
