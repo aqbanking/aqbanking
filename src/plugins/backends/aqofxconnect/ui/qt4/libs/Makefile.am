@@ -1,4 +1,5 @@
 INCLUDES=-I$(top_builddir)/headers \
+  $(GWENGUI_QT4_CFLAGS) \
   -I dialogs $(gwenhywfar_includes) $(qt4_includes)
 
 UI_FILES=\

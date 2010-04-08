@@ -7,6 +7,7 @@ INCLUDES = \
   -I$(srcdir)/../../lib/gui \
   -I$(srcdir)/../../lib \
   -I../../lib/widgets -I../../lib/dialogs -I../../lib/gui -I../../lib/views -I../../lib \
+  $(GWENGUI_QT4_CFLAGS) \
   $(qt4_includes) $(all_includes)
 
 EXTRA_DIST = qt4_wizard.xml.in

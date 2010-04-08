@@ -3,6 +3,7 @@ SUBDIRS=wizard
 INCLUDES = $(gwenhywfar_includes) $(qt3_includes) \
   -I$(top_builddir)/headers \
   -I$(srcdir)/.. -I$(srcdir)/wizard \
+  $(GWENGUI_QT3_CFLAGS) \
   -I.. -Iwizard
 
 

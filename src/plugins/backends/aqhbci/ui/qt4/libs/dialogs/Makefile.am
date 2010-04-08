@@ -3,6 +3,7 @@ SUBDIRS=wizard
 INCLUDES = $(gwenhywfar_includes) $(qt4_includes) \
   -I$(top_builddir)/headers \
   -I$(srcdir)/.. -I$(srcdir)/wizard \
+  $(GWENGUI_QT4_CFLAGS) \
   -I.. -Iwizard
 
 
@@ -40,7 +41,7 @@ MOC_FILES=\
  cfgtabpageaccounthbci.moc \
  cfgtabpageaccounthbci.ui.moc \
  cfgtabpageuserhbci.moc
- 
+
 
 libdialogs_la_LIBADD=wizard/libwizard.la
 
@@ -64,7 +65,7 @@ sources:
 
 %.ui.h: %.ui
 	$(qt4_uic) $< -o $@
-	
+
 SUFFIXES = .ui .ui.h .moc.cpp
 
 # For qt3 compatibility of qt4

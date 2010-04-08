@@ -2,6 +2,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
   -I../widgets -I.. \
+  $(GWENGUI_QT4_CFLAGS) \
   $(gwenhywfar_includes) $(qt4_includes)
 
 DEFS += -DAQHBCI_DATAFOLDER=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"
@@ -55,7 +56,7 @@ sources:
 # Build rules for the files that come from the .ui file
 %.ui.h: %.ui
 	$(qt4_uic) $< -o $@
-	
+
 SUFFIXES = .ui .ui.h .moc.cpp
 
 # For qt3 compatibility of qt4

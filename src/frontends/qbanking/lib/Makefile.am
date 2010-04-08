@@ -4,6 +4,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
   -Idialogs -Iwidgets -Iviews $(GWENGUI_QT3_CFLAGS) \
+  $(GWENGUI_QT3_CFLAGS) \
   $(all_includes)
 
 DEFS += -DBUILDING_QBANKING \

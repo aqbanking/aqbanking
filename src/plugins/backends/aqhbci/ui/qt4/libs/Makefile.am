@@ -2,6 +2,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/dialogs -I$(srcdir)/logmanager \
   -Idialogs -Ilogmanager \
+  $(GWENGUI_QT4_CFLAGS) \
   $(gwenhywfar_includes) $(qt4_includes)
 
 SUBDIRS=dialogs logmanager 

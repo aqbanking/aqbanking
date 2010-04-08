@@ -2,6 +2,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
   -I../widgets -I.. \
+  $(GWENGUI_QT3_CFLAGS) \
   $(all_includes)
 
 DEFS += -DAQHBCI_DATAFOLDER=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"

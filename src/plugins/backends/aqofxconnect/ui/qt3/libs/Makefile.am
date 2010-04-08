@@ -1,4 +1,5 @@
 INCLUDES=-I$(top_builddir)/headers \
+  $(GWENGUI_QT3_CFLAGS) \
   -I dialogs @all_includes@
 
 UI_FILES=\

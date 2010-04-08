@@ -1,5 +1,6 @@
 INCLUDES = \
   -I$(top_builddir)/headers \
+  $(GWENGUI_QT3_CFLAGS) \
   $(qt3_includes) $(all_includes)
 
 DEFS += -DPKGDATADIR=\"$(pkgdatadir)\" \

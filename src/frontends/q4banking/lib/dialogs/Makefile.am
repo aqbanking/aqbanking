@@ -2,6 +2,7 @@ INCLUDES = \
   -I$(top_builddir)/headers \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
   -I../widgets -I.. \
+  $(GWENGUI_QT4_CFLAGS) \
   $(gwenhywfar_includes) $(qt4_includes)
 
 DEFS += -DBUILDING_Q4BANKING
@@ -40,7 +41,7 @@ nodist_iheader_HEADERS=\
  qbcfgtabpageusers.ui.h \
  qbcfgtabpagebackends.ui.h \
  qbselectbackend.ui.h
- 
+
 
 iheaderdir=${includedir}/q4banking
 iheader_HEADERS=\
