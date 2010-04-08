@@ -1,4 +1,6 @@
-INCLUDES=-I$(top_builddir)/headers -I../  @all_includes@
+INCLUDES=-I$(top_builddir)/headers \
+  -I.. -I$(srcdir)/.. \
+  @all_includes@
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
