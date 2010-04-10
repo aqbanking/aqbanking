@@ -74,7 +74,7 @@ void AB_Gui_Unextend(GWEN_GUI *gui) {
 
 
 
-void AB_Gui_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p) {
   AB_GUI *xgui;
 
   xgui=(AB_GUI*) p;

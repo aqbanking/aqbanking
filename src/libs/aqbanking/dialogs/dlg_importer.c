@@ -91,7 +91,7 @@ GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
 
 
 
-void AB_ImporterDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_ImporterDialog_FreeData(void *bp, void *p) {
   AB_IMPORTER_DIALOG *xdlg;
 
   xdlg=(AB_IMPORTER_DIALOG*) p;
@@ -1031,9 +1031,9 @@ int AB_ImporterDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
-				    GWEN_DIALOG_EVENTTYPE t,
-				    const char *sender) {
+int GWENHYWFAR_CB AB_ImporterDialog_SignalHandler(GWEN_DIALOG *dlg,
+						  GWEN_DIALOG_EVENTTYPE t,
+						  const char *sender) {
   AB_IMPORTER_DIALOG *xdlg;
 
   assert(dlg);

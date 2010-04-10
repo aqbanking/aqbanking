@@ -218,7 +218,7 @@ GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
 
 
 
-void AB_CSV_EditProfileDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_CSV_EditProfileDialog_FreeData(void *bp, void *p) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   xdlg=(AB_CSV_EDIT_PROFILE_DIALOG*) p;
@@ -793,9 +793,9 @@ int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *se
 
 
 
-int AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
-					   GWEN_DIALOG_EVENTTYPE t,
-					   const char *sender) {
+int GWENHYWFAR_CB AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
+							 GWEN_DIALOG_EVENTTYPE t,
+							 const char *sender) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);

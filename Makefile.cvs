@@ -132,10 +132,14 @@ mp-win:
 
 
 mp-w32:
-	PATH="$(MINGW32_PREFIX)/bin:$(PATH)"
-	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" \
-	LIBOFX_CFLAGS="-I$(MINGW32_PREFIX)/include" \
-	LIBOFX_LIBS="-L$(MINGW32_PREFIX)/lib -lofx" \
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	PATH="$(MINGW32_PREFIX)/bin:$(PATH)" \
+	PKG_CONFIG_PATH=/tmp/install/lib/pkgconfig \
+	CFLAGS="$(MY_CFLAGS) -I/tmp/install/include -L/tmp/install/lib" CXXFLAGS="-ggdb -Wall -I/tmp/install/include -L/tmp/install/lib" \
         DLLTOOL=i586-mingw32msvc-dlltool \
 	OBJDUMP=i586-mingw32msvc-objdump \
 	LD=i586-mingw32msvc-ld \
@@ -147,12 +151,9 @@ mp-w32:
 	AS=i586-mingw32msvc-as \
 	RC=i586-mingw32msvc-windres \
 	./configure \
-	  --enable-maintainer-mode \
-	  --prefix=$(MINGW32_PREFIX) $(WIN32_OPTIONS) \
+	  --prefix=/tmp/install $(WIN32_OPTIONS) \
 	  --enable-release \
-	  --with-gwen-dir=$(MINGW32_PREFIX) \
-	  --with-chipcard-client-dir=$(MINGW32_PREFIX) \
-	  --with-backends="aqhbci aqofxconnect" \
+	  --with-gwen-dir=/tmp/install \
 	  --with-frontends="" \
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge

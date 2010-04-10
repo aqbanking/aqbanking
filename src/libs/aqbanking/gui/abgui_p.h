@@ -22,7 +22,7 @@ struct AB_GUI {
   GWEN_GUI_CHECKCERT_FN checkCertFn;
 };
 
-static void AB_Gui_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p);
 static int AB_Gui__HashPair(const char *token,
 			    const char *pin,
 			    GWEN_BUFFER *buf);
