@@ -307,7 +307,7 @@ void AB_Value_toHumanReadableString2(const AB_VALUE *v,
 #endif
 
   num=AB_Value_GetValueAsDouble(v);
-  rv=snprintf(numbuf, sizeof(numbuf), "%.*lf",
+  rv=snprintf(numbuf, sizeof(numbuf), "%.*f",
 	      prec, num);
 
 #ifdef HAVE_SETLOCALE
@@ -330,7 +330,12 @@ void AB_Value_toHumanReadableString2(const AB_VALUE *v,
 
 double AB_Value_GetValueAsDouble(const AB_VALUE *v) {
   assert(v);
-  return mpq_get_d(v->value);
+  if (mpz_fits_slong_p(mpq_numref(v->value)) && mpz_fits_slong_p(mpq_denref(v->value))) {
+    return (double) (mpz_get_d(mpq_numref(v->value)) / mpz_get_d(mpq_denref(v->value)));
+  }
+  else {
+    return mpq_get_d(v->value);
+  }
 }
 
 
