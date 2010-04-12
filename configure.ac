@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=2
 AQBANKING_VERSION_PATCHLEVEL=9
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="git"
 
@@ -1721,6 +1721,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/Makefile
   src/plugins/backends/aqhbci/plugin/Makefile
   src/plugins/backends/aqhbci/plugin/aqhbci.xml
+  src/plugins/backends/aqhbci/plugin/dialogs/Makefile
   src/plugins/backends/aqhbci/plugin/header.xml
   src/plugins/backends/aqhbci/plugin/ressource.rc
   src/plugins/backends/aqhbci/plugin/banking/Makefile
