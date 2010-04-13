@@ -17,6 +17,8 @@
 #include "dlg_pintan_p.h"
 #include "i18n_l.h"
 
+#include <aqbanking/dlg_selectbankinfo.h>
+
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/pathmanager.h>
@@ -75,6 +77,11 @@ GWEN_DIALOG *AH_PinTanDialog_new(AB_BANKING *ab) {
   GWEN_Buffer_free(fbuf);
 
   xdlg->banking=ab;
+
+  /* preset */
+  xdlg->hbciVersion=300;
+  xdlg->httpVMajor=1;
+  xdlg->httpVMinor=1;
 
   /* done */
   return dlg;
@@ -359,6 +366,9 @@ void AH_PinTanDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
+
+
+
 void AH_PinTanDialog_Init(GWEN_DIALOG *dlg) {
   AH_PINTAN_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -386,6 +396,29 @@ void AH_PinTanDialog_Init(GWEN_DIALOG *dlg) {
 			      GWEN_DialogProperty_Title,
 			      0,
 			      I18N("This dialog assists you in setting up a Pin/TAN User.\n"),
+			      0);
+
+  /* setup bank page */
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "wiz_bank_label",
+			      GWEN_DialogProperty_Title,
+			      0,
+			      I18N("<p>Please select the bank.</p>"
+				   "<p>AqBanking has an internal database which "
+				   "contains HBCI/FinTS information about many banks.<p>"
+				   "<p>If there is an entry for your bank this dialog will use the "
+				   "information from the database.</p>"),
+			      0);
+
+  /* setup user page */
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "wiz_user_label",
+			      GWEN_DialogProperty_Title,
+			      0,
+			      I18N("<p>For most banks the customer id must be the same as the user id.</p>"
+				   "<p>However, some banks actually use the customer id, so please look into "
+				   "the documentation provided by your bank to discover whether this is the "
+				   "case with your bank.</p>"),
 			      0);
 
   /* setup extro page */
@@ -604,9 +637,113 @@ int AH_PinTanDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
+int AH_PinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+  AH_PINTAN_DIALOG *xdlg;
+  GWEN_DIALOG *dlg2;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
+  if (dlg2==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg2, 0);
+  if (rv==0) {
+    /* rejected */
+    GWEN_Dialog_free(dlg2);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  else {
+    const AB_BANKINFO *bi;
+
+    bi=AB_SelectBankInfoDialog_GetSelectedBankInfo(dlg2);
+    if (bi) {
+      const char *s;
+      AB_BANKINFO_SERVICE *sv;
+
+      s=AB_BankInfo_GetBankId(bi);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_bankcode_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+      s=AB_BankInfo_GetBankName(bi);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_bankname_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+      sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
+      while(sv) {
+	const char *s;
+
+	s=AB_BankInfoService_GetType(sv);
+	if (s && *s && strcasecmp(s, "HBCI")==0) {
+	  s=AB_BankInfoService_GetMode(sv);
+	  if (s && *s && strcasecmp(s, "PINTAN")==0)
+	    break;
+	}
+	sv=AB_BankInfoService_List_Next(sv);
+      }
+
+      if (sv) {
+	/* PIN/TAN service found */
+	s=AB_BankInfoService_GetAddress(sv);
+	GWEN_Dialog_SetCharProperty(dlg,
+				    "wiz_url_edit",
+				    GWEN_DialogProperty_Value,
+				    0,
+				    (s && *s)?s:"",
+				    0);
+	s=AB_BankInfoService_GetPversion(sv);
+	if (s && *s) {
+	  if (strcasecmp(s, "2.01")==0 ||
+	      strcasecmp(s, "2")==0)
+	    xdlg->hbciVersion=201;
+	  else if (strcasecmp(s, "2.10")==0 ||
+		   strcasecmp(s, "2.1")==0)
+	    xdlg->hbciVersion=210;
+	  else if (strcasecmp(s, "2.20")==0 ||
+		   strcasecmp(s, "2.2")==0)
+	    xdlg->hbciVersion=220;
+	  else if (strcasecmp(s, "3.00")==0 ||
+		   strcasecmp(s, "3.0")==0 ||
+		   strcasecmp(s, "3")==0)
+	    xdlg->hbciVersion=300;
+	  else if (strcasecmp(s, "4.00")==0 ||
+		   strcasecmp(s, "4.0")==0 ||
+		   strcasecmp(s, "4")==0)
+	    xdlg->hbciVersion=400;
+	}
+      }
+    }
+  }
+
+  GWEN_Dialog_free(dlg2);
+
+  if (AH_PinTanDialog_GetBankPageData(dlg)<0)
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+  else
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_PinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
-  if (strcasecmp(sender, "wiz_prev_button")==0)
+  if (strcasecmp(sender, "wiz_bankcode_button")==0)
+    return AH_PinTanDialog_HandleActivatedBankCode(dlg);
+  else if (strcasecmp(sender, "wiz_prev_button")==0)
     return AH_PinTanDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
     return AH_PinTanDialog_Next(dlg);

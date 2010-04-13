@@ -12,6 +12,8 @@
 
       <!-- bank settings page -->
       <widget type="vlayout" flags="fillX fillY" >
+        <widget type="label" name="wiz_bank_label" flags="fillX fillY justifyLeft" />
+        <widget type="hLine" flags="fillX" />
         <widget type="gridLayout" columns="2" flags="fillX" >
 
           <widget type="label" name="wiz_bankcode_label" text="Bank Code" flags="fillX fillY justifyLeft" />
@@ -32,6 +34,8 @@
 
       <!-- user settings page -->
       <widget type="vlayout" flags="fillX fillY" >
+        <widget type="label" name="wiz_user_label" flags="fillX fillY justifyLeft" />
+        <widget type="hLine" flags="fillX" />
         <widget type="gridLayout" columns="2" flags="fillX" >
 
           <widget type="label" text="User Name" />
