@@ -73,7 +73,7 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
-			    int nounmount,
+			    int withProgress, int nounmount, int doLock,
 			    uint32_t guiid);
 
 /**
@@ -87,7 +87,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 int nounmount,
+			 int withProgress, int nounmount, int doLock,
 			 uint32_t guiid);
 
 /**
@@ -101,7 +101,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      int nounmount,
+			      int withProgress, int nounmount, int doLock,
 			      uint32_t guiid);
 
 /**
@@ -115,7 +115,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     int nounmount,
+			     int withProgress, int nounmount, int doLock,
 			     uint32_t guiid);
 
 /**
@@ -132,7 +132,7 @@ AQHBCI_API
 int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      int withAuthKey,
-			      int nounmount,
+			      int withProgress, int nounmount, int doLock,
 			      uint32_t guiid);
 
 /**
@@ -145,7 +145,8 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
  */
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro,
-			AB_USER *u, int nounmount,
+			AB_USER *u,
+			int withProgress, int nounmount, int doLock,
 			uint32_t guiid);
 
 /**
@@ -159,7 +160,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
 AQHBCI_API
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 			     AB_IMEXPORTER_CONTEXT *ctx,
-			     int nounmount,
+			     int withProgress, int nounmount, int doLock,
 			     uint32_t guiid);
 
 
@@ -174,7 +175,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
-			  int nounmount,
+			  int withProgress, int nounmount, int doLock,
 			  uint32_t guiid);
 
 

@@ -26,7 +26,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 			  AB_IMEXPORTER_CONTEXT *ctx,
 			  const uint8_t *dataPtr,
 			  uint32_t dataLen,
-			  int nounmount,
+			  int withProgress, int nounmount, int doLock,
 			  uint32_t guiid);
 
 int AH_Provider_ValidateTransfer(AB_TRANSACTION *t,

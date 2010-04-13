@@ -148,7 +148,7 @@ int getCert(AB_BANKING *ab,
     return 3;
   }
   else {
-    rv=AH_Provider_GetCert(pro, u, 0, 0);
+    rv=AH_Provider_GetCert(pro, u, 1, 0, 1, 0);
     if (rv) {
       DBG_ERROR(0, "Error getting certificate (%d)", rv);
       AB_Banking_Fini(ab);

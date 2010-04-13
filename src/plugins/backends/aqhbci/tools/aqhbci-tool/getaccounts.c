@@ -153,7 +153,7 @@ int getAccounts(AB_BANKING *ab,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 0);
+    rv=AH_Provider_GetAccounts(pro, u, ctx, 1, 0, 1, 0);
     AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error getting accounts (%d)", rv);

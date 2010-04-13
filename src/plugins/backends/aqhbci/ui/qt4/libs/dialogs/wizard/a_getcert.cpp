@@ -61,7 +61,7 @@ bool ActionGetCert::apply() {
   u=wInfo->getUser();
   assert(u);
 
-  rv=AH_Provider_GetCert(pro, u, 1, 0);
+  rv=AH_Provider_GetCert(pro, u, 1, 1, 1, 0);
   if (rv) {
     DBG_ERROR(0, "Could not get certificate (%d)", rv);
     return false;

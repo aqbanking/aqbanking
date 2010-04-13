@@ -108,7 +108,7 @@ void ActionGetSysId::slotButtonClicked() {
 			     0);
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(pro, u, ctx, 1, pid);
+  rv=AH_Provider_GetSysId(pro, u, ctx, 1, 1, 1, pid);
   GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {

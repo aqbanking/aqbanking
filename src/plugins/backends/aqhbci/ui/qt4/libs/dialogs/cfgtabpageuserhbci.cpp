@@ -381,7 +381,7 @@ void CfgTabPageUserHbci::slotGetServerKeys() {
 			       GWEN_GUI_PROGRESS_NONE,
 			       0);
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, pid);
+    rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, 1, 1, pid);
     AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error getting server keys");
@@ -432,7 +432,7 @@ void CfgTabPageUserHbci::slotGetSysId() {
 			       GWEN_GUI_PROGRESS_NONE,
 			       0);
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetSysId(pro, u, ctx, 1, pid);
+    rv=AH_Provider_GetSysId(pro, u, ctx, 1, 1, 1, pid);
     GWEN_Gui_ProgressEnd(pid);
     if (gui)
       gui->popParentWidget();
@@ -476,7 +476,7 @@ void CfgTabPageUserHbci::slotGetAccounts() {
 			       GWEN_GUI_PROGRESS_NONE,
 			       0);
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetAccounts(pro, u, ctx, 1, pid);
+    rv=AH_Provider_GetAccounts(pro, u, ctx, 1, 1, 1, pid);
     GWEN_Gui_ProgressEnd(pid);
     if (gui)
       gui->popParentWidget();
@@ -537,7 +537,7 @@ void CfgTabPageUserHbci::slotGetItanModes() {
 			       GWEN_GUI_PROGRESS_NONE,
 			       0);
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetItanModes(pro, u, ctx, 1, pid);
+    rv=AH_Provider_GetItanModes(pro, u, ctx, 1, 1, 1, pid);
     GWEN_Gui_ProgressEnd(pid);
     if (gui)
       gui->popParentWidget();

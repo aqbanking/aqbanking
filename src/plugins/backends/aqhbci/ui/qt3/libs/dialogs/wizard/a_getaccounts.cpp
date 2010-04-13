@@ -105,7 +105,7 @@ void ActionGetAccounts::slotButtonClicked() {
 			     NULL,
 			     GWEN_GUI_PROGRESS_NONE,
 			     0);
-  rv=AH_Provider_GetAccounts(pro, u, ctx, 1, pid);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 1, 1, 1, pid);
   GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {
