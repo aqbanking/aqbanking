@@ -505,6 +505,20 @@ int readHBCIFile(const char *fname) {
     return -1;
   }
 
+  if (GWEN_DB_WriteFile(dbData,
+                        "out.conf",
+			GWEN_DB_FLAGS_QUOTE_VALUES | \
+                        GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                        GWEN_DB_FLAGS_INDEND | \
+                        GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
+                        GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+			GWEN_DB_FLAGS_OMIT_TYPES,
+			0,
+			2000)) {
+    DBG_ERROR(0, "Error writing bank file");
+    return -1;
+  }
+
   fprintf(stdout, "Updating database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
   while(dbT) {
@@ -540,6 +554,14 @@ int readHBCIFile(const char *fname) {
 		   strcmp(ver, "2.20")==0 ||
 		   strcmp(ver, "2.2.0")==0)
 	    ver="2.20";
+	  else if (strcmp(ver, "3")==0 ||
+		   strcmp(ver, "3.0")==0 ||
+		   strcmp(ver, "3.0.0")==0)
+	    ver="3.0";
+	  else if (strcmp(ver, "4")==0 ||
+		   strcmp(ver, "4.0")==0 ||
+		   strcmp(ver, "4.0.0")==0)
+	    ver="3.0";
 	}
 	if (addr) {
 	  const char *s;
@@ -615,6 +637,66 @@ int readHBCIFile(const char *fname) {
 	    AB_BankInfoService_SetMode(sv, "RDH5");
 	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
 	  } /* if RDH5 */
+
+	  s=GWEN_DB_GetCharValue(dbT, "rdh6", 0, "nein");
+	  if (strcasecmp(s, "ja")==0) {
+	    AB_BANKINFO_SERVICE *sv;
+
+	    sv=AB_BankInfoService_new();
+	    AB_BankInfoService_SetType(sv, "HBCI");
+	    AB_BankInfoService_SetAddress(sv, addr);
+	    AB_BankInfoService_SetPversion(sv, ver);
+	    AB_BankInfoService_SetMode(sv, "RDH6");
+	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+	  } /* if RDH6 */
+
+	  s=GWEN_DB_GetCharValue(dbT, "rdh7", 0, "nein");
+	  if (strcasecmp(s, "ja")==0) {
+	    AB_BANKINFO_SERVICE *sv;
+
+	    sv=AB_BankInfoService_new();
+	    AB_BankInfoService_SetType(sv, "HBCI");
+	    AB_BankInfoService_SetAddress(sv, addr);
+	    AB_BankInfoService_SetPversion(sv, ver);
+	    AB_BankInfoService_SetMode(sv, "RDH7");
+	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+	  } /* if RDH7 */
+
+	  s=GWEN_DB_GetCharValue(dbT, "rdh8", 0, "nein");
+	  if (strcasecmp(s, "ja")==0) {
+	    AB_BANKINFO_SERVICE *sv;
+
+	    sv=AB_BankInfoService_new();
+	    AB_BankInfoService_SetType(sv, "HBCI");
+	    AB_BankInfoService_SetAddress(sv, addr);
+	    AB_BankInfoService_SetPversion(sv, ver);
+	    AB_BankInfoService_SetMode(sv, "RDH8");
+	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+	  } /* if RDH8 */
+
+	  s=GWEN_DB_GetCharValue(dbT, "rdh9", 0, "nein");
+	  if (strcasecmp(s, "ja")==0) {
+	    AB_BANKINFO_SERVICE *sv;
+
+	    sv=AB_BankInfoService_new();
+	    AB_BankInfoService_SetType(sv, "HBCI");
+	    AB_BankInfoService_SetAddress(sv, addr);
+	    AB_BankInfoService_SetPversion(sv, ver);
+	    AB_BankInfoService_SetMode(sv, "RDH9");
+	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+	  } /* if RDH9 */
+
+	  s=GWEN_DB_GetCharValue(dbT, "rdh10", 0, "nein");
+	  if (strcasecmp(s, "ja")==0) {
+	    AB_BANKINFO_SERVICE *sv;
+
+	    sv=AB_BankInfoService_new();
+	    AB_BankInfoService_SetType(sv, "HBCI");
+	    AB_BankInfoService_SetAddress(sv, addr);
+	    AB_BankInfoService_SetPversion(sv, ver);
+	    AB_BankInfoService_SetMode(sv, "RDH10");
+	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+	  } /* if RDH10 */
 
 	  s=GWEN_DB_GetCharValue(dbT, "pinTanUrl", 0, 0);
 	  if (s && *s) {
