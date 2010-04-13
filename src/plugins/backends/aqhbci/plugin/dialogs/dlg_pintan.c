@@ -18,6 +18,11 @@
 #include "i18n_l.h"
 
 #include <aqbanking/dlg_selectbankinfo.h>
+#include <aqbanking/user.h>
+#include <aqbanking/banking_be.h>
+
+#include <aqhbci/user.h>
+#include <aqhbci/provider.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -29,7 +34,8 @@
 #define PAGE_BEGIN     0
 #define PAGE_BANK      1
 #define PAGE_USER      2
-#define PAGE_END       3
+#define PAGE_CREATE    3
+#define PAGE_END       4
 
 
 #define DIALOG_MINWIDTH  400
@@ -421,6 +427,15 @@ void AH_PinTanDialog_Init(GWEN_DIALOG *dlg) {
 				   "case with your bank.</p>"),
 			      0);
 
+  /* setup creation page */
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "wiz_create_label",
+			      GWEN_DialogProperty_Title,
+			      0,
+			      I18N("<p>We are now ready to create the user and retrieve the account list.</p>"
+				   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"),
+			      0);
+
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
 			      "wiz_end_label",
@@ -584,12 +599,220 @@ int AH_PinTanDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
+  case PAGE_CREATE:
+    if (!forwards)
+      GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Next"), 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
+    return GWEN_DialogEvent_ResultHandled;
+
   case PAGE_END:
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
+    GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Finish"), 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_abort_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
 
   default:
     return GWEN_DialogEvent_ResultHandled;
   }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
+  AH_PINTAN_DIALOG *xdlg;
+  AB_USER *u;
+  GWEN_URL *url;
+  int rv;
+  uint32_t pid;
+  AB_IMEXPORTER_CONTEXT *ctx;
+  AB_PROVIDER *pro;
+
+  DBG_ERROR(0, "Doit");
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  pro=AB_Banking_GetProvider(xdlg->banking, "aqhbci");
+  if (pro==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
+    // TODO: show error message
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  DBG_ERROR(0, "Creating user");
+  u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
+  if (u==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
+    // TODO: show error message
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  /* generic setup */
+  AB_User_SetUserName(u, xdlg->userName);
+  AB_User_SetUserId(u, xdlg->userId);
+  if (xdlg->customerId && *(xdlg->customerId))
+    AB_User_SetCustomerId(u, xdlg->customerId);
+  else
+    AB_User_SetCustomerId(u, xdlg->userId);
+  AB_User_SetCountry(u, "de");
+
+  AB_User_SetBankCode(u, xdlg->bankCode);
+
+  /* HBCI setup */
+  AH_User_SetTokenType(u, "pintan");
+  AH_User_SetCryptMode(u, AH_CryptMode_Pintan);
+
+  url=GWEN_Url_fromString(xdlg->url);
+  assert(url);
+  GWEN_Url_SetProtocol(url, "https");
+  if (GWEN_Url_GetPort(url)==0)
+    GWEN_Url_SetPort(url, 443);
+  AH_User_SetServerUrl(u, url);
+  GWEN_Url_free(url);
+  AH_User_SetHbciVersion(u, xdlg->hbciVersion);
+  AH_User_SetHttpVMajor(u, xdlg->httpVMajor);
+  AH_User_SetHttpVMinor(u, xdlg->httpVMinor);
+
+  DBG_ERROR(0, "Adding user");
+  rv=AB_Banking_AddUser(xdlg->banking, u);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
+    AB_User_free(u);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Setting Up PIN/TAN User"),
+			     I18N("The system id and a list of accounts will be retrieved."),
+			     3,
+			     0);
+  /* lock new user */
+  DBG_ERROR(0, "Locking user");
+  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u, pid);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Unable to lock users"));
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  /* get certificate */
+  DBG_ERROR(0, "Getting certs");
+  GWEN_Gui_ProgressLog(pid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Retrieving SSL certificate"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetCert(pro, u, 0, 1, 0, pid);
+  if (rv<0) {
+    // TODO: retry with SSLv3 if necessary
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Aborted by user."));
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  /* get system id */
+  DBG_ERROR(0, "Getting sysid");
+  GWEN_Gui_ProgressLog(pid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Retrieving system id"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0, pid);
+  if (rv<0) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Aborted by user."));
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  /* get account list */
+  DBG_ERROR(0, "Getting account list");
+  GWEN_Gui_ProgressLog(pid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Retrieving account list"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0, pid);
+  if (rv<0) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Aborted by user."));
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  /* unlock user */
+  DBG_ERROR(0, "Unlocking user");
+  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0, pid);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Could not unlock customer [%s] (%d)",
+	     AB_User_GetCustomerId(u), rv);
+    GWEN_Gui_ProgressLog2(pid,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Could not unlock user %s (%d)"),
+			  AB_User_GetUserId(u), rv);
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "wiz_end_label",
+			      GWEN_DialogProperty_Title,
+			      0,
+			      I18N("The user has been successfully setup."),
+			      0);
+  GWEN_Gui_ProgressEnd(pid);
+  AH_PinTanDialog_EnterPage(dlg, PAGE_END, 1);
 
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -605,8 +828,10 @@ int AH_PinTanDialog_Next(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
-
-  if (page<PAGE_END) {
+  if (page==PAGE_CREATE) {
+    return AH_PinTanDialog_DoIt(dlg);
+  }
+  else if (page<PAGE_END) {
     page++;
     return AH_PinTanDialog_EnterPage(dlg, page, 1);
   }

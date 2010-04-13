@@ -51,6 +51,11 @@
   
       </widget>
 
+      <!-- action page -->
+      <widget type="vlayout" flags="fillX fillY" >
+        <widget type="label" name="wiz_create_label" flags="fillX fillY justifyLeft" />
+      </widget>
+
       <!-- extro page -->
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="label" name="wiz_end_label" flags="fillX fillY justifyLeft" />
