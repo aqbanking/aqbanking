@@ -404,7 +404,7 @@ void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg) {
     i=DIALOG_MINHEIGHT;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
-  /* read importer column widths */
+  /* read bank column widths */
   for (i=0; i<5; i++) {
     j=GWEN_DB_GetIntValue(dbPrefs, "bank_list_columns", i, -1);
     if (j<LIST_MINCOLWIDTH)
@@ -471,6 +471,23 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "bank_list_sortbycolumn",
 		      -1);
+  for (i=0; i<5; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "listBox", GWEN_DialogProperty_SortDirection, i,
+				 GWEN_DialogSortDirection_None);
+    if (j!=GWEN_DialogSortDirection_None) {
+      GWEN_DB_SetIntValue(dbPrefs,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "bank_list_sortbycolumn",
+			  i);
+      GWEN_DB_SetIntValue(dbPrefs,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "bank_list_sortdir",
+			  (j==GWEN_DialogSortDirection_Up)?1:0);
+      break;
+    }
+  }
 }
 
 
