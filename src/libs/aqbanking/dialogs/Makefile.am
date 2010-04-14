@@ -12,28 +12,33 @@ iheader_HEADERS=\
   dlg_selectbankinfo.h \
   dlg_setup.h \
   dlg_newaccount_be.h \
-  dlg_newuser_be.h
+  dlg_newuser_be.h \
+  dlg_selectbackend.h
 
 noinst_HEADERS=\
   dlg_importer_p.h \
   dlg_selectbankinfo_p.h \
   dlg_setup_p.h \
   dlg_newaccount_p.h \
-  dlg_newuser_p.h
+  dlg_newuser_p.h \
+  dlg_selectbackend_p.h
 
 libabdialogs_la_SOURCES=\
   dlg_importer.c \
   dlg_selectbankinfo.c \
   dlg_setup.c \
   dlg_newaccount.c \
-  dlg_newuser.c
+  dlg_newuser.c \
+  dlg_selectbackend.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/dialogs
 dlgdata_DATA=\
   dlg_importer.dlg \
   dlg_selectbankinfo.dlg \
-  dlg_setup.dlg
+  dlg_setup.dlg \
+  dlg_selectbackend.dlg
+
 
 
 EXTRA_DIST=$(typefiles) $(dlgdata_DATA)
