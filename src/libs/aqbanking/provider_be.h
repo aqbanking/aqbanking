@@ -24,6 +24,7 @@
 
 #include <gwenhywfar/plugin.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/dialog.h>
 
 
 #ifdef __cplusplus
@@ -35,6 +36,13 @@ extern "C" {
  *
  */
 /*@{*/
+
+
+#define AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG     0x00000001
+#define AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG    0x00000002
+#define AB_PROVIDER_FLAGS_HAS_NEWACCOUNT_DIALOG  0x00000004
+#define AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG 0x00000008
+
 
 /**
  * This type is used with @ref AB_Provider_ExtendAccount and
@@ -129,6 +137,15 @@ typedef int (*AB_PROVIDER_UPDATE_FN)(AB_PROVIDER *pro,
                                      uint32_t currentVersion);
 
 
+typedef GWEN_DIALOG* (*AB_PROVIDER_GET_NEWUSER_DIALOG_FN)(AB_PROVIDER *pro);
+
+typedef GWEN_DIALOG* (*AB_PROVIDER_GET_EDITUSER_DIALOG_FN)(AB_PROVIDER *pro, AB_USER *u);
+
+typedef GWEN_DIALOG* (*AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN)(AB_PROVIDER *pro);
+
+typedef GWEN_DIALOG* (*AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
+
+
 /*@}*/
 
 
@@ -144,6 +161,10 @@ AB_PROVIDER *AB_Provider_new(AB_BANKING *ab,
  */
 AQBANKING_API
 int AB_Provider_IsInit(const AB_PROVIDER *pro);
+
+
+AQBANKING_API
+void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
 
 
 /** @name Virtual Functions
@@ -263,6 +284,27 @@ int AB_Provider_Update(AB_PROVIDER *pro,
                        uint32_t currentVersion);
 
 
+/**
+ * Create a dialog which allows to create a new user.
+ * The dialog returned (if any) must be derived via @ref AB_NewUserDialog_new().
+ */
+AQBANKING_API
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro);
+
+AQBANKING_API
+GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
+
+/**
+ * Create a dialog which allows to create a new account.
+ * The dialog returned (if any) must be derived via @ref AB_NewAccountDialog_new().
+ */
+AQBANKING_API
+GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro);
+
+AQBANKING_API
+GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
+
+
 /*@}*/
 
 
@@ -296,6 +338,17 @@ void AB_Provider_SetExtendAccountFn(AB_PROVIDER *pro,
 AQBANKING_API
 void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f);
 
+AQBANKING_API
+void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f);
+
+AQBANKING_API
+void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f);
+
+AQBANKING_API
+void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f);
+
+AQBANKING_API
+void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f);
 
 /*@}*/
 

@@ -93,6 +93,13 @@ void AB_Provider_free(AB_PROVIDER *pro){
 
 
 
+void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl) {
+  assert(pro);
+  pro->flags|=fl;
+}
+
+
+
 void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
   assert(pro);
   pro->plugin=pl;
@@ -301,6 +308,39 @@ void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f) {
 
 
 
+void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f) {
+  assert(pro);
+  pro->getNewUserDialogFn=f;
+}
+
+
+
+void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f) {
+  assert(pro);
+  pro->getEditUserDialogFn=f;
+}
+
+
+
+void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f) {
+  assert(pro);
+  pro->getNewAccountDialogFn=f;
+}
+
+
+
+void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f) {
+  assert(pro);
+  pro->getEditAccountDialogFn=f;
+}
+
+
+
+
+
+
+
+
 int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   assert(pro);
   if (pro->isInit==0) {
@@ -414,6 +454,49 @@ int AB_Provider_Update(AB_PROVIDER *pro,
   DBG_INFO(AQBANKING_LOGDOMAIN, "No update function set");
   return 0;
 }
+
+
+
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro) {
+  assert(pro);
+  if (pro->getNewUserDialogFn)
+    return pro->getNewUserDialogFn(pro);
+  else
+    return NULL;
+}
+
+
+
+GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+  assert(pro);
+  if (pro->getEditUserDialogFn)
+    return pro->getEditUserDialogFn(pro, u);
+  else
+    return NULL;
+}
+
+
+
+GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro) {
+  assert(pro);
+  if (pro->getNewAccountDialogFn)
+    return pro->getNewAccountDialogFn(pro);
+  else
+    return NULL;
+}
+
+
+
+GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+  assert(pro);
+  if (pro->getEditAccountDialogFn)
+    return pro->getEditAccountDialogFn(pro, a);
+  else
+    return NULL;
+}
+
+
+
 
 
 

@@ -44,6 +44,12 @@ struct AB_PROVIDER {
 
   AB_PROVIDER_UPDATE_FN updateFn;
 
+  AB_PROVIDER_GET_NEWUSER_DIALOG_FN getNewUserDialogFn;
+  AB_PROVIDER_GET_EDITUSER_DIALOG_FN getEditUserDialogFn;
+
+  AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN getNewAccountDialogFn;
+  AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN getEditAccountDialogFn;
+
   GWEN_PLUGIN *plugin;
 
   uint32_t usage;
