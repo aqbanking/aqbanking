@@ -37,7 +37,6 @@ noinst_HEADERS=\
  bankinfoplugin_p.h \
  country_l.h \
  country_p.h \
- cryptmanager_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
