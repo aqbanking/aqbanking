@@ -19,6 +19,7 @@
 
 #include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/dlg_selectbackend.h>
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
@@ -632,10 +633,29 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_PROVIDER *pro;
+  const char *s;
+  const char *initialProvider=NULL;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
+
+  s=GWEN_I18N_GetCurrentLocale();
+  if (s && *s) {
+    if (strstr(s, "de_"))
+      initialProvider="aqhbci";
+    else
+      initialProvider="aqofxconnect";
+  }
+  pro=AB_SelectBackend(xdlg->banking,
+		       initialProvider,
+		       I18N("Please select the online banking backend the new "
+			    "user is to be created for."));
+  if (pro==NULL) {
+    DBG_ERROR(0, "No provider selected.");
+    return GWEN_DialogEvent_ResultHandled;
+  }
 
   return GWEN_DialogEvent_ResultNotHandled;
 }
@@ -668,10 +688,29 @@ int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_PROVIDER *pro;
+  const char *s;
+  const char *initialProvider=NULL;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
+
+  s=GWEN_I18N_GetCurrentLocale();
+  if (s && *s) {
+    if (strstr(s, "de_"))
+      initialProvider="aqhbci";
+    else
+      initialProvider="aqofxconnect";
+  }
+  pro=AB_SelectBackend(xdlg->banking,
+		       initialProvider,
+		       I18N("Please select the online banking backend the new "
+			    "account is to be created for."));
+  if (pro==NULL) {
+    DBG_ERROR(0, "No provider selected.");
+    return GWEN_DialogEvent_ResultHandled;
+  }
 
   return GWEN_DialogEvent_ResultNotHandled;
 }
