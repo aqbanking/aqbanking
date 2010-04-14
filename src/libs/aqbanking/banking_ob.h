@@ -42,6 +42,18 @@ extern "C" {
  */
 /*@{*/
 
+/**
+ * Returns a list of currently known users, or NULL if there are no
+ * users. The returned list is owned by the caller, so he is
+ * responsible for freeing it (using @ref AB_User_List2_free).
+ *
+ * Please note that even while the list is owned by the caller the users
+ * in that list are not! Sou you may not free any of those users in the
+ * list (e.g. by calling @ref AB_User_List2_FreeAll).
+ *
+ * @return The list of users, or NULL if there are none.
+ * @param ab pointer to the AB_BANKING object
+ */
 AQBANKING_API
 AB_USER_LIST2 *AB_Banking_GetUsers(const AB_BANKING *ab);
 
