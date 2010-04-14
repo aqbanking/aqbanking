@@ -23,6 +23,7 @@
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
+#include <aqhbci/dlg_pintan_special.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -287,6 +288,8 @@ int AH_PinTanDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
   return xdlg->httpVMinor;
 }
 
+
+
 void AH_PinTanDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
   AH_PINTAN_DIALOG *xdlg;
 
@@ -390,7 +393,7 @@ void AH_PinTanDialog_Init(GWEN_DIALOG *dlg) {
 			      "",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("HBCI Pin/TAN Setup Wizard"),
+			      I18N("HBCI PIN/TAN Setup Wizard"),
 			      0);
 
   /* select first page */
@@ -964,6 +967,45 @@ int AH_PinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
+int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+  AH_PINTAN_DIALOG *xdlg;
+  GWEN_DIALOG *dlg2;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  dlg2=AH_PinTanSpecialDialog_new(xdlg->banking);
+  if (dlg2==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  AH_PinTanSpecialDialog_SetHttpVersion(dlg2, xdlg->httpVMajor, xdlg->httpVMinor);
+  AH_PinTanSpecialDialog_SetHbciVersion(dlg2, xdlg->hbciVersion);
+  AH_PinTanSpecialDialog_SetFlags(dlg2, xdlg->flags);
+
+  rv=GWEN_Gui_ExecDialog(dlg2, 0);
+  if (rv==0) {
+    /* rejected */
+    GWEN_Dialog_free(dlg2);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  else {
+    xdlg->httpVMajor=AH_PinTanSpecialDialog_GetHttpVMajor(dlg2);
+    xdlg->httpVMinor=AH_PinTanSpecialDialog_GetHttpVMinor(dlg2);
+    xdlg->hbciVersion=AH_PinTanSpecialDialog_GetHbciVersion(dlg2);
+    xdlg->flags=AH_PinTanSpecialDialog_GetFlags(dlg2);
+  }
+
+  GWEN_Dialog_free(dlg2);
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_PinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
@@ -974,6 +1016,8 @@ int AH_PinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return AH_PinTanDialog_Next(dlg);
   else if (strcasecmp(sender, "wiz_abort_button")==0)
     return GWEN_DialogEvent_ResultReject;
+  else if (strcasecmp(sender, "wiz_special_button")==0)
+    return AH_PinTanDialog_HandleActivatedSpecial(dlg);
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
   }
