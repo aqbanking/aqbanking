@@ -20,6 +20,7 @@
 #include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>
 #include <aqbanking/dlg_selectbackend.h>
+#include <aqbanking/dlg_editaccount.h>
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
@@ -319,27 +320,10 @@ int AB_SetupDialog_UserChanged(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_AccountChanged(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_ACCOUNT *a;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
-
-  a=AB_SetupDialog_GetCurrentAccount(dlg);
-  if (a) {
-    AB_PROVIDER *pro;
-    uint32_t flags=0;
-
-    pro=AB_Account_GetProvider(a);
-    assert(pro);
-    flags=AB_Provider_GetFlags(pro);
-    GWEN_Dialog_SetIntProperty(dlg, "editAccountButton", GWEN_DialogProperty_Enabled, 0,
-			       (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG)?1:0,
-			       0);
-  }
-  else {
-    GWEN_Dialog_SetIntProperty(dlg, "editAccountButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
-  }
 
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -676,12 +660,39 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_ACCOUNT *a;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  return GWEN_DialogEvent_ResultNotHandled;
+  a=AB_SetupDialog_GetCurrentAccount(dlg);
+  if (a) {
+    AB_PROVIDER *pro;
+    uint32_t flags=0;
+    GWEN_DIALOG *dlg2;
+    int rv;
+
+    pro=AB_Account_GetProvider(a);
+    assert(pro);
+    flags=AB_Provider_GetFlags(pro);
+    if (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG)
+      dlg2=AB_Provider_GetEditAccountDialog(pro, a);
+    else
+      dlg2=AB_EditAccountDialog_new(xdlg->banking, a, 1);
+    if (dlg2==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    rv=GWEN_Gui_ExecDialog(dlg2, 0);
+    if (rv==0) {
+      /* rejected */
+    }
+    GWEN_Dialog_free(dlg2);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
