@@ -784,8 +784,6 @@ int GWENHYWFAR_CB AB_SetupDialog_SignalHandler(GWEN_DIALOG *dlg,
 
   case GWEN_DialogEvent_TypeEnabled:
   case GWEN_DialogEvent_TypeDisabled:
-  case GWEN_DialogEvent_TypeGetImagePath:
-  case GWEN_DialogEvent_TypeGetIconPath:
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
