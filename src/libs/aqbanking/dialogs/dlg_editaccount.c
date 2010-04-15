@@ -26,12 +26,13 @@
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 
 #define DIALOG_MINWIDTH  400
 #define DIALOG_MINHEIGHT 300
 
-#define USER_LIST_MINCOLWIDTH 100
+#define USER_LIST_MINCOLWIDTH 50
 
 
 
@@ -75,6 +76,7 @@ GWEN_DIALOG *AB_EditAccountDialog_new(AB_BANKING *ab, AB_ACCOUNT *a, int doLock)
   GWEN_Buffer_free(fbuf);
 
   xdlg->banking=ab;
+  xdlg->selectedUsers=AB_User_List2_new();
   xdlg->account=a;
   xdlg->doLock=doLock;
 
@@ -300,6 +302,94 @@ int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg,
   GWEN_Buffer_free(tbuf);
 
   return -1;
+}
+
+
+
+const AB_COUNTRY *AB_EditAccountDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
+  AB_EDIT_ACCOUNT_DIALOG *xdlg;
+  int idx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
+  if (idx>=0) {
+    const char *currentText;
+
+    currentText=GWEN_Dialog_GetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, idx, NULL);
+    if (currentText && *currentText && xdlg->countryList) {
+      AB_COUNTRY_CONSTLIST2_ITERATOR *it;
+
+      it=AB_Country_ConstList2_First(xdlg->countryList);
+      if (it) {
+	const AB_COUNTRY *c;
+	GWEN_BUFFER *tbuf;
+
+	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	c=AB_Country_ConstList2Iterator_Data(it);
+	while(c) {
+	  if (createCountryString(c, tbuf)==0 &&
+	      strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
+	    GWEN_Buffer_free(tbuf);
+	    AB_Country_ConstList2Iterator_free(it);
+            return c;
+	  }
+	  GWEN_Buffer_Reset(tbuf);
+	  c=AB_Country_ConstList2Iterator_Next(it);
+	}
+	GWEN_Buffer_free(tbuf);
+	AB_Country_ConstList2Iterator_free(it);
+      }
+    }
+  }
+
+  return NULL;
+}
+
+
+
+const AB_COUNTRY *AB_EditAccountDialog_GetCurrentCurrency(GWEN_DIALOG *dlg) {
+  AB_EDIT_ACCOUNT_DIALOG *xdlg;
+  int idx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
+  if (idx>=0) {
+    const char *currentText;
+
+    currentText=GWEN_Dialog_GetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, idx, NULL);
+    if (currentText && *currentText && xdlg->countryList) {
+      AB_COUNTRY_CONSTLIST2_ITERATOR *it;
+
+      it=AB_Country_ConstList2_First(xdlg->countryList);
+      if (it) {
+	const AB_COUNTRY *c;
+	GWEN_BUFFER *tbuf;
+
+	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	c=AB_Country_ConstList2Iterator_Data(it);
+	while(c) {
+	  if (createCurrencyString(c, tbuf)==0 &&
+	      strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
+	    GWEN_Buffer_free(tbuf);
+	    AB_Country_ConstList2Iterator_free(it);
+            return c;
+	  }
+	  GWEN_Buffer_Reset(tbuf);
+	  c=AB_Country_ConstList2Iterator_Next(it);
+	}
+	GWEN_Buffer_free(tbuf);
+	AB_Country_ConstList2Iterator_free(it);
+      }
+    }
+  }
+
+  return NULL;
 }
 
 
@@ -642,6 +732,143 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
+static void removeAllSpaces(uint8_t *s) {
+  uint8_t *d;
+
+  d=s;
+  while(*s) {
+    if (*s>33)
+      *(d++)=*s;
+    s++;
+  }
+  *d=0;
+}
+
+
+
+int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
+  AB_EDIT_ACCOUNT_DIALOG *xdlg;
+  int i;
+  const char *s;
+  const AB_COUNTRY *c;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  /* fromGui */
+  s=GWEN_Dialog_GetCharProperty(dlg, "accountNumberEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    s=GWEN_Buffer_GetStart(tbuf);
+    if (a)
+      AB_Account_SetAccountNumber(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "accountNameEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    if (a)
+      AB_Account_SetAccountName(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "ibanEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    if (a)
+      AB_Account_SetIBAN(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "ownerNameEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    if (a)
+      AB_Account_SetOwnerName(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* get currency */
+  c=AB_EditAccountDialog_GetCurrentCurrency(dlg);
+  if (c)
+    AB_Account_SetCurrency(a, AB_Country_GetCurrencyCode(c));
+
+  i=GWEN_Dialog_GetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Value, 0, 0);
+  if (a)
+    AB_Account_SetAccountType(a, i);
+
+  /*  get country */
+  c=AB_EditAccountDialog_GetCurrentCountry(dlg);
+  if (c) {
+    if (a)
+      AB_Account_SetCountry(a, AB_Country_GetCode(c));
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    if (a)
+      AB_Account_SetBankCode(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "bankNameEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    if (a)
+      AB_Account_SetBankName(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "bicEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    if (a)
+      AB_Account_SetBIC(a, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  if (a)
+    AB_Account_SetSelectedUsers(a, xdlg->selectedUsers);
+  return 0;
+}
+
+
+
 void AB_EditAccountDialog_Fini(GWEN_DIALOG *dlg) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   int i;
@@ -652,11 +879,6 @@ void AB_EditAccountDialog_Fini(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
-
-  /* fromGui */
-
-
-
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
@@ -831,6 +1053,14 @@ int AB_EditAccountDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 				  0,
 				  (s && *s)?s:"",
 				  0);
+
+      s=AB_BankInfo_GetBic(bi);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "bicEdit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
     }
   }
   GWEN_Dialog_free(dlg2);
@@ -838,6 +1068,63 @@ int AB_EditAccountDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
   return GWEN_DialogEvent_ResultHandled;
 }
 
+
+
+int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
+  AB_EDIT_ACCOUNT_DIALOG *xdlg;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  rv=AB_EditAccountDialog_fromGui(dlg, NULL, 0);
+  if (rv<0) {
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  if (xdlg->doLock) {
+    int rv;
+
+    rv=AB_Banking_BeginExclUseAccount(xdlg->banking, xdlg->account, 0);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+			  I18N("Error"),
+			  I18N("Unable to lock account. Maybe already in use?"),
+			  I18N("Dismiss"),
+			  NULL,
+			  NULL,
+			  0);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+  }
+
+  AB_EditAccountDialog_fromGui(dlg, xdlg->account, 1);
+
+  if (xdlg->doLock) {
+    int rv;
+
+    rv=AB_Banking_EndExclUseAccount(xdlg->banking, xdlg->account, 0, 0);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+			  I18N("Error"),
+			  I18N("Unable to unlock account."),
+			  I18N("Dismiss"),
+			  NULL,
+			  NULL,
+			  0);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+  }
+
+  return GWEN_DialogEvent_ResultAccept;
+}
 
 
 int AB_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
@@ -848,7 +1135,7 @@ int AB_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   else if (strcasecmp(sender, "bankCodeButton")==0)
     return AB_EditAccountDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "okButton")==0)
-    return GWEN_DialogEvent_ResultAccept;
+    return AB_EditAccountDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "helpButton")==0) {

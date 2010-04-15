@@ -102,7 +102,7 @@ static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf) {
   
   /* column 1 */
   uid=AB_User_GetUniqueId(u);
-  snprintf(numbuf, sizeof(numbuf)-1, "%d", uid);
+  snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
@@ -140,7 +140,7 @@ static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf) {
   
   /* column 1 */
   uid=AB_Account_GetUniqueId(a);
-  snprintf(numbuf, sizeof(numbuf)-1, "%d", uid);
+  snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
@@ -369,6 +369,7 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     }
     AB_User_List2_free(ul);
   }
+  GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
 
   /* account list */
   GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
@@ -401,6 +402,7 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     }
     AB_Account_List2_free(al);
   }
+  GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
 
 
   AB_SetupDialog_UserChanged(dlg);
@@ -688,10 +690,12 @@ int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
     rv=GWEN_Gui_ExecDialog(dlg2, 0);
     if (rv==0) {
       /* rejected */
+      GWEN_Dialog_free(dlg2);
+      return GWEN_DialogEvent_ResultHandled;
     }
     GWEN_Dialog_free(dlg2);
+    AB_SetupDialog_Reload(dlg);
   }
-
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -702,6 +706,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
   AB_PROVIDER *pro;
   const char *s;
   const char *initialProvider=NULL;
+  uint32_t flags;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
@@ -721,6 +726,77 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
   if (pro==NULL) {
     DBG_ERROR(0, "No provider selected.");
     return GWEN_DialogEvent_ResultHandled;
+  }
+
+  flags=AB_Provider_GetFlags(pro);
+  if (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG) {
+    GWEN_DIALOG *dlg2;
+    int rv;
+
+    dlg2=AB_Provider_GetNewAccountDialog(pro);
+    if (dlg2==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    rv=GWEN_Gui_ExecDialog(dlg2, 0);
+    if (rv==0) {
+      /* rejected */
+      GWEN_Dialog_free(dlg2);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    GWEN_Dialog_free(dlg2);
+    AB_SetupDialog_Reload(dlg);
+  }
+  else {
+    GWEN_DIALOG *dlg2;
+    AB_ACCOUNT *a;
+    const AB_COUNTRY *c=NULL;
+    const char *s;
+    int rv;
+
+    a=AB_Banking_CreateAccount(xdlg->banking, AB_Provider_GetName(pro));
+    if (a==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "No account created.");
+      AB_Account_free(a);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    s=GWEN_I18N_GetCurrentLocale();
+    if (s && *s) {
+      if (strstr(s, "de_"))
+	c=AB_Banking_FindCountryByCode(xdlg->banking, "de");
+      else if (strstr(s, "us_"))
+	c=AB_Banking_FindCountryByCode(xdlg->banking, "us");
+    }
+    if (c) {
+      AB_Account_SetCountry(a, AB_Country_GetCode(c));
+      AB_Account_SetCurrency(a, AB_Country_GetCurrencyCode(c));
+    }
+
+
+    dlg2=AB_EditAccountDialog_new(xdlg->banking, a, 0);
+    if (dlg2==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
+      AB_Account_free(a);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    rv=GWEN_Gui_ExecDialog(dlg2, 0);
+    if (rv==0) {
+      /* rejected */
+      GWEN_Dialog_free(dlg2);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    GWEN_Dialog_free(dlg2);
+
+    rv=AB_Banking_AddAccount(xdlg->banking, a);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      AB_Account_free(a);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    AB_SetupDialog_Reload(dlg);
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
