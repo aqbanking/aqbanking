@@ -436,6 +436,7 @@ void AB_Account_SetSelectedUsers(AB_ACCOUNT *a, const AB_USER_LIST2 *ul) {
 	char numbuf[16];
 
 	snprintf(numbuf, sizeof(numbuf)-1, "%u", AB_User_GetUniqueId(u));
+        numbuf[sizeof(numbuf)-1]=0;
 	GWEN_StringList_AppendString(a->selectedUserIds, numbuf, 0, 1);
 	u=AB_User_List2Iterator_Next(it);
       }
@@ -521,7 +522,7 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
   }
 
   GWEN_DB_DeleteVar(db, "selectedUser");
-  se=GWEN_StringList_FirstEntry(a->userIds);
+  se=GWEN_StringList_FirstEntry(a->selectedUserIds);
   while(se) {
     const char *s;
 
