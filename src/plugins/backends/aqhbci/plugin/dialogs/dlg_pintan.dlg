@@ -16,7 +16,7 @@
         <widget type="hLine" flags="fillX" />
         <widget type="gridLayout" columns="2" flags="fillX" >
 
-          <widget type="label" name="wiz_bankcode_label" text="Bank Code" flags="fillX fillY justifyLeft" />
+          <widget type="label" text="Bank Code" flags="justifyLeft" />
           <widget type="hlayout" flags="fillX" >
             <widget type="lineEdit" name="wiz_bankcode_edit" flags="fillX" />
             <widget type="pushButton" name="wiz_bankcode_button" text="Select" />
