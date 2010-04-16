@@ -21,6 +21,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/dlg_selectbackend.h>
 #include <aqbanking/dlg_editaccount.h>
+#include <aqbanking/dlg_edituser.h>
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
@@ -291,27 +292,10 @@ AB_ACCOUNT *AB_SetupDialog_GetCurrentAccount(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_UserChanged(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
-
-  u=AB_SetupDialog_GetCurrentUser(dlg);
-  if (u) {
-    AB_PROVIDER *pro;
-    uint32_t flags=0;
-
-    pro=AB_User_GetProvider(u);
-    assert(pro);
-    flags=AB_Provider_GetFlags(pro);
-    GWEN_Dialog_SetIntProperty(dlg, "editUserButton", GWEN_DialogProperty_Enabled, 0,
-			       (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG)?1:0,
-			       0);
-  }
-  else {
-    GWEN_Dialog_SetIntProperty(dlg, "editUserButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
-  }
 
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -607,12 +591,41 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  return GWEN_DialogEvent_ResultNotHandled;
+  u=AB_SetupDialog_GetCurrentUser(dlg);
+  if (u) {
+    AB_PROVIDER *pro;
+    uint32_t flags=0;
+    GWEN_DIALOG *dlg2;
+    int rv;
+
+    pro=AB_User_GetProvider(u);
+    assert(pro);
+    flags=AB_Provider_GetFlags(pro);
+    if (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG)
+      dlg2=AB_Provider_GetEditUserDialog(pro, u);
+    else
+      dlg2=AB_EditUserDialog_new(xdlg->banking, u, 1);
+    if (dlg2==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    rv=GWEN_Gui_ExecDialog(dlg2, 0);
+    if (rv==0) {
+      /* rejected */
+      GWEN_Dialog_free(dlg2);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    GWEN_Dialog_free(dlg2);
+    AB_SetupDialog_Reload(dlg);
+  }
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
