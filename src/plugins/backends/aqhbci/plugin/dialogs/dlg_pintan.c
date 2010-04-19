@@ -110,6 +110,17 @@ void GWENHYWFAR_CB AH_PinTanDialog_FreeData(void *bp, void *p) {
 
 
 
+AB_USER *AH_PinTanDialog_GetUser(const GWEN_DIALOG *dlg) {
+  AH_PINTAN_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->user;
+}
+
+
 const char *AH_PinTanDialog_GetBankCode(const GWEN_DIALOG *dlg) {
   AH_PINTAN_DIALOG *xdlg;
 
@@ -816,6 +827,8 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			      0);
   GWEN_Gui_ProgressEnd(pid);
   AH_PinTanDialog_EnterPage(dlg, PAGE_END, 1);
+
+  xdlg->user=u;
 
   return GWEN_DialogEvent_ResultHandled;
 }

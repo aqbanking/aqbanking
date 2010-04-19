@@ -35,6 +35,7 @@ struct AH_PINTAN_DIALOG {
 
   uint32_t flags;
 
+  AB_USER *user;
 };
 
 

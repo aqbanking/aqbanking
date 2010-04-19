@@ -57,6 +57,7 @@ AQHBCI_API void AH_PinTanDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 AQHBCI_API void AH_PinTanDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);
 AQHBCI_API void AH_PinTanDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl);
 
+AQHBCI_API AB_USER *AH_PinTanDialog_GetUser(const GWEN_DIALOG *dlg);
 
 
 #ifdef __cplusplus

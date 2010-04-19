@@ -9,21 +9,28 @@ noinst_LTLIBRARIES=libaqhbci_dlgs.la
 iheaderdir=${includedir}/aqhbci
 iheader_HEADERS=\
   dlg_pintan.h \
-  dlg_pintan_special.h
+  dlg_pintan_special.h \
+  dlg_newuser.h
 
 noinst_HEADERS=\
   dlg_pintan_p.h \
-  dlg_pintan_special_p.h
+  dlg_pintan_special_p.h \
+  dlg_newuser_p.h
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_pintan.c \
-  dlg_pintan_special.c
+  dlg_pintan_special.c \
+  dlg_newuser.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
 dlgdata_DATA=\
   dlg_pintan.dlg \
-  dlg_pintan_special.dlg
+  dlg_pintan_special.dlg \
+  dlg_newuser.dlg \
+  chipcard.png \
+  keyfile.png \
+  pintan.png
 
 EXTRA_DIST=$(typefiles) $(dlgdata_DATA)
 

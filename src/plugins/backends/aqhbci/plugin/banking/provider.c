@@ -38,6 +38,7 @@
 
 #include "adminjobs_l.h"
 #include <aqhbci/user.h>
+#include <aqhbci/dlg_newuser.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -86,6 +87,9 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetExtendUserFn(pro, AH_Provider_ExtendUser);
   AB_Provider_SetExtendAccountFn(pro, AH_Provider_ExtendAccount);
   AB_Provider_SetUpdateFn(pro, AH_Provider_Update);
+  AB_Provider_SetGetNewUserDialogFn(pro, AH_Provider_GetNewUserDialog);
+
+  AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
 
   GWEN_NEW_OBJECT(AH_PROVIDER, hp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AH_PROVIDER, pro, hp,
@@ -990,6 +994,24 @@ int AH_Provider_Update(AB_PROVIDER *pro,
   return 0;
 }
 
+
+
+GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro) {
+  AH_PROVIDER *hp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  dlg=AH_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  if (dlg==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
 
 
 
