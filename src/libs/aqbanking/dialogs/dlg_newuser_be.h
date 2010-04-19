@@ -26,6 +26,8 @@ extern "C" {
 
 AQBANKING_API GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, const char *dname);
 
+AQBANKING_API AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg);
+
 AQBANKING_API AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg);
 AQBANKING_API void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u);
 
