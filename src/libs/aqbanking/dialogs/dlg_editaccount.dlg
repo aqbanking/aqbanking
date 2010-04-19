@@ -8,22 +8,22 @@
       <widget type="groupBox" text="Account Info" flags="fillX" >
         <widget type="gridLayout" columns="2" flags="fillX" >
         
-          <widget type="label" text="Account Number" />
+          <widget type="label" text="Account Number" flags="noWordWrap" />
           <widget type="lineEdit" name="accountNumberEdit" columns="20" flags="fillX" />
     
-          <widget type="label" text="Account Name" />
+          <widget type="label" text="Account Name" flags="noWordWrap" />
           <widget type="lineEdit" name="accountNameEdit" columns="20" flags="fillX" />
     
-          <widget type="label" text="IBAN" />
+          <widget type="label" text="IBAN" flags="noWordWrap" />
           <widget type="lineEdit" name="ibanEdit" columns="20" flags="fillX" />
     
-          <widget type="label" text="Owner Name" />
+          <widget type="label" text="Owner Name" flags="noWordWrap" />
           <widget type="lineEdit" name="ownerNameEdit" columns="20" flags="fillX" />
     
-          <widget type="label" text="Currency" />
+          <widget type="label" text="Currency" flags="noWordWrap" />
           <widget type="comboBox" name="currencyCombo"  columns="20" flags="fillX readOnly" />
     
-          <widget type="label" text="Account Type" />
+          <widget type="label" text="Account Type" flags="noWordWrap" />
           <widget type="comboBox" name="accountTypeCombo"  columns="20" flags="fillX readOnly" />
   
         </widget>
@@ -37,16 +37,16 @@
           <widget type="label" text="Country" />
           <widget type="comboBox" name="countryCombo"  columns="20" flags="fillX readOnly" />
   
-          <widget type="label" text="Bank Code" />
+          <widget type="label" text="Bank Code" flags="noWordWrap" />
           <widget type="hlayout" flags="fillX" >
             <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
             <widget type="pushButton" name="bankCodeButton" text="Select" />
           </widget>
 
-          <widget type="label" text="Bank Name" />
+          <widget type="label" text="Bank Name" flags="noWordWrap" />
           <widget type="lineEdit" name="bankNameEdit" columns="20" flags="fillX" />
 
-          <widget type="label" text="SWIFT BIC" />
+          <widget type="label" text="SWIFT BIC" flags="noWordWrap" />
           <widget type="lineEdit" name="bicEdit" columns="20" flags="fillX" />
 
         </widget>
