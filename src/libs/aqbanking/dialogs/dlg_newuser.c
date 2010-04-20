@@ -29,6 +29,7 @@ GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, const char *dname) {
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg, xdlg,
 		       AB_NewUserDialog_FreeData);
 
+  xdlg->banking=ab;
   return dlg;
 }
 

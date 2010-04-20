@@ -18,6 +18,7 @@
 #include "i18n_l.h"
 
 #include <aqhbci/dlg_pintan.h>
+#include <aqhbci/dlg_ddvcard.h>
 
 #include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>
@@ -112,7 +113,6 @@ void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetIntProperty(dlg, "createKeyFileButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "importKeyFileButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "initChipcardButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "useChipcardButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
 
 
   /* read width */
@@ -182,11 +182,101 @@ static int AH_NewUserDialog_HandleActivatedPinTan(GWEN_DIALOG *dlg) {
 
 
 
+static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
+  int rv;
+  GWEN_BUFFER *mtypeName;
+  GWEN_BUFFER *mediumName;
+  uint32_t pid;
+  GWEN_CRYPT_TOKEN *ct;
+
+  mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
+  mediumName=GWEN_Buffer_new(0, 64, 0, 1);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Checking Chipcard"),
+			     I18N("Checking chipcard type, please wait..."),
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+
+  rv=AB_Banking_CheckCryptToken(AB_NewUserDialog_GetBanking(dlg),
+				GWEN_Crypt_Token_Device_Card,
+				mtypeName,
+				mediumName,
+				pid);
+  GWEN_Gui_ProgressEnd(pid);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=AB_Banking_GetCryptToken(AB_NewUserDialog_GetBanking(dlg),
+			      GWEN_Buffer_GetStart(mtypeName),
+			      GWEN_Buffer_GetStart(mediumName),
+			      &ct);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "ddvcard")==0) {
+    GWEN_DIALOG *dlg2;
+
+    DBG_ERROR(0, "DDV card");
+    dlg2=AH_DdvCardDialog_new(AB_NewUserDialog_GetBanking(dlg), ct);
+    if (dlg2==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+      GWEN_Buffer_free(mediumName);
+      GWEN_Buffer_free(mtypeName);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    GWEN_Dialog_SetWidgetText(dlg2, "", I18N("Create HBCI/FinTS DDV User"));
+  
+    rv=GWEN_Gui_ExecDialog(dlg2, 0);
+    if (rv==0) {
+      /* rejected */
+      GWEN_Dialog_free(dlg2);
+      AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    AB_NewUserDialog_SetUser(dlg, AH_PinTanDialog_GetUser(dlg2));
+    GWEN_Dialog_free(dlg2);
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+    return GWEN_DialogEvent_ResultAccept;
+  }
+  else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
+    DBG_ERROR(0, "STARCOS RSA card");
+    // TODO
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Card type \"%s\" not yet supported",
+	      GWEN_Buffer_GetStart(mtypeName));
+  }
+  GWEN_Buffer_free(mediumName);
+  GWEN_Buffer_free(mtypeName);
+  AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "abortButton")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "usePinTanButton")==0)
     return AH_NewUserDialog_HandleActivatedPinTan(dlg);
+  else if (strcasecmp(sender, "useChipcardButton")==0)
+    return AH_NewUserDialog_HandleActivatedUseCard(dlg);
   else if (strcasecmp(sender, "helpButton")==0) {
     /* TODO: open u help dialog */
   }
