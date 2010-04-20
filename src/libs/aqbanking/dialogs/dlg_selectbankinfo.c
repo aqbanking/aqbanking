@@ -87,7 +87,7 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
 
 
 
-void AB_SelectBankInfoDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_SelectBankInfoDialog_FreeData(void *bp, void *p) {
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   xdlg=(AB_SELECTBANKINFO_DIALOG*) p;
@@ -555,9 +555,9 @@ int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sen
 
 
 
-int AB_SelectBankInfoDialog_SignalHandler(GWEN_DIALOG *dlg,
-					  GWEN_DIALOG_EVENTTYPE t,
-					  const char *sender) {
+int GWENHYWFAR_CB AB_SelectBankInfoDialog_SignalHandler(GWEN_DIALOG *dlg,
+							GWEN_DIALOG_EVENTTYPE t,
+							const char *sender) {
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   assert(dlg);

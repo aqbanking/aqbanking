@@ -15,6 +15,8 @@ WIN32_OPTIONS=\
 
 MINGW32_PREFIX=/usr/i586-mingw32msvc
 
+WIN32_INSTALL_DIR=/home/martin/install/win32
+
 default: all
 
 dist:
@@ -138,8 +140,8 @@ mp-w32:
 	automake --add-missing
 	autoconf
 	PATH="$(MINGW32_PREFIX)/bin:$(PATH)" \
-	PKG_CONFIG_PATH=/tmp/install/lib/pkgconfig \
-	CFLAGS="$(MY_CFLAGS) -I/tmp/install/include -L/tmp/install/lib" CXXFLAGS="-ggdb -Wall -I/tmp/install/include -L/tmp/install/lib" \
+	PKG_CONFIG_PATH=$(WIN32_INSTALL_DIR)/lib/pkgconfig \
+	CFLAGS="$(MY_CFLAGS) -I$(WIN32_INSTALL_DIR)/include -L$(WIN32_INSTALL_DIR)/lib" CXXFLAGS="-ggdb -Wall -I$(WIN32_INSTALL_DIR)/include -L$(WIN32_INSTALL_DIR)/lib" \
         DLLTOOL=i586-mingw32msvc-dlltool \
 	OBJDUMP=i586-mingw32msvc-objdump \
 	LD=i586-mingw32msvc-ld \
@@ -151,9 +153,9 @@ mp-w32:
 	AS=i586-mingw32msvc-as \
 	RC=i586-mingw32msvc-windres \
 	./configure \
-	  --prefix=/tmp/install $(WIN32_OPTIONS) \
+	  --prefix=$(WIN32_INSTALL_DIR) $(WIN32_OPTIONS) \
 	  --enable-release \
-	  --with-gwen-dir=/tmp/install \
+	  --with-gwen-dir=$(WIN32_INSTALL_DIR) \
 	  --with-frontends="" \
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge
