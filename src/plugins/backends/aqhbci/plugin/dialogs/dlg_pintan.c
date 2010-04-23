@@ -723,7 +723,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get certificate */
-  DBG_ERROR(0, "Getting certs");
+  DBG_ERROR(0, "Getting certs (%08x)", AH_User_GetFlags(u));
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving SSL certificate"));
