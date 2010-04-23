@@ -731,7 +731,7 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0, pid);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0, pid);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
