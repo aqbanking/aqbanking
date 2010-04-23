@@ -45,7 +45,7 @@ BUILT_SOURCES = $(nodist_aqofxconnect_la_SOURCES) $(MOC_FILES) $(nodist_noinst_H
 CLEANFILES = $(BUILT_SOURCES);
 
 sources:
-	for f in $(aqofxconnect_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
+	for f in $(aqofxconnect_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).h); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 

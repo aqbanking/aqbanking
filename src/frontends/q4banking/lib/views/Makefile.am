@@ -38,7 +38,7 @@ BUILT_SOURCES = $(MOC_FILES) $(nodist_libviews_la_SOURCES) $(nodist_iheader_HEAD
 CLEANFILES = $(BUILT_SOURCES)
 
 sources:
-	for f in $(libviews_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
+	for f in $(libviews_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).h); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 

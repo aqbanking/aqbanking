@@ -105,7 +105,7 @@ libdialogs_la_SOURCES= \
 
 
 sources:
-	for f in $(libdialogs_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
+	for f in $(libdialogs_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).h); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 

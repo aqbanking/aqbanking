@@ -41,7 +41,7 @@ CLEANFILES = $(BUILT_SOURCES)
 
 
 sources:
-	for f in $(liblogmanager_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
+	for f in $(liblogmanager_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).h); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
