@@ -64,6 +64,8 @@ mkinstalldirs
 mksymlinks.sh
 po/*.mo
 po/*.qm
+po/package.pot
+po/dialogs.pot
 py-compile
 qtsources
 release
@@ -111,3 +113,4 @@ testlib
 tutorials/qtfrontend
 tutorials/tutorial?
 version.h
+dlgsources
