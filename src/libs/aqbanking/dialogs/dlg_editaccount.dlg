@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dialog type="dialog" name="ab_edit_account" 
+<dialog type="dialog" name="ab_edit_account" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
 

@@ -35,17 +35,24 @@ dlgdata_DATA=\
   dlg_ddvcard_special.dlg \
   dlg_pintan.dlg \
   dlg_pintan_special.dlg \
-  dlg_newuser.dlg \
+  dlg_newuser.dlg
+
+dlgimagedir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
+dlgimage_DATA=\
   chipcard.png \
   keyfile.png \
   pintan.png
 
-EXTRA_DIST=$(typefiles) $(dlgdata_DATA)
+
+EXTRA_DIST=$(typefiles) $(dlgdata_DATA) $(dlgimage_DATA)
 
 
 sources:
 	for f in $(libaqhbci_dlgs_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for f in $(dlgdata_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
