@@ -88,6 +88,15 @@ Set this property with @ref AH_TanMethod_SetMaxActiveLists,
 get it with @ref AH_TanMethod_GetMaxActiveLists
 </p>
 
+@anchor AH_TAN_METHOD_GvVersion
+<h3>GvVersion</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetGvVersion, 
+get it with @ref AH_TanMethod_GetGvVersion
+</p>
+
 */
 #ifdef __cplusplus
 extern "C" {
@@ -230,6 +239,15 @@ AQHBCI_API int AH_TanMethod_GetMaxActiveLists(const AH_TAN_METHOD *el);
 * Set the property @ref AH_TAN_METHOD_MaxActiveLists
 */
 AQHBCI_API void AH_TanMethod_SetMaxActiveLists(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_GvVersion
+*/
+AQHBCI_API int AH_TanMethod_GetGvVersion(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_GvVersion
+*/
+AQHBCI_API void AH_TanMethod_SetGvVersion(AH_TAN_METHOD *el, int d);
 
 
 #ifdef __cplusplus

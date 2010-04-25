@@ -26,6 +26,7 @@
     <elem name="prompt" type="char" ptr="1" />
     <elem name="returnMaxLen" type="int" />
     <elem name="maxActiveLists" type="int" />
+    <elem name="gvVersion" type="int" />
   </type>
   
   

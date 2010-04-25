@@ -70,6 +70,7 @@ AH_TAN_METHOD *AH_TanMethod_dup(const AH_TAN_METHOD *d) {
     st->prompt=strdup(d->prompt);
   st->returnMaxLen=d->returnMaxLen;
   st->maxActiveLists=d->maxActiveLists;
+  st->gvVersion=d->gvVersion;
   return st;
 }
 
@@ -99,6 +100,8 @@ int AH_TanMethod_toDb(const AH_TAN_METHOD *st, GWEN_DB_NODE *db) {
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxActiveLists", st->maxActiveLists))
     return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "gvVersion", st->gvVersion))
+    return -1;
   return 0;
 }
 
@@ -115,6 +118,7 @@ int AH_TanMethod_ReadDb(AH_TAN_METHOD *st, GWEN_DB_NODE *db) {
   AH_TanMethod_SetPrompt(st, GWEN_DB_GetCharValue(db, "prompt", 0, 0));
   AH_TanMethod_SetReturnMaxLen(st, GWEN_DB_GetIntValue(db, "returnMaxLen", 0, 0));
   AH_TanMethod_SetMaxActiveLists(st, GWEN_DB_GetIntValue(db, "maxActiveLists", 0, 0));
+  AH_TanMethod_SetGvVersion(st, GWEN_DB_GetIntValue(db, "gvVersion", 0, 0));
   return 0;
 }
 
@@ -281,6 +285,21 @@ int AH_TanMethod_GetMaxActiveLists(const AH_TAN_METHOD *st) {
 void AH_TanMethod_SetMaxActiveLists(AH_TAN_METHOD *st, int d) {
   assert(st);
   st->maxActiveLists=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetGvVersion(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->gvVersion;
+}
+
+
+void AH_TanMethod_SetGvVersion(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->gvVersion=d;
   st->_modified=1;
 }
 

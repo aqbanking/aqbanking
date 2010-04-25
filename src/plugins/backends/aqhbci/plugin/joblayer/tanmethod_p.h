@@ -22,7 +22,9 @@ struct AH_TAN_METHOD {
   char *prompt;
   int returnMaxLen;
   int maxActiveLists;
+  int gvVersion;
 };
+
 
 
 
