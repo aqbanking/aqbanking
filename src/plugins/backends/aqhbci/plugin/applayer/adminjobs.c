@@ -56,7 +56,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
   int version;
 
   assert(u);
-  j=AH_Job_new("JobGetKeys", u, 0);
+  j=AH_Job_new("JobGetKeys", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetKeys not supported, should not happen");
@@ -353,9 +353,9 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
   assert(u);
 
   if (authKeyInfo)
-    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0);
+    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0, 0);
   else
-    j=AH_Job_new("JobSendKeys", u, 0);
+    j=AH_Job_new("JobSendKeys", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
     return NULL;
@@ -584,7 +584,7 @@ AH_JOB *AH_Job_UpdateBank_new(AB_USER *u) {
   AH_JOB_UPDATEBANK *jd;
 
   assert(u);
-  j=AH_Job_new("JobUpdateBankInfo", u, 0);
+  j=AH_Job_new("JobUpdateBankInfo", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobUpdateBankInfo not supported, should not happen");
     return 0;
@@ -739,7 +739,7 @@ AH_JOB *AH_Job_GetSysId_new(AB_USER *u){
   AH_JOB_GETSYSID *jd;
 
   assert(u);
-  j=AH_Job_new("JobSync", u, 0);
+  j=AH_Job_new("JobSync", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSync not supported, should not happen");
     return 0;
@@ -899,9 +899,9 @@ AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon){
 
   assert(u);
   if (anon)
-    j=AH_Job_new("JobDialogInitAnon", u, 0);
+    j=AH_Job_new("JobDialogInitAnon", u, 0, 0);
   else
-    j=AH_Job_new("JobDialogInit", u, 0);
+    j=AH_Job_new("JobDialogInit", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobTestVersion not supported, should not happen");
@@ -1052,7 +1052,7 @@ AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
   AH_JOB_GETSTATUS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_Job_new("JobGetStatus", u, 0);
+  j=AH_Job_new("JobGetStatus", u, 0, 0);
   if (!j)
     return 0;
 
@@ -1167,7 +1167,7 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process) {
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
 
-  j=AH_Job_new("JobTan", u, 0);
+  j=AH_Job_new("JobTan", u, 0, 0);
   if (!j)
     return 0;
 
@@ -1528,7 +1528,7 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
   AH_JOB_GETITANMODES *jd;
 
   assert(u);
-  j=AH_Job_new("JobGetItanModes", u, 0);
+  j=AH_Job_new("JobGetItanModes", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetItanModes not supported, should not happen");
@@ -1661,7 +1661,7 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
   GWEN_DB_NODE *dbArgs;
 
   assert(u);
-  j=AH_Job_new("JobChangePin", u, 0);
+  j=AH_Job_new("JobChangePin", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobChangePin not supported, should not happen");
     return 0;

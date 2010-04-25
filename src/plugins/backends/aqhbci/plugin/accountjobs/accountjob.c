@@ -44,7 +44,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   assert(name);
   assert(u);
   assert(account);
-  j=AH_Job_new(name, u, AB_Account_GetAccountNumber(account));
+  j=AH_Job_new(name, u, AB_Account_GetAccountNumber(account), 0);
   if (!j)
     return 0;
 
