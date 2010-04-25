@@ -473,6 +473,20 @@ void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i) {
 
 
 
+int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg) {
+  assert(dlg);
+  return dlg->tanJobVersion;
+}
+
+
+
+void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i) {
+  assert(dlg);
+  dlg->tanJobVersion=i;
+}
+
+
+
 
 #include "dialog_hbci.c"
 #include "dialog_https.c"

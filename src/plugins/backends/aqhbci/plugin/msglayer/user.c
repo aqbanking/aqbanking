@@ -1598,47 +1598,56 @@ void AH_User_LoadTanMethods(AB_USER *u) {
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  AH_TanMethod_List_Clear(ue->tanMethodDescriptions);
-
+  /* read directly from BPD */
   if (ue->cryptMode==AH_CryptMode_Pintan) {
-    AH_JOB *jTan;
+    GWEN_DB_NODE *db;
+    int rv;
 
-    jTan=AH_Job_Tan_new(u, 1); /* TODO: select correct HKTAN version */
-    if (!jTan) {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
+    AH_TanMethod_List_Clear(ue->tanMethodDescriptions);
+    db=GWEN_DB_Group_new("bpd");
+    rv=AH_Job_SampleBpdVersions("JobTan", u, db);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD for TAN job");
     }
     else {
-      GWEN_DB_NODE *db;
-      GWEN_DB_NODE *dbT;
+      GWEN_DB_NODE *dbV;
 
-      db=AH_Job_GetParams(jTan);
-      assert(db);
+      dbV=GWEN_DB_GetFirstGroup(db);
+      while(dbV) {
+	int version;
 
-      dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
-      if (!dbT) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "No tanmethod found");
-      }
-      while(dbT) {
-	AH_TAN_METHOD *tm;
+	version=atoi(GWEN_DB_GroupName(dbV));
+	if (version>0) {
+	  GWEN_DB_NODE *dbT;
 
-	tm=AH_TanMethod_fromDb(dbT);
-	if (tm) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN,
-		   "Adding TAN method [%s] for",
-		   AH_TanMethod_GetMethodId(tm));
-	  //AH_TanMethod_SetGvVersion(tm, v);
-	  AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
+	  dbT=GWEN_DB_FindFirstGroup(dbV, "tanMethod");
+	  if (!dbT) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "No tan method found");
+	  }
+	  while(dbT) {
+	    AH_TAN_METHOD *tm;
+
+	    tm=AH_TanMethod_fromDb(dbT);
+	    if (tm) {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN,
+			"Adding TAN method [%s] for GV version %d",
+			AH_TanMethod_GetMethodId(tm), version);
+	      AH_TanMethod_SetGvVersion(tm, version);
+	      AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
+	    }
+	    else {
+	      DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
+	      GWEN_DB_Dump(dbT, stderr, 2);
+	    }
+
+	    dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
+	  }
 	}
-	else {
-	  DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
-	  GWEN_DB_Dump(dbT, stderr, 2);
-	}
 
-	dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
+	dbV=GWEN_DB_GetNextGroup(dbV);
       }
-
-      AH_Job_free(jTan);
     }
+    GWEN_DB_Group_free(db);
   }
 }
 

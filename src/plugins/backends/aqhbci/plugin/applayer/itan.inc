@@ -264,7 +264,8 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   assert(u);
 
   /* test create HKTAN job */
-  jTan=AH_Job_Tan_new(u, 0);
+  jTan=AH_Job_Tan_new(u, 0, 0);
+  /* TODO!!!! Select HKTAN version, call AH_Dialog_SetTanJobVersion( */
   if (!jTan) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not (yet?) available");
     AH_Dialog_SetItanMethod(dlg, 0);

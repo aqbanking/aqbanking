@@ -56,7 +56,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   assert(um);
 
   /* prepare HKTAN */
-  jTan=AH_Job_Tan_new(u, 1);
+  jTan=AH_Job_Tan_new(u, 1, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;

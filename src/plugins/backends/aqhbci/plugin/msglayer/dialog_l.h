@@ -85,6 +85,9 @@ uint32_t AH_Dialog_GetItanMethod(const AH_DIALOG *dlg);
 int AH_Dialog_GetItanProcessType(const AH_DIALOG *dlg);
 void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i);
 
+int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg);
+void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i);
+
 int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout);
 
 

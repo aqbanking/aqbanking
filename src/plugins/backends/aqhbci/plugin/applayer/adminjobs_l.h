@@ -151,7 +151,7 @@ AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
  * This is an internal job. It is only used to present a TAN using a
  * two-step mechanism (iTAN).
  */
-AH_JOB *AH_Job_Tan_new(AB_USER *u, int process);
+AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion);
 void AH_Job_Tan_SetHash(AH_JOB *j,
                         const unsigned char *p,
                         unsigned int len);

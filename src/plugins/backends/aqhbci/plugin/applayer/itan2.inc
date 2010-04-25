@@ -48,7 +48,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   assert(u);
 
   /* prepare HKTAN (process type 4) */
-  jTan1=AH_Job_Tan_new(u, 4);
+  jTan1=AH_Job_Tan_new(u, 4, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
@@ -194,7 +194,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* prepare HKTAN (process type 2) */
-  jTan2=AH_Job_Tan_new(u, 2);
+  jTan2=AH_Job_Tan_new(u, 2, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan2) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     AH_Job_free(jTan2);

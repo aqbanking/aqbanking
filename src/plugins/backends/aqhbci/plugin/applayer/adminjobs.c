@@ -1161,13 +1161,13 @@ int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 GWEN_INHERIT(AH_JOB, AH_JOB_TAN);
 
 
-AH_JOB *AH_Job_Tan_new(AB_USER *u, int process) {
+AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   AH_JOB *j;
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
 
-  j=AH_Job_new("JobTan", u, 0, 0);
+  j=AH_Job_new("JobTan", u, 0, jobVersion);
   if (!j)
     return 0;
 
