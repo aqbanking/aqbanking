@@ -110,7 +110,8 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_KEEPALIVE;
     else if (strcasecmp(s, "ignoreUpd")==0)
       fl|=AH_USER_FLAGS_IGNORE_UPD;
-    else if (strcasecmp(s, "forceSsl3")==0)
+    else if (strcasecmp(s, "forceSsl3")==0 ||
+	     strcasecmp(s, "forceSslv3")==0)
       fl|=AH_USER_FLAGS_FORCE_SSL3;
     else if (strcasecmp(s, "noBase64")==0)
       fl|=AH_USER_FLAGS_NO_BASE64;
@@ -1602,39 +1603,40 @@ void AH_User_LoadTanMethods(AB_USER *u) {
   if (ue->cryptMode==AH_CryptMode_Pintan) {
     AH_JOB *jTan;
 
-    jTan=AH_Job_Tan_new(u, 1);
+    jTan=AH_Job_Tan_new(u, 1); /* TODO: select correct HKTAN version */
     if (!jTan) {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     }
     else {
       GWEN_DB_NODE *db;
       GWEN_DB_NODE *dbT;
-  
+
       db=AH_Job_GetParams(jTan);
       assert(db);
-  
+
       dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
       if (!dbT) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "No tanmethod found");
       }
       while(dbT) {
 	AH_TAN_METHOD *tm;
-  
+
 	tm=AH_TanMethod_fromDb(dbT);
 	if (tm) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN,
-		   "Adding TAN method [%s]",
+		   "Adding TAN method [%s] for",
 		   AH_TanMethod_GetMethodId(tm));
+	  //AH_TanMethod_SetGvVersion(tm, v);
 	  AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
 	}
 	else {
 	  DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
 	  GWEN_DB_Dump(dbT, stderr, 2);
 	}
-  
+
 	dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
       }
-  
+
       AH_Job_free(jTan);
     }
   }
