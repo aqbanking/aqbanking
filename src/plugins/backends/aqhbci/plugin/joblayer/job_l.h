@@ -111,7 +111,8 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
 /*@{*/
 AH_JOB *AH_Job_new(const char *name,
                    AB_USER *u,
-                   const char *accountId);
+		   const char *accountId,
+		   int jobVersion);
 void AH_Job_free(AH_JOB *j);
 void AH_Job_Attach(AH_JOB *j);
 /*@}*/
@@ -283,6 +284,15 @@ int AH_Job_GetChallengeClass(const AH_JOB *j);
 void AH_Job_SetChallengeClass(AH_JOB *j, int i);
 
 void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf);
+
+/**
+ * This function adds all BPD groups of the job with the given name and for
+ * which XML descriptions are available. So basically, the user can choose
+ * a job version from the returned list.
+ */
+int AH_Job_SampleBpdVersions(const char *name,
+			     AB_USER *u,
+			     GWEN_DB_NODE *dbResult);
 
 #endif /* AH_JOB_L_H */
 

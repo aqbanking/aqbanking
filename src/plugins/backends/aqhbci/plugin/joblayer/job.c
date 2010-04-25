@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -40,8 +37,9 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 AH_JOB *AH_Job_new(const char *name,
-                   AB_USER *u,
-                   const char *accountId) {
+		   AB_USER *u,
+		   const char *accountId,
+		   int jobVersion) {
   AH_JOB *j;
   GWEN_XMLNODE *node;
   GWEN_XMLNODE *jobNode=0;
@@ -158,32 +156,62 @@ AH_JOB *AH_Job_new(const char *name,
     }
 
     /* check for a job for which we have a BPD */
-    node=0;
-    dbHighestVersion=0;
+    node=NULL;
+    dbHighestVersion=NULL;
     highestVersion=-1;
-    while(jobBPD) {
-      int version;
 
-      /* get version from BPD */
-      version=atoi(GWEN_DB_GroupName(jobBPD));
-      if (version>highestVersion) {
-        /* now get the correct version of the JOB */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
-                 name, version);
-        node=GWEN_MsgEngine_FindNodeByProperty(e,
-                                               "JOB",
-                                               "id",
-                                               version,
-                                               name);
-        if (node) {
-          dbHighestVersion=jobBPD;
-          highestVersion=version;
-          jobNode=node;
-        }
-      }
-      jobBPD=GWEN_DB_GetNextGroup(jobBPD);
-    } /* while */
-    jobBPD=dbHighestVersion;
+    if (jobVersion) {
+      /* a job version has been selected from outside, look for
+       * the BPD of that particular version */
+      while(jobBPD) {
+	int version;
+
+	/* get version from BPD */
+	version=atoi(GWEN_DB_GroupName(jobBPD));
+	if (version==jobVersion) {
+	  /* now get the correct version of the JOB */
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
+		   name, version);
+	  node=GWEN_MsgEngine_FindNodeByProperty(e,
+						 "JOB",
+						 "id",
+						 version,
+						 name);
+	  if (node) {
+	    dbHighestVersion=jobBPD;
+	    highestVersion=version;
+	    jobNode=node;
+	  }
+	}
+	jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+      } /* while */
+      jobBPD=dbHighestVersion;
+    }
+    else {
+      while(jobBPD) {
+	int version;
+
+	/* get version from BPD */
+	version=atoi(GWEN_DB_GroupName(jobBPD));
+	if (version>highestVersion) {
+	  /* now get the correct version of the JOB */
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
+		   name, version);
+	  node=GWEN_MsgEngine_FindNodeByProperty(e,
+						 "JOB",
+						 "id",
+						 version,
+						 name);
+	  if (node) {
+	    dbHighestVersion=jobBPD;
+	    highestVersion=version;
+	    jobNode=node;
+	  }
+	}
+	jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+      } /* while */
+      jobBPD=dbHighestVersion;
+    }
 
     if (!jobBPD) {
       if (needsBPD) {
@@ -351,6 +379,109 @@ AH_JOB *AH_Job_new(const char *name,
   return j;
 }
 
+
+
+int AH_Job_SampleBpdVersions(const char *name,
+			     AB_USER *u,
+			     GWEN_DB_NODE *dbResult) {
+  GWEN_XMLNODE *node;
+  GWEN_XMLNODE *jobNode=0;
+  const char *segCode;
+  const char *paramName;
+  GWEN_DB_NODE *bpdgrp;
+  const AH_BPD *bpd;
+  GWEN_MSGENGINE *e;
+
+  assert(name);
+  assert(u);
+
+  /* get job descriptions */
+  e=AH_User_GetMsgEngine(u);
+  assert(e);
+  GWEN_MsgEngine_Attach(e);
+
+  bpd=AH_User_GetBpd(u);
+
+  if (AH_User_GetHbciVersion(u)==0)
+    GWEN_MsgEngine_SetProtocolVersion(e, 210);
+  else
+    GWEN_MsgEngine_SetProtocolVersion(e, AH_User_GetHbciVersion(u));
+
+  GWEN_MsgEngine_SetMode(e, AH_CryptMode_toString(AH_User_GetCryptMode(u)));
+
+  /* first select any version, we simply need to know the BPD job name */
+  node=GWEN_MsgEngine_FindNodeByProperty(e,
+                                         "JOB",
+                                         "id",
+                                         0,
+                                         name);
+  if (!node) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Job \"%s\" not supported by local XML files", name);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  jobNode=node;
+
+  /* get some properties */
+  paramName=GWEN_XMLNode_GetProperty(node, "params", "");
+  segCode=GWEN_XMLNode_GetProperty(node, "code", "");
+
+  if (bpd) {
+    bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(u));
+    assert(bpdgrp);
+  }
+  else
+    bpdgrp=NULL;
+
+  if (paramName && *paramName) {
+    GWEN_DB_NODE *jobBPD;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" needs BPD job \"%s\"",
+	     name, paramName);
+
+    if (!bpd) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,"No BPD");
+      return GWEN_ERROR_BAD_DATA;
+    }
+
+    /* get BPD job */
+    jobBPD=GWEN_DB_GetGroup(bpdgrp,
+                            GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                            paramName);
+    if (jobBPD) {
+      /* children are one group per version */
+      jobBPD=GWEN_DB_GetFirstGroup(jobBPD);
+    }
+
+    /* check for jobs for which we have a BPD */
+    while(jobBPD) {
+      int version;
+
+      /* get version from BPD */
+      version=atoi(GWEN_DB_GroupName(jobBPD));
+      /* now get the correct version of the JOB */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", name, version);
+      node=GWEN_MsgEngine_FindNodeByProperty(e,
+					     "JOB",
+					     "id",
+					     version,
+					     name);
+      if (node) {
+	GWEN_DB_NODE *cpy;
+
+	cpy=GWEN_DB_Group_dup(jobBPD);
+	GWEN_DB_AddGroup(dbResult, cpy);
+      }
+      jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+    } /* while */
+  } /* if paramName */
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has no BPDs");
+    return 0;
+  }
+
+  return 0;
+}
 
 
 
