@@ -253,112 +253,107 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 				   AH_DIALOG *dlg) {
-  AH_JOB *jTan;
   AB_USER *u;
-  GWEN_DB_NODE *dbParams;
-  GWEN_DB_NODE *dbMethod=0;
-  int fn=0;
-  int process=0;
+  const AH_TAN_METHOD_LIST *tml;
 
   u=cbox->user;
   assert(u);
 
-  /* test create HKTAN job */
-  jTan=AH_Job_Tan_new(u, 0, 0);
-  /* TODO!!!! Select HKTAN version, call AH_Dialog_SetTanJobVersion( */
-  if (!jTan) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Job HKTAN not (yet?) available");
-    AH_Dialog_SetItanMethod(dlg, 0);
-    AH_Dialog_SetItanProcessType(dlg, 0);
+  tml=AH_User_GetTanMethodDescriptions(u);
+  if (tml==NULL || AH_TanMethod_List_GetCount(tml)<1) {
+    /* no or empty list, select 999 */
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
+    GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+			 GWEN_LoggerLevel_Warning,
+			 I18N("There are no tan method descriptions (yet), trying One-Step TAN."));
+    AH_Dialog_SetItanMethod(dlg, 999);
+    AH_Dialog_SetItanProcessType(dlg, 1);
+    AH_Dialog_SetTanJobVersion(dlg, 0);
     return 0;
-  }
-
-  fn=AH_User_GetSelectedTanMethod(u);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
-  dbParams=AH_Job_GetParams(jTan);
-  assert(dbParams);
-
-  if (fn && AH_User_HasTanMethod(u, fn)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching DB node for selected TAN method %d", fn);
-    /* find DB_NODE of selected TanMethod */
-    dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
-    while(dbMethod) {
-      if (GWEN_DB_GetIntValue(dbMethod, "function", 0, 0)==fn) {
-	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-	if (process==1 || process==2) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found DB for selected TAN method %d (process: %d)",
-		   fn, process);
-	  break;
-	}
-	else {
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		     "iTan process type \"%d\" not supported", process);
-	  /* selected mode is not supported, choose another one later */
-	  fn=0;
-	  break;
-	}
-      }
-
-      dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
-    }
-
-    if (fn==0) {
-      GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
-			   GWEN_LoggerLevel_Warning,
-			   I18N("TAN method selected by user is no longer valid,"
-				"please choose another one"));
-    }
-  }
-
-  if (fn==0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0, looking for a usable method");
-    /* find DB_NODE of first supported TanMethod */
-    dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
-    while(dbMethod) {
-      fn=GWEN_DB_GetIntValue(dbMethod, "function", 0, 0);
-      if (AH_User_HasTanMethod(u, fn) ||
-	  AH_User_GetTanMethodCount(u)==0) {
-	process=GWEN_DB_GetIntValue(dbMethod, "process", 0, 0);
-	if (process==1 || process==2)
-	  break;
-	else {
-	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		     "iTan process type \"%d\" not supported", process);
-	}
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "TAN method %d not allowed for this user", fn);
-      }
-
-      dbMethod=GWEN_DB_FindNextGroup(dbMethod, "tanMethod");
-    }
-  }
-
-  if (!dbMethod || !fn) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "No matching iTAN mode found (fn=%d)", fn);
-    AH_Job_free(jTan);
-    return GWEN_ERROR_NOT_FOUND;
   }
   else {
-    const char *s;
-    const char *lm=I18N_NOOP("Selecting iTAN mode \"%s\"");
-    char lbuf[256];
+    const AH_TAN_METHOD *tm=NULL;
+    int fn;
 
-    s=GWEN_DB_GetCharValue(dbMethod, "methodName", 0, 0);
-    if (!s || !*s)
-      s=GWEN_DB_GetCharValue(dbMethod, "methodId", 0, 0);
-    snprintf(lbuf, sizeof(lbuf), I18N(lm), s);
-    lbuf[sizeof(lbuf)-1]=0;
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
-    GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
-			 lbuf);
-    AH_Dialog_SetItanMethod(dlg, fn);
-    AH_Dialog_SetItanProcessType(dlg, process);
+    fn=AH_User_GetSelectedTanMethod(u);
+    if (fn && AH_User_HasTanMethod(u, fn)) {
 
-    AH_Job_free(jTan);
-    return 0;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
+      tm=AH_TanMethod_List_First(tml);
+      while(tm) {
+	int proc;
+
+	if (AH_TanMethod_GetFunction(tm)==fn) {
+	  proc=AH_TanMethod_GetProcess(tm);
+	  if (proc==1 || proc==2) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
+		     fn, proc);
+	    break;
+	  }
+	  else {
+	    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		       "iTan process type \"%d\" not supported", proc);
+	  }
+	}
+
+	tm=AH_TanMethod_List_Next(tm);
+      }
+      if (tm==NULL) {
+	GWEN_Gui_ProgressLog2(AH_Dialog_GetGuiId(dlg),
+			      GWEN_LoggerLevel_Warning,
+			      I18N("TAN method (%d) selected by user is no longer valid,"
+				   "please choose another one"),
+			      fn);
+      }
+    }
+
+    if (tm==NULL) {
+      /* choose a method */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0, looking for a usable method");
+
+      tm=AH_TanMethod_List_First(tml);
+      while(tm) {
+	int proc;
+
+	proc=AH_TanMethod_GetProcess(tm);
+	if (proc==1 || proc==2) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
+		   fn, proc);
+	  break;
+	}
+	else {
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		     "iTan process type \"%d\" not supported", proc);
+	}
+
+	tm=AH_TanMethod_List_Next(tm);
+      }
+    }
+
+    if (tm==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"No matching iTAN mode found (fn=%d)", fn);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+    else {
+      const char *s;
+
+
+      s=AH_TanMethod_GetMethodName(tm);
+      if (!s || !*s)
+	s=AH_TanMethod_GetMethodId(tm);
+
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+      GWEN_Gui_ProgressLog2(0,
+			    GWEN_LoggerLevel_Info,
+			    I18N("Selecting iTAN mode \"%s\" (%d)"),
+			    s?s:I18N("(unnamed)"),
+			    AH_TanMethod_GetFunction(tm));
+      AH_Dialog_SetItanMethod(dlg, AH_TanMethod_GetFunction(tm));
+      AH_Dialog_SetItanProcessType(dlg, AH_TanMethod_GetProcess(tm));
+      AH_Dialog_SetTanJobVersion(dlg, AH_TanMethod_GetGvVersion(tm));
+      return 0;
+    }
   }
 }
 
