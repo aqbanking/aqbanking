@@ -118,7 +118,7 @@ int AB_Gui__HashPair(const char *token,
 
 int AB_Gui_CheckCert(GWEN_GUI *gui,
 		     const GWEN_SSLCERTDESCR *cd,
-		     GWEN_IO_LAYER *io, uint32_t guiid) {
+		     GWEN_SYNCIO *sio, uint32_t guiid) {
   AB_GUI *xgui;
   const char *hash;
   const char *status;
@@ -142,7 +142,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
   if (rv<0) {
     /* fallback */
     DBG_WARN(AQBANKING_LOGDOMAIN, "Could not lock certs db, asking user (%d)", rv);
-    result=xgui->checkCertFn(gui, cd, io, guiid);
+    result=xgui->checkCertFn(gui, cd, sio, guiid);
   }
   else {
     int i;
@@ -200,7 +200,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
       } /* if non-interactive */
 
       if (xgui->checkCertFn) {
-	result=xgui->checkCertFn(gui, cd, io, guiid);
+	result=xgui->checkCertFn(gui, cd, sio, guiid);
 	if (result==0) {
 	  GWEN_DB_SetIntValue(dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			      GWEN_Buffer_GetStart(hbuf), result);

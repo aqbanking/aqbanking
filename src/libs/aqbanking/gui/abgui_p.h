@@ -28,7 +28,7 @@ static int AB_Gui__HashPair(const char *token,
 			    GWEN_BUFFER *buf);
 static int AB_Gui_CheckCert(GWEN_GUI *gui,
 			    const GWEN_SSLCERTDESCR *cd,
-			    GWEN_IO_LAYER *io, uint32_t guiid);
+			    GWEN_SYNCIO *sio, uint32_t guiid);
 
 static int AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
 				   const char *groupName,
