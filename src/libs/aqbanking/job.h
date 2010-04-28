@@ -254,7 +254,7 @@ GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j);
  * by the backend when asked to check for this job.
  */
 AQBANKING_API
-int AB_Job_CheckAvailability(AB_JOB *j, uint32_t guiid);
+int AB_Job_CheckAvailability(AB_JOB *j);
 
 /**
  * Returns the status of this job.

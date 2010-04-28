@@ -33,8 +33,7 @@ struct AH_JOB_GETKEYS {
 };
 
 static void GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p);
-static int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				  uint32_t guiid);
+static int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -68,8 +67,7 @@ struct AH_JOB_GETSYSID {
 };
 
 static void GWENHYWFAR_CB AH_Job_GetSysId_FreeData(void *bp, void *p);
-static int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				   uint32_t guiid);
+static int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetSysId_NextMsg(AH_JOB *j);
 static int AH_Job_GetSysId_ExtractSysId(AH_JOB *j);
 
@@ -89,8 +87,7 @@ struct AH_JOB_UPDATEBANK {
 };
 static void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p);
 
-static int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				     uint32_t guiid);
+static int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -105,8 +102,7 @@ struct AH_JOB_TESTVERSION {
   AH_JOB_TESTVERSION_RESULT versionSupported;
 };
 static void GWENHYWFAR_CB AH_Job_TestVersion_FreeData(void *bp, void *p);
-static int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				      uint32_t guiid);
+static int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -123,12 +119,10 @@ struct AH_JOB_GETSTATUS {
   GWEN_TIME *toDate;
 };
 static void GWENHYWFAR_CB AH_Job_GetStatus_FreeData(void *bp, void *p);
-static int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				    uint32_t guiid);
+static int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 				     AH_JOB_EXCHANGE_MODE m,
-				     AB_IMEXPORTER_CONTEXT *ctx,
-				     uint32_t guiid);
+				     AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -144,12 +138,10 @@ struct AH_JOB_TAN {
   int tanMethod;
 };
 static void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p);
-static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			      uint32_t guiid);
+static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AH_JOB_EXCHANGE_MODE m,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid);
+			       AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -165,8 +157,7 @@ struct AH_JOB_GETITANMODES {
   int modeCount;
 };
 static void GWENHYWFAR_CB AH_Job_GetItanModes_FreeData(void *bp, void *p);
-static int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				       uint32_t guiid);
+static int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

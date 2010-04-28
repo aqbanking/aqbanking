@@ -24,21 +24,17 @@ struct AH_JOB_GETTRANSACTIONS {
   int dummy;
 };
 static void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p);
-static int AH_Job_GetTransactions_Process(AH_JOB *j,
-					  AB_IMEXPORTER_CONTEXT *ctx,
-					  uint32_t guiid);
+static int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 					   AH_JOB_EXCHANGE_MODE m,
-					   AB_IMEXPORTER_CONTEXT *ctx,
-					   uint32_t guiid);
+					   AB_IMEXPORTER_CONTEXT *ctx);
 
 static int
   AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                            AB_IMEXPORTER_ACCOUNTINFO *ai,
                                            const char *docType,
                                            int noted,
-					   GWEN_BUFFER *buf,
-					   uint32_t guiid);
+					   GWEN_BUFFER *buf);
 
 
 

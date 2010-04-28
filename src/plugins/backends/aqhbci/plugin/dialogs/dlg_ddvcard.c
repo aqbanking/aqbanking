@@ -714,7 +714,7 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
   /* lock new user */
   DBG_ERROR(0, "Locking user");
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u, pid);
+  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
@@ -731,9 +731,9 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0, pid);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
@@ -742,7 +742,7 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
@@ -754,7 +754,7 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* unlock user */
   DBG_ERROR(0, "Unlocking user");
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0, pid);
+  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not unlock customer [%s] (%d)",
@@ -763,7 +763,7 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1, pid);
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;

@@ -167,8 +167,7 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      const char *exporterName,
                               const char *profileName,
-			      GWEN_BUFFER *buf,
-			      uint32_t guiid) {
+			      GWEN_BUFFER *buf) {
   AB_IMEXPORTER *ie;
   GWEN_DB_NODE *dbProfile;
   int rv;
@@ -189,7 +188,7 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
     return GWEN_ERROR_NO_DATA;
   }
 
-  rv=AB_ImExporter_ExportToBuffer(ie, ctx, buf, dbProfile, guiid);
+  rv=AB_ImExporter_ExportToBuffer(ie, ctx, buf, dbProfile);
   GWEN_DB_Group_free(dbProfile);
 
   if (rv<0) {
@@ -275,7 +274,7 @@ int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
               if (GWEN_DB_ReadFile(dbT,
                                    GWEN_Buffer_GetStart(nbuf),
                                    GWEN_DB_FLAGS_DEFAULT |
-				   GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+				   GWEN_PATH_FLAGS_CREATE_GROUP)) {
                 DBG_ERROR(AQBANKING_LOGDOMAIN,
                           "Could not read file \"%s\"",
                           GWEN_Buffer_GetStart(nbuf));
@@ -475,9 +474,7 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
 
   rv=GWEN_DB_WriteFile(dbProfile,
 		       GWEN_Buffer_GetStart(buf),
-		       GWEN_DB_FLAGS_DEFAULT,
-		       0,
-		       2000);
+		       GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Error writing users profile (%d)", rv);
@@ -557,8 +554,7 @@ int AB_Banking_ExportWithProfile(AB_BANKING *ab,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 const char *profileName,
 				 const char *profileFile,
-				 GWEN_IO_LAYER *io,
-				 uint32_t guiid) {
+				 GWEN_SYNCIO *sio) {
   AB_IMEXPORTER *exporter;
   GWEN_DB_NODE *dbProfiles;
   GWEN_DB_NODE *dbProfile;
@@ -577,9 +573,7 @@ int AB_Banking_ExportWithProfile(AB_BANKING *ab,
     dbProfiles=GWEN_DB_Group_new("profiles");
     if (GWEN_DB_ReadFile(dbProfiles, profileFile,
                          GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP,
-			 0,
-			 2000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
       DBG_ERROR(0, "Error reading profiles from \"%s\"",
                 profileFile);
       return GWEN_ERROR_GENERIC;
@@ -610,9 +604,8 @@ int AB_Banking_ExportWithProfile(AB_BANKING *ab,
 
   rv=AB_ImExporter_Export(exporter,
 			  ctx,
-			  io,
-			  dbProfile,
-			  guiid);
+			  sio,
+			  dbProfile);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbProfiles);
@@ -630,8 +623,7 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 const char *profileName,
 				 const char *profileFile,
-				 GWEN_IO_LAYER *io,
-				 uint32_t guiid) {
+				 GWEN_SYNCIO *sio) {
   AB_IMEXPORTER *importer;
   GWEN_DB_NODE *dbProfiles;
   GWEN_DB_NODE *dbProfile;
@@ -650,9 +642,7 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
     dbProfiles=GWEN_DB_Group_new("profiles");
     if (GWEN_DB_ReadFile(dbProfiles, profileFile,
                          GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP,
-			 0,
-			 2000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
       DBG_ERROR(0, "Error reading profiles from \"%s\"",
                 profileFile);
       return GWEN_ERROR_GENERIC;
@@ -683,9 +673,8 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 
   rv=AB_ImExporter_Import(importer,
 			  ctx,
-			  io,
-			  dbProfile,
-			  guiid);
+			  sio,
+			  dbProfile);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbProfiles);
@@ -703,54 +692,38 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
 				     AB_IMEXPORTER_CONTEXT *ctx,
 				     const char *profileName,
 				     const char *profileFile,
-                                     const char *inputFileName,
-				     uint32_t guiid) {
-  int fd;
+                                     const char *inputFileName) {
+  GWEN_SYNCIO *sio;
+  int rv;
 
-  fd=open(inputFileName, O_RDONLY);
-  if (fd<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Error opening input file [%s]: %s",
-	      inputFileName, strerror(errno));
-    return GWEN_ERROR_IO;
+  sio=GWEN_SyncIo_File_new(inputFileName, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
-  else {
-    GWEN_IO_LAYER *io;
-    int rv;
-  
-    io=GWEN_Io_LayerFile_new(fd, -1);
-    GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_FLAGS_DONTCLOSE);
-    rv=GWEN_Io_Manager_RegisterLayer(io);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      close(fd);
-      return rv;
-    }
-    rv=AB_Banking_ImportWithProfile(ab,
-				    importerName,
-				    ctx,
-				    profileName,
-				    profileFile,
-				    io,
-				    guiid);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      close(fd);
-      return rv;
-    }
 
-    rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 2000);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      close(fd);
-      return rv;
-    }
-
-    return 0;
+  rv=AB_Banking_ImportWithProfile(ab,
+				  importerName,
+				  ctx,
+				  profileName,
+				  profileFile,
+				  sio);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
+
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return 0;
 }
+
+
 
 

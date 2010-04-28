@@ -99,8 +99,7 @@ void GWENHYWFAR_CB AH_Job_EuTransfer_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_EuTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			      uint32_t guiid){
+int AH_Job_EuTransfer_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_EUTRANSFER *aj;
 
   assert(j);
@@ -362,8 +361,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AH_JOB_EXCHANGE_MODE m,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid){
+			       AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_EUTRANSFER *aj;
   AB_BANKING *ab;
 

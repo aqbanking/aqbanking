@@ -67,8 +67,7 @@ int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg) {
 
 
 int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
-			      const char *buf, int blen,
-			      int timeout) {
+			      const char *buf, int blen) {
   int rv;
 
   rv=GWEN_Io_Layer_WriteBytes(dlg->ioLayer,
@@ -76,8 +75,8 @@ int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
 			      blen,
 			      GWEN_IO_REQUEST_FLAGS_WRITEALL |
 			      GWEN_IO_REQUEST_FLAGS_FLUSH,
-			      dlg->guiid,
-			      timeout);
+			      0,
+			      10000);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -88,7 +87,7 @@ int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
 
 
 
-int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
+int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
   AH_MSG *msg;
   GWEN_BUFFER *tbuf;
   int rv;
@@ -104,8 +103,8 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
 			     (uint8_t*)header,
 			     sizeof(header)-1,
 			     GWEN_IO_REQUEST_FLAGS_READALL,
-			     dlg->guiid,
-			     timeout);
+			     0,
+			     30000);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading header (%d)", rv);
     return rv;
@@ -161,8 +160,8 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
 			     (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
                              msgSize,
 			     GWEN_IO_REQUEST_FLAGS_READALL,
-			     dlg->guiid,
-			     timeout);
+			     0,
+			     30000);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading message (%d)", rv);
     GWEN_Buffer_free(tbuf);

@@ -25,8 +25,7 @@
 
 
 int AO_Provider__SetAddress(GWEN_INETADDRESS *addr,
-			    const char *bankAddr,
-			    uint32_t guiid) {
+			    const char *bankAddr) {
   int err;
 
   err=GWEN_InetAddr_SetAddress(addr, bankAddr);
@@ -37,7 +36,7 @@ int AO_Provider__SetAddress(GWEN_INETADDRESS *addr,
 	     I18N("Resolving hostname \"%s\" ..."),
 	     bankAddr);
     dbgbuf[sizeof(dbgbuf)-1]=0;
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 dbgbuf);
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Resolving hostname \"%s\"",
@@ -48,7 +47,7 @@ int AO_Provider__SetAddress(GWEN_INETADDRESS *addr,
 	       I18N("Unknown hostname \"%s\""),
 	       bankAddr);
       dbgbuf[sizeof(dbgbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   dbgbuf);
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
@@ -71,7 +70,7 @@ int AO_Provider__SetAddress(GWEN_INETADDRESS *addr,
 		 I18N("IP address is %s"),
 		 addrBuf);
 	dbgbuf[sizeof(dbgbuf)-1]=0;
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Notice,
 			     dbgbuf);
       }
@@ -85,8 +84,7 @@ int AO_Provider__SetAddress(GWEN_INETADDRESS *addr,
 
 int AO_Provider_CreateConnection(AB_PROVIDER *pro,
 				 AB_USER *u,
-				 GWEN_IO_LAYER **pIo,
-				 uint32_t guiid) {
+				 GWEN_IO_LAYER **pIo) {
   int port;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
@@ -103,7 +101,7 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
   if (s==NULL) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Missing server address");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                          I18N("Missing server address"));
     return GWEN_ERROR_INVALID;
   }
@@ -111,7 +109,7 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
   if (!url) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Bad server address [%s]", s);
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 I18N("Bad server address"));
     return GWEN_ERROR_INVALID;
   }
@@ -123,7 +121,7 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
   addrType=AO_User_GetServerType(u);
 
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  rv=AO_Provider__SetAddress(addr, GWEN_Url_GetServer(url), guiid);
+  rv=AO_Provider__SetAddress(addr, GWEN_Url_GetServer(url));
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_InetAddr_free(addr);
@@ -248,27 +246,26 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
 int AO_Provider_SendPacket(AB_PROVIDER *pro,
                            GWEN_IO_LAYER *io,
-			   const uint8_t *buf, int blen,
-			   uint32_t guiid) {
+			   const uint8_t *buf, int blen) {
   int rv;
 
   /* first connect to server */
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Connecting to bank..."));
-  rv=GWEN_Io_Layer_ConnectRecursively(io, NULL, 0, guiid,
+  rv=GWEN_Io_Layer_ConnectRecursively(io, NULL, 0, 0,
 				      AO_PROVIDER_TIMEOUT_CONNECT);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not connect to server (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					guiid, 2000);
+					0, 2000);
     return rv;
   }
   else {
     GWEN_DB_NODE *db;
 
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
 
@@ -282,12 +279,12 @@ int AO_Provider_SendPacket(AB_PROVIDER *pro,
 				GWEN_IO_REQUEST_FLAGS_PACKETBEGIN |
 				GWEN_IO_REQUEST_FLAGS_PACKETEND |
 				GWEN_IO_REQUEST_FLAGS_FLUSH,
-				guiid, AO_PROVIDER_TIMEOUT_SEND);
+				0, AO_PROVIDER_TIMEOUT_SEND);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not send message (%d)", rv);
       GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  guiid, 2000);
+					  0, 2000);
       return rv;
     }
 
@@ -300,14 +297,13 @@ int AO_Provider_SendPacket(AB_PROVIDER *pro,
 
 int AO_Provider_RecvPacket(AB_PROVIDER *pro,
                            GWEN_IO_LAYER *io,
-			   GWEN_BUFFER *buf,
-			   uint32_t guiid) {
+			   GWEN_BUFFER *buf) {
   int rv;
   GWEN_DB_NODE *db;
   int code;
 
   /* recv packet (this reads the HTTP body) */
-  rv=GWEN_Io_Layer_ReadPacketToBuffer(io, buf, 0, guiid,
+  rv=GWEN_Io_Layer_ReadPacketToBuffer(io, buf, 0, 0,
 				      AO_PROVIDER_TIMEOUT_RECV);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "No message received (%d)", rv);
@@ -341,21 +337,21 @@ int AO_Provider_RecvPacket(AB_PROVIDER *pro,
 	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 		  "Got an error response (%d: %s)",
 		  code, text);
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     GWEN_Buffer_GetStart(lbuf));
         /* set error code */
         code=AB_ERROR_NETWORK;
       }
       else {
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Notice,
 			     GWEN_Buffer_GetStart(lbuf));
       }
       GWEN_Buffer_free(lbuf);
     }
     else {
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Info,
 			   GWEN_Buffer_GetStart(lbuf));
       GWEN_Buffer_free(lbuf);
@@ -363,7 +359,7 @@ int AO_Provider_RecvPacket(AB_PROVIDER *pro,
   }
   else {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No HTTP status code received");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No HTTP status code received"));
     code=AB_ERROR_NETWORK;
@@ -379,8 +375,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
 			       AB_USER *u,
                                const uint8_t *p,
                                unsigned int plen,
-			       GWEN_BUFFER **pRbuf,
-			       uint32_t guiid) {
+			       GWEN_BUFFER **pRbuf) {
   AO_PROVIDER *dp;
   GWEN_IO_LAYER *io;
   GWEN_BUFFER *rbuf;
@@ -395,7 +390,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Saving response in \"/tmp/ofx.log\" ...");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Warning,
 			 I18N("Saving communication log to /tmp/ofx.log"));
 
@@ -419,46 +414,46 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
   }
 
   /* setup connection */
-  rv=AO_Provider_CreateConnection(pro, u, &io, guiid);
+  rv=AO_Provider_CreateConnection(pro, u, &io);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Could not create connection");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not connect to bank server"));
     return rv;
   }
 
   /* send message */
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Sending request..."));
-  rv=AO_Provider_SendPacket(pro, io, p, plen, guiid);
+  rv=AO_Provider_SendPacket(pro, io, p, plen);
   if (rv) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Error %d", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					guiid, 2000);
+					0, 2000);
     GWEN_Io_Layer_free(io);
     return rv;
   }
 
   /* wait for response */
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Waiting for response..."));
   rbuf=GWEN_Buffer_new(0, 1024, 0, 1);
-  rv=AO_Provider_RecvPacket(pro, io, rbuf, guiid);
+  rv=AO_Provider_RecvPacket(pro, io, rbuf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "Error receiving packet (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Network error while waiting for response"));
     GWEN_Buffer_free(rbuf);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					guiid, 2000);
+					0, 2000);
     GWEN_Io_Layer_free(io);
     return rv;
   }
@@ -466,16 +461,16 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
   /* disconnect (ignore result) */
   rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					 0,
-					 guiid, 2000);
+					 0, 2000);
   if (rv) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not disconnect (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(io, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					guiid, 2000);
+					0, 2000);
   }
 
   /* found a response, transform it */
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Parsing response..."));
 

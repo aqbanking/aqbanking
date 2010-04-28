@@ -27,7 +27,7 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_JOB)
 
 AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a);
 
-int AB_Job_Update(AB_JOB *j, uint32_t guiid);
+int AB_Job_Update(AB_JOB *j);
 
 void AB_Job_SetUniqueId(AB_JOB *j, uint32_t jid);
 

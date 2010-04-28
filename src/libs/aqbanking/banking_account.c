@@ -179,7 +179,7 @@ AB_ACCOUNT *AB_Banking_CreateAccount(AB_BANKING *ab, const char *backendName){
     return 0;
   }
 
-  uid=AB_Banking_GetUniqueId(ab, 0);
+  uid=AB_Banking_GetUniqueId(ab);
   assert(uid);
 
   a=AB_Account_new(ab, pro);
@@ -226,8 +226,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				AB_CFG_GROUP_ACCOUNTS,
-				groupName, sizeof(groupName)-1,
-				0);
+				groupName, sizeof(groupName)-1);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to create a unique id for account [%08x] (%d)",
@@ -239,8 +238,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_ACCOUNTS,
-			      groupName,
-			      0);
+			      groupName);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to lock account config [%08x] (%d)",
@@ -252,8 +250,7 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_ACCOUNTS,
 			     groupName,
-			     db,
-			     0);
+			     db);
   GWEN_DB_Group_free(db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -261,16 +258,14 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
 	      AB_Account_GetUniqueId(a), rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_ACCOUNTS,
-			       groupName,
-			       0);
+			       groupName);
     return rv;
   }
 
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_ACCOUNTS,
-				groupName,
-				0);
+				groupName);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to unlock account config [%08x] (%d)",
@@ -310,8 +305,7 @@ int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   if (groupName) {
     rv=GWEN_ConfigMgr_DeleteGroup(ab->configMgr,
 				  AB_CFG_GROUP_ACCOUNTS,
-				  groupName,
-				  0);
+				  groupName);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Unable to delete account config [%08x] (%d)",

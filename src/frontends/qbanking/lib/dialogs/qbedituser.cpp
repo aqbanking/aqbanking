@@ -88,7 +88,7 @@ bool QBEditUser::fromGui(bool doLock) {
   int rv;
 
   if (doLock) {
-    rv=getBanking()->beginExclUseUser(_user, 0);
+    rv=getBanking()->beginExclUseUser(_user);
     if (rv<0) {
       DBG_ERROR(0, "Could not lock user");
       QMessageBox::critical(this,
@@ -102,12 +102,12 @@ bool QBEditUser::fromGui(bool doLock) {
 
   if (!QBCfgTab::fromGui()) {
     if (doLock)
-      getBanking()->endExclUseUser(_user, 1, 0); /* abandon changes */
+      getBanking()->endExclUseUser(_user, 1); /* abandon changes */
     return false;
   }
 
   if (doLock) {
-    rv=getBanking()->endExclUseUser(_user, 0, 0);
+    rv=getBanking()->endExclUseUser(_user, 0);
     if (rv<0) {
       DBG_ERROR(0, "Could not unlock user");
       QMessageBox::critical(this,

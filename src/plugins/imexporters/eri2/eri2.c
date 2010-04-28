@@ -139,9 +139,8 @@ void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p){
 
 int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_IO_LAYER *io,
-			     GWEN_DB_NODE *params,
-			     uint32_t guiid){
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params){
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_DB_NODE *dbData;
   int rv;
@@ -155,7 +154,7 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
   mbuf = GWEN_Buffer_new(0, 1024, 0, 1);
   dbData = GWEN_DB_Group_new("transactions");
 
-  fb=GWEN_FastBuffer_new(512, io, guiid, 2000);
+  fb=GWEN_FastBuffer_new(512, sio);
 
   /* parse into db */
   for (;;) {
@@ -201,18 +200,18 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
   GWEN_Buffer_free(mbuf);
 
   /* import from db */
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       "Transforming data to transactions");
-  rv = AB_ImExporterERI2__ImportFromGroup(ctx, dbData, params, guiid);
+  rv = AB_ImExporterERI2__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbData);
@@ -488,8 +487,7 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
 int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                        GWEN_DB_NODE *db,
-				       GWEN_DB_NODE *dbParams,
-				       uint32_t guiid) {
+				       GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbT;
 
   dbT = GWEN_DB_FindFirstGroup(db, "RecordType1");
@@ -503,7 +501,7 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       t = AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-        GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			     "Error in config file");
         return GWEN_ERROR_GENERIC;
       }
@@ -575,7 +573,7 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   int fd;
   char lbuffer[AB_IMEXPORTER_ERI2_CHECKBUF_LENGTH];
   GWEN_BUFFEREDIO *bio;
@@ -630,9 +628,8 @@ int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t g
 
 int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_IO_LAYER *io,
-			     GWEN_DB_NODE *params,
-			     uint32_t guiid){
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params){
   AB_IMEXPORTER_ERI2 *ieh;
 
   assert(ie);

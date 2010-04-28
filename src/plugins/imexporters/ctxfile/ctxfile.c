@@ -70,9 +70,8 @@ void GWENHYWFAR_CB AH_ImExporterCtxFile_FreeData(void *bp, void *p){
 
 int AH_ImExporterCtxFile_Import(AB_IMEXPORTER *ie,
 				AB_IMEXPORTER_CONTEXT *ctx,
-				GWEN_IO_LAYER *io,
-				GWEN_DB_NODE *params,
-				uint32_t guiid){
+				GWEN_SYNCIO *sio,
+				GWEN_DB_NODE *params){
   AH_IMEXPORTER_CTXFILE *ieh;
   GWEN_DB_NODE *dbData;
   int rv;
@@ -83,11 +82,9 @@ int AH_ImExporterCtxFile_Import(AB_IMEXPORTER *ie,
 
   dbData=GWEN_DB_Group_new("context");
   rv=GWEN_DB_ReadFromIo(dbData,
-			io,
+			sio,
 			GWEN_DB_FLAGS_DEFAULT |
-			GWEN_PATH_FLAGS_CREATE_GROUP,
-			guiid,
-			2000);
+			GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
@@ -97,21 +94,21 @@ int AH_ImExporterCtxFile_Import(AB_IMEXPORTER *ie,
   }
 
   /* transform DB to transactions */
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       "Transforming data to transactions");
 
   rv=AB_ImExporterContext_ReadDb(ctx, dbData);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
@@ -123,7 +120,7 @@ int AH_ImExporterCtxFile_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterCtxFile_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterCtxFile_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   AH_IMEXPORTER_CTXFILE *ieh;
 
   assert(ie);
@@ -138,9 +135,8 @@ int AH_ImExporterCtxFile_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_
 
 int AH_ImExporterCtxFile_Export(AB_IMEXPORTER *ie,
 				AB_IMEXPORTER_CONTEXT *ctx,
-				GWEN_IO_LAYER *io,
-				GWEN_DB_NODE *params,
-				uint32_t guiid){
+				GWEN_SYNCIO *sio,
+				GWEN_DB_NODE *params){
   AH_IMEXPORTER_CTXFILE *ieh;
   GWEN_DB_NODE *dbData;
   int rv;
@@ -155,16 +151,16 @@ int AH_ImExporterCtxFile_Export(AB_IMEXPORTER *ie,
   rv=AB_ImExporterContext_toDb(ctx, dbData);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error exporting data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=GWEN_DB_WriteToIo(dbData, io, GWEN_DB_FLAGS_DEFAULT, guiid, 2000);
+  rv=GWEN_DB_WriteToIo(dbData, sio, GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error exporting data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;

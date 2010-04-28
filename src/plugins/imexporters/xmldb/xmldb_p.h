@@ -39,19 +39,17 @@ void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p);
 static
 int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid);
+			      GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params);
 
 static
 int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid);
+                              GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params);
 
 static
-int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
+int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 
 #endif /* AQHBCI_IMEX_XMLDB_P_H */

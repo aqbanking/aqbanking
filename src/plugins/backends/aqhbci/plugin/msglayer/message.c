@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,9 +32,7 @@
 #include <gwenhywfar/padd.h>
 #include <gwenhywfar/gui.h>
 
-#include <gwenhywfar/iolayer.h>
-#include <gwenhywfar/iomanager.h>
-#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
@@ -915,7 +910,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
 
-  guiid=AH_Dialog_GetGuiId(hmsg->dialog);
+  guiid=0;
 
   mode=AH_CryptMode_toString(AH_User_GetCryptMode(u));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Mode is: %s", mode);
@@ -1365,8 +1360,7 @@ void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
-		      GWEN_IO_LAYER *io){
+int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio){
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1397,15 +1391,9 @@ int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
       }
     }
     if (plusCount>=3 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_Io_Layer_WriteChar(io, '*',
-				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				  0,
-				  2000);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "*", 1);
     else
-      err=GWEN_Io_Layer_WriteChar(io, *p,
-				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				  0,
-				  2000);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
     if (err<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
@@ -1420,8 +1408,7 @@ int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
-		      GWEN_IO_LAYER *io){
+int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio){
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1452,15 +1439,9 @@ int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen,
       }
     }
     if (plusCount>=1 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_Io_Layer_WriteChar(io, '*',
-				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				  0,
-				  2000);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "*", 1);
     else
-      err=GWEN_Io_Layer_WriteChar(io, *p,
-				  GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				  0,
-				  2000);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
     if (err<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
@@ -1482,8 +1463,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   GWEN_DB_NODE *db;
   AB_USER *u;
   AH_HBCI *h;
-  int fd;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   unsigned int bsize;
   const char *logFile;
   int vmajor, vminor, vpatchlevel, vbuild;
@@ -1552,60 +1532,42 @@ void AH_Msg_LogMessage(AH_MSG *msg,
     GWEN_DB_Group_free(db);
     return;
   }
-  fd=open(logFile,
-          O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
-  if (fd==-1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "open(%s): %s",
-              logFile, strerror(errno));
-    GWEN_DB_Group_free(db);
-    return;
-  }
 
-  /* create io layer for this file */
-  io=GWEN_Io_LayerFile_new(-1, fd);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_File_new(logFile, GWEN_SyncIo_File_CreationMode_OpenAlways);
+  GWEN_SyncIo_AddFlags(sio,
+		       GWEN_SYNCIO_FILE_FLAGS_READ |
+		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_APPEND);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     GWEN_DB_Group_free(db);
     return;
   }
 
   /* write header */
-  rv=GWEN_DB_WriteToIo(db, io,
+  rv=GWEN_DB_WriteToIo(db, sio,
 		       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
 		       GWEN_DB_FLAGS_DETAILED_GROUPS |
 		       GWEN_DB_FLAGS_USE_COLON|
-		       GWEN_DB_FLAGS_OMIT_TYPES,
-		       0,
-		       2000);
+		       GWEN_DB_FLAGS_OMIT_TYPES);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     GWEN_DB_Group_free(db);
     return;
   }
 
   /* append empty line to separate header from data */
-  rv=GWEN_Io_Layer_WriteChar(io, '\n',
-			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
-			     0,
-			     2000);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     GWEN_DB_Group_free(db);
     return;
   }
@@ -1623,16 +1585,11 @@ void AH_Msg_LogMessage(AH_MSG *msg,
       unsigned int slen;
 
       if (*p=='\'') {
-	rv=GWEN_Io_Layer_WriteChar(io, *p,
-				   GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				   0,
-				   2000);
+	rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
 	if (rv<0) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					      GWEN_IO_REQUEST_FLAGS_FORCE,
-					      0, 2000);
-	  GWEN_Io_Layer_free(io);
+	  GWEN_SyncIo_Disconnect(sio);
+	  GWEN_SyncIo_free(sio);
 	  GWEN_DB_Group_free(db);
 	  return;
 	}
@@ -1644,16 +1601,11 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 	segEnd=strchr(p, '\'');
 	if (segEnd==NULL) {
 	  /* no segment end found, write rest of the buffer */
-	  rv=GWEN_Io_Layer_WriteBytes(io, (const uint8_t*)p, bleft,
-				      GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				      0,
-				      2000);
+	  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)p, bleft);
 	  if (rv<0) {
 	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-						GWEN_IO_REQUEST_FLAGS_FORCE,
-						0, 2000);
-	    GWEN_Io_Layer_free(io);
+	    GWEN_SyncIo_Disconnect(sio);
+	    GWEN_SyncIo_free(sio);
 	    GWEN_DB_Group_free(db);
 	    return;
 	  }
@@ -1665,26 +1617,21 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 	assert(slen);
   
 	if (strncasecmp(p, "HNSHA:", 6)==0)
-	  rv=AH_Msg__AnonHnsha(p, slen, io);
+	  rv=AH_Msg__AnonHnsha(p, slen, sio);
 	else if (strncasecmp(p, "HKPAE:", 6)==0 ||
 		 strncasecmp(p, "DKPAE:", 6)==0)
-	  rv=AH_Msg__AnonHkpae(p, slen, io);
+	  rv=AH_Msg__AnonHkpae(p, slen, sio);
 	/* add more segments with confidential data here */
 	else {
 	  unsigned int l;
 
 	  l=slen;
-	  rv=GWEN_Io_Layer_WriteBytes(io, (const uint8_t*)p, l,
-				      GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				      0,
-				      2000);
+	  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)p, l);
 	}
 	if (rv<0) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					      GWEN_IO_REQUEST_FLAGS_FORCE,
-					      0, 2000);
-	  GWEN_Io_Layer_free(io);
+	  GWEN_SyncIo_Disconnect(sio);
+	  GWEN_SyncIo_free(sio);
 	  GWEN_DB_Group_free(db);
 	  return;
 	}
@@ -1695,50 +1642,35 @@ void AH_Msg_LogMessage(AH_MSG *msg,
     } /* while bleft */
   }
   else {
-    rv=GWEN_Io_Layer_WriteBytes(io,
-				(const uint8_t*)GWEN_Buffer_GetStart(buf),
-				bsize,
-				GWEN_IO_REQUEST_FLAGS_WRITEALL,
-				0,
-				2000);
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)GWEN_Buffer_GetStart(buf), bsize);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  0, 2000);
-      GWEN_Io_Layer_free(io);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
       GWEN_DB_Group_free(db);
       return;
     }
   }
 
   /* add LF for better readability */
-  rv=GWEN_Io_Layer_WriteChar(io, '\n',
-			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
-			     0,
-			     2000);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     GWEN_DB_Group_free(db);
     return;
   }
 
   /* close layer */
-  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 30000);
+  rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_free(sio);
     return;
   }
 
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_free(sio);
 
   GWEN_DB_Group_free(db);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message logged");

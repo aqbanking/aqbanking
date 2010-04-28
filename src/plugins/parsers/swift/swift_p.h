@@ -64,25 +64,19 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 
 
 int AHB_SWIFT_Export(GWEN_DBIO *dbio,
-		     GWEN_IO_LAYER *io,
+		     GWEN_SYNCIO *sio,
 		     GWEN_DB_NODE *data,
 		     GWEN_DB_NODE *cfg,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs);
+		     uint32_t flags);
 
 int AHB_SWIFT_Import(GWEN_DBIO *dbio,
-		     GWEN_IO_LAYER *io,
+		     GWEN_SYNCIO *sio,
 		     GWEN_DB_NODE *data,
 		     GWEN_DB_NODE *cfg,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs);
+		     uint32_t flags);
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
-                                               const char *fname,
-					       uint32_t guiid,
-					       int msecs);
+                                               const char *fname);
 
 GWEN_DBIO *GWEN_DBIO_SWIFT_Factory(GWEN_PLUGIN *pl);
 GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,

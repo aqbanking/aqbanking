@@ -118,8 +118,7 @@ void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			   uint32_t guiid){
+int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_HBCI *h;
   AH_JOB_GETKEYS *jd;
   AB_USER *u;
@@ -145,7 +144,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
     return rv;
   }
 
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (cctx==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "CT context %d not found",
@@ -620,8 +619,7 @@ void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			      uint32_t guiid){
+int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_UPDATEBANK *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -833,8 +831,7 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 
 
 
-int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			    uint32_t guiid){
+int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSYSID *jd;
 
   assert(j);
@@ -938,8 +935,7 @@ void GWENHYWFAR_CB AH_Job_TestVersion_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid){
+int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_TESTVERSION *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -1119,8 +1115,7 @@ void GWENHYWFAR_CB AH_Job_GetStatus_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-			     uint32_t guiid){
+int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSTATUS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetStatus");
@@ -1137,8 +1132,7 @@ int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 
 int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 			      AH_JOB_EXCHANGE_MODE m,
-			      AB_IMEXPORTER_CONTEXT *ctx,
-			      uint32_t guiid){
+			      AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETSTATUS *aj;
 
   DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d), should not happen...", m);
@@ -1205,8 +1199,7 @@ void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-		       uint32_t guiid){
+int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -1295,8 +1288,7 @@ void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i) {
 
 int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
 			AH_JOB_EXCHANGE_MODE m,
-			AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid){
+			AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_TAN *aj;
 
   DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -1565,8 +1557,7 @@ void GWENHYWFAR_CB AH_Job_GetItanModes_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				uint32_t guiid){
+int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETITANMODES *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;

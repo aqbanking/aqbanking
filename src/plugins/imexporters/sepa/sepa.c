@@ -70,10 +70,9 @@ void GWENHYWFAR_CB AH_ImExporterSEPA_FreeData(void *bp, void *p){
 
 
 int AH_ImExporterSEPA_Import(AB_IMEXPORTER *ie,
-                              AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid){
+			     AB_IMEXPORTER_CONTEXT *ctx,
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params){
   AH_IMEXPORTER_SEPA *ieh;
 
   assert(ie);
@@ -88,9 +87,8 @@ int AH_ImExporterSEPA_Import(AB_IMEXPORTER *ie,
 
 int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 			     AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_IO_LAYER *io,
-			     GWEN_DB_NODE *params,
-			     uint32_t guiid){
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params){
   AH_IMEXPORTER_SEPA *ieh;
   const char *s;
 
@@ -100,7 +98,7 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 
   s=GWEN_DB_GetCharValue(params, "type", 0, "ccm");
   if (strcasecmp(s, "ccm")==0) {
-    return AH_ImExporterSEPA_Export_Ccm(ie, ctx, io, params, guiid);
+    return AH_ImExporterSEPA_Export_Ccm(ie, ctx, sio, params);
   }
   else if (strcasecmp(s, "cdm")==0) {
   }
@@ -115,7 +113,7 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   AH_IMEXPORTER_SEPA *ieh;
 
   assert(ie);

@@ -126,7 +126,7 @@ int AH_Msg_SignRdh1(AH_MSG *hmsg,
   assert(e);
   GWEN_MsgEngine_SetMode(e, "rdh");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   uFlags=AH_User_GetFlags(su);
 
@@ -415,7 +415,7 @@ int AH_Msg_EncryptRdh1(AH_MSG *hmsg) {
   assert(e);
   GWEN_MsgEngine_SetMode(e, "rdh");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -680,7 +680,7 @@ int AH_Msg_DecryptRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   assert(e);
   GWEN_MsgEngine_SetMode(e, "rdh");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -880,7 +880,7 @@ int AH_Msg_VerifyRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),

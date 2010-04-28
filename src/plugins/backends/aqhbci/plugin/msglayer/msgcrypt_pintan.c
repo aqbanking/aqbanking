@@ -124,7 +124,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(h),
 			 AH_PROVIDER_NAME,
@@ -246,7 +246,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
   /* handle pin */
   memset(pin, 0, sizeof(pin));
-  rv=AH_User_InputPin(su, pin, 4, sizeof(pin), 0, gid);
+  rv=AH_User_InputPin(su, pin, 4, sizeof(pin), 0);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error getting pin from medium (%d)", rv);
@@ -274,7 +274,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
       memset(tan, 0, sizeof(tan));
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Asking for TAN");
-      rv=AH_User_InputTan(su, tan, 4, sizeof(tan), gid);
+      rv=AH_User_InputTan(su, tan, 4, sizeof(tan));
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
 	GWEN_DB_Group_free(cfg);
@@ -354,7 +354,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -475,7 +475,7 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -554,7 +554,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   /* let's go */
   sigheads=GWEN_List_new();

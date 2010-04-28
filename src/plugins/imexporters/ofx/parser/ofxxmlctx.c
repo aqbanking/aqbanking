@@ -29,16 +29,13 @@ GWEN_INHERIT(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX)
 
 
 
-GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags,
-				    uint32_t guiid,
-				    int timeout,
-				    AB_IMEXPORTER_CONTEXT *ioContext) {
+GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioContext) {
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_XMLCTX *xctx;
   AIO_OFX_GROUP *g;
 
   /* create base object */
-  ctx=GWEN_XmlCtx_new(flags, guiid, timeout);
+  ctx=GWEN_XmlCtx_new(flags);
   assert(ctx);
 
   /* create and assign extension */

@@ -15,7 +15,6 @@
 
 int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
                                    AB_USER *u,
-				   uint32_t guiid,
 				   GWEN_BUFFER *buf) {
   int rv;
 

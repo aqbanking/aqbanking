@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Thu Apr 29 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,7 +18,6 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/iolayer.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -812,12 +808,10 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
 
 
 int AHB_DTAUS__Export(GWEN_DBIO *dbio,
-		      GWEN_IO_LAYER *io,
+		      GWEN_SYNCIO *sio,
                       GWEN_DB_NODE *data,
 		      GWEN_DB_NODE *cfg,
-		      uint32_t flags,
-		      uint32_t guiid,
-		      int msecs){
+		      uint32_t flags){
   AB_VALUE *sumEUR;
   AB_VALUE *sumDEM;
   AB_VALUE *sumBankCodes;
@@ -829,7 +823,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   int isEuro;
   const uint8_t *p;
   uint32_t size;
-  uint32_t bytesWritten;
+  int rv;
 
   isDebitNote=(strcasecmp(GWEN_DB_GetCharValue(cfg, "type", 0, "transfer"),
                           "debitnote")==0);
@@ -907,29 +901,13 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   /* DTAUS finished, write it */
   p=(const uint8_t*)GWEN_Buffer_GetStart(dst);
   size=GWEN_Buffer_GetUsedBytes(dst);
-  bytesWritten=0;
-  while(bytesWritten<size) {
-    int err;
-    unsigned int bsize;
-
-    bsize=size-bytesWritten;
-    err=GWEN_Io_Layer_WriteBytes(io, p, bsize,
-				 GWEN_IO_REQUEST_FLAGS_WRITEALL |
-				 GWEN_IO_REQUEST_FLAGS_FLUSH,
-				 guiid, msecs);
-    if (err<0) {
-      DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-      GWEN_Buffer_free(dst);
-      return err;
-    }
-    if (bsize==0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Broken pipe");
-      GWEN_Buffer_free(dst);
-      return GWEN_ERROR_IO;
-    }
-    p+=bsize;
-    bytesWritten+=bsize;
-  } /* while */
+  rv=GWEN_SyncIo_WriteForced(sio, p, size);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Broken pipe");
+    GWEN_Buffer_free(dst);
+    return GWEN_ERROR_IO;
+  }
+  GWEN_Buffer_free(dst);
 
   return 0;
 }

@@ -218,8 +218,7 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro) {
 int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 				GWEN_CRYPT_TOKEN_DEVICE devt,
 				GWEN_BUFFER *typeName,
-				GWEN_BUFFER *tokenName,
-				uint32_t guiid) {
+				GWEN_BUFFER *tokenName) {
   GWEN_PLUGIN_MANAGER *pm;
   int rv;
 
@@ -235,7 +234,7 @@ int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 					       devt,
 					       typeName,
 					       tokenName,
-					       guiid);
+					       0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -246,7 +245,7 @@ int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 
 
 
-int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   AH_PROVIDER *hp;
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
@@ -449,7 +448,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   }
 
   /* exchange parameters */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, NULL, guiid);
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, NULL);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
     AH_Job_free(mj);
@@ -465,7 +464,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 
 
 
-int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   AH_PROVIDER *hp;
   GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
@@ -484,7 +483,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   assert(hp);
 
   if (hp->outbox==0)
-    hp->outbox=AH_Outbox_new(hp->hbci, guiid);
+    hp->outbox=AH_Outbox_new(hp->hbci);
   assert(hp->outbox);
 
   dbJob=AB_Job_GetProviderData(j, pro);
@@ -691,7 +690,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
     if (sigs) {
       if (sigs>1) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("ERROR: Multiple signatures not "
 				  "yet supported"));
@@ -711,7 +710,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
   AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
 
   /* exchange arguments */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL, guiid);
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
     AH_Job_free(mj);
@@ -753,8 +752,7 @@ AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
 
 
 
-int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid){
+int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AH_PROVIDER *hp;
   int rv;
   AB_JOB_LIST2_ITERATOR *jit;
@@ -771,7 +769,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
     return 0;
   }
 
-  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, 1, guiid);
+  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, 1);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox.");
     rv=GWEN_ERROR_GENERIC;
@@ -780,7 +778,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
   /* fill gaps */
   AB_Banking_FillGapsInImExporterContext(AB_Provider_GetBanking(pro), ctx);
 
-  mjl=AH_Outbox_GetFinishedJobs(hp->outbox, guiid);
+  mjl=AH_Outbox_GetFinishedJobs(hp->outbox);
   assert(mjl);
   /* copy job results to Banking-job, set status etc */
   jit=AB_Job_List2_First(hp->bankingJobs);
@@ -858,7 +856,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
       }
 
       /* exchange results */
-      rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults, ctx, guiid);
+      rv=AH_Job_Exchange(mj, bj, AH_Job_ExchangeModeResults, ctx);
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging results");
         AB_Job_SetStatus(bj, AB_Job_StatusError);
@@ -1029,8 +1027,7 @@ AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro){
 
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
-			    int withProgress, int nounmount, int doLock,
-			    uint32_t guiid) {
+			    int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1058,14 +1055,14 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
@@ -1074,16 +1071,16 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
     // TODO: show errors
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
   else {
-    rv=AH_Job_Commit(job, doLock, guiid);
+    rv=AH_Job_Commit(job, doLock);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -1094,13 +1091,13 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   if (AB_Account_List2_GetSize(accs)==0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No accounts found");
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NO_DATA;
   }
 
   AH_Outbox_free(ob);
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
   return 0;
 }
 
@@ -1108,8 +1105,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 int withProgress, int nounmount, int doLock,
-			 uint32_t guiid) {
+			 int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1139,44 +1135,44 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     job=AH_Job_GetSysId_new(u);
     if (!job) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
       return GWEN_ERROR_GENERIC;
     }
     AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-    ob=AH_Outbox_new(h, guiid);
+    ob=AH_Outbox_new(h);
     AH_Outbox_AddJob(ob, job);
 
-    rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock, guiid);
+    rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
 
     if (AH_Job_HasErrors(job)) {
       if (AH_Job_HasItanResult(job)) {
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Adjusting to iTAN modes of the server"));
-	rv=AH_Job_Commit(job, doLock, guiid);
+	rv=AH_Job_Commit(job, doLock);
         if (rv) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
           AH_Outbox_free(ob);
           if (!nounmount)
-	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
           return rv;
         }
 
-	rv=GWEN_Gui_ProgressLog(guiid,
+	rv=GWEN_Gui_ProgressLog(0,
 				GWEN_LoggerLevel_Error,
 				I18N("Retrying to get system id."));
 	if (rv) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in progress log, maybe user aborted?");
 	  AH_Outbox_free(ob);
 	  if (!nounmount)
-	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 	  return rv;
 	}
       }
@@ -1185,17 +1181,17 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
         // TODO: show errors
         AH_Outbox_free(ob);
         if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
         return GWEN_ERROR_GENERIC;
       }
     }
     else {
-      rv=AH_Job_Commit(job, doLock, guiid);
+      rv=AH_Job_Commit(job, doLock);
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
         AH_Outbox_free(ob);
         if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
         return rv;
       }
       break;
@@ -1204,23 +1200,23 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     AH_Outbox_free(ob);
     if (i>1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Tried too often, giving up");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Could not get system id after multiple trials"));
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return GWEN_ERROR_GENERIC;
     }
   }
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)\n", rv);
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -1229,10 +1225,10 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   if (!s) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id");
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -1240,7 +1236,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+    rv=AB_Banking_EndExclUseUser(ab, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not unlock customer [%s] (%d)",
@@ -1249,13 +1245,13 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 	       I18N("Could not unlock user %s (%d)"),
 	       AB_User_GetUserId(u), rv);
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -1263,7 +1259,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_free(ob);
 
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -1272,8 +1268,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      int withProgress, int nounmount, int doLock,
-			      uint32_t guiid) {
+			      int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1302,57 +1297,57 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     return GWEN_ERROR_GENERIC;
   }
 
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not execute outbox."));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt key received");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No crypt key received."));
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
   else {
-    rv=AH_Job_Commit(job, doLock, guiid);
+    rv=AH_Job_Commit(job, doLock);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Could not commit result"));
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
 
   if (AH_Job_GetKeys_GetSignKeyInfo(job)==0) {
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Bank does not use a sign key."));
   }
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)\n", rv);
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -1365,7 +1360,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 
       snprintf(tbuf, sizeof(tbuf)-1, I18N("Setting peer ID to \"%s\")"), s);
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   tbuf);
       AH_User_SetPeerId(u, s);
@@ -1379,44 +1374,44 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 0);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 0);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 0);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
   else {
@@ -1430,17 +1425,17 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
       rv=GWEN_Crypt_Token_SetKeyInfo(ct,
 				     kid,
 				     ki,
-				     guiid);
+				     0);
       if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving sign key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+	  AB_Banking_EndExclUseUser(ab, u, 0);
 	AH_Outbox_free(ob);
 	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Sign key saved");
@@ -1453,17 +1448,17 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
       rv=GWEN_Crypt_Token_SetKeyInfo(ct,
                                      kid,
 				     ki,
-				     guiid);
+				     0);
       if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving crypt key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+	  AB_Banking_EndExclUseUser(ab, u, 0);
 	AH_Outbox_free(ob);
 	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Crypt key saved");
@@ -1476,42 +1471,42 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
       rv=GWEN_Crypt_Token_SetKeyInfo(ct,
 				     kid,
 				     ki,
-				     guiid);
+				     0);
       if (rv) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving auth key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+	  AB_Banking_EndExclUseUser(ab, u, 0);
 	AH_Outbox_free(ob);
 	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Auth key saved");
     }
   }
 
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Keys saved."));
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+    rv=AB_Banking_EndExclUseUser(ab, u, 0);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not unlock user (%d)\n", rv);
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
 
   AH_Outbox_free(ob);
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -1521,8 +1516,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      int withAuthKey,
-			      int withProgress, int nounmount, int doLock,
-			      uint32_t guiid) {
+			      int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1556,35 +1550,35 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -1596,14 +1590,14 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
                                             GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					    guiid);
+					    0);
     if (signKeyInfo==NULL) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Sign key info not found on crypt token");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Sign key info not found on crypt token"));
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1619,14 +1613,14 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					     guiid);
+					     0);
     if (cryptKeyInfo==NULL) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key info not found on crypt token");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Crypt key info not found on crypt token"));
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1643,14 +1637,14 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 					      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					      guiid);
+					      0);
       if (authKeyInfo==NULL) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Auth key info not found on crypt token");
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Auth key info not found on crypt token"));
 	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 	return GWEN_ERROR_NOT_FOUND;
       }
     }
@@ -1664,62 +1658,62 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Job not supported, should not happen"));
     if (!nounmount && mounted)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
 
   /* enqueue job */
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
   /* execute queue */
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, 0, doLock, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, 0, doLock);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not execute outbox."));
     AH_Outbox_free(ob);
     if (!nounmount && mounted)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* check result */
   if (AH_Job_HasErrors(job)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Job contains errors."));
     AH_Outbox_free(ob);
     if (!nounmount && mounted)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
   else {
-    rv=AH_Job_Commit(job, doLock, guiid);
+    rv=AH_Job_Commit(job, doLock);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Could not commit result"));
       AH_Outbox_free(ob);
       if (!nounmount && mounted)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
 
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Keys sent"));
 
   AH_Outbox_free(ob);
   if (!nounmount && mounted)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -1728,17 +1722,15 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
 			     AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock,
-			     uint32_t guiid) {
-  return AH_Provider_SendUserKeys2(pro, u, ctx, 0, withProgress, nounmount, doLock, guiid);
+			     int withProgress, int nounmount, int doLock) {
+  return AH_Provider_SendUserKeys2(pro, u, ctx, 0, withProgress, nounmount, doLock);
 }
 
 
 
 int AH_Provider_GetCert(AB_PROVIDER *pro,
 			AB_USER *u,
-			int withProgress, int nounmount, int doLock,
-			uint32_t guiid) {
+			int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   int rv;
@@ -1765,12 +1757,12 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
 			     I18N("We are now asking the server for its "
 				  "SSL certificate"),
 			     GWEN_GUI_PROGRESS_NONE,
-			     guiid);
+			     0);
   /* first try */
-  dialog=AH_Dialog_new(u, pid);
+  dialog=AH_Dialog_new(u);
   assert(dialog);
   rv=AH_Dialog_TestServer_Https(dialog, 30000);
-  AH_Dialog_Disconnect(dialog, 2);
+  AH_Dialog_Disconnect(dialog);
   AH_Dialog_free(dialog);
 
   if (rv) {
@@ -1794,8 +1786,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
 
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock,
-			     uint32_t guiid) {
+			     int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1818,7 +1809,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   assert(h);
 
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
@@ -1827,7 +1818,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 	       I18N("Could not lock user %s (%d)"),
 	       AB_User_GetUserId(u), rv);
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
       return rv;
@@ -1837,36 +1828,36 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   job=AH_Job_GetItanModes_new(u);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
-    AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+    AB_Banking_EndExclUseUser(ab, u, 1);
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, 0, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.");
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   tm=AH_Job_GetItanModes_GetModes(job);
   if (tm[0]==-1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No iTAN modes reported");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No iTAN modes reported."));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -1874,22 +1865,22 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
    * special case we need to apply the job data, because otherwise we couldn't
    * fully connect to the server next time.
    */
-  rv=AH_Job_Commit(job, 0, guiid); /* doLock=0 */
+  rv=AH_Job_Commit(job, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not commit result to the system"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+    rv=AB_Banking_EndExclUseUser(ab, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not unlock customer [%s] (%d)",
@@ -1898,13 +1889,13 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 	       I18N("Could not unlock user %s (%d)"),
 	       AB_User_GetUserId(u), rv);
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);
+      AB_Banking_EndExclUseUser(ab, u, 1);
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -1912,7 +1903,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_free(ob);
 
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -1921,8 +1912,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
-			  int withProgress, int nounmount, int doLock,
-			  uint32_t guiid) {
+			  int withProgress, int nounmount, int doLock) {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_JOB *job;
@@ -1958,7 +1948,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 			    "</p>"
 			    "</html>"),
 		       pwbuf,
-		       0, 8, guiid);
+		       0, 8, 0);
 
   job=AH_Job_ChangePin_new(u, pwbuf);
   if (!job) {
@@ -1967,14 +1957,14 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
@@ -1983,16 +1973,16 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
     // TODO: show errors
     AH_Outbox_free(ob);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
   else {
-    rv=AH_Job_Commit(job, doLock, guiid);
+    rv=AH_Job_Commit(job, doLock);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
       AH_Outbox_free(ob);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -2000,7 +1990,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_free(ob);
 
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -2070,8 +2060,7 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 int useBankKey,
                                 int variant,
                                 GWEN_BUFFER *lbuf,
-				int nounmount,
-				uint32_t guiid) {
+				int nounmount) {
   if (variant==0) {
     switch(AH_User_GetRdhType(u)) {
     case 0:
@@ -2092,8 +2081,8 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   }
 
   switch(variant) {
-  case 1: return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount, guiid);
-  case 2: return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount, guiid);
+  case 1: return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
+  case 2: return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
@@ -2106,8 +2095,7 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 				 int useBankKey,
 				 int variant,
 				 GWEN_BUFFER *lbuf,
-				 int nounmount,
-				 uint32_t guiid) {
+				 int nounmount) {
   if (variant==0) {
     switch(AH_User_GetRdhType(u)) {
     case 0:
@@ -2128,8 +2116,8 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
   }
 
   switch(variant) {
-  case 1: return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount, guiid);
-  case 2: return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount, guiid);
+  case 1: return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
+  case 2: return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
@@ -2142,8 +2130,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 				 AB_USER *u,
 				 int useBankKey,
 				 GWEN_BUFFER *lbuf,
-				 int nounmount,
-				 uint32_t guiid) {
+				 int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -2179,35 +2166,35 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -2220,7 +2207,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
@@ -2232,16 +2219,16 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       guiid);
+				       0);
       }
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
 				"please get them first"));
@@ -2257,15 +2244,15 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
 				"please generate them first"));
@@ -2338,7 +2325,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -2374,7 +2361,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -2443,8 +2430,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 				  AB_USER *u,
 				  int useBankKey,
 				  GWEN_BUFFER *lbuf,
-				  int nounmount,
-				  uint32_t guiid) {
+				  int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -2480,35 +2466,35 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -2521,7 +2507,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
@@ -2533,16 +2519,16 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       guiid);
+				       0);
       }
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
 				"please get them first"));
@@ -2558,15 +2544,15 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
 				"please generate them first"));
@@ -2644,7 +2630,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -2682,7 +2668,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -2760,8 +2746,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 				 AB_USER *u,
 				 int useBankKey,
 				 GWEN_BUFFER *lbuf,
-				 int nounmount,
-				 uint32_t guiid) {
+				 int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -2798,35 +2783,35 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -2839,7 +2824,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
@@ -2851,16 +2836,16 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       guiid);
+				       0);
       }
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
 				"please get them first"));
@@ -2876,15 +2861,15 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
 				"please generate them first"));
@@ -2963,7 +2948,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -3002,7 +2987,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -3101,8 +3086,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 				  AB_USER *u,
 				  int useBankKey,
 				  GWEN_BUFFER *lbuf,
-				  int nounmount,
-				 uint32_t guiid) {
+				  int nounmount) {
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -3139,35 +3123,35 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 			      &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
   /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), guiid);
+  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -3180,7 +3164,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
@@ -3192,16 +3176,16 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       guiid);
+				       0);
       }
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Server keys missing, "
 				"please get them first"));
@@ -3217,15 +3201,15 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     guiid);
+				     0);
     }
     if (!ki ||
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
 	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("User keys missing, "
 				"please generate them first"));
@@ -3310,7 +3294,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -3351,7 +3335,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                            I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
@@ -3449,8 +3433,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
 int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 			   AB_USER *u,
-			   int nounmount,
-			   uint32_t guiid) {
+			   int nounmount) {
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   uint32_t keyId;
@@ -3496,7 +3479,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 
   /* open token for admin */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
-    rv=GWEN_Crypt_Token_Open(ct, 1, guiid);
+    rv=GWEN_Crypt_Token_Open(ct, 1, 0);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error opening crypt token (%d)", rv);
@@ -3530,7 +3513,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 
     ski=GWEN_Crypt_Token_GetKeyInfo(ct, skeyId,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
-				    guiid);
+				    0);
     if (ski==NULL) {
       skeyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (skeyId==0) {
@@ -3541,7 +3524,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       }
       ski=GWEN_Crypt_Token_GetKeyInfo(ct, skeyId,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
-				      guiid);
+				      0);
     }
 
     if (ski) {
@@ -3625,7 +3608,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   }
   
   /* generate cipher key */
-  rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, guiid);
+  rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error generating key (%d)", rv);
@@ -3637,7 +3620,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   oki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId,
 				  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				  guiid);
+				  0);
   if (oki==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Could not get KeyInfo for newly created key %d", keyId);
@@ -3653,7 +3636,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
-  rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, guiid);
+  rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, 0);
   GWEN_Crypt_Token_KeyInfo_free(ki);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -3671,7 +3654,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   }
   
   /* generate sign key */
-  rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, guiid);
+  rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error generating key (%d)", rv);
@@ -3683,7 +3666,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   oki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId,
 				  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				  guiid);
+				  0);
   if (oki==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Could not get KeyInfo for newly created key %d", keyId);
@@ -3699,7 +3682,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
-  rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, guiid);
+  rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, 0);
   GWEN_Crypt_Token_KeyInfo_free(ki);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -3711,7 +3694,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   keyId=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
   if (keyId) {
     /* generate auth sign key */
-    rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, guiid);
+    rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error generating key (%d)", rv);
@@ -3723,7 +3706,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     oki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				    guiid);
+				    0);
     if (oki==NULL) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Could not get KeyInfo for newly created key %d", keyId);
@@ -3739,7 +3722,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
-    rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, guiid);
+    rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, 0);
     GWEN_Crypt_Token_KeyInfo_free(ki);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -3750,7 +3733,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 
   if (!nounmount) {
     /* close token */
-    rv=GWEN_Crypt_Token_Close(ct, 0, guiid);
+    rv=GWEN_Crypt_Token_Close(ct, 0, 0);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error closing crypt token (%d)", rv);
@@ -3770,8 +3753,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 			  AB_IMEXPORTER_CONTEXT *ctx,
 			  const uint8_t *dataPtr,
 			  uint32_t dataLen,
-			  int withProgress, int nounmount, int doLock,
-			  uint32_t guiid) {
+			  int withProgress, int nounmount, int doLock) {
   AH_PROVIDER *hp;
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -3814,14 +3796,14 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h, guiid);
+  ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
 
-  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock, guiid);
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     AH_Job_free(job);
     AH_Outbox_free(ob);
     return rv;
@@ -3834,14 +3816,14 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
     // TODO: show errors
     AH_Job_free(job);
     if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
 
   AH_Job_free(job);
 
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h), guiid);
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
 
   return 0;
 }
@@ -4027,7 +4009,7 @@ static int AH_Provider_Test4(AB_PROVIDER *pro) {
 
   u=AB_Banking_FindUser(ab, "aqhbci", "de", "20090500", "*", "*");
   assert(u);
-  dlg=AH_Dialog_new(u, 0);
+  dlg=AH_Dialog_new(u);
   assert(dlg);
   AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
   msg=AH_Msg_new(dlg);

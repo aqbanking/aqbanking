@@ -33,7 +33,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/libloader.h>
-#include <gwenhywfar/bio_file.h>
+//#include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/pathmanager.h>
@@ -41,8 +41,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/ctplugin.h>
 #include <gwenhywfar/configmgr.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -169,7 +168,7 @@ void AB_Banking_free(AB_BANKING *ab){
 
     GWEN_INHERIT_FINI(AB_BANKING, ab);
 
-    AB_Banking_ClearCryptTokenList(ab, 0);
+    AB_Banking_ClearCryptTokenList(ab);
     GWEN_Crypt_Token_List2_free(ab->cryptTokenList);
     AB_Account_List_free(ab->accounts);
     AB_User_List_free(ab->users);
@@ -187,15 +186,14 @@ void AB_Banking_free(AB_BANKING *ab){
 
 
 
-int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
+int AB_Banking_GetUniqueId(AB_BANKING *ab){
   int rv;
   int uid=0;
   GWEN_DB_NODE *dbConfig=NULL;
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_MAIN,
-			      "uniqueId",
-			      guiid);
+			      "uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     return rv;
@@ -204,8 +202,7 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     &dbConfig,
-			     guiid);
+			     &dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
     return rv;
@@ -218,14 +215,12 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     dbConfig,
-			     guiid);
+			     dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_MAIN,
-			       "uniqueId",
-			       guiid);
+			       "uniqueId");
     GWEN_DB_Group_free(dbConfig);
     return rv;
   }
@@ -234,8 +229,7 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_MAIN,
-				"uniqueId",
-				guiid);
+				"uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     return rv;
@@ -246,14 +240,13 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid){
 
 
 
-int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid){
+int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
   int rv;
   GWEN_DB_NODE *dbConfig=NULL;
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_MAIN,
-			      "uniqueId",
-			      guiid);
+			      "uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     return rv;
@@ -262,8 +255,7 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid){
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     &dbConfig,
-			     guiid);
+			     &dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
     return rv;
@@ -274,14 +266,12 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid){
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
-			     dbConfig,
-			     guiid);
+			     dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_MAIN,
-			       "uniqueId",
-			       guiid);
+			       "uniqueId");
     GWEN_DB_Group_free(dbConfig);
     return rv;
   }
@@ -290,8 +280,7 @@ int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid, uint32_t guiid){
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_MAIN,
-				"uniqueId",
-				guiid);
+				"uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     return rv;
@@ -482,11 +471,11 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
 
 
 
-AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId, uint32_t guiid){
+AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
   int rv;
   GWEN_DB_NODE *dbData=NULL;
 
-  rv=AB_Banking_LoadAppConfig(ab, &dbData, guiid);
+  rv=AB_Banking_LoadAppConfig(ab, &dbData);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to load app config");
@@ -526,30 +515,27 @@ AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId, uint32
 
 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-					 const char *accountId,
-					 uint32_t guiid){
-  return AB_Banking__GetAccount(ab, accountId, guiid);
+					 const char *accountId){
+  return AB_Banking__GetAccount(ab, accountId);
 }
 
 
 
-void AB_Banking_SetAccountAlias(AB_BANKING *ab,
-				AB_ACCOUNT *a, const char *alias,
-				uint32_t guiid){
+void AB_Banking_SetAccountAlias(AB_BANKING *ab, AB_ACCOUNT *a, const char *alias){
   int rv;
   GWEN_DB_NODE *dbConfig=NULL;
   GWEN_DB_NODE *db;
 
-  rv=AB_Banking_LockAppConfig(ab, guiid);
+  rv=AB_Banking_LockAppConfig(ab);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return;
   }
 
-  rv=AB_Banking_LoadAppConfig(ab, &dbConfig, guiid);
+  rv=AB_Banking_LoadAppConfig(ab, &dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab, guiid);
+    AB_Banking_UnlockAppConfig(ab);
     return;
   }
 
@@ -558,14 +544,14 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
 		      alias,
 		      AB_Account_GetUniqueId(a));
 
-  rv=AB_Banking_SaveAppConfig(ab, dbConfig, guiid);
+  rv=AB_Banking_SaveAppConfig(ab, dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab, guiid);
+    AB_Banking_UnlockAppConfig(ab);
     return;
   }
 
-  rv=AB_Banking_UnlockAppConfig(ab, guiid);
+  rv=AB_Banking_UnlockAppConfig(ab);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return;

@@ -73,8 +73,7 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
-			    int withProgress, int nounmount, int doLock,
-			    uint32_t guiid);
+			    int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the system id for the given user. This is only needed for
@@ -87,8 +86,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 int withProgress, int nounmount, int doLock,
-			 uint32_t guiid);
+			 int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the public server keys for the given user. This is only needed for
@@ -101,8 +99,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      int withProgress, int nounmount, int doLock,
-			      uint32_t guiid);
+			      int withProgress, int nounmount, int doLock);
 
 /**
  * Send the public keys of the given user. This is only needed for
@@ -115,8 +112,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock,
-			     uint32_t guiid);
+			     int withProgress, int nounmount, int doLock);
 
 /**
  * Send the public keys of the given user. This is only needed for
@@ -132,8 +128,7 @@ AQHBCI_API
 int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      int withAuthKey,
-			      int withProgress, int nounmount, int doLock,
-			      uint32_t guiid);
+			      int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the SSL certificate for the given user. This is only needed for
@@ -146,8 +141,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro,
 			AB_USER *u,
-			int withProgress, int nounmount, int doLock,
-			uint32_t guiid);
+			int withProgress, int nounmount, int doLock);
 
 /**
  * Ask the server for the list of supported iTAN modes. Not all servers
@@ -160,8 +154,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
 AQHBCI_API
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 			     AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock,
-			     uint32_t guiid);
+			     int withProgress, int nounmount, int doLock);
 
 
 /**
@@ -175,8 +168,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
-			  int withProgress, int nounmount, int doLock,
-			  uint32_t guiid);
+			  int withProgress, int nounmount, int doLock);
 
 
 /*@}*/
@@ -199,7 +191,6 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
  * @param variant use 1 for RDH1, 2 for RDH2-10 (or 0 for autoselection)
  * @param lbuf buffer to write the iniletter to
  * @param nounmount if !=0 the CryptToken will not be unmounted after use
- * @param guiid GUI id in whose context the function is called (for GWEN_Gui_ProgressLog etc)
  */
 AQHBCI_API
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
@@ -207,8 +198,7 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 int useBankKey,
                                 int variant,
                                 GWEN_BUFFER *lbuf,
-				int nounmount,
-				uint32_t guiid);
+				int nounmount);
 
 /**
  * Creates a HTML version of the INI letter. This function needs to mount
@@ -219,7 +209,6 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
  * @param variant use 1 for RDH1, 2 for RDH2-10 (or 0 for autoselection)
  * @param lbuf buffer to write the iniletter to
  * @param nounmount if !=0 the CryptToken will not be unmounted after use
- * @param guiid GUI id in whose context the function is called (for GWEN_Gui_ProgressLog etc)
  */
 AQHBCI_API
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
@@ -227,16 +216,13 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  int useBankKey,
                                  int variant,
                                  GWEN_BUFFER *lbuf,
-				 int nounmount,
-				 uint32_t guiid);
+				 int nounmount);
 /*@}*/
 
 
 
 AQHBCI_API
-int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u,
-			   int nounmount,
-			   uint32_t guiid);
+int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
 
 
 AQHBCI_API

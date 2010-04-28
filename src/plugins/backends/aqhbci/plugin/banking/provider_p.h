@@ -42,13 +42,10 @@ static int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *bu
 /*@{*/
 static int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-static int AH_Provider_UpdateJob(AB_PROVIDER *pro,
-				 AB_JOB *j,
-				 uint32_t guiid);
-static int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
+static int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
+static int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
 static int AH_Provider_Execute(AB_PROVIDER *pro,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid);
+			       AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Provider_ResetQueue(AB_PROVIDER *pro);
 static int AH_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
 				  AB_PROVIDER_EXTEND_MODE em,
@@ -67,27 +64,23 @@ static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 					AB_USER *u,
 					int useBankKey,
 					GWEN_BUFFER *lbuf,
-					int nounmount,
-					uint32_t guiid);
+					int nounmount);
 static int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 					 AB_USER *u,
 					 int useBankKey,
 					 GWEN_BUFFER *lbuf,
-					 int nounmount,
-					 uint32_t guiid);
+					 int nounmount);
 
 static int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 					AB_USER *u,
 					int useBankKey,
 					GWEN_BUFFER *lbuf,
-					int nounmount,
-					uint32_t guiid);
+					int nounmount);
 static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 					 AB_USER *u,
 					 int useBankKey,
 					 GWEN_BUFFER *lbuf,
-					 int nounmount,
-					 uint32_t guiid);
+					 int nounmount);
 
 /*@}*/
 

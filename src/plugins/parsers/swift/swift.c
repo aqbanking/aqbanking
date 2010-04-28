@@ -691,12 +691,10 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 
 
 int AHB_SWIFT_Import(GWEN_DBIO *dbio,
-		     GWEN_IO_LAYER *io,
+		     GWEN_SYNCIO *sio,
                      GWEN_DB_NODE *data,
 		     GWEN_DB_NODE *cfg,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs) {
+		     uint32_t flags) {
   int rv;
   const char *p;
   int skipFileLines;
@@ -717,7 +715,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   skipFileLines=GWEN_DB_GetIntValue(cfg, "skipFileLines", 0, 0);
   skipDocLines=GWEN_DB_GetIntValue(cfg, "skipDocLines", 0, 0);
 
-  fb=GWEN_FastBuffer_new(256, io, guiid, msecs);
+  fb=GWEN_FastBuffer_new(256, sio);
 
   for (;;) {
     AHB_SWIFT_TAG_LIST *tl;
@@ -725,7 +723,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
     tl=AHB_SWIFT_Tag_List_new();
 
     /* check for user abort */
-    rv=GWEN_Gui_ProgressAdvance(guiid, GWEN_GUI_PROGRESS_NONE);
+    rv=GWEN_Gui_ProgressAdvance(0, GWEN_GUI_PROGRESS_NONE);
     if (rv==GWEN_ERROR_USER_ABORTED) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
       GWEN_FastBuffer_free(fb);
@@ -733,7 +731,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       return rv;
     }
 
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Reading SWIFT document"));
 
     /* skip lines at the beginning if requested */
@@ -765,12 +763,12 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 	break;
     }
 
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Parsing SWIFT data"));
     rv=AHB_SWIFT_ReadDocument(fb, tl, 0);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
-      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			   I18N("Error parsing SWIFT data"));
       GWEN_FastBuffer_free(fb);
       AHB_SWIFT_Tag_List_free(tl);
@@ -781,7 +779,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       DBG_INFO(AQBANKING_LOGDOMAIN, "End of document reached");
       if (docsImported==0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "Empty document, aborting");
-	GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			     I18N("Empty SWIFT document, aborting"));
 	GWEN_FastBuffer_free(fb);
 	AHB_SWIFT_Tag_List_free(tl);
@@ -791,18 +789,18 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
     }
 
     /* now all tags have been read, transform them */
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Importing SWIFT data"));
-    rv=AHB_SWIFT940_Import(tl, data, cfg, flags, guiid, msecs);
+    rv=AHB_SWIFT940_Import(tl, data, cfg, flags);
     if (rv) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
-      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			   I18N("Error importing SWIFT data"));
       GWEN_FastBuffer_free(fb);
       AHB_SWIFT_Tag_List_free(tl);
       return rv;
     }
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Debug,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Swift document successfully imported"));
     docsImported++;
   } /* for */
@@ -816,12 +814,10 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 
 
 int AHB_SWIFT_Export(GWEN_DBIO *dbio,
-		     GWEN_IO_LAYER *io,
+		     GWEN_SYNCIO *sio,
 		     GWEN_DB_NODE *data,
                      GWEN_DB_NODE *cfg,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs) {
+		     uint32_t flags) {
   DBG_ERROR(AQBANKING_LOGDOMAIN, "AHB_SWIFT_Export: Not yet implemented");
   return -1;
 }
@@ -829,9 +825,7 @@ int AHB_SWIFT_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
-					       const char *fname,
-					       uint32_t guiid,
-					       int msecs) {
+					       const char *fname) {
   int fd;
   GWEN_BUFFEREDIO *bio;
   int i;

@@ -30,6 +30,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -90,9 +91,8 @@ void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p){
 
 int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_IO_LAYER *io,
-			    GWEN_DB_NODE *params,
-			    uint32_t guiid){
+                            GWEN_SYNCIO *sio,
+			    GWEN_DB_NODE *params){
   AH_IMEXPORTER_OFX *ieh;
   int rv;
   GWEN_XML_CONTEXT *xmlCtx;
@@ -103,11 +103,11 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
   /* this context does the real work, it sets some callbacks which
    * make GWEN's normal XML code read an OFX file */
-  xmlCtx=AIO_OfxXmlCtx_new(0, guiid, GWEN_TIMEOUT_FOREVER, ctx);
+  xmlCtx=AIO_OfxXmlCtx_new(0, ctx);
   assert(xmlCtx);
 
   /* read OFX file into context */
-  rv=GWEN_XML_ReadFromIo(xmlCtx, io);
+  rv=GWEN_XML_ReadFromIo(xmlCtx, sio);
   GWEN_XmlCtx_free(xmlCtx);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -119,51 +119,50 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
-  int fd;
-  GWEN_BUFFEREDIO *bio;
+int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+  AH_IMEXPORTER_OFX *ieh;
+  GWEN_SYNCIO *sio;
+  int rv;
+  uint8_t tbuf[256];
 
   assert(ie);
   assert(fname);
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    /* error */
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "open(%s): %s", fname, strerror(errno));
-    return GWEN_ERROR_NOT_FOUND;
+  assert(ie);
+  ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie);
+  assert(ieh);
+
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    char lbuffer[256];
-    int err;
-
-    err=GWEN_BufferedIO_ReadLine(bio, lbuffer, sizeof(lbuffer));
-    if (err) {
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "File \"%s\" is not supported by this plugin",
-               fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      return GWEN_ERROR_BAD_DATA;
-    }
-    if (-1!=GWEN_Text_ComparePattern(lbuffer, "*<OFX>*", 0) ||
-        -1!=GWEN_Text_ComparePattern(lbuffer, "*<OFC>*", 0)) {
-      /* match */
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "File \"%s\" is supported by this plugin",
-               fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      return 0;
-    }
-  } /* while */
-
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
+  rv=GWEN_SyncIo_Read(sio, tbuf, sizeof(tbuf)-1);
+  if (rv<1) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "File \"%s\" is not supported by this plugin",
+	     fname);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  tbuf[rv-1]=0;
+  if (-1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<OFX>*", 0) ||
+      -1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<OFC>*", 0)) {
+    /* match */
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "File \"%s\" is supported by this plugin",
+	     fname);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return 0;
+  }
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   return GWEN_ERROR_BAD_DATA;
 }
 

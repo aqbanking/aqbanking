@@ -38,18 +38,16 @@ typedef struct AH_DIALOG AH_DIALOG;
 
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *owner, uint32_t guiid);
+AH_DIALOG *AH_Dialog_new(AB_USER *owner);
 void AH_Dialog_free(AH_DIALOG *dlg);
 
 void AH_Dialog_Attach(AH_DIALOG *dlg);
 
 AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg);
 
-uint32_t AH_Dialog_GetGuiId(const AH_DIALOG *dlg);
+int AH_Dialog_Connect(AH_DIALOG *dlg);
 
-int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout);
-
-int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout);
+int AH_Dialog_Disconnect(AH_DIALOG *dlg);
 
 
 uint32_t AH_Dialog_GetFlags(const AH_DIALOG *dlg);

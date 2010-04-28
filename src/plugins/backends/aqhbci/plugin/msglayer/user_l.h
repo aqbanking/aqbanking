@@ -69,27 +69,23 @@ void AH_User_SetUpdVersion(AB_USER *u, int i);
 int AH_User_InputPin(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen, int maxLen,
-                     int flags,
-                     uint32_t guiid);
+                     int flags);
 
 int AH_User_InputPasswd(AB_USER *u,
 			char *pwbuffer,
 			int minLen, int maxLen,
-                        int flags,
-                        uint32_t guiid);
+                        int flags);
 
 int AH_User_InputTan(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen,
-                     int maxLen,
-                     uint32_t guiid);
+                     int maxLen);
 
 int AH_User_InputTanWithChallenge(AB_USER *u,
 				  const char *challenge,
 				  char *pwbuffer,
 				  int minLen,
-                                  int maxLen,
-                                  uint32_t guiid);
+                                  int maxLen);
 
 int AH_User_SetTanStatus(AB_USER *u,
 			 const char *challenge,

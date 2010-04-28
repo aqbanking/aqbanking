@@ -71,7 +71,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   GWEN_INHERIT_INIT(AB_JOB, j);
   GWEN_LIST_INIT(AB_JOB, j);
 
-  j->jobId=AB_Banking_GetUniqueId(ab, 0);
+  j->jobId=AB_Banking_GetUniqueId(ab);
   j->jobType=jt;
   j->account=a;
 
@@ -100,7 +100,7 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
 
 
 
-int AB_Job_Update(AB_JOB *j, uint32_t guiid){
+int AB_Job_Update(AB_JOB *j){
   AB_PROVIDER *pro;
 
   assert(j);
@@ -108,7 +108,7 @@ int AB_Job_Update(AB_JOB *j, uint32_t guiid){
   /* check whether the job is available */
   pro=AB_Account_GetProvider(j->account);
   assert(pro);
-  j->availability=AB_Provider_UpdateJob(pro, j, guiid);
+  j->availability=AB_Provider_UpdateJob(pro, j);
   return j->availability;
 }
 
@@ -141,9 +141,9 @@ void AB_Job_free(AB_JOB *j){
 
 
 
-int AB_Job_CheckAvailability(AB_JOB *j, uint32_t guiid){
+int AB_Job_CheckAvailability(AB_JOB *j){
   assert(j);
-  AB_Job_Update(j, guiid);
+  AB_Job_Update(j);
   return j->availability;
 }
 

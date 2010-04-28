@@ -319,8 +319,7 @@ int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a);
  */
 AQBANKING_API 
 int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
-			   AB_IMEXPORTER_CONTEXT *ctx,
-			   uint32_t guiid);
+			   AB_IMEXPORTER_CONTEXT *ctx);
 /*@}*/
 
 

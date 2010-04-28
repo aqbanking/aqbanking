@@ -192,8 +192,7 @@ int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
 
       rv=GWEN_DBIO_ExportToBuffer(dbio, dbuf,
 				  dbTransfers, dbCfg,
-				  GWEN_DB_FLAGS_DEFAULT,
-				  0, 2000);
+				  GWEN_DB_FLAGS_DEFAULT);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating DTAUS object");
 	return rv;

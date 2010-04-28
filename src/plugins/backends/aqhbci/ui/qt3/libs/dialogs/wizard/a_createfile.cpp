@@ -82,7 +82,7 @@ bool ActionCreateFile::apply() {
   rv=GWEN_Crypt_Token_Create(ct, 0);
   if (rv) {
     DBG_ERROR(0, "Error creating CryptToken (%d)", rv);
-    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
     return false;
   }
 
@@ -113,7 +113,7 @@ bool ActionCreateFile::undo() {
   ct=wInfo->getToken();
   if (ct) {
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
-      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
+      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }
     wInfo->setToken(NULL);

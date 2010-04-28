@@ -171,7 +171,7 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   AO_PROVIDER *dp;
 
   assert(pro);
@@ -198,7 +198,7 @@ int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 
 
 
-int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   AO_PROVIDER *dp;
   AB_ACCOUNT *a;
   AB_USER *u;
@@ -419,8 +419,7 @@ AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, uint32_t jid) {
 
 
 
-int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid){
+int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AO_PROVIDER *dp;
   int oks=0;
   int errors=0;
@@ -431,7 +430,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
 
-  rv=AO_Provider_ExecQueue(pro, ctx, guiid);
+  rv=AO_Provider_ExecQueue(pro, ctx);
   if (!rv)
     oks++;
   else {
@@ -483,7 +482,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
     AB_Job_List2Iterator_free(jit);
   }
 
-  rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(pro), 0);
+  rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(pro));
   if (rv==GWEN_ERROR_USER_ABORTED) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "User aborted");
@@ -505,8 +504,7 @@ int AO_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
 
 int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
 					AB_USER *u,
-					AB_IMEXPORTER_CONTEXT *ictx,
-					uint32_t guiid){
+					AB_IMEXPORTER_CONTEXT *ictx){
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   assert(pro);
@@ -558,7 +556,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
 
         snprintf(msgbuf, sizeof(msgbuf), I18N(msg),
                  accountNumber, bankCode);
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Notice,
 			     msgbuf);
         AB_Banking_AddAccount(AB_Provider_GetBanking(pro),a );
@@ -627,7 +625,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   GWEN_Buffer_ReserveBytes(reqbuf, 1024);
 
   /* add actual request */
-  rv=AO_Provider__AddAccountInfoReq(pro, u, guiid, reqbuf);
+  rv=AO_Provider__AddAccountInfoReq(pro, u, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
@@ -638,7 +636,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   }
 
   /* wrap message (adds headers etc) */
-  rv=AO_Provider__WrapMessage(pro, u, reqbuf, guiid);
+  rv=AO_Provider__WrapMessage(pro, u, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
@@ -652,8 +650,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
   rv=AO_Provider_SendAndReceive(pro, u,
 				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
 				GWEN_Buffer_GetUsedBytes(reqbuf),
-				&rbuf,
-				guiid);
+				&rbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getAccounts-request (%d)", rv);
@@ -686,7 +683,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
     GWEN_Buffer_Rewind(rbuf);
     dbProfile=GWEN_DB_Group_new("profile");
     /* actually import */
-    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile, pid);
+    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile);
     GWEN_DB_Group_free(dbProfile);
     GWEN_Buffer_free(rbuf);
     if (rv<0) {
@@ -701,7 +698,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
     }
 
     /* create accounts */
-    rv=AO_Provider__ProcessImporterContext(pro, u, ictx, pid);
+    rv=AO_Provider__ProcessImporterContext(pro, u, ictx);
     if (rv<0) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 		"Error importing accounts (%d)", rv);
@@ -722,8 +719,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
 
 
 int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
-				  AB_IMEXPORTER_CONTEXT *ictx,
-				  uint32_t guiid) {
+				  AB_IMEXPORTER_CONTEXT *ictx) {
   AO_PROVIDER *dp;
   GWEN_BUFFER *reqbuf;
   GWEN_BUFFER *rbuf=0;
@@ -755,7 +751,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   GWEN_Buffer_ReserveBytes(reqbuf, 1024);
 
   /* add actual request */
-  rv=AO_Provider__AddStatementRequest(pro, j, guiid, reqbuf);
+  rv=AO_Provider__AddStatementRequest(pro, j, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
@@ -764,7 +760,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   }
 
   /* wrap message (adds headers etc) */
-  rv=AO_Provider__WrapMessage(pro, u, reqbuf, guiid);
+  rv=AO_Provider__WrapMessage(pro, u, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
@@ -776,12 +772,11 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   rv=AO_Provider_SendAndReceive(pro, u,
 				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
 				GWEN_Buffer_GetUsedBytes(reqbuf),
-				&rbuf,
-				guiid);
+				&rbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getStatements-request (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error parsing server response"));
     GWEN_Buffer_free(rbuf);
@@ -794,7 +789,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 
     /* parse response */
     GWEN_Buffer_free(reqbuf);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
 			 I18N("Parsing response"));
 
@@ -810,13 +805,13 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
     GWEN_Buffer_Rewind(rbuf);
     dbProfile=GWEN_DB_Group_new("profile");
     /* actually import */
-    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile, guiid);
+    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile);
     GWEN_DB_Group_free(dbProfile);
     GWEN_Buffer_free(rbuf);
     if (rv<0) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 		"Error importing server response (%d)", rv);
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Error parsing response"));
       return rv;
@@ -833,8 +828,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 
 int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      AO_USERQUEUE *uq,
-			      uint32_t guiid){
+			      AO_USERQUEUE *uq){
   AB_JOB_LIST2_ITERATOR *jit;
   AO_PROVIDER *dp;
   int errors=0;
@@ -861,7 +855,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
         int rv;
 
 	/* start new context */
-	rv=AO_Provider_RequestStatements(pro, uj, ctx, guiid);
+	rv=AO_Provider_RequestStatements(pro, uj, ctx);
 	if (rv==GWEN_ERROR_USER_ABORTED) {
 	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
@@ -876,8 +870,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 	  oks++;
 	else
 	  errors++;
-	rv=GWEN_Gui_ProgressAdvance(guiid,
-				    AO_Provider_CountDoneJobs(dp->bankingJobs));
+	rv=GWEN_Gui_ProgressAdvance(0, AO_Provider_CountDoneJobs(dp->bankingJobs));
 	if (rv==GWEN_ERROR_USER_ABORTED) {
 	  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
 	  AB_Job_List2Iterator_free(jit);
@@ -899,8 +892,7 @@ int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 
 
 int AO_Provider_ExecQueue(AB_PROVIDER *pro,
-			  AB_IMEXPORTER_CONTEXT *ctx,
-			  uint32_t guiid) {
+			  AB_IMEXPORTER_CONTEXT *ctx) {
   AO_USERQUEUE *uq;
   AO_PROVIDER *dp;
   int errors=0;
@@ -926,10 +918,10 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 	     I18N("Locking user %s"),
 	     AB_User_GetUserId(u));
     tbuf[sizeof(tbuf)-1]=0;
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
 			 tbuf);
-    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
@@ -938,23 +930,23 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 	       I18N("Could not lock user %s (%d)"),
 	       AB_User_GetUserId(u), rv);
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid);  /* abandon */
+      AB_Banking_EndExclUseUser(ab, u, 1);  /* abandon */
       errors++;
       if (rv==GWEN_ERROR_USER_ABORTED)
 	return rv;
     }
     else {
-      rv=AO_Provider_ExecUserQueue(pro, ctx, uq, guiid);
+      rv=AO_Provider_ExecUserQueue(pro, ctx, uq);
       if (rv)
 	errors++;
       else
 	oks++;
       if (rv==GWEN_ERROR_USER_ABORTED) {
 	DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
-	AB_Banking_EndExclUseUser(ab, u, 1, guiid);  /* abandon */
+	AB_Banking_EndExclUseUser(ab, u, 1);  /* abandon */
 	return rv;
       }
 
@@ -962,16 +954,16 @@ int AO_Provider_ExecQueue(AB_PROVIDER *pro,
 	       I18N("Unlocking user %s"),
 	       AB_User_GetUserId(u));
       tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Info,
 			   tbuf);
-      rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+      rv=AB_Banking_EndExclUseUser(ab, u, 0);
       if (rv<0) {
 	snprintf(tbuf, sizeof(tbuf)-1,
 		 I18N("Could not unlock user %s (%d)"),
 		 AB_User_GetUserId(u), rv);
 	tbuf[sizeof(tbuf)-1]=0;
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     tbuf);
 	errors++;

@@ -81,9 +81,8 @@ void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p){
 
 int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_IO_LAYER *io,
-			    GWEN_DB_NODE *params,
-			    uint32_t guiid){
+			    GWEN_SYNCIO *sio,
+			    GWEN_DB_NODE *params){
   AH_IMEXPORTER_CSV *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -98,13 +97,11 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      io,
+		      sio,
                       dbData,
 		      dbSubParams,
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      guiid,
-		      2000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
@@ -114,20 +111,20 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
   }
 
   /* transform DB to transactions */
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       "Transforming data to transactions");
-  rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbData, params, guiid);
+  rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbData, params);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                           "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
@@ -186,8 +183,7 @@ AB_VALUE *AH_ImExporterCSV__ValueFromDb(GWEN_DB_NODE *dbV, int commaThousands, i
 
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
-				      GWEN_DB_NODE *dbParams,
-				      uint32_t guiid) {
+				      GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbT;
   const char *dateFormat;
   int inUtc;
@@ -227,7 +223,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 				    I18N("Importing parsed data..."),
 				    NULL,
 				    GWEN_DB_Groups_Count(db),
-				    guiid);
+				    0);
   dbT=GWEN_DB_GetFirstGroup(db);
   while(dbT) {
     int matches;
@@ -454,7 +450,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Not a transaction, checking subgroups");
       /* not a transaction, check subgroups */
-      rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams, guiid);
+      rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams);
       if (rv) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here");
 	GWEN_Gui_ProgressEnd(progressId);
@@ -480,7 +476,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   AH_IMEXPORTER_CSV *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -489,7 +485,7 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gu
   assert(ieh);
   assert(ieh->dbio);
 
-  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname, guiid, 2000);
+  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
   switch(rv) {
   case GWEN_DBIO_CheckFileResultOk:      return 0;
   case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
@@ -502,10 +498,9 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gu
 
 int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 					 AB_IMEXPORTER_CONTEXT *ctx,
-					 GWEN_IO_LAYER *io,
+					 GWEN_SYNCIO *sio,
 					 GWEN_DB_NODE *params,
-					 int noted,
-					 uint32_t guiid){
+					 int noted){
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -712,15 +707,13 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   }
 
   rv=GWEN_DBIO_Export(ieh->dbio,
-		      io,
+		      sio,
 		      dbData,
 		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT,
-		      guiid,
-                      2000);
+		      GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error exporting data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;
@@ -734,9 +727,8 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 
 int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_IO_LAYER *io,
-			    GWEN_DB_NODE *params,
-			    uint32_t guiid){
+                            GWEN_SYNCIO *sio,
+			    GWEN_DB_NODE *params){
   AH_IMEXPORTER_CSV *ieh;
   const char *subject;
 
@@ -748,9 +740,9 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
   subject=GWEN_DB_GetCharValue(params, "subject", 0,
 			       "transactions");
   if (strcasecmp(subject, "transactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, io, params, 0, guiid);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, 0);
   else if (strcasecmp(subject, "notedTransactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, io, params, 1, guiid);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, 1);
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to export unknown subject \"%s\"", subject);

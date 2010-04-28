@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Sep 27 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,17 +21,17 @@ extern "C" {
 
 
 AQBANKING_API
-int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb, uint32_t guiid);
+int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb);
 
 AQBANKING_API
-int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db, uint32_t guiid);
+int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 
 AQBANKING_API
-int AB_Banking_LockAppConfig(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_LockAppConfig(AB_BANKING *ab);
 
 AQBANKING_API
-int AB_Banking_UnlockAppConfig(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_UnlockAppConfig(AB_BANKING *ab);
 
 
 
@@ -39,21 +39,19 @@ int AB_Banking_UnlockAppConfig(AB_BANKING *ab, uint32_t guiid);
 AQBANKING_API
 int AB_Banking_LoadSharedConfig(AB_BANKING *ab,
 				const char *name,
-				GWEN_DB_NODE **pDb,
-				uint32_t guiid);
+				GWEN_DB_NODE **pDb);
 
 AQBANKING_API
 int AB_Banking_SaveSharedConfig(AB_BANKING *ab,
 				const char *name,
-				GWEN_DB_NODE *db,
-				uint32_t guiid);
+				GWEN_DB_NODE *db);
 
 
 AQBANKING_API
-int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name, uint32_t guiid);
+int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name);
 
 AQBANKING_API
-int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name, uint32_t guiid);
+int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
 
 
 
@@ -63,14 +61,14 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name, uint32_t gui
  * lock is in place no other application can make any changes to the account.
  */
 AQBANKING_API
-int AB_Banking_BeginExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, uint32_t guiid);
+int AB_Banking_BeginExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 
 /**
  * This function writes the configuration of the given account to the database and
  * releases the given account so that other applications can access it.
  */
 AQBANKING_API
-int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon, uint32_t guiid);
+int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon);
 
 
 
@@ -80,14 +78,14 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon, uin
  * lock is in place no other application can make any changes to the user.
  */
 AQBANKING_API
-int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u, uint32_t guiid);
+int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u);
 
 /**
  * This function writes the configuration of the given user to the database and
  * releases the given user so that other applications can access it.
  */
 AQBANKING_API
-int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon, uint32_t guiid);
+int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon);
 
 
 
@@ -96,7 +94,7 @@ int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon, uint32_t 
  */
 /*@{*/
 AQBANKING_API
-int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_HasConf4(AB_BANKING *ab);
 /*@}*/
 
 
@@ -106,13 +104,13 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid);
 /*@{*/
 
 AQBANKING_API
-int AB_Banking_HasConf3(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_HasConf3(AB_BANKING *ab);
 
 /**
  * This function imports the configuration of AqBanking3.
  */
 AQBANKING_API
-int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_ImportConf3(AB_BANKING *ab);
 /*@}*/
 
 
@@ -122,13 +120,13 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid);
 /*@{*/
 
 AQBANKING_API
-int AB_Banking_HasConf2(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_HasConf2(AB_BANKING *ab);
 
 /**
  * This function imports the configuration of AqBanking2.
  */
 AQBANKING_API
-int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_ImportConf2(AB_BANKING *ab);
 
 /*@}*/
 

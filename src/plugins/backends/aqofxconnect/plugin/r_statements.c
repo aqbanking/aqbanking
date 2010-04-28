@@ -14,7 +14,6 @@
 
 
 int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-				     uint32_t guiid,
 				     GWEN_BUFFER *buf) {
   const char *s;
   AB_ACCOUNT *a;
@@ -106,7 +105,6 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 
 
 int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-					   uint32_t guiid,
 					   GWEN_BUFFER *buf) {
   const char *s;
   AB_ACCOUNT *a;
@@ -165,7 +163,6 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 
 
 int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-				    uint32_t guiid,
 				    GWEN_BUFFER *buf) {
   const char *s;
   AB_ACCOUNT *a;
@@ -247,7 +244,6 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
 
 
 int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
-				     uint32_t guiid,
 				     GWEN_BUFFER *buf) {
   AB_ACCOUNT *a;
   int rv;
@@ -257,11 +253,11 @@ int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
 
   switch(AB_Account_GetAccountType(a)) {
   case AB_AccountType_CreditCard:
-    rv=AO_Provider__AddCreditCardStatementReq(pro, j, guiid, buf);
+    rv=AO_Provider__AddCreditCardStatementReq(pro, j, buf);
     break;
 
   case AB_AccountType_Investment:
-    rv=AO_Provider__AddInvStatementReq(pro, j, guiid, buf);
+    rv=AO_Provider__AddInvStatementReq(pro, j, buf);
     break;
 
   case AB_AccountType_Checking:
@@ -270,7 +266,7 @@ int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
   case AB_AccountType_Cash:
   case AB_AccountType_Unknown:
   default:
-    rv=AO_Provider__AddBankStatementReq(pro, j, guiid, buf);
+    rv=AO_Provider__AddBankStatementReq(pro, j, buf);
     break;
   }
 

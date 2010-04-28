@@ -728,8 +728,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 					    xdlg->context,
 					    xdlg->profileName,
 					    NULL,
-					    xdlg->fileName,
-					    0);
+					    xdlg->fileName);
 	if (rv<0) {
 	  /* TODO: show error message */
 	  DBG_ERROR(0, "Error importing file: %d", rv);

@@ -86,7 +86,7 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
 
 
 
-int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_HasConf4(AB_BANKING *ab) {
   int rv;
   GWEN_DB_NODE *db=NULL;
   int backends=0;
@@ -102,7 +102,7 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
   }
 
   /* load main group, check version */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db, guiid);
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
     return rv;
@@ -112,7 +112,7 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
   sl=GWEN_StringList_new();
 
   /* count backends */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_BACKENDS, sl, guiid);
+  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_BACKENDS, sl);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list backend groups (%d)", rv);
     GWEN_StringList_free(sl);
@@ -122,7 +122,7 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
   GWEN_StringList_Clear(sl);
 
   /* count users */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_USERS, sl, guiid);
+  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_USERS, sl);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list user groups (%d)", rv);
     GWEN_StringList_free(sl);
@@ -132,7 +132,7 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
   GWEN_StringList_Clear(sl);
 
   /* count accounts */
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, sl, guiid);
+  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, sl);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not list account groups (%d)", rv);
     GWEN_StringList_free(sl);
@@ -152,13 +152,13 @@ int AB_Banking_HasConf4(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb, uint32_t guiid) {
+int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb) {
   assert(ab);
   assert(ab->appName);
   if (ab->appName) {
     int rv;
 
-    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, pDb, guiid);
+    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, pDb);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not load app group [%s] (%d)",
@@ -175,13 +175,13 @@ int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb, uint32_t guiid)
 
 
 
-int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db, uint32_t guiid) {
+int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db) {
   assert(ab);
   assert(ab->appName);
   if (ab->appName) {
     int rv;
 
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, db, guiid);
+    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not save app group [%s] (%d)",
@@ -198,13 +198,13 @@ int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db, uint32_t guiid) {
 
 
 
-int AB_Banking_LockAppConfig(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_LockAppConfig(AB_BANKING *ab) {
   assert(ab);
   assert(ab->appName);
   if (ab->appName) {
     int rv;
 
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, guiid);
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not lock app group [%s] (%d)",
@@ -221,13 +221,13 @@ int AB_Banking_LockAppConfig(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_UnlockAppConfig(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_UnlockAppConfig(AB_BANKING *ab) {
   assert(ab);
   assert(ab->appName);
   if (ab->appName) {
     int rv;
 
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, guiid);
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not unlock app group [%s] (%d)",
@@ -244,14 +244,13 @@ int AB_Banking_UnlockAppConfig(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb,
-				uint32_t guiid) {
+int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb) {
   assert(ab);
   assert(name);
   if (name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, pDb, guiid);
+    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, pDb);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not load shared group [%s] (%d)",
@@ -268,14 +267,13 @@ int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
 
 
 
-int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db,
-				uint32_t guiid) {
+int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db) {
   assert(ab);
   assert(name);
   if (name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, db, guiid);
+    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not save shared group [%s] (%d)",
@@ -292,13 +290,13 @@ int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
 
 
 
-int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name, uint32_t guiid) {
+int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name) {
   assert(ab);
   assert(name);
   if (name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, guiid);
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not lock shared group [%s] (%d)",
@@ -315,13 +313,13 @@ int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name, uint32_t guiid
 
 
 
-int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name, uint32_t guiid) {
+int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name) {
   assert(ab);
   assert(name);
   if (name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, guiid);
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not unlock shared group [%s] (%d)",
@@ -341,15 +339,14 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name, uint32_t gui
 int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE **pDb,
-				uint32_t guiid) {
+				GWEN_DB_NODE **pDb) {
   assert(ab);
   assert(pluginName);
   assert(name);
   if (pluginName && name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, pluginName, name, pDb, guiid);
+    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, pluginName, name, pDb);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not load plugin group [%s] (%d)",
@@ -369,15 +366,14 @@ int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
 int AB_Banking_SavePluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE *db,
-				uint32_t guiid) {
+				GWEN_DB_NODE *db) {
   assert(ab);
   assert(pluginName);
   assert(name);
   if (pluginName && name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, pluginName, name, db, guiid);
+    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, pluginName, name, db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not save plugin group [%s] (%d)",
@@ -396,15 +392,14 @@ int AB_Banking_SavePluginConfig(AB_BANKING *ab,
 
 int AB_Banking_LockPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
-				const char *name,
-				uint32_t guiid) {
+				const char *name) {
   assert(ab);
   assert(pluginName);
   assert(name);
   if (pluginName && name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, pluginName, name, guiid);
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, pluginName, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not lock plugin group [%s] (%d)",
@@ -423,15 +418,14 @@ int AB_Banking_LockPluginConfig(AB_BANKING *ab,
 
 int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
 				  const char *pluginName,
-				  const char *name,
-				  uint32_t guiid) {
+				  const char *name) {
   assert(ab);
   assert(pluginName);
   assert(name);
   if (pluginName && name) {
     int rv;
 
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, pluginName, name, guiid);
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, pluginName, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Could not unlock plugin group [%s] (%d)",
@@ -448,12 +442,12 @@ int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
 
 
 
-int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_LoadAllUsers(AB_BANKING *ab) {
   GWEN_STRINGLIST *sl;
   int rv;
 
   sl=GWEN_StringList_new();
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_USERS, sl, guiid);
+  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_USERS, sl);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_StringList_free(sl);
@@ -470,7 +464,7 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid) {
       t=GWEN_StringListEntry_Data(se);
       assert(t);
 
-      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_USERS, t, &db, guiid);
+      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_USERS, t, &db);
       if (rv<0) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
 		 "Could not load user group [%s] (%d), ignoring",
@@ -573,12 +567,12 @@ int AB_Banking_LoadAllUsers(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_LoadAllAccounts(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_LoadAllAccounts(AB_BANKING *ab) {
   GWEN_STRINGLIST *sl;
   int rv;
 
   sl=GWEN_StringList_new();
-  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, sl, guiid);
+  rv=GWEN_ConfigMgr_ListSubGroups(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, sl);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_StringList_free(sl);
@@ -595,7 +589,7 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab, uint32_t guiid) {
       t=GWEN_StringListEntry_Data(se);
       assert(t);
 
-      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, t, &db, guiid);
+      rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTS, t, &db);
       if (rv<0) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
 		 "Could not load account group [%s] (%d), ignoring",
@@ -688,7 +682,7 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_LoadConfig(AB_BANKING *ab) {
   int rv;
   GWEN_DB_NODE *db=NULL;
 
@@ -700,7 +694,7 @@ int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid) {
   }
 
   /* load main group, check version */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db, guiid);
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
     return rv;
@@ -718,17 +712,17 @@ int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid) {
   }
 
   /* init all providers */
-  AB_Banking_ActivateAllProviders(ab, guiid);
+  AB_Banking_ActivateAllProviders(ab);
 
   /* load all users */
-  rv=AB_Banking_LoadAllUsers(ab, guiid);
+  rv=AB_Banking_LoadAllUsers(ab);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   /* load all accounts */
-  rv=AB_Banking_LoadAllAccounts(ab, guiid);
+  rv=AB_Banking_LoadAllAccounts(ab);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -769,14 +763,14 @@ int AB_Banking_LoadConfig(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_UnloadConfig(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_UnloadConfig(AB_BANKING *ab) {
   AB_PROVIDER *pro;
   int rv;
 
   assert(ab);
 
   /* clear all active crypt token */
-  AB_Banking_ClearCryptTokenList(ab, 0);
+  AB_Banking_ClearCryptTokenList(ab);
 
   AB_Account_List_Clear(ab->accounts);
   AB_User_List_Clear(ab->users);
@@ -785,7 +779,7 @@ int AB_Banking_UnloadConfig(AB_BANKING *ab, uint32_t guiid) {
   pro=AB_Provider_List_First(ab->providers);
   while(pro) {
     while (AB_Provider_IsInit(pro)) {
-      rv=AB_Banking_FiniProvider(ab, pro, guiid);
+      rv=AB_Banking_FiniProvider(ab, pro);
       if (rv) {
 	DBG_WARN(AQBANKING_LOGDOMAIN,
 		 "Error deinitializing backend \"%s\"",
@@ -802,7 +796,7 @@ int AB_Banking_UnloadConfig(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_SaveConfig(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_SaveConfig(AB_BANKING *ab) {
   GWEN_DB_NODE *db=NULL;
   int rv;
 
@@ -816,17 +810,17 @@ int AB_Banking_SaveConfig(AB_BANKING *ab, uint32_t guiid) {
   }
 
   /* lock group */
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", guiid);
+  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config group (%d)", rv);
     return rv;
   }
 
   /* load group (is locked now) */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db, guiid);
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", guiid);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
     return rv;
   }
 
@@ -839,16 +833,16 @@ int AB_Banking_SaveConfig(AB_BANKING *ab, uint32_t guiid) {
 		      AQBANKING_VERSION_BUILD);
 
   /* save group (still locked) */
-  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", db, guiid);
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save main config group (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", guiid);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
     GWEN_DB_Group_free(db);
     return rv;
   }
 
   /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", guiid);
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock main config group (%d)", rv);
     GWEN_DB_Group_free(db);
@@ -941,8 +935,7 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
 
 
 int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
-				   AB_ACCOUNT *a,
-				   uint32_t guiid) {
+				   AB_ACCOUNT *a) {
   GWEN_DB_NODE *db=NULL;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -959,8 +952,7 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
   /* lock group */
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_ACCOUNTS,
-			      AB_Account_GetDbId(a),
-			      guiid);
+			      AB_Account_GetDbId(a));
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
     return rv;
@@ -970,14 +962,12 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_ACCOUNTS,
 			     AB_Account_GetDbId(a),
-			     &db,
-			     guiid);
+			     &db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load account group (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_ACCOUNTS,
-			       AB_Account_GetDbId(a),
-			       guiid);
+			       AB_Account_GetDbId(a));
     return rv;
   }
 
@@ -990,8 +980,7 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
 	     AB_Account_GetBankCode(a), AB_Account_GetAccountNumber(a), rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_ACCOUNTS,
-			       AB_Account_GetDbId(a),
-			       guiid);
+			       AB_Account_GetDbId(a));
     GWEN_DB_Group_free(db);
     return rv;
   }
@@ -1005,8 +994,7 @@ int AB_Banking_BeginExclUseAccount(AB_BANKING *ab,
 
 int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
 				 AB_ACCOUNT *a,
-				 int abandon,
-				 uint32_t guiid) {
+				 int abandon) {
   int rv;
 
   if (!abandon) {
@@ -1028,14 +1016,12 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			       AB_CFG_GROUP_ACCOUNTS,
 			       AB_Account_GetDbId(a),
-			       db,
-			       guiid);
+			       db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save account group (%d)", rv);
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_ACCOUNTS,
-				 AB_Account_GetDbId(a),
-				 guiid);
+				 AB_Account_GetDbId(a));
       GWEN_DB_Group_free(db);
       return rv;
     }
@@ -1045,8 +1031,7 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
   /* unlock group */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_ACCOUNTS,
-				AB_Account_GetDbId(a),
-				guiid);
+				AB_Account_GetDbId(a));
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock account group (%d)", rv);
     return rv;
@@ -1057,9 +1042,7 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab,
 
 
 
-int AB_Banking_BeginExclUseUser(AB_BANKING *ab,
-				AB_USER *u,
-				uint32_t guiid) {
+int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u) {
   GWEN_DB_NODE *db=NULL;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -1076,8 +1059,7 @@ int AB_Banking_BeginExclUseUser(AB_BANKING *ab,
   /* lock group */
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_USERS,
-			      AB_User_GetDbId(u),
-			      guiid);
+			      AB_User_GetDbId(u));
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
     return rv;
@@ -1087,14 +1069,12 @@ int AB_Banking_BeginExclUseUser(AB_BANKING *ab,
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
 			     AB_CFG_GROUP_USERS,
 			     AB_User_GetDbId(u),
-			     &db,
-			     guiid);
+			     &db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load account group (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_USERS,
-			       AB_User_GetDbId(u),
-			       guiid);
+			       AB_User_GetDbId(u));
     return rv;
   }
 
@@ -1120,8 +1100,7 @@ int AB_Banking_BeginExclUseUser(AB_BANKING *ab,
 
 int AB_Banking_EndExclUseUser(AB_BANKING *ab,
 			      AB_USER *u,
-			      int abandon,
-			      uint32_t guiid) {
+			      int abandon) {
   int rv;
 
   if (!abandon) {
@@ -1145,14 +1124,12 @@ int AB_Banking_EndExclUseUser(AB_BANKING *ab,
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			       AB_CFG_GROUP_USERS,
 			       AB_User_GetDbId(u),
-			       db,
-			       guiid);
+			       db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_USERS,
-				 AB_User_GetDbId(u),
-				 guiid);
+				 AB_User_GetDbId(u));
       GWEN_DB_Group_free(db);
       return rv;
     }
@@ -1162,8 +1139,7 @@ int AB_Banking_EndExclUseUser(AB_BANKING *ab,
   /* unlock group */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_USERS,
-				AB_User_GetDbId(u),
-				guiid);
+				AB_User_GetDbId(u));
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock user group (%d)", rv);
     return rv;
@@ -1192,8 +1168,7 @@ int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock) {
     /* lock group */
     rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				AB_CFG_GROUP_ACCOUNTS,
-				AB_Account_GetDbId(a),
-				0);
+				AB_Account_GetDbId(a));
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock account config group (%d)", rv);
       return rv;
@@ -1213,8 +1188,7 @@ int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock) {
     if (doLock)
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_ACCOUNTS,
-				 AB_Account_GetDbId(a),
-				 0);
+				 AB_Account_GetDbId(a));
     return rv;
   }
 
@@ -1223,15 +1197,13 @@ int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock) {
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_ACCOUNTS,
 			     AB_Account_GetDbId(a),
-			     db,
-			     0);
+			     db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save account group (%d)", rv);
     if (doLock) {
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_ACCOUNTS,
-				 AB_Account_GetDbId(a),
-				 0);
+				 AB_Account_GetDbId(a));
     }
     GWEN_DB_Group_free(db);
     return rv;
@@ -1242,8 +1214,7 @@ int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock) {
     /* unlock group */
     rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				  AB_CFG_GROUP_ACCOUNTS,
-				  AB_Account_GetDbId(a),
-				  0);
+				  AB_Account_GetDbId(a));
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock account group (%d)", rv);
       return rv;
@@ -1273,8 +1244,7 @@ int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock) {
     /* lock group */
     rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				AB_CFG_GROUP_USERS,
-				AB_User_GetDbId(u),
-				0);
+				AB_User_GetDbId(u));
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock user config group (%d)", rv);
       return rv;
@@ -1296,8 +1266,7 @@ int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock) {
     if (doLock) {
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_USERS,
-				 AB_User_GetDbId(u),
-				 0);
+				 AB_User_GetDbId(u));
     }
     return rv;
   }
@@ -1306,15 +1275,13 @@ int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock) {
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_USERS,
 			     AB_User_GetDbId(u),
-			     db,
-			     0);
+			     db);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
     if (doLock) {
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_USERS,
-				 AB_User_GetDbId(u),
-				 0);
+				 AB_User_GetDbId(u));
     }
     GWEN_DB_Group_free(db);
     return rv;
@@ -1325,8 +1292,7 @@ int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock) {
     /* unlock group */
     rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				  AB_CFG_GROUP_USERS,
-				  AB_User_GetDbId(u),
-				  0);
+				  AB_User_GetDbId(u));
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock user group (%d)", rv);
       return rv;

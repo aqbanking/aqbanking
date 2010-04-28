@@ -127,7 +127,7 @@ int setHbciVersion(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -172,12 +172,12 @@ int setHbciVersion(AB_BANKING *ab,
     }
 
     /* lock user */
-    rv=AB_Banking_BeginExclUseUser(ab, u, 0);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv<0) {
       fprintf(stderr,
 	      "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
 	      rv);
-      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_OnlineFini(ab);
       AB_Banking_Fini(ab);
       return 4;
     }
@@ -186,18 +186,18 @@ int setHbciVersion(AB_BANKING *ab,
     AH_User_SetHbciVersion(u, v);
 
     /* unlock user */
-    rv=AB_Banking_EndExclUseUser(ab, u, 0, 0);
+    rv=AB_Banking_EndExclUseUser(ab, u, 0);
     if (rv<0) {
       fprintf(stderr,
 	      "ERROR: Could not unlock user (%d)\n",
 	      rv);
-      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_OnlineFini(ab);
       AB_Banking_Fini(ab);
       return 4;
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

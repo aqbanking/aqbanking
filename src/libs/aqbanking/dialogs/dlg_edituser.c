@@ -446,7 +446,7 @@ int AB_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user, 0);
+    rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -467,7 +467,7 @@ int AB_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0, 0);
+    rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |

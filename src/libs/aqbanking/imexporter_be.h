@@ -72,22 +72,19 @@ void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags);
 /*@{*/
 typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                       GWEN_IO_LAYER *io,
-				       GWEN_DB_NODE *params,
-				       uint32_t guiid);
+				       GWEN_SYNCIO *sio,
+				       GWEN_DB_NODE *params);
 
 typedef int (*AB_IMEXPORTER_EXPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-				       GWEN_IO_LAYER *io,
-				       GWEN_DB_NODE *params,
-				       uint32_t guiid);
+				       GWEN_SYNCIO *sio,
+				       GWEN_DB_NODE *params);
 
 /**
  * Checks whether the given file is possibly supported by the plugin.
  */
 typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
-					  const char *fname,
-					  uint32_t guiid);
+					  const char *fname);
 
 
 /**

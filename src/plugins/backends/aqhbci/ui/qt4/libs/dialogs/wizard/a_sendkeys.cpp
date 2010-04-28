@@ -113,7 +113,7 @@ void ActionSendKeys::slotButtonClicked() {
 			     0);
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_SendUserKeys(pro, u, ctx, 1, 1, 1, pid);
+  rv=AH_Provider_SendUserKeys(pro, u, ctx, 1, 1, 1);
   GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {

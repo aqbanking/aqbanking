@@ -204,8 +204,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   rv=AB_Banking_CheckCryptToken(AB_NewUserDialog_GetBanking(dlg),
 				GWEN_Crypt_Token_Device_Card,
 				mtypeName,
-				mediumName,
-				pid);
+				mediumName);
   GWEN_Gui_ProgressEnd(pid);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -243,14 +242,14 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
     if (rv==0) {
       /* rejected */
       GWEN_Dialog_free(dlg2);
-      AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+      AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg));
       return GWEN_DialogEvent_ResultHandled;
     }
     AB_NewUserDialog_SetUser(dlg, AH_PinTanDialog_GetUser(dlg2));
     GWEN_Dialog_free(dlg2);
     GWEN_Buffer_free(mediumName);
     GWEN_Buffer_free(mtypeName);
-    AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+    AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg));
     return GWEN_DialogEvent_ResultAccept;
   }
   else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
@@ -263,7 +262,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   }
   GWEN_Buffer_free(mediumName);
   GWEN_Buffer_free(mtypeName);
-  AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg), 0);
+  AB_Banking_ClearCryptTokenList(AB_NewUserDialog_GetBanking(dlg));
 
   return GWEN_DialogEvent_ResultHandled;
 }

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -101,8 +98,7 @@ bool UserWizard::_checkAndCreateMedium(WizardInfo *wInfo) {
   rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(_provider),
 				GWEN_Crypt_Token_Device_Card,
 				mtypeName,
-				mediumName,
-				pid);
+				mediumName);
   GWEN_Gui_ProgressEnd(pid);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -158,7 +154,7 @@ bool UserWizard::_handleModeImportCard() {
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
-    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
+    AB_Banking_ClearCryptTokenList(_app->getCInterface());
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     wInfo.setUser(NULL);
@@ -186,7 +182,7 @@ bool UserWizard::_handleModeImportFile() {
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
-    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
+    AB_Banking_ClearCryptTokenList(_app->getCInterface());
 
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
@@ -214,7 +210,7 @@ bool UserWizard::_handleModeCreateFile() {
   /* setup user */
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
-    AB_Banking_ClearCryptTokenList(_app->getCInterface(), 0);
+    AB_Banking_ClearCryptTokenList(_app->getCInterface());
     wInfo.setToken(NULL);
     wInfo.subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     wInfo.setUser(NULL);
@@ -283,7 +279,7 @@ bool UserWizard::finishUser(QBanking *qb,
   if (w->exec()==QDialog::Accepted) {
     DBG_NOTICE(0, "Accepted");
     /* unmount medium */
-    AB_Banking_ClearCryptTokenList(qb->getCInterface(), 0);
+    AB_Banking_ClearCryptTokenList(qb->getCInterface());
   }
   else {
     DBG_NOTICE(0, "Rejected");

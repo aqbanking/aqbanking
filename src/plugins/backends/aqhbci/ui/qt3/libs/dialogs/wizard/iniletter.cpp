@@ -121,8 +121,7 @@ void IniLetter::_createIniLetter() {
                                   _isUserKey?0:1,
                                   0,
 				  buf,
-				  1,
-				  0);
+				  1);
   if (rv) {
     QMessageBox::critical(this,
 			  tr("Error"),

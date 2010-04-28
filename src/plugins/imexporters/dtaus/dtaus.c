@@ -80,9 +80,8 @@ void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p){
 
 int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
 			      AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid){
+			      GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params){
   AH_IMEXPORTER_DTAUS *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -97,16 +96,14 @@ int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      io,
+		      sio,
 		      dbData,
 		      dbSubParams,
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      guiid,
-		      2000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 "Error importing data");
     GWEN_DB_Group_free(dbData);
@@ -199,7 +196,7 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   AH_IMEXPORTER_DTAUS *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -208,7 +205,7 @@ int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t 
   assert(ieh);
   assert(ieh->dbio);
 
-  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname, guiid, 2000);
+  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
   switch(rv) {
   case GWEN_DBIO_CheckFileResultOk:      return 0;
   case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
@@ -222,9 +219,8 @@ int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t 
 
 int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 			      AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid){
+			      GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params){
   AH_IMEXPORTER_DTAUS *ieh;
   GWEN_DB_NODE *dbSubParams;
   int rv;
@@ -279,7 +275,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
       if (tlocalBankCode &&
 	  localBankCode &&
 	  strcasecmp(tlocalBankCode, localBankCode)!=0) {
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Transactions with multiple bank codes found"));
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -290,7 +286,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
       if (tlocalAccountNumber &&
 	  localAccountNumber &&
 	  strcasecmp(tlocalAccountNumber, localAccountNumber)!=0) {
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Transactions with multiple account numbers found"));
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -301,7 +297,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
       if (tlocalName &&
 	  localName &&
 	  strcasecmp(tlocalName, localName)!=0) {
-	GWEN_Gui_ProgressLog(guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Transactions with multiple local names found"));
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -343,10 +339,9 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
     }
 
     /* export transactions to IO */
-    rv=GWEN_DBIO_Export(ieh->dbio, io,
+    rv=GWEN_DBIO_Export(ieh->dbio, sio,
 			dbTransfers, dbCfg,
-			GWEN_DB_FLAGS_DEFAULT,
-			guiid, 2000);
+			GWEN_DB_FLAGS_DEFAULT);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating DTAUS object");
       GWEN_DB_Group_free(dbTransfers);

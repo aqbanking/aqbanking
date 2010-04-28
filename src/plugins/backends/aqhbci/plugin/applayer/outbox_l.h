@@ -32,7 +32,7 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 #include <aqhbci/user.h>
 
 
-AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci, uint32_t guiid);
+AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci);
 void AH_Outbox_free(AH_OUTBOX *ob);
 void AH_Outbox_Attach(AH_OUTBOX *ob);
 
@@ -40,18 +40,18 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
 void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj);
 
 /* makes all jobs commit their data */
-void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock, uint32_t guiid);
+void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock);
 
 
 /* makes all jobs process their data */
-void AH_Outbox_Process(AH_OUTBOX *ob, uint32_t guiid);
+void AH_Outbox_Process(AH_OUTBOX *ob);
 
 /* makes all jobs commit their system data (only calls
  * @ref AH_Job_DefaultCommitHandler which only commits system data
  * like account data, bank parameter data etc according to the flags in
  * @ref AH_HBCIClient).
  */
-void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock, uint32_t guiid);
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock);
 
 
 unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob);
@@ -60,8 +60,7 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob);
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
-		      int withProgress, int nounmount, int doLock,
-		      uint32_t guiid);
+		      int withProgress, int nounmount, int doLock);
 
 
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
@@ -70,7 +69,7 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
                                   int isTransfer);
 
 
-AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob, uint32_t guiid);
+AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob);
 
 
 #endif /* AH_OUTBOX_L_H */

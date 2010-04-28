@@ -53,8 +53,7 @@ int AO_Provider__AddHeaders(AB_PROVIDER *pro,
 
 int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 			   AB_USER *u,
-			   GWEN_BUFFER *buf,
-			   uint32_t guiid) {
+			   GWEN_BUFFER *buf) {
   GWEN_TIME *ti;
   const char *s;
   char userpass[64];
@@ -79,7 +78,7 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
   else {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Missing user id, should not happen");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Missing user id, should not happen"));
     return GWEN_ERROR_INTERNAL;
@@ -106,8 +105,8 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 			    msgbuf,
 			    userpass,
 			    4,
-                            sizeof(userpass),
-			    guiid);
+			    sizeof(userpass),
+			    0);
     GWEN_Buffer_free(nbuf);
     if (rv<0) {
       memset(userpass, 0, sizeof(userpass));
@@ -229,8 +228,7 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro,
 
 int AO_Provider__WrapMessage(AB_PROVIDER *pro,
                              AB_USER *u,
-			     GWEN_BUFFER *buf,
-			     uint32_t guiid) {
+			     GWEN_BUFFER *buf) {
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -246,7 +244,7 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro,
   }
   GWEN_Buffer_AppendString(tbuf, "<OFX>");
 
-  rv=AO_Provider__AddSignOn(pro, u, tbuf, guiid);
+  rv=AO_Provider__AddSignOn(pro, u, tbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding signon element (%d)", rv);

@@ -210,7 +210,7 @@ bool QBanking::setAccountStatus(const AB_ACCOUNT *a,
 AB_ACCOUNT *QBanking::_getAccount(const char *accountId){
   AB_ACCOUNT *a;
 
-  a=AB_Banking_GetAccountByAlias(getCInterface(), accountId, 0);
+  a=AB_Banking_GetAccountByAlias(getCInterface(), accountId);
   if (!a) {
     // should not happen anyway
     QMessageBox::critical(_parentWidget,
@@ -235,7 +235,7 @@ void QBanking::setAccountAlias(AB_ACCOUNT *a, const char *alias){
   assert(a);
   assert(alias);
 
-  AB_Banking_SetAccountAlias(getCInterface(), a, alias, 0);
+  AB_Banking_SetAccountAlias(getCInterface(), a, alias);
 }
 
 

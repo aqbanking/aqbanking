@@ -150,7 +150,7 @@ int iniLetter(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -199,14 +199,14 @@ int iniLetter(AB_BANKING *ab,
                                       bankKey,
                                       variant,
 				      lbuf,
-				      0, 0);
+				      0);
     else
       rv=AH_Provider_GetIniLetterTxt(pro,
 				     u,
                                      bankKey,
                                      variant,
 				     lbuf,
-				     0, 0);
+				     0);
     if (rv) {
       DBG_ERROR(0, "Could not create ini letter (%d)", rv);
       return 3;
@@ -217,7 +217,7 @@ int iniLetter(AB_BANKING *ab,
     GWEN_Buffer_free(lbuf);
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

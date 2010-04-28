@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: adminjobs.c 950 2006-02-22 19:39:02Z aquamaniac $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,9 +20,7 @@
 
 int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 			  AH_DIALOG *dlg,
-			  AH_JOBQUEUE *qJob,
-			  int timeout,
-                          uint32_t guiid){
+			  AH_JOBQUEUE *qJob){
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -187,7 +182,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send HKTAN message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2, timeout, guiid);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -199,7 +194,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(jTan, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, jq, guiid);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
@@ -210,7 +205,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
-  rv=AH_Job_Process(jTan, cbox->outbox->context, guiid);
+  rv=AH_Job_Process(jTan, cbox->outbox->context);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -228,8 +223,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 				     challenge,
 				     tanBuffer,
 				     1,
-                                     sizeof(tanBuffer),
-                                     guiid);
+                                     sizeof(tanBuffer));
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg1);
@@ -282,7 +276,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send job message */
-  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1, timeout, guiid);
+  rv=AH_Outbox__CBox_Itan_SendMsg(cbox, dlg, msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -292,7 +286,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(j, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, timeout, dlg, qJob, guiid);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

@@ -41,11 +41,10 @@ static void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p);
 
 static int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-static int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
-static int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
+static int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
+static int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
 static int AO_Provider_Execute(AB_PROVIDER *pro,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid);
+			       AB_IMEXPORTER_CONTEXT *ctx);
 static int AO_Provider_ResetQueue(AB_PROVIDER *pro);
 static int AO_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
 				  AB_PROVIDER_EXTEND_MODE em,
@@ -65,20 +64,16 @@ static int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
                                       AB_USER *u,
 				      const uint8_t *p,
                                       unsigned int plen,
-				      GWEN_BUFFER **rbuf,
-				      uint32_t guiid);
+				      GWEN_BUFFER **rbuf);
 
 static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
-					 AB_IMEXPORTER_CONTEXT *ictx,
-					 uint32_t guiid);
+					 AB_IMEXPORTER_CONTEXT *ictx);
 
 static int AO_Provider_ExecUserQueue(AB_PROVIDER *pro,
 				     AB_IMEXPORTER_CONTEXT *ctx,
-				     AO_USERQUEUE *uq,
-				     uint32_t guiid);
+				     AO_USERQUEUE *uq);
 static int AO_Provider_ExecQueue(AB_PROVIDER *pro,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 uint32_t guiid);
+				 AB_IMEXPORTER_CONTEXT *ctx);
 
 static int AO_Provider_CountDoneJobs(AB_JOB_LIST2 *jl);
 static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, uint32_t jid);
@@ -88,8 +83,7 @@ static AB_JOB *AO_Provider_FindJobById(AB_JOB_LIST2 *jl, uint32_t jid);
 
 int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
 					AB_USER *u,
-					AB_IMEXPORTER_CONTEXT *ictx,
-					uint32_t guiid);
+					AB_IMEXPORTER_CONTEXT *ictx);
 
 
 
@@ -99,8 +93,7 @@ static int AO_Provider__AddHeaders(AB_PROVIDER *pro,
 
 static int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 				  AB_USER *u,
-				  GWEN_BUFFER *buf,
-				  uint32_t guiid);
+				  GWEN_BUFFER *buf);
 
 static int AO_Provider__WrapRequest(AB_PROVIDER *pro,
                                     AB_USER *u,
@@ -110,32 +103,25 @@ static int AO_Provider__WrapRequest(AB_PROVIDER *pro,
 
 static int AO_Provider__WrapMessage(AB_PROVIDER *pro,
 				    AB_USER *u,
-				    GWEN_BUFFER *buf,
-				    uint32_t guiid);
+				    GWEN_BUFFER *buf);
 
 
 
-static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-					    uint32_t guiid,
-					    GWEN_BUFFER *buf);
+static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j, GWEN_BUFFER *buf);
 
 static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-						  uint32_t guiid,
 						  GWEN_BUFFER *buf);
 
 static int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
-					   uint32_t guiid,
 					   GWEN_BUFFER *buf);
 
 static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_JOB *j,
-					    uint32_t guiid,
 					    GWEN_BUFFER *buf);
 
 
 
 int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro,
                                    AB_USER *u,
-				   uint32_t guiid,
 				   GWEN_BUFFER *buf);
 
 

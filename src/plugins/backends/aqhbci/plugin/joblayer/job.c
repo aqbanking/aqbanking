@@ -982,7 +982,7 @@ const char *AH_Job_GetAccountId(const AH_JOB *j) {
 
 
 
-int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid){
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   assert(j);
   assert(j->usage);
@@ -990,23 +990,23 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid){
   AH_Job_SampleResults(j);
 
   if (j->processFn)
-    return j->processFn(j, ctx, guiid);
+    return j->processFn(j, ctx);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No processFn set");
-    return AH_Job_DefaultProcessHandler(j, guiid);
+    return AH_Job_DefaultProcessHandler(j);
   }
 }
 
 
 
-int AH_Job_Commit(AH_JOB *j, int doLock, uint32_t guiid){
+int AH_Job_Commit(AH_JOB *j, int doLock){
   assert(j);
   assert(j->usage);
   if (j->commitFn)
-    return j->commitFn(j, doLock, guiid);
+    return j->commitFn(j, doLock);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No commitFn set");
-    return AH_Job_DefaultCommitHandler(j, doLock, guiid);
+    return AH_Job_DefaultCommitHandler(j, doLock);
   }
 }
 
@@ -1014,8 +1014,7 @@ int AH_Job_Commit(AH_JOB *j, int doLock, uint32_t guiid){
 
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 		    AH_JOB_EXCHANGE_MODE m,
-		    AB_IMEXPORTER_CONTEXT *ctx,
-		    uint32_t guiid){
+		    AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *db;
 
   assert(j);
@@ -1073,7 +1072,7 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
   } /* switch */
 
   if (j->exchangeFn)
-    return j->exchangeFn(j, bj, m, ctx, guiid);
+    return j->exchangeFn(j, bj, m, ctx);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No exchangeFn set");
     return GWEN_ERROR_NOT_SUPPORTED;
@@ -1082,11 +1081,11 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
-int AH_Job_Prepare(AH_JOB *j, uint32_t guiid){
+int AH_Job_Prepare(AH_JOB *j){
   assert(j);
   assert(j->usage);
   if (j->prepareFn)
-    return j->prepareFn(j, guiid);
+    return j->prepareFn(j);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No prepareFn set");
     return GWEN_ERROR_NOT_SUPPORTED;
@@ -1334,7 +1333,7 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
 
 
-int AH_Job__CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
+int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
   GWEN_DB_NODE *dbCurr;
   AB_USER *u;
   AB_BANKING *ab;
@@ -1713,7 +1712,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
                      accountId);
 	  accCreated=0;
 	  if (doLock) {
-	    rv=AB_Banking_BeginExclUseAccount(ab, acc, guiid);
+	    rv=AB_Banking_BeginExclUseAccount(ab, acc);
 	    if (rv<0) {
 	      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	      mayModifyAcc=0;
@@ -1782,10 +1781,10 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
 	else {
 	  if (mayModifyAcc) {
 	    if (doLock) {
-	      rv=AB_Banking_EndExclUseAccount(ab, acc, 0, guiid);
+	      rv=AB_Banking_EndExclUseAccount(ab, acc, 0);
 	      if (rv<0) {
 		DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-		AB_Banking_EndExclUseAccount(ab, acc, 1, guiid); /* abort */
+		AB_Banking_EndExclUseAccount(ab, acc, 1); /* abort */
 	      }
 	    }
 	  }
@@ -1845,7 +1844,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
 
 
 
-int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
+int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
   AB_USER *u;
   AB_BANKING *ab;
   int rv, rv2;
@@ -1858,7 +1857,7 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u, guiid);
+    rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -1866,14 +1865,14 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid) {
   }
 
   /* commit data */
-  rv2=AH_Job__CommitSystemData(j, doLock, guiid);
+  rv2=AH_Job__CommitSystemData(j, doLock);
 
   if (doLock) {
     /* unlock user */
-    rv=AB_Banking_EndExclUseUser(ab, u, 0, guiid);
+    rv=AB_Banking_EndExclUseUser(ab, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_EndExclUseUser(ab, u, 1, guiid); /* abandon */
+      AB_Banking_EndExclUseUser(ab, u, 1); /* abandon */
       return rv;
     }
   }
@@ -1925,7 +1924,7 @@ int AH_Job_HasItanResult(AH_JOB *j) {
 
 
 
-int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid){
+int AH_Job_DefaultProcessHandler(AH_JOB *j){
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_PROCESSED) {
@@ -1937,7 +1936,7 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid){
 
 
 
-int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock, uint32_t guiid){
+int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock){
   int rv;
 
   assert(j);
@@ -1946,7 +1945,7 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock, uint32_t guiid){
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already committed job \"%s\"", j->name);
     return 0;
   }
-  rv=AH_Job_CommitSystemData(j, doLock, guiid);
+  rv=AH_Job_CommitSystemData(j, doLock);
   j->flags|=AH_JOB_FLAGS_COMMITTED;
   return rv;
 }

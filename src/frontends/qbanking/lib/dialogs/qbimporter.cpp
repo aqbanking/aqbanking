@@ -148,8 +148,7 @@ bool QBImporter::init() {
 
   rv=_app->loadSharedSubConfig("qbanking",
 			       "gui/dlgs/importer",
-			       &_dbData,
-			       0);
+			       &_dbData);
   if (rv<0) {
     DBG_INFO(0, "Could not load shared config");
     return false;
@@ -195,8 +194,7 @@ bool QBImporter::fini() {
 
   rv=_app->saveSharedSubConfig("qbanking",
 			       "gui/dlgs/importer",
-			       _dbData,
-			       0);
+			       _dbData);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
   }
@@ -691,7 +689,7 @@ bool QBImporter::_checkFileType(const QString &fname){
 	  int rv;
     
 	  // let the importer check the file
-	  rv=AB_ImExporter_CheckFile(importer, fname.utf8(), 0); // TODO: set guiid
+	  rv=AB_ImExporter_CheckFile(importer, fname.utf8());
           if (rv==0) {
             qs=QWidget::tr("File type is \"%1\"")
               .arg(QString::fromUtf8(GWEN_PluginDescription_GetName(pd)));
@@ -866,78 +864,21 @@ bool QBImporter::_readFile(const QString &fname){
     return false;
   }
   else {
-    int fd;
-
     DBG_INFO(0, "Importing file \"%s\"", fname.local8Bit().data());
-    // Note: This is not a cast but rather a call of the
-    // conversion operator "QCString::operator const char * ()
-    // const" that will correctly convert the QCString to the
-    // const char*
-    fd = ::open(fname.local8Bit().data(), O_RDONLY);
-    // Note: We need to write ::open() to avoid an ambiguity with
-    // QDialog::open().
-    if (fd==-1) {
-      qs=QWidget::tr("Could not open file \"%1\": %2")
-	.arg(fname)
-	.arg(QString(strerror(errno)));
+
+    rv=AB_ImExporter_ImportFile(_importer, _context, fname.local8Bit().data(), _profile);
+    if (rv<0) {
+      DBG_NOTICE(0, "Error importing file \"%s\"",
+		 fname.local8Bit().data());
+      qs=QWidget::tr("Error importing file \"%1\"").arg(fname);
       QMessageBox::critical(this,
 			    tr("Error"),
 			    qs,
-			    QMessageBox::Ok,QMessageBox::NoButton);
+			    QMessageBox::Ok,Qt::NoButton);
       return false;
     }
-    else {
-      GWEN_IO_LAYER *io;
-
-      io=GWEN_Io_LayerFile_new(fd, -1);
-      assert(io);
-
-      rv=GWEN_Io_Manager_RegisterLayer(io);
-      if (rv) {
-	qs=QWidget::tr("Could not register io layer (%1)").arg(rv);
-	QMessageBox::critical(this,
-			      tr("Internal Error"),
-			      qs,
-			      QMessageBox::Ok,QMessageBox::NoButton);
-	GWEN_Io_Layer_free(io);
-	return false;
-      }
-
-      rv=AB_ImExporter_Import(_importer,
-			      _context,
-			      io,
-			      _profile,
-			      0); // TODO: guiid
-      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000); // TODO: guiid
-      GWEN_Io_Layer_free(io);
-      if (rv) {
-	DBG_NOTICE(0, "Error importing file \"%s\"",
-		   fname.local8Bit().data());
-        qs=QWidget::tr("Error importing file \"%1\"").arg(fname);
-	QMessageBox::critical(this,
-			      tr("Error"),
-			      qs,
-			      QMessageBox::Ok,QMessageBox::NoButton);
-	return false;
-      }
-      DBG_NOTICE(0, "File \"%s\" imported",
-		 fname.local8Bit().data());
-
-#if 0
-      if (1) {
-	GWEN_DB_NODE *dbX;
-
-	dbX=GWEN_DB_Group_new("context");
-	AB_ImExporterContext_toDb(_context, dbX);
-	GWEN_DB_WriteFile(dbX, "/tmp/ctx.out",
-			  GWEN_DB_FLAGS_DEFAULT,
-			  0, 2000);
-        GWEN_DB_Group_free(dbX);
-      }
-#endif
-
-
-    } // if open succeeded
+    DBG_NOTICE(0, "File \"%s\" imported",
+	       fname.local8Bit().data());
   } // if file exists
 
   DBG_NOTICE(0, "Reading files completed.");

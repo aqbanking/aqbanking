@@ -107,7 +107,7 @@ void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
 
 
 
-int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid){
+int AB_Provider_Init(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider already is initialized");
@@ -119,8 +119,7 @@ int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid){
 
     rv=AB_Banking_LoadPluginConfig(pro->banking,
 				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData,
-				   guiid);
+				   pro->name, &dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -143,7 +142,7 @@ int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid){
 
 
 
-int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid){
+int AB_Provider_Fini(AB_PROVIDER *pro){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
@@ -155,8 +154,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid){
 
     rv=AB_Banking_LockPluginConfig(pro->banking,
                                    AB_CFG_GROUP_BACKENDS,
-				   pro->name,
-				   guiid);
+				   pro->name);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -164,14 +162,12 @@ int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid){
 
     rv=AB_Banking_LoadPluginConfig(pro->banking,
                                    AB_CFG_GROUP_BACKENDS,
-				   pro->name, &dbData,
-				   guiid);
+				   pro->name, &dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
                                     AB_CFG_GROUP_BACKENDS,
-				    pro->name,
-				    guiid);
+				    pro->name);
       return rv;
     }
 
@@ -181,28 +177,26 @@ int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid){
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
 				    AB_CFG_GROUP_BACKENDS,
-				    pro->name,
-				    guiid);
+				    pro->name);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
     rv=AB_Banking_SavePluginConfig(pro->banking,
 				   AB_CFG_GROUP_BACKENDS,
-				   pro->name, dbData, guiid);
+				   pro->name, dbData);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Banking_UnlockPluginConfig(pro->banking,
 				    AB_CFG_GROUP_BACKENDS,
-				    pro->name,
-				    guiid);
+				    pro->name);
       GWEN_DB_Group_free(dbData);
       return rv;
     }
 
     rv=AB_Banking_UnlockPluginConfig(pro->banking,
 				     AB_CFG_GROUP_BACKENDS,
-				     pro->name, guiid);
+				     pro->name);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_DB_Group_free(dbData);
@@ -341,14 +335,14 @@ void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDI
 
 
 
-int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return GWEN_ERROR_INVALID;
   }
   if (pro->updateJobFn) {
-    return pro->updateJobFn(pro, j, guiid);
+    return pro->updateJobFn(pro, j);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateJob function set");
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -356,14 +350,14 @@ int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 
 
 
-int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return GWEN_ERROR_INVALID;
   }
   if (pro->addJobFn) {
-    return pro->addJobFn(pro, j, guiid);
+    return pro->addJobFn(pro, j);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No addJob function set");
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -371,15 +365,14 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
 
 
 
-int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid){
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   assert(pro);
   if (pro->isInit==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
     return GWEN_ERROR_INVALID;
   }
   if (pro->executeFn) {
-    return pro->executeFn(pro, ctx, guiid);
+    return pro->executeFn(pro, ctx);
   }
   DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
   return GWEN_ERROR_NOT_IMPLEMENTED;

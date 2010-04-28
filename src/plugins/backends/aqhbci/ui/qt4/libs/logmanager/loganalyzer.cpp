@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-  -------------------
-  cvs         : $Id$
   begin       : Sat Oct 25 2003
-  copyright   : (C) 2003 by Martin Preuss
+  copyright   : (C) 2003-2010 by Martin Preuss
   email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -38,10 +35,8 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/path.h>
 
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_memory.h>
-#include <gwenhywfar/iolayer.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_memory.h>
 
 
 #ifndef WIN32
@@ -83,88 +78,62 @@ LogAnalyzer::LogFile::LogMessage::~LogMessage(){
 
 string LogAnalyzer::LogFile::LogMessage::toString() const {
   int rv;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   GWEN_BUFFER *buf;
   std::string result;
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
+  sio=GWEN_SyncIo_Memory_new(buf, 0);
 
-  /* create io layer for this file */
-  io=GWEN_Io_LayerMemory_new(buf);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
-    return "";
-  }
-
-  /* write header */
-  rv=GWEN_DB_WriteToIo(_header, io,
+  rv=GWEN_DB_WriteToIo(_header, sio,
 		       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
 		       GWEN_DB_FLAGS_DETAILED_GROUPS |
 		       GWEN_DB_FLAGS_USE_COLON|
-		       GWEN_DB_FLAGS_OMIT_TYPES,
-		       0,
-		       2000);
+		       GWEN_DB_FLAGS_OMIT_TYPES);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return "";
   }
 
   /* append empty line to separate header from data */
-  rv=GWEN_Io_Layer_WriteChar(io, '\n',
-			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
-			     0,
-			     2000);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return "";
   }
 
   /* write data */
-  rv=GWEN_Io_Layer_WriteBytes(io,
-			      (const uint8_t*)_message.data(),
-			      _message.length(),
-			      GWEN_IO_REQUEST_FLAGS_WRITEALL,
-			      0,
-			      2000);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) _message.data(), _message.length());
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return "";
   }
 
   /* append CR for better readability */
-  rv=GWEN_Io_Layer_WriteChar(io, '\n',
-			     GWEN_IO_REQUEST_FLAGS_WRITEALL,
-			     0,
-			     2000);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return "";
   }
 
   /* close layer */
-  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 30000);
+  rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    GWEN_Buffer_free(buf);
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return "";
   }
 
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_free(sio);
+
   result=std::string(GWEN_Buffer_GetStart(buf),
 		     GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
@@ -176,49 +145,27 @@ string LogAnalyzer::LogFile::LogMessage::toString() const {
 
 LogAnalyzer::LogFile::LogFile(const string &fname)
 :_fileName(fname){
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   GWEN_FAST_BUFFER *fb;
-  int fd;
   int rv;
   uint8_t buffer[1024];
 
-  fd=open(fname.c_str(), O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Error opening file \"%s\": %s",
-              fname.c_str(),
-              strerror(errno));
-    throw Error("LogAnalyzer::Logfile::LogFile",
-                ERROR_LEVEL_NORMAL,
-                HBCI_ERROR_CODE_UNKNOWN,
-                ERROR_ADVISE_DONTKNOW,
-                "Error opening file",
-                fname);
-  }
-
-  /* create io layer for this file */
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-
-  /* create fast buffer around io layer */
-  fb=GWEN_FastBuffer_new(1024, io, 0, 20000);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Internal error: Could not register io layer (%d)", rv);
-    GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					GWEN_IO_REQUEST_FLAGS_FORCE,
-					0, 2000);
-    GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_File_new(fname.c_str(), GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     throw Error("LogAnalyzer::Logfile::LogFile",
 		ERROR_LEVEL_NORMAL,
 		HBCI_ERROR_CODE_UNKNOWN,
 		ERROR_ADVISE_DONTKNOW,
-		"Error registering io layer",
+		"Error opening file",
 		fname);
   }
+
+  /* create fast buffer around io layer */
+  fb=GWEN_FastBuffer_new(1024, sio);
 
   for (;;) {
     Pointer<LogMessage> msg;
@@ -235,13 +182,11 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
       if (rv==GWEN_ERROR_EOF)
 	break;
       else {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	DBG_ERROR(0, "here (%d)", rv);
 	GWEN_DB_Group_free(hd);
 	GWEN_FastBuffer_free(fb);
-	GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					    GWEN_IO_REQUEST_FLAGS_FORCE,
-					    0, 2000);
-	GWEN_Io_Layer_free(io);
+	GWEN_SyncIo_Disconnect(sio);
+        GWEN_SyncIo_free(sio);
 	throw Error("LogAnalyzer::Logfile::LogFile",
 		    ERROR_LEVEL_NORMAL,
 		    HBCI_ERROR_CODE_UNKNOWN,
@@ -262,13 +207,11 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
 
       GWEN_FASTBUFFER_READFORCED(fb, rv, buffer, lsize);
       if (rv<0) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	DBG_ERROR(0, "here (%d)", rv);
 	GWEN_DB_Group_free(hd);
 	GWEN_FastBuffer_free(fb);
-	GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					    GWEN_IO_REQUEST_FLAGS_FORCE,
-					    0, 2000);
-	GWEN_Io_Layer_free(io);
+	GWEN_SyncIo_Disconnect(sio);
+	GWEN_SyncIo_free(sio);
 	throw Error("LogAnalyzer::Logfile::LogFile",
 		    ERROR_LEVEL_NORMAL,
 		    HBCI_ERROR_CODE_UNKNOWN,
@@ -284,17 +227,15 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
     GWEN_FASTBUFFER_READFORCED(fb, rv, buffer, 1);
     if (rv<0) {
       if (rv==GWEN_ERROR_EOF) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "EOF met");
+	DBG_INFO(0, "EOF met");
 	break;
       }
       else {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	DBG_ERROR(0, "here (%d)", rv);
 	GWEN_DB_Group_free(hd);
 	GWEN_FastBuffer_free(fb);
-	GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-					    GWEN_IO_REQUEST_FLAGS_FORCE,
-					    0, 2000);
-	GWEN_Io_Layer_free(io);
+	GWEN_SyncIo_Disconnect(sio);
+	GWEN_SyncIo_free(sio);
 	throw Error("LogAnalyzer::Logfile::LogFile",
 		    ERROR_LEVEL_NORMAL,
 		    HBCI_ERROR_CODE_UNKNOWN,
@@ -305,16 +246,14 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
     }
     else {
       msg=new LogMessage(hd, body);
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding message");
+      DBG_INFO(0, "Adding message");
       _logMessages.push_back(msg);
     }
   }
 
   GWEN_FastBuffer_free(fb);
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL,
-				      0,
-				      0, 2000);
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 }
 
 

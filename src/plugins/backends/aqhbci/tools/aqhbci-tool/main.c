@@ -250,8 +250,7 @@ int main(int argc, char **argv) {
     dbPins=GWEN_DB_Group_new("pins");
     if (GWEN_DB_ReadFile(dbPins, pinFile,
 			 GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP,
-			 0, 20000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
       fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
       return 2;
     }

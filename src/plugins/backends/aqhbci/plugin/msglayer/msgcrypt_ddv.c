@@ -127,7 +127,7 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(h),
 			 AH_PROVIDER_NAME,
@@ -429,7 +429,7 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg) {
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -692,7 +692,7 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   uFlags=AH_User_GetFlags(u);
@@ -884,7 +884,7 @@ int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
 
-  gid=AH_Dialog_GetGuiId(hmsg->dialog);
+  gid=0;
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),

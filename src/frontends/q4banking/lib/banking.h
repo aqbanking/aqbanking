@@ -67,12 +67,12 @@ public:
   /**
    * See @ref AB_Banking_OnlineInit
    */
-  int onlineInit(uint32_t guiid);
+  int onlineInit();
 
   /**
    * See @ref AB_Banking_OnlineFini
    */
-  int onlineFini(uint32_t guiid);
+  int onlineFini();
 
   /**
    * Loads a backend with the given name. You can use
@@ -116,40 +116,36 @@ public:
   int getUserDataDir(GWEN_BUFFER *buf) const ;
   int getAppUserDataDir(GWEN_BUFFER *buf) const ;
 
-  int loadAppConfig(GWEN_DB_NODE **pDb, uint32_t guiid);
-  int saveAppConfig(GWEN_DB_NODE *db, uint32_t guiid);
-  int lockAppConfig(uint32_t guiid);
-  int unlockAppConfig(uint32_t guiid);
+  int loadAppConfig(GWEN_DB_NODE **pDb);
+  int saveAppConfig(GWEN_DB_NODE *db);
+  int lockAppConfig();
+  int unlockAppConfig();
 
   int loadAppSubConfig(const char *subGroup,
-		       GWEN_DB_NODE **pDb,
-		       uint32_t guiid);
+		       GWEN_DB_NODE **pDb);
 
   int saveAppSubConfig(const char *subGroup,
-		       GWEN_DB_NODE *dbSrc,
-		       uint32_t guiid);
+		       GWEN_DB_NODE *dbSrc);
 
 
-  int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb, uint32_t guiid);
-  int saveSharedConfig(const char *name, GWEN_DB_NODE *db, uint32_t guiid);
-  int lockSharedConfig(const char *name, uint32_t guiid);
-  int unlockSharedConfig(const char *name, uint32_t guiid);
+  int loadSharedConfig(const char *name, GWEN_DB_NODE **pDb);
+  int saveSharedConfig(const char *name, GWEN_DB_NODE *db);
+  int lockSharedConfig(const char *name);
+  int unlockSharedConfig(const char *name);
 
   int loadSharedSubConfig(const char *name,
 			  const char *subGroup,
-			  GWEN_DB_NODE **pDb,
-			  uint32_t guiid);
+			  GWEN_DB_NODE **pDb);
 
   int saveSharedSubConfig(const char *name,
 			  const char *subGroup,
-			  GWEN_DB_NODE *dbSrc,
-			  uint32_t guiid);
+			  GWEN_DB_NODE *dbSrc);
 
-  int beginExclUseAccount(AB_ACCOUNT *a, uint32_t guiid);
-  int endExclUseAccount(AB_ACCOUNT *a, int abandon, uint32_t guiid);
+  int beginExclUseAccount(AB_ACCOUNT *a);
+  int endExclUseAccount(AB_ACCOUNT *a, int abandon);
 
-  int beginExclUseUser(AB_USER *u, uint32_t guiid);
-  int endExclUseUser(AB_USER *u, int abandon, uint32_t guiid);
+  int beginExclUseUser(AB_USER *u);
+  int endExclUseUser(AB_USER *u, int abandon);
 
 
   /** @name Plugin Handling
@@ -201,8 +197,7 @@ public:
    * and allows that backend to process it.
    */
   virtual int executeJobs(AB_JOB_LIST2 *jl,
-			  AB_IMEXPORTER_CONTEXT *ctx,
-			  uint32_t guiid);
+			  AB_IMEXPORTER_CONTEXT *ctx);
 
   /*@}*/
 

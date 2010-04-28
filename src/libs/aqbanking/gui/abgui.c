@@ -138,7 +138,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
   AB_Gui__HashPair(hash, status, hbuf);
 
   /* lock certificate data */
-  rv=AB_Banking_LockSharedConfig(xgui->banking, "certs", guiid);
+  rv=AB_Banking_LockSharedConfig(xgui->banking, "certs");
   if (rv<0) {
     /* fallback */
     DBG_WARN(AQBANKING_LOGDOMAIN, "Could not lock certs db, asking user (%d)", rv);
@@ -148,7 +148,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
     int i;
 
     /* load certificate data */
-    rv=AB_Banking_LoadSharedConfig(xgui->banking, "certs", &dbCerts, guiid);
+    rv=AB_Banking_LoadSharedConfig(xgui->banking, "certs", &dbCerts);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load certs (%d)", rv);
       dbCerts=GWEN_DB_Group_new("certs");
@@ -210,14 +210,14 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 
     /* write new certs */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Saving certs");
-    rv=AB_Banking_SaveSharedConfig(xgui->banking, "certs", dbCerts, guiid);
+    rv=AB_Banking_SaveSharedConfig(xgui->banking, "certs", dbCerts);
     if (rv<0) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
     }
 
     /* unlock certs */
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Unlocking certs");
-    rv=AB_Banking_UnlockSharedConfig(xgui->banking, "certs", guiid);
+    rv=AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
     if (rv<0) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
     }
@@ -258,8 +258,7 @@ int AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 
     rv=AB_Banking_LoadSharedConfig(xgui->banking,
                                    GWEN_Buffer_GetStart(nbuf),
-				   &db,
-				   0);
+				   &db);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(nbuf);
@@ -301,22 +300,19 @@ int AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
 
     /* lock configuration */
     rv=AB_Banking_LockSharedConfig(xgui->banking,
-                                   GWEN_Buffer_GetStart(nbuf),
-				   0);
+                                   GWEN_Buffer_GetStart(nbuf));
     if (rv==0) {
       /* save configuration */
       rv=AB_Banking_SaveSharedConfig(xgui->banking,
 				     GWEN_Buffer_GetStart(nbuf),
-				     db,
-				     0);
+				     db);
       if (rv<0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }
 
       /* unlock configuration */
       rv=AB_Banking_UnlockSharedConfig(xgui->banking,
-				       GWEN_Buffer_GetStart(nbuf),
-				       0);
+				       GWEN_Buffer_GetStart(nbuf));
       if (rv<0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }

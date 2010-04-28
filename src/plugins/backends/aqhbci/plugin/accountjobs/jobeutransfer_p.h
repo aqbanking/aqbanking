@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,12 +22,10 @@ struct AH_JOB_EUTRANSFER {
 };
 static void GWENHYWFAR_CB AH_Job_EuTransfer_FreeData(void *bp, void *p);
 static int AH_Job_EuTransfer_Process(AH_JOB *j,
-				     AB_IMEXPORTER_CONTEXT *ctx,
-				     uint32_t guiid);
+				     AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 				      AH_JOB_EXCHANGE_MODE m,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      uint32_t guiid);
+				      AB_IMEXPORTER_CONTEXT *ctx);
 
 
 static int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,

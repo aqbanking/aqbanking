@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,7 +13,7 @@
 #define AQBANKING_IMEXPORTER_H
 
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/syncio.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/dialog.h>
@@ -103,9 +100,8 @@ extern "C" {
 AQBANKING_API 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_IO_LAYER *io,
-			 GWEN_DB_NODE *dbProfile,
-			 uint32_t guiid);
+			 GWEN_SYNCIO *sio,
+			 GWEN_DB_NODE *dbProfile);
 
 /**
  * Writes all data to the given stream.
@@ -119,9 +115,8 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 AQBANKING_API 
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_IO_LAYER *io,
-			 GWEN_DB_NODE *dbProfile,
-			 uint32_t guiid);
+			 GWEN_SYNCIO *sio,
+			 GWEN_DB_NODE *dbProfile);
 
 /**
  * This function should return a dialog (see @ref GWEN_DIALOG) which
@@ -154,22 +149,19 @@ AQBANKING_API
 int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              const char *fname,
-			     GWEN_DB_NODE *dbProfile,
-			     uint32_t guiid);
+			     GWEN_DB_NODE *dbProfile);
 
 AQBANKING_API
 int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
 			       AB_IMEXPORTER_CONTEXT *ctx,
                                GWEN_BUFFER *buf,
-			       GWEN_DB_NODE *dbProfile,
-			       uint32_t guiid);
+			       GWEN_DB_NODE *dbProfile);
 
 AQBANKING_API
 int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 GWEN_BUFFER *buf,
-				 GWEN_DB_NODE *dbProfile,
-				 uint32_t guiid);
+				 GWEN_DB_NODE *dbProfile);
 
 
 /**
@@ -177,8 +169,7 @@ int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
  */
 AQBANKING_API
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
-			    const char *fname,
-			    uint32_t guiid);
+			    const char *fname);
 
 /*@}*/
 

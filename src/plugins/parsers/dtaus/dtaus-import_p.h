@@ -71,12 +71,10 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
                             GWEN_DB_NODE *cfg);
 
 int AHB_DTAUS__Import(GWEN_DBIO *dbio,
-		      GWEN_IO_LAYER *io,
-                      GWEN_DB_NODE *data,
+		      GWEN_SYNCIO *sio,
+		      GWEN_DB_NODE *data,
 		      GWEN_DB_NODE *cfg,
-                      uint32_t flags,
-		      uint32_t guiid,
-		      int msecs);
+                      uint32_t flags);
 
 
 

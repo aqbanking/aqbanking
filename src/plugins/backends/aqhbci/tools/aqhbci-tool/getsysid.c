@@ -113,7 +113,7 @@ int getSysId(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -151,7 +151,7 @@ int getSysId(AB_BANKING *ab,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1, 0);
+    rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1);
     AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error getting system id (%d)", rv);
@@ -160,7 +160,7 @@ int getSysId(AB_BANKING *ab,
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

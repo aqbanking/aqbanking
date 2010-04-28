@@ -91,8 +91,7 @@ void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				     uint32_t guiid){
+int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_FOREIGNXFERWH *aj;
 
   assert(j);
@@ -108,8 +107,7 @@ int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_ForeignTransferWH_Exchange(AH_JOB *j, AB_JOB *bj,
 				      AH_JOB_EXCHANGE_MODE m,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      uint32_t guiid){
+				      AB_IMEXPORTER_CONTEXT *ctx){
   /* this function is not needed since there is no AB_Job for this */
   return 0;
 }

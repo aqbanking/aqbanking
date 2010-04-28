@@ -112,7 +112,7 @@ int addsubAccountFlags(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -149,12 +149,12 @@ int addsubAccountFlags(AB_BANKING *ab,
     uint32_t flags;
 
     /* lock account */
-    rv=AB_Banking_BeginExclUseAccount(ab, a, 0);
+    rv=AB_Banking_BeginExclUseAccount(ab, a);
     if (rv<0) {
       fprintf(stderr,
 	      "ERROR: Could not lock account, maybe it is used in another application? (%d)\n",
 	      rv);
-      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_OnlineFini(ab);
       AB_Banking_Fini(ab);
       return 4;
     }
@@ -171,18 +171,18 @@ int addsubAccountFlags(AB_BANKING *ab,
     }
 
     /* unlock account */
-    rv=AB_Banking_EndExclUseAccount(ab, a, 0, 0);
+    rv=AB_Banking_EndExclUseAccount(ab, a, 0);
     if (rv<0) {
       fprintf(stderr,
 	      "ERROR: Could not unlock account (%d)\n",
 	      rv);
-      AB_Banking_OnlineFini(ab, 0);
+      AB_Banking_OnlineFini(ab);
       AB_Banking_Fini(ab);
       return 4;
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

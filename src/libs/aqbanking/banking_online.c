@@ -14,7 +14,7 @@
 /* This file is included by banking.c */
 
 
-int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid) {
+int AB_Banking_ExecutionProgress(AB_BANKING *ab) {
   if (!ab->currentJobs)
     return 0;
   else {
@@ -38,7 +38,7 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid) {
       } /* while */
       AB_Job_List2Iterator_free(jit);
     }
-    return GWEN_Gui_ProgressAdvance(pid, count);
+    return GWEN_Gui_ProgressAdvance(0, count);
   }
 }
 
@@ -46,8 +46,7 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid) {
 
 int AB_Banking__ExecuteQueue(AB_BANKING *ab,
                              AB_JOB_LIST2 *jl,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-                             uint32_t pid){
+                             AB_IMEXPORTER_CONTEXT *ctx){
   AB_PROVIDER *pro;
   int succ;
 
@@ -83,7 +82,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
 	    /* same provider, add job */
 	    AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
 		       "Adding job to backend");
-	    rv=AB_Provider_AddJob(pro, j, pid);
+	    rv=AB_Provider_AddJob(pro, j);
 	    if (rv) {
 	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
 	      AB_Job_SetStatus(j, AB_Job_StatusError);
@@ -113,7 +112,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
     if (jobs) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
                  AB_Provider_GetName(pro));
-      rv=AB_Provider_Execute(pro, ctx, pid);
+      rv=AB_Provider_Execute(pro, ctx);
       if (rv<0) {
 	if (rv==GWEN_ERROR_USER_ABORTED) {
           DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
@@ -123,7 +122,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
       }
       else {
-	rv=AB_Banking_ExecutionProgress(ab, pid);
+	rv=AB_Banking_ExecutionProgress(ab);
 	if (rv==GWEN_ERROR_USER_ABORTED) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
 	  ab->currentJobs=0;
@@ -153,8 +152,7 @@ int AB_Banking__ExecuteQueue(AB_BANKING *ab,
 
 
 int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
-			   AB_IMEXPORTER_CONTEXT *ctx,
-			   uint32_t guiid){
+			   AB_IMEXPORTER_CONTEXT *ctx){
   int rv;
   uint32_t pid;
   AB_JOB_LIST2_ITERATOR *jit;
@@ -186,11 +184,11 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 			     I18N("Now the jobs are send via their "
 				  "backends to the credit institutes."),
 			     AB_Job_List2_GetSize(jl2),
-			     guiid);
+			     0);
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
 		       I18N("Sending jobs to the bank(s)"));
-  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx, pid);
-  AB_Banking_ClearCryptTokenList(ab, guiid);
+  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
+  AB_Banking_ClearCryptTokenList(ab);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
   }
@@ -606,16 +604,16 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
 
 
 
-int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid) {
-  return AB_Provider_Init(pro, guiid);
+int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
+  return AB_Provider_Init(pro);
 }
 
 
 
-int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro, uint32_t guiid) {
+int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
   int rv;
 
-  rv=AB_Provider_Fini(pro, guiid);
+  rv=AB_Provider_Fini(pro);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv);
   }
@@ -651,7 +649,7 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
     return pro;
   pro=AB_Banking__LoadProviderPlugin(ab, name);
   if (pro) {
-    if (AB_Banking_InitProvider(ab, pro, 0)) {
+    if (AB_Banking_InitProvider(ab, pro)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not init provider \"%s\"", name);
       AB_Provider_free(pro);
       return 0;
@@ -741,7 +739,7 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
 
 
 
-void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid) {
+void AB_Banking_ClearCryptTokenList(AB_BANKING *ab) {
   GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
 
   assert(ab);
@@ -757,14 +755,14 @@ void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid) {
       while(GWEN_Crypt_Token_IsOpen(ct)) {
 	int rv;
 
-	rv=GWEN_Crypt_Token_Close(ct, 0, guiid);
+	rv=GWEN_Crypt_Token_Close(ct, 0, 0);
 	if (rv) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN,
 		   "Could not close crypt token [%s:%s], abandoning (%d)",
 		   GWEN_Crypt_Token_GetTypeName(ct),
 		   GWEN_Crypt_Token_GetTokenName(ct),
 		   rv);
-	  GWEN_Crypt_Token_Close(ct, 1, guiid);
+	  GWEN_Crypt_Token_Close(ct, 1, 0);
 	}
       }
       GWEN_Crypt_Token_free(ct);
@@ -779,8 +777,7 @@ void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid) {
 int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 			       GWEN_CRYPT_TOKEN_DEVICE devt,
 			       GWEN_BUFFER *typeName,
-			       GWEN_BUFFER *tokenName,
-			       uint32_t guiid) {
+			       GWEN_BUFFER *tokenName) {
   GWEN_PLUGIN_MANAGER *pm;
   int rv;
 
@@ -796,7 +793,7 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 					       devt,
 					       typeName,
 					       tokenName,
-					       guiid);
+					       0);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

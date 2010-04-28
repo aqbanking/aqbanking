@@ -142,8 +142,7 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      const char *exporterName,
                               const char *profileName,
-			      GWEN_BUFFER *buf,
-			      uint32_t guiid);
+			      GWEN_BUFFER *buf);
 
 
 /*@}*/ /* addtogroup */

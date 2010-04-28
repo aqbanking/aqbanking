@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +23,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/gui.h>
 
-#include <gwenhywfar/io_memory.h>
+#include <gwenhywfar/syncio_memory.h>
 
 #include <aqbanking/jobgettransactions.h>
 #include <aqbanking/jobgettransactions_be.h>
@@ -87,10 +84,9 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
 					     const char *docType,
                                              int noted,
-					     GWEN_BUFFER *buf,
-					     uint32_t guiid){
+					     GWEN_BUFFER *buf){
   GWEN_DBIO *dbio;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   int rv;
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbDay;
@@ -108,7 +104,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   dbio=GWEN_DBIO_GetPlugin("swift");
   if (!dbio) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not found");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Plugin \"SWIFT\" not found.\n"
 			      "If you are using Debian/Ubuntu then you are "
@@ -118,7 +114,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   }
 
   GWEN_Buffer_Rewind(buf);
-  io=GWEN_Io_LayerMemory_new(buf);
+  sio=GWEN_SyncIo_Memory_new(buf, 0);
 
   db=GWEN_DB_Group_new("transactions");
   dbParams=GWEN_DB_Group_new("params");
@@ -131,21 +127,20 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			"keepMultipleBlanks", 0);
 
-  rv=GWEN_DBIO_Import(dbio, io,
+  rv=GWEN_DBIO_Import(dbio, sio,
 		      db, dbParams,
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      guiid, 2000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error parsing SWIFT %s (%d)",
 	      docType, rv);
     GWEN_DB_Group_free(dbParams);
     GWEN_DB_Group_free(db);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
   GWEN_DB_Group_free(dbParams);
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_free(sio);
 
   /* first count the groups */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
@@ -167,7 +162,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 				    I18N("Importing transactions..."),
 				    NULL,
 				    cnt,
-				    guiid);
+				    0);
 
   /* add transactions to list */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
@@ -250,8 +245,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-				   uint32_t guiid){
+int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETTRANSACTIONS *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -342,8 +336,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0,
-						 tbooked, guiid)){
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)){
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
@@ -369,8 +362,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1,
-						 tnoted, guiid)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1, tnoted)) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions");
@@ -389,8 +381,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 				    AH_JOB_EXCHANGE_MODE m,
-				    AB_IMEXPORTER_CONTEXT *ctx,
-				    uint32_t guiid){
+				    AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETTRANSACTIONS *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);

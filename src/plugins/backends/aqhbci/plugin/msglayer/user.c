@@ -1113,8 +1113,7 @@ int AH_User_MkTanName(const AB_USER *u,
 int AH_User_InputPin(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen, int maxLen,
-                     int flags,
-                     uint32_t guiid){
+                     int flags){
   GWEN_BUFFER *nbuf;
   int rv;
   const char *numeric_warning = "";
@@ -1191,7 +1190,7 @@ int AH_User_InputPin(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-                          guiid);
+			  0);
   GWEN_Buffer_free(nbuf);
 
   return rv;
@@ -1202,8 +1201,7 @@ int AH_User_InputPin(AB_USER *u,
 int AH_User_InputPasswd(AB_USER *u,
 			char *pwbuffer,
 			int minLen, int maxLen,
-                        int flags,
-                        uint32_t guiid){
+                        int flags){
   GWEN_BUFFER *nbuf;
   int rv;
   const char *numeric_warning = "";
@@ -1280,7 +1278,7 @@ int AH_User_InputPasswd(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-                          guiid);
+			  0);
   GWEN_Buffer_free(nbuf);
 
   return rv;
@@ -1291,8 +1289,7 @@ int AH_User_InputPasswd(AB_USER *u,
 int AH_User_InputTan(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen,
-                     int maxLen,
-                     uint32_t guiid){
+                     int maxLen){
   int rv;
   char buffer[512];
   const char *un;
@@ -1337,7 +1334,7 @@ int AH_User_InputTan(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-                          guiid);
+			  0);
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
   return rv;
@@ -1349,8 +1346,7 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 				  const char *challenge,
 				  char *pwbuffer,
 				  int minLen,
-                                  int maxLen,
-                                  uint32_t guiid){
+                                  int maxLen){
   int rv;
   char buffer[512];
   const char *un;
@@ -1403,7 +1399,7 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-                          guiid);
+			  0);
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
   return rv;

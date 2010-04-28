@@ -93,21 +93,18 @@ typedef int (*AB_PROVIDER_FINI_FN)(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 /**
  * See @ref AB_Provider_UpdateJob
  */
-typedef int (*AB_PROVIDER_UPDATEJOB_FN)(AB_PROVIDER *pro, AB_JOB *j,
-					uint32_t guiid);
+typedef int (*AB_PROVIDER_UPDATEJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
 
 /**
  * See @ref AB_Provider_AddJob.
  */
-typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j,
-				     uint32_t guiid);
+typedef int (*AB_PROVIDER_ADDJOB_FN)(AB_PROVIDER *pro, AB_JOB *j);
 
 /**
  * See @ref AB_Provider_Execute
  */
 typedef int (*AB_PROVIDER_EXECUTE_FN)(AB_PROVIDER *pro,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      uint32_t guiid);
+				      AB_IMEXPORTER_CONTEXT *ctx);
 
 
 /**
@@ -175,22 +172,16 @@ void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
 /**
  * Allow the backend to initialize itself.
  * @param pro backend object
- * @param dbData GWEN_DB group for the data of the backend (as returned by
- *   @ref AB_Provider_GetData). This group MUST NOT be freed or unlinked, it
- *   is a group inside AqBankings config database.
  */
 AQBANKING_API
-int AB_Provider_Init(AB_PROVIDER *pro, uint32_t guiid);
+int AB_Provider_Init(AB_PROVIDER *pro);
 
 /**
  * Allow the backend to deinitialize itself.
  * @param pro backend object
- * @param dbData GWEN_DB group for the data of the backend (as returned by
- *   @ref AB_Provider_GetData). This group MUST NOT be freed or unlinked, it
- *   is a group inside AqBankings config database.
  */
 AQBANKING_API
-int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid);
+int AB_Provider_Fini(AB_PROVIDER *pro);
 
 /**
  * This function should check for the availability of the given job and
@@ -205,7 +196,7 @@ int AB_Provider_Fini(AB_PROVIDER *pro, uint32_t guiid);
  * @param j job to update
  */
 AQBANKING_API
-int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
+int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
 
 /**
  * <p>
@@ -229,7 +220,7 @@ int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
  * @param pro backend object
  */
 AQBANKING_API
-int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
+int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
 
 /**
  * Executes all jobs in the queue which have just been added via
@@ -239,8 +230,7 @@ int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid);
  * @param ctx im-/exporter context to receive responses
  */
 AQBANKING_API
-int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid);
+int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
 
 /**
  * Resets the queue of the backend.

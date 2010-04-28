@@ -114,7 +114,7 @@ int createKeys(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -151,7 +151,7 @@ int createKeys(AB_BANKING *ab,
     return 3;
   }
   else {
-    rv=AH_Provider_CreateKeys(pro, u, 0, 0);
+    rv=AH_Provider_CreateKeys(pro, u, 0);
     if (rv) {
       DBG_ERROR(0, "Error creating keys (%d)", rv);
       AB_Banking_Fini(ab);
@@ -159,7 +159,7 @@ int createKeys(AB_BANKING *ab,
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;

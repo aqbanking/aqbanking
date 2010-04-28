@@ -46,15 +46,13 @@ void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p);
 static
 int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_IO_LAYER *bio,
-			     GWEN_DB_NODE *params,
-			     uint32_t guiid);
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params);
 
 static
 int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 				       GWEN_DB_NODE *db,
-				       GWEN_DB_NODE *dbParams,
-				       uint32_t guiid);
+				       GWEN_DB_NODE *dbParams);
 
 static
 int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
@@ -85,14 +83,13 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
                                        GWEN_DB_NODE *params);
 
 static
-int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
+int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 static
 int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-                             GWEN_IO_LAYER *io,
-			     GWEN_DB_NODE *params,
-			     uint32_t guiid);
+			     AB_IMEXPORTER_CONTEXT *ctx,
+			     GWEN_SYNCIO *sio,
+			     GWEN_DB_NODE *params);
 
 
 

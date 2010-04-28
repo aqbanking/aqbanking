@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,9 +17,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/iolayer.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_memory.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_memory.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -105,16 +101,15 @@ void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags) {
 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_IO_LAYER *io,
-			 GWEN_DB_NODE *params,
-			 uint32_t guiid){
+			 GWEN_SYNCIO *sio,
+			 GWEN_DB_NODE *params){
   assert(ie);
   assert(ctx);
-  assert(io);
+  assert(sio);
   assert(params);
 
   if (ie->importFn)
-    return ie->importFn(ie, ctx, io, params, guiid);
+    return ie->importFn(ie, ctx, sio, params);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -123,16 +118,15 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_IO_LAYER *io,
-			 GWEN_DB_NODE *params,
-			 uint32_t guiid){
+			 GWEN_SYNCIO *sio,
+			 GWEN_DB_NODE *params){
   assert(ie);
   assert(ctx);
-  assert(io);
+  assert(sio);
   assert(params);
 
   if (ie->exportFn)
-    return ie->exportFn(ie, ctx, io, params, guiid);
+    return ie->exportFn(ie, ctx, sio, params);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -140,13 +134,12 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
-			    const char *fname,
-			    uint32_t guiid){
+			    const char *fname){
   assert(ie);
   assert(fname);
 
   if (ie->checkFileFn)
-    return ie->checkFileFn(ie, fname, guiid);
+    return ie->checkFileFn(ie, fname);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -171,38 +164,27 @@ int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              const char *fname,
-			     GWEN_DB_NODE *dbProfile,
-			     uint32_t guiid){
-  int fd;
+			     GWEN_DB_NODE *dbProfile){
+  GWEN_SYNCIO *sio;
   int rv;
-  GWEN_IO_LAYER *io;
 
   assert(ie);
   assert(ctx);
   assert(fname);
   assert(dbProfile);
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    /* error */
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s", fname, strerror(errno));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  rv=AB_ImExporter_Import(ie, ctx, io, dbProfile, guiid);
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 2000);
-  GWEN_Io_Layer_free(io);
+  rv=AB_ImExporter_Import(ie, ctx, sio, dbProfile);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   return rv;
 }
@@ -212,10 +194,9 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
 int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
 			       AB_IMEXPORTER_CONTEXT *ctx,
 			       GWEN_BUFFER *buf,
-			       GWEN_DB_NODE *dbProfile,
-			       uint32_t guiid) {
+			       GWEN_DB_NODE *dbProfile) {
   int rv;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
 
   assert(ie);
   assert(ctx);
@@ -223,19 +204,10 @@ int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
   assert(dbProfile);
 
   /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerMemory_new(buf);
-  assert(io);
+  sio=GWEN_SyncIo_Memory_new(buf, 0);
 
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  rv=AB_ImExporter_Import(ie, ctx, io, dbProfile, guiid);
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 2000);
-  GWEN_Io_Layer_free(io);
+  rv=AB_ImExporter_Import(ie, ctx, sio, dbProfile);
+  GWEN_SyncIo_free(sio);
 
   return rv;
 }
@@ -245,10 +217,9 @@ int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
 int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 GWEN_BUFFER *buf,
-				 GWEN_DB_NODE *dbProfile,
-				 uint32_t guiid) {
+				 GWEN_DB_NODE *dbProfile) {
   int rv;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
 
   assert(ie);
   assert(ctx);
@@ -256,19 +227,9 @@ int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
   assert(dbProfile);
 
   /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerMemory_new(buf);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  rv=AB_ImExporter_Export(ie, ctx, io, dbProfile, guiid);
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 2000);
-  GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_Memory_new(buf, 0);
+  rv=AB_ImExporter_Export(ie, ctx, sio, dbProfile);
+  GWEN_SyncIo_free(sio);
 
   return rv;
 }

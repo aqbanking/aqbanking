@@ -79,8 +79,7 @@ bool QBCfgTabPageAccounts::toGui() {
 
   rv=getBanking()->loadSharedSubConfig("qbanking",
 				       "settings/gui/accountList",
-				       &dbConfig,
-				       0);
+				       &dbConfig);
   if (rv==0) {
     int i, j;
 
@@ -125,8 +124,7 @@ bool QBCfgTabPageAccounts::fromGui() {
 
   rv=getBanking()->saveSharedSubConfig("qbanking",
 				       "settings/gui/accountList",
-				       dbConfig,
-				       0);
+				       dbConfig);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
     GWEN_DB_Group_free(dbConfig);

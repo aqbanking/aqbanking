@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,8 +18,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -146,8 +142,8 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   AB_BANKINFO_PLUGIN_GENERIC *bde;
   GWEN_BUFFER *pbuf;
   AB_BANKINFO *bi;
-  int fd;
   GWEN_DB_NODE *dbT;
+  GWEN_SYNCIO *sio;
   uint32_t pos;
   int rv;
 
@@ -168,36 +164,37 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__ReadBankInfo(AB_BANKINFO_PLUGIN *bip,
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
   GWEN_Buffer_AppendString(pbuf, DIRSEP "banks.data");
 
-  /* open file */
-  fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s",
-              GWEN_Buffer_GetStart(pbuf), strerror(errno));
+  sio=GWEN_SyncIo_File_new(GWEN_Buffer_GetStart(pbuf), GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     GWEN_Buffer_free(pbuf);
-    return 0;
+    return NULL;
   }
+
   /* seek position */
   DBG_VERBOUS(0, "Seeking to %08x (%d)", pos, pos);
-  if ((off_t)-1==lseek(fd, pos, SEEK_SET)) {
+  if ((int64_t)-1==GWEN_SyncIo_File_Seek(sio, pos, GWEN_SyncIo_File_Whence_Set)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "lseek(%s, %u): %s",
-              GWEN_Buffer_GetStart(pbuf),
+	      "seek(%s, %u): %s",
+	      GWEN_Buffer_GetStart(pbuf),
               pos,
-              strerror(errno));
-    close(fd);
-    GWEN_Buffer_free(pbuf);
-    return 0;
+	      strerror(errno));
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return NULL;
   }
 
   /* read data */
   dbT=GWEN_DB_Group_new("bank");
-  rv=GWEN_DB_ReadFromFd(dbT, fd,
+  rv=GWEN_DB_ReadFromIo(dbT, sio,
 			GWEN_DB_FLAGS_DEFAULT |
 			GWEN_PATH_FLAGS_CREATE_GROUP|
-			GWEN_DB_FLAGS_UNTIL_EMPTY_LINE,
-			0,
-			2000);
-  close(fd);
+			GWEN_DB_FLAGS_UNTIL_EMPTY_LINE);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Could not load file \"%s\" (%d)", GWEN_Buffer_GetStart(pbuf), rv);
     GWEN_DB_Group_free(dbT);
@@ -601,9 +598,9 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
   uint32_t count=0;
   uint32_t i=0;
   GWEN_BUFFER *pbuf;
-  int fd;
   uint32_t progressId;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
+  int rv;
 
   assert(bip);
   bde=GWEN_INHERIT_GETDATA(AB_BANKINFO_PLUGIN, AB_BANKINFO_PLUGIN_GENERIC,
@@ -614,19 +611,17 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
   AB_BankInfoPluginGENERIC__GetDataDir(bip, pbuf);
   GWEN_Buffer_AppendString(pbuf, DIRSEP "banks.data");
-  /* open file */
-  fd=open(GWEN_Buffer_GetStart(pbuf), O_RDONLY | O_EXCL);
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "open(%s): %s",
-              GWEN_Buffer_GetStart(pbuf),
-              strerror(errno));
-    GWEN_Buffer_free(pbuf);
-    return GWEN_ERROR_NOT_FOUND;
-  }
 
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  GWEN_Io_Manager_RegisterLayer(io);
+  /* open file */
+  sio=GWEN_SyncIo_File_new(GWEN_Buffer_GetStart(pbuf), GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    GWEN_Buffer_free(pbuf);
+    return rv;
+  }
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -648,25 +643,25 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
 	GWEN_Gui_ProgressEnd(progressId);
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Aborted by user");
-	GWEN_Io_Layer_free(io);
+	GWEN_SyncIo_Disconnect(sio);
+	GWEN_SyncIo_free(sio);
 	GWEN_Buffer_free(pbuf);
 	return GWEN_ERROR_USER_ABORTED;
       }
     }
 
     dbT=GWEN_DB_Group_new("bank");
-    if (GWEN_DB_ReadFromIo(dbT, io,
+    if (GWEN_DB_ReadFromIo(dbT, sio,
 			   GWEN_DB_FLAGS_DEFAULT |
 			   GWEN_PATH_FLAGS_CREATE_GROUP |
-			   GWEN_DB_FLAGS_UNTIL_EMPTY_LINE,
-			   0,
-			   2000)) {
+			   GWEN_DB_FLAGS_UNTIL_EMPTY_LINE)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Could not read from file \"%s\"",
                 GWEN_Buffer_GetStart(pbuf));
       GWEN_Gui_ProgressEnd(progressId);
       GWEN_DB_Group_free(dbT);
-      GWEN_Io_Layer_free(io);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
       GWEN_Buffer_free(pbuf);
       return GWEN_ERROR_GENERIC;
     }
@@ -686,7 +681,8 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
 
   GWEN_Gui_ProgressEnd(progressId);
 
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   GWEN_Buffer_free(pbuf);
 
   if (count==0) {

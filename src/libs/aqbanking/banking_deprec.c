@@ -13,8 +13,7 @@
 
 int AB_Banking__ImportConfDir(AB_BANKING *ab,
 			      const char *path,
-			      const char *groupName,
-			      uint32_t guiid) {
+			      const char *groupName) {
   GWEN_STRINGLIST *sl;
   GWEN_BUFFER *nbuf;
   int rv;
@@ -65,9 +64,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
 			    GWEN_Buffer_GetStart(nbuf),
 			    GWEN_DB_FLAGS_DEFAULT |
 			    GWEN_PATH_FLAGS_CREATE_GROUP |
-			    GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM,
-			    0,
-			    10000);
+			    GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM);
 	if (rv<0) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	  GWEN_DB_Group_free(dbConfig);
@@ -79,8 +76,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
   
 	rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				    groupName,
-				    GWEN_Buffer_GetStart(gbuf),
-				    guiid);
+				    GWEN_Buffer_GetStart(gbuf));
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to lock shared config [%s] (%d)",
@@ -95,8 +91,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
 	rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 				   groupName,
 				   GWEN_Buffer_GetStart(gbuf),
-				   dbConfig,
-				   guiid);
+				   dbConfig);
   
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -104,8 +99,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
 		    GWEN_Buffer_GetStart(gbuf), rv);
 	  GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				     groupName,
-				     GWEN_Buffer_GetStart(gbuf),
-				     guiid);
+				     GWEN_Buffer_GetStart(gbuf));
 	  GWEN_DB_Group_free(dbConfig);
 	  GWEN_Buffer_free(gbuf);
 	  GWEN_StringList_free(sl);
@@ -116,8 +110,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
 	/* unlock */
 	rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				      groupName,
-				      GWEN_Buffer_GetStart(gbuf),
-				      guiid);
+				      GWEN_Buffer_GetStart(gbuf));
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to unlock shared config [%s] (%d)",
@@ -148,7 +141,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
 
 
 
-int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_ImportConf3(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
   uint32_t pos;
@@ -177,9 +170,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   rv=GWEN_DB_ReadFile(dbSettings,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      0,
-		      10000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbSettings);
@@ -202,8 +193,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
       groupName=GWEN_DB_GroupName(db);
       rv=AB_Banking_LockPluginConfig(ab,
 				     AB_CFG_GROUP_BACKENDS,
-				     groupName,
-				     guiid);
+				     groupName);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to lock plugin config [%s] (%d)",
@@ -216,16 +206,14 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
       rv=AB_Banking_SavePluginConfig(ab,
 				     AB_CFG_GROUP_BACKENDS,
 				     groupName,
-				     db,
-				     guiid);
+				     db);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to save plugin config [%s] (%d)",
 		  groupName, rv);
 	AB_Banking_UnlockPluginConfig(ab,
 				      AB_CFG_GROUP_BACKENDS,
-				      groupName,
-				      guiid);
+				      groupName);
 	GWEN_DB_Group_free(dbSettings);
 	GWEN_Buffer_free(nbuf);
 	return rv;
@@ -234,8 +222,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
       /* unlock */
       rv=AB_Banking_UnlockPluginConfig(ab,
 				       AB_CFG_GROUP_BACKENDS,
-				       groupName,
-				       guiid);
+				       groupName);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to unlock plugin config [%s] (%d)",
@@ -271,8 +258,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				      AB_CFG_GROUP_USERS,
-				      groupName, sizeof(groupName)-1,
-				      guiid);
+				      groupName, sizeof(groupName)-1);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to create a unique id for user [%08x] (%d)",
@@ -285,8 +271,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				    AB_CFG_GROUP_USERS,
-				    groupName,
-				    guiid);
+				    groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to lock user config [%08x] (%d)",
@@ -299,8 +284,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 	rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 				   AB_CFG_GROUP_USERS,
 				   groupName,
-				   db,
-				   guiid);
+				   db);
 
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -308,8 +292,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 		    uid, rv);
 	  GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				     AB_CFG_GROUP_USERS,
-				     groupName,
-				     guiid);
+				     groupName);
 	  GWEN_DB_Group_free(dbSettings);
 	  GWEN_Buffer_free(nbuf);
 	  return rv;
@@ -318,8 +301,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 	/* unlock */
 	rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				      AB_CFG_GROUP_USERS,
-				      groupName,
-				      guiid);
+				      groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to unlock user config [%08x] (%d)",
@@ -356,8 +338,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				      AB_CFG_GROUP_ACCOUNTS,
-				      groupName, sizeof(groupName)-1,
-				      guiid);
+				      groupName, sizeof(groupName)-1);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to create a unique id for account [%08x] (%d)",
@@ -370,8 +351,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				    AB_CFG_GROUP_ACCOUNTS,
-				    groupName,
-				    guiid);
+				    groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to lock account config [%08x] (%d)",
@@ -384,8 +364,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 	rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 				   AB_CFG_GROUP_ACCOUNTS,
 				   groupName,
-				   db,
-				   guiid);
+				   db);
 
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -393,8 +372,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 		    uid, rv);
 	  GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				     AB_CFG_GROUP_ACCOUNTS,
-				     groupName,
-				     guiid);
+				     groupName);
 	  GWEN_DB_Group_free(dbSettings);
 	  GWEN_Buffer_free(nbuf);
 	  return rv;
@@ -403,8 +381,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 	/* unlock */
 	rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				      AB_CFG_GROUP_ACCOUNTS,
-				      groupName,
-				      guiid);
+				      groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to unlock account config [%08x] (%d)",
@@ -423,8 +400,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   /* save main configuration */
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 			      AB_CFG_GROUP_MAIN,
-			      "config",
-			      guiid);
+			      "config");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     GWEN_DB_Group_free(dbSettings);
@@ -438,13 +414,12 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "config",
-			     dbSettings,
-			     guiid);
+			     dbSettings);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to save main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 			       AB_CFG_GROUP_MAIN,
-			       "config", guiid);
+			       "config");
     GWEN_DB_Group_free(dbSettings);
     GWEN_Buffer_free(nbuf);
     return rv;
@@ -453,8 +428,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				AB_CFG_GROUP_MAIN,
-				"config",
-				guiid);
+				"config");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     GWEN_DB_Group_free(dbSettings);
@@ -469,8 +443,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_AppendString(nbuf, "shared");
   rv=AB_Banking__ImportConfDir(ab,
 			       GWEN_Buffer_GetStart(nbuf),
-			       AB_CFG_GROUP_SHARED,
-			       guiid);
+			       AB_CFG_GROUP_SHARED);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(nbuf);
@@ -482,8 +455,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_AppendString(nbuf, "apps");
   rv=AB_Banking__ImportConfDir(ab,
 			       GWEN_Buffer_GetStart(nbuf),
-			       AB_CFG_GROUP_APPS,
-			       guiid);
+			       AB_CFG_GROUP_APPS);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(nbuf);
@@ -493,7 +465,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_free(nbuf);
 
   if (highestUid) {
-    rv=AB_Banking_SetUniqueId(ab, highestUid, guiid);
+    rv=AB_Banking_SetUniqueId(ab, highestUid);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Unable to store highest unique id used (%d)",
@@ -507,7 +479,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_HasConf3(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_HasConf3(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
   uint32_t pos;
@@ -546,9 +518,7 @@ int AB_Banking_HasConf3(AB_BANKING *ab, uint32_t guiid) {
   rv=GWEN_DB_ReadFile(dbSettings,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      guiid,
-		      10000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbSettings);
@@ -625,7 +595,7 @@ int AB_Banking_HasConf3(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_ImportConf2(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
   uint32_t pos;
@@ -654,9 +624,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
   rv=GWEN_DB_ReadFile(dbSettings,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      0,
-		      10000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbSettings);
@@ -679,8 +647,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
       groupName=GWEN_DB_GroupName(db);
       rv=AB_Banking_LockPluginConfig(ab,
 				     AB_CFG_GROUP_BACKENDS,
-				     groupName,
-				     guiid);
+				     groupName);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to lock plugin config [%s] (%d)",
@@ -693,16 +660,14 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
       rv=AB_Banking_SavePluginConfig(ab,
 				     AB_CFG_GROUP_BACKENDS,
 				     groupName,
-				     db,
-				     guiid);
+				     db);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to save plugin config [%s] (%d)",
 		  groupName, rv);
 	AB_Banking_UnlockPluginConfig(ab,
 				      AB_CFG_GROUP_BACKENDS,
-				      groupName,
-				      guiid);
+				      groupName);
 	GWEN_DB_Group_free(dbSettings);
 	GWEN_Buffer_free(nbuf);
 	return rv;
@@ -711,8 +676,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
       /* unlock */
       rv=AB_Banking_UnlockPluginConfig(ab,
 				       AB_CFG_GROUP_BACKENDS,
-				       groupName,
-				       guiid);
+				       groupName);
       if (rv<0) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Unable to unlock plugin config [%s] (%d)",
@@ -748,8 +712,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				      AB_CFG_GROUP_USERS,
-				      groupName, sizeof(groupName)-1,
-				      guiid);
+				      groupName, sizeof(groupName)-1);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to create a unique id for user [%08x] (%d)",
@@ -762,8 +725,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				    AB_CFG_GROUP_USERS,
-				    groupName,
-				    guiid);
+				    groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to lock user config [%08x] (%d)",
@@ -776,8 +738,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 	rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 				   AB_CFG_GROUP_USERS,
 				   groupName,
-				   db,
-				   guiid);
+				   db);
 
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -785,8 +746,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 		    uid, rv);
 	  GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				     AB_CFG_GROUP_USERS,
-				     groupName,
-				     guiid);
+				     groupName);
 	  GWEN_DB_Group_free(dbSettings);
 	  GWEN_Buffer_free(nbuf);
 	  return rv;
@@ -795,8 +755,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 	/* unlock */
 	rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				      AB_CFG_GROUP_USERS,
-				      groupName,
-				      guiid);
+				      groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to unlock user config [%08x] (%d)",
@@ -833,8 +792,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_GetUniqueId(ab->configMgr,
 				      AB_CFG_GROUP_ACCOUNTS,
-				      groupName, sizeof(groupName)-1,
-				      guiid);
+				      groupName, sizeof(groupName)-1);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to create a unique id for account [%08x] (%d)",
@@ -847,8 +805,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 
 	rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
 				    AB_CFG_GROUP_ACCOUNTS,
-				    groupName,
-				    guiid);
+				    groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to lock account config [%08x] (%d)",
@@ -861,8 +818,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 	rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 				   AB_CFG_GROUP_ACCOUNTS,
 				   groupName,
-				   db,
-				   guiid);
+				   db);
 
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -870,8 +826,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 		    uid, rv);
 	  GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				     AB_CFG_GROUP_ACCOUNTS,
-				     groupName,
-				     guiid);
+				     groupName);
 	  GWEN_DB_Group_free(dbSettings);
 	  GWEN_Buffer_free(nbuf);
 	  return rv;
@@ -880,8 +835,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 	/* unlock */
 	rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				      AB_CFG_GROUP_ACCOUNTS,
-				      groupName,
-				      guiid);
+				      groupName);
 	if (rv<0) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Unable to unlock account config [%08x] (%d)",
@@ -902,8 +856,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_AppendString(nbuf, "shared");
   rv=AB_Banking__ImportConfDir(ab,
 			       GWEN_Buffer_GetStart(nbuf),
-			       AB_CFG_GROUP_SHARED,
-			       guiid);
+			       AB_CFG_GROUP_SHARED);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(nbuf);
@@ -915,8 +868,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_AppendString(nbuf, "apps");
   rv=AB_Banking__ImportConfDir(ab,
 			       GWEN_Buffer_GetStart(nbuf),
-			       AB_CFG_GROUP_APPS,
-			       guiid);
+			       AB_CFG_GROUP_APPS);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(nbuf);
@@ -926,7 +878,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
   GWEN_Buffer_free(nbuf);
 
   if (highestUid) {
-    rv=AB_Banking_SetUniqueId(ab, highestUid, guiid);
+    rv=AB_Banking_SetUniqueId(ab, highestUid);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
 		"Unable to store highest unique id used (%d)",
@@ -940,7 +892,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_HasConf2(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_HasConf2(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
   uint32_t pos;
@@ -979,9 +931,7 @@ int AB_Banking_HasConf2(AB_BANKING *ab, uint32_t guiid) {
   rv=GWEN_DB_ReadFile(dbSettings,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      0,
-		      10000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbSettings);

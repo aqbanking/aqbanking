@@ -26,12 +26,10 @@ struct AH_JOB_GETDATEDTRANSFERS {
 static void GWENHYWFAR_CB AH_Job_GetDatedTransfers_FreeData(void *bp, void *p);
 
 static int AH_Job_GetDatedTransfers_Process(AH_JOB *j,
-					    AB_IMEXPORTER_CONTEXT *ctx,
-					    uint32_t guiid);
+					    AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetDatedTransfers_Exchange(AH_JOB *j, AB_JOB *bj,
 					     AH_JOB_EXCHANGE_MODE m,
-					     AB_IMEXPORTER_CONTEXT *ctx,
-					     uint32_t guiid);
+					     AB_IMEXPORTER_CONTEXT *ctx);
 
 
 #endif /* AH_JOBGETDATEDTRANSFERS_P_H */

@@ -117,7 +117,7 @@ void ActionGetKeys::slotButtonClicked() {
 			     GWEN_GUI_PROGRESS_NONE,
 			     0);
 
-  rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, 1, 1, pid);
+  rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, 1, 1);
   GWEN_Gui_ProgressEnd(pid);
   AB_ImExporterContext_free(ctx);
   if (rv) {

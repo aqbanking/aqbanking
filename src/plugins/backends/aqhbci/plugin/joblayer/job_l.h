@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -83,14 +80,12 @@ typedef enum {
  */
 /*@{*/
 typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 uint32_t guiid);
-typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, int doLock, uint32_t guiid);
+				 AB_IMEXPORTER_CONTEXT *ctx);
+typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, int doLock);
 typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 				  AH_JOB_EXCHANGE_MODE m,
-				  AB_IMEXPORTER_CONTEXT *ctx,
-				  uint32_t guiid);
-typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j, uint32_t guiid);
+				  AB_IMEXPORTER_CONTEXT *ctx);
+typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 
 /**
  * This function is called on multi-message jobs and should return:
@@ -163,14 +158,13 @@ AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j);
  *
  */
 /*@{*/
-int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, uint32_t guiid);
-int AH_Job_Commit(AH_JOB *j, int doLock, uint32_t guiid);
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+int AH_Job_Commit(AH_JOB *j, int doLock);
 /** exchanges data between the HBCI job and the banking job
  */
 int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 		    AH_JOB_EXCHANGE_MODE m,
-		    AB_IMEXPORTER_CONTEXT *ctx,
-		    uint32_t guiid);
+		    AB_IMEXPORTER_CONTEXT *ctx);
 
 /**
  * Check whether the results for this job contain warning 3920. In this
@@ -185,7 +179,7 @@ int AH_Job_HasItanResult(AH_JOB *j);
  * additionally let the job do some basic stuff (like saving UPD, BPD,
  * messages etc).
  */
-int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid);
+int AH_Job_CommitSystemData(AH_JOB *j, int doLock);
 
 
 /**
@@ -193,15 +187,15 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock, uint32_t guiid);
  * additionally let the job do some basic stuff (like catching UPD, BPD,
  * messages etc).
  */
-int AH_Job_DefaultProcessHandler(AH_JOB *j, uint32_t guiid);
+int AH_Job_DefaultProcessHandler(AH_JOB *j);
 
 /**
  * You can use this from the Commit function of the inheriting class.
  * It calls @ref AH_Job_CommitSystemData.
  */
-int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock, uint32_t guiid);
+int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock);
 
-int AH_Job_Prepare(AH_JOB *j, uint32_t guiid);
+int AH_Job_Prepare(AH_JOB *j);
 
 /*@}*/
 

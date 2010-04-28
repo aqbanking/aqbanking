@@ -44,7 +44,7 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
       /* remove variables from comparison */
       GWEN_DB_DeleteVar(dbT, "status");
 
-      err=GWEN_DB_WriteToBuffer(dbT, buf1, GWEN_DB_FLAGS_COMPACT, 0, 2000);
+      err=GWEN_DB_WriteToBuffer(dbT, buf1, GWEN_DB_FLAGS_COMPACT);
       if (err) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "INTERNAL: Error writing DB to buffer");
@@ -64,7 +64,7 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
       /* remove variables from comparison */
       GWEN_DB_DeleteVar(dbT, "status");
 
-      err=GWEN_DB_WriteToBuffer(dbT, buf0, GWEN_DB_FLAGS_COMPACT, 0, 2000);
+      err=GWEN_DB_WriteToBuffer(dbT, buf0, GWEN_DB_FLAGS_COMPACT);
       if (err) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "INTERNAL: Error writing DB to buffer");

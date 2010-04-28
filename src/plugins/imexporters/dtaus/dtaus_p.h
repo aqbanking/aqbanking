@@ -37,19 +37,17 @@ void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p);
 static
 int AH_ImExporterDTAUS_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid);
+                              GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params);
 
 static
 int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 			      AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_IO_LAYER *io,
-			      GWEN_DB_NODE *params,
-			      uint32_t guiid);
+			      GWEN_SYNCIO *sio,
+			      GWEN_DB_NODE *params);
 
 static
-int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
+int AH_ImExporterDTAUS_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 static
 int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,

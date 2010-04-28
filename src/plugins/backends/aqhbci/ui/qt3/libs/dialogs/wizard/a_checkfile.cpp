@@ -124,8 +124,7 @@ void ActionCheckFile::slotButtonClicked() {
   rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(pro),
 				GWEN_Crypt_Token_Device_File,
 				mtypeName,
-				mediumName,
-				pid);
+				mediumName);
   GWEN_Gui_ProgressEnd(pid);
   if (rv) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -157,7 +156,7 @@ void ActionCheckFile::slotButtonClicked() {
     DBG_ERROR(0, "Error mounting medium (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);
     if (created)
-      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
+      AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
     return;
   }
 
@@ -191,7 +190,7 @@ bool ActionCheckFile::undo() {
 
   ct=wInfo->getToken();
   if (ct) {
-    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro), 0);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
     if (wInfo->getFlags() & WIZARDINFO_FLAGS_MEDIUM_CREATED) {
       wInfo->subFlags(WIZARDINFO_FLAGS_MEDIUM_CREATED);
     }

@@ -6,9 +6,8 @@
 
 int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_IO_LAYER *io,
-				 GWEN_DB_NODE *params,
-				 uint32_t guiid){
+				 GWEN_SYNCIO *sio,
+				 GWEN_DB_NODE *params){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;
@@ -82,7 +81,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
 
     /* generate MsgId */
-    uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie), guiid);
+    uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie));
     GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
     snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
     GWEN_Buffer_AppendString(tbuf, numbuf);
@@ -389,10 +388,9 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   xmlctx=GWEN_XmlCtxStore_new(root,
 			      GWEN_XML_FLAGS_DEFAULT |
                               GWEN_XML_FLAGS_SIMPLE |
-			      GWEN_XML_FLAGS_HANDLE_HEADERS,
-			      guiid, 10000);
+			      GWEN_XML_FLAGS_HANDLE_HEADERS);
 
-  rv=GWEN_XMLNode_WriteToStream(root, xmlctx, io);
+  rv=GWEN_XMLNode_WriteToStream(root, xmlctx, sio);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_XmlCtx_free(xmlctx);

@@ -22,10 +22,7 @@
 
 
 
-GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags,
-				    uint32_t guiid,
-				    int timeout,
-				    AB_IMEXPORTER_CONTEXT *ioContext);
+GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioContext);
 
 int AIO_OfxXmlCtx_GetResultCode(const GWEN_XML_CONTEXT *ctx);
 void AIO_OfxXmlCtx_SetResultCode(GWEN_XML_CONTEXT *ctx, int i);

@@ -48,8 +48,7 @@ extern "C" {
  */
 AQBANKING_API 
 void AB_Banking_SetAccountAlias(AB_BANKING *ab,
-				AB_ACCOUNT *a, const char *alias,
-				uint32_t guiid);
+				AB_ACCOUNT *a, const char *alias);
 
 /**
  * This function returns the AqBanking account to which the given
@@ -69,8 +68,7 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
  */
 AQBANKING_API 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-					 const char *alias,
-					 uint32_t guiid);
+					 const char *alias);
 
 
 AQBANKING_API 
@@ -79,8 +77,7 @@ int AB_Banking_ExportWithProfile(AB_BANKING *ab,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 const char *profileName,
 				 const char *profileFile,
-				 GWEN_IO_LAYER *io,
-				 uint32_t guiid);
+				 GWEN_SYNCIO *sio);
 
 AQBANKING_API 
 int AB_Banking_ImportWithProfile(AB_BANKING *ab,
@@ -88,8 +85,7 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 const char *profileName,
 				 const char *profileFile,
-				 GWEN_IO_LAYER *io,
-				 uint32_t guiid);
+				 GWEN_SYNCIO *sio);
 
 /**
  * Another convenience function to import a given file.
@@ -101,8 +97,7 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
 				     AB_IMEXPORTER_CONTEXT *ctx,
 				     const char *profileName,
 				     const char *profileFile,
-                                     const char *inputFileName,
-				     uint32_t guiid);
+                                     const char *inputFileName);
 
 
 /*@}*/

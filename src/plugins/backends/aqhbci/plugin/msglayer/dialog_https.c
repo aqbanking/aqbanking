@@ -158,19 +158,17 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
-			       const char *buf, int blen,
-			       int timeout) {
+int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen) {
   int rv;
   uint32_t fl;
 
   fl=AH_User_GetFlags(dlg->dialogOwner);
 
   /* first connect to server */
-  GWEN_Gui_ProgressLog(dlg->guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Connecting to bank..."));
-  rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0, dlg->guiid, 30000);
+  rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0, 0, 30000);
   if (rv==GWEN_ERROR_SSL) {
     GWEN_IO_LAYER *ioTls;
 
@@ -179,30 +177,30 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 	       "Error connecting (%d), retrying", rv);
     GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					dlg->guiid, 2000);
+					0, 2000);
     ioTls=GWEN_Io_Layer_FindBaseLayerByType(dlg->ioLayer, GWEN_IO_LAYER_TLS_TYPE);
     assert(ioTls);
 
     if (fl & AH_USER_FLAGS_FORCE_SSL3) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Retrying to connect (non-SSLv3)"));
       GWEN_Io_Layer_SubFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
       rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0,
-					  dlg->guiid, 30000);
+					  0, 30000);
       if (rv==0) {
 	AH_User_SubFlags(dlg->dialogOwner, AH_USER_FLAGS_FORCE_SSL3);
       }
     }
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to connect (SSLv3)");
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Retrying to connect (SSLv3)"));
       GWEN_Io_Layer_AddFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
       rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0,
-					  dlg->guiid, 30000);
+					  0, 30000);
       if (rv==0) {
 	AH_User_AddFlags(dlg->dialogOwner, AH_USER_FLAGS_FORCE_SSL3);
       }
@@ -211,19 +209,19 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not connect to server (%d)", rv);
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not connect to the bank"));
     GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					dlg->guiid, 2000);
+					0, 2000);
     return rv;
   }
   else {
     GWEN_BUFFER *tbuf;
     GWEN_DB_NODE *db;
 
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
     tbuf=GWEN_Buffer_new(0, blen, 0, 1);
@@ -238,7 +236,7 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 	GWEN_Buffer_free(tbuf);
 	GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					    GWEN_IO_REQUEST_FLAGS_FORCE,
-					    dlg->guiid, 2000);
+					    0, 2000);
 	return rv;
       }
       GWEN_Buffer_AppendString(tbuf, "\r\n");
@@ -255,13 +253,13 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 				GWEN_IO_REQUEST_FLAGS_PACKETBEGIN |
 				GWEN_IO_REQUEST_FLAGS_PACKETEND |
 				GWEN_IO_REQUEST_FLAGS_FLUSH,
-				dlg->guiid, timeout);
+				0, 30000);
     GWEN_Buffer_free(tbuf);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not send message (%d)", rv);
       GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  dlg->guiid, 2000);
+					  0, 2000);
       return rv;
     }
 
@@ -272,13 +270,13 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 
 
 
-int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeout) {
+int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf) {
   int rv;
   GWEN_DB_NODE *db;
   int code;
 
   /* recv packet (this reads the HTTP body) */
-  rv=GWEN_Io_Layer_ReadPacketToBuffer(dlg->ioLayer, buf, 0, dlg->guiid, timeout);
+  rv=GWEN_Io_Layer_ReadPacketToBuffer(dlg->ioLayer, buf, 0, 0, 30000);
   if (rv<0) {
     if (GWEN_Buffer_GetUsedBytes(buf)) {
       /* data received, check for common error codes */
@@ -328,7 +326,7 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
 		  "Got an error response (%d: %s)",
 		  code, text);
-	GWEN_Gui_ProgressLog(dlg->guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Error,
 			     GWEN_Buffer_GetStart(lbuf));
 	GWEN_Buffer_Reset(lbuf);
@@ -362,7 +360,7 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
 	      GWEN_Buffer_AppendString(lbuf, s);
 	      GWEN_Buffer_AppendString(lbuf, ")");
 
-	      GWEN_Gui_ProgressLog(dlg->guiid,
+	      GWEN_Gui_ProgressLog(0,
 				   GWEN_LoggerLevel_Warning,
                                    GWEN_Buffer_GetStart(lbuf));
 	    }
@@ -370,13 +368,13 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
 	}
       }
       else {
-	GWEN_Gui_ProgressLog(dlg->guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Notice,
 			     GWEN_Buffer_GetStart(lbuf));
       }
     }
     else {
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Info,
 			   GWEN_Buffer_GetStart(lbuf));
     }
@@ -384,7 +382,7 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No HTTP status code received");
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No HTTP status code received"));
     code=AB_ERROR_NETWORK;
@@ -395,7 +393,7 @@ int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf, int timeo
 
 
 
-int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
+int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   GWEN_BUFFER *tbuf;
   AH_MSG *msg;
   int rv;
@@ -410,12 +408,12 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
 
   /* read HBCI message */
   for (;;) {
-    rv=AH_Dialog_RecvMessage_Https_read(dlg, tbuf, timeout);
+    rv=AH_Dialog_RecvMessage_Https_read(dlg, tbuf);
     if (rv<0 || rv<200 || rv>299) {
       GWEN_Buffer_free(tbuf);
       GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  dlg->guiid, 2000);
+					  0, 2000);
       return (rv>0)?AB_ERROR_NETWORK:rv;
     }
     if (rv!=100)
@@ -424,13 +422,13 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
   }
 
   /* disconnect */
-  GWEN_Gui_ProgressLog(dlg->guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Disconnecting from bank..."));
   GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 				      GWEN_IO_REQUEST_FLAGS_FORCE,
-				      dlg->guiid, 2000);
-  GWEN_Gui_ProgressLog(dlg->guiid,
+				      0, 2000);
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Disconnected."));
 
@@ -444,27 +442,27 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
 			  bbuf);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decode BASE64 message (%d)", rv);
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
                            I18N("Could not BASE64-decode the message"));
       GWEN_Buffer_free(bbuf);
       GWEN_Buffer_free(tbuf);
       GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  dlg->guiid, 2000);
+					  0, 2000);
       return rv;
     }
     GWEN_Buffer_free(tbuf);
     tbuf=bbuf;
     if (strstr(GWEN_Buffer_GetStart(tbuf), "HNHBK:")==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Received message is not HBCI");
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
                            I18N("Received message is not HBCI"));
       GWEN_Buffer_free(tbuf);
       GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					  GWEN_IO_REQUEST_FLAGS_FORCE,
-					  dlg->guiid, 2000);
+					  0, 2000);
       return rv;
     }
   }
@@ -502,7 +500,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
   if (1!=sscanf(p1, "%d", &msgSize)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad size field [%s]", p1);
     GWEN_Buffer_free(tbuf);
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unparsable message received"));
     return GWEN_ERROR_BAD_DATA;
@@ -514,7 +512,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad message size (%d<%d)",
 	      GWEN_Buffer_GetUsedBytes(tbuf), msgSize);
     GWEN_Buffer_free(tbuf);
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Received message was truncated"));
     return GWEN_ERROR_BAD_DATA;
@@ -533,13 +531,13 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg, int timeout) {
 int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout) {
   int rv;
 
-  GWEN_Gui_ProgressLog(dlg->guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Preparing connection"));
   rv=AH_Dialog_CreateIoLayer_Https(dlg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create io layer (%d)", rv);
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error preparing connection"));
     GWEN_Io_Layer_free(dlg->ioLayer);
@@ -547,10 +545,10 @@ int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout) {
     return AB_ERROR_NETWORK;
   }
 
-  GWEN_Gui_ProgressLog(dlg->guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Connecting to bank..."));
-  rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0, dlg->guiid, timeout);
+  rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0, 0, 30000);
   if (rv<0) {
     uint32_t fl;
     GWEN_IO_LAYER *ioTls;
@@ -560,30 +558,30 @@ int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout) {
 	       "Error connecting (%d), retrying", rv);
     GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					dlg->guiid, 2000);
+					0, 2000);
     ioTls=GWEN_Io_Layer_FindBaseLayerByType(dlg->ioLayer, GWEN_IO_LAYER_TLS_TYPE);
     assert(ioTls);
     fl=AH_User_GetFlags(dlg->dialogOwner);
     if (fl & AH_USER_FLAGS_FORCE_SSL3) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Retrying to connect (non-SSLv3)"));
       GWEN_Io_Layer_SubFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
       rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0,
-					  dlg->guiid, 30000);
+					  0, 30000);
       if (rv==0) {
 	AH_User_SubFlags(dlg->dialogOwner, AH_USER_FLAGS_FORCE_SSL3);
       }
     }
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to connect (SSLv3)");
-      GWEN_Gui_ProgressLog(dlg->guiid,
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Retrying to connect (SSLv3)"));
       GWEN_Io_Layer_AddFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
       rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer, NULL, 0,
-					  dlg->guiid, 30000);
+					  0, 30000);
       if (rv==0) {
 	AH_User_AddFlags(dlg->dialogOwner, AH_USER_FLAGS_FORCE_SSL3);
       }
@@ -594,7 +592,7 @@ int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not connect to server (%d)", rv);
     GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					dlg->guiid, 2000);
+					0, 2000);
     GWEN_Io_Layer_free(dlg->ioLayer);
     dlg->ioLayer=NULL;
     return rv;
@@ -602,11 +600,11 @@ int AH_Dialog_TestServer_Https(AH_DIALOG *dlg, int timeout) {
 
   rv=GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
                                          0,
-					 dlg->guiid, 2000);
+					 0, 2000);
   if (rv) {
     GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer, NULL,
 					GWEN_IO_REQUEST_FLAGS_FORCE,
-					dlg->guiid, 2000);
+					0, 2000);
   }
 
   GWEN_Io_Layer_free(dlg->ioLayer);

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: jobgetbalance_p.h 1283 2007-07-25 14:28:36Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,13 +28,11 @@ static void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp,
 							    void *p);
 
 static int AH_Job_ForeignTransferWH_Process(AH_JOB *j,
-					    AB_IMEXPORTER_CONTEXT *ctx,
-					    uint32_t guiid);
+					    AB_IMEXPORTER_CONTEXT *ctx);
 
 static int AH_Job_ForeignTransferWH_Exchange(AH_JOB *j, AB_JOB *bj,
 					     AH_JOB_EXCHANGE_MODE m,
-					     AB_IMEXPORTER_CONTEXT *ctx,
-					     uint32_t guiid);
+					     AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

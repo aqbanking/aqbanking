@@ -565,7 +565,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
   dlg=AH_Msg_GetDialog(msg);
   assert(dlg);
-  guiid=AH_Dialog_GetGuiId(dlg);
+  guiid=0;
 
   /* log all results */
   tanRecycle=0;
@@ -656,7 +656,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           else
             GWEN_Buffer_AppendString(logmsg, " (S)");
         }
-	GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+	GWEN_Gui_ProgressLog(0,
 			     level,
 			     GWEN_Buffer_GetStart(logmsg));
 	GWEN_Buffer_free(logmsg);
@@ -667,7 +667,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 		    "Bad PIN flagged: %d", rcode);
 	  badPin=1;
 	  if (jq->usedPin) {
-	    GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+	    GWEN_Gui_ProgressLog(0,
 				 GWEN_LoggerLevel_Error,
 				 I18N("PIN seems to be invalid"));
 	    AH_User_SetPinStatus(jq->user, jq->usedPin,
@@ -1039,7 +1039,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Dialog not aborted, assuming correct PIN");
     if (jq->usedPin) {
-      GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+      GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Info,
 			   I18N("Dialog not aborted, assuming PIN is ok"));
       AH_User_SetPinStatus(jq->user, jq->usedPin,

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -447,9 +444,7 @@ int AH_HBCI_SaveSettings(const char *path, GWEN_DB_NODE *db){
   }
 
   /* write file */
-  if (GWEN_DB_WriteFile(db,
-			path,
-			GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+  if (GWEN_DB_WriteFile(db, path, GWEN_DB_FLAGS_DEFAULT)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not write file \"%s\"", path);
     return -1;
@@ -476,7 +471,7 @@ GWEN_DB_NODE *AH_HBCI_LoadSettings(const char *path) {
   if (GWEN_DB_ReadFile(db,
                        path,
 		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not read file \"%s\"",
 	     path);

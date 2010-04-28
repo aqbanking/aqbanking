@@ -285,7 +285,7 @@ int AIO_OfxGroup_STATUS_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
     }
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "%s", GWEN_Buffer_GetStart(buf));
-    GWEN_Gui_ProgressLog(GWEN_XmlCtx_GetGuiId(ctx),
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 GWEN_Buffer_GetStart(buf));
     GWEN_Buffer_free(buf);

@@ -400,7 +400,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
 
 
-int AB_Banking_OnlineInit(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_OnlineInit(AB_BANKING *ab) {
 
   assert(ab);
 
@@ -412,10 +412,10 @@ int AB_Banking_OnlineInit(AB_BANKING *ab, uint32_t guiid) {
   if (ab->onlineInitCount==0) {
     int rv;
 
-    rv=AB_Banking_LoadConfig(ab, guiid);
+    rv=AB_Banking_LoadConfig(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_UnloadConfig(ab, guiid);
+      AB_Banking_UnloadConfig(ab);
       return rv;
     }
   } /* if first init */
@@ -427,7 +427,7 @@ int AB_Banking_OnlineInit(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-int AB_Banking_OnlineFini(AB_BANKING *ab, uint32_t guiid) {
+int AB_Banking_OnlineFini(AB_BANKING *ab) {
   int rv=0;
   assert(ab);
 
@@ -438,8 +438,8 @@ int AB_Banking_OnlineFini(AB_BANKING *ab, uint32_t guiid) {
   }
 
   if (ab->onlineInitCount==1) {
-    rv=AB_Banking_SaveConfig(ab, guiid);
-    AB_Banking_UnloadConfig(ab, guiid);
+    rv=AB_Banking_SaveConfig(ab);
+    AB_Banking_UnloadConfig(ab);
   }
   ab->onlineInitCount--;
 
@@ -448,7 +448,7 @@ int AB_Banking_OnlineFini(AB_BANKING *ab, uint32_t guiid) {
 
 
 
-void AB_Banking_ActivateAllProviders(AB_BANKING *ab, uint32_t guiid){
+void AB_Banking_ActivateAllProviders(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
   GWEN_PLUGIN_MANAGER *pm;
 

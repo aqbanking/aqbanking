@@ -78,14 +78,13 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
 			     GWEN_CRYPT_TOKEN **pCt);
 
 AQBANKING_API 
-void AB_Banking_ClearCryptTokenList(AB_BANKING *ab, uint32_t guiid);
+void AB_Banking_ClearCryptTokenList(AB_BANKING *ab);
 
 AQBANKING_API 
 int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 			       GWEN_CRYPT_TOKEN_DEVICE devt,
 			       GWEN_BUFFER *typeName,
-			       GWEN_BUFFER *tokenName,
-			       uint32_t guiid);
+			       GWEN_BUFFER *tokenName);
 
 /*@}*/
 
@@ -99,27 +98,23 @@ AQBANKING_API
 int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE **pDb,
-				uint32_t guiid);
+				GWEN_DB_NODE **pDb);
 
 AQBANKING_API 
 int AB_Banking_SavePluginConfig(AB_BANKING *ab,
 				const char *pluginName,
 				const char *name,
-				GWEN_DB_NODE *db,
-				uint32_t guiid);
+				GWEN_DB_NODE *db);
 
 AQBANKING_API 
 int AB_Banking_LockPluginConfig(AB_BANKING *ab,
 				const char *pluginName,
-				const char *name,
-				uint32_t guiid);
+				const char *name);
 
 AQBANKING_API 
 int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
 				  const char *pluginName,
-				  const char *name,
-				  uint32_t guiid);
+				  const char *name);
 
 AQBANKING_API 
 int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock);
@@ -136,10 +131,10 @@ int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock);
 
 
 AQBANKING_API
-int AB_Banking_ExecutionProgress(AB_BANKING *ab, uint32_t pid);
+int AB_Banking_ExecutionProgress(AB_BANKING *ab);
 
 AQBANKING_API
-int AB_Banking_GetUniqueId(AB_BANKING *ab, uint32_t guiid);
+int AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 
 /**

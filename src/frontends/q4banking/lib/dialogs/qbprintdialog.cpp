@@ -98,8 +98,7 @@ void QBPrintDialog::loadGuiSetup(){
 
   rv=_banking->loadSharedSubConfig("qbanking",
 				   "gui/dlgs/printdialog",
-				   &dbConfig,
-				   0);
+				   &dbConfig);
   if (rv<0) {
     DBG_INFO(0, "Could not load shared config");
   }
@@ -165,8 +164,7 @@ void QBPrintDialog::saveGuiSetup(){
 
   rv=_banking->saveSharedSubConfig("qbanking",
 				   GWEN_Buffer_GetStart(dbuf),
-				   db,
-				   0);
+				   db);
   GWEN_Buffer_free(dbuf);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
@@ -182,8 +180,7 @@ void QBPrintDialog::loadPrinterSetup(QPrinter *printer){
 
   rv=_banking->loadSharedSubConfig("qbanking",
 				   "gui/dlgs/printdialog",
-				   &dbConfig,
-				   0);
+				   &dbConfig);
   if (rv<0) {
     DBG_INFO(0, "Could not load shared config");
   }
@@ -473,8 +470,7 @@ void QBPrintDialog::savePrinterSetup(QPrinter *printer) {
 
   rv=_banking->saveSharedSubConfig("qbanking",
 				   GWEN_Buffer_GetStart(dbuf),
-				   db,
-				   0);
+				   db);
   GWEN_Buffer_free(dbuf);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);

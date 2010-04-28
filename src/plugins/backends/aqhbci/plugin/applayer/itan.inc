@@ -203,19 +203,17 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg){
 
 int AH_Outbox__CBox_Itan_SendMsg(AH_OUTBOX__CBOX *cbox,
 				 AH_DIALOG *dlg,
-				 AH_MSG *msg,
-				 int timeout,
-				 uint32_t guiid) {
+				 AH_MSG *msg) {
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  GWEN_Gui_ProgressLog(guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Sending queue"));
   rv=AH_Dialog_SendMessage(dlg, msg);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    GWEN_Gui_ProgressLog(guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to send (network error)"));
     return rv;
@@ -229,17 +227,15 @@ int AH_Outbox__CBox_Itan_SendMsg(AH_OUTBOX__CBOX *cbox,
 
 int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
 			 AH_DIALOG *dlg,
-			 AH_JOBQUEUE *qJob,
-			 int timeout,
-			 uint32_t guiid){
+			 AH_JOBQUEUE *qJob){
   int rv;
   int process;
 
   process=AH_Dialog_GetItanProcessType(dlg);
   if (process==1)
-    rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob, timeout, guiid);
+    rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob);
   else if (process==2)
-    rv=AH_Outbox__CBox_Itan2(cbox, dlg, qJob, timeout, guiid);
+    rv=AH_Outbox__CBox_Itan2(cbox, dlg, qJob);
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "iTAN method %d not supported", process);
@@ -263,7 +259,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   if (tml==NULL || AH_TanMethod_List_GetCount(tml)<1) {
     /* no or empty list, select 999 */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
-    GWEN_Gui_ProgressLog(AH_Dialog_GetGuiId(dlg),
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Warning,
 			 I18N("There are no tan method descriptions (yet), trying One-Step TAN."));
     AH_Dialog_SetItanMethod(dlg, 999);
@@ -299,7 +295,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 	tm=AH_TanMethod_List_Next(tm);
       }
       if (tm==NULL) {
-	GWEN_Gui_ProgressLog2(AH_Dialog_GetGuiId(dlg),
+	GWEN_Gui_ProgressLog2(0,
 			      GWEN_LoggerLevel_Warning,
 			      I18N("TAN method (%d) selected by user is no longer valid,"
 				   "please choose another one"),

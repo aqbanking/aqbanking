@@ -40,24 +40,21 @@ void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p);
 static
 int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CONTEXT *ctx,
-                                  GWEN_IO_LAYER *bio,
-				  GWEN_DB_NODE *params,
-				  uint32_t guiid);
+                                  GWEN_SYNCIO *sio,
+				  GWEN_DB_NODE *params);
 
 static
 int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
                                   AB_IMEXPORTER_CONTEXT *ctx,
-                                  GWEN_IO_LAYER *io,
-				  GWEN_DB_NODE *params,
-				  uint32_t guiid);
+                                  GWEN_SYNCIO *sio,
+				  GWEN_DB_NODE *params);
 
 static
-int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid);
+int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 static
 int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                             GWEN_DB_NODE *db,
-					    GWEN_DB_NODE *dbParams,
-					    uint32_t guiid);
+					    GWEN_DB_NODE *dbParams);
 
 #endif /* AQHBCI_IMEX_OHBCI1_P_H */

@@ -47,7 +47,7 @@
 #endif
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *u, uint32_t guiid) {
+AH_DIALOG *AH_Dialog_new(AB_USER *u) {
   AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *pbuf;
@@ -57,8 +57,6 @@ AH_DIALOG *AH_Dialog_new(AB_USER *u, uint32_t guiid) {
 
   GWEN_NEW_OBJECT(AH_DIALOG, dlg);
   dlg->usage=1;
-
-  dlg->guiid=guiid;
 
   dlg->globalValues=GWEN_DB_Group_new("globalValues");
   dlg->dialogId=strdup("0");
@@ -109,13 +107,6 @@ void AH_Dialog_free(AH_DIALOG *dlg){
       GWEN_FREE_OBJECT(dlg);
     }
   }
-}
-
-
-
-uint32_t AH_Dialog_GetGuiId(const AH_DIALOG *dlg){
-  assert(dlg);
-  return dlg->guiid;
 }
 
 
@@ -252,21 +243,20 @@ uint32_t AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
 int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg) {
   assert(dlg);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
-    return AH_Dialog_RecvMessage_Https(dlg, pMsg, GWEN_TIMEOUT_FOREVER);
+    return AH_Dialog_RecvMessage_Https(dlg, pMsg);
   else
-    return AH_Dialog_RecvMessage_Hbci(dlg, pMsg, GWEN_TIMEOUT_FOREVER);
+    return AH_Dialog_RecvMessage_Hbci(dlg, pMsg);
 }
 
 
 
 int AH_Dialog__SendPacket(AH_DIALOG *dlg,
-			  const char *buf, int blen,
-			  int timeout) {
+			  const char *buf, int blen) {
   assert(dlg);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
-    return AH_Dialog_SendPacket_Https(dlg, buf, blen, timeout);
+    return AH_Dialog_SendPacket_Https(dlg, buf, blen);
   else
-    return AH_Dialog_SendPacket_Hbci(dlg, buf, blen, timeout);
+    return AH_Dialog_SendPacket_Hbci(dlg, buf, blen);
 }
 
 
@@ -288,8 +278,7 @@ int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
 
   rv=AH_Dialog__SendPacket(dlg,
 			   GWEN_Buffer_GetStart(mbuf),
-			   GWEN_Buffer_GetUsedBytes(mbuf),
-			   GWEN_TIMEOUT_FOREVER);
+			   GWEN_Buffer_GetUsedBytes(mbuf));
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog (%d)", rv);
     return rv;
@@ -371,11 +360,11 @@ int AH_Dialog__CreateIoLayer(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
+int AH_Dialog_Connect(AH_DIALOG *dlg) {
   int rv;
 
   AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
-  GWEN_Gui_ProgressLog(dlg->guiid,
+  GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Connecting to bank..."));
 
@@ -390,11 +379,11 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
     rv=GWEN_Io_Layer_ConnectRecursively(dlg->ioLayer,
 					NULL,
 					0,
-					dlg->guiid,
-					timeout);
+					0,
+                                        30000);
     if (rv) {
       if (rv==GWEN_ERROR_TIMEOUT) {
-	GWEN_Gui_ProgressLog(dlg->guiid,
+	GWEN_Gui_ProgressLog(0,
 			     GWEN_LoggerLevel_Notice,
 			     I18N("Timeout."));
       }
@@ -404,7 +393,7 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
       dlg->ioLayer=NULL;
       return AB_ERROR_NETWORK;
     }
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
   }
@@ -414,18 +403,18 @@ int AH_Dialog_Connect(AH_DIALOG *dlg, int timeout) {
 
 
 
-int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout) {
+int AH_Dialog_Disconnect(AH_DIALOG *dlg) {
   if (AH_User_GetCryptMode(dlg->dialogOwner)!=AH_CryptMode_Pintan) {
     int rv;
 
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Disconnecting from bank..."));
 
     rv=GWEN_Io_Layer_DisconnectRecursively(dlg->ioLayer,
 					   NULL,
 					   0,
-					   dlg->guiid, timeout);
+					   0, 10000);
     dlg->flags&=~AH_DIALOG_FLAGS_OPEN;
     if (rv) {
       DBG_WARN(AQHBCI_LOGDOMAIN,
@@ -435,7 +424,7 @@ int AH_Dialog_Disconnect(AH_DIALOG *dlg, int timeout) {
     GWEN_Io_Layer_free(dlg->ioLayer);
     dlg->ioLayer=0;
 
-    GWEN_Gui_ProgressLog(dlg->guiid,
+    GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Notice,
 			 I18N("Disconnected."));
   }

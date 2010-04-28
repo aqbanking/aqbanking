@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Thu Apr 29 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -53,12 +50,10 @@ int AHB_DTAUS__CreateSetE(GWEN_BUFFER *dst,
 
 
 int AHB_DTAUS__Export(GWEN_DBIO *dbio,
-		      GWEN_IO_LAYER *io,
+		      GWEN_SYNCIO *sio,
                       GWEN_DB_NODE *data,
 		      GWEN_DB_NODE *cfg,
-		      uint32_t flags,
-		      uint32_t guiid,
-		      int msecs);
+		      uint32_t flags);
 
 
 

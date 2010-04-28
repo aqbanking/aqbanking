@@ -22,8 +22,7 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/fastbuffer.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include "../../../libs/aqbanking/types/bankinfo_l.h"
 #include <time.h>
@@ -53,15 +52,13 @@ int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbParams;
 
   dbParams=GWEN_DB_Group_new("params");
-  if (GWEN_DB_ReadFile(dbParams, pname,
-		       GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+  if (GWEN_DB_ReadFile(dbParams, pname, GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Error reading profile file \"%s\"", pname);
     GWEN_DB_Group_free(dbParams);
     return -1;
   }
 
-  if (GWEN_DB_ReadFileAs(db, fname, "csv", dbParams,
-			 GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+  if (GWEN_DB_ReadFileAs(db, fname, "csv", dbParams, GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_ERROR(0, "Error reading data file \"%s\"", fname);
     GWEN_DB_Group_free(dbParams);
     return -1;
@@ -512,9 +509,7 @@ int readHBCIFile(const char *fname) {
                         GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES,
-			0,
-			2000)) {
+			GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
@@ -784,9 +779,7 @@ int readATBLZFile2(const char *fname) {
                         GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES,
-			0,
-			2000)) {
+			GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
@@ -1268,8 +1261,7 @@ int readBcFile(const char *fname) {
 			GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES,
-			0, 2000)) {
+			GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
@@ -1494,42 +1486,41 @@ int saveBankInfos(const char *path) {
   AB_BANKINFO *bi;
   uint32_t count=0;
   GWEN_BUFFER *xbuf;
-  GWEN_IO_LAYER *io;
-  int fd;
-  int err;
+  GWEN_SYNCIO *sio;
+  int rv;
   GWEN_FAST_BUFFER *fb;
 
   fprintf(stdout, "Saving database...\n");
-  fd=open(path, O_RDWR | O_CREAT | O_TRUNC,
-          S_IRUSR | S_IWUSR
-#ifdef S_IRGRP
-          |S_IRGRP
-#endif
-#ifdef S_IROTH
-          |S_IROTH
-#endif
-          );
-  if (fd==-1) {
-    DBG_ERROR(0, "open(%s): %s", path, strerror(errno));
-    return -1;
+  sio=GWEN_SyncIo_File_new(path, GWEN_SyncIo_File_CreationMode_CreateAlways);
+  GWEN_SyncIo_AddFlags(sio,
+		       GWEN_SYNCIO_FILE_FLAGS_READ |
+		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+		       GWEN_SYNCIO_FILE_FLAGS_UWRITE);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
-  io=GWEN_Io_LayerFile_new(-1, fd);
-  GWEN_Io_Manager_RegisterLayer(io);
-  fb=GWEN_FastBuffer_new(512, io, 0, 2000);
 
-  GWEN_FASTBUFFER_WRITELINE(fb, err, "# This is an automatically created file");
-  if (err>=0) {
-    GWEN_FASTBUFFER_WRITELINE(fb, err, "# All banks are separated by newlines");
+  fb=GWEN_FastBuffer_new(512, sio);
+
+  GWEN_FASTBUFFER_WRITELINE(fb, rv, "# This is an automatically created file");
+  if (rv>=0) {
+    GWEN_FASTBUFFER_WRITELINE(fb, rv, "# All banks are separated by newlines");
   }
-  if (err>=0) {
-    GWEN_FASTBUFFER_WRITELINE(fb, err,
+  if (rv>=0) {
+    GWEN_FASTBUFFER_WRITELINE(fb, rv,
 			      "# Please do not modify this file, "
 			      "the index files rely on exact positions.");
   }
-  if (err<0) {
-    DBG_INFO(0, "here (%d)", err);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
     DBG_ERROR(0, "Error writing bank file \"%s\"", path);
     GWEN_FastBuffer_free(fb);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return -1;
   }
 
@@ -1577,17 +1568,19 @@ int saveBankInfos(const char *path) {
       DBG_ERROR(0, "Error writing bank file \"%s\"", path);
       GWEN_DB_Group_free(dbT);
       GWEN_FastBuffer_free(fb);
-      GWEN_Io_Layer_free(io);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
       return -1;
     }
-    GWEN_FASTBUFFER_WRITELINE(fb, err, "");
-    if (err<0) {
-      DBG_ERROR_ERR(0, err);
+    GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
+    if (rv<0) {
+      DBG_ERROR_ERR(0, rv);
       DBG_ERROR(0, "Error writing bank file \"%s\"", path);
       GWEN_DB_Group_free(dbT);
       GWEN_FastBuffer_free(fb);
-      GWEN_Io_Layer_free(io);
-      return err;
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return rv;
     }
     GWEN_DB_Group_free(dbT);
 
@@ -1599,23 +1592,25 @@ int saveBankInfos(const char *path) {
   } /* while bi */
 
   /* flush fast buffer */
-  GWEN_FASTBUFFER_FLUSH(fb, err);
-  if (err<0) {
-    DBG_ERROR(0, "Error closing bank file \"%s\" (%d)", path, err);
+  GWEN_FASTBUFFER_FLUSH(fb, rv);
+  if (rv<0) {
+    DBG_ERROR(0, "Error closing bank file \"%s\" (%d)", path, rv);
     GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_free(io);
-    return err;
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
   GWEN_FastBuffer_free(fb);
 
   /* flush and close io */
-  err=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 30000);
-  if (err<0) {
-    DBG_ERROR(0, "Error closing bank file \"%s\" (%d)", path, err);
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    DBG_ERROR(0, "Error closing bank file \"%s\" (%d)", path, rv);
     GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_free(io);
-    return err;
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
+  GWEN_SyncIo_free(sio);
 
   fprintf(stdout, "  Written %d banks.\n", count);
   return 0;
@@ -1669,9 +1664,7 @@ int makeBankInfos(const char *path) {
 			  GWEN_DB_FLAGS_INDEND | \
 			  GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
 			  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			  GWEN_DB_FLAGS_OMIT_TYPES,
-			  0,
-			  2000)) {
+			  GWEN_DB_FLAGS_OMIT_TYPES)) {
       DBG_ERROR(0, "Error writing bank file \"%s\"",
 		GWEN_Buffer_GetStart(dbuf));
       GWEN_DB_Group_free(dbT);
@@ -1712,21 +1705,21 @@ int makeBankInfos(const char *path) {
 
 int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
   uint32_t count=0;
-  int fd;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   GWEN_FAST_BUFFER *fb;
+  int rv;
 
   fprintf(stdout, "Loading database, this will take a few minutes ...\n");
-  fd=open(fname, O_RDONLY | O_EXCL);
-  if (fd==-1) {
-    DBG_ERROR(0, "open(%s): %s", fname, strerror(errno));
-    return -1;
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
 
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  GWEN_Io_Manager_RegisterLayer(io);
-
-  fb=GWEN_FastBuffer_new(512, io, 0, 2000);
+  fb=GWEN_FastBuffer_new(512, sio);
 
   for(;;) {
     GWEN_DB_NODE *dbT;
@@ -1747,7 +1740,8 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
       DBG_ERROR(0, "Could not load file \"%s\" (%d)", fname, rv);
       GWEN_DB_Group_free(dbT);
       GWEN_FastBuffer_free(fb);
-      GWEN_Io_Layer_free(io);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
       return -1;
     }
 
@@ -1766,7 +1760,8 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
   fprintf(stdout, "  Read %d banks.\n", count);
 
   GWEN_FastBuffer_free(fb);
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   return 0;
 }
@@ -2047,9 +2042,7 @@ int main(int argc, char **argv) {
       return 2;
     }
 
-    if (GWEN_DB_WriteFile(dbIdx,
-                          "index.conf.out",
-			  GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+    if (GWEN_DB_WriteFile(dbIdx, "index.conf.out", GWEN_DB_FLAGS_DEFAULT)) {
       DBG_ERROR(0, "Error writing index file");
       return -1;
     }

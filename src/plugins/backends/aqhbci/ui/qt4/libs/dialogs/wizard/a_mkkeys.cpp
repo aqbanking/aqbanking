@@ -109,8 +109,7 @@ void ActionCreateKeys::slotButtonClicked() {
 
   _realDialog->setStatus(ActionWidget::StatusChecking);
 
-  rv=AH_Provider_CreateKeys(wi->getProvider(),
-			    u, 1, 0);
+  rv=AH_Provider_CreateKeys(wi->getProvider(), u, 1);
   if (rv) {
     DBG_ERROR(0, "Could not create keys (%d)", rv);
     _realDialog->setStatus(ActionWidget::StatusFailed);

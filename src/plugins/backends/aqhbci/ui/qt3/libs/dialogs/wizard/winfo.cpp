@@ -308,7 +308,7 @@ void WizardInfo::releaseData() {
 
   if (_token && (_flags & WIZARDINFO_FLAGS_MEDIUM_CREATED)) {
     DBG_INFO(0, "Deleting medium");
-    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(_provider), 0);
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(_provider));
     _flags&=~WIZARDINFO_FLAGS_MEDIUM_CREATED;
     _token=NULL;
   }

@@ -22,6 +22,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -1071,19 +1072,17 @@ int AHB_DTAUS__ReadDocument(GWEN_BUFFER *src,
 
 
 int AHB_DTAUS__Import(GWEN_DBIO *dbio,
-		      GWEN_IO_LAYER *io,
+		      GWEN_SYNCIO *sio,
                       GWEN_DB_NODE *data,
 		      GWEN_DB_NODE *cfg,
-		      uint32_t flags,
-		      uint32_t guiid,
-		      int msecs) {
+		      uint32_t flags) {
   GWEN_BUFFER *src;
   int rv;
   unsigned int pos;
 
   src=GWEN_Buffer_new(0, 1024, 0, 1);
-  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_IO);
-  GWEN_Buffer_SetSourceIoLayer(src, io, 0);
+  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_SYNCIO);
+  GWEN_Buffer_SetSourceSyncIo(src, sio, 0);
 
   pos=0;
   rv=0;
@@ -1141,48 +1140,34 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
 
 
 
-GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio,
-						const char *fname,
-						uint32_t guiid,
-						int msecs) {
+GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio, const char *fname) {
   GWEN_BUFFER *src;
   GWEN_DBIO_CHECKFILE_RESULT rv;
   unsigned int pos;
-  int fd;
-  GWEN_BUFFEREDIO *bio;
+  GWEN_SYNCIO *sio;
 
   assert(dbio);
   assert(fname);
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    /* error */
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "open(%s): %s", fname, strerror(errno));
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
-
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
 
   src=GWEN_Buffer_new(0, 1024, 0, 1);
-  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_BIO);
-  GWEN_Buffer_SetSourceBIO(src, bio, 0);
+  GWEN_Buffer_AddMode(src, GWEN_BUFFER_MODE_USE_SYNCIO);
+  GWEN_Buffer_SetSourceSyncIo(src, sio, 0);
 
   pos=0;
-  if (GWEN_BufferedIO_CheckEOF(bio)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "End of stream reached");
-    GWEN_BufferedIO_Close(bio);
-    GWEN_BufferedIO_free(bio);
-    GWEN_Buffer_free(src);
-    return GWEN_DBIO_CheckFileResultNotOk;
-  }
-
   rv=AHB_DTAUS__ReallyCheckFile(src, pos);
 
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
   GWEN_Buffer_free(src);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   return rv;
 }

@@ -197,7 +197,7 @@ int test5(int argc, char **argv) {
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
                        "params/type", "mt940");
   rv=GWEN_DB_ReadFileAs(db, "test.swift", "swift", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000);
+			GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -254,7 +254,7 @@ int test6(int argc, char **argv) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, "test.txt", "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000);
+			GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -310,7 +310,7 @@ int test6(int argc, char **argv) {
   }
 
   rv=GWEN_DB_WriteFileAs(dbOut, "countries.csv", "csv", dbParams,
-			 GWEN_DB_FLAGS_DEFAULT, 0, 2000);
+			 GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(0, "Error writing file");
     return 2;
@@ -413,8 +413,7 @@ int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, fname, "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP,
-			0, 2000);
+			GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -1192,9 +1191,7 @@ int test15(int argc, char **argv) {
   rv=GWEN_DBIO_ImportFromFile(dbio, fname,
 			      dbData,
 			      dbParams,
-			      GWEN_PATH_FLAGS_CREATE_GROUP,
-			      0,
-                              2000);
+			      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     fprintf(stderr, "Error on import (%d)\n", rv);
     return 2;

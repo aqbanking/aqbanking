@@ -78,9 +78,8 @@ void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
 
 int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
 				  AB_IMEXPORTER_CONTEXT *ctx,
-				  GWEN_IO_LAYER *io,
-				  GWEN_DB_NODE *params,
-				  uint32_t guiid){
+				  GWEN_SYNCIO *sio,
+				  GWEN_DB_NODE *params){
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -95,13 +94,11 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      io,
+		      sio,
                       dbData,
 		      dbSubParams,
 		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP,
-		      guiid,
-                      2000);
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
@@ -111,20 +108,20 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
   }
 
   /* transform DB to transactions */
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
-  GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
 		       "Transforming data to transactions");
-  rv=AH_ImExporterOpenHBCI1__ImportFromGroup(ctx, dbData, params, guiid);
+  rv=AH_ImExporterOpenHBCI1__ImportFromGroup(ctx, dbData, params);
   if (rv) {
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
@@ -138,8 +135,7 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
 
 int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 					    GWEN_DB_NODE *db,
-					    GWEN_DB_NODE *dbParams,
-					    uint32_t guiid) {
+					    GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbBanks;
   const char *dateFormat;
   int inUtc;
@@ -281,7 +277,7 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -290,7 +286,7 @@ int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint3
   assert(ieh);
   assert(ieh->dbio);
 
-  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname, guiid, 2000);
+  rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
   switch(rv) {
   case GWEN_DBIO_CheckFileResultOk:      return AB_ERROR_INDIFFERENT;
   case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
@@ -303,9 +299,8 @@ int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint3
 
 int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
 				  AB_IMEXPORTER_CONTEXT *ctx,
-                                  GWEN_IO_LAYER *io,
-				  GWEN_DB_NODE *params,
-				  uint32_t guiid){
+                                  GWEN_SYNCIO *sio,
+				  GWEN_DB_NODE *params){
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -341,7 +336,7 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
       if (rv) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Could not transform transaction to db");
-	GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			     "Error transforming data to db");
         GWEN_DB_Group_free(dbData);
         GWEN_DB_Group_free(dbTransaction);
@@ -398,15 +393,13 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
 
 
   rv=GWEN_DBIO_Export(ieh->dbio,
-                      io,
+                      sio,
                       dbData,
 		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT,
-		      guiid,
-		      2000);
+		      GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
-    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error,
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			 "Error exporting data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;

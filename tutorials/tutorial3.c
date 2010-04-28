@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   /* This function loads the settings file of AqBanking so the users and
    * accounts become available after this function successfully returns.
    */
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     fprintf(stderr, "Error on init of online modules (%d)\n", rv);
     return 2;
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
      * is available with the given account.
      * If the job is available then 0 is returned, otherwise the error code
      * might give you a hint why the job is not supported. */
-    rv=AB_Job_CheckAvailability(j, 0);
+    rv=AB_Job_CheckAvailability(j);
     if (rv) {
       fprintf(stderr, "Job is not available (%d)\n", rv);
       return 2;
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
      * It only returns an error code (!=0) if there has been a problem
      * sending the jobs.
      */
-    rv=AB_Banking_ExecuteJobs(ab, jl, ctx, 0);
+    rv=AB_Banking_ExecuteJobs(ab, jl, ctx);
     if (rv) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
       return 2;
@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
   /* This function MUST be called in order to let AqBanking save the changes
    * to the users and accounts (like they occur after executing jobs).
    */
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit online modules (%d)\n", rv);
     return 3;
