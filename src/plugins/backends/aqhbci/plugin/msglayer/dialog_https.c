@@ -169,6 +169,15 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
     dlg->httpSession=NULL;
     return rv;
   }
+  else if (rv==0) {
+    /* not a HTTP code */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    GWEN_HttpSession_Fini(dlg->httpSession);
+    GWEN_HttpSession_free(dlg->httpSession);
+    dlg->httpSession=NULL;
+    return GWEN_ERROR_INTERNAL;
+  }
   else if (!(rv>=200 && rv<=299)) {
     /* not a HTTP: ok code */
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
