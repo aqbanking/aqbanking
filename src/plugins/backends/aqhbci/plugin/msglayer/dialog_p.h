@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,8 +11,12 @@
 #ifndef GWHBCI_DIALOG_P_H
 #define GWHBCI_DIALOG_P_H
 
-#include <gwenhywfar/inetaddr.h>
+
 #include "dialog_l.h"
+
+#include <aqbanking/httpsession.h>
+
+#include <gwenhywfar/inetaddr.h>
 
 
 struct AH_DIALOG {
@@ -26,7 +27,8 @@ struct AH_DIALOG {
 
   GWEN_MSGENGINE *msgEngine;
 
-  GWEN_IO_LAYER *ioLayer;
+  GWEN_SYNCIO *ioLayer;
+  GWEN_HTTP_SESSION *httpSession;
 
   uint32_t flags;
 
@@ -41,21 +43,19 @@ struct AH_DIALOG {
 };
 
 
-
-static int AH_Dialog__SetAddress(AH_DIALOG *dlg,
-                                 GWEN_INETADDRESS *addr,
-                                 const char *bankAddr);
-
-static int AH_Dialog__SendPacket(AH_DIALOG *dlg, const char *buf, int blen);
+static int AH_Dialog_SendPacket(AH_DIALOG *dlg, const char *buf, int blen);
 
 
 static int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg);
+static int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg);
+static int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg);
 static int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
 				     const char *buf, int blen);
 static int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg);
 
-static int AH_Dialog_RecvMessage_Https_read(AH_DIALOG *dlg, GWEN_BUFFER *buf);
 static int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg);
+static int AH_Dialog_Connect_Https(AH_DIALOG *dlg);
+static int AH_Dialog_Disconnect_Https(AH_DIALOG *dlg);
 static int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
 				      const char *buf, int blen);
 static int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg);

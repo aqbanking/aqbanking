@@ -99,6 +99,11 @@ AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
                                                const char *name);
 
+AQBANKING_API
+GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
+					      const char *imExporterName,
+					      const char *profileName);
+
 /**
  * Save the given profile in the local user folder of the given im-/exporter
  * module. After that this profile will appear in the list returned by
@@ -143,6 +148,28 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 			      const char *exporterName,
                               const char *profileName,
 			      GWEN_BUFFER *buf);
+
+AQBANKING_API
+int AB_Banking_ImportBuffer(AB_BANKING *ab,
+			    AB_IMEXPORTER_CONTEXT *ctx,
+			    const char *exporterName,
+			    const char *profileName,
+			    GWEN_BUFFER *buf);
+
+
+AQBANKING_API
+int AB_Banking_ExportToFile(AB_BANKING *ab,
+			    AB_IMEXPORTER_CONTEXT *ctx,
+			    const char *exporterName,
+			    const char *profileName,
+			    const char *fileName);
+
+AQBANKING_API
+int AB_Banking_ImportFile(AB_BANKING *ab,
+			  AB_IMEXPORTER_CONTEXT *ctx,
+			  const char *exporterName,
+			  const char *profileName,
+			  const char *fileName);
 
 
 /*@}*/ /* addtogroup */

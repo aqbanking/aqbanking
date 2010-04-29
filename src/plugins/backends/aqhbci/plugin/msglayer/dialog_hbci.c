@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: dialog.c 1109 2007-01-10 14:30:14Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,18 +9,14 @@
 
 /* this file is included from dialog.c" */
 
-#include <gwenhywfar/io_socket.h>
-
 
 
 
 int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg) {
-  int port;
-  GWEN_SOCKET *sk;
-  GWEN_INETADDRESS *addr;
   const GWEN_URL *url;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   int rv;
+  GWEN_BUFFER *tbuf;
 
   assert(dlg);
 
@@ -34,49 +27,87 @@ int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg) {
     return GWEN_ERROR_INVALID;
   }
 
-  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  io=GWEN_Io_LayerSocket_new(sk);
-
-  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
-  rv=AH_Dialog__SetAddress(dlg, addr, GWEN_Url_GetServer(url));
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Url_toString(url, tbuf);
+  rv=GWEN_Gui_GetSyncIo(GWEN_Buffer_GetStart(tbuf), "hbci", 3000, &sio);
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_InetAddr_free(addr);
-    return rv;
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_GENERIC;
   }
-  port=GWEN_Url_GetPort(url);
-  if (port==0)
-    port=3000;
+  GWEN_Buffer_free(tbuf);
 
-  GWEN_InetAddr_SetPort(addr, port);
-  GWEN_Io_LayerSocket_SetPeerAddr(io, addr);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Could not register io layer (%d)", rv);
-    GWEN_InetAddr_free(addr);
-    GWEN_Io_Layer_free(io);
-    return 0;
-  }
-
-  dlg->ioLayer=io;
-  GWEN_InetAddr_free(addr);
+  dlg->ioLayer=sio;
   return 0;
 }
 
 
 
-int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
-			      const char *buf, int blen) {
+int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg) {
+  if (dlg->ioLayer==NULL) {
+    int rv;
+
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Connecting to bank..."));
+
+    rv=AH_Dialog_CreateIoLayer_Hbci(dlg);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    do {
+      rv=GWEN_SyncIo_Connect(dlg->ioLayer);
+    } while (rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"Could not connect to bank (%d)", rv);
+      GWEN_SyncIo_free(dlg->ioLayer);
+      dlg->ioLayer=NULL;
+      GWEN_Gui_ProgressLog2(0,
+			    GWEN_LoggerLevel_Error,
+			    I18N("Could not connect (%d)"),
+			    rv);
+      return rv;
+    }
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Connected."));
+  }
+  return 0;
+}
+
+
+
+int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg) {
+  if (dlg->ioLayer) {
+    int rv;
+
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Disconnecting from bank..."));
+
+    do {
+      rv=GWEN_SyncIo_Disconnect(dlg->ioLayer);
+    } while (rv==GWEN_ERROR_INTERRUPTED);
+
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Notice,
+			 I18N("Disconnected."));
+    GWEN_SyncIo_free(dlg->ioLayer);
+    dlg->ioLayer=NULL;
+  }
+  return 0;
+}
+
+
+
+int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg, const char *buf, int blen) {
   int rv;
 
-  rv=GWEN_Io_Layer_WriteBytes(dlg->ioLayer,
-			      (const uint8_t*)buf,
-			      blen,
-			      GWEN_IO_REQUEST_FLAGS_WRITEALL |
-			      GWEN_IO_REQUEST_FLAGS_FLUSH,
-			      0,
-			      10000);
+  rv=GWEN_SyncIo_WriteForced(dlg->ioLayer, (const uint8_t*)buf, blen);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -99,12 +130,7 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
   assert(dlg->ioLayer);
 
   /* receive header */
-  rv=GWEN_Io_Layer_ReadBytes(dlg->ioLayer,
-			     (uint8_t*)header,
-			     sizeof(header)-1,
-			     GWEN_IO_REQUEST_FLAGS_READALL,
-			     0,
-			     30000);
+  rv=GWEN_SyncIo_ReadForced(dlg->ioLayer, (uint8_t*)header, sizeof(header)-1);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading header (%d)", rv);
     return rv;
@@ -156,12 +182,9 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
   GWEN_Buffer_AllocRoom(tbuf, msgSize);
 
   /* receive rest of the message */
-  rv=GWEN_Io_Layer_ReadBytes(dlg->ioLayer,
-			     (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
-                             msgSize,
-			     GWEN_IO_REQUEST_FLAGS_READALL,
-			     0,
-			     30000);
+  rv=GWEN_SyncIo_ReadForced(dlg->ioLayer,
+			    (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
+			    msgSize);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading message (%d)", rv);
     GWEN_Buffer_free(tbuf);

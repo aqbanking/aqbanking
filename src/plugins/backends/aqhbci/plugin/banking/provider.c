@@ -1761,7 +1761,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
   /* first try */
   dialog=AH_Dialog_new(u);
   assert(dialog);
-  rv=AH_Dialog_TestServer_Https(dialog, 30000);
+  rv=AH_Dialog_TestServer_Https(dialog);
   AH_Dialog_Disconnect(dialog);
   AH_Dialog_free(dialog);
 

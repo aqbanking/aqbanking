@@ -191,6 +191,47 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
 
 
 
+int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
+			       AB_IMEXPORTER_CONTEXT *ctx,
+			       const char *fname,
+			       GWEN_DB_NODE *dbProfile) {
+  GWEN_SYNCIO *sio;
+  int rv;
+
+  assert(ie);
+  assert(ctx);
+  assert(fname);
+  assert(dbProfile);
+
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
+  GWEN_SyncIo_AddFlags(sio,
+		       GWEN_SYNCIO_FILE_FLAGS_READ |
+		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
+		       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  rv=AB_ImExporter_Export(ie, ctx, sio, dbProfile);
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+  GWEN_SyncIo_free(sio);
+
+  return rv;
+}
+
+
+
 int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
 			       AB_IMEXPORTER_CONTEXT *ctx,
 			       GWEN_BUFFER *buf,

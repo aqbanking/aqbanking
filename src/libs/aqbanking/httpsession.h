@@ -35,9 +35,7 @@
  */
 /*@{*/
 AQBANKING_API 
-GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u,
-                                      const char *url,
-				      uint32_t guiid);
+GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u, const char *url);
 
 /*@}*/
 
