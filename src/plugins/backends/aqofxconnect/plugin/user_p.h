@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,6 +27,9 @@ struct AO_USER {
   char *appVer;
   char *headerVer;
   char *clientUid;
+
+  int httpVMajor;
+  int httpVMinor;
 };
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);

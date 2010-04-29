@@ -137,6 +137,20 @@ AQOFXCONNECT_API
 void AO_User_SetClientUid(AB_USER *u, const char *s);
 
 
+
+AQOFXCONNECT_API
+int AO_User_GetHttpVMajor(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHttpVMajor(AB_USER *u, int i);
+
+AQOFXCONNECT_API
+int AO_User_GetHttpVMinor(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHttpVMinor(AB_USER *u, int i);
+
+
 #ifdef __cplusplus
 }
 #endif

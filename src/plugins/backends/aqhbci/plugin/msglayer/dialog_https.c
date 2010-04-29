@@ -37,7 +37,9 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
 
   sess=AB_HttpSession_new(AB_User_GetProvider(dlg->dialogOwner),
 			  dlg->dialogOwner,
-			  GWEN_Buffer_GetStart(tbuf));
+			  GWEN_Buffer_GetStart(tbuf),
+			  "https",
+			  443);
   GWEN_Buffer_free(tbuf);
 
   /* setup session */

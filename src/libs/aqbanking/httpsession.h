@@ -35,7 +35,10 @@
  */
 /*@{*/
 AQBANKING_API 
-GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u, const char *url);
+GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u,
+				      const char *url,
+				      const char *defaultProto,
+				      int defaultPort);
 
 /*@}*/
 

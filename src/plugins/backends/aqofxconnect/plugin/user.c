@@ -130,6 +130,8 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     GWEN_INHERIT_SETDATA(AB_USER, AO_USER, u, ue, AO_User_FreeData);
 
     if (em==AB_ProviderExtendMode_Create) {
+      ue->httpVMajor=1;
+      ue->httpVMinor=0;
     }
     else {
       const char *s;
@@ -196,8 +198,14 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	ue->clientUid=strdup(s);
       else
 	ue->clientUid=NULL;
-    }
 
+      ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
+      ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
+      if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
+	ue->httpVMajor=1;
+	ue->httpVMinor=0;
+      }
+    }
   }
   else {
     AO_USER *ue;
@@ -245,6 +253,11 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       if (ue->clientUid)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "clientUid", ue->clientUid);
+
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "httpVMajor", ue->httpVMajor);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "httpVMinor", ue->httpVMinor);
     }
   }
 }
@@ -567,6 +580,54 @@ void AO_User_SetClientUid(AB_USER *u, const char *s) {
   free(ue->clientUid);
   if (s) ue->clientUid=strdup(s);
   else ue->clientUid=NULL;
+}
+
+
+
+int AO_User_GetHttpVMajor(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->httpVMajor;
+}
+
+
+
+void AO_User_SetHttpVMajor(AB_USER *u, int i) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->httpVMajor=i;
+}
+
+
+
+int AO_User_GetHttpVMinor(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->httpVMinor;
+}
+
+
+
+void AO_User_SetHttpVMinor(AB_USER *u, int i) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->httpVMinor=i;
 }
 
 

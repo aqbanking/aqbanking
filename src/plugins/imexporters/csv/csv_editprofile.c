@@ -19,9 +19,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_buffered.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/text.h>
 
@@ -257,9 +256,8 @@ static const char *getCharValueFromDoubleStringsCombo(GWEN_DIALOG *dlg,
 
 static int readTestData(GWEN_DIALOG *dlg) {
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
-  int fd;
-  GWEN_IO_LAYER *io;
-  GWEN_IO_LAYER *baseIo;
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *dbuf;
   int i;
   int ignoreLines=0;
@@ -274,16 +272,13 @@ static int readTestData(GWEN_DIALOG *dlg) {
 
   GWEN_StringList_Clear(xdlg->columns);
 
-  fd=open(xdlg->testFileName, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "open(%s): %s (%d)",
-	      xdlg->testFileName, strerror(errno), errno);
-    return GWEN_ERROR_IO;
-  }
+  /* create file IO */
+  sio=GWEN_SyncIo_File_new(xdlg->testFileName, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  baseIo=sio;
 
-  baseIo=GWEN_Io_LayerFile_new(fd, -1);
-  io=GWEN_Io_LayerBuffered_new(baseIo);
-  GWEN_Io_Manager_RegisterLayer(io);
+  /* create buffered IO on top of file io to allow for reading of lines below */
+  sio=GWEN_SyncIo_Buffered_new(baseIo);
 
   dbuf=GWEN_Buffer_new(0, 1024, 0, 1);
 
@@ -301,21 +296,34 @@ static int readTestData(GWEN_DIALOG *dlg) {
   else if (strcasecmp(delimiter, "SPACE")==0)
     delimiter=" ";
 
+  /* open file */
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(dbuf);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
   for (i=0; i<ignoreLines; i++) {
-    rv=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, dbuf, GWEN_Dialog_GetGuiId(dlg), 2000);
+    rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, dbuf);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading: %d", rv);
       GWEN_Buffer_free(dbuf);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
       return rv;
     }
     GWEN_Buffer_Reset(dbuf);
   }
 
   /* read single data line */
-  rv=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, dbuf, GWEN_Dialog_GetGuiId(dlg), 2000);
+  rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, dbuf);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading: %d", rv);
     GWEN_Buffer_free(dbuf);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
@@ -323,8 +331,8 @@ static int readTestData(GWEN_DIALOG *dlg) {
 			      GWEN_Buffer_GetStart(dbuf), 0);
 
   /* we don't need the io layer any longer */
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, GWEN_Dialog_GetGuiId(dlg), 2000);
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
   s=GWEN_Buffer_GetStart(dbuf);
