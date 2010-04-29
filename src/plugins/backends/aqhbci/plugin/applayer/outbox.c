@@ -2070,8 +2070,8 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
   }
 
   rv=AB_Banking_ExecutionProgress(AH_HBCI_GetBankingApi(ob->hbci));
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted");
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted (%d)", rv);
     AH_Outbox__FinishOutbox(ob);
     return rv;
   }
