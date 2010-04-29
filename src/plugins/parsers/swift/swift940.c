@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1079,9 +1076,7 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
 int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 			GWEN_DB_NODE *data,
 			GWEN_DB_NODE *cfg,
-			uint32_t flags,
-			uint32_t guiid,
-			int msecs) {
+			uint32_t flags) {
   AHB_SWIFT_TAG *tg;
   GWEN_DB_NODE *dbDay=NULL;
   GWEN_DB_NODE *dbTemplate=NULL;
@@ -1108,7 +1103,7 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 				    I18N("Importing SWIFT tags..."),
 				    NULL,
 				    AHB_SWIFT_Tag_List_GetCount(tl),
-				    guiid);
+				    0);
 
   tg=AHB_SWIFT_Tag_List_First(tl);
   while(tg) {
