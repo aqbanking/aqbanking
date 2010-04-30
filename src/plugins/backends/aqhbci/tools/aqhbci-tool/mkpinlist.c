@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,6 +16,7 @@
 #include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,7 +31,8 @@ int mkPinList(AB_BANKING *ab,
               char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  int fd;
+  GWEN_SYNCIO *sio;
+  AB_USER_LIST2 *ul;
   int rv;
   const char *outFile;
   const GWEN_ARGS args[]={
@@ -100,97 +99,96 @@ int mkPinList(AB_BANKING *ab,
   pro=AB_Banking_GetProvider(ab, "aqhbci");
   assert(pro);
 
-  if (outFile==0)
-    fd=fileno(stdout);
-  else
-    fd=open(outFile, O_RDWR | O_CREAT | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
-              strerror(errno));
-    return 4;
+  if (outFile==0) {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_DONTCLOSE);
   }
   else {
-    GWEN_BUFFEREDIO *bio;
-    int err;
-    AB_USER_LIST2 *ul;
-
-    bio=GWEN_BufferedIO_File_new(fd);
-    if (!outFile)
-      GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
-    GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
-
-    GWEN_BufferedIO_WriteLine(bio,
-                              "# This is a PIN file to be used "
-                              "with AqBanking");
-    GWEN_BufferedIO_WriteLine(bio,
-                              "# Please insert the PINs/passwords "
-                              "for the users below");
-
-    ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
-    if (ul) {
-      AB_USER_LIST2_ITERATOR *uit;
-  
-      uit=AB_User_List2_First(ul);
-      if (uit) {
-	AB_USER *u;
-  
-        u=AB_User_List2Iterator_Data(uit);
-        assert(u);
-  
-        while(u) {
-	  const char *s;
-	  GWEN_BUFFER *nbuf;
-          int rv;
-
-          GWEN_BufferedIO_WriteLine(bio, "");
-          GWEN_BufferedIO_Write(bio, "# User \"");
-          s=AB_User_GetUserId(u);
-          assert(s);
-          GWEN_BufferedIO_Write(bio, s);
-          GWEN_BufferedIO_Write(bio, "\" at \"");
-          s=AB_User_GetBankCode(u);
-          GWEN_BufferedIO_Write(bio, s);
-          GWEN_BufferedIO_WriteLine(bio, "\"");
-
-	  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-          if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan)
-	    rv=AH_User_MkPinName(u, nbuf);
-	  else
-	    rv=AH_User_MkPasswdName(u, nbuf);
-
-	  if (rv==0) {
-            GWEN_BUFFER *obuf;
-
-	    obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-	    if (GWEN_Text_EscapeToBufferTolerant(GWEN_Buffer_GetStart(nbuf),
-						 obuf)) {
-	      DBG_ERROR(0, "Error escaping name to buffer");
-	      return 3;
-	    }
-            GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(obuf));
-            GWEN_BufferedIO_WriteLine(bio, " = \"\"");
-
-            GWEN_Buffer_free(obuf);
-          }
-	  GWEN_Buffer_free(nbuf);
-
-          u=AB_User_List2Iterator_Next(uit);
-        }
-        AB_User_List2Iterator_free(uit);
-      }
-      AB_User_List2_free(ul);
-    }
-
-    err=GWEN_BufferedIO_Close(bio);
-    if (err) {
-      DBG_ERROR_ERR(0, err);
-      GWEN_BufferedIO_Abandon(bio);
-      GWEN_BufferedIO_free(bio);
+    sio=GWEN_SyncIo_File_new(outFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_ERROR(0, "Error opening output file: %s",
+		strerror(errno));
       return 4;
     }
-    GWEN_BufferedIO_free(bio);
   }
+
+  GWEN_SyncIo_WriteLine(sio,
+			"# This is a PIN file to be used "
+			"with AqBanking");
+  GWEN_SyncIo_WriteLine(sio,
+			"# Please insert the PINs/passwords "
+			"for the users below");
+
+  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
+  if (ul) {
+    AB_USER_LIST2_ITERATOR *uit;
+
+    uit=AB_User_List2_First(ul);
+    if (uit) {
+      AB_USER *u;
+
+      u=AB_User_List2Iterator_Data(uit);
+      assert(u);
+
+      while(u) {
+	const char *s;
+	GWEN_BUFFER *nbuf;
+	int rv;
+
+	GWEN_SyncIo_WriteLine(sio, "");
+	GWEN_SyncIo_WriteString(sio, "# User \"");
+	s=AB_User_GetUserId(u);
+	assert(s);
+	GWEN_SyncIo_WriteString(sio, s);
+	GWEN_SyncIo_WriteString(sio, "\" at \"");
+	s=AB_User_GetBankCode(u);
+	GWEN_SyncIo_WriteString(sio, s);
+	GWEN_SyncIo_WriteLine(sio, "\"");
+
+	nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+	if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan)
+	  rv=AH_User_MkPinName(u, nbuf);
+	else
+	  rv=AH_User_MkPasswdName(u, nbuf);
+
+	if (rv==0) {
+	  GWEN_BUFFER *obuf;
+
+	  obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+	  if (GWEN_Text_EscapeToBufferTolerant(GWEN_Buffer_GetStart(nbuf),
+					       obuf)) {
+	    DBG_ERROR(0, "Error escaping name to buffer");
+	    return 3;
+	  }
+	  GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(obuf));
+	  GWEN_SyncIo_WriteLine(sio, " = \"\"");
+
+	  GWEN_Buffer_free(obuf);
+	}
+	GWEN_Buffer_free(nbuf);
+
+	u=AB_User_List2Iterator_Next(uit);
+      }
+      AB_User_List2Iterator_free(uit);
+    }
+    AB_User_List2_free(ul);
+  }
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    DBG_ERROR_ERR(0, rv);
+    GWEN_SyncIo_free(sio);
+    return 4;
+  }
+  GWEN_SyncIo_free(sio);
 
 
   rv=AB_Banking_OnlineFini(ab);

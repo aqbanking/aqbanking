@@ -24,8 +24,6 @@
 // Gwenhywfar includes
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
 
 // QT includes
 #include <qlistview.h>

@@ -32,7 +32,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/bio_buffer.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/process.h>

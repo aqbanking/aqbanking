@@ -29,10 +29,6 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iolayer.h>
-#include <gwenhywfar/iomanager.h>
 
 #include <gwenhywfar/syncio_file.h>
 

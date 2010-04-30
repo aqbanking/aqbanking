@@ -16,7 +16,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_memory.h>
 

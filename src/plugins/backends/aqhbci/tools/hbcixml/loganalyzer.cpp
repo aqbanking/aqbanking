@@ -32,7 +32,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/syncio_file.h>
 
 #include <unistd.h>

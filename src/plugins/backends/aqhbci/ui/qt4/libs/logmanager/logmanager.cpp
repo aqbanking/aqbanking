@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,7 +21,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
 
 #ifndef WIN32

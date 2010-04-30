@@ -24,7 +24,6 @@
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml.h>
-#include <gwenhywfar/bufferedio.h>
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 
