@@ -21,6 +21,8 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/dbio_be.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_buffered.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -582,7 +584,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
       for (;;) {
 	GWEN_FASTBUFFER_READBYTE(fb, c);
         if (c<0) {
-	  if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
+	  if (c==GWEN_ERROR_EOF) {
 	    DBG_ERROR(AQBANKING_LOGDOMAIN,
 		      "EOF met (%d)", c);
 	    return GWEN_ERROR_EOF;
@@ -660,7 +662,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
         for (;;) {
 	  GWEN_FASTBUFFER_READBYTE(fb, c);
 	  if (c<0) {
-            if (c==GWEN_BUFFEREDIO_CHAR_EOF) {
+            if (c==GWEN_ERROR_EOF) {
               DBG_ERROR(AQBANKING_LOGDOMAIN,
                         "EOF met (%d)", c);
 	      return GWEN_ERROR_EOF;
@@ -826,25 +828,28 @@ int AHB_SWIFT_Export(GWEN_DBIO *dbio,
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
 					       const char *fname) {
-  int fd;
-  GWEN_BUFFEREDIO *bio;
   int i;
   GWEN_DBIO_CHECKFILE_RESULT res;
   GWEN_BUFFER *lbuf;
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
 
   assert(dbio);
   assert(fname);
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  baseIo=sio;
+
+  sio=GWEN_SyncIo_Buffered_new(baseIo);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "open(%s): %s", fname, strerror(errno));
+	      "open(%s): %s", fname, strerror(errno));
     return GWEN_DBIO_CheckFileResultNotOk;
   }
-
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
 
   /* search for ":20:" tag */
   lbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -853,15 +858,14 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
     int err;
     const char *p;
 
-    if (GWEN_BufferedIO_CheckEOF(bio))
-      break;
-
-    err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuf);
-    if (err) {
+    err=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, lbuf);
+    if (err<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
       res=GWEN_DBIO_CheckFileResultNotOk;
       break;
     }
+    else if (err==0)
+      break;
     p=GWEN_Buffer_GetStart(lbuf);
     if (strstr(p, ":20:")) {
       /* don't be too sure about the file being importable... */
@@ -872,8 +876,8 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
   } /* for */
   GWEN_Buffer_free(lbuf);
 
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   return res;
 }

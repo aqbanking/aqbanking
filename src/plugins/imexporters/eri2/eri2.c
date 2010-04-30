@@ -18,6 +18,8 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_buffered.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/msgengine.h>
@@ -574,11 +576,11 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
-  int fd;
-  char lbuffer[AB_IMEXPORTER_ERI2_CHECKBUF_LENGTH];
-  GWEN_BUFFEREDIO *bio;
-  int err;
+  GWEN_BUFFER *lbuffer;
   AB_IMEXPORTER_ERI2 *ieh;
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_ERI2, ie);
@@ -586,42 +588,45 @@ int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
   assert(fname);
 
-  fd = open(fname, O_RDONLY);
-  if (fd == -1) {
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  baseIo=sio;
+
+  sio=GWEN_SyncIo_Buffered_new(baseIo);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "open(%s): %s", fname, strerror(errno));
-    return GWEN_ERROR_NOT_FOUND;
+    return GWEN_ERROR_IO;
   }
 
-  bio = GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, AB_IMEXPORTER_ERI2_CHECKBUF_LENGTH);
-
-  err = GWEN_BufferedIO_ReadLine(bio, lbuffer,
-                                 AB_IMEXPORTER_ERI2_CHECKBUF_LENGTH);
-  if (err) {
+  lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, lbuffer);
+  if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "File \"%s\" is not supported by this plugin",
 	     fname);
-    GWEN_BufferedIO_Close(bio);
-    GWEN_BufferedIO_free(bio);
-    return err;
+    GWEN_Buffer_free(lbuffer);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return GWEN_ERROR_BAD_DATA;
   }
 
-  if ( -1 != GWEN_Text_ComparePattern(lbuffer, "*EUR99999999992000*", 0)) {
+  if ( -1 != GWEN_Text_ComparePattern(GWEN_Buffer_GetStart(lbuffer), "*EUR99999999992000*", 0)) {
     /* match */
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "File \"%s\" is supported by this plugin",
 	     fname);
-    GWEN_BufferedIO_Close(bio);
-    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(lbuffer);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return 0;
   }
-
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
+  GWEN_Buffer_free(lbuffer);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   return GWEN_ERROR_BAD_DATA;
-
 }
 
 
