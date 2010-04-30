@@ -107,7 +107,7 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
   assert(xmlCtx);
 
   /* read OFX file into context */
-  rv=GWEN_XML_ReadFromIo(xmlCtx, sio);
+  rv=GWEN_XMLContext_ReadFromIo(xmlCtx, sio);
   GWEN_XmlCtx_free(xmlCtx);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);

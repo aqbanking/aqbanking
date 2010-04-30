@@ -418,7 +418,7 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 
   doc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   ctxml=GWEN_XmlCtxStore_new(doc, GWEN_XML_FLAGS_HANDLE_HEADERS);
-  rv=GWEN_XML_ReadFromIo(ctxml, sio);
+  rv=GWEN_XMLContext_ReadFromIo(ctxml, sio);
   GWEN_XmlCtx_free(ctxml);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
