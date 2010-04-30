@@ -228,7 +228,6 @@
          needBPD="1" 
          response="TanResponse"
          single="1"
-         pversion="300"
  >
    <SEG type="Tan" version="1" />
  </JOBdef>
@@ -244,7 +243,6 @@
          needBPD="1" 
          response="TanResponse"
          single="1"
-         pversion="300"
  >
    <SEG type="Tan" version="2" />
  </JOBdef>
@@ -260,7 +258,6 @@
          needBPD="1" 
          response="TanResponse"
          single="1"
-         pversion="300"
  >
    <SEG type="Tan" version="2" />
  </JOBdef>
