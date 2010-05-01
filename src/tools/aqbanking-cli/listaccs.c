@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: listaccs.c 340 2005-06-22 14:52:59Z aquamaniac $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -113,7 +110,7 @@ int listAccs(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -191,7 +188,7 @@ int listAccs(AB_BANKING *ab,
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     AB_Banking_Fini(ab);

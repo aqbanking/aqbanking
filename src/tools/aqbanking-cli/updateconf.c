@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,17 +17,17 @@
 static int _getConfig(AB_BANKING *ab) {
   int rv;
 
-  rv=AB_Banking_HasConf4(ab, 0);
+  rv=AB_Banking_HasConf4(ab);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 4 found, no update needed.\n");
     return 0;
   }
   fprintf(stderr, "Config for AqBanking 4 not found, update needed (%d)\n", rv);
 
-  rv=AB_Banking_HasConf3(ab, 0);
+  rv=AB_Banking_HasConf3(ab);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 3 found, importing\n");
-    rv=AB_Banking_ImportConf3(ab, 0);
+    rv=AB_Banking_ImportConf3(ab);
     if (rv<0) {
       fprintf(stderr, "Error importing configuration (%d)\n", rv);
       return rv;
@@ -36,10 +36,10 @@ static int _getConfig(AB_BANKING *ab) {
   }
   fprintf(stderr, "Config for AqBanking 3 not found (%d)\n", rv);
 
-  rv=AB_Banking_HasConf2(ab, 0);
+  rv=AB_Banking_HasConf2(ab);
   if (!rv) {
     fprintf(stderr, "Config for AqBanking 2 found, importing\n");
-    rv=AB_Banking_ImportConf2(ab, 0);
+    rv=AB_Banking_ImportConf2(ab);
     if (rv<0) {
       fprintf(stderr, "Error importing configuration (%d)\n", rv);
       return rv;
@@ -109,7 +109,7 @@ static int updateConf(AB_BANKING *ab,
       return 2;
     }
   
-    rv=AB_Banking_OnlineInit(ab, 0);
+    rv=AB_Banking_OnlineInit(ab);
     if (rv) {
       AB_Banking_Fini(ab);
       fprintf(stderr, "Error while loading the newly imported configuration (2:%d)\n", rv);
@@ -117,7 +117,7 @@ static int updateConf(AB_BANKING *ab,
     }
 
     /* uninit immediately */
-    rv=AB_Banking_OnlineFini(ab, 0);
+    rv=AB_Banking_OnlineFini(ab);
     if (rv) {
       fprintf(stderr, "Error on deinit (1:%d)\n", rv);
       AB_Banking_Fini(ab);

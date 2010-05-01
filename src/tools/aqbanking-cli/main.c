@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,11 +26,6 @@
 #include "globals.h"
 
 
-#include "af_utils.c"
-#include "dbinit.c"
-#include "dbrecontrans.c"
-#include "dblisttrans.c"
-#include "dblisttransfers.c"
 #include "chkacc.c"
 #include "chkiban.c"
 #include "debitnote.c"
@@ -224,23 +219,6 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
 			     I18N("   Update configuration from previous AqBanking versions\n"));
 
-#ifdef WITH_AQFINANCE
-    GWEN_Buffer_AppendString(ubuf, " dbinit\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Initialize AqFinance database\n"));
-
-    GWEN_Buffer_AppendString(ubuf, " dbrecon\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Reconcile transfers using transactions (both from AqFinance database)\n"));
-
-    GWEN_Buffer_AppendString(ubuf, " dblisttrans\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("  Export transactions from the AqFinance database\n"));
-
-    GWEN_Buffer_AppendString(ubuf, " dblisttransfers\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("  Export transfers from the AqFinance database\n"));
-#endif
     GWEN_Buffer_AppendString(ubuf, "\n");
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
@@ -275,8 +253,7 @@ int main(int argc, char **argv) {
     dbPins=GWEN_DB_Group_new("pins");
     if (GWEN_DB_ReadFile(dbPins, pinFile,
 			 GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP,
-			 0, 20000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
       fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
       return 2;
     }
@@ -338,38 +315,6 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "updateconf")==0) {
     rv=updateConf(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "dbinit")==0) {
-#ifdef WITH_AQFINANCE
-    rv=dbInit(ab, db, argc, argv);
-#else
-    fprintf(stderr, "ERROR: Support for AqFinance not built-in.\n");
-    rv=1;
-#endif
-  }
-  else if (strcasecmp(cmd, "dbrecon")==0) {
-#ifdef WITH_AQFINANCE
-    rv=dbReconTrans(ab, db, argc, argv);
-#else
-    fprintf(stderr, "ERROR: Support for AqFinance not built-in.\n");
-    rv=1;
-#endif
-  }
-  else if (strcasecmp(cmd, "dblisttrans")==0) {
-#ifdef WITH_AQFINANCE
-    rv=dblistTrans(ab, db, argc, argv);
-#else
-    fprintf(stderr, "ERROR: Support for AqFinance not built-in.\n");
-    rv=1;
-#endif
-  }
-  else if (strcasecmp(cmd, "dblisttransfers")==0) {
-#ifdef WITH_AQFINANCE
-    rv=dblistTransfers(ab, db, argc, argv);
-#else
-    fprintf(stderr, "ERROR: Support for AqFinance not built-in.\n");
-    rv=1;
-#endif
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

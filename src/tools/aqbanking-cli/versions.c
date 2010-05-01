@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,10 +14,6 @@
 #include "globals.h"
 #include <gwenhywfar/gwenhywfar.h>
 #include <aqbanking/banking.h>
-
-#ifdef WITH_AQFINANCE
-# include <aqfinance/version.h>
-#endif
 
 
 static
@@ -43,14 +39,6 @@ int versions(AB_BANKING *ab,
 			&vbuild);
   fprintf(stdout, " AqBanking    : %d.%d.%d.%d\n",
 	  vmajor, vminor, vpatchLevel, vbuild);
-
-#ifdef WITH_AQFINANCE
-  fprintf(stdout, " AqFinance    : %d.%d.%d.%d\n",
-	  AQFINANCE_VERSION_MAJOR,
-	  AQFINANCE_VERSION_MINOR,
-	  AQFINANCE_VERSION_PATCHLEVEL,
-	  AQFINANCE_VERSION_BUILD);
-#endif
 
   return 0;
 }

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: listbal.c 344 2005-06-28 04:10:47Z aquamaniac $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,8 +13,6 @@
 
 #include "globals.h"
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/bio_file.h>
 
 #include <aqbanking/accstatus.h>
 

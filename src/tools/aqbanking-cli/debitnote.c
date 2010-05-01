@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: import.c 764 2006-01-13 14:00:00Z cstim $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,8 +17,6 @@
 #include <aqbanking/jobsingledebitnote.h>
 
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -43,22 +38,17 @@ int debitNote(AB_BANKING *ab,
   const char *country;
   const char *bankId;
   const char *accountId;
-  GWEN_DB_NODE *dbCtx;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
   AB_TRANSACTION *t;
   AB_JOB_LIST2 *jobList;
   AB_JOB *j;
-  int fd;
   int rvExec;
   const char *rCountry;
   const char *rBankId;
   const char *rAccountId;
   int forceCheck;
-#ifdef WITH_AQFINANCE
-  int useDb;
-#endif
   AB_BANKINFO_CHECKRESULT res;
   const GWEN_ARGS args[]={
   {
@@ -193,19 +183,6 @@ int debitNote(AB_BANKING *ab,
     "force account number check",
     "force account number check"
   },
-#ifdef WITH_AQFINANCE
-  {
-    0,                
-    GWEN_ArgsType_Int,
-    "usedb",
-    0,  
-    1,  
-    0, 
-    "usedb",
-    "store transfer in internal database",
-    "store transfer in internal database"
-  },
-#endif
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
@@ -246,13 +223,6 @@ int debitNote(AB_BANKING *ab,
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   forceCheck=GWEN_DB_GetIntValue(db, "forceCheck", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-#ifdef WITH_AQFINANCE
-  useDb=GWEN_DB_GetIntValue(db, "usedb", 0, 0);
-  if (useDb && ctxFile) {
-    fprintf(stderr, "Option \"-c\" doesn't work with \"--usedb\"\n");
-    return 1;
-  }
-#endif
 
   rv=AB_Banking_Init(ab);
   if (rv) {
@@ -260,7 +230,7 @@ int debitNote(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -333,23 +303,12 @@ int debitNote(AB_BANKING *ab,
   }
 
   j=AB_JobSingleDebitNote_new(a);
-  rv=AB_Job_CheckAvailability(j, 0);
+  rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
     AB_ImExporterContext_free(ctx);
     return 3;
   }
-
-#ifdef WITH_AQFINANCE
-  if (useDb) {
-    rv=AFM_add_debitnote(ab, t, AE_Statement_StatusSending);
-    if (rv<0) {
-      DBG_ERROR(0, "Unable to store transfer to DB (%d)", rv);
-      AB_ImExporterContext_free(ctx);
-      return 3;
-    }
-  }
-#endif
 
   rv=AB_JobSingleDebitNote_SetTransaction(j, t);
   if (rv<0) {
@@ -362,93 +321,23 @@ int debitNote(AB_BANKING *ab,
   /* execute job */
   rvExec=0;
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ExecuteJobs(ab, jobList, ctx, 0);
+  rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
 
-#ifdef WITH_AQFINANCE
-  if (useDb) {
-    rv=AFM_update_debitnotes(ab, ctx);
-    if (rv<0) {
-      DBG_ERROR(0, "Unable to update debit notes in DB (%d)", rv);
-      AB_ImExporterContext_free(ctx);
-      return 4;
-    }
+  /* write context */
+  rv=writeContext(ctxFile, ctx);
+  if (rv<0) {
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
+    return 4;
   }
-  else {
-#endif
-    /* write context */
-    dbCtx=GWEN_DB_Group_new("context");
-    if (AB_ImExporterContext_toDb(ctx, dbCtx)) {
-      DBG_ERROR(0, "Error writing context to db");
-      return 4;
-    }
-    if (ctxFile==0)
-      fd=fileno(stdout);
-    else
-      fd=open(ctxFile, O_RDWR|O_CREAT|O_TRUNC,
-	      S_IRUSR | S_IWUSR
-#ifdef S_IRGRP
-	      | S_IRGRP
-#endif
-#ifdef S_IWGRP
-	      | S_IWGRP
-#endif
-	     );
-    if (fd<0) {
-      DBG_ERROR(0, "Error selecting output file: %s",
-	      strerror(errno));
-      return 4;
-    }
-    else {
-      GWEN_DB_NODE *dbCtx;
-      int rv;
-
-      dbCtx=GWEN_DB_Group_new("context");
-      rv=AB_ImExporterContext_toDb(ctx, dbCtx);
-      if (rv<0) {
-	DBG_ERROR(0, "Error writing context to db (%d)", rv);
-	GWEN_DB_Group_free(dbCtx);
-	AB_Banking_OnlineFini(ab, 0);
-	AB_Banking_Fini(ab);
-	return 4;
-      }
-
-      rv=GWEN_DB_WriteToFd(dbCtx, fd,
-			   GWEN_DB_FLAGS_DEFAULT,
-			   0,
-			   2000);
-      if (rv<0) {
-	DBG_ERROR(0, "Error writing context (%d)", rv);
-	GWEN_DB_Group_free(dbCtx);
-	if (ctxFile)
-	  close(fd);
-	AB_Banking_OnlineFini(ab, 0);
-	AB_Banking_Fini(ab);
-	return 4;
-      }
-
-      if (ctxFile) {
-	if (close(fd)) {
-	  DBG_ERROR(0, "Error writing context (%d)", rv);
-	  GWEN_DB_Group_free(dbCtx);
-	  AB_Banking_OnlineFini(ab, 0);
-	  AB_Banking_Fini(ab);
-	  return 4;
-	}
-      }
-
-      GWEN_DB_Group_free(dbCtx);
-    }
-#ifdef WITH_AQFINANCE
-  }
-#endif
-
+  AB_ImExporterContext_free(ctx);
 
   /* that's it */
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     AB_Banking_Fini(ab);

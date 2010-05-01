@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: listtrans.c 764 2006-01-13 14:00:00Z cstim $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,8 +13,6 @@
 
 #include "globals.h"
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -40,9 +35,6 @@ int listTransfers(AB_BANKING *ab,
   const char *exporterName;
   const char *profileName;
   const char *profileFile;
-  AB_IMEXPORTER *exporter;
-  GWEN_DB_NODE *dbProfiles;
-  GWEN_DB_NODE *dbProfile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_CONTEXT *nctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea=0;
@@ -50,7 +42,6 @@ int listTransfers(AB_BANKING *ab,
   const char *accountId;
   const char *bankName;
   const char *accountName;
-  int fd;
   AB_TRANSACTION_STATUS tStatus;
   const GWEN_ARGS args[]={
   {
@@ -200,11 +191,13 @@ int listTransfers(AB_BANKING *ab,
 
   exporterName=GWEN_DB_GetCharValue(db, "exporterName", 0, "csv");
   profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "cli-transfers");
-  profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, 0);
+  profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  outFile=GWEN_DB_GetCharValue(db, "outFile", 0, 0);
 
   tStatus=AB_Transaction_Status_fromString(GWEN_DB_GetCharValue(db,
 								"status", 0,
@@ -216,50 +209,7 @@ int listTransfers(AB_BANKING *ab,
     return 2;
   }
 
-  /* get export module */
-  exporter=AB_Banking_GetImExporter(ab, exporterName);
-  if (!exporter) {
-    DBG_ERROR(0, "Export module \"%s\" not found", exporterName);
-    return 3;
-  }
-
-  /* get profiles */
-  if (profileFile) {
-    dbProfiles=GWEN_DB_Group_new("profiles");
-    if (GWEN_DB_ReadFile(dbProfiles, profileFile,
-                         GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP,
-			 0,
-			 2000)) {
-      DBG_ERROR(0, "Error reading profiles from \"%s\"",
-                profileFile);
-      return 3;
-    }
-  }
-  else {
-    dbProfiles=AB_Banking_GetImExporterProfiles(ab, exporterName);
-  }
-
-  /* select profile */
-  dbProfile=GWEN_DB_GetFirstGroup(dbProfiles);
-  while(dbProfile) {
-    const char *name;
-
-    name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
-    assert(name);
-    if (strcasecmp(name, profileName)==0)
-      break;
-    dbProfile=GWEN_DB_GetNextGroup(dbProfile);
-  }
-  if (!dbProfile) {
-    DBG_ERROR(0, "Profile \"%s\" for exporter \"%s\" not found",
-              profileName, exporterName);
-    return 3;
-  }
-
-  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   rv=readContext(ctxFile, &ctx, 1);
-
   if (rv<0) {
     DBG_ERROR(0, "Error reading context (%d)", rv);
     return 4;
@@ -321,73 +271,15 @@ int listTransfers(AB_BANKING *ab,
   } /* while */
 
   /* export new context */
-  outFile=GWEN_DB_GetCharValue(db, "outFile", 0, 0);
-  if (outFile==0)
-    fd=fileno(stdout);
-  else
-    fd=open(outFile, O_RDWR | O_CREAT | O_TRUNC,
-            S_IRUSR | S_IWUSR
-#ifdef S_IRGRP
-            | S_IRGRP
-#endif
-#ifdef S_IWGRP
-            | S_IWGRP
-#endif
-           );
-  if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
-              strerror(errno));
+  rv=AB_Banking_ExportToFileWithProfile(ab, exporterName, ctx,
+					profileName, profileFile,
+					outFile);
+  if (rv<0) {
+    DBG_ERROR(0, "Error exporting (%d).", rv);
     AB_ImExporterContext_free(nctx);
-    GWEN_DB_Group_free(dbProfiles);
     return 4;
   }
-  else {
-    GWEN_IO_LAYER *io;
-
-    io=GWEN_Io_LayerFile_new(-1, fd);
-    GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_FLAGS_DONTCLOSE);
-    rv=GWEN_Io_Manager_RegisterLayer(io);
-    if (rv<0) {
-      DBG_ERROR(0, "Error registering io layer (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      AB_ImExporterContext_free(nctx);
-      GWEN_DB_Group_free(dbProfiles);
-      return 4;
-    }
-
-    rv=AB_ImExporter_Export(exporter,
-                            nctx,
-                            io,
-			    dbProfile,
-			    0);
-    if (rv<0) {
-      DBG_ERROR(0, "Error exporting data (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      AB_ImExporterContext_free(nctx);
-      GWEN_DB_Group_free(dbProfiles);
-      return 4;
-    }
-
-    rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 2000);
-    if (rv<0) {
-      DBG_ERROR(0, "Error flushing (%d)", rv);
-      GWEN_Io_Layer_free(io);
-      AB_ImExporterContext_free(nctx);
-      GWEN_DB_Group_free(dbProfiles);
-      return 4;
-    }
-    GWEN_Io_Layer_free(io);
-    if (outFile) {
-      if (close(fd)) {
-	DBG_ERROR(0, "close(): %s", strerror(errno));
-	AB_ImExporterContext_free(nctx);
-	GWEN_DB_Group_free(dbProfiles);
-	return 4;
-      }
-    }
-  }
   AB_ImExporterContext_free(nctx);
-  GWEN_DB_Group_free(dbProfiles);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

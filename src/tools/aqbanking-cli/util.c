@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,8 +13,7 @@
 
 #include "globals.h"
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,48 +28,55 @@ int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist) {
   AB_IMEXPORTER_CONTEXT *ctx;
-  int fd;
+  GWEN_SYNCIO *sio;
+  GWEN_DB_NODE *dbCtx;
+  int rv;
 
-  if (ctxFile==0)
-    fd=fileno(stdin);
-  else
-    fd=open(ctxFile, O_RDONLY);
-  if (fd<0) {
-    if (!mustExist) {
-      ctx=AB_ImExporterContext_new();
-      *pCtx=ctx;
-      return 0;
-    }
-    DBG_ERROR(0, "open(%s): %s", ctxFile, strerror(errno));
-    return GWEN_ERROR_IO;
+  if (ctxFile==NULL) {
+    sio=GWEN_SyncIo_File_fromStdin();
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
+			 GWEN_SYNCIO_FILE_FLAGS_READ);
   }
   else {
-    GWEN_DB_NODE *dbCtx;
-    int rv;
-
-    dbCtx=GWEN_DB_Group_new("context");
-    rv=GWEN_DB_ReadFromFd(dbCtx, fd,
-			  GWEN_DB_FLAGS_DEFAULT |
-			  GWEN_PATH_FLAGS_CREATE_GROUP,
-			  0,
-			  2000);
-    if (ctxFile)
-      close(fd);
+    sio=GWEN_SyncIo_File_new(ctxFile, GWEN_SyncIo_File_CreationMode_OpenExisting);
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+    rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
-      DBG_ERROR(0, "Error reading context file (%d)", rv);
-      GWEN_DB_Group_free(dbCtx);
-      return rv;
+      if (!mustExist) {
+	ctx=AB_ImExporterContext_new();
+	*pCtx=ctx;
+	GWEN_SyncIo_free(sio);
+	return 0;
+      }
+      GWEN_SyncIo_free(sio);
+      return 4;
     }
-
-    ctx=AB_ImExporterContext_fromDb(dbCtx);
-    if (!ctx) {
-      DBG_ERROR(0, "No context in input data");
-      GWEN_DB_Group_free(dbCtx);
-      return GWEN_ERROR_BAD_DATA;
-    }
-    GWEN_DB_Group_free(dbCtx);
-    *pCtx=ctx;
   }
+
+  /* actually read */
+  dbCtx=GWEN_DB_Group_new("context");
+  rv=GWEN_DB_ReadFromIo(dbCtx, sio,
+			GWEN_DB_FLAGS_DEFAULT |
+			GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading context file (%d)", rv);
+    GWEN_DB_Group_free(dbCtx);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  ctx=AB_ImExporterContext_fromDb(dbCtx);
+  if (!ctx) {
+    DBG_ERROR(0, "No context in input data");
+    GWEN_DB_Group_free(dbCtx);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  GWEN_DB_Group_free(dbCtx);
+  *pCtx=ctx;
 
   return 0;
 }
@@ -79,7 +85,7 @@ int readContext(const char *ctxFile,
 
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
   GWEN_DB_NODE *dbCtx;
-  int fd;
+  GWEN_SYNCIO *sio;
   int rv;
 
   dbCtx=GWEN_DB_Group_new("context");
@@ -88,57 +94,51 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
     DBG_ERROR(0, "Error writing context to db");
     return rv;
   }
-  if (ctxFile==0)
-    fd=fileno(stdout);
-  else
-    fd=open(ctxFile, O_RDWR|O_CREAT|O_TRUNC,
-	    S_IRUSR | S_IWUSR
-#ifdef S_IRGRP
-	    | S_IRGRP
-#endif
-#ifdef S_IWGRP
-	    | S_IWGRP
-#endif
-	   );
-  if (fd<0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
-	      strerror(errno));
-    return GWEN_ERROR_IO;
+  if (ctxFile==NULL) {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE);
   }
   else {
-    GWEN_DB_NODE *dbCtx;
-    int rv;
-
-    dbCtx=GWEN_DB_Group_new("context");
-    rv=AB_ImExporterContext_toDb(ctx, dbCtx);
+    sio=GWEN_SyncIo_File_new(ctxFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
-      DBG_ERROR(0, "Error writing context to db (%d)", rv);
-      GWEN_DB_Group_free(dbCtx);
-      return rv;
+      DBG_ERROR(0, "Error selecting output file: %s",
+		strerror(errno));
+      GWEN_SyncIo_free(sio);
+      return 4;
     }
-
-    rv=GWEN_DB_WriteToFd(dbCtx, fd,
-			 GWEN_DB_FLAGS_DEFAULT,
-			 0,
-			 2000);
-    if (rv<0) {
-      DBG_ERROR(0, "Error writing context (%d)", rv);
-      GWEN_DB_Group_free(dbCtx);
-      if (ctxFile)
-	close(fd);
-      return rv;
-    }
-
-    if (ctxFile) {
-      if (close(fd)) {
-	DBG_ERROR(0, "Error writing context (%d)", rv);
-	GWEN_DB_Group_free(dbCtx);
-	return GWEN_ERROR_IO;
-      }
-    }
-
-    GWEN_DB_Group_free(dbCtx);
   }
+
+
+  dbCtx=GWEN_DB_Group_new("context");
+  rv=AB_ImExporterContext_toDb(ctx, dbCtx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context to db (%d)", rv);
+    GWEN_DB_Group_free(dbCtx);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  rv=GWEN_DB_WriteToIo(dbCtx, sio, GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context (%d)", rv);
+    GWEN_DB_Group_free(dbCtx);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_DB_Group_free(dbCtx);
 
   return 0;
 }
@@ -230,6 +230,4 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
   return t;
 }
-
-
 

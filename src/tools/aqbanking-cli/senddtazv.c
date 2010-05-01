@@ -318,7 +318,7 @@ int sendDtazv(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on onlineInit (%d)", rv);
     GWEN_Buffer_free(dtazv);
@@ -369,9 +369,7 @@ int sendDtazv(AB_BANKING *ab,
       }
       else {
 	rv2=GWEN_DB_WriteFile(dbCtx, ctxFile,
-			      GWEN_DB_FLAGS_DEFAULT,
-			      0,
-			      20000);
+			      GWEN_DB_FLAGS_DEFAULT);
 	if (rv2) {
 	  DBG_ERROR(0, "Error writing context to file [%s] (%d)",
 		    ctxFile, rv2);
@@ -395,7 +393,7 @@ int sendDtazv(AB_BANKING *ab,
 
   GWEN_Buffer_free(dtazv);
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 6;

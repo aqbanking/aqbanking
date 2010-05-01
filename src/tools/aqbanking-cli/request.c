@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,9 +44,6 @@ int request(AB_BANKING *ab,
   int reqBalance=0;
   int reqSto=0;
   int reqDT=0;
-#ifdef WITH_AQFINANCE
-  int useDb;
-#endif
   GWEN_TIME *fromTime=0;
   GWEN_TIME *toTime=0;
   AB_JOB_LIST2 *jobList;
@@ -172,19 +169,6 @@ int request(AB_BANKING *ab,
     "Specify the first date for which transactions are wanted (YYYYMMDD)", /* short */
     "Specify the first date for which transactions are wanted (YYYYMMDD)" /* long */
   },
-#ifdef WITH_AQFINANCE
-  {
-    0,                
-    GWEN_ArgsType_Int,
-    "usedb",
-    0,  
-    1,  
-    0, 
-    "usedb",
-    "store transactions in internal database",
-    "store transactions in internal database"
-  },
-#endif
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
@@ -225,13 +209,6 @@ int request(AB_BANKING *ab,
   reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
   reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-#ifdef WITH_AQFINANCE
-  useDb=GWEN_DB_GetIntValue(db, "usedb", 0, 0);
-  if (useDb && ctxFile) {
-    fprintf(stderr, "Option \"-c\" doesn't work with \"--usedb\"\n");
-    return 1;
-  }
-#endif
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
   if (s && *s) {
     GWEN_BUFFER *dbuf;
@@ -269,7 +246,7 @@ int request(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -327,7 +304,7 @@ int request(AB_BANKING *ab,
             AB_JOB *j;
 
 	    j=AB_JobGetTransactions_new(a);
-	    rv=AB_Job_CheckAvailability(j, 0);
+	    rv=AB_Job_CheckAvailability(j);
 	    if (rv<0) {
 	      DBG_ERROR(0,
 			"Error requesting transactions for %s/%s: %d",
@@ -348,7 +325,7 @@ int request(AB_BANKING *ab,
             AB_JOB *j;
 
 	    j=AB_JobGetBalance_new(a);
-	    rv=AB_Job_CheckAvailability(j, 0);
+	    rv=AB_Job_CheckAvailability(j);
 	    if (rv<0) {
 	      DBG_ERROR(0,
 			"Error requesting balance for %s/%s: %d",
@@ -364,7 +341,7 @@ int request(AB_BANKING *ab,
             AB_JOB *j;
 
 	    j=AB_JobGetStandingOrders_new(a);
-	    rv=AB_Job_CheckAvailability(j, 0);
+	    rv=AB_Job_CheckAvailability(j);
 	    if (rv<0) {
 	      DBG_ERROR(0,
 			"Error requesting standing order for %s/%s: %d",
@@ -380,7 +357,7 @@ int request(AB_BANKING *ab,
             AB_JOB *j;
 
 	    j=AB_JobGetDatedTransfers_new(a);
-	    rv=AB_Job_CheckAvailability(j, 0);
+	    rv=AB_Job_CheckAvailability(j);
 	    if (rv<0) {
 	      DBG_ERROR(0,
 			"Error requesting dated transfers for %s/%s: %d",
@@ -404,96 +381,31 @@ int request(AB_BANKING *ab,
 
   if (requests) {
     AB_IMEXPORTER_CONTEXT *ctx;
-    int fd;
 
     DBG_INFO(0, "%d requests created", requests);
     ctx=AB_ImExporterContext_new();
-    rv=AB_Banking_ExecuteJobs(ab, jobList, ctx, 0);
+    rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
     if (rv) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
       return 3;
     }
 
-#ifdef WITH_AQFINANCE
-    if (!useDb) {
-#endif
-      if (ctxFile==0)
-	fd=fileno(stdout);
-      else
-	fd=open(ctxFile, O_RDWR | O_CREAT | O_TRUNC,
-		S_IRUSR | S_IWUSR
-#ifdef S_IRGRP
-		| S_IRGRP
-#endif
-#ifdef S_IWGRP
-		| S_IWGRP
-#endif
-	       );
-      if (fd<0) {
-	DBG_ERROR(0, "Error selecting output file: %s",
-		  strerror(errno));
-	return 4;
-      }
-      else {
-	GWEN_DB_NODE *dbCtx;
-	int rv;
-
-	dbCtx=GWEN_DB_Group_new("context");
-	rv=AB_ImExporterContext_toDb(ctx, dbCtx);
-	if (rv<0) {
-	  DBG_ERROR(0, "Error writing context to db (%d)", rv);
-	  GWEN_DB_Group_free(dbCtx);
-	  AB_Banking_OnlineFini(ab, 0);
-	  AB_Banking_Fini(ab);
-	  return 4;
-	}
-
-	rv=GWEN_DB_WriteToFd(dbCtx, fd,
-			     GWEN_DB_FLAGS_DEFAULT,
-			     0,
-			     2000);
-	if (rv<0) {
-	  DBG_ERROR(0, "Error writing context (%d)", rv);
-	  GWEN_DB_Group_free(dbCtx);
-	  if (ctxFile)
-	    close(fd);
-	  AB_Banking_OnlineFini(ab, 0);
-	  AB_Banking_Fini(ab);
-	  return 4;
-	}
-
-	if (ctxFile) {
-	  if (close(fd)) {
-	    DBG_ERROR(0, "Error writing context (%d)", rv);
-	    GWEN_DB_Group_free(dbCtx);
-	    AB_Banking_OnlineFini(ab, 0);
-	    AB_Banking_Fini(ab);
-	    return 4;
-	  }
-	}
-
-	GWEN_DB_Group_free(dbCtx);
-      }
-#ifdef WITH_AQFINANCE
+    rv=writeContext(ctxFile, ctx);
+    if (rv<0) {
+      DBG_ERROR(0, "Error writing context file (%d)", rv);
+      AB_Banking_OnlineFini(ab);
+      AB_Banking_Fini(ab);
+      return 4;
     }
-    else {
-      rv=AFM_import_statements(ab, ctx);
-      if (rv<0) {
-	DBG_ERROR(0, "Unable to store transfer to DB (%d)", rv);
-	AB_ImExporterContext_free(ctx);
-	return 4;
-      }
-    }
-#endif
   }
   else {
     DBG_ERROR(0, "No requests created");
-    AB_Banking_OnlineFini(ab, 0);
+    AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
 
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     AB_Banking_Fini(ab);

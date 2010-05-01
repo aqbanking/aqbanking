@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,8 +14,6 @@
 #include "globals.h"
 
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -88,7 +86,7 @@ int fillGaps(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab, 0);
+  rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
@@ -110,7 +108,7 @@ int fillGaps(AB_BANKING *ab,
   }
 
   /* that's it */
-  rv=AB_Banking_OnlineFini(ab, 0);
+  rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     AB_Banking_Fini(ab);
