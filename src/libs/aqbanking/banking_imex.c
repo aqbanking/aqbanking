@@ -772,17 +772,74 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
   GWEN_SYNCIO *sio;
   int rv;
 
-  sio=GWEN_SyncIo_File_new(inputFileName, GWEN_SyncIo_File_CreationMode_OpenExisting);
-  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
-  rv=GWEN_SyncIo_Connect(sio);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_SyncIo_free(sio);
-    return rv;
+  if (inputFileName) {
+    sio=GWEN_SyncIo_File_new(inputFileName, GWEN_SyncIo_File_CreationMode_OpenExisting);
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+  else {
+    sio=GWEN_SyncIo_File_fromStdin();
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_DONTCLOSE);
   }
 
   rv=AB_Banking_ImportWithProfile(ab,
 				  importerName,
+				  ctx,
+				  profileName,
+				  profileFile,
+				  sio);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return 0;
+}
+
+
+
+int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
+				       const char *exporterName,
+				       AB_IMEXPORTER_CONTEXT *ctx,
+				       const char *profileName,
+				       const char *profileFile,
+				       const char *outputFileName) {
+  GWEN_SYNCIO *sio;
+  int rv;
+
+  if (outputFileName) {
+    sio=GWEN_SyncIo_File_new(outputFileName, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+  else {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_DONTCLOSE);
+  }
+
+  rv=AB_Banking_ExportWithProfile(ab,
+				  exporterName,
 				  ctx,
 				  profileName,
 				  profileFile,

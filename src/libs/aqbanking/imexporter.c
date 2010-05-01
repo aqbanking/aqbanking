@@ -172,13 +172,19 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
   assert(fname);
   assert(dbProfile);
 
-  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
-  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
-  rv=GWEN_SyncIo_Connect(sio);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_SyncIo_free(sio);
-    return rv;
+  if (fname) {
+    sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+  else {
+    sio=GWEN_SyncIo_File_fromStdin();
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_DONTCLOSE);
   }
 
   rv=AB_ImExporter_Import(ie, ctx, sio, dbProfile);
@@ -202,19 +208,25 @@ int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
   assert(fname);
   assert(dbProfile);
 
-  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
-  GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
-  rv=GWEN_SyncIo_Connect(sio);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_SyncIo_free(sio);
-    return rv;
+  if (fname) {
+    sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+  else {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_DONTCLOSE);
   }
 
   rv=AB_ImExporter_Export(ie, ctx, sio, dbProfile);

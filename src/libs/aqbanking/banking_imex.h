@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -165,11 +162,21 @@ int AB_Banking_ExportToFile(AB_BANKING *ab,
 			    const char *fileName);
 
 AQBANKING_API
-int AB_Banking_ImportFile(AB_BANKING *ab,
-			  AB_IMEXPORTER_CONTEXT *ctx,
-			  const char *exporterName,
-			  const char *profileName,
-			  const char *fileName);
+int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
+				     const char *importerName,
+				     AB_IMEXPORTER_CONTEXT *ctx,
+				     const char *profileName,
+				     const char *profileFile,
+                                     const char *inputFileName);
+
+
+AQBANKING_API
+int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
+				       const char *exporterName,
+				       AB_IMEXPORTER_CONTEXT *ctx,
+				       const char *profileName,
+				       const char *profileFile,
+				       const char *outputFileName);
 
 
 /*@}*/ /* addtogroup */
