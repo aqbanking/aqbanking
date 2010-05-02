@@ -160,8 +160,6 @@ if test -z "$qt3_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_qt3_libs])
    if test -n "$found_dir" ; then
      qt3_libs="-L$found_dir -l${qt_libname}"
-       test "$OSYSTEM" = "freebsd" && \
-          qt3_libs="$qt3_libs -lc_r"
    fi
 fi
 

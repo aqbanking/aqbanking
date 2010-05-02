@@ -146,8 +146,6 @@ if test -z "$qt4_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_qt4_libs])
    if test -n "$found_dir" ; then
      qt4_libs="-L$found_dir -l${qt_libname}"
-       test "$OSYSTEM" = "freebsd" && \
-          qt4_libs="$qt4_libs -lc_r"
    fi
 fi
 
