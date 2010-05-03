@@ -27,6 +27,8 @@
 # include <locale.h>
 #endif
 
+#include <ctype.h>
+
 
 #define AB_VALUE_STRSIZE 256
 
@@ -87,6 +89,21 @@ AB_VALUE *AB_Value_fromDouble(double i) {
 
 
 
+static int AB_Value_determineDecimalComma(const char *s) {
+  int len;
+  int i;
+
+  len=strlen(s);
+  for (i=len-1; i>=0; i--) {
+    if (s[i]==',' || s[i]=='.')
+      return (int) (s[i]);
+  }
+
+  return 0;
+}
+
+
+
 AB_VALUE *AB_Value_fromString(const char *s) {
   AB_VALUE *v;
   const char *currency=NULL;
@@ -94,6 +111,7 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   char *tmpString=NULL;
   char *p;
   char *t;
+  char decimalComma;
   int isNeg=0;
 
   tmpString=strdup(s);
@@ -116,10 +134,27 @@ AB_VALUE *AB_Value_fromString(const char *s) {
     *t=0;
   }
 
+  /* remove thousand's comma */
+  decimalComma=AB_Value_determineDecimalComma(p);
+  if (decimalComma) {
+    char *s1, *d1;
+
+    s1=p;
+    d1=p;
+    while(*s1) {
+      register char c;
+
+      c=*(s1++);
+      if (isdigit(c) || c=='/')
+	*(d1++)=c;
+      else if (c==decimalComma)
+        /* always use '.' as decimal comma */
+	*(d1++)='.';
+    }
+    *d1=0;
+  }
+
   v=AB_Value_new();
-  t=strchr(p, ',');
-  if (t)
-    *t='.';
 
   t=strchr(p, '.');
   if (t) {
