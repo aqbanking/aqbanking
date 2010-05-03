@@ -165,6 +165,12 @@ int import(AB_BANKING *ab,
     return 2;
   }
 
+  rv=AB_Banking_OnlineInit(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
   /* import new context */
   ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
