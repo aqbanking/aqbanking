@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -744,7 +741,7 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No response (timeout)"));
-    return AB_ERROR_NETWORK;
+    return rv;
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Got a message");
