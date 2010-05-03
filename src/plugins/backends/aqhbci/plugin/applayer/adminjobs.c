@@ -433,6 +433,7 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   const char *userId;
   const AB_COUNTRY *pcountry;
   int country;
+  int hbciVersion;
 
   assert(j);
   assert(dbKey);
@@ -452,6 +453,10 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
     country=AB_Country_GetNumericCode(pcountry);
   else
     country=280;
+
+  hbciVersion=AH_User_GetHbciVersion(u);
+  if (hbciVersion==0)
+    hbciVersion=220;
 
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "keyName/country", country);
@@ -501,8 +506,18 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 2);
       break;
-    case 0:
     case 1:
+      if (hbciVersion<300)
+	/* for HBCI up until 2.20 the opmode has to be set to 16 even for crypt keys */
+	GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "key/opmode", 16);
+      else
+	/* since FinTS 3.00 the crypt key uses the value "2" (meaning CBC) */
+	GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "key/opmode", 2);
+      break;
+
+    case 0:
     default:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 2);
