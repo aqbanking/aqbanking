@@ -510,60 +510,43 @@ AC_ARG_WITH(imexporters,
 )
 
 if test "$aqbanking_imexporters" == "all"; then
-  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile"
+  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43"
 fi
 
 for f in ${aqbanking_imexporters}; do
   case "$f" in
     csv)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs csv"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs csv/libio_csv.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV, 1, [plugin availability])
       ;;
     dtaus)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs dtaus"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs dtaus/libio_dtaus.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_DTAUS, 1, [plugin availability])
       ;;
     eri2)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs eri2"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs eri2/libio_eri2.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_ERI2, 1, [plugin availability])
       ;;
     ofx)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ofx"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ofx/libio_ofx.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OFX, 1, [plugin availability])
       ;;
     openhbci1)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs openhbci1"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs openhbci1/libio_openhbci1.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1, 1, [plugin availability])
       ;;
     swift)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs swift"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs swift/libio_swift.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SWIFT, 1, [plugin availability])
       ;;
     xmldb)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs xmldb"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs xmldb/libio_xmldb.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XMLDB, 1, [plugin availability])
       ;;
     yellownet)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs yellownet"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs yellownet/libio_yellownet.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_YELLOWNET, 1, [plugin availability])
       ;;
     sepa)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs sepa"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs sepa/libio_sepa.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA, 1, [plugin availability])
       ;;
     ctxfile)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ctxfile"
-      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ctxfile/libio_ctxfile.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE, 1, [plugin availability])
+      ;;
+    q43)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs q43"
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -595,13 +578,9 @@ for f in ${aqbanking_parsers}; do
   case "$f" in
     dtaus)
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs dtaus"
-      aqbanking_plugins_parsers_libs="$aqbanking_plugins_parsers_libs dtaus/libparser_dtaus.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_PARSERS_DTAUS, 1, [plugin availability])
       ;;
     swift)
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
-      aqbanking_plugins_parsers_libs="$aqbanking_plugins_parsers_libs swift/libparser_swift.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_PARSERS_SWIFT, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -633,28 +612,18 @@ for f in ${aqbanking_bankinfos}; do
   case "$f" in
     at)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs at"
-      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs at/libbankinfo_at.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_AT, 1, [plugin availability])
       ;;
     ca)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ca"
-      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs ca/libbankinfo_ca.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_CA, 1, [plugin availability])
       ;;
     ch)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ch"
-      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs ch/libbankinfo_ch.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_CH, 1, [plugin availability])
       ;;
     de)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs de"
-      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs de/libbankinfo_de.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
       ;;
     us)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs us"
-      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs us/libbankinfo_us.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_US, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -1710,6 +1679,10 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/ctxfile/ressource.rc
   src/plugins/imexporters/ctxfile/profiles/Makefile
   src/plugins/imexporters/ctxfile/profiles/default.conf
+  src/plugins/imexporters/q43/Makefile
+  src/plugins/imexporters/q43/q43.xml
+  src/plugins/imexporters/q43/profiles/Makefile
+  src/plugins/imexporters/q43/profiles/default.conf
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml
