@@ -240,7 +240,9 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	  const char *s;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
-	  s=AB_Transaction_GetCustomerReference(t);
+	  s=AB_Transaction_GetEndToEndReference(t);
+	  if (!( s && *s))
+	    s=AB_Transaction_GetCustomerReference(t);
 	  if (!s)
 	    s="NOTPROVIDED";
 	  GWEN_XMLNode_SetCharValue(nnn, "EndToEndId", s);

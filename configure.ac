@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=1
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -804,17 +804,6 @@ if test "x$gmp_libs" = "x"; then
   fi
 fi
 AC_SUBST(gmp_libs)
-
-
-
-###-------------------------------------------------------------------------
-# Check for AqFinance
-
-AC_AQFINANCE(0,1,0)
-AM_CONDITIONAL(WITH_AQFINANCE, [test "$have_aqfinance" = "yes"])
-if test "$have_aqfinance" = "yes"; then
-  AC_DEFINE(WITH_AQFINANCE, 1, [if support for AqFinance enabled])
-fi
 
 
 
@@ -1770,7 +1759,6 @@ echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
 echo "Use KtoBlzCheck         : $have_ktoblzcheck"
-echo "Use AqFinance           : $have_aqfinance"
 echo "Build AqBanking-CLI     : $enable_cli"
 echo "CLI Version String      : $AQBANKING_CLI_VERSION_STRING"
 echo
