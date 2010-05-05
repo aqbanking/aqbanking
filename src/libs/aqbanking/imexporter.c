@@ -209,7 +209,7 @@ int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
   assert(dbProfile);
 
   if (fname) {
-    sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+    sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
     GWEN_SyncIo_AddFlags(sio,
 			 GWEN_SYNCIO_FILE_FLAGS_READ |
 			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
