@@ -63,6 +63,7 @@ struct AH_USER {
   char *prompt;
 
   AH_TAN_METHOD_LIST *tanMethodDescriptions;
+  char *tanMediumId;
 
   int maxTransfersPerJob;
   int maxDebitNotesPerJob;

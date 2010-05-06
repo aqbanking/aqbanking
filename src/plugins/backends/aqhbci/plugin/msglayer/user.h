@@ -237,6 +237,15 @@ AQHBCI_API
 const char *AH_User_GetHttpUserAgent(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHttpUserAgent(AB_USER *u, const char *s);
+
+
+AQHBCI_API
+const char *AH_User_GetTanMediumId(const AB_USER *u);
+
+AQHBCI_API
+void AH_User_SetTanMediumId(AB_USER *u, const char *s);
+
+
 /*@}*/
 
 

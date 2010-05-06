@@ -35,7 +35,8 @@ aqhbci_tool4_SOURCES=main.c \
  subuserflags.c \
  listitanmodes.c \
  setitanmode.c \
- setmaxtransfers.c
+ setmaxtransfers.c \
+ settanmediumid.c
 
 
 aqhbci_tool4_LDADD = \

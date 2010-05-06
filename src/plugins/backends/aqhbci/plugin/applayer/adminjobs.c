@@ -1207,6 +1207,7 @@ void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
   AH_JOB_TAN *aj;
 
   aj=(AH_JOB_TAN*)p;
+  free(aj->tanMediumId);
   free(aj->reference);
   free(aj->challenge);
   GWEN_FREE_OBJECT(aj);
@@ -1419,6 +1420,26 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j) {
   assert(aj);
 
   return aj->reference;
+}
+
+
+
+void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  if (s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "tanMediumId", s);
+  else
+    GWEN_DB_DeleteVar(dbArgs, "tanMediumId");
 }
 
 

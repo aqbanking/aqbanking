@@ -58,6 +58,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   AH_Job_Tan_SetTanMethod(jTan, um);
+  AH_Job_Tan_SetTanMediumId(jTan, AH_User_GetTanMediumId(u));
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Setting up HKTAN from job [%s]",
            AH_Job_GetName(j));

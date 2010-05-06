@@ -165,6 +165,8 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j);
 int AH_Job_Tan_GetTanMethod(const AH_JOB *j);
 void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i);
 
+void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s);
+
 int AH_Job_Tan_FinishSetup(AH_JOB *j);
 
 

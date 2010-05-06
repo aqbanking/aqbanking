@@ -219,6 +219,10 @@ int main(int argc, char **argv) {
                              I18N("  setMaxTransfers:\n"
                                   "    Set the maximum number of transfers/debit notes per job \n\n"));
 
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  setTanMediumId:\n"
+                                  "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
+
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return 0;
@@ -333,6 +337,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "setmaxtransfers")==0) {
     rv=setMaxTransfers(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "setTanMediumId")==0) {
+    rv=setTanMediumId(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();

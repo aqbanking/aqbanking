@@ -263,7 +263,7 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   }
   else
     ue->serverUrl=NULL;
-  
+
   /* load BPD */
   AH_Bpd_free(ue->bpd);
   gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
@@ -352,6 +352,11 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   /* read some settings */
   ue->maxTransfersPerJob=GWEN_DB_GetIntValue(db, "maxTransfersPerJob", 0, AH_USER_MAX_TRANSFERS_PER_JOB);
   ue->maxDebitNotesPerJob=GWEN_DB_GetIntValue(db, "maxDebitNotesPerJob", 0, AH_USER_MAX_DEBITNOTES_PER_JOB);
+
+  free(ue->tanMediumId);
+  s=GWEN_DB_GetCharValue(db, "tanMediumId", 0, NULL);
+  if (s) ue->tanMediumId=strdup(s);
+  else ue->tanMediumId=NULL;
 }
 
 
@@ -469,7 +474,9 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "maxDebitNotesPerJob",
 		      ue->maxDebitNotesPerJob);
-
+  if (ue->tanMediumId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "tanMediumId", ue->tanMediumId);
 }
 
 
@@ -1583,6 +1590,32 @@ void AH_User_SetSelectedTanMethod(AB_USER *u, int i) {
   assert(ue);
 
   ue->selectedTanMethod=i;
+}
+
+
+
+const char *AH_User_GetTanMediumId(const AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->tanMediumId;
+}
+
+
+
+void AH_User_SetTanMediumId(AB_USER *u, const char *s) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->tanMediumId);
+  if (s) ue->tanMediumId=strdup(s);
+  else ue->tanMediumId=NULL;
 }
 
 
