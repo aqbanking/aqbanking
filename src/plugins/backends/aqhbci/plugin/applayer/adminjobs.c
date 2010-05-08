@@ -666,7 +666,10 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
   while(dbCurr) {
     dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                   "data/AccountData");
+				   "data/AccountData2");
+    if (dbAccountData==NULL)
+      dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+				     "data/AccountData");
     if (dbAccountData) {
       const char *accountId;
       const char *userName;

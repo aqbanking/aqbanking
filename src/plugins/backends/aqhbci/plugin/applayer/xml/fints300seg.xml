@@ -449,7 +449,7 @@
 
 
 
-  <SEGdef id="AccountData" 
+  <SEGdef id="AccountData2"
           code="HIUPD" 
           version="5"
           pversion="300"
@@ -475,7 +475,7 @@
 
 
 
-  <SEGdef id="AccountData" 
+  <SEGdef id="AccountData2" 
           code="HIUPD" 
           version="6"
           pversion="300"

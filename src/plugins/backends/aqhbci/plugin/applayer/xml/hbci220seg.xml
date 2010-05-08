@@ -402,7 +402,7 @@
 
 
 
-  <SEGdef id="AccountData" 
+  <SEGdef id="AccountData2"
           code="HIUPD" 
           version="4"
           delimiter="+"

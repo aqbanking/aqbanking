@@ -288,6 +288,8 @@ int AH_Job_SampleBpdVersions(const char *name,
 			     AB_USER *u,
 			     GWEN_DB_NODE *dbResult);
 
+int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion);
+
 #endif /* AH_JOB_L_H */
 
 

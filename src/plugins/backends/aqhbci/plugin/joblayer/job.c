@@ -381,6 +381,37 @@ AH_JOB *AH_Job_new(const char *name,
 
 
 
+void AH_Job_free(AH_JOB *j) {
+  if (j) {
+    assert(j->usage);
+    if (--(j->usage)==0) {
+      AB_Value_free(j->challengeValue);
+      GWEN_StringList_free(j->challengeParams);
+      GWEN_StringList_free(j->log);
+      GWEN_StringList_free(j->signers);
+      free(j->name);
+      free(j->accountId);
+      free(j->dialogId);
+      free(j->expectedSigner);
+      free(j->expectedCrypter);
+      free(j->usedTan);
+      GWEN_MsgEngine_free(j->msgEngine);
+      GWEN_DB_Group_free(j->jobParams);
+      GWEN_DB_Group_free(j->jobArguments);
+      GWEN_DB_Group_free(j->jobResponses);
+      AH_Result_List_free(j->msgResults);
+      AH_Result_List_free(j->segResults);
+      AB_Message_List_free(j->messages);
+
+      GWEN_LIST_FINI(AH_JOB, j);
+      GWEN_INHERIT_FINI(AH_JOB, j);
+      GWEN_FREE_OBJECT(j);
+    }
+  }
+}
+
+
+
 int AH_Job_SampleBpdVersions(const char *name,
 			     AB_USER *u,
 			     GWEN_DB_NODE *dbResult) {
@@ -485,32 +516,35 @@ int AH_Job_SampleBpdVersions(const char *name,
 
 
 
-void AH_Job_free(AH_JOB *j) {
-  if (j) {
-    assert(j->usage);
-    if (--(j->usage)==0) {
-      AB_Value_free(j->challengeValue);
-      GWEN_StringList_free(j->challengeParams);
-      GWEN_StringList_free(j->log);
-      GWEN_StringList_free(j->signers);
-      free(j->name);
-      free(j->accountId);
-      free(j->dialogId);
-      free(j->expectedSigner);
-      free(j->expectedCrypter);
-      free(j->usedTan);
-      GWEN_MsgEngine_free(j->msgEngine);
-      GWEN_DB_Group_free(j->jobParams);
-      GWEN_DB_Group_free(j->jobArguments);
-      GWEN_DB_Group_free(j->jobResponses);
-      AH_Result_List_free(j->msgResults);
-      AH_Result_List_free(j->segResults);
-      AB_Message_List_free(j->messages);
+int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion) {
+  GWEN_DB_NODE *db;
+  int rv;
 
-      GWEN_LIST_FINI(AH_JOB, j);
-      GWEN_INHERIT_FINI(AH_JOB, j);
-      GWEN_FREE_OBJECT(j);
+  db=GWEN_DB_Group_new("bpd");
+  rv=AH_Job_SampleBpdVersions(name, u, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  else {
+    GWEN_DB_NODE *dbT;
+    int m=-1;
+
+    /* determine maximum version */
+    dbT=GWEN_DB_GetFirstGroup(db);
+    while(dbT) {
+      int v;
+
+      v=atoi(GWEN_DB_GroupName(dbT));
+      if (v>0 && v>m && v<=maxVersion)
+        m=v;
+      dbT=GWEN_DB_GetNextGroup(dbT);
     }
+    GWEN_DB_Group_free(db);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Max version of [%s] up until %d: %d",
+	     name, maxVersion, m);
+    return m;
   }
 }
 
@@ -1652,8 +1686,9 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 						  "version",
 						  0, 0));
       }
-      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData")==0){
-        const char *accountId;
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData")==0 ||
+	       strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0){
+	const char *accountId;
         const char *accountSuffix;
         const char *userName;
         const char *accountName;
@@ -1677,6 +1712,11 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	if (accountId==NULL)
 	  accountId=I18N("AH_JOB|-- no account id --");
 	accountSuffix=GWEN_DB_GetCharValue(dbRd, "accountSubId", 0, 0);
+	if (!(accountSuffix && *accountSuffix) &&
+	    strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
+	  /* accountSuffix is empty with accountData2, so basically jobs without
+           * suffix are supported, the suffix is just empty */
+          accountSuffix="<empty>";
         accountName=GWEN_DB_GetCharValue(dbRd, "account/name", 0, 0);
         userName=GWEN_DB_GetCharValue(dbRd, "name1", 0, 0);
 	iban=GWEN_DB_GetCharValue(dbRd, "iban", 0, 0);
@@ -1739,7 +1779,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           AB_Account_SetCountry(acc, "de");
           AB_Account_SetBankCode(acc, bankCode);
 	  AB_Account_SetAccountNumber(acc, accountId);
-          AH_Account_SetSuffix(acc, accountSuffix);
+	  AH_Account_SetSuffix(acc, accountSuffix);
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Setting user \"%s\" for account \"%s\"",
                      AB_User_GetUserId(u),
@@ -1756,7 +1796,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    AB_Account_SetOwnerName(acc, userName);
 	  if (iban)
 	    AB_Account_SetIBAN(acc, iban);
-	  if (accountSuffix && *accountSuffix)
+          if (accountSuffix && *accountSuffix)
 	    AH_Account_SetSuffix(acc, accountSuffix);
 
 	  /* set bank name */
