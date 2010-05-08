@@ -48,7 +48,7 @@ noinst_HEADERS=\
  httpsession_p.h
 
 
-iheaderdir=@aqbanking_headerdir_am@
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
  account.h \
  account_be.h \
