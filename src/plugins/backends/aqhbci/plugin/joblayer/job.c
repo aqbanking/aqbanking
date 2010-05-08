@@ -1654,6 +1654,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
       }
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData")==0){
         const char *accountId;
+        const char *accountSuffix;
         const char *userName;
         const char *accountName;
         const char *bankCode;
@@ -1675,6 +1676,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	accountId=GWEN_DB_GetCharValue(dbRd, "accountId", 0, 0);
 	if (accountId==NULL)
 	  accountId=I18N("AH_JOB|-- no account id --");
+	accountSuffix=GWEN_DB_GetCharValue(dbRd, "accountSubId", 0, 0);
         accountName=GWEN_DB_GetCharValue(dbRd, "account/name", 0, 0);
         userName=GWEN_DB_GetCharValue(dbRd, "name1", 0, 0);
 	iban=GWEN_DB_GetCharValue(dbRd, "iban", 0, 0);
@@ -1696,7 +1698,12 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             GWEN_Buffer_AppendString(mbuf, accountName);
           else
             GWEN_Buffer_AppendString(mbuf, accountId);
-          GWEN_Gui_ProgressLog(0,
+	  if (accountSuffix) {
+	    GWEN_Buffer_AppendString(mbuf, "(");
+	    GWEN_Buffer_AppendString(mbuf, accountSuffix);
+	    GWEN_Buffer_AppendString(mbuf, ")");
+	  }
+	  GWEN_Gui_ProgressLog(0,
 			       GWEN_LoggerLevel_Notice,
 			       GWEN_Buffer_GetStart(mbuf));
 	  GWEN_Buffer_free(mbuf);
@@ -1731,7 +1738,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           assert(acc);
           AB_Account_SetCountry(acc, "de");
           AB_Account_SetBankCode(acc, bankCode);
-          AB_Account_SetAccountNumber(acc, accountId);
+	  AB_Account_SetAccountNumber(acc, accountId);
+          AH_Account_SetSuffix(acc, accountSuffix);
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Setting user \"%s\" for account \"%s\"",
                      AB_User_GetUserId(u),
@@ -1748,6 +1756,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    AB_Account_SetOwnerName(acc, userName);
 	  if (iban)
 	    AB_Account_SetIBAN(acc, iban);
+	  if (accountSuffix && *accountSuffix)
+	    AH_Account_SetSuffix(acc, accountSuffix);
 
 	  /* set bank name */
 	  bpd=AH_User_GetBpd(j->user);

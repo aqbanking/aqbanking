@@ -40,6 +40,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   AH_ACCOUNTJOB *aj;
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
+  const char *s;
 
   assert(name);
   assert(u);
@@ -55,12 +56,19 @@ AH_JOB *AH_AccountJob_new(const char *name,
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "accountId",
-                       AB_Account_GetAccountNumber(account));
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "bankCode",
-                       AB_Account_GetBankCode(account));
+
+  s=AB_Account_GetAccountNumber(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+
+  s=AH_Account_GetSuffix(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+
+  s=AB_Account_GetBankCode(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                       "country", 280);
 
