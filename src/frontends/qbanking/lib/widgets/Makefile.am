@@ -1,5 +1,5 @@
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/.. -I$(srcdir)/../dialogs \
   -I.. -I../dialogs \
   $(GWENGUI_QT3_CFLAGS) \
@@ -18,7 +18,7 @@ noinst_LTLIBRARIES=libwidgets.la
 nodist_iheader_HEADERS=\
  qbcfgtab.ui.h
 
-iheaderdir=${includedir}/qbanking
+iheaderdir=@aqbanking_headerdir_am@/qbanking
 iheader_HEADERS=\
  qbaccountlist.h \
  qbjoblist.h \

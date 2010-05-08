@@ -9,7 +9,7 @@ builddir="$2"
 # code
 #
 
-rm -Rf headers 2>/dev/null
+rm -Rf aqbanking5 2>/dev/null
 
 # The prefix to the source code (=srcdir)
 sprefix=`( cd ${srcdir} ; pwd )`
@@ -72,24 +72,24 @@ function symlinkFolder() {
 
 # symlink all headers from src/lib/aqbanking
 AQ_HEADER_FILES="${sprefix}/version.h ${sprefix}/system.h"
-mkdir -p headers/aqbanking
-symlinkFolder "src/libs/aqbanking" "headers/aqbanking"
-ln -s "${bprefix}/version.h" headers/aqbanking/version.h
-ln -s "${bprefix}/system.h" headers/aqbanking/system.h
+mkdir -p aqbanking5/aqbanking
+symlinkFolder "src/libs/aqbanking" "aqbanking5/aqbanking"
+ln -s "${bprefix}/version.h" aqbanking5/aqbanking/version.h
+ln -s "${bprefix}/system.h" aqbanking5/aqbanking/system.h
 
 # symlink all headers from src/frontends
 dirlist='@aqbanking_frontends@'  # list might be empty
 for frontend in ${dirlist} ; do
-  mkdir -p headers/${frontend}
-  symlinkFolder "src/frontends/${frontend}" "headers/${frontend}"
+  mkdir -p aqbanking5/${frontend}
+  symlinkFolder "src/frontends/${frontend}" "aqbanking5/${frontend}"
 done
 
 # symlink all headers from src/plugins/backends/
 dirlist='@aqbanking_backends@'  # list might be empty
 for backend in ${dirlist} ; do
-  mkdir -p headers/${backend}
+  mkdir -p aqbanking5/${backend}
   if [ -d "src/plugins/backends/${backend}/plugin" ] ; then
-    symlinkFolder "src/plugins/backends/${backend}/plugin" "headers/${backend}"
+    symlinkFolder "src/plugins/backends/${backend}/plugin" "aqbanking5/${backend}"
   fi
 done
 

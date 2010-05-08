@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=2
+AQBANKING_VERSION_PATCHLEVEL=3
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -63,7 +63,7 @@ esac
 
 AQBANKING_SO_CURRENT=32
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=2
+AQBANKING_SO_REVISION=3
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -816,9 +816,12 @@ AC_SUBST(gmp_libs)
 aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 aqbanking_ldflags="-L\${libdir}"
 aqbanking_libs="-laqbanking"
-aqbanking_includes="-I\${includedir}"
+aqbanking_includes="-I\${includedir}/aqbanking5"
+aqbanking_headerdir_am="\$(includedir)/aqbanking5"
+aqbanking_headerdir="\${includedir}/aqbanking5"
 aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
 aqbanking_pkgdatadir="\${datadir}/aqbanking"
+aqbanking_symlinkdir="\$(top_builddir)/aqbanking5"
 
 case "$OS_TYPE" in
     posix)
@@ -1123,6 +1126,9 @@ AC_SUBST(aqbanking_ldflags)
 AC_SUBST(aqbanking_libs)
 AC_SUBST(aqbanking_plugindir)
 AC_SUBST(aqbanking_pkgdatadir)
+AC_SUBST(aqbanking_symlinkdir)
+AC_SUBST(aqbanking_headerdir_am)
+AC_SUBST(aqbanking_headerdir)
 
 
 ###-------------------------------------------------------------------------
@@ -1279,7 +1285,7 @@ AC_SUBST(with_q4banking)
 # Common settings; can be overridden per-OS below.
 aqhbci_internal_libs="${abs_top_builddir}/src/plugins/backends/aqhbci/plugin/libaqhbci.la"
 aqhbci_ldflags="-L\${libdir}"
-aqhbci_includes="-I\${includedir}"
+aqhbci_includes="${aqbanking_includes}"
 aqhbci_libs="-laqhbci"
 with_aqhbci="no"
 
@@ -1324,7 +1330,7 @@ AC_MSG_RESULT($aqhbci_datadir)
 
 # Common settings
 aqofxconnect_internal_libs="${abs_top_builddir}/src/plugins/backends/aqofxconnect/plugin/libaqofxconnect.la"
-aqofxconnect_includes="-I\${includedir}"
+aqofxconnect_includes="${aqbanking_includes}"
 aqofxconnect_libs="-L\${libdir} -laqofxconnect"
 
 case "$aqbanking_backends" in *aqofxconnect*)
@@ -1353,7 +1359,7 @@ AC_SUBST(aqofxconnect_libs)
 
 # Common settings
 qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
-qbanking_includes="-I\${includedir}"
+qbanking_includes="${aqbanking_includes}"
 qbanking_libs="-L\${libdir} -lqbanking"
 qbanking_data="\${datadir}/qbanking"
 qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
@@ -1384,7 +1390,7 @@ AC_SUBST(qbanking_helpdir)
 
 # Common settings
 q4banking_internal_libs="${abs_top_builddir}/src/frontends/q4banking/lib/libq4banking.la"
-q4banking_includes="-I\${includedir}"
+q4banking_includes="${aqbanking_includes}"
 q4banking_libs="-L\${libdir} -lq4banking"
 q4banking_data="\${datadir}/q4banking"
 q4banking_plugindir="\${aqbanking_plugindir}/frontends/q4banking"

@@ -1,6 +1,6 @@
 EXTRA_DIST=README
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes)
+INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes)
 bin_PROGRAMS=aqhbci-tool4
 
 idatadir=$(datadir)/doc/aqhbci/aqhbci-tool

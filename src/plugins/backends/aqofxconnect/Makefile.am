@@ -2,7 +2,7 @@ SUBDIRS=plugin ui
 
 EXTRA_DIST=ChangeLog README version.h.in
 
-iheaderdir=${includedir}/aqofxconnect
+iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
 iheader_HEADERS=\
   version.h
 BUILT_SOURCES = version.h

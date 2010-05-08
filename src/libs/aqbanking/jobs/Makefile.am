@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/headers \
+INCLUDES = -I$(aqbanking_symlinkdir) \
   $(all_includes) \
   -I$(srcdir)/.. \
   -I$(srcdir)/../types
@@ -36,7 +36,7 @@ noinst_HEADERS=\
 
 
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS= \
  jobgetbalance.h \
  jobgetbalance_be.h \

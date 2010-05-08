@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers @all_includes@
+INCLUDES=-I$(aqbanking_symlinkdir) @all_includes@
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -10,7 +10,7 @@ noinst_HEADERS=\
   abgui_p.h
 
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
   abgui.h
 

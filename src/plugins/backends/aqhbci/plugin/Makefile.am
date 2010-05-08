@@ -4,7 +4,7 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 EXTRA_DIST=aqhbci.xml.in header.xml.in
 
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
+INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
  -I$(srcdir)/joblayer
 
 BUILT_SOURCES = version.h
@@ -15,7 +15,7 @@ plugindir= $(aqbanking_plugindir)/providers
 plugin_LTLIBRARIES=aqhbci.la
 plugin_DATA=aqhbci.xml
 
-iheaderdir=${includedir}/aqhbci
+iheaderdir=@aqbanking_headerdir_am@/aqhbci
 iheader_HEADERS=aqhbci.h
 
 noinst_HEADERS = aqhbci_l.h

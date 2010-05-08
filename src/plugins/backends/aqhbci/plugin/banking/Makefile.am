@@ -1,7 +1,7 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
+INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
   -I$(srcdir)/../applayer -I$(srcdir)/../accountjobs  -I$(srcdir)/..
 
@@ -16,7 +16,7 @@ noinst_HEADERS=\
  provider_p.h
 
 
-iheaderdir=${includedir}/aqhbci
+iheaderdir=@aqbanking_headerdir_am@/aqhbci
 iheader_HEADERS=\
  provider.h
 

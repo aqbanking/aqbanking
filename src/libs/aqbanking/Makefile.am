@@ -1,7 +1,7 @@
 SUBDIRS=types jobs gui dialogs
 
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/types -I$(srcdir)/jobs $(gwenhywfar_includes)
 
 lib_LTLIBRARIES=libaqbanking.la
@@ -48,7 +48,7 @@ noinst_HEADERS=\
  httpsession_p.h
 
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@
 iheader_HEADERS=\
  account.h \
  account_be.h \

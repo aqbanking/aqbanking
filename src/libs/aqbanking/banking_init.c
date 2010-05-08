@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: banking.c 1106 2007-01-09 21:14:59Z martin $
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************

@@ -1,7 +1,7 @@
 EXTRA_DIST = README tutorials.h
 
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   $(gwenhywfar_includes) $(qt3_includes)
 
 noinst_PROGRAMS=\

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/headers $(all_includes) $(ktoblzcheck_includes)
+INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) $(ktoblzcheck_includes)
 
 noinst_HEADERS=de_p.h
 

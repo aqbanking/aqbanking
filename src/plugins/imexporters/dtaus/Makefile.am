@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes) -I$(top_srcdir)/src/libs/aqbanking
+INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) -I$(top_srcdir)/src/libs/aqbanking
 EXTRA_DIST=README
 
 noinst_HEADERS=dtaus_p.h

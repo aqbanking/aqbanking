@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) \
+INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
            -I$(top_srcdir)/src/libs/aqbanking
 
 EXTRA_DIST=\

@@ -1,7 +1,7 @@
 SUBDIRS=widgets dialogs views
 
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/dialogs -I$(srcdir)/widgets -I$(srcdir)/views \
   -Idialogs -Iwidgets -Iviews \
   $(GWENGUI_QT4_CFLAGS) \
@@ -17,7 +17,7 @@ AM_CPPFLAGS= @visibility_cflags@
 
 lib_LTLIBRARIES=libq4banking.la
 
-iheaderdir = $(includedir)/q4banking
+iheaderdir = @aqbanking_headerdir_am@/q4banking
 iheader_HEADERS=\
  api.h \
  banking.h \

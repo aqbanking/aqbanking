@@ -1,6 +1,6 @@
 INCLUDES = \
   -I$(top_srcdir) \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   $(all_includes)
 
 DEFS += -DBUILDING_AQNONE

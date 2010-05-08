@@ -1,5 +1,5 @@
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   $(GWENGUI_QT4_CFLAGS) \
   $(qt4_includes) $(gwenhywfar_includes) 
 

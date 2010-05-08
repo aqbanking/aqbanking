@@ -17,7 +17,7 @@ dist_aclocal_DATA = aqbanking.m4
 
 ACLOCAL_AMFLAGS = $(ADD_ACLOCAL_FLAGS) -I m4
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
   version.h system.h
 

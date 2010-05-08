@@ -1,5 +1,5 @@
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/../widgets -I$(srcdir)/.. \
   -I../widgets -I.. \
   $(GWENGUI_QT3_CFLAGS) \
@@ -43,7 +43,7 @@ nodist_iheader_HEADERS=\
  qbselectbackend.ui.h
  
 
-iheaderdir=${includedir}/qbanking
+iheaderdir=@aqbanking_headerdir_am@/qbanking
 iheader_HEADERS=\
  qbprocesswatcher.h \
  qbmapaccount.h \

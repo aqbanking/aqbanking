@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers $(gwenhywfar_includes)
+INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
 
 localedir=$(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
@@ -24,7 +24,7 @@ noinst_HEADERS=\
  queues_p.h
 
 
-iheaderdir=$(includedir)/aqofxconnect
+iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
 iheader_HEADERS=\
  account.h \
  aqofxconnect.h \

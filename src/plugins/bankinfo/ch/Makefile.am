@@ -1,4 +1,4 @@
-INCLUDES =-I$(top_builddir)/headers $(all_includes)
+INCLUDES =-I$(aqbanking_symlinkdir) $(all_includes)
 
 noinst_HEADERS=ch_p.h
 

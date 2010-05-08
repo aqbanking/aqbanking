@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(top_builddir)/headers -I$(top_srcdir)/src/libs/aqbanking $(all_includes)
+INCLUDES = -I$(aqbanking_symlinkdir) -I$(top_srcdir)/src/libs/aqbanking $(all_includes)
 EXTRA_DIST=
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters

@@ -1,7 +1,7 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(top_builddir)/headers $(all_includes) \
+INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/..
 
 typefiles=tanmethod.xml
@@ -20,7 +20,7 @@ noinst_HEADERS=\
   tanmethod_l.h \
   tanmethod_p.h
 
-iheaderdir=${includedir}/aqhbci
+iheaderdir=@aqbanking_headerdir_am@/aqhbci
 iheader_HEADERS=\
   tanmethod.h
 

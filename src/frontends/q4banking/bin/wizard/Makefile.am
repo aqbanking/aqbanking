@@ -1,5 +1,5 @@
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/../../gui \
   -I$(srcdir)/../../lib/widgets \
   -I$(srcdir)/../../lib/dialogs \

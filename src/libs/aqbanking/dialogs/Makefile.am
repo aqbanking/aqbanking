@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers \
+INCLUDES=-I$(aqbanking_symlinkdir) \
   -I.. -I$(srcdir)/.. \
   @all_includes@
 
@@ -6,7 +6,7 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 noinst_LTLIBRARIES=libabdialogs.la
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
   dlg_importer.h \
   dlg_selectbankinfo.h \

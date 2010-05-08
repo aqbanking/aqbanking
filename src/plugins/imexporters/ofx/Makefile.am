@@ -8,7 +8,7 @@ EXTRA_DIST=\
   ofx.xml.in
 
 
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) -Iparser -I$(srcdir)/parser
+INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) -Iparser -I$(srcdir)/parser
 #EXTRA_DIST=README
 
 noinst_HEADERS=ofx-internal_p.h

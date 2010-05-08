@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers \
+INCLUDES=-I$(aqbanking_symlinkdir) \
   -I.. -I$(srcdir)/.. \
   -I$(top_srcdir)/src/libs/aqbanking $(gwenhywfar_includes)
 
@@ -6,7 +6,7 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 noinst_LTLIBRARIES=libaqhbci_dlgs.la
 
-iheaderdir=${includedir}/aqhbci
+iheaderdir=@aqbanking_headerdir_am@/aqhbci
 iheader_HEADERS=\
   dlg_pintan.h \
   dlg_pintan_special.h \

@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers $(gwenhywfar_includes)
+INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
 
 lib_LTLIBRARIES=libaqbankingpp.la
 
@@ -9,7 +9,7 @@ noinst_HEADERS=\
  cppgui.h \
  bprogress.h
 
-iheaderdir=${includedir}/aqbanking++
+iheaderdir=@aqbanking_headerdir_am@/aqbanking++
 iheader_HEADERS=\
  banking.h \
  cppgui.h

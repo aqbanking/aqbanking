@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/headers \
+INCLUDES=-I$(aqbanking_symlinkdir) \
   $(GWENGUI_QT3_CFLAGS) \
   -I dialogs @all_includes@
 

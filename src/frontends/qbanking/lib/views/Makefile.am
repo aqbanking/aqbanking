@@ -1,5 +1,5 @@
 INCLUDES = \
-  -I$(top_builddir)/headers \
+  -I$(aqbanking_symlinkdir) \
   -I$(srcdir)/../widgets -I$(srcdir)/../dialogs -I$(srcdir)/.. \
   -I../widgets -I../dialogs -I.. \
   $(GWENGUI_QT3_CFLAGS) \
@@ -10,7 +10,7 @@ AM_CPPFLAGS= @visibility_cflags@
 
 noinst_LTLIBRARIES=libviews.la
 
-iheaderdir=${includedir}/qbanking
+iheaderdir=@aqbanking_headerdir_am@/qbanking
 iheader_HEADERS=\
  qbbankselector.h
 

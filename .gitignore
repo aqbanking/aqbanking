@@ -49,6 +49,7 @@ core
 debug
 depcomp
 headers
+aqbanking5
 i18nsources
 install-sh
 libtool

@@ -1,6 +1,6 @@
 #EXTRA_DIST=
 
-INCLUDES = -I$(top_builddir)/headers $(gwenhywfar_includes) $(aqfinance_includes)
+INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) $(aqfinance_includes)
 
 AM_CFLAGS=@visibility_cflags@
 
