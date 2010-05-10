@@ -50,12 +50,13 @@ iheader_HEADERS=$(built_headers_pub)\
   ab_userqueuefns.h \
   ab_queuefns.h
 
-
-
-EXTRA_DIST=$(typefiles) $(built_sources) $(built_headers) \
+extra_sources=\
   ab_accountqueuefns.c \
   ab_userqueuefns.c \
   ab_queuefns.c
+
+
+EXTRA_DIST=$(typefiles) $(built_sources) $(built_headers) $(extra_sources)
 
 
 
@@ -83,4 +84,10 @@ SUFFIXES = .xml .c
 
 types: $(typefiles)
 	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
+
+
+sources: $(built_sources)
+	for f in $(libabbesupport_la_SOURCES) $(extra_sources); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
 
