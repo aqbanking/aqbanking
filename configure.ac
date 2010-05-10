@@ -648,6 +648,22 @@ all_includes="$all_includes $gwenhywfar_includes"
 
 ###-------------------------------------------------------------------------
 #
+# check typemaker2
+#
+
+AC_MSG_CHECKING(typemaker2 binary)
+AC_ARG_WITH(typemaker2-exe, 
+  [  --with-typemaker2-exe=EXE      path and name of the executable typemaker2],
+  [typemaker2_exe="$withval"],
+  [typemaker2_exe="\$(gwenhywfar_bindir)/typemaker2"]
+)
+AC_MSG_RESULT($typemaker2_exe)
+AC_SUBST(typemaker2_exe)
+
+
+
+###-------------------------------------------------------------------------
+#
 # check xmlmerge
 #
 AC_MSG_CHECKING(xmlmerge)
