@@ -1,4 +1,4 @@
-SUBDIRS=types jobs gui dialogs
+SUBDIRS=types jobs gui dialogs backendsupport typemaker2
 
 INCLUDES = \
   -I$(aqbanking_symlinkdir) \
@@ -87,6 +87,7 @@ libaqbanking_la_SOURCES=\
 
 
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
+ backendsupport/libabbesupport.la \
  jobs/libjobs.la \
  types/libtypes.la \
  gui/libabgui.la \

@@ -1,0 +1,41 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_QUEUE" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AB_QUEUE</identifier>
+      <prefix>AB_Queue</prefix>
+      
+      <flags>
+        with_inherit
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/banking.h</header>
+        <header type="sys" loc="pre">aqbanking/ab_userqueue.h</header>
+        <header type="sys" loc="post">aqbanking/ab_queuefns.h</header>
+        <header type="local" loc="code">ab_queuefns.c</header>
+      </headers>
+      
+    </lang>
+
+    <members>
+
+      <member name="userQueueList" type="AB_USERQUEUE_LIST">
+        <default>NULL</default>
+        <preset>AB_UserQueue_List_new()</preset>
+        <access>public</access>
+        <flags>volatile own dup</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+

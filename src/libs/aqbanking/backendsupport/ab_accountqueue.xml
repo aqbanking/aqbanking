@@ -1,0 +1,52 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_ACCOUNTQUEUE" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AB_ACCOUNTQUEUE</identifier>
+      <prefix>AB_AccountQueue</prefix>
+      
+      <flags>
+        with_inherit
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/banking.h</header>
+        <header type="sys" loc="pre">aqbanking/ab_jobqueue.h</header>
+        <header type="sys" loc="post">aqbanking/ab_accountqueuefns.h</header>
+        <header type="local" loc="code">ab_accountqueuefns.c</header>
+      </headers>
+      
+    </lang>
+
+    <members>
+
+      <member name="account" type="AB_ACCOUNT">
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>volatile</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+        <dupflags>assign</dupflags>
+      </member>
+
+      <member name="jobQueueList" type="AB_JOBQUEUE_LIST">
+        <default>NULL</default>
+        <preset>AB_JobQueue_List_new()</preset>
+        <access>public</access>
+        <flags>volatile own dup</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+
