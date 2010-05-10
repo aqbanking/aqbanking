@@ -93,10 +93,10 @@ AH_JOB *AH_AccountJob_new(const char *name,
     if (maxVer>0) {
       jobVersion=AH_Job_GetMaxVersionUpUntil(name, u, maxVer);
       if (jobVersion<1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, jobVersion);
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
 	GWEN_Gui_ProgressLog2(0,
 			      GWEN_LoggerLevel_Warning,
-			      "No version for job [%s] up to %d found, falling back to 0", name, jobVersion);
+			      "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
 	jobVersion=0;
       }
       else {
