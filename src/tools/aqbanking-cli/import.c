@@ -189,9 +189,9 @@ int import(AB_BANKING *ab,
     iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
     while(iea) {
       if (bankId)
-        AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
+	AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
       if (accountId)
-        AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
+	AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
       iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
     } /* while */
   }

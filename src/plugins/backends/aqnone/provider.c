@@ -45,13 +45,13 @@ int AN_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-int AN_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AN_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 
 
-int AN_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j, uint32_t guiid){
+int AN_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
@@ -63,8 +63,7 @@ int AN_Provider_ResetQueue(AB_PROVIDER *pro){
 
 
 
-int AN_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t guiid){
+int AN_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   return 0;
 }
 
