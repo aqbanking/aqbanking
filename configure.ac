@@ -26,9 +26,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=4
 AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=3
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -80,6 +80,12 @@ AQOFXCONNECT_SO_AGE=0
 AQOFXCONNECT_SO_REVISION=0
 AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
 
+
+AQPAYPAL_SO_CURRENT=1
+AQPAYPAL_SO_AGE=0
+AQPAYPAL_SO_REVISION=0
+AQPAYPAL_SO_EFFECTIVE="`echo \$(($AQPAYPAL_SO_CURRENT-$AQPAYPAL_SO_AGE))`"
+
 #
 # frontends
 #
@@ -117,6 +123,14 @@ AQOFXCONNECT_VERSION_BUILD=$AQBANKING_VERSION_BUILD
 AQOFXCONNECT_VERSION_TAG=$AQBANKING_VERSION_TAG
 AQOFXCONNECT_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 AQOFXCONNECT_VERSION_STRING="$AQBANKING_VERSION_STRING"
+
+AQPAYPAL_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQPAYPAL_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQPAYPAL_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQPAYPAL_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+AQPAYPAL_VERSION_TAG=$AQBANKING_VERSION_TAG
+AQPAYPAL_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
+AQPAYPAL_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
 QBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
 QBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
@@ -166,6 +180,7 @@ AQHBCI_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQDTAUS_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQGELDKARTE_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQOFXCONNECT_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
+AQPAYPAL_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 QBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 Q4BANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 
@@ -258,6 +273,41 @@ AC_SUBST(AQOFXCONNECT_SO_REVISION)
 AC_SUBST(AQOFXCONNECT_SO_AGE)
 AC_SUBST(AQOFXCONNECT_SO_EFFECTIVE)
 AC_DEFINE_UNQUOTED(AQOFXCONNECT_SO_EFFECTIVE_STR, "$AQOFXCONNECT_SO_EFFECTIVE",
+                   [effective SO version])
+
+
+
+#
+# same for AqPaypal
+#
+
+AC_SUBST(AQPAYPAL_VERSION_MAJOR)
+AC_SUBST(AQPAYPAL_VERSION_MINOR)
+AC_SUBST(AQPAYPAL_VERSION_PATCHLEVEL)
+AC_SUBST(AQPAYPAL_VERSION_BUILD)
+AC_SUBST(AQPAYPAL_VERSION_TAG)
+AC_SUBST(AQPAYPAL_VERSION_FULL_STRING)
+AC_SUBST(AQPAYPAL_VERSION_STRING)
+AC_SUBST(AQPAYPAL_VERSION_RELEASE_STRING)
+
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_MAJOR,$AQPAYPAL_VERSION_MAJOR, 
+                   [major version])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_MINOR,$AQPAYPAL_VERSION_MINOR, 
+                   [minor version])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_PATCHLEVEL,$AQPAYPAL_VERSION_PATCHLEVEL, 
+                   [patchlevel])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_BUILD,$AQPAYPAL_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_STRING,"$AQPAYPAL_VERSION_STRING", 
+                   [version string])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_FULL_STRING,"$AQPAYPAL_VERSION_FULL_STRING",
+                   [full version string])
+AC_DEFINE_UNQUOTED(AQPAYPAL_VERSION_TAG,$AQPAYPAL_VERSION_TAG, [tag])
+
+AC_SUBST(AQPAYPAL_SO_CURRENT)
+AC_SUBST(AQPAYPAL_SO_REVISION)
+AC_SUBST(AQPAYPAL_SO_AGE)
+AC_SUBST(AQPAYPAL_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQPAYPAL_SO_EFFECTIVE_STR, "$AQPAYPAL_SO_EFFECTIVE",
                    [effective SO version])
 
 
@@ -474,18 +524,19 @@ for f in ${aqbanking_backends}; do
   case "$f" in
     aqhbci)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqhbci"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/plugin/libaqhbciplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
       ;;
     aqnone)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnoneplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
       ;;
     aqofxconnect)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/plugin/libaqofxconnectplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
+      ;;
+    aqpaypal)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqpaypal"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -494,7 +545,21 @@ for f in ${aqbanking_backends}; do
 done
 
 AC_SUBST(aqbanking_plugins_backends_dirs)
-AC_SUBST(aqbanking_plugins_backends_libs)
+
+
+# special license announcements
+for f in ${aqbanking_backends}; do
+  case "$f" in
+    aqpaypal)
+      AC_MSG_WARN(["
+
+**** Please note that the Paypal plugin has a special license.
+**** See src/plugins/backends/aqpaypal/COPYING!"
+
+])
+      ;;
+  esac
+done
 
 
 
@@ -555,7 +620,6 @@ for f in ${aqbanking_imexporters}; do
 done
 
 AC_SUBST(aqbanking_plugins_imexporters_dirs)
-AC_SUBST(aqbanking_plugins_imexporters_libs)
 
 
 
@@ -589,7 +653,6 @@ for f in ${aqbanking_parsers}; do
 done
 
 AC_SUBST(aqbanking_plugins_parsers_dirs)
-AC_SUBST(aqbanking_plugins_parsers_libs)
 
 
 
@@ -632,7 +695,6 @@ for f in ${aqbanking_bankinfos}; do
 done
 
 AC_SUBST(aqbanking_plugins_bankinfo_dirs)
-AC_SUBST(aqbanking_plugins_bankinfo_libs)
 
 
 
@@ -1370,6 +1432,35 @@ AC_SUBST(aqofxconnect_libs)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for backend AqPaypal
+#
+
+# Common settings
+aqpaypal_internal_libs="${abs_top_builddir}/src/plugins/backends/aqpaypal/plugin/libaqpaypal.la"
+aqpaypal_includes="${aqbanking_includes}"
+aqpaypal_libs="-L\${libdir} -laqpaypal"
+
+case "$aqbanking_backends" in *aqpaypal*)
+  case "$OS_TYPE" in
+      posix)
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQPAYPAL_DLL,1, [Define if DLL is built])
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqpaypal_includes)
+AC_SUBST(aqpaypal_includes)
+AC_SUBST(aqpaypal_internal_libs)
+AC_SUBST(aqpaypal_libs)
+#AC_DEFINE_UNQUOTED(AQPAYPAL_DATA, "${aqpaypal_data}", [data dir])
+
+
+
+###-------------------------------------------------------------------------
+#
 # Configure stuff for frontend qbanking
 #
 
@@ -1746,6 +1837,11 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
   src/plugins/backends/aqofxconnect/ui/qt4/Makefile
   src/plugins/backends/aqofxconnect/ui/qt4/libs/Makefile
+  src/plugins/backends/aqpaypal/Makefile
+  src/plugins/backends/aqpaypal/plugin/Makefile
+  src/plugins/backends/aqpaypal/plugin/aqpaypal.xml
+  src/plugins/backends/aqpaypal/tools/Makefile
+  src/plugins/backends/aqpaypal/tools/aqpaypal-tool/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc

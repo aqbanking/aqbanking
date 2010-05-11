@@ -1,4 +1,9 @@
 
+Licenses
+
+1. AqBanking
+============
+
 AqBanking is licensed under the GPL (see below).
 
 All contributions from Christian Stimming,  Patrick Prasse Stephen R. 
@@ -12,6 +17,14 @@ choice.
 
 All contributions from Martin Preuss are licensed under GPL.
 Hence, the full package is licensed under GPL. 
+
+
+
+2. AqPaypal
+===========
+
+AqPaypal has its own license, see src/plugins/backends/aqpaypal/COPYING.
+
 
 If you are interested in another licensing option, please contact Martin
 Preuss (martin@libchipcard.de) and ask for other available licenses, some of 

@@ -88,6 +88,8 @@ src/plugins/backends/aqhbci/ui/qt3/qt3_debug/aqhbci-qt3-debug
 src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
 src/plugins/backends/aqnone/aqnone.xml
 src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
+src/plugins/backends/aqpaypal/plugin/aqpaypal.xml
+src/plugins/backends/aqpaypal/tools/aqpaypal-tool/aqpaypal-tool
 src/plugins/bankinfo/*/*.xml
 src/plugins/bankinfo/generic/??/*.idx
 src/plugins/bankinfo/generic/??/banks.data
