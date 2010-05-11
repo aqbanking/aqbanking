@@ -82,7 +82,7 @@ int addUser(AB_BANKING *ab,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
     "serverAddr",                 /* name */
-    1,                            /* minnum */
+    0,                            /* minnum */
     1,                            /* maxnum */
     "s",                          /* short option */
     "server",                     /* long option */
@@ -154,7 +154,7 @@ int addUser(AB_BANKING *ab,
   apiPassword=GWEN_DB_GetCharValue(db, "password", 0, NULL);
   apiSignature=GWEN_DB_GetCharValue(db, "signature", 0, NULL);
   userName=GWEN_DB_GetCharValue(db, "userName", 0, NULL);
-  server=GWEN_DB_GetCharValue(db, "serverAddr", 0, NULL);
+  server=GWEN_DB_GetCharValue(db, "serverAddr", 0, "https://api-3t.paypal.com/nvp");
 
   user=AB_Banking_FindUser(ab, APY_PROVIDER_NAME,
 			   "*",
