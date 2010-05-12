@@ -76,6 +76,9 @@ mkdir -p aqbanking5/aqbanking
 symlinkFolder "src/libs/aqbanking" "aqbanking5/aqbanking"
 ln -s "${bprefix}/version.h" aqbanking5/aqbanking/version.h
 ln -s "${bprefix}/system.h" aqbanking5/aqbanking/system.h
+ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_jobqueue.h" aqbanking5/aqbanking
+ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_accountqueue.h" aqbanking5/aqbanking
+ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_userqueue.h" aqbanking5/aqbanking
 
 # symlink all headers from src/frontends
 dirlist='@aqbanking_frontends@'  # list might be empty

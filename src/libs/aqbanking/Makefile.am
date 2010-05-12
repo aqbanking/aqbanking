@@ -104,6 +104,10 @@ sources:
 	  $(MAKE) -C $$d sources; \
 	done
 
+built_sources:
+	for d in  backendsupport ; do \
+	  $(MAKE) -C $$d built_sources; \
+	done ;
 
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlib ab_value_test
