@@ -113,32 +113,6 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     }
   }
 
-#ifdef WITH_LF_HEADER
-  {
-    LICENSE_FILE *lf;
-    static uint8_t ft_provider_aqpaypal[]=LICENSE_FT_PROVIDER_AQPAYPAL;
-
-    lf=LicenseFile_LoadDefaultFile();
-    if (!lf) {
-      return GWEN_ERROR_INVALID;
-    }
-    else {
-      if (LicenseFile_IsPrivate(lf)!=0) {
-	LicenseFile_notCoveredByLicense();
-	return GWEN_ERROR_INVALID;
-      }
-      if (LicenseFile_HasItem(lf,
-			      LICENSE_FILE_FIELD_FEATURE,
-                              ft_provider_aqpaypal,
-			      sizeof(ft_provider_aqpaypal))!=1) {
-	LicenseFile_notCoveredByLicense();
-	return GWEN_ERROR_INVALID;
-      }
-      LicenseFile_free(lf);
-    }
-  }
-#endif
-
   if (1) {
     GWEN_STRINGLIST *sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME,
 						  AB_PM_LOCALEDIR);
