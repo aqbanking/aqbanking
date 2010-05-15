@@ -5,6 +5,7 @@ EXTRA_DIST=aqpaypal.xml.in
 iheaderdir=${includedir}/aqpaypal
 iheader_HEADERS=\
  aqpaypal.h \
+ provider.h \
  user.h
 
 plugindir= $(aqbanking_plugindir)/providers
@@ -13,7 +14,7 @@ plugin_DATA=aqpaypal.xml
 
 noinst_HEADERS=\
  aqpaypal_l.h \
- provider_p.h \
+ provider_l.h provider_p.h \
  user_p.h user_l.h
 
 
