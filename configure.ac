@@ -516,7 +516,7 @@ AC_ARG_WITH(backends,
   [aqbanking_backends="all"]
 )
 
-if test "$aqbanking_backends" == "all"; then
+if test "$aqbanking_backends" = "all"; then
   aqbanking_backends="aqhbci aqnone aqofxconnect"
 fi
 
@@ -574,7 +574,7 @@ AC_ARG_WITH(imexporters,
   [aqbanking_imexporters="all"]
 )
 
-if test "$aqbanking_imexporters" == "all"; then
+if test "$aqbanking_imexporters" = "all"; then
   aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43"
 fi
 
@@ -634,7 +634,7 @@ AC_ARG_WITH(parsers,
   [aqbanking_parsers="all"]
 )
 
-if test "$aqbanking_parsers" == "all"; then
+if test "$aqbanking_parsers" = "all"; then
   aqbanking_parsers="dtaus swift"
 fi
 
@@ -667,7 +667,7 @@ AC_ARG_WITH(bankinfos,
   [aqbanking_bankinfos="all"]
 )
 
-if test "$aqbanking_bankinfos" == "all"; then
+if test "$aqbanking_bankinfos" = "all"; then
   aqbanking_bankinfos="at ca ch de us"
 fi
 
