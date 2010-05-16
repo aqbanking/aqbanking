@@ -23,7 +23,7 @@ bprefix=`pwd`
 # functions
 #
 
-function symlinkFolder() {
+symlinkFolder () {
   local dfiles
   local src
   local dst
