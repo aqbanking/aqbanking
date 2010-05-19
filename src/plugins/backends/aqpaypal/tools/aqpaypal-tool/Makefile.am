@@ -21,7 +21,7 @@ aqpaypal_tool_SOURCES=main.c \
 
 aqpaypal_tool_LDADD = \
   $(aqpaypal_internal_libs) \
-  $(aqbanking_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
 
