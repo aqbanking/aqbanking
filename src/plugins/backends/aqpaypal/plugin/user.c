@@ -58,7 +58,7 @@ void APY_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
 
 
-void APY_User_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p) {
   APY_USER *ue;
 
   ue=(APY_USER*)p;

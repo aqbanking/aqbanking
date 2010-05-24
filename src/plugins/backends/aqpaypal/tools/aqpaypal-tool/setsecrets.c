@@ -38,7 +38,7 @@ int setSecrets(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AB_USER_LIST2 *ul;
-  AB_USER *u;
+  AB_USER *u=NULL;
   int rv;
   const char *userId;
   const char *apiPassword;

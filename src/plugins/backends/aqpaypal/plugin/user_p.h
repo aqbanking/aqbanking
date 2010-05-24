@@ -28,7 +28,7 @@ struct APY_USER {
   int httpVMinor;
 };
 
-static void APY_User_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p);
 
 static void APY_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
 static void APY_User_toDb(AB_USER *u, GWEN_DB_NODE *db);

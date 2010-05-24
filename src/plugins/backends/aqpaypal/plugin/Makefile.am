@@ -1,5 +1,7 @@
 INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
 
+DEFS += -DBUILDING_AQPAYPAL
+
 EXTRA_DIST=aqpaypal.xml.in
 
 iheaderdir=${includedir}/aqpaypal

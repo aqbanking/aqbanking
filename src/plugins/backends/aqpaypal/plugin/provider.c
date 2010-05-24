@@ -71,7 +71,7 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
 
 
 
-void APY_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p) {
   APY_PROVIDER *xp;
 
   xp=(APY_PROVIDER*) p;

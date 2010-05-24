@@ -14,7 +14,7 @@
 #include "provider.h"
 
 
-AB_PROVIDER *APY_Provider_new(AB_BANKING *ab);
+AQPAYPAL_API AB_PROVIDER *APY_Provider_new(AB_BANKING *ab);
 
 int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUFFER *secbuf);
 int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec);
