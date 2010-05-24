@@ -33,7 +33,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = aqbanking.pc
 
 listdoc.h:
-	$(gwenhywfar_bindir)/mklistdoc -v `find headers -name '*.h' ` >listdoc.h
+	$(gwenhywfar_bindir)/mklistdoc -I $(gwenhywfar_headers) -v `find $(aqbanking_symlinkdir) -name '*.h' ` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
 	if test -d apidoc; then rm -Rf apidoc; fi
