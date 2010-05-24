@@ -155,6 +155,7 @@ mp-w32:
 	  --enable-release \
 	  --with-gwen-dir=$(WIN32_INSTALL_DIR) \
 	  --with-frontends="" \
+          --with-backends="aqhbci aqofxconnect aqpaypal"  \
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge
 
