@@ -26,6 +26,7 @@ den Bedingungen der GPL verwendet werden:
 - QBankManager
 - AqFinance
 - aqbd (Teil des Orgamon-Systems)
+- Pecunia
 
 
 Jede weitere GPL-Anwendung, die nicht nur dem Zweck der Umgehung der GPL
@@ -48,6 +49,7 @@ terms of the GPL:
 - QBankManager
 - AqFinance
 - aqbd (part of the Orgamon system)
+- Pecunia
 
 Any other GPL-licensed application will be added to this list provided it is not just
 a tool to circumvent the GPL by indirectly providing the services of AqBanking 
