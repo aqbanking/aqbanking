@@ -55,7 +55,7 @@
          single="1"
          needTan="1"
   >
-   <SEG type="InternalTransfer" version="4" />
+   <SEG type="InternalTransfer" version="1" />
  </JOBdef>
 
 </JOBs>

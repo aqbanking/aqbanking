@@ -613,6 +613,14 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     }
     break;
 
+  case AB_Job_TypeInternalTransfer:
+    mj=AH_Job_InternalTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
   case AB_Job_TypeEuTransfer:
     mj=AH_Job_EuTransfer_new(mu, ma);
     if (!mj) {
