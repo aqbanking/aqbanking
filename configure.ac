@@ -945,6 +945,12 @@ AC_ARG_WITH(plugin-searchdir, [  --with-plugin-searchdir=DIR where to search for
 if test -z "${aqbanking_plugin_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     aqbanking_plugin_searchdir="lib/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      aqbanking_plugin_searchdir="Frameworks/AqBanking/lib/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
+    else
+      aqbanking_plugin_searchdir="$aqbanking_plugindir"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       aqbanking_plugin_searchdir="lib/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
@@ -971,6 +977,12 @@ AC_ARG_WITH(cfg-searchdir, [  --with-cfg-searchdir=DIR where to search for cfg f
 if test -z "$aqbanking_cfg_searchdir"; then
   if test "$OSYSTEM" = "windows"; then
     aqbanking_cfg_searchdir="etc"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      aqbanking_cfg_searchdir="Frameworks/AqBanking/etc"
+    else
+      aqbanking_cfg_searchdir="\$(sysconfdir)"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       aqbanking_cfg_searchdir="etc"
@@ -998,6 +1010,12 @@ AC_ARG_WITH(locale-searchdir, [  --with-locale-searchdir=DIR where to search for
 if test -z "${aqbanking_locale_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     aqbanking_locale_searchdir="share/locale"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      aqbanking_locale_searchdir="Frameworks/AqBanking/share/locale"
+    else
+      aqbanking_locale_searchdir="\$(localedir)"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       aqbanking_locale_searchdir="share/locale"
@@ -1024,6 +1042,12 @@ AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for dat
 if test -z "${aqbanking_data_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     aqbanking_data_searchdir="share"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      aqbanking_data_searchdir="Frameworks/AqBanking/share"
+    else
+      aqbanking_data_searchdir="\$(datadir)"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       aqbanking_data_searchdir="share"
