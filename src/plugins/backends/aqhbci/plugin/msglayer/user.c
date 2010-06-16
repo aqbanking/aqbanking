@@ -1658,7 +1658,7 @@ void AH_User_LoadTanMethods(AB_USER *u) {
 
 	    tm=AH_TanMethod_fromDb(dbT);
 	    if (tm) {
-	      DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      DBG_INFO(AQHBCI_LOGDOMAIN,
 			"Adding TAN method %d [%s] for GV version %d",
                         AH_TanMethod_GetFunction(tm),
 			AH_TanMethod_GetMethodId(tm),
