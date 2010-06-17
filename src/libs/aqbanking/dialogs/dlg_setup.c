@@ -662,7 +662,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
     GWEN_DIALOG *dlg2;
     int rv;
 
-    dlg2=AB_Provider_GetNewUserDialog(pro);
+    dlg2=AB_Provider_GetNewUserDialog(pro, 0);
     if (dlg2==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
       return GWEN_DialogEvent_ResultHandled;

@@ -450,10 +450,10 @@ int AB_Provider_Update(AB_PROVIDER *pro,
 
 
 
-GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   assert(pro);
   if (pro->getNewUserDialogFn)
-    return pro->getNewUserDialogFn(pro);
+    return pro->getNewUserDialogFn(pro, i);
   else
     return NULL;
 }

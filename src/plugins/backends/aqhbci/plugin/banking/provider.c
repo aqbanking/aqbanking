@@ -1002,7 +1002,7 @@ int AH_Provider_Update(AB_PROVIDER *pro,
 
 
 
-GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 

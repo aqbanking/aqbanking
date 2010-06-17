@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -134,7 +131,7 @@ typedef int (*AB_PROVIDER_UPDATE_FN)(AB_PROVIDER *pro,
                                      uint32_t currentVersion);
 
 
-typedef GWEN_DIALOG* (*AB_PROVIDER_GET_NEWUSER_DIALOG_FN)(AB_PROVIDER *pro);
+typedef GWEN_DIALOG* (*AB_PROVIDER_GET_NEWUSER_DIALOG_FN)(AB_PROVIDER *pro, int i);
 
 typedef GWEN_DIALOG* (*AB_PROVIDER_GET_EDITUSER_DIALOG_FN)(AB_PROVIDER *pro, AB_USER *u);
 
@@ -277,9 +274,14 @@ int AB_Provider_Update(AB_PROVIDER *pro,
 /**
  * Create a dialog which allows to create a new user.
  * The dialog returned (if any) must be derived via @ref AB_NewUserDialog_new().
+ * @param pro pointer to the backend for which a new user is to be created
+ * @param i additional parameter depending on the backend. it can be used
+ *   to specify the user type to be created (e.g. for HBCI those values
+ *   specify whether PIN/TAN, keyfile or chipcard users are to be created).
+ *   Use value 0 for the generic dialog.
  */
 AQBANKING_API
-GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro);
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
 
 AQBANKING_API
 GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);

@@ -57,7 +57,7 @@ static int AH_Provider_Update(AB_PROVIDER *pro,
                               uint32_t lastVersion,
                               uint32_t currentVersion);
 
-static GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro);
+static GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
 
 
 static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
