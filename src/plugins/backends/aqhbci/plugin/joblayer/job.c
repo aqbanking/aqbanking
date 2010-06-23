@@ -1663,7 +1663,9 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             GWEN_DB_AddGroupChildren(bn, dbRd);
             /* remove "head" and "segment" group */
             GWEN_DB_DeleteGroup(bn, "head");
-            GWEN_DB_DeleteGroup(bn, "segment");
+	    GWEN_DB_DeleteGroup(bn, "segment");
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d",
+                     GWEN_DB_GroupName(dbRd), segver);
             modCust=1;
           } /* if isbpdjob */
           else {
