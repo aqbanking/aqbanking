@@ -1685,12 +1685,15 @@ void AH_User_LoadTanMethods(AB_USER *u) {
 
 
 
-const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(const AB_USER *u) {
+const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(AB_USER *u) {
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
+
+  /* always reload TAN methods from BPD */
+  AH_User_LoadTanMethods(u);
 
   return ue->tanMethodDescriptions;
 }
