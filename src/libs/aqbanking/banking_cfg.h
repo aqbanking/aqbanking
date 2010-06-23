@@ -80,6 +80,7 @@ int AB_Banking_EndExclUseAccount(AB_BANKING *ab, AB_ACCOUNT *a, int abandon);
 AQBANKING_API
 int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u);
 
+
 /**
  * This function writes the configuration of the given user to the database and
  * releases the given user so that other applications can access it.

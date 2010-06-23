@@ -1098,42 +1098,56 @@ int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u) {
 
 
 
+int AB_Banking_SaveUser(AB_BANKING *ab, AB_USER *u) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbP;
+  int rv;
+
+  db=GWEN_DB_Group_new("user");
+  AB_User_toDb(u, db);
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
+		       "data/backend");
+  rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
+			    AB_ProviderExtendMode_Save,
+			    dbP);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+
+  /* save group (still locked) */
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
+			     AB_CFG_GROUP_USERS,
+			     AB_User_GetDbId(u),
+			     db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  GWEN_DB_Group_free(db);
+
+  return 0;
+}
+
+
+
 int AB_Banking_EndExclUseUser(AB_BANKING *ab,
 			      AB_USER *u,
 			      int abandon) {
   int rv;
 
   if (!abandon) {
-    GWEN_DB_NODE *db;
-    GWEN_DB_NODE *dbP;
-
-    db=GWEN_DB_Group_new("user");
-    AB_User_toDb(u, db);
-    dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT,
-			 "data/backend");
-    rv=AB_Provider_ExtendUser(AB_User_GetProvider(u), u,
-			      AB_ProviderExtendMode_Save,
-			      dbP);
-    if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
-
     /* save group (still locked) */
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			       AB_CFG_GROUP_USERS,
-			       AB_User_GetDbId(u),
-			       db);
+    rv=AB_Banking_SaveUser(ab, u);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save user group (%d)", rv);
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
 				 AB_CFG_GROUP_USERS,
 				 AB_User_GetDbId(u));
-      GWEN_DB_Group_free(db);
       return rv;
     }
-    GWEN_DB_Group_free(db);
   }
 
   /* unlock group */

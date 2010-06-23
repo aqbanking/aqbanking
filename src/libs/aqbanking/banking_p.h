@@ -159,4 +159,12 @@ static int AB_Banking__ImportConfDir(AB_BANKING *ab,
 				     const char *path,
 				     const char *groupName);
 
+/**
+ * Write the settings of the user while in exclusive use. This is also called
+ * internally by @ref AB_Banking_EndExclUseUser.
+ * Please note that the user must be locked with @ref AB_Banking_BeginExclUseUser.
+ */
+static int AB_Banking_SaveUser(AB_BANKING *ab, AB_USER *u);
+
+
 #endif /* AQBANKING_BANKING_P_H */

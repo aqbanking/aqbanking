@@ -1171,7 +1171,21 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
           if (!nounmount)
 	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
           return rv;
-        }
+	}
+
+#if 0
+	/* save user in order to get the info written to config database for
+         * inspection while debugging
+         */
+        rv=AB_Banking_SaveUser(ab, u);
+	if (rv<0) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving user (%d)", rv);
+	  AH_Outbox_free(ob);
+	  if (!nounmount)
+	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+	  return rv;
+	}
+#endif
 
 	rv=GWEN_Gui_ProgressLog(0,
 				GWEN_LoggerLevel_Error,
