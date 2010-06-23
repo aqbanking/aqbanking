@@ -31,7 +31,6 @@
 #include "jobeutransfer_l.h"
 #include "jobloadcellphone_l.h"
 
-
 /* special jobs */
 #include "jobforeignxferwh_l.h"
 
@@ -39,6 +38,8 @@
 #include "adminjobs_l.h"
 #include <aqhbci/user.h>
 #include <aqhbci/dlg_newuser.h>
+#include <aqhbci/dlg_pintan.h>
+#include <aqhbci/dlg_ddvcard.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -1002,6 +1003,82 @@ int AH_Provider_Update(AB_PROVIDER *pro,
 
 
 
+GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
+  int rv;
+  GWEN_BUFFER *mtypeName;
+  GWEN_BUFFER *mediumName;
+  uint32_t pid;
+  GWEN_CRYPT_TOKEN *ct;
+
+  mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
+  mediumName=GWEN_Buffer_new(0, 64, 0, 1);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+			     I18N("Checking Chipcard"),
+			     I18N("Checking chipcard type, please wait..."),
+			     GWEN_GUI_PROGRESS_NONE,
+			     0);
+
+  rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(pro),
+				GWEN_Crypt_Token_Device_Card,
+				mtypeName,
+				mediumName);
+  GWEN_Gui_ProgressEnd(pid);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return NULL;
+  }
+
+  rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
+			      GWEN_Buffer_GetStart(mtypeName),
+			      GWEN_Buffer_GetStart(mediumName),
+			      &ct);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return NULL;
+  }
+
+  if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "ddvcard")==0) {
+    GWEN_DIALOG *dlg2;
+
+    DBG_ERROR(0, "DDV card");
+    dlg2=AH_DdvCardDialog_new(AB_Provider_GetBanking(pro), ct);
+    if (dlg2==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+      GWEN_Buffer_free(mediumName);
+      GWEN_Buffer_free(mtypeName);
+      return NULL;
+    }
+
+    GWEN_Dialog_SetWidgetText(dlg2, "", I18N("Create HBCI/FinTS DDV User"));
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return dlg2;
+  }
+  else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
+    DBG_ERROR(0, "STARCOS RSA card");
+    // TODO
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Card type \"%s\" not yet supported",
+	      GWEN_Buffer_GetStart(mtypeName));
+  }
+  GWEN_Buffer_free(mediumName);
+  GWEN_Buffer_free(mtypeName);
+  AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
+
+  return NULL;
+}
+
+
+
 GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
@@ -1010,7 +1087,25 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  dlg=AH_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  switch(i) {
+  case AqHBCI_NewUserDialog_CodeExistingPinTan:
+    dlg=AH_PinTanDialog_new(AB_Provider_GetBanking(pro));
+    break;
+
+  case AqHBCI_NewUserDialog_CodeExistingChipcard:
+    dlg=AH_Provider_GetNewCardUserDialog(pro);
+    break;
+
+  case AqHBCI_NewUserDialog_CodeCreateKeyFile:
+  case AqHBCI_NewUserDialog_CodeExistingKeyFile:
+  case AqHBCI_NewUserDialog_CodeCreateChipcard:
+
+  case AqHBCI_NewUserDialog_CodeGeneric:
+  default:
+    dlg=AH_NewUserDialog_new(AB_Provider_GetBanking(pro));
+    break;
+  }
+
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return NULL;

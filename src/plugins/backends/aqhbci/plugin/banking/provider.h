@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,6 +32,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+  /**
+   * This enum can be used as argument to @ref AB_Provider_GetNewUserDialog
+   */
+  enum AQHBCI_NEWUSER_DIALOG_CODE {
+    AqHBCI_NewUserDialog_CodeGeneric=0,
+    AqHBCI_NewUserDialog_CodeExistingPinTan,
+    AqHBCI_NewUserDialog_CodeCreateKeyFile,
+    AqHBCI_NewUserDialog_CodeExistingKeyFile,
+    AqHBCI_NewUserDialog_CodeCreateChipcard,
+    AqHBCI_NewUserDialog_CodeExistingChipcard
+  };
 
 
 AQHBCI_API
