@@ -1175,6 +1175,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       return -1;
     }
 
+    AB_TransactionLimits_free(lim);
     return 0;
   }
 
