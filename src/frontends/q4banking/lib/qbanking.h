@@ -35,12 +35,12 @@
 #include <aqbanking/banking.h>
 #include <aqbanking/accstatus.h>
 
-#include <Qt/qobject.h>
-#include <Qt/qdatetime.h>
-#include <Qt/qstring.h>
-#include <Qt/qstringlist.h>
-#include <Qt/qwidget.h> // needed for QPointer<QWidget>
-#include <Qt/qpointer.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qdatetime.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringlist.h>
+#include <QtGui/qwidget.h> // needed for QPointer<QWidget>
+#include <QtCore/qpointer.h>
 
 #include <list>
 

@@ -24,7 +24,7 @@ class QBImporter;
 #include <list>
 #include <string>
 
-#include <Qt/qstring.h>
+#include <QtCore/qstring.h>
 
 #include <gwenhywfar/logger.h>
 

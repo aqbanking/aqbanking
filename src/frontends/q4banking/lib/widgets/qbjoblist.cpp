@@ -17,8 +17,8 @@
 
 #include "qbjoblist.h"
 #include <assert.h>
-#include <Qt/qstring.h>
-#include <Qt/qwidget.h>
+#include <QtCore/qstring.h>
+#include <QtGui/qwidget.h>
 #include <gwenhywfar/debug.h>
 
 

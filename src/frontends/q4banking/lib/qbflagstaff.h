@@ -16,7 +16,7 @@
 class QBFlagStaff;
 
 #include <q4banking/qbanking.h>
-#include <Qt/qobject.h>
+#include <QtCore/qobject.h>
 
 
 class Q4BANKING_API QBFlagStaff: public QObject {

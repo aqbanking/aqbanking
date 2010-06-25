@@ -18,8 +18,8 @@
 #include <aqbanking/banking.h>
 #include <q4banking/qbanking.h>
 
-#include <Qt/qwidget.h>
-#include <Qt/qstring.h>
+#include <QtGui/qwidget.h>
+#include <QtCore/qstring.h>
 //Added by qt3to4:
 #include <Q3VBoxLayout>
 

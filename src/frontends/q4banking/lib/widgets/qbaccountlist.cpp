@@ -17,7 +17,7 @@
 
 #include "qbaccountlist.h"
 #include <assert.h>
-#include <Qt/qstring.h>
+#include <QtCore/qstring.h>
 
 
 

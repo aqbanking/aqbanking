@@ -17,7 +17,7 @@
 
 #include "qbplugindescrlist.h"
 #include <assert.h>
-#include <Qt/qstring.h>
+#include <QtCore/qstring.h>
 
 
 
