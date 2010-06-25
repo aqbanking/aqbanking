@@ -20,6 +20,12 @@ The following types have been registered with AqBanking:
   </li>
   <li>
     <b>
+      EBICS
+    </b>
+    - German and French homebanking protocol
+  </li>
+  <li>
+    <b>
       OFX
     </b>
     - OFX direct connect protocol
@@ -73,6 +79,23 @@ this is the protocol version to be used:
     2.20
   </li>
 </ul>
+
+For
+
+<b>
+  EBICS
+</b>
+
+this is also the protocol version:
+
+<ul>
+  <li>
+    H002
+  </li>
+  <li>
+    H003
+  </li>
+</ul>
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetPversion, 
@@ -107,6 +130,24 @@ the following values are used:
     RDH4
   </li>
   <li>
+    RDH5
+  </li>
+  <li>
+    RDH6
+  </li>
+  <li>
+    RDH7
+  </li>
+  <li>
+    RDH8
+  </li>
+  <li>
+    RDH9
+  </li>
+  <li>
+    RDH10
+  </li>
+  <li>
     PINTAN
   </li>
 </ul>
@@ -116,10 +157,39 @@ Set this property with @ref AB_BankInfoService_SetMode,
 get it with @ref AB_BankInfoService_GetMode
 </p>
 
+@anchor AB_BANKINFO_SERVICE_UserFlags
+<h3>UserFlags</h3>
+<p>
+This field contains some service-dependent user flags. For HBCI these are the flags of AH_USER (e.g. forceSslv3 etc).
+</p>
+<p>
+Set this property with @ref AB_BankInfoService_SetUserFlags, 
+get it with @ref AB_BankInfoService_GetUserFlags
+</p>
+
+@anchor AB_BANKINFO_SERVICE_Hversion
+<h3>Hversion</h3>
+<p>
+For HTTP-based protocols this is the HTTP version to be used:
+
+<ul>
+  <li>
+    1.0
+  </li>
+  <li>
+    1.1
+  </li>
+</ul>
+</p>
+<p>
+Set this property with @ref AB_BankInfoService_SetHversion, 
+get it with @ref AB_BankInfoService_GetHversion
+</p>
+
 @anchor AB_BANKINFO_SERVICE_Aux1
 <h3>Aux1</h3>
 <p>
-This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the FID from the bankinfo file.
+This is a multi purpose field to be used by a bankinfo plugin as it sees fit. OFX uses this to store the FID from the bankinfo file. EBICS stores the HOSTID here.
 </p>
 <p>
 Set this property with @ref AB_BankInfoService_SetAux1, 
@@ -260,6 +330,24 @@ AQBANKING_API const char *AB_BankInfoService_GetMode(const AB_BANKINFO_SERVICE *
 * Set the property @ref AB_BANKINFO_SERVICE_Mode
 */
 AQBANKING_API void AB_BankInfoService_SetMode(AB_BANKINFO_SERVICE *el, const char *d);
+
+/**
+* Returns the property @ref AB_BANKINFO_SERVICE_UserFlags
+*/
+AQBANKING_API uint32_t AB_BankInfoService_GetUserFlags(const AB_BANKINFO_SERVICE *el);
+/**
+* Set the property @ref AB_BANKINFO_SERVICE_UserFlags
+*/
+AQBANKING_API void AB_BankInfoService_SetUserFlags(AB_BANKINFO_SERVICE *el, uint32_t d);
+
+/**
+* Returns the property @ref AB_BANKINFO_SERVICE_Hversion
+*/
+AQBANKING_API const char *AB_BankInfoService_GetHversion(const AB_BANKINFO_SERVICE *el);
+/**
+* Set the property @ref AB_BANKINFO_SERVICE_Hversion
+*/
+AQBANKING_API void AB_BankInfoService_SetHversion(AB_BANKINFO_SERVICE *el, const char *d);
 
 /**
 * Returns the property @ref AB_BANKINFO_SERVICE_Aux1

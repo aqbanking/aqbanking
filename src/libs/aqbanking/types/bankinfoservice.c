@@ -47,6 +47,8 @@ void AB_BankInfoService_free(AB_BANKINFO_SERVICE *st) {
     free(st->pversion);
   if (st->mode)
     free(st->mode);
+  if (st->hversion)
+    free(st->hversion);
   if (st->aux1)
     free(st->aux1);
   if (st->aux2)
@@ -78,6 +80,9 @@ AB_BANKINFO_SERVICE *AB_BankInfoService_dup(const AB_BANKINFO_SERVICE *d) {
     st->pversion=strdup(d->pversion);
   if (d->mode)
     st->mode=strdup(d->mode);
+  st->userFlags=d->userFlags;
+  if (d->hversion)
+    st->hversion=strdup(d->hversion);
   if (d->aux1)
     st->aux1=strdup(d->aux1);
   if (d->aux2)
@@ -108,6 +113,11 @@ int AB_BankInfoService_toDb(const AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
   if (st->mode)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "mode", st->mode))
       return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userFlags", st->userFlags))
+    return -1;
+  if (st->hversion)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "hversion", st->hversion))
+      return -1;
   if (st->aux1)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "aux1", st->aux1))
       return -1;
@@ -132,6 +142,8 @@ int AB_BankInfoService_ReadDb(AB_BANKINFO_SERVICE *st, GWEN_DB_NODE *db) {
   AB_BankInfoService_SetSuffix(st, GWEN_DB_GetCharValue(db, "suffix", 0, 0));
   AB_BankInfoService_SetPversion(st, GWEN_DB_GetCharValue(db, "pversion", 0, 0));
   AB_BankInfoService_SetMode(st, GWEN_DB_GetCharValue(db, "mode", 0, 0));
+  AB_BankInfoService_SetUserFlags(st, GWEN_DB_GetIntValue(db, "userFlags", 0, 0));
+  AB_BankInfoService_SetHversion(st, GWEN_DB_GetCharValue(db, "hversion", 0, 0));
   AB_BankInfoService_SetAux1(st, GWEN_DB_GetCharValue(db, "aux1", 0, 0));
   AB_BankInfoService_SetAux2(st, GWEN_DB_GetCharValue(db, "aux2", 0, 0));
   AB_BankInfoService_SetAux3(st, GWEN_DB_GetCharValue(db, "aux3", 0, 0));
@@ -247,6 +259,41 @@ void AB_BankInfoService_SetMode(AB_BANKINFO_SERVICE *st, const char *d) {
     st->mode=strdup(d);
   else
     st->mode=0;
+  st->_modified=1;
+}
+
+
+
+
+uint32_t AB_BankInfoService_GetUserFlags(const AB_BANKINFO_SERVICE *st) {
+  assert(st);
+  return st->userFlags;
+}
+
+
+void AB_BankInfoService_SetUserFlags(AB_BANKINFO_SERVICE *st, uint32_t d) {
+  assert(st);
+  st->userFlags=d;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_BankInfoService_GetHversion(const AB_BANKINFO_SERVICE *st) {
+  assert(st);
+  return st->hversion;
+}
+
+
+void AB_BankInfoService_SetHversion(AB_BANKINFO_SERVICE *st, const char *d) {
+  assert(st);
+  if (st->hversion)
+    free(st->hversion);
+  if (d && *d)
+    st->hversion=strdup(d);
+  else
+    st->hversion=0;
   st->_modified=1;
 }
 

@@ -14,6 +14,9 @@
       <function type="dup" name="AB_BankInfoService_List2_dup" />
     </functions>
   </type>
+
+  <type id="uint32_t" basetype="int" />
+
 </typedefs>
 
 
@@ -36,6 +39,7 @@
         The following types have been registered with AqBanking:
         <ul>
           <li><b>HBCI</b> - German homebanking protocol</li>
+          <li><b>EBICS</b> - German and French homebanking protocol</li>
           <li><b>OFX</b>  - OFX direct connect protocol</li>
         </ul>
       </descr>
@@ -60,6 +64,12 @@
           <li>2.10</li>
           <li>2.20</li>
         </ul>
+        
+        For <b>EBICS</b> this is also the protocol version:
+        <ul>
+          <li>H002</li>
+          <li>H003</li>
+        </ul>
       </descr>
     </elem>
     <elem name="mode" type="char" ptr="1">
@@ -72,7 +82,30 @@
           <li>RDH2</li>
           <li>RDH3</li>
           <li>RDH4</li>
+          <li>RDH5</li>
+          <li>RDH6</li>
+          <li>RDH7</li>
+          <li>RDH8</li>
+          <li>RDH9</li>
+          <li>RDH10</li>
           <li>PINTAN</li>
+        </ul>
+      </descr>
+    </elem>
+    <elem name="userFlags" type="uint32_t">
+      <descr>
+        This field contains some service-dependent user flags. 
+        For HBCI these are the flags of AH_USER (e.g. forceSslv3 etc).
+      </descr>
+    </elem>
+    
+    <elem name="hversion" type="char" ptr="1">
+      <descr>
+        For HTTP-based protocols this is the HTTP version to be
+        used:
+        <ul>
+          <li>1.0</li>
+          <li>1.1</li>
         </ul>
       </descr>
     </elem>
@@ -81,6 +114,7 @@
         This is a multi purpose field to be used by a bankinfo plugin as
         it sees fit.
         OFX uses this to store the FID from the bankinfo file.
+        EBICS stores the HOSTID here.
       </descr>
     </elem>
     <elem name="aux2" type="char" ptr="1">

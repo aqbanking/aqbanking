@@ -17,11 +17,15 @@ struct AB_BANKINFO_SERVICE {
   char *suffix;
   char *pversion;
   char *mode;
+  uint32_t userFlags;
+  char *hversion;
   char *aux1;
   char *aux2;
   char *aux3;
   char *aux4;
 };
+
+
 
 
 
