@@ -19,6 +19,7 @@
 
 #include <aqhbci/dlg_pintan.h>
 #include <aqhbci/dlg_ddvcard.h>
+#include <aqhbci/dlg_newkeyfile.h>
 
 #include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>
@@ -110,7 +111,6 @@ void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      0);
 
   /* temporarily disable not-implemented buttons */
-  GWEN_Dialog_SetIntProperty(dlg, "createKeyFileButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "importKeyFileButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "initChipcardButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
 
@@ -269,6 +269,31 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
 
 
 
+static int AH_NewUserDialog_HandleActivatedNewKeyFile(GWEN_DIALOG *dlg) {
+  GWEN_DIALOG *dlg2;
+  int rv;
+
+  dlg2=AH_NewKeyFileDialog_new(AB_NewUserDialog_GetBanking(dlg));
+  if (dlg2==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  GWEN_Dialog_SetWidgetText(dlg2, "", I18N("Create HBCI/FinTS Keyfile User"));
+
+  rv=GWEN_Gui_ExecDialog(dlg2, 0);
+  if (rv==0) {
+    /* rejected */
+    GWEN_Dialog_free(dlg2);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  AB_NewUserDialog_SetUser(dlg, AH_NewKeyFileDialog_GetUser(dlg2));
+  GWEN_Dialog_free(dlg2);
+  return GWEN_DialogEvent_ResultAccept;
+}
+
+
+
 int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "abortButton")==0)
     return GWEN_DialogEvent_ResultReject;
@@ -276,6 +301,8 @@ int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return AH_NewUserDialog_HandleActivatedPinTan(dlg);
   else if (strcasecmp(sender, "useChipcardButton")==0)
     return AH_NewUserDialog_HandleActivatedUseCard(dlg);
+  else if (strcasecmp(sender, "createKeyFileButton")==0)
+    return AH_NewUserDialog_HandleActivatedNewKeyFile(dlg);
   else if (strcasecmp(sender, "helpButton")==0) {
     /* TODO: open u help dialog */
   }
