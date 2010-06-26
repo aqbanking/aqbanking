@@ -84,6 +84,9 @@ int AB_Banking_BeginExclUseUser(AB_BANKING *ab, AB_USER *u);
 /**
  * This function writes the configuration of the given user to the database and
  * releases the given user so that other applications can access it.
+ * @param ab pointer to the AqBanking object
+ * @param u user
+ * @param abandon if 0 then the changes are written to the database, otherwise they are not
  */
 AQBANKING_API
 int AB_Banking_EndExclUseUser(AB_BANKING *ab, AB_USER *u, int abandon);
