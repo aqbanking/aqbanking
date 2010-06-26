@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -40,6 +37,7 @@
 #include <aqhbci/dlg_newuser.h>
 #include <aqhbci/dlg_pintan.h>
 #include <aqhbci/dlg_ddvcard.h>
+#include <aqhbci/dlg_newkeyfile.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -1097,6 +1095,9 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
     break;
 
   case AqHBCI_NewUserDialog_CodeCreateKeyFile:
+    dlg=AH_NewKeyFileDialog_new(AB_Provider_GetBanking(pro));
+    break;
+
   case AqHBCI_NewUserDialog_CodeExistingKeyFile:
   case AqHBCI_NewUserDialog_CodeCreateChipcard:
 
