@@ -126,6 +126,37 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
 /*@}*/
 
 
+/** @name Convenience Functions for Import/Export
+ *
+ * For import and exports the following objects are generally needed:
+ * <ul>
+ *   <li>im/exporter module (e.g. "csv", "ofx", "swift")</li>
+ *   <li>im/export profile with the settings for the im/exporter module (e.g. "SWIFT-MT940" for
+ *       the "swift" importer)</li>
+ *   <li>im/export context (needed on import to store imported data, on export to hold the data
+ *       to export)</li>
+ *   <li>source/destination for the data to import/export (e.g. a CSV-file, OFX file etc)</li>
+ * </ul>
+ *
+ * To make it easier for applications to import/export data this group contains some convenience
+ * functions which automatically load the appropriate im/exporter plugin and a selected im/exporter
+ * settings profile.
+ *
+ * The raw im/export API of AqBanking works with GWEN_SYNCIO objects as source/destination for the
+ * formatted data. Such a GWEN_SYNCIO object can be a file or a buffer in memory.
+ * However, the functions in this group allow you just to specify the file to import from/export to
+ * and leave the gory details of setting up a GWEN_SYNCIO to AqBanking.
+ *
+ * There are functions to:
+ * <ul>
+ *   <li>import from a file</li>
+ *   <li>import from a memory buffer</li>
+ *   <li>export to a file</li>
+ *   <li>export to a memory buffer</li>
+ * </ul>
+ */
+/*@{*/
+
 /**
  * This function tries to fill missing fields in a given imexporter context.
  * It tries to find the online banking accounts for all account info objects in
@@ -139,12 +170,74 @@ AQBANKING_API
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
 
 
+/**
+ * This function loads the given im/exporter plugin (if necessary) and also loads the given
+ * im/exporter settings profile. The resulting data is written to a GWEN_BUFFER (which is basically
+ * a memory buffer).
+ * @return 0 on success, an error code otherwise
+ * @param ab banking API object
+ * @param ctx export context containing the accounts, transactions etc to export
+ * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
+ * @param profileName name of the exporter settings profile to use (most plugins only provide the
+ * "default" profile, but especially the CSV im/exporter has many profiles from which to choose)
+ * @param buf buffer to write the exported data to
+ */
 AQBANKING_API
 int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 			      AB_IMEXPORTER_CONTEXT *ctx,
 			      const char *exporterName,
                               const char *profileName,
 			      GWEN_BUFFER *buf);
+
+/**
+ * This function loads the given im/exporter plugin (if necessary) and also loads the given
+ * im/exporter settings profile. The resulting data is written to the given file.
+ * @return 0 on success, an error code otherwise
+ * @param ab banking API object
+ * @param ctx export context containing the accounts, transactions etc to export
+ * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
+ * @param profileName name of the exporter settings profile to use (most plugins only provide the
+ * "default" profile, but especially the CSV im/exporter has many profiles from which to choose)
+ * @param fileName name of the file to create and to write the formatted data to
+ */
+AQBANKING_API
+int AB_Banking_ExportToFile(AB_BANKING *ab,
+			    AB_IMEXPORTER_CONTEXT *ctx,
+			    const char *exporterName,
+			    const char *profileName,
+			    const char *fileName);
+
+/**
+ * This function basically does the same as @ref AB_Banking_ExportToFile. However, it loads the
+ * exporter settings profile from a given file (as opposed to the forementioned function which
+ * loads the profile by name from the set of system- or user-wide installed profiles).
+ * So this functions allows for loading of special profiles which aren't installed.
+ * @return 0 on success, an error code otherwise
+ * @param ab banking API object
+ * @param ctx export context containing the accounts, transactions etc to export
+ * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
+ * @param profileName name of the exporter settings profile stored in the file whose name
+ *   is given in @b profileFile
+ * @param profileFile name of the file to load the exporter settings profile from.
+ * @param outFileName name of the file to create and to write the formatted data to
+ */
+AQBANKING_API
+int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
+				       const char *exporterName,
+				       AB_IMEXPORTER_CONTEXT *ctx,
+				       const char *profileName,
+				       const char *profileFile,
+				       const char *outputFileName);
+
+
+AQBANKING_API 
+int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+				 const char *exporterName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_SYNCIO *sio);
+
 
 AQBANKING_API
 int AB_Banking_ImportBuffer(AB_BANKING *ab,
@@ -155,13 +248,6 @@ int AB_Banking_ImportBuffer(AB_BANKING *ab,
 
 
 AQBANKING_API
-int AB_Banking_ExportToFile(AB_BANKING *ab,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    const char *exporterName,
-			    const char *profileName,
-			    const char *fileName);
-
-AQBANKING_API
 int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
 				     const char *importerName,
 				     AB_IMEXPORTER_CONTEXT *ctx,
@@ -170,13 +256,28 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
                                      const char *inputFileName);
 
 
-AQBANKING_API
-int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
-				       const char *exporterName,
-				       AB_IMEXPORTER_CONTEXT *ctx,
-				       const char *profileName,
-				       const char *profileFile,
-				       const char *outputFileName);
+
+AQBANKING_API 
+int AB_Banking_ImportWithProfile(AB_BANKING *ab,
+				 const char *importerName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_SYNCIO *sio);
+
+/**
+ * Another convenience function to import a given file.
+ * (introduced in AqBanking 4.3.0)
+ */
+AQBANKING_API 
+int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
+				     const char *importerName,
+				     AB_IMEXPORTER_CONTEXT *ctx,
+				     const char *profileName,
+				     const char *profileFile,
+                                     const char *inputFileName);
+
+/*@}*/
 
 
 /*@}*/ /* addtogroup */
