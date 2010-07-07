@@ -768,7 +768,6 @@ AC_SUBST(ktoblzcheck_includes)
 # QT3
 #
 
-QT3TO4="NO"
 UIC3="NO"
 QT_BINDIR=""
 
@@ -796,7 +795,6 @@ case "$aqbanking_frontends" in
       UIC3="${qt3_uic}"
     else
       AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-      AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
     fi
   
     dnl Make sure moc and uic come from the same Qt version
@@ -822,7 +820,6 @@ esac
 
 dnl Store the bin dir for the windows dlls
 AC_SUBST(QT_BINDIR)
-AM_CONDITIONAL([HAVE_QT3TO4], [test "$QT3TO4" != "NO"])
 AM_CONDITIONAL(WITH_QBANKING, [test "$with_qbanking" = "yes"])
 
 

@@ -6,4 +6,3 @@ sources:
 
 built_sources:
 
-qt4-port:

@@ -64,12 +64,6 @@ sources:
 	  $(MAKE) -C $$d sources; \
 	done
 
-# This section is for a qt4 environment
-qt4-port:
-	for A in $(libqbhelp_la_SOURCES) $(noinst_HEADERS) qb_help.cpp qbhelpbrowser.cpp; do \
-	 $(YES) | $(QT3TO4) $$A; \
-	done
-#	rm $(BUILT_SOURCES)
 # For qt3 compatibility of qt4
 DEFS += -DQT3_SUPPORT
 

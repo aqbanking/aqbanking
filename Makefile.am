@@ -243,27 +243,6 @@ srpm: $(PACKAGE).spec dist
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild --nodeps -ts $(PACKAGE)-$(VERSION).tar.gz
 
-# This section is for a qt4 environment
-qt4-port:
-if HAVE_QT3TO4
-	for d in src/frontends/qbanking src/plugins/backends/aqhbci/ui/qt3 src/plugins/backends/aqdtaus/ui/qt3 src/plugins/backends/aqofxconnect/ui/qt3; do \
-	  $(MAKE) -C $$d qt4-port; \
-	done
-else
-	@echo "***"
-	@echo "*** Error: The tool \"qt3to4\" has not been found by ./configure. "
-	@echo "*** Did you add \"qbanking\" to the argument list of --with-frontends=\"...\""
-	@echo "*** so that the qt4 tools are being detected?"
-	@echo "***"
-	@exit 1
-endif
-
-# One consolidated make target for running all steps of qt4 building
-qt4-all: $(BUILT_SOURCES) config.h
-	$(MAKE) $(AM_MAKEFLAGS) clean
-	$(MAKE) $(AM_MAKEFLAGS) qt4-port
-	$(MAKE) $(AM_MAKEFLAGS) all
-
 BUILT_SOURCES = $(iheader_HEADERS) sl-headers
 CLEANFILES += $(BUILT_SOURCES)
 
