@@ -1773,7 +1773,6 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
 
   /* create job */
   job=AH_Job_SendKeys_new(u, cryptKeyInfo, signKeyInfo, authKeyInfo);
-  AH_Job_AddSigner(job, AB_User_GetUserId(u));
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     GWEN_Gui_ProgressLog(0,
@@ -1783,6 +1782,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
   }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
   /* enqueue job */
   ob=AH_Outbox_new(h);
@@ -3714,7 +3714,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     return GWEN_ERROR_INVALID;
   }
 
-  fprintf(stderr, "Creating keys, please wait...\n");
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Creating keys, please wait..."));
 
   /* get cipher key id */
   keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
@@ -3730,6 +3732,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error generating key (%d)", rv);
+    GWEN_Gui_ProgressLog2(0,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Error creating cipher key (%d)"), rv);
     GWEN_Crypt_CryptAlgo_free(algo);
     return rv;
   }
@@ -3776,6 +3781,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Error generating key (%d)", rv);
+    GWEN_Gui_ProgressLog2(0,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Error creating sign key (%d)"), rv);
     GWEN_Crypt_CryptAlgo_free(algo);
     return rv;
   }
@@ -3816,6 +3824,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"Error generating key (%d)", rv);
+      GWEN_Gui_ProgressLog2(0,
+			    GWEN_LoggerLevel_Error,
+			    I18N("Error creating auth key (%d)"), rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }

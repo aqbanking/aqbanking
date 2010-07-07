@@ -741,6 +741,7 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   /* HBCI setup */
   AH_User_SetTokenType(u, "ohbci");
   AH_User_SetTokenName(u, AH_NewKeyFileDialog_GetFileName(dlg));
+  AH_User_SetTokenContextId(u, 1);
   AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
   AH_User_SetStatus(u, AH_UserStatusPending);
   AH_User_SetHbciVersion(u, xdlg->hbciVersion);
@@ -860,6 +861,9 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
+    GWEN_Gui_ProgressLog2(pid,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Error generating keys: %d"), rv);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -883,7 +887,7 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Sending user keys"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_SendUserKeys2(pro, u, ctx, 1, 0, 1, 0); /* withAuthKey, withProgress, nounmount, doLock */
+  rv=AH_Provider_SendUserKeys2(pro, u, ctx, 0, 0, 1, 0); /* withAuthKey, withProgress, nounmount, doLock */
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -924,12 +928,6 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
   GWEN_Gui_ProgressEnd(pid);
   AH_NewKeyFileDialog_EnterPage(dlg, PAGE_END, 1);
 
