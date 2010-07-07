@@ -52,6 +52,9 @@ AQHBCI_API void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s);
 AQHBCI_API int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg);
 AQHBCI_API void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i);
 
+AQHBCI_API int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg);
+AQHBCI_API void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i);
+
 AQHBCI_API uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg);
 AQHBCI_API void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 AQHBCI_API void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);

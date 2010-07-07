@@ -31,6 +31,7 @@ struct AH_NEWKEYFILE_DIALOG {
   char *url;
 
   int hbciVersion;
+  int rdhVersion;
 
   uint32_t flags;
 

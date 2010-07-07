@@ -14,7 +14,7 @@
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="label" name="wiz_file_label" flags="fillX fillY justifyLeft" />
         <widget type="hLine" flags="fillX" />
-        <widget type="wlayout" flags="fillX" >
+        <widget type="hlayout" flags="fillX" >
           <widget type="label" text="File" />
           <widget type="lineEdit" name="wiz_filename_edit" columns="40" flags="fillX" />
           <widget type="pushButton" text="Select" name="wiz_filename_button" />
