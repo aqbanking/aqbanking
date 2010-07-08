@@ -10,6 +10,7 @@
     <widget type="hlayout" flags="fillX" >
       <widget type="pushButton" name="createKeyFileButton" text="Create Keyfile" icon="keyfile.png" />
       <widget type="pushButton" name="importKeyFileButton" text="Import Keyfile" icon="keyfile.png" />
+      <widget type="hspacer" flags="fillX" />
     </widget>
 
     <widget type="hLine" flags="fillX" />
@@ -17,12 +18,14 @@
     <widget type="hlayout" flags="fillX" >
       <widget type="pushButton" name="initChipcardButton" text="Init Chipcard" icon="chipcard.png" />
       <widget type="pushButton" name="useChipcardButton"  text="Use Chipcard"  icon="chipcard.png" />
+      <widget type="hspacer" flags="fillX" />
     </widget>
 
     <widget type="hLine" flags="fillX" />
 
     <widget type="hlayout" flags="fillX" >
       <widget type="pushButton" name="usePinTanButton" text="Use PIN/TAN" icon="pintan.png"  />
+      <widget type="hspacer" flags="fillX" />
     </widget>
 
     <!-- wizard controls -->
