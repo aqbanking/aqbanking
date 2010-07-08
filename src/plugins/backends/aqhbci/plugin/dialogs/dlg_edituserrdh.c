@@ -14,7 +14,7 @@
 
 
 
-#include "dlg_edituserddv_p.h"
+#include "dlg_edituserrdh_p.h"
 #include "i18n_l.h"
 
 #include <aqhbci/user.h>
@@ -37,27 +37,27 @@
 
 
 
-GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG)
+GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG)
 
 
 
 
-GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
+GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
   GWEN_DIALOG *dlg;
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new("ah_edit_user_ddv");
-  GWEN_NEW_OBJECT(AH_EDIT_USER_DDV_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg, xdlg,
-		       AH_EditUserDdvDialog_FreeData);
-  GWEN_Dialog_SetSignalHandler(dlg, AH_EditUserDdvDialog_SignalHandler);
+  dlg=GWEN_Dialog_new("ah_edit_user_rdh");
+  GWEN_NEW_OBJECT(AH_EDIT_USER_RDH_DIALOG, xdlg);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg, xdlg,
+		       AH_EditUserRdhDialog_FreeData);
+  GWEN_Dialog_SetSignalHandler(dlg, AH_EditUserRdhDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg",
+			       "aqbanking/backends/aqhbci/dialogs/dlg_edituserrdh.dlg",
 			       fbuf);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
@@ -87,10 +87,10 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
 
 
 
-void GWENHYWFAR_CB AH_EditUserDdvDialog_FreeData(void *bp, void *p) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+void GWENHYWFAR_CB AH_EditUserRdhDialog_FreeData(void *bp, void *p) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
 
-  xdlg=(AH_EDIT_USER_DDV_DIALOG*) p;
+  xdlg=(AH_EDIT_USER_RDH_DIALOG*) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -116,12 +116,12 @@ static int createCountryString(const AB_COUNTRY *c, GWEN_BUFFER *tbuf) {
 
 
 
-const AB_COUNTRY *AH_EditUserDdvDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+const AB_COUNTRY *AH_EditUserRdhDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   int idx;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
@@ -160,14 +160,15 @@ const AB_COUNTRY *AH_EditUserDdvDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
 
 
 
-void AH_EditUserDdvDialog_Init(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
   const char *s;
+  uint32_t flags;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -256,8 +257,13 @@ void AH_EditUserDdvDialog_Init(GWEN_DIALOG *dlg) {
   s=AB_User_GetCustomerId(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "customerIdEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
+  GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.01", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.10", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.20", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "3.0", 0);
+
+  GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.0", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.1", 0);
 
   /* toGui */
   switch(AH_User_GetHbciVersion(xdlg->user)) {
@@ -267,6 +273,29 @@ void AH_EditUserDdvDialog_Init(GWEN_DIALOG *dlg) {
   case 300: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
   default:  break;
   }
+
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, I18N("(auto)"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "1", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "2", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "10", 0);
+
+  switch(AH_User_GetRdhType(xdlg->user)) {
+  case 0:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
+  case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
+  case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
+  case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
+  default:  break;
+  }
+
+  flags=AH_User_GetFlags(xdlg->user);
+  GWEN_Dialog_SetIntProperty(dlg, "bankDoesntSignCheck", GWEN_DialogProperty_Value, 0,
+			     (flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)?1:0,
+			     0);
+
+  GWEN_Dialog_SetIntProperty(dlg, "bankUsesSignSeqCheck", GWEN_DialogProperty_Value, 0,
+			     (flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)?1:0,
+			     0);
+
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -295,14 +324,15 @@ static void removeAllSpaces(uint8_t *s) {
 
 
 
-int AH_EditUserDdvDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   const char *s;
   const AB_COUNTRY *c;
   int i;
+  uint32_t flags;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   /* fromGui */
@@ -356,7 +386,7 @@ int AH_EditUserDdvDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   }
 
   /*  get country */
-  c=AH_EditUserDdvDialog_GetCurrentCountry(dlg);
+  c=AH_EditUserRdhDialog_GetCurrentCountry(dlg);
   if (c) {
     if (u)
       AB_User_SetCountry(u, AB_Country_GetCode(c));
@@ -371,18 +401,34 @@ int AH_EditUserDdvDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   case 3: AH_User_SetHbciVersion(xdlg->user, 300); break;
   }
 
+  i=GWEN_Dialog_GetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, -1);
+  switch(i) {
+  case 1: AH_User_SetRdhType(xdlg->user, 1); break;
+  case 2: AH_User_SetRdhType(xdlg->user, 2); break;
+  case 3: AH_User_SetRdhType(xdlg->user, 10); break;
+  default:
+  case 0: AH_User_SetRdhType(xdlg->user, 0); break;
+  }
+
+  flags=0;
+  if (GWEN_Dialog_GetIntProperty(dlg, "bankDoesntSignCheck", GWEN_DialogProperty_Value, 0, 0))
+    flags|=AH_USER_FLAGS_BANK_DOESNT_SIGN;
+  if (GWEN_Dialog_GetIntProperty(dlg, "bankUsesSignSeqCheck", GWEN_DialogProperty_Value, 0, 0))
+    flags|=AH_USER_FLAGS_BANK_USES_SIGNSEQ;
+  AH_User_SetFlags(xdlg->user, flags);
+
   return 0;
 }
 
 
 
-void AH_EditUserDdvDialog_Fini(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+void AH_EditUserRdhDialog_Fini(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -408,13 +454,13 @@ void AH_EditUserDdvDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AH_EditUserDdvDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+int AH_EditUserRdhDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
@@ -452,15 +498,15 @@ int AH_EditUserDdvDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+int AH_EditUserRdhDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   int rv;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
-  rv=AH_EditUserDdvDialog_fromGui(dlg, NULL, 0);
+  rv=AH_EditUserRdhDialog_fromGui(dlg, NULL, 0);
   if (rv<0) {
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -484,7 +530,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     }
   }
 
-  AH_EditUserDdvDialog_fromGui(dlg, xdlg->user, 1);
+  AH_EditUserRdhDialog_fromGui(dlg, xdlg->user, 1);
 
   if (xdlg->doLock) {
     int rv;
@@ -510,13 +556,39 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+static int AH_EditUserRdhDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(AB_User_GetProvider(xdlg->user),
+			  xdlg->user,
+                          ctx,
+			  1,   /* withProgress */
+			  0,   /* nounmount */
+			  xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+static int AH_EditUserRdhDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   ctx=AB_ImExporterContext_new();
@@ -536,13 +608,79 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
 
 
 
-int AH_EditUserDdvDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
+  int rv;
+  GWEN_BUFFER *tbuf;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
+  assert(xdlg);
+
+  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  /* add HTML version of the INI letter */
+  GWEN_Buffer_AppendString(tbuf, "<html>");
+  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
+				  xdlg->user,
+				  0,
+				  0,
+				  tbuf,
+				  1);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    AB_Banking_ClearCryptTokenList(xdlg->banking);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  GWEN_Buffer_AppendString(tbuf, "</html>");
+
+
+  /* add ASCII version of the INI letter for frontends which don't support HTML */
+  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
+				 xdlg->user,
+				 0,
+				 0,
+				 tbuf,
+				 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    AB_Banking_ClearCryptTokenList(xdlg->banking);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_Print(I18N("INI Letter"),
+		    "HBCI-INILETTER",
+		    I18N("INI Letter for HBCI"),
+		    GWEN_Buffer_GetStart(tbuf),
+		    0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AH_EditUserRdhDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "bankCodeButton")==0)
-    return AH_EditUserDdvDialog_HandleActivatedBankCode(dlg);
+    return AH_EditUserRdhDialog_HandleActivatedBankCode(dlg);
+  else if (strcasecmp(sender, "getSysIdButton")==0)
+    return AH_EditUserRdhDialog_HandleActivatedGetSysId(dlg);
   else if (strcasecmp(sender, "getAccountsButton")==0)
-    return AH_EditUserDdvDialog_HandleActivatedGetAccounts(dlg);
+    return AH_EditUserRdhDialog_HandleActivatedGetAccounts(dlg);
+  else if (strcasecmp(sender, "iniLetterButton")==0)
+    return AH_EditUserRdhDialog_HandleActivatedIniLetter(dlg);
   else if (strcasecmp(sender, "okButton")==0)
-    return AH_EditUserDdvDialog_HandleActivatedOk(dlg);
+    return AH_EditUserRdhDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "helpButton")==0) {
@@ -554,22 +692,22 @@ int AH_EditUserDdvDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int GWENHYWFAR_CB AH_EditUserDdvDialog_SignalHandler(GWEN_DIALOG *dlg,
-						     GWEN_DIALOG_EVENTTYPE t,
-						     const char *sender) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
+int GWENHYWFAR_CB AH_EditUserRdhDialog_SignalHandler(GWEN_DIALOG *dlg,
+							GWEN_DIALOG_EVENTTYPE t,
+							const char *sender) {
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
   switch(t) {
   case GWEN_DialogEvent_TypeInit:
-    AH_EditUserDdvDialog_Init(dlg);
+    AH_EditUserRdhDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeFini:
-    AH_EditUserDdvDialog_Fini(dlg);
+    AH_EditUserRdhDialog_Fini(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
@@ -577,7 +715,7 @@ int GWENHYWFAR_CB AH_EditUserDdvDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeActivated:
-    return AH_EditUserDdvDialog_HandleActivated(dlg, sender);
+    return AH_EditUserRdhDialog_HandleActivated(dlg, sender);
 
   case GWEN_DialogEvent_TypeEnabled:
   case GWEN_DialogEvent_TypeDisabled:

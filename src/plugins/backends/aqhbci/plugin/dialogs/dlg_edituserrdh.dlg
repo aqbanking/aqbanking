@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dialog type="dialog" name="ah_edit_user_ddv" i18n="aqbanking"
+<dialog type="dialog" name="ah_edit_user_rdh" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
 
@@ -42,16 +42,23 @@
           <widget type="label" text="HBCI Version" />
           <widget type="comboBox" name="hbciVersionCombo"  columns="20" flags="fillX" />
     
+          <widget type="label" text="RDH Version" />
+          <widget type="comboBox" name="rdhVersionCombo"  columns="20" flags="fillX" />
+    
         </widget>
     
+        <widget type="checkBox" name="bankDoesntSignCheck" text="Bank does not sign messages" />
+        <widget type="checkBox" name="bankUsesSignSeqCheck" text="Bank uses own signature counter" />
+
       </widget>   <!-- vlayout -->
     </widget>     <!-- groupBox -->
 
 
     <widget type="groupBox" text="Special Actions" flags="fillX" >
-      <widget type="hLayout" flags="fillX" >
+      <widget type="gridLayout" columns="3" flags="fillX equalWidth" >
+        <widget type="pushButton" text="Get System Id" name="getSysIdButton" />
         <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
-        <widget type="hspacer" flags="fillX" />
+        <widget type="pushButton" text="Ini Letter" name="iniLetterButton" />
       </widget>
     </widget>     <!-- groupBox -->
 

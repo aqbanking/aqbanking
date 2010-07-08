@@ -40,6 +40,7 @@
 #include <aqhbci/dlg_newkeyfile.h>
 #include <aqhbci/dlg_edituserpintan.h>
 #include <aqhbci/dlg_edituserddv.h>
+#include <aqhbci/dlg_edituserrdh.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -1098,6 +1099,8 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
     dlg=AH_EditUserDdvDialog_new(AB_Provider_GetBanking(pro), u, 1);
     break;
   case AH_CryptMode_Rdh:
+    dlg=AH_EditUserRdhDialog_new(AB_Provider_GetBanking(pro), u, 1);
+    break;
   default:
     dlg=NULL;
     break;
