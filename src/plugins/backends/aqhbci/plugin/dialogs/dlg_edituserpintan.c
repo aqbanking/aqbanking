@@ -91,6 +91,8 @@ void GWENHYWFAR_CB AH_EditUserPinTanDialog_FreeData(void *bp, void *p) {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
 
   xdlg=(AH_EDIT_USER_PINTAN_DIALOG*) p;
+  AH_TanMethod_List_free(xdlg->tanMethodList);
+
   GWEN_FREE_OBJECT(xdlg);
 }
 
