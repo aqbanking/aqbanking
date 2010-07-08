@@ -34,7 +34,7 @@
     </widget>     <!-- groupBox -->
 
 
-    <widget type="groupBox" text="PIN/TAN HBCI Settings" flags="fillX" >
+    <widget type="groupBox" text="HBCI Settings" flags="fillX" >
       <widget type="vlayout" flags="fillX fillY" >
     
         <widget type="gridLayout" columns="2" flags="fillX" >
