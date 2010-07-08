@@ -475,8 +475,9 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      GWEN_DialogProperty_Title,
 			      0,
 			      I18N("<html><p>The user has been successfully created.</p>"
-				   "<p>You must now <b>send</b> the INI letter to the bank and wait "
-				   "for the activation of your account.</p></html>"),
+				   "<p>You must now <b>print</b> the INI letter (click the button below) "
+				   "and <b>send</b> it to the bank.</p> "
+				   "<p>The activation of your account by the bank can take a few days.</p></html>"),
 				   0);
 
   /* read width */
@@ -1185,6 +1186,69 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
 
 
 
+static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
+  AH_NEWKEYFILE_DIALOG *xdlg;
+  int rv;
+  GWEN_BUFFER *tbuf;
+
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  assert(xdlg);
+
+  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  /* add HTML version of the INI letter */
+  GWEN_Buffer_AppendString(tbuf, "<html>");
+  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
+				  xdlg->user,
+				  0,
+				  0,
+				  tbuf,
+				  1);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    AB_Banking_ClearCryptTokenList(xdlg->banking);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  GWEN_Buffer_AppendString(tbuf, "</html>");
+
+
+  /* add ASCII version of the INI letter for frontends which don't support HTML */
+  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
+				 xdlg->user,
+				 0,
+				 0,
+				 tbuf,
+				 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    AB_Banking_ClearCryptTokenList(xdlg->banking);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_Print(I18N("INI Letter"),
+		    "HBCI-INILETTER",
+		    I18N("INI Letter for HBCI"),
+		    GWEN_Buffer_GetStart(tbuf),
+		    0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_filename_button")==0)
@@ -1199,6 +1263,8 @@ int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "wiz_special_button")==0)
     return AH_NewKeyFileDialog_HandleActivatedSpecial(dlg);
+  else if (strcasecmp(sender, "wiz_iniletter_button")==0)
+    return AH_NewKeyFileDialog_HandleActivatedIniLetter(dlg);
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
   }

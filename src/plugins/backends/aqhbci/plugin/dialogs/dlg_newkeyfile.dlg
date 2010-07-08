@@ -76,6 +76,10 @@
       <!-- extro page -->
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="label" name="wiz_end_label" flags="fillX fillY justifyLeft" />
+        <widget type="hlayout" flags="fillX" >
+          <widget type="hspacer" flags="fillX" />
+          <widget type="pushButton" text="Print Ini Letter" name="wiz_iniletter_button" />
+        </widget>
       </widget>
 
     </widget>
