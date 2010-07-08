@@ -43,43 +43,76 @@ QBGui::~QBGui() {
 
 
 int QBGui::_extractHTML(const char *text, GWEN_BUFFER *tbuf) {
-  GWEN_XMLNODE *xmlNode;
+  const char *p=0;
+  const char *p2=0;
 
-  xmlNode=GWEN_XMLNode_fromString(text, strlen(text),
-				  GWEN_XML_FLAGS_DEFAULT |
-				  GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
-  if (xmlNode==NULL) {
-    DBG_DEBUG(0, "here");
-    return -1;
-  }
-  else {
-    GWEN_XMLNODE *nn;
+  if (text==NULL)
+    return 0;
 
-    nn=GWEN_XMLNode_FindFirstTag(xmlNode, "html", 0, 0);
-    if (nn) {
-      GWEN_XMLNODE *on, *onn;
-      int rv;
+  /* find begin of HTML area */
+  p=text;
+  while ((p=strchr(p, '<'))) {
+    const char *t;
 
-      on=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-      onn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "qt");
-      GWEN_XMLNode_AddChild(on, onn);
-      GWEN_XMLNode_AddChildrenOnly(onn, nn, 1);
-
-      /* text contains HTML tag, take it */
-      rv=GWEN_XMLNode_toBuffer(on, tbuf, GWEN_XML_FLAGS_DEFAULT);
-      GWEN_XMLNode_free(on);
-      if (rv) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error writing data to stream");
-	GWEN_XMLNode_free(xmlNode);
-	return -1;
+    t=p;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+	    t++;
+	    if (toupper(*t)=='>') {
+	      break;
+	    }
+	  }
+        }
       }
     }
-    else {
-      GWEN_XMLNode_free(xmlNode);
-      return 1;
-    }
+    p++;
+  } /* while */
+
+  /* find end of HTML area */
+  if (p) {
+    p+=6; /* skip "<html>" */
+    p2=p;
+    while ((p2=strchr(p2, '<'))) {
+      const char *t;
+  
+      t=p2;
+      t++;
+      if (toupper(*t)=='/') {
+	t++;
+	if (toupper(*t)=='H') {
+	  t++;
+	  if (toupper(*t)=='T') {
+	    t++;
+	    if (toupper(*t)=='M') {
+	      t++;
+	      if (toupper(*t)=='L') {
+		t++;
+		if (toupper(*t)=='>') {
+		  break;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      p2++;
+    } /* while */
   }
-  GWEN_XMLNode_free(xmlNode);
+
+  if (p && p2) {
+    GWEN_Buffer_AppendString(tbuf, "<qt>");
+    GWEN_Buffer_AppendBytes(tbuf, p, p2-p);
+    GWEN_Buffer_AppendString(tbuf, "</qt>");
+    return 0;
+  }
+
+  GWEN_Buffer_AppendString(tbuf, text);
   return 0;
 }
 
