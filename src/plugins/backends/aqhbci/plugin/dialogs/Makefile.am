@@ -8,6 +8,7 @@ noinst_LTLIBRARIES=libaqhbci_dlgs.la
 
 iheaderdir=@aqbanking_headerdir_am@/aqhbci
 iheader_HEADERS=\
+  dlg_edituserpintan.h \
   dlg_pintan.h \
   dlg_pintan_special.h \
   dlg_newuser.h \
@@ -17,6 +18,7 @@ iheader_HEADERS=\
   dlg_newkeyfile_special.h
 
 noinst_HEADERS=\
+  dlg_edituserpintan_p.h \
   dlg_pintan_p.h \
   dlg_pintan_special_p.h \
   dlg_newuser_p.h \
@@ -26,6 +28,7 @@ noinst_HEADERS=\
   dlg_newkeyfile_special_p.h
 
 libaqhbci_dlgs_la_SOURCES=\
+  dlg_edituserpintan.c \
   dlg_pintan.c \
   dlg_pintan_special.c \
   dlg_newuser.c \
@@ -37,6 +40,7 @@ libaqhbci_dlgs_la_SOURCES=\
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
 dlgdata_DATA=\
+  dlg_edituserpintan.dlg \
   dlg_ddvcard.dlg \
   dlg_ddvcard_special.dlg \
   dlg_pintan.dlg \

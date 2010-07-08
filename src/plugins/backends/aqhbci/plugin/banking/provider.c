@@ -38,6 +38,7 @@
 #include <aqhbci/dlg_pintan.h>
 #include <aqhbci/dlg_ddvcard.h>
 #include <aqhbci/dlg_newkeyfile.h>
+#include <aqhbci/dlg_edituserpintan.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -87,8 +88,11 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetExtendAccountFn(pro, AH_Provider_ExtendAccount);
   AB_Provider_SetUpdateFn(pro, AH_Provider_Update);
   AB_Provider_SetGetNewUserDialogFn(pro, AH_Provider_GetNewUserDialog);
+  AB_Provider_SetGetEditUserDialogFn(pro, AH_Provider_GetEditUserDialog);
 
-  AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
+  AB_Provider_AddFlags(pro,
+		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
+		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG);
 
   GWEN_NEW_OBJECT(AH_PROVIDER, hp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AH_PROVIDER, pro, hp,
@@ -1073,6 +1077,36 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
 
   return NULL;
+}
+
+
+
+GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+  AH_PROVIDER *hp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  switch(AH_User_GetCryptMode(u)) {
+  case AH_CryptMode_Pintan:
+    dlg=AH_EditUserPinTanDialog_new(AB_Provider_GetBanking(pro), u, 1);
+    break;
+  case AH_CryptMode_Ddv:
+  case AH_CryptMode_Rdh:
+  default:
+    dlg=NULL;
+    break;
+  }
+
+  if (dlg==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+
 }
 
 
