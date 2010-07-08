@@ -3,7 +3,7 @@
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
 
-    <widget type="groupBox" text="General Settings" flags="fillX fillY" >
+    <widget type="groupBox" text="General Settings" flags="fillX" >
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="hlayout" flags="fillX" >
     
@@ -34,7 +34,7 @@
     </widget>     <!-- groupBox -->
 
 
-    <widget type="groupBox" text="PIN/TAN HBCI Settings" flags="fillX fillY" >
+    <widget type="groupBox" text="PIN/TAN HBCI Settings" flags="fillX" >
       <widget type="vlayout" flags="fillX fillY" >
     
         <widget type="gridLayout" columns="2" flags="fillX" >
@@ -54,6 +54,16 @@
         <widget type="checkBox" name="noBase64Check" text="Disable Base64 Encoding" />
 
       </widget>   <!-- vlayout -->
+    </widget>     <!-- groupBox -->
+
+
+    <widget type="groupBox" text="Special Actions" flags="fillX" >
+      <widget type="gridLayout" columns="2" flags="fillX equalWidth" >
+        <widget type="pushButton" text="Get Certificate" name="getCertButton" />
+        <widget type="pushButton" text="Get System Id" name="getSysIdButton" />
+        <widget type="pushButton" text="Get iTAN Modes" name="getItanModesButton" />
+        <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
+      </widget>
     </widget>     <!-- groupBox -->
 
 

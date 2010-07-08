@@ -219,10 +219,60 @@ const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dl
 
 
 
+static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  const AH_TAN_METHOD_LIST *ctl;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->tanMethodList) {
+    AH_TanMethod_List_free(xdlg->tanMethodList);
+    xdlg->tanMethodList=NULL;
+  }
+  ctl=AH_User_GetTanMethodDescriptions(xdlg->user);
+  if (ctl)
+    xdlg->tanMethodList=AH_TanMethod_List_dup(ctl);
+
+  /* setup tanmethod combo */
+  GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, I18N("-- select --"), 0);
+  if (xdlg->tanMethodList) {
+    AH_TAN_METHOD *tm;
+    GWEN_BUFFER *tbuf;
+    int i;
+    int idx;
+    int selectedMethod;
+
+    selectedMethod=AH_User_GetSelectedTanMethod(xdlg->user);
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    idx=-1;
+    i=1;
+    tm=AH_TanMethod_List_First(xdlg->tanMethodList);
+    while(tm) {
+      if (createTanMethodString(tm, tbuf)==0) {
+	if (AH_TanMethod_GetFunction(tm)==selectedMethod)
+          idx=i;
+	GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
+        i++;
+      }
+      GWEN_Buffer_Reset(tbuf);
+
+      tm=AH_TanMethod_List_Next(tm);
+    }
+    GWEN_Buffer_free(tbuf);
+    if (idx>=0)
+      /* chooses selected entry in combo box */
+      GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Value, 0, idx, 0);
+  }
+}
+
+
+
 void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
-  const AH_TAN_METHOD_LIST *ctl;
   int i;
   const char *s;
   uint32_t flags;
@@ -235,9 +285,6 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 
   /* init */
   xdlg->countryList=AB_Banking_ListCountriesByName(xdlg->banking, "*");
-  ctl=AH_User_GetTanMethodDescriptions(xdlg->user);
-  if (ctl)
-    xdlg->tanMethodList=AH_TanMethod_List_dup(ctl);
 
   GWEN_Dialog_SetCharProperty(dlg,
 			      "",
@@ -308,36 +355,7 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, idx, 0);
   }
 
-  /* setup tanmethod combo */
-  GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, I18N("-- select --"), 0);
-  if (xdlg->tanMethodList) {
-    AH_TAN_METHOD *tm;
-    GWEN_BUFFER *tbuf;
-    int i;
-    int idx;
-    int selectedMethod;
-
-    selectedMethod=AH_User_GetSelectedTanMethod(xdlg->user);
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    idx=-1;
-    i=1;
-    tm=AH_TanMethod_List_First(xdlg->tanMethodList);
-    while(tm) {
-      if (createTanMethodString(tm, tbuf)==0) {
-	if (AH_TanMethod_GetFunction(tm)==selectedMethod)
-          idx=i;
-	GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
-        i++;
-      }
-      GWEN_Buffer_Reset(tbuf);
-
-      tm=AH_TanMethod_List_Next(tm);
-    }
-    GWEN_Buffer_free(tbuf);
-    if (idx>=0)
-      /* chooses selected entry in combo box */
-      GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Value, 0, idx, 0);
-  }
+  AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
 
   s=AB_User_GetUserName(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "userNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
@@ -648,9 +666,123 @@ int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
 
 
+static int AH_EditUserPinTanDialog_HandleActivatedGetCert(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  rv=AH_Provider_GetCert(AB_User_GetProvider(xdlg->user),
+			 xdlg->user,
+			 1,   /* withProgress */
+			 0,   /* nounmount */
+			 xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(AB_User_GetProvider(xdlg->user),
+			  xdlg->user,
+                          ctx,
+			  1,   /* withProgress */
+			  0,   /* nounmount */
+			  xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetItanModes(AB_User_GetProvider(xdlg->user),
+			      xdlg->user,
+			      ctx,
+			      1,   /* withProgress */
+			      0,   /* nounmount */
+			      xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+static int AH_EditUserPinTanDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccounts(AB_User_GetProvider(xdlg->user),
+			     xdlg->user,
+			     ctx,
+			     1,   /* withProgress */
+			     0,   /* nounmount */
+			     xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_EditUserPinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "bankCodeButton")==0)
     return AH_EditUserPinTanDialog_HandleActivatedBankCode(dlg);
+  else if (strcasecmp(sender, "getCertButton")==0)
+    return AH_EditUserPinTanDialog_HandleActivatedGetCert(dlg);
+  else if (strcasecmp(sender, "getSysIdButton")==0)
+    return AH_EditUserPinTanDialog_HandleActivatedGetSysId(dlg);
+  else if (strcasecmp(sender, "getItanModesButton")==0)
+    return AH_EditUserPinTanDialog_HandleActivatedGetItanModes(dlg);
+  else if (strcasecmp(sender, "getAccountsButton")==0)
+    return AH_EditUserPinTanDialog_HandleActivatedGetAccounts(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AH_EditUserPinTanDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)
