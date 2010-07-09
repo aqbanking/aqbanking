@@ -753,6 +753,29 @@ void AB_Banking_GetVersion(int *major,
 
 
 
+GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
+					 const char *backend,
+					 int mode) {
+  AB_PROVIDER *pro;
+  GWEN_DIALOG *dlg;
+
+  assert(ab);
+  pro=AB_Banking_GetProvider(ab, backend);
+  if (!pro) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backend);
+    return NULL;
+  }
+
+  dlg=AB_Provider_GetNewUserDialog(pro, mode);
+  if (dlg==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN,
+	     "Provider did not return a NewUser dialog (backend=%s, mode=%d)",
+	     backend, mode);
+    return NULL;
+  }
+
+  return dlg;
+}
 
 
 

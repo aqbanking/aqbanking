@@ -33,6 +33,7 @@ typedef struct AB_BANKING AB_BANKING;
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/plugindescr.h>
+#include <gwenhywfar/dialog.h>
 
 #include <aqbanking/error.h> /* for AQBANKING_API */
 #include <aqbanking/version.h>
@@ -245,6 +246,27 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 			    const char *frontends,
                             GWEN_BUFFER *pbuf);
 
+/**
+ * Create a dialog which allows to create a new user.
+ *
+ * @return dialog
+ *
+ * @param ab pointer to the AqBanking object
+ *
+ * @param backend name of the backend for which a user is to be created
+ *   (e.g. "aqhbci", "aqebics" etc)
+ *
+ * @param mode additional parameter depending on the backend. it can be used
+ *   to specify the user type to be created (e.g. for HBCI those values
+ *   specify whether PIN/TAN, keyfile or chipcard users are to be created,
+ *   see @ref AqHBCI_NewUserDialog_CodeGeneric and following).
+ *   Use value 0 for the generic dialog.
+ */
+AQBANKING_API 
+GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
+					 const char *backend,
+					 int mode);
+
 
 /*@}*/
 
@@ -342,9 +364,14 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /** @name Plugin Handling
  *
- * These functions are also obsolte and will be removed for AqBanking5.
+ * These functions are also obsolete and will be removed for AqBanking5.
  */
 /*@{*/
+
+/**
+ * This particular function will be moved to a non-export header file because
+ * it is internally used.
+ */
 AQBANKING_API AQBANKING_DEPRECATED
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
