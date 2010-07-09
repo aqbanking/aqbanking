@@ -83,7 +83,7 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect aqpaypal"  \
-	    --with-frontends="q4banking qbanking"
+	    --with-frontends=""
 	make sources
 
 mp-priv:
@@ -100,7 +100,7 @@ mp-priv:
 	  LIBOFX_LIBS="-L/opt/devel/4/lib -lofx" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="qbanking" \
+	    --with-frontends="" \
 	    --with-gwen-dir=/opt/devel/4 \
 	    --with-chipcard-client-dir=/opt/devel/4 \
 	    --prefix=/opt/devel/4
@@ -114,7 +114,7 @@ mp-orig:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus aqyellownet aqgeldkarte" --with-frontends="qbanking" --with-gwen-dir=/opt/devel --with-chipcard-client-dir=/opt/devel
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus aqyellownet aqgeldkarte" --with-frontends="" --with-gwen-dir=/opt/devel --with-chipcard-client-dir=/opt/devel
 	make sources
 
 mp2:
@@ -124,7 +124,7 @@ mp2:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends="fbanking qbanking kbanking"
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends=""
 	make sources
 
 mp-win:
