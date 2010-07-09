@@ -19,12 +19,34 @@
 #include <aqbanking/imexporter.h>
 
 
+
+/** @defgroup G_AB_DIALOGS_IMPORTER Generic File Import Dialog
+ * @ingroup G_AB_DIALOGS
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
 
+/**
+ * Creates a file import assistent.
+ *
+ * @return pointer to the created dialog.
+ *
+ * @param banking pointer to the AqBanking object
+
+ * @param ctx pointer to the import context to receive the content of the
+ * imported file
+ *
+ * @param finishedMessage message to show on the last page of the assistent
+ *   (i.e. the page which is shown after a successfull import into the given
+ *    import context).
+ */
 AQBANKING_API GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
 						 AB_IMEXPORTER_CONTEXT *ctx,
 						 const char *finishedMessage);
@@ -34,6 +56,8 @@ AQBANKING_API GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
 }
 #endif
 
+
+/*@}*/
 
 
 #endif

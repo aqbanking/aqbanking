@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -20,11 +17,6 @@
 extern "C" {
 #endif
 
-
-/** @addtogroup G_AB_SIMPLE
- *
- */
-/*@{*/
 
 /** @name Mapping Application Accounts to Online Accounts
  *
@@ -47,8 +39,7 @@ extern "C" {
  * @param alias unique id of your application's own account structure
  */
 AQBANKING_API 
-void AB_Banking_SetAccountAlias(AB_BANKING *ab,
-				AB_ACCOUNT *a, const char *alias);
+void AB_Banking_SetAccountAlias(AB_BANKING *ab, AB_ACCOUNT *a, const char *alias);
 
 /**
  * This function returns the AqBanking account to which the given
@@ -67,14 +58,11 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab,
  * @param alias unique id of your application's own account structure
  */
 AQBANKING_API 
-AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-					 const char *alias);
+AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab, const char *alias);
 
 
 /*@}*/
 
-
-/*@}*/ /* addtogroup */
 
 #ifdef __cplusplus
 }

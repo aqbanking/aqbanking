@@ -6,11 +6,8 @@
  *  @ingroup G_AB_LIBRARY
  */
 
-/** @defgroup G_AB_ONLINE_BANKING Online Banking
+/** @defgroup G_AB_BANKING Main Interface
  *  @ingroup G_AB_C_INTERFACE
- */
-/** @defgroup G_AB_ACCOUNT Accounts
- * @ingroup G_AB_ONLINE_BANKING
  */
 
 /** @defgroup G_AB_INFO Bank/Country Info
@@ -21,13 +18,60 @@
  * @ingroup G_AB_C_INTERFACE
  */
 
-/** @defgroup G_AB_SIMPLE Simplified API
+/** @defgroup G_AB_ONLINE_BANKING Online Banking
  *  @ingroup G_AB_C_INTERFACE
  */
 
+/** @defgroup G_AB_ACCOUNT Accounts
+ * @ingroup G_AB_ONLINE_BANKING
+ */
 
-/** @defgroup G_AB_VIRTUAL Virtual Functions
+/** @defgroup G_AB_DIALOGS Platform-indepentent Dialogs
  *  @ingroup G_AB_C_INTERFACE
+ *
+ * Dialogs are only available if the application created and set a GWEN_GUI
+ * object with support for the GWEN_DIALOG framework.
+ *
+ * Currently these are the following implementations:
+ * <ul>
+ *   <li>FOX16 (see @ref FOX16_Gui)</li>
+ *   <li>QT3 (see @ref QT3_Gui)</li>
+ *   <li>QT4 (see @ref QT4_Gui)</li>
+ *   <li>GTK2 (see @ref Gtk2_Gui_new)</li>
+ * </ul>
+ *
+ *
+ * The following is a demonstration of the use of AqBankings new dialogs
+ * (using the generic file importer):
+ *
+ * @code
+ *
+ *   GWEN_DIALOG *dlg;
+ *   AB_IMEXPORTER_CONTEXT *ctx;
+ *   int rv;
+
+ *   ctx=AB_ImExporterContext_new();
+ *   dlg=AB_ImporterDialog_new(banking,
+ *       		      ctx,
+ *       		      I18N("Your file has been successfully imported.\n"
+ *       			   "Click the finish button below to import the "
+ *       			   "data into the application\n"));
+ *
+ *   if (dlg==NULL) {
+ *     fprintf(stderr, "Could not create dialog\n");
+ *     return 1;
+ *   }
+ *
+ *   rv=GWEN_Gui_ExecDialog(dlg, 0);
+ *   if (rv==0) {
+ *     GWEN_Dialog_free(dlg);
+ *     AB_ImExporterContext_free(ctx);
+ *     return 1;
+ *   }
+ *   GWEN_Dialog_free(dlg);
+ *
+ * @endcode
+ *
  */
 
 
@@ -43,29 +87,7 @@
 
 
 
-/** @defgroup G_AB_FRONTENDS Frontends */
-
-/** @defgroup G_AB_QBANKING QT Frontend (QBanking)
- * @ingroup G_AB_FRONTENDS
- */
-
-/** @defgroup G_AB_KBANKING KDE Frontend (KBanking)
- * @ingroup G_AB_FRONTENDS
- */
-
-/** @defgroup G_AB_G2BANKING GTK2 Frontend (G2Banking)
- * @ingroup G_AB_FRONTENDS
- */
-/** @defgroup G_AB_G2BANKING_VIEWS Views
- * @ingroup G_AB_G2BANKING
- */
-/** @defgroup G_AB_G2BANKING_WIDGETS Widgets
- * @ingroup G_AB_G2BANKING
- */
-
-/** @defgroup G_AB_CBANKING Console Frontend (CBanking)
- * @ingroup G_AB_FRONTENDS
- */
+/** @defgroup G_AB_GUI Gwenhywfar GUI Extension */
 
 
 /** @defgroup G_AB_BACKENDS Backends
@@ -80,20 +102,8 @@ tasks.
 
 This library was designed by Martin Preuss<martin@aquamaniac.de> to
 provide a generic way for applications to use Online Banking
-(e.g. HBCI), and to import/export financial data (such as OFX, SWIFT,
+(e.g. HBCI, EBICS), and to import/export financial data (such as OFX, SWIFT,
 DTAUS). It is written in C (see @ref G_AB_C_INTERFACE).
-
-If you are writing an application and want to use AqBanking's
-features, there are two possibilities:
-
- - Use the "Im/Exporter Layer API", which requires the least coding
- effort on the application side. See @ref G_AB_ONLINE_BANKING,
-
- - Or you can use the "Main Interface API" (also called "High level
- API" sometimes), which offers the highest flexibility by its access
- to @ref AB_JOB objects but requires slightly more coding effort. See
- @ref G_AB_BANKING, and there is also a full introduction into the
- program flow of that interface: @ref G_APP_INTRO
 
 A general Note: All strings exchanged from and to AqBanking are
 expected in UTF-8 encoding unless stated otherwise. Please do not pass
@@ -127,15 +137,6 @@ library is organized in multiple layers:
   </li>
 
   <li>
-    <b>Simplified API</b>: 
-    This layer offers an even simpler API to applications, where the calls to 
-    all lower layers are combined, and the application will <i>not</i> deal 
-    with @ref AB_JOB objects. This may be useful when adding AqBanking support
-    to applications which have not been designed to work with AqBanking in the
-    first place (see @ref G_AB_SIMPLE)
-  </li>
-  
-  <li>
     <b>API for Backends</b>
     This level is represented by the function group @ref G_AB_BE_INTERFACE).
     These functions should <i>not</i> be accessed by an application; instead,
@@ -148,12 +149,6 @@ library is organized in multiple layers:
   </li>
 </ul>
 
-
-For the backends/providers, AqBanking provides callbacks for some
-simple user interaction functions, independently of the actual
-graphical or text frontend. (see @ref G_AB_PROVIDER) This has the
-additional advantage that any new backend/provider will then
-immediately be supported by all applications.
 */
 
 /**

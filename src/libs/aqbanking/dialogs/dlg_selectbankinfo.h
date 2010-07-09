@@ -23,6 +23,12 @@ extern "C" {
 #endif
 
 
+/** @defgroup G_AB_DIALOGS_SELECT_BANKINFO Bank Finder Dialog
+ * @ingroup G_AB_DIALOGS
+ *
+ */
+/*@{*/
+
 
 AQBANKING_API 
 GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
@@ -31,6 +37,10 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
 
 AQBANKING_API 
 const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg);
+
+
+
+/*@}*/
 
 
 

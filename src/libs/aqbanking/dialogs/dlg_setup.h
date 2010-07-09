@@ -18,6 +18,14 @@
 #include <gwenhywfar/db.h>
 
 
+
+/** @defgroup G_AB_DIALOGS_SETUP Online Banking Setup Dialog
+ * @ingroup G_AB_DIALOGS
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,6 +39,10 @@ AQBANKING_API GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab);
 #ifdef __cplusplus
 }
 #endif
+
+
+
+/*@}*/
 
 
 

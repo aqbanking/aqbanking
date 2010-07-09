@@ -20,6 +20,13 @@
 #include <gwenhywfar/db.h>
 
 
+/** @defgroup G_AB_DIALOGS_SELECT_BACKEND Select a Backend
+ * @ingroup G_AB_DIALOGS
+ *
+ */
+/*@{*/
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -50,6 +57,9 @@ AQBANKING_API void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, 
 }
 #endif
 
+
+
+/*@}*/
 
 
 #endif

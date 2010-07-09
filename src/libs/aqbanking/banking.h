@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -18,14 +15,17 @@
 #ifndef AQBANKING_BANKING_H
 #define AQBANKING_BANKING_H
 
+
 /** @addtogroup G_AB_BANKING Main Interface
  */
 /*@{*/
+
 /**
  * Object to be operated on by functions in this group (@ref AB_BANKING).
  */
 typedef struct AB_BANKING AB_BANKING;
 /*@}*/
+
 
 
 #include <gwenhywfar/inherit.h>
@@ -116,20 +116,10 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * </p>
  * <p>
  * This function does not actually load the configuration file or setup
- * AqBanking, that is performed by @ref AB_Banking_Init.
+ * AqBanking, that is performed by @ref AB_Banking_Init and
+ * @ref AB_Banking_OnlineInit, respectively.
  * </p>
- * <p>
- * Please note: This function internally calls @ref AB_Banking_newExtended
- * with the value 0 for <i>extensions</i>. So if your program supports any
- * extension you should call @ref AB_Banking_newExtended instead of this
- * function.
- * </p>
- * See @ref AB_BANKING_EXTENSION_NONE and following.
- * This is used to keep the number of callbacks to the application small
- * (otherswise whenever we add a flag which changes the expected behaviour
- * of a GUI callback we would have to introduce a new callback in order to
- * maintain binary compatibility).
-
+ *
  * @return new instance of AB_BANKING
  *
  * @param appName name of the application which wants to use AqBanking.
@@ -139,18 +129,13 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * @param dname Path for the directory containing the user data of
  * AqBanking. You should in most cases present a NULL for this
  * parameter, which means AqBanking will choose the default user
- * data folder which is "$HOME/.aqbanking".  The configuration file
- * "settings.conf" file is searched for in this folder. NOTE:
- * Versions of AqBanking before 1.2.0.16 used this argument to
- * specify the path and name (!) of the configuration file,
- * whereas now this specifies only the path. It is now impossible
- * to specify the name; aqbanking will always use its default name
- * "settings.conf". For AqBanking < 1.2.0.16, the default
- * configuration file was "$HOME/.aqbanking.conf". This file is
- * now also searched for, but if it exists it will be moved to the
- * new default path and name upon AB_Banking_Fini. The new path
- * will be "$HOME/.aqbanking/settings.conf".
-
+ * data folder which is "$HOME/.aqbanking".
+ * The configuration itself is handled using GWEN's GWEN_ConfigMgr
+ * module (see @ref GWEN_ConfigMgr_Factory). That module stores the
+ * configuration in AqBanking's subfolder "settings" (i.e. the
+ * full path to the user/account configuration is "$HOME/.aqbanking/settings").
+ *
+ * @param extensions use 0 for now.
  */
 AQBANKING_API
 AB_BANKING *AB_Banking_new(const char *appName,
@@ -175,9 +160,13 @@ void AB_Banking_GetVersion(int *major,
 
 
 /**
- * Initializes AqBanking. This actually reads the configuration file,
- * thus loading account settings and backends as needed.
+ * Initializes AqBanking.
+ * This sets up the plugins, plugin managers and path managers.
+ * If you want to use online banking tasks you must also call
+ * @ref AB_Banking_OnlineInit afterwards.
+ *
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ *
  * @param ab banking interface
  */
 AQBANKING_API 
@@ -186,17 +175,36 @@ int AB_Banking_Init(AB_BANKING *ab);
 /**
  * Deinitializes AqBanking thus allowing it to save its data and to unload
  * backends.
+ * Please remember to call @ref AB_Banking_OnlineFini before this function
+ * if you have used online banking functions.
+ *
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ *
  * @param ab banking interface
  */
 AQBANKING_API 
 int AB_Banking_Fini(AB_BANKING *ab);
 
 
+/**
+ * Setup the online banking part of AqBanking. This function actually loads
+ * the users and accounts.
+ *
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ *
+ * @param ab banking interface
+ */
 AQBANKING_API 
 int AB_Banking_OnlineInit(AB_BANKING *ab);
 
 
+/**
+ * Uninitialize the online banking part of AqBanking.
+ *
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ *
+ * @param ab banking interface
+ */
 AQBANKING_API 
 int AB_Banking_OnlineFini(AB_BANKING *ab);
 
@@ -208,21 +216,13 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
 /** @name Working With Backends
  *
  * <p>
- * Working with backends - as far as the frontend is concerned - is very
- * simple.
+ *   These functions are now deprecated and will be removed prior to the release
+ *   of AqBanking5.
  * </p>
  * <p>
- * An application typically does this upon initial setup:
- * <ul>
- *  <li>
- *    get a list of available backends (@ref AB_Banking_GetActiveProviders)
- *  </li>
- *  <li>
- *    optionally: allow the user to setup a selected backend
- *    (@ref AB_Banking_FindWizard to get the required setup wizard) and
- *    then run that wizard)
- *  </li>
- * </ul>
+ *   Since AqBanking5 configuration dialogs
+ *   and assistents are implemented using GWEN's Dialog Framework. This framework
+ *   allows for platform-independent dialogs (see @ref AB_ImporterDialog_new).
  * </p>
  */
 /*@{*/
@@ -230,82 +230,16 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
 /**
  * Returns a list of the names of currently active providers.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
-/**
- * This function simpifies wizard handling. It searches for a wizard for
- * the given frontends.
- * @param ab pointer to the AB_BANKING object
- *
- * @param backend This argument is no longer being used.  For
- * aqbanking >= 2.0.1 it can be NULL, but for aqbanking <= 2.0.0
- * it must be set to non-null.  The argument is completely ignored
- * since aqbanking>=1.9.0.
- *
- * @param frontends A semicolon-separated list of acceptable
- * frontends, or NULL.  The following strings are suggested:
- * <table>
- *  <tr>
- *    <td>KDE Applications</td>
- *    <td>kde;qt;gtk;gnome</td>
- *  </tr>
- *  <tr>
- *    <td>QT Applications</td>
- *    <td>qt;kde;gtk;gnome</td>
- *  </tr>
- *  <tr>
- *    <td>GNOME Applications</td>
- *    <td>gnome;gtk;qt;kde</td>
- *  </tr>
- *  <tr>
- *    <td>GTK Applications</td>
- *    <td>gtk;gnome;qt;kde</td>
- *  </tr>
- * </table>
- * Alternatively, you can always add an asterisk ("*") to the list
- * to accept any other frontend, or pass a NULL pointer to accept
- * the first valid frontend.
- */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_FindWizard(AB_BANKING *ab,
                           const char *backend,
                           const char *frontends,
                           GWEN_BUFFER *pbuf);
 
-/**
- * This function simpifies debugger handling. It searches for a debugger for
- * the given backend and the given frontends.
- * @param ab pointer to the AB_BANKING object
- * @param backend name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- * @param frontends This is a semicolon separated list of acceptable frontends
- * The following lists merely are suggestions:
- * <table>
- *  <tr>
- *    <td>KDE Applications</td>
- *    <td>kde;qt;gtk;gnome</td>
- *  </tr>
- *  <tr>
- *    <td>QT Applications</td>
- *    <td>qt;kde;gtk;gnome</td>
- *  </tr>
- *  <tr>
- *    <td>GNOME Applications</td>
- *    <td>gnome;gtk;qt;kde</td>
- *  </tr>
- *  <tr>
- *    <td>GTK Applications</td>
- *    <td>gtk;gnome;qt;kde</td>
- *  </tr>
- * </table>
- * You can always add an asterisk ("*") to the list to accept any other
- * frontend (or pass a NULL pointer to accept the first valid frontend).
- */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_FindDebugger(AB_BANKING *ab,
 			    const char *backend,
 			    const char *frontends,
@@ -319,8 +253,6 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 /** @name Application Data
  *
  * Applications may let AqBanking store global application specific data.
- * In addition, account specific data can also be stored using
- * @ref AB_Account_GetAppData.
  */
 /*@{*/
 /**
@@ -410,48 +342,18 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /** @name Plugin Handling
  *
+ * These functions are also obsolte and will be removed for AqBanking5.
  */
 /*@{*/
-/**
- * Returns a list2 of provider descriptions. You must free this list after
- * using it via @ref GWEN_PluginDescription_List2_freeAll.
- * Please note that a simple @ref GWEN_PluginDescription_List2_free would
- * not suffice, since that would only free the list but not the objects
- * stored within the list !
- * @param ab pointer to the AB_BANKING object
- */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
-/**
- * Returns a list2 of wizard descriptions.
- * You must free this list after using it via
- * @ref GWEN_PluginDescription_List2_freeAll.
- * Please note that a simple @ref GWEN_PluginDescription_List2_free would
- * not suffice, since that would only free the list but not the objects
- * stored within the list !
- * @param ab pointer to the AB_BANKING object
- */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab);
 
 
-/**
- * Returns a list2 of debugger descriptions for the given backend.
- * You must free this list after using it via
- * @ref GWEN_PluginDescription_List2_freeAll.
- * Please note that a simple @ref GWEN_PluginDescription_List2_free would
- * not suffice, since that would only free the list but not the objects
- * stored within the list !
- * @param ab pointer to the AB_BANKING object
- * @param pn name of the backend (such as "aqhbci". You can retrieve
- * such a name either from the list of active backends
- * (@ref AB_Banking_GetActiveProviders) or from an plugin description
- * retrieved via @ref AB_Banking_GetProviderDescrs (call
- * @ref GWEN_PluginDescription_GetName on that plugin description).
- */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
                                                             const char *pn);
 /*@}*/
