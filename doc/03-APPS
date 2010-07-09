@@ -6,22 +6,6 @@
 This document explains what an application needs to perform to setup
 and use AqBanking.
 
-If you are writing an application and want to use AqBanking's
-features, there are two possibilities:
-
- - Use the "Application Layer API" (maybe this should better be called
- "ImExporter Layer API"), which requires the least coding effort on
- the application side. In particular, this API means that the
- application will not deal with the AB_JOB objects but only
- AB_IMEXPORTER_CONTEXT objects.
-
- - Or you can use the "Main Interface API" (also called "High level
- API" sometimes), which offers the highest flexibility by its access
- to AB_JOB objects.
-
-This document describes the second approach, where the application
-constructs AB_JOB objects and passed data from and to these objects.
-
 
 2. Application Coding Overview
 ==============================
@@ -32,30 +16,17 @@ into this frame.
 
 1. Create an instance of AB_BANKING (AB_Banking_new())
 
-2. Set all (!) callbacks for virtual functions
-
-   The class AB_BANKING (file "banking.h") uses several callback
-   functions which should be set by the application which uses
-   AqBanking.  These are callbacks which allow AqBanking or any of its
-   plugins to interact with the user.  See the section "Virtual
-   Functions" in the Doxygen documentation of AB_BANKING.  
-
-   Note: For some callbacks, if no function has been set, then the
-   program flow will terminate when these callbacks would have been
-   needed.  This might lead to unexpected termination, so you should
-   make sure you set all callback functions in AB_BANKING.
-
-3. Call AB_Banking_Init
+2. Call AB_Banking_Init
    This makes AqBanking actually read its configuration. Before this call
    AqBanking can not work.
 
 4. Do whatever you want (see section 4)
 
-5. Call AB_Banking_Fini
+3. Call AB_Banking_Fini
    This allows AqBanking to write its configuration back.
    You should always call this function to avoid data inconsistencies.
 
-6. Free the AqBanking object (AB_Banking_free())
+4. Free the AqBanking object (AB_Banking_free())
    This function releases all data currently owned by AqBanking.
    You should always call this function to avoid memory leaks.
 
@@ -65,49 +36,7 @@ into this frame.
 
 
 
-3. First Time
-=============
-
-This section describes the program flow for the initial setup of the
-AqBanking configuration. The general initialisation steps from section
-2 are not repeated here but have to be performed beforehand.
-
-When you start using AqBanking there probably is no account setup so
-you will have to do it now:
-
-1. Ask AqBanking for a list of available backends 
-   (AB_Banking_GetProviderDescrs()); "provider" is simply another word
-   for "backend".
-
-2. Present this list to the user to pick one of them (or pick a fixed
-   one, e.g. "aqhbci").
-
-3. Activate the chosen backend(s).
-   This also imports a possibly available account list from the backends.
-
-4. Ask AqBanking about the account list (if the backend already was setup
-   it might have returned an account list which in that case has been
-   imported to AqBanking)
-
-5. Map the AqBanking-accounts to your application accounts. Either you
-   retrieve an account by AB_Banking_GetAccountByCodeAndNumber(), or
-   you set an alias for an account by AB_Banking_SetAccountAlias() and
-   can retrieve it later by AB_Banking_GetAccountByAlias().
-
-Some backends - e.g. AqHBCI - allow transparent updates of account
-information. This is automatically used by AqBanking whenever an account is
-loaded from AqBanking's configuration file.
-
-
-If the backend does not have an account list (e.g. because is has not been
-setup yet) you can invoke the backend setup wizard 
-(AB_Banking_FindWizard()). You can get a list of available wizards for a
-given backend via AB_Banking_GetWizardDescrs().
-
-
-
-
-4. Performing Jobs
+3. Performing Jobs
 ==================
 
 This section describes the program flow for the normal operation of
@@ -121,22 +50,12 @@ following steps (Example: Getting the balance of an account):
 
  1. Create an instance of AB_BANKING (AB_Banking_new())
  
- 2. Set all (!) callbacks for virtual functions
- 
-    The class AB_BANKING (file "banking.h") uses several callback
-    functions which should be set by the application which uses
-    AqBanking.  These are callbacks which allow AqBanking or any of
-    its plugins to interact with the user.  See the section "Virtual
-    Functions" in the Doxygen documentation of AB_BANKING.
+ 2. Call AB_Banking_Init
+    This makes AqBanking prepare the plugin framework.
 
-    Note: For some callbacks, if no function has been set, then the
-    program flow will terminate when these callbacks would have been
-    needed.  This might lead to unexpected termination, so you should
-    make sure you set all callback functions in AB_BANKING.
-
- 3. Call AB_Banking_Init
-    This makes AqBanking actually read its configuration. Before this call
-    AqBanking can not work.
+ 3. Call AB_Banking_OnlineInit
+    This makes AqBanking actually read its configuration. Without this call
+    online banking is not possible.
 
 ---------------------------------------------------------- X8
 
@@ -157,27 +76,14 @@ following steps (Example: Getting the balance of an account):
     Besides the account which has been given to the constructor this job
     has no further arguments.
 
- 8. Enqueue this job with the execution queue
-    AB_Banking_EnqueueJob()
+ 8. Add this job to a job list 
 
- 9. Optionally add all "pending" jobs: 
-    Get them with 
-                AB_Banking_GetPendingJobs() 
-    and add any of them using
-                AB_Banking_EnqueueJob()
-    You might choose to only add those pending jobs which have been created
-    by your application.
-    Please note that you MUST NOT call 
-                AB_Banking_DelPendingJob()
-    for jobs you enqueued, because when a pending job is enqueued it will be
-    MOVED from the pending queue to the execution queue.
-
-10. Execute the queue
+ 9. Execute the queue
     AB_Banking_ExecuteQueue()
     This function sends all enqueued jobs to their backends which will then
     do the necessary communication with the bank server etc.
 
-11. Check for the status of each job.
+10. Check for the status of each job.
     AB_Job_GetStatus()
     This function returns the status of the job.
     Some jobs might have the status "pending". Those jobs have been processed
@@ -188,32 +94,26 @@ following steps (Example: Getting the balance of an account):
     If the job has been finished you may apply the information returned (in
     this case the balance of an account).
 
-12. Remove the job from the list of finished jobs.
-    AB_Banking_DelFinishedJob()
-    This is only needed if the job has been finished. If you don't delete the
-    job from the finished queue it will stay there forever (since only the
-    application which created the job may delete it).
-    
-    Please note that this function does not free the job, so before going to
-    the next step you have to free the job now using AB_Job_free().
-
 ---------------------------------------------------------- X8
 
-13. Call AB_Banking_Fini
+11. Call AB_Banking_OnlineFini
     This allows AqBanking to write its configuration back.
     You should always call this function to avoid data inconsistencies.
 
+12. Call AB_Banking_Fini
+    This releases all ressources assigned to AqBanking.
+    
     Please note that before calling this function you MUST free all AqBanking
     objects you own.
 
-14. Release all AqBanking data (AB_Banking_free())
+13. Release all AqBanking data (AB_Banking_free())
     This function releases all data currently owned by AqBanking.
     You should always call this function to avoid memory leaks.
 
 
-Actually, steps 3 to 13 may be performed multiple times.
-Most likely an application will perform steps 1-3 and 13-14 only upon
-startup and then later loop between steps 4 and 12.
+Actually, steps 4 to 10 may be performed multiple times.
+Most likely an application will perform steps 1-3 and 11-13 only upon
+startup and then later loop between steps 4 and 10.
 
 
 
