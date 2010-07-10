@@ -203,34 +203,8 @@ uninstall-mo-catalogs:
 	done
 
 
-if MAKE_QT_CATS
-
-qtlocaledir = $(pkgdatadir)/i18n
-install-qt-catalogs: catalogs
-	$(mkinstalldirs) "$(DESTDIR)$(qtlocaledir)";
-	@if test $(MSGFMT_SUPPORTS_QT) = "yes"; then \
-	  for i in $(ALL_LINGUAS); do \
-	    fileqm=$(top_builddir)/po/$$i.qm; \
-            echo "Installing translation catalog for language \"$$i\""; \
-            $(INSTALL_DATA) $${fileqm} $(DESTDIR)$(qtlocaledir)/$$i.qm; \
-          done \
-	fi
-uninstall-qt-catalogs:
-	@$(NORMAL_UNINSTALL)
-	@for i in $(ALL_LINGUAS); do \
-	  echo " rm -f '$(DESTDIR)$(qtlocaledir)/$$i.qm'"; \
-	  rm -f "$(DESTDIR)$(qtlocaledir)/$$i.qm"; \
-	done
-
-install-data-local: install-qt-catalogs install-mo-catalogs
-uninstall-local: uninstall-qt-catalogs uninstall-mo-catalogs
-
-else
-
 install-data-local: install-mo-catalogs
 uninstall-local: uninstall-mo-catalogs
-
-endif # if MAKE_QT_CATS
 
 CLEANFILES += $(I18NCATALOGS)
 

@@ -1,4 +1,4 @@
-SUBDIRS=libs frontends plugins tools test
+SUBDIRS=libs plugins tools test
 
 sources:
 	for d in $(SUBDIRS); do \

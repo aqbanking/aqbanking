@@ -83,7 +83,7 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect aqpaypal"  \
-	    --with-frontends=""
+	    --with-frontends="q4banking"
 	make sources
 
 mp-priv:

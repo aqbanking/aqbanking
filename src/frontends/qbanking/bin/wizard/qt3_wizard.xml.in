@@ -1,9 +1,0 @@
-<plugin name="qt3-wizard" type="Wizard" frontend="qt" >
-  <version>@WIZARD_KDE_VERSION_FULL_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>QT/KDE Setup Wizard for AqDTAUS</short>
-  <descr>
-    This backend provides a generic setup wizard  for QT/KDE.
-  </descr>
-</plugin>
-

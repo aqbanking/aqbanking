@@ -8,8 +8,7 @@ noinst_PROGRAMS=\
   tutorial1 \
   tutorial2 \
   tutorial3 \
-  tutorial4 \
-  qtfrontend
+  tutorial4
 
 tutorial1_SOURCES=tutorial1.c
 tutorial1_LDADD=\
@@ -26,23 +25,4 @@ tutorial3_LDADD=\
 tutorial4_SOURCES=tutorial4.c
 tutorial4_LDADD=\
   $(top_builddir)/src/libs/aqbanking/libaqbanking.la $(gwenhywfar_libs)
-
-# This conditional is a synonym of a (not yet existing) HAVE_QT
-if MAKE_QT_CATS
-qgui_internal_libs= $(top_builddir)/src/frontends/qbanking/gui/libqgui.la
-else
-qgui_internal_libs=
-endif
-
-qtfrontend_SOURCES=qtfrontend.cpp
-
-if WITH_QBANKING
-qtfrontend_LDADD=\
-  $(top_builddir)/src/libs/aqbanking/libaqbanking.la \
-  $(qbanking_internal_libs) \
-  $(gwenhywfar_libs) $(qt3_libs)
-else
-qtfrontend_LDADD=
-endif
-
 

@@ -80,13 +80,6 @@ ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_jobqueue.h" aqbanking5/aq
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_accountqueue.h" aqbanking5/aqbanking
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_userqueue.h" aqbanking5/aqbanking
 
-# symlink all headers from src/frontends
-dirlist='@aqbanking_frontends@'  # list might be empty
-for frontend in ${dirlist} ; do
-  mkdir -p aqbanking5/${frontend}
-  symlinkFolder "src/frontends/${frontend}" "aqbanking5/${frontend}"
-done
-
 # symlink all headers from src/plugins/backends/
 dirlist='@aqbanking_backends@'  # list might be empty
 for backend in ${dirlist} ; do

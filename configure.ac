@@ -66,22 +66,6 @@ AQPAYPAL_SO_AGE=0
 AQPAYPAL_SO_REVISION=0
 AQPAYPAL_SO_EFFECTIVE="`echo \$(($AQPAYPAL_SO_CURRENT-$AQPAYPAL_SO_AGE))`"
 
-#
-# frontends
-#
-
-QBANKING_SO_CURRENT=9
-QBANKING_SO_REVISION=0
-QBANKING_SO_AGE=0
-QBANKING_SO_EFFECTIVE="`echo \$(($QBANKING_SO_CURRENT-$QBANKING_SO_AGE))`"
-
-
-Q4BANKING_SO_CURRENT=2
-Q4BANKING_SO_REVISION=0
-Q4BANKING_SO_AGE=0
-Q4BANKING_SO_EFFECTIVE="`echo \$(($Q4BANKING_SO_CURRENT-$Q4BANKING_SO_AGE))`"
-
-
 
 
 ###-------------------------------------------------------------------------
@@ -483,31 +467,6 @@ AC_CHECK_FUNCS([setlocale])
 
 ###-------------------------------------------------------------------------
 #
-# frontends
-#
-
-AC_ARG_WITH(frontends, 
-  [  --with-frontends=list      space separated list of frontends (default:all)],
-  [aqbanking_frontends="$withval"],
-  [aqbanking_frontends="q4banking qbanking"]
-)
-# The ordering is important due to linker dependencies, so force
-# the correct ordering here:
-case "$aqbanking_frontends" in *q4banking*)
-  tmp_frontends="q4banking"
-  ;;
-esac
-case "$aqbanking_frontends" in *qbanking*)
-  tmp_frontends="${tmp_frontends} qbanking"
-  ;;
-esac
-aqbanking_frontends="${tmp_frontends}"
-AC_SUBST(aqbanking_frontends)
-
-
-
-###-------------------------------------------------------------------------
-#
 # Backends. Those do not have a required ordering.
 #
 
@@ -760,107 +719,6 @@ fi
 AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
 AC_SUBST(ktoblzcheck_libs)
 AC_SUBST(ktoblzcheck_includes)
-
-
-
-###-------------------------------------------------------------------------
-#
-# QT3
-#
-
-UIC3="NO"
-QT_BINDIR=""
-
-case "$aqbanking_frontends" in 
-  *qbanking*)
-    AQ_CHECK_QT3
-    if test "$have_qt3" = "yes"; then
-      all_includes="$all_includes $qt3_includes"
-    
-      # Define this macro to disable the cast from QString to const char
-      # which implicitly uses latin1()!
-      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
-    fi
-    
-    dnl windows/mingw doesnt have the yes program, so add this emulation
-    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-    
-    dnl Store the bin dir for the windows dlls
-    QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
-  
-    dnl Check for potential qt4 environment, but only if moc is from qt4
-    dnl (watch out: the outside square parenteses are vitally important here!)
-    MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
-      UIC3="${qt3_uic}"
-    else
-      AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-    fi
-  
-    dnl Make sure moc and uic come from the same Qt version
-    dnl (watch out: the outside square parenteses are vitally important here!)
-    UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
-          "` echo ${UIC_VERSION} | cut -d. -f1 `" \
-       -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
-          "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
-      AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-    fi
-
-    PKG_CHECK_MODULES([GWENGUI_QT3], [gwengui-qt3])
-
-
-    AC_DEFINE(BUILD_QBANKING_FRONTEND, 1, [if qbanking frontend is built])
-    with_qbanking="yes"
-    ;;
-  *)
-    qbanking_internal_libs=""
-    ;;
-esac
-
-dnl Store the bin dir for the windows dlls
-AC_SUBST(QT_BINDIR)
-AM_CONDITIONAL(WITH_QBANKING, [test "$with_qbanking" = "yes"])
-
-
-
-###-------------------------------------------------------------------------
-#
-# QT4
-#
-
-UIC4="NO"
-QT4_BINDIR=""
-
-case "$aqbanking_frontends" in 
-  *q4banking*)
-    AQ_CHECK_QT4
-    if test "$have_qt4" = "yes"; then
-      # Define this macro to disable the cast from QString to const char
-      # which implicitly uses latin1()!
-      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
-    fi
-    
-    dnl windows/mingw doesnt have the yes program, so add this emulation
-    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-    
-    dnl Store the bin dir for the windows dlls
-    QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
-    UIC4="${qt4_uic}"
-
-    PKG_CHECK_MODULES([GWENGUI_QT4], [gwengui-qt4])
-  
-    AC_DEFINE(BUILD_Q4BANKING_FRONTEND, 1, [if qbanking frontend is built])
-    with_q4banking="yes"
-    ;;
-  *)
-    q4banking_internal_libs=""
-    ;;
-esac
-
-dnl Store the bin dir for the windows dlls
-AC_SUBST(QT4_BINDIR)
-AM_CONDITIONAL(WITH_Q4BANKING, [test "$with_q4banking" = "yes"])
 
 
 
@@ -1339,46 +1197,6 @@ dependencies_ok="yes"
 
 ###-------------------------------------------------------------------------
 #
-# check for dependencies of frontends
-#
-
-with_qbanking="no"
-for frontend in $aqbanking_frontends; do
-  case "$frontend" in
-    qbanking)
-      if test "x$have_qt3" != "xyes"; then
-        AC_MSG_NOTICE([*** QT3 is required for QT-frontend "qbanking". Specify --with-frontends="" to build aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      qt3_ui="qt3"
-      with_qbanking="yes"
-      ;;
-    q4banking)
-      if test "x$have_qt4" != "xyes"; then
-        AC_MSG_NOTICE([*** QT4 is required for QT-frontend "q4banking". Specify --with-frontends="" to build aqbanking without that frontend.])
-	dependencies_ok="no"
-      fi
-      qt4_ui="qt4"
-      with_q4banking="yes"
-      ;;
-  esac
-done
-
-AM_CONDITIONAL(MAKE_QT_CATS, [test "x$have_qt3" = "xyes"])
-
-if test "x$dependencies_ok" != "xyes"; then
-  AC_MSG_ERROR([
-*** Requirements not fulfilled. Fix your requirements or change the 
-*** configuration.])
-fi
-
-AC_SUBST(with_qbanking)
-AC_SUBST(with_q4banking)
-
-
-
-###-------------------------------------------------------------------------
-#
 # Configure stuff for backend AqHBCI
 #
 
@@ -1483,78 +1301,6 @@ AC_SUBST(aqpaypal_libs)
 
 ###-------------------------------------------------------------------------
 #
-# Configure stuff for frontend qbanking
-#
-
-# Common settings
-qbanking_internal_libs="${abs_top_builddir}/src/frontends/qbanking/lib/libqbanking.la"
-qbanking_includes="${aqbanking_includes}"
-qbanking_libs="-L\${libdir} -lqbanking"
-qbanking_data="\${datadir}/qbanking"
-qbanking_plugindir="\${aqbanking_plugindir}/frontends/qbanking"
-qbanking_helpdir="\${datadir}/aqbanking/frontends/qbanking/help"
-
-case "$OS_TYPE" in
-    posix)
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_QBANKING_DLL,1, [Define if DLL is built])
-	all_includes="$all_includes -mms-bitfields"
-    	;;
-esac
-
-AC_SUBST(qbanking_includes)
-AC_SUBST(qbanking_internal_libs)
-AC_SUBST(qbanking_libs)
-AC_SUBST(qbanking_data)
-AC_SUBST(qbanking_plugindir)
-AC_SUBST(qbanking_helpdir)
-
-
-
-###-------------------------------------------------------------------------
-#
-# Configure stuff for frontend q4banking
-#
-
-# Common settings
-q4banking_internal_libs="${abs_top_builddir}/src/frontends/q4banking/lib/libq4banking.la"
-q4banking_includes="${aqbanking_includes}"
-q4banking_libs="-L\${libdir} -lq4banking"
-q4banking_data="\${datadir}/q4banking"
-q4banking_plugindir="\${aqbanking_plugindir}/frontends/q4banking"
-q4banking_helpdir="\${datadir}/aqbanking/frontends/q4banking/help"
-
-case "$OS_TYPE" in
-    posix)
-    	;;
-    windows)
-        AC_DEFINE_UNQUOTED(BUILDING_Q4BANKING_DLL,1, [Define if DLL is built])
-	all_includes="$all_includes -mms-bitfields"
-    	;;
-esac
-
-AC_SUBST(q4banking_includes)
-AC_SUBST(q4banking_internal_libs)
-AC_SUBST(q4banking_libs)
-AC_SUBST(q4banking_data)
-AC_SUBST(q4banking_plugindir)
-AC_SUBST(q4banking_helpdir)
-
-
-
-###-------------------------------------------------------------------------
-#
-# subst selected UIs
-#
-
-AC_SUBST(qt3_ui)
-AC_SUBST(qt4_ui)
-
-
-
-###-------------------------------------------------------------------------
-#
 # check for plugin init
 #
 AC_MSG_CHECKING(if plugin init is wanted)
@@ -1642,7 +1388,6 @@ AS_SCRUB_INCLUDE(all_includes)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 
-AC_SUBST(aqbanking_frontends)
 AC_SUBST(aqbanking_backends)
 
 
@@ -1679,35 +1424,6 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/typemaker2/c/Makefile
   src/libs/aqbanking/backendsupport/Makefile
   src/libs/aqbanking++/Makefile
-  src/frontends/Makefile
-  src/frontends/qbanking/Makefile
-  src/frontends/qbanking/lib/Makefile
-  src/frontends/qbanking/lib/dialogs/Makefile
-  src/frontends/qbanking/lib/views/Makefile
-  src/frontends/qbanking/lib/widgets/Makefile
-  src/frontends/qbanking/lib/version.h
-  src/frontends/qbanking/lib/ressource.rc
-  src/frontends/qbanking/bin/Makefile
-  src/frontends/qbanking/bin/wizard/Makefile
-  src/frontends/qbanking/bin/wizard/qt3_wizard.xml
-  src/frontends/qbanking/bin/helpbrowser/Makefile
-  src/frontends/qbanking/help/Makefile
-  src/frontends/qbanking/help/de/Makefile
-  src/frontends/qbanking/help/de/images/Makefile
-  src/frontends/q4banking/Makefile
-  src/frontends/q4banking/lib/Makefile
-  src/frontends/q4banking/lib/dialogs/Makefile
-  src/frontends/q4banking/lib/views/Makefile
-  src/frontends/q4banking/lib/widgets/Makefile
-  src/frontends/q4banking/lib/version.h
-  src/frontends/q4banking/lib/ressource.rc
-  src/frontends/q4banking/bin/Makefile
-  src/frontends/q4banking/bin/wizard/Makefile
-  src/frontends/q4banking/bin/wizard/qt4_wizard.xml
-  src/frontends/q4banking/bin/helpbrowser/Makefile
-  src/frontends/q4banking/help/Makefile
-  src/frontends/q4banking/help/de/Makefile
-  src/frontends/q4banking/help/de/images/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
   src/plugins/bankinfo/at/Makefile
@@ -1834,31 +1550,11 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/tools/Makefile
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqhbci/tools/aqhbci-tool/Makefile
-  src/plugins/backends/aqhbci/ui/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/qt3_debug/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/qt3_debug/qt_debug.xml
-  src/plugins/backends/aqhbci/ui/qt3/libs/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/libs/dialogs/wizard/Makefile
-  src/plugins/backends/aqhbci/ui/qt3/libs/logmanager/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/qt4_debug/qt4_debug.xml
-  src/plugins/backends/aqhbci/ui/qt4/libs/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/libs/dialogs/wizard/Makefile
-  src/plugins/backends/aqhbci/ui/qt4/libs/logmanager/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
   src/plugins/backends/aqofxconnect/plugin/ressource.rc
-  src/plugins/backends/aqofxconnect/ui/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt3/libs/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt4/Makefile
-  src/plugins/backends/aqofxconnect/ui/qt4/libs/Makefile
   src/plugins/backends/aqpaypal/Makefile
   src/plugins/backends/aqpaypal/plugin/Makefile
   src/plugins/backends/aqpaypal/plugin/aqpaypal.xml
@@ -1896,7 +1592,6 @@ echo "Summary"
 echo "----------------------------------------------------"
 echo "AqBanking version       : $AQBANKING_VERSION_FULL_STRING"
 echo "Local Installation Mode : $enable_local_install"
-echo "Supported frontends     : $aqbanking_frontends"
 echo "Cfg Search Folder       : $aqbanking_cfg_searchdir"
 echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"

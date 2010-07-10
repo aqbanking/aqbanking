@@ -1,4 +1,4 @@
-SUBDIRS=plugin ui
+SUBDIRS=plugin
 
 EXTRA_DIST=ChangeLog README version.h.in
 

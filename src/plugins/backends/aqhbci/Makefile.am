@@ -1,4 +1,4 @@
-SUBDIRS=plugin tools ui
+SUBDIRS=plugin tools
 
 CLEANFILES = $(BUILT_SOURCES)
 

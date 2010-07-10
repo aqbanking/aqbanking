@@ -1,9 +1,0 @@
-<plugin name="qt4-wizard" type="Wizard" frontend="qt4" >
-  <version>@WIZARD_KDE_VERSION_FULL_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>QT/KDE Setup Wizard for AqHBCI</short>
-  <descr>
-    This backend provides a generic setup wizard  for QT/KDE.
-  </descr>
-</plugin>
-

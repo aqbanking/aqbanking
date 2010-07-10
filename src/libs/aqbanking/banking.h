@@ -231,7 +231,7 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
 /**
  * Returns a list of the names of currently active providers.
  */
-AQBANKING_API AQBANKING_DEPRECATED
+AQBANKING_API
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
 AQBANKING_API AQBANKING_DEPRECATED

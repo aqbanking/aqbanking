@@ -1,8 +1,0 @@
-*-config.in
-ressource.rc
-version.h
-*.moc.cpp
-*.ui.h
-*.ui.cpp
-i18nsources
-*-config
