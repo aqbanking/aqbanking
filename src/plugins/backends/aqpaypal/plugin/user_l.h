@@ -22,6 +22,7 @@ void APY_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 /* internal function, called from APY_Provider */
 void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature, const char *userid);
 
+const char *APY_User_GetApiUserId(const AB_USER *u);
 const char *APY_User_GetApiPassword(const AB_USER *u);
 const char *APY_User_GetApiSignature(const AB_USER *u);
 

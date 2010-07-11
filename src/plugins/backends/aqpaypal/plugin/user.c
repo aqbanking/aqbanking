@@ -142,6 +142,18 @@ void APY_User_SetServerUrl(AB_USER *u, const char *s) {
 
 
 
+const char *APY_User_GetApiUserId(const AB_USER *u) {
+  APY_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, APY_USER, u);
+  assert(ue);
+
+  return ue->apiUserId;
+}
+
+
+
 const char *APY_User_GetApiPassword(const AB_USER *u) {
   APY_USER *ue;
 

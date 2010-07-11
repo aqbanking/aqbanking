@@ -670,7 +670,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendString(tbuf, "user=");
-  s=AB_User_GetUserId(u);
+  s=APY_User_GetApiUserId(u);
   if (s && *s)
     GWEN_Text_EscapeToBuffer(s, tbuf);
   else {
