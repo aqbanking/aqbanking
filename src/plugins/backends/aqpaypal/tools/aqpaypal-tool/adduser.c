@@ -40,6 +40,7 @@ int addUser(AB_BANKING *ab,
   AB_USER *user;
   int rv;
   const char *userId;
+  const char *apiUserId;
   const char *apiPassword;
   const char *apiSignature;
   const char *userName;
@@ -77,6 +78,17 @@ int addUser(AB_BANKING *ab,
     "signature",                  /* long option */
     "Specify the API signature",  /* short description */
     "Specify the API signature"   /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "apiUserId",                  /* name */
+    1,                            /* minnum */
+    1,                            /* maxnum */
+    "U",                          /* short option */
+    "apiuserid",                  /* long option */
+    "Specify the API user id",    /* short description */
+    "Specify the API user id"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -151,6 +163,7 @@ int addUser(AB_BANKING *ab,
   assert(pro);
 
   userId=GWEN_DB_GetCharValue(db, "userId", 0, NULL);
+  apiUserId=GWEN_DB_GetCharValue(db, "apiUserId", 0, NULL);
   apiPassword=GWEN_DB_GetCharValue(db, "password", 0, NULL);
   apiSignature=GWEN_DB_GetCharValue(db, "signature", 0, NULL);
   userName=GWEN_DB_GetCharValue(db, "userName", 0, NULL);
@@ -189,7 +202,7 @@ int addUser(AB_BANKING *ab,
     return 3;
   }
 
-  rv=APY_User_SetApiSecrets(user, apiPassword, apiSignature);
+  rv=APY_User_SetApiSecrets(user, apiPassword, apiSignature, apiUserId);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error on APY_User_SetApiSecrets (%d)\n", rv);
     AB_Banking_EndExclUseUser(ab, user, 1);

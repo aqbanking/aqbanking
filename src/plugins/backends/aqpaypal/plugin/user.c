@@ -65,6 +65,7 @@ void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p) {
   free(ue->serverUrl);
   free(ue->apiPassword);
   free(ue->apiSignature);
+  free(ue->apiUserId);
   GWEN_FREE_OBJECT(ue);
 }
 
@@ -165,7 +166,7 @@ const char *APY_User_GetApiSignature(const AB_USER *u) {
 
 
 
-void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature) {
+void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature, const char *userid) {
   APY_USER *ue;
 
   assert(u);
@@ -173,17 +174,21 @@ void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *sign
   assert(ue);
 
   free(ue->apiPassword);
-  if (password) ue->apiPassword=strdup(password);
+  if (password && *password) ue->apiPassword=strdup(password);
   else ue->apiPassword=NULL;
 
   free(ue->apiSignature);
-  if (signature) ue->apiSignature=strdup(signature);
+  if (signature && *signature) ue->apiSignature=strdup(signature);
   else ue->apiSignature=NULL;
+
+  free(ue->apiUserId);
+  if (userid && *userid) ue->apiUserId=strdup(userid);
+  else ue->apiUserId=NULL;
 }
 
 
 
-int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature) {
+int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature, const char *userid) {
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -191,6 +196,8 @@ int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signatu
   GWEN_Text_EscapeToBuffer(password, tbuf);
   GWEN_Buffer_AppendByte(tbuf, ':');
   GWEN_Text_EscapeToBuffer(signature, tbuf);
+  GWEN_Buffer_AppendByte(tbuf, ':');
+  GWEN_Text_EscapeToBuffer(userid, tbuf);
   rv=APY_Provider_WriteUserApiSecrets(AB_User_GetProvider(u), u, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   if (rv<0) {

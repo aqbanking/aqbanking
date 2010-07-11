@@ -37,6 +37,8 @@ static int APY_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 				      AB_PROVIDER_EXTEND_MODE em,
 				      GWEN_DB_NODE *dbBackend);
 
+static GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
+
 
 static int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db);
 
@@ -63,6 +65,7 @@ static int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
 static int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 				    AB_USER *u,
 				    AB_TRANSACTION *t);
+
 
 
 #endif

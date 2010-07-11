@@ -21,6 +21,7 @@ typedef struct APY_USER APY_USER;
 struct APY_USER {
   char *serverUrl;
 
+  char *apiUserId;
   char *apiPassword;
   char *apiSignature;
 

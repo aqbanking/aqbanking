@@ -14,6 +14,8 @@
 #include "provider_p.h"
 #include "user_l.h"
 
+#include "dlg_newuser.h"
+
 #include <aqbanking/job_be.h>
 #include <aqbanking/httpsession.h>
 #include <aqbanking/jobgettransactions.h>
@@ -65,6 +67,12 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
   AB_Provider_SetResetQueueFn(pro, APY_Provider_ResetQueue);
   AB_Provider_SetExtendUserFn(pro, APY_Provider_ExtendUser);
   AB_Provider_SetExtendAccountFn(pro, APY_Provider_ExtendAccount);
+
+  AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
+
+  AB_Provider_AddFlags(pro,
+		       /*AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG | */
+		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
 
   return pro;
 }
@@ -1073,22 +1081,36 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
   }
   else {
     char *t;
+    char *t2=NULL;
     GWEN_BUFFER *sbuf1;
     GWEN_BUFFER *sbuf2;
+    GWEN_BUFFER *sbuf3;
 
     t=strchr(GWEN_Buffer_GetStart(xbuf), ':');
-    if (t)
+    if (t) {
       *(t++)=0;
+      t2=strchr(t, ':');
+      if (t2) {
+	*(t2++)=0;
+      }
+    }
 
     sbuf1=GWEN_Buffer_new(0, 256, 0, 1);
     sbuf2=GWEN_Buffer_new(0, 256, 0, 1);
+    sbuf3=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(xbuf), sbuf1);
     if (t) {
       GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
       t=GWEN_Buffer_GetStart(sbuf2);
+      if (t2) {
+	GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
+      }
     }
-    APY_User_SetApiSecrets_l(u, GWEN_Buffer_GetStart(sbuf1), GWEN_Buffer_GetStart(sbuf2));
+    APY_User_SetApiSecrets_l(u, GWEN_Buffer_GetStart(sbuf1), GWEN_Buffer_GetStart(sbuf2), GWEN_Buffer_GetStart(sbuf3));
     GWEN_Buffer_free(xbuf);
+    GWEN_Buffer_free(sbuf3);
+    GWEN_Buffer_free(sbuf2);
+    GWEN_Buffer_free(sbuf1);
   }
 
   aq=AB_AccountQueue_List_First(AB_UserQueue_GetAccountQueueList(uq));
@@ -1104,7 +1126,7 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
   }
 
   /* erase secrets */
-  APY_User_SetApiSecrets_l(u, NULL, NULL);
+  APY_User_SetApiSecrets_l(u, NULL, NULL, NULL);
 
   /* unlock user */
   rv=AB_Banking_EndExclUseUser(AB_Provider_GetBanking(pro), u, 0);
@@ -1461,6 +1483,23 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
 }
 
 
+
+GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+  APY_PROVIDER *xp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
+  assert(xp);
+
+  dlg=APY_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  if (dlg==NULL) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
 
 
 

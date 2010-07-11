@@ -22,7 +22,7 @@ AQPAYPAL_API void APY_User_SetServerUrl(AB_USER *u, const char *s);
 /**
  * This function sets the given secrets and writes a new secrets file.
  */
-AQPAYPAL_API int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature);
+AQPAYPAL_API int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature, const char *userId);
 
 
 AQPAYPAL_API int APY_User_GetHttpVMajor(const AB_USER *u);
