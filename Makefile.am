@@ -5,7 +5,7 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
  aqbanking.iss.in aqbanking.iss \
  Doxyfile.in version.h.in system.h.in \
- i18nsources qtsources \
+ i18nsources \
  mksymlinks.sh.in mksymlinks.sh Makefile.cvs
 
 idatadir=${datadir}/doc/aqbanking
@@ -91,15 +91,15 @@ if IF_MAKE_I18N_FILES
 # We directly read that file list. For old make programs, you would
 # set this to an empty variable, because they are only needed by the
 # developers and release technicians.
-I18NFILES=$(shell cat $(srcdir)/i18nsources $(srcdir)/qtsources)
+I18NFILES=$(shell cat $(srcdir)/i18nsources)
 DLGFILES=$(shell cat $(srcdir)/dlgsources)
 
 
 # Current build rule:
 sources:
-	rm -f $(srcdir)/i18nsources $(srcdir)/qtsources $(srcdir)/dlgsources
+	rm -f $(srcdir)/i18nsources $(srcdir)/dlgsources
 	$(MAKE) -C $(top_builddir)/src sources
-$(srcdir)/i18nsources $(srcdir)/qtsources $(srcdir)/dlgsources:
+$(srcdir)/i18nsources $(srcdir)/dlgsources:
 	$(MAKE) sources
 
 # Could also be solved this way: Read the I18NFILES variable from file
@@ -131,7 +131,7 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
-po/$(PACKAGE).pot: i18nsources dlgsources qtsources $(I18NFILES)
+po/$(PACKAGE).pot: i18nsources dlgsources $(I18NFILES)
 	rm -f po/tmp*
 	if test -n "$(I18NFILES)"; then \
 	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N -kI18S\
