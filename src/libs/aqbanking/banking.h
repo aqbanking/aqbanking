@@ -216,15 +216,6 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
 
 /** @name Working With Backends
  *
- * <p>
- *   These functions are now deprecated and will be removed prior to the release
- *   of AqBanking5.
- * </p>
- * <p>
- *   Since AqBanking5 configuration dialogs
- *   and assistents are implemented using GWEN's Dialog Framework. This framework
- *   allows for platform-independent dialogs (see @ref AB_ImporterDialog_new).
- * </p>
  */
 /*@{*/
 
@@ -234,17 +225,8 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
 AQBANKING_API
 const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_FindWizard(AB_BANKING *ab,
-                          const char *backend,
-                          const char *frontends,
-                          GWEN_BUFFER *pbuf);
-
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_FindDebugger(AB_BANKING *ab,
-			    const char *backend,
-			    const char *frontends,
-                            GWEN_BUFFER *pbuf);
+AQBANKING_API
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 /**
  * Create a dialog which allows to create a new user.
@@ -266,6 +248,43 @@ AQBANKING_API
 GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
 					 const char *backend,
 					 int mode);
+
+/*@}*/
+
+
+
+/** @name Working With Backends (Deprecated)
+ *
+ * <p>
+ *   These functions are now deprecated and will be removed prior to the release
+ *   of AqBanking5.
+ * </p>
+ * <p>
+ *   Since AqBanking5 configuration dialogs
+ *   and assistents are implemented using GWEN's Dialog Framework. This framework
+ *   allows for platform-independent dialogs (see @ref AB_ImporterDialog_new).
+ * </p>
+ */
+/*@{*/
+
+
+/**
+ * This function is deprecated and will be removed for the final release
+ * of AqBanking5.
+ * You can use @ref AB_SetupDialog_new to create the new setup dialog within your
+ * application and run it via @ref GWEN_Dialog_Exec().
+ */
+AQBANKING_API AQBANKING_DEPRECATED
+int AB_Banking_FindWizard(AB_BANKING *ab,
+                          const char *backend,
+                          const char *frontends,
+                          GWEN_BUFFER *pbuf);
+
+AQBANKING_API AQBANKING_DEPRECATED
+int AB_Banking_FindDebugger(AB_BANKING *ab,
+			    const char *backend,
+			    const char *frontends,
+                            GWEN_BUFFER *pbuf);
 
 
 /*@}*/
@@ -367,13 +386,6 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
  * These functions are also obsolete and will be removed for AqBanking5.
  */
 /*@{*/
-
-/**
- * This particular function will be moved to a non-export header file because
- * it is internally used.
- */
-AQBANKING_API AQBANKING_DEPRECATED
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
 AQBANKING_API AQBANKING_DEPRECATED
