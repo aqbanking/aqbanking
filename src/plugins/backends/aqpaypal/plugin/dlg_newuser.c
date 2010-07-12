@@ -765,6 +765,32 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
+  if (1) {
+    AB_ACCOUNT *account;
+    int rv;
+
+    account=AB_Banking_CreateAccount(xdlg->banking, APY_PROVIDER_NAME);
+    assert(account);
+#if 0
+    AB_User_SetUserName(u, xdlg->userName);
+    AB_User_SetUserId(u, xdlg->userId);
+#endif
+    AB_Account_SetOwnerName(account, AB_User_GetUserName(u));
+    AB_Account_SetAccountNumber(account, AB_User_GetUserId(u));
+    AB_Account_SetBankCode(account, "PAYPAL");
+    AB_Account_SetUser(account, u);
+    AB_Account_SetSelectedUser(account, u);
+
+    rv=AB_Banking_AddAccount(xdlg->banking, account);
+    if (rv<0) {
+      DBG_INFO(AQPAYPAL_LOGDOMAIN, "Error adding account (%d)", rv);
+      AB_Account_free(account);
+      AB_Banking_DeleteUser(xdlg->banking, u);
+      GWEN_Gui_ProgressEnd(pid);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+  }
+
   GWEN_Dialog_SetCharProperty(dlg,
 			      "wiz_end_label",
 			      GWEN_DialogProperty_Title,
