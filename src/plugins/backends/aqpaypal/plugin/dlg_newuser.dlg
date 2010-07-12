@@ -51,7 +51,7 @@
       <!-- action page -->
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="label" name="wiz_create_label" flags="fillX fillY justifyLeft" />
-        <widget type="pushButton" text="Special Settings" name="wiz_special_button" />
+<!--        <widget type="pushButton" text="Special Settings" name="wiz_special_button" /> -->
       </widget>
 
       <!-- extro page -->
