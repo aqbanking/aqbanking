@@ -394,15 +394,13 @@ void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg) {
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
-  if (i<DIALOG_MINWIDTH)
-    i=DIALOG_MINWIDTH;
-  GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+  if (i>=DIALOG_MINWIDTH)
+    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
-  if (i<DIALOG_MINHEIGHT)
-    i=DIALOG_MINHEIGHT;
-  GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+  if (i>=DIALOG_MINHEIGHT)
+    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read bank column widths */
   for (i=0; i<5; i++) {
@@ -436,8 +434,6 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
-  if (i<DIALOG_MINWIDTH)
-    i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_width",
@@ -445,8 +441,6 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
-  if (i<DIALOG_MINHEIGHT)
-    i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",

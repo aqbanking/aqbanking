@@ -389,8 +389,6 @@ void AH_EditUserDdvDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
-  if (i<DIALOG_MINWIDTH)
-    i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_width",
@@ -398,8 +396,6 @@ void AH_EditUserDdvDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
-  if (i<DIALOG_MINHEIGHT)
-    i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",

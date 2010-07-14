@@ -283,15 +283,13 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
-  if (i<DIALOG_MINWIDTH)
-    i=DIALOG_MINWIDTH;
-  GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+  if (i>=DIALOG_MINWIDTH)
+      GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
-  if (i<DIALOG_MINHEIGHT)
-    i=DIALOG_MINHEIGHT;
-  GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+  if (i>=DIALOG_MINHEIGHT)
+      GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read importer column widths */
   for (i=0; i<2; i++) {
@@ -339,8 +337,6 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
-  if (i<DIALOG_MINWIDTH)
-    i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_width",
@@ -348,8 +344,6 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
-  if (i<DIALOG_MINHEIGHT)
-    i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbPrefs,
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",
@@ -960,6 +954,12 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
+  }
+  else if (strcasecmp(sender, "wiz_importer_list")==0) {
+    if (AB_ImporterDialog_DetermineSelectedImporter(dlg)<0)
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    else
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
   }
 
   else if (strcasecmp(sender, "wiz_file_button")==0) {
