@@ -1485,6 +1485,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/psk.conf
   src/plugins/imexporters/csv/profiles/diba.conf
   src/plugins/imexporters/csv/profiles/dkb.conf
+  src/plugins/imexporters/csv/profiles/dkb-cash.conf
   src/plugins/imexporters/csv/profiles/sparda.conf
   src/plugins/imexporters/csv/profiles/full.conf
   src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
