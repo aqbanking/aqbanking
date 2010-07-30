@@ -330,6 +330,13 @@ void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDI
 
 
 
+void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f) {
+  assert(pro);
+  pro->getUserTypeDialogFn=f;
+}
+
+
+
 
 
 
@@ -484,6 +491,16 @@ GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
   assert(pro);
   if (pro->getEditAccountDialogFn)
     return pro->getEditAccountDialogFn(pro, a);
+  else
+    return NULL;
+}
+
+
+
+GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro) {
+  assert(pro);
+  if (pro->getUserTypeDialogFn)
+    return pro->getUserTypeDialogFn(pro);
   else
     return NULL;
 }

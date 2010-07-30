@@ -41,6 +41,7 @@
 #include <aqhbci/dlg_edituserpintan.h>
 #include <aqhbci/dlg_edituserddv.h>
 #include <aqhbci/dlg_edituserrdh.h>
+#include <aqhbci/dlg_choose_usertype.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -91,10 +92,12 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetUpdateFn(pro, AH_Provider_Update);
   AB_Provider_SetGetNewUserDialogFn(pro, AH_Provider_GetNewUserDialog);
   AB_Provider_SetGetEditUserDialogFn(pro, AH_Provider_GetEditUserDialog);
+  AB_Provider_SetGetUserTypeDialogFn(pro, AH_Provider_GetUserTypeDialog);
 
   AB_Provider_AddFlags(pro,
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
-		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG);
+		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
+		       AB_PROVIDER_FLAGS_HAS_USERTYPE_DIALOG);
 
   GWEN_NEW_OBJECT(AH_PROVIDER, hp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AH_PROVIDER, pro, hp,
@@ -1112,7 +1115,6 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   }
 
   return dlg;
-
 }
 
 
@@ -1147,6 +1149,25 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
     break;
   }
 
+  if (dlg==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
+
+
+
+GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
+  AH_PROVIDER *hp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  dlg=AH_ChooseUserTypeDialog_new(AB_Provider_GetBanking(pro));
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return NULL;

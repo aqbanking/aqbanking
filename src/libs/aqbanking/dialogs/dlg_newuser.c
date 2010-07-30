@@ -49,7 +49,7 @@ AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg);
-  assert(dlg);
+  assert(xdlg);
 
   return xdlg->user;
 }
@@ -61,7 +61,7 @@ void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u) {
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg);
-  assert(dlg);
+  assert(xdlg);
 
   xdlg->user=u;
 }
@@ -73,7 +73,7 @@ AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg) {
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg);
-  assert(dlg);
+  assert(xdlg);
 
   return xdlg->banking;
 }

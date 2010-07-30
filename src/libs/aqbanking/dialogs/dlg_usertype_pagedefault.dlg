@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog type="dialog" name="ab_usertype_pagedefault" i18n="aqbanking"
+        flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
+  <widget type="vlayout" flags="fillX fillY" >
+
+    <widget type="label" name="defaultIntroLabel" flags="fillX fillY" />
+
+    <widget type="hLine" flags="fillX" />
+
+    <widget type="radioButton" name="defaultStandardRadio"   text="Standard Setup" groupId="1" flags="fillX justifyLeft" />
+
+  </widget>
+
+</dialog>

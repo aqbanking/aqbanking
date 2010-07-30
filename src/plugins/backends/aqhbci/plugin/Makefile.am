@@ -72,7 +72,6 @@ aqhbci_la_LDFLAGS = -no-undefined -module -avoid-version
 testlib_SOURCES=testlib.c
 testlib_LDADD = \
   $(aqhbci_internal_libs) \
-  $(cbanking_internal_libs) \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 

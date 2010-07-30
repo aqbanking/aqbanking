@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -49,6 +46,8 @@ struct AB_PROVIDER {
 
   AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN getNewAccountDialogFn;
   AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN getEditAccountDialogFn;
+
+  AB_PROVIDER_GET_USERTYPE_DIALOG_FN getUserTypeDialogFn;
 
   GWEN_PLUGIN *plugin;
 

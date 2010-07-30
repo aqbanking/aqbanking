@@ -15,7 +15,9 @@ iheader_HEADERS=\
   dlg_newuser_be.h \
   dlg_selectbackend.h \
   dlg_editaccount.h \
-  dlg_edituser.h
+  dlg_edituser.h \
+  dlg_usertype_page_be.h \
+  dlg_setup_newuser.h
 
 noinst_HEADERS=\
   dlg_importer_p.h \
@@ -25,7 +27,11 @@ noinst_HEADERS=\
   dlg_newuser_p.h \
   dlg_selectbackend_p.h \
   dlg_editaccount_p.h \
-  dlg_edituser_p.h
+  dlg_edituser_p.h \
+  dlg_usertype_page_p.h \
+  dlg_setup_newuser_p.h \
+  dlg_usertype_pagedefault_l.h \
+  dlg_usertype_pagedefault_p.h
 
 libabdialogs_la_SOURCES=\
   dlg_importer.c \
@@ -35,7 +41,10 @@ libabdialogs_la_SOURCES=\
   dlg_newuser.c \
   dlg_selectbackend.c \
   dlg_editaccount.c \
-  dlg_edituser.c
+  dlg_edituser.c \
+  dlg_usertype_page.c \
+  dlg_setup_newuser.c \
+  dlg_usertype_pagedefault.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/dialogs
@@ -45,7 +54,10 @@ dlgdata_DATA=\
   dlg_setup.dlg \
   dlg_selectbackend.dlg \
   dlg_editaccount.dlg \
-  dlg_edituser.dlg
+  dlg_edituser.dlg \
+  dlg_setup_newuser.dlg \
+  dlg_usertype_pagedefault.dlg
+
 
 
 

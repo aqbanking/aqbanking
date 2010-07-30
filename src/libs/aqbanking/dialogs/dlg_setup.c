@@ -23,6 +23,8 @@
 #include <aqbanking/dlg_editaccount.h>
 #include <aqbanking/dlg_edituser.h>
 
+#include <aqbanking/dlg_setup_newuser.h>
+
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
 
@@ -625,6 +627,121 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
 
 
 int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
+#if 1
+  AB_SETUP_DIALOG *xdlg;
+  GWEN_DIALOG *dlg2;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  dlg2=AB_SetupNewUserDialog_new(xdlg->banking);
+  if (dlg2==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg2, 0);
+  if (rv==0) {
+    /* rejected */
+    GWEN_Dialog_free(dlg2);
+  }
+  else {
+    const char *s;
+
+    s=AB_SetupNewUserDialog_GetSelectedBackend(dlg2);
+    if (s && *s) {
+      AB_PROVIDER *pro;
+      int selectedType;
+      uint32_t flags;
+
+      pro=AB_Banking_GetProvider(xdlg->banking, s);
+      if (pro==NULL) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
+	GWEN_Dialog_free(dlg2);
+	return GWEN_DialogEvent_ResultHandled;
+      }
+      selectedType=AB_SetupNewUserDialog_GetSelectedType(dlg2);
+      GWEN_Dialog_free(dlg2);
+
+      flags=AB_Provider_GetFlags(pro);
+      if (flags & AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG) {
+	GWEN_DIALOG *dlg3;
+	int rv;
+
+	dlg3=AB_Provider_GetNewUserDialog(pro, selectedType);
+	if (dlg3==NULL) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+
+	rv=GWEN_Gui_ExecDialog(dlg3, 0);
+	if (rv==0) {
+	  /* rejected */
+	  GWEN_Dialog_free(dlg3);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+	GWEN_Dialog_free(dlg3);
+	AB_SetupDialog_Reload(dlg);
+      }
+      else {
+	GWEN_DIALOG *dlg3;
+	AB_USER *u;
+	const AB_COUNTRY *c=NULL;
+	const char *s;
+	int rv;
+    
+	u=AB_Banking_CreateUser(xdlg->banking, AB_Provider_GetName(pro));
+	if (u==NULL) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "No user created.");
+	  AB_User_free(u);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+    
+	s=GWEN_I18N_GetCurrentLocale();
+	if (s && *s) {
+	  if (strstr(s, "de_"))
+	    c=AB_Banking_FindCountryByCode(xdlg->banking, "de");
+	  else if (strstr(s, "us_"))
+	    c=AB_Banking_FindCountryByCode(xdlg->banking, "us");
+	}
+	if (c) {
+	  AB_User_SetCountry(u, AB_Country_GetCode(c));
+	}
+    
+	dlg3=AB_EditUserDialog_new(xdlg->banking, u, 0);
+	if (dlg3==NULL) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
+	  AB_User_free(u);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+    
+	rv=GWEN_Gui_ExecDialog(dlg3, 0);
+	if (rv==0) {
+	  /* rejected */
+	  GWEN_Dialog_free(dlg3);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+	GWEN_Dialog_free(dlg3);
+    
+	rv=AB_Banking_AddUser(xdlg->banking, u);
+	if (rv<0) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	  AB_User_free(u);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+	AB_SetupDialog_Reload(dlg);
+      }
+    }
+    else {
+      GWEN_Dialog_free(dlg2);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+#else
   AB_SETUP_DIALOG *xdlg;
   AB_PROVIDER *pro;
   const char *s;
@@ -721,6 +838,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
   }
 
   return GWEN_DialogEvent_ResultHandled;
+#endif
 }
 
 

@@ -17,7 +17,8 @@ iheader_HEADERS=\
   dlg_ddvcard.h \
   dlg_ddvcard_special.h \
   dlg_newkeyfile.h \
-  dlg_newkeyfile_special.h
+  dlg_newkeyfile_special.h \
+  dlg_choose_usertype.h
 
 noinst_HEADERS=\
   dlg_edituserddv_p.h \
@@ -29,7 +30,8 @@ noinst_HEADERS=\
   dlg_ddvcard_p.h \
   dlg_ddvcard_special_p.h \
   dlg_newkeyfile_p.h \
-  dlg_newkeyfile_special_p.h
+  dlg_newkeyfile_special_p.h \
+  dlg_choose_usertype_p.h
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_edituserddv.c \
@@ -41,7 +43,8 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_ddvcard.c \
   dlg_ddvcard_special.c \
   dlg_newkeyfile.c \
-  dlg_newkeyfile_special.c
+  dlg_newkeyfile_special.c \
+  dlg_choose_usertype.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
@@ -55,7 +58,8 @@ dlgdata_DATA=\
   dlg_pintan_special.dlg \
   dlg_newkeyfile.dlg \
   dlg_newkeyfile_special.dlg \
-  dlg_newuser.dlg
+  dlg_newuser.dlg \
+  dlg_choose_usertype.dlg
 
 dlgimagedir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
 dlgimage_DATA=\
