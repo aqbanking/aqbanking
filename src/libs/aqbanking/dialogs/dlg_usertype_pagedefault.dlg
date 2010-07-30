@@ -5,10 +5,6 @@
 
     <widget type="label" name="defaultIntroLabel" flags="fillX fillY" />
 
-    <widget type="hLine" flags="fillX" />
-
-    <widget type="radioButton" name="defaultStandardRadio"   text="Standard Setup" groupId="1" flags="fillX justifyLeft" />
-
   </widget>
 
 </dialog>

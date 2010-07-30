@@ -76,8 +76,9 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
 
 
 void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg) {
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "init called");
-  GWEN_Dialog_SetIntProperty(dlg, "defaultStandardRadio", GWEN_DialogProperty_Value, 0, 1, 0);
+  GWEN_Dialog_SetCharProperty(dlg, "defaultIntroLabel", GWEN_DialogProperty_Title, 0,
+			      I18N("<p>Click on the <i>run</i> button below to create the user.</p>"),
+			      0);
 }
 
 

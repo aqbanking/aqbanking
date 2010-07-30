@@ -76,6 +76,13 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_BANKING *ab) {
 
 
 void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
+  GWEN_Dialog_SetCharProperty(dlg, "hbciIntroLabel", GWEN_DialogProperty_Title, 0,
+			      I18N("<p>The HBCI module supports a broad range of security "
+				   "media. Please choose the user setup mode from the following "
+				   "list.</p>"
+				   "<p>Click on the <i>run</i> button below to create the user.</p>"),
+			      0);
+
   switch(AB_UserTypePageDialog_GetSelectedType(dlg)) {
   case AqHBCI_NewUserDialog_CodeGeneric:
   case AqHBCI_NewUserDialog_CodeExistingPinTan:
@@ -95,20 +102,6 @@ void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "hbciUseChipcardRadio", GWEN_DialogProperty_Value, 0, 1, 0);
     break;
   }
-
-  GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Choose User Setup Type"),
-			      0);
-
-  GWEN_Dialog_SetCharProperty(dlg,
-			      "hbciIntroLabel",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("<p>Please select the type of user you want to create from the list below.</p>"),
-			      0);
 
   /* temporarily disable not-implemented buttons */
   GWEN_Dialog_SetIntProperty(dlg, "hbciImportKeyFileRadio", GWEN_DialogProperty_Enabled, 0, 0, 0);
