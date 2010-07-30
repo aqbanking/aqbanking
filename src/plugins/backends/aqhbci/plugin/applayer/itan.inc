@@ -272,35 +272,42 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     int fn;
 
     fn=AH_User_GetSelectedTanMethod(u);
-    if (fn && AH_User_HasTanMethod(u, fn)) {
+    if (fn) {
+      if (AH_User_HasTanMethod(u, fn)) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
+	tm=AH_TanMethod_List_First(tml);
+	while(tm) {
+	  int proc;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
-      tm=AH_TanMethod_List_First(tml);
-      while(tm) {
-	int proc;
+	  if (AH_TanMethod_GetFunction(tm)==fn) {
+	    proc=AH_TanMethod_GetProcess(tm);
+	    if (proc==1 || proc==2) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
+		       fn, proc);
+	      break;
+	    }
+	    else {
+	      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+			 "iTan process type \"%d\" not supported", proc);
+	    }
+	  }
 
-	if (AH_TanMethod_GetFunction(tm)==fn) {
-	  proc=AH_TanMethod_GetProcess(tm);
-	  if (proc==1 || proc==2) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
-		     fn, proc);
-	    break;
-	  }
-	  else {
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		       "iTan process type \"%d\" not supported", proc);
-	  }
+	  tm=AH_TanMethod_List_Next(tm);
 	}
-
-	tm=AH_TanMethod_List_Next(tm);
+	if (tm==NULL) {
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Warning,
+				I18N("TAN method (%d) selected by user is no longer valid,"
+				     "please choose another one"),
+				fn);
+	}
       }
-      if (tm==NULL) {
-	GWEN_Gui_ProgressLog2(0,
-			      GWEN_LoggerLevel_Warning,
-			      I18N("TAN method (%d) selected by user is no longer valid,"
-				   "please choose another one"),
-			      fn);
+      else {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
       }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No Tan method selected");
     }
 
     if (tm==NULL) {
