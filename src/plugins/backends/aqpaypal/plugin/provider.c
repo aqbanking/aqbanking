@@ -15,6 +15,7 @@
 #include "user_l.h"
 
 #include "dlg_newuser.h"
+#include "dlg_edituser.h"
 
 #include <aqbanking/job_be.h>
 #include <aqbanking/httpsession.h>
@@ -69,9 +70,10 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
   AB_Provider_SetExtendAccountFn(pro, APY_Provider_ExtendAccount);
 
   AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
+  AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
 
   AB_Provider_AddFlags(pro,
-		       /*AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG | */
+		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
 
   return pro;
@@ -1493,6 +1495,25 @@ GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   assert(xp);
 
   dlg=APY_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  if (dlg==NULL) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
+
+
+
+GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+  APY_PROVIDER *xp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
+  assert(xp);
+
+  dlg=APY_EditUserDialog_new(AB_Provider_GetBanking(pro), u, 1);
   if (dlg==NULL) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
     return NULL;

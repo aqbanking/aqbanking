@@ -38,6 +38,7 @@ static int APY_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 				      GWEN_DB_NODE *dbBackend);
 
 static GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
+static GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
 
 
 static int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db);

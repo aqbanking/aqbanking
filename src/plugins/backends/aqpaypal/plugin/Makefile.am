@@ -16,7 +16,8 @@ noinst_HEADERS=\
  aqpaypal_l.h \
  provider_l.h provider_p.h \
  user_p.h user_l.h \
- dlg_newuser_p.h dlg_newuser.h
+ dlg_newuser_p.h dlg_newuser.h \
+ dlg_edituser_p.h dlg_edituser.h
 
 
 # library
@@ -25,7 +26,8 @@ libaqpaypal_la_LIBADD=$(gwenhywfar_libs) $(aqbanking_internal_libs)
 libaqpaypal_la_SOURCES=\
   provider.c \
   user.c \
-  dlg_newuser.c
+  dlg_newuser.c \
+  dlg_edituser.c
 
 
 # plugin
@@ -37,7 +39,8 @@ aqpaypal_la_LIBADD=libaqpaypal.la $(gwenhywfar_libs) $(aqbanking_internal_libs)
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqpaypal/dialogs
 dlgdata_DATA=\
-  dlg_newuser.dlg
+  dlg_newuser.dlg \
+  dlg_edituser.dlg
 
 
 sources:
@@ -51,3 +54,5 @@ sources:
 EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA)
 
 built_sources:
+
+
