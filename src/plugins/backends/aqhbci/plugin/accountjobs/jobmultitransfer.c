@@ -366,7 +366,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
     s=AH_Account_GetSuffix(a);
-    if (s)
+    if (s && *s && strcasecmp(s, "<empty>")!=0)
       AB_Transaction_SetLocalSuffix(t, s);
   }
 

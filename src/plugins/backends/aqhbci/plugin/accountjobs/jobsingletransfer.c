@@ -555,6 +555,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	if (maxn && n>maxn) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many purpose lines (%d>%d)", n, maxn);
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Too many purpose lines (%d>%d)"),
+				n, maxn);
 	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
@@ -565,6 +569,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	if (maxs && l>maxs) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN,
 		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Too many chars in purpose line %d (%d>%d)"),
+				n, l, maxs);
 	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
@@ -698,7 +706,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
     a=AH_AccountJob_GetAccount(mj);
     assert(a);
     s=AH_Account_GetSuffix(a);
-    if (s)
+    if (s && *s && strcasecmp(s, "<empty>")!=0)
       AB_Transaction_SetLocalSuffix(t, s);
   }
 
@@ -729,6 +737,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
       if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Text key \"%s\" not supported by bank",
 		  numbuf);
+	GWEN_Gui_ProgressLog2(0,
+			      GWEN_LoggerLevel_Error,
+			      I18N("Text key \"%d\" not supported by the bank"),
+			      n);
 	return GWEN_ERROR_INVALID;
       }
     }
@@ -765,6 +777,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Month day \"%s\" not supported by bank",
                       numbuf);
+	    GWEN_Gui_ProgressLog2(0,
+				  GWEN_LoggerLevel_Error,
+				  I18N("Month day \"%d\" not supported by bank"),
+				  n);
             return GWEN_ERROR_INVALID;
           }
         }
@@ -787,6 +803,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Execution month day \"%s\" not supported by bank",
                       numbuf);
+	    GWEN_Gui_ProgressLog2(0,
+				  GWEN_LoggerLevel_Error,
+				  I18N("Execution month day \"%d\" not supported by bank"),
+				  n);
             return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
@@ -812,6 +832,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Week day \"%s\" not supported by bank",
                       numbuf);
+	    GWEN_Gui_ProgressLog2(0,
+				  GWEN_LoggerLevel_Error,
+				  I18N("Week day \"%d\" not supported by bank"),
+				  n);
             return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
@@ -834,6 +858,10 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
             DBG_ERROR(AQHBCI_LOGDOMAIN,
                       "Execution month day \"%s\" not supported by bank",
                       numbuf);
+	    GWEN_Gui_ProgressLog2(0,
+				  GWEN_LoggerLevel_Error,
+				  I18N("Execution month day \"%d\" not supported by bank"),
+				  n);
             return GWEN_ERROR_INVALID;
           }
         } /* if there are limits */
@@ -861,6 +889,11 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt<n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Minimum setup time violated");
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Minimum setup time violated. "
+				     "Dated transactions need to be at least %d days away"),
+				n);
           return GWEN_ERROR_INVALID;
         }
 
@@ -869,6 +902,11 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt>n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Maximum setup time violated");
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Maximum setup time violated. "
+				     "Dated transactions need to be at most %d days away"),
+				n);
           return GWEN_ERROR_INVALID;
         }
       }
@@ -892,6 +930,11 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt<n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Minimum setup time violated");
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Minimum setup time violated. "
+				     "Dated transactions need to be at least %d days away"),
+				n);
           return GWEN_ERROR_INVALID;
         }
 
@@ -900,6 +943,11 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
         if (n && dt>n) {
           DBG_ERROR(AQHBCI_LOGDOMAIN,
                     "Maximum setup time violated");
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Error,
+				I18N("Maximum setup time violated. "
+				     "Dated transactions need to be at most %d days away"),
+				n);
           return GWEN_ERROR_INVALID;
         }
       }
