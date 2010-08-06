@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
   const char *cmd;
   const char *pinFile;
   int nonInteractive=0;
+  int acceptValidCerts=0;
   int rv;
   AB_BANKING *ab;
   GWEN_GUI *gui;
@@ -95,6 +96,17 @@ int main(int argc, char **argv) {
     "Select non-interactive mode.\n"        /* long description */
     "This automatically returns a confirmative answer to any non-critical\n"
     "message."
+  },
+  {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "acceptValidCerts",           /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "A",                          /* short option */
+    "acceptvalidcerts",           /* long option */
+    "Automatically accept all valid TLS certificate",
+    "Automatically accept all valid TLS certificate"
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -243,10 +255,17 @@ int main(int argc, char **argv) {
   s=GWEN_DB_GetCharValue(db, "charset", 0, "ISO-8859-15");
   GWEN_Gui_CGui_SetCharSet(gui, s);
   nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
+  acceptValidCerts=GWEN_DB_GetIntValue(db, "acceptValidCerts", 0, 0);
   if (nonInteractive)
     GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
   else
     GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
+
+  if (acceptValidCerts)
+    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
+  else
+    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
+
   pinFile=GWEN_DB_GetCharValue(db, "pinFile", 0, NULL);
   if (pinFile) {
     GWEN_DB_NODE *dbPins;
