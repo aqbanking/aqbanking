@@ -41,7 +41,7 @@
         <widget type="gridLayout" columns="2" flags="fillX" >
 
           <widget type="label" text="Context From File" />
-          <widget type="comboBox" name="wiz_context_combo" columns="40" flags="fillX" />
+          <widget type="comboBox" name="wiz_context_combo" columns="40" flags="fillX readOnly" />
 
           <widget type="label" text="Bank Code" flags="justifyLeft" />
           <widget type="hlayout" flags="fillX" >

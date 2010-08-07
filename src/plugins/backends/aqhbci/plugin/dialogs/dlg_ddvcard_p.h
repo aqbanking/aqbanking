@@ -14,6 +14,7 @@
 
 #include "dlg_ddvcard_l.h"
 
+#include <gwenhywfar/ct_context.h>
 
 
 typedef struct AH_DDVCARD_DIALOG AH_DDVCARD_DIALOG;
@@ -35,6 +36,7 @@ struct AH_DDVCARD_DIALOG {
   uint32_t flags;
 
   GWEN_CRYPT_TOKEN *cryptToken;
+  GWEN_CRYPT_TOKEN_CONTEXT_LIST *contextList;
   AB_USER *user;
 };
 
@@ -46,6 +48,7 @@ static int GWENHYWFAR_CB AH_DdvCardDialog_SignalHandler(GWEN_DIALOG *dlg,
 							const char *sender);
 
 
+static int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i);
 
 
 

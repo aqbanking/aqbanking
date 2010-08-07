@@ -43,6 +43,8 @@
 #define DIALOG_MINHEIGHT 200
 
 
+#define MAX_CONTEXT_ID_ENTRIES 64
+
 
 GWEN_INHERIT(GWEN_DIALOG, AH_DDVCARD_DIALOG)
 
@@ -85,6 +87,52 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct) {
 
   xdlg->banking=ab;
   xdlg->cryptToken=ct;
+  xdlg->contextList=GWEN_Crypt_Token_Context_List_new();
+
+  if (1) {
+    uint32_t idList[MAX_CONTEXT_ID_ENTRIES];
+    uint32_t idCount;
+    uint32_t i;
+
+    if (!GWEN_Crypt_Token_IsOpen(ct)) {
+      rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+      if (rv<0) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
+	GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+			    GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			    GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+			    I18N("Error"),
+			    I18N("Card could not be contacted. Maybe removed?"),
+			    I18N("Dismiss"),
+			    NULL,
+			    NULL,
+			    0);
+	GWEN_Dialog_free(dlg);
+	return NULL;
+      }
+    }
+
+    idCount=MAX_CONTEXT_ID_ENTRIES;
+    rv=GWEN_Crypt_Token_GetContextIdList(ct, idList, &idCount, 0);
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
+      GWEN_Dialog_free(dlg);
+      return NULL;
+    }
+
+    for (i=0; i<idCount; i++) {
+      const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+
+      ctx=GWEN_Crypt_Token_GetContext(ct, idList[i], 0);
+      if (ctx) {
+	GWEN_CRYPT_TOKEN_CONTEXT *nctx;
+
+	nctx=GWEN_Crypt_Token_Context_dup(ctx);
+	GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Added context %08x", idList[i]);
+      }
+    }
+  } /* for */
 
   /* preset */
   xdlg->hbciVersion=210;
@@ -100,6 +148,7 @@ void GWENHYWFAR_CB AH_DdvCardDialog_FreeData(void *bp, void *p) {
   AH_DDVCARD_DIALOG *xdlg;
 
   xdlg=(AH_DDVCARD_DIALOG*) p;
+  GWEN_Crypt_Token_Context_List_free(xdlg->contextList);
   free(xdlg->bankCode);
   free(xdlg->bankName);
   free(xdlg->userName);
@@ -461,6 +510,46 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 			      0,
 			      I18N("The user has been successfully setup."),
 			      0);
+
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  if (1) {
+    const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+    int i;
+
+    i=1;
+    ctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
+    while(ctx) {
+      char numbuf[64];
+      GWEN_BUFFER *tbuf;
+      const char *s;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      snprintf(numbuf, sizeof(numbuf)-1, I18N("Context %d:"), i);
+      numbuf[sizeof(numbuf)-1]=0;
+      GWEN_Buffer_AppendString(tbuf, numbuf);
+
+      s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
+      if (s && *s && strcasecmp(s, "20202020")!=0)
+	GWEN_Buffer_AppendString(tbuf, s);
+      else
+	GWEN_Buffer_AppendString(tbuf, I18N("<no bank code>"));
+      GWEN_Buffer_AppendString(tbuf, "-");
+
+      s=GWEN_Crypt_Token_Context_GetUserId(ctx);
+      if (s && *s)
+	GWEN_Buffer_AppendString(tbuf, s);
+      else
+	GWEN_Buffer_AppendString(tbuf, I18N("<no user id>"));
+
+      GWEN_Dialog_SetCharProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
+      GWEN_Buffer_free(tbuf);
+
+      i++;
+      ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
+    }
+  }
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, 0, 0);
+  AH_DdvCardDialog_FromContext(dlg, 0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -1066,12 +1155,78 @@ int AH_DdvCardDialog_HandleActivatedReadCard(GWEN_DIALOG *dlg) {
 
 
 
+int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
+  AH_DDVCARD_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg);
+  assert(xdlg);
+
+  if (i>=0) {
+    GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+
+    ctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
+    while(ctx && i--)
+      ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
+
+    if (ctx) {
+      const char *s;
+
+      s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
+      if (s && strcasecmp(s, "20202020")==0)
+	s=NULL;
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_bankcode_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+      s=GWEN_Crypt_Token_Context_GetAddress(ctx);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_url_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+      s=GWEN_Crypt_Token_Context_GetUserId(ctx);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_userid_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_customerid_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+    }
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AH_DdvCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
+  int i;
+
+  i=GWEN_Dialog_GetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, -1);
+  if (i>=0)
+    AH_DdvCardDialog_FromContext(dlg, i);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
     return AH_DdvCardDialog_HandleActivatedBankCode(dlg);
-  else if (strcasecmp(sender, "wiz_readcard_button")==0)
-    return AH_DdvCardDialog_HandleActivatedReadCard(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)
     return AH_DdvCardDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
@@ -1083,6 +1238,8 @@ int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
   }
+  else if (strcasecmp(sender, "wiz_context_combo")==0)
+    return AH_DdvCardDialog_HandleActivatedContext(dlg);
 
   return GWEN_DialogEvent_ResultNotHandled;
 }

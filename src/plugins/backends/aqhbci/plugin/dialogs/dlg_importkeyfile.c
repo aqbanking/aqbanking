@@ -712,14 +712,17 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
 	GWEN_Buffer_AppendString(tbuf, numbuf);
 
 	s=GWEN_Crypt_Token_Context_GetServiceId(nctx);
-	if (s && *s) {
+	if (s && *s && strcasecmp(s, "20202020")!=0)
 	  GWEN_Buffer_AppendString(tbuf, s);
-	  GWEN_Buffer_AppendString(tbuf, "-");
-	}
+        else
+	  GWEN_Buffer_AppendString(tbuf, I18N("<no bank code>"));
+	GWEN_Buffer_AppendString(tbuf, "-");
 
 	s=GWEN_Crypt_Token_Context_GetUserId(nctx);
 	if (s && *s)
 	  GWEN_Buffer_AppendString(tbuf, s);
+	else
+	  GWEN_Buffer_AppendString(tbuf, I18N("<no user id>"));
 	GWEN_Dialog_SetCharProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
         GWEN_Buffer_free(tbuf);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Added context %08x", idList[i]);
@@ -830,6 +833,8 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   uint32_t pid;
   AB_IMEXPORTER_CONTEXT *ctx;
   AB_PROVIDER *pro;
+  int contextId=1;
+  int i;
 
   DBG_ERROR(0, "Doit");
   assert(dlg);
@@ -848,6 +853,18 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
     // TODO: show error message
     return GWEN_DialogEvent_ResultHandled;
+  }
+
+  i=GWEN_Dialog_GetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, -1);
+  if (i>0) {
+    GWEN_CRYPT_TOKEN_CONTEXT *tctx;
+
+    tctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
+    while(tctx && --i)
+      tctx=GWEN_Crypt_Token_Context_List_Next(tctx);
+
+    if (tctx)
+      contextId=GWEN_Crypt_Token_Context_GetId(tctx);
   }
 
   DBG_ERROR(0, "Creating user");
@@ -872,7 +889,7 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   /* HBCI setup */
   AH_User_SetTokenType(u, "ohbci");
   AH_User_SetTokenName(u, AH_ImportKeyFileDialog_GetFileName(dlg));
-  AH_User_SetTokenContextId(u, 1);
+  AH_User_SetTokenContextId(u, contextId);
   AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
   AH_User_SetStatus(u, AH_UserStatusPending);
   AH_User_SetHbciVersion(u, xdlg->hbciVersion);

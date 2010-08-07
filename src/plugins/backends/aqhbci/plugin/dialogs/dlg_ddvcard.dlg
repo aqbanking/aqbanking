@@ -20,10 +20,6 @@
       <!-- intro page -->
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="label" name="wiz_begin_label" flags="fillX fillY justifyLeft" />
-        <widget type="hlayout" flags="fillX" >
-          <widget type="pushButton" name="wiz_readcard_button" text="Read from card" />
-          <widget type="hspacer" flags="fillX" />
-        </widget>
       </widget>
 
       <!-- bank settings page -->
@@ -31,6 +27,9 @@
         <widget type="label" name="wiz_bank_label" flags="fillX fillY justifyLeft" />
         <widget type="hLine" flags="fillX" />
         <widget type="gridLayout" columns="2" flags="fillX" >
+
+          <widget type="label" text="Context From File" />
+          <widget type="comboBox" name="wiz_context_combo" columns="40" flags="fillX readOnly" />
 
           <widget type="label" text="Bank Code" flags="justifyLeft" />
           <widget type="hlayout" flags="fillX" >
