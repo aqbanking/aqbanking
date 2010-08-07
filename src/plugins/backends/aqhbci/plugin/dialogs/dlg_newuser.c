@@ -17,9 +17,9 @@
 #include "dlg_newuser_p.h"
 #include "i18n_l.h"
 
-#include <aqhbci/dlg_pintan.h>
-#include <aqhbci/dlg_ddvcard.h>
-#include <aqhbci/dlg_newkeyfile.h>
+#include "dlg_pintan_l.h"
+#include "dlg_ddvcard_l.h"
+#include "dlg_newkeyfile_l.h"
 
 #include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>

@@ -109,26 +109,32 @@ static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf) {
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 2 */
+  s=AB_User_GetBankCode(u);
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "\t");
+
+  /* column 3 */
   s=AB_User_GetUserId(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
   
-  /* column 3 */
+  /* column 4 */
   s=AB_User_GetCustomerId(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
   
-  /* column 4 */
+  /* column 5 */
   s=AB_User_GetUserName(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
   
-  /* column 5 */
+  /* column 6 */
   s=AB_User_GetBackendName(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
@@ -320,12 +326,14 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
   AB_USER_LIST2 *ul;
   AB_ACCOUNT_LIST2 *al;
+  int i;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
   /* user list */
+  i=0;
   GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   ul=AB_Banking_GetUsers(xdlg->banking);
   if (ul) {
@@ -346,6 +354,7 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
 				    0,
 				    GWEN_Buffer_GetStart(tbuf),
 				    0);
+        i++;
         GWEN_Buffer_Reset(tbuf);
 	u=AB_User_List2Iterator_Next(it);
       }
@@ -356,8 +365,11 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     AB_User_List2_free(ul);
   }
   GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+  if (i)
+    GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* account list */
+  i=0;
   GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   al=AB_Banking_GetAccounts(xdlg->banking);
   if (al) {
@@ -378,7 +390,7 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
 				    0,
 				    GWEN_Buffer_GetStart(tbuf),
 				    0);
-
+	i++;
         GWEN_Buffer_Reset(tbuf);
 	a=AB_Account_List2Iterator_Next(it);
       }
@@ -389,6 +401,8 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     AB_Account_List2_free(al);
   }
   GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+  if (i)
+    GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
 
 
   AB_SetupDialog_UserChanged(dlg);
@@ -421,7 +435,7 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
 			      "userListBox",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("Id\tUser Id\tCustomer Id\tUser Name\tModule"),
+			      I18N("Id\tBank Code\tUser Id\tCustomer Id\tUser Name\tModule"),
 			      0);
   GWEN_Dialog_SetIntProperty(dlg,
 			     "userListBox",
@@ -455,7 +469,7 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read user column widths */
-  for (i=0; i<5; i++) {
+  for (i=0; i<6; i++) {
     j=GWEN_DB_GetIntValue(dbPrefs, "user_list_columns", i, -1);
     if (j<USER_LIST_MINCOLWIDTH)
       j=USER_LIST_MINCOLWIDTH;
@@ -512,7 +526,7 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* store column widths of user list */
   GWEN_DB_DeleteVar(dbPrefs, "user_list_columns");
-  for (i=0; i<5; i++) {
+  for (i=0; i<6; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_ColumnWidth, i, -1);
@@ -528,7 +542,7 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "user_list_sortbycolumn",
 		      -1);
-  for (i=0; i<5; i++) {
+  for (i=0; i<6; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_SortDirection, i,

@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Sat Jun 26 2010
+ begin       : Sat Aug 07 2010
  copyright   : (C) 2010 by Martin Preuss
  email       : martin@aqbanking.de
 
@@ -14,7 +14,7 @@
 
 
 
-#include "dlg_newkeyfile_p.h"
+#include "dlg_importkeyfile_p.h"
 #include "i18n_l.h"
 
 #include <aqbanking/dlg_selectbankinfo.h>
@@ -48,27 +48,27 @@
 
 
 
-GWEN_INHERIT(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG)
+GWEN_INHERIT(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG)
 
 
 
 
-GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_ImportKeyFileDialog_new(AB_BANKING *ab) {
   GWEN_DIALOG *dlg;
-  AH_NEWKEYFILE_DIALOG *xdlg;
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new("ah_setup_newkeyfile");
-  GWEN_NEW_OBJECT(AH_NEWKEYFILE_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg, xdlg,
-		       AH_NewKeyFileDialog_FreeData);
-  GWEN_Dialog_SetSignalHandler(dlg, AH_NewKeyFileDialog_SignalHandler);
+  dlg=GWEN_Dialog_new("ah_setup_importkeyfile");
+  GWEN_NEW_OBJECT(AH_IMPORTKEYFILE_DIALOG, xdlg);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg, xdlg,
+		       AH_ImportKeyFileDialog_FreeData);
+  GWEN_Dialog_SetSignalHandler(dlg, AH_ImportKeyFileDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_newkeyfile.dlg",
+			       "aqbanking/backends/aqhbci/dialogs/dlg_importkeyfile.dlg",
 			       fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
@@ -100,10 +100,10 @@ GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_BANKING *ab) {
 
 
 
-void GWENHYWFAR_CB AH_NewKeyFileDialog_FreeData(void *bp, void *p) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void GWENHYWFAR_CB AH_ImportKeyFileDialog_FreeData(void *bp, void *p) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
-  xdlg=(AH_NEWKEYFILE_DIALOG*) p;
+  xdlg=(AH_IMPORTKEYFILE_DIALOG*) p;
   free(xdlg->fileName);
   free(xdlg->bankCode);
   free(xdlg->bankName);
@@ -115,11 +115,11 @@ void GWENHYWFAR_CB AH_NewKeyFileDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *AH_NewKeyFileDialog_GetUser(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+AB_USER *AH_ImportKeyFileDialog_GetUser(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->user;
@@ -127,11 +127,11 @@ AB_USER *AH_NewKeyFileDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-const char *AH_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->fileName;
@@ -139,11 +139,11 @@ const char *AH_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->fileName);
@@ -153,11 +153,11 @@ void AH_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->bankCode;
@@ -165,11 +165,11 @@ const char *AH_NewKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->bankCode);
@@ -179,11 +179,11 @@ void AH_NewKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->bankName;
@@ -191,11 +191,11 @@ const char *AH_NewKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->bankName);
@@ -205,11 +205,11 @@ void AH_NewKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->userName;
@@ -217,11 +217,11 @@ const char *AH_NewKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->userName);
@@ -231,11 +231,11 @@ void AH_NewKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->userId;
@@ -243,11 +243,11 @@ const char *AH_NewKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->userId);
@@ -257,11 +257,11 @@ void AH_NewKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->customerId;
@@ -269,11 +269,11 @@ const char *AH_NewKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->customerId);
@@ -283,11 +283,11 @@ void AH_NewKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_NewKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+const char *AH_ImportKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->url;
@@ -295,11 +295,11 @@ const char *AH_NewKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   free(xdlg->url);
@@ -309,11 +309,11 @@ void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->hbciVersion;
@@ -321,11 +321,11 @@ int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->hbciVersion=i;
@@ -333,11 +333,11 @@ void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->rdhVersion;
@@ -345,11 +345,11 @@ int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->rdhVersion=i;
@@ -357,11 +357,11 @@ void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+uint32_t AH_ImportKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->flags;
@@ -369,11 +369,11 @@ uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags=fl;
@@ -381,11 +381,11 @@ void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags&=~fl;
@@ -393,11 +393,11 @@ void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags&=~fl;
@@ -408,13 +408,13 @@ void AH_NewKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_Init(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -423,7 +423,7 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("HBCI Keyfile Setup Wizard"),
+			      I18N("HBCI Keyfile Import Wizard"),
 			      0);
 
   /* select first page */
@@ -434,7 +434,7 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_begin_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("This dialog assists you in setting up a Keyfile User.\n"),
+			      I18N("This dialog assists you in importing a Keyfile User.\n"),
 			      0);
 
   /* setup bank page */
@@ -474,11 +474,8 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_end_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<html><p>The user has been successfully created.</p>"
-				   "<p>You must now <b>print</b> the INI letter (click the button below) "
-				   "and <b>send</b> it to the bank.</p> "
-				   "<p>The activation of your account by the bank can take a few days.</p></html>"),
-				   0);
+			      I18N("<html><p>The user has been successfully created.</p></html>"),
+			      0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -497,13 +494,13 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_Fini(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+void AH_ImportKeyFileDialog_Fini(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -525,17 +522,17 @@ void AH_NewKeyFileDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   const char *s;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_filename_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetFileName(dlg, s);
+    AH_ImportKeyFileDialog_SetFileName(dlg, s);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing file name");
     return GWEN_ERROR_NO_DATA;
@@ -546,17 +543,17 @@ int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   const char *s;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_bankcode_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetBankCode(dlg, s);
+    AH_ImportKeyFileDialog_SetBankCode(dlg, s);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing bank code");
     return GWEN_ERROR_NO_DATA;
@@ -564,13 +561,13 @@ int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_bankname_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetBankName(dlg, s);
+    AH_ImportKeyFileDialog_SetBankName(dlg, s);
   else
-    AH_NewKeyFileDialog_SetBankName(dlg, NULL);
+    AH_ImportKeyFileDialog_SetBankName(dlg, NULL);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_url_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetUrl(dlg, s);
+    AH_ImportKeyFileDialog_SetUrl(dlg, s);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing URL");
     return GWEN_ERROR_NO_DATA;
@@ -581,17 +578,17 @@ int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   const char *s;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_username_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetUserName(dlg, s);
+    AH_ImportKeyFileDialog_SetUserName(dlg, s);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing user name");
     return GWEN_ERROR_NO_DATA;
@@ -599,7 +596,7 @@ int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_userid_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetUserId(dlg, s);
+    AH_ImportKeyFileDialog_SetUserId(dlg, s);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing user id");
     return GWEN_ERROR_NO_DATA;
@@ -607,21 +604,88 @@ int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_customerid_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
-    AH_NewKeyFileDialog_SetCustomerId(dlg, s);
+    AH_ImportKeyFileDialog_SetCustomerId(dlg, s);
   else
-    AH_NewKeyFileDialog_SetCustomerId(dlg, NULL);
+    AH_ImportKeyFileDialog_SetCustomerId(dlg, NULL);
 
   return 0;
 }
 
 
 
-int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_PLUGIN *pl;
+  GWEN_BUFFER *tnBuf;
+  GWEN_BUFFER *ttBuf;
+  GWEN_CRYPT_TOKEN *ct;
+  int rv;
+
+  /* create CryptToken */
+  pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+  if (pm==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin manager not found");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  tnBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  ttBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Crypt_Token_PluginManager_CheckToken(pm, GWEN_Crypt_Token_Device_File, ttBuf, tnBuf, 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(ttBuf);
+    GWEN_Buffer_free(tnBuf);
+    return rv;
+  }
+
+  pl=GWEN_PluginManager_GetPlugin(pm, GWEN_Buffer_GetStart(ttBuf));
+  if (pl==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin not found");
+    GWEN_Buffer_free(ttBuf);
+    GWEN_Buffer_free(tnBuf);
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Plugin found");
+
+  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, GWEN_Buffer_GetStart(ttBuf));
+  if (ct==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
+    GWEN_Buffer_free(ttBuf);
+    GWEN_Buffer_free(tnBuf);
+    return GWEN_ERROR_INTERNAL;
+  }
+  GWEN_Buffer_free(ttBuf);
+  GWEN_Buffer_free(tnBuf);
+
+  /* create crypt token */
+  rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open token");
+    GWEN_Crypt_Token_free(ct);
+    return rv;
+  }
+
+  /* close crypt token */
+  rv=GWEN_Crypt_Token_Close(ct, 0, 0);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not close token");
+    GWEN_Crypt_Token_free(ct);
+    return rv;
+  }
+
+  GWEN_Crypt_Token_free(ct);
+
+  return 0;
+}
+
+
+
+int AH_ImportKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int rv;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   switch(page) {
@@ -632,7 +696,7 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
   case PAGE_FILE:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
+    rv=AH_ImportKeyFileDialog_GetFilePageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -641,8 +705,16 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_BANK:
+    if (forwards) {
+      /* leaving FILE page, check whether we can open the file */
+      rv=AH_ImportKeyFileDialog_CheckFileType(dlg);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	return GWEN_DialogEvent_ResultHandled;
+      }
+    }
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    rv=AH_NewKeyFileDialog_GetBankPageData(dlg);
+    rv=AH_ImportKeyFileDialog_GetBankPageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -652,7 +724,7 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
   case PAGE_USER:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    rv=AH_NewKeyFileDialog_GetUserPageData(dlg);
+    rv=AH_ImportKeyFileDialog_GetUserPageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -683,24 +755,21 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   AB_USER *u;
   GWEN_URL *url;
   int rv;
   uint32_t pid;
   AB_IMEXPORTER_CONTEXT *ctx;
   AB_PROVIDER *pro;
-  GWEN_PLUGIN_MANAGER *pm;
-  GWEN_PLUGIN *pl;
-  GWEN_CRYPT_TOKEN *ct;
 
   DBG_ERROR(0, "Doit");
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
-  rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
+  rv=AH_ImportKeyFileDialog_GetFilePageData(dlg);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No file?");
     // TODO: show error message
@@ -735,52 +804,13 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* HBCI setup */
   AH_User_SetTokenType(u, "ohbci");
-  AH_User_SetTokenName(u, AH_NewKeyFileDialog_GetFileName(dlg));
+  AH_User_SetTokenName(u, AH_ImportKeyFileDialog_GetFileName(dlg));
   AH_User_SetTokenContextId(u, 1);
   AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
   AH_User_SetStatus(u, AH_UserStatusPending);
   AH_User_SetHbciVersion(u, xdlg->hbciVersion);
   AH_User_SetRdhType(u, xdlg->rdhVersion);
   AH_User_SetFlags(u, xdlg->flags);
-
-  /* create CryptToken */
-  pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
-  if (pm==0) {
-    DBG_ERROR(0, "Plugin manager not found");
-    return 3;
-  }
-
-  pl=GWEN_PluginManager_GetPlugin(pm, AH_User_GetTokenType(u));
-  if (pl==0) {
-    DBG_ERROR(0, "Plugin not found");
-    AB_User_free(u);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  DBG_ERROR(0, "Plugin found");
-
-  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, AH_User_GetTokenName(u));
-  if (ct==0) {
-    DBG_ERROR(0, "Could not create crypt token");
-    AB_User_free(u);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  /* create crypt token */
-  rv=GWEN_Crypt_Token_Create(ct, 0);
-  if (rv) {
-    DBG_ERROR(0, "Could not create token");
-    AB_User_free(u);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  /* close crypt token */
-  rv=GWEN_Crypt_Token_Close(ct, 0, 0);
-  if (rv) {
-    DBG_ERROR(0, "Could not close token");
-    AB_User_free(u);
-    unlink(AH_User_GetTokenName(u));
-    return GWEN_DialogEvent_ResultHandled;
-  }
 
   url=GWEN_Url_fromString(xdlg->url);
   assert(url);
@@ -803,8 +833,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
 			     GWEN_GUI_PROGRESS_SHOW_ABORT,
 			     I18N("Setting Up Keyfile User"),
-			     I18N("The server keys will now be retrieved, keys created and sent to the bank."),
-			     3, /* getkeys, mkKeys, sendKeys */
+			     I18N("The server keys and system id will now be retrieved."),
+			     2, /* getkeys, getsysid */
 			     0);
   /* lock new user */
   DBG_ERROR(0, "Locking user");
@@ -815,7 +845,6 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
     AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -831,17 +860,17 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
+
+  /* TODO: show bank key hash */
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -849,45 +878,17 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  /* generate keys */
-  rv=AH_Provider_CreateKeys(pro, u, 0);
-  if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
-    GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error generating keys: %d"), rv);
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
-  if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
-    GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  /* send user keys */
-  DBG_ERROR(0, "Sending keys");
+  /* get sysid keys id */
+  DBG_ERROR(0, "Getting SysId");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
-		       I18N("Sending user keys"));
+		       I18N("Retrieving system id"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_SendUserKeys2(pro, u, ctx, 0, 0, 1, 0); /* withAuthKey, withProgress, nounmount, doLock */
+  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
-    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -897,7 +898,6 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
-    //unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -924,7 +924,7 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Gui_ProgressEnd(pid);
-  AH_NewKeyFileDialog_EnterPage(dlg, PAGE_END, 1);
+  AH_ImportKeyFileDialog_EnterPage(dlg, PAGE_END, 1);
 
   xdlg->user=u;
 
@@ -933,21 +933,21 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_Next(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_Next(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int page;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
   if (page==PAGE_CREATE) {
-    return AH_NewKeyFileDialog_DoIt(dlg);
+    return AH_ImportKeyFileDialog_DoIt(dlg);
   }
   else if (page<PAGE_END) {
     page++;
-    return AH_NewKeyFileDialog_EnterPage(dlg, page, 1);
+    return AH_ImportKeyFileDialog_EnterPage(dlg, page, 1);
   }
   else if (page==PAGE_END)
     return GWEN_DialogEvent_ResultAccept;
@@ -957,18 +957,18 @@ int AH_NewKeyFileDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_Previous(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_Previous(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int page;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
   if (page>PAGE_BEGIN) {
     page--;
-    return AH_NewKeyFileDialog_EnterPage(dlg, page, 0);
+    return AH_ImportKeyFileDialog_EnterPage(dlg, page, 0);
   }
 
   return GWEN_DialogEvent_ResultHandled;
@@ -976,13 +976,13 @@ int AH_NewKeyFileDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
@@ -1094,7 +1094,7 @@ int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
   GWEN_Dialog_free(dlg2);
 
-  if (AH_NewKeyFileDialog_GetBankPageData(dlg)<0)
+  if (AH_ImportKeyFileDialog_GetBankPageData(dlg)<0)
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
   else
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
@@ -1104,13 +1104,13 @@ int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   dlg2=AH_RdhSpecialDialog_new(xdlg->banking);
@@ -1140,14 +1140,14 @@ int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int AH_ImportKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int rv;
   const char *s;
   GWEN_BUFFER *pathBuffer;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
@@ -1167,7 +1167,7 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
 				0,
 				GWEN_Buffer_GetStart(pathBuffer),
 				0);
-    rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
+    rv=AH_ImportKeyFileDialog_GetFilePageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -1182,14 +1182,14 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+static int AH_ImportKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
 
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
@@ -1245,22 +1245,22 @@ static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_ImportKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_filename_button")==0)
-    return AH_NewKeyFileDialog_HandleActivatedFileButton(dlg);
+    return AH_ImportKeyFileDialog_HandleActivatedFileButton(dlg);
   else if (strcasecmp(sender, "wiz_bankcode_button")==0)
-    return AH_NewKeyFileDialog_HandleActivatedBankCode(dlg);
+    return AH_ImportKeyFileDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)
-    return AH_NewKeyFileDialog_Previous(dlg);
+    return AH_ImportKeyFileDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
-    return AH_NewKeyFileDialog_Next(dlg);
+    return AH_ImportKeyFileDialog_Next(dlg);
   else if (strcasecmp(sender, "wiz_abort_button")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "wiz_special_button")==0)
-    return AH_NewKeyFileDialog_HandleActivatedSpecial(dlg);
+    return AH_ImportKeyFileDialog_HandleActivatedSpecial(dlg);
   else if (strcasecmp(sender, "wiz_iniletter_button")==0)
-    return AH_NewKeyFileDialog_HandleActivatedIniLetter(dlg);
+    return AH_ImportKeyFileDialog_HandleActivatedIniLetter(dlg);
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
   }
@@ -1270,7 +1270,7 @@ int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AH_ImportKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "wiz_filename_edit")==0 ||
       strcasecmp(sender, "wiz_bankcode_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
@@ -1280,21 +1280,21 @@ int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
     int rv;
 
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_FILE) {
-      rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
+      rv=AH_ImportKeyFileDialog_GetFilePageData(dlg);
       if (rv<0)
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_BANK) {
-      rv=AH_NewKeyFileDialog_GetBankPageData(dlg);
+      rv=AH_ImportKeyFileDialog_GetBankPageData(dlg);
       if (rv<0)
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
-      rv=AH_NewKeyFileDialog_GetUserPageData(dlg);
+      rv=AH_ImportKeyFileDialog_GetUserPageData(dlg);
       if (rv<0)
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
@@ -1307,29 +1307,29 @@ int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
 
 
 
-int GWENHYWFAR_CB AH_NewKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
-						    GWEN_DIALOG_EVENTTYPE t,
-						    const char *sender) {
-  AH_NEWKEYFILE_DIALOG *xdlg;
+int GWENHYWFAR_CB AH_ImportKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
+						       GWEN_DIALOG_EVENTTYPE t,
+						       const char *sender) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
   switch(t) {
   case GWEN_DialogEvent_TypeInit:
-    AH_NewKeyFileDialog_Init(dlg);
+    AH_ImportKeyFileDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeFini:
-    AH_NewKeyFileDialog_Fini(dlg);
+    AH_ImportKeyFileDialog_Fini(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    return AH_NewKeyFileDialog_HandleValueChanged(dlg, sender);
+    return AH_ImportKeyFileDialog_HandleValueChanged(dlg, sender);
 
   case GWEN_DialogEvent_TypeActivated:
-    return AH_NewKeyFileDialog_HandleActivated(dlg, sender);
+    return AH_ImportKeyFileDialog_HandleActivated(dlg, sender);
 
   case GWEN_DialogEvent_TypeEnabled:
   case GWEN_DialogEvent_TypeDisabled:

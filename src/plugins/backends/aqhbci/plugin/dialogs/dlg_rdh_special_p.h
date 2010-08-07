@@ -8,16 +8,16 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_DLG_NEWKEYFILE_SPECIAL_P_H
-#define AQHBCI_DLG_NEWKEYFILE_SPECIAL_P_H
+#ifndef AQHBCI_DLG_RDH_SPECIAL_P_H
+#define AQHBCI_DLG_RDH_SPECIAL_P_H
 
 
-#include "dlg_newkeyfile_special.h"
+#include "dlg_rdh_special_l.h"
 
 
 
-typedef struct AH_NEWKEYFILE_SPECIAL_DIALOG AH_NEWKEYFILE_SPECIAL_DIALOG;
-struct AH_NEWKEYFILE_SPECIAL_DIALOG {
+typedef struct AH_RDH_SPECIAL_DIALOG AH_RDH_SPECIAL_DIALOG;
+struct AH_RDH_SPECIAL_DIALOG {
   AB_BANKING *banking;
 
   int hbciVersion;
@@ -26,11 +26,11 @@ struct AH_NEWKEYFILE_SPECIAL_DIALOG {
 };
 
 
-static void GWENHYWFAR_CB AH_NewKeyFileSpecialDialog_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_RdhSpecialDialog_FreeData(void *bp, void *p);
 
-static int GWENHYWFAR_CB AH_NewKeyFileSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
-								  GWEN_DIALOG_EVENTTYPE t,
-								  const char *sender);
+static int GWENHYWFAR_CB AH_RdhSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
+							   GWEN_DIALOG_EVENTTYPE t,
+							   const char *sender);
 
 
 

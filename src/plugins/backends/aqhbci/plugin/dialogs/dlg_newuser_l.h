@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Thu Jul 08 2010
+ begin       : Mon Apr 19 2010
  copyright   : (C) 2010 by Martin Preuss
  email       : martin@aqbanking.de
 
@@ -8,15 +8,12 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_DLG_EDITUSER_RDH_H
-#define AQHBCI_DLG_EDITUSER_RDH_H
+#ifndef AQHBCI_NEWUSER_DIALOG_H
+#define AQHBCI_NEWUSER_DIALOG_H
 
+
+#include <aqbanking/dlg_newuser_be.h>
 #include <aqhbci/aqhbci.h>
-
-#include <aqbanking/banking.h>
-#include <aqbanking/user.h>
-
-#include <gwenhywfar/dialog.h>
 
 
 #ifdef __cplusplus
@@ -24,14 +21,12 @@ extern "C" {
 #endif
 
 
-AQHBCI_API GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
-
+GWEN_DIALOG *AH_NewUserDialog_new(AB_BANKING *ab);
 
 
 #ifdef __cplusplus
 }
 #endif
-
 
 
 

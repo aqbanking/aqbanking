@@ -14,7 +14,7 @@
 
 
 
-#include "dlg_newkeyfile_special_p.h"
+#include "dlg_rdh_special_p.h"
 #include "i18n_l.h"
 
 #include <aqbanking/user.h>
@@ -35,27 +35,27 @@
 
 
 
-GWEN_INHERIT(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG)
+GWEN_INHERIT(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG)
 
 
 
 
-GWEN_DIALOG *AH_NewKeyFileSpecialDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_BANKING *ab) {
   GWEN_DIALOG *dlg;
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+  AH_RDH_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new("ah_setup_newkeyfile_special");
-  GWEN_NEW_OBJECT(AH_NEWKEYFILE_SPECIAL_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg, xdlg,
-		       AH_NewKeyFileSpecialDialog_FreeData);
-  GWEN_Dialog_SetSignalHandler(dlg, AH_NewKeyFileSpecialDialog_SignalHandler);
+  dlg=GWEN_Dialog_new("ah_rdh_special");
+  GWEN_NEW_OBJECT(AH_RDH_SPECIAL_DIALOG, xdlg);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg, xdlg,
+		       AH_RdhSpecialDialog_FreeData);
+  GWEN_Dialog_SetSignalHandler(dlg, AH_RdhSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_newkeyfile_special.dlg",
+			       "aqbanking/backends/aqhbci/dialogs/dlg_rdh_special.dlg",
 			       fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
@@ -86,20 +86,20 @@ GWEN_DIALOG *AH_NewKeyFileSpecialDialog_new(AB_BANKING *ab) {
 
 
 
-void GWENHYWFAR_CB AH_NewKeyFileSpecialDialog_FreeData(void *bp, void *p) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void GWENHYWFAR_CB AH_RdhSpecialDialog_FreeData(void *bp, void *p) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
-  xdlg=(AH_NEWKEYFILE_SPECIAL_DIALOG*) p;
+  xdlg=(AH_RDH_SPECIAL_DIALOG*) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-int AH_NewKeyFileSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+int AH_RdhSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->hbciVersion;
@@ -107,11 +107,11 @@ int AH_NewKeyFileSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->hbciVersion=i;
@@ -119,11 +119,11 @@ void AH_NewKeyFileSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_NewKeyFileSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+int AH_RdhSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->rdhVersion;
@@ -131,11 +131,11 @@ int AH_NewKeyFileSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->rdhVersion=i;
@@ -143,11 +143,11 @@ void AH_NewKeyFileSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_NewKeyFileSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   return xdlg->flags;
@@ -155,11 +155,11 @@ uint32_t AH_NewKeyFileSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags=fl;
@@ -167,11 +167,11 @@ void AH_NewKeyFileSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags&=~fl;
@@ -179,11 +179,11 @@ void AH_NewKeyFileSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   xdlg->flags&=~fl;
@@ -191,13 +191,13 @@ void AH_NewKeyFileSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileSpecialDialog_Init(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -258,14 +258,14 @@ void AH_NewKeyFileSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileSpecialDialog_Fini(GWEN_DIALOG *dlg) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+  AH_RDH_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
   uint32_t flags;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
@@ -313,7 +313,7 @@ void AH_NewKeyFileSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_RdhSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -328,29 +328,29 @@ int AH_NewKeyFileSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sen
 
 
 
-int GWENHYWFAR_CB AH_NewKeyFileSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
+int GWENHYWFAR_CB AH_RdhSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
 							   GWEN_DIALOG_EVENTTYPE t,
 							   const char *sender) {
-  AH_NEWKEYFILE_SPECIAL_DIALOG *xdlg;
+  AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_SPECIAL_DIALOG, dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
   switch(t) {
   case GWEN_DialogEvent_TypeInit:
-    AH_NewKeyFileSpecialDialog_Init(dlg);
+    AH_RdhSpecialDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeFini:
-    AH_NewKeyFileSpecialDialog_Fini(dlg);
+    AH_RdhSpecialDialog_Fini(dlg);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeActivated:
-    return AH_NewKeyFileSpecialDialog_HandleActivated(dlg, sender);
+    return AH_RdhSpecialDialog_HandleActivated(dlg, sender);
 
   case GWEN_DialogEvent_TypeEnabled:
   case GWEN_DialogEvent_TypeDisabled:

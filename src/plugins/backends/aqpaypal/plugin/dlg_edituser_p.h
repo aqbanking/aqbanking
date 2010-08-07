@@ -12,7 +12,7 @@
 #define AQPAYPAL_DLG_EDITUSER_P_H
 
 
-#include "dlg_edituser.h"
+#include "dlg_edituser_l.h"
 
 #include <aqpaypal/user.h>
 

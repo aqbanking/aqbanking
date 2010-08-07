@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_EDITUSER_DDV_P_H
 
 
-#include "dlg_edituserddv.h"
+#include "dlg_edituserddv_l.h"
 
 #include <aqhbci/user.h>
 

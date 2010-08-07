@@ -12,7 +12,7 @@
 #define AQHBCI_NEWUSER_DIALOG_P_H
 
 
-#include "dlg_newuser.h"
+#include "dlg_newuser_l.h"
 
 
 

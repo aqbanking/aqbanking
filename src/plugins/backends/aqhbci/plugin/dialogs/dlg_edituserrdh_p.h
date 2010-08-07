@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_EDITUSER_RDH_P_H
 
 
-#include "dlg_edituserrdh.h"
+#include "dlg_edituserrdh_l.h"
 
 #include <aqhbci/user.h>
 

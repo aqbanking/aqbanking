@@ -16,8 +16,8 @@ noinst_HEADERS=\
  aqpaypal_l.h \
  provider_l.h provider_p.h \
  user_p.h user_l.h \
- dlg_newuser_p.h dlg_newuser.h \
- dlg_edituser_p.h dlg_edituser.h
+ dlg_newuser_p.h dlg_newuser_l.h \
+ dlg_edituser_p.h dlg_edituser_l.h
 
 
 # library

@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2010 by Martin Preuss
+ email       : martin@aqbanking.de
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
 <dialog type="dialog" name="ah_edit_user_rdh" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >

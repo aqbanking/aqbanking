@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_DDVCARD_P_H
 
 
-#include "dlg_ddvcard.h"
+#include "dlg_ddvcard_l.h"
 
 
 

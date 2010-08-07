@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_EDITUSER_PINTAN_P_H
 
 
-#include "dlg_edituserpintan.h"
+#include "dlg_edituserpintan_l.h"
 
 #include <aqhbci/user.h>
 

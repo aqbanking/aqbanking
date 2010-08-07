@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_PINTAN_SPECIAL_P_H
 
 
-#include "dlg_pintan_special.h"
+#include "dlg_pintan_special_l.h"
 
 
 

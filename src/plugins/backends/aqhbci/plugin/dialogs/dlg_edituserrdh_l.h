@@ -8,8 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_DLG_EDITUSER_PINTAN_H
-#define AQHBCI_DLG_EDITUSER_PINTAN_H
+#ifndef AQHBCI_DLG_EDITUSER_RDH_H
+#define AQHBCI_DLG_EDITUSER_RDH_H
 
 #include <aqhbci/aqhbci.h>
 
@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 
-AQHBCI_API GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
+GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
 
 
 

@@ -31,17 +31,18 @@
 /* special jobs */
 #include "jobforeignxferwh_l.h"
 
+#include "dlg_newuser_l.h"
+#include "dlg_pintan_l.h"
+#include "dlg_ddvcard_l.h"
+#include "dlg_newkeyfile_l.h"
+#include "dlg_importkeyfile_l.h"
+#include "dlg_edituserpintan_l.h"
+#include "dlg_edituserddv_l.h"
+#include "dlg_edituserrdh_l.h"
+#include "dlg_choose_usertype_l.h"
 
 #include "adminjobs_l.h"
 #include <aqhbci/user.h>
-#include <aqhbci/dlg_newuser.h>
-#include <aqhbci/dlg_pintan.h>
-#include <aqhbci/dlg_ddvcard.h>
-#include <aqhbci/dlg_newkeyfile.h>
-#include <aqhbci/dlg_edituserpintan.h>
-#include <aqhbci/dlg_edituserddv.h>
-#include <aqhbci/dlg_edituserrdh.h>
-#include <aqhbci/dlg_choose_usertype.h>
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
@@ -1141,6 +1142,8 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
     break;
 
   case AqHBCI_NewUserDialog_CodeExistingKeyFile:
+    dlg=AH_ImportKeyFileDialog_new(AB_Provider_GetBanking(pro));
+    break;
   case AqHBCI_NewUserDialog_CodeCreateChipcard:
 
   case AqHBCI_NewUserDialog_CodeGeneric:

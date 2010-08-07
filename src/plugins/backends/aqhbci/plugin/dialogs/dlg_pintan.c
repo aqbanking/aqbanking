@@ -23,7 +23,7 @@
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
-#include <aqhbci/dlg_pintan_special.h>
+#include "dlg_pintan_special_l.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

@@ -14,8 +14,8 @@
 #include "provider_p.h"
 #include "user_l.h"
 
-#include "dlg_newuser.h"
-#include "dlg_edituser.h"
+#include "dlg_newuser_l.h"
+#include "dlg_edituser_l.h"
 
 #include <aqbanking/job_be.h>
 #include <aqbanking/httpsession.h>

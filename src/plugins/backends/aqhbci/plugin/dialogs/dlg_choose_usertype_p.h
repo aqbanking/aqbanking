@@ -12,7 +12,7 @@
 #define AQHBCI_CHOOSEUSERTYPE_DIALOG_P_H
 
 
-#include "dlg_choose_usertype.h"
+#include "dlg_choose_usertype_l.h"
 
 
 static int GWENHYWFAR_CB AH_ChooseUserTypeDialog_SignalHandler(GWEN_DIALOG *dlg,

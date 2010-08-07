@@ -6,32 +6,22 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 noinst_LTLIBRARIES=libaqhbci_dlgs.la
 
-iheaderdir=@aqbanking_headerdir_am@/aqhbci
-iheader_HEADERS=\
-  dlg_edituserddv.h \
-  dlg_edituserpintan.h \
-  dlg_edituserrdh.h \
-  dlg_pintan.h \
-  dlg_pintan_special.h \
-  dlg_newuser.h \
-  dlg_ddvcard.h \
-  dlg_ddvcard_special.h \
-  dlg_newkeyfile.h \
-  dlg_newkeyfile_special.h \
-  dlg_choose_usertype.h
+#iheaderdir=@aqbanking_headerdir_am@/aqhbci
+#iheader_HEADERS=
 
 noinst_HEADERS=\
-  dlg_edituserddv_p.h \
-  dlg_edituserpintan_p.h \
-  dlg_edituserrdh_p.h \
-  dlg_pintan_p.h \
-  dlg_pintan_special_p.h \
-  dlg_newuser_p.h \
-  dlg_ddvcard_p.h \
-  dlg_ddvcard_special_p.h \
-  dlg_newkeyfile_p.h \
-  dlg_newkeyfile_special_p.h \
-  dlg_choose_usertype_p.h
+  dlg_edituserddv_l.h dlg_edituserddv_p.h \
+  dlg_edituserpintan_l.h dlg_edituserpintan_p.h \
+  dlg_edituserrdh_l.h dlg_edituserrdh_p.h \
+  dlg_pintan_l.h dlg_pintan_p.h \
+  dlg_pintan_special_l.h dlg_pintan_special_p.h \
+  dlg_newuser_l.h dlg_newuser_p.h \
+  dlg_ddvcard_l.h dlg_ddvcard_p.h \
+  dlg_ddvcard_special_l.h dlg_ddvcard_special_p.h \
+  dlg_newkeyfile_l.h dlg_newkeyfile_p.h \
+  dlg_rdh_special_l.h dlg_rdh_special_p.h \
+  dlg_importkeyfile_l.h dlg_importkeyfile_p.h \
+  dlg_choose_usertype_l.h dlg_choose_usertype_p.h
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_edituserddv.c \
@@ -43,7 +33,8 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_ddvcard.c \
   dlg_ddvcard_special.c \
   dlg_newkeyfile.c \
-  dlg_newkeyfile_special.c \
+  dlg_rdh_special.c \
+  dlg_importkeyfile.c \
   dlg_choose_usertype.c
 
 
@@ -57,7 +48,8 @@ dlgdata_DATA=\
   dlg_pintan.dlg \
   dlg_pintan_special.dlg \
   dlg_newkeyfile.dlg \
-  dlg_newkeyfile_special.dlg \
+  dlg_rdh_special.dlg \
+  dlg_importkeyfile.dlg \
   dlg_newuser.dlg \
   dlg_choose_usertype.dlg
 

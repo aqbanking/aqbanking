@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Mon Apr 12 2010
+ begin       : Sat Aug 07 2010
  copyright   : (C) 2010 by Martin Preuss
  email       : martin@aqbanking.de
 
@@ -8,17 +8,19 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_DLG_PINTAN_P_H
-#define AQHBCI_DLG_PINTAN_P_H
+#ifndef AQHBCI_DLG_IMPORTKEYFILE_P_H
+#define AQHBCI_DLG_IMPORTKEYFILE_P_H
 
 
-#include "dlg_pintan_l.h"
+#include "dlg_importkeyfile_l.h"
 
 
 
-typedef struct AH_PINTAN_DIALOG AH_PINTAN_DIALOG;
-struct AH_PINTAN_DIALOG {
+typedef struct AH_IMPORTKEYFILE_DIALOG AH_IMPORTKEYFILE_DIALOG;
+struct AH_IMPORTKEYFILE_DIALOG {
   AB_BANKING *banking;
+
+  char *fileName;
 
   char *bankCode;
   char *bankName;
@@ -28,10 +30,8 @@ struct AH_PINTAN_DIALOG {
   char *customerId;
   char *url;
 
-  int httpVMajor;
-  int httpVMinor;
-
   int hbciVersion;
+  int rdhVersion;
 
   uint32_t flags;
 
@@ -39,12 +39,14 @@ struct AH_PINTAN_DIALOG {
 };
 
 
-static void GWENHYWFAR_CB AH_PinTanDialog_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AH_ImportKeyFileDialog_FreeData(void *bp, void *p);
 
-static int GWENHYWFAR_CB AH_PinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender);
+static int GWENHYWFAR_CB AH_ImportKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
+							      GWEN_DIALOG_EVENTTYPE t,
+							      const char *sender);
 
+static int AH_ImportKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg);
+static int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg);
 
 
 

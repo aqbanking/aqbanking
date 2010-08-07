@@ -12,7 +12,7 @@
 #define AQHBCI_DLG_NEWKEYFILE_P_H
 
 
-#include "dlg_newkeyfile.h"
+#include "dlg_newkeyfile_l.h"
 
 
 

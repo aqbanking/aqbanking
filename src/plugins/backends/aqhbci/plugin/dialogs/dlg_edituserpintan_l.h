@@ -8,10 +8,10 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQPAYPAL_DLG_EDITUSER_H
-#define AQPAYPAL_DLG_EDITUSER_H
+#ifndef AQHBCI_DLG_EDITUSER_PINTAN_H
+#define AQHBCI_DLG_EDITUSER_PINTAN_H
 
-#include <aqpaypal/aqpaypal.h>
+#include <aqhbci/aqhbci.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/user.h>
@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 
-AQPAYPAL_API GWEN_DIALOG *APY_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
+GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
 
 
 

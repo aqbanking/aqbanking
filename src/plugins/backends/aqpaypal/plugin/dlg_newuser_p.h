@@ -12,7 +12,7 @@
 #define AQPAYPAL_DLG_NEWUSER_P_H
 
 
-#include "dlg_newuser.h"
+#include "dlg_newuser_l.h"
 
 
 
