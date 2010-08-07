@@ -1,6 +1,5 @@
 
 
-
 #undef BUILDING_AQHBCI
 
 #include <aqhbci/provider.h>
