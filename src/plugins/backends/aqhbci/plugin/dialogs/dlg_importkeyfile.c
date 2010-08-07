@@ -47,6 +47,8 @@
 #define DIALOG_MINHEIGHT 200
 
 
+#define MAX_CONTEXT_ID_ENTRIES 64
+
 
 GWEN_INHERIT(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG)
 
@@ -89,6 +91,7 @@ GWEN_DIALOG *AH_ImportKeyFileDialog_new(AB_BANKING *ab) {
   GWEN_Buffer_free(fbuf);
 
   xdlg->banking=ab;
+  xdlg->contextList=GWEN_Crypt_Token_Context_List_new();
 
   /* preset */
   xdlg->hbciVersion=210;
@@ -104,6 +107,7 @@ void GWENHYWFAR_CB AH_ImportKeyFileDialog_FreeData(void *bp, void *p) {
   AH_IMPORTKEYFILE_DIALOG *xdlg;
 
   xdlg=(AH_IMPORTKEYFILE_DIALOG*) p;
+  GWEN_Crypt_Token_Context_List_free(xdlg->contextList);
   free(xdlg->fileName);
   free(xdlg->bankCode);
   free(xdlg->bankName);
@@ -614,12 +618,19 @@ int AH_ImportKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_BUFFER *tnBuf;
   GWEN_BUFFER *ttBuf;
   GWEN_CRYPT_TOKEN *ct;
   int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
+  assert(xdlg);
+
+  GWEN_Crypt_Token_Context_List_Clear(xdlg->contextList);
 
   /* create CryptToken */
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
@@ -629,6 +640,7 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
   }
 
   tnBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(tnBuf, xdlg->fileName);
   ttBuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_Crypt_Token_PluginManager_CheckToken(pm, GWEN_Crypt_Token_Device_File, ttBuf, tnBuf, 0);
   if (rv<0) {
@@ -647,7 +659,7 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
   }
   DBG_INFO(AQHBCI_LOGDOMAIN, "Plugin found");
 
-  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, GWEN_Buffer_GetStart(ttBuf));
+  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, GWEN_Buffer_GetStart(tnBuf));
   if (ct==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
     GWEN_Buffer_free(ttBuf);
@@ -664,6 +676,56 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
     GWEN_Crypt_Token_free(ct);
     return rv;
   }
+
+  GWEN_Dialog_SetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  GWEN_Dialog_SetCharProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_AddValue, 0, I18N("-- custom --"), 0);
+  if (1) {
+    uint32_t idList[MAX_CONTEXT_ID_ENTRIES];
+    uint32_t idCount;
+    uint32_t i;
+
+    idCount=MAX_CONTEXT_ID_ENTRIES;
+    rv=GWEN_Crypt_Token_GetContextIdList(ct, idList, &idCount, 0);
+    if (rv) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
+      GWEN_Crypt_Token_Close(ct, 1, 0);
+      GWEN_Crypt_Token_free(ct);
+      return rv;
+    }
+
+    for (i=0; i<idCount; i++) {
+      const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+
+      ctx=GWEN_Crypt_Token_GetContext(ct, idList[i], 0);
+      if (ctx) {
+	GWEN_CRYPT_TOKEN_CONTEXT *nctx;
+        char numbuf[64];
+	GWEN_BUFFER *tbuf;
+        const char *s;
+
+	nctx=GWEN_Crypt_Token_Context_dup(ctx);
+	GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
+
+	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	snprintf(numbuf, sizeof(numbuf)-1, I18N("Context %d:"), i+1);
+	numbuf[sizeof(numbuf)-1]=0;
+	GWEN_Buffer_AppendString(tbuf, numbuf);
+
+	s=GWEN_Crypt_Token_Context_GetServiceId(nctx);
+	if (s && *s) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, "-");
+	}
+
+	s=GWEN_Crypt_Token_Context_GetUserId(nctx);
+	if (s && *s)
+	  GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Dialog_SetCharProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
+        GWEN_Buffer_free(tbuf);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Added context %08x", idList[i]);
+      }
+    }
+  } /* for */
 
   /* close crypt token */
   rv=GWEN_Crypt_Token_Close(ct, 0, 0);
@@ -707,6 +769,11 @@ int AH_ImportKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   case PAGE_BANK:
     if (forwards) {
       /* leaving FILE page, check whether we can open the file */
+      rv=AH_ImportKeyFileDialog_GetFilePageData(dlg);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	return GWEN_DialogEvent_ResultHandled;
+      }
       rv=AH_ImportKeyFileDialog_CheckFileType(dlg);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -904,7 +971,6 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
-
 
   /* unlock user */
   DBG_ERROR(0, "Unlocking user");
@@ -1154,8 +1220,8 @@ int AH_ImportKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_filename_edit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s)
     GWEN_Buffer_AppendString(pathBuffer, s);
-  rv=GWEN_Gui_GetFileName(I18N("Create Keyfile"),
-			  GWEN_Gui_FileNameType_SaveFileName,
+  rv=GWEN_Gui_GetFileName(I18N("Select Keyfile"),
+			  GWEN_Gui_FileNameType_OpenFileName,
 			  0,
 			  I18N("All Files (*)\tOHBCI Files (*ohbci;*.medium)"),
 			  pathBuffer,
@@ -1186,7 +1252,6 @@ static int AH_ImportKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
   AH_IMPORTKEYFILE_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
-
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
@@ -1245,6 +1310,63 @@ static int AH_ImportKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
 
 
+int AH_ImportKeyFileDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
+  AH_IMPORTKEYFILE_DIALOG *xdlg;
+  int i;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
+  assert(xdlg);
+
+  i=GWEN_Dialog_GetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, -1);
+  if (i>0) {
+    GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+
+    ctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
+    while(ctx && --i)
+      ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
+
+    if (ctx) {
+      const char *s;
+
+      s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_bankcode_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+      s=GWEN_Crypt_Token_Context_GetAddress(ctx);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_url_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+      s=GWEN_Crypt_Token_Context_GetUserId(ctx);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_userid_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+      GWEN_Dialog_SetCharProperty(dlg,
+				  "wiz_customerid_edit",
+				  GWEN_DialogProperty_Value,
+				  0,
+				  (s && *s)?s:"",
+				  0);
+
+    }
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_ImportKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_filename_button")==0)
@@ -1264,6 +1386,8 @@ int AH_ImportKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
   else if (strcasecmp(sender, "wiz_help_button")==0) {
     /* TODO: open a help dialog */
   }
+  else if (strcasecmp(sender, "wiz_context_combo")==0)
+    return AH_ImportKeyFileDialog_HandleActivatedContext(dlg);
 
   return GWEN_DialogEvent_ResultNotHandled;
 }
