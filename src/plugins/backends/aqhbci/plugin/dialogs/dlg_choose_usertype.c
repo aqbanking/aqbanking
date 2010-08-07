@@ -104,7 +104,6 @@ void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
   }
 
   /* temporarily disable not-implemented buttons */
-  GWEN_Dialog_SetIntProperty(dlg, "hbciImportKeyFileRadio", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "hbciInitChipcardRadio", GWEN_DialogProperty_Enabled, 0, 0, 0);
 }
 

@@ -14,6 +14,7 @@
 
 #include "dlg_importkeyfile_l.h"
 
+#include <gwenhywfar/ct_context.h>
 
 
 typedef struct AH_IMPORTKEYFILE_DIALOG AH_IMPORTKEYFILE_DIALOG;
@@ -35,6 +36,8 @@ struct AH_IMPORTKEYFILE_DIALOG {
 
   uint32_t flags;
 
+  GWEN_CRYPT_TOKEN_CONTEXT_LIST *contextList;
+
   AB_USER *user;
 };
 
@@ -47,6 +50,8 @@ static int GWENHYWFAR_CB AH_ImportKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
 
 static int AH_ImportKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg);
 static int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg);
+
+static int AH_ImportKeyFileDialog_HandleActivatedContext(GWEN_DIALOG *dlg);
 
 
 
