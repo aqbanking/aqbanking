@@ -1015,26 +1015,15 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *mediumName;
-  uint32_t pid;
   GWEN_CRYPT_TOKEN *ct;
 
   mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
   mediumName=GWEN_Buffer_new(0, 64, 0, 1);
 
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Checking Chipcard"),
-			     I18N("Checking chipcard type, please wait..."),
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
-
   rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(pro),
 				GWEN_Crypt_Token_Device_Card,
 				mtypeName,
 				mediumName);
-  GWEN_Gui_ProgressEnd(pid);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
