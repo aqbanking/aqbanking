@@ -1,4 +1,3 @@
-                                                                    2008/11/25
 
                                 Content
                                 =======
@@ -8,36 +7,35 @@
                1.2.   Generic Financial Data Importer/Exporter Framework
                1.3.   Bank/Account Information
                2.   Supported Platforms
-               3.   Supported Frontends
-               4.   Supported Backends
-               4.1.   HBCI
-               4.2.   OFX Direct Connect
-               4.3.   EBICS
-               4.4.   None
-               5.   What Do I Need ?
-               5.1.   Required Packages
-               5.2.   Applications
-               6.   Building AqBanking
-               6.1.   Building from the Tar File
-               6.2.   Building from CVS/SVN
-               6.3.   Building the API Documentation
-               6.4.   Notes on porting the qt parts to Qt-4: 
-               7.   Windows Registry Keys Used
-               7.1.   Software\\AqBanking\\Paths\\pkgdatadir
-               7.2.   Software\\AqBanking\\Paths\\sysconfdir
-               7.3.   Software\\AqBanking\\Paths\\bankinfodir
-               7.4.   Software\\AqBanking\\Paths\\providerdir
-               7.5.   Software\\AqBanking\\Paths\\importerdir
-               8.   Environment Variables Used
-               8.1.   AQBANKING_LOGLEVEL
-               8.2.   AQBANKING_STORE_JOBLOGS
-               8.3.   AQHBCI_LOGBOOKED
-               8.4.   AQHBCI_LOGNOTED
-               8.5.   AQHBCI_DEBUG_JOBS
-               8.6.   AQOFX_LOG_COMM
-               9.   Security in PIN/TAN Mode
-               10.  Using Your Own Profiles for Im-/Exporters
-               11.  Thanks
+               3.   Supported Backends
+               3.1.   HBCI
+               3.2.   OFX Direct Connect
+               3.3.   EBICS
+               3.4.   Paypal
+               3.5.   None
+               4.   What Do I Need ?
+               4.1.   Required Packages
+               4.2.   Applications
+               5.   Building AqBanking
+               5.1.   Building from the Tar File
+               5.2.   Building from CVS/SVN
+               5.3.   Building the API Documentation
+               6.   Windows Registry Keys Used
+               6.1.   Software\\AqBanking\\Paths\\pkgdatadir
+               6.2.   Software\\AqBanking\\Paths\\sysconfdir
+               6.3.   Software\\AqBanking\\Paths\\bankinfodir
+               6.4.   Software\\AqBanking\\Paths\\providerdir
+               6.5.   Software\\AqBanking\\Paths\\importerdir
+               7.   Environment Variables Used
+               7.1.   AQBANKING_LOGLEVEL
+               7.2.   AQBANKING_STORE_JOBLOGS
+               7.3.   AQHBCI_LOGBOOKED
+               7.4.   AQHBCI_LOGNOTED
+               7.5.   AQHBCI_DEBUG_JOBS
+               7.6.   AQOFX_LOG_COMM
+               8.   Security in PIN/TAN Mode
+               9 .  Using Your Own Profiles for Im-/Exporters
+               10.  Thanks
 
 
 
@@ -60,7 +58,7 @@ The homepage of AqBanking is http://www.aqbanking.de/
 The intention of AqBanking is to provide a middle layer between the program
 and the various Online Banking libraries (e.g. AqHBCI, OpenHBCI etc). 
 
-The real work is done in so-called banking backends. See chapter 4 for a
+The real work is done in so-called banking backends. See chapter 3 for a
 list of supported backends.
 
 
@@ -81,6 +79,7 @@ Currently there are plugins for the following formats:
   - CSV
   - OpenHBCI1 transactions
   - ERI
+  - Q43
   
 - Exporters
   - DTAUS (German financial format)
@@ -117,41 +116,19 @@ which Gwenhywfar is available.
 This includes (but is not limited to): 
  - Linux (of course ;-)
  - Windows (WIN32 platforms, such as Windows95 up to Windows XP)
+ - MacOSX 10.5 and newer
  - most POSIX systems (such as the BSDs) should also be supported, 
    however, this is untested
 
 
 
-3. Supported Frontends
-======================
-
-The aqbanking package includes several so-called frontends which
-offer a simplified interface between aqbanking and GUI
-applications. The aqbanking library itself requires the
-implementation of various user interaction functions (e.g. opening
-a message box), and for particular GUI libraries these are already
-available in the respective frontends. 
-
-Basically all common GUI libraries (KDE, GNOME, Qt, console) are
-supported, and there exist frontend libraries for each of them. This
-is accomplished by only a few callback functions for user
-interaction which can be overloaded by applications.
-
-This package contains the following frontends:
- - GTK 2 ("g2banking")
- - Qt 3  ("qbanking"), can also be converted to Qt4 as described below
- - KDE 3 ("kbanking")
- - Console ("cbanking")
-
-
-
-4. Supported Backends
+3. Supported Backends
 =====================
 
 AqBanking includes all its currently known banking backends.
 
 
-4.1. HBCI
+3.1. HBCI
 ---------
 
 The backend AqHBCI provides support for the German online banking protocol
@@ -168,27 +145,27 @@ The following security media are supported:
 This backend supports the HBCI versions 2.01, 2.10, 2.20 and 3.00
 
 
-4.2. OFX Direct Connect
+3.2. OFX Direct Connect
 -----------------------
 
 This backend provides support for an online banking protocol used in the 
 United States, Canada and maybe in the United Kingdom.
 
 
-4.3. EBICS
+3.3. EBICS
 ----------
 
 EBICS is the successor of the German banking protocol FTAM. It is used in commercial
 environments. The tool AqBanking-CLI comes with optional support for this protocol.
 
 
-4.4. Paypal
+3.4. Paypal
 -----------
 
 This backend uses Paypal's native API for retrieving transactions.
 
 
-4.5. None
+3.5. None
 ---------
 
 This is a fallback module which can be used by applications for accounts which
@@ -196,11 +173,11 @@ are not managed by any online banking backend.
 
 
 
-5. What Do I Need ?
+4. What Do I Need ?
 ===================
 
 
-5.1. Required Packages
+4.1. Required Packages
 ----------------------
 
 AqBanking has several direct dependencies:
@@ -220,11 +197,8 @@ required for the python wrappers of aqbanking. The python wrappers
 are installed by default (to disable it, use --disable-python),
 but they cannot be used unless "ctypes" is installed.
 
-(Note: Further information in German can be found on
-http://linuxwiki.de/AqBanking )
 
-
-5.2. Applications
+4.2. Applications
 -----------------
 
 These applications fully or partially support AqBanking:
@@ -240,11 +214,11 @@ The aqbanking package also includes several command-line tools
 
 
 
-6. Building AqBanking
+5. Building AqBanking
 =====================
 
 
-6.1. Building from the Tar File
+5.1. Building from the Tar File
 -------------------------------
 
 #>./configure
@@ -275,7 +249,7 @@ Compilation hints for specific platforms:
   ./configure qt3_libs="-L/opt/qt/lib -lqt-mt"
 
 
-6.2. Building from CVS/SVN
+5.2. Building from CVS/SVN
 --------------------------
 
 #>make -fMakefile.cvs
@@ -283,7 +257,7 @@ Compilation hints for specific platforms:
 and continue as described in "6.1. Building from the Tar File".
 
 
-6.3. Building the API Documentation
+5.3. Building the API Documentation
 -----------------------------------
 
 #>make srcdoc
@@ -299,7 +273,7 @@ means it does *not* obey the --prefix argument.
 
 
 
-7. Windows Registry Keys Used
+6. Windows Registry Keys Used
 =============================
 
 Some AqBanking versions might use registry keys below HKEY_CURRENT_USER.  
@@ -314,38 +288,38 @@ following keys. These keys are created by the setup.exe which
 contains the binary package for WIN32 platforms.
 
 
-7.1. Software\\AqBanking\\Paths\\pkgdatadir
+6.1. Software\\AqBanking\\Paths\\pkgdatadir
 -------------------------------------------
 This is the data folder (i.e. $PREFIX/share/aqbanking on POSIX systems).
 
 
-7.2. Software\\AqBanking\\Paths\\sysconfdir
+6.2. Software\\AqBanking\\Paths\\sysconfdir
 -------------------------------------------
 This is the folder containing system configuration files.
 (i.e. $PREFIX/etc on POSIX systems).
 
 
-7.3. Software\\AqBanking\\Paths\\bankinfodir
+6.3. Software\\AqBanking\\Paths\\bankinfodir
 -------------------------------------------
 This folder is used to store bankinfo plugins.
 
 
-7.4. Software\\AqBanking\\Paths\\providerdir
+6.4. Software\\AqBanking\\Paths\\providerdir
 -------------------------------------------
 This folder is used to store provider (backend) plugins.
 
 
-7.5. Software\\AqBanking\\Paths\\importerdir
+6.5. Software\\AqBanking\\Paths\\importerdir
 -------------------------------------------
 This folder is used to store importer/exporter plugins.
 
 
 
-8. Environment Variables Used
+7. Environment Variables Used
 =============================
 
 
-8.1. AQBANKING_LOGLEVEL
+7.1. AQBANKING_LOGLEVEL
 -----------------------
 
 This variable stores the loglevel to be used for AqBanking.
@@ -353,14 +327,14 @@ Possible values are: emergency, alert, critical, error, warning, notice,
 info, debug and verbous.
 
 
-8.2. AQBANKING_STORE_JOBLOGS
+7.2. AQBANKING_STORE_JOBLOGS
 ----------------------------
 If this variable is defined then AqBanking will always store job logs with 
 jobs. Otherwise job logs are only stored for jobs with a status other than
 "finished". Job logs can become quite big.
 
 
-8.3. AQHBCI_LOGBOOKED
+7.3. AQHBCI_LOGBOOKED
 ---------------------
 If this environment variable exists then the file "/tmp/booked.mt" is created
 upon reception of transactions via the job GetTransactions. This file then
@@ -368,19 +342,19 @@ contains a SWIFT MT940 document which can be very helpfull in case there is
 a problem in the SWIFT parser.
 
 
-8.4. AQHBCI_LOGNOTED
+7.4. AQHBCI_LOGNOTED
 --------------------
 Same as AQHBCI_LOGBOOKED but for noted transactions (which are transactions
 which are noted but ot yet booked)
 
 
-8.5. AQHBCI_DEBUG_JOBS
+7.5. AQHBCI_DEBUG_JOBS
 ----------------------
 If this variable exists then additional debugging data is stored with each
 job.
 
 
-8.6. AQOFX_LOG_COMM
+7.6. AQOFX_LOG_COMM
 -------------------
 If this variable exists then all OFX communication is logged to /tmp/ofx.log.
 This is only needed when debugging AqOfxConnect.
@@ -389,7 +363,7 @@ that file!
 
 
 
-9. Security in PIN/TAN Mode
+8. Security in PIN/TAN Mode
 ===========================
 
 In PIN/TAN mode AqHBCI stores certificates of the bank in a special folder:
@@ -408,8 +382,8 @@ but unable to modify it or to add new ones.
 
 
 
-10. Using Your Own Profiles for Im-/Exporters
-=============================================
+9. Using Your Own Profiles for Im-/Exporters
+============================================
 
 You can create your own profiles to be used with the various importers.
 For AqBanking to recognize your private profiles they must be stored in
@@ -419,7 +393,7 @@ E.g. CSV profiles on Linux must be stored in
 
 
 
-11. Thanks
+10. Thanks
 ==========
 
 I wish to thank the following (among others) people for their support in 
@@ -432,5 +406,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2009/09/22
+Martin Preuss, Hamburg/Germany, 2010/08/08
 
