@@ -351,13 +351,16 @@ or on Windows/mingw32
 7. Windows Registry Keys Used
 =============================
 
-AqBanking uses registry keys below HKEY_CURRENT_USER.  Currently the
-following keys are used. These keys are created by the setup.exe which
-contains the binary package for WIN32 platforms.
+Some AqBanking versions might use registry keys below HKEY_CURRENT_USER.  
+These are at the moment only versions shipped with GnuCash (at least that
+used to be the case which is why handling of registry keys was introduced
+in the first place). Most versions of AqBanking don't use the registry
+to determine installation paths because those versions are filesystem
+relocatable, so they don't need the registry.
 
- Note: Additionally in Sept/Oct 2007 a relocatable mode of aqbanking
- has been introduced. This might mean that those registry keys are not
- needed anymore. (FIXME: Need to clarify this.)
+At any rate, those version that still do use the registry use the
+following keys. These keys are created by the setup.exe which
+contains the binary package for WIN32 platforms.
 
 
 7.1. Software\\AqBanking\\Paths\\pkgdatadir
