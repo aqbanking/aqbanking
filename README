@@ -165,7 +165,7 @@ The following security media are supported:
                      with OpenHBCI in parallel)
  - PIN/TAN (PIN/TAN mode using HTTP over SSL)
 
-This backend supports the HBCI versions 2.01, 2.10 and 2.20.
+This backend supports the HBCI versions 2.01, 2.10, 2.20 and 3.00
 
 
 4.2. OFX Direct Connect
@@ -176,13 +176,19 @@ United States, Canada and maybe in the United Kingdom.
 
 
 4.3. EBICS
---------------
+----------
 
 EBICS is the successor of the German banking protocol FTAM. It is used in commercial
 environments. The tool AqBanking-CLI comes with optional support for this protocol.
 
 
-4.4. None
+4.4. Paypal
+-----------
+
+This backend uses Paypal's native API for retrieving transactions.
+
+
+4.5. None
 ---------
 
 This is a fallback module which can be used by applications for accounts which
@@ -199,7 +205,7 @@ are not managed by any online banking backend.
 
 AqBanking has several direct dependencies:
 
-- "Gwenhywfar" >= 3.5.2, available from
+- "Gwenhywfar" >= 3.99.0, available from
 http://gwenhywfar.sf.net/, is absolutely required
 
 - "GMP", the GNU MP Bignum Library available from 
@@ -208,10 +214,6 @@ http://gwenhywfar.sf.net/, is absolutely required
 - "KtoBlzCheck" >= 1.0 from http://sf.net/projects/ktoblzcheck is
 required for the German bank account number checking, otherwise
 the account number checking will not be compiled.
-
-- "libchipcard" >= 4.0.0 from http://www.libchipcard.de is
-required for the aqgeldkarte backend, otherwise the geldkarte
-parts cannot be compiled
 
 - The python module "ctypes" http://sf.net/projects/ctypes is
 required for the python wrappers of aqbanking. The python wrappers
@@ -226,19 +228,15 @@ http://linuxwiki.de/AqBanking )
 -----------------
 
 These applications fully or partially support AqBanking:
- - QBankManager (http://www.aquamaniac.de/qbanking/)
+ - AqFinance (http://www2.aquamaniac.de/sites/aqfinance/index.php)
+ - QBankManager (http://www.aquamaniac.de/qbanking/, discontinued)
  - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://kmymoney2.sf.net/)
- - (partially) Grisbi (http://sourceforge.net/projects/grisbi)
  - OrgaMon (http://orgamon.org/)
+ - Pecunia 0.2 (http://www.pecuniabanking.de/Pecunia/Home.html)
 
 The aqbanking package also includes several command-line tools
-(aqbanking-tool, aqhbci-tool) and GUI tools (qt3-wizard etc)
-used by Gnucash, KMyMoney and QBanking to let the user setup,
-modify and debug HBCI settings.
-
-(Note: Further information in German can be found on
-http://linuxwiki.de/AqBanking )
+(aqbanking-tool, aqhbci-tool).
 
 
 
@@ -282,7 +280,7 @@ Compilation hints for specific platforms:
 
 #>make -fMakefile.cvs
 
-and continue as described in "5.1. Building from the Tar File".
+and continue as described in "6.1. Building from the Tar File".
 
 
 6.3. Building the API Documentation
@@ -298,53 +296,6 @@ API documentations of the projects AqBanking depends on) use this:
 This installs the linked doc to the path you gave to ./configure
 by "--with-docpath=PATH". It defaults to "$HOME/apidoc", which
 means it does *not* obey the --prefix argument.
-
-
-6.4. Notes on porting the qt parts to Qt-4: 
-------------------------------------------
-
-The Qt4 library is available as GPL on Linux *and* Windows, which
-means this online banking programm is available on windows as well,
-which is a GOOD THING!
-
-But qt4 is not at all source compatible to qt3, see
-http://doc.trolltech.com/4.0/porting4.html. Trolltech provides a
-tool for the necessary class renaming, called "qt3to4". This
-aqbanking package already has the necessary make rules ("make
-qt4-port") for calling that tool on all source files for the
-"qbanking" frontend and the ui-tools of the "aqhbci" backend, if
-the qt4 library has been detected at configure time. I.e. if you
-want to use this package in qt4, do the following two steps:
-
-1. Call ./configure with qt3_libs and qt3_includes set so that the
-   Qt4 libraries are found
-2. Call "make qt4-all"
-3. As usual call "make"
-
-An example for 1. is this for Linux/g++:
-
-DIR4=/usr/local/qt4
-LIBS4=-L${DIR4}/lib -lQtCore -lQtGui -lQt3Support
-INCS4=-I${DIR4}/include -I${DIR4}/include/Qt -I${DIR4}/include/QtCore
-INCS4+=-I${DIR4}/include/QtGui -I${DIR4}/include/Qt3Support
-TO4=${DIR4}/bin/qt3to4
-
-    ./configure --prefix=/my/prefix \
-    --enable-debug=yes --enable-qt3=yes \
-    QTDIR=${DIR4} QT3TO4=${TO4} \
-    qt3_libs="${LIBS4}" \
-    qt3_includes="${INCS4}"
-
-or on Windows/mingw32
-
-  ./configure -C 
-    --enable-debug QTDIR=$QTDIR 
-    qt3_libs="-L$QTDIR/bin -lQtCore4 -lQtGui4 -lQt3Support4" 
-    qt3_includes="-I$QTDIR/include -I$QTDIR/include/Qt -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/Qt3Support" 
-    --with-gwen-dir=/c/Programme/gwenhywfar 
-    --with-aqbanking-dir=/c/Programme/aqbanking
-
--- 2005-08-10, cstim
 
 
 
