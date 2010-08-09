@@ -683,6 +683,79 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
+int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg) {
+  AH_NEWKEYFILE_DIALOG *xdlg;
+  int rv;
+  GWEN_BUFFER *tbuf;
+
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
+  assert(xdlg);
+
+  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  /* add HTML version of the INI letter */
+  GWEN_Buffer_AppendString(tbuf, "<html>");
+  GWEN_Buffer_AppendString(tbuf, I18N("<p>The following is the INI letter describing the keys of your bank. "
+				      "Please look at it carefully and compare the information against that "
+				      "in the letter from your bank.</p>"
+				      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
+				      "Contact your bank immediately if the hash doesn't match!</p>"));
+  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
+				  xdlg->user,
+				  1,
+				  0,
+				  tbuf,
+				  1);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+  GWEN_Buffer_AppendString(tbuf, "</html>");
+
+
+  /* add ASCII version of the INI letter for frontends which don't support HTML */
+  GWEN_Buffer_AppendString(tbuf, I18N("The following is the INI letter describing the keys of your bank.\n"
+				      "Please look at it carefully and compare the information against that\n"
+				      "in the letter from your bank.\n"
+				      "\n"
+				      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
+				      "Contact your bank immediately if the hash doesn't match!\n\n"));
+  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
+				 xdlg->user,
+				 1,
+				 0,
+				 tbuf,
+				 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    // TODO: show error message
+    GWEN_Buffer_free(tbuf);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  if (1!=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
+			     GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			     I18N("Check Bank Keys"),
+			     GWEN_Buffer_GetStart(tbuf),
+			     I18N("Keys are ok"),
+			     I18N("Keys don't match!"),
+			     NULL,
+			     0)) {
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_VERIFY;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  return 0;
+}
+
+
+
 int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_NEWKEYFILE_DIALOG *xdlg;
   AB_USER *u;
@@ -832,6 +905,19 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
+    GWEN_Gui_ProgressEnd(pid);
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=AH_NewKeyFileDialog_CheckBankIniLetter(dlg);
+  if (rv<0) {
+    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    unlink(AH_NewKeyFileDialog_GetFileName(dlg));
+    GWEN_Gui_ProgressLog(pid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Bad bank keys, you should contact your bank."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
