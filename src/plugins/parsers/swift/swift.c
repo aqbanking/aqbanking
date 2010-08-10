@@ -719,6 +719,40 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 
   fb=GWEN_FastBuffer_new(256, sio);
 
+  /* skip lines at the beginning if requested */
+  if (skipFileLines>0) {
+    int i;
+    GWEN_BUFFER *lbuf;
+
+    lbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    for (i=0; i<skipFileLines; i++) {
+      int err;
+
+      err=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuf);
+      if (err<0) {
+	if (err==GWEN_ERROR_EOF && i==0)
+	  break;
+	DBG_INFO(AQBANKING_LOGDOMAIN,
+		 "Error in report, aborting (%d)", err);
+	GWEN_Buffer_free(lbuf);
+	GWEN_FastBuffer_free(fb);
+	return err;
+      }
+      GWEN_Buffer_Reset(lbuf);
+    }
+    GWEN_Buffer_free(lbuf);
+
+    if (i<skipFileLines) {
+      /* not enough lines to skip, assume end of document */
+
+      GWEN_FastBuffer_free(fb);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "To few lines in file");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			   I18N("Empty SWIFT file, aborting"));
+      return GWEN_ERROR_EOF;
+    }
+  }
+
   for (;;) {
     AHB_SWIFT_TAG_LIST *tl;
 
