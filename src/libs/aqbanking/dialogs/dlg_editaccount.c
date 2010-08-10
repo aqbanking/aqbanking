@@ -76,7 +76,6 @@ GWEN_DIALOG *AB_EditAccountDialog_new(AB_BANKING *ab, AB_ACCOUNT *a, int doLock)
   GWEN_Buffer_free(fbuf);
 
   xdlg->banking=ab;
-  xdlg->selectedUsers=AB_User_List2_new();
   xdlg->account=a;
   xdlg->doLock=doLock;
 
@@ -90,7 +89,6 @@ void GWENHYWFAR_CB AB_EditAccountDialog_FreeData(void *bp, void *p) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
 
   xdlg=(AB_EDIT_ACCOUNT_DIALOG*) p;
-  AB_User_List2_free(xdlg->selectedUsers);
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -145,30 +143,32 @@ static void createUserString(const AB_USER *u, GWEN_BUFFER *tbuf) {
   uid=AB_User_GetUniqueId(u);
   snprintf(numbuf, sizeof(numbuf)-1, "%d", uid);
   numbuf[sizeof(numbuf)-1]=0;
-  GWEN_Buffer_AppendString(tbuf, numbuf);
-  GWEN_Buffer_AppendString(tbuf, "\t");
-  
-  /* column 2 */
-  s=AB_User_GetUserId(u);
-  if (s && *s)
-    GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "\t");
-  
-  /* column 3 */
-  s=AB_User_GetCustomerId(u);
-  if (s && *s)
-    GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "\t");
-  
-  /* column 4 */
+
   s=AB_User_GetUserName(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "-");
+
+  s=AB_User_GetBankCode(u);
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "-");
+  
+  s=AB_User_GetCustomerId(u);
+  if (!(s && *s))
+    s=AB_User_GetUserId(u);
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
+
+  GWEN_Buffer_AppendString(tbuf, " (");
+  GWEN_Buffer_AppendString(tbuf, numbuf);
+  GWEN_Buffer_AppendString(tbuf, ")");
+
 }
 
 
 
-AB_USER *AB_EditAccountDialog_GetCurrentUser(GWEN_DIALOG *dlg, const char *listBoxName) {
+AB_USER *AB_EditAccountDialog_GetCurrentUser(GWEN_DIALOG *dlg) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   AB_USER_LIST2 *ul;
 
@@ -181,11 +181,11 @@ AB_USER *AB_EditAccountDialog_GetCurrentUser(GWEN_DIALOG *dlg, const char *listB
   if (ul) {
     int idx;
 
-    idx=GWEN_Dialog_GetIntProperty(dlg, listBoxName, GWEN_DialogProperty_Value, 0, -1);
+    idx=GWEN_Dialog_GetIntProperty(dlg, "userCombo",  GWEN_DialogProperty_Value, 0, -1);
     if (idx>=0) {
       const char *currentText;
   
-      currentText=GWEN_Dialog_GetCharProperty(dlg, listBoxName, GWEN_DialogProperty_Value, idx, NULL);
+      currentText=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, idx, NULL);
       if (currentText && *currentText) {
 	AB_USER_LIST2_ITERATOR *it;
     
@@ -221,59 +221,7 @@ AB_USER *AB_EditAccountDialog_GetCurrentUser(GWEN_DIALOG *dlg, const char *listB
 
 
 
-void AB_EditAccountDialog_SampleUserList(GWEN_DIALOG *dlg,
-					 const char *listBoxName,
-					 AB_USER_LIST2 *destList) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  AB_USER_LIST2 *ul;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  /* user list */
-  ul=AB_Banking_GetUsers(xdlg->banking);
-  if (ul) {
-    int i;
-    int num;
-
-    num=GWEN_Dialog_GetIntProperty(dlg, listBoxName, GWEN_DialogProperty_ValueCount, 0, 0);
-    for (i=0; i<num; i++) {
-      const char *t;
-  
-      t=GWEN_Dialog_GetCharProperty(dlg, listBoxName, GWEN_DialogProperty_Value, i, NULL);
-      if (t && *t) {
-	AB_USER_LIST2_ITERATOR *it;
-    
-	it=AB_User_List2_First(ul);
-	if (it) {
-	  AB_USER *u;
-	  GWEN_BUFFER *tbuf;
-    
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  u=AB_User_List2Iterator_Data(it);
-	  while(u) {
-	    createUserString(u, tbuf);
-	    if (strcasecmp(t, GWEN_Buffer_GetStart(tbuf))==0)
-	      AB_User_List2_PushBack(destList, u);
-	    GWEN_Buffer_Reset(tbuf);
-	    u=AB_User_List2Iterator_Next(it);
-	  }
-	  GWEN_Buffer_free(tbuf);
-
-	  AB_User_List2Iterator_free(it);
-	}
-	AB_User_List2_free(ul);
-      }
-    }
-  }
-}
-
-
-
-int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg,
-				       AB_USER *u,
-				       const char *listBoxName) {
+int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg, AB_USER *u) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_BUFFER *tbuf;
   int i;
@@ -289,11 +237,11 @@ int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg,
   s=GWEN_Buffer_GetStart(tbuf);
 
   /* user list */
-  num=GWEN_Dialog_GetIntProperty(dlg, listBoxName, GWEN_DialogProperty_ValueCount, 0, 0);
+  num=GWEN_Dialog_GetIntProperty(dlg, "userCombo", GWEN_DialogProperty_ValueCount, 0, 0);
   for (i=0; i<num; i++) {
     const char *t;
 
-    t=GWEN_Dialog_GetCharProperty(dlg, listBoxName, GWEN_DialogProperty_Value, i, NULL);
+    t=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, i, NULL);
     if (t && *t && strcasecmp(s, t)==0) {
       GWEN_Buffer_free(tbuf);
       return i;
@@ -397,15 +345,22 @@ const AB_COUNTRY *AB_EditAccountDialog_GetCurrentCurrency(GWEN_DIALOG *dlg) {
 void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   AB_USER_LIST2 *users;
+  GWEN_STRINGLIST *sl;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
   assert(xdlg);
 
-  GWEN_Dialog_SetIntProperty(dlg, "availUserList", GWEN_DialogProperty_ClearValues, 0, 0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "selectedUserList", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, "userCombo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "userCombo",
+			      GWEN_DialogProperty_AddValue,
+			      0,
+			      I18N("-- select --"),
+			      0);
 
   /* setup lists of available and selected users */
+  sl=GWEN_StringList_new();
   users=AB_Banking_FindUsers(xdlg->banking,
 			     AB_Account_GetBackendName(xdlg->account),
 			     "*", "*", "*", "*");
@@ -420,26 +375,13 @@ void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
 
       u1=AB_User_List2Iterator_Data(it1);
       while(u1) {
-	int isSelected=0;
-
-	if (xdlg->selectedUsers)
-	  isSelected=(AB_User_List2_Contains(xdlg->selectedUsers, u1)!=NULL);
-
 	createUserString(u1, tbuf);
-	if (isSelected)
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "selectedUserList",
-				      GWEN_DialogProperty_AddValue,
-				      0,
-				      GWEN_Buffer_GetStart(tbuf),
-				      0);
-	else
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "availUserList",
-				      GWEN_DialogProperty_AddValue,
-				      0,
-				      GWEN_Buffer_GetStart(tbuf),
-				      0);
+	GWEN_Dialog_SetCharProperty(dlg,
+				    "userCombo",
+				    GWEN_DialogProperty_AddValue,
+				    0,
+				    GWEN_Buffer_GetStart(tbuf),
+				    0);
 	GWEN_Buffer_Reset(tbuf);
 	u1=AB_User_List2Iterator_Next(it1);
       }
@@ -448,6 +390,28 @@ void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
     GWEN_Buffer_Reset(tbuf);
   }
   AB_User_List2_free(users);
+
+  if (GWEN_StringList_Count(sl)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    /* sort user list */
+    GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s)
+	GWEN_Dialog_SetCharProperty(dlg,
+				    "userCombo",
+				    GWEN_DialogProperty_AddValue,
+				    0,
+				    s,
+				    0);
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+  GWEN_StringList_free(sl);
 }
 
 
@@ -455,11 +419,10 @@ void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
 void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
-  AB_USER_LIST2 *ul;
   int i;
-  int j;
   const char *s;
   AB_ACCOUNT_TYPE t;
+  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
@@ -652,43 +615,15 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   if (t<AB_AccountType_MoneyMarket)
     GWEN_Dialog_SetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Value, 0, t, 0);
 
-  /* available user list */
-  GWEN_Dialog_SetCharProperty(dlg,
-			      "availUserList",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Id\tUser Id\tCustomer Id\tUser Name"),
-			      0);
-  GWEN_Dialog_SetIntProperty(dlg,
-			     "availUserList",
-			     GWEN_DialogProperty_SelectionMode,
-			     0,
-			     GWEN_Dialog_SelectionMode_Single,
-			     0);
-
-  /* selected user list */
-  GWEN_Dialog_SetCharProperty(dlg,
-			      "selectedUserList",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Id\tUser Id\tCustomer Id\tUser Name"),
-			      0);
-  GWEN_Dialog_SetIntProperty(dlg,
-			     "selectedUserList",
-			     GWEN_DialogProperty_SelectionMode,
-			     0,
-			     GWEN_Dialog_SelectionMode_Single,
-			     0);
-
-  ul=AB_Account_GetSelectedUsers(xdlg->account);
-  if (ul) {
-    if (xdlg->selectedUsers)
-      AB_User_List2_free(xdlg->selectedUsers);
-    xdlg->selectedUsers=AB_User_List2_dup(ul);
-
-  }
   AB_EditAccountDialog_RebuildUserLists(dlg);
+  u=AB_Account_GetFirstSelectedUser(xdlg->account);
+  if (u) {
+    int idx;
 
+    idx=AB_EditAccountDialog_FindUserEntry(dlg, u);
+    if (idx>=0)
+      GWEN_Dialog_SetIntProperty(dlg, "userCombo", GWEN_DialogProperty_Value, 0, idx, 0);
+  }
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -699,33 +634,6 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i>=DIALOG_MINHEIGHT)
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
-
-  /* read avail user column widths */
-  for (i=0; i<4; i++) {
-    j=GWEN_DB_GetIntValue(dbPrefs, "avail_user_list_columns", i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_Dialog_SetIntProperty(dlg, "availUserList", GWEN_DialogProperty_ColumnWidth, i, j, 0);
-  }
-  /* get sort column */
-  i=GWEN_DB_GetIntValue(dbPrefs, "avail_user_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(dbPrefs, "avail_user_list_sortdir", 0, -1);
-  if (i>=0 && j>=0)
-    GWEN_Dialog_SetIntProperty(dlg, "availUserList", GWEN_DialogProperty_SortDirection, i, j, 0);
-
-  /* read selected user column widths */
-  for (i=0; i<4; i++) {
-    j=GWEN_DB_GetIntValue(dbPrefs, "sel_user_list_columns", i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_Dialog_SetIntProperty(dlg, "selectedUserList", GWEN_DialogProperty_ColumnWidth, i, j, 0);
-  }
-  /* get sort column */
-  i=GWEN_DB_GetIntValue(dbPrefs, "sel_user_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(dbPrefs, "sel_user_list_sortdir", 0, -1);
-  if (i>=0 && j>=0)
-    GWEN_Dialog_SetIntProperty(dlg, "selectedUserList", GWEN_DialogProperty_SortDirection, i, j, 0);
-
 }
 
 
@@ -860,8 +768,13 @@ int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
     GWEN_Buffer_free(tbuf);
   }
 
-  if (a)
-    AB_Account_SetSelectedUsers(a, xdlg->selectedUsers);
+  if (a) {
+    AB_USER *u;
+
+    u=AB_EditAccountDialog_GetCurrentUser(dlg);
+    AB_Account_SetSelectedUser(a, u);
+  }
+
   return 0;
 }
 
@@ -891,115 +804,6 @@ void AB_EditAccountDialog_Fini(GWEN_DIALOG *dlg) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",
 		      i);
-
-  /* store column widths of user list */
-  GWEN_DB_DeleteVar(dbPrefs, "avail_user_list_columns");
-  for (i=0; i<4; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "availUserList", GWEN_DialogProperty_ColumnWidth, i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(dbPrefs,
-			GWEN_DB_FLAGS_DEFAULT,
-			"avail_user_list_columns",
-			j);
-  }
-  /* store column sorting of user list */
-  GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "avail_user_list_sortbycolumn",
-		      -1);
-  for (i=0; i<4; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "availUserList", GWEN_DialogProperty_SortDirection, i,
-				 GWEN_DialogSortDirection_None);
-    if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "avail_user_list_sortbycolumn",
-			  i);
-      GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "avail_user_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
-      break;
-    }
-  }
-
-  /* store column widths of user list */
-  GWEN_DB_DeleteVar(dbPrefs, "sel_user_list_columns");
-  for (i=0; i<4; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "selectedUserList", GWEN_DialogProperty_ColumnWidth, i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(dbPrefs,
-			GWEN_DB_FLAGS_DEFAULT,
-			"sel_user_list_columns",
-			j);
-  }
-  /* store column sorting of user list */
-  GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "sel_user_list_sortbycolumn",
-		      -1);
-  for (i=0; i<4; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "selectedUserList", GWEN_DialogProperty_SortDirection, i,
-				 GWEN_DialogSortDirection_None);
-    if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "sel_user_list_sortbycolumn",
-			  i);
-      GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "sel_user_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
-      break;
-    }
-  }
-
-}
-
-
-
-int AB_EditAccountDialog_HandleActivatedToRight(GWEN_DIALOG *dlg) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  AB_USER *u;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  u=AB_EditAccountDialog_GetCurrentUser(dlg, "availUserList");
-  if (u) {
-    AB_User_List2_PushBack(xdlg->selectedUsers, u);
-    AB_EditAccountDialog_RebuildUserLists(dlg);
-  }
-  return GWEN_DialogEvent_ResultHandled;
-}
-
-
-
-int AB_EditAccountDialog_HandleActivatedToLeft(GWEN_DIALOG *dlg) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  AB_USER *u;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  u=AB_EditAccountDialog_GetCurrentUser(dlg, "selectedUserList");
-  if (u) {
-    AB_User_List2_Remove(xdlg->selectedUsers, u);
-    AB_EditAccountDialog_RebuildUserLists(dlg);
-  }
-  return GWEN_DialogEvent_ResultHandled;
 }
 
 
@@ -1122,11 +926,7 @@ int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
 
 int AB_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  if (strcasecmp(sender, "toRightButton")==0)
-    return AB_EditAccountDialog_HandleActivatedToRight(dlg);
-  else if (strcasecmp(sender, "toLeftButton")==0)
-    return AB_EditAccountDialog_HandleActivatedToLeft(dlg);
-  else if (strcasecmp(sender, "bankCodeButton")==0)
+  if (strcasecmp(sender, "bankCodeButton")==0)
     return AB_EditAccountDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AB_EditAccountDialog_HandleActivatedOk(dlg);

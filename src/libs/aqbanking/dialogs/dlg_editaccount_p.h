@@ -23,8 +23,6 @@ struct AB_EDIT_ACCOUNT_DIALOG {
   int doLock;
 
   AB_COUNTRY_CONSTLIST2 *countryList;
-
-  AB_USER_LIST2 *selectedUsers;
 };
 
 
