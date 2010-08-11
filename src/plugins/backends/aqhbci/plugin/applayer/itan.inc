@@ -258,7 +258,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
   tml=AH_User_GetTanMethodDescriptions(u);
   if (tml==NULL || AH_TanMethod_List_GetCount(tml)<1) {
     /* no or empty list, select 999 */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Warning,
 			 I18N("There are no tan method descriptions (yet), trying One-Step TAN."));
@@ -273,8 +273,8 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
     fn=AH_User_GetSelectedTanMethod(u);
     if (fn) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
       if (AH_User_HasTanMethod(u, fn)) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
 	tm=AH_TanMethod_List_First(tml);
 	while(tm) {
 	  int proc;
@@ -322,7 +322,13 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 	if (proc==1 || proc==2) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
 		   fn, proc);
-	  break;
+	  if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): yes", AH_TanMethod_GetFunction(tm));
+	    break;
+	  }
+	  else {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", AH_TanMethod_GetFunction(tm));
+	  }
 	}
 	else {
 	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
@@ -336,6 +342,9 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     if (tm==NULL) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
 		"No matching iTAN mode found (fn=%d)", fn);
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Info,
+			   I18N("No iTAN method available for automatic selection"));
       return GWEN_ERROR_NOT_FOUND;
     }
     else {
