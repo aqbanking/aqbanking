@@ -885,7 +885,7 @@ int AH_PinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -987,7 +987,7 @@ int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
   dlg2=AH_PinTanSpecialDialog_new(xdlg->banking);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     return GWEN_DialogEvent_ResultHandled;
   }
 

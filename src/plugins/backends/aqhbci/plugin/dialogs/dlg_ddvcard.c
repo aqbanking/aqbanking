@@ -98,15 +98,7 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct) {
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
-	GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			    GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			    GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			    I18N("Error"),
-			    I18N("Card could not be contacted. Maybe removed?"),
-			    I18N("Dismiss"),
-			    NULL,
-			    NULL,
-			    0);
+	GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
 	GWEN_Dialog_free(dlg);
 	return NULL;
       }
@@ -117,6 +109,7 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct) {
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
       GWEN_Dialog_free(dlg);
+      GWEN_Gui_ShowError(I18N("Error"), I18N("Could not read context id list from card (%d)"), rv);
       return NULL;
     }
 
@@ -732,7 +725,6 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_IMEXPORTER_CONTEXT *ctx;
   AB_PROVIDER *pro;
 
-  DBG_ERROR(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg);
   assert(xdlg);
@@ -740,15 +732,14 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   pro=AB_Banking_GetProvider(xdlg->banking, "aqhbci");
   if (pro==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    // TODO: show error message
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not find backend, maybe some plugins are not installed?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  DBG_ERROR(0, "Creating user");
   u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
   if (u==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
-    // TODO: show error message
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create user, maybe some plugins are not installed?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -779,11 +770,11 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Url_free(url);
   AH_User_SetHbciVersion(u, xdlg->hbciVersion);
 
-  DBG_ERROR(0, "Adding user");
   rv=AB_Banking_AddUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
+    GWEN_Gui_ShowError(I18N("Error"), I18N("Could not add user (%d)"), rv);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -796,20 +787,18 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			     1,
 			     0);
   /* lock new user */
-  DBG_ERROR(0, "Locking user");
   rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
-    GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unable to lock users"));
+    GWEN_Gui_ProgressLog2(pid,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Unable to lock users (%d)"), rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   /* get account list */
-  DBG_ERROR(0, "Getting account list");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
@@ -836,7 +825,6 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* unlock user */
-  DBG_ERROR(0, "Unlocking user");
   rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -922,7 +910,8 @@ int AH_DdvCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -1024,7 +1013,8 @@ int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
   dlg2=AH_DdvCardSpecialDialog_new(xdlg->banking);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe incomplete installation?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -1043,112 +1033,6 @@ int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_free(dlg2);
-
-  return GWEN_DialogEvent_ResultHandled;
-}
-
-
-
-int AH_DdvCardDialog_HandleActivatedReadCard(GWEN_DIALOG *dlg) {
-  AH_DDVCARD_DIALOG *xdlg;
-  int rv;
-  int i;
-  uint32_t idList[32];
-  uint32_t idCount;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg);
-  assert(xdlg);
-
-  if (!GWEN_Crypt_Token_IsOpen(xdlg->cryptToken)) {
-    rv=GWEN_Crypt_Token_Open(xdlg->cryptToken, 0, 0);
-    if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
-      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Card could not be contacted. Maybe removed?"),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-  }
-
-  /* read number and ids of contexts */
-  idCount=32;
-  rv=GWEN_Crypt_Token_GetContextIdList(xdlg->cryptToken, idList, &idCount, 0);
-  if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading context list (%d)", rv);
-    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			I18N("Error"),
-			I18N("Could not read the list of users from the card."),
-			I18N("Dismiss"),
-			NULL,
-			NULL,
-			0);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-
-  for (i=0; i<idCount; i++) {
-    const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-
-    cctx=GWEN_Crypt_Token_GetContext(xdlg->cryptToken, idList[i], 0);
-    if (cctx) {
-      const char *s;
-
-      s=GWEN_Crypt_Token_Context_GetUserId(cctx);
-      if (s && *s && (uint8_t)(*s)>32) {
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "wiz_userid_edit",
-				    GWEN_DialogProperty_Value,
-				    0,
-				    s,
-				    0);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "wiz_customerid_edit",
-				    GWEN_DialogProperty_Value,
-				    0,
-				    s,
-				    0);
-
-	s=GWEN_Crypt_Token_Context_GetUserName(cctx);
-	if (s && *s && (uint8_t)(*s)>32)
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "wiz_username_edit",
-				      GWEN_DialogProperty_Value,
-				      0,
-				      s,
-				      0);
-
-	s=GWEN_Crypt_Token_Context_GetServiceId(cctx);
-	if (s && *s && (uint8_t)(*s)>32)
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "wiz_bankcode_edit",
-				      GWEN_DialogProperty_Value,
-				      0,
-				      s,
-				      0);
-	s=GWEN_Crypt_Token_Context_GetAddress(cctx);
-	if (s && *s && (uint8_t)(*s)>32)
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "wiz_url_edit",
-				      GWEN_DialogProperty_Value,
-				      0,
-				      s,
-				      0);
-	s=GWEN_Crypt_Token_Context_GetPeerId(cctx);
-	if (s && *s && (uint8_t)(*s)>32)
-	  AH_DdvCardDialog_SetPeerId(dlg, s);
-	break;
-      }
-    }
-  }
 
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -1224,7 +1108,6 @@ int AH_DdvCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
 
 
 int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
     return AH_DdvCardDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)

@@ -80,7 +80,6 @@ GWEN_DIALOG *AH_ImportKeyFileDialog_new(AB_BANKING *ab) {
   }
 
   /* read dialog from dialog description file */
-  DBG_ERROR(0, "Reading dialog file [%s]\n", GWEN_Buffer_GetStart(fbuf));
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
@@ -636,6 +635,9 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
   if (pm==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin manager not found");
+    GWEN_Gui_ShowError(I18N("Error"),
+		       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
+		       GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -653,6 +655,9 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
   pl=GWEN_PluginManager_GetPlugin(pm, GWEN_Buffer_GetStart(ttBuf));
   if (pl==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin not found");
+    GWEN_Gui_ShowError(I18N("Error"),
+		       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
+                       GWEN_Buffer_GetStart(ttBuf));
     GWEN_Buffer_free(ttBuf);
     GWEN_Buffer_free(tnBuf);
     return GWEN_ERROR_NOT_SUPPORTED;
@@ -671,8 +676,12 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
 
   /* create crypt token */
   rv=GWEN_Crypt_Token_Open(ct, 0, 0);
-  if (rv) {
+  if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open token");
+    GWEN_Gui_ShowError(I18N("Error"),
+		       I18N("The keyfile %s could not be opened. Please check permissions (%d)."),
+		       GWEN_Crypt_Token_GetTokenName(ct),
+		       rv);
     GWEN_Crypt_Token_free(ct);
     return rv;
   }
@@ -686,8 +695,11 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
 
     idCount=MAX_CONTEXT_ID_ENTRIES;
     rv=GWEN_Crypt_Token_GetContextIdList(ct, idList, &idCount, 0);
-    if (rv) {
+    if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
+      GWEN_Gui_ShowError(I18N("Error"),
+			 I18N("Could not read context id list (%d)."),
+			 rv);
       GWEN_Crypt_Token_Close(ct, 1, 0);
       GWEN_Crypt_Token_free(ct);
       return rv;
@@ -732,8 +744,12 @@ int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg) {
 
   /* close crypt token */
   rv=GWEN_Crypt_Token_Close(ct, 0, 0);
-  if (rv) {
+  if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not close token");
+    GWEN_Gui_ShowError(I18N("Error"),
+		       I18N("The keyfile %s could not be closed. Please check disc space."),
+		       GWEN_Crypt_Token_GetTokenName(ct),
+		       rv);
     GWEN_Crypt_Token_free(ct);
     return rv;
   }
@@ -836,7 +852,6 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   int contextId=1;
   int i;
 
-  DBG_ERROR(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_IMPORTKEYFILE_DIALOG, dlg);
   assert(xdlg);
@@ -851,7 +866,9 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   pro=AB_Banking_GetProvider(xdlg->banking, "aqhbci");
   if (pro==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    // TODO: show error message
+    GWEN_Gui_ShowError(I18N("Error"),
+                       "%s",
+		       I18N("Could not find HBCI backend, maybe some plugins are not installed?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -871,7 +888,9 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
   if (u==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
-    // TODO: show error message
+    GWEN_Gui_ShowError(I18N("Error"),
+		       "%s",
+		       I18N("Could not create HBCI user (internal error)"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -904,11 +923,13 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetServerUrl(u, url);
   GWEN_Url_free(url);
 
-  DBG_ERROR(0, "Adding user");
   rv=AB_Banking_AddUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
+    GWEN_Gui_ShowError(I18N("Error"),
+		       I18N("Could not add HBCI user, maybe there already is a user of that id (%d)"),
+		       rv);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -921,20 +942,18 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 			     2, /* getkeys, getsysid */
 			     0);
   /* lock new user */
-  DBG_ERROR(0, "Locking user");
   rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
-    GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unable to lock users"));
+    GWEN_Gui_ProgressLog2(pid,
+			  GWEN_LoggerLevel_Error,
+			  I18N("Unable to lock users (%d)"), rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   /* get server keys id */
-  DBG_ERROR(0, "Getting keys");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving server keys"));
@@ -963,7 +982,6 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get sysid keys id */
-  DBG_ERROR(0, "Getting SysId");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving system id"));
@@ -990,7 +1008,6 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* unlock user */
-  DBG_ERROR(0, "Unlocking user");
   rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1070,7 +1087,8 @@ int AH_ImportKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -1198,7 +1216,8 @@ int AH_ImportKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
   dlg2=AH_RdhSpecialDialog_new(xdlg->banking);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -1257,7 +1276,7 @@ int AH_ImportKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
   GWEN_Buffer_free(pathBuffer);
   return GWEN_DialogEvent_ResultHandled;
@@ -1385,7 +1404,6 @@ int AH_ImportKeyFileDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
 
 
 int AH_ImportKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_filename_button")==0)
     return AH_ImportKeyFileDialog_HandleActivatedFileButton(dlg);
   else if (strcasecmp(sender, "wiz_bankcode_button")==0)

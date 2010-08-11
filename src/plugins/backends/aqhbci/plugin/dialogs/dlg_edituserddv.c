@@ -60,7 +60,7 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
 			       "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg",
 			       fbuf);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -69,7 +69,7 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
   /* read dialog from dialog description file */
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -110,7 +110,7 @@ static int createCountryString(const AB_COUNTRY *c, GWEN_BUFFER *tbuf) {
     }
     return 0;
   }
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No local name");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "No local name");
   return GWEN_ERROR_NO_DATA;
 }
 
@@ -417,7 +417,8 @@ int AH_EditUserDdvDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could create dialog, maybe incomplete installation?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -468,7 +469,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
     rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
 			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
 			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
@@ -489,7 +490,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
     rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
 			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
 			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
@@ -571,7 +572,6 @@ int GWENHYWFAR_CB AH_EditUserDdvDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    DBG_ERROR(0, "ValueChanged: %s", sender);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeActivated:
