@@ -178,6 +178,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 		       "Automatically accepting valid new certificate [%s]",
 		       hash);
 	    GWEN_Buffer_free(hbuf);
+	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
 	    return 0;
 	  }
 	  else {
@@ -185,6 +186,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 		       "Automatically rejecting certificate [%s] (noninteractive)",
 		       hash);
 	    GWEN_Buffer_free(hbuf);
+	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
 	    return GWEN_ERROR_USER_ABORTED;
 	  }
 	} /* if cert is valid */
@@ -194,6 +196,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 		       "Automatically rejecting invalid certificate [%s] (noninteractive)",
 		       hash);
 	    GWEN_Buffer_free(hbuf);
+	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
 	    return GWEN_ERROR_USER_ABORTED;
 	  }
 	}
