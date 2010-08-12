@@ -265,6 +265,11 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.0", 0);
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.1", 0);
 
+  GWEN_Dialog_SetCharProperty(dlg, "statusCombo", GWEN_DialogProperty_AddValue, 0, I18N("HBCIUserStatus|new"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "statusCombo", GWEN_DialogProperty_AddValue, 0, I18N("HBCIUserStatus|enabled"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "statusCombo", GWEN_DialogProperty_AddValue, 0, I18N("HBCIUserStatus|pending"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "statusCombo", GWEN_DialogProperty_AddValue, 0, I18N("HBCIUserStatus|disabled"), 0);
+
   /* toGui */
   switch(AH_User_GetHbciVersion(xdlg->user)) {
   case 201: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
@@ -284,6 +289,14 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg) {
   case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
   case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
   case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
+  default:  break;
+  }
+
+  switch(AH_User_GetStatus(xdlg->user)) {
+  case AH_UserStatusNew:      GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
+  case AH_UserStatusEnabled:  GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
+  case AH_UserStatusPending:  GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
+  case AH_UserStatusDisabled: GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
   default:  break;
   }
 
@@ -408,6 +421,15 @@ int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   case 3: AH_User_SetRdhType(xdlg->user, 10); break;
   default:
   case 0: AH_User_SetRdhType(xdlg->user, 0); break;
+  }
+
+  i=GWEN_Dialog_GetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, -1);
+  switch(i) {
+  case 0: AH_User_SetStatus(xdlg->user, AH_UserStatusNew); break;
+  case 1: AH_User_SetStatus(xdlg->user, AH_UserStatusEnabled); break;
+  case 2: AH_User_SetStatus(xdlg->user, AH_UserStatusPending); break;
+  case 3: AH_User_SetStatus(xdlg->user, AH_UserStatusDisabled); break;
+  default: break;
   }
 
   flags=0;

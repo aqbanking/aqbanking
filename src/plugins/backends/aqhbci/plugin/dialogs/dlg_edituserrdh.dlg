@@ -56,6 +56,9 @@
     
           <widget type="label" text="RDH Version" />
           <widget type="comboBox" name="rdhVersionCombo"  columns="20" flags="fillX" />
+
+          <widget type="label" text="Status" />
+          <widget type="comboBox" name="statusCombo"  columns="20" flags="fillX readOnly" />
     
         </widget>
     
