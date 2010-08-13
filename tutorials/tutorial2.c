@@ -15,14 +15,14 @@
  * It also gives an introduction into the usage of XXX_List2's and list2   *
  * iterators.                                                              *
  *                                                                         *
- * You must either choose a frontend to be used with AqBanking or create   *
- * one yourself by implementing the user interface callbacks of AqBanking. *
+ * You must either choose a GUI implementation to be used with AqBanking   *
+ * or create one yourself by implementing the user interface callbacks of  *
+ * LibGwenhywfar.                                                          *
  *                                                                         *
- * However, for simplicity reasons we use the console frontend CBanking    *
+ * However, for simplicity reasons we use the console GUI implementation   *
  * which implements these callbacks for you.                               *
  *                                                                         *
- * There are other frontends, e.g. G2Banking for GTK2/Gnome, QBanking for  *
- * QT3 or KDE3 or KBanking for KDE3.                                       *
+ * There are other GUI implementations, e.g. for GTK2, QT3, QT4 and FOX16. *
  ***************************************************************************/
 
 
