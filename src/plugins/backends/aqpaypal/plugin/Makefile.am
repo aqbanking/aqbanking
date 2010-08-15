@@ -47,6 +47,9 @@ sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done
+	for f in $(dlgdata_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
+	done
 	for f in $(libaqpaypal_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
