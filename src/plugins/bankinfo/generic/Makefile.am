@@ -97,7 +97,7 @@ de_files_tmp: de.tar.bz2
 	touch $@
 
 us.tar.bz2:
-	./mkdeinfo build-am data/us/fidata us data/us/FedACHdir.txt tmp.banks
+	./mkdeinfo build-am data/us/fidata.UTF-8 us data/us/FedACHdir.txt tmp.banks
 	test -d us || mkdir -p us
 	if test -f data/us/aux.conf; then \
 	  ./mkdeinfo update tmp.banks data/us/aux.conf tmp.banks; \
@@ -115,7 +115,7 @@ us_files_tmp: us.tar.bz2
 
 
 ca.tar.bz2:
-	./mkdeinfo build-am data/us/fidata ca data/us/FedACHdir.txt tmp.banks
+	./mkdeinfo build-am data/us/fidata.UTF-8 ca data/us/FedACHdir.txt tmp.banks
 	test -d ca || mkdir -p ca
 	if test -f data/ca/aux.conf; then \
 	  ./mkdeinfo update tmp.banks data/ca/aux.conf tmp.banks; \
