@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -25,6 +22,8 @@
 #include <gwenhywfar/syncio_file.h>
 
 #include "../../../libs/aqbanking/types/bankinfo_l.h"
+#include <aqofxconnect/user.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1031,7 +1030,13 @@ int readMSMFiles(const char *path,
 	    b=GWEN_XMLNode_FindFirstTag(b, "ProviderSettings", 0, 0);
 	  if (b) {
 	    const char *s;
-  
+	    int i;
+	    uint32_t uflags=0;
+
+	    i=GWEN_XMLNode_GetIntValue(b, "AcctListAvail", 0);
+	    if (i>0)
+	      uflags|=AO_USER_FLAGS_ACCOUNT_LIST;
+
 	    s=readCharValueXml(b, "country", dbuf);
 	    if (s && *s) {
 	      if (strcasecmp(s, "USA")==0 ||
@@ -1102,7 +1107,8 @@ int readMSMFiles(const char *path,
 		pver=GWEN_XMLNode_GetCharValue(b, "OFXHeaderVer", 0);
 		server=readCharValueXml(b, "ProviderUrl",
 					dbuf);
-		if (pver && *pver && server && *server) {
+                if (pver && *pver && server && *server &&
+                    strcasecmp(server, "http://moneycentral.msn.com/cust404.htm")!=0) {
 		  AB_BANKINFO_SERVICE *sv;
   
 		  sv=AB_BankInfoService_new();
