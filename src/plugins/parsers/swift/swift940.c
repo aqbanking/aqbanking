@@ -802,6 +802,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           AHB_SWIFT__SetCharValue(data, flags, "origvalue/currency", buffer);
           p+=3;
           bleft-=3;
+          if (*p=='/') { /* Deutsche Bank seems to be sending */
+	    p++;         /* a "/" between currency and amount */
+	    bleft--;
+          }
           /* get value */
           p2=p;
           while(*p2 && *p2!='/') p2++;
@@ -829,6 +833,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           AHB_SWIFT__SetCharValue(data, flags, "charges/currency", buffer);
           p+=3;
           bleft-=3;
+          if (*p=='/') { /* Deutsche Bank seems to be sending */
+	    p++;         /* a "/" between currency and amount */
+	    bleft--;
+          }
           /* get value */
           p2=p;
           while(*p2 && *p2!='/') p2++;
