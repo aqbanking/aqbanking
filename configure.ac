@@ -1557,6 +1557,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
   src/plugins/backends/aqofxconnect/plugin/ressource.rc
+  src/plugins/backends/aqofxconnect/plugin/libofxhome/Makefile
   src/plugins/backends/aqpaypal/Makefile
   src/plugins/backends/aqpaypal/plugin/Makefile
   src/plugins/backends/aqpaypal/plugin/aqpaypal.xml

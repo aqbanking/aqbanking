@@ -86,7 +86,20 @@ for backend in ${dirlist} ; do
   mkdir -p aqbanking5/${backend}
   if [ -d "src/plugins/backends/${backend}/plugin" ] ; then
     symlinkFolder "src/plugins/backends/${backend}/plugin" "aqbanking5/${backend}"
+    # symlink all subfolders
+    for f in src/plugins/backends/${backend}/plugin/*; do
+      if [ -d "src/plugins/backends/${backend}/plugin/$f" ] ; then
+        case $f in
+          .libs | .deps)
+            ;;
+          *)
+            symlinkFolder "src/plugins/backends/${backend}/plugin/$f" "aqbanking5/${backend}"
+            ;;
+        esac
+      fi
+    done
   fi
+  
 done
 
 

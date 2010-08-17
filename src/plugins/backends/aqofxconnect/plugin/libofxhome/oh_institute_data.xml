@@ -1,0 +1,132 @@
+<?xml?>
+
+<tm2>
+  <type id="OH_INSTITUTE_DATA" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>OH_INSTITUTE_DATA</identifier>
+      <prefix>OH_InstituteData</prefix>
+      
+      <flags>
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqofxconnect/aqofxconnect.h</header>
+        <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
+        <header type="sys" loc="post">aqofxconnect/oh_institute_data_fns.h</header>
+        <header type="local" loc="codeEnd">oh_institute_data_fns.c</header>
+      </headers>
+      
+    </lang>
+
+    <defines>
+
+      <define id="OH_INSTITUTE_DATA_FLAGS" prefix="OH_INSTITUTE_DATA_FLAGS_">
+        <item name="OFXFAIL"   value="0x00000001" />
+        <item name="SSLFAIL"   value="0x00000002" />
+     </define>
+
+    </defines>
+
+
+    <members>
+  
+      <member name="id" type="int" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_getbymember</flags>
+        <access>public</access>
+      </member>
+
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+      <member name="name" type="char_ptr" maxlen="128" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="fid" type="char_ptr" maxlen="128" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="org" type="char_ptr" maxlen="128" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="brokerId" type="char_ptr" maxlen="128" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="url" type="char_ptr" maxlen="256" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="lastOfxValidationTime" type="gwen_time" maxlen="16" >
+        <aedb_type>AEDB_DataType_String</aedb_type>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+      <member name="lastSslValidationTime" type="gwen_time" maxlen="16" >
+        <aedb_type>AEDB_DataType_String</aedb_type>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+
+      <member name="fileName" type="char_ptr" maxlen="256" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
