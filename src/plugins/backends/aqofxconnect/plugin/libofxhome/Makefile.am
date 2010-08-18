@@ -9,10 +9,10 @@ typefiles=\
  oh_institute_spec.xml
 
 
-typedatadir=$(datadir)/aqbanking/aqofxconnect/typemaker2/c
-dist_typedata_DATA=\
-  oh_institute_data.tm2 oh_institute_data_list.tm2 oh_institute_data_list2.tm2 \
-  oh_institute_spec.tm2 oh_institute_spec_list.tm2 oh_institute_spec_list2.tm2
+#typedatadir=$(datadir)/aqbanking/aqofxconnect/typemaker2/c
+#nodist_typedata_DATA=\
+#  oh_institute_data.tm2 oh_institute_data_list.tm2 oh_institute_data_list2.tm2 \
+#  oh_institute_spec.tm2 oh_institute_spec_list.tm2 oh_institute_spec_list2.tm2
 
 
 build_sources= \
@@ -54,6 +54,7 @@ libtest_LDADD=libofxhome.la $(gwenhywfar_libs)
 
 EXTRA_DIST=\
  oh_institute_data_fns.c \
+ oh_institute_spec_fns.c \
   $(typefiles) $(build_sources) $(build_headers)
 
 
