@@ -263,12 +263,18 @@ void AB_SetupNewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_begin_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>This dialog assists you in creating an online banking user."
+                              I18N("<html>"
+                                   "<p>This dialog assists you in creating an online banking user."
 				   "The following steps are:</p>"
                                    "<ul>"
 				   "<li>select the banking protocol</li>"
 				   "<li>select the type of user to create</li>"
-				   "</ul>"),
+                                   "</ul>"
+                                   "</html>"
+                                   "This dialog assists you in creating an online banking user.\n"
+                                   "The following steps are:\n"
+                                   " - select the banking protocol\n"
+				   " - select the type of user to create\n"),
 			      0);
 
   /* read width */

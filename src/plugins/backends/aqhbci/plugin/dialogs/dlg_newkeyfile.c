@@ -444,11 +444,18 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_bank_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>Please select the bank.</p>"
+			      I18N("<html>"
+                                   "<p>Please select the bank.</p>"
 				   "<p>AqBanking has an internal database which "
 				   "contains HBCI/FinTS information about many banks.<p>"
 				   "<p>If there is an entry for your bank this dialog will use the "
-				   "information from the database.</p>"),
+                                   "information from the database.</p>"
+                                   "</html>"
+                                   "Please select the bank.\n"
+                                   "AqBanking has an internal database which contains\n"
+                                   "HBCI/FinTS information about many banks.\n"
+                                   "If there is an entry for your bank this dialog will use the\n"
+                                   "information from the database."),
 			      0);
 
   /* setup user page */
@@ -456,10 +463,16 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_user_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>For most banks the customer id must be the same as the user id.</p>"
+                              I18N("<html>"
+                                   "<p>For most banks the customer id must be the same as the user id.</p>"
 				   "<p>However, some banks actually use the customer id, so please look into "
 				   "the documentation provided by your bank to discover whether this is the "
-				   "case with your bank.</p>"),
+                                   "case with your bank.</p>"
+                                   "</html>"
+                                   "For most banks the customer id must be the same as the user id.\n"
+                                   "However, some banks actually use the customer id, so please look into\n"
+				   "the documentation provided by your bank to discover whether this is the\n"
+                                   "case with your bank."),
 			      0);
 
   /* setup creation page */
@@ -467,8 +480,12 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_create_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<html><p>We are now ready to create the user and exchange keys with the server.</p>"
-				   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p></html>"),
+                              I18N("<html>"
+                                   "<p>We are now ready to create the user and exchange keys with the server.</p>"
+                                   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
+                                   "</html>"
+                                   "We are now ready to create the user and exchange keys with the server.\n"
+                                   "Click the NEXT button to proceed or ABORT to abort."),
 			      0);
 
   /* setup extro page */
@@ -476,10 +493,16 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_end_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<html><p>The user has been successfully created.</p>"
-				   "<p>You must now <b>print</b> the INI letter (click the button below) "
-				   "and <b>send</b> it to the bank.</p> "
-				   "<p>The activation of your account by the bank can take a few days.</p></html>"),
+                              I18N("<html>"
+                                   "<p>The user has been successfully created.</p>"
+                                   "<p>You must now <b>print</b> the INI letter (click the button below) "
+                                   "and <b>send</b> it to the bank.</p> "
+                                   "<p>The activation of your account by the bank can take a few days.</p>"
+                                   "</html>"
+                                   "The user has been successfully created.\n"
+                                   "You must now PRINT the INI letter (click the button below)\n"
+                                   "and SEND it to the bank.\n"
+                                   "The activation of your account by the bank can take a few days."),
 				   0);
 
   /* read width */

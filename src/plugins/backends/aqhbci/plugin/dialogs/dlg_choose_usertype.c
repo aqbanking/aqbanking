@@ -77,10 +77,17 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_BANKING *ab) {
 
 void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "hbciIntroLabel", GWEN_DialogProperty_Title, 0,
-			      I18N("<p>The HBCI module supports a broad range of security "
+                              I18N("<html>"
+                                   "<p>The HBCI module supports a broad range of security "
 				   "media. Please choose the user setup mode from the following "
-				   "list.</p>"
-				   "<p>Click on the <i>run</i> button below to create the user.</p>"),
+                                   "list.</p>"
+                                   "<p>Click on the <i>run</i> button below to create the user.</p>"
+                                   "</html>"
+                                   "The HBCI module supports a broad range of security\n"
+                                   "media. Please choose the user setup mode from the following\n"
+                                   "list.\n"
+                                   "Click on the RUN button below to create the user."
+                                  ),
 			      0);
 
   switch(AB_UserTypePageDialog_GetSelectedType(dlg)) {

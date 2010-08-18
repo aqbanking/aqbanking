@@ -210,11 +210,21 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_begin_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("This dialog assists you in importing files.\n"
-				   "The following steps are:\n"
-				   "- select file to import\n"
-				   "- select importer module\n"
-				   "- select importer profile\n"),
+                              I18N(
+                                   "<html>"
+                                   "<p>This dialog assists you in importing files."
+                                   "The following steps are:</p>"
+                                   "<ul>"
+				   "<li>select file to import</li>"
+                                   "<li>select importer module</li>"
+                                   "<li>select importer profile</li>"
+                                   "</ul>"
+                                   "</html>"
+                                   "This dialog assists you in importing files.\n"
+                                   "The following steps are:\n"
+                                   "- select file to import\n"
+                                   "- select importer module\n"
+                                   "- select importer profile\n"),
 			      0);
 
   /* setup file page */

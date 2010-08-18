@@ -459,21 +459,33 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_begin_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>This dialog assists you in setting up a DDV Chipcard User.</p>"
+                              I18N("<html>"
+                                   "<p>This dialog assists you in setting up a DDV Chipcard User.</p>"
 				   "<p>Some chipcards contain user information. You can click the button below "
-				   "to read that information from the card.</p>"),
-			      0);
+                                   "to read that information from the card.</p>"
+                                   "</html>"
+                                   "This dialog assists you in setting up a DDV Chipcard User.\n"
+                                   "Some chipcards contain user information. You can click the button below\n"
+                                   "to read that information from the card."),
+                              0);
 
   /* setup bank page */
   GWEN_Dialog_SetCharProperty(dlg,
 			      "wiz_bank_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>Please select the bank.</p>"
+			      I18N("<html>"
+                                   "<p>Please select the bank.</p>"
 				   "<p>AqBanking has an internal database which "
 				   "contains HBCI/FinTS information about many banks.<p>"
 				   "<p>If there is an entry for your bank this dialog will use the "
-				   "information from the database.</p>"),
+                                   "information from the database.</p>"
+                                   "</html>"
+                                   "Please select the bank.\n"
+                                   "AqBanking has an internal database which contains\n"
+                                   "HBCI/FinTS information about many banks.\n"
+                                   "If there is an entry for your bank this dialog will use the\n"
+                                   "information from the database."),
 			      0);
 
   /* setup user page */
@@ -481,19 +493,29 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_user_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>For most banks the customer id must be the same as the user id.</p>"
+                              I18N("<html>"
+                                   "<p>For most banks the customer id must be the same as the user id.</p>"
 				   "<p>However, some banks actually use the customer id, so please look into "
 				   "the documentation provided by your bank to discover whether this is the "
-				   "case with your bank.</p>"),
-			      0);
+                                   "case with your bank.</p>"
+                                   "</html>"
+                                   "For most banks the customer id must be the same as the user id.\n"
+                                   "However, some banks actually use the customer id, so please look into\n"
+				   "the documentation provided by your bank to discover whether this is the\n"
+                                   "case with your bank."),
+                              0);
 
   /* setup creation page */
   GWEN_Dialog_SetCharProperty(dlg,
 			      "wiz_create_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>We are now ready to create the user and retrieve the account list.</p>"
-				   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"),
+                              I18N("<html>"
+                                   "<p>We are now ready to create the user and retrieve the account list.</p>"
+                                   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
+                                   "</html>"
+                                   "We are now ready to create the user and retrieve the account list.\n"
+                                   "Click the NEXT button to proceed or ABORT to abort."),
 			      0);
 
   /* setup extro page */

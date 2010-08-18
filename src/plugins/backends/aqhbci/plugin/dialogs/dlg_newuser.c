@@ -98,7 +98,8 @@ void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "introLabel",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>You can now create a new HBCI/FinTS user.</p>"
+                              I18N("<html>"
+                                   "<p>You can now create a new HBCI/FinTS user.</p>"
 				   "AqBanking supports the following user types:"
 				   "<ul>"
 				   " <li>Keyfile-based user</li>"
@@ -107,7 +108,16 @@ void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 				   "</ul>"
 				   "<p>Which type of user you need to setup is determined "
 				   "by the bank. The letter from your bank should contain this "
-				   "information.</p>"),
+                                   "information.</p>"
+                                   "</html>"
+                                   "You can now create a new HBCI/FinTS user.\n"
+                                   "AqBanking supports the following user types:\n"
+				   " - Keyfile-based user\n"
+				   " - Chipcard-based user\n"
+				   " - PIN/TAN user\n"
+				   "Which type of user you need to setup is determined\n"
+				   "by the bank. The letter from your bank should contain this\n"
+                                   "information."),
 			      0);
 
   /* temporarily disable not-implemented buttons */

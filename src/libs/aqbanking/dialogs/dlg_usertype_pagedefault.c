@@ -77,8 +77,11 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
 
 void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "defaultIntroLabel", GWEN_DialogProperty_Title, 0,
-			      I18N("<p>Click on the <i>run</i> button below to create the user.</p>"),
-			      0);
+                              I18N("<html>"
+                                   "<p>Click on the <i>run</i> button below to create the user.</p>"
+                                   "</html>"
+                                   "Click on the RUN button below to create the user."),
+                              0);
 }
 
 
