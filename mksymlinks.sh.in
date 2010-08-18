@@ -102,6 +102,10 @@ for backend in ${dirlist} ; do
   
 done
 
+if [ -d aqbanking5/aqofxconnect ] ; then
+  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/plugin/libofxhome/oh_institute_data.h" aqbanking5/aqofxconnect
+  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/plugin/libofxhome/oh_institute_spec.h" aqbanking5/aqofxconnect
+fi
 
 
 rm -f sl-headers 2>/dev/null
