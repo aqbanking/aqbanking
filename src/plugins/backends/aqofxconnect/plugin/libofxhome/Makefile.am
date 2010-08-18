@@ -1,4 +1,5 @@
-INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
+INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
+  -I$(top_srcdir)/src/libs/aqbanking
 
 
 DEFS += -DBUILDING_AQOFXCONNECT
@@ -13,6 +14,11 @@ typefiles=\
 #nodist_typedata_DATA=\
 #  oh_institute_data.tm2 oh_institute_data_list.tm2 oh_institute_data_list2.tm2 \
 #  oh_institute_spec.tm2 oh_institute_spec_list.tm2 oh_institute_spec_list2.tm2
+
+
+dlgdatadir=$(aqbanking_pkgdatadir)/aqbanking/aqofxconnect/dialogs
+dlgdata_DATA=\
+  dlg_getinst.dlg
 
 
 build_sources= \
@@ -32,19 +38,22 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 noinst_HEADERS=$(build_headers_priv) \
-  ofxhome_p.h
+  ofxhome_p.h \
+  dlg_getinst_p.h
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
 iheader_HEADERS=$(build_headers_pub) \
- oh_institute_data_fns.h \
- oh_institute_spec_fns.h \
- ofxhome.h
+  oh_institute_data_fns.h \
+  oh_institute_spec_fns.h \
+  ofxhome.h \
+  dlg_getinst.h
 
 
 noinst_LTLIBRARIES=libofxhome.la
 libofxhome_la_SOURCES= $(build_sources) \
-  ofxhome.c
+  ofxhome.c \
+  dlg_getinst.c
 
 
 noinst_PROGRAMS=libtest
