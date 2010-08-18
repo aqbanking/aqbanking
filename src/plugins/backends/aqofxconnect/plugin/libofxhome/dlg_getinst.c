@@ -52,7 +52,7 @@ GWEN_DIALOG *OH_GetInstituteDialog_new(const char *dataFolder, const char *name)
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "aqbanking/aqofxconnect/dialogs/dlg_getinst.dlg",
+			       "aqbanking/backends/aqofxconnect/dialogs/dlg_getinst.dlg",
 			       fbuf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Dialog description file not found (%d).", rv);

@@ -1,5 +1,5 @@
 INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
-  -I$(top_srcdir)/src/libs/aqbanking
+  -I$(top_srcdir)/src/libs/aqbanking $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
 
 
 DEFS += -DBUILDING_AQOFXCONNECT
@@ -16,7 +16,7 @@ typefiles=\
 #  oh_institute_spec.tm2 oh_institute_spec_list.tm2 oh_institute_spec_list2.tm2
 
 
-dlgdatadir=$(aqbanking_pkgdatadir)/aqbanking/aqofxconnect/dialogs
+dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqofxconnect/dialogs
 dlgdata_DATA=\
   dlg_getinst.dlg
 
@@ -58,7 +58,8 @@ libofxhome_la_SOURCES= $(build_sources) \
 
 noinst_PROGRAMS=libtest
 libtest_SOURCES=libtest.c
-libtest_LDADD=libofxhome.la $(gwenhywfar_libs)
+libtest_LDADD=libofxhome.la $(aqbanking_internal_libs) $(gwenhywfar_libs) $(GWENGUI_GTK2_LIBS) $(GTK2_LIBS)
+
 
 
 EXTRA_DIST=\
