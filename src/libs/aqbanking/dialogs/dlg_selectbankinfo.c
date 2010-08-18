@@ -501,6 +501,13 @@ int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
     AB_SelectBankInfoDialog_UpdateList(dlg);
     return GWEN_DialogEvent_ResultHandled;
   }
+  else if (strcasecmp(sender, "listBox")==0) {
+    AB_BANKINFO *bi;
+
+    bi=AB_SelectBankInfoDialog_DetermineSelectedBankInfo(dlg);
+    GWEN_Dialog_SetIntProperty(dlg, "okButton", GWEN_DialogProperty_Enabled, 0, bi?1:0, 0);
+    return GWEN_DialogEvent_ResultHandled;
+  }
   else if (strcasecmp(sender, "okButton")==0) {
     AB_BANKINFO *bi;
 
