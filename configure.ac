@@ -667,6 +667,16 @@ AC_GWENHYWFAR(3,99,18,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
+# For libgwenhywfar > 3.99.20, look for its library gwengui-gtk2.
+PKG_CHECK_MODULES([GWENGUI_GTK2], [gwengui-gtk2 gwenhywfar], [
+    HAVE_GWENGUI_GTK2=1
+    PKG_CHECK_MODULES([GTK2], [gtk+-2.0])
+  ], [
+    HAVE_GWENGUI_GTK2=0
+  ])
+AC_SUBST(HAVE_GWENGUI_GTK2)
+AM_CONDITIONAL(WITH_GWENGUI_GTK2, [test "$HAVE_GWENGUI_GTK2" = "1"])
+
 
 ###-------------------------------------------------------------------------
 #

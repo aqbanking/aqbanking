@@ -1,10 +1,25 @@
-INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes)
+INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
 
 
-noinst_PROGRAMS=abtest 
+if WITH_GWENGUI_GTK2
+noinst_PROGRAMS=abtest
+else
+noinst_PROGRAMS=abtest test-dlg-setup
+endif
 
 abtest_SOURCES=abtest.c
 abtest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
+
+if WITH_GWENGUI_GTK2
+test_dlg_setup_SOURCES = test-dlg-setup.c
+test_dlg_setup_LDADD = \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs) \
+  $(GWENGUI_GTK2_LIBS) \
+  $(GTK2_LIBS)
+endif
+
+EXTRA_DIST = test-dlg-setup.c
 
 #cpptest_SOURCES=cpptest.cpp
 #cpptest_LDADD = $(aqbanking_internal_libs) $(top_builddir)/src/libs/aqbanking++/libaqbankingpp.la $(gwenhywfar_libs) -lstdc++
