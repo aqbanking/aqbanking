@@ -599,7 +599,7 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "to try multiple settings.</p>"
                                    "</html>"
                                    "Please choose the application you want AqBanking to emulate.\n"
-                                   "Not all banks support all applications and versions, you you might have\n"
+                                   "Not all banks support all applications and versions, you might have\n"
                                    "to try multiple settings."),
                               0);
 
