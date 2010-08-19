@@ -801,5 +801,50 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 
 
 
+int AB_Banking_GetCert(AB_BANKING *ab,
+                       const char *url,
+                       const char *defaultProto,
+                       int defaultPort,
+                       uint32_t *httpFlags,
+                       uint32_t pid) {
+  int rv;
+  GWEN_HTTP_SESSION *sess;
+
+  sess=GWEN_HttpSession_new(url, defaultProto, defaultPort);
+  GWEN_HttpSession_SetFlags(sess, *httpFlags);
+
+  rv=GWEN_HttpSession_Init(sess);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_ProgressLog2(pid,
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not init HTTP session  (%d)"), rv);
+    GWEN_HttpSession_free(sess);
+    return rv;
+  }
+
+  rv=GWEN_HttpSession_ConnectionTest(sess);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not connect to server (%d)", rv);
+    GWEN_Gui_ProgressLog2(pid,
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not connect to server, giving up (%d)"), rv);
+    return rv;
+  }
+
+  *httpFlags=GWEN_HttpSession_GetFlags(sess);
+
+  GWEN_HttpSession_Fini(sess);
+  GWEN_HttpSession_free(sess);
+
+  GWEN_Gui_ProgressLog(pid,
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Connection ok, certificate probably received"));
+
+  return 0;
+}
+
+
+
 
 

@@ -18,6 +18,8 @@
 
 #include <aqbanking/banking.h>
 
+#include <gwenhywfar/httpsession.h>
+
 
 #define AB_CFG_GROUP_BACKENDS   "backends"
 #define AB_CFG_GROUP_BANKINFO   "bankinfo"
@@ -135,6 +137,15 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab);
 
 AQBANKING_API
 int AB_Banking_GetUniqueId(AB_BANKING *ab);
+
+
+AQBANKING_API
+int AB_Banking_GetCert(AB_BANKING *ab,
+                       const char *url,
+                       const char *defaultProto,
+                       int defaultPort,
+                       uint32_t *httpFlags,
+                       uint32_t pid);
 
 
 /**
