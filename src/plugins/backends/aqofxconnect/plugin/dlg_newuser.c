@@ -595,11 +595,11 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      0,
                               I18N("<html>"
                                    "<p>Please choose the application you want AqBanking to emulate. "
-                                   "Not all bank supports all applications and versions, you might have "
+                                   "Not all banks support all applications and versions, you might have "
                                    "to try multiple settings.</p>"
                                    "</html>"
                                    "Please choose the application you want AqBanking to emulate.\n"
-                                   "Not all bank supports all applications and versions, you you might have\n"
+                                   "Not all banks support all applications and versions, you you might have\n"
                                    "to try multiple settings."),
                               0);
 
