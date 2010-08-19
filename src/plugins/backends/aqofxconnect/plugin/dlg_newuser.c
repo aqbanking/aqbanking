@@ -556,7 +556,7 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "try to retrieve information about your bank.</p>"
                                    "<p>If you had to manually enter this information because your "
                                    "bank was unknown to <i>www.ofxhome.com</i> you are kindly "
-                                   "ask to submit your bank server information there to help "
+                                   "asked to submit your bank server information there to help "
                                    "the next user.</p>"
                                    "</html>"
                                    "Click the SELECT button to choose from a list of\n"
@@ -564,7 +564,7 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "try to retrieve information about your bank.\n"
                                    "If you had to manually enter this information because your\n"
                                    "bank was unknown to \"www.ofxhome.com\" you are kindly\n"
-                                   "ask to submit your bank server information there to help\n"
+                                   "asked to submit your bank server information there to help\n"
                                    "the next user."),
                               0);
 
