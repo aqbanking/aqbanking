@@ -30,27 +30,6 @@ GWEN_INHERIT(AB_USER, AO_USER);
 
 
 
-AO_USER_SERVERTYPE AO_User_ServerType_fromString(const char *s) {
-  assert(s);
-  if (strcasecmp(s, "http")==0)
-    return AO_User_ServerTypeHTTP;
-  else if (strcasecmp(s, "https")==0)
-    return AO_User_ServerTypeHTTPS;
-  return AO_User_ServerTypeUnknown;
-}
-
-
-
-const char *AO_User_ServerType_toString(AO_USER_SERVERTYPE t) {
-  switch(t) {
-  case AO_User_ServerTypeHTTP:  return "http";
-  case AO_User_ServerTypeHTTPS: return "https";
-  default:                      return "unknown";
-  }
-}
-
-
-
 uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
   int i;
   uint32_t f=0;
@@ -159,17 +138,12 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       else
 	ue->fid=NULL;
 
-      s=GWEN_DB_GetCharValue(db, "serverType", 0, "https");
-      ue->serverType=AO_User_ServerType_fromString(s);
-
       free(ue->serverAddr);
       s=GWEN_DB_GetCharValue(db, "serverAddr", 0, NULL);
       if (s)
 	ue->serverAddr=strdup(s);
       else
 	ue->serverAddr=NULL;
-
-      ue->serverPort=GWEN_DB_GetIntValue(db, "serverPort", 0, 0);
 
       free(ue->appId);
       s=GWEN_DB_GetCharValue(db, "appId", 0, NULL);
@@ -228,16 +202,9 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "fid", ue->fid);
 
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "serverType",
-			   AO_User_ServerType_toString(ue->serverType));
-
       if (ue->serverAddr)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "serverAddr", ue->serverAddr);
-
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "serverPort", ue->serverPort);
 
       if (ue->appId)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -362,30 +329,6 @@ void AO_User_SetFid(AB_USER *u, const char *s) {
 
 
 
-AO_USER_SERVERTYPE AO_User_GetServerType(const AB_USER *u) {
-  AO_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
-  assert(ue);
-
-  return ue->serverType;
-}
-
-
-
-void AO_User_SetServerType(AB_USER *u, AO_USER_SERVERTYPE t) {
-  AO_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
-  assert(ue);
-
-  ue->serverType=t;
-}
-
-
-
 const char *AO_User_GetServerAddr(const AB_USER *u) {
   AO_USER *ue;
 
@@ -408,30 +351,6 @@ void AO_User_SetServerAddr(AB_USER *u, const char *s) {
   free(ue->serverAddr);
   if (s) ue->serverAddr=strdup(s);
   else ue->serverAddr=NULL;
-}
-
-
-
-int AO_User_GetServerPort(const AB_USER *u) {
-  AO_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
-  assert(ue);
-
-  return ue->serverPort;
-}
-
-
-
-void AO_User_SetServerPort(AB_USER *u, int i) {
-  AO_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
-  assert(ue);
-
-  ue->serverPort=i;
 }
 
 

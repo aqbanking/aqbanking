@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Wed Jan 09 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de

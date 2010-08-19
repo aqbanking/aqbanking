@@ -22,7 +22,6 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
   GWEN_HTTP_SESSION *sess;
   uint32_t flags;
   const char *addr;
-  const char *addrType;
 
   /* take bank addr from user */
   addr=AO_User_GetServerAddr(u);
@@ -30,17 +29,8 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User has no valid address settings");
     return GWEN_ERROR_INVALID;
   }
-  switch(AO_User_GetServerType(u)) {
-  case AO_User_ServerTypeHTTP:
-    addrType="http";
-    break;
-  case AO_User_ServerTypeHTTPS:
-  default:
-    addrType="https";
-    break;
-  }
 
-  sess=AB_HttpSession_new(pro, u, addr, addrType, AO_User_GetServerPort(u));
+  sess=AB_HttpSession_new(pro, u, addr, "https", 443);
 
   /* setup session */
   flags=AO_User_GetFlags(u);

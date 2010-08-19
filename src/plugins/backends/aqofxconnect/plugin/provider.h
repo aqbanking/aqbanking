@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -28,11 +25,20 @@ extern "C" {
 typedef struct AO_PROVIDER AO_PROVIDER;
 
 
+typedef struct {
+  const char *appName;
+  const char *appId;
+  const char *appVer;
+} AO_APPINFO;
+
+
 AQOFXCONNECT_API AB_PROVIDER *AO_Provider_new(AB_BANKING *ab);
 
-AQOFXCONNECT_API int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-						 AB_USER *u,
-						 uint32_t guiid);
+AQOFXCONNECT_API const AO_APPINFO *AO_Provider_GetAppInfos(AB_PROVIDER *pro);
+
+AQOFXCONNECT_API int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u);
+
+AQOFXCONNECT_API int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Wed Jan 09 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -89,10 +87,10 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
   while (strlen(userpass)<4) {
     GWEN_BUFFER *nbuf;
     int rv;
-    char msg[]=I18N_NOOP("Please enter the password for user %s"
-			 "<html>"
-			 "Please enter the password for user <b>%s</b>"
-			 "</html>");
+    char msg[]=I18S("Please enter the password for user %s"
+                    "<html>"
+                    "Please enter the password for user <b>%s</b>"
+                    "</html>");
     char msgbuf[512];
 
     nbuf=GWEN_Buffer_new(0, 64, 0, 1);

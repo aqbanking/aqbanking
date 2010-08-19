@@ -11,26 +11,26 @@
  ***************************************************************************/
 -->
 
-<dialog type="dialog" name="oh_getinst" i18n="aqbanking"
+<dialog type="dialog" name="ao_ofx_special" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
-    <widget type="label" name="infoLabel" flags="fillX justifyLeft" />
 
     <widget type="gridLayout" columns="2" flags="fillX" >
 
-      <widget type="label" text="Bank Name" />
-      <widget type="lineEdit" name="nameEdit"     columns="40" flags="" />
+      <widget type="label" text="HTTP Version" />
+      <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX readOnly" />
 
     </widget>
 
-    <widget type="groupBox" text="Matching Banks" flags="fillX fillY" >
-      <widget type="listBox" name="listBox" columns="5" flags="fillX fillY" />
-    </widget>
+    <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
+    <widget type="checkBox" name="emptyBankIdCheck" text="Send Empty Bank Id" />
+    <widget type="checkBox" name="emptyFidCheck" text="Send Empty FID" />
+    <widget type="checkBox" name="shortDateCheck" text="Send Short Date" />
 
     <!-- wizard controls -->
     <widget type="hLine" flags="fillX" />
     <widget type="hlayout" flags="fillX equalWidth" >
-      <widget type="pushButton" text="Help"     name="wiz_help_button" />
+      <widget type="pushButton" text="Help"     name="helpButton" />
       <widget type="hspacer" flags="fillX" />
       <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
       <widget type="pushButton" text="Abort"  name="abortButton" />

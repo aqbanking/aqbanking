@@ -20,9 +20,7 @@ struct AO_USER {
   char *brokerId;
   char *org;
   char *fid;
-  AO_USER_SERVERTYPE serverType;
   char *serverAddr;
-  int serverPort;
   char *appId;
   char *appVer;
   char *headerVer;

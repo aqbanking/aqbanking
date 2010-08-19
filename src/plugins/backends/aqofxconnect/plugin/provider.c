@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -20,6 +17,7 @@
 #include "account.h"
 #include "queues_l.h"
 #include "user.h"
+#include "dlg_newuser_l.h"
 
 #include <aqbanking/account_be.h>
 #include <aqbanking/job_be.h>
@@ -47,14 +45,43 @@
 
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
-#define I18N_NOOP(msg) msg
 #define I18S(msg) msg
 
-#define I18N_NOOP(msg) msg
 
 
 
 GWEN_INHERIT(AB_PROVIDER, AO_PROVIDER)
+
+
+
+
+static AO_APPINFO _appInfos[]={
+{ I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1800"},
+{ I18S("Intuit Quicken Windows 2008"),    "QWIN",       "1700"},
+{ I18S("Intuit Quicken Windows 2007"),    "QWIN",       "1600"},
+{ I18S("Intuit Quicken Windows 2006"),    "QWIN",       "1500"},
+{ I18S("Intuit Quicken Windows 2005"),    "QWIN",       "1400"},
+{ I18S("Intuit Quicken Mac 2008"),        "QMOFX",      "1700"},
+{ I18S("Intuit Quicken Mac 2007"),        "QMOFX",      "1600"},
+{ I18S("Intuit Quicken Mac 2006"),        "QMOFX",      "1500"},
+{ I18S("Intuit Quicken Mac 2005"),        "QMOFX",      "1400"},
+
+{ I18S("Intuit QuickBooks Windows 2008"), "QBW",        "1800"},
+{ I18S("Intuit QuickBooks Windows 2007"), "QBW",        "1700"},
+{ I18S("Intuit QuickBooks Windows 2006"), "QBW",        "1600"},
+{ I18S("Intuit QuickBooks Windows 2005"), "QBW",        "1500"},
+
+{ I18S("Microsoft Money Plus"),           "Money Plus", "1700"},
+{ I18S("Microsoft Money 2007"),           "Money",      "1600"},
+{ I18S("Microsoft Money 2006"),           "Money",      "1500"},
+{ I18S("Microsoft Money 2005"),           "Money",      "1400"},
+{ I18S("Microsoft Money 2004"),           "Money",      "1200"},
+{ I18S("Microsoft Money 2003"),           "Money",      "1100"},
+
+{ NULL, NULL, NULL}
+};
+
+
 
 
 
@@ -77,6 +104,9 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   AB_Provider_SetResetQueueFn(pro, AO_Provider_ResetQueue);
   AB_Provider_SetExtendUserFn(pro, AO_Provider_ExtendUser);
   AB_Provider_SetExtendAccountFn(pro, AO_Provider_ExtendAccount);
+
+  AB_Provider_SetGetNewUserDialogFn(pro, AO_Provider_GetNewUserDialog);
+  AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
 
   return pro;
 }
@@ -533,7 +563,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
                                AQOFXCONNECT_BACKENDNAME,
                                country, bankCode, accountNumber);
       if (!a) {
-        char msg[]=I18N_NOOP("Adding account %s to bank %s");
+        char msg[]=I18S("Adding account %s to bank %s");
         char msgbuf[512];
 
         DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Adding account %s to bank %s",
@@ -587,9 +617,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
 
 
 
-int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
-				AB_USER *u,
-				uint32_t guiid) {
+int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
   AO_PROVIDER *dp;
   GWEN_BUFFER *reqbuf;
   GWEN_BUFFER *rbuf=NULL;
@@ -606,6 +634,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
 			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
 			     GWEN_GUI_PROGRESS_SHOW_LOG |
                              GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                             (keepOpen?GWEN_GUI_PROGRESS_KEEP_OPEN:0) |
 			     GWEN_GUI_PROGRESS_SHOW_ABORT,
 			     I18N("Requesting account list"),
 			     I18N("We are now requesting a list of "
@@ -617,7 +646,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro,
 				  "which can be managed via <i>OFX</i>.\n"
 				  "</html>"),
 			     1,
-			     guiid);
+                             0);
   ictx=AB_ImExporterContext_new();
 
   reqbuf=GWEN_Buffer_new(0, 2048, 0, 1);
@@ -998,6 +1027,89 @@ int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
   AO_Account_Extend(a, pro, em, db);
   return 0;
 }
+
+
+
+GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+  AO_PROVIDER *xp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
+  assert(xp);
+
+  dlg=AO_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  if (dlg==NULL) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
+
+
+
+const AO_APPINFO *AO_Provider_GetAppInfos(AB_PROVIDER *pro) {
+  return _appInfos;
+}
+
+
+
+int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u) {
+  AO_PROVIDER *xp;
+  int rv;
+  const char *url;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
+  assert(xp);
+
+  url=AO_User_GetServerAddr(u);
+  if (url && *url) {
+    uint32_t uFlags;
+    uint32_t hFlags=0;
+    uint32_t pid;
+
+    uFlags=AO_User_GetFlags(u);
+    if (uFlags & AO_USER_FLAGS_FORCE_SSL3)
+      hFlags|=GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3;
+
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               I18N("Getting Certificate"),
+                               I18N("We are now asking the server for its "
+                                    "SSL certificate"),
+                               GWEN_GUI_PROGRESS_NONE,
+                               0);
+
+    rv=AB_Banking_GetCert(AB_Provider_GetBanking(pro),
+                          url,
+                          "https", 443, &hFlags, pid);
+    if (rv<0) {
+      GWEN_Gui_ProgressEnd(pid);
+      return rv;
+    }
+
+    if (hFlags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3) {
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Setting ForceSSLv3 flag");
+      uFlags|=AO_USER_FLAGS_FORCE_SSL3;
+    }
+    else {
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Clearing ForceSSLv3 flag");
+      uFlags&=~AO_USER_FLAGS_FORCE_SSL3;
+    }
+    AO_User_SetFlags(u, uFlags);
+    GWEN_Gui_ProgressEnd(pid);
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No url");
+    return GWEN_ERROR_INVALID;
+  }
+}
+
+
 
 
 #include "network.c"

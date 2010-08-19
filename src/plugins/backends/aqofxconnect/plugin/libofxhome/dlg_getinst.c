@@ -256,6 +256,19 @@ void OH_GetInstituteDialog_Init(GWEN_DIALOG *dlg) {
 			     GWEN_Dialog_SelectionMode_Single,
 			     0);
 
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "infoLabel",
+			      GWEN_DialogProperty_Title,
+			      0,
+                              I18N("<html>"
+                                   "<p>Please start typing in the name of your bank. The list "
+                                   "below will be updated to show matching banks.</p>"
+                                   "<p>Choose the bank from list below and click <b>ok</b>.</p>"
+                                   "</html>"
+                                   "Please start typing in the name of your bank. The list\n"
+                                   "below will be updated to show matching banks.\n"
+                                   "Choose the bank from list below and click OK."),
+                              0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);

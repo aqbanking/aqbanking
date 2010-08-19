@@ -76,6 +76,9 @@ sources:
 	for f in $(libofxhome_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(dlgdata_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done

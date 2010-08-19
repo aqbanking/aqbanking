@@ -53,6 +53,8 @@ static int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 				     AB_PROVIDER_EXTEND_MODE em,
 				     GWEN_DB_NODE *dbBackend);
 
+static GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
+
 
 #if 0
 static int AO_Provider_EncodeJob(AB_PROVIDER *pro,
