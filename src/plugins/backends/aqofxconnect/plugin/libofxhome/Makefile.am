@@ -65,7 +65,7 @@ libtest_LDADD=libofxhome.la $(aqbanking_internal_libs) $(gwenhywfar_libs) $(GWEN
 EXTRA_DIST=\
  oh_institute_data_fns.c \
  oh_institute_spec_fns.c \
-  $(typefiles) $(build_sources) $(build_headers)
+  $(typefiles) $(dlgdata_DATA) $(dlgimage_DATA) $(build_sources) $(build_headers)
 
 
 built_sources: $(build_sources)
