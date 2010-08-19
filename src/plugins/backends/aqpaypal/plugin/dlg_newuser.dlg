@@ -11,7 +11,7 @@
  ***************************************************************************/
 -->
 
-<dialog type="dialog" name="apy_newuser" i18n="aqbanking"
+<dialog type="dialog" name="ao_newuser" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
 

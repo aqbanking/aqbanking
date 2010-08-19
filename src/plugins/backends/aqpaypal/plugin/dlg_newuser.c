@@ -393,12 +393,21 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_begin_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>This dialog assists you in setting up a Paypal User.</p>"
+			      I18N("<html>"
+                                   "<p>This dialog assists you in setting up a Paypal User.</p>"
 				   "<p>Please note that you have to apply for API access with Paypal. "
 				   "The following procedure helps you getting there:</p>"
 				   "<p>Login into your Paypal account via web browser, enter the <i>My Profile</i> "
 				   "page, click  <i>API access</i> under <i>Account information</i>.</p>"
-				   "<p>Choose <b>Option 2</b>.</p>"),
+                                   "<p>Choose <b>Option 2</b>.</p>"
+                                   "</html>"
+                                   "This dialog assists you in setting up a Paypal User.\n"
+				   "Please note that you have to apply for API access with Paypal.\n"
+				   "The following procedure helps you getting there:\n"
+				   "Login into your Paypal account via web browser, enter the \"My Profile\"\n"
+				   "page, click  \"API access\" under \"Account information\".\n"
+                                   "Choose OPTION 2."
+                                  ),
 			      0);
 
   /* setup user page */
@@ -406,10 +415,16 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_user_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>You can find the information needed here after logging into your "
+                              I18N("<html>"
+                                   "<p>You can find the information needed here after logging into your "
 				   "Paypal account via web browser. The information can then be found "
-				   "under <i>My Profile</i>, <i>Account Information</i>, <i>API Access</i>.</p>"),
-			      0);
+                                   "under <i>My Profile</i>, <i>Account Information</i>, <i>API Access</i>.</p>"
+                                   "</html>"
+                                   "You can find the information needed here after logging into your\n"
+				   "Paypal account via web browser. The information can then be found\n"
+                                   "under <\"My Profile\", \"Account Information\", \"API Access\"."
+                                  ),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg,
 			      "wiz_url_edit",
@@ -424,8 +439,9 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_secret_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>Enter the API password and signature as it is found on the "
-				   "Paypal page described in the previous steps.</p>"
+                              I18N("<html>"
+                                   "<p>Enter the API password and signature as it is found on the "
+                                   "Paypal page described in the previous steps.</p>"
 				   "<p><font color=\"red\"><b>"
 				   "The API password and API signature are extremely sensitive "
 				   "information which you must under no circumstances reveal to "
@@ -434,7 +450,19 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 				   "remember, so AqBanking stores them in a file which is very well "
 				   "encrypted.</p>"
 				   "<p>When the user is created in the next step you will be asked for "
-				   "the password to be set for that credential file.</p>"),
+                                   "the password to be set for that credential file.</p>"
+                                   "</html>"
+                                   "Enter the API password and signature as it is found on the\n"
+                                   "Paypal page described in the previous steps.\n"
+                                   "The API password and API signature are extremely sensitive\n"
+                                   "information which you must under no circumstances reveal to\n"
+                                   "anybody!\n"
+                                   "That being said, these credentials are also quite hard to\n"
+				   "remember, so AqBanking stores them in a file which is very well\n"
+                                   "encrypted.\n"
+				   "When the user is created in the next step you will be asked for\n"
+                                   "the password to be set for that credential file."
+                                  ),
 			      0);
 
   /* setup creation page */
@@ -442,11 +470,19 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 			      "wiz_create_label",
 			      GWEN_DialogProperty_Title,
 			      0,
-			      I18N("<p>We are now ready to create the user.</p>"
+                              I18N("<html>"
+                                   "<p>We are now ready to create the user.</p>"
 				   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
 				   "<p>If you proceed you will be asked to enter a new password. This is the password "
 				   "for the credentials file described in previous steps.</p>"
-				   "<p>Please be carefull to enter a sufficiently secure password</p>"),
+                                   "<p>Please be carefull to enter a sufficiently secure password</p>"
+                                   "</html>"
+                                   "We are now ready to create the user.\n"
+                                   "Click the \"next\" button to proceed or \"abort\" to abort.\n"
+				   "If you proceed you will be asked to enter a new password. This is the password\n"
+                                   "for the credentials file described in previous steps.\n"
+                                   "Please be carefull to enter a sufficiently secure password."
+                                  ),
 			      0);
 
   /* setup extro page */
