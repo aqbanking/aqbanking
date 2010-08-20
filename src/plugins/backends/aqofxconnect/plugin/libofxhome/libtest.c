@@ -150,8 +150,6 @@ int test3(int argc, char **argv) {
   }
   AB_Banking_free(ab);
   GWEN_Gui_free(gui);
-#else
-# warning "No GTK2 GUI"
 #endif
   return 0;
 }

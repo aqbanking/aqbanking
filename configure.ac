@@ -667,16 +667,26 @@ AC_GWENHYWFAR(3,99,18,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
-# For libgwenhywfar > 3.99.20, look for its library gwengui-gtk2.
-PKG_CHECK_MODULES([GWENGUI_GTK2], [gwengui-gtk2 gwenhywfar], [
-    HAVE_GWENGUI_GTK2=1
-    PKG_CHECK_MODULES([GTK2], [gtk+-2.0])
-  ], [
-    HAVE_GWENGUI_GTK2=0
-  ])
-AC_SUBST(HAVE_GWENGUI_GTK2)
-if test "$HAVE_GWENGUI_GTK2" = "1"; then
-  AC_DEFINE(USE_GWENGUI_GTK2, 1, [GTK2Gui availability])
+AC_ARG_ENABLE(gui-tests,
+  [  --enable-gui-tests         allow GUI tests (default=no)],
+  enable_gui_tests="$enableval",
+  enable_gui_tests="no")
+AC_MSG_RESULT($enable_gui_tests)
+
+if test "$enable_gui_tests" != "no"; then
+  # For libgwenhywfar > 3.99.20, look for its library gwengui-gtk2.
+  PKG_CHECK_MODULES([GWENGUI_GTK2], [gwengui-gtk2 gwenhywfar], [
+      HAVE_GWENGUI_GTK2=1
+      PKG_CHECK_MODULES([GTK2], [gtk+-2.0])
+    ], [
+      HAVE_GWENGUI_GTK2=0
+    ])
+  AC_SUBST(HAVE_GWENGUI_GTK2)
+  if test "$HAVE_GWENGUI_GTK2" = "1"; then
+    AC_DEFINE(USE_GWENGUI_GTK2, 1, [GTK2Gui availability])
+  fi
+else
+  HAVE_GWENGUI_GTK2=0
 fi
 AM_CONDITIONAL(WITH_GWENGUI_GTK2, [test "$HAVE_GWENGUI_GTK2" = "1"])
 

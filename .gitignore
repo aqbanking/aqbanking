@@ -109,6 +109,7 @@ src/plugins/imexporters/q43/q43.xml
 src/plugins/parsers/dtaus/dtaus.xml
 src/plugins/parsers/swift/swift.xml
 src/test/abtest
+src/test/test-dlg-setup
 src/tools/aqbanking-cli/aqbanking-cli
 stamp-h1
 system.h
