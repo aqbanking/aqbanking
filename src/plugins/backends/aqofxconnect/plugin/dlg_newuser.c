@@ -878,8 +878,10 @@ int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     return GWEN_DialogEvent_ResultHandled;
 
   case PAGE_CREATE:
-    if (!forwards)
+    if (!forwards) {
+      AO_NewUserDialog_UndoIt(dlg);
       GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Next"), 0);
+    }
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
@@ -887,8 +889,10 @@ int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Finish"), 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+#if 0
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_abort_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+#endif
     return GWEN_DialogEvent_ResultHandled;
 
   default:
@@ -1018,6 +1022,33 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 
   xdlg->user=u;
 
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg) {
+  AO_NEWUSER_DIALOG *xdlg;
+  AB_USER *u;
+
+  DBG_ERROR(0, "UndoIt");
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
+  assert(xdlg);
+
+  u=xdlg->user;
+  if (u) {
+    AB_ACCOUNT *a;
+
+    /* delete all accounts created for this user */
+    while ( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
+      AB_Banking_DeleteAccount(xdlg->banking, a);
+    }
+
+    /* delete the user itself */
+    AB_Banking_DeleteUser(xdlg->banking, u);
+    xdlg->user=NULL;
+  }
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -1249,8 +1280,10 @@ int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return AO_NewUserDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
     return AO_NewUserDialog_Next(dlg);
-  else if (strcasecmp(sender, "wiz_abort_button")==0)
+  else if (strcasecmp(sender, "wiz_abort_button")==0) {
+    AO_NewUserDialog_UndoIt(dlg);
     return GWEN_DialogEvent_ResultReject;
+  }
   else if (strcasecmp(sender, "wiz_bank_button")==0)
     return AO_NewUserDialog_HandleActivatedBankSelect(dlg);
   else if (strcasecmp(sender, "wiz_app_combo")==0)

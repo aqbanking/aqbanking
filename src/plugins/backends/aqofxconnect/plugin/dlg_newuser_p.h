@@ -50,6 +50,32 @@ static int GWENHYWFAR_CB AO_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
 							 const char *sender);
 
 
+static void AO_NewUserDialog_Init(GWEN_DIALOG *dlg);
+static void AO_NewUserDialog_Fini(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_GetBankPageData(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_GetAppPageData(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards);
+static int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_Next(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_Previous(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg);
+static int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);
+static int AO_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender);
+
+
+
+
+
+
+
+
+
+
 
 
 
