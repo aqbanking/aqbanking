@@ -674,12 +674,12 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
     return rv;
   }
 
-  /* exchange mesages */
+  /* exchange mesages (could also return HTTP code!) */
   rv=AO_Provider_SendAndReceive(pro, u,
 				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
 				GWEN_Buffer_GetUsedBytes(reqbuf),
 				&rbuf);
-  if (rv<0) {
+  if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getAccounts-request (%d)", rv);
     GWEN_Buffer_free(reqbuf);
@@ -796,12 +796,12 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
     return rv;
   }
 
-  /* exchange messages */
+  /* exchange messages (might also return HTTP code!) */
   rv=AO_Provider_SendAndReceive(pro, u,
 				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
 				GWEN_Buffer_GetUsedBytes(reqbuf),
 				&rbuf);
-  if (rv<0) {
+  if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getStatements-request (%d)", rv);
     GWEN_Gui_ProgressLog(0,
