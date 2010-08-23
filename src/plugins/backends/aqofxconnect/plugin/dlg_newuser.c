@@ -938,6 +938,10 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_User_SetCountry(u, "us");
   AB_User_SetBankCode(u, "0000000000");
 
+  AO_User_SetBrokerId(u, xdlg->brokerId);
+  AO_User_SetOrg(u, xdlg->org);
+  AO_User_SetFid(u, xdlg->fid);
+
   AO_User_SetAppId(u, xdlg->appId);
   AO_User_SetAppVer(u, xdlg->appVer);
   AO_User_SetHeaderVer(u, xdlg->headerVer);
