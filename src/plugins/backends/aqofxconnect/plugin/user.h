@@ -47,6 +47,12 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 		    GWEN_DB_NODE *dbBackend);
 
 AQOFXCONNECT_API
+const char *AO_User_GetBankName(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetBankName(AB_USER *u, const char *s);
+
+AQOFXCONNECT_API
 const char *AO_User_GetBrokerId(const AB_USER *u);
 
 AQOFXCONNECT_API

@@ -117,6 +117,13 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
       ue->flags=AO_User_Flags_fromDb(db, "flags");
 
+      free(ue->bankName);
+      s=GWEN_DB_GetCharValue(db, "bankName", 0, NULL);
+      if (s)
+	ue->bankName=strdup(s);
+      else
+	ue->bankName=NULL;
+
       free(ue->brokerId);
       s=GWEN_DB_GetCharValue(db, "brokerId", 0, NULL);
       if (s)
@@ -190,6 +197,10 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     if (em==AB_ProviderExtendMode_Save) {
       AO_User_Flags_toDb(db, "flags", ue->flags);
 
+      if (ue->bankName)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "bankName", ue->bankName);
+
       if (ue->brokerId)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "brokerId", ue->brokerId);
@@ -236,6 +247,7 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
 
   ue=(AO_USER*)p;
 
+  free(ue->bankName);
   free(ue->brokerId);
   free(ue->org);
   free(ue->fid);
@@ -247,6 +259,33 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
 
   GWEN_FREE_OBJECT(ue);
 }
+
+
+
+const char *AO_User_GetBankName(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->bankName;
+}
+
+
+
+void AO_User_SetBankName(AB_USER *u, const char *s) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  free(ue->bankName);
+  if (s) ue->bankName=strdup(s);
+  else ue->bankName=NULL;
+}
+
 
 
 

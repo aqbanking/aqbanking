@@ -17,6 +17,7 @@ typedef struct AO_USER AO_USER;
 struct AO_USER {
   uint32_t flags;
 
+  char *bankName;
   char *brokerId;
   char *org;
   char *fid;
