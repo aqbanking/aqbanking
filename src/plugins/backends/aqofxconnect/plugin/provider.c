@@ -17,6 +17,7 @@
 #include "account.h"
 #include "queues_l.h"
 #include "user.h"
+#include "dlg_edituser_l.h"
 #include "dlg_newuser_l.h"
 
 #include <aqbanking/account_be.h>
@@ -104,6 +105,9 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   AB_Provider_SetResetQueueFn(pro, AO_Provider_ResetQueue);
   AB_Provider_SetExtendUserFn(pro, AO_Provider_ExtendUser);
   AB_Provider_SetExtendAccountFn(pro, AO_Provider_ExtendAccount);
+
+  AB_Provider_SetGetEditUserDialogFn(pro, AO_Provider_GetEditUserDialog);
+  AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG);
 
   AB_Provider_SetGetNewUserDialogFn(pro, AO_Provider_GetNewUserDialog);
   AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
@@ -1026,6 +1030,25 @@ int AO_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 			      GWEN_DB_NODE *db){
   AO_Account_Extend(a, pro, em, db);
   return 0;
+}
+
+
+
+GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+  AO_PROVIDER *xp;
+  GWEN_DIALOG *dlg;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
+  assert(xp);
+
+  dlg=AO_EditUserDialog_new(AB_Provider_GetBanking(pro), u, 1);
+  if (dlg==NULL) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
 }
 
 
