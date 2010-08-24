@@ -844,6 +844,7 @@ int AO_EditUserDialog_FromGui(GWEN_DIALOG *dlg) {
   AB_User_SetBankCode(xdlg->user, "0000000000");
 
   AO_User_SetFlags(xdlg->user, xdlg->flags);
+  AO_User_SetBankName(xdlg->user, xdlg->bankName);
   AO_User_SetBrokerId(xdlg->user, xdlg->brokerId);
   AO_User_SetOrg(xdlg->user, xdlg->org);
   AO_User_SetFid(xdlg->user, xdlg->fid);
