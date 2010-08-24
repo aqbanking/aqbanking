@@ -8,8 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQOFXCONNECT_DLG_PINTAN_H
-#define AQOFXCONNECT_DLG_PINTAN_H
+#ifndef AQOFXCONNECT_DLG_NEWUSER_L_H
+#define AQOFXCONNECT_DLG_NEWUSER_L_H
 
 
 #include <aqofxconnect/aqofxconnect.h>

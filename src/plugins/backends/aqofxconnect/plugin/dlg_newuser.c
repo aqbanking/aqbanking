@@ -92,8 +92,6 @@ GWEN_DIALOG *AO_NewUserDialog_new(AB_BANKING *ab) {
   xdlg->httpVMajor=1;
   xdlg->httpVMinor=1;
 
-  xdlg->url=strdup("https://api-3t.paypal.com/nvp");
-
   /* done */
   return dlg;
 }
@@ -936,8 +934,10 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_User_SetUserId(u, xdlg->userId);
   AB_User_SetCustomerId(u, xdlg->userId);
   AB_User_SetCountry(u, "us");
+  AB_User_SetBankName(u, xdlg->bankName);
   AB_User_SetBankCode(u, "0000000000");
 
+  AO_User_SetFlags(u, xdlg->flags);
   AO_User_SetBrokerId(u, xdlg->brokerId);
   AO_User_SetOrg(u, xdlg->org);
   AO_User_SetFid(u, xdlg->fid);
