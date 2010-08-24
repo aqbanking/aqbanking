@@ -51,8 +51,14 @@ void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
     }
 
   }
+  else if (em==AB_ProviderExtendMode_Reload) {
+    ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
+    assert(ae);
+    ae->maxPurposeLines=GWEN_DB_GetIntValue(db, "maxPurposeLines", 0, 1);
+    ae->debitAllowed=GWEN_DB_GetIntValue(db, "debitAllowed", 0, 1);
+  }
   else if (em==AB_ProviderExtendMode_Save) {
-    ae = GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
+    ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
     assert(ae);
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			"maxPurposeLines", ae->maxPurposeLines);
