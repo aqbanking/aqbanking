@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2010 by Martin Preuss
+ email       : martin@aqbanking.de
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
+<dialog type="dialog" name="ao_edit_user" i18n="aqbanking"
+        flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
+  <widget type="vlayout" flags="fillX fillY" >
+
+    <widget type="tabBook" name="wiz_tab_book" flags="fillX fillY" >
+
+      <!-- user page -->
+      <widget type="tabPage" text="User Settings">
+        <widget type="vlayout" flags="fillX fillY" >
+          <widget type="label" name="wiz_user_label" flags="fillX fillY justifyLeft" />
+          <widget type="hLine" flags="fillX" />
+          <widget type="gridLayout" columns="2" flags="fillX" >
+    
+            <widget type="label" text="User Name" />
+            <widget type="lineEdit" name="wiz_username_edit" columns="40" flags="fillX" />
+    
+            <widget type="label" text="User Id" />
+            <widget type="lineEdit" name="wiz_userid_edit" columns="40" flags="fillX" />
+    
+            <widget type="label" text="Client UID" />
+            <widget type="lineEdit" name="wiz_clientuid_edit" columns="40" flags="fillX" />
+    
+          </widget>
+        </widget>
+  
+      </widget>
+    
+      <!-- bank settings page -->
+      <widget type="tabPage" text="Bank Settings">
+        <widget type="vlayout" flags="fillX fillY" >
+          <widget type="label" name="wiz_bank_label" flags="fillX fillY justifyLeft" />
+          <widget type="hLine" flags="fillX" />
+          <widget type="gridLayout" columns="2" flags="fillX" >
+    
+            <widget type="label" text="Bank Name" />
+            <widget type="hlayout" flags="fillX" >
+              <widget type="lineEdit" name="wiz_bankname_edit" columns="40" flags="fillX" />
+              <widget type="pushButton" text="Select" name="wiz_bank_button" />
+            </widget>
+            
+            <widget type="label" text="Broker Id" />
+            <widget type="lineEdit" name="wiz_brokerid_edit" columns="40" flags="fillX" />
+    
+            <widget type="label" text="FID" />
+            <widget type="lineEdit" name="wiz_fid_edit" columns="40" flags="fillX" />
+    
+            <widget type="label" text="ORG" />
+            <widget type="lineEdit" name="wiz_org_edit" columns="40" flags="fillX" />
+    
+            <widget type="label" text="Server URL" />
+            <widget type="lineEdit" name="wiz_url_edit" columns="40" flags="fillX" />
+    
+          </widget>
+    
+        </widget>
+      </widget>
+  
+ 
+      <!-- app page -->
+      <widget type="tabPage" text="Application Settings">
+        <widget type="vlayout" flags="fillX fillY" >
+          <widget type="label" name="wiz_app_label" flags="fillX fillY justifyLeft" />
+          <widget type="hLine" flags="fillX" />
+          <widget type="gridLayout" columns="2" flags="fillX" >
+    
+            <widget type="label" text="Emulated Application" flags="justifyLeft" />
+            <widget type="comboBox" name="wiz_app_combo" flags="fillX readOnly" />
+    
+            <widget type="label" text="Application ID" flags="justifyLeft" />
+            <widget type="lineEdit" name="wiz_appid_edit" flags="fillX" />
+    
+            <widget type="label" text="Application Version" flags="justifyLeft" />
+            <widget type="lineEdit" name="wiz_appver_edit" flags="fillX" />
+    
+            <widget type="label" text="Header Version" flags="justifyLeft" />
+            <widget type="lineEdit" name="wiz_headerver_edit" flags="fillX" />
+    
+          </widget>
+
+          <widget type="hlayout" flags="fillX fillY" >
+            <widget type="pushButton" text="Special Settings" name="wiz_special_button" />
+          </widget>
+
+        </widget>
+      </widget>
+    
+    </widget>
+
+
+    <!-- wizard controls -->
+    <widget type="vspacer" flags="fillY" />
+    <widget type="hLine" flags="fillX" />
+    <widget type="hlayout" flags="fillX equalWidth" >
+      <widget type="pushButton" text="Help"     name="helpButton" />
+      <widget type="hspacer" flags="fillX" />
+      <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+      <widget type="pushButton" text="Abort"  name="abortButton" />
+    </widget>
+
+  </widget>
+
+</dialog>

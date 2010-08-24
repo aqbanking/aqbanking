@@ -11,6 +11,7 @@ plugin_DATA = aqofxconnect.xml
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqofxconnect/dialogs
 dlgdata_DATA=\
+  dlg_edituser.dlg \
   dlg_newuser.dlg \
   dlg_ofx_special.dlg
 
@@ -22,6 +23,7 @@ noinst_HEADERS=\
   user_p.h \
   queues_l.h \
   queues_p.h \
+  dlg_edituser_p.h dlg_edituser_l.h \
   dlg_newuser_p.h dlg_newuser_l.h \
   dlg_ofx_special_p.h dlg_ofx_special_l.h
 
@@ -40,6 +42,7 @@ libaqofxconnect_la_SOURCES= \
   provider.c \
   queues.c \
   user.c \
+  dlg_edituser.c \
   dlg_newuser.c \
   dlg_ofx_special.c
 
