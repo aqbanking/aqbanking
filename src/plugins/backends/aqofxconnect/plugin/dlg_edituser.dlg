@@ -64,6 +64,10 @@
             <widget type="lineEdit" name="wiz_url_edit" columns="40" flags="fillX" />
     
           </widget>
+
+          <widget type="hlayout" flags="fillX fillY" >
+            <widget type="pushButton" text="Retrieve Account List" name="wiz_getaccounts_button" />
+          </widget>
     
         </widget>
       </widget>
