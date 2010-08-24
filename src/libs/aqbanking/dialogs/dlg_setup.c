@@ -641,7 +641,6 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
 
 
 int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
-#if 1
   AB_SETUP_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -755,116 +754,90 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
   }
 
   return GWEN_DialogEvent_ResultHandled;
-#else
-  AB_SETUP_DIALOG *xdlg;
-  AB_PROVIDER *pro;
-  const char *s;
-  const char *initialProvider=NULL;
-  uint32_t flags;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
-  assert(xdlg);
-
-  s=GWEN_I18N_GetCurrentLocale();
-  if (s && *s) {
-    if (strstr(s, "de_"))
-      initialProvider="aqhbci";
-    else
-      initialProvider="aqofxconnect";
-  }
-  pro=AB_SelectBackend(xdlg->banking,
-		       initialProvider,
-		       I18N("Please select the online banking backend the new "
-			    "user is to be created for."));
-  if (pro==NULL) {
-    DBG_ERROR(0, "No provider selected.");
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  flags=AB_Provider_GetFlags(pro);
-  if (flags & AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG) {
-    GWEN_DIALOG *dlg2;
-    int rv;
-
-    dlg2=AB_Provider_GetNewUserDialog(pro, 0);
-    if (dlg2==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
-      return GWEN_DialogEvent_ResultHandled;
-    }
-
-    rv=GWEN_Gui_ExecDialog(dlg2, 0);
-    if (rv==0) {
-      /* rejected */
-      GWEN_Dialog_free(dlg2);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-    GWEN_Dialog_free(dlg2);
-    AB_SetupDialog_Reload(dlg);
-  }
-  else {
-    GWEN_DIALOG *dlg2;
-    AB_USER *u;
-    const AB_COUNTRY *c=NULL;
-    const char *s;
-    int rv;
-
-    u=AB_Banking_CreateUser(xdlg->banking, AB_Provider_GetName(pro));
-    if (u==NULL) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "No user created.");
-      AB_User_free(u);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-
-    s=GWEN_I18N_GetCurrentLocale();
-    if (s && *s) {
-      if (strstr(s, "de_"))
-	c=AB_Banking_FindCountryByCode(xdlg->banking, "de");
-      else if (strstr(s, "us_"))
-	c=AB_Banking_FindCountryByCode(xdlg->banking, "us");
-    }
-    if (c) {
-      AB_User_SetCountry(u, AB_Country_GetCode(c));
-    }
-
-    dlg2=AB_EditUserDialog_new(xdlg->banking, u, 0);
-    if (dlg2==NULL) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
-      AB_User_free(u);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-
-    rv=GWEN_Gui_ExecDialog(dlg2, 0);
-    if (rv==0) {
-      /* rejected */
-      GWEN_Dialog_free(dlg2);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-    GWEN_Dialog_free(dlg2);
-
-    rv=AB_Banking_AddUser(xdlg->banking, u);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_User_free(u);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-    AB_SetupDialog_Reload(dlg);
-  }
-
-  return GWEN_DialogEvent_ResultHandled;
-#endif
 }
 
 
 
 int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  return GWEN_DialogEvent_ResultNotHandled;
+  u=AB_SetupDialog_GetCurrentUser(dlg);
+  if (u) {
+    AB_ACCOUNT *a;
+    int rv;
+    char nbuf[512];
+
+    snprintf(nbuf, sizeof(nbuf)-1,
+	     I18N("<html>"
+		  "<p>Do you really want to delete the user <i>%s</i>?"
+		  "</html>"
+		  "Do you really want to delete the user \"%s\"?"),
+	     AB_User_GetUserId(u), AB_User_GetUserId(u));
+    nbuf[sizeof(nbuf)-1]=0;
+
+    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			   GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			   I18N("Delete User"),
+			   nbuf,
+			   I18N("Yes"),
+			   I18N("No"),
+			   NULL,
+			   0);
+    if (rv!=1) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u);
+    if (a) {
+      int i;
+
+      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			     I18N("Error"),
+			     I18N("<html>"
+				  "<p>There is at least one account assigned to the selected user.</p>"
+				  "<p>Do you want to remove the account(s) and continue removing the user?</p>"
+				  "</html>"
+				  "There is at least one account assigned to the selected user.\n"
+				  "Do you want to remove the account(s) and continue removing the user?"),
+			     I18N("Yes"),
+			     I18N("No"),
+			     NULL,
+			     0);
+      if (rv!=1) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+	return GWEN_DialogEvent_ResultHandled;
+      }
+
+      i=0;
+      while( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
+	rv=AB_Banking_DeleteAccount(xdlg->banking, a);
+	if (rv<0) {
+	  GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, i);
+	  AB_SetupDialog_Reload(dlg);
+	  return GWEN_DialogEvent_ResultHandled;
+	}
+	i++;
+      }
+    }
+
+    /* now delete the user */
+    rv=AB_Banking_DeleteUser(xdlg->banking, u);
+    if (rv<0) {
+      GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting user: %d"), rv);
+      AB_SetupDialog_Reload(dlg);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    AB_SetupDialog_Reload(dlg);
+  }
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
@@ -1015,12 +988,59 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_DelAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
+  AB_ACCOUNT *a;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  return GWEN_DialogEvent_ResultNotHandled;
+  a=AB_SetupDialog_GetCurrentAccount(dlg);
+  if (a) {
+    int rv;
+    char nbuf[512];
+    char ibuf[32];
+    const char *an;
+
+    an=AB_Account_GetAccountName(a);
+    if (!(an && *an))
+      an=AB_Account_GetAccountNumber(a);
+    if (!(an && *an)) {
+      snprintf(ibuf, sizeof(ibuf)-1, "%d", (int) AB_Account_GetUniqueId(a));
+      ibuf[sizeof(ibuf)-1]=0;
+      an=ibuf;
+    }
+
+    snprintf(nbuf, sizeof(nbuf)-1,
+	     I18N("<html>"
+		  "<p>Do you really want to delete the account <i>%s</i>?"
+		  "</html>"
+		  "Do you really want to delete the account \"%s\"?"),
+	     an, an);
+    nbuf[sizeof(nbuf)-1]=0;
+
+    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+			   GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			   I18N("Delete Account"),
+			   nbuf,
+			   I18N("Yes"),
+			   I18N("No"),
+			   NULL,
+			   0);
+    if (rv!=1) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    rv=AB_Banking_DeleteAccount(xdlg->banking, a);
+    if (rv<0) {
+      GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d"), rv);
+      AB_SetupDialog_Reload(dlg);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+
+    AB_SetupDialog_Reload(dlg);
+  }
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
