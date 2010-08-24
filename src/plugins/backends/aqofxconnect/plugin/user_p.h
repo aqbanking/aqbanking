@@ -33,6 +33,7 @@ struct AO_USER {
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);
 
+static void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
 
 
 #endif

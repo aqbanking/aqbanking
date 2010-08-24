@@ -113,80 +113,12 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       ue->httpVMinor=0;
     }
     else {
-      const char *s;
-
-      ue->flags=AO_User_Flags_fromDb(db, "flags");
-
-      free(ue->bankName);
-      s=GWEN_DB_GetCharValue(db, "bankName", 0, NULL);
-      if (s)
-	ue->bankName=strdup(s);
-      else
-	ue->bankName=NULL;
-
-      free(ue->brokerId);
-      s=GWEN_DB_GetCharValue(db, "brokerId", 0, NULL);
-      if (s)
-	ue->brokerId=strdup(s);
-      else
-	ue->brokerId=NULL;
-
-      free(ue->org);
-      s=GWEN_DB_GetCharValue(db, "org", 0, NULL);
-      if (s)
-	ue->org=strdup(s);
-      else
-	ue->org=NULL;
-
-      free(ue->fid);
-      s=GWEN_DB_GetCharValue(db, "fid", 0, NULL);
-      if (s)
-	ue->fid=strdup(s);
-      else
-	ue->fid=NULL;
-
-      free(ue->serverAddr);
-      s=GWEN_DB_GetCharValue(db, "serverAddr", 0, NULL);
-      if (s)
-	ue->serverAddr=strdup(s);
-      else
-	ue->serverAddr=NULL;
-
-      free(ue->appId);
-      s=GWEN_DB_GetCharValue(db, "appId", 0, NULL);
-      if (s)
-	ue->appId=strdup(s);
-      else
-	ue->appId=NULL;
-
-      free(ue->appVer);
-      s=GWEN_DB_GetCharValue(db, "appVer", 0, NULL);
-      if (s)
-	ue->appVer=strdup(s);
-      else
-	ue->appVer=NULL;
-
-      free(ue->headerVer);
-      s=GWEN_DB_GetCharValue(db, "headerVer", 0, NULL);
-      if (s)
-	ue->headerVer=strdup(s);
-      else
-	ue->headerVer=NULL;
-
-      free(ue->clientUid);
-      s=GWEN_DB_GetCharValue(db, "clientUid", 0, NULL);
-      if (s)
-	ue->clientUid=strdup(s);
-      else
-	ue->clientUid=NULL;
-
-      ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
-      ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
-      if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
-	ue->httpVMajor=1;
-	ue->httpVMinor=0;
-      }
+      AO_User_ReadDb(u, db);
     }
+  }
+  else if (em==AB_ProviderExtendMode_Reload) {
+    /* just reload user */
+    AO_User_ReadDb(u, db);
   }
   else {
     AO_USER *ue;
@@ -258,6 +190,89 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
   free(ue->clientUid);
 
   GWEN_FREE_OBJECT(ue);
+}
+
+
+
+void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+  AO_USER *ue;
+  const char *s;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  ue->flags=AO_User_Flags_fromDb(db, "flags");
+  
+  free(ue->bankName);
+  s=GWEN_DB_GetCharValue(db, "bankName", 0, NULL);
+  if (s)
+    ue->bankName=strdup(s);
+  else
+    ue->bankName=NULL;
+  
+  free(ue->brokerId);
+  s=GWEN_DB_GetCharValue(db, "brokerId", 0, NULL);
+  if (s)
+    ue->brokerId=strdup(s);
+  else
+    ue->brokerId=NULL;
+  
+  free(ue->org);
+  s=GWEN_DB_GetCharValue(db, "org", 0, NULL);
+  if (s)
+    ue->org=strdup(s);
+  else
+    ue->org=NULL;
+  
+  free(ue->fid);
+  s=GWEN_DB_GetCharValue(db, "fid", 0, NULL);
+  if (s)
+    ue->fid=strdup(s);
+  else
+    ue->fid=NULL;
+  
+  free(ue->serverAddr);
+  s=GWEN_DB_GetCharValue(db, "serverAddr", 0, NULL);
+  if (s)
+    ue->serverAddr=strdup(s);
+  else
+    ue->serverAddr=NULL;
+  
+  free(ue->appId);
+  s=GWEN_DB_GetCharValue(db, "appId", 0, NULL);
+  if (s)
+    ue->appId=strdup(s);
+  else
+    ue->appId=NULL;
+  
+  free(ue->appVer);
+  s=GWEN_DB_GetCharValue(db, "appVer", 0, NULL);
+  if (s)
+    ue->appVer=strdup(s);
+  else
+    ue->appVer=NULL;
+  
+  free(ue->headerVer);
+  s=GWEN_DB_GetCharValue(db, "headerVer", 0, NULL);
+  if (s)
+    ue->headerVer=strdup(s);
+  else
+    ue->headerVer=NULL;
+  
+  free(ue->clientUid);
+  s=GWEN_DB_GetCharValue(db, "clientUid", 0, NULL);
+  if (s)
+    ue->clientUid=strdup(s);
+  else
+    ue->clientUid=NULL;
+  
+  ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
+  ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
+  if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
+    ue->httpVMajor=1;
+    ue->httpVMinor=0;
+  }
 }
 
 
