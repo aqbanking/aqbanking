@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -675,30 +672,46 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       const char *userName;
       const char *accountName;
       const char *bankCode;
+      const char *accountSuffix;
       AB_ACCOUNT *acc;
   
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
-      accs++;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account candidate");
 
       /* account data found */
       accountId=GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0);
-      assert(accountId);
+      accountSuffix=GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0);
+      if (!(accountSuffix && *accountSuffix) &&
+          strcasecmp(GWEN_DB_GroupName(dbAccountData), "AccountData2")==0)
+        /* accountSuffix is empty with accountData2, so basically jobs without
+         * suffix are supported, the suffix is just empty */
+        accountSuffix="<empty>";
       accountName=GWEN_DB_GetCharValue(dbAccountData, "account/name", 0, 0);
       userName=GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0);
       bankCode=GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0);
-      assert(bankCode);
 
-      acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
-      assert(acc);
-      AB_Account_SetBankCode(acc, bankCode);
-      AB_Account_SetAccountNumber(acc, accountId);
+      if (accountId && *accountId &&
+	  bankCode && *bankCode) {
+	acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+	assert(acc);
+	AB_Account_SetBankCode(acc, bankCode);
+	AB_Account_SetAccountNumber(acc, accountId);
 
-      if (accountName)
-        AB_Account_SetAccountName(acc, accountName);
-      if (userName)
-        AB_Account_SetOwnerName(acc, userName);
+	if (accountName)
+	  AB_Account_SetAccountName(acc, accountName);
+        if (accountSuffix)
+          AH_Account_SetSuffix(acc, accountSuffix);
+        if (userName)
+	  AB_Account_SetOwnerName(acc, userName);
 
-      AB_Account_List2_PushBack(jd->accountList, acc);
+        accs++;
+	AB_Account_List2_PushBack(jd->accountList, acc);
+      }
+      else {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], AccName=[%s]",
+		  bankCode?bankCode:"",
+		  accountId?accountId:"",
+		  accountName?accountName:"");
+      }
     }
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
