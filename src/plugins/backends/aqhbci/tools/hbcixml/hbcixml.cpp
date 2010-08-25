@@ -508,7 +508,7 @@ int show(const s_args &args) {
 
 
   if (args.logLevel>=GWEN_LoggerLevel_Debug)
-    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
+    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), 1);
 
   listNode=GWEN_MsgEngine_ListMessage(e,
                                       args.typ.c_str(),
@@ -524,7 +524,7 @@ int show(const s_args &args) {
 
   DBG_INFO(0, "Listnode:");
   if (args.logLevel>=GWEN_LoggerLevel_Info)
-    GWEN_XMLNode_Dump(listNode, stderr, 1);
+    GWEN_XMLNode_Dump(listNode, 1);
 
   version=atoi(GWEN_XMLNode_GetProperty(listNode, "version", "-1"));
 
@@ -596,7 +596,7 @@ int listAll(const s_args &args) {
 
 
   if (args.logLevel>=GWEN_LoggerLevel_Info)
-    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
+    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), 1);
 
 
   n=GWEN_MsgEngine_GetDefinitions(e);
@@ -712,7 +712,7 @@ int checkAll(const s_args &args) {
 
 
   if (args.logLevel>=GWEN_LoggerLevel_Info)
-    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), stderr, 1);
+    GWEN_XMLNode_Dump(GWEN_MsgEngine_GetDefinitions(e), 1);
 
 
   n=GWEN_MsgEngine_GetDefinitions(e);
@@ -765,7 +765,7 @@ int checkAll(const s_args &args) {
               }
 
               if (isError) {
-                GWEN_XMLNode_Dump(cn, stderr, 2);
+                GWEN_XMLNode_Dump(cn, 2);
                 errors++;
               }
             }

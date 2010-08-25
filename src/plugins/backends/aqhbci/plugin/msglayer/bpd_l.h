@@ -97,7 +97,7 @@ int AH_Bpd_IsDirty(const AH_BPD *bpd);
 void AH_Bpd_SetIsDirty(AH_BPD *bpd,
                        int dirty);
 
-void AH_Bpd_Dump(const AH_BPD *bpd, FILE *f, int insert);
+void AH_Bpd_Dump(const AH_BPD *bpd, int insert);
 
 void AH_Bpd_ClearAddr(AH_BPD *bpd);
 /** takes over ownership of the given BPD address */

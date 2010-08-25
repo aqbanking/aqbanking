@@ -1877,7 +1877,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 				 "text", text);
 	    if (AH_HBCI_SaveMessage(h, j->user, dbTmp)) {
 	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save this message:");
-	      GWEN_DB_Dump(dbTmp, stderr, 2);
+	      GWEN_DB_Dump(dbTmp, 2);
 	    }
 	    GWEN_DB_Group_free(dbTmp);
 	  }

@@ -485,7 +485,7 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Error in SWIFT data: no tag name");
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
-                           GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
+                           GWEN_Buffer_GetUsedBytes(lbuf), 2);
       GWEN_Buffer_free(lbuf);
       return -1;
     }
@@ -496,7 +496,7 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Error in SWIFT data: incomplete tag name");
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(lbuf),
-			   GWEN_Buffer_GetUsedBytes(lbuf), stderr, 2);
+			   GWEN_Buffer_GetUsedBytes(lbuf), 2);
       GWEN_Buffer_free(lbuf);
       return -1;
     }
@@ -573,7 +573,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
       }
       if (swhead[2]!=':') {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
-        GWEN_Text_DumpString(swhead, 4, stderr, 2);
+        GWEN_Text_DumpString(swhead, 4, 2);
 	return GWEN_ERROR_BAD_DATA;
       }
       DBG_DEBUG(0, "Reading block %d", swhead[1]-'0');

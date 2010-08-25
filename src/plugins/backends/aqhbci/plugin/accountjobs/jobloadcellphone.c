@@ -96,7 +96,7 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   dbParams=AH_Job_GetParams(j);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
   if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    GWEN_DB_Dump(dbParams, stderr, 2);
+    GWEN_DB_Dump(dbParams, 2);
 
   /* read products */
   pl=AB_CellPhoneProduct_List_new();

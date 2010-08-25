@@ -176,7 +176,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad transaction data:");
-        GWEN_DB_Dump(dbT, stderr, 2);
+        GWEN_DB_Dump(dbT, 2);
       }
       else {
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
@@ -296,7 +296,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       unsigned int bs;
 
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbXA, stderr, 2);
+        GWEN_DB_Dump(dbXA, 2);
       p=GWEN_DB_GetBinValue(dbXA, "booked", 0, 0, 0, &bs);
       if (p && bs)
 	GWEN_Buffer_AppendBytes(tbooked, p, bs);

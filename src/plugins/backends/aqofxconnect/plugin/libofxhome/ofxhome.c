@@ -122,7 +122,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
                                 GWEN_XML_FLAGS_HANDLE_NAMESPACES);
   if (nroot==NULL) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_Dump(xbuf, stderr, 2);
+    GWEN_Buffer_Dump(xbuf, 2);
     GWEN_Buffer_free(xbuf);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -131,7 +131,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
   n=GWEN_XMLNode_FindFirstTag(nroot, "institutionlist", NULL, NULL);
   if (n==NULL) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "XML tree does not contain an \"institutionlist\" element");
-    GWEN_XMLNode_Dump(nroot, stderr, 2);
+    GWEN_XMLNode_Dump(nroot, 2);
     GWEN_XMLNode_free(nroot);
     return GWEN_ERROR_NO_DATA;
   }
@@ -139,7 +139,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
   n=GWEN_XMLNode_FindFirstTag(n, "institutionid", NULL, NULL);
   if (n==NULL) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "XML tree does not contain an \"institutionid\" element");
-    GWEN_XMLNode_Dump(nroot, stderr, 2);
+    GWEN_XMLNode_Dump(nroot, 2);
     GWEN_XMLNode_free(nroot);
     return GWEN_ERROR_NO_DATA;
   }
@@ -150,7 +150,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
       os=OH_InstituteSpec_fromXml(n);
       if (os==NULL) {
         DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "element does not contain a valid institute spec");
-        GWEN_XMLNode_Dump(n, stderr, 2);
+        GWEN_XMLNode_Dump(n, 2);
       }
       else
         OH_InstituteSpec_List_Add(os, sl);
@@ -255,7 +255,7 @@ int OfxHome_LoadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
       OH_InstituteSpec_List_Add(os, sl);
     else {
       DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Group does not contain a valid institute spec");
-      GWEN_DB_Dump(dbT, stderr, 2);
+      GWEN_DB_Dump(dbT, 2);
     }
     dbT=GWEN_DB_GetNextGroup(dbT);
   }
@@ -404,7 +404,7 @@ int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
                                 GWEN_XML_FLAGS_HANDLE_NAMESPACES);
   if (nroot==NULL) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_Dump(xbuf, stderr, 2);
+    GWEN_Buffer_Dump(xbuf, 2);
     GWEN_Buffer_free(xbuf);
     return rv;
   }
@@ -413,14 +413,14 @@ int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
   n=GWEN_XMLNode_FindFirstTag(nroot, "institution", NULL, NULL);
   if (n==NULL) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "XML tree does not contain an \"institution\" element");
-    GWEN_XMLNode_Dump(n, stderr, 2);
+    GWEN_XMLNode_Dump(n, 2);
     GWEN_XMLNode_free(nroot);
     return GWEN_ERROR_BAD_DATA;
   }
   od=OH_InstituteData_fromXml(n);
   if (od==NULL) {
     DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "element does not contain valid institute data");
-    GWEN_XMLNode_Dump(n, stderr, 2);
+    GWEN_XMLNode_Dump(n, 2);
     GWEN_XMLNode_free(nroot);
     return GWEN_ERROR_BAD_DATA;
   }

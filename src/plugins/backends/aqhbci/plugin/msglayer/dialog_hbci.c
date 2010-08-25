@@ -159,7 +159,7 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
   p2=strchr(p1, '+');
   if (p2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad data (missing '+')");
-    GWEN_Text_DumpString(header, 21, stderr, 2);
+    GWEN_Text_DumpString(header, 21, 2);
     return GWEN_ERROR_BAD_DATA;
   }
 

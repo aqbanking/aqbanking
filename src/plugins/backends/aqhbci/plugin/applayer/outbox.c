@@ -753,7 +753,7 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   rsp=GWEN_DB_Group_new("response");
   if (AH_Msg_DecodeMsg(msg, rsp, GWEN_MSGENGINE_READ_FLAGS_DEFAULT)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
-    AH_Msg_Dump(msg, stderr, 2);
+    AH_Msg_Dump(msg, 2);
     GWEN_DB_Group_free(rsp);
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
@@ -767,8 +767,8 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   /* check for message reference */
   if (AH_Msg_GetMsgRef(msg)==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unrequested message, deleting it");
-    AH_Msg_Dump(msg, stderr, 2);
-    GWEN_DB_Dump(rsp, stderr, 2);
+    AH_Msg_Dump(msg, 2);
+    GWEN_DB_Dump(rsp, 2);
     GWEN_DB_Group_free(rsp);
     AH_Msg_free(msg);
     GWEN_Gui_ProgressLog(0,

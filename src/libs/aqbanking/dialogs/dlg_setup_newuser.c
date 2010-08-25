@@ -175,7 +175,7 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab) {
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Dialog description does not contain path [dialogVLayout/wiz_stack/backendRadioWidget]");
-      GWEN_XMLNode_Dump(nDialog, stderr, 2);
+      GWEN_XMLNode_Dump(nDialog, 2);
       GWEN_XMLNode_free(n);
       GWEN_Buffer_free(fbuf);
       GWEN_Dialog_free(dlg);

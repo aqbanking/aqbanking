@@ -371,7 +371,7 @@ int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db) {
         if (!e) {
           DBG_ERROR(0, "Bad element for type \"AB_TEXTKEY_DESCR\"");
           if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-            GWEN_DB_Dump(dbT2, stderr, 2);
+            GWEN_DB_Dump(dbT2, 2);
           AB_TransactionLimits_free(st);
           return 0;
         }

@@ -98,7 +98,7 @@ int test5(int argc, char **argv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
   }
-  GWEN_DB_Dump(db, stderr, 2);
+  GWEN_DB_Dump(db, 2);
 
   return 0;
 }
@@ -155,7 +155,7 @@ int test6(int argc, char **argv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
   }
-  GWEN_DB_Dump(db, stderr, 2);
+  GWEN_DB_Dump(db, 2);
 
   dbOut=GWEN_DB_Group_new("out");
   GWEN_DB_ClearGroup(dbParams, 0);
@@ -499,7 +499,7 @@ int test7(int argc, char **argv) {
   if (rv)
     return rv;
 
-  GWEN_DB_Dump(dbCountries, stderr, 2);
+  GWEN_DB_Dump(dbCountries, 2);
   return 0;
 }
 
@@ -621,7 +621,7 @@ int test8(int argc, char **argv) {
 	}
 	else {
 	  DBG_ERROR(0, "Country \"%s\" has no number", code);
-	  GWEN_DB_Dump(dbT, stderr, 2);
+	  GWEN_DB_Dump(dbT, 2);
 	}
       }
     }
@@ -697,7 +697,7 @@ int test8(int argc, char **argv) {
   }
 
 
-  GWEN_DB_Dump(dbXML, stderr, 2);
+  GWEN_DB_Dump(dbXML, 2);
   return 0;
 }
 
@@ -1062,7 +1062,7 @@ int test15(int argc, char **argv) {
   fprintf(stderr, "Freeing AB_Banking...\n");
   AB_Banking_free(ab);
 
-  GWEN_DB_Dump(dbData, stderr, 2);
+  GWEN_DB_Dump(dbData, 2);
 
   fprintf(stderr, "Finished\n");
   return 0;

@@ -184,7 +184,7 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbBalance, stderr, 2);
+        GWEN_DB_Dump(dbBalance, 2);
 
       acst=AB_AccountStatus_new();
 

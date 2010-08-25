@@ -457,48 +457,48 @@ void AH_Bpd_SetIsDirty(AH_BPD *bpd, int dirty){
 
 
 
-void AH_Bpd_Dump(const AH_BPD *bpd, FILE *f, int insert) {
+void AH_Bpd_Dump(const AH_BPD *bpd, int insert) {
   uint32_t k;
   unsigned int i;
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Bpd:\n");
+    fprintf(stderr, " ");
+  fprintf(stderr, "Bpd:\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Version : %d\n", bpd->bpdVersion);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Version : %d\n", bpd->bpdVersion);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "JobTypesPerMsg : %d\n", bpd->jobTypesPerMsg);
+    fprintf(stderr, " ");
+  fprintf(stderr, "JobTypesPerMsg : %d\n", bpd->jobTypesPerMsg);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "MaxMsgSize     : %d\n", bpd->maxMsgSize);
+    fprintf(stderr, " ");
+  fprintf(stderr, "MaxMsgSize     : %d\n", bpd->maxMsgSize);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "HBCI versions  : ");
+    fprintf(stderr, " ");
+  fprintf(stderr, "HBCI versions  : ");
   for (i=0; i<AH_BPD_MAXHBCIVERSIONS; i++) {
     if (bpd->hbciVersions[i])
-      fprintf(f, "%d ",bpd->hbciVersions[i]);
+      fprintf(stderr, "%d ",bpd->hbciVersions[i]);
   }
-  fprintf(f, "\n");
+  fprintf(stderr, "\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Languages      : ");
+    fprintf(stderr, " ");
+  fprintf(stderr, "Languages      : ");
   for (i=0; i<AH_BPD_MAXLANGUAGES; i++) {
     if (bpd->languages[i])
-      fprintf(f, "%d ",bpd->languages[i]);
+      fprintf(stderr, "%d ",bpd->languages[i]);
   }
-  fprintf(f, "\n");
+  fprintf(stderr, "\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "BPD Jobs      :\n");
-  GWEN_DB_Dump(bpd->bpdJobs, f, insert+17);
+    fprintf(stderr, " ");
+  fprintf(stderr, "BPD Jobs      :\n");
+  GWEN_DB_Dump(bpd->bpdJobs, insert+17);
 }
 
 
@@ -721,7 +721,7 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
     i=GWEN_DB_GetIntValue(db, "type", 0, -1);
     if (i==-1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "bad BPD address");
-      GWEN_DB_Dump(db, stderr, 2);
+      GWEN_DB_Dump(db, 2);
       AH_BpdAddr_free(ba);
       return 0;
     }
@@ -732,7 +732,7 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "bad BPD address: unknown type %i", i);
       ba->type=AH_BPD_AddrTypeUnknown; break;
-      GWEN_DB_Dump(db, stderr, 2);
+      GWEN_DB_Dump(db, 2);
       AH_BpdAddr_free(ba);
       return 0;
     }
@@ -746,7 +746,7 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
       ba->type=AH_BPD_AddrTypeSSL;
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "bad BPD address: bad type %s", p);
-      GWEN_DB_Dump(db, stderr, 2);
+      GWEN_DB_Dump(db, 2);
       AH_BpdAddr_free(ba);
       return 0;
     }
@@ -763,7 +763,7 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
                 "bad BPD address: bad filter type %s", p);
-      GWEN_DB_Dump(db, stderr, 2);
+      GWEN_DB_Dump(db, 2);
       AH_BpdAddr_free(ba);
       return 0;
     }
@@ -776,7 +776,7 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
   p=GWEN_DB_GetCharValue(db, "address", 0, 0);
   if (!p) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "bad BPD address: no address");
-    GWEN_DB_Dump(db, stderr, 2);
+    GWEN_DB_Dump(db, 2);
     AH_BpdAddr_free(ba);
     return 0;
   }

@@ -564,7 +564,7 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group");
-      GWEN_DB_Dump(dbT, stderr, 2);
+      GWEN_DB_Dump(dbT, 2);
     }
 
     dbT=GWEN_DB_FindNextGroup(dbT, "RecordType1");

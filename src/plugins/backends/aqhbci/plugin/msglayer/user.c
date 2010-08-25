@@ -1668,7 +1668,7 @@ void AH_User_LoadTanMethods(AB_USER *u) {
 	    }
 	    else {
 	      DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
-	      GWEN_DB_Dump(dbT, stderr, 2);
+	      GWEN_DB_Dump(dbT, 2);
 	    }
 
 	    dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");

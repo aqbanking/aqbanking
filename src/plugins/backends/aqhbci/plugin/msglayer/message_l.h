@@ -107,12 +107,11 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
                      unsigned int flags);
 
 void AH_Msg__Dump(const AH_MSG *hmsg,
-                  FILE *f,
                   unsigned int indent);
 
-#define AH_Msg_Dump(hmsg, f, indent) \
+#define AH_Msg_Dump(hmsg, indent) \
   {fprintf(stderr, "Dumping message from "__FILE__" %d\n", __LINE__);\
-  AH_Msg__Dump(hmsg, f, indent);}
+  AH_Msg__Dump(hmsg, indent);}
 
 
 GWEN_BUFFER *AH_Msg_GetOrigBuffer(AH_MSG *hmsg);

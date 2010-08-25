@@ -4204,12 +4204,12 @@ static int AH_Provider_Test4(AB_PROVIDER *pro) {
 
   if (AH_Msg_EncodeMsg(msg)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
-    AH_Msg_Dump(msg, stderr, 2);
+    AH_Msg_Dump(msg, 2);
     return -1;
   }
 
   fprintf(stderr, "Message is:\n");
-  AH_Msg_Dump(msg, stderr, 2);
+  AH_Msg_Dump(msg, 2);
 
   return 0;
 }

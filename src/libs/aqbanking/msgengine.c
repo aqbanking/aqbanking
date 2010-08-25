@@ -816,7 +816,7 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
 
     DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Entering BinTypeRead with this:");
     if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Verbous)
-      GWEN_Buffer_Dump(vbuf, stderr, 2);
+      GWEN_Buffer_Dump(vbuf, 2);
 
     p=GWEN_Buffer_GetStart(vbuf);
     pos=0;

@@ -408,9 +408,9 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
     GWEN_Buffer_SetPos(hmsg->buffer, usedBefore);
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer:");
-    GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+    GWEN_Buffer_Dump(hmsg->buffer, 2);
     DBG_ERROR(AQHBCI_LOGDOMAIN, "XML:");
-    GWEN_XMLNode_Dump(node, stderr, 2);
+    GWEN_XMLNode_Dump(node, 2);
     DBG_ERROR(0, "MsgEngine - mode: %s version:%d",
               GWEN_MsgEngine_GetMode(e),
               GWEN_MsgEngine_GetProtocolVersion(e));
@@ -645,8 +645,8 @@ int AH_Msg_ReadSegment(AH_MSG *msg,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Full message (pos=%04x)", posBak);
     GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf),
                          GWEN_Buffer_GetUsedBytes(mbuf),
-                         stderr, 1);
-    GWEN_DB_Dump(tmpdb, stderr, 1);
+                         1);
+    GWEN_DB_Dump(tmpdb, 1);
     GWEN_DB_Group_free(tmpdb);
     return -1;
   }
@@ -769,7 +769,7 @@ int AH_Msg_ReadSegment(AH_MSG *msg,
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing segment \"%s\"",p);
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
                            GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
-                           stderr, 1);
+                           1);
       GWEN_DB_Group_free(tmpdb);
       return -1;
     }
@@ -826,7 +826,7 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
 
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error here:");
-      GWEN_Buffer_Dump(mbuf, stderr, 2);
+      GWEN_Buffer_Dump(mbuf, 2);
 #ifdef AH_MSG_HEAVY_DEBUG
       return -1;
 #endif
@@ -866,7 +866,7 @@ int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr) {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
                   "Unexpected sequence number (%d, expected %d)",
                   rsn, sn);
-        GWEN_DB_Dump(n, stderr, 2);
+        GWEN_DB_Dump(n, 2);
 
         GWEN_DB_SetIntValue(n,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -1101,62 +1101,61 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
 
 /* --------------------------------------------------------------- FUNCTION */
 void AH_Msg__Dump(const AH_MSG *hmsg,
-                  FILE *f,
                   unsigned int indent) {
   unsigned int i;
   GWEN_STRINGLISTENTRY *se;
 
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "AH_Msg\n");
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "==================================================\n");
-  for (i=0; i<indent; i++) fprintf(f, " ");
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "AH_Msg\n");
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "==================================================\n");
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
   if (hmsg->origbuffer) {
-    for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "Original buffer      :\n");
-    GWEN_Buffer_Dump(hmsg->origbuffer, f, indent+2);
+    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    fprintf(stderr, "Original buffer      :\n");
+    GWEN_Buffer_Dump(hmsg->origbuffer, indent+2);
   }
   else {
-    for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "Original buffer      : none\n");
+    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    fprintf(stderr, "Original buffer      : none\n");
   }
   if (hmsg->buffer) {
-    for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "Buffer:\n");
-    GWEN_Buffer_Dump(hmsg->buffer, f, indent+2);
+    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    fprintf(stderr, "Buffer:\n");
+    GWEN_Buffer_Dump(hmsg->buffer, indent+2);
   }
   else {
-    for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "Buffer               : none\n");
+    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    fprintf(stderr, "Buffer               : none\n");
   }
 
-  for (i=0; i<indent; i++) fprintf(f, " ");
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
   if (hmsg->crypterId) {
-    fprintf(f, "Crypter: %s\n", hmsg->crypterId);
+    fprintf(stderr, "Crypter: %s\n", hmsg->crypterId);
   }
   else {
-    fprintf(f, "Crypter: none\n");
+    fprintf(stderr, "Crypter: none\n");
   }
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Signers (%d):\n", GWEN_StringList_Count(hmsg->signerIdList));
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "Signers (%d):\n", GWEN_StringList_Count(hmsg->signerIdList));
   se=GWEN_StringList_FirstEntry(AH_Msg_GetSignerIdList(hmsg));
   while(se) {
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "%s\n", GWEN_StringListEntry_Data(se));
+    for (i=0; i<indent+2; i++) fprintf(stderr, " ");
+    fprintf(stderr, "%s\n", GWEN_StringListEntry_Data(se));
     se=GWEN_StringListEntry_Next(se);
   } /* while */
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Nodes                : %d\n", hmsg->nodes);
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Msg number           : %d\n", hmsg->msgNum);
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Reference msg number : %d\n", hmsg->refMsgNum);
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "First segment        : %d\n", hmsg->firstSegment);
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Last segment         : %d\n", hmsg->lastSegment);
-  for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "\n");
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "Nodes                : %d\n", hmsg->nodes);
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "Msg number           : %d\n", hmsg->msgNum);
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "Reference msg number : %d\n", hmsg->refMsgNum);
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "First segment        : %d\n", hmsg->firstSegment);
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "Last segment         : %d\n", hmsg->lastSegment);
+  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  fprintf(stderr, "\n");
 }
 
 

@@ -178,7 +178,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got this key response:");
       if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbKeyResponse, stderr, 2);
+        GWEN_DB_Dump(dbKeyResponse, 2);
 
       p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0 , &bs);
       if (!p || !bs) {
@@ -828,7 +828,7 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Extracting system-id from this response:");
   if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    GWEN_DB_Dump(dbResponses, stderr, 2);
+    GWEN_DB_Dump(dbResponses, 2);
 
   /* search for "SyncResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -982,7 +982,7 @@ int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsing this response");
   if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    GWEN_DB_Dump(dbResponses, stderr, 2);
+    GWEN_DB_Dump(dbResponses, 2);
 
   /* search for "MsgResult" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -1270,7 +1270,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a TAN response");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbTanResponse, stderr, 2);
+        GWEN_DB_Dump(dbTanResponse, 2);
 
       s=GWEN_DB_GetCharValue(dbTanResponse, "challenge", 0, 0);
       if (s) {
@@ -1624,7 +1624,7 @@ int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsing this response");
   if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    GWEN_DB_Dump(dbResponses, stderr, 2);
+    GWEN_DB_Dump(dbResponses, 2);
 
   /* search for "SegResult" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);

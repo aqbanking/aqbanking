@@ -863,7 +863,7 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
 				sumEUR, sumDEM,
 				sumBankCodes, sumAccountIds)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating C set from this data:");
-        GWEN_DB_Dump(gr, stderr, 2);
+        GWEN_DB_Dump(gr, 2);
         GWEN_Buffer_free(dst);
 	AB_Value_free(sumAccountIds);
 	AB_Value_free(sumBankCodes);

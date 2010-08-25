@@ -189,7 +189,7 @@ int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
     DBG_ERROR(0, "Transaction is:");
     dbT=GWEN_DB_Group_new("Test-Transaction");
     AB_Transaction_toDb(t, dbT);
-    GWEN_DB_Dump(dbT, stderr, 2);
+    GWEN_DB_Dump(dbT, 2);
     GWEN_DB_Group_free(dbT);
   }
 
