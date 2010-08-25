@@ -218,7 +218,6 @@ AQBANKING_API uint32_t AB_User_GetLastSessionId(const AB_USER *el);
 AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, uint32_t d);
 
 
-
 /**
 * Returns the property @ref AB_USER_Banking
 */

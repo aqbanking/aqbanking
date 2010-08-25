@@ -60,11 +60,4 @@ AB_PROVIDER *AB_User_GetProvider(const AB_USER *u) {
 
 
 
-int AB_User__dbToDb(GWEN_DB_NODE *n, GWEN_DB_NODE *where) {
-  return GWEN_DB_AddGroupChildren(where, n);
-}
-
-
-
-
 

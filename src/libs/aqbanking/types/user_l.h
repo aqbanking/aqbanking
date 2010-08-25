@@ -58,7 +58,6 @@ AQBANKING_API GWEN_FSLOCK *AB_User_GetFileLock(const AB_USER *el);
 AQBANKING_API void AB_User_SetFileLock(AB_USER *el, GWEN_FSLOCK *d);
 
 
-
 /**
 * Returns the property @ref AB_USER_DbId
 */

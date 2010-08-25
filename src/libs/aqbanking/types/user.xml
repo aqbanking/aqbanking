@@ -70,8 +70,6 @@
     <elem name="fileLock" type="GWEN_FSLOCK" ptr="1" volatile="1" 
           access="lib" takeOver="1" copy="0" const="0" />
 
-    <elem name="data" type="GWEN_DB_NODE" ptr="1" 
-          access="private" const="0" preset="GWEN_DB_Group_new(data)"/>
     <elem name="banking" type="AB_BANKING" ptr="1" const="0" volatile="1"
           takeOver="0" copy="0" />
     

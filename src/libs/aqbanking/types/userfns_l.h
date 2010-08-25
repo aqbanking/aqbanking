@@ -18,7 +18,6 @@
 
 AB_USER *AB_User_new(AB_BANKING *ab);
 AB_USER *AB_User_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
-int AB_User__dbToDb(GWEN_DB_NODE *n, GWEN_DB_NODE *where);
 
 
 
