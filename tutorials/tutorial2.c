@@ -51,6 +51,12 @@ int main(int argc, char **argv) {
     return 2;
   }
 
+  rv=AB_Banking_OnlineInit(ab);
+  if (rv) {
+    fprintf(stderr, "Error on onlineinit (%d)\n", rv);
+    return 2;
+  }
+
   fprintf(stderr, "AqBanking successfully initialized.\n");
 
   /* Get a list of accounts which are known to AqBanking.
@@ -113,6 +119,12 @@ int main(int argc, char **argv) {
     AB_Account_List2_free(accs);
   }
 
+
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on online deinit (%d)\n", rv);
+    return 3;
+  }
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

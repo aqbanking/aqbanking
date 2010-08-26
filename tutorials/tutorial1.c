@@ -63,7 +63,26 @@ int main(int argc, char **argv) {
     return 2;
   }
 
+  /* Initialize the only banking part of AqBanking. This is needed to
+   * actually perform online banking actions (like retrieving account
+   * statements etc).
+   */
+  rv=AB_Banking_OnlineInit(ab);
+  if (rv) {
+    fprintf(stderr, "Error on onlineinit (%d)\n", rv);
+    return 2;
+  }
+
+
   fprintf(stderr, "AqBanking successfully initialized.\n");
+
+
+  /* deinit the online banking part of AqBanking */
+  rv=AB_Banking_OnlineFini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 3;
+  }
 
   /* You must always call this function before exiting, because only then
    * AqBanking's settings are written.
