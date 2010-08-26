@@ -428,6 +428,12 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
   }
 
   node=GWEN_XMLNode_FindFirstTag(doc, "IC", 0, 0);
+  if (node==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Document does not contain element \"IC\"");
+    GWEN_XMLNode_Dump(doc, 2);
+    GWEN_XMLNode_free(doc);
+    return GWEN_ERROR_BAD_DATA;
+  }
   node=GWEN_XMLNode_FindFirstTag(node, "KONAUS", 0, 0);
   while(node) {
     AB_IMEXPORTER_ACCOUNTINFO *ai;
