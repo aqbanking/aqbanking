@@ -233,6 +233,9 @@ code-cleanup:
 	-admin/fixuifiles
 	-admin/glade-fixup
 
+cppcheck:
+	for f in `find . -name \*.c -o -name \*.cpp`; do cppcheck $$f; done
+
 ChangeLog:
 	git log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog
 

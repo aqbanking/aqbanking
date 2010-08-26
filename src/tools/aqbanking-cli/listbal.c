@@ -323,7 +323,13 @@ int listBal(AB_BANKING *ab,
     iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
   } /* while */
 
-
+  if (outFile) {
+    if (fclose(f)) {
+      DBG_ERROR(0, "Error closing output file: %s",
+		strerror(errno));
+      return 4;
+    }
+  }
 
   rv=AB_Banking_Fini(ab);
   if (rv) {
