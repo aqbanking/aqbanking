@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -243,7 +240,8 @@ AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
                                    const char *backendName,
                                    const char *country,
                                    const char *bankId,
-                                   const char *accountId);
+                                   const char *accountId,
+                                   const char *subAccountId);
 
 /**
  * This function returns a list of accounts which match the given
@@ -261,7 +259,8 @@ AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
                                           const char *backendName,
                                           const char *country,
                                           const char *bankId,
-                                          const char *accountId);
+                                          const char *accountId,
+                                          const char *subAccountId);
 
 /**
  * Creates an account and shows it to the backend (which might want to extend

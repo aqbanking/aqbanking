@@ -74,7 +74,8 @@ int main(int argc, char **argv) {
                            "aqhbci", /* backend name */
                            "de",     /* two-char ISO country code */
                            "200*",   /* bank code (with wildcard) */
-                           "*");     /* account number (wildcard) */
+                           "*",      /* account number (wildcard) */
+                           "*");     /* sub account id (Unterkontomerkmal) */
   if (a) {
     AB_JOB_LIST2 *jl;
     AB_JOB *j;

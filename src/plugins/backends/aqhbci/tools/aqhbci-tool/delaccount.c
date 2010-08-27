@@ -39,6 +39,7 @@ int delAccount(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   const char *account;
+  const char *subAccountId;
   uint32_t delAll = 0;
   uint32_t pretend = 0;
   uint32_t uniqueId = 0;
@@ -60,6 +61,17 @@ int delAccount(AB_BANKING *ab,
     "account",                   /* long option */
     "Specify the account number", /* short description */
     "Specify the account number"  /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -192,6 +204,7 @@ int delAccount(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, 0);
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
   account=GWEN_DB_GetCharValue(db, "account", 0, 0);
+  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
   delAll=GWEN_DB_GetIntValue(db, "all", 0, 0);
   pretend=GWEN_DB_GetIntValue(db, "pretend", 0, 0);
   uniqueId=GWEN_DB_GetIntValue(db, "accountUniqueId", 0, 0);
@@ -199,7 +212,7 @@ int delAccount(AB_BANKING *ab,
 
   matches = AB_Account_List2_new();
 
-  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "*", "*", "*");
+  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
   if (al) {
     ait=AB_Account_List2_First(al);
     if (ait) {
@@ -221,6 +234,12 @@ int delAccount(AB_BANKING *ab,
         if (match && account) {
           s=AB_Account_GetAccountNumber(a);
           if (!s || !*s || -1==GWEN_Text_ComparePattern(s, account, 0))
+            match=0;
+        }
+
+        if (match && account) {
+          s=AB_Account_GetSubAccountId(a);
+          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, subAccountId, 0))
             match=0;
         }
 

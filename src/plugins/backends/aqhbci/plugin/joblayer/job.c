@@ -1714,11 +1714,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	if (accountId==NULL)
 	  accountId=I18N("AH_JOB|-- no account id --");
 	accountSuffix=GWEN_DB_GetCharValue(dbRd, "accountSubId", 0, 0);
-	if (!(accountSuffix && *accountSuffix) &&
-	    strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
-	  /* accountSuffix is empty with accountData2, so basically jobs without
-           * suffix are supported, the suffix is just empty */
-          accountSuffix="<empty>";
         accountName=GWEN_DB_GetCharValue(dbRd, "account/name", 0, 0);
         userName=GWEN_DB_GetCharValue(dbRd, "name1", 0, 0);
 	iban=GWEN_DB_GetCharValue(dbRd, "iban", 0, 0);
@@ -1754,7 +1749,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         acc=AB_Banking_FindAccount(ab, AH_PROVIDER_NAME,
                                    "de", /* TODO: get country */
                                    bankCode,
-                                   accountId);
+                                   accountId,
+                                   accountSuffix);
 	if (acc) {
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Account \"%s\" already exists",
@@ -1771,7 +1767,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  }
           else
 	    mayModifyAcc=1;
-	}
+        }
         else {
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\"", accountId);
 	  accCreated=1;
@@ -1781,7 +1777,11 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           AB_Account_SetCountry(acc, "de");
           AB_Account_SetBankCode(acc, bankCode);
 	  AB_Account_SetAccountNumber(acc, accountId);
-	  AH_Account_SetSuffix(acc, accountSuffix);
+          if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
+            /* KTV in version 2 available */
+            AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
+          else
+            AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Setting user \"%s\" for account \"%s\"",
                      AB_User_GetUserId(u),
@@ -1799,7 +1799,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  if (iban)
 	    AB_Account_SetIBAN(acc, iban);
           if (accountSuffix && *accountSuffix)
-	    AH_Account_SetSuffix(acc, accountSuffix);
+            AB_Account_SetSubAccountId(acc, accountSuffix);
 
 	  /* set bank name */
 	  bpd=AH_User_GetBpd(j->user);

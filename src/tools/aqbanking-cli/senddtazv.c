@@ -203,6 +203,7 @@ int sendDtazv(AB_BANKING *ab,
   int rv;
   const char *bankId;
   const char *accountId;
+  const char *subAccountId;
   const char *inFile;
   const char *ctxFile;
   const char *cpath;
@@ -229,6 +230,17 @@ int sendDtazv(AB_BANKING *ab,
     "account",                    /* long option */
     "Specify the account number", /* short description */
     "Specify the account number"  /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -300,6 +312,7 @@ int sendDtazv(AB_BANKING *ab,
 
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
+  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, "*");
   inFile=GWEN_DB_GetCharValue(db, "infile", 0, NULL);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, NULL);
   cpath=GWEN_DB_GetCharValue(db, "cpath", 0, NULL);
@@ -329,7 +342,7 @@ int sendDtazv(AB_BANKING *ab,
   assert(pro);
 
   al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de",
-			     bankId, accountId);
+                             bankId, accountId, subAccountId);
   if (al) {
     if (AB_Account_List2_GetSize(al)!=1) {
       DBG_ERROR(0, "Ambiguous account specification");

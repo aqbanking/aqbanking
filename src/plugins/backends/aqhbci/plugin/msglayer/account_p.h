@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -23,8 +20,6 @@ typedef struct AH_ACCOUNT AH_ACCOUNT;
 struct AH_ACCOUNT {
   AH_HBCI *hbci;
   uint32_t flags;
-
-  char *suffix;
 };
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);

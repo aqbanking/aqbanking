@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -38,6 +35,9 @@ extern "C" {
 /** Prefer single debit notes over multi debit notes for this account */
 #define AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE 0x00000002
 
+/* for this account there are KTV2 information availabel (e.g. account sub id) */
+#define AH_BANK_FLAGS_KTV2                    0x00000004
+
 #define AH_BANK_FLAGS_DEFAULT 0
 
 /*@}*/
@@ -69,17 +69,6 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags);
 
 /*@}*/
 
-
-
-/** @name Account Id Suffix
- *
- */
-/*@{*/
-AQHBCI_API
-const char *AH_Account_GetSuffix(const AB_ACCOUNT *a);
-AQHBCI_API
-void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s);
-/*@}*/
 
 
 #ifdef __cplusplus

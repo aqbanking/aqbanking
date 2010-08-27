@@ -83,7 +83,8 @@ int main(int argc, char **argv) {
                            "aqhbci", /* backend name */
                            "de",     /* two-char ISO country code */
 			   "*",      /* bank code (with wildcard) */
-			   accNr);   /* account number (wildcard) */
+                           accNr,    /* account number (wildcard) */
+                           "*");     /* sub account id (Unterkontomerkmal) */
   if (a) {
     AB_JOB *j;
     AB_IMEXPORTER_CONTEXT *ctx;

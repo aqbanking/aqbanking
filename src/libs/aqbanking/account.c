@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -110,6 +107,13 @@ int AB_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
     a->accountNumber=strdup(s);
   else
     a->accountNumber=NULL;
+
+  free(a->subAccountId);
+  s=GWEN_DB_GetCharValue(db, "subAccountId", 0, NULL);
+  if (s)
+    a->subAccountId=strdup(s);
+  else
+    a->subAccountId=NULL;
 
   free(a->bankCode);
   s=GWEN_DB_GetCharValue(db, "bankCode", 0, NULL);
@@ -562,6 +566,7 @@ void AB_Account_free(AB_ACCOUNT *a){
       GWEN_INHERIT_FINI(AB_ACCOUNT, a);
       free(a->backendName);
 
+      free(a->subAccountId);
       free(a->accountNumber);
       free(a->bankCode);
       free(a->accountName);
@@ -654,6 +659,27 @@ void AB_Account_SetAccountNumber(AB_ACCOUNT *a, const char *s){
     a->accountNumber=strdup(s);
   else
     a->accountNumber=NULL;
+}
+
+
+
+const char *AB_Account_GetSubAccountId(const AB_ACCOUNT *a){
+  assert(a);
+  assert(a->usage);
+  return a->subAccountId;
+}
+
+
+
+void AB_Account_SetSubAccountId(AB_ACCOUNT *a, const char *s){
+  assert(a);
+  assert(a->usage);
+
+  free(a->subAccountId);
+  if (s)
+    a->subAccountId=strdup(s);
+  else
+    a->subAccountId=NULL;
 }
 
 

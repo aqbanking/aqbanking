@@ -565,7 +565,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
 
       a=AB_Banking_FindAccount(AB_Provider_GetBanking(pro),
                                AQOFXCONNECT_BACKENDNAME,
-                               country, bankCode, accountNumber);
+                               country, bankCode, accountNumber, NULL);
       if (!a) {
         char msg[]=I18S("Adding account %s to bank %s");
         char msgbuf[512];

@@ -4404,8 +4404,8 @@ int AH_Provider_ValidateTransfer(AB_TRANSACTION *t,
 	     "No local suffix, filling in (if possible)");
     a=AB_Job_GetAccount(j);
     assert(a);
-    s=AH_Account_GetSuffix(a);
-    if (s)
+    s=AB_Account_GetSubAccountId(a);
+    if (s && *s)
       AB_Transaction_SetLocalSuffix(t, s);
   }
 

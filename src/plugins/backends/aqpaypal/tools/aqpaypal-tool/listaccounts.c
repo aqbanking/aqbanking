@@ -80,7 +80,7 @@ int listAccounts(AB_BANKING *ab,
     return 2;
   }
 
-  al=AB_Banking_FindAccounts(ab, APY_PROVIDER_NAME, "*", "*", "*");
+  al=AB_Banking_FindAccounts(ab, APY_PROVIDER_NAME, "*", "*", "*", "*");
   if (al) {
     AB_ACCOUNT_LIST2_ITERATOR *ait;
 

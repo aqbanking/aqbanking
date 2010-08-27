@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: banking.c 1106 2007-01-09 21:14:59Z martin $
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -63,7 +60,8 @@ AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
                                    const char *backendName,
                                    const char *country,
                                    const char *bankId,
-                                   const char *accountId) {
+                                   const char *accountId,
+                                   const char *subAccountId) {
   AB_ACCOUNT *a;
 
   assert(ab);
@@ -78,9 +76,14 @@ AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
   if (!country) country="*";
   if (!bankId) bankId="*";
   if (!accountId) accountId="*";
+  if (!subAccountId) subAccountId="*";
 
   while(a) {
     const char *lbackendName;
+    const char *lcountry;
+    const char *lbankId;
+    const char *laccountId;
+    const char *lsubAccountId;
 
     lbackendName=AB_Account_GetBackendName(a);
     if (!lbackendName) {
@@ -92,14 +95,21 @@ AB_ACCOUNT *AB_Banking_FindAccount(const AB_BANKING *ab,
       abort();
     }
 
-    if ((-1!=GWEN_Text_ComparePattern(lbackendName,
-                                      backendName, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetCountry(a),
-                                      country, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetBankCode(a),
-                                      bankId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetAccountNumber(a),
-                                      accountId, 0)))
+    lcountry=AB_Account_GetCountry(a);
+    lbankId=AB_Account_GetBankCode(a);
+    laccountId=AB_Account_GetAccountNumber(a);
+    lsubAccountId=AB_Account_GetSubAccountId(a);
+
+    if (!lcountry) lcountry="";
+    if (!lbankId) lbankId="";
+    if (!laccountId) laccountId="";
+    if (!lsubAccountId) lsubAccountId="";
+
+    if ((-1!=GWEN_Text_ComparePattern(lbackendName, backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lcountry, country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lbankId, bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(laccountId, accountId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lsubAccountId, subAccountId, 0)))
       break;
     a=AB_Account_List_Next(a);
   } /* while */
@@ -113,7 +123,8 @@ AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
                                           const char *backendName,
                                           const char *country,
                                           const char *bankId,
-                                          const char *accountId) {
+                                          const char *accountId,
+                                          const char *subAccountId) {
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
 
@@ -130,9 +141,14 @@ AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
   if (!country) country="*";
   if (!bankId) bankId="*";
   if (!accountId) accountId="*";
+  if (!subAccountId) subAccountId="*";
 
   while(a) {
     const char *lbackendName;
+    const char *lcountry;
+    const char *lbankId;
+    const char *laccountId;
+    const char *lsubAccountId;
 
     lbackendName=AB_Account_GetBackendName(a);
     if (!lbackendName) {
@@ -144,14 +160,21 @@ AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
       abort();
     }
 
-    if ((-1!=GWEN_Text_ComparePattern(AB_Account_GetBackendName(a),
-                                      backendName, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetCountry(a),
-                                      country, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetBankCode(a),
-                                      bankId, 0)) &&
-        (-1!=GWEN_Text_ComparePattern(AB_Account_GetAccountNumber(a),
-                                      accountId, 0)))
+    lcountry=AB_Account_GetCountry(a);
+    lbankId=AB_Account_GetBankCode(a);
+    laccountId=AB_Account_GetAccountNumber(a);
+    lsubAccountId=AB_Account_GetSubAccountId(a);
+
+    if (!lcountry) lcountry="";
+    if (!lbankId) lbankId="";
+    if (!laccountId) laccountId="";
+    if (!lsubAccountId) lsubAccountId="";
+
+    if ((-1!=GWEN_Text_ComparePattern(lbackendName, backendName, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lcountry, country, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lbankId, bankId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(laccountId, accountId, 0)) &&
+        (-1!=GWEN_Text_ComparePattern(lsubAccountId, subAccountId, 0)))
       AB_Account_List2_PushBack(al, a);
     a=AB_Account_List_Next(a);
   } /* while */

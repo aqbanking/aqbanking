@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -84,8 +81,6 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
   AH_ACCOUNT *ae;
 
   ae=(AH_ACCOUNT*) p;
-  free(ae->suffix);
-  ae->suffix=(char*) -1;
   GWEN_FREE_OBJECT(ae);
 }
 
@@ -101,12 +96,12 @@ void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
   ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
   
-  free(ae->suffix);
   s=GWEN_DB_GetCharValue(db, "suffix", 0, NULL);
-  if (s)
-    ae->suffix=strdup(s);
-  else
-    ae->suffix=NULL;
+  if (s && *s) {
+    ae->flags|=AH_BANK_FLAGS_KTV2;
+    if (strcasecmp(s, "<empty>")!=0)
+      AB_Account_SetSubAccountId(a, s);
+  }
 }
 
 
@@ -119,9 +114,7 @@ void AH_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   assert(ae);
 
   AH_Account_Flags_toDb(db, "accountFlags", ae->flags);
-  if (ae->suffix)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "suffix", ae->suffix);
+  GWEN_DB_DeleteVar(db, "suffix");
 }
 
 
@@ -137,35 +130,6 @@ AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a) {
 
 
 
-const char *AH_Account_GetSuffix(const AB_ACCOUNT *a){
-  AH_ACCOUNT *ae;
-
-  assert(a);
-  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
-  assert(ae);
-
-  return ae->suffix;
-}
-
-
-
-void AH_Account_SetSuffix(AB_ACCOUNT *a, const char *s){
-  AH_ACCOUNT *ae;
-
-  assert(a);
-  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
-  assert(ae);
-
-  free(ae->suffix);
-  if (s)
-    ae->suffix=strdup(s);
-  else
-    ae->suffix=NULL;
-
-}
-
-
-
 void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                            uint32_t flags) {
   GWEN_DB_DeleteVar(db, name);
@@ -175,6 +139,9 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "preferSingleDebitNote");
+  if (flags & AH_BANK_FLAGS_KTV2)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "ktv2");
 }
 
 
@@ -193,6 +160,8 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER;
     else if (strcasecmp(s, "preferSingleDebitNote")==0)
       fl|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
+    else if (strcasecmp(s, "ktv2")==0)
+      fl|=AH_BANK_FLAGS_KTV2;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown account flag \"%s\"", s);
     }

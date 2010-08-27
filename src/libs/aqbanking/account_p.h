@@ -32,6 +32,7 @@ struct AB_ACCOUNT {
   AB_PROVIDER *provider;
   char *backendName;
 
+  char *subAccountId;
   char *accountNumber;
   char *bankCode;
   char *accountName;

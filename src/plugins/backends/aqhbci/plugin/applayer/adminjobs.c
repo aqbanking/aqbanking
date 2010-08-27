@@ -680,11 +680,6 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       /* account data found */
       accountId=GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0);
       accountSuffix=GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0);
-      if (!(accountSuffix && *accountSuffix) &&
-          strcasecmp(GWEN_DB_GroupName(dbAccountData), "AccountData2")==0)
-        /* accountSuffix is empty with accountData2, so basically jobs without
-         * suffix are supported, the suffix is just empty */
-        accountSuffix="<empty>";
       accountName=GWEN_DB_GetCharValue(dbAccountData, "account/name", 0, 0);
       userName=GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0);
       bankCode=GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0);
@@ -693,13 +688,18 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	  bankCode && *bankCode) {
 	acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
 	assert(acc);
+        if (strcasecmp(GWEN_DB_GroupName(dbAccountData), "AccountData2")==0)
+          /* KTV in version 2 available */
+          AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
+        else
+          AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
 	AB_Account_SetBankCode(acc, bankCode);
 	AB_Account_SetAccountNumber(acc, accountId);
 
 	if (accountName)
 	  AB_Account_SetAccountName(acc, accountName);
         if (accountSuffix)
-          AH_Account_SetSuffix(acc, accountSuffix);
+          AB_Account_SetSubAccountId(acc, accountSuffix);
         if (userName)
 	  AB_Account_SetOwnerName(acc, userName);
 

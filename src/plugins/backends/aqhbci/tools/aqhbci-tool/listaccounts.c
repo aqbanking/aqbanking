@@ -81,7 +81,7 @@ int listAccounts(AB_BANKING *ab,
     return 2;
   }
 
-  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de", "*", "*");
+  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de", "*", "*", "*");
   if (al) {
     AB_ACCOUNT_LIST2_ITERATOR *ait;
 

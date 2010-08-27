@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -47,8 +44,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   assert(u);
   assert(account);
 
-  s=AH_Account_GetSuffix(account);
-  if (!(s && *s)) {
+  if (AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2) {
     int maxVer=0;
 
     /* no account suffix, so we try to determine the highest usable
@@ -121,8 +117,8 @@ AH_JOB *AH_AccountJob_new(const char *name,
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
 
-  s=AH_Account_GetSuffix(account);
-  if (s && *s && strcasecmp(s, "<empty>")!=0)
+  s=AB_Account_GetSubAccountId(account);
+  if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
 
   s=AB_Account_GetBankCode(account);

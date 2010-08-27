@@ -38,6 +38,7 @@ int transfer(AB_BANKING *ab,
   const char *country;
   const char *bankId;
   const char *accountId;
+  const char *subAccountId;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -94,6 +95,17 @@ int transfer(AB_BANKING *ab,
     "account",                    /* long option */
     "overwrite the account number",     /* short description */
     "overwrite the account number"      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
@@ -221,6 +233,7 @@ int transfer(AB_BANKING *ab,
   country=GWEN_DB_GetCharValue(db, "country", 0, "de");
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
+  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
   forceCheck=GWEN_DB_GetIntValue(db, "forceCheck", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
 
@@ -237,7 +250,7 @@ int transfer(AB_BANKING *ab,
   }
 
   /* get account */
-  al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId);
+  al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
   if (AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
     return 2;

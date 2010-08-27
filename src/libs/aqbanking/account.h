@@ -104,6 +104,12 @@ const char *AB_Account_GetAccountNumber(const AB_ACCOUNT *acc);
 AQBANKING_API 
 void AB_Account_SetAccountNumber(AB_ACCOUNT *acc, const char *s);
 
+
+AQBANKING_API 
+const char *AB_Account_GetSubAccountId(const AB_ACCOUNT *acc);
+AQBANKING_API 
+void AB_Account_SetSubAccountId(AB_ACCOUNT *acc, const char *s);
+
 AQBANKING_API 
 const char *AB_Account_GetBankCode(const AB_ACCOUNT *acc);
 AQBANKING_API 
