@@ -1,7 +1,4 @@
 
-- let aqhbci remove unneeded data from settings.conf (after migrating to
-  1.9.x)
-
 - loganalyzer: read messages from FASTBUFFER instead from IO
 
 CAVEATS:

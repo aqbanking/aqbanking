@@ -33,9 +33,8 @@
                7.4.   AQHBCI_LOGNOTED
                7.5.   AQHBCI_DEBUG_JOBS
                7.6.   AQOFX_LOG_COMM
-               8.   Security in PIN/TAN Mode
-               9 .  Using Your Own Profiles for Im-/Exporters
-               10.  Thanks
+               8 .  Using Your Own Profiles for Im-/Exporters
+               9.   Thanks
 
 
 
@@ -109,7 +108,7 @@ currency codes).
 2. Supported Platforms
 ======================
 
-AqBanking uses the library Gwenhywfar (http://gwenhywfar.sf.net/) for 
+AqBanking uses the library Gwenhywfar (http://www.aqbanking.de/) for 
 abstraction of the underlying system. So it should work on any system for 
 which Gwenhywfar is available. 
 
@@ -363,26 +362,8 @@ that file!
 
 
 
-8. Security in PIN/TAN Mode
-===========================
 
-In PIN/TAN mode AqHBCI stores certificates of the bank in a special folder:
-      $HOME/.banking/backends/aqhbci/data/banks/280/<BLZ>/certs/.
-(<BLZ> is the routing number of your bank, German "Bankleitzahl")
-
-Authentification of the bank is only possible by checking against the known
-certificates stored in this folder.
-
-For maximum security you could chown this folder to another user and make it
-readable and accessible by the running user after having received and 
-acknowledged the bank's certificate.
-
-This way the running application is able to read and verify the certificates
-but unable to modify it or to add new ones.
-
-
-
-9. Using Your Own Profiles for Im-/Exporters
+8. Using Your Own Profiles for Im-/Exporters
 ============================================
 
 You can create your own profiles to be used with the various importers.
@@ -393,7 +374,7 @@ E.g. CSV profiles on Linux must be stored in
 
 
 
-10. Thanks
+9. Thanks
 ==========
 
 I wish to thank the following (among others) people for their support in 
@@ -406,5 +387,5 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2010/08/08
+Martin Preuss, Hamburg/Germany, 2010/08/26
 
