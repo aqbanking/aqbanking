@@ -35,8 +35,8 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab) {
 
   xgui->banking=ab;
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
-  GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
-  GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
+  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
+  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
 
   return gui;
 }
@@ -69,6 +69,9 @@ void AB_Gui_Unextend(GWEN_GUI *gui) {
   GWEN_Gui_SetCheckCertFn(gui, xgui->checkCertFn);
 
   /* unlink from GWEN_GUI object */
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "Unlinking GUI from banking object");
+  GWEN_Gui_SetReadDialogPrefsFn(gui, xgui->readDialogPrefsFn);
+  GWEN_Gui_SetWriteDialogPrefsFn(gui, xgui->writeDialogPrefsFn);
   GWEN_INHERIT_UNLINK(GWEN_GUI, AB_GUI, gui);
 }
 

@@ -20,6 +20,9 @@ typedef struct AB_GUI AB_GUI;
 struct AB_GUI {
   AB_BANKING *banking;
   GWEN_GUI_CHECKCERT_FN checkCertFn;
+
+  GWEN_GUI_READ_DIALOG_PREFS_FN readDialogPrefsFn;
+  GWEN_GUI_WRITE_DIALOG_PREFS_FN writeDialogPrefsFn;
 };
 
 static void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p);
