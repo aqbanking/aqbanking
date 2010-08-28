@@ -72,6 +72,17 @@ int request(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
     "bankName",                   /* name */
     0,                            /* minnum */
@@ -262,6 +273,7 @@ int request(AB_BANKING *ab,
       AB_ACCOUNT *a;
       const char *bankId;
       const char *accountId;
+      const char *subAccountId;
       const char *bankName;
       const char *accountName;
       const char *s;
@@ -269,6 +281,7 @@ int request(AB_BANKING *ab,
       bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
       bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
       accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
+      subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
       accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
 
       a=AB_Account_List2Iterator_Data(ait);
@@ -293,6 +306,13 @@ int request(AB_BANKING *ab,
           if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
             matches=0;
         }
+
+        if (matches && subAccountId) {
+          s=AB_Account_GetSubAccountId(a);
+          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, subAccountId, 0))
+            matches=0;
+        }
+
         if (matches && accountName) {
           s=AB_Account_GetAccountName(a);
           if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
