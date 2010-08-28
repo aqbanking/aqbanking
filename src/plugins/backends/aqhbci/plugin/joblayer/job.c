@@ -76,7 +76,6 @@ AH_JOB *AH_Job_new(const char *name,
 
   e=AH_User_GetMsgEngine(u);
   assert(e);
-  GWEN_MsgEngine_Attach(e);
 
   bpd=AH_User_GetBpd(u);
 
@@ -429,7 +428,6 @@ int AH_Job_SampleBpdVersions(const char *name,
   /* get job descriptions */
   e=AH_User_GetMsgEngine(u);
   assert(e);
-  GWEN_MsgEngine_Attach(e);
 
   bpd=AH_User_GetBpd(u);
 

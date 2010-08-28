@@ -482,7 +482,7 @@ void AB_Banking_ActivateAllProviders(AB_BANKING *ab){
       pd=GWEN_PluginDescription_List2Iterator_Next(it);
     } /* while */
     GWEN_PluginDescription_List2Iterator_free(it);
-    GWEN_PluginDescription_List2_free(descrs);
+    GWEN_PluginDescription_List2_freeAll(descrs);
   }
 }
 
