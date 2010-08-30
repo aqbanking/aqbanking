@@ -311,7 +311,7 @@ public:
 
 } /* namespace HBCI */
 
-typedef struct HBCI::Error HBCI_Error;
+typedef class HBCI::Error HBCI_Error;
 
 /* Now the typedefs and function prototypes for C. */
 

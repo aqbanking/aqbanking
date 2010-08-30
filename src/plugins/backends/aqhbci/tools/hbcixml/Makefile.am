@@ -8,7 +8,7 @@ hbcixml3_SOURCES=hbcixml.cpp loganalyzer.cpp error.cpp
 hbcixml3_LDADD = \
   $(aqhbci_internal_libs) \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) 
+  $(gwenhywfar_libs) -lstdc++
 
 if IS_WINDOWS
 
