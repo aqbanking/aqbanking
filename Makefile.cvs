@@ -86,6 +86,23 @@ mp:
 	    --with-frontends="q4banking"
 	make sources
 
+clang:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
+	automake --add-missing
+	autoconf
+	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH):./m4" \
+	  CC=clang \
+	  CXX=clang \
+	  CXXFLAGS="-ggdb -Wall" \
+	  CFLAGS="$(MP_CFLAGS)" \
+	  ./configure $(MP_CONF_FLAGS) \
+	    --with-backends="aqhbci aqofxconnect aqpaypal"  \
+	    --with-frontends="q4banking"
+	make sources
+
 mp-priv:
 	libtoolize -f --automake
 	aclocal -I ./m4
