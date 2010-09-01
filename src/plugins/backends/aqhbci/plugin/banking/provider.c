@@ -1292,7 +1292,6 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
     job=AH_Job_GetSysId_new(u);
     if (!job) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
-      AB_Banking_EndExclUseUser(ab, u, 1);
       return GWEN_ERROR_GENERIC;
     }
     AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -1308,65 +1307,68 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
       return rv;
     }
 
-    if (AH_Job_HasErrors(job)) {
-      if (AH_Job_HasItanResult(job)) {
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Adjusting to iTAN modes of the server"));
-	rv=AH_Job_Commit(job, doLock);
-        if (rv) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-          AH_Outbox_free(ob);
-          if (!nounmount)
-	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-          return rv;
-	}
-
-#if 0
-	/* save user in order to get the info written to config database for
-         * inspection while debugging
-         */
-        rv=AB_Banking_SaveUser(ab, u);
-	if (rv<0) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving user (%d)", rv);
-	  AH_Outbox_free(ob);
-	  if (!nounmount)
-	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-	  return rv;
-	}
-#endif
-
-	rv=GWEN_Gui_ProgressLog(0,
-				GWEN_LoggerLevel_Error,
-				I18N("Retrying to get system id."));
-	if (rv) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in progress log, maybe user aborted?");
-	  AH_Outbox_free(ob);
-	  if (!nounmount)
-	    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-	  return rv;
-	}
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-        // TODO: show errors
-        AH_Outbox_free(ob);
-        if (!nounmount)
+    /* check whether we received a sysid */
+    s=AH_Job_GetSysId_GetSysId(job);
+    if (s && *s) {
+      /* we did, commit the job and break loop */
+      rv=AH_Job_Commit(job, doLock);
+      if (rv<0) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+	AH_Outbox_free(ob);
+	if (!nounmount)
 	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-        return GWEN_ERROR_GENERIC;
+	return rv;
       }
+      break;
     }
-    else {
+
+    if (AH_Job_HasItanResult(job)) {
+      GWEN_Gui_ProgressLog(0,
+                           GWEN_LoggerLevel_Notice,
+                           I18N("Adjusting to iTAN modes of the server"));
       rv=AH_Job_Commit(job, doLock);
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
         AH_Outbox_free(ob);
         if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+          AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
         return rv;
       }
-      break;
+
+#if 0
+      /* save user in order to get the info written to config database for
+       * inspection while debugging
+       */
+      rv=AB_Banking_SaveUser(ab, u);
+      if (rv<0) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error saving user (%d)", rv);
+        AH_Outbox_free(ob);
+        if (!nounmount)
+          AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        return rv;
+      }
+#endif
+
+      rv=GWEN_Gui_ProgressLog(0,
+                              GWEN_LoggerLevel_Notice,
+                              I18N("Retrying to get system id."));
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in progress log, maybe user aborted?");
+        AH_Outbox_free(ob);
+        if (!nounmount)
+          AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        return rv;
+      }
     }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has no system id and no iTAN results");
+      // TODO: show errors
+      AH_Outbox_free(ob);
+      if (!nounmount)
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+      return GWEN_ERROR_GENERIC;
+    }
+
     AH_Job_free(job);
     AH_Outbox_free(ob);
     if (i>1) {
@@ -1378,7 +1380,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return GWEN_ERROR_GENERIC;
     }
-  }
+  } /* for */
 
   /* lock user */
   if (doLock) {
