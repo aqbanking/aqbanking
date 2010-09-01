@@ -22,7 +22,10 @@
 #include <gwenhywfar/syncio_file.h>
 
 #include "../../../libs/aqbanking/types/bankinfo_l.h"
-#include <aqofxconnect/user.h>
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
+# include <aqofxconnect/user.h>
+#endif
 
 #include <time.h>
 #include <stdio.h>
@@ -1031,11 +1034,14 @@ int readMSMFiles(const char *path,
 	  if (b) {
 	    const char *s;
 	    int i;
-	    uint32_t uflags=0;
+	    uint32_t uflags;
 
+	    uflags=0;
 	    i=GWEN_XMLNode_GetIntValue(b, "AcctListAvail", 0);
-	    if (i>0)
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
+            if (i>0)
 	      uflags|=AO_USER_FLAGS_ACCOUNT_LIST;
+#endif
 
 	    s=readCharValueXml(b, "country", dbuf);
 	    if (s && *s) {
