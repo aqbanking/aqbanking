@@ -384,7 +384,7 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
     const char *p;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
-              "SystemId requested (deprecated)");
+             "SystemId requested (deprecated), in mode \"%s\" variable \"%s\"", GWEN_MsgEngine_GetMode(e), name);
     p=AH_User_GetSystemId(x->user);
     if (p)
       return p;
