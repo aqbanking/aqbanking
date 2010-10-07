@@ -1,8 +1,7 @@
 char name="DKB-Cash"
 char shortDescr="DKB Cash Konto"
 char version="@AQBANKING_VERSION_STRING@"
-char longDescr="This profile supports the CSV format used by the 
-Deutsche Kreditbank"
+char longDescr="This profile supports the CSV format used by the Deutsche Kreditbank"
 int import="1"
 int export="1"
 
