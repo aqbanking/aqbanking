@@ -38,6 +38,8 @@
 #define AQPAYPAL_PASSWORD_ITERATIONS 1467
 #define AQPAYPAL_CRYPT_ITERATIONS    648
 
+#define AQPAYPAL_API_VER    "56.0"
+
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
@@ -114,7 +116,7 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(AQPAYPAL_LOGDOMAIN, ll);
       DBG_WARN(AQPAYPAL_LOGDOMAIN,
-               "Overriding loglevel for AqEBICS with \"%s\"",
+               "Overriding loglevel for AqPAYPAL with \"%s\"",
                logLevelName);
     }
     else {
@@ -416,7 +418,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendString(tbuf, "user=");
-  s=AB_User_GetUserId(u);
+  s=APY_User_GetApiUserId(u);
   if (s && *s)
     GWEN_Text_EscapeToBuffer(s, tbuf);
   else {
@@ -448,7 +450,8 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
     return GWEN_ERROR_INVALID;
   }
 
-  GWEN_Buffer_AppendString(tbuf, "&version=2.3");
+  GWEN_Buffer_AppendString(tbuf, "&version=");
+  GWEN_Text_EscapeToBuffer(AQPAYPAL_API_VER, tbuf);
   GWEN_Buffer_AppendString(tbuf, "&method=getTransactionDetails");
 
   GWEN_Buffer_AppendString(tbuf, "&transactionId=");
@@ -469,6 +472,36 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
     return rv;
+  }
+
+  if (getenv("AQPAYPAL_LOG_COMM")) {
+    int len;
+    FILE *f;
+
+    len=GWEN_Buffer_GetUsedBytes(tbuf);
+
+    f=fopen("paypal.log", "a+");
+    if (f) {
+      fprintf(f, "\n============================================\n");
+      fprintf(f, "Sending (UpdateTrans):\n");
+      if (len>0) {
+	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  fclose(f);
+	}
+	else {
+	  if (fclose(f)) {
+	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  }
+	}
+      }
+      else {
+	fprintf(f, "Empty data.\n");
+	if (fclose(f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	}
+      }
+    }
   }
 
   /* send request */
@@ -494,6 +527,36 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
     return rv;
   }
 
+  if (getenv("AQPAYPAL_LOG_COMM")) {
+    int len;
+    FILE *f;
+
+    len=GWEN_Buffer_GetUsedBytes(tbuf);
+
+    f=fopen("paypal.log", "a+");
+    if (f) {
+      fprintf(f, "\n============================================\n");
+      fprintf(f, "Received (UpdateTrans):\n");
+      if (len>0) {
+	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  fclose(f);
+	}
+	else {
+	  if (fclose(f)) {
+	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  }
+	}
+      }
+      else {
+	fprintf(f, "Empty data.\n");
+	if (fclose(f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	}
+      }
+    }
+  }
+
   /* deinit (ignore result because it isn't important) */
   GWEN_HttpSession_Fini(sess);
   GWEN_HttpSession_free(sess);
@@ -502,8 +565,8 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   dbResponse=GWEN_DB_Group_new("response");
   rv=APY_Provider_ParseResponse(pro, GWEN_Buffer_GetStart(tbuf), dbResponse);
 
-#ifdef DEBUG_PAYPAL
-  if (1) {
+#if 0
+  if (getenv("AQPAYPAL_LOG_COMM")) {
     static int debugCounter=0;
     char namebuf[64];
 
@@ -707,7 +770,9 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     return GWEN_ERROR_INVALID;
   }
 
-  GWEN_Buffer_AppendString(tbuf, "&version=2.3");
+  GWEN_Buffer_AppendString(tbuf, "&version=");
+  GWEN_Text_EscapeToBuffer(AQPAYPAL_API_VER, tbuf);
+
   GWEN_Buffer_AppendString(tbuf, "&method=transactionSearch");
 
   ti=AB_JobGetTransactions_GetFromTime(j);
@@ -731,6 +796,37 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     AB_Job_SetStatus(j, AB_Job_StatusError);
     return rv;
   }
+
+  if (getenv("AQPAYPAL_LOG_COMM")) {
+    int len;
+    FILE *f;
+
+    len=GWEN_Buffer_GetUsedBytes(tbuf);
+
+    f=fopen("paypal.log", "a+");
+    if (f) {
+      fprintf(f, "\n============================================\n");
+      fprintf(f, "Sending (GetTrans):\n");
+      if (len>0) {
+	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  fclose(f);
+	}
+	else {
+	  if (fclose(f)) {
+	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  }
+	}
+      }
+      else {
+	fprintf(f, "Empty data.\n");
+	if (fclose(f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	}
+      }
+    }
+  }
+
 
 #if 0
   DBG_ERROR(0, "Would send this: [%s]", GWEN_Buffer_GetStart(tbuf));
@@ -766,6 +862,36 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     AB_Job_SetStatus(j, AB_Job_StatusError);
     return rv;
   }
+
+  if (getenv("AQPAYPAL_LOG_COMM")) {
+    int len;
+    FILE *f;
+
+    len=GWEN_Buffer_GetUsedBytes(tbuf);
+    f=fopen("paypal.log", "a+");
+    if (f) {
+      fprintf(f, "\n============================================\n");
+      fprintf(f, "Received (GetTrans):\n");
+      if (len>0) {
+	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  fclose(f);
+	}
+	else {
+	  if (fclose(f)) {
+	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	  }
+	}
+      }
+      else {
+	fprintf(f, "Empty data.\n");
+	if (fclose(f)) {
+	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+	}
+      }
+    }
+  }
+
 
   /* deinit (ignore result because it isn't important) */
   GWEN_HttpSession_Fini(sess);
