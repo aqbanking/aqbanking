@@ -253,7 +253,7 @@ Compilation hints for specific platforms:
 
 #>make -fMakefile.cvs
 
-and continue as described in "6.1. Building from the Tar File".
+and continue as described in "5.1. Building from the Tar File".
 
 
 5.3. Building the API Documentation
@@ -282,7 +282,7 @@ in the first place). Most versions of AqBanking don't use the registry
 to determine installation paths because those versions are filesystem
 relocatable, so they don't need the registry.
 
-At any rate, those version that still do use the registry use the
+At any rate, those versions that still do use the registry use the
 following keys. These keys are created by the setup.exe which
 contains the binary package for WIN32 platforms.
 
@@ -344,7 +344,7 @@ a problem in the SWIFT parser.
 7.4. AQHBCI_LOGNOTED
 --------------------
 Same as AQHBCI_LOGBOOKED but for noted transactions (which are transactions
-which are noted but ot yet booked)
+which are noted but not yet booked)
 
 
 7.5. AQHBCI_DEBUG_JOBS
