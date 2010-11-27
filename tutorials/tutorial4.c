@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
   gui=GWEN_Gui_CGui_new();
   assert(gui);
-  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
+  GWEN_Gui_SetCharSet(gui, "ISO-8859-15");
   GWEN_Gui_SetGui(gui);
 
   ab=AB_Banking_new("tutorial4", 0, 0);

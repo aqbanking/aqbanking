@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
   int acceptValidCerts=0;
   const char *pinFile;
   const char *cfgDir;
+  const char *s;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -253,7 +254,9 @@ int main(int argc, char **argv) {
   }
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
+  s=GWEN_DB_GetCharValue(db, "charset", 0, NULL);
+  if (s && *s)
+    GWEN_Gui_SetCharSet(gui, s);
 
   if (nonInteractive)
     GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
