@@ -660,6 +660,31 @@ AC_SUBST(aqbanking_plugins_bankinfo_dirs)
 
 ###-------------------------------------------------------------------------
 #
+# KtoBlzCheck
+#
+
+pkg_modules="ktoblzcheck >= 1.10"
+PKG_CHECK_MODULES(ktoblzcheck, [$pkg_modules], [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
+if test "$have_ktoblzcheck" = "yes"; then
+  AC_DEFINE(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
+  ktoblzcheck_includes="$ktoblzcheck_CFLAGS"
+  ktoblzcheck_libs="$ktoblzcheck_LIBS"
+else
+  AC_MSG_WARN([
+*** ktoblzcheck is missing. 
+*** Account number checking will not be available.
+*** We strongly suggest installing ktoblzcheck and its devel
+*** package.])
+fi
+
+AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
+AC_SUBST(ktoblzcheck_libs)
+AC_SUBST(ktoblzcheck_includes)
+
+
+
+###-------------------------------------------------------------------------
+#
 # Check for Gwen
 #
 
@@ -717,31 +742,6 @@ AC_ARG_WITH(xmlmerge, [  --with-xmlmerge=PATH path and name of tool xmlmerge],
   [XMLMERGE="$gwenhywfar_dir/bin/xmlmerge"])
 AC_SUBST(XMLMERGE)
 AC_MSG_RESULT($XMLMERGE)
-
-
-
-###-------------------------------------------------------------------------
-#
-# KtoBlzCheck
-#
-
-pkg_modules="ktoblzcheck >= 1.10"
-PKG_CHECK_MODULES(ktoblzcheck, [$pkg_modules], [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
-if test "$have_ktoblzcheck" = "yes"; then
-  AC_DEFINE(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
-  ktoblzcheck_includes="$ktoblzcheck_CFLAGS"
-  ktoblzcheck_libs="$ktoblzcheck_LIBS"
-else
-  AC_MSG_WARN([
-*** ktoblzcheck is missing. 
-*** Account number checking will not be available.
-*** We strongly suggest installing ktoblzcheck and its devel
-*** package.])
-fi
-
-AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
-AC_SUBST(ktoblzcheck_libs)
-AC_SUBST(ktoblzcheck_includes)
 
 
 
