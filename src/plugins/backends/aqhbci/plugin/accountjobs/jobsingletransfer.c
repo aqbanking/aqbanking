@@ -1093,16 +1093,16 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
       if (s && *s) {
 	while(*s) {
-	  char buf[3];
+	  char buf[2];
           const char *x;
 
-          buf[2]=0;
-          strncpy(buf, s, 2);
+	  buf[0]=*s;
+	  buf[1]=0;
           x=buf;
           if (*x=='0')
             x++;
           AB_TransactionLimits_AddValuesExecutionDayWeek(lim, x, 0);
-	  s+=2;
+	  s++;
 	} /* while */
         GWEN_StringList_Sort(AB_TransactionLimits_GetValuesExecutionDayWeek(lim),
                              1, GWEN_StringList_SortModeInt);
