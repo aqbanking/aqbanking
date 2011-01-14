@@ -485,6 +485,11 @@ int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db){
   if (a->accountNumber)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "accountNumber", a->accountNumber);
+
+  if (a->subAccountId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "subAccountId", a->subAccountId);
+
   if (a->bankCode)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "bankCode", a->bankCode);
