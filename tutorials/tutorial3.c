@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
             else
               purpose="";
 
-            fprintf(stderr, " %-32s (%.2lf %s)\n",
+            fprintf(stderr, " %-32s (%.2f %s)\n",
                     purpose,
 		    AB_Value_GetValueAsDouble(v),
                     AB_Value_GetCurrency(v));
