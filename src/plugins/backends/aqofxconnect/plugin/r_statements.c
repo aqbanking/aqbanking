@@ -73,7 +73,7 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
     ti=AB_JobGetTransactions_GetFromTime(j);
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+      GWEN_Time_toString(ti, "YYYYMMDD", buf);
     }
 
     ti=AB_JobGetTransactions_GetToTime(j);
