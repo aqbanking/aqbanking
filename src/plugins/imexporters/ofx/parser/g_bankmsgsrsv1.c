@@ -20,6 +20,7 @@
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
 #include "g_stmttrnrs_l.h"
+#include "g_acctinfotrnrs_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -55,6 +56,9 @@ int AIO_OfxGroup_BANKMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
 
   if (strcasecmp(tagName, "STMTTRNRS")==0) {
     gNew=AIO_OfxGroup_STMTTRNRS_new(tagName, g, ctx);
+  }
+  else if (strcasecmp(tagName, "ACCTINFOTRNRS")==0) {
+    gNew=AIO_OfxGroup_ACCTINFOTRNRS_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
