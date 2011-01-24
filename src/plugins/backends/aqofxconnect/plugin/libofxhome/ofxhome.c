@@ -154,8 +154,8 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
       }
       else
         OH_InstituteSpec_List_Add(os, sl);
-      /* yes, this really means "FindFirstTag" */
-      n=GWEN_XMLNode_FindFirstTag(n, "institutionid", NULL, NULL);
+      /* previously we needed to use "FindFirstTag" because of the malformed response */
+      n=GWEN_XMLNode_FindNextTag(n, "institutionid", NULL, NULL);
     }
   }
   GWEN_XMLNode_free(nroot);
