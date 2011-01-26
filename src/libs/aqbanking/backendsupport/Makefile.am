@@ -17,6 +17,7 @@ dist_typedata_DATA=\
   ab_userqueue.tm2 \
   ab_userqueue_list.tm2 \
   ab_queue.tm2 \
+  ab_jobqueue.tm2 \
   ab_jobqueue_list.tm2
 
 
