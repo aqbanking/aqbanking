@@ -390,6 +390,14 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
   default:  break;
   }
 
+  /* TAN medium id */
+  s=AH_User_GetTanMediumId(xdlg->user);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, s, 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_ToolTip, 0,
+                              I18N("For smsTAN or mTAN this is your mobile phone number. "
+                                   "Please ask your bank for the necessary format of this number."),
+                              0);
+
   flags=AH_User_GetFlags(xdlg->user);
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
 			     (flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
@@ -519,6 +527,19 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   tm=AH_EditUserPinTanDialog_GetCurrentTanMethod(dlg);
   if (tm)
     AH_User_SetSelectedTanMethod(xdlg->user, AH_TanMethod_GetFunction(tm));
+
+  /* handle tan medium id */
+  s=GWEN_Dialog_GetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    if (u)
+      AH_User_SetTanMediumId(u, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
 
   flags=0;
   if (GWEN_Dialog_GetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0, 0))

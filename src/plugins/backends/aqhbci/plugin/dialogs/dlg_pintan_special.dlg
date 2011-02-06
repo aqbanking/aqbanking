@@ -23,6 +23,9 @@
       <widget type="label" text="HTTP Version" />
       <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX readOnly" />
 
+      <widget type="label" text="TAN Medium ID" />
+      <widget type="comboBox" name="tanMediumIdEdit"  columns="32" flags="fillX readOnly" />
+
     </widget>
 
     <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />

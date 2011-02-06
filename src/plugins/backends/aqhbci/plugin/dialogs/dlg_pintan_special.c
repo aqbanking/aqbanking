@@ -91,6 +91,9 @@ void GWENHYWFAR_CB AH_PinTanSpecialDialog_FreeData(void *bp, void *p) {
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   xdlg=(AH_PINTAN_SPECIAL_DIALOG*) p;
+
+  free(xdlg->tanMediumId);
+
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -205,6 +208,34 @@ void AH_PinTanSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
+const char *AH_PinTanSpecialDialog_GetTanMediumId(const GWEN_DIALOG *dlg) {
+  AH_PINTAN_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->tanMediumId;
+}
+
+
+
+void AH_PinTanSpecialDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s) {
+  AH_PINTAN_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->tanMediumId);
+  if (s && *s)
+    xdlg->tanMediumId=strdup(s);
+  else
+    xdlg->tanMediumId=NULL;
+}
+
+
+
 void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -250,6 +281,14 @@ void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
 			     (xdlg->flags & AH_USER_FLAGS_NO_BASE64)?1:0,
 			     0);
 
+  if (xdlg->tanMediumId)
+    GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, xdlg->tanMediumId, 0);
+  /* set tooltip */
+  GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_ToolTip, 0,
+                              I18N("For smsTAN or mTAN this is your mobile phone number. "
+                                   "Please ask your bank for the necessary format of this number."),
+                              0);
+
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -269,6 +308,7 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   int i;
   GWEN_DB_NODE *dbPrefs;
   uint32_t flags;
+  const char *s;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG, dlg);
@@ -303,6 +343,9 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   if (GWEN_Dialog_GetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_NO_BASE64;
   xdlg->flags=flags;
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, NULL);
+  AH_PinTanSpecialDialog_SetTanMediumId(dlg, s);
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);

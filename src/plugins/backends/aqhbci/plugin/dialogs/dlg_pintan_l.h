@@ -57,6 +57,10 @@ void AH_PinTanDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AH_PinTanDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AH_PinTanDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl);
 
+const char *AH_PinTanDialog_GetTanMediumId(const GWEN_DIALOG *dlg);
+void AH_PinTanDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s);
+
+
 AB_USER *AH_PinTanDialog_GetUser(const GWEN_DIALOG *dlg);
 
 

@@ -39,6 +39,8 @@ void AH_PinTanSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AH_PinTanSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AH_PinTanSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl);
 
+const char *AH_PinTanSpecialDialog_GetTanMediumId(const GWEN_DIALOG *dlg);
+void AH_PinTanSpecialDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s);
 
 
 #ifdef __cplusplus

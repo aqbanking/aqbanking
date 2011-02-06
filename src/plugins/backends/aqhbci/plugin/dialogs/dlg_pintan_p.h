@@ -35,6 +35,8 @@ struct AH_PINTAN_DIALOG {
 
   uint32_t flags;
 
+  char *tanMediumId;
+
   AB_USER *user;
 };
 

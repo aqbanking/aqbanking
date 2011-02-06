@@ -26,6 +26,8 @@ struct AH_PINTAN_SPECIAL_DIALOG {
   int hbciVersion;
 
   uint32_t flags;
+
+  char *tanMediumId;
 };
 
 

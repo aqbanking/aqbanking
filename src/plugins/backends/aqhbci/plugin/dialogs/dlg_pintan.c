@@ -105,6 +105,8 @@ void GWENHYWFAR_CB AH_PinTanDialog_FreeData(void *bp, void *p) {
   free(xdlg->userName);
   free(xdlg->userId);
   free(xdlg->customerId);
+  free(xdlg->tanMediumId);
+
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -383,6 +385,35 @@ void AH_PinTanDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
   xdlg->flags&=~fl;
 }
+
+
+
+const char *AH_PinTanDialog_GetTanMediumId(const GWEN_DIALOG *dlg) {
+  AH_PINTAN_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->tanMediumId;
+}
+
+
+
+void AH_PinTanDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s) {
+  AH_PINTAN_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->tanMediumId);
+  if (s) xdlg->tanMediumId=strdup(s);
+  else xdlg->tanMediumId=NULL;
+}
+
+
+
 
 
 
@@ -1011,6 +1042,7 @@ int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   AH_PinTanSpecialDialog_SetHttpVersion(dlg2, xdlg->httpVMajor, xdlg->httpVMinor);
   AH_PinTanSpecialDialog_SetHbciVersion(dlg2, xdlg->hbciVersion);
   AH_PinTanSpecialDialog_SetFlags(dlg2, xdlg->flags);
+  AH_PinTanSpecialDialog_SetTanMediumId(dlg2, xdlg->tanMediumId);
 
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
   if (rv==0) {
@@ -1023,6 +1055,7 @@ int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
     xdlg->httpVMinor=AH_PinTanSpecialDialog_GetHttpVMinor(dlg2);
     xdlg->hbciVersion=AH_PinTanSpecialDialog_GetHbciVersion(dlg2);
     xdlg->flags=AH_PinTanSpecialDialog_GetFlags(dlg2);
+    AH_PinTanDialog_SetTanMediumId(dlg, AH_PinTanSpecialDialog_GetTanMediumId(dlg2));
   }
 
   GWEN_Dialog_free(dlg2);

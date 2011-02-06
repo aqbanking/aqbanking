@@ -59,6 +59,9 @@
     
           <widget type="label" text="Selected TAN Method" />
           <widget type="comboBox" name="tanMethodCombo"  columns="20" flags="fillX" />
+
+          <widget type="label" text="TAN Medium ID" />
+          <widget type="lineEdit" name="tanMediumIdEdit" columns="32" flags="fillX" />
     
         </widget>
     
