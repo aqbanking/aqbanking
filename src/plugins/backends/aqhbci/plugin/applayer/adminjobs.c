@@ -1191,6 +1191,7 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
+  const char *s;
 
   j=AH_Job_new("JobTan", u, 0, jobVersion);
   if (!j)
@@ -1214,6 +1215,12 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   if (process==1 || process==2)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "moreTans", "N");
+
+  /* set tanmedium id (if any) */
+  s=AH_User_GetTanMediumId(u);
+  if (s && *s)
+    AH_Job_Tan_SetTanMediumId(j, s);
+
   return j;
 }
 
