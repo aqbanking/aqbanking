@@ -38,8 +38,8 @@
                 <widget type="textEdit" name="longDescrEdit" flags="fillX fillY" />
               </widget>
   
-              <widget type="checkBox" name="importCheck" text="Applicable for Imports" />
-              <widget type="checkBox" name="exportCheck" text="Applicable for Exports" />
+              <widget type="checkBox" name="importCheck" text="CSV_EditProfile|Applicable for Imports" />
+              <widget type="checkBox" name="exportCheck" text="CSV_EditProfile|Applicable for Exports" />
             </widget>
           </widget>
           <widget type="vspacer" flags="fillY" />
@@ -58,7 +58,7 @@
                 <widget type="label" text="Column Delimiter" />
                 <widget type="comboBox" name="delimiterCombo" columns="20" flags="fillX readOnly" />
         
-                <widget type="label" text="Subject" />
+                <widget type="label" text="CSV_EditProfile|Subject" />
                 <widget type="comboBox" name="subjectCombo" columns="20" flags="fillX readOnly" />
               </widget>
 
