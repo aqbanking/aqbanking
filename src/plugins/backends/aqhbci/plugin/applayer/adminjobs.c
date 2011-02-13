@@ -1193,9 +1193,12 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   GWEN_DB_NODE *dbParams;
   const char *s;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for TAN job in version %d", jobVersion);
   j=AH_Job_new("JobTan", u, 0, jobVersion);
-  if (!j)
-    return 0;
+  if (!j) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job in version %d not found", jobVersion);
+    return NULL;
+  }
 
   GWEN_NEW_OBJECT(AH_JOB_TAN, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TAN, j, aj,

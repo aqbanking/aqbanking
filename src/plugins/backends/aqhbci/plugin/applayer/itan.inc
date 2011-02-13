@@ -288,7 +288,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 	    }
 	    else {
 	      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-			 "iTan process type \"%d\" not supported", proc);
+			 "iTan process type \"%d\" not supported, ignoring", proc);
 	    }
 	  }
 
@@ -312,7 +312,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
     if (tm==NULL) {
       /* choose a method */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method is 0, looking for a usable method");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Autoselecting a usable TAN method");
 
       tm=AH_TanMethod_List_First(tml);
       while(tm) {
@@ -332,7 +332,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 	}
 	else {
 	  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		     "iTan process type \"%d\" not supported", proc);
+		     "iTan process type \"%d\" not supported, ignoring", proc);
 	}
 
 	tm=AH_TanMethod_List_Next(tm);
@@ -355,7 +355,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
       if (!s || !*s)
 	s=AH_TanMethod_GetMethodId(tm);
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\"", s);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\" (needs HKTAN:%d)", s, AH_TanMethod_GetGvVersion(tm));
       GWEN_Gui_ProgressLog2(0,
 			    GWEN_LoggerLevel_Info,
 			    I18N("Selecting iTAN mode \"%s\" (%d)"),
