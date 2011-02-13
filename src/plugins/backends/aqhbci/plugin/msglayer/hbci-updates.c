@@ -92,6 +92,15 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       }
     }
 
+    if (oldVersion<((5<<24) | (0<<16) | (3<<8) | 1)) {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Updating user from pre 5.0.3.1");
+      rv=AH_HBCI_UpdateUser_5_0_3_1(hbci, db);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
     /* insert more updates here */
 
 
@@ -355,6 +364,72 @@ int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   }
   return 0;
 }
+
+
+
+int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+  int tmn;
+
+  /* update selectedTanMethod */
+  tmn=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
+  if (tmn>0 && tmn < 1000) {
+    GWEN_DB_NODE *dbT;
+
+    /* get first version group of "bpd/bpdjobs/HITANS" */
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
+    if (dbT)
+      dbT=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpdjobs");
+    if (dbT)
+      dbT=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "HITANS");
+    if (dbT)
+      dbT=GWEN_DB_GetFirstGroup(dbT);
+
+    if (dbT) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Starting with group %s", GWEN_DB_GroupName(dbT));
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No group");
+    }
+
+    while(dbT) {
+      int foundTm=0;
+      int version;
+
+      /* find tanMethod group in any of the tanMethod groups of every HITANS version */
+      version=atoi(GWEN_DB_GroupName(dbT));
+      if (version>0) {
+        GWEN_DB_NODE *dbM;
+
+        dbM=GWEN_DB_FindFirstGroup(dbT, "tanMethod");
+        while(dbM) {
+          int fn;
+
+          fn=GWEN_DB_GetIntValue(dbM, "function", 0, 0);
+          if (fn==tmn) {
+            int newFn;
+
+            newFn=(version*1000)+fn;
+            DBG_WARN(AQHBCI_LOGDOMAIN, "Updating selectedTanMethod from %d to %d", tmn, newFn);
+            GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                "selectedTanMethod", newFn);
+            foundTm=1;
+            break;
+          }
+          dbM=GWEN_DB_FindNextGroup(dbM, "tanMethod");
+        }
+      }
+      if (foundTm)
+        break;
+      dbT=GWEN_DB_GetNextGroup(dbT);
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No selectedTanMethod");
+  }
+
+  return 0;
+}
+
 
 
 

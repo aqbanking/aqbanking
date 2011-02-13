@@ -273,13 +273,19 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
     fn=AH_User_GetSelectedTanMethod(u);
     if (fn) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d", fn);
-      if (AH_User_HasTanMethod(u, fn)) {
+      int utFunction;
+      int utJobVersion;
+
+      utFunction=fn % 1000;
+      utJobVersion=fn / 1000;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d (Job version %d, Function %d)", fn, utFunction, utJobVersion);
+      if (AH_User_HasTanMethod(u, utFunction)) {
 	tm=AH_TanMethod_List_First(tml);
 	while(tm) {
 	  int proc;
 
-	  if (AH_TanMethod_GetFunction(tm)==fn) {
+	  if (AH_TanMethod_GetFunction(tm)==utFunction && AH_TanMethod_GetGvVersion(tm)==utJobVersion) {
 	    proc=AH_TanMethod_GetProcess(tm);
 	    if (proc==1 || proc==2) {
 	      DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
@@ -349,7 +355,6 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
     }
     else {
       const char *s;
-
 
       s=AH_TanMethod_GetMethodName(tm);
       if (!s || !*s)

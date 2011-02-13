@@ -59,6 +59,11 @@ static int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
  */
 static int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
+/**
+ * This update transforms selectedTanMethod
+ */
+static int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db);
+
 /*@}*/
 
 

@@ -180,6 +180,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       AH_User_LoadTanMethods(u);
       if (rv==1) {
 	/* updated config, write it now */
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Writing back updated HBCI user %d", AB_User_GetUniqueId(u));
 	rv=AB_Banking_SaveUserConfig(AB_Provider_GetBanking(pro), u, 1);
 	if (rv<0) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save user db (%d)", rv);

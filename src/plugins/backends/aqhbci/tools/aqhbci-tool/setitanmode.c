@@ -41,6 +41,8 @@ int setItanMode(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   int itanMethod;
+  int itanMethodJobVersion;
+  int itanMethodFunction;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -125,8 +127,10 @@ int setItanMode(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
   itanMethod=GWEN_DB_GetIntValue(db, "itanMethod", 0, -1);
-  if (itanMethod<900 || itanMethod>999) {
-    fprintf(stderr, "Only methods between 900 and 999 allowed\n");
+  itanMethodJobVersion=itanMethod / 1000;
+  itanMethodFunction=itanMethod % 1000;
+  if (itanMethodFunction<900 || itanMethodFunction>999) {
+    fprintf(stderr, "Only methods between x900 and x999 allowed\n");
     return 1;
   }
 
@@ -179,7 +183,7 @@ int setItanMode(AB_BANKING *ab,
     }
 
     /* modify user */
-    if (!AH_User_HasTanMethod(u, itanMethod)) {
+    if (!AH_User_HasTanMethod(u, itanMethodFunction)) {
       fprintf(stderr, "ERROR: iTAN method not allowed for this user (try \"getitanmodes\" first)\n");
       AB_Banking_EndExclUseUser(ab, u, 1);
       AB_Banking_OnlineFini(ab);

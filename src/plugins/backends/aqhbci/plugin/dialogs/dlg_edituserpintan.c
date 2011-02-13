@@ -134,6 +134,13 @@ static int createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf) {
     GWEN_Buffer_AppendString(tbuf, s);
   }
 
+  /* add HKTAN version */
+  GWEN_Buffer_AppendString(tbuf, " (Version ");
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", AH_TanMethod_GetGvVersion(tm));
+  numbuf[sizeof(numbuf)-1]=0;
+  GWEN_Buffer_AppendString(tbuf, numbuf);
+  GWEN_Buffer_AppendString(tbuf, ")");
+
   return 0;
 }
 
@@ -196,7 +203,7 @@ const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dl
     const char *currentText;
 
     currentText=GWEN_Dialog_GetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Value, idx, NULL);
-    if (currentText && *currentText && xdlg->countryList) {
+    if (currentText && *currentText && xdlg->tanMethodList) {
       AH_TAN_METHOD *tm;
       GWEN_BUFFER *tbuf;
 
@@ -246,15 +253,19 @@ static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg) {
     int i;
     int idx;
     int selectedMethod;
+    int tjv;
+    int tfn;
 
     selectedMethod=AH_User_GetSelectedTanMethod(xdlg->user);
+    tjv=selectedMethod / 1000;
+    tfn=selectedMethod % 1000;
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     idx=-1;
     i=1;
     tm=AH_TanMethod_List_First(xdlg->tanMethodList);
     while(tm) {
       if (createTanMethodString(tm, tbuf)==0) {
-	if (AH_TanMethod_GetFunction(tm)==selectedMethod)
+	if (AH_TanMethod_GetFunction(tm)==tfn && AH_TanMethod_GetGvVersion(tm)==tjv)
           idx=i;
 	GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
         i++;
@@ -357,6 +368,7 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, idx, 0);
   }
 
+  /* also selects currently selected TAN method */
   AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
 
   s=AB_User_GetUserName(xdlg->user);
@@ -525,8 +537,12 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   }
 
   tm=AH_EditUserPinTanDialog_GetCurrentTanMethod(dlg);
-  if (tm)
-    AH_User_SetSelectedTanMethod(xdlg->user, AH_TanMethod_GetFunction(tm));
+  if (tm) {
+    int fn;
+
+    fn=(AH_TanMethod_GetGvVersion(tm)*1000)+AH_TanMethod_GetFunction(tm);
+    AH_User_SetSelectedTanMethod(xdlg->user, fn);
+  }
 
   /* handle tan medium id */
   s=GWEN_Dialog_GetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, NULL);

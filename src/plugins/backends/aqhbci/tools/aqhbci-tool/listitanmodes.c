@@ -160,13 +160,17 @@ int listItanModes(AB_BANKING *ab,
       fprintf(stdout, "TAN Methods\n");
       while(tm) {
 	const char *mid;
-	const char *mname;
+        const char *mname;
+        int combinedVersion;
 
-	fprintf(stdout,
-		"- %3d (%d)",
-		AH_TanMethod_GetFunction(tm),
-		AH_TanMethod_GetProcess(tm));
-	mid=AH_TanMethod_GetMethodId(tm);
+        combinedVersion=AH_TanMethod_GetFunction(tm)+(AH_TanMethod_GetGvVersion(tm)*1000);
+        fprintf(stdout,
+                "- %4d (F%3d/V%1d/P%1d)",
+                combinedVersion,
+                AH_TanMethod_GetFunction(tm),
+                AH_TanMethod_GetGvVersion(tm),
+                AH_TanMethod_GetProcess(tm));
+        mid=AH_TanMethod_GetMethodId(tm);
 	mname=AH_TanMethod_GetMethodName(tm);
 	if (mid && mname) {
 	  fprintf(stdout, ": %s (%s)", mid, mname);
@@ -179,7 +183,7 @@ int listItanModes(AB_BANKING *ab,
 	}
 
 	if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
-          if (AH_User_GetSelectedTanMethod(u)==AH_TanMethod_GetFunction(tm))
+          if (AH_User_GetSelectedTanMethod(u)==combinedVersion)
 	    fprintf(stdout, " [available and selected]");
           else
 	    fprintf(stdout, " [available]");
