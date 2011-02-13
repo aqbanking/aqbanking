@@ -31,9 +31,9 @@
 GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
-void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-		       AB_PROVIDER_EXTEND_MODE em,
-		       GWEN_DB_NODE *dbBackend) {
+int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
+                      AB_PROVIDER_EXTEND_MODE em,
+                      GWEN_DB_NODE *dbBackend) {
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -54,16 +54,20 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
       rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
-	assert(0);
+        GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
+                           I18N("Your settings database might be in an inconsistent state!"));
+        return rv;
       }
       AH_Account_ReadDb(a, dbBackend);
       if (rv==1) {
 	/* updated config, write it now */
 	rv=AB_Banking_SaveAccountConfig(AB_Provider_GetBanking(pro), a, 1);
 	if (rv<0) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save account db (%d)", rv);
-	  assert(0);
-	}
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save account db (%d)", rv);
+          GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
+                             I18N("Your settings database might be in an inconsistent state!"));
+          return rv;
+        }
       }
     }
   }
@@ -73,6 +77,8 @@ void AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
   else if (em==AB_ProviderExtendMode_Save) {
     AH_Account_toDb(a, dbBackend);
   }
+
+  return 0;
 }
 
 

@@ -953,8 +953,7 @@ int AH_Provider_ResetQueue(AB_PROVIDER *pro){
 int AH_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
 			   AB_PROVIDER_EXTEND_MODE em,
 			   GWEN_DB_NODE *db) {
-  AH_User_Extend(u, pro, em, db);
-  return 0;
+  return AH_User_Extend(u, pro, em, db);
 }
 
 
@@ -962,8 +961,7 @@ int AH_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
 int AH_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
 			      AB_PROVIDER_EXTEND_MODE em,
 			      GWEN_DB_NODE *db){
-  AH_Account_Extend(a, pro, em, db);
-  return 0;
+  return AH_Account_Extend(a, pro, em, db);
 }
 
 

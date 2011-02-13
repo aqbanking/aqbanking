@@ -22,9 +22,9 @@
 #include <gwenhywfar/gui.h>
 
 
-void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		    AB_PROVIDER_EXTEND_MODE em,
-		    GWEN_DB_NODE *db);
+int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
+                   AB_PROVIDER_EXTEND_MODE em,
+                   GWEN_DB_NODE *db);
 
 AH_HBCI *AH_User_GetHbci(const AB_USER *u);
 GWEN_MSGENGINE *AH_User_GetMsgEngine(const AB_USER *u);

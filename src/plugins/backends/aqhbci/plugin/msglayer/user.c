@@ -129,9 +129,9 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		    AB_PROVIDER_EXTEND_MODE em,
-		    GWEN_DB_NODE *db) {
+int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
+                   AB_PROVIDER_EXTEND_MODE em,
+                   GWEN_DB_NODE *db) {
   DBG_INFO(AQHBCI_LOGDOMAIN, "Extending user with mode %d", em);
   if (em==AB_ProviderExtendMode_Create ||
       em==AB_ProviderExtendMode_Extend) {
@@ -172,7 +172,9 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       rv=AH_HBCI_UpdateDbUser(ue->hbci, db);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update user db (%d)", rv);
-	assert(0);
+        GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
+                           I18N("Your settings database might be in an inconsistent state!"));
+        return rv;
       }
       AH_User_ReadDb(u, db);
       AH_User_LoadTanMethods(u);
@@ -180,8 +182,10 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	/* updated config, write it now */
 	rv=AB_Banking_SaveUserConfig(AB_Provider_GetBanking(pro), u, 1);
 	if (rv<0) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save user db (%d)", rv);
-	  assert(0);
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save user db (%d)", rv);
+          GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
+                             I18N("Your settings database might be in an inconsistent state!"));
+          return rv;
 	}
       }
     }
@@ -203,6 +207,8 @@ void AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       AH_User_toDb(u, db);
     } /* if save */
   }
+
+  return 0;
 }
 
 
