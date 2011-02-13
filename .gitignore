@@ -50,6 +50,7 @@ depcomp
 headers
 aqbanking5
 i18nsources
+index.lokalize
 install-sh
 libtool
 listdoc.h
