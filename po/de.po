@@ -1,13 +1,13 @@
 # translation of de.po to deutsch
 # Markus Frisch, 2005.
 # Martin Preuss <martin@libchipcard.de>, 2005, 2007, 2008.
-# Martin Preuss <martin@aqbanking.de>, 2010.
+# Martin Preuss <martin@aqbanking.de>, 2010, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2011-02-13 19:47+0100\n"
-"PO-Revision-Date: 2010-08-27 09:48+0200\n"
+"PO-Revision-Date: 2011-02-13 20:02+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -2335,18 +2335,16 @@ msgid "Commission (Securities) (currency)"
 msgstr ""
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:159
-#, fuzzy
 msgid "Bank Account Id"
-msgstr "Konto"
+msgstr "Kontonummer"
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:160
 msgid "Positive/Negative Mark"
 msgstr "Positiv/Negativ Markierung"
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:520
-#, fuzzy
 msgid "Edit CSV Profile"
-msgstr "Profil wählen"
+msgstr "CSV-Profil bearbeiten"
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:638
 #: src/plugins/imexporters/csv/csv_editprofile.c:672
@@ -2374,19 +2372,16 @@ msgid "Please select a field delimiter."
 msgstr "Bitte wählen Sie einen Feldtrenner."
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:693
-#, fuzzy
 msgid "Please select a date format."
-msgstr "<qt>Bitte wählen Sie erst ein Land.</qt>"
+msgstr "<qt>Bitte wählen Sie ein Datumsformat.</qt>"
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:707
-#, fuzzy
 msgid "Please select a value format."
-msgstr "<qt>Bitte wählen Sie erst ein Land.</qt>"
+msgstr "<qt>Bitte wählen Sie ein Betragsformat.</qt>"
 
 #: src/plugins/imexporters/csv/csv_editprofile.c:736
-#, fuzzy
 msgid "Please select a valid column type."
-msgstr "<qt>Bitte wählen Sie ein Land aus.</qt>"
+msgstr "<qt>Bitte wählen Sie einen gültigen Spaltentyp.</qt>"
 
 #: src/plugins/imexporters/dtaus/dtaus.c:280
 msgid "Transactions with multiple bank codes found"
@@ -3325,14 +3320,14 @@ msgstr "Fehler beim Exportieren der Daten"
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:175
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:187
 msgid "AqBanking Settings Database Error"
-msgstr ""
+msgstr "AqBanking-Datenbankfehler"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:58
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:68
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:176
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:188
 msgid "Your settings database might be in an inconsistent state!"
-msgstr ""
+msgstr "Ihre AqBanking-Konfiguration ist möglicherweise inkonsistent! "
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/message.c:948
 msgid "Bad message number, ignoring"
@@ -3372,15 +3367,15 @@ msgstr ""
 "mindestens %d Zeichen lang sein.%s</p></html>"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1181
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Please enter the PIN for \n"
 "user %s at %s\n"
 "%s<html>Please enter the PIN for user <i>%s</i> at <i>%s</i>.<br>%s</html>"
 msgstr ""
-"Bitte geben Sie das %s für \n"
+"Bitte geben Sie die PIN für \n"
 "Benutzer %s bei %s\n"
-"ein.%s<html>Bitte geben Sie das %s für Benutzer <i>%s</i> bei <i>%s</i> ein."
+"ein.%s<html>Bitte geben Sie die PIN für Benutzer <i>%s</i> bei <i>%s</i> ein."
 "<br>%s</html>"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1203
@@ -3623,9 +3618,9 @@ msgid "Too many chars in purpose line %d (%d>%d)"
 msgstr "Zu viele Zeichen in Zeile %d des Verwendungszwecks (%d>%d) "
 
 #: src/plugins/backends/aqhbci/plugin/accountjobs/jobsingletransfer.c:742
-#, fuzzy, c-format
+#, c-format
 msgid "Text key \"%d\" not supported by the bank"
-msgstr "Empfangene Antwort ist von der Bank nicht signiert"
+msgstr "Der Textschlüssel \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/plugins/backends/aqhbci/plugin/accountjobs/jobsingletransfer.c:782
 #, c-format
@@ -3770,9 +3765,8 @@ msgid "Unable to lock users"
 msgstr "Antwort konnte nicht kodiert werden"
 
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2126
-#, fuzzy
 msgid "Executing HBCI jobs"
-msgstr "Aufträge werden ausgeführt"
+msgstr "HBCI-Aufträge werden ausgeführt"
 
 #: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2139
 #, fuzzy
@@ -3815,7 +3809,6 @@ msgstr ""
 
 #: src/plugins/backends/aqhbci/plugin/banking/provider.c:1055
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:243
-#, fuzzy
 msgid "Create HBCI/FinTS DDV User"
 msgstr "Neuen DDV-Chipkarten-Benutzer erstellen"
 
@@ -4200,7 +4193,7 @@ msgstr ""
 msgid ""
 "For smsTAN or mTAN this is your mobile phone number. Please ask your bank "
 "for the necessary format of this number."
-msgstr ""
+msgstr "Bei smsTAN oder mTAN verwenden Sie hier Ihre Handynummer."
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:268
 msgid "HBCIUserStatus|new"
@@ -4310,9 +4303,8 @@ msgstr ""
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:869
 #: src/plugins/backends/aqpaypal/plugin/dlg_newuser.c:493
 #: src/plugins/backends/aqpaypal/plugin/dlg_newuser.c:830
-#, fuzzy
 msgid "The user has been successfully setup."
-msgstr "Der Auftrag wurde erfolgreich ausgeführt."
+msgstr "Der Benutzer wurde erfolgreich eingerichtet."
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:666
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:726
@@ -4324,7 +4316,6 @@ msgid "Finish"
 msgstr "Fertig"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:750
-#, fuzzy
 msgid "Setting Up PIN/TAN User"
 msgstr "PIN/TAN einrichten"
 
@@ -4335,7 +4326,6 @@ msgstr "Die Systemkennung und Kontenliste werden angefordert."
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:771
 #: src/plugins/backends/aqofxconnect/plugin/dlg_newuser.c:985
 #: src/plugins/backends/aqpaypal/plugin/dlg_newuser.c:743
-#, fuzzy
 msgid "Retrieving SSL certificate"
 msgstr "Server-Zertifikat abrufen"
 
@@ -4351,32 +4341,27 @@ msgstr "Server-Zertifikat abrufen"
 #: src/plugins/backends/aqofxconnect/plugin/dlg_newuser.c:1002
 #: src/plugins/backends/aqpaypal/plugin/dlg_newuser.c:761
 #: src/plugins/backends/aqpaypal/plugin/dlg_newuser.c:777
-#, fuzzy
 msgid "Aborted by user."
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:799
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_importkeyfile.c:1007
-#, fuzzy
 msgid "Retrieving system id"
 msgstr "Systemkennung abrufen"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:826
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:826
-#, fuzzy
 msgid "Retrieving account list"
 msgstr "Anforderung der Kontenliste"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan_special.c:254
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard_special.c:184
-#, fuzzy
 msgid "HBCI PIN/TAN Special Settings"
-msgstr "PIN/TAN-Einstellungen"
+msgstr "Spezielle HBCI-PIN/TAN-Einstellungen"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:94
-#, fuzzy
 msgid "Create a New User"
-msgstr "Neuer RDH-Benutzer erstellen"
+msgstr "Neuer Benutzer erstellen"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:101
 msgid ""
@@ -4408,9 +4393,8 @@ msgstr ""
 "Diese Information sollten Sie in den Unterlagen von Ihrer Bank finden."
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:174
-#, fuzzy
 msgid "Create HBCI/FinTS PIN/TAN User"
-msgstr "Neuen PIN/TAN-Benutzer erstellen"
+msgstr "Neuen HBCI/FinTS PIN/TAN-Benutzer erstellen"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:203
 #, fuzzy
@@ -5269,7 +5253,7 @@ msgstr ""
 
 #: src/tools/aqbanking-cli/main.c:233
 msgid "   Update configuration from previous AqBanking versions\n"
-msgstr ""
+msgstr "  "
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
 #: src/libs/aqbanking/dialogs/dlg_importer.dlg:29
@@ -5297,9 +5281,9 @@ msgstr "Neu"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget><widget>
 #: src/libs/aqbanking/dialogs/dlg_importer.dlg:49
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "Delete"
-msgstr "Datum"
+msgstr "Entfernen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/libs/aqbanking/dialogs/dlg_importer.dlg:65
@@ -5495,15 +5479,15 @@ msgstr "lange Beschreibung"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget><widget><widget>
 #: src/plugins/imexporters/csv/csv_editprofile.dlg:41
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "CSV_EditProfile|Applicable for Imports"
 msgstr "für Import geeignet"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget><widget><widget>
 #: src/plugins/imexporters/csv/csv_editprofile.dlg:42
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "CSV_EditProfile|Applicable for Exports"
-msgstr "für Export"
+msgstr "für Export geeignet"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
 #: src/plugins/imexporters/csv/csv_editprofile.dlg:49
@@ -5799,7 +5783,7 @@ msgstr "Ausgewählte TAN-Methode"
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:63
 #, no-wrap
 msgid "TAN Medium ID"
-msgstr ""
+msgstr "TAN-Medienkennung"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:68
