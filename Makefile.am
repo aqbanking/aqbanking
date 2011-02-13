@@ -93,13 +93,13 @@ if IF_MAKE_I18N_FILES
 # developers and release technicians.
 I18NFILES=$(shell cat $(srcdir)/i18nsources)
 DLGFILES=$(shell cat $(srcdir)/dlgsources)
-
+PDFILES=$(shell cat $(srcdir)/pdsources)
 
 # Current build rule:
 sources:
-	rm -f $(srcdir)/i18nsources $(srcdir)/dlgsources
+	rm -f $(srcdir)/i18nsources $(srcdir)/dlgsources $(srcdir)/pdsources
 	$(MAKE) -C $(top_builddir)/src sources
-$(srcdir)/i18nsources $(srcdir)/dlgsources:
+$(srcdir)/i18nsources $(srcdir)/dlgsources $(srcdir)/pdsources:
 	$(MAKE) sources
 
 # Could also be solved this way: Read the I18NFILES variable from file
@@ -131,7 +131,7 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
-po/$(PACKAGE).pot: i18nsources dlgsources $(I18NFILES)
+po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	rm -f po/tmp*
 	if test -n "$(I18NFILES)"; then \
 	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N -kI18S\
@@ -143,6 +143,14 @@ po/$(PACKAGE).pot: i18nsources dlgsources $(I18NFILES)
 	fi
 	for i in $(DLGFILES); do \
           po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
+	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
+	  mv po/tmppot2 po/tmppot; \
+	done
+	for i in $(PDFILES); do \
+          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o wrap \
+	    -o translated="<plugin><short> <plugin><descr>" \
+	    -o untranslated="<plugin><version> <plugin><author>" \
+	    && \
 	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
 	  mv po/tmppot2 po/tmppot; \
 	done

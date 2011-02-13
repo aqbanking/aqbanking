@@ -50,6 +50,9 @@ sources:
 	for f in $(dlgdata_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
 	done
+	for f in $(plugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done
 	for f in $(libaqpaypal_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done

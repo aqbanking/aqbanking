@@ -1,13 +1,8 @@
-<PluginDescr>
-  <plugin name="qif" type="imexporter.inactive" import="1" export="1" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>QIF</short>
-    <descr>
-      This plugin imports QIF data. (Export currently unimplemented.)
-    </descr>
-    <descr lang="de" >
-      Diese Erweiterung importiert QIF-Dateien. (Export ist noch nicht implementiert.)
-    </descr>
-  </plugin>
-</PluginDescr>
+<plugin name="qif" type="imexporter.inactive" import="1" export="1" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>QIF</short>
+  <descr>
+    This plugin imports QIF data. (Export currently unimplemented.)
+  </descr>
+</plugin>

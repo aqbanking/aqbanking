@@ -15,3 +15,6 @@ sources:
 	for f in $(de_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(bankinfoplugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done

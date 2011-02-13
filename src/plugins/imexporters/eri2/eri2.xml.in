@@ -1,13 +1,8 @@
-<PluginDescr>
-  <plugin name="eri2" type="imexporter" import="1" export="0" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss (martin@aquamaniac.de)</author>
-    <short>ERI</short>
-    <descr>
-      This plugin imports ERI data.
-    </descr>
-    <descr lang="de">
-      Diese Erweiterung importiert ERI-Dateien.
-    </descr>
-  </plugin>
-</PluginDescr>
+<plugin name="eri2" type="imexporter" import="1" export="0" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss (martin@aquamaniac.de)</author>
+  <short>ERI</short>
+  <descr>
+    This plugin imports ERI data.
+  </descr>
+</plugin>

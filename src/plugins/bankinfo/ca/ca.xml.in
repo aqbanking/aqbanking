@@ -1,16 +1,10 @@
-<PluginDescr>
-  <plugin name="ca" type="bankinfo" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>Bank info provider for Canada</short>
-    <short lang="de">Bankenliste fuer Kanada</short>
-    <descr>
-      This plugin handles Canadian banks.
-    </descr>
-    <descr lang="de">
-      Diese Erweiterung behandelt Kanadische Banken.
-    </descr>
-  </plugin>
-</PluginDescr>
+<plugin name="ca" type="bankinfo" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Bank info provider for Canada</short>
+  <descr>
+    This plugin handles Canadian banks.
+  </descr>
+</plugin>
 
 

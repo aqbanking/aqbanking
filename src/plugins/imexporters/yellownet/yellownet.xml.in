@@ -1,17 +1,8 @@
-<PluginDescr>
-  <plugin name="yellownet" type="imexporter" import="1" export="0" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>YellowNet XML Data</short>
-    <short lang="de">YellowNet XML-Dateien</short>
-    <descr>
-      This plugin imports YellowNet XML files.
-    </descr>
-    <descr lang="de">
-      Diese Erweiterung importiert XML-Dateien von YellowNet.
-    </descr>
-  </plugin>
-</PluginDescr>
-
-
-
+<plugin name="yellownet" type="imexporter" import="1" export="0" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>YellowNet XML Data</short>
+  <descr>
+    This plugin imports YellowNet XML files.
+  </descr>
+</plugin>

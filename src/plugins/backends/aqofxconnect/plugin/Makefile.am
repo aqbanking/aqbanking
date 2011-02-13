@@ -90,6 +90,9 @@ sources:
 	for f in $(dlgdata_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
 	done
+	for f in $(plugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done

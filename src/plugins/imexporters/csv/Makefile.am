@@ -30,3 +30,6 @@ sources:
 	for f in $(dialogdata_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
 	done
+	for f in $(imexporterplugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done

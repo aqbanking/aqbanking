@@ -29,4 +29,7 @@ sources:
 	for f in $(ofx_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(imexporterplugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done
 

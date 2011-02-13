@@ -1,15 +1,9 @@
-<PluginDescr>
-  <plugin name="at" type="bankinfo" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>Bank info provider for Austria</short>
-    <short lang="de">Bankenliste fuer Oesterreich</short>
-    <descr>
-      This plugin handles Austrian banks.
-    </descr>
-    <descr lang="de">
-      Diese Erweiterung behandelt oesterreichische Banken.
-    </descr>
-  </plugin>
-</PluginDescr>
+<plugin name="at" type="bankinfo" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Bank info provider for Austria</short>
+  <descr>
+    This plugin handles Austrian banks.
+  </descr>
+</plugin>
 

@@ -33,6 +33,9 @@ sources:
 	for f in $(libaqhbci_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(plugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done

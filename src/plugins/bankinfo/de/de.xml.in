@@ -1,17 +1,10 @@
-<PluginDescr>
-  <plugin name="de" type="bankinfo" >
-    <version>@AQBANKING_VERSION_STRING@</version>
-    <author>Martin Preuss(martin@libchipcard.de)</author>
-    <short>Bank info checker for Germany</short>
-    <short lang="de">Bankenliste und Kontonummercheck fuer Deutschland</short>
-    <descr>
-      This plugin handles German banks and accounts.
-    </descr>
-    <descr lang="de">
-      Diese Erweiterung behandelt deutsche Banken und ueberprueft Kontonummern
-      bei deutschen Banken.
-    </descr>
-  </plugin>
-</PluginDescr>
+<plugin name="de" type="bankinfo" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Bank info checker for Germany</short>
+  <descr>
+    This plugin handles German banks and accounts.
+  </descr>
+</plugin>
 
 

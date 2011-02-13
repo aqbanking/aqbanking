@@ -67,6 +67,7 @@ po/*.mo
 po/*.qm
 po/package.pot
 po/dialogs.pot
+pdsources
 py-compile
 qtsources
 release
