@@ -155,6 +155,8 @@ int main(int argc, char **argv) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
+    GWEN_Buffer_AppendString(ubuf, I18N("This is version "));
+    GWEN_Buffer_AppendString(ubuf, AQHBCI_VERSION_STRING "\n");
     GWEN_Buffer_AppendString(ubuf,
                              I18N("Usage: "));
     GWEN_Buffer_AppendString(ubuf, argv[0]);
