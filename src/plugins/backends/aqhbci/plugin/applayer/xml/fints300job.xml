@@ -259,7 +259,7 @@
          response="TanResponse"
          single="1"
  >
-   <SEG type="Tan" version="2" />
+   <SEG type="Tan" version="3" />
  </JOBdef>
 
 
