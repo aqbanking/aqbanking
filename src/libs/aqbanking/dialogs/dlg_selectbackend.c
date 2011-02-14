@@ -164,26 +164,11 @@ int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg) {
       d=GWEN_PluginDescription_List_Next(d);
     }
     if (d) {
-      GWEN_BUFFER *tbuf;
+      const char *s;
       int rv;
 
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=GWEN_PluginDescription_GetLongDescrByFormat(d, "html", tbuf);
-      if (rv<0) {
-	const char *s;
-
-	DBG_INFO(0, "No long HTML description");
-	s=GWEN_PluginDescription_GetLongDescr(d);
-	if (s)
-	  GWEN_Buffer_AppendString(tbuf, s);
-      }
-      GWEN_Dialog_SetCharProperty(dlg,
-				  "descrLabel",
-				  GWEN_DialogProperty_Title,
-				  0,
-				  GWEN_Buffer_GetStart(tbuf),
-				  0);
-      GWEN_Buffer_free(tbuf);
+      s=GWEN_PluginDescription_GetLongDescr(d);
+      GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
     }
   }
 
