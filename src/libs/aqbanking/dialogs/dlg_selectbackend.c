@@ -165,7 +165,6 @@ int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg) {
     }
     if (d) {
       const char *s;
-      int rv;
 
       s=GWEN_PluginDescription_GetLongDescr(d);
       GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
