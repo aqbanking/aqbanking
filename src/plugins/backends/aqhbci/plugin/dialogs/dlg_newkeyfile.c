@@ -708,7 +708,7 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
   AH_NEWKEYFILE_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -728,7 +728,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg) {
 				      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
 				      "Contact your bank immediately if the hash doesn't match!</p>"));
   rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
-				  xdlg->user,
+                                  u,
 				  1,
 				  0,
 				  tbuf,
@@ -750,7 +750,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg) {
 				      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
 				      "Contact your bank immediately if the hash doesn't match!\n\n"));
   rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
-				 xdlg->user,
+                                 u,
 				 1,
 				 0,
 				 tbuf,
@@ -948,7 +948,7 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  rv=AH_NewKeyFileDialog_CheckBankIniLetter(dlg);
+  rv=AH_NewKeyFileDialog_CheckBankIniLetter(dlg, u);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

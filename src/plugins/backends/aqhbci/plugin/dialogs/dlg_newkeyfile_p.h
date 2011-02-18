@@ -46,7 +46,7 @@ static int GWENHYWFAR_CB AH_NewKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
 							   const char *sender);
 
 static int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg);
-static int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg);
+static int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u);
 
 
 
