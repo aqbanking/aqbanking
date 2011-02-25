@@ -295,7 +295,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	  return GWEN_ERROR_BAD_DATA;
 	}
 	else {
-	  if (p[27]=='2')
+	  if (p[27]=='1')
 	    /* FIXME: Do we have to negate on "1" or "2"? */
 	    AB_Value_Negate(v);
 	  AB_Transaction_SetValue(t, v);
