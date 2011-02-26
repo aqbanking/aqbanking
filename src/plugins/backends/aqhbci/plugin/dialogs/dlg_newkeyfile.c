@@ -727,7 +727,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 				      "in the letter from your bank.</p>"
 				      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
 				      "Contact your bank immediately if the hash doesn't match!</p>"));
-  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(u),
                                   u,
 				  1,
 				  0,
@@ -749,7 +749,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 				      "\n"
 				      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
 				      "Contact your bank immediately if the hash doesn't match!\n\n"));
-  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(u),
                                  u,
 				 1,
 				 0,
