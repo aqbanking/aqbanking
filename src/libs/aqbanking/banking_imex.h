@@ -256,7 +256,54 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
                                      const char *inputFileName);
 
 
-
+/**
+ * Imports data using a profile.
+ *
+ * @param ab banking API object
+ * @param ctx import context to receive the imported accounts, transactions etc
+ * @param importerName name of the importer module (e.g. "csv", "swift", "ofx" etc)
+ * @param profileName name of the importer settings profile stored in the file whose name
+ *   is given in @b profileFile
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ * @param sio IO from which to import
+ *
+ * Example for a profile file:
+ * @code
+ * profile {
+ *   char name="test"
+ *   char shortDescr="Test"
+ *   char version="5.0.4"
+ *   char longDescr="Test Profile"
+ *   int import="1"
+ *   int export="1"
+ *   char type="csv"
+ *   char groupNames="transaction", "transfer", "debitnote", "line"
+ *   char dateFormat="DD.MM.YYYY"
+ *   int utc="0"
+ *   char subject="transactions"
+ *   int usePosNegField="0"
+ *   char posNegFieldName="posNeg"
+ *   int defaultIsPositive="1"
+ *   char valueFormat="float"
+ *   params {
+ *     quote="0"
+ *     title="1"
+ *     delimiter=";"
+ *     group="transaction"
+ *     columns {
+ *       1="remoteBankCode"
+ *       2="remoteAccountNumber"
+ *       3="remoteName[0]"
+ *       4="value/value"
+ *       5="purpose[0]"
+ *       6="purpose[1]"
+ *     } # columns
+ *   } # params
+ *  } # profile
+ * @endcode
+ */
 AQBANKING_API 
 int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 const char *importerName,
