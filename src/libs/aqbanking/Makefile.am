@@ -110,7 +110,7 @@ built_sources:
 	done ;
 
 # Build and link a test program to verify the linker flags
-noinst_PROGRAMS = testlib ab_value_test
+noinst_PROGRAMS = testlib testlibcc ab_value_test
 testlib_SOURCES = testlib.c
 testlib_LDADD = libaqbanking.la $(gwenhywfar_libs)
 
@@ -118,3 +118,7 @@ testlib_LDADD = libaqbanking.la $(gwenhywfar_libs)
 ab_value_test_SOURCES = ab-value-test.c
 ab_value_test_LDADD = libaqbanking.la $(gwenhywfar_libs)
 TESTS = testlib ab_value_test
+
+# Another test program to verify the c++ usage
+testlibcc_SOURCES = testlibcc.cpp
+testlibcc_LDADD = libaqbanking.la $(gwenhywfar_libs)
