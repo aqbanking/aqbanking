@@ -40,6 +40,9 @@ public:
   Value(double d)
 	: m_ptr(AB_Value_fromDouble(d))
   {}
+  Value(long int num, long int denom)
+	: m_ptr(AB_Value_fromInt(num, denom))
+  {}
   Value& operator=(const Value& ov)
   {
 	if (&ov == this)
@@ -60,6 +63,8 @@ public:
   {
 	return m_ptr;
   }
+  long int getNum() const { return AB_Value_Num(m_ptr); }
+  long int getDenom() const { return AB_Value_Denom(m_ptr); }
 
   void toString(GWEN_BUFFER *buf) const
   {
@@ -99,6 +104,10 @@ public:
   {
 	return AB_Value_Compare(m_ptr, other.m_ptr);
   }
+  bool equal(const Value& other) const
+  {
+	return AB_Value_Equal(m_ptr, other.m_ptr);
+  }
   int addValue(const Value& other)
   {
 	return AB_Value_AddValue(m_ptr, other);
@@ -135,6 +144,23 @@ public:
 private:
   wrapped_type* m_ptr;
 };
+
+bool operator==(const Value& v1, const Value& v2)
+{
+  return v1.equal(v2);
+}
+bool operator!=(const Value& v1, const Value& v2)
+{
+  return !(v1 == v2);
+}
+bool operator>(const Value& v1, const Value& v2)
+{
+  return v1.compare(v2) > 0;
+}
+bool operator<(const Value& v1, const Value& v2)
+{
+  return v1.compare(v2) < 0;
+}
 
 } // END namespace AB
 

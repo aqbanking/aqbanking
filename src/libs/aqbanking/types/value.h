@@ -67,6 +67,10 @@ AQBANKING_API void AB_Value_toHumanReadableString2(const AB_VALUE *v,
 
 AQBANKING_API AB_VALUE *AB_Value_fromDouble(double i);
 
+/** Returns a newly allocated rational number, initialized to
+ * num/denom. */
+AQBANKING_API AB_VALUE *AB_Value_fromInt(long int num, long int denom);
+
 
 /** Create a value from the given GWEN_DB. */
 AQBANKING_API AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db);
@@ -109,6 +113,12 @@ AQBANKING_API int AB_Value_IsNegative(const AB_VALUE *v);
 AQBANKING_API int AB_Value_IsPositive(const AB_VALUE *v);
 AQBANKING_API int AB_Value_Compare(const AB_VALUE *v1, const AB_VALUE *v2);
 
+/** Returns non-zero if v1 and v2 are equal, zero if they are
+ * non-equal. Although AB_Value_Compare() can be used for the same
+ * purpose, this function is much faster.
+ */
+AQBANKING_API int AB_Value_Equal(const AB_VALUE *v1, const AB_VALUE *v2);
+
 AQBANKING_API int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2);
 AQBANKING_API int AB_Value_SubValue(AB_VALUE *v1, const AB_VALUE *v2);
 AQBANKING_API int AB_Value_MultValue(AB_VALUE *v1, const AB_VALUE *v2);
@@ -122,6 +132,12 @@ AQBANKING_API void AB_Value_SetCurrency(AB_VALUE *v, const char *s);
 
 
 AQBANKING_API void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent);
+
+/** Returns the numerator of the given rational number. */
+AQBANKING_API long int AB_Value_Num(const AB_VALUE *v);
+/** Returns the denominator of the given rational number. */
+AQBANKING_API long int AB_Value_Denom(const AB_VALUE *v);
+
 
 #ifdef __cplusplus
 }

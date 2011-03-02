@@ -87,6 +87,14 @@ AB_VALUE *AB_Value_fromDouble(double i) {
   return v;
 }
 
+AB_VALUE *AB_Value_fromInt(long int num, long int denom) {
+  AB_VALUE *v;
+
+  v=AB_Value_new();
+  mpq_set_si(v->value, num, denom);
+
+  return v;
+}
 
 
 static int AB_Value_determineDecimalComma(const char *s) {
@@ -418,6 +426,13 @@ int AB_Value_Compare(const AB_VALUE *v1, const AB_VALUE *v2) {
   return mpq_cmp(v1->value, v2->value);
 }
 
+int AB_Value_Equal(const AB_VALUE *v1, const AB_VALUE *v2) {
+  assert(v1);
+  assert(v2);
+
+  return mpq_equal(v1->value, v2->value);
+}
+
 
 
 int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2) {
@@ -510,9 +525,16 @@ AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *stl) {
 
 
 
+long int AB_Value_Num(const AB_VALUE *v)
+{
+  assert(v);
+  return mpz_get_si(mpq_numref(v->value));
+}
 
-
-
-
+long int AB_Value_Denom(const AB_VALUE *v)
+{
+  assert(v);
+  return mpz_get_si(mpq_denref(v->value));
+}
 
 
