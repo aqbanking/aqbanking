@@ -6,6 +6,7 @@ noinst_HEADERS=
 
 iheaderdir=@aqbanking_headerdir_am@/aqbankingpp
 iheader_HEADERS=\
+ cxxwrap.hpp \
  value.hpp
 
 libaqbankingpp_la_SOURCES=\

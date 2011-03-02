@@ -17,6 +17,9 @@
 #include <aqbanking/value.h>
 #include <string>
 
+// FIXME: This include needs to use the aqbankingpp prefix
+#include "cxxwrap.hpp"
+  
 namespace AB
 {
 
@@ -27,111 +30,59 @@ class /*AQBANKING_API*/ Value
 {
 public:
   typedef AB_VALUE wrapped_type;
+private:
+  wrapped_type* m_ptr;
+public:
 
-  Value()
-	: m_ptr(AB_Value_new())
-  {}
-  Value(const wrapped_type *ov)
-	: m_ptr(AB_Value_dup(ov))
-  {}
-  Value(const Value& ov)
-	: m_ptr(AB_Value_dup(ov.ptr()))
-  {}
+  AB_CXXWRAP_CONSTRUCTOR0(Value, AB_Value);
+  AB_CXXWRAP_CONSTRUCTORS(Value, AB_Value);
+
+  /** Extra constructor: Create this value from a double */
   Value(double d)
 	: m_ptr(AB_Value_fromDouble(d))
   {}
+  /** Extra constructor: Create this value from two integer values for
+	  numerator and denominator */
   Value(long int num, long int denom)
 	: m_ptr(AB_Value_fromInt(num, denom))
   {}
-  Value& operator=(const Value& ov)
-  {
-	if (&ov == this)
-	  return *this;
-	AB_Value_free(m_ptr);
-	m_ptr = AB_Value_dup(ov.ptr());
-	return *this;
-  }
-  ~Value()
-  {
-	AB_Value_free(m_ptr);
-  }
-  operator const wrapped_type*() const
-  {
-	return m_ptr;
-  }
-  const wrapped_type* ptr() const
-  {
-	return m_ptr;
-  }
-  long int getNum() const { return AB_Value_Num(m_ptr); }
-  long int getDenom() const { return AB_Value_Denom(m_ptr); }
 
   void toString(GWEN_BUFFER *buf) const
   {
 	AB_Value_toString(m_ptr, buf);
   }
+  std::string toString() const
+  {
+	GWEN_BUFFER *buf = GWEN_Buffer_new(NULL, 100, 0, 0);
+	toString(buf);
+	std::string result(GWEN_Buffer_GetStart(buf));
+	GWEN_Buffer_free(buf);
+	return result;
+  }
 
-  /**
-   * This function returns the value as a double.
-   * You should not feed another AB_VALUE from this double, because the
-   * conversion from an AB_VALUE to a double might be lossy!
-   */
-  double getValueAsDouble() const
-  {
-	return AB_Value_GetValueAsDouble(m_ptr);
-  }
-  void setValueFromDouble(double d)
-  {
-	AB_Value_SetValueFromDouble(m_ptr, d);
-  }
-  void setZero()
-  {
-	AB_Value_SetZero(m_ptr);
-  }
-  bool isZero() const
-  {
-	return AB_Value_IsZero(m_ptr);
-  }
-  bool isNegative() const
-  {
-	return AB_Value_IsNegative(m_ptr);
-  }
-  bool isPositive() const
-  {
-	return AB_Value_IsPositive(m_ptr);
-  }
-  int compare(const Value& other) const
-  {
-	return AB_Value_Compare(m_ptr, other.m_ptr);
-  }
-  bool equal(const Value& other) const
-  {
-	return AB_Value_Equal(m_ptr, other.m_ptr);
-  }
-  int addValue(const Value& other)
-  {
-	return AB_Value_AddValue(m_ptr, other);
-  }
-  int subValue(const Value& other)
-  {
-	return AB_Value_SubValue(m_ptr, other);
-  }
-  int multValue(const Value& other)
-  {
-	return AB_Value_MultValue(m_ptr, other);
-  }
-  int divValue(const Value& other)
-  {
-	return AB_Value_DivValue(m_ptr, other);
-  }
-  int negate(const Value& other)
-  {
-	return AB_Value_Negate(m_ptr);
-  }
-  const char* getCurrency() const
-  {
-	return AB_Value_GetCurrency(m_ptr);
-  }
+
+  long int AB_CXXWRAP_GET0_CONST(getNum, AB_Value_Num);
+  long int AB_CXXWRAP_GET0_CONST(getDenom, AB_Value_Denom);
+  double AB_CXXWRAP_GET0_CONST(getValueAsDouble, AB_Value_GetValueAsDouble);
+
+  AB_CXXWRAP_SET1(setValueFromDouble, double, AB_Value_SetValueFromDouble);
+  AB_CXXWRAP_SET0(setZero, AB_Value_SetZero);
+
+  bool AB_CXXWRAP_GET0_CONST(isZero, AB_Value_IsZero);
+  bool AB_CXXWRAP_GET0_CONST(isNegative, AB_Value_IsNegative);
+  bool AB_CXXWRAP_GET0_CONST(isPositive, AB_Value_IsPositive);
+
+  int AB_CXXWRAP_GET1_CONST(compare, const Value&, AB_Value_Compare);
+  bool AB_CXXWRAP_GET1_CONST(equal, const Value&, AB_Value_Equal);
+
+  int AB_CXXWRAP_GET1(addValue, const Value&, AB_Value_AddValue);
+  int AB_CXXWRAP_GET1(subValue, const Value&, AB_Value_SubValue);
+  int AB_CXXWRAP_GET1(multValue, const Value&, AB_Value_MultValue);
+  int AB_CXXWRAP_GET1(divValue, const Value&, AB_Value_DivValue);
+
+  int AB_CXXWRAP_GET0(negate, AB_Value_Negate);
+
+  std::string AB_CXXWRAP_GET0_CONST(getCurrency, AB_Value_GetCurrency);
   void setCurrency(const std::string& s)
   {
 	AB_Value_SetCurrency(m_ptr, s.c_str());
@@ -141,8 +92,6 @@ public:
   {
 	return Value(AB_Value_fromString(s.c_str()));
   }
-private:
-  wrapped_type* m_ptr;
 };
 
 bool operator==(const Value& v1, const Value& v2)
