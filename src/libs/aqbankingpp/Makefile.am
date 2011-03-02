@@ -6,7 +6,10 @@ noinst_HEADERS=
 
 iheaderdir=@aqbanking_headerdir_am@/aqbankingpp
 iheader_HEADERS=\
+ accountstatus.hpp \
+ balance.hpp \
  cxxwrap.hpp \
+ time.hpp \
  value.hpp
 
 libaqbankingpp_la_SOURCES=\

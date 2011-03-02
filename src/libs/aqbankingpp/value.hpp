@@ -15,10 +15,8 @@
 #define AB_VALUE_HPP
 
 #include <aqbanking/value.h>
+#include <aqbankingpp/cxxwrap.hpp>
 #include <string>
-
-// FIXME: This include needs to use the aqbankingpp prefix
-#include "cxxwrap.hpp"
   
 namespace AB
 {

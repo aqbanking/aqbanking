@@ -61,6 +61,10 @@ symlinkFolder () {
           AQ_HEADER_FILES="${AQ_HEADER_FILES} ${dst}/${f}"
           ln -s "${sprefix}/${src}/${f}" "${dst}/${f}"
           ;;
+        *.hpp)
+          AQ_HEADER_FILES="${AQ_HEADER_FILES} ${dst}/${f}"
+          ln -s "${sprefix}/${src}/${f}" "${dst}/${f}"
+          ;;
       esac
     fi
     
@@ -79,6 +83,10 @@ ln -s "${bprefix}/system.h" aqbanking5/aqbanking/system.h
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_jobqueue.h" aqbanking5/aqbanking
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_accountqueue.h" aqbanking5/aqbanking
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_userqueue.h" aqbanking5/aqbanking
+
+# symlink all headers from src/lib/aqbankingpp
+mkdir -p aqbanking5/aqbankingpp
+symlinkFolder "src/libs/aqbankingpp" "aqbanking5/aqbankingpp"
 
 # symlink all headers from src/plugins/backends/
 dirlist='@aqbanking_backends@'  # list might be empty

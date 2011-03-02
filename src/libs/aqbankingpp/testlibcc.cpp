@@ -1,6 +1,9 @@
 #include <gwenhywfar/buffer.h>
 #include <aqbanking/banking.h>
 #include "value.hpp"
+#include "balance.hpp"
+#include "time.hpp"
+#include "accountstatus.hpp"
 
 const char *input = "1,361.54";
 
