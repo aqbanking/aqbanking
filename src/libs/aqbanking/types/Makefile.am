@@ -60,7 +60,6 @@ iheader_HEADERS=\
   user.h \
   userfns.h \
   value.h \
-  value.hpp \
   cellphoneproduct.h \
   security.h \
   message.h
