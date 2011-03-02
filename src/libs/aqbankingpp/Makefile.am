@@ -9,6 +9,7 @@ iheader_HEADERS=\
  accountstatus.hpp \
  balance.hpp \
  cxxwrap.hpp \
+ stringlist.hpp \
  time.hpp \
  value.hpp
 
