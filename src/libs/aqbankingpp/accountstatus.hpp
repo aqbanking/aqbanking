@@ -16,8 +16,8 @@
 
 #include <aqbanking/accstatus.h>
 
-#include <aqbankingpp/balance.hpp>
 #include <aqbankingpp/cxxwrap.hpp>
+#include <aqbankingpp/balance.hpp>
 #include <aqbankingpp/time.hpp>
 #include <aqbankingpp/value.hpp>
   

@@ -35,20 +35,25 @@ public:
   AB_CXXWRAP_CONSTRUCTOR0(Value, AB_Value);
   AB_CXXWRAP_CONSTRUCTORS(Value, AB_Value);
 
-  /** Extra constructor: Create this value from a double */
+  /** Extra constructor: Create this value from a double. \see
+      AB_Value_fromDouble() */
   Value(double d)
 	: m_ptr(AB_Value_fromDouble(d))
   {}
+
   /** Extra constructor: Create this value from two integer values for
-	  numerator and denominator */
+      numerator and denominator. \see AB_Value_fromInt() */
   Value(long int num, long int denom)
 	: m_ptr(AB_Value_fromInt(num, denom))
   {}
 
+  /** Conversion to string. \see AB_Value_toString() */
   void toString(GWEN_BUFFER *buf) const
   {
 	AB_Value_toString(m_ptr, buf);
   }
+
+  /** Conversion to string. \see AB_Value_toString() */
   std::string toString() const
   {
 	GWEN_BUFFER *buf = GWEN_Buffer_new(NULL, 100, 0, 0);
@@ -86,6 +91,7 @@ public:
 	AB_Value_SetCurrency(m_ptr, s.c_str());
   }
 
+  /** Conversion from string. \see AB_Value_fromString() */
   static Value fromString(const std::string& s)
   {
 	return Value(AB_Value_fromString(s.c_str()));

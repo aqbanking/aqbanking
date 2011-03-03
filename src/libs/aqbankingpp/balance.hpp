@@ -23,7 +23,7 @@
 namespace AB
 {
 
-/** A wrapper class around the AB_BALANCE type */
+/** A wrapper class around the \ref AB_BALANCE type */
 class Balance
 {
 public:

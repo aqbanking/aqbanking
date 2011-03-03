@@ -1170,11 +1170,11 @@ AC_ARG_ENABLE(full-doc,
 if test "$enable_fulldoc" = "yes"; then
 	DOXYGEN_INPUT="listdoc.h src"
         DOXYGEN_DEFINE=""
-        DOXYGEN_FILE_PATTERNS="*.h *.c *.cpp"
+        DOXYGEN_FILE_PATTERNS="*.h *.hpp *.c *.cpp"
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
 	DOXYGEN_INPUT="listdoc.h aqbanking5"
-        DOXYGEN_FILE_PATTERNS="*.h"
+        DOXYGEN_FILE_PATTERNS="*.h *.hpp"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)

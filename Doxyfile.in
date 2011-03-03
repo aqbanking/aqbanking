@@ -1270,7 +1270,10 @@ PREDEFINED             = @DOXYGEN_DEFINE@ \
 # The macro definition that is found in the sources will be used.
 # Use the PREDEFINED tag if you want to use a different macro definition.
 
-EXPAND_AS_DEFINED      =
+EXPAND_AS_DEFINED      = AB_CXXWRAP_GET0_CONST AB_CXXWRAP_GET0 \
+        AB_CXXWRAP_GET1_CONST AB_CXXWRAP_GET1 \
+        AB_CXXWRAP_SET0 AB_CXXWRAP_SET1 \
+        AB_CXXWRAP_CONSTRUCTOR0 AB_CXXWRAP_CONSTRUCTORS
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES (the default) then
 # doxygen's preprocessor will remove all function-like macros that are alone

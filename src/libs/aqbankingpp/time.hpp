@@ -46,10 +46,16 @@ public:
   struct tm AB_CXXWRAP_GET0_CONST(toTm, GWEN_Time_toTm);
   time_t AB_CXXWRAP_GET0_CONST(toTime_t, GWEN_Time_toTime_t);
 
+  /**
+   * Returns the broken down date as local date.
+   */
   int getBrokenDownDate(int& day, int& month, int& year)
   {
 	return GWEN_Time_GetBrokenDownDate(m_ptr, &day, &month, &year);
   }
+  /**
+   * Returns the broken down time as UTC date (Greenwhich Mean time).
+   */
   int getBrokenDownUtcDate(int& day, int& month, int& year)
   {
 	return GWEN_Time_GetBrokenDownUtcDate(m_ptr, &day, &month, &year);
