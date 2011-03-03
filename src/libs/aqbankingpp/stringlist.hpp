@@ -17,13 +17,15 @@
 #include <gwenhywfar/stringlist.h>
 
 #include <aqbankingpp/cxxwrap.hpp>
+#include <aqbankingpp/aqbankingppdecl.hpp>
 #include <string>
+#include <vector>
   
 namespace AB
 {
 
 /** A wrapper class around the GWEN_STRINGLIST type */
-class StringList
+class AQBANKINGPP_DECL StringList
 {
 public:
   typedef GWEN_STRINGLIST wrapped_type;
@@ -36,6 +38,7 @@ public:
 
   AB_CXXWRAP_CONSTRUCTOR0(StringList, GWEN_StringList);
   AB_CXXWRAP_CONSTRUCTORS(StringList, GWEN_StringList);
+  StringList(const std::vector<std::string>& other);
 
   AB_CXXWRAP_SET0(clear, GWEN_StringList_Clear);
   size_type AB_CXXWRAP_GET0_CONST(size, GWEN_StringList_Count);
@@ -51,6 +54,8 @@ public:
   {
     GWEN_StringList_InsertString(m_ptr, s.c_str(), false, false);
   }
+  std::vector<std::string> toVector() const;
+
 };
 
 } // END namespace AB

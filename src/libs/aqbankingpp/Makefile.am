@@ -4,9 +4,14 @@ lib_LTLIBRARIES=libaqbankingpp.la
 
 noinst_HEADERS=
 
+if IS_WINDOWS
+  libaqbankingpp_la_CPPFLAGS = -Dexport_AQBANKINGPP $(AM_CPPFLAGS)
+endif
+
 iheaderdir=@aqbanking_headerdir_am@/aqbankingpp
 iheader_HEADERS=\
  accountstatus.hpp \
+ aqbankingppdecl.hpp \
  balance.hpp \
  cxxwrap.hpp \
  stringlist.hpp \
@@ -14,7 +19,7 @@ iheader_HEADERS=\
  value.hpp
 
 libaqbankingpp_la_SOURCES=\
- dummy.c
+ stringlist.cpp
 
 libaqbankingpp_la_LIBADD = \
  $(aqbanking_internal_libs) \
