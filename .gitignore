@@ -78,6 +78,7 @@ src/frontends/qbanking/bin/wizard/qt3-wizard
 src/frontends/qbanking/bin/wizard/qt3_wizard.xml
 src/frontends/qbanking/lib/checklib
 src/libs/aqbanking/ab_value_test
+src/libs/aqbankingpp/testlibcc
 src/plugins/backends/aqhbci/plugin/accountjobs/accountjobs.xml
 src/plugins/backends/aqhbci/plugin/applayer/xml/base.xml
 src/plugins/backends/aqhbci/plugin/aqhbci.xml
