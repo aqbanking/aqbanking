@@ -8,6 +8,9 @@
  ***************************************************************************/
 
 
+#define AH_MSGRDH10_MAXKEYBUF 4096
+
+
 
 int AH_MsgRdh_PrepareCryptoSeg10(AH_MSG *hmsg,
 				AB_USER *u,
@@ -431,7 +434,7 @@ int AH_Msg_EncryptRdh10(AH_MSG *hmsg) {
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
   GWEN_CRYPT_KEY *sk;
-  uint8_t encKey[2048];
+  uint8_t encKey[AH_MSGRDH10_MAXKEYBUF+64];
   int encKeyLen;
   uint32_t gid;
 
@@ -688,7 +691,7 @@ int AH_Msg_DecryptRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
   GWEN_CRYPT_KEY *sk=NULL;
-  uint8_t decKey[300];
+  uint8_t decKey[AH_MSGRDH10_MAXKEYBUF+64];
   GWEN_DB_NODE *nhead=NULL;
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
@@ -790,11 +793,11 @@ int AH_Msg_DecryptRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   if (p && l) {
     uint32_t elen;
     GWEN_CRYPT_PADDALGO *algo;
-    uint8_t encKey[2048];
+    uint8_t encKey[AH_MSGRDH10_MAXKEYBUF+64];
     int ksize;
 
     ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-    assert(ksize<=2048);
+    assert(ksize<=AH_MSGRDH10_MAXKEYBUF);
 
     /* fill encoded key with 0 */
     memset(encKey, 0, sizeof(encKey));
@@ -1011,7 +1014,7 @@ int AH_Msg_VerifyRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-  assert(ksize<=2048);
+  assert(ksize<=AH_MSGRDH10_MAXKEYBUF);
 
   /* store begin of signed data */
   dataBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
