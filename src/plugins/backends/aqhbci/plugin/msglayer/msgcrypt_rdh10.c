@@ -431,7 +431,7 @@ int AH_Msg_EncryptRdh10(AH_MSG *hmsg) {
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
   GWEN_CRYPT_KEY *sk;
-  uint8_t encKey[300];
+  uint8_t encKey[2048];
   int encKeyLen;
   uint32_t gid;
 
@@ -790,11 +790,11 @@ int AH_Msg_DecryptRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   if (p && l) {
     uint32_t elen;
     GWEN_CRYPT_PADDALGO *algo;
-    uint8_t encKey[300];
+    uint8_t encKey[2048];
     int ksize;
 
     ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-    assert(ksize<=256);
+    assert(ksize<=2048);
 
     /* fill encoded key with 0 */
     memset(encKey, 0, sizeof(encKey));
@@ -1011,7 +1011,7 @@ int AH_Msg_VerifyRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-  assert(ksize<=256);
+  assert(ksize<=2048);
 
   /* store begin of signed data */
   dataBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
