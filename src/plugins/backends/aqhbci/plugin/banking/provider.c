@@ -1024,6 +1024,9 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
 				mediumName);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_ShowError(I18N("Chipcard Error"),
+		       I18N("Error checking chip card (%d).\n"
+			    "Maybe libchipcard or its plugins aren't instaalled?"));
     GWEN_Buffer_free(mediumName);
     GWEN_Buffer_free(mtypeName);
     return NULL;
