@@ -44,7 +44,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   assert(u);
   assert(account);
 
-  if (AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2) {
+  if (!(AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2)) {
     int maxVer=0;
 
     /* no account suffix, so we try to determine the highest usable
