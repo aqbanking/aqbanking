@@ -14,7 +14,7 @@ int utc="0"
 params {
   
   # number of lines to ignore
-  int ignoreLines="14"
+  int ignoreLines="22"
   
   # if 1 then values are quoted
   quote="1"
@@ -24,7 +24,7 @@ params {
   title="1"
   
   # special values are "TAB" and "SPACE"
-  delimiter="TAB"
+  delimiter=";"
   
   # this is the group name looked for in the given data to GWEN_CSV_Write
   # if not given then all groups match
