@@ -108,7 +108,14 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
   assert(params);
 
   if (ie->importFn)
+  {
+    if (GWEN_SyncIo_GetStatus(sio) != GWEN_SyncIo_Status_Connected) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "GWEN_SYNCIO %s not connected; did you forget to call GWEN_SyncIo_Connect()?", GWEN_SyncIo_GetTypeName(sio));
+      return GWEN_ERROR_NOT_OPEN;
+    }
+
     return ie->importFn(ie, ctx, sio, params);
+  }
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -177,7 +184,7 @@ int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
     GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Failed to Connect() syncio (%d)", rv);
       GWEN_SyncIo_free(sio);
       return rv;
     }
@@ -219,7 +226,7 @@ int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
 			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Failed to Connect() syncio (%d)", rv);
       GWEN_SyncIo_free(sio);
       return rv;
     }
@@ -232,7 +239,7 @@ int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
   rv=AB_ImExporter_Export(ie, ctx, sio, dbProfile);
   rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Failed to Disconnect() syncio (%d)", rv);
     GWEN_SyncIo_free(sio);
     return rv;
   }
