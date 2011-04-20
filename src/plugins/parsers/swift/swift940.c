@@ -759,10 +759,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       p2=p;
       while(*p2 && *p2!='/' && *p2!=10) p2++;
       if (p2==p) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing bank reference (%s)", p);
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			      "SWIFT: Missing bank reference");
-	return -1;
+	DBG_WARN(AQBANKING_LOGDOMAIN, "Missing bank reference (%s) - ignored", p);
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+			      "SWIFT: Non-Standard MT940 file: Missing bank reference field in :61: line - ignored.");
+	return 0;
       }
       s=(char*)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
