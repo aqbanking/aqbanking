@@ -1862,6 +1862,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  AB_Message_SetText(amsg, text);
 	  AB_Message_SetDateReceived(amsg, ti);
 	  GWEN_Time_free(ti);
+	  AB_Message_SetUserId(amsg, AB_User_GetUniqueId(u));
 	  AB_Message_List_Add(amsg, j->messages);
 
 	  if (1) {

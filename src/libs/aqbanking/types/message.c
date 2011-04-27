@@ -57,6 +57,8 @@ AB_MESSAGE *AB_Message_dup(const AB_MESSAGE *d) {
 
   assert(d);
   st=AB_Message_new();
+  st->userId=d->userId;
+  st->accountId=d->accountId;
   if (d->subject)
     st->subject=strdup(d->subject);
   if (d->text)
@@ -70,6 +72,10 @@ AB_MESSAGE *AB_Message_dup(const AB_MESSAGE *d) {
 int AB_Message_toDb(const AB_MESSAGE *st, GWEN_DB_NODE *db) {
   assert(st);
   assert(db);
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userId", st->userId))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "accountId", st->accountId))
+    return -1;
   if (st->subject)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "subject", st->subject))
       return -1;
@@ -86,6 +92,8 @@ int AB_Message_toDb(const AB_MESSAGE *st, GWEN_DB_NODE *db) {
 int AB_Message_ReadDb(AB_MESSAGE *st, GWEN_DB_NODE *db) {
   assert(st);
   assert(db);
+  AB_Message_SetUserId(st, GWEN_DB_GetIntValue(db, "userId", 0, 0));
+  AB_Message_SetAccountId(st, GWEN_DB_GetIntValue(db, "accountId", 0, 0));
   AB_Message_SetSubject(st, GWEN_DB_GetCharValue(db, "subject", 0, 0));
   AB_Message_SetText(st, GWEN_DB_GetCharValue(db, "text", 0, 0));
   if (1) { /* for local vars */
@@ -110,6 +118,36 @@ AB_MESSAGE *AB_Message_fromDb(GWEN_DB_NODE *db) {
   AB_Message_ReadDb(st, db);
   st->_modified=0;
   return st;
+}
+
+
+
+
+uint32_t AB_Message_GetUserId(const AB_MESSAGE *st) {
+  assert(st);
+  return st->userId;
+}
+
+
+void AB_Message_SetUserId(AB_MESSAGE *st, uint32_t d) {
+  assert(st);
+  st->userId=d;
+  st->_modified=1;
+}
+
+
+
+
+uint32_t AB_Message_GetAccountId(const AB_MESSAGE *st) {
+  assert(st);
+  return st->accountId;
+}
+
+
+void AB_Message_SetAccountId(AB_MESSAGE *st, uint32_t d) {
+  assert(st);
+  st->accountId=d;
+  st->_modified=1;
 }
 
 

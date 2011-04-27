@@ -6,6 +6,26 @@
 
 /** @page P_AB_MESSAGE_PUBLIC AB_Message (public)
 This page describes the properties of AB_MESSAGE
+@anchor AB_MESSAGE_UserId
+<h3>UserId</h3>
+<p>
+ID of the user in whose context the message has been received (see @ref AB_User_GetUniqueId).
+</p>
+<p>
+Set this property with @ref AB_Message_SetUserId, 
+get it with @ref AB_Message_GetUserId
+</p>
+
+@anchor AB_MESSAGE_AccountId
+<h3>AccountId</h3>
+<p>
+ID of the account in whose context the message has been received (if any). This field is not set by AqHBCI but may be used by other backends in some cases.
+</p>
+<p>
+Set this property with @ref AB_Message_SetAccountId, 
+get it with @ref AB_Message_GetAccountId
+</p>
+
 @anchor AB_MESSAGE_Subject
 <h3>Subject</h3>
 <p>
@@ -96,6 +116,24 @@ AQBANKING_API int AB_Message_IsModified(const AB_MESSAGE *st);
 /** Sets the modified state of the given object
 */
 AQBANKING_API void AB_Message_SetModified(AB_MESSAGE *st, int i);
+
+/**
+* Returns the property @ref AB_MESSAGE_UserId
+*/
+AQBANKING_API uint32_t AB_Message_GetUserId(const AB_MESSAGE *el);
+/**
+* Set the property @ref AB_MESSAGE_UserId
+*/
+AQBANKING_API void AB_Message_SetUserId(AB_MESSAGE *el, uint32_t d);
+
+/**
+* Returns the property @ref AB_MESSAGE_AccountId
+*/
+AQBANKING_API uint32_t AB_Message_GetAccountId(const AB_MESSAGE *el);
+/**
+* Set the property @ref AB_MESSAGE_AccountId
+*/
+AQBANKING_API void AB_Message_SetAccountId(AB_MESSAGE *el, uint32_t d);
 
 /**
 * Returns the property @ref AB_MESSAGE_Subject

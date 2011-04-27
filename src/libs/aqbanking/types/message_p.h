@@ -12,10 +12,14 @@ struct AB_MESSAGE {
   int _usage;
   int _modified;
 
+  uint32_t userId;
+  uint32_t accountId;
   char *subject;
   char *text;
   GWEN_TIME *dateReceived;
 };
+
+
 
 
 

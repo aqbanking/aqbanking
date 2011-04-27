@@ -8,6 +8,8 @@
     </functions>
   </type>
 
+  <type id="uint32_t" basetype="int" />
+
 </typedefs>
 
 
@@ -24,6 +26,19 @@
       <header type="sys" >gwenhywfar/gwentime.h</header>
       <header type="sys" >aqbanking/error.h</header>
     </headers>
+
+    <elem name="userId" type="uint32_t" >
+      <descr>
+        ID of the user in whose context the message has been received (see @ref AB_User_GetUniqueId).
+      </descr>
+    </elem>
+
+    <elem name="accountId" type="uint32_t" >
+      <descr>
+        ID of the account in whose context the message has been received (if any).
+        This field is not set by AqHBCI but may be used by other backends in some cases.
+      </descr>
+    </elem>
 
     <elem name="subject" type="char" ptr="1" >
       <descr>
