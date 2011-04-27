@@ -420,12 +420,12 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 
+AC_PROG_LIBTOOL
 AC_LIBTOOL_WIN32_DLL
 AC_LIBTOOL_RC
 # Newer libtool doesn't have AC_LIBTOOL_RC anymore.  Need to check for
 # $(RC) by ourselves.
 AC_CHECK_TOOL([RC], [windres], [no])
-AC_PROG_LIBTOOL
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
 AC_CHECK_PROG(SED,sed,sed)
 
