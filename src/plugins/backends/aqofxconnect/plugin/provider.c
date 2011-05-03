@@ -57,7 +57,9 @@ GWEN_INHERIT(AB_PROVIDER, AO_PROVIDER)
 
 
 static AO_APPINFO _appInfos[]={
-{ I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1800"},
+{ I18S("Intuit Quicken Windows 2011"),    "QWIN",       "2000"},
+{ I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1900"},
+{ I18S("Intuit Quicken Windows 2009"),    "QWIN",       "1800"},
 { I18S("Intuit Quicken Windows 2008"),    "QWIN",       "1700"},
 { I18S("Intuit Quicken Windows 2007"),    "QWIN",       "1600"},
 { I18S("Intuit Quicken Windows 2006"),    "QWIN",       "1500"},
