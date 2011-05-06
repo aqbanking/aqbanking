@@ -1048,7 +1048,7 @@ int analyzeLog(const s_args &args) {
       if (GWEN_MsgEngine_TrustedData_GetTrustLevel(ntd)>args.trustLevel) {
         int pos;
         unsigned int size;
-        char rbuffer[2];
+        char rbuffer[3];
         const char *rpstr;
 
         rpstr=GWEN_MsgEngine_TrustedData_GetReplacement(ntd);
