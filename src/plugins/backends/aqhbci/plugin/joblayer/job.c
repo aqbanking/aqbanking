@@ -1570,11 +1570,14 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
                 j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
 		if (j==0)
 		  break;
+		DBG_INFO(AQHBCI_LOGDOMAIN, "Adding allowed TAN method %d", j);
 		AH_User_AddTanMethod(u, j);
 	      } /* for */
-	      if (i==0)
+	      if (i==0) {
                 /* add single step if empty list */
+		DBG_INFO(AQHBCI_LOGDOMAIN, "No allowed TAN method reported, assuming 999");
 		AH_User_AddTanMethod(u, 999);
+	      }
 	    }
           } /* if result */
           dbRes=GWEN_DB_GetNextGroup(dbRes);
