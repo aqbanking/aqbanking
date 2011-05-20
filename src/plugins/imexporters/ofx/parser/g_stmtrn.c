@@ -186,15 +186,15 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
         t=xg->transaction;
 	if (strcasecmp(s, "CREDIT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, I18N("Credit"));
+	  AB_Transaction_SetTransactionText(t, I18N("Generic credit"));
 	}
 	else if (strcasecmp(s, "DEBIT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, I18N("Debit"));
+	  AB_Transaction_SetTransactionText(t, I18N("Generic debit"));
 	}
 	else if (strcasecmp(s, "INT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "INT");
-	  AB_Transaction_SetTransactionText(t, I18N("Interest"));
+	  AB_Transaction_SetTransactionText(t, I18N("Interest earned or paid (Note: Depends on signage of amount)"));
 	}
 	else if (strcasecmp(s, "DIV")==0) {
 	  AB_Transaction_SetTransactionKey(t, "DIV");
@@ -202,7 +202,7 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	}
 	else if (strcasecmp(s, "FEE")==0) {
 	  AB_Transaction_SetTransactionKey(t, "BRF");
-	  AB_Transaction_SetTransactionText(t, I18N("Fee"));
+	  AB_Transaction_SetTransactionText(t, I18N("FI fee"));
 	}
 	else if (strcasecmp(s, "SRVCHG")==0) {
 	  AB_Transaction_SetTransactionKey(t, "CHG");
@@ -214,11 +214,11 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	}
 	else if (strcasecmp(s, "ATM")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, I18N("Cash dispenser"));
+	  AB_Transaction_SetTransactionText(t, I18N("ATM debit or credit (Note: Depends on signage of amount)"));
 	}
 	else if (strcasecmp(s, "POS")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, I18N("Point of sale"));
+	  AB_Transaction_SetTransactionText(t, I18N("Point of sale debit or credit (Note: Depends on signage of amount)"));
 	}
 	else if (strcasecmp(s, "XFER")==0) {
 	  AB_Transaction_SetTransactionKey(t, "TRF");
@@ -234,7 +234,7 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	}
 	else if (strcasecmp(s, "CASH")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Cash"));
+	  AB_Transaction_SetTransactionText(t, I18N("Cash withdrawal"));
 	}
 	else if (strcasecmp(s, "DIRECTDEP")==0) {
 	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
@@ -246,13 +246,15 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	}
 	else if (strcasecmp(s, "REPEATPMT")==0) {
 	  AB_Transaction_SetTransactionKey(t, "STO");
-	  AB_Transaction_SetTransactionText(t, I18N("Standing order"));
+	  AB_Transaction_SetTransactionText(t, I18N("Repeating payment/standing order"));
 	}
 	else if (strcasecmp(s, "OTHER")==0) {
 	  AB_Transaction_SetTransactionKey(t, "MSC");
+	  AB_Transaction_SetTransactionText(t, I18N("Other"));
 	}
 	else {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown transaction type [%s]", s);
+	  AB_Transaction_SetTransactionText(t, I18N("Unknown transaction type"));
 	}
       }
       else if (strcasecmp(xg->currentElement, "DTPOSTED")==0) {
@@ -312,14 +314,14 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
         /* ignore */
       }
       else if (strcasecmp(xg->currentElement, "NAME")==0) {
-	AB_Transaction_AddPurpose(xg->transaction, s, 1);
+	AB_Transaction_AddRemoteName(xg->transaction, s, 1);
       }
       else if (strcasecmp(xg->currentElement, "MEMO")==0 ||
 	       strcasecmp(xg->currentElement, "MEMO2")==0) {
 	AB_Transaction_AddPurpose(xg->transaction, s, 1);
       }
-      else if (strcasecmp(xg->currentElement, "SRVTID")==0 ||
-	       strcasecmp(xg->currentElement, "SRVTID2")==0) {
+      else if (strcasecmp(xg->currentElement, "SRVRTID")==0 ||
+	       strcasecmp(xg->currentElement, "SRVRTID2")==0) {
 	AB_Transaction_SetBankReference(xg->transaction, s);
       }
       else {
