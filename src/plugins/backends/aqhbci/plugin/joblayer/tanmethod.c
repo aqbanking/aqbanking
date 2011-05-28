@@ -40,6 +40,10 @@ void AH_TanMethod_free(AH_TAN_METHOD *st) {
     free(st->methodId);
   if (st->methodName)
     free(st->methodName);
+  if (st->zkaTanName)
+    free(st->zkaTanName);
+  if (st->zkaTanVersion)
+    free(st->zkaTanVersion);
   if (st->formatId)
     free(st->formatId);
   if (st->prompt)
@@ -63,6 +67,10 @@ AH_TAN_METHOD *AH_TanMethod_dup(const AH_TAN_METHOD *d) {
     st->methodId=strdup(d->methodId);
   if (d->methodName)
     st->methodName=strdup(d->methodName);
+  if (d->zkaTanName)
+    st->zkaTanName=strdup(d->zkaTanName);
+  if (d->zkaTanVersion)
+    st->zkaTanVersion=strdup(d->zkaTanVersion);
   st->tanMaxLen=d->tanMaxLen;
   if (d->formatId)
     st->formatId=strdup(d->formatId);
@@ -70,6 +78,18 @@ AH_TAN_METHOD *AH_TanMethod_dup(const AH_TAN_METHOD *d) {
     st->prompt=strdup(d->prompt);
   st->returnMaxLen=d->returnMaxLen;
   st->maxActiveLists=d->maxActiveLists;
+  st->multiTanAllowed=d->multiTanAllowed;
+  st->timeShiftAllowed=d->timeShiftAllowed;
+  st->tanListMode=d->tanListMode;
+  st->stornoAllowed=d->stornoAllowed;
+  st->needSmsAccount=d->needSmsAccount;
+  st->needLocalAccount=d->needLocalAccount;
+  st->needChallengeClass=d->needChallengeClass;
+  st->needChallengeAmount=d->needChallengeAmount;
+  st->challengeIsStructured=d->challengeIsStructured;
+  st->initMode=d->initMode;
+  st->needTanMediumId=d->needTanMediumId;
+  st->maxActiveTanMedia=d->maxActiveTanMedia;
   st->gvVersion=d->gvVersion;
   return st;
 }
@@ -88,6 +108,12 @@ int AH_TanMethod_toDb(const AH_TAN_METHOD *st, GWEN_DB_NODE *db) {
   if (st->methodName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "methodName", st->methodName))
       return -1;
+  if (st->zkaTanName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "zkaTanName", st->zkaTanName))
+      return -1;
+  if (st->zkaTanVersion)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "zkaTanVersion", st->zkaTanVersion))
+      return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "tanMaxLen", st->tanMaxLen))
     return -1;
   if (st->formatId)
@@ -99,6 +125,30 @@ int AH_TanMethod_toDb(const AH_TAN_METHOD *st, GWEN_DB_NODE *db) {
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "returnMaxLen", st->returnMaxLen))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxActiveLists", st->maxActiveLists))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "multiTanAllowed", st->multiTanAllowed))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "timeShiftAllowed", st->timeShiftAllowed))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "tanListMode", st->tanListMode))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "stornoAllowed", st->stornoAllowed))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needSmsAccount", st->needSmsAccount))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needLocalAccount", st->needLocalAccount))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needChallengeClass", st->needChallengeClass))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needChallengeAmount", st->needChallengeAmount))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "challengeIsStructured", st->challengeIsStructured))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "initMode", st->initMode))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needTanMediumId", st->needTanMediumId))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxActiveTanMedia", st->maxActiveTanMedia))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "gvVersion", st->gvVersion))
     return -1;
@@ -113,11 +163,25 @@ int AH_TanMethod_ReadDb(AH_TAN_METHOD *st, GWEN_DB_NODE *db) {
   AH_TanMethod_SetProcess(st, GWEN_DB_GetIntValue(db, "process", 0, 0));
   AH_TanMethod_SetMethodId(st, GWEN_DB_GetCharValue(db, "methodId", 0, 0));
   AH_TanMethod_SetMethodName(st, GWEN_DB_GetCharValue(db, "methodName", 0, 0));
+  AH_TanMethod_SetZkaTanName(st, GWEN_DB_GetCharValue(db, "zkaTanName", 0, 0));
+  AH_TanMethod_SetZkaTanVersion(st, GWEN_DB_GetCharValue(db, "zkaTanVersion", 0, 0));
   AH_TanMethod_SetTanMaxLen(st, GWEN_DB_GetIntValue(db, "tanMaxLen", 0, 0));
   AH_TanMethod_SetFormatId(st, GWEN_DB_GetCharValue(db, "formatId", 0, 0));
   AH_TanMethod_SetPrompt(st, GWEN_DB_GetCharValue(db, "prompt", 0, 0));
   AH_TanMethod_SetReturnMaxLen(st, GWEN_DB_GetIntValue(db, "returnMaxLen", 0, 0));
   AH_TanMethod_SetMaxActiveLists(st, GWEN_DB_GetIntValue(db, "maxActiveLists", 0, 0));
+  AH_TanMethod_SetMultiTanAllowed(st, GWEN_DB_GetIntValue(db, "multiTanAllowed", 0, 0));
+  AH_TanMethod_SetTimeShiftAllowed(st, GWEN_DB_GetIntValue(db, "timeShiftAllowed", 0, 0));
+  AH_TanMethod_SetTanListMode(st, GWEN_DB_GetIntValue(db, "tanListMode", 0, 0));
+  AH_TanMethod_SetStornoAllowed(st, GWEN_DB_GetIntValue(db, "stornoAllowed", 0, 0));
+  AH_TanMethod_SetNeedSmsAccount(st, GWEN_DB_GetIntValue(db, "needSmsAccount", 0, 0));
+  AH_TanMethod_SetNeedLocalAccount(st, GWEN_DB_GetIntValue(db, "needLocalAccount", 0, 0));
+  AH_TanMethod_SetNeedChallengeClass(st, GWEN_DB_GetIntValue(db, "needChallengeClass", 0, 0));
+  AH_TanMethod_SetNeedChallengeAmount(st, GWEN_DB_GetIntValue(db, "needChallengeAmount", 0, 0));
+  AH_TanMethod_SetChallengeIsStructured(st, GWEN_DB_GetIntValue(db, "challengeIsStructured", 0, 0));
+  AH_TanMethod_SetInitMode(st, GWEN_DB_GetIntValue(db, "initMode", 0, 0));
+  AH_TanMethod_SetNeedTanMediumId(st, GWEN_DB_GetIntValue(db, "needTanMediumId", 0, 0));
+  AH_TanMethod_SetMaxActiveTanMedia(st, GWEN_DB_GetIntValue(db, "maxActiveTanMedia", 0, 0));
   AH_TanMethod_SetGvVersion(st, GWEN_DB_GetIntValue(db, "gvVersion", 0, 0));
   return 0;
 }
@@ -206,6 +270,46 @@ void AH_TanMethod_SetMethodName(AH_TAN_METHOD *st, const char *d) {
 
 
 
+const char *AH_TanMethod_GetZkaTanName(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->zkaTanName;
+}
+
+
+void AH_TanMethod_SetZkaTanName(AH_TAN_METHOD *st, const char *d) {
+  assert(st);
+  if (st->zkaTanName)
+    free(st->zkaTanName);
+  if (d && *d)
+    st->zkaTanName=strdup(d);
+  else
+    st->zkaTanName=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AH_TanMethod_GetZkaTanVersion(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->zkaTanVersion;
+}
+
+
+void AH_TanMethod_SetZkaTanVersion(AH_TAN_METHOD *st, const char *d) {
+  assert(st);
+  if (st->zkaTanVersion)
+    free(st->zkaTanVersion);
+  if (d && *d)
+    st->zkaTanVersion=strdup(d);
+  else
+    st->zkaTanVersion=0;
+  st->_modified=1;
+}
+
+
+
+
 int AH_TanMethod_GetTanMaxLen(const AH_TAN_METHOD *st) {
   assert(st);
   return st->tanMaxLen;
@@ -285,6 +389,186 @@ int AH_TanMethod_GetMaxActiveLists(const AH_TAN_METHOD *st) {
 void AH_TanMethod_SetMaxActiveLists(AH_TAN_METHOD *st, int d) {
   assert(st);
   st->maxActiveLists=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetMultiTanAllowed(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->multiTanAllowed;
+}
+
+
+void AH_TanMethod_SetMultiTanAllowed(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->multiTanAllowed=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetTimeShiftAllowed(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->timeShiftAllowed;
+}
+
+
+void AH_TanMethod_SetTimeShiftAllowed(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->timeShiftAllowed=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetTanListMode(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->tanListMode;
+}
+
+
+void AH_TanMethod_SetTanListMode(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->tanListMode=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetStornoAllowed(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->stornoAllowed;
+}
+
+
+void AH_TanMethod_SetStornoAllowed(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->stornoAllowed=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetNeedSmsAccount(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->needSmsAccount;
+}
+
+
+void AH_TanMethod_SetNeedSmsAccount(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->needSmsAccount=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetNeedLocalAccount(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->needLocalAccount;
+}
+
+
+void AH_TanMethod_SetNeedLocalAccount(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->needLocalAccount=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetNeedChallengeClass(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->needChallengeClass;
+}
+
+
+void AH_TanMethod_SetNeedChallengeClass(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->needChallengeClass=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetNeedChallengeAmount(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->needChallengeAmount;
+}
+
+
+void AH_TanMethod_SetNeedChallengeAmount(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->needChallengeAmount=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetChallengeIsStructured(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->challengeIsStructured;
+}
+
+
+void AH_TanMethod_SetChallengeIsStructured(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->challengeIsStructured=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetInitMode(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->initMode;
+}
+
+
+void AH_TanMethod_SetInitMode(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->initMode=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetNeedTanMediumId(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->needTanMediumId;
+}
+
+
+void AH_TanMethod_SetNeedTanMediumId(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->needTanMediumId=d;
+  st->_modified=1;
+}
+
+
+
+
+int AH_TanMethod_GetMaxActiveTanMedia(const AH_TAN_METHOD *st) {
+  assert(st);
+  return st->maxActiveTanMedia;
+}
+
+
+void AH_TanMethod_SetMaxActiveTanMedia(AH_TAN_METHOD *st, int d) {
+  assert(st);
+  st->maxActiveTanMedia=d;
   st->_modified=1;
 }
 

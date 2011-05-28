@@ -263,6 +263,22 @@
  </JOBdef>
 
 
+ <!--  Geschaeftsvorfall: TAN einreichen (Version 4) -->
+ <JOBdef id="JobTan" 
+         code="HKTAN"
+         params="HITANS"
+         version="4" 
+         mode="PINTAN" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="TanResponse"
+         single="1"
+ >
+   <SEG type="Tan" version="4" />
+ </JOBdef>
+
+
  <!--  Geschaeftsvorfall: TAN einreichen (Version 5) -->
  <JOBdef id="JobTan" 
          code="HKTAN"

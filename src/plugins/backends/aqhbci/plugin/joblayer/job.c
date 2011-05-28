@@ -1778,11 +1778,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           AB_Account_SetCountry(acc, "de");
           AB_Account_SetBankCode(acc, bankCode);
 	  AB_Account_SetAccountNumber(acc, accountId);
-          if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
-            /* KTV in version 2 available */
-            AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
-          else
-            AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
                      "Setting user \"%s\" for account \"%s\"",
                      AB_User_GetUserId(u),
@@ -1801,6 +1796,12 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    AB_Account_SetIBAN(acc, iban);
           if (accountSuffix && *accountSuffix)
             AB_Account_SetSubAccountId(acc, accountSuffix);
+
+          if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
+            /* KTV in version 2 available */
+            AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
+          else
+            AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
 
 	  /* set bank name */
 	  bpd=AH_User_GetBpd(j->user);

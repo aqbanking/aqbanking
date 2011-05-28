@@ -17,13 +17,41 @@ struct AH_TAN_METHOD {
   int process;
   char *methodId;
   char *methodName;
+  char *zkaTanName;
+  char *zkaTanVersion;
   int tanMaxLen;
   char *formatId;
   char *prompt;
   int returnMaxLen;
   int maxActiveLists;
+  int multiTanAllowed;
+  int timeShiftAllowed;
+  int tanListMode;
+  int stornoAllowed;
+  int needSmsAccount;
+  int needLocalAccount;
+  int needChallengeClass;
+  int needChallengeAmount;
+  int challengeIsStructured;
+  int initMode;
+  int needTanMediumId;
+  int maxActiveTanMedia;
   int gvVersion;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

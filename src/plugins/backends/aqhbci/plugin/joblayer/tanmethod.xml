@@ -21,11 +21,25 @@
     <elem name="process" type="int" />
     <elem name="methodId" type="char" ptr="1" />
     <elem name="methodName" type="char" ptr="1" />
+    <elem name="zkaTanName" type="char" ptr="1" />
+    <elem name="zkaTanVersion" type="char" ptr="1" />
     <elem name="tanMaxLen" type="int" />
     <elem name="formatId" type="char" ptr="1" />
     <elem name="prompt" type="char" ptr="1" />
     <elem name="returnMaxLen" type="int" />
     <elem name="maxActiveLists" type="int" />
+    <elem name="multiTanAllowed" type="int" />
+    <elem name="timeShiftAllowed" type="int" />
+    <elem name="tanListMode" type="int" />
+    <elem name="stornoAllowed" type="int" />
+    <elem name="needSmsAccount" type="int" />
+    <elem name="needLocalAccount" type="int" />
+    <elem name="needChallengeClass" type="int" />
+    <elem name="needChallengeAmount" type="int" />
+    <elem name="challengeIsStructured" type="int" />
+    <elem name="initMode" type="int" />
+    <elem name="needTanMediumId" type="int" />
+    <elem name="maxActiveTanMedia" type="int" />
     <elem name="gvVersion" type="int" />
   </type>
   

@@ -1663,21 +1663,46 @@ void AH_User_LoadTanMethods(AB_USER *u) {
 	  }
 	  while(dbT) {
 	    AH_TAN_METHOD *tm;
+	    const char *s;
 
-	    tm=AH_TanMethod_fromDb(dbT);
-	    if (tm) {
-	      DBG_INFO(AQHBCI_LOGDOMAIN,
-			"Adding TAN method %d [%s] for GV version %d",
-                        AH_TanMethod_GetFunction(tm),
-			AH_TanMethod_GetMethodId(tm),
-			version);
-	      AH_TanMethod_SetGvVersion(tm, version);
-	      AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
-	    }
-	    else {
-	      DBG_WARN(AQHBCI_LOGDOMAIN, "Invalid TAN method");
-	      GWEN_DB_Dump(dbT, 2);
-	    }
+	    tm=AH_TanMethod_new();
+	    AH_TanMethod_SetFunction(tm, GWEN_DB_GetIntValue(dbT, "function", 0, 0));
+	    AH_TanMethod_SetProcess(tm, GWEN_DB_GetIntValue(dbT, "process", 0, 0));
+	    AH_TanMethod_SetMethodId(tm, GWEN_DB_GetCharValue(dbT, "methodId", 0, 0));
+	    AH_TanMethod_SetMethodName(tm, GWEN_DB_GetCharValue(dbT, "methodName", 0, 0));
+	    AH_TanMethod_SetTanMaxLen(tm, GWEN_DB_GetIntValue(dbT, "tanMaxLen", 0, 0));
+	    AH_TanMethod_SetFormatId(tm, GWEN_DB_GetCharValue(dbT, "formatId", 0, 0));
+	    AH_TanMethod_SetPrompt(tm, GWEN_DB_GetCharValue(dbT, "prompt", 0, 0));
+	    AH_TanMethod_SetReturnMaxLen(tm, GWEN_DB_GetIntValue(dbT, "returnMaxLen", 0, 0));
+	    AH_TanMethod_SetMaxActiveLists(tm, GWEN_DB_GetIntValue(dbT, "maxActiveLists", 0, 0));
+	    AH_TanMethod_SetGvVersion(tm, GWEN_DB_GetIntValue(dbT, "gvVersion", 0, 0));
+	    s=GWEN_DB_GetCharValue(dbT, "multiTanAllowed", 0, NULL);
+	    if (s && strcasecmp(s, "j")==0)
+	      AH_TanMethod_SetMultiTanAllowed(tm, 1);
+	    AH_TanMethod_SetTimeShiftAllowed(tm, GWEN_DB_GetIntValue(dbT, "timeShiftAllowed", 0, 0));
+	    AH_TanMethod_SetTanListMode(tm, GWEN_DB_GetIntValue(dbT, "tanListMode", 0, 0));
+	    s=GWEN_DB_GetCharValue(dbT, "stornoAllowed", 0, NULL);
+	    if (s && strcasecmp(s, "j")==0)
+	      AH_TanMethod_SetStornoAllowed(tm, 1);
+	    s=GWEN_DB_GetCharValue(dbT, "needChallengeClass", 0, NULL);
+	    if (s && strcasecmp(s, "j")==0)
+	      AH_TanMethod_SetNeedChallengeClass(tm, 1);
+	    s=GWEN_DB_GetCharValue(dbT, "needChallengeAmount", 0, NULL);
+	    if (s && strcasecmp(s, "j")==0)
+	      AH_TanMethod_SetNeedChallengeAmount(tm, 1);
+	    AH_TanMethod_SetInitMode(tm, GWEN_DB_GetIntValue(dbT, "initMode", 0, 0));
+	    s=GWEN_DB_GetCharValue(dbT, "tanMediumIdNeeded", 0, NULL);
+	    if (s && strcasecmp(s, "j")==0)
+	      AH_TanMethod_SetNeedTanMediumId(tm, 1);
+	    AH_TanMethod_SetMaxActiveTanMedia(tm, GWEN_DB_GetIntValue(dbT, "maxActiveMedia", 0, 0));
+
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
+		     "Adding TAN method %d [%s] for GV version %d",
+		     AH_TanMethod_GetFunction(tm),
+		     AH_TanMethod_GetMethodId(tm),
+		     version);
+	    AH_TanMethod_SetGvVersion(tm, version);
+	    AH_TanMethod_List_Add(tm, ue->tanMethodDescriptions);
 
 	    dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
 	  }

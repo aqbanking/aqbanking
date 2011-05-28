@@ -43,6 +43,24 @@ Set this property with @ref AH_TanMethod_SetMethodName,
 get it with @ref AH_TanMethod_GetMethodName
 </p>
 
+@anchor AH_TAN_METHOD_ZkaTanName
+<h3>ZkaTanName</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetZkaTanName, 
+get it with @ref AH_TanMethod_GetZkaTanName
+</p>
+
+@anchor AH_TAN_METHOD_ZkaTanVersion
+<h3>ZkaTanVersion</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetZkaTanVersion, 
+get it with @ref AH_TanMethod_GetZkaTanVersion
+</p>
+
 @anchor AH_TAN_METHOD_TanMaxLen
 <h3>TanMaxLen</h3>
 <p>
@@ -86,6 +104,114 @@ get it with @ref AH_TanMethod_GetReturnMaxLen
 <p>
 Set this property with @ref AH_TanMethod_SetMaxActiveLists, 
 get it with @ref AH_TanMethod_GetMaxActiveLists
+</p>
+
+@anchor AH_TAN_METHOD_MultiTanAllowed
+<h3>MultiTanAllowed</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetMultiTanAllowed, 
+get it with @ref AH_TanMethod_GetMultiTanAllowed
+</p>
+
+@anchor AH_TAN_METHOD_TimeShiftAllowed
+<h3>TimeShiftAllowed</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetTimeShiftAllowed, 
+get it with @ref AH_TanMethod_GetTimeShiftAllowed
+</p>
+
+@anchor AH_TAN_METHOD_TanListMode
+<h3>TanListMode</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetTanListMode, 
+get it with @ref AH_TanMethod_GetTanListMode
+</p>
+
+@anchor AH_TAN_METHOD_StornoAllowed
+<h3>StornoAllowed</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetStornoAllowed, 
+get it with @ref AH_TanMethod_GetStornoAllowed
+</p>
+
+@anchor AH_TAN_METHOD_NeedSmsAccount
+<h3>NeedSmsAccount</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetNeedSmsAccount, 
+get it with @ref AH_TanMethod_GetNeedSmsAccount
+</p>
+
+@anchor AH_TAN_METHOD_NeedLocalAccount
+<h3>NeedLocalAccount</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetNeedLocalAccount, 
+get it with @ref AH_TanMethod_GetNeedLocalAccount
+</p>
+
+@anchor AH_TAN_METHOD_NeedChallengeClass
+<h3>NeedChallengeClass</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetNeedChallengeClass, 
+get it with @ref AH_TanMethod_GetNeedChallengeClass
+</p>
+
+@anchor AH_TAN_METHOD_NeedChallengeAmount
+<h3>NeedChallengeAmount</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetNeedChallengeAmount, 
+get it with @ref AH_TanMethod_GetNeedChallengeAmount
+</p>
+
+@anchor AH_TAN_METHOD_ChallengeIsStructured
+<h3>ChallengeIsStructured</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetChallengeIsStructured, 
+get it with @ref AH_TanMethod_GetChallengeIsStructured
+</p>
+
+@anchor AH_TAN_METHOD_InitMode
+<h3>InitMode</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetInitMode, 
+get it with @ref AH_TanMethod_GetInitMode
+</p>
+
+@anchor AH_TAN_METHOD_NeedTanMediumId
+<h3>NeedTanMediumId</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetNeedTanMediumId, 
+get it with @ref AH_TanMethod_GetNeedTanMediumId
+</p>
+
+@anchor AH_TAN_METHOD_MaxActiveTanMedia
+<h3>MaxActiveTanMedia</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AH_TanMethod_SetMaxActiveTanMedia, 
+get it with @ref AH_TanMethod_GetMaxActiveTanMedia
 </p>
 
 @anchor AH_TAN_METHOD_GvVersion
@@ -196,6 +322,24 @@ AQHBCI_API const char *AH_TanMethod_GetMethodName(const AH_TAN_METHOD *el);
 AQHBCI_API void AH_TanMethod_SetMethodName(AH_TAN_METHOD *el, const char *d);
 
 /**
+* Returns the property @ref AH_TAN_METHOD_ZkaTanName
+*/
+AQHBCI_API const char *AH_TanMethod_GetZkaTanName(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_ZkaTanName
+*/
+AQHBCI_API void AH_TanMethod_SetZkaTanName(AH_TAN_METHOD *el, const char *d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_ZkaTanVersion
+*/
+AQHBCI_API const char *AH_TanMethod_GetZkaTanVersion(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_ZkaTanVersion
+*/
+AQHBCI_API void AH_TanMethod_SetZkaTanVersion(AH_TAN_METHOD *el, const char *d);
+
+/**
 * Returns the property @ref AH_TAN_METHOD_TanMaxLen
 */
 AQHBCI_API int AH_TanMethod_GetTanMaxLen(const AH_TAN_METHOD *el);
@@ -239,6 +383,114 @@ AQHBCI_API int AH_TanMethod_GetMaxActiveLists(const AH_TAN_METHOD *el);
 * Set the property @ref AH_TAN_METHOD_MaxActiveLists
 */
 AQHBCI_API void AH_TanMethod_SetMaxActiveLists(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_MultiTanAllowed
+*/
+AQHBCI_API int AH_TanMethod_GetMultiTanAllowed(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_MultiTanAllowed
+*/
+AQHBCI_API void AH_TanMethod_SetMultiTanAllowed(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_TimeShiftAllowed
+*/
+AQHBCI_API int AH_TanMethod_GetTimeShiftAllowed(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_TimeShiftAllowed
+*/
+AQHBCI_API void AH_TanMethod_SetTimeShiftAllowed(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_TanListMode
+*/
+AQHBCI_API int AH_TanMethod_GetTanListMode(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_TanListMode
+*/
+AQHBCI_API void AH_TanMethod_SetTanListMode(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_StornoAllowed
+*/
+AQHBCI_API int AH_TanMethod_GetStornoAllowed(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_StornoAllowed
+*/
+AQHBCI_API void AH_TanMethod_SetStornoAllowed(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_NeedSmsAccount
+*/
+AQHBCI_API int AH_TanMethod_GetNeedSmsAccount(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_NeedSmsAccount
+*/
+AQHBCI_API void AH_TanMethod_SetNeedSmsAccount(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_NeedLocalAccount
+*/
+AQHBCI_API int AH_TanMethod_GetNeedLocalAccount(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_NeedLocalAccount
+*/
+AQHBCI_API void AH_TanMethod_SetNeedLocalAccount(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_NeedChallengeClass
+*/
+AQHBCI_API int AH_TanMethod_GetNeedChallengeClass(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_NeedChallengeClass
+*/
+AQHBCI_API void AH_TanMethod_SetNeedChallengeClass(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_NeedChallengeAmount
+*/
+AQHBCI_API int AH_TanMethod_GetNeedChallengeAmount(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_NeedChallengeAmount
+*/
+AQHBCI_API void AH_TanMethod_SetNeedChallengeAmount(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_ChallengeIsStructured
+*/
+AQHBCI_API int AH_TanMethod_GetChallengeIsStructured(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_ChallengeIsStructured
+*/
+AQHBCI_API void AH_TanMethod_SetChallengeIsStructured(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_InitMode
+*/
+AQHBCI_API int AH_TanMethod_GetInitMode(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_InitMode
+*/
+AQHBCI_API void AH_TanMethod_SetInitMode(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_NeedTanMediumId
+*/
+AQHBCI_API int AH_TanMethod_GetNeedTanMediumId(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_NeedTanMediumId
+*/
+AQHBCI_API void AH_TanMethod_SetNeedTanMediumId(AH_TAN_METHOD *el, int d);
+
+/**
+* Returns the property @ref AH_TAN_METHOD_MaxActiveTanMedia
+*/
+AQHBCI_API int AH_TanMethod_GetMaxActiveTanMedia(const AH_TAN_METHOD *el);
+/**
+* Set the property @ref AH_TAN_METHOD_MaxActiveTanMedia
+*/
+AQHBCI_API void AH_TanMethod_SetMaxActiveTanMedia(AH_TAN_METHOD *el, int d);
 
 /**
 * Returns the property @ref AH_TAN_METHOD_GvVersion
