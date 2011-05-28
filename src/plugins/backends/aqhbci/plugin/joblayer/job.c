@@ -1757,18 +1757,14 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
                      "Account \"%s\" already exists",
                      accountId);
 	  accCreated=0;
-	  if (doLock) {
-	    rv=AB_Banking_BeginExclUseAccount(ab, acc);
-	    if (rv<0) {
-	      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	      mayModifyAcc=0;
-	    }
-	    else
-	      mayModifyAcc=1;
+	  rv=AB_Banking_BeginExclUseAccount(ab, acc);
+	  if (rv<0) {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	    mayModifyAcc=0;
 	  }
-          else
+	  else
 	    mayModifyAcc=1;
-        }
+	}
         else {
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\"", accountId);
 	  accCreated=1;
@@ -1797,11 +1793,21 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           if (accountSuffix && *accountSuffix)
             AB_Account_SetSubAccountId(acc, accountSuffix);
 
-          if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0)
-            /* KTV in version 2 available */
-            AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
-          else
-            AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
+	  if (strcasecmp(GWEN_DB_GroupName(dbRd), "AccountData2")==0) {
+	    /* KTV in version 2 available */
+	    AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
+	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Extended account information is available");
+	    GWEN_Gui_ProgressLog(0,
+				 GWEN_LoggerLevel_Notice,
+				 I18N("Extended account information available"));
+	  }
+	  else {
+	    AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
+	    DBG_WARN(AQHBCI_LOGDOMAIN, "Extended account information is not available, some jobs might not work");
+	    GWEN_Gui_ProgressLog(0,
+				 GWEN_LoggerLevel_Warning,
+				 I18N("Extended account information is not available, some jobs might not work"));
+	  }
 
 	  /* set bank name */
 	  bpd=AH_User_GetBpd(j->user);
@@ -1834,12 +1840,10 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  AB_Banking_AddAccount(ab, acc);
 	else {
 	  if (mayModifyAcc) {
-	    if (doLock) {
-	      rv=AB_Banking_EndExclUseAccount(ab, acc, 0);
-	      if (rv<0) {
-		DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-		AB_Banking_EndExclUseAccount(ab, acc, 1); /* abort */
-	      }
+	    rv=AB_Banking_EndExclUseAccount(ab, acc, 0);
+	    if (rv<0) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	      AB_Banking_EndExclUseAccount(ab, acc, 1); /* abort */
 	    }
 	  }
 	}
