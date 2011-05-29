@@ -981,6 +981,8 @@ int AH_Job_SingleTransfer_AddChallengeParams(AH_JOB *j, AB_JOB *bj, const AB_TRA
       const char *s;
       const AB_VALUE *v;
 
+      AH_Job_SetChallengeClass(j, 4);
+
       /* P1: Betrag */
       v=AB_Transaction_GetValue(t);
       if (v) {
@@ -1086,6 +1088,8 @@ int AH_Job_SingleTransfer_AddChallengeParams(AH_JOB *j, AB_JOB *bj, const AB_TRA
       const char *s;
       const AB_VALUE *v;
       GWEN_BUFFER *tbuf;
+
+      AH_Job_SetChallengeClass(j, 5);
 
       /* P1: Betrag */
       v=AB_Transaction_GetValue(t);
@@ -1477,8 +1481,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       }
 
       /* preset challenge stuff */
-      AH_Job_SetChallengeClass(j, 10);
-      AH_Job_AddChallengeParam(j, AB_Transaction_GetRemoteAccountNumber(t));
+      AH_Job_SetChallengeClass(j, 4);
       AH_Job_SetChallengeValue(j, AB_Transaction_GetValue(t));
 
       dbT=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
