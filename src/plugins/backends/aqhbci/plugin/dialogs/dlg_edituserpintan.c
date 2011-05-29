@@ -289,6 +289,7 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
   int i;
   const char *s;
   uint32_t flags;
+  const GWEN_URL *gu;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
@@ -376,6 +377,16 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 
   s=AB_User_GetBankCode(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+  gu=AH_User_GetServerUrl(xdlg->user);
+  if (gu) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Url_toString(gu, tbuf);
+    GWEN_Dialog_SetCharProperty(dlg, "urlEdit", GWEN_DialogProperty_Value, 0, GWEN_Buffer_GetStart(tbuf), 0);
+    GWEN_Buffer_free(tbuf);
+  }
 
   s=AB_User_GetUserId(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "userIdEdit", GWEN_DialogProperty_Value, 0, s, 0);
@@ -554,6 +565,29 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     GWEN_Text_CondenseBuffer(tbuf);
     if (u)
       AH_User_SetTanMediumId(u, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "urlEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+    GWEN_URL *gu;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    gu=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
+    if (gu==NULL) {
+      if (!quiet) {
+	GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
+      }
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_BAD_DATA;
+    }
+    if (u)
+      AH_User_SetServerUrl(u, gu);
+    GWEN_Url_free(gu);
     GWEN_Buffer_free(tbuf);
   }
 

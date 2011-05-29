@@ -50,6 +50,9 @@
       <widget type="vlayout" flags="fillX fillY" >
     
         <widget type="gridLayout" columns="2" flags="fillX" >
+
+          <widget type="label" text="Server URL" />
+          <widget type="lineEdit" name="urlEdit" columns="40" flags="fillX" />
     
           <widget type="label" text="HBCI Version" />
           <widget type="comboBox" name="hbciVersionCombo"  columns="20" flags="fillX" />
