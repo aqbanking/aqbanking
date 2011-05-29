@@ -41,6 +41,8 @@ static AH_JOB *AH_Job_SingleTransferBase_new(AB_USER *u,
                                              AB_ACCOUNT *account,
                                              AB_JOB_TYPE jobType);
 
+static int AH_Job_SingleTransfer_AddChallengeParams(AH_JOB *j, AB_JOB *bj, const AB_TRANSACTION *t);
+
 #endif /* AH_JOBSINGLETRANSFER_P_H */
 
 

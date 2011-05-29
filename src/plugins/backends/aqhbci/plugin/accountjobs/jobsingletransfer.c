@@ -967,6 +967,163 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 
 
 
+int AH_Job_SingleTransfer_AddChallengeParams(AH_JOB *j, AB_JOB *bj, const AB_TRANSACTION *t) {
+  AH_JOB_SINGLETRANSFER *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_SINGLETRANSFER, j);
+  assert(aj);
+
+  switch(aj->jobType) {
+  case AB_Job_TypeTransfer:
+  case AB_Job_TypeDebitNote:
+    {
+      const char *s;
+      const AB_VALUE *v;
+
+      /* P1: Betrag */
+      v=AB_Transaction_GetValue(t);
+      if (v) {
+        GWEN_BUFFER *tbuf;
+
+        tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+        AB_Value_toHumanReadableString2(v, tbuf, 2, 0); /* TODO: currency needed?? */
+        AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
+      }
+
+      /* P2: BLZ Empfaenger */
+      s=AB_Transaction_GetRemoteBankCode(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P3: Konto Empfaenger */
+      s=AB_Transaction_GetRemoteAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P4: BLZ Absender (O) */
+      s=AB_Transaction_GetLocalBankCode(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P5: Konto Absender (O) */
+      s=AB_Transaction_GetLocalAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      if (aj->jobType==AB_Job_TypeTransfer) {
+        /* P6: Name Absender (O) */
+        s=AB_Transaction_GetLocalName(t);
+        assert(s && *s);
+        AH_Job_AddChallengeParam(j, s);
+      }
+    }
+    break;
+
+  case AB_Job_TypeCreateStandingOrder:
+    break;
+  case AB_Job_TypeModifyStandingOrder:
+    break;
+  case AB_Job_TypeDeleteStandingOrder:
+    break;
+
+  case AB_Job_TypeCreateDatedTransfer:
+  case AB_Job_TypeModifyDatedTransfer:
+  case AB_Job_TypeDeleteDatedTransfer:
+    {
+      const char *s;
+      const AB_VALUE *v;
+      const GWEN_TIME *ti;
+      GWEN_BUFFER *tbuf;
+
+      /* P1: Betrag */
+      v=AB_Transaction_GetValue(t);
+      assert(v);
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      AB_Value_toHumanReadableString2(v, tbuf, 2, 0); /* TODO: currency needed?? */
+      AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+
+      /* P2: BLZ Empfaenger */
+      s=AB_Transaction_GetRemoteBankCode(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P3: Konto Empfaenger */
+      s=AB_Transaction_GetRemoteAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P4: Termin (M) */
+      ti=AB_Transaction_GetDate(t);
+      assert(ti);
+
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+      AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+
+      /* P5: BLZ Absender (O) */
+      s=AB_Transaction_GetLocalBankCode(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P6: Konto Absender (O) */
+      s=AB_Transaction_GetLocalAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P7: Name Absender (O) */
+      s=AB_Transaction_GetLocalName(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+    }
+    break;
+
+  case AB_Job_TypeInternalTransfer:
+    {
+      const char *s;
+      const AB_VALUE *v;
+      GWEN_BUFFER *tbuf;
+
+      /* P1: Betrag */
+      v=AB_Transaction_GetValue(t);
+      assert(v);
+
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      AB_Value_toHumanReadableString2(v, tbuf, 2, 0); /* TODO: currency needed?? */
+      AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+
+      /* P2: Konto Empfaenger */
+      s=AB_Transaction_GetRemoteAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P3: Konto Absender (O) */
+      s=AB_Transaction_GetLocalAccountNumber(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+
+      /* P4: Name Empfaenger (O) (we use the local name here instead, but it is the same as the remote name) */
+      s=AB_Transaction_GetLocalName(t);
+      assert(s && *s);
+      AH_Job_AddChallengeParam(j, s);
+    }
+    break;
+
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Unhandled job type %d", aj->jobType);
+    return GWEN_ERROR_INVALID;
+  }
+
+  return 0;
+}
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 				   AH_JOB_EXCHANGE_MODE m,
@@ -1319,6 +1476,11 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         return GWEN_ERROR_INVALID;
       }
 
+      /* preset challenge stuff */
+      AH_Job_SetChallengeClass(j, 10);
+      AH_Job_AddChallengeParam(j, AB_Transaction_GetRemoteAccountNumber(t));
+      AH_Job_SetChallengeValue(j, AB_Transaction_GetValue(t));
+
       dbT=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                            "transaction");
       assert(dbT);
@@ -1574,10 +1736,8 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
         break;
       } /* switch */
 
-      /* set challenge stuff */
-      AH_Job_SetChallengeClass(j, 10);
-      AH_Job_AddChallengeParam(j, AB_Transaction_GetRemoteAccountNumber(t));
-      AH_Job_SetChallengeValue(j, AB_Transaction_GetValue(t));
+      /* set challenge parameters */
+      AH_Job_SingleTransfer_AddChallengeParams(j, bj, t);
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
