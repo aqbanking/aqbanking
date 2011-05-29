@@ -101,6 +101,7 @@ void AH_Dialog_free(AH_DIALOG *dlg){
       free(dlg->logName);
       GWEN_MsgEngine_free(dlg->msgEngine);
       GWEN_DB_Group_free(dlg->globalValues);
+      AH_TanMethod_free(dlg->tanMethodDescription);
 
       GWEN_FREE_OBJECT(dlg);
     }
@@ -343,6 +344,24 @@ int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg) {
 void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i) {
   assert(dlg);
   dlg->tanJobVersion=i;
+}
+
+
+
+const AH_TAN_METHOD *AH_Dialog_GetTanMethodDescription(const AH_DIALOG *dlg) {
+  assert(dlg);
+  return dlg->tanMethodDescription;
+}
+
+
+
+void AH_Dialog_SetTanMethodDescription(AH_DIALOG *dlg, const AH_TAN_METHOD *tm) {
+  assert(dlg);
+  AH_TanMethod_free(dlg->tanMethodDescription);
+  if (tm)
+    dlg->tanMethodDescription=AH_TanMethod_dup(tm);
+  else
+    dlg->tanMethodDescription=NULL;
 }
 
 

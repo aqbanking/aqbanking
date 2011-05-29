@@ -40,6 +40,8 @@ struct AH_DIALOG {
   uint32_t itanMethod;
   int itanProcessType;
   int tanJobVersion;
+
+  AH_TAN_METHOD *tanMethodDescription;
 };
 
 

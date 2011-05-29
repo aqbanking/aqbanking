@@ -369,6 +369,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
       AH_Dialog_SetItanMethod(dlg, AH_TanMethod_GetFunction(tm));
       AH_Dialog_SetItanProcessType(dlg, AH_TanMethod_GetProcess(tm));
       AH_Dialog_SetTanJobVersion(dlg, AH_TanMethod_GetGvVersion(tm));
+      AH_Dialog_SetTanMethodDescription(dlg, tm);
       return 0;
     }
   }

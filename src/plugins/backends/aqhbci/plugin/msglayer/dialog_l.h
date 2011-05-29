@@ -25,6 +25,7 @@ typedef struct AH_DIALOG AH_DIALOG;
 
 #include "hbci_l.h"
 #include "message_l.h"
+#include "tanmethod.h"
 
 #include <aqhbci/aqhbci.h>
 
@@ -85,6 +86,11 @@ void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i);
 
 int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg);
 void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i);
+
+
+const AH_TAN_METHOD *AH_Dialog_GetTanMethodDescription(const AH_DIALOG *dlg);
+void AH_Dialog_SetTanMethodDescription(AH_DIALOG *dlg, const AH_TAN_METHOD *tm);
+
 
 int AH_Dialog_TestServer_Https(AH_DIALOG *dlg);
 
