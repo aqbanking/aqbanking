@@ -1363,10 +1363,11 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 				  int minLen,
                                   int maxLen){
   int rv;
-  char buffer[512];
+  char buffer[1024];
   const char *un;
   const char *bn=NULL;
   GWEN_BUFFER *nbuf;
+  GWEN_BUFFER *xbuf;
   AB_BANKINFO *bi;
 
   assert(u);
@@ -1383,38 +1384,56 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 
   buffer[0]=0;
   buffer[sizeof(buffer)-1]=0;
+
+  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* text version */
   snprintf(buffer, sizeof(buffer)-1,
-	   I18N("Please enter the TAN\n"
-		"for user %s at %s.\n"
-                "The server provided the following challenge:\n"
-                "%s"
-                "<html>"
-                "<p>"
-		"Please enter the TAN for user <i>%s</i> at "
-		"<i>%s</i>."
-		"</p>"
-                "<p>"
-                "The server provided the following challenge:"
-                "</p>"
-                "<p align=\"center\" >"
-                "<font color=\"blue\">%s</font>"
-                "</p>"
-                "</html>"),
-	   un, bn, challenge,
-	   un, bn, challenge);
+           I18N("Please enter the TAN\n"
+                "for user %s at %s.\n"), un, bn);
+  buffer[sizeof(buffer)-1]=0;
+  GWEN_Buffer_AppendString(xbuf, buffer);
+  if (challenge && *challenge) {
+    GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
+    GWEN_Buffer_AppendString(xbuf, "\n");
+    GWEN_Buffer_AppendString(xbuf, challenge);
+  }
+
+  /* html version */
+  GWEN_Buffer_AppendString(xbuf,
+                           "<html>"
+                           "<p>");
+  snprintf(buffer, sizeof(buffer)-1,
+           I18N("Please enter the TAN for user <i>%s</i> at <i>%s</i>."), un, bn);
+  buffer[sizeof(buffer)-1]=0;
+  GWEN_Buffer_AppendString(xbuf, buffer);
+  GWEN_Buffer_AppendString(xbuf, "</p>");
+  if (challenge && *challenge) {
+    GWEN_Buffer_AppendString(xbuf, "<p>");
+    GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
+    GWEN_Buffer_AppendString(xbuf, "</p>"
+                             "<p align=\"center\" >"
+                             "<font color=\"blue\">");
+    GWEN_Buffer_AppendString(xbuf, challenge);
+    GWEN_Buffer_AppendString(xbuf,
+                             "</font>"
+                             "</p>"
+                             "</html>");
+  }
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkTanName(u, challenge, nbuf);
   rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
 			  /*GWEN_GUI_INPUT_FLAGS_NUMERIC |*/
-			  GWEN_GUI_INPUT_FLAGS_SHOW,
+                          GWEN_GUI_INPUT_FLAGS_SHOW,
 			  GWEN_Buffer_GetStart(nbuf),
-			  I18N("Enter TAN"),
-			  buffer,
-			  pwbuffer,
+                          I18N("Enter TAN"),
+                          GWEN_Buffer_GetStart(xbuf),
+                          pwbuffer,
 			  minLen,
 			  maxLen,
 			  0);
+  GWEN_Buffer_free(xbuf);
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
   return rv;
