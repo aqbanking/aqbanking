@@ -216,6 +216,7 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
       size-=lsize;
     } // while
 
+#if 0
     /* read closing LF */
     GWEN_FASTBUFFER_READFORCED(fb, rv, buffer, 1);
     if (rv<0) {
@@ -242,6 +243,11 @@ LogAnalyzer::LogFile::LogFile(const string &fname)
       DBG_INFO(0, "Adding message");
       _logMessages.push_back(msg);
     }
+#else
+    msg=new LogMessage(hd, body);
+    DBG_INFO(0, "Adding message");
+    _logMessages.push_back(msg);
+#endif
   }
 
   GWEN_FastBuffer_free(fb);
