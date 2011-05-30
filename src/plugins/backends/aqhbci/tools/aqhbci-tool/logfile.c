@@ -450,9 +450,25 @@ int logFile(AB_BANKING *ab,
       }
 
       if (dbOutFile) {
-	const char *tMsg="# ========== Message ==========\n";
+	GWEN_BUFFER *xbuf;
 	GWEN_DB_NODE *dbOut;
-  
+
+	xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	GWEN_Buffer_AppendString(xbuf, "# ========== Message ( ");
+	s=GWEN_DB_GetCharValue(dbHeader, "sender", 0, "UNK");
+	if (s && *s) {
+	  GWEN_Buffer_AppendString(xbuf, "sender=");
+	  GWEN_Buffer_AppendString(xbuf, s);
+	  GWEN_Buffer_AppendString(xbuf, " ");
+	}
+	s=GWEN_DB_GetCharValue(dbHeader, "crypt", 0, "UNK");
+	if (s && *s) {
+	  GWEN_Buffer_AppendString(xbuf, "crypt=");
+	  GWEN_Buffer_AppendString(xbuf, s);
+	  GWEN_Buffer_AppendString(xbuf, " ");
+	}
+	GWEN_Buffer_AppendString(xbuf, ") ==========\n");
+
 	dbOut=GWEN_DB_Group_new("Message");
 	GWEN_Buffer_Rewind(tbuf);
 	rv=GWEN_MsgEngine_ReadMessage(e, "SEG", tbuf, dbOut, 0);
@@ -462,7 +478,10 @@ int logFile(AB_BANKING *ab,
 	  return 2;
 	}
   
-	rv=GWEN_SyncIo_WriteForced(sioDb, (const uint8_t*) tMsg, strlen(tMsg));
+	rv=GWEN_SyncIo_WriteForced(sioDb,
+				   (const uint8_t*) GWEN_Buffer_GetStart(xbuf),
+				   GWEN_Buffer_GetUsedBytes(xbuf));
+	GWEN_Buffer_free(xbuf);
 	if (rv<0) {
 	  DBG_INFO(0, "here (%d)", rv);
 	  return rv;
