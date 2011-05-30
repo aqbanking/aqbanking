@@ -7,7 +7,8 @@ idatadir=$(datadir)/doc/aqhbci/aqhbci-tool
 idata_DATA=README
 
 localedir = $(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DLOCALEDIR=\"$(localedir)\" -DXMLDATA_DIR=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"
+
 
 noinst_HEADERS=globals.h
 
@@ -36,7 +37,8 @@ aqhbci_tool4_SOURCES=main.c \
  listitanmodes.c \
  setitanmode.c \
  setmaxtransfers.c \
- settanmediumid.c
+ settanmediumid.c \
+ logfile.c
 
 
 aqhbci_tool4_LDADD = \

@@ -361,6 +361,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "setTanMediumId")==0) {
     rv=setTanMediumId(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "logfile")==0) {
+    rv=logFile(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();
     rv=0;

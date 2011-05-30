@@ -163,6 +163,11 @@ int setTanMediumId(AB_BANKING *ab,
 		   int argc,
 		   char **argv);
 
+int logFile(AB_BANKING *ab,
+            GWEN_DB_NODE *dbArgs,
+            int argc,
+            char **argv);
+
 
 int test1(AB_BANKING *ab,
           GWEN_DB_NODE *dbArgs,
