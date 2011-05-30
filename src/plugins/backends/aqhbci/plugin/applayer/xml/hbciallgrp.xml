@@ -77,8 +77,8 @@
     <!-- "Saldo" -->
     <ELEM name="debitmark" type="alpha" minsize="1" maxsize="1" />
     <GROUP type="btg" trustlevel="4" />
-    <ELEM name="date" type="date" minsize="8" maxsize="8" />
-    <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" />
+    <ELEM name="date" type="date" minsize="8" maxsize="8" trustLevel="0" />
+    <ELEM name="time" type="time" minsize="6" maxsize="6" minnum="0" trustLevel="0" />
   </GROUPdef>
 
   <GROUPdef id="limit" delimiter=":" version="1">

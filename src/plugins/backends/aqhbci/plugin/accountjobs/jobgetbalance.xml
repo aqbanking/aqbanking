@@ -33,8 +33,8 @@
    <GROUP type="ktv" version="1" />
    <ELEM name="accountName" type="AN" maxsize="30" />
    <ELEM name="currency" type="alpha" />
-   <GROUP type="saldo" name="booked" minnum="0" trustlevel="4" version="1" />
-   <GROUP type="saldo" name="noted" minnum="0" trustlevel="4" version="1" />
+   <GROUP type="saldo" name="booked" minnum="0" version="1" />
+   <GROUP type="saldo" name="noted" minnum="0" version="1" />
    <GROUP type="btg" name="creditline" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="available" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="spent" minnum="0" trustlevel="4" version="1" />
@@ -90,8 +90,8 @@
    <GROUP type="ktv" version="1" />
    <ELEM name="accountName" type="AN" maxsize="30" />
    <ELEM name="currency" type="alpha" />
-   <GROUP type="saldo" name="booked" minnum="0" trustlevel="4" version="1" />
-   <GROUP type="saldo" name="noted" minnum="0" trustlevel="4" version="1" />
+   <GROUP type="saldo" name="booked" minnum="0" version="1" />
+   <GROUP type="saldo" name="noted" minnum="0" version="1" />
    <GROUP type="btg" name="creditline" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="available" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="spent" minnum="0" trustlevel="4" version="1" />
@@ -151,8 +151,8 @@
    <GROUP type="ktv" version="2" />
    <ELEM name="accountName" type="AN" maxsize="30" />
    <ELEM name="currency" type="alpha" />
-   <GROUP type="saldo" name="booked" minnum="0" trustlevel="4" version="1" />
-   <GROUP type="saldo" name="noted" minnum="0" trustlevel="4" version="1" />
+   <GROUP type="saldo" name="booked" minnum="0" version="1" />
+   <GROUP type="saldo" name="noted" minnum="0"  version="1" />
    <GROUP type="btg" name="creditline" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="available" minnum="0" trustlevel="4" version="1" />
    <GROUP type="btg" name="spent" minnum="0" trustlevel="4" version="1" />
