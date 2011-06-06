@@ -208,10 +208,24 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 int AO_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   AO_PROVIDER *dp;
+  AB_ACCOUNT *a;
+  AB_USER *u;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(dp);
+
+  /* configuration check */
+  a=AB_Job_GetAccount(j);
+  assert(a);
+
+  u=AB_Account_GetFirstUser(a);
+  if (u==NULL) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No user assigned to account, should not happen");
+    GWEN_Gui_ShowError(I18N("Setup Error"),
+		       I18N("No user assigned to this account. Please check your configuration."));
+    return GWEN_ERROR_INTERNAL;
+  }
 
   switch(AB_Job_GetType(j)) {
   case AB_Job_TypeGetBalance:
@@ -249,7 +263,12 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   assert(a);
 
   u=AB_Account_GetFirstUser(a);
-  assert(u);
+  if (u==NULL) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No user assigned to account, should not happen");
+    GWEN_Gui_ShowError(I18N("Setup Error"),
+		       I18N("No user assigned to this account. Please check your configuration."));
+    return GWEN_ERROR_INTERNAL;
+  }
 
   dbJob=AB_Job_GetProviderData(j, pro);
   assert(dbJob);
