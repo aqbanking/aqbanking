@@ -1061,7 +1061,7 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
     return dlg2;
   }
   else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
-    DBG_ERROR(0, "STARCOS RSA card");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "STARCOS RSA card currently not supported by this dialog");
     // TODO
   }
   else {
@@ -1117,6 +1117,8 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Get user dialog %d", i);
 
   switch(i) {
   case AqHBCI_NewUserDialog_CodeExistingPinTan:
