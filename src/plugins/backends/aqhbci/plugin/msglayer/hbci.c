@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -358,80 +358,6 @@ void AH_HBCI_AppendUniqueName(AH_HBCI *hbci, GWEN_BUFFER *nbuf) {
   GWEN_Buffer_AppendString(nbuf, buffer);
 }
 
-
-
-
-int AH_HBCI_AddBankCertFolder(AH_HBCI *hbci,
-                              const AB_USER *u,
-                              GWEN_BUFFER *nbuf) {
-  AH_HBCI_AddObjectPath(hbci,
-                        AB_User_GetCountry(u),
-                        AB_User_GetBankCode(u),
-                        0, 0, 0, nbuf);
-  GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP "certs");
-  return 0;
-}
-
-
-
-int AH_HBCI_RemoveAllBankCerts(AH_HBCI *hbci, const AB_USER *u) {
-  GWEN_DIRECTORY *d;
-  GWEN_BUFFER *nbuf;
-  char nbuffer[64];
-  unsigned int pathLen;
-
-  assert(hbci);
-
-  /* create path */
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_HBCI_AddBankCertFolder(hbci, u, nbuf);
-  pathLen=GWEN_Buffer_GetUsedBytes(nbuf);
-
-  d=GWEN_Directory_new();
-  if (GWEN_Directory_Open(d, GWEN_Buffer_GetStart(nbuf))) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Path \"%s\" is not available",
-             GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
-    GWEN_Directory_free(d);
-    return -1;
-  }
-
-  while(!GWEN_Directory_Read(d,
-                             nbuffer,
-                             sizeof(nbuffer))) {
-    if (strcmp(nbuffer, ".") &&
-        strcmp(nbuffer, "..")) {
-      struct stat st;
-
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Removing cert \"%s\"", nbuffer);
-      GWEN_Buffer_Crop(nbuf, 0, pathLen);
-      GWEN_Buffer_SetPos(nbuf, pathLen);
-      GWEN_Buffer_AppendString(nbuf, AH_PATH_SEP);
-      GWEN_Buffer_AppendString(nbuf, nbuffer);
-
-      if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "stat(%s): %s",
-                  GWEN_Buffer_GetStart(nbuf),
-                  strerror(errno));
-      }
-      else {
-        if (!S_ISDIR(st.st_mode)) {
-          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Removing cert \"%s\"", nbuffer);
-          if (unlink(GWEN_Buffer_GetStart(nbuf))) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "unlink(%s): %s",
-                      GWEN_Buffer_GetStart(nbuf),
-                      strerror(errno));
-          }
-        } /* if !dir */
-      } /* if stat was ok */
-    } /* if not "." and not ".." */
-  } /* while */
-  GWEN_Directory_Close(d);
-  GWEN_Directory_free(d);
-  GWEN_Buffer_free(nbuf);
-
-  return 0;
-}
 
 
 
