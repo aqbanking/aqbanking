@@ -1883,6 +1883,26 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
 
     case AB_Job_TypeDeleteStandingOrder:
+      ot=AB_JobDeleteStandingOrder_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+        switch(tStatus) {
+	case AB_Transaction_StatusAccepted:
+	  AB_Transaction_SetStatus(t, AB_Transaction_StatusRevoked);
+	  break;
+	case AB_Transaction_StatusPending:
+	  AB_Transaction_SetStatus(t, AB_Transaction_StatusPending);
+	  break;
+	case AB_Transaction_StatusRejected:
+	default:
+	  /* don't modify status */
+	  break;
+        }
+	AB_JobModifyStandingOrder_SetTransaction(bj, t);
+        AB_ImExporterContext_AddStandingOrder(ctx, t);
+      }
       break;
 
     case AB_Job_TypeCreateDatedTransfer:
@@ -1912,6 +1932,26 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
 
     case AB_Job_TypeDeleteDatedTransfer:
+      ot=AB_JobDeleteDatedTransfer_GetTransaction(bj);
+      if (ot) {
+	AB_TRANSACTION *t;
+
+	t=AB_Transaction_dup(ot);
+        switch(tStatus) {
+	case AB_Transaction_StatusAccepted:
+	  AB_Transaction_SetStatus(t, AB_Transaction_StatusRevoked);
+	  break;
+	case AB_Transaction_StatusPending:
+	  AB_Transaction_SetStatus(t, AB_Transaction_StatusPending);
+	  break;
+	case AB_Transaction_StatusRejected:
+	default:
+	  /* don't modify status */
+	  break;
+        }
+	AB_JobModifyDatedTransfer_SetTransaction(bj, t);
+        AB_ImExporterContext_AddDatedTransfer(ctx, t);
+      }
       break;
 
     default:
