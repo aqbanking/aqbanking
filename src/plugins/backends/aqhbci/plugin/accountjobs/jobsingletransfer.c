@@ -1865,7 +1865,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobCreateStandingOrder_SetTransaction(bj, t);
-        AB_Transaction_free(t);
+        AB_ImExporterContext_AddStandingOrder(ctx, t);
       }
       break;
 
@@ -1878,7 +1878,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobModifyStandingOrder_SetTransaction(bj, t);
-	AB_Transaction_free(t);
+        AB_ImExporterContext_AddStandingOrder(ctx, t);
       }
       break;
 
@@ -1894,7 +1894,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobCreateDatedTransfer_SetTransaction(bj, t);
-        AB_Transaction_free(t);
+        AB_ImExporterContext_AddDatedTransfer(ctx, t);
       }
       break;
 
@@ -1907,7 +1907,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
 	AB_JobModifyDatedTransfer_SetTransaction(bj, t);
-        AB_Transaction_free(t);
+        AB_ImExporterContext_AddDatedTransfer(ctx, t);
       }
       break;
 
