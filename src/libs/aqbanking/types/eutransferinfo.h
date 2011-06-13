@@ -81,7 +81,7 @@ AQBANKING_API void AB_EuTransferInfo_List2_freeAll(AB_EUTRANSFER_INFO_LIST2 *stl
 
 /** Creates a new object.
 */
-AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_new();
+AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_EUTRANSFER_INFO *AB_EuTransferInfo_fromDb(GWEN_DB_NODE *db);

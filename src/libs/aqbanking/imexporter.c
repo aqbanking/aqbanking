@@ -563,7 +563,7 @@ void AB_ImExporterContext_ClearLog(AB_IMEXPORTER_CONTEXT *iec) {
 
 
 
-AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new() {
+AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new(void) {
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
   GWEN_NEW_OBJECT(AB_IMEXPORTER_ACCOUNTINFO, iea);
@@ -1487,7 +1487,7 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
-AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(){
+AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(void){
   AB_IMEXPORTER_CONTEXT *iec;
 
   GWEN_NEW_OBJECT(AB_IMEXPORTER_CONTEXT, iec);

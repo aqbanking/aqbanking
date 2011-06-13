@@ -974,7 +974,7 @@ AQBANKING_API void AB_Transaction_List2_freeAll(AB_TRANSACTION_LIST2 *stl);
 
 /** Creates a new object.
 */
-AQBANKING_API AB_TRANSACTION *AB_Transaction_new();
+AQBANKING_API AB_TRANSACTION *AB_Transaction_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_TRANSACTION *AB_Transaction_fromDb(GWEN_DB_NODE *db);

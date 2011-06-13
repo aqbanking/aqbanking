@@ -36,7 +36,7 @@ GWEN_LIST2_FUNCTION_DEFS(AB_PIN, AB_Pin)
 
 void AB_Pin_List2_freeAll(AB_PIN_LIST2 *stl);
 
-AB_PIN *AB_Pin_new();
+AB_PIN *AB_Pin_new(void);
 AB_PIN *AB_Pin_fromDb(GWEN_DB_NODE *db);
 AB_PIN *AB_Pin_dup(const AB_PIN*st);
 void AB_Pin_free(AB_PIN *st);

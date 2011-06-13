@@ -24,7 +24,7 @@ GWEN_LIST2_FUNCTIONS(AB_SECURITY, AB_Security)
 
 
 
-AB_SECURITY *AB_Security_new() {
+AB_SECURITY *AB_Security_new(void) {
   AB_SECURITY *st;
 
   GWEN_NEW_OBJECT(AB_SECURITY, st)

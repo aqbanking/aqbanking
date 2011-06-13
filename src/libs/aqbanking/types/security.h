@@ -111,7 +111,7 @@ AQBANKING_API void AB_Security_List2_freeAll(AB_SECURITY_LIST2 *stl);
 
 /** Creates a new object.
 */
-AQBANKING_API AB_SECURITY *AB_Security_new();
+AQBANKING_API AB_SECURITY *AB_Security_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_SECURITY *AB_Security_fromDb(GWEN_DB_NODE *db);

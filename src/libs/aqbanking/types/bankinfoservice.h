@@ -260,7 +260,7 @@ AQBANKING_API void AB_BankInfoService_List2_freeAll(AB_BANKINFO_SERVICE_LIST2 *s
 
 /** Creates a new object.
 */
-AQBANKING_API AB_BANKINFO_SERVICE *AB_BankInfoService_new();
+AQBANKING_API AB_BANKINFO_SERVICE *AB_BankInfoService_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_BANKINFO_SERVICE *AB_BankInfoService_fromDb(GWEN_DB_NODE *db);

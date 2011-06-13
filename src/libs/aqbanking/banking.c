@@ -719,7 +719,7 @@ int AB_Banking_CheckIban(const char *iban) {
 
 
 
-GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs() {
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void) {
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_DATADIR);
@@ -728,7 +728,7 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs() {
 
 
 
-GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs() {
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void) {
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);

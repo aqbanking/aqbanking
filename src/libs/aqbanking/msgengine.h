@@ -37,7 +37,7 @@ extern "C" {
  */
 
 AQBANKING_API
-GWEN_MSGENGINE *AB_MsgEngine_new();
+GWEN_MSGENGINE *AB_MsgEngine_new(void);
 
 
 #ifdef __cplusplus

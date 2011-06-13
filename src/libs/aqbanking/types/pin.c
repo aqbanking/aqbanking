@@ -23,7 +23,7 @@ GWEN_LIST2_FUNCTIONS(AB_PIN, AB_Pin)
 
 
 
-AB_PIN *AB_Pin_new() {
+AB_PIN *AB_Pin_new(void) {
   AB_PIN *st;
 
   GWEN_NEW_OBJECT(AB_PIN, st)

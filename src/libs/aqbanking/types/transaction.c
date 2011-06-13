@@ -268,7 +268,7 @@ const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v) {
 
 
 
-AB_TRANSACTION *AB_Transaction_new() {
+AB_TRANSACTION *AB_Transaction_new(void) {
   AB_TRANSACTION *st;
 
   GWEN_NEW_OBJECT(AB_TRANSACTION, st)

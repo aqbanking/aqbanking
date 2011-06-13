@@ -69,7 +69,7 @@ AQBANKING_API void AB_TextKeyDescr_List2_freeAll(AB_TEXTKEY_DESCR_LIST2 *stl);
 
 /** Creates a new object.
 */
-AQBANKING_API AB_TEXTKEY_DESCR *AB_TextKeyDescr_new();
+AQBANKING_API AB_TEXTKEY_DESCR *AB_TextKeyDescr_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_TEXTKEY_DESCR *AB_TextKeyDescr_fromDb(GWEN_DB_NODE *db);

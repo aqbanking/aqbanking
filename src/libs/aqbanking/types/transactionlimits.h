@@ -586,7 +586,7 @@ AQBANKING_API void AB_TransactionLimits_List2_freeAll(AB_TRANSACTION_LIMITS_LIST
 
 /** Creates a new object.
 */
-AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_new();
+AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_TRANSACTION_LIMITS *AB_TransactionLimits_fromDb(GWEN_DB_NODE *db);

@@ -406,7 +406,7 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   buf=GWEN_Buffer_new(0, 256, 0, 1);
   db=GWEN_DB_Group_new("profiles");
 
-  sl=AB_Banking_GetGlobalDataDirs(ab);
+  sl=AB_Banking_GetGlobalDataDirs();
   assert(sl);
 
   sentry=GWEN_StringList_FirstEntry(sl);

@@ -24,7 +24,7 @@ GWEN_LIST2_FUNCTIONS(AB_MESSAGE, AB_Message)
 
 
 
-AB_MESSAGE *AB_Message_new() {
+AB_MESSAGE *AB_Message_new(void) {
   AB_MESSAGE *st;
 
   GWEN_NEW_OBJECT(AB_MESSAGE, st)

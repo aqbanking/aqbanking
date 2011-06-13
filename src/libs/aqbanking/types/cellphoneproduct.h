@@ -110,7 +110,7 @@ AQBANKING_API void AB_CellPhoneProduct_List2_freeAll(AB_CELLPHONE_PRODUCT_LIST2 
 
 /** Creates a new object.
 */
-AQBANKING_API AB_CELLPHONE_PRODUCT *AB_CellPhoneProduct_new();
+AQBANKING_API AB_CELLPHONE_PRODUCT *AB_CellPhoneProduct_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 AQBANKING_API AB_CELLPHONE_PRODUCT *AB_CellPhoneProduct_fromDb(GWEN_DB_NODE *db);

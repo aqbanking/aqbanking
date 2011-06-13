@@ -24,7 +24,7 @@ GWEN_LIST2_FUNCTIONS(AB_BANKINFO, AB_BankInfo)
 
 
 
-AB_BANKINFO *AB_BankInfo_new() {
+AB_BANKINFO *AB_BankInfo_new(void) {
   AB_BANKINFO *st;
 
   GWEN_NEW_OBJECT(AB_BANKINFO, st)

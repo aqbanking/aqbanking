@@ -214,7 +214,7 @@ uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie);
  */
 /*@{*/
 AQBANKING_API 
-AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new();
+AB_IMEXPORTER_CONTEXT *AB_ImExporterContext_new(void);
 
 AQBANKING_API
 void AB_ImExporterContext_free(AB_IMEXPORTER_CONTEXT *iec);
@@ -462,7 +462,7 @@ void AB_ImExporterContext_ClearLog(AB_IMEXPORTER_CONTEXT *iec);
  */
 /*@{*/
 AQBANKING_API
-AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new();
+AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new(void);
 AQBANKING_API 
 void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea);
 

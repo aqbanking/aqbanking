@@ -23,7 +23,7 @@ GWEN_LIST2_FUNCTIONS(AB_USER, AB_User)
 
 
 
-AB_USER *AB_User__new() {
+AB_USER *AB_User__new(void) {
   AB_USER *st;
 
   GWEN_NEW_OBJECT(AB_USER, st)

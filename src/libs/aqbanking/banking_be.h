@@ -59,11 +59,11 @@ AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
  * windows to find data.
  */
 AQBANKING_API
-GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs();
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
 
 
 AQBANKING_API
-GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs();
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
 
 /*@}*/
 

@@ -26,7 +26,7 @@ struct AB_USER {
   char *dbId;
 };
 
-AB_USER *AB_User__new();
+AB_USER *AB_User__new(void);
 
 
 
