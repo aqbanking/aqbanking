@@ -22,7 +22,7 @@ int AB_Banking__ImportConfDir(AB_BANKING *ab,
   nbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(nbuf, path);
 
-  sl=GWEN_StringList_new(0, 256, 0, 1);
+  sl=GWEN_StringList_new();
   rv=GWEN_Directory_GetDirEntries(GWEN_Buffer_GetStart(nbuf), sl, NULL);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "No configurations for group [%s]", groupName);
