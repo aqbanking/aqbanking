@@ -780,7 +780,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 		   AH_Job_GetName(j), AH_Job_StatusName(st), st);
 	}
         j=AH_Job_List_Next(j);
-      } /* while */
+      } /* while j */
       if (j) {
         /* check for attachability */
         if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ATTACHABLE) {
