@@ -2011,6 +2011,9 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 
   ob=AH_Outbox_new(h);
   AH_Outbox_AddJob(ob, job);
+  /* AH_Outbox_AddJob() increments the reference counter, we decrement it
+   * here so that the job will be deleted with the outbox */
+  AH_Job_free(job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, 0);
   if (rv) {
