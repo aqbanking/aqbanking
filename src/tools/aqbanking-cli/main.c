@@ -97,6 +97,17 @@ int main(int argc, char **argv) {
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
+    "charset",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "charset",                    /* long option */
+    "Specify the output character set",       /* short description */
+    "Specify the output character set"        /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
     "pinfile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -218,7 +229,7 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
 			     I18N("   Issue a single debit note (data from command line)\n"));
 
-    GWEN_Buffer_AppendString(ubuf, " transfers\n");
+    GWEN_Buffer_AppendString(ubuf, " debitnotes\n");
     GWEN_Buffer_AppendString(ubuf,
 			     I18N("   Issue a number of debit notes (data from a file)\n"));
 
