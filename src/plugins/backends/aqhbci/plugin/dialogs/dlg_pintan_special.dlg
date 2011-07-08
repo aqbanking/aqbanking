@@ -24,7 +24,7 @@
       <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX readOnly" />
 
       <widget type="label" text="TAN Medium ID" />
-      <widget type="comboBox" name="tanMediumIdEdit"  columns="32" flags="fillX readOnly" />
+      <widget type="lineEdit" name="tanMediumIdEdit"  columns="32" flags="fillX" />
 
     </widget>
 
