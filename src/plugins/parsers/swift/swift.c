@@ -241,7 +241,13 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr) {
 	  /* s is the beginning of a new subtag, so the end has been found */
 	  break;
 	}
+	else
+	  /* next is not a digit, so this is not the begin of a new tag */
+	  s++;
       }
+      else
+	/* next is not a digit, so this is not the begin of a new tag */
+	s++;
     }
     else if (*s)
       /* not the beginning of a new tag, continue */
