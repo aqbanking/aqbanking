@@ -735,12 +735,14 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
 		       I18N("Waiting for response"));
 
   rv=AH_Dialog_RecvMessage(dlg, &msg);
-  if (rv<0) {
+  if (rv>=200 && rv<300)
+    rv=0;
+  if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "No message within specified timeout, giving up");
-    GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("No response (timeout)"));
+	     "Error receiving response (%d)", rv);
+    GWEN_Gui_ProgressLog2(0,
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error receiving response (%d)"), rv);
     return rv;
   }
 
