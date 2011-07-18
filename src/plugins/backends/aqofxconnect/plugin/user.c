@@ -168,6 +168,7 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 			  "httpVMajor", ue->httpVMajor);
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "httpVMinor", ue->httpVMinor);
+
     }
   }
 }

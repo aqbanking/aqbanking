@@ -599,6 +599,7 @@ void AO_EditUserDialog_Init(GWEN_DIALOG *dlg) {
     s="102";
   GWEN_Dialog_SetCharProperty(dlg, "wiz_headerver_edit", GWEN_DialogProperty_Value, 0, s, 0);
 
+  xdlg->flags=AO_User_GetFlags(xdlg->user);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -898,10 +899,12 @@ int AO_EditUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
   if (rv==0) {
     /* rejected */
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Rejected");
     GWEN_Dialog_free(dlg2);
     return GWEN_DialogEvent_ResultHandled;
   }
   else {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Accepted");
     xdlg->httpVMajor=AO_OfxSpecialDialog_GetHttpVMajor(dlg2);
     xdlg->httpVMinor=AO_OfxSpecialDialog_GetHttpVMinor(dlg2);
     xdlg->flags=AO_OfxSpecialDialog_GetFlags(dlg2);

@@ -1122,10 +1122,12 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
   if (rv==0) {
     /* rejected */
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Rejected");
     GWEN_Dialog_free(dlg2);
     return GWEN_DialogEvent_ResultHandled;
   }
   else {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Accepted");
     xdlg->httpVMajor=AO_OfxSpecialDialog_GetHttpVMajor(dlg2);
     xdlg->httpVMinor=AO_OfxSpecialDialog_GetHttpVMinor(dlg2);
     xdlg->flags=AO_OfxSpecialDialog_GetFlags(dlg2);
