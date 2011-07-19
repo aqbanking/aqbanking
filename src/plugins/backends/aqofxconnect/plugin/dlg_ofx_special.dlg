@@ -20,6 +20,12 @@
       <widget type="label" text="HTTP Version" />
       <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX readOnly" />
 
+      <widget type="label" text="Client UID" />
+      <widget type="lineedit" name="clientUidEdit"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Security Type" />
+      <widget type="lineedit" name="securityTypeEdit"  columns="20" flags="fillX" />
+
     </widget>
 
     <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />

@@ -27,12 +27,19 @@ int AO_Provider__AddHeaders(AB_PROVIDER *pro,
     s="102";
   GWEN_Buffer_AppendString(buf, s);
   GWEN_Buffer_AppendString(buf, "\r\n");
+
+  s=AO_User_GetSecurityType(u);
+  if (!s || !*s)
+    s="NONE";
+  GWEN_Buffer_AppendString(buf, "SECURITY:");
+  GWEN_Buffer_AppendString(buf, s);
+  GWEN_Buffer_AppendString(buf, "\r\n");
+
   GWEN_Buffer_AppendString(buf,
-			   "SECURITY:NONE\r\n"
-			   "ENCODING:USASCII\r\n"
-			   "CHARSET:1252\r\n"
-			   "COMPRESSION:NONE\r\n"
-			   "OLDFILEUID:NONE\r\n");
+                           "ENCODING:USASCII\r\n"
+                           "CHARSET:1252\r\n"
+                           "COMPRESSION:NONE\r\n"
+                           "OLDFILEUID:NONE\r\n");
   GWEN_Buffer_AppendString(buf, "NEWFILEUID:");
   GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
   GWEN_Buffer_AppendString(buf, "\r\n");

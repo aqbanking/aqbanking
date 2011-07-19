@@ -112,6 +112,7 @@ void GWENHYWFAR_CB AO_NewUserDialog_FreeData(void *bp, void *p) {
   free(xdlg->appVer);
   free(xdlg->headerVer);
   free(xdlg->clientUid);
+  free(xdlg->securityType);
 
   GWEN_FREE_OBJECT(xdlg);
 }
@@ -946,6 +947,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AO_User_SetAppVer(u, xdlg->appVer);
   AO_User_SetHeaderVer(u, xdlg->headerVer);
   AO_User_SetClientUid(u, xdlg->clientUid);
+  AO_User_SetSecurityType(xdlg->user, xdlg->securityType);
 
   AO_User_SetServerAddr(u, xdlg->url);
   AO_User_SetHttpVMajor(u, xdlg->httpVMajor);
@@ -1119,6 +1121,9 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   AO_OfxSpecialDialog_SetHttpVersion(dlg2, xdlg->httpVMajor, xdlg->httpVMinor);
   AO_OfxSpecialDialog_SetFlags(dlg2, xdlg->flags);
 
+  AO_OfxSpecialDialog_SetClientUid(dlg2, xdlg->clientUid);
+  AO_OfxSpecialDialog_SetSecurityType(dlg2, xdlg->securityType);
+
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
   if (rv==0) {
     /* rejected */
@@ -1127,10 +1132,22 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
   else {
+    const char *s;
+
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Accepted");
     xdlg->httpVMajor=AO_OfxSpecialDialog_GetHttpVMajor(dlg2);
     xdlg->httpVMinor=AO_OfxSpecialDialog_GetHttpVMinor(dlg2);
     xdlg->flags=AO_OfxSpecialDialog_GetFlags(dlg2);
+
+    s=AO_OfxSpecialDialog_GetClientUid(dlg2);
+    free(xdlg->clientUid);
+    if (s) xdlg->clientUid=strdup(s);
+    else xdlg->clientUid=NULL;
+
+    s=AO_OfxSpecialDialog_GetSecurityType(dlg2);
+    free(xdlg->securityType);
+    if (s) xdlg->securityType=strdup(s);
+    else xdlg->securityType=NULL;
   }
 
   GWEN_Dialog_free(dlg2);

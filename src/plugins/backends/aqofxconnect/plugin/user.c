@@ -164,6 +164,10 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			     "clientUid", ue->clientUid);
 
+      if (ue->securityType)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "securityType", ue->securityType);
+
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "httpVMajor", ue->httpVMajor);
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -189,6 +193,7 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
   free(ue->appVer);
   free(ue->headerVer);
   free(ue->clientUid);
+  free(ue->securityType);
 
   GWEN_FREE_OBJECT(ue);
 }
@@ -267,7 +272,14 @@ void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
     ue->clientUid=strdup(s);
   else
     ue->clientUid=NULL;
-  
+
+  free(ue->securityType);
+  s=GWEN_DB_GetCharValue(db, "securityType", 0, NULL);
+  if (s)
+    ue->securityType=strdup(s);
+  else
+    ue->securityType=NULL;
+
   ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
   ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
   if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
@@ -554,6 +566,32 @@ void AO_User_SetClientUid(AB_USER *u, const char *s) {
   free(ue->clientUid);
   if (s) ue->clientUid=strdup(s);
   else ue->clientUid=NULL;
+}
+
+
+
+const char *AO_User_GetSecurityType(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->securityType;
+}
+
+
+
+void AO_User_SetSecurityType(AB_USER *u, const char *s) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  free(ue->securityType);
+  if (s) ue->securityType=strdup(s);
+  else ue->securityType=NULL;
 }
 
 

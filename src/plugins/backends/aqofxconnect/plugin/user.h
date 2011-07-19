@@ -117,6 +117,14 @@ void AO_User_SetClientUid(AB_USER *u, const char *s);
 
 
 AQOFXCONNECT_API
+const char *AO_User_GetSecurityType(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetSecurityType(AB_USER *u, const char *s);
+
+
+
+AQOFXCONNECT_API
 int AO_User_GetHttpVMajor(const AB_USER *u);
 
 AQOFXCONNECT_API

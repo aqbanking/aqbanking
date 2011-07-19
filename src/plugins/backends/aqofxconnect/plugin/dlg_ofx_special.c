@@ -90,6 +90,9 @@ void GWENHYWFAR_CB AO_OfxSpecialDialog_FreeData(void *bp, void *p) {
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   xdlg=(AO_OFX_SPECIAL_DIALOG*) p;
+  free(xdlg->clientUid);
+  free(xdlg->securityType);
+
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -180,6 +183,58 @@ void AO_OfxSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
+void AO_OfxSpecialDialog_SetSecurityType(GWEN_DIALOG *dlg, const char *s) {
+  AO_OFX_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->securityType);
+  if (s) xdlg->securityType=strdup(s);
+  else xdlg->securityType=NULL;
+}
+
+
+
+const char *AO_OfxSpecialDialog_GetSecurityType(const GWEN_DIALOG *dlg) {
+  AO_OFX_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->securityType;
+}
+
+
+
+void AO_OfxSpecialDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s) {
+  AO_OFX_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->clientUid);
+  if (s) xdlg->clientUid=strdup(s);
+  else xdlg->clientUid=NULL;
+}
+
+
+
+const char *AO_OfxSpecialDialog_GetClientUid(const GWEN_DIALOG *dlg) {
+  AO_OFX_SPECIAL_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->clientUid;
+}
+
+
+
 void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg) {
   AO_OFX_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -223,6 +278,15 @@ void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetIntProperty(dlg, "shortDateCheck", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & AO_USER_FLAGS_SEND_SHORT_DATE)?1:0,
 			     0);
+  if (xdlg->clientUid)
+    GWEN_Dialog_SetCharProperty(dlg, "clientUidEdit", GWEN_DialogProperty_Value, 0,
+                                xdlg->clientUid,
+                                0);
+
+  if (xdlg->securityType)
+    GWEN_Dialog_SetCharProperty(dlg, "securityTypeEdit", GWEN_DialogProperty_Value, 0,
+                                xdlg->securityType,
+                                0);
 
 
   /* read width */
@@ -243,6 +307,7 @@ void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   int i;
   GWEN_DB_NODE *dbPrefs;
   uint32_t flags;
+  const char *s;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
@@ -275,6 +340,11 @@ void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg) {
     flags|=AO_USER_FLAGS_SEND_SHORT_DATE;
   xdlg->flags=flags;
 
+  s=GWEN_Dialog_GetCharProperty(dlg, "clientUidEdit", GWEN_DialogProperty_Value, 0, NULL);
+  AO_OfxSpecialDialog_SetClientUid(dlg, s);
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "securityTypeEdit", GWEN_DialogProperty_Value, 0, NULL);
+  AO_OfxSpecialDialog_SetSecurityType(dlg, s);
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);

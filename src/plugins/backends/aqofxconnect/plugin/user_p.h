@@ -27,6 +27,8 @@ struct AO_USER {
   char *headerVer;
   char *clientUid;
 
+  char *securityType;
+
   int httpVMajor;
   int httpVMinor;
 };

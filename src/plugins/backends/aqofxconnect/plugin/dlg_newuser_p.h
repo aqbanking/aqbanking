@@ -33,6 +33,7 @@ struct AO_NEWUSER_DIALOG {
   char *appVer;
   char *headerVer;
   char *clientUid;
+  char *securityType;
 
   int httpVMajor;
   int httpVMinor;

@@ -24,6 +24,9 @@ struct AO_OFX_SPECIAL_DIALOG {
   int httpVMinor;
 
   uint32_t flags;
+
+  char *clientUid;
+  char *securityType;
 };
 
 

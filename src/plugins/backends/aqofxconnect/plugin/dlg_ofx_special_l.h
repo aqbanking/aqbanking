@@ -36,6 +36,12 @@ void AO_OfxSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AO_OfxSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AO_OfxSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl);
 
+void AO_OfxSpecialDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s);
+const char *AO_OfxSpecialDialog_GetClientUid(const GWEN_DIALOG *dlg);
+
+void AO_OfxSpecialDialog_SetSecurityType(GWEN_DIALOG *dlg, const char *s);
+const char *AO_OfxSpecialDialog_GetSecurityType(const GWEN_DIALOG *dlg);
+
 
 
 #ifdef __cplusplus

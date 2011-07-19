@@ -35,6 +35,7 @@ struct AO_EDITUSER_DIALOG {
   char *appVer;
   char *headerVer;
   char *clientUid;
+  char *securityType;
 
   int httpVMajor;
   int httpVMinor;
