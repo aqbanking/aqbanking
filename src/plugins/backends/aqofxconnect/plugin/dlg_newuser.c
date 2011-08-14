@@ -947,7 +947,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AO_User_SetAppVer(u, xdlg->appVer);
   AO_User_SetHeaderVer(u, xdlg->headerVer);
   AO_User_SetClientUid(u, xdlg->clientUid);
-  AO_User_SetSecurityType(xdlg->user, xdlg->securityType);
+  AO_User_SetSecurityType(u, xdlg->securityType);
 
   AO_User_SetServerAddr(u, xdlg->url);
   AO_User_SetHttpVMajor(u, xdlg->httpVMajor);
