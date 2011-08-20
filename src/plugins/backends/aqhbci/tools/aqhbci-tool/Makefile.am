@@ -44,7 +44,7 @@ aqhbci_tool4_SOURCES=main.c \
 aqhbci_tool4_LDADD = \
   $(aqhbci_internal_libs) \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
+  $(gwenhywfar_libs) -lstdc++
 
 
 if IS_WINDOWS
