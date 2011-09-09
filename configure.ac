@@ -1455,6 +1455,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/ofx/parser/Makefile
   src/plugins/imexporters/ofx/profiles/Makefile
   src/plugins/imexporters/ofx/profiles/default.conf
+  src/plugins/imexporters/ofx/profiles/iso8859.conf
   src/plugins/imexporters/swift/Makefile
   src/plugins/imexporters/swift/swift.xml
   src/plugins/imexporters/swift/ressource.rc

@@ -28,6 +28,8 @@ struct AIO_OFX_XMLCTX {
 
   AIO_OFX_GROUP *currentGroup;
   char *currentTagName;
+
+  char *charset;
 };
 
 
@@ -42,6 +44,9 @@ static int AIO_OfxXmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 				 const char *attrName,
 				 const char *attrData);
 
+static int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
+                                     const char *data,
+                                     GWEN_BUFFER *buf);
 
 #endif
 

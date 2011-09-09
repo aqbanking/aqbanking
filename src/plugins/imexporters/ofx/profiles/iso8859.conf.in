@@ -1,0 +1,12 @@
+
+char name="iso8859"
+char shortDescr="Profile for ISO-8859-15 files"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="Profile for files encoded with ISO8859-15 (e.g. with umlauts)"
+int import="1"
+int export="0"
+
+params {
+  char charset="ISO-8859-15"
+}
+

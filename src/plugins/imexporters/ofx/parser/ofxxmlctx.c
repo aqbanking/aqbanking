@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -83,7 +81,35 @@ void AIO_OfxXmlCtx_FreeData(void *bp, void *p) {
   free(xctx->resultSeverity);
   free(xctx->currentTagName);
 
+  free(xctx->charset);
+
   GWEN_FREE_OBJECT(xctx);
+}
+
+
+
+const char *AIO_OfxXmlCtx_GetCharset(const GWEN_XML_CONTEXT *ctx) {
+  AIO_OFX_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->charset;
+}
+
+
+
+void AIO_OfxXmlCtx_SetCharset(GWEN_XML_CONTEXT *ctx, const char *s) {
+  AIO_OFX_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX, ctx);
+  assert(xctx);
+
+  free(xctx->charset);
+  if (s) xctx->charset=strdup(s);
+  else xctx->charset=NULL;
 }
 
 
@@ -201,9 +227,9 @@ void AIO_OfxXmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s) {
 
 
 
-int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			       const char *data,
-			       GWEN_BUFFER *buf) {
+int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
+			      const char *data,
+			      GWEN_BUFFER *buf) {
   const uint8_t *p;
   uint8_t *dst;
   uint8_t *src;
@@ -235,7 +261,9 @@ int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
     uint8_t c;
 
     c=*p;
-    if (c<32 || c>=127)
+    /* DISABLED: c>=127 would filter out umlauts...
+     if (c<32 || c>=127)*/
+    if (c<32)
       c=32;
 
     /* remember next loop whether this char was a blank */
@@ -265,6 +293,44 @@ int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
   return 0;
 }
 
+
+
+int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
+			       const char *data,
+			       GWEN_BUFFER *buf) {
+  AIO_OFX_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX, ctx);
+  assert(xctx);
+
+  if (xctx->charset) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=AIO_OfxXmlCtx_CleanupData(ctx, data, tbuf);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+
+    rv=GWEN_Text_ConvertCharset(xctx->charset, "UTF-8",
+				GWEN_Buffer_GetStart(tbuf),
+				GWEN_Buffer_UsedBytes(tbuf),
+				buf);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    GWEN_Buffer_free(tbuf);
+    return 0;
+  }
+  else
+    return AIO_OfxXmlCtx_CleanupData(ctx, data, buf);
+}
 
 
 

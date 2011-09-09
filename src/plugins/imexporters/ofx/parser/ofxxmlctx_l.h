@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -23,6 +21,10 @@
 
 
 GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioContext);
+
+const char *AIO_OfxXmlCtx_GetCharset(const GWEN_XML_CONTEXT *ctx);
+void AIO_OfxXmlCtx_SetCharset(GWEN_XML_CONTEXT *ctx, const char *s);
+
 
 int AIO_OfxXmlCtx_GetResultCode(const GWEN_XML_CONTEXT *ctx);
 void AIO_OfxXmlCtx_SetResultCode(GWEN_XML_CONTEXT *ctx, int i);

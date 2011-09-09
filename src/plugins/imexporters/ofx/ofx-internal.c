@@ -96,6 +96,7 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
   AH_IMEXPORTER_OFX *ieh;
   int rv;
   GWEN_XML_CONTEXT *xmlCtx;
+  const char *s;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie);
@@ -105,6 +106,11 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
    * make GWEN's normal XML code read an OFX file */
   xmlCtx=AIO_OfxXmlCtx_new(0, ctx);
   assert(xmlCtx);
+
+  /* possibly set charset */
+  s=GWEN_DB_GetCharValue(params, "charset", 0, NULL);
+  if (s && *s)
+    AIO_OfxXmlCtx_SetCharset(xmlCtx, s);
 
   /* read OFX file into context */
   rv=GWEN_XMLContext_ReadFromIo(xmlCtx, sio);
