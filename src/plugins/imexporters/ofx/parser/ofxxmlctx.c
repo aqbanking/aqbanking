@@ -318,7 +318,7 @@ int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
 
     rv=GWEN_Text_ConvertCharset(xctx->charset, "UTF-8",
 				GWEN_Buffer_GetStart(tbuf),
-				GWEN_Buffer_UsedBytes(tbuf),
+				GWEN_Buffer_GetUsedBytes(tbuf),
 				buf);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
