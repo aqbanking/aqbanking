@@ -1299,7 +1299,7 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
   GWEN_Buffer_free(pathBuffer);
   return GWEN_DialogEvent_ResultHandled;

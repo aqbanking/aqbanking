@@ -87,7 +87,7 @@ void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg) {
 
 
 void AB_UserTypePageDefaultDialog_Fini(GWEN_DIALOG *dlg) {
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "fini called");
+  DBG_NOTICE(AQBANKING_LOGDOMAIN, "fini called");
   AB_UserTypePageDialog_SetSelectedType(dlg, 0);
 }
 

@@ -500,7 +500,7 @@ int AB_ImporterDialog_DetermineSelectedImporter(GWEN_DIALOG *dlg) {
 
   /* get current value */
   rv=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Value, 0, -1);
-  DBG_ERROR(0, "Selected value: %d", rv);
+  DBG_NOTICE(0, "Selected value: %d", rv);
   if (rv!=-1) {
     const char *s;
 
@@ -525,7 +525,7 @@ int AB_ImporterDialog_DetermineSelectedImporter(GWEN_DIALOG *dlg) {
 	xdlg->importerName=strdup(s);
 
       if (xdlg->importerName) {
-	DBG_ERROR(0, "Selected importer [%s]", xdlg->importerName);
+	DBG_NOTICE(0, "Selected importer [%s]", xdlg->importerName);
         return 0;
       }
     }
@@ -599,7 +599,7 @@ int AB_ImporterDialog_DetermineSelectedProfile(GWEN_DIALOG *dlg) {
 
   /* get current value */
   rv=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, -1);
-  DBG_ERROR(0, "Selected value: %d", rv);
+  DBG_NOTICE(0, "Selected value: %d", rv);
   if (rv!=-1) {
     const char *s;
 
@@ -624,7 +624,7 @@ int AB_ImporterDialog_DetermineSelectedProfile(GWEN_DIALOG *dlg) {
 	xdlg->profileName=strdup(s);
 
       if (xdlg->profileName) {
-	DBG_ERROR(0, "Selected profile [%s]", xdlg->profileName);
+	DBG_NOTICE(0, "Selected profile [%s]", xdlg->profileName);
         return 0;
       }
     }
@@ -739,7 +739,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 	  AB_ImExporterContext_Clear(xdlg->context);
 	}
 	else {
-	  DBG_ERROR(0, "Import ok.");
+	  DBG_NOTICE(0, "Import ok.");
 	  /* no way back */
 	  GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
 	  GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
@@ -769,7 +769,7 @@ int AB_ImporterDialog_Next(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
-  DBG_ERROR(0, "Value of wiz_stack: %d", page);
+  DBG_NOTICE(0, "Value of wiz_stack: %d", page);
 
   if (page<PAGE_END) {
     page++;
@@ -875,7 +875,7 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
     }
     if (rv==1) {
       /* accepted */
-      DBG_ERROR(0, "Accepted, writing profile");
+      DBG_NOTICE(0, "Accepted, writing profile");
       rv=AB_Banking_SaveLocalImExporterProfile(xdlg->banking,
 					       xdlg->importerName,
 					       dbT,
@@ -934,7 +934,7 @@ int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg) {
   }
   if (rv==1) {
     /* accepted */
-    DBG_ERROR(0, "Accepted, writing profile");
+    DBG_NOTICE(0, "Accepted, writing profile");
     rv=AB_Banking_SaveLocalImExporterProfile(xdlg->banking,
 					     xdlg->importerName,
 					     dbProfile,
@@ -955,7 +955,7 @@ int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg) {
 
 
 int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
+  DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return AB_ImporterDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
@@ -1001,7 +1001,7 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     }
     GWEN_Buffer_free(pathBuffer);
     return GWEN_DialogEvent_ResultNotHandled;

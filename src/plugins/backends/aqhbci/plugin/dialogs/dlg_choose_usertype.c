@@ -131,7 +131,7 @@ void AH_ChooseUserTypeDialog_Fini(GWEN_DIALOG *dlg) {
     i=AqHBCI_NewUserDialog_CodeCreateChipcard;
   else
     i=AqHBCI_NewUserDialog_CodeGeneric;
-  DBG_ERROR(0, "Setting selected type to %d", i);
+  DBG_NOTICE(0, "Setting selected type to %d", i);
   AB_UserTypePageDialog_SetSelectedType(dlg, i);
 }
 

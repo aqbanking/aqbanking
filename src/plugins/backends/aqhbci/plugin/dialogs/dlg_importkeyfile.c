@@ -904,7 +904,7 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
       contextId=GWEN_Crypt_Token_Context_GetId(tctx);
   }
 
-  DBG_ERROR(0, "Creating user");
+  DBG_NOTICE(0, "Creating user");
   u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
   if (u==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
@@ -1296,7 +1296,7 @@ int AH_ImportKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
   GWEN_Buffer_free(pathBuffer);
   return GWEN_DialogEvent_ResultHandled;

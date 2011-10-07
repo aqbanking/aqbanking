@@ -134,7 +134,7 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab) {
 	      if (AB_Provider_GetFlags(pro) & AB_PROVIDER_FLAGS_HAS_USERTYPE_DIALOG) {
 		cdlg=AB_ProviderGetUserTypeDialog(pro);
 		if (cdlg==NULL) {
-		  DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend [%s] does not return a userType dialog, using default", name);
+		  DBG_WARN(AQBANKING_LOGDOMAIN, "Backend [%s] does not return a userType dialog, using default", name);
 		  cdlg=AB_UserTypePageDefaultDialog_new(ab);
 		}
 	      }
@@ -202,7 +202,7 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab) {
 
     while ( (cdlg=GWEN_Dialog_List_First(subDialogs)) ) {
       GWEN_Dialog_List_Del(cdlg);
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Adding dialog %s", GWEN_Dialog_GetId(cdlg));
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding dialog %s", GWEN_Dialog_GetId(cdlg));
       rv=GWEN_Dialog_AddSubDialog(dlg, "wiz_stack", cdlg);
       if (rv<0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -374,7 +374,7 @@ int AB_SetupNewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
   default:
     if (forwards){
-      DBG_ERROR(0, "About to enter page %d", page);
+      DBG_NOTICE(0, "About to enter page %d", page);
       GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Run"), 0);
       GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
       return GWEN_DialogEvent_ResultHandled;
@@ -424,17 +424,17 @@ int AB_SetupNewUserDialog_Next(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
-  DBG_ERROR(0, "Value of wiz_stack: %d", page);
+  DBG_NOTICE(0, "Value of wiz_stack: %d", page);
 
   if (page==PAGE_BEGIN) {
-    DBG_ERROR(0, "First page");
+    DBG_NOTICE(0, "First page");
     page++;
     return AB_SetupNewUserDialog_EnterPage(dlg, page, 1);
   }
   if (page==PAGE_BACKEND) {
     int idx;
 
-    DBG_ERROR(0, "Backend page");
+    DBG_NOTICE(0, "Backend page");
     idx=AB_SetupNewUserDialog_DetermineBackendIndex(dlg);
     if (idx!=-1) {
       page=idx+PAGE_BACKEND+1;
@@ -473,7 +473,7 @@ int AB_SetupNewUserDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 int AB_SetupNewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
+  DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return AB_SetupNewUserDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)

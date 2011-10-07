@@ -211,7 +211,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
 				mediumName);
   GWEN_Gui_ProgressEnd(pid);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
     GWEN_Buffer_free(mtypeName);
     return GWEN_DialogEvent_ResultHandled;
@@ -222,7 +222,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
 			      GWEN_Buffer_GetStart(mediumName),
 			      &ct);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
     GWEN_Buffer_free(mtypeName);
     return GWEN_DialogEvent_ResultHandled;
@@ -231,7 +231,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "ddvcard")==0) {
     GWEN_DIALOG *dlg2;
 
-    DBG_ERROR(0, "DDV card");
+    DBG_NOTICE(0, "DDV card");
     dlg2=AH_DdvCardDialog_new(AB_NewUserDialog_GetBanking(dlg), ct);
     if (dlg2==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
@@ -257,7 +257,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultAccept;
   }
   else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
-    DBG_ERROR(0, "STARCOS RSA card");
+    DBG_NOTICE(0, "STARCOS RSA card");
     // TODO
   }
   else {

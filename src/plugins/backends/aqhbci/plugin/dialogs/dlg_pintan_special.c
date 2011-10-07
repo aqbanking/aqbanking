@@ -365,7 +365,7 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 int AH_PinTanSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
+  DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
   else if (strcasecmp(sender, "abortButton")==0)

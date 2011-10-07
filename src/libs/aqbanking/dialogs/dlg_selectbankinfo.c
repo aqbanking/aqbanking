@@ -493,7 +493,7 @@ int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SELECTBANKINFO_DIALOG, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Activated: %s", sender);
+  DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "blzEdit")==0 ||
       strcasecmp(sender, "bicEdit")==0 ||
       strcasecmp(sender, "nameEdit")==0 ||
@@ -530,7 +530,7 @@ int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
 int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
   const char *s;
 
-  DBG_ERROR(0, "Changed %s", sender);
+  DBG_NOTICE(0, "Changed %s", sender);
   if (strcasecmp(sender, "blzEdit")==0 ||
       strcasecmp(sender, "bicEdit")==0) {
     s=GWEN_Dialog_GetCharProperty(dlg, sender, GWEN_DialogProperty_Value, 0, NULL);

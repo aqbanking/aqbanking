@@ -960,7 +960,7 @@ int GWENHYWFAR_CB AB_EditAccountDialog_SignalHandler(GWEN_DIALOG *dlg,
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeValueChanged:
-    DBG_ERROR(0, "ValueChanged: %s", sender);
+    DBG_NOTICE(0, "ValueChanged: %s", sender);
     return GWEN_DialogEvent_ResultHandled;;
 
   case GWEN_DialogEvent_TypeActivated:

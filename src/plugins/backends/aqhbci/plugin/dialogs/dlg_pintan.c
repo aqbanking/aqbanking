@@ -687,7 +687,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_IMEXPORTER_CONTEXT *ctx;
   AB_PROVIDER *pro;
 
-  DBG_ERROR(0, "Doit");
+  DBG_NOTICE(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
   assert(xdlg);
@@ -699,7 +699,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  DBG_ERROR(0, "Creating user");
+  DBG_NOTICE(0, "Creating user");
   u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
   if (u==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
@@ -735,7 +735,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetHttpVMinor(u, xdlg->httpVMinor);
   AH_User_SetFlags(u, xdlg->flags);
 
-  DBG_ERROR(0, "Adding user");
+  DBG_NOTICE(0, "Adding user");
   rv=AB_Banking_AddUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
@@ -752,7 +752,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			     3,
 			     0);
   /* lock new user */
-  DBG_ERROR(0, "Locking user");
+  DBG_NOTICE(0, "Locking user");
   rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
@@ -765,7 +765,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get certificate */
-  DBG_ERROR(0, "Getting certs (%08x)", AH_User_GetFlags(u));
+  DBG_NOTICE(0, "Getting certs (%08x)", AH_User_GetFlags(u));
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving SSL certificate"));
@@ -774,7 +774,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     // TODO: retry with SSLv3 if necessary
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
@@ -793,7 +793,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get system id */
-  DBG_ERROR(0, "Getting sysid");
+  DBG_NOTICE(0, "Getting sysid");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving system id"));
@@ -820,7 +820,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get account list */
-  DBG_ERROR(0, "Getting account list");
+  DBG_NOTICE(0, "Getting account list");
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
@@ -847,7 +847,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* unlock user */
-  DBG_ERROR(0, "Unlocking user");
+  DBG_NOTICE(0, "Unlocking user");
   rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1066,7 +1066,7 @@ int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 int AH_PinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
-  DBG_ERROR(0, "Activated: %s", sender);
+  DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
     return AH_PinTanDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)
