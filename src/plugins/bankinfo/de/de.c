@@ -88,6 +88,9 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
     GWEN_BUFFER *fbuf;
     int rv;
 
+    /* for debian look also in /var/lib */
+    GWEN_StringList_AppendString(paths, "/var/lib", 0, 0);
+
     db=GWEN_DB_Group_new("config");
     fbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Directory_FindFileInPaths(paths,
@@ -96,9 +99,9 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
 				      "bankdata.txt",
 				      fbuf);
     if (rv) {
-      /* for debian */
+      /* for debian look also in /var/lib/ktoblzcheck1 */
       rv=GWEN_Directory_FindFileInPaths(paths,
-					"libktoblzcheck1"
+					"ktoblzcheck1"
 					DIRSEP
 					"bankdata.txt",
 					fbuf);
