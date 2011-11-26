@@ -1118,8 +1118,20 @@ int AH_User_MkTanName(const AB_USER *u,
     return 0;
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing tokenType or tokenName");
-    return GWEN_ERROR_NO_DATA;
+    const char *s;
+
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No tokenType or tokenName");
+    GWEN_Buffer_AppendString(buf, "TAN_");
+    s=AB_User_GetBankCode(u);
+    if (s)
+      GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "_");
+    GWEN_Buffer_AppendString(buf, AB_User_GetUserId(u));
+    if (challenge) {
+      GWEN_Buffer_AppendString(buf, "_");
+      GWEN_Buffer_AppendString(buf, challenge);
+    }
+    return 0;
   }
 }
 
