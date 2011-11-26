@@ -22,6 +22,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
+#include <aqbanking/banking.h>
 
 
 #define DIALOG_MINWIDTH  400
@@ -51,7 +52,7 @@ GWEN_DIALOG *OH_GetInstituteDialog_new(const char *dataFolder, const char *name)
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
+  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
 			       "aqbanking/backends/aqofxconnect/dialogs/dlg_getinst.dlg",
 			       fbuf);
   if (rv<0) {

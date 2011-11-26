@@ -54,7 +54,7 @@ GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_BANKING *ab) {
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
+  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
 			       "aqbanking/backends/aqhbci/dialogs/dlg_pintan_special.dlg",
 			       fbuf);
   if (rv<0) {
