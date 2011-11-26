@@ -1073,9 +1073,10 @@
    <ELEM name="process" type="num" size="1" />
    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="challenge" type="ascii" minnum="0" />
+   <ELEM name="challenge" type="ascii" maxsize="999" minnum="0" />
    <ELEM name="expireDate" type="ascii" minnum="0" />
    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+   <ELEM name="ben" type="ascii" size="99" minnum="0" />
    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
    
    <VALUES>
