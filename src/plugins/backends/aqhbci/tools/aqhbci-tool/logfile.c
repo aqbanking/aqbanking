@@ -33,7 +33,7 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db) {
   GWEN_SYNCIO *sio;
   GWEN_FAST_BUFFER *fb;
   int rv;
-  GWEN_BUFFER *tbuf;
+  GWEN_BUFFER *tbuf = NULL;
 
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
   GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
