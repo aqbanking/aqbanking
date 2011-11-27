@@ -157,6 +157,13 @@ void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
+int AH_AccountJob_IsAccountJob(const AH_JOB *j) {
+  return GWEN_INHERIT_ISOFTYPE(AH_JOB, AH_ACCOUNTJOB, j);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf) {
   GWEN_TIME *t;
   int hours, mins, secs;
