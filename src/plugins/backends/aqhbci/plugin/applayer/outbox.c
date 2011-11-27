@@ -2040,7 +2040,6 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob){
 
 
 int AH_Outbox__Execute(AH_OUTBOX *ob){
-  unsigned int loop;
   unsigned int jobCount;
   int rv;
 
@@ -2061,7 +2060,6 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return rv;
   }
 
-  loop=0;
   rv=AH_Outbox_SendAndRecv(ob);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");

@@ -1470,6 +1470,60 @@ void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s) {
 
 
 
+void AH_Job_Tan_SetLocalAccountInfo(AH_JOB *j,
+                                    const char *bankCode,
+                                    const char *accountId,
+                                    const char *accountSubId) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  if (bankCode && *bankCode)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "localAccount/bankCode", bankCode);
+  if (accountId && *accountId)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "localAccount/accountId", accountId);
+  if (accountSubId && *accountSubId)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "localAccount/accountSubId", accountSubId);
+}
+
+
+
+void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
+                                  const char *bankCode,
+                                  const char *accountId,
+                                  const char *accountSubId) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  if (bankCode && *bankCode)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "smsAccount/bankCode", bankCode);
+  if (accountId && *accountId)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "smsAccount/accountId", accountId);
+  if (accountSubId && *accountSubId)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "smsAccount/accountSubId", accountSubId);
+}
+
+
+
 int AH_Job_Tan_FinishSetup(AH_JOB *j) {
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *args;

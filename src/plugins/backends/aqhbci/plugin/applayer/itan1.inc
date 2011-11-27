@@ -34,6 +34,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_JOBQUEUE *jq;
   const char *challenge;
   GWEN_STRINGLIST *sl;
+  AB_ACCOUNT *acc=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 1");
 
@@ -50,6 +51,20 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   um=AH_Dialog_GetItanMethod(dlg);
   assert(um);
 
+  /* get account for HKTAN5 */
+  if (j) {
+    AH_JOB *aj;
+
+    aj=j;
+    while(aj) {
+      if (AH_AccountJob_IsAccountJob(aj))
+        break;
+      aj=AH_Job_List_Next(aj);
+    }
+    if (aj)
+      acc=AH_AccountJob_GetAccount(aj);
+  }
+
   /* prepare HKTAN */
   jTan=AH_Job_Tan_new(u, 1, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan) {
@@ -62,6 +77,24 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Setting up HKTAN from job [%s]",
            AH_Job_GetName(j));
+
+  if (acc) {
+    const char *baBankCode;
+    const char *baAccountId;
+    const char *baAccountSubId;
+
+    baBankCode=AB_Account_GetBankCode(acc);
+    baAccountId=AB_Account_GetAccountNumber(acc);
+    baAccountSubId=AB_Account_GetSubAccountId(acc);
+
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Setting local and sms bank account for HKTAN to %s/%s/%s",
+             baBankCode?baBankCode:"(none)",
+             baAccountId?baAccountId:"(none)",
+             baAccountSubId?baAccountSubId:"(none)");
+    AH_Job_Tan_SetLocalAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
+    AH_Job_Tan_SetSmsAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
+  }
 
   /* copy challenge params */
   sl=AH_Job_GetChallengeParams(j);

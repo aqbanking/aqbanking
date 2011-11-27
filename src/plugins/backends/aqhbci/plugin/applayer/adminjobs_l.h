@@ -167,6 +167,15 @@ void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i);
 
 void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s);
 
+void AH_Job_Tan_SetLocalAccountInfo(AH_JOB *j,
+                                    const char *bankCode,
+                                    const char *accountId,
+                                    const char *accountSubId);
+void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
+                                  const char *bankCode,
+                                  const char *accountId,
+                                  const char *accountSubId);
+
 int AH_Job_Tan_FinishSetup(AH_JOB *j);
 
 
