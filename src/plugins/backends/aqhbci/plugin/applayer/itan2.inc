@@ -30,6 +30,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_JOB *jTan2;
   AB_USER *u;
   const char *challenge;
+  const char *challengeHhd;
   AH_JOBQUEUE *qJob2=NULL;
 
   jl=AH_JobQueue_GetJobList(qJob);
@@ -154,6 +155,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+  challengeHhd=AH_Job_Tan_GetHhdChallenge(jTan1);
   challenge=AH_Job_Tan_GetChallenge(jTan1);
 
   /* prepare second message (the one with the TAN) */
@@ -164,15 +166,16 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   AH_Msg_SetItanHashMode(msg2, 0);
 
   /* ask for TAN */
-  if (challenge) {
+  if (challenge || challengeHhd) {
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_User_InputTanWithChallenge(u,
-				     challenge,
-				     tanBuffer,
-				     1,
- 	       			     sizeof(tanBuffer));
+    rv=AH_User_InputTanWithChallenge2(u,
+                                      challenge,
+                                      challengeHhd,
+                                      tanBuffer,
+                                      1,
+                                      sizeof(tanBuffer));
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg2);

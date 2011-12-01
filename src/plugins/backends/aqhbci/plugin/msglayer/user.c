@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,10 +25,12 @@
 #include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <ctype.h>
 
 
 GWEN_INHERIT(AB_USER, AH_USER)
@@ -1812,6 +1811,163 @@ void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i){
 
 
 
+
+void AH_User__CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf) {
+  const uint8_t *p;
+
+  p=code;
+  while(*p) {
+    uint8_t c;
+
+    c=toupper(*p);
+    if ( (c>='0' && c<='9') || (c>='A' && c<='Z') || c==',')
+      GWEN_Buffer_AppendByte(cbuf, c);
+    p++;
+  }
+}
+
+
+
+void AH_User__ExtractCode(GWEN_BUFFER *cbuf) {
+  const char *pStart=NULL;
+  const char *pEnd=NULL;
+
+  pStart=GWEN_Text_StrCaseStr(GWEN_Buffer_GetStart(cbuf), "CHLGUC");
+  if (pStart) {
+    pStart+=10; /* skip "CHLGUC" and following 4 digits */
+    pEnd=GWEN_Text_StrCaseStr(pStart, "CHLGTEXT");
+  }
+  if (pStart && pEnd) {
+    GWEN_Buffer_Crop(cbuf, pStart-GWEN_Buffer_GetStart(cbuf), pEnd-pStart);
+    GWEN_Buffer_SetPos(cbuf, 0);
+    GWEN_Buffer_InsertByte(cbuf, '0');
+    GWEN_Buffer_SetPos(cbuf, GWEN_Buffer_GetUsedBytes(cbuf));
+  }
+}
+
+
+
+int AH_User_InputTanWithChallenge2(AB_USER *u,
+				   const char *challenge,
+				   const char *challengeHhd,
+				   char *pwbuffer,
+				   int minLen,
+				   int maxLen){
+  int rv;
+  char buffer[1024];
+  const char *un;
+  const char *bn=NULL;
+  GWEN_BUFFER *nbuf;
+  GWEN_BUFFER *xbuf;
+  AB_BANKINFO *bi;
+  uint32_t iflags=0;
+
+  assert(u);
+  un=AB_User_GetUserId(u);
+  /* find bank name */
+  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
+			    "de",
+                            "*",
+			    AB_User_GetBankCode(u));
+  if (bi)
+    bn=AB_BankInfo_GetBankName(bi);
+  if (!bn)
+    AB_User_GetBankCode(u);
+
+  iflags=GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW;
+
+  buffer[0]=0;
+  buffer[sizeof(buffer)-1]=0;
+
+  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* text version */
+  snprintf(buffer, sizeof(buffer)-1,
+           I18N("Please enter the TAN\n"
+                "for user %s at %s.\n"), un, bn);
+  buffer[sizeof(buffer)-1]=0;
+  GWEN_Buffer_AppendString(xbuf, buffer);
+
+
+  if (challengeHhd && *challengeHhd) {
+    GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
+    GWEN_Buffer_AppendString(xbuf, challengeHhd);
+    GWEN_Buffer_AppendString(xbuf, "$OEND$");
+    iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
+
+    /* text version */
+    snprintf(buffer, sizeof(buffer)-1,
+	     I18N("Please enter the TAN\n"
+		  "for user %s at %s.\n"), un, bn);
+    buffer[sizeof(buffer)-1]=0;
+    GWEN_Buffer_AppendString(xbuf, buffer);
+    if (challenge && *challenge) {
+      GWEN_Buffer_AppendString(xbuf, challenge);
+      GWEN_Buffer_AppendString(xbuf, "\n");
+    }
+    else {
+      GWEN_Buffer_AppendString(xbuf, I18N("Please enter the TAN from the device."));
+    }
+  }
+  else if (challenge && *challenge) {
+    const char *s;
+
+    /* look for "CHLGUC" */
+    s=GWEN_Text_StrCaseStr(challenge, "CHLGUC");
+    if (s) {
+      GWEN_BUFFER *cbuf;
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+      /* compress code */
+      cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      AH_User__CompressCode((const uint8_t*) s, cbuf);
+      AH_User__ExtractCode(cbuf);
+
+      /* cbuf should now contain the optical code, extrace the text */
+      GWEN_Buffer_AppendString(tbuf, "$OBEGIN$");
+      GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(cbuf));
+      GWEN_Buffer_AppendString(tbuf, "$OEND$");
+      iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
+
+      GWEN_Buffer_free(cbuf);
+
+      s=GWEN_Text_StrCaseStr(challenge, "CHLGTEXT");
+      if (s) {
+	/* skip "CHLGTEXT" and 4 digits */
+	s+=12;
+	/* add rest of the message */
+	GWEN_Buffer_AppendString(tbuf, s);
+      }
+      else {
+	/* create own text */
+	GWEN_Buffer_AppendString(xbuf, I18N("Please enter the TAN from the device."));
+      }
+    }
+    else {
+      /* no optical challenge */
+      GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
+      GWEN_Buffer_AppendString(xbuf, "\n");
+      GWEN_Buffer_AppendString(xbuf, challenge);
+    }
+  }
+
+  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+  AH_User_MkTanName(u, challenge, nbuf);
+  rv=GWEN_Gui_GetPassword(iflags,
+			  GWEN_Buffer_GetStart(nbuf),
+			  I18N("Enter TAN"),
+			  GWEN_Buffer_GetStart(xbuf),
+			  pwbuffer,
+			  minLen,
+			  maxLen,
+			  0);
+  GWEN_Buffer_free(xbuf);
+  GWEN_Buffer_free(nbuf);
+  AB_BankInfo_free(bi);
+  return rv;
+}
 
 
 

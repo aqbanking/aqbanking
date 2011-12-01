@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -86,6 +83,14 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 				  char *pwbuffer,
 				  int minLen,
                                   int maxLen);
+
+/* for optical challenges */
+int AH_User_InputTanWithChallenge2(AB_USER *u,
+                                   const char *challenge,
+                                   const char *challengeHhd,
+                                   char *pwbuffer,
+                                   int minLen,
+                                   int maxLen);
 
 int AH_User_SetTanStatus(AB_USER *u,
 			 const char *challenge,

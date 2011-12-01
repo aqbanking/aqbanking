@@ -33,6 +33,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   GWEN_BUFFER *bHash;
   AH_JOBQUEUE *jq;
   const char *challenge;
+  const char *challengeHhd;
   GWEN_STRINGLIST *sl;
   AB_ACCOUNT *acc=NULL;
 
@@ -246,18 +247,20 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_JobQueue_free(jq);
     return rv;
   }
+  challengeHhd=AH_Job_Tan_GetHhdChallenge(jTan);
   challenge=AH_Job_Tan_GetChallenge(jTan);
 
   /* ask for TAN */
-  if (challenge) {
+  if (challenge || challengeHhd) {
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_User_InputTanWithChallenge(u,
-				     challenge,
-				     tanBuffer,
-				     1,
-                                     sizeof(tanBuffer));
+    rv=AH_User_InputTanWithChallenge2(u,
+                                      challenge,
+                                      challengeHhd,
+                                      tanBuffer,
+                                      1,
+                                      sizeof(tanBuffer));
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg1);

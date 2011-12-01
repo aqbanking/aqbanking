@@ -412,4 +412,3 @@ void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
 
 
 
-
