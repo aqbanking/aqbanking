@@ -134,6 +134,7 @@ static int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
 typedef struct AH_JOB_TAN AH_JOB_TAN;
 struct AH_JOB_TAN {
   char *challenge;
+  char *challengeHhd;
   char *reference;
   int tanMethod;
   char *tanMediumId;

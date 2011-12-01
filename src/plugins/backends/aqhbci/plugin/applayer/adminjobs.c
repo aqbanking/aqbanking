@@ -1236,6 +1236,7 @@ void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
   free(aj->tanMediumId);
   free(aj->reference);
   free(aj->challenge);
+  free(aj->challengeHhd);
   GWEN_FREE_OBJECT(aj);
 }
 
@@ -1286,6 +1287,23 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (s) {
         free(aj->challenge);
         aj->challenge=strdup(s);
+      }
+
+      /* get special HHD challenge */
+      if (GWEN_DB_VariableExists(dbTanResponse, "challengeHHD")) {
+	const uint8_t *p;
+	unsigned int l;
+
+	p=GWEN_DB_GetBinValue(dbTanResponse, "challengeHHD", 0, NULL, 0, &l);
+	if (p && l) {
+	  GWEN_BUFFER *bbuf;
+
+	  bbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	  GWEN_Text_ToHexBuffer((const char*) p, l, 0, 0, 0);
+	  free(aj->challengeHhd);
+	  aj->challengeHhd=strdup(GWEN_Buffer_GetStart(bbuf));
+	  GWEN_Buffer_free(bbuf);
+	}
       }
 
       s=GWEN_DB_GetCharValue(dbTanResponse, "jobReference", 0, 0);
@@ -1434,6 +1452,18 @@ const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
   assert(aj);
 
   return aj->challenge;
+}
+
+
+
+const char *AH_Job_Tan_GetHhdChallenge(const AH_JOB *j) {
+  AH_JOB_TAN *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  return aj->challengeHhd;
 }
 
 
