@@ -261,7 +261,6 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   AB_USER *mu;
   AB_ACCOUNT *ma;
   int rv;
-  uint32_t uFlags;
   uint32_t aFlags;
 
   assert(pro);
@@ -281,7 +280,6 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     return GWEN_ERROR_NOT_AVAILABLE;
   }
 
-  uFlags=AH_User_GetFlags(mu);
   aFlags=AH_Account_GetFlags(ma);
 
   mj=0;
@@ -484,7 +482,6 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   int sigs;
   int jobIsNew=1;
   AB_JOB_STATUS jst;
-  uint32_t uFlags;
   uint32_t aFlags;
 
   assert(pro);
@@ -526,7 +523,6 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     return GWEN_ERROR_NOT_AVAILABLE;
   }
 
-  uFlags=AH_User_GetFlags(mu);
   aFlags=AH_Account_GetFlags(ma);
 
   mj=0;
