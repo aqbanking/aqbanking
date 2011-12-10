@@ -22,6 +22,8 @@
 #include <aqhbci/provider.h>
 #include "adminjobs_l.h"
 
+#include "hhd_l.h"
+
 #include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/debug.h>
@@ -1891,7 +1893,12 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 
   if (challengeHhd && *challengeHhd) {
     GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
-    GWEN_Buffer_AppendString(xbuf, challengeHhd);
+    rv=AH_HHD14_Translate(challengeHhd, xbuf);
+    if (rv<0) {
+      GWEN_Buffer_free(xbuf);
+      AB_BankInfo_free(bi);
+      return rv;
+    }
     GWEN_Buffer_AppendString(xbuf, "$OEND$");
     iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
 
@@ -1915,30 +1922,23 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
     /* look for "CHLGUC" */
     s=GWEN_Text_StrCaseStr(challenge, "CHLGUC");
     if (s) {
-      GWEN_BUFFER *cbuf;
-      GWEN_BUFFER *tbuf;
-
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-      /* compress code */
-      cbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      AH_User__CompressCode((const uint8_t*) s, cbuf);
-      AH_User__ExtractCode(cbuf);
-
-      /* cbuf should now contain the optical code, extrace the text */
-      GWEN_Buffer_AppendString(tbuf, "$OBEGIN$");
-      GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(cbuf));
-      GWEN_Buffer_AppendString(tbuf, "$OEND$");
+      GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
+      rv=AH_HHD14_Translate(s, xbuf);
+      if (rv<0) {
+	GWEN_Buffer_free(xbuf);
+	AB_BankInfo_free(bi);
+	return rv;
+      }
+      GWEN_Buffer_AppendString(xbuf, "$OEND$");
       iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
 
-      GWEN_Buffer_free(cbuf);
-
+      /* extract text */
       s=GWEN_Text_StrCaseStr(challenge, "CHLGTEXT");
       if (s) {
 	/* skip "CHLGTEXT" and 4 digits */
 	s+=12;
 	/* add rest of the message */
-	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(xbuf, s);
       }
       else {
 	/* create own text */
