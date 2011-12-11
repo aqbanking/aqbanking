@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,6 +22,7 @@ struct AH_JOB {
   GWEN_INHERIT_ELEMENT(AH_JOB);
 
   char *name;
+  char *code;
   char *accountId;
   char *description;
 

@@ -1444,6 +1444,23 @@ void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p) {
 
 
 
+void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p) {
+  AH_JOB_TAN *aj;
+  GWEN_DB_NODE *dbArgs;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
+  assert(aj);
+
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "segmentId", p);
+}
+
+
+
 const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
   AH_JOB_TAN *aj;
 

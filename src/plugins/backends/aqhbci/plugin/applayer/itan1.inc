@@ -161,6 +161,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_Tan_SetHash(jTan,
 		     (const unsigned char*)GWEN_Buffer_GetStart(bHash),
 		     GWEN_Buffer_GetUsedBytes(bHash));
+  AH_Job_Tan_SetSegCode(jTan, AH_Job_GetCode(j));
 
   rv=AH_Job_Tan_FinishSetup(jTan);
   if (rv<0) {

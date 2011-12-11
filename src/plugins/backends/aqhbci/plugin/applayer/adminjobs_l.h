@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -173,6 +173,8 @@ void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
                                   const char *bankCode,
                                   const char *accountId,
                                   const char *accountSubId);
+
+void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p);
 
 int AH_Job_Tan_FinishSetup(AH_JOB *j);
 
