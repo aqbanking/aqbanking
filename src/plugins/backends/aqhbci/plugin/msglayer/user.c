@@ -1848,14 +1848,6 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  /* text version */
-  snprintf(buffer, sizeof(buffer)-1,
-           I18N("Please enter the TAN\n"
-                "for user %s at %s.\n"), un, bn);
-  buffer[sizeof(buffer)-1]=0;
-  GWEN_Buffer_AppendString(xbuf, buffer);
-
-
   if (challengeHhd && *challengeHhd) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", challengeHhd);
     GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
@@ -1898,6 +1890,13 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
       }
       GWEN_Buffer_AppendString(xbuf, "$OEND$");
       iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
+
+      /* text version */
+      snprintf(buffer, sizeof(buffer)-1,
+               I18N("Please enter the TAN\n"
+                    "for user %s at %s.\n"), un, bn);
+      buffer[sizeof(buffer)-1]=0;
+      GWEN_Buffer_AppendString(xbuf, buffer);
 
       /* extract text */
       s=GWEN_Text_StrCaseStr(challenge, "CHLGTEXT");
