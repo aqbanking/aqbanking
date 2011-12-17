@@ -121,6 +121,8 @@ const char *AH_Job_GetName(const AH_JOB *j);
 const char *AH_Job_GetAccountId(const AH_JOB *j);
 const char *AH_Job_GetDescription(const AH_JOB *j);
 
+const char *AH_Job_GetCode(const AH_JOB *j);
+
 int AH_Job_GetMinSignatures(const AH_JOB *j);
 int AH_Job_GetSecurityProfile(const AH_JOB *j);
 int AH_Job_GetSecurityClass(const AH_JOB *j);

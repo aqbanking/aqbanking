@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -113,7 +113,12 @@ AH_JOB *AH_Job_new(const char *name,
   noSysId=(atoi(GWEN_XMLNode_GetProperty(node, "nosysid", "0"))!=0);
   noItan=(atoi(GWEN_XMLNode_GetProperty(node, "noitan", "0"))!=0);
   paramName=GWEN_XMLNode_GetProperty(node, "params", "");
+
+  /* get and store segment code for later use in TAN jobs */
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
+  free(j->code);
+  if (segCode) j->code=strdup(segCode);
+  else j->code=NULL;
 
   if (bpd) {
     bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(u));
@@ -388,6 +393,7 @@ void AH_Job_free(AH_JOB *j) {
       GWEN_StringList_free(j->challengeParams);
       GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
+      free(j->code);
       free(j->name);
       free(j->accountId);
       free(j->dialogId);
@@ -415,8 +421,6 @@ int AH_Job_SampleBpdVersions(const char *name,
 			     AB_USER *u,
 			     GWEN_DB_NODE *dbResult) {
   GWEN_XMLNODE *node;
-  GWEN_XMLNODE *jobNode=0;
-  const char *segCode;
   const char *paramName;
   GWEN_DB_NODE *bpdgrp;
   const AH_BPD *bpd;
@@ -449,11 +453,9 @@ int AH_Job_SampleBpdVersions(const char *name,
 	     "Job \"%s\" not supported by local XML files", name);
     return GWEN_ERROR_NOT_FOUND;
   }
-  jobNode=node;
 
   /* get some properties */
   paramName=GWEN_XMLNode_GetProperty(node, "params", "");
-  segCode=GWEN_XMLNode_GetProperty(node, "code", "");
 
   if (bpd) {
     bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(u));
@@ -702,6 +704,14 @@ const char *AH_Job_GetName(const AH_JOB *j) {
   assert(j);
   assert(j->usage);
   return j->name;
+}
+
+
+
+const char *AH_Job_GetCode(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->code;
 }
 
 

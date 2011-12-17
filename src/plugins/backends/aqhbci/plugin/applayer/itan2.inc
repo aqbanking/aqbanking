@@ -50,6 +50,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     return -1;
   }
   AH_Job_Tan_SetTanMediumId(jTan1, AH_User_GetTanMediumId(u));
+  AH_Job_Tan_SetSegCode(jTan1, AH_Job_GetCode(j));
 
   /* copy signers */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
@@ -201,6 +202,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
   AH_Job_Tan_SetReference(jTan2, AH_Job_Tan_GetReference(jTan1));
   AH_Job_Tan_SetTanMediumId(jTan2, AH_User_GetTanMediumId(u));
+  AH_Job_Tan_SetSegCode(jTan2, AH_Job_GetCode(j));
 
   /* copy signers */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
