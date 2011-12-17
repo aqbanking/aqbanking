@@ -73,9 +73,6 @@ static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
 
 static void AH_User_LoadTanMethods(AB_USER *u);
 
-static void AH_User__CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf);
-static void AH_User__ExtractCode(GWEN_BUFFER *cbuf);
-
 
 #endif /* AH_USER_P_H */
 

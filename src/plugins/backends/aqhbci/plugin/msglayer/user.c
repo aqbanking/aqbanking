@@ -1814,41 +1814,6 @@ void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i){
 
 
 
-void AH_User__CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf) {
-  const uint8_t *p;
-
-  p=code;
-  while(*p) {
-    uint8_t c;
-
-    c=toupper(*p);
-    if ( (c>='0' && c<='9') || (c>='A' && c<='Z') || c==',')
-      GWEN_Buffer_AppendByte(cbuf, c);
-    p++;
-  }
-}
-
-
-
-void AH_User__ExtractCode(GWEN_BUFFER *cbuf) {
-  const char *pStart=NULL;
-  const char *pEnd=NULL;
-
-  pStart=GWEN_Text_StrCaseStr(GWEN_Buffer_GetStart(cbuf), "CHLGUC");
-  if (pStart) {
-    pStart+=10; /* skip "CHLGUC" and following 4 digits */
-    pEnd=GWEN_Text_StrCaseStr(pStart, "CHLGTEXT");
-  }
-  if (pStart && pEnd) {
-    GWEN_Buffer_Crop(cbuf, pStart-GWEN_Buffer_GetStart(cbuf), pEnd-pStart);
-    GWEN_Buffer_SetPos(cbuf, 0);
-    GWEN_Buffer_InsertByte(cbuf, '0');
-    GWEN_Buffer_SetPos(cbuf, GWEN_Buffer_GetUsedBytes(cbuf));
-  }
-}
-
-
-
 int AH_User_InputTanWithChallenge2(AB_USER *u,
 				   const char *challenge,
 				   const char *challengeHhd,
@@ -1892,6 +1857,7 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 
 
   if (challengeHhd && *challengeHhd) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", challengeHhd);
     GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
     rv=AH_HHD14_Translate(challengeHhd, xbuf);
     if (rv<0) {
@@ -1922,6 +1888,7 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
     /* look for "CHLGUC" */
     s=GWEN_Text_StrCaseStr(challenge, "CHLGUC");
     if (s) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains CHLGUC");
       GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
       rv=AH_HHD14_Translate(s, xbuf);
       if (rv<0) {
@@ -1947,6 +1914,7 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
     }
     else {
       /* no optical challenge */
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains no optical data");
       GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
       GWEN_Buffer_AppendString(xbuf, "\n");
       GWEN_Buffer_AppendString(xbuf, challenge);
