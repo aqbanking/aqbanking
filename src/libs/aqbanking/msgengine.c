@@ -56,10 +56,10 @@ GWEN_MSGENGINE *AB_MsgEngine_new(void){
 
 
 void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p){
-  GWEN_MSGENGINE *e;
+  //GWEN_MSGENGINE *e;
   AB_MSGENGINE *le;
 
-  e=(GWEN_MSGENGINE*)bp;
+  //e=(GWEN_MSGENGINE*)bp;
   le=(AB_MSGENGINE*)p;
 
   /* free all objects inside AB_MsgEngine */
@@ -339,7 +339,7 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
     int size;
     int condense;
     int kvk;
-    uint32_t vpos=0;
+    //uint32_t vpos=0;
 
     kvk=atoi(GWEN_XMLNode_GetProperty(node, "kvk", "0"));
     condense=atoi(GWEN_XMLNode_GetProperty(node, "condense", "1"));
@@ -360,8 +360,9 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
       }
     }
 
-    if (kvk)
-      vpos=GWEN_Buffer_GetPos(vbuf);
+    if (kvk) {
+//      vpos=GWEN_Buffer_GetPos(vbuf);
+    }
     if (condense) {
       GWEN_BUFFER *tbuf;
 
@@ -800,7 +801,7 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
     const char *p;
     unsigned int tagType;
     unsigned int tagLength;
-    const char *tagData;
+    //const char *tagData;
     unsigned int size;
     unsigned int pos;
     unsigned int j;
@@ -894,7 +895,7 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
     }
     pos++;
     tagLength=j;
-    tagData=p+pos;
+    //tagData=p+pos;
     GWEN_Buffer_SetPos(vbuf, pos);
 
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Tag: %02x (%d bytes)", tagType, tagLength);

@@ -403,7 +403,7 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 			   GWEN_SYNCIO *sio,
 			   GWEN_DB_NODE *params){
   AB_IMEXPORTER_YELLOWNET *ieh;
-  GWEN_DB_NODE *dbSubParams;
+  //GWEN_DB_NODE *dbSubParams;
   GWEN_XMLNODE *doc;
   GWEN_XMLNODE *node;
   int rv;
@@ -413,8 +413,8 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET, ie);
   assert(ieh);
 
-  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			       "params");
+//  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+//			       "params");
 
   doc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   ctxml=GWEN_XmlCtxStore_new(doc, GWEN_XML_FLAGS_HANDLE_HEADERS);

@@ -398,7 +398,7 @@ int AH_Msg_EncryptRdh1(AH_MSG *hmsg) {
   GWEN_MSGENGINE *e;
   AB_USER *u;
   const char *peerId;
-  uint32_t uFlags;
+//  uint32_t uFlags;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -418,7 +418,7 @@ int AH_Msg_EncryptRdh1(AH_MSG *hmsg) {
   gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  uFlags=AH_User_GetFlags(u);
+//  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
   if (!peerId || *peerId==0)
@@ -661,7 +661,7 @@ int AH_Msg_DecryptRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   GWEN_MSGENGINE *e;
   AB_USER *u;
   const char *peerId;
-  uint32_t uFlags;
+//  uint32_t uFlags;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -683,7 +683,7 @@ int AH_Msg_DecryptRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   gid=0;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  uFlags=AH_User_GetFlags(u);
+//  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
   if (!peerId || *peerId==0)

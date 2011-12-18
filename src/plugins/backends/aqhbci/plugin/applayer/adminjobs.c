@@ -100,10 +100,10 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
-  AH_JOB *j;
+//  AH_JOB *j;
   AH_JOB_GETKEYS *jd;
 
-  j=(AH_JOB*) bp;
+//  j=(AH_JOB*) bp;
   jd=(AH_JOB_GETKEYS*) p;
 
   GWEN_Crypt_Token_KeyInfo_free(jd->signKeyInfo);

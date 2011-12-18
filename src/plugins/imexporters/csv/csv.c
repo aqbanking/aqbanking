@@ -509,7 +509,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   const char *dateFormat;
   int inUtc;
   int usePosNegField;
-  int defaultIsPositive;
+  //int defaultIsPositive;
   int splitValueInOut;
   const char *posNegFieldName;
   const char *valueFormat;
@@ -525,7 +525,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 				  "YYYY/MM/DD");
   inUtc=GWEN_DB_GetIntValue(params, "utc", 0, 0);
   usePosNegField=GWEN_DB_GetIntValue(params, "usePosNegField", 0, 0);
-  defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
+  //defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
 				       "posNeg");
   splitValueInOut=GWEN_DB_GetIntValue(params, "splitValueInOut", 0, 0);

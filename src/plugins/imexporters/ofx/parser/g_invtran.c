@@ -88,14 +88,14 @@ char *AIO_OfxGroup_INVTRAN_GetDatum(const AIO_OFX_GROUP *g, int index) {
 /*Here to detect the start tags of the 3 data tags in this group.*/
 int AIO_OfxGroup_INVTRAN_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   AIO_OFX_GROUP_INVTRAN *xg;
-  GWEN_XML_CONTEXT *ctx;
+  //GWEN_XML_CONTEXT *ctx;
   int it;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRAN, g);
   assert(xg);
 
-  ctx=AIO_OfxGroup_GetXmlContext(g);
+  //ctx=AIO_OfxGroup_GetXmlContext(g);
 
   free(xg->currentElement);
   xg->currentElement=NULL;

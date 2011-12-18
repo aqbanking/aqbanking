@@ -41,7 +41,7 @@ int setItanMode(AB_BANKING *ab,
   const char *userId;
   const char *customerId;
   int itanMethod;
-  int itanMethodJobVersion;
+//  int itanMethodJobVersion;
   int itanMethodFunction;
   const GWEN_ARGS args[]={
   {
@@ -127,7 +127,7 @@ int setItanMode(AB_BANKING *ab,
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
   itanMethod=GWEN_DB_GetIntValue(db, "itanMethod", 0, -1);
-  itanMethodJobVersion=itanMethod / 1000;
+//  itanMethodJobVersion=itanMethod / 1000;
   itanMethodFunction=itanMethod % 1000;
   if (itanMethodFunction<900 || itanMethodFunction>999) {
     fprintf(stderr, "Only methods between x900 and x999 allowed\n");

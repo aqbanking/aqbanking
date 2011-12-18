@@ -482,7 +482,7 @@ int AB_Banking_ImportConf3(AB_BANKING *ab) {
 int AB_Banking_HasConf3(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
-  uint32_t pos;
+  //uint32_t pos;
   GWEN_DB_NODE *dbSettings;
   GWEN_DB_NODE *db;
   int rv;
@@ -501,7 +501,7 @@ int AB_Banking_HasConf3(AB_BANKING *ab) {
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Buffer_AppendString(nbuf, ".aqbanking");
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
-  pos=GWEN_Buffer_GetPos(nbuf);
+  //pos=GWEN_Buffer_GetPos(nbuf);
 
   GWEN_Buffer_AppendString(nbuf, "settings.conf");
 
@@ -603,7 +603,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab) {
   GWEN_DB_NODE *db;
   int rv;
   uint32_t highestUid=0;
-  uint32_t lastVersion;
+  //uint32_t lastVersion;
 
   rv=GWEN_Directory_GetHomeDirectory(home, sizeof(home)-1);
   if (rv<0) {
@@ -633,7 +633,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab) {
   }
 
   /* now the settings.conf has been read, copy stuff */
-  lastVersion=GWEN_DB_GetIntValue(dbSettings, "lastVersion", 0, 0);
+  //lastVersion=GWEN_DB_GetIntValue(dbSettings, "lastVersion", 0, 0);
 
   /* import backends */
   db=GWEN_DB_GetGroup(dbSettings,
@@ -895,7 +895,7 @@ int AB_Banking_ImportConf2(AB_BANKING *ab) {
 int AB_Banking_HasConf2(AB_BANKING *ab) {
   char home[256];
   GWEN_BUFFER *nbuf;
-  uint32_t pos;
+  //uint32_t pos;
   GWEN_DB_NODE *dbSettings;
   GWEN_DB_NODE *db;
   int rv;
@@ -914,7 +914,7 @@ int AB_Banking_HasConf2(AB_BANKING *ab) {
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Buffer_AppendString(nbuf, ".banking");
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
-  pos=GWEN_Buffer_GetPos(nbuf);
+  //pos=GWEN_Buffer_GetPos(nbuf);
 
   GWEN_Buffer_AppendString(nbuf, "settings.conf");
 

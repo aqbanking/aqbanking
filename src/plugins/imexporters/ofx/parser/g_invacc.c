@@ -152,13 +152,13 @@ void AIO_OfxGroup_INVACC_SetAccType(AIO_OFX_GROUP *g, const char *s) {
 
 int AIO_OfxGroup_INVACC_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   AIO_OFX_GROUP_INVACC *xg;
-  GWEN_XML_CONTEXT *ctx;
+  //GWEN_XML_CONTEXT *ctx;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_INVACC, g);
   assert(xg);
 
-  ctx=AIO_OfxGroup_GetXmlContext(g);
+  //ctx=AIO_OfxGroup_GetXmlContext(g);
   free(xg->currentElement);
   xg->currentElement=NULL;
   if (strcasecmp(tagName, "BANKID")==0 ||

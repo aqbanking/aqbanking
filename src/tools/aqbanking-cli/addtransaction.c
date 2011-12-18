@@ -35,7 +35,7 @@ int addTransaction(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
-  const char *country;
+//  const char *country;
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
@@ -222,7 +222,7 @@ int addTransaction(AB_BANKING *ab,
     return 0;
   }
 
-  country=GWEN_DB_GetCharValue(db, "country", 0, "de");
+//  country=GWEN_DB_GetCharValue(db, "country", 0, "de");
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);

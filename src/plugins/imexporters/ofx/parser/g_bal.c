@@ -127,13 +127,13 @@ void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_TIME *ti) {
 int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g,
 				 const char *tagName) {
   AIO_OFX_GROUP_BAL *xg;
-  GWEN_XML_CONTEXT *ctx;
+  //GWEN_XML_CONTEXT *ctx;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BAL, g);
   assert(xg);
 
-  ctx=AIO_OfxGroup_GetXmlContext(g);
+  //ctx=AIO_OfxGroup_GetXmlContext(g);
 
   if (strcasecmp(tagName, "BALAMT")==0 ||
       strcasecmp(tagName, "DTASOF")==0) {

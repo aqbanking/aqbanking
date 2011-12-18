@@ -337,7 +337,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
   int isDebitNote;
   int isEuro;
   unsigned int extSets;
-  unsigned int startPos;
+  //unsigned int startPos;
   AB_VALUE *val;
   GWEN_STRINGLIST *purposeList;
 
@@ -391,7 +391,7 @@ int AHB_DTAUS__CreateSetC(GWEN_BUFFER *dst,
     GWEN_Buffer_free(nbuf);
   } /* for */
 
-  startPos=GWEN_Buffer_GetPos(dst);
+  //startPos=GWEN_Buffer_GetPos(dst);
   GWEN_Buffer_AllocRoom(dst, 256);
 
   isDebitNote=(strcasecmp(GWEN_DB_GetCharValue(cfg, "type", 0, "transfer"),
@@ -820,15 +820,15 @@ int AHB_DTAUS__Export(GWEN_DBIO *dbio,
   GWEN_BUFFER *dst;
   GWEN_DB_NODE *gr;
   int isDebitNote;
-  int isEuro;
+  //int isEuro;
   const uint8_t *p;
   uint32_t size;
   int rv;
 
   isDebitNote=(strcasecmp(GWEN_DB_GetCharValue(cfg, "type", 0, "transfer"),
                           "debitnote")==0);
-  isEuro=(strcasecmp(GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"),
-                     "EUR")==0);
+  //isEuro=(strcasecmp(GWEN_DB_GetCharValue(cfg, "currency", 0, "EUR"),
+  //                   "EUR")==0);
   cSets=0;
   sumEUR=AB_Value_new();
   sumDEM=AB_Value_new();

@@ -113,7 +113,6 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   GWEN_MSGENGINE *e;
   AB_USER *su;
   uint32_t uFlags;
-  uint32_t gid;
   char pin[64];
   uint32_t tm;
 
@@ -123,8 +122,6 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
-
-  gid=0;
 
   su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(h),
 			 AH_PROVIDER_NAME,
@@ -344,8 +341,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
   GWEN_MSGENGINE *e;
   AB_USER *u;
   const char *peerId;
-  uint32_t uFlags;
-  uint32_t gid;
+//  uint32_t uFlags;
 
   assert(hmsg);
   h=AH_Dialog_GetHbci(hmsg->dialog);
@@ -354,10 +350,8 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  gid=0;
-
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  uFlags=AH_User_GetFlags(u);
+//  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
   if (!peerId || *peerId==0)
@@ -462,11 +456,10 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   GWEN_MSGENGINE *e;
   AB_USER *u;
   const char *peerId;
-  uint32_t uFlags;
+//  uint32_t uFlags;
   GWEN_DB_NODE *nhead=NULL;
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
-  uint32_t gid;
 
   assert(hmsg);
   h=AH_Dialog_GetHbci(hmsg->dialog);
@@ -475,10 +468,8 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  gid=0;
-
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  uFlags=AH_User_GetFlags(u);
+//  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
   if (!peerId || *peerId==0)
@@ -542,19 +533,16 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   int nonSigHeads;
   int nSigheads;
   unsigned int dataBegin;
-  char *dataStart;
-  unsigned int dataLength;
+//  char *dataStart;
+//  unsigned int dataLength;
   unsigned int i;
   AB_USER *u;
-  uint32_t gid;
 
   assert(hmsg);
   h=AH_Dialog_GetHbci(hmsg->dialog);
   assert(h);
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
-
-  gid=0;
 
   /* let's go */
   sigheads=GWEN_List_new();
@@ -614,7 +602,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
         GWEN_List_free(sigheads);
         return GWEN_ERROR_BAD_DATA;
       }
-      dataLength=currpos-dataBegin;
+//      dataLength=currpos-dataBegin;
       break;
     }
     n=GWEN_DB_GetNextGroup(n);
@@ -669,7 +657,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   /* ok, now verify all signatures */
-  dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
+//  dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
   for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
     GWEN_DB_NODE *sighead;
     GWEN_DB_NODE *sigtail;

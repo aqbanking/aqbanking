@@ -554,7 +554,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   int d1b, d2b, d3b;
   int neg;
   GWEN_TIME *ti;
-  char curr3=0;
+  //char curr3=0;
   const char *currency;
 
   p=AHB_SWIFT_Tag_GetData(tg);
@@ -667,7 +667,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   }
   if (!isdigit(*p)) {
     /* found third character, skip it */
-    curr3=*p;
+    //curr3=*p;
     p++;
     bleft--;
   }

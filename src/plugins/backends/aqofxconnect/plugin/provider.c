@@ -779,7 +779,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
   int rv;
   AB_USER *u;
   AB_ACCOUNT *a;
-  time_t t=0;
+//  time_t t=0;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
@@ -793,11 +793,11 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_JOB *j,
 
   /* get from time */
   if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
-    const GWEN_TIME *ti;
+//    const GWEN_TIME *ti;
 
-    ti=AB_JobGetTransactions_GetFromTime(j);
-    if (ti)
-      t=GWEN_Time_toTime_t(ti);
+//    ti=AB_JobGetTransactions_GetFromTime(j);
+//    if (ti)
+//      t=GWEN_Time_toTime_t(ti);
   }
 
   reqbuf=GWEN_Buffer_new(0, 2048, 0, 1);

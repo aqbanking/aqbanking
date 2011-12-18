@@ -998,13 +998,14 @@ int readMSMFiles(const char *path,
     nProvider=GWEN_XMLNode_FindFirstTag(n, "prov", 0, 0);
     if (nProvider) {
       const char *guid;
-      int isCross=0;
+      //int isCross=0;
 
       guid=GWEN_XMLNode_GetCharValue(nProvider, "CrossRefGuid", 0);
       if (!guid || !*guid)
 	guid=GWEN_XMLNode_GetCharValue(nProvider, "guid", 0);
-      else
-	isCross=1;
+      else {
+        //isCross=1;
+      }
       if (guid) {
 	FILE *f;
 

@@ -406,8 +406,8 @@ int dumpNode(GWEN_XMLNODE *n,
       // found a group
       unsigned int minnum;
       unsigned int maxnum;
-      unsigned int minsize;
-      unsigned int maxsize;
+//      unsigned int minsize;
+//      unsigned int maxsize;
       const char *type;
       const char *path;
       bool hide;
@@ -417,8 +417,8 @@ int dumpNode(GWEN_XMLNODE *n,
 
       minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
       maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum", "1"));
-      minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize", "1"));
-      maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize", "1"));
+//      minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize", "1"));
+//      maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize", "1"));
       hide=atoi(GWEN_XMLNode_GetProperty(n, "hide", "0"));
       type=GWEN_XMLNode_GetProperty(n, "type", "1");
 

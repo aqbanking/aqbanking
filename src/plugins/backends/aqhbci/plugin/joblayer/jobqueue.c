@@ -902,9 +902,9 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
           dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
           while(dbResult) {
-            int rcode;
+//            int rcode;
 
-	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+//	    rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
 	    /* nothing to do right now */
 	    dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
 	  } /* while */
