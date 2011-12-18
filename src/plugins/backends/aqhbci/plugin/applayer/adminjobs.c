@@ -26,6 +26,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -1299,7 +1300,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	  GWEN_BUFFER *bbuf;
 
 	  bbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  GWEN_Text_ToHexBuffer((const char*) p, l, 0, 0, 0);
+          GWEN_Text_ToHexBuffer((const char*) p, l, bbuf, 0, 0, 0);
 	  free(aj->challengeHhd);
 	  aj->challengeHhd=strdup(GWEN_Buffer_GetStart(bbuf));
 	  GWEN_Buffer_free(bbuf);
