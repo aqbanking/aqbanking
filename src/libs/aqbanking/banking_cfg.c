@@ -97,7 +97,7 @@ int AB_Banking_HasConf4(AB_BANKING *ab) {
   /* check for config manager (created by AB_Banking_Init) */
   if (ab->configMgr==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
+	      "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -399,6 +399,13 @@ int AB_Banking_LockPluginConfig(AB_BANKING *ab,
   if (pluginName && name) {
     int rv;
 
+    /* check for config manager (created by AB_Banking_Init) */
+    if (ab->configMgr==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
+      return GWEN_ERROR_GENERIC;
+    }
+
     rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, pluginName, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -689,7 +696,7 @@ int AB_Banking_LoadConfig(AB_BANKING *ab) {
   /* check for config manager (created by AB_Banking_Init) */
   if (ab->configMgr==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
+	      "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
     return GWEN_ERROR_GENERIC;
   }
 

@@ -151,6 +151,13 @@ int AB_Banking_ImportConf3(AB_BANKING *ab) {
   uint32_t highestUid=0;
   uint32_t lastVersion;
 
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
+    return GWEN_ERROR_GENERIC;
+  }
+
   rv=GWEN_Directory_GetHomeDirectory(home, sizeof(home)-1);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -604,6 +611,13 @@ int AB_Banking_ImportConf2(AB_BANKING *ab) {
   int rv;
   uint32_t highestUid=0;
   //uint32_t lastVersion;
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
+    return GWEN_ERROR_GENERIC;
+  }
 
   rv=GWEN_Directory_GetHomeDirectory(home, sizeof(home)-1);
   if (rv<0) {
