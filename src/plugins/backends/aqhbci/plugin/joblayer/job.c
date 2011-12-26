@@ -117,7 +117,7 @@ AH_JOB *AH_Job_new(const char *name,
   /* get and store segment code for later use in TAN jobs */
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
   free(j->code);
-  if (segCode) j->code=strdup(segCode);
+  if (segCode && *segCode) j->code=strdup(segCode);
   else j->code=NULL;
 
   if (bpd) {
