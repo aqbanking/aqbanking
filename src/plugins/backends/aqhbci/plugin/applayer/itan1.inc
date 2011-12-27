@@ -34,7 +34,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_JOBQUEUE *jq;
   const char *challenge;
   const char *challengeHhd;
-  GWEN_STRINGLIST *sl;
+  //GWEN_STRINGLIST *sl;
   AB_ACCOUNT *acc=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 1");
@@ -97,6 +97,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_Job_Tan_SetSmsAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
   }
 
+#if 0
   /* copy challenge params */
   sl=AH_Job_GetChallengeParams(j);
   if (sl) {
@@ -114,6 +115,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   /* copy challenge amount */
   AH_Job_SetChallengeValue(jTan, AH_Job_GetChallengeValue(j));
+#endif
 
   /* copy challenge class */
   AH_Job_SetChallengeClass(jTan, AH_Job_GetChallengeClass(j));
@@ -163,7 +165,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 		     GWEN_Buffer_GetUsedBytes(bHash));
   AH_Job_Tan_SetSegCode(jTan, AH_Job_GetCode(j));
 
-  rv=AH_Job_Tan_FinishSetup(jTan);
+  rv=AH_Job_Tan_FinishSetup(jTan, j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);

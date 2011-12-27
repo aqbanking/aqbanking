@@ -26,6 +26,8 @@ struct AH_JOB {
   char *accountId;
   char *description;
 
+  int segmentVersion;
+
   int challengeClass;
 
   char *expectedSigner;
@@ -66,6 +68,8 @@ struct AH_JOB {
   AH_JOB_EXCHANGE_FN exchangeFn;
 
   AH_JOB_NEXTMSG_FN nextMsgFn;
+
+  AH_JOB_ADDCHALLENGEPARAMS_FN addChallengeParamsFn;
 
   AH_RESULT_LIST *segResults;
   AH_RESULT_LIST *msgResults;

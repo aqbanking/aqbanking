@@ -1183,11 +1183,11 @@
  >
    <GROUP type="SegHead" name="head" />
    <ELEM name="process" type="num" size="1" />
-   <ELEM name="segmentId" type="ascii" size="6" minnum="0" />
+   <ELEM name="segmentId" type="ascii" maxsize="6" minnum="0" />
    <GROUP type="kti" name="localAccount" version="1" minnum="0" />
    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+   <ELEM name="tanList" type="ascii" maxsize="20" minnum="0" />
    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
    <GROUP type="kti" name="smsAccount" version="1" minnum="0" />

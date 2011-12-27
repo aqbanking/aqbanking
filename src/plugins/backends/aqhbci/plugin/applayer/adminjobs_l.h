@@ -176,7 +176,7 @@ void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
 
 void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p);
 
-int AH_Job_Tan_FinishSetup(AH_JOB *j);
+int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob);
 
 
 /* __________________________________________________________________________

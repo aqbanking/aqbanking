@@ -87,6 +87,9 @@ typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 				  AB_IMEXPORTER_CONTEXT *ctx);
 typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 
+typedef int (*AH_JOB_ADDCHALLENGEPARAMS_FN)(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+
+
 /**
  * This function is called on multi-message jobs and should return:
  * <ul>
@@ -199,6 +202,14 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock);
 
 int AH_Job_Prepare(AH_JOB *j);
 
+/**
+ * This function lets the job add its challenge parameters itself.
+ * Unfortunately this is needed, because the ZKA decided to make FinTS
+ * even more complicated than it already is :-/
+ * For some HKTAN versions the list of parameters differs from others.
+ */
+int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+
 /*@}*/
 
 
@@ -211,6 +222,7 @@ void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f);
 void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f);
 void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
 void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f);
+void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f);
 /*@}*/
 
 
@@ -291,6 +303,8 @@ int AH_Job_SampleBpdVersions(const char *name,
 			     GWEN_DB_NODE *dbResult);
 
 int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion);
+
+int AH_Job_GetSegmentVersion(const AH_JOB *j);
 
 #endif /* AH_JOB_L_H */
 

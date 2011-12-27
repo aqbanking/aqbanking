@@ -241,6 +241,7 @@ AH_JOB *AH_Job_new(const char *name,
       DBG_INFO(AQHBCI_LOGDOMAIN, "Highest version is %d", highestVersion);
       GWEN_DB_AddGroupChildren(j->jobParams, jobBPD);
       /* sample some variables from BPD jobs */
+      j->segmentVersion=highestVersion;
       j->minSigs=GWEN_DB_GetIntValue(jobBPD, "minsigs", 0, 0);
       j->secProfile=GWEN_DB_GetIntValue(jobBPD, "secProfile", 0, 1);
       j->secClass=GWEN_DB_GetIntValue(jobBPD, "securityClass", 0, 0);
@@ -562,6 +563,14 @@ int AH_Job_GetChallengeClass(const AH_JOB *j) {
   assert(j);
   assert(j->usage);
   return j->challengeClass;
+}
+
+
+
+int AH_Job_GetSegmentVersion(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->segmentVersion;
 }
 
 
@@ -1136,6 +1145,19 @@ int AH_Job_Prepare(AH_JOB *j){
 
 
 
+int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+  assert(j);
+  assert(j->usage);
+  if (j->addChallengeParamsFn)
+    return j->addChallengeParamsFn(j, hkTanVer, dbMethod);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No addChallengeParamsFn set");
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+}
+
+
+
 void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f){
   assert(j);
   assert(j->usage);
@@ -1172,6 +1194,14 @@ void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f) {
   assert(j);
   assert(j->usage);
   j->prepareFn=f;
+}
+
+
+
+void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f) {
+  assert(j);
+  assert(j->usage);
+  j->addChallengeParamsFn=f;
 }
 
 

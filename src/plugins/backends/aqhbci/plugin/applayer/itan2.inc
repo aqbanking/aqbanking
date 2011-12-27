@@ -33,6 +33,8 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   const char *challengeHhd;
   AH_JOBQUEUE *qJob2=NULL;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 2");
+
   jl=AH_JobQueue_GetJobList(qJob);
   assert(jl);
   assert(AH_Job_List_GetCount(jl)==1);

@@ -40,6 +40,8 @@
 
 /*#define CHALLENGE_ADD_ONLY_PREKOMMA_VALUES*/
 
+#define AH_MULTI_CHALLENGE_CLASS_HKSUB 12
+#define AH_MULTI_CHALLENGE_CLASS_HKSLA 19
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_MULTITRANSFER);
@@ -53,7 +55,7 @@ AH_JOB *AH_Job_MultiTransfer_new(AB_USER *u,
 
   j=AH_Job_MultiTransferBase_new(u, account, 1);
   if (j)
-    AH_Job_SetChallengeClass(j, 50);
+    AH_Job_SetChallengeClass(j, AH_MULTI_CHALLENGE_CLASS_HKSUB);
   return j;
 }
 
@@ -66,7 +68,7 @@ AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *u,
 
   j=AH_Job_MultiTransferBase_new(u, account, 0);
   if (j)
-    AH_Job_SetChallengeClass(j, 50);
+    AH_Job_SetChallengeClass(j, AH_MULTI_CHALLENGE_CLASS_HKSLA);
   return j;
 }
 
@@ -94,12 +96,14 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
                        AH_Job_MultiTransfer_FreeData);
   aj->isTransfer=isTransfer;
   aj->sumRemoteAccountId=AB_Value_new();
+  aj->sumRemoteBankCode=AB_Value_new();
   aj->sumValues=AB_Value_new();
 
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_MultiTransfer_Process);
   AH_Job_SetExchangeFn(j, AH_Job_MultiTransfer_Exchange);
   AH_Job_SetPrepareFn(j, AH_Job_MultiTransfer_Prepare);
+  AH_Job_SetAddChallengeParamsFn(j, AH_Job_MultiTransfer_AddChallengeParams);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -149,6 +153,7 @@ void GWENHYWFAR_CB AH_Job_MultiTransfer_FreeData(void *bp, void *p){
   aj=(AH_JOB_MULTITRANSFER*)p;
 
   AB_Value_free(aj->sumValues);
+  AB_Value_free(aj->sumRemoteBankCode);
   AB_Value_free(aj->sumRemoteAccountId);
 
   GWEN_FREE_OBJECT(aj);
@@ -531,6 +536,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	char tbuf[11];
         AB_VALUE *tv;
 
+        /* sum up account ids */
 	s=AB_Transaction_GetRemoteAccountNumber(t);
 	assert(s);
         tbuf[0]=0;
@@ -538,6 +544,16 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	tv=AB_Value_fromString(tbuf);
 	assert(tv);
 	AB_Value_AddValue(aj->sumRemoteAccountId, tv);
+	AB_Value_free(tv);
+
+        /* sum up bank codes */
+        s=AB_Transaction_GetRemoteBankCode(t);
+	assert(s);
+        tbuf[0]=0;
+	strncat(tbuf, s, 10);
+	tv=AB_Value_fromString(tbuf);
+	assert(tv);
+	AB_Value_AddValue(aj->sumRemoteBankCode, tv);
 	AB_Value_free(tv);
 
 #ifdef CHALLENGE_ADD_ONLY_PREKOMMA_VALUES
@@ -664,30 +680,107 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 int AH_Job_MultiTransfer_Prepare(AH_JOB *j){
+#if 0
+  /* this code should no longer be needed since we use
+   * AH_Job_MultiTransfer_AddChallengeParams now */
+
   AH_JOB_MULTITRANSFER *aj;
   GWEN_BUFFER *tbuf;
   char *p;
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Prepare function called");
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Prepare function called");
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
   assert(aj);
 
-  AH_Job_SetChallengeClass(j, 50);
-
   tbuf=GWEN_Buffer_new(0, 32, 0, 1);
 
   /* set challenge parameter */
+
+  /* add sum of account numbers */
   AB_Value_toHumanReadableString2(aj->sumRemoteAccountId,
 				  tbuf, 0, 0);
   p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
   if (p)
     *p=0;
   AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  /* add sum of bank codes */
+  AB_Value_toHumanReadableString2(aj->sumRemoteBankCode,
+                                  tbuf, 0, 0);
+  p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
+  if (p)
+    *p=0;
+  AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+
+
   GWEN_Buffer_free(tbuf);
 
+  if (aj->sumValues) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting value");
+  }
   AH_Job_SetChallengeValue(j, aj->sumValues);
+
+#endif
+
+  return 0;
+}
+
+
+
+int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+  AH_JOB_MULTITRANSFER *aj;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
+  assert(aj);
+
+  /* set challenge parameter */
+  if (hkTanVer>=5) {
+    GWEN_BUFFER *tbuf;
+    char *p;
+    char numbuf[16];
+
+    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+
+    /* add number of transfers */
+    snprintf(numbuf, sizeof(numbuf)-1, "%d", aj->transferCount);
+    numbuf[sizeof(numbuf)-1]=0;
+    AH_Job_AddChallengeParam(j, numbuf);
+
+    /* add sum of amount */
+    AH_Job_ValueToChallengeString(aj->sumValues, tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* add sum of account numbers */
+    AB_Value_toHumanReadableString2(aj->sumRemoteAccountId,
+                                    tbuf, 0, 0);
+    p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
+    if (p)
+      *p=0;
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* add sum of bank codes */
+    AB_Value_toHumanReadableString2(aj->sumRemoteBankCode,
+                                    tbuf, 0, 0);
+    p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
+    if (p)
+      *p=0;
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+
+    /* done */
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled HKTAN segment version %d for now", hkTanVer);
+    return GWEN_ERROR_INTERNAL;
+  }
 
   return 0;
 }
