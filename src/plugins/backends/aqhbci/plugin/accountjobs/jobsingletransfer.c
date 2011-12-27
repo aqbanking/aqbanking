@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -242,6 +239,8 @@ void GWENHYWFAR_CB AH_Job_SingleTransfer_FreeData(void *bp, void *p){
   aj=(AH_JOB_SINGLETRANSFER*)p;
   free(aj->fiid);
   free(aj->oldFiid);
+
+  AB_Transaction_free(aj->validatedTransaction);
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -1741,6 +1740,8 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
       /* set challenge parameters */
       AH_Job_SingleTransfer_AddChallengeParams(j, bj, t);
+      AB_Transaction_Attach(t);
+      aj->validatedTransaction=t;
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");

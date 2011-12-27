@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,6 +21,7 @@ struct AH_JOB_SINGLETRANSFER {
   AB_JOB_TYPE jobType;
   char *fiid;
   char *oldFiid;
+  AB_TRANSACTION *validatedTransaction;
 };
 static void GWENHYWFAR_CB AH_Job_SingleTransfer_FreeData(void *bp, void *p);
 static int AH_Job_SingleTransfer_Process(AH_JOB *j,
