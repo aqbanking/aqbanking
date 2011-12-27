@@ -30,6 +30,7 @@
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 
 #define PAGE_BEGIN     0
@@ -551,6 +552,20 @@ void AH_PinTanDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
+static void removeAllSpaces(uint8_t *s) {
+  uint8_t *d;
+
+  d=s;
+  while(*s) {
+    if (*s>33)
+      *(d++)=*s;
+    s++;
+  }
+  *d=0;
+}
+
+
+
 int AH_PinTanDialog_GetBankPageData(GWEN_DIALOG *dlg) {
   AH_PINTAN_DIALOG *xdlg;
   const char *s;
@@ -560,22 +575,44 @@ int AH_PinTanDialog_GetBankPageData(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_bankcode_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetBankCode(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    AH_PinTanDialog_SetBankCode(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing bank code");
     return GWEN_ERROR_NO_DATA;
   }
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_bankname_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetBankName(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    AH_PinTanDialog_SetBankName(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else
     AH_PinTanDialog_SetBankName(dlg, NULL);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_url_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetUrl(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    AH_PinTanDialog_SetUrl(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing URL");
     return GWEN_ERROR_NO_DATA;
@@ -595,24 +632,45 @@ int AH_PinTanDialog_GetUserPageData(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_username_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetUserName(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    AH_PinTanDialog_SetUserName(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing user name");
     return GWEN_ERROR_NO_DATA;
   }
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_userid_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetUserId(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    AH_PinTanDialog_SetUserId(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing user id");
     return GWEN_ERROR_NO_DATA;
   }
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_customerid_edit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s)
-    AH_PinTanDialog_SetCustomerId(dlg, s);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    AH_PinTanDialog_SetCustomerId(dlg, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   else
     AH_PinTanDialog_SetCustomerId(dlg, NULL);
 
