@@ -1584,7 +1584,6 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
   GWEN_DB_NODE *args;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbMethod;
-  GWEN_STRINGLIST *sl;
   const char *s;
 
   assert(j);
@@ -1622,10 +1621,17 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
 
   rv=AH_Job_AddChallengeParams(accJob, AH_Job_GetSegmentVersion(j), dbMethod);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+    if (rv==GWEN_ERROR_NOT_SUPPORTED) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Challenge parameters not supported by job, ignoring");
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
   else {
+    GWEN_STRINGLIST *sl;
+
     /* add challenge params as provided by addChallengeParams function */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Using result of AddChallengeParams function");
     sl=AH_Job_GetChallengeParams(accJob);
