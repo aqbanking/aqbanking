@@ -1456,8 +1456,14 @@ void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p) {
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "segmentId", p);
+  if (p && *p) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting segment id in TAN to [%s]", p);
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "segmentId", p);
+  }
+  else {
+    GWEN_DB_DelVariable(dbArgs, "segmentId");
+  }
 }
 
 
