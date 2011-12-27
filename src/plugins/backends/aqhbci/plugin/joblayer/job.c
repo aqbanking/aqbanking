@@ -45,7 +45,7 @@ AH_JOB *AH_Job_new(const char *name,
   GWEN_XMLNODE *jobNode=0;
   GWEN_XMLNODE *msgNode;
   GWEN_XMLNODE *descrNode;
-  const char *segCode;
+  const char *segCode=NULL;
   const char *paramName;
   int needsBPD;
   int needTAN;
