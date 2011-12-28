@@ -987,7 +987,7 @@
    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
-   <ELEM name="challengeClass" type="num" size="2" minnum="0" />
+   <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
    
    <VALUES>
@@ -1056,7 +1056,7 @@
    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
-   <ELEM name="challengeClass" type="num" size="2" minnum="0" />
+   <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
    
@@ -1122,7 +1122,7 @@
    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
    <GROUP type="kti" name="smsAccount" version="1" minnum="0" />
-   <ELEM name="challengeClass" type="num" size="2" minnum="0" />
+   <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
    
@@ -1191,7 +1191,7 @@
    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
    <GROUP type="kti" name="smsAccount" version="1" minnum="0" />
-   <ELEM name="challengeClass" type="num" size="2" minnum="0" />
+   <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
    
@@ -1205,14 +1205,14 @@
  <SEGdef id="TanResponse" code="HITAN" version="5" delimiter="+"
          terminator="'">
    <GROUP type="SegHead" name="head" />
-   <ELEM name="process" type="num" size="1" />
+   <ELEM name="process" type="num" maxsize="1" />
    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
    <ELEM name="challenge" type="ascii" minnum="0" />
    <ELEM name="challengeHHD" type="bin" maxsize="128" minnum="0" />
    <ELEM name="expireDate" type="ascii" minnum="0" />
-   <ELEM name="tanList" type="ascii" size="20" minnum="0" />
-   <ELEM name="ben" type="ascii" size="20" minnum="0" maxnum="99" />
+   <ELEM name="tanList" type="ascii" maxsize="20" minnum="0" />
+   <ELEM name="ben" type="ascii" maxsize="20" minnum="0" maxnum="99" />
    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
    
    <VALUES>

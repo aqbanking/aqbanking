@@ -35,6 +35,10 @@ typedef struct AH_JOB AH_JOB;
 #define AH_JOB_FLAGS_NEEDTAN              0x40000000
 #define AH_JOB_FLAGS_OUTBOX               0x80000000
 
+#define AH_JOB_TANVER_1_4 0x14
+#define AH_JOB_TANVER_1_3 0x13
+
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>

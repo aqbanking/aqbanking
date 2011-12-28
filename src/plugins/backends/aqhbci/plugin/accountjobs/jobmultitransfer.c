@@ -44,6 +44,11 @@
 #define AH_MULTI_CHALLENGE_CLASS_HKSLA 19
 
 
+/* this changes the list of challenge params sent */
+#define FIDUCIA_HACK1
+
+
+
 GWEN_INHERIT(AH_JOB, AH_JOB_MULTITRANSFER);
 
 
@@ -729,9 +734,16 @@ int AH_Job_MultiTransfer_Prepare(AH_JOB *j){
 }
 
 
-
+// TODO: korrigieren gemaess TANve1.4, hier auch testen, ob 1.4 oder andere Version verwendet wird
 int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
   AH_JOB_MULTITRANSFER *aj;
+  const char *s;
+  int tanVer=AH_JOB_TANVER_1_4;
+#ifdef FIDUCIA_HACK1
+  char *p;
+#else
+  AB_ACCOUNT *acc=NULL;
+#endif
 
   DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
 
@@ -739,23 +751,42 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
   assert(aj);
 
+  s=GWEN_DB_GetCharValue(dbMethod, "zkaTanVersion", 0, NULL);
+  if (s && *s && strncasecmp(s, "1.3", 3)==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
+    tanVer=AH_JOB_TANVER_1_3;
+  }
+
   /* set challenge parameter */
-  if (hkTanVer>=5) {
+  if (tanVer==AH_JOB_TANVER_1_4) {
     GWEN_BUFFER *tbuf;
-    char *p;
     char numbuf[16];
 
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
     tbuf=GWEN_Buffer_new(0, 32, 0, 1);
 
-    /* add number of transfers */
+    if (aj->isTransfer)
+      AH_Job_SetChallengeClass(j, 12);
+    else
+      AH_Job_SetChallengeClass(j, 19);
+
+    /* P1: number of transfers */
     snprintf(numbuf, sizeof(numbuf)-1, "%d", aj->transferCount);
     numbuf[sizeof(numbuf)-1]=0;
     AH_Job_AddChallengeParam(j, numbuf);
 
-    /* add sum of amount */
+    /* P2: sum of amount */
     AH_Job_ValueToChallengeString(aj->sumValues, tbuf);
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
+
+#ifdef FIDUCIA_HACK1
+    /* TODO:
+     * This shouldn't work according to "Belegungsrichtlinien TANve1.4",
+     * but for whatever reason the FIDUCIA only works with this code.
+     * P3 should be "Local Account", but it is rather the sum of all
+     * partner accounts used in the list of transactions...
+     */
 
     /* add sum of account numbers */
     AB_Value_toHumanReadableString2(aj->sumRemoteAccountId,
@@ -774,11 +805,24 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
       *p=0;
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
 
+#else
+    /* TODO:
+     * This is how it should be done according to the specs...
+     */
+
+    /* P3: local account number */
+    acc=AH_AccountJob_GetAccount(j);
+    assert(acc);
+    s=AB_Account_GetAccountNumber(acc);
+    if (s && *s)
+      AH_Job_AddChallengeParam(j, s);
+#endif
+
     /* done */
     GWEN_Buffer_free(tbuf);
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled HKTAN segment version %d for now", hkTanVer);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version %d for now", tanVer);
     return GWEN_ERROR_INTERNAL;
   }
 

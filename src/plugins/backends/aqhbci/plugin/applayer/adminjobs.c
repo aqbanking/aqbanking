@@ -1613,12 +1613,6 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
     return GWEN_ERROR_GENERIC;
   }
   
-  /* set challenge class */
-  s=GWEN_DB_GetCharValue(dbMethod, "needChallengeClass", 0, "N");
-  if (strcasecmp(s, "J")==0)
-    GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"challengeClass", AH_Job_GetChallengeClass(j));
-
   rv=AH_Job_AddChallengeParams(accJob, AH_Job_GetSegmentVersion(j), dbMethod);
   if (rv<0) {
     if (rv==GWEN_ERROR_NOT_SUPPORTED) {
@@ -1647,6 +1641,12 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
       }
     }
   }
+
+  /* set challenge class */
+  s=GWEN_DB_GetCharValue(dbMethod, "needChallengeClass", 0, "N");
+  if (strcasecmp(s, "J")==0)
+    GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "challengeClass", AH_Job_GetChallengeClass(accJob));
 
   return 0;
 }
