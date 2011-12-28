@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -43,9 +40,6 @@
 #define AH_MULTI_CHALLENGE_CLASS_HKSUB 12
 #define AH_MULTI_CHALLENGE_CLASS_HKSLA 19
 
-
-/* this changes the list of challenge params sent */
-#define FIDUCIA_HACK1
 
 
 
@@ -739,11 +733,8 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
   AH_JOB_MULTITRANSFER *aj;
   const char *s;
   int tanVer=AH_JOB_TANVER_1_4;
-#ifdef FIDUCIA_HACK1
   char *p;
-#else
   AB_ACCOUNT *acc=NULL;
-#endif
 
   DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
 
@@ -780,13 +771,27 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
 
-#ifdef FIDUCIA_HACK1
-    /* TODO:
-     * This shouldn't work according to "Belegungsrichtlinien TANve1.4",
-     * but for whatever reason the FIDUCIA only works with this code.
-     * P3 should be "Local Account", but it is rather the sum of all
-     * partner accounts used in the list of transactions...
-     */
+    /* P3: local account number */
+    acc=AH_AccountJob_GetAccount(j);
+    assert(acc);
+    s=AB_Account_GetAccountNumber(acc);
+    if (s && *s) {
+      int i;
+
+      i=10-strlen(s);
+      GWEN_Buffer_AppendString(tbuf, s);
+      if (i>0) {
+        GWEN_Buffer_Rewind(tbuf);
+        GWEN_Buffer_FillLeftWithBytes(tbuf, '0', i);
+      }
+      AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No account number");
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_INVALID;
+    }
 
     /* add sum of account numbers */
     AB_Value_toHumanReadableString2(aj->sumRemoteAccountId,
@@ -794,29 +799,11 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
     p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
     if (p)
       *p=0;
+    /* only use first 10 digits */
+    GWEN_Buffer_Crop(tbuf, 0, 10);
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
 
-    /* add sum of bank codes */
-    AB_Value_toHumanReadableString2(aj->sumRemoteBankCode,
-                                    tbuf, 0, 0);
-    p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
-    if (p)
-      *p=0;
-    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
-
-#else
-    /* TODO:
-     * This is how it should be done according to the specs...
-     */
-
-    /* P3: local account number */
-    acc=AH_AccountJob_GetAccount(j);
-    assert(acc);
-    s=AB_Account_GetAccountNumber(acc);
-    if (s && *s)
-      AH_Job_AddChallengeParam(j, s);
-#endif
 
     /* done */
     GWEN_Buffer_free(tbuf);
