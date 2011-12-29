@@ -728,7 +728,6 @@ int AH_Job_MultiTransfer_Prepare(AH_JOB *j){
 }
 
 
-// TODO: korrigieren gemaess TANve1.4, hier auch testen, ob 1.4 oder andere Version verwendet wird
 int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
   AH_JOB_MULTITRANSFER *aj;
   const char *s;
@@ -778,9 +777,11 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
     if (s && *s) {
       int i;
 
-      i=10-strlen(s);
       GWEN_Buffer_AppendString(tbuf, s);
+      i=10-strlen(s);
       if (i>0) {
+        /* need to left-fill the account number with leading zeroes
+         * to a length of exactly 10 digits */
         GWEN_Buffer_Rewind(tbuf);
         GWEN_Buffer_FillLeftWithBytes(tbuf, '0', i);
       }
