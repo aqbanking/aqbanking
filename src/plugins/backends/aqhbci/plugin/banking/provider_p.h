@@ -63,6 +63,8 @@ static GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro);
 static GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
 static GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro);
 
+static GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
+
 
 static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 					AB_USER *u,
