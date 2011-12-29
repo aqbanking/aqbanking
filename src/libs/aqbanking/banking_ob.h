@@ -305,7 +305,7 @@ int AB_Banking_DeleteAccount(AB_BANKING *ab, AB_ACCOUNT *a);
 /*@{*/
 /**
  * <p>
- * This function sends all obs from the given list to their
+ * This function sends all jobs from the given list to their
  * respective backend. The results will be stored in the given im-/exporter
  * context.
  * </p>
