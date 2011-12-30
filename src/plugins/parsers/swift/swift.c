@@ -665,9 +665,14 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 	bsize=3;
 	GWEN_FASTBUFFER_READFORCED(fb, err, swhead, bsize);
 	if (err<0) {
+	  if (err==GWEN_ERROR_EOF) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN,
+		      "EOF met (%d)", c);
+	    return 0;
+	  }
 	  DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
 	  return err;
-        }
+	}
 #if 0
 	if (swhead[2]!=':') {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
@@ -681,8 +686,8 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
             if (c==GWEN_ERROR_EOF) {
               DBG_ERROR(AQBANKING_LOGDOMAIN,
                         "EOF met (%d)", c);
-	      return GWEN_ERROR_EOF;
-            }
+	      return 0;
+	    }
             DBG_ERROR(AQBANKING_LOGDOMAIN,
                       "Error reading from BIO (%d)", c);
 	    return GWEN_ERROR_READ;
