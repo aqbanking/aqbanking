@@ -539,7 +539,7 @@ int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
 }
 
 
-
+#if 0
 int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 			   AHB_SWIFT_TAG_LIST *tl,
 			   unsigned int maxTags) {
@@ -707,6 +707,131 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
       } /* for */
     } /* if something follows block 4 */
   } /* if full SWIFT with blocks */
+
+  return 0;
+}
+#endif
+
+
+
+int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
+			   AHB_SWIFT_TAG_LIST *tl,
+			   unsigned int maxTags) {
+  int rv;
+  int c;
+  int isFullSwift=0;
+  int subDocs=0;
+
+  /* check for first character being a curly bracket */
+  for (;;) {
+    GWEN_FASTBUFFER_PEEKBYTE(fb, c);
+    if (c<0) {
+      if (c==GWEN_ERROR_EOF) {
+	DBG_INFO(AQBANKING_LOGDOMAIN,
+		 "EOF met, empty document");
+	return 1;
+      }
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error reading from BIO (%d)", c);
+      return c;
+    }
+    if (c=='{') {
+      isFullSwift=1;
+      break;
+    }
+    else if (c>3)
+      /* some SWIFT documents contain 01 at the beginning and 03 at the end,
+       * we simply skip those characters here */
+      break;
+    GWEN_FASTBUFFER_READBYTE(fb, c);
+  } /* for */
+
+  if (isFullSwift) {
+    /* read header, seek block 4 */
+    for (;;) {
+      int err;
+      char swhead[4];
+      unsigned int bsize;
+      int curls=0;
+
+      /* skip everything before curly bracket */
+      for (;;) {
+	GWEN_FASTBUFFER_PEEKBYTE(fb, c);
+	if (c<0) {
+	  if (c==GWEN_ERROR_EOF) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "EOF met, empty block");
+	    if (subDocs>0) {
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "We got %d data blocks, returning", subDocs);
+	      return 0;
+	    }
+	    return 1;
+	  }
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Error reading from BIO (%d)", c);
+	  return c;
+	}
+	if (c=='{') {
+	  break;
+	}
+	GWEN_FASTBUFFER_READBYTE(fb, c);
+      } /* for */
+
+      /* read block start ("{n:...") */
+      bsize=3;
+
+      GWEN_FASTBUFFER_READFORCED(fb, err, swhead, bsize);
+      if (err<0) {
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+	return err;
+      }
+      if (swhead[2]!=':') {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Not a SWIFT block");
+	GWEN_Text_DumpString(swhead, 4, 2);
+	return GWEN_ERROR_BAD_DATA;
+      }
+
+      /* handle block */
+      DBG_DEBUG(0, "Reading block %d", swhead[1]-'0');
+      if (swhead[1]=='4') {
+	/* read document from block 4 */
+	rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
+	if (rv) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
+	subDocs++;
+      }
+
+      /* skip block */
+      for (;;) {
+	GWEN_FASTBUFFER_READBYTE(fb, c);
+	if (c<0) {
+	  if (c==GWEN_ERROR_EOF) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN,
+		      "EOF met (%d)", c);
+	    return GWEN_ERROR_EOF;
+	  }
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Error reading from BIO (%d)", c);
+	  return GWEN_ERROR_READ;
+	}
+	if (c=='{')
+	  curls++;
+	else if (c=='}') {
+	  if (curls==0)
+	    break;
+	  else
+	    curls--;
+	}
+      } /* for */
+    } /* for */
+  }
+  else {
+    /* not a full swift document, just read the SWIFT document directly */
+    rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
+    if (rv)
+      return rv;
+  }
 
   return 0;
 }
