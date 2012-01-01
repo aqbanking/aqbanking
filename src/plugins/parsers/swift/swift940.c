@@ -88,7 +88,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     while(*p2 && isdigit(*p2))
       p2++;
     if (p2==p) {
-      DBG_WARN(AQBANKING_LOGDOMAIN,
+      DBG_INFO(AQBANKING_LOGDOMAIN,
                "LocalAccountNumber starts with nondigits (%s)", p);
       AHB_SWIFT__SetCharValue(data,
                               GWEN_DB_FLAGS_OVERWRITE_VARS,
