@@ -1813,6 +1813,43 @@ void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i){
 
 
 
+int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf) {
+  while(*s) {
+    if (*s=='<') {
+      const char *s2;
+      int l;
+
+      s2=s;
+      s2++;
+      while(*s2 && *s2!='>')
+	s2++;
+      l=s2-s-2;
+      if (l>0) {
+	const char *s3;
+
+	s3=s;
+	s3++;
+	if (l==2) {
+	  if (strncasecmp(s3, "br", 2)==0)
+	    GWEN_Buffer_AppendString(obuf, "\n");
+	}
+	else if (l==3) {
+	  if (strncasecmp(s3, "br/", 3)==0)
+	    GWEN_Buffer_AppendString(obuf, "\n");
+	}
+      }
+      s=s2; /* set s to position of closing bracket */
+    }
+    else
+      GWEN_Buffer_AppendByte(obuf, *s);
+    /* next char */
+    s++;
+  }
+
+  return 0;
+}
+
+
 
 int AH_User_InputTanWithChallenge2(AB_USER *u,
 				   const char *challenge,
@@ -1903,8 +1940,8 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
       if (s) {
 	/* skip "CHLGTEXT" and 4 digits */
 	s+=12;
-	/* add rest of the message */
-	GWEN_Buffer_AppendString(xbuf, s);
+	/* add rest of the message (replace HTML tags, if any) */
+	AH_User_AddTextWithoutTags(s, xbuf);
       }
       else {
 	/* create own text */

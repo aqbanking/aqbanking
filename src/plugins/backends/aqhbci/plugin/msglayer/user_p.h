@@ -74,6 +74,9 @@ static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
 static void AH_User_LoadTanMethods(AB_USER *u);
 
 
+static int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf);
+
+
 #endif /* AH_USER_P_H */
 
 
