@@ -903,6 +903,7 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   uint32_t expMsgNum;
   uint32_t guiid;
 
+  assert(hmsg->dialog);
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
