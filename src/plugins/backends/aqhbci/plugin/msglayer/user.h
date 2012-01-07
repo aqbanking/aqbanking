@@ -65,7 +65,15 @@ extern "C" {
  * no longer does (as requested by Andreas Filsinger).
  */
 #define AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS     0x00000100
-/*@}*/
+
+/** Some TAN jobs have a field for the account to be used to charge
+ * for SMS. This field is semi-optional (some banks need it, some need
+ * you not to use it).
+ * If this flag is set then the SMS account specification is omitted.
+ */
+#define AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT      0x00000200
+
+    /*@}*/
 
 
 

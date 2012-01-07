@@ -430,6 +430,10 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 			     (flags & AH_USER_FLAGS_NO_BASE64)?1:0,
 			     0);
 
+  GWEN_Dialog_SetIntProperty(dlg, "omitSmsAccountCheck", GWEN_DialogProperty_Value, 0,
+                             (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0,
+			     0);
+
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -596,6 +600,8 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     flags|=AH_USER_FLAGS_FORCE_SSL3;
   if (GWEN_Dialog_GetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_NO_BASE64;
+  if (GWEN_Dialog_GetIntProperty(dlg, "omitSmsAccountCheck", GWEN_DialogProperty_Value, 0, 0))
+    flags|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
   AH_User_SetFlags(xdlg->user, flags);
 
   return 0;

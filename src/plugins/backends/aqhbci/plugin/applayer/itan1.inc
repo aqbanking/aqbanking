@@ -94,7 +94,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
              baAccountId?baAccountId:"(none)",
              baAccountSubId?baAccountSubId:"(none)");
     AH_Job_Tan_SetLocalAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
-    AH_Job_Tan_SetSmsAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
+    if (!(AH_User_GetFlags(u) & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT))
+      /* only set SMS account if allowed */
+      AH_Job_Tan_SetSmsAccountInfo(jTan, baBankCode, baAccountId, baAccountSubId);
   }
 
 #if 0
