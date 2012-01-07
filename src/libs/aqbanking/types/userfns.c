@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2011 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,6 +15,8 @@
 #include "userfns.h"
 #include "user_p.h"
 #include <aqbanking/banking_be.h>
+
+#include <gwenhywfar/debug.h>
 
 
 
@@ -35,11 +34,19 @@ AB_USER *AB_User_new(AB_BANKING *ab) {
 
 AB_USER *AB_User_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db) {
   AB_USER *u;
+  const char *pname;
+
   assert(ab);
 
   u=AB_User_new(ab);
   AB_User_SetBanking(u, ab);
   AB_User_ReadDb(u, db);
+  pname=AB_User_GetBackendName(u);
+  if (!(pname && *pname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "User group does not contain a provider name, ignoring user");
+    AB_User_free(u);
+    return NULL;
+  }
   return u;
 }
 

@@ -57,8 +57,11 @@ AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db){
   int rv;
 
   assert(ab);
-  pname=GWEN_DB_GetCharValue(db, "provider", 0, 0);
-  assert(pname);
+  pname=GWEN_DB_GetCharValue(db, "provider", 0, NULL);
+  if (!(pname && *pname)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Account group does not contain a provider name, ignoring account");
+    return NULL;
+  }
   pro=AB_Banking_GetProvider(ab, pname);
   if (!pro) {
     DBG_WARN(AQBANKING_LOGDOMAIN,
