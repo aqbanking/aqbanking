@@ -615,11 +615,11 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
      * is and the valuta month differ by more than 10 months then the year
      * of the booking date will be adjusted.
      */
-    if (d2b-d2a>10) {
+    if (d2b-d2a>7) {
       /* booked before actually withdrawn */
       d1b=d1a-1;
     }
-    else if (d2a-d2b>10) {
+    else if (d2a-d2b>7) {
       /* withdrawn and booked later */
       d1b=d1a+1;
     }
