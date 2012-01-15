@@ -773,6 +773,11 @@ int AB_CSV_EditProfileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sende
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "helpButton")==0) {
   }
+  else if (strcasecmp(sender, "headerCheck")==0) {
+    if (xdlg->testFileName)
+      readTestData(dlg);
+    return GWEN_DialogEvent_ResultHandled;
+  }
 
   return GWEN_DialogEvent_ResultHandled;
 }
