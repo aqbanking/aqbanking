@@ -107,10 +107,11 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
   assert(sio);
   assert(params);
 
-  if (ie->importFn)
-  {
-    if (GWEN_SyncIo_GetStatus(sio) != GWEN_SyncIo_Status_Connected) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "GWEN_SYNCIO %s not connected; did you forget to call GWEN_SyncIo_Connect()?", GWEN_SyncIo_GetTypeName(sio));
+  if (ie->importFn) {
+    if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "GWEN_SYNCIO %s not connected (%d); did you forget to call GWEN_SyncIo_Connect()?",
+		GWEN_SyncIo_GetStatus(sio),
+		GWEN_SyncIo_GetTypeName(sio));
       return GWEN_ERROR_NOT_OPEN;
     }
 
