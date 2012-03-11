@@ -26,8 +26,5 @@ struct AB_NEWACCOUNT_DIALOG {
 static void GWENHYWFAR_CB AB_NewAccountDialog_FreeData(void *bp, void *p);
 
 
-
-
-
 #endif
 
