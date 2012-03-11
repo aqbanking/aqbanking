@@ -794,7 +794,8 @@ int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *se
 
   if (strcasecmp(sender, "ignoreLinesSpin")==0 ||
       strcasecmp(sender, "delimiterCombo")==0 ||
-      strcasecmp(sender, "headerCheck")==0) {
+      strcasecmp(sender, "headerCheck")==0 ||
+      strcasecmp(sender, "quoteCheck")==0) {
     if (xdlg->testFileName)
       readTestData(dlg);
   }
