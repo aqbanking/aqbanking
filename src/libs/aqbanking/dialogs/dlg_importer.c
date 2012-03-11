@@ -635,6 +635,37 @@ int AB_ImporterDialog_DetermineSelectedProfile(GWEN_DIALOG *dlg) {
 
 
 
+int AB_ImporterDialog_FindIndexOfProfile(GWEN_DIALOG *dlg, const char *proname) {
+  AB_IMPORTER_DIALOG *xdlg;
+  int cnt;
+  int slen;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
+  assert(xdlg);
+
+  slen=strlen(proname);
+  cnt=GWEN_Dialog_GetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_ValueCount, 0, -1);
+  if (cnt>0 && slen>0) {
+    int i;
+
+    for (i=0; i<cnt; i++) {
+      const char *s;
+
+      s=GWEN_Dialog_GetCharProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, i, NULL);
+      if (s && *s) {
+	if (strncasecmp(s, proname, slen)==0)
+	  /* found position, return it */
+	  return i;
+      }
+    }
+  }
+
+  return -1;
+}
+
+
+
 int AB_ImporterDialog_DetermineFilename(GWEN_DIALOG *dlg) {
   AB_IMPORTER_DIALOG *xdlg;
   const char *s;
@@ -874,7 +905,10 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
       return GWEN_DialogEvent_ResultHandled;
     }
     if (rv==1) {
+      const char *proname;
+
       /* accepted */
+      proname=GWEN_DB_GetCharValue(dbT, "name", 0, NULL);
       DBG_NOTICE(0, "Accepted, writing profile");
       rv=AB_Banking_SaveLocalImExporterProfile(xdlg->banking,
 					       xdlg->importerName,
@@ -886,6 +920,18 @@ int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg) {
 	GWEN_Dialog_free(edlg);
 	GWEN_DB_Group_free(dbProfiles);
 	return GWEN_DialogEvent_ResultHandled;
+      }
+
+      /* reload "wiz_profile_list", select new profile */
+      AB_ImporterDialog_UpdateProfileList(dlg);
+      if (proname && *proname) {
+	int idx;
+
+	idx=AB_ImporterDialog_FindIndexOfProfile(dlg, proname);
+	if (idx>=0) {
+	  GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, idx, 1);
+	  AB_ImporterDialog_DetermineSelectedProfile(dlg);
+	}
       }
     }
 
@@ -933,7 +979,10 @@ int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
   if (rv==1) {
+    const char *proname;
+
     /* accepted */
+    proname=GWEN_DB_GetCharValue(dbProfile, "name", 0, NULL);
     DBG_NOTICE(0, "Accepted, writing profile");
     rv=AB_Banking_SaveLocalImExporterProfile(xdlg->banking,
 					     xdlg->importerName,
@@ -945,6 +994,19 @@ int AB_ImporterDialog_NewProfile(GWEN_DIALOG *dlg) {
       GWEN_DB_Group_free(dbProfile);
       return GWEN_DialogEvent_ResultHandled;
     }
+
+    /* reload "wiz_profile_list", select new profile */
+    AB_ImporterDialog_UpdateProfileList(dlg);
+    if (proname && *proname) {
+      int idx;
+
+      idx=AB_ImporterDialog_FindIndexOfProfile(dlg, proname);
+      if (idx>=0) {
+	GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, idx, 1);
+	AB_ImporterDialog_DetermineSelectedProfile(dlg);
+      }
+    }
+
   }
 
   GWEN_Dialog_free(edlg);
