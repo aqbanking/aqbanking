@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2012-01-01 19:48+0100\n"
+"POT-Creation-Date: 2012-03-12 22:44+0100\n"
 "PO-Revision-Date: 2011-02-13 22:23+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
@@ -1651,7 +1651,7 @@ msgstr "Bitte wählen Sie das zu verwendende Profil aus."
 msgid "The file has been successfully imported."
 msgstr "Die Datei wurde erfolgreich importiert."
 
-#: src/libs/aqbanking/dialogs/dlg_importer.c:718
+#: src/libs/aqbanking/dialogs/dlg_importer.c:749
 #: src/libs/aqbanking/dialogs/dlg_setup_newuser.c:369
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:718
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:720
@@ -1662,15 +1662,15 @@ msgstr "Die Datei wurde erfolgreich importiert."
 msgid "Next"
 msgstr "Weiter"
 
-#: src/libs/aqbanking/dialogs/dlg_importer.c:746
+#: src/libs/aqbanking/dialogs/dlg_importer.c:777
 msgid "Finished"
 msgstr "Abgeschlossen"
 
-#: src/libs/aqbanking/dialogs/dlg_importer.c:984
+#: src/libs/aqbanking/dialogs/dlg_importer.c:1046
 msgid "Select File to Import"
 msgstr "Zu importierende Datei auswählen"
 
-#: src/libs/aqbanking/dialogs/dlg_importer.c:987
+#: src/libs/aqbanking/dialogs/dlg_importer.c:1049
 msgid "All Files (*)\tCSV Files (*csv;*.CSV)\t*.sta"
 msgstr "Alle Dateien (*)\tCSV-Dateien (*.csv;*.CSV)\t*.sta"
 
@@ -1732,10 +1732,10 @@ msgstr "Nein"
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:421
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:476
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:497
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:583
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:645
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:700
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:721
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:587
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:651
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:706
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:727
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:487
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:542
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:563
@@ -1891,8 +1891,8 @@ msgstr ""
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:472
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:478
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:499
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:702
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:723
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:708
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:729
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:544
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:565
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_editaccount.c:916
@@ -1916,7 +1916,7 @@ msgstr "Benutzer bearbeiten"
 
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:450
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:477
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:701
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:707
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:543
 #: src/plugins/backends/aqpaypal/plugin/dlg_edituser.c:509
 msgid "Unable to lock user. Maybe already in use?"
@@ -1926,7 +1926,7 @@ msgstr ""
 
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:471
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:498
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:722
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:728
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:564
 #: src/plugins/backends/aqpaypal/plugin/dlg_edituser.c:535
 msgid "Unable to unlock user."
@@ -3198,7 +3198,7 @@ msgid "The server was unable to send mail to the specified Internet address."
 msgstr ""
 
 #: src/plugins/imexporters/ofx/parser/g_status.c:130
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:583
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:587
 #, fuzzy
 msgid "Invalid URL"
 msgstr "Ungültige Eingabe"
@@ -3350,15 +3350,15 @@ msgstr "Fehler beim Exportieren der Daten"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:57
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:67
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:176
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:188
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:181
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:193
 msgid "AqBanking Settings Database Error"
 msgstr "AqBanking-Datenbankfehler"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:58
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:68
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:177
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:189
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:182
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:194
 msgid "Your settings database might be in an inconsistent state!"
 msgstr "Ihre AqBanking-Konfiguration ist möglicherweise inkonsistent! "
 
@@ -3379,12 +3379,12 @@ msgstr "Fehlerhafte Nachrichtenreferenz (ignoriert)"
 msgid "No message reference found, ignoring"
 msgstr "Fehlerhafte Nachrichtenreferenz (ignoriert)"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1169
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1257
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1174
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1262
 msgid " You must only enter numbers, not letters."
 msgstr " Es dürfen nur Zahlen eingegeben werden, keine Buchstaben."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1173
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1178
 #, c-format
 msgid ""
 "Please enter a new PIN for \n"
@@ -3399,7 +3399,7 @@ msgstr ""
 "eine neue PIN für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Die PIN muß "
 "mindestens %d Zeichen lang sein.%s</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1194
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1199
 #, c-format
 msgid ""
 "Please enter the PIN for \n"
@@ -3411,11 +3411,11 @@ msgstr ""
 "ein.%s<html>Bitte geben Sie die PIN für Benutzer <i>%s</i> bei <i>%s</i> ein."
 "<br>%s</html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1216
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1221
 msgid "Enter PIN"
 msgstr "PIN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1261
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1266
 #, c-format
 msgid ""
 "Please enter a new password for \n"
@@ -3430,7 +3430,7 @@ msgstr ""
 "Sie ein neues Passwort für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Das "
 "Passwort muß mindestens %d Zeichen lang sein.%s</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1282
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1287
 #, c-format
 msgid ""
 "Please enter the password for \n"
@@ -3443,13 +3443,13 @@ msgstr ""
 "ein.%s<html>Bitte geben Sie das Passwort für Benutzer <i>%s</i> bei <i>%s</"
 "i> ein.<br>%s</html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1304
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1309
 #: src/plugins/backends/aqpaypal/plugin/provider.c:1475
 #: src/plugins/backends/aqpaypal/plugin/provider.c:1566
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1343
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1348
 #, c-format
 msgid ""
 "Please enter the next TAN\n"
@@ -3460,28 +3460,28 @@ msgstr ""
 "für Benutzer %s bei %s ein <html> Bitte geben Sie die nächste TAN für "
 "Benutzer <i>%s</i> bei <i>%s</i> ein. </html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1360
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1443
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1964
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1365
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1448
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1969
 msgid "Enter TAN"
 msgstr "TAN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1405
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1902
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1933
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1410
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1907
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1938
 #, fuzzy, c-format
 msgid ""
 "Please enter the TAN\n"
 "for user %s at %s.\n"
 msgstr "Bitte geben Sie den Namen der Bank ein."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1410
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1426
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1954
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1415
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1431
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1959
 msgid "The server provided the following challenge:"
 msgstr ""
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1420
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1425
 #, fuzzy, c-format
 msgid "Please enter the TAN for user <i>%s</i> at <i>%s</i>."
 msgstr ""
@@ -3490,8 +3490,8 @@ msgstr ""
 "Benutzer <i>%s</i> bei <i>%s</i> ein. </html>"
 
 #. create own text
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1911
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1948
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1916
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1953
 #, fuzzy
 msgid "Please enter the TAN from the device."
 msgstr "Bitte geben Sie einen Namen für das Profil ein."
@@ -4251,14 +4251,14 @@ msgid "Error creating auth key (%d)"
 msgstr "Fehler beim Speichern des Authentifizierungs-Schlüssels"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:421
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:645
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:651
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:487
 msgid "Could create dialog, maybe incomplete installation?"
 msgstr ""
 "Dialog konnte nicht erzeugt werden, eventuell unvollständige Installation?"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:420
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan_special.c:288
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan_special.c:292
 msgid ""
 "For smsTAN or mTAN this is your mobile phone number. Please ask your bank "
 "for the necessary format of this number."
@@ -5898,19 +5898,25 @@ msgid "Disable Base64 Encoding"
 msgstr "Nicht BASE64 kodieren"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:80
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:73
+#, fuzzy, no-wrap
+msgid "Omit SMS Account"
+msgstr "Konto bearbeiten"
+
+#. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:81
 #, no-wrap
 msgid "Get Certificate"
 msgstr "Abruf des Zertifikats "
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:81
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:82
 #, no-wrap
 msgid "Get System Id"
 msgstr "Systemkennung abrufen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:82
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:83
 #, no-wrap
 msgid "Get iTAN Modes"
 msgstr "iTAN-Modi abrufen"
