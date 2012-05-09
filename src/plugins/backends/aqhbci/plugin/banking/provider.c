@@ -3881,8 +3881,12 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   ki=GWEN_Crypt_Token_KeyInfo_dup(oki);
   if (rdhType>1)
     GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, rdhType);
-  else
-    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 2);
+  else {
+    if (AH_User_GetHbciVersion(u)>=300)
+      GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 1);
+    else
+      GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 2);
+  }
   GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, 1);
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
@@ -3924,8 +3928,12 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     ki=GWEN_Crypt_Token_KeyInfo_dup(oki);
     if (rdhType>1)
       GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, rdhType);
-    else
-      GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 3);
+    else {
+      if (AH_User_GetHbciVersion(u)>=300)
+	GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 1);
+      else
+	GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, 3);
+    }
     GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, 1);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
