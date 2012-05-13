@@ -1245,6 +1245,8 @@ int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   }
 
   AH_RdhSpecialDialog_SetFlags(dlg2, xdlg->flags);
+  AH_RdhSpecialDialog_SetHbciVersion(dlg2, xdlg->hbciVersion);
+  AH_RdhSpecialDialog_SetRdhVersion(dlg2, xdlg->rdhVersion);
 
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
   if (rv==0) {
