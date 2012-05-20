@@ -2770,7 +2770,11 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
   GWEN_Buffer_AppendString(lbuf, I18N("Time"));
+  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
@@ -3434,7 +3438,11 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
+  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+
+  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
   GWEN_Buffer_AppendString(lbuf, I18N("Time"));
+  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
