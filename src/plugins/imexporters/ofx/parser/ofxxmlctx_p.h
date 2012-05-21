@@ -30,6 +30,8 @@ struct AIO_OFX_XMLCTX {
   char *currentTagName;
 
   char *charset;
+
+  int startDepthOfOfxElement;
 };
 
 

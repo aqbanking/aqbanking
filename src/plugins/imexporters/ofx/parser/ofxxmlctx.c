@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008,2012 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -381,6 +381,13 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
   if (xctx->currentGroup) {
     if (*(xctx->currentTagName)=='/') {
       int rv;
+      int endingOfxDoc=0;
+
+      if (strcasecmp(xctx->currentTagName, "/OFX")==0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, will reset depth to %d",
+		 xctx->startDepthOfOfxElement);
+	endingOfxDoc=1;
+      }
 
       /* it is a closing tag, call EndTagFn */
       DBG_INFO(AQBANKING_LOGDOMAIN,
@@ -415,9 +422,21 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 	AIO_OfxGroup_free(g);
 	GWEN_XmlCtx_DecDepth(ctx);
       }
+
+      if (endingOfxDoc) {
+	/* TODO: Tags which have no closing element should decrease the depth by themselves... */
+	DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, resetting depth to %d",
+		 xctx->startDepthOfOfxElement);
+	GWEN_XmlCtx_SetDepth(ctx, xctx->startDepthOfOfxElement);
+      }
     }
     else {
       int rv;
+
+      if (strcasecmp(xctx->currentTagName, "OFX")==0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Start of OFX document reached, storing depth");
+	xctx->startDepthOfOfxElement=GWEN_XmlCtx_GetDepth(ctx);
+      }
 
       /* it is an opening tag, call StartTagFn */
       DBG_INFO(AQBANKING_LOGDOMAIN,
