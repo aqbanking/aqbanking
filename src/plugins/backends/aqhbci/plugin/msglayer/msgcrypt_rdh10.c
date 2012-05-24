@@ -797,6 +797,10 @@ int AH_Msg_DecryptRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr){
     int ksize;
 
     ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
+    if (ksize<l) {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Keyinfo keysize is smaller than size of transmitted key, adjusting");
+      ksize=l;
+    }
     assert(ksize<=AH_MSGRDH10_MAXKEYBUF);
 
     /* fill encoded key with 0 */
