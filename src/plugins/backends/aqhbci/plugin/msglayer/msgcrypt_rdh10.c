@@ -803,7 +803,7 @@ int AH_Msg_DecryptRdh10(AH_MSG *hmsg, GWEN_DB_NODE *gr){
     }
     assert(ksize<=AH_MSGRDH10_MAXKEYBUF);
 
-    /* fill encoded key with 0 */
+    /* fill encoded key with 0 to the total length of our private key */
     memset(encKey, 0, sizeof(encKey));
     memmove(encKey+(ksize-l), p, l);
 
