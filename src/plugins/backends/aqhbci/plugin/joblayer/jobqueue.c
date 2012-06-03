@@ -1026,6 +1026,14 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   }
   if (dialogAborted) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer");
+    if (jq->usedPin) {
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Info,
+			   I18N("Dialog aborted by bank, assuming bad PIN"));
+      AH_User_SetPinStatus(jq->user, jq->usedPin,
+			   GWEN_Gui_PasswordStatus_Bad);
+    }
+
     return GWEN_ERROR_ABORTED;
   }
 
