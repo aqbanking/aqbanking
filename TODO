@@ -5,3 +5,31 @@ CAVEATS:
 - you need to call AB_Job_CheckAvailability() after creating a job
 
 
+- generic settings
+  - bank code
+  - bank name
+  - hbci version
+  - bank url
+  - flags:
+    - userId == customerId
+
+- settings in DDV mode:
+  - flags:
+    - bankDoesntSign
+    - bankUsesSignSeq
+
+- settings in RDH mode
+  - rdh version
+  - keysize
+  - flags:
+    - bankDoesntSign
+    - bankUsesSignSeq
+  
+
+- settings in pin/tan mode
+  - http version
+  - flags
+    - forceSslv3
+    - noBase64
+    - omitSmsAccount
+
