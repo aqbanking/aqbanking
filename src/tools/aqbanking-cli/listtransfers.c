@@ -271,7 +271,7 @@ int listTransfers(AB_BANKING *ab,
   } /* while */
 
   /* export new context */
-  rv=AB_Banking_ExportToFileWithProfile(ab, exporterName, ctx,
+  rv=AB_Banking_ExportToFileWithProfile(ab, exporterName, nctx,
 					profileName, profileFile,
 					outFile);
   if (rv<0) {
