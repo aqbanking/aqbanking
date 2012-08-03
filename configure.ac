@@ -25,10 +25,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=0
-AQBANKING_VERSION_PATCHLEVEL=24
+AQBANKING_VERSION_PATCHLEVEL=25
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="git"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -43,7 +43,7 @@ AQBANKING_VERSION_TAG="git"
 
 AQBANKING_SO_CURRENT=34
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=24
+AQBANKING_SO_REVISION=25
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -1500,6 +1500,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/postbankffm.conf
   src/plugins/imexporters/csv/profiles/cli-transfers.conf
   src/plugins/imexporters/csv/profiles/sns.conf
+  src/plugins/imexporters/csv/profiles/transfers.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/ressource.rc
