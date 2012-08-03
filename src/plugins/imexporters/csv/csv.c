@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2004,2012 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -500,7 +500,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 					 AB_IMEXPORTER_CONTEXT *ctx,
 					 GWEN_SYNCIO *sio,
 					 GWEN_DB_NODE *params,
-					 int noted){
+					 int notedOrTransfers){
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -538,10 +538,25 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   while(ai) {
     const AB_TRANSACTION *t;
 
-    if (noted)
-      t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(ai);
-    else
+    switch(notedOrTransfers) {
+    case AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS:
       t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+      break;
+    case AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS:
+      t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(ai);
+      break;
+    case AH_IMEXPORTERCSV_SUBJECT_TRANSFERS:
+      t=AB_ImExporterAccountInfo_GetFirstTransfer(ai);
+      break;
+    default:
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Invalid subject type %d", notedOrTransfers);
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error,
+			    "Invalid subject type %d", notedOrTransfers);
+      GWEN_DB_Group_free(dbData);
+      return GWEN_ERROR_GENERIC;
+    }
+
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_TIME *ti;
@@ -698,10 +713,25 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 
       /* add transaction db */
       GWEN_DB_AddGroup(dbData, dbTransaction);
-      if (noted)
-	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(ai);
-      else
+
+      switch(notedOrTransfers) {
+      case AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS:
 	t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+	break;
+      case AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS:
+	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(ai);
+	break;
+      case AH_IMEXPORTERCSV_SUBJECT_TRANSFERS:
+	t=AB_ImExporterAccountInfo_GetNextTransfer(ai);
+	break;
+      default:
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Invalid subject type %d", notedOrTransfers);
+	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error,
+			      "Invalid subject type %d", notedOrTransfers);
+	GWEN_DB_Group_free(dbData);
+	return GWEN_ERROR_GENERIC;
+      }
     }
     ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
   }
@@ -740,9 +770,11 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
   subject=GWEN_DB_GetCharValue(params, "subject", 0,
 			       "transactions");
   if (strcasecmp(subject, "transactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, 0);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS);
   else if (strcasecmp(subject, "notedTransactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, 1);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS);
+  else if (strcasecmp(subject, "transfers")==0)
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_TRANSFERS);
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to export unknown subject \"%s\"", subject);

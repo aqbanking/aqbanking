@@ -1,8 +1,8 @@
 
-char name="cli-transfers"
-char shortDescr="default profile"
+char name="transfers"
+char shortDescr="transfers"
 char version="@AQBANKING_CLI_VERSION_STRING@"
-char longDescr="This profile is used for transactions"
+char longDescr="This profile is used for transfers"
 int import="1"
 int export="1"
 
@@ -15,7 +15,7 @@ int utc="0"
 # - transactions: This exports booked transactions (default)
 # - notedTransactions: Exports noted transactions
 #
-char subject="transactions"
+char subject="transfers"
 
 # The following vars are used when there is an additional field within a
 # record which defines the sign of the amount.

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004,2012 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,6 +19,12 @@ typedef struct AH_IMEXPORTER_CSV AH_IMEXPORTER_CSV;
 struct AH_IMEXPORTER_CSV {
   GWEN_DBIO *dbio;
 };
+
+
+#define AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS      0
+#define AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS 1
+#define AH_IMEXPORTERCSV_SUBJECT_TRANSFERS         2
+
 
 
 AQBANKING_EXPORT
