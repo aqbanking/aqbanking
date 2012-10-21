@@ -33,7 +33,7 @@ int addTransaction(AB_BANKING *ab,
 		   int argc,
 		   char **argv) {
   GWEN_DB_NODE *db;
-  int rv;
+  int rv, transferType;
   const char *ctxFile;
 //  const char *country;
   const char *bankId;
@@ -257,7 +257,7 @@ int addTransaction(AB_BANKING *ab,
   //AB_Account_List2_free(al);
 
   /* create transaction from arguments */
-  t=mkTransfer(a, db);
+  t=mkTransfer(a, db, &transferType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create transaction from arguments");
     return 2;

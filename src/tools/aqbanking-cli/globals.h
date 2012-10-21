@@ -32,7 +32,7 @@ int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist);
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx);
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType);
 
 
 

@@ -45,7 +45,7 @@ int debitNote(AB_BANKING *ab,
   AB_TRANSACTION *t;
   AB_JOB_LIST2 *jobList;
   AB_JOB *j;
-  int rvExec;
+  int rvExec, transferType;
   const char *rCountry;
   const char *rBankId;
   const char *rAccountId;
@@ -266,7 +266,7 @@ int debitNote(AB_BANKING *ab,
   jobList=AB_Job_List2_new();
 
   /* create transaction from arguments */
-  t=mkTransfer(a, db);
+  t=mkTransfer(a, db, &transferType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create transaction from arguments");
     return 2;

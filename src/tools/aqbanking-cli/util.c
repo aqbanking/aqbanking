@@ -145,11 +145,13 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   AB_TRANSACTION *t;
   const char *s;
-  int i;
+  int period, i;
+  GWEN_TIME *d;
 
+  *transferType = 0; // single transfer
   assert(a);
   assert(db);
   t=AB_Transaction_new();
@@ -227,6 +229,85 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
     AB_Transaction_free(t);
     return 0;
   }
+
+  // dated transfer
+  s=GWEN_DB_GetCharValue(db, "executionDate", 0, 0);
+  if (s && *s) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, s);
+    GWEN_Buffer_AppendString(dbuf, "-00:00");
+    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+                                     "YYYYMMDD-hh:mm");
+    GWEN_Buffer_free(dbuf);
+    if (d==0) {
+      DBG_ERROR(0, "Invalid execution date value \"%s\"", s);
+      return 0;
+    }
+    AB_Transaction_SetDate(t, d);
+    *transferType = 1;
+    return t;
+  }
+
+  // standing orders
+  s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
+  if (s && *s) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, s);
+    GWEN_Buffer_AppendString(dbuf, "-00:00");
+    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+                                     "YYYYMMDD-hh:mm");
+    GWEN_Buffer_free(dbuf);
+    if (d==0) {
+      DBG_ERROR(0, "Invalid first execution date value \"%s\"", s);
+      return 0;
+    }
+    AB_Transaction_SetFirstExecutionDate(t, d);
+  } else
+    return t; // single transfer
+
+  *transferType = 2;
+  s=GWEN_DB_GetCharValue(db, "lastExecutionDate", 0, 0);
+  if (s && *s) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, s);
+    GWEN_Buffer_AppendString(dbuf, "-00:00");
+    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
+                                     "YYYYMMDD-hh:mm");
+    GWEN_Buffer_free(dbuf);
+    if (d==0) {
+      DBG_ERROR(0, "Invalid last execution date value \"%s\"", s);
+      return 0;
+    }
+    AB_Transaction_SetLastExecutionDate(t, d);
+  }
+
+  period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
+  if (i <= 0 || i > 2) {
+    DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
+    return 0;
+  }
+  if (i == 1) AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
+  else AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
+
+  i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
+  if (i <= 0) {
+    DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
+    return 0;
+  }
+  AB_Transaction_SetCycle(t, i);
+
+  i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
+  if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
+    DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
+    return 0;
+  }
+  AB_Transaction_SetExecutionDay(t, i);
 
   return t;
 }

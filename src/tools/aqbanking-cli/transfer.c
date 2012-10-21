@@ -15,6 +15,8 @@
 
 #include <aqbanking/account.h>
 #include <aqbanking/jobsingletransfer.h>
+#include <aqbanking/jobcreatedatedtransfer.h>
+#include <aqbanking/jobcreatesto.h>
 
 #include <gwenhywfar/text.h>
 
@@ -39,6 +41,7 @@ int transfer(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
+  int transferType=0;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -196,6 +199,72 @@ int transfer(AB_BANKING *ab,
     "force account number check"
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Char,
+    "executionDate", 
+    0,  
+    1,  
+    0, 
+    "executionDate",
+    "set execution date of transfer",
+    "set execution date of transfer"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Char,
+    "firstExecutionDate", 
+    0,  
+    1,  
+    0, 
+    "firstExecutionDate",
+    "set date of first execution (standing orders)",
+    "set date of first execution (standing orders)"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Char,
+    "lastExecutionDate", 
+    0,  
+    1,  
+    0, 
+    "lastExecutionDate",
+    "set date of last execution (standing orders)",
+    "set date of last execution (standing orders)"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Int,
+    "executionDay", 
+    0,  
+    1,  
+    0, 
+    "executionDay",
+    "set day of execution (standing orders)",
+    "set day of execution (standing orders)"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Int,
+    "executionCycle", 
+    0,  
+    1,  
+    0, 
+    "executionCycle",
+    "set execution cycle (standing orders)",
+    "set execution cycle (standing orders)"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ArgsType_Int,
+    "executionPeriod", 
+    0,  
+    1,  
+    0, 
+    "executionPeriod",
+    "set execution period (standing orders)",
+    "set execution period (standing orders)"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -266,7 +335,7 @@ int transfer(AB_BANKING *ab,
   jobList=AB_Job_List2_new();
 
   /* create transaction from arguments */
-  t=mkTransfer(a, db);
+  t=mkTransfer(a, db, &transferType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create transaction from arguments");
     return 2;
@@ -315,7 +384,17 @@ int transfer(AB_BANKING *ab,
     return 4;
   }
 
-  j=AB_JobSingleTransfer_new(a);
+  if (transferType == 0)
+    j=AB_JobSingleTransfer_new(a);
+  else if (transferType == 1)
+    j=AB_JobCreateDatedTransfer_new(a);
+  else if (transferType == 2)
+    j=AB_JobCreateStandingOrder_new(a);
+  else {
+    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
+    return 6;
+  }
+
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
@@ -323,7 +402,16 @@ int transfer(AB_BANKING *ab,
     return 3;
   }
 
-  rv=AB_JobSingleTransfer_SetTransaction(j, t);
+  if (transferType == 0)
+    rv=AB_JobSingleTransfer_SetTransaction(j, t);
+  else if (transferType == 1)
+    rv=AB_JobCreateDatedTransfer_SetTransaction(j, t);
+  else if (transferType == 2)
+    rv=AB_JobCreateStandingOrder_SetTransaction(j, t);
+  else {
+    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
+    return 6;
+  }
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
     AB_ImExporterContext_free(ctx);
