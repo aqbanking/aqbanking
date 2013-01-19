@@ -93,7 +93,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
 			       "params");
   dbData=GWEN_DB_Group_new("transactions");
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 		       I18N("Reading file..."));
 
   rv=GWEN_DBIO_Import(ieh->dbio,
@@ -111,7 +111,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   }
 
   /* transform DB to transactions */
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 		       "Data imported, transforming to transactions");
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
   if (rv) {
