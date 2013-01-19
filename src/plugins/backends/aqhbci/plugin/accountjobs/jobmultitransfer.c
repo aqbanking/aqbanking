@@ -810,7 +810,7 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
     GWEN_Buffer_free(tbuf);
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version %d for now", tanVer);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version 0x%02x for now", tanVer);
     return GWEN_ERROR_INTERNAL;
   }
 
