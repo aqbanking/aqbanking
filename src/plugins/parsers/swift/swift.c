@@ -913,8 +913,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       return rv;
     }
 
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
-			 I18N("Reading SWIFT document"));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Debug,
+                          I18N("Reading SWIFT document %d"), docsImported+1);
 
     /* skip lines at the beginning if requested */
     if (skipDocLines>0) {
