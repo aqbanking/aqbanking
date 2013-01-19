@@ -213,7 +213,6 @@ int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
 
   assert(ie);
   assert(ctx);
-  assert(fname);
   assert(dbProfile);
 
   if (fname) {
