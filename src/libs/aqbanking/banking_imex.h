@@ -94,7 +94,7 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
  */
 AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
-                                               const char *name);
+                                               const char *imExporterName);
 
 AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
