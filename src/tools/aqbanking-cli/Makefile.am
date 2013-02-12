@@ -29,6 +29,7 @@ EXTRA_DIST=\
   import.c \
   listaccs.c \
   listbal.c \
+  listprofiles.c \
   listtrans.c \
   listtransfers.c \
   request.c \

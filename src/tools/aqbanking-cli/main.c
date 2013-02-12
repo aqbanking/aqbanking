@@ -33,6 +33,7 @@
 #include "import.c"
 #include "listaccs.c"
 #include "listbal.c"
+#include "listprofiles.c"
 #include "listtrans.c"
 #include "listtransfers.c"
 #include "request.c"
@@ -350,6 +351,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "updateconf")==0) {
     rv=updateConf(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "listprofiles")==0) {
+    rv=listProfiles(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
