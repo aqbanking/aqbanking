@@ -181,6 +181,21 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 			  int withProgress, int nounmount, int doLock);
 
 
+/**
+ * Request SEPA information for a given account. This info is then stored
+ * within the AqBanking account information (IBAN, BIC).
+ * @param pro pointer to the HBCI provider
+ * @param a account for which the info is to be requested
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+AQHBCI_API
+int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
+                                   AB_ACCOUNT_LIST2 *al,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   int withProgress, int nounmount, int doLock);
+
+
 /*@}*/
 
 

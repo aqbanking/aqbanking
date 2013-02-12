@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2013 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -164,6 +161,20 @@ static int AH_Job_GetItanModes_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetAccountSepaInfo
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+typedef struct AH_JOB_GETACCSEPAINFO AH_JOB_GETACCSEPAINFO;
+struct AH_JOB_GETACCSEPAINFO {
+  AB_ACCOUNT *account;
+  int scanned;
+};
+static void GWENHYWFAR_CB AH_Job_GetAccountSepaInfo_FreeData(void *bp, void *p);
+
+static int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

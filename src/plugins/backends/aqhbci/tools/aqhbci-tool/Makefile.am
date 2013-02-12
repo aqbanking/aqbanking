@@ -38,7 +38,8 @@ aqhbci_tool4_SOURCES=main.c \
  setitanmode.c \
  setmaxtransfers.c \
  settanmediumid.c \
- logfile.c
+ logfile.c \
+ getaccsepa.c
 
 
 aqhbci_tool4_LDADD = \

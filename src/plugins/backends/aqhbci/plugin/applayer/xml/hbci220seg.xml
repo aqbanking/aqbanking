@@ -886,6 +886,59 @@
  </SEGdef>
 
 
+
+
+
+ <!-- 
+  --------------------------------------------------------------------
+    SEPA-spezifische Erweiterung
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktz" version="1" maxnum="999"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+  </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HISPAS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+
+   <ELEM name="AllowSingleAccount" type="num" maxsize="2" />
+   <ELEM name="AllowNationalAccountSpec" type="num" maxsize="2" />
+   <ELEM name="AllowStructuredPurpose" type="num" maxsize="2" />
+   <ELEM name="SupportedSepaFormats" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
 </SEGs>
 
 

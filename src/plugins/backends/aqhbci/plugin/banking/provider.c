@@ -4055,6 +4055,78 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 
 
 
+int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
+                                   AB_ACCOUNT_LIST2 *al,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   int withProgress, int nounmount, int doLock) {
+  AH_PROVIDER *hp;
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_OUTBOX *ob;
+  AB_ACCOUNT_LIST2_ITERATOR *ait;
+  int rv;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+
+  ob=AH_Outbox_new(h);
+
+  /* sample jobs */
+  ait=AB_Account_List2_First(al);
+  if (ait) {
+    AB_ACCOUNT *a;
+
+    a=AB_Account_List2Iterator_Data(ait);
+    assert(a);
+    while(a) {
+      AB_USER *u;
+      AH_JOB *job;
+
+      u=AB_Account_GetFirstUser(a);
+      if (!u) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+      }
+      else {
+        job=AH_Job_GetAccountSepaInfo_new(u, a);
+        if (!job) {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+          return GWEN_ERROR_GENERIC;
+        }
+        AH_Job_AddSigner(job, AB_User_GetUserId(u));
+        AH_Outbox_AddJob(ob, job);
+      }
+
+      a=AB_Account_List2Iterator_Next(ait);
+    }
+    AB_Account_List2Iterator_free(ait);
+  }
+
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
+    AH_Outbox_free(ob);
+    return rv;
+  }
+
+  AH_Outbox_free(ob);
+
+  if (!nounmount)
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+
+  return 0;
+}
+
+
+
+
 
 #include "message_l.h"
 #include <stdio.h>

@@ -202,6 +202,18 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin);
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetAccountSepaInfo
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc);
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

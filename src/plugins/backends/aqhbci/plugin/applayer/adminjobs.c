@@ -1829,3 +1829,163 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
 
 
 
+/* __________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                             AH_Job_GetAccountSepaInfo
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+GWEN_INHERIT(AH_JOB, AH_JOB_GETACCSEPAINFO)
+
+/* --------------------------------------------------------------- FUNCTION */
+AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc) {
+  AH_JOB *j;
+  GWEN_DB_NODE *dbArgs;
+  AH_JOB_GETACCSEPAINFO *jd;
+  const char *s;
+
+  assert(u);
+  j=AH_Job_new("JobGetAccountSepaInfo", u, 0, 0);
+  if (!j) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "JobGetAccountSepaInfo not supported, should not happen");
+    return 0;
+  }
+
+  GWEN_NEW_OBJECT(AH_JOB_GETACCSEPAINFO, jd);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETACCSEPAINFO, j, jd,
+                       AH_Job_GetAccountSepaInfo_FreeData)
+  AH_Job_SetProcessFn(j, AH_Job_GetAccountSepaInfo_Process);
+
+  jd->account=acc;
+
+  /* set arguments */
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  s=AB_Account_GetAccountNumber(jd->account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+
+  s=AB_Account_GetSubAccountId(jd->account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+
+  s=AB_Account_GetBankCode(jd->account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
+                      "country", 280);
+
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetAccountSepaInfo created");
+  return j;
+}
+
+
+
+void GWENHYWFAR_CB AH_Job_GetAccountSepaInfo_FreeData(void *bp, void *p){
+  AH_JOB_GETACCSEPAINFO *jd;
+
+  jd=(AH_JOB_GETACCSEPAINFO*)p;
+  jd->account=NULL;
+}
+
+
+
+int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+  AH_JOB_GETACCSEPAINFO *jd;
+  GWEN_DB_NODE *dbResponses;
+  GWEN_DB_NODE *dbCurr;
+  AB_USER *u;
+  AB_BANKING *ab;
+
+  assert(j);
+  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETACCSEPAINFO, j);
+  assert(jd);
+
+  if (jd->scanned)
+    return 0;
+
+  jd->scanned=1;
+
+  dbResponses=AH_Job_GetResponses(j);
+  assert(dbResponses);
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  /* search for "GetAccountSepaInfoResponse" */
+  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+  while(dbCurr) {
+    GWEN_DB_NODE *dbXA;
+    int rv;
+
+    rv=AH_Job_CheckEncryption(j, dbCurr);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+    rv=AH_Job_CheckSignature(j, dbCurr);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                          "data/GetAccountSepaInfoResponse");
+    if (dbXA) {
+      const char *accountId;
+      const char *bankCode;
+      const char *accountSuffix;
+      const char *iban;
+      const char *bic;
+
+      /* account data found */
+      accountId=GWEN_DB_GetCharValue(dbXA, "accountId", 0, 0);
+      accountSuffix=GWEN_DB_GetCharValue(dbXA, "accountsubid", 0, 0);
+      bankCode=GWEN_DB_GetCharValue(dbXA, "bankCode", 0, 0);
+
+      iban=GWEN_DB_GetCharValue(dbXA, "iban", 0, 0);
+      bic=GWEN_DB_GetCharValue(dbXA, "bic", 0, 0);
+
+      rv=AB_Banking_BeginExclUseAccount(ab, jd->account);
+      if (rv<0) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
+      }
+      else {
+        if (accountSuffix)
+          AB_Account_SetSubAccountId(jd->account, accountSuffix);
+        AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
+
+        if (iban && *iban && bic && *bic) {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
+          AB_Account_SetIBAN(jd->account, iban);
+          AB_Account_SetBIC(jd->account, bic);
+        }
+        else {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], IBAN=[%s], BIC=[%s]",
+                    bankCode?bankCode:"",
+                    accountId?accountId:"",
+                    iban?iban:"",
+                    bic?bic:"");
+        }
+        AB_Banking_EndExclUseAccount(ab, jd->account, 0);
+      }
+    }
+
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  }
+
+  return 0;
+}
+
+
+
