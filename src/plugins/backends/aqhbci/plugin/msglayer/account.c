@@ -148,6 +148,9 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_BANK_FLAGS_KTV2)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "ktv2");
+  if (flags & AH_BANK_FLAGS_SEPA)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "sepa");
 }
 
 
@@ -168,6 +171,8 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
     else if (strcasecmp(s, "ktv2")==0)
       fl|=AH_BANK_FLAGS_KTV2;
+    else if (strcasecmp(s, "sepa")==0)
+      fl|=AH_BANK_FLAGS_SEPA;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown account flag \"%s\"", s);
     }

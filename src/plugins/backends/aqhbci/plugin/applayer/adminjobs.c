@@ -1947,11 +1947,16 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       const char *accountSuffix;
       const char *iban;
       const char *bic;
+      const char *sSepa;
+      int useWithSepa=0;
 
       /* account data found */
       accountId=GWEN_DB_GetCharValue(dbXA, "accountId", 0, 0);
       accountSuffix=GWEN_DB_GetCharValue(dbXA, "accountsubid", 0, 0);
       bankCode=GWEN_DB_GetCharValue(dbXA, "bankCode", 0, 0);
+      sSepa=GWEN_DB_GetCharValue(dbXA, "sepa", 0, "n");
+      if (strcasecmp(sSepa, "j")==0)
+        useWithSepa=1;
 
       iban=GWEN_DB_GetCharValue(dbXA, "iban", 0, 0);
       bic=GWEN_DB_GetCharValue(dbXA, "bic", 0, 0);
@@ -1964,6 +1969,11 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         if (accountSuffix)
           AB_Account_SetSubAccountId(jd->account, accountSuffix);
         AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
+
+        if (useWithSepa)
+          AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+        else
+          AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
 
         if (iban && *iban && bic && *bic) {
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);

@@ -38,6 +38,9 @@ extern "C" {
 /* for this account there are KTV2 information availabel (e.g. account sub id) */
 #define AH_BANK_FLAGS_KTV2                    0x00000004
 
+/* this account can be used with SEPA jobs */
+#define AH_BANK_FLAGS_SEPA                    0x00000008
+
 #define AH_BANK_FLAGS_DEFAULT 0
 
 /*@}*/
