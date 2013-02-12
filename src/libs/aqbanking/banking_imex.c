@@ -513,7 +513,17 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
     GWEN_Buffer_free(buf);
     return rv;
   }
-  GWEN_Buffer_AppendString(buf, DIRSEP "profiles" DIRSEP);
+  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
+
+  /* make sure the path exists */
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(buf), GWEN_PATH_FLAGS_CHECKROOT);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+
+  GWEN_Buffer_AppendString(buf, DIRSEP);
   if (fname && *fname)
     GWEN_Buffer_AppendString(buf, fname);
   else {
