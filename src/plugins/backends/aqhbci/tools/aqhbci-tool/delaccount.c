@@ -237,7 +237,7 @@ int delAccount(AB_BANKING *ab,
             match=0;
         }
 
-        if (match && account) {
+        if (match && subAccountId) {
           s=AB_Account_GetSubAccountId(a);
           if (!s || !*s || -1==GWEN_Text_ComparePattern(s, subAccountId, 0))
             match=0;
