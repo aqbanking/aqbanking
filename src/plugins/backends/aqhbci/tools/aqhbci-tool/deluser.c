@@ -99,7 +99,7 @@ int delUser(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
-    "uniqueId",                 /* name */
+    "userUniqueId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
     0,                          /* short option */
