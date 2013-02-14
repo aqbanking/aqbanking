@@ -3,7 +3,8 @@ SUBDIRS=profiles
 INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(aqbanking_symlinkdir) $(all_includes)
 
 extra_sources=\
-  sepa_exp_ccm.c
+  sepa_exp_ccm.c \
+  sepa_exp_123.c
 
 EXTRA_DIST=README $(extra_sources)
 

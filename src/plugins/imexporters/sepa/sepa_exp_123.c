@@ -4,10 +4,10 @@
 
 
 
-int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_SYNCIO *sio,
-				 GWEN_DB_NODE *params){
+int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
+                                        AB_IMEXPORTER_CONTEXT *ctx,
+                                        GWEN_SYNCIO *sio,
+                                        GWEN_DB_NODE *params){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;
@@ -54,16 +54,16 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   documentNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Document");
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xmlns",
-			   "urn:sepade:xsd:pain.001.001.02");
+			   "urn:iso:std:iso:20022:tech:xsd:pain.001.002.03");
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xmlns:xsi",
 			   "http://www.w3.org/2001/XMLSchema-instance");
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xsi:schemaLocation",
-                           "urn:sepade:xsd:pain.001.001.02 pain.001.001.02.xsd");
+			   "urn:iso:std:iso:20022:tech:xsd:pain.001.002.03 pain.001.002.03.xsd");
   GWEN_XMLNode_AddChild(root, documentNode);
 
-  painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "pain.001.001.02");
+  painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CstmrCdtTrfInitn");
   GWEN_XMLNode_AddChild(documentNode, painNode);
 
   /* create GrpHdr */
@@ -96,12 +96,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
 
-    /* store sum */
-    AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
-    GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
-
-    GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
-
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
     if (nn) {
       const char *s;
@@ -120,9 +114,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     }
 
     GWEN_Buffer_free(tbuf);
-
   }
-  AB_Value_free(v);
 
   /* generate PmtInf */
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtInf");
@@ -133,6 +125,20 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     GWEN_XMLNode_AddChild(painNode, n);
     GWEN_XMLNode_SetCharValue(n, "PmtInfId", "");
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
+
+    GWEN_XMLNode_SetCharValue(n, "BtchBookg", "true");
+    /* store NbOfTxs */
+    GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
+    if (1) {
+      GWEN_BUFFER *tbuf;
+
+      /* store sum */
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+      GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+    }
+
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
     if (nn) {
       GWEN_XMLNODE *nnn;
@@ -167,6 +173,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
       GWEN_Buffer_free(tbuf);
       GWEN_Time_free(ti);
     }
+    AB_Value_free(v);
 
     /* create "Dbtr" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");

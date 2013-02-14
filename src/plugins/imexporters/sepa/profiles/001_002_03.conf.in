@@ -1,0 +1,11 @@
+
+char name="001_002_03"
+char shortDescr="default profile"
+char version="@AQBANKING_VERSION_STRING@"
+char longDescr="pain.001.002.03"
+int import="0"
+int export="1"
+
+char type="001_002_03"
+
+
