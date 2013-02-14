@@ -45,6 +45,7 @@
 #include "addtransaction.c"
 #include "fillgaps.c"
 #include "updateconf.c"
+#include "sepatransfer.c"
 
 
 
@@ -330,6 +331,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "transfer")==0) {
     rv=transfer(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepatransfer")==0) {
+    rv=sepaTransfer(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listtransfers")==0) {
     rv=listTransfers(ab, db, argc, argv);
