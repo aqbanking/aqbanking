@@ -87,8 +87,8 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
 }
 
 
-void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
-{
+
+void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a) {
   const char *s;
 
   assert(t);
@@ -110,5 +110,13 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
   s=AB_Account_GetOwnerName(a);
   if (s && *s)
     AB_Transaction_SetLocalName(t, s);
+
+  s=AB_Account_GetBIC(a);
+  if (s && *s)
+    AB_Transaction_SetLocalBic(t, s);
+
+  s=AB_Account_GetIBAN(a);
+  if (s && *s)
+    AB_Transaction_SetLocalIban(t, s);
 }
 
