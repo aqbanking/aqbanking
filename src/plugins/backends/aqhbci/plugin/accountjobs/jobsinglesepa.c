@@ -214,7 +214,6 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       lim=AB_JobSepaTransfer_GetFieldLimits(bj);
       t=AB_JobSepaTransfer_GetTransaction(bj);
       profileName="ccm";
-      //descriptor="urn:sepade:xsd:pain.001.001.02";
       descriptor="sepade.pain.001.001.02.xsd";
       break;
     case AB_Job_TypeSepaDebitNote:
