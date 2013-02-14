@@ -705,7 +705,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaTransfer:
-    mj=AH_Job_SingleTransfer_new(mu, ma);
+    mj=AH_Job_SingleSepaTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
