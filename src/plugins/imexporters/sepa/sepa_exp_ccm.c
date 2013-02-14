@@ -131,6 +131,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
+    GWEN_XMLNode_SetCharValue(n, "PmtInfId", "");
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
     if (nn) {
@@ -170,8 +171,20 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* create "Dbtr" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");
     if (nn) {
+      const char *s;
+
       GWEN_XMLNode_AddChild(n, nn);
-      GWEN_XMLNode_SetCharValue(nn, "Nm", AB_ImExporterAccountInfo_GetOwner(ai));
+
+      s=AB_ImExporterAccountInfo_GetOwner(ai);
+      if (!s)
+        s=AB_Transaction_GetLocalName(t);
+      if (!s) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
+        AB_Value_free(v);
+        return GWEN_ERROR_BAD_DATA;
+      }
+
+      GWEN_XMLNode_SetCharValue(nn, "Nm", s);
     }
 
     /* create "DbtrAcct" */
