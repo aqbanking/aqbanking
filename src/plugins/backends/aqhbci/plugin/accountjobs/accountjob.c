@@ -130,6 +130,15 @@ AH_JOB *AH_AccountJob_new(const char *name,
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                       "country", 280);
 
+  /* new for SEPA jobs */
+  s=AB_Account_GetIBAN(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", s);
+
+  s=AB_Account_GetBIC(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", s);
+
   return j;
 }
 

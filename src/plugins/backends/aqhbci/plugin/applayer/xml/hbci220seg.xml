@@ -925,11 +925,13 @@
  <SEGdef code="HISPAS" version="1"
          delimiter=":" terminator="'" isbpdjob="1" >
    <GROUP type="BPDJob" version="2" />
+   <ELEM name="AllowSingleAccount" type="an" maxsize="2" />
+   <ELEM name="AllowNationalAccountSpec" type="an" maxsize="2" />
+   <ELEM name="AllowStructuredPurpose" type="an" maxsize="2" />
+   <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+     <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+   </GROUP>
 
-   <ELEM name="AllowSingleAccount" type="num" maxsize="2" />
-   <ELEM name="AllowNationalAccountSpec" type="num" maxsize="2" />
-   <ELEM name="AllowStructuredPurpose" type="num" maxsize="2" />
-   <ELEM name="SupportedSepaFormats" type="ascii" maxsize="256" minnum="0" maxnum="99" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

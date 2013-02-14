@@ -27,6 +27,7 @@
 #include "jobmultitransfer_l.h"
 #include "jobeutransfer_l.h"
 #include "jobloadcellphone_l.h"
+#include "jobsinglesepa_l.h"
 
 /* special jobs */
 #include "jobforeignxferwh_l.h"
@@ -453,6 +454,16 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     }
     break;
 
+  case AB_Job_TypeSepaTransfer:
+    GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "isMultiJob", 0);
+    mj=AH_Job_SingleSepaTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
   default:
     return GWEN_ERROR_NOT_AVAILABLE;
   }
@@ -687,6 +698,14 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeLoadCellPhone:
     mj=AH_Job_LoadCellPhone_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeSepaTransfer:
+    mj=AH_Job_SingleTransfer_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;

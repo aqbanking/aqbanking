@@ -16,6 +16,7 @@
 #include "jobsinglesepa_p.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
+#include "provider_l.h"
 #include <aqhbci/account.h>
 
 #include <gwenhywfar/debug.h>
@@ -47,7 +48,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   GWEN_DB_NODE *dbArgs;
 
   switch(jobType) {
-  case AB_Job_TypeSepaTransfer
+  case AB_Job_TypeSepaTransfer:
     j=AH_AccountJob_new("JobSepaSingleTransfer", u, account);
     break;
   case AB_Job_TypeSepaDebitNote:
@@ -61,7 +62,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   if (!j)
     return NULL;
 
-  GWEN_NEW_OBJECT(AH_JOB_SINGLETRANSFER, aj);
+  GWEN_NEW_OBJECT(AH_JOB_SINGLESEPA, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_SINGLESEPA, j, aj,
                        AH_Job_SingleSepa_FreeData);
   aj->jobType=jobType;
@@ -78,7 +79,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   case AB_Job_TypeSepaTransfer:
     GWEN_DB_SetCharValue(dbArgs,
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "descriptor"
+			 "descriptor",
 			 "sepade:xsd:pain.001.001.02.xsd");
     break;
   case AB_Job_TypeSepaDebitNote:
@@ -104,9 +105,7 @@ void GWENHYWFAR_CB AH_Job_SingleSepa_FreeData(void *bp, void *p) {
 
 
 
-int AH_Job_SingleSepa_Process(AH_JOB *j,
-			      AB_IMEXPORTER_CONTEXT *ctx,
-			      uint32_t guiid) {
+int AH_Job_SingleSepa_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_SINGLESEPA *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -155,8 +154,7 @@ int AH_Job_SingleSepa_Process(AH_JOB *j,
 
 int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AH_JOB_EXCHANGE_MODE m,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t guiid) {
+			       AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_SINGLESEPA *aj;
   AB_BANKING *ab;
 
@@ -187,7 +185,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
 
     switch(aj->jobType) {
-    case AB_Job_TypeSepaTransfer
+    case AB_Job_TypeSepaTransfer:
       AB_JobSepaTransfer_SetFieldLimits(bj, lim);
       break;
     case AB_Job_TypeSepaDebitNote:
@@ -209,7 +207,8 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     AB_TRANSACTION *t=NULL;
     int rv;
     GWEN_DB_NODE *dbArgs;
-    const char *profileName=NULL;
+    const char *profileName="";
+    const char *descriptor="";
 
     dbArgs=AH_Job_GetArguments(j);
 
@@ -219,11 +218,13 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       lim=AB_JobSepaTransfer_GetFieldLimits(bj);
       t=AB_JobSepaTransfer_GetTransaction(bj);
       profileName="ccm";
+      descriptor="pain.001.001.02";
       break;
     case AB_Job_TypeSepaDebitNote:
       lim=AB_JobSepaDebitNote_GetFieldLimits(bj);
       t=AB_JobSepaDebitNote_GetTransaction(bj);
       /* profileName="ccm"; insert correct name */
+      /* descriptor="pain.001.001.02"; insert correct name */
       break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", aj->jobType);
@@ -252,7 +253,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       AB_ImExporterContext_AddTransaction(ioc, cpy);
 
       dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName);
+      rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName, dbuf);
       AB_ImExporterContext_free(ioc);
       if (rv<0) {
 	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -260,6 +261,12 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 	return rv;
       }
 
+      /* store descriptor */
+      GWEN_DB_SetCharValue(dbArgs,
+			   GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "descriptor",
+			   descriptor);
+      /* store transfer */
       GWEN_DB_SetBinValue(dbArgs,
 			  GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "transfer",
@@ -282,14 +289,6 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 
   return 0;
 }
-
-
-
-int AH_Job_SingleSepa__ValidateTransfer(AB_JOB *bj,
-					AH_JOB *mj,
-					AB_TRANSACTION *t) {
-}
-
 
 
 

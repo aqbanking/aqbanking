@@ -24,17 +24,11 @@ struct AH_JOB_SINGLESEPA {
 };
 static void GWENHYWFAR_CB AH_Job_SingleSepa_FreeData(void *bp, void *p);
 static int AH_Job_SingleSepa_Process(AH_JOB *j,
-				     AB_IMEXPORTER_CONTEXT *ctx,
-				     uint32_t guiid);
+				     AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 				      AH_JOB_EXCHANGE_MODE m,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      uint32_t guiid);
+				      AB_IMEXPORTER_CONTEXT *ctx);
 
-
-static int AH_Job_SingleSepa__ValidateTransfer(AB_JOB *bj,
-					       AH_JOB *mj,
-					       AB_TRANSACTION *t);
 
 static AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
 					 AB_ACCOUNT *account,

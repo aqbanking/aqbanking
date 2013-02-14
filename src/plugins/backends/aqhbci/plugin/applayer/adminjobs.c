@@ -1879,6 +1879,14 @@ AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc) {
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                       "country", 280);
 
+  s=AB_Account_GetIBAN(jd->account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", s);
+
+  s=AB_Account_GetBIC(jd->account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", s);
+
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetAccountSepaInfo created");
   return j;

@@ -17,7 +17,7 @@
          delimiter="+" 
          terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="ktz" version="2" />
+   <GROUP type="kti" version="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
    <VALUES>
@@ -55,7 +55,7 @@
          code="HKCCS"
          params="HICCSS"
          version="1"
- 		     crypt="1"
+         crypt="1"
          sign="1" 
          needBPD="1"
          needTan="1"

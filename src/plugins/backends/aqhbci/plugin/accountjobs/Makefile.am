@@ -4,6 +4,7 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(srcdir)/../joblayer \
   -I$(srcdir)/../msglayer \
+  -I$(srcdir)/../banking \
   -I$(srcdir)/..
 
 noinst_LTLIBRARIES=libhbciaccjobs.la
@@ -28,7 +29,9 @@ noinst_HEADERS=\
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \
-  jobloadcellphone_p.h
+  jobloadcellphone_p.h \
+  jobsinglesepa_l.h \
+  jobsinglesepa_p.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -40,7 +43,8 @@ libhbciaccjobs_la_SOURCES=\
   jobeutransfer.c \
   jobmultitransfer.c \
   jobforeignxferwh.c \
-  jobloadcellphone.c
+  jobloadcellphone.c \
+  jobsinglesepa.c
 
 
 sources:
@@ -68,7 +72,8 @@ xmlfiles=\
   $(srcdir)/jobcreatedatedxfer.xml \
   $(srcdir)/jobmodifydatedxfer.xml \
   $(srcdir)/jobdeletedatedxfer.xml \
-  $(srcdir)/jobloadcellphone.xml
+  $(srcdir)/jobloadcellphone.xml \
+  $(srcdir)/jobsinglesepa.xml
 
 EXTRA_DIST=$(xmlfiles)
 
