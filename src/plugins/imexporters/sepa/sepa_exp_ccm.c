@@ -219,7 +219,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
       GWEN_XMLNode_AddChild(n, nn);
       s=AB_ImExporterAccountInfo_GetBic(ai);
       if (!s)
-        s=AB_Transaction_GetRemoteBic(t);
+        s=AB_Transaction_GetLocalBic(t);
       if (!s) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "No BIC");
 	GWEN_XMLNode_free(root);
