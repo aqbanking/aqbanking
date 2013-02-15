@@ -17,7 +17,7 @@
          delimiter="+" 
          terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="kti" version="1" />
+   <GROUP type="kti_i" version="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
    <VALUES>

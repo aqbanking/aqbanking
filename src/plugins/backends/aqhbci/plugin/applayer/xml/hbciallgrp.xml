@@ -33,11 +33,10 @@
     <!-- "Kreditinstitutskennung" -->
     <ELEM name="country" type="num" maxsize="3" />
     <ELEM name="bankcode" type="ascii" maxsize="30" minnum="0" />
-    <VALUES>
+   <VALUES>
       <VALUE path="country">280</VALUE>
       <VALUE path="bankcode">?bankcode</VALUE>
     </VALUES>
-    
   </GROUPdef>
 
   <GROUPdef id="ktv" delimiter=":" version="1">
@@ -61,6 +60,17 @@
     <ELEM name="accountsubid" type="ascii" minnum="0" />
     <GROUP type="kik" />
   </GROUPdef>
+
+  <GROUPdef id="kti_i" delimiter=":" version="1">
+    <!-- "Kontoverbindung international - nur international" -->
+    <ELEM name="iban" type="ascii" minnum="0" />
+    <ELEM name="bic" type="ascii" minnum="0" />
+    <ELEM name="nop1_accountid" type="ascii" minnum="0" />
+    <ELEM name="nop2_accountsubid" type="ascii" minnum="0" />
+    <ELEM name="nop3_country" type="num" maxsize="3" minnum="0" />
+    <ELEM name="nop4_bankcode" type="ascii" maxsize="30" minnum="0" />
+  </GROUPdef>
+
 
   <GROUPdef id="ktz" delimiter=":" version="1">
     <!-- "Kontoverbindung ZV international" -->
