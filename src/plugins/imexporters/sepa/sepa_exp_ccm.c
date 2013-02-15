@@ -52,6 +52,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   }
 
   documentNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Document");
+#if 0
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xmlns",
 			   "urn:sepade:xsd:pain.001.001.02");
@@ -61,6 +62,17 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xsi:schemaLocation",
                            "urn:sepade:xsd:pain.001.001.02 pain.001.001.02.xsd");
+#else
+  GWEN_XMLNode_SetProperty(documentNode,
+			   "xmlns",
+                           "urn:swift:xsd:$pain.001.002.02");
+  GWEN_XMLNode_SetProperty(documentNode,
+			   "xmlns:xsi",
+			   "http://www.w3.org/2001/XMLSchema-instance");
+  GWEN_XMLNode_SetProperty(documentNode,
+			   "xsi:schemaLocation",
+                           "urn:swift:xsd:$pain.001.001.02 pain.001.001.02.xsd");
+#endif
   GWEN_XMLNode_AddChild(root, documentNode);
 
   painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "pain.001.001.02");
@@ -101,6 +113,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
 
     GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
+    //GWEN_XMLNode_SetCharValue(n, "Grpg", "MIXD");
 
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
     if (nn) {
