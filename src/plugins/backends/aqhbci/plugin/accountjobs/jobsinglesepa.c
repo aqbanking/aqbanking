@@ -73,8 +73,6 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   /* preset some arguments */
   dbArgs=AH_Job_GetArguments(j);
 
-  /* TODO: set "ktz" */
-
   switch(jobType) {
   case AB_Job_TypeSepaTransfer:
     break;
