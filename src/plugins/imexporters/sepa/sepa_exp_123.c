@@ -427,7 +427,7 @@ int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
   }
 
   xmlctx=GWEN_XmlCtxStore_new(root,
-			      GWEN_XML_FLAGS_DEFAULT |
+                              GWEN_XML_FLAGS_INDENT |
                               GWEN_XML_FLAGS_SIMPLE |
 			      GWEN_XML_FLAGS_HANDLE_HEADERS);
 
