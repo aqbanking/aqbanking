@@ -211,8 +211,12 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     case AB_Job_TypeSepaTransfer:
       lim=AB_JobSepaTransfer_GetFieldLimits(bj);
       t=AB_JobSepaTransfer_GetTransaction(bj);
-      profileName="ccm";
-      descriptor="sepade.pain.001.001.02.xsd";
+      // TODO: choose from HISPAS
+      //profileName="ccm";
+      //descriptor="sepade.pain.001.001.02.xsd";
+      profileName="001_002_03";
+      descriptor="sepade.pain.001.002.03.xsd";
+      
       break;
     case AB_Job_TypeSepaDebitNote:
       lim=AB_JobSepaDebitNote_GetFieldLimits(bj);
