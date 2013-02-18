@@ -45,7 +45,7 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
 				  AB_JOB_TYPE jobType) {
   AH_JOB *j;
   AH_JOB_SINGLESEPA *aj;
-  GWEN_DB_NODE *dbArgs;
+  //GWEN_DB_NODE *dbArgs;
 
   switch(jobType) {
   case AB_Job_TypeSepaTransfer:
@@ -71,7 +71,8 @@ AH_JOB *AH_Job_SingleSepaBase_new(AB_USER *u,
   AH_Job_SetExchangeFn(j, AH_Job_SingleSepa_Exchange);
 
   /* preset some arguments */
-  dbArgs=AH_Job_GetArguments(j);
+  //dbArgs=
+  AH_Job_GetArguments(j);
 
   switch(jobType) {
   case AB_Job_TypeSepaTransfer:
