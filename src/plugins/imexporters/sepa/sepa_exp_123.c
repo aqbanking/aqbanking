@@ -123,14 +123,33 @@ int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
     GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
-    GWEN_XMLNode_SetCharValue(n, "PmtInfId", "");
+
+    /* generate PmtInfId */
+    if (1) {
+      GWEN_TIME *ti;
+      GWEN_BUFFER *tbuf;
+      uint32_t uid;
+      char numbuf[32];
+
+      ti=GWEN_CurrentTime();
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+
+      uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie));
+      GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
+      snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
+      GWEN_Buffer_AppendString(tbuf, numbuf);
+      GWEN_XMLNode_SetCharValue(n, "PmtInfId", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      GWEN_Time_free(ti);
+    }
+
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
 
     GWEN_XMLNode_SetCharValue(n, "BtchBookg", "true");
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
     if (1) {
-      GWEN_BUFFER *tbuf;
+        GWEN_BUFFER *tbuf;
 
       /* store sum */
       tbuf=GWEN_Buffer_new(0, 64, 0, 1);
