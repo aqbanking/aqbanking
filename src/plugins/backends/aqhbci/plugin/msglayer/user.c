@@ -153,6 +153,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
 
     ue->hbci=AH_Provider_GetHbci(pro);
     ue->tanMethodDescriptions=AH_TanMethod_List_new();
+    ue->sepaDescriptors=GWEN_StringList_new();
 
     s=AB_User_GetCountry(u);
     if (!s || !*s)
@@ -184,6 +185,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       }
       AH_User_ReadDb(u, db);
       AH_User_LoadTanMethods(u);
+      AH_User_LoadSepaDescriptors(u);
       if (rv==1) {
 	/* updated config, write it now */
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Writing back updated HBCI user %d", AB_User_GetUniqueId(u));
@@ -201,6 +203,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     /* just reload user */
     AH_User_ReadDb(u, db);
     AH_User_LoadTanMethods(u);
+    AH_User_LoadSepaDescriptors(u);
   }
   else {
     AH_USER *ue;
@@ -235,6 +238,7 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   AH_TanMethod_List_free(ue->tanMethodDescriptions);
+  GWEN_StringList_free(ue->sepaDescriptors);
   GWEN_FREE_OBJECT(ue);
 }
 
@@ -1754,6 +1758,67 @@ void AH_User_LoadTanMethods(AB_USER *u) {
 
 
 
+void AH_User_LoadSepaDescriptors(AB_USER *u) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+  int rv;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  /* read directly from BPD */
+
+  GWEN_StringList_Clear(ue->sepaDescriptors);
+  db=GWEN_DB_Group_new("bpd");
+  rv=AH_Job_SampleBpdVersions("JobGetAccountSepaInfo", u, db);
+  if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD for TAN job");
+  }
+  else {
+    GWEN_DB_NODE *dbV;
+
+    dbV=GWEN_DB_GetFirstGroup(db);
+    while(dbV) {
+      int version;
+
+      version=atoi(GWEN_DB_GroupName(dbV));
+      if (version>0) {
+	GWEN_DB_NODE *dbT;
+
+	/* always overwrite with latest version received */
+	GWEN_StringList_Clear(ue->sepaDescriptors);
+	dbT=GWEN_DB_FindFirstGroup(dbV, "SupportedSepaFormats");
+	if (!dbT) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "No SEPA descriptor found");
+	}
+	while(dbT) {
+	  int i;
+
+	  for (i=0; i<100; i++) {
+	    const char *s;
+
+	    s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
+	    if (! (s && *s))
+	      break;
+	    GWEN_StringList_AppendString(ue->sepaDescriptors, s, 0, 1);
+	    DBG_INFO(AQHBCI_LOGDOMAIN,
+		     "Adding SEPA descriptor [%s] for GV version %d",
+		     s, version);
+	  }
+
+	  dbT=GWEN_DB_FindNextGroup(dbT, "SupportedSepaFormats");
+	}
+      }
+
+      dbV=GWEN_DB_GetNextGroup(dbV);
+    }
+  }
+  GWEN_DB_Group_free(db);
+}
+
+
+
 
 const AH_TAN_METHOD_LIST *AH_User_GetTanMethodDescriptions(AB_USER *u) {
   AH_USER *ue;
@@ -1976,6 +2041,33 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
   return rv;
+}
+
+
+
+const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl) {
+  AH_USER *ue;
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (GWEN_StringList_Count(ue->sepaDescriptors)<1)
+    AH_User_LoadSepaDescriptors(u);
+
+  se=GWEN_StringList_FirstEntry(ue->sepaDescriptors);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s && -1!=GWEN_Text_ComparePattern(s, tmpl, 1))
+      return s;
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  return NULL;
 }
 
 

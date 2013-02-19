@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2013 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,6 +13,7 @@
 #include <aqhbci/aqhbci.h>
 #include <aqhbci/tanmethod.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/stringlist.h>
 
 
 /** @defgroup G_AB_BE_AQHBCI_USER HBCI User Extensions
@@ -290,7 +288,7 @@ AQHBCI_API void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i);
 
 
 
-
+AQHBCI_API const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl);
 
 
 /*@}*/ /* defgroup */

@@ -152,6 +152,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 			       AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_SINGLESEPA *aj;
   AB_BANKING *ab;
+  AB_USER *u;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
 
@@ -167,6 +168,9 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
               "Different job types");
     return GWEN_ERROR_INVALID;
   }
+
+  u=AH_Job_GetUser(j);
+  assert(u);
 
   switch(m) {
   case AH_Job_ExchangeModeParams: {
@@ -204,6 +208,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     GWEN_DB_NODE *dbArgs;
     const char *profileName="";
     const char *descriptor="";
+    const char *s;
 
     dbArgs=AH_Job_GetArguments(j);
 
@@ -212,12 +217,28 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     case AB_Job_TypeSepaTransfer:
       lim=AB_JobSepaTransfer_GetFieldLimits(bj);
       t=AB_JobSepaTransfer_GetTransaction(bj);
-      // TODO: choose from HISPAS
-      //profileName="ccm";
-      //descriptor="sepade.pain.001.001.02.xsd";
-      profileName="001_002_03";
-      descriptor="sepade.pain.001.002.03.xsd";
-      
+      /* choose from HISPAS */
+      /* first check for any descriptor for pain 001.002.03 */
+      s=AH_User_FindSepaDescriptor(u, "*001.002.03*");
+      if (s) {
+        profileName="001_002_03";
+        descriptor=s;
+      }
+      else {
+        /* look for pain 001.001.02 */
+        s=AH_User_FindSepaDescriptor(u, "*001.001.02*");
+        if (s) {
+          profileName="ccm";
+          descriptor=s;
+        }
+      }
+
+      /* check for valid descriptor */
+      if (!(descriptor && *descriptor)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found, please update your SEPA account information");
+        return GWEN_ERROR_GENERIC;
+      }
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
       break;
     case AB_Job_TypeSepaDebitNote:
       lim=AB_JobSepaDebitNote_GetFieldLimits(bj);

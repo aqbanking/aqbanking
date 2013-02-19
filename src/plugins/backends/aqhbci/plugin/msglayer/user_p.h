@@ -61,6 +61,7 @@ struct AH_USER {
 
   AH_TAN_METHOD_LIST *tanMethodDescriptions;
   char *tanMediumId;
+  GWEN_STRINGLIST *sepaDescriptors;
 
   int maxTransfersPerJob;
   int maxDebitNotesPerJob;
@@ -72,6 +73,7 @@ static void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
 static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
 
 static void AH_User_LoadTanMethods(AB_USER *u);
+static void AH_User_LoadSepaDescriptors(AB_USER *u);
 
 
 static int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf);
