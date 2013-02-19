@@ -38,7 +38,8 @@ EXTRA_DIST=\
   transfers.c \
   util.c \
   versions.c \
-  updateconf.c
+  updateconf.c \
+  sepatransfer.c
 
 
 if IS_WINDOWS
