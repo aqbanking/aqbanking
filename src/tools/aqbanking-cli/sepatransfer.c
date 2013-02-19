@@ -89,6 +89,17 @@ int sepaTransfer(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "name",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "name",                      /* long option */
+    "Specify your name",    /* short description */
+    "Specify your name"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
     "subAccountId",                /* name */
     0,                            /* minnum */
