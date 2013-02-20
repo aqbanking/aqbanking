@@ -195,6 +195,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		  AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
 		}
 		else if (strcasecmp(identifier, "KREF+")==0) {
+		  /* content of PmtInfId */
 		  AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
 		}
 		else if (strcasecmp(identifier, "MREF+")==0) {
@@ -226,6 +227,10 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	      /* no identifier here */
 	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
 		/* continuation of previous identifier, add to buffer */
+		if (strcasecmp(identifier, "SVWZ+")==0) {
+		  /* add a space for purpose */
+		  GWEN_Buffer_AppendString(tbuf, " ");
+		}
 		GWEN_Buffer_AppendString(tbuf, s);
 	      }
 	      else {
