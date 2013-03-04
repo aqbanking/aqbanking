@@ -57,6 +57,9 @@ GWEN_INHERIT(AB_PROVIDER, AO_PROVIDER)
 
 
 static AO_APPINFO _appInfos[]={
+  /* got this list from https://microsoftmoneyoffline.wordpress.com/appid-appver/ */
+{ I18S("Intuit Quicken Windows 2013"),    "QWIN",       "2200"},
+{ I18S("Intuit Quicken Windows 2012"),    "QWIN",       "2100"},
 { I18S("Intuit Quicken Windows 2011"),    "QWIN",       "2000"},
 { I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1900"},
 { I18S("Intuit Quicken Windows 2009"),    "QWIN",       "1800"},
@@ -64,6 +67,7 @@ static AO_APPINFO _appInfos[]={
 { I18S("Intuit Quicken Windows 2007"),    "QWIN",       "1600"},
 { I18S("Intuit Quicken Windows 2006"),    "QWIN",       "1500"},
 { I18S("Intuit Quicken Windows 2005"),    "QWIN",       "1400"},
+
 { I18S("Intuit Quicken Mac 2008"),        "QMOFX",      "1700"},
 { I18S("Intuit Quicken Mac 2007"),        "QMOFX",      "1600"},
 { I18S("Intuit Quicken Mac 2006"),        "QMOFX",      "1500"},
