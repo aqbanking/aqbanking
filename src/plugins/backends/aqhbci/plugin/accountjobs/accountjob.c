@@ -82,7 +82,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
 		"Therefore this job is not supported with your account.");
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
-			   I18N("This job needs an account suffix, but your bank didn't provide one. "
+			   I18N("This job needs an account suffix, but your bank did not provide one. "
                                 "Therefore this job is not supported with your account.\n"
                                 "Setting a higher HBCI version in the user settings might fix "
                                 "the problem."));

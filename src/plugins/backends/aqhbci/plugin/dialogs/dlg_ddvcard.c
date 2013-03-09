@@ -1036,7 +1036,7 @@ int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   dlg2=AH_DdvCardSpecialDialog_new(xdlg->banking);
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
-    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe incomplete installation?"));
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 

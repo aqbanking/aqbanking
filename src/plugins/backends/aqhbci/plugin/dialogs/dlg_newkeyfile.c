@@ -726,7 +726,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 				      "Please look at it carefully and compare the information against that "
 				      "in the letter from your bank.</p>"
 				      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
-				      "Contact your bank immediately if the hash doesn't match!</p>"));
+				      "Contact your bank immediately if the hash does not match!</p>"));
   rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(u),
                                   u,
 				  1,
@@ -748,7 +748,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 				      "in the letter from your bank.\n"
 				      "\n"
 				      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
-				      "Contact your bank immediately if the hash doesn't match!\n\n"));
+				      "Contact your bank immediately if the hash does not match!\n\n"));
   rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(u),
                                  u,
 				 1,
@@ -768,7 +768,7 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 			     I18N("Check Bank Keys"),
 			     GWEN_Buffer_GetStart(tbuf),
 			     I18N("Keys are ok"),
-			     I18N("Keys don't match!"),
+			     I18N("Keys do not match!"),
 			     NULL,
 			     0)) {
     GWEN_Buffer_free(tbuf);

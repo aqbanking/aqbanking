@@ -68,7 +68,7 @@ static AIO_OFX_GROUP_STATUS_ERROR error_msg_list[] = {
 {2022, I18S("Invalid TAN"), I18S("The server was unable to validate the TAN sent in the request.")},
 {2023, I18S("Unknown FITID"), I18S("The specified FITID/BILLID does not exist or no longer exists. [BILLID not found in the billing message sets]")},
 {2025, I18S("Branch ID missing"), I18S("A <BRANCHID> value must be provided in the <BANKACCTFROM> aggregate for this country system, but this field is missing.")},
-{2026, I18S("Bank name doesn't match bank ID"), I18S("The value of <BANKNAME> in the <EXTBANKACCTTO> aggregate is inconsistent with the value of <BANKID> in the <BANKACCTTO> aggregate.")},
+{2026, I18S("Bank name does not match bank ID"), I18S("The value of <BANKNAME> in the <EXTBANKACCTTO> aggregate is inconsistent with the value of <BANKID> in the <BANKACCTTO> aggregate.")},
 {2027, I18S("Invalid date range"), I18S("Response for non-overlapping dates, date ranges in the future, et cetera.")},
 {2028, I18S("Requested element unknown"), I18S("One or more elements of the request were not recognized by the server or the server (as noted in the FI Profile) does not support the elements. The server executed the element transactions it understood and supported. For example, the request file included private tags in a <PMTRQ> but the server was able to execute the rest of the request.")},
 {6500, I18S("<REJECTIFMISSING>Y invalid without <TOKEN>"), I18S("This error code may appear <SYNCERROR> element of an <xxxSYNCRS> wrapper (in <PRESDLVMSGSRSV1> and V2 message set responses) or the <CODE> contained in any embedded transaction wrappers within a sync response. The corresponding sync request wrapper included <REJECTIFMISSING>Y with <REFRESH>Y or <TOKENONLY>Y, which is illegal.")},

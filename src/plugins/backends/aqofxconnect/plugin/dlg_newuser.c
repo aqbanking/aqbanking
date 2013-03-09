@@ -576,13 +576,13 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "<p>Please enter your user settings below.</p>"
                                    "<p><i>User Name</i> is your real name, <i>User Id</i> is "
                                    "assigned to you by the bank after applying for OFX DirectConnect "
-                                   "and <i>Client UID</i> is used by some banks only. If you don't have such "
+                                   "and <i>Client UID</i> is used by some banks only. If you do not have such "
                                    "a value in your documents from the bank just leave it blank.</p>"
                                    "</html>"
                                    "Please enter your user settings below.\n"
                                    "\"User Name\" is your real name, \"User Id\" is\n"
                                    "assigned to you by the bank after applying for OFX DirectConnect\n"
-                                   "and \"Client UID\" is used by some banks. If you don't have such\n"
+                                   "and \"Client UID\" is used by some banks. If you do not have such\n"
                                    "a value in your documents from the bank just leave it blank."),
                               0);
 
@@ -652,14 +652,14 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "<p>You can now try to retrieve the list of accounts the "
                                    "bank allows you to manage via OFX DirectConnect.</p>"
                                    "<p>Please note that not every banks supports this. If your "
-                                   "bank doesn't support account list download you will have to "
+                                   "bank does not support account list download you will have to "
                                    "add the account manually.</p>"
                                    "</html>"
                                    "The user has been successfully setup.\n"
                                    "You can now try to retrieve the list of accounts the\n"
                                    "bank allows you to manage via OFX DirectConnect.\n"
                                    "Please note that not every banks supports this. If your\n"
-                                   "bank doesn't support account list download you will have to\n"
+                                   "bank does not support account list download you will have to\n"
                                    "add the account manually."
                                   ),
 			      0);
