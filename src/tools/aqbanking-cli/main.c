@@ -48,6 +48,20 @@
 #include "sepatransfer.c"
 
 
+static void cmdAddHelpStr(GWEN_BUFFER *ubuf,
+                          const char* cmdname,
+                          const char* cmdhelp)
+{
+  // Indentation of the command: one space
+  GWEN_Buffer_AppendString(ubuf, " ");
+  GWEN_Buffer_AppendString(ubuf, cmdname);
+  GWEN_Buffer_AppendString(ubuf, ":\n");
+  // Indentation of the help: three spaces
+  GWEN_Buffer_AppendString(ubuf, "   ");
+  GWEN_Buffer_AppendString(ubuf, cmdhelp);
+  GWEN_Buffer_AppendString(ubuf, "\n");
+}
+
 
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
@@ -184,68 +198,50 @@ int main(int argc, char **argv) {
     }
     GWEN_Buffer_AppendString(ubuf,
                              I18N("\nCommands:\n"));
-    GWEN_Buffer_AppendString(ubuf, " senddtazv:\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Sends a DTAZV file to the bank\n"));
-    GWEN_Buffer_AppendString(ubuf, " listaccs\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Prints the list of accounts\n"));
+    cmdAddHelpStr(ubuf, "senddtazv",
+                  I18N("Sends a DTAZV file to the bank"));
 
-    GWEN_Buffer_AppendString(ubuf, " listbal\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  Export balances from a  "
-				  "context file.\n"));
+    cmdAddHelpStr(ubuf, "listaccs",
+                  I18N("Prints the list of accounts"));
 
-    GWEN_Buffer_AppendString(ubuf, " listtrans\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("  Export transactions from a "
-				  "context file.\n"));
+    cmdAddHelpStr(ubuf, "listbal",
+                  I18N("Export balances from a context file."));
 
-    GWEN_Buffer_AppendString(ubuf, " request\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("   Requests transactions, "
-				  "  balances, standing orders etc.\n"));
+    cmdAddHelpStr(ubuf, "listtrans",
+                  I18N("Export transactions from a context file."));
 
-    GWEN_Buffer_AppendString(ubuf, " chkacc\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Check a combination of bank id and "
-				  "account number\n"));
+    cmdAddHelpStr(ubuf, "request",
+                  I18N("Requests transactions, balances, standing orders etc."));
 
-    GWEN_Buffer_AppendString(ubuf, " chkiban\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Check an IBAN\n"));
+    cmdAddHelpStr(ubuf, "chkacc",
+                  I18N("Check a combination of bank id and account number"));
 
-    GWEN_Buffer_AppendString(ubuf, " import\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Import a file into an import context file\n"));
+    cmdAddHelpStr(ubuf, "chkiban",
+                  I18N("Check an IBAN"));
 
-    GWEN_Buffer_AppendString(ubuf, " transfer\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Issue a single transfer (data from command line)\n"));
+    cmdAddHelpStr(ubuf, "import",
+                  I18N("Import a file into an import context file"));
 
-    GWEN_Buffer_AppendString(ubuf, " transfers\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Issue a number of transfers (data from a file)\n"));
+    cmdAddHelpStr(ubuf, "transfer",
+                  I18N("Issue a single transfer (data from command line)"));
 
-    GWEN_Buffer_AppendString(ubuf, " debitnote\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Issue a single debit note (data from command line)\n"));
+    cmdAddHelpStr(ubuf, "transfers",
+                  I18N("Issue a number of transfers (data from a file)"));
 
-    GWEN_Buffer_AppendString(ubuf, " debitnotes\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Issue a number of debit notes (data from a file)\n"));
+    cmdAddHelpStr(ubuf, "debitnote",
+                  I18N("Issue a single debit note (data from command line)"));
 
-    GWEN_Buffer_AppendString(ubuf, " addtrans\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Add a transfer to an existing import context file\n"));
+    cmdAddHelpStr(ubuf, "debitnotes",
+                  I18N("Issue a number of debit notes (data from a file)"));
 
-    GWEN_Buffer_AppendString(ubuf, " fillgaps\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Fill gaps in an import context file from configuration settings\n"));
+    cmdAddHelpStr(ubuf, "addtrans",
+                  I18N("Add a transfer to an existing import context file"));
 
-    GWEN_Buffer_AppendString(ubuf, " updateconf\n");
-    GWEN_Buffer_AppendString(ubuf,
-			     I18N("   Update configuration from previous AqBanking versions\n"));
+    cmdAddHelpStr(ubuf, "fillgaps",
+                  I18N("Fill gaps in an import context file from configuration settings"));
+
+    cmdAddHelpStr(ubuf, "updateconf",
+                  I18N("Update configuration from previous AqBanking versions"));
 
     GWEN_Buffer_AppendString(ubuf, "\n");
 
