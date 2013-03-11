@@ -61,7 +61,7 @@ libhbcimsg_la_SOURCES=\
  user.c
 
 sources:
-	for f in $(libhbcimsg_la_SOURCES); do \
+	for f in $(libhbcimsg_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
