@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2013-03-09 11:16+0100\n"
-"PO-Revision-Date: 2013-03-09 11:18+0100\n"
+"POT-Creation-Date: 2013-03-11 21:50+0100\n"
+"PO-Revision-Date: 2013-03-11 21:53+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
 "Language: de_DE\n"
@@ -1563,6 +1563,20 @@ msgstr "SEPA-Lastschrift"
 
 #: src/libs/aqbanking/job.c:293
 #: src/libs/aqbanking/dialogs/dlg_editaccount.c:590
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_ddv.c:773
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_ddv.c:1080
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh1.c:761
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh1.c:1088
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh2.c:762
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh2.c:1102
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh3.c:765
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh3.c:1104
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh5.c:775
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh5.c:1114
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh10.c:786
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh10.c:1126
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_pintan.c:497
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_pintan.c:684
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_editaccount.c:592
 msgid "unknown"
 msgstr "unbekannt"
@@ -3460,6 +3474,75 @@ msgstr "Bitte geben Sie die TAN für Benutzer <i>%s</i> bei <i>%s</i> ein."
 msgid "Please enter the TAN from the device."
 msgstr "Bitet geben Sie die TAN vom Gerät ein."
 
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh1.c:1155
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh2.c:1169
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh3.c:1171
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh5.c:1181
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh10.c:1215
+msgid "Unable to verify signature (no key)"
+msgstr "Signatur kann nicht überprüft werden (kein Schlüssel)"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh1.c:1166
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh2.c:1180
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh3.c:1182
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh5.c:1192
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh10.c:1226
+msgid "Invalid signature!!!"
+msgstr "Ungültige Signatur!"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh1.c:1172
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh2.c:1186
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh3.c:1188
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh5.c:1198
+#: src/plugins/backends/aqhbci/plugin/msglayer/msgcrypt_rdh10.c:1232
+msgid "Could not verify signature"
+msgstr "Signatur konnte nicht überprüft werden"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_hbci.c:52
+msgid "Connecting to bank..."
+msgstr "Verbindungsaufbau zur Bank..."
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_hbci.c:71
+#, c-format
+msgid "Could not connect (%d)"
+msgstr "Konnte keine Verbindung herstellen (%d)"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_hbci.c:77
+msgid "Connected."
+msgstr "Verbunden."
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_hbci.c:90
+msgid "Disconnecting from bank..."
+msgstr "Verbindung zur Bank wird beendet..."
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_hbci.c:98
+msgid "Disconnected."
+msgstr "Beendet."
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:199
+msgid "Could not BASE64-decode the message"
+msgstr "Die Nachricht konnte nicht BASE64-kodiert werden"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:213
+msgid "Received message is not HBCI"
+msgstr "Die empfangene Nachricht ist nicht im HBCI-Format"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:263
+msgid "Unparsable message received"
+msgstr "Unlesbare Nachricht empfangen"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:278
+msgid "Received message was truncated"
+msgstr "Die empfangene Nachricht war abgeschnitten"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:300
+msgid "Preparing connection"
+msgstr "Verbindung vorbereiten"
+
+#: src/plugins/backends/aqhbci/plugin/msglayer/dialog_https.c:306
+msgid "Error preparing connection"
+msgstr "Fehler beim Vorbereiten der Verbindung"
+
 #: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1755
 msgid "AH_JOB|-- no account id --"
 msgstr "-- keine Kontonummer --"
@@ -4740,6 +4823,14 @@ msgid ""
 "list.\n"
 "Click on the RUN button below to create the user."
 msgstr ""
+"<html><p>Das HBCI-Modul unterstützt viele verschiedene Sicherheitsmedien. "
+"Bitte\n"
+"wählen Sie die Einrichtungsart aus der folgenden Liste.</p><p>\n"
+"Klicken Sie auf den »Ausführen«-Knopf, um den Benutzer zu erstellen.</p></"
+"html>\n"
+"Das HBCI-Modul unterstützt viele verschiedene Sicherheitsmedien. Bitte\n"
+"wählen Sie die Einrichtungsart aus der folgenden Liste.\n"
+"Klicken Sie auf den »Ausführen«-Knopf, um den Benutzer zu erstellen."
 
 #. got this list from https://microsoftmoneyoffline.wordpress.com/appid-appver/
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:61
@@ -4843,6 +4934,8 @@ msgstr "Einrichtungsfehler"
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:273
 msgid "No user assigned to this account. Please check your configuration."
 msgstr ""
+"Dieses Konto ist keinem Benutzer zugeordnet. Bitte überprüfen Sie Ihre "
+"Konfiguration."
 
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:595
 #, c-format
@@ -4925,15 +5018,15 @@ msgstr "Bitte geben Sie Ihre Benutzerkennung (User ID) ein."
 #: src/plugins/backends/aqofxconnect/plugin/dlg_edituser.c:771
 #: src/plugins/backends/aqofxconnect/plugin/dlg_edituser.c:783
 msgid "Please select a valid application to emulate."
-msgstr ""
+msgstr "Bitte wählen Sie eine Anwendung, die emuliert werden soll."
 
 #: src/plugins/backends/aqofxconnect/plugin/dlg_edituser.c:795
 msgid "Please enter a correct header version (default is 102)."
-msgstr ""
+msgstr "Bitte wählen Sie eine Header-Version (voreingestellt ist 102)."
 
 #: src/plugins/backends/aqofxconnect/plugin/dlg_newuser.c:529
 msgid "OFX DirectConnect Setup Wizard"
-msgstr ""
+msgstr "OFX DirectConnect Setup-Assistent"
 
 #: src/plugins/backends/aqofxconnect/plugin/dlg_newuser.c:540
 msgid ""
@@ -5036,99 +5129,105 @@ msgstr ""
 #. maxnum
 #. short option
 #. long option
-#: src/tools/aqbanking-cli/main.c:72 src/tools/aqbanking-cli/main.c:73
+#: src/tools/aqbanking-cli/main.c:86 src/tools/aqbanking-cli/main.c:87
 msgid "Specify the configuration folder"
-msgstr ""
+msgstr "Gibt den Konfigurationsordner an"
 
-#: src/tools/aqbanking-cli/main.c:129 src/tools/aqbanking-cli/main.c:131
+#: src/tools/aqbanking-cli/main.c:143 src/tools/aqbanking-cli/main.c:145
 msgid ""
 "Show this help screen. For help on commands, run aqbanking-cli <COMMAND> --"
 "help."
 msgstr ""
+"Diesen Hilfetext anzeigen. Um die Hilfe für einzelne Kommandos zu erhalten, "
+"bitte aufrufen: aqbanking-cli <KOMMANDO> --help"
 
-#: src/tools/aqbanking-cli/main.c:171
+#: src/tools/aqbanking-cli/main.c:185
 msgid "This is version "
-msgstr ""
+msgstr "Dies ist Version "
 
-#: src/tools/aqbanking-cli/main.c:174
+#: src/tools/aqbanking-cli/main.c:188
 msgid "Usage: "
-msgstr ""
+msgstr "Benutzung: "
 
-#: src/tools/aqbanking-cli/main.c:177
+#: src/tools/aqbanking-cli/main.c:191
 msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
-msgstr ""
+msgstr " [ALLGEMEINE OPTIONEN] KOMMANDO [KOMMANDO-OPTIONEN]\n"
 
-#: src/tools/aqbanking-cli/main.c:180
+#: src/tools/aqbanking-cli/main.c:194
 msgid ""
 "\n"
 "Global Options:\n"
 msgstr ""
+"\n"
+"Allgemeine Optionen:\n"
 
-#: src/tools/aqbanking-cli/main.c:186
+#: src/tools/aqbanking-cli/main.c:200
 msgid ""
 "\n"
 "Commands:\n"
 msgstr ""
+"\n"
+"Kommandos:\n"
 
-#: src/tools/aqbanking-cli/main.c:189
-msgid "   Sends a DTAZV file to the bank\n"
-msgstr ""
+#: src/tools/aqbanking-cli/main.c:202
+msgid "Sends a DTAZV file to the bank"
+msgstr "Eine DTAZV-Datei zur Bank senden"
 
-#: src/tools/aqbanking-cli/main.c:192
-msgid "   Prints the list of accounts\n"
-msgstr "   Anzeigen der Kontenliste\n"
+#: src/tools/aqbanking-cli/main.c:205
+msgid "Prints the list of accounts"
+msgstr "Anzeigen der Kontenliste"
 
-#: src/tools/aqbanking-cli/main.c:196
-msgid "  Export balances from a  context file.\n"
-msgstr ""
-
-#: src/tools/aqbanking-cli/main.c:201
-msgid "  Export transactions from a context file.\n"
-msgstr ""
-
-#: src/tools/aqbanking-cli/main.c:206
-msgid "   Requests transactions,   balances, standing orders etc.\n"
-msgstr ""
+#: src/tools/aqbanking-cli/main.c:208
+msgid "Export balances from a context file."
+msgstr "Salden aus einer Kontextdatei exportieren."
 
 #: src/tools/aqbanking-cli/main.c:211
-msgid "   Check a combination of bank id and account number\n"
+msgid "Export transactions from a context file."
+msgstr "Buchungen aus einer Kontextdatei exportieren."
+
+#: src/tools/aqbanking-cli/main.c:214
+msgid "Requests transactions, balances, standing orders etc."
 msgstr ""
 
-#: src/tools/aqbanking-cli/main.c:216
-msgid "   Check an IBAN\n"
+#: src/tools/aqbanking-cli/main.c:217
+msgid "Check a combination of bank id and account number"
 msgstr ""
 
 #: src/tools/aqbanking-cli/main.c:220
-msgid "   Import a file into an import context file\n"
+msgid "Check an IBAN"
+msgstr "Eine IBAN überprüfen"
+
+#: src/tools/aqbanking-cli/main.c:223
+msgid "Import a file into an import context file"
+msgstr "Eine Datei in eine Import-Kontextdatei importieren"
+
+#: src/tools/aqbanking-cli/main.c:226
+msgid "Issue a single transfer (data from command line)"
 msgstr ""
 
-#: src/tools/aqbanking-cli/main.c:224
-msgid "   Issue a single transfer (data from command line)\n"
-msgstr ""
-
-#: src/tools/aqbanking-cli/main.c:228
-msgid "   Issue a number of transfers (data from a file)\n"
+#: src/tools/aqbanking-cli/main.c:229
+msgid "Issue a number of transfers (data from a file)"
 msgstr ""
 
 #: src/tools/aqbanking-cli/main.c:232
-msgid "   Issue a single debit note (data from command line)\n"
+msgid "Issue a single debit note (data from command line)"
 msgstr ""
 
-#: src/tools/aqbanking-cli/main.c:236
-msgid "   Issue a number of debit notes (data from a file)\n"
+#: src/tools/aqbanking-cli/main.c:235
+msgid "Issue a number of debit notes (data from a file)"
 msgstr ""
 
-#: src/tools/aqbanking-cli/main.c:240
-msgid "   Add a transfer to an existing import context file\n"
+#: src/tools/aqbanking-cli/main.c:238
+msgid "Add a transfer to an existing import context file"
+msgstr ""
+
+#: src/tools/aqbanking-cli/main.c:241
+msgid "Fill gaps in an import context file from configuration settings"
 msgstr ""
 
 #: src/tools/aqbanking-cli/main.c:244
-msgid "   Fill gaps in an import context file from configuration settings\n"
-msgstr ""
-
-#: src/tools/aqbanking-cli/main.c:248
-msgid "   Update configuration from previous AqBanking versions\n"
-msgstr ""
+msgid "Update configuration from previous AqBanking versions"
+msgstr "Die Konfiguration aus früheren AqBanking-Versionen aktualisieren"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
 #: src/libs/aqbanking/dialogs/dlg_importer.dlg:29
