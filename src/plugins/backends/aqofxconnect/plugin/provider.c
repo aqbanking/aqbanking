@@ -85,6 +85,8 @@ static AO_APPINFO _appInfos[]={
 { I18S("Microsoft Money 2004"),           "Money",      "1200"},
 { I18S("Microsoft Money 2003"),           "Money",      "1100"},
 
+{ I18S("ProSaldo Money 2013"),            "PROSALDO",   "11005"},
+
 { NULL, NULL, NULL}
 };
 
