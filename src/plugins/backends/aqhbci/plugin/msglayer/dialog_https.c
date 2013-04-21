@@ -194,6 +194,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
 			  bbuf);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decode BASE64 message (%d)", rv);
+      /* for debugging purposes */
+      GWEN_Buffer_Dump(tbuf, 2);
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
                            I18N("Could not BASE64-decode the message"));
@@ -211,6 +213,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
                            I18N("Received message is not HBCI"));
+      /* for debugging purposes */
+      GWEN_Buffer_Dump(tbuf, 2);
       GWEN_Buffer_free(tbuf);
       GWEN_HttpSession_Fini(dlg->httpSession);
       GWEN_HttpSession_free(dlg->httpSession);
@@ -233,6 +237,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   p1=strchr(GWEN_Buffer_GetStart(tbuf), '+');
   if (p1==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad data (missing '+')");
+    /* for debugging purposes */
+    GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_Fini(dlg->httpSession);
     GWEN_HttpSession_free(dlg->httpSession);
@@ -245,6 +251,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   p2=strchr(p1, '+');
   if (p2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad data (missing '+')");
+    /* for debugging purposes */
+    GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_Fini(dlg->httpSession);
     GWEN_HttpSession_free(dlg->httpSession);
@@ -257,6 +265,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   *p2=0;
   if (1!=sscanf(p1, "%d", &msgSize)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad size field [%s]", p1);
+    /* for debugging purposes */
+    GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
@@ -271,7 +281,9 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   /* check message size */
   if (GWEN_Buffer_GetUsedBytes(tbuf)<msgSize) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad message size (%d<%d)",
-	      GWEN_Buffer_GetUsedBytes(tbuf), msgSize);
+              GWEN_Buffer_GetUsedBytes(tbuf), msgSize);
+    /* for debugging purposes */
+    GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
