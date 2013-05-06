@@ -17,6 +17,7 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+#include "user_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -40,14 +41,37 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbArgs;
+  int useCreditCardJob=0;
+  GWEN_DB_NODE *updgroup;
 
-  j=AH_AccountJob_new("JobGetBalance", u, account);
+  //Check if we should use DKKKS
+  updgroup=AH_User_GetUpd(u);
+  assert(updgroup);
+  updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                            AB_Account_GetAccountNumber(account));
+  if (updgroup) {
+    GWEN_DB_NODE *n;
+
+    n=GWEN_DB_GetFirstGroup(updgroup);
+    while(n) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
+		     "DKKKS")==0) {
+	useCreditCardJob = 1;
+	break;
+      }
+      n=GWEN_DB_GetNextGroup(n);
+    } /* while */
+  } /* if updgroup for the given account found */
+
+  if(useCreditCardJob)
+    j=AH_AccountJob_new("JobGetBalanceCreditCard", u, account);
+  else
+    j=AH_AccountJob_new("JobGetBalance", u, account);
   if (!j)
     return 0;
 
   GWEN_NEW_OBJECT(AH_JOB_GETBALANCE, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETBALANCE, j, aj,
-                       AH_Job_GetBalance_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETBALANCE, j, aj, AH_Job_GetBalance_FreeData);
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetBalance_Process);
   AH_Job_SetExchangeFn(j, AH_Job_GetBalance_Exchange);
@@ -55,8 +79,12 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "allAccounts", "N");
+  if(useCreditCardJob)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
+			 "accountNumber", AB_Account_GetAccountNumber(account));
+  else
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
+			 "allAccounts", "N");
 
   return j;
 }
@@ -176,6 +204,9 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
     dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                "data/balance");
+    if (!dbBalance)
+      dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                                         "data/balancecreditcard");
     if (dbBalance) {
       AB_ACCOUNT_STATUS *acst;
       GWEN_DB_NODE *dbT;

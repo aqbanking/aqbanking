@@ -17,6 +17,7 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+#include "user_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -47,7 +48,32 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobGetTransactions", u, account);
+  int useCreditCardJob = 0;
+
+  //Check if we should use DKKKU
+  GWEN_DB_NODE *updgroup;
+  updgroup=AH_User_GetUpd(u);
+  assert(updgroup);
+  updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                            AB_Account_GetAccountNumber(account));
+  if (updgroup) {
+    const char *code;
+     GWEN_DB_NODE *n;
+      n=GWEN_DB_GetFirstGroup(updgroup);
+      while(n) {
+        if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
+                       "DKKKU")==0) {
+          useCreditCardJob = 1;
+          break;
+        }
+        n=GWEN_DB_GetNextGroup(n);
+      } /* while */
+  } /* if updgroup for the given account found */
+
+  if(useCreditCardJob)
+    j=AH_AccountJob_new("JobGetTransactionsCreditCard", u, account);
+  else
+    j=AH_AccountJob_new("JobGetTransactions", u, account);
   if (!j)
     return 0;
 
@@ -55,13 +81,21 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j, aj,
                        AH_Job_GetTransactions_FreeData);
   /* overwrite some virtual functions */
-  AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
+  if(useCreditCardJob)
+    AH_Job_SetProcessFn(j, AH_Job_GetTransactionsCreditCard_Process);
+  else
+    AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
+
   AH_Job_SetExchangeFn(j, AH_Job_GetTransactions_Exchange);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
+  if(useCreditCardJob)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
+                         "accountNumber", AB_Account_GetAccountNumber(account));
+  else
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                        "allAccounts", "N");
   return j;
 }
@@ -376,7 +410,149 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   return 0;
 }
 
+int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+  AH_JOB_GETTRANSACTIONS *aj;
+  AB_ACCOUNT *a;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+  AB_USER *u;
+  GWEN_DB_NODE *dbResponses;
+  GWEN_DB_NODE *dbCurr;
+  GWEN_BUFFER *tbooked;
+  GWEN_BUFFER *tnoted;
+  int rv;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCreditCard");
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j);
+  assert(aj);
+
+  tbooked=GWEN_Buffer_new(0, 1024, 0, 1);
+  tnoted=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  dbResponses=AH_Job_GetResponses(j);
+  assert(dbResponses);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Response: %x", dbResponses);
+  GWEN_DB_Dump(dbResponses, 2);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Response end");
+
+
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
+  ai=AB_ImExporterContext_GetAccountInfo(ctx,
+                                         AB_Account_GetBankCode(a),
+                                         AB_Account_GetAccountNumber(a));
+  assert(ai);
+  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  /* search for "Transactions" */
+  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+  while(dbCurr) {
+    GWEN_DB_NODE *dbXA;
+
+    rv=AH_Job_CheckEncryption(j, dbCurr);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
+      GWEN_Buffer_free(tbooked);
+      GWEN_Buffer_free(tnoted);
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+    rv=AH_Job_CheckSignature(j, dbCurr);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
+      GWEN_Buffer_free(tbooked);
+      GWEN_Buffer_free(tnoted);
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
+
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                          "data/transactionscreditcard");
+    if (dbXA) {
+      GWEN_DB_NODE *dbT;
+      GWEN_DB_NODE *dbV;
+      GWEN_TIME *date;
+      GWEN_TIME *valutaDate;
+      GWEN_BUFFER *buf;
+      const char *p;
+
+      dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                           "entries");
+      while (dbT) {
+        /* read date (Buchungsdatum) */
+        p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
+        assert(p);
+        date=GWEN_Time_fromString(p, "YYYYMMDD");
+
+        /* read valutaData (Umsatzdatum) */
+        p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
+        assert(p);
+        valutaDate=GWEN_Time_fromString(p, "YYYYMMDD");
+
+        /* read value */
+        AB_VALUE *v1;
+        AB_VALUE *v2;
+        dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                             "value");
+        assert(dbV);
+        v1=AB_Value_fromDb(dbV);
+        v2=0;
+        if (!v1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
+        }
+        else {
+          p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
+          if (p) {
+            if (strcasecmp(p, "D")==0 ||
+                strcasecmp(p, "RC")==0) {
+              v2=AB_Value_dup(v1);
+              AB_Value_Negate(v2);
+            }
+            else if (strcasecmp(p, "C")==0 ||
+                strcasecmp(p, "RD")==0)
+              v2=AB_Value_dup(v1);
+            else {
+              DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
+              v2=0;
+            }
+          }
+          AB_Value_free(v1);
+        }
+
+        /* read purpose */
+        GWEN_STRINGLIST* purpose;
+        p=GWEN_DB_GetCharValue(dbT, "purpose", 0, 0);
+        assert(p);
+        purpose=GWEN_StringList_fromTabString(p, 0);
+
+        /* unhandled: reference number, balance */
+
+        AB_TRANSACTION *t;
+        t=AB_Transaction_new();
+        AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
+        AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
+        AB_Transaction_SetValutaDate(t, valutaDate);
+        AB_Transaction_SetDate(t, date);
+        AB_Transaction_SetValue(t, v2);
+        AB_Transaction_SetPurpose(t, purpose);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
+        AB_ImExporterAccountInfo_AddTransaction(ai, t);
+
+        GWEN_StringList_free(purpose);
+        AB_Value_free(v2);
+        GWEN_Time_free(date);
+        GWEN_Time_free(valutaDate);
+
+        dbT = GWEN_DB_FindNextGroup(dbT, "entries");
+      } //while (dbT)
+    } //if (dbXA)
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  }
+}
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
