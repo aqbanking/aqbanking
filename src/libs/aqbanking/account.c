@@ -197,6 +197,22 @@ int AB_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db){
     snprintf(numbuf, sizeof(numbuf)-1, "%u", id);
     GWEN_StringList_AppendString(a->selectedUserIds, numbuf, 0, 1);
   }
+  /* fix problem where there is no userId in the list */
+  if (GWEN_StringList_Count(a->userIds)<GWEN_StringList_Count(a->selectedUserIds)) {
+    GWEN_STRINGLISTENTRY *se;
+  
+    se=GWEN_StringList_FirstEntry(a->selectedUserIds);
+    while(se) {
+      const char *s;
+  
+      s=GWEN_StringListEntry_Data(se);
+      if (s) {
+	GWEN_StringList_AppendString(a->userIds, s, 0, 1);
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
 
   /* TODO: START: remove this */
   GWEN_DB_Group_free(a->appData);
@@ -445,6 +461,7 @@ void AB_Account_SetSelectedUsers(AB_ACCOUNT *a, const AB_USER_LIST2 *ul) {
 	snprintf(numbuf, sizeof(numbuf)-1, "%u", AB_User_GetUniqueId(u));
         numbuf[sizeof(numbuf)-1]=0;
 	GWEN_StringList_AppendString(a->selectedUserIds, numbuf, 0, 1);
+	GWEN_StringList_AppendString(a->userIds, numbuf, 0, 1); /* also add to userIds, if not already done */
 	u=AB_User_List2Iterator_Next(it);
       }
       AB_User_List2Iterator_free(it);
@@ -465,6 +482,7 @@ void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u) {
 
     snprintf(numbuf, sizeof(numbuf)-1, "%u", AB_User_GetUniqueId(u));
     GWEN_StringList_AppendString(a->selectedUserIds, numbuf, 0, 1);
+    GWEN_StringList_AppendString(a->userIds, numbuf, 0, 1); /* also add to userIds, if not already done */
   }
 }
 
