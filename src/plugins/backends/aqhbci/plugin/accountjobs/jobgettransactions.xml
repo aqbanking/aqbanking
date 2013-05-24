@@ -54,11 +54,11 @@
     <ELEM name="valutaDate" type="date" minsize="8" maxsize="8" minnum="0" />
     <ELEM name="date" type="date" minsize="8" maxsize="8" minnum="0" />
     <ELEM name="unknown1" type="an" maxsize="0" />
+    <GROUP name="value2" type="btg" trustlevel="4" version="1" /> <!-- This seems to have the same value as "value", but for weekly creditcard statement this is zero and only "value" has the correct amount -->
+    <ELEM name="debitmark2" type="alpha" minsize="1" maxsize="1" /> <!-- This seems to have the same value as "debitmark2", but notes on "value2" apply -->
+    <ELEM name="unknown3" type="an" maxsize="30" /> <!-- This has always been '1,' -->
     <GROUP name="value" type="btg" trustlevel="4" version="1" />
     <ELEM name="debitmark" type="alpha" minsize="1" maxsize="1" />
-    <ELEM name="unknown3" type="an" maxsize="30" /> <!-- This has always been '1,' -->
-    <GROUP name="value2" type="btg" trustlevel="4" version="1" /> <!-- This seems to have the same value as "value" -->
-    <ELEM name="debitmark2" type="alpha" minsize="1" maxsize="1" /> <!-- This seems to have the same value as "debitmark" -->
     <ELEM name="purpose" type="an" maxsize="50" />
     <ELEM name="unknown4" type="an" maxsize="0" />
     <ELEM name="unknown4" type="an" maxsize="0" />

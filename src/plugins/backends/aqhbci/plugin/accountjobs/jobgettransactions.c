@@ -529,7 +529,10 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         assert(p);
         purpose=GWEN_StringList_fromTabString(p, 0);
 
-        /* unhandled: reference number, balance */
+        /* read reference */
+        p=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
+        assert(p);
+        GWEN_StringList_AppendString(purpose, p, 0, 0);
 
         AB_TRANSACTION *t;
         t=AB_Transaction_new();
