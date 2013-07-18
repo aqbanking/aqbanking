@@ -170,15 +170,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
       GWEN_Buffer_free(tbuf);
     }
     else {
-      GWEN_TIME *ti;
-      GWEN_BUFFER *tbuf;
-
-      ti=GWEN_CurrentTime();
-      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-      GWEN_Time_toString(ti, "YYYY-MM-DD", tbuf);
-      GWEN_XMLNode_SetCharValue(n, "ReqdExctnDt", GWEN_Buffer_GetStart(tbuf));
-      GWEN_Buffer_free(tbuf);
-      GWEN_Time_free(ti);
+      GWEN_XMLNode_SetCharValue(n, "ReqdExctnDt", "1999-01-01");
     }
 
     /* create "Dbtr" */

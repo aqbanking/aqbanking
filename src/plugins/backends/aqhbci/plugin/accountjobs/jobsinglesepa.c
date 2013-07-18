@@ -271,10 +271,7 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 
       ioc=AB_ImExporterContext_new();
       cpy=AB_Transaction_dup(t);
-      /* set NODATE (1999/01/01) */
-      ti=GWEN_Time_new(1999, 0, 1, 0, 0, 0, 0);
-      AB_Transaction_SetDate(cpy, ti);
-      GWEN_Time_free(ti);
+      /* don't set date, SEPA exporter will create NODATE (1999/01/01) */
       AB_ImExporterContext_AddTransaction(ioc, cpy);
 
       dbuf=GWEN_Buffer_new(0, 256, 0, 1);
