@@ -4,6 +4,8 @@
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
+ copyright   : (C) 2013 by Paul Conrady
+ email       : c.p.conrady@gmail.com
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
@@ -16,12 +18,9 @@
 
 #include "g_invpos_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
-
-#include "g_bankacc_l.h"
 #include "g_secid_l.h"
 
 #include <gwenhywfar/misc.h>
@@ -112,7 +111,8 @@ int AIO_OfxGroup_INVPOS_StartTag(AIO_OFX_GROUP *g,
       strcasecmp(tagName, "UNITS")==0 ||
       strcasecmp(tagName, "UNITPRICE")==0 ||
       strcasecmp(tagName, "MKTVAL")==0 ||
-      strcasecmp(tagName, "DTPRICEASOF")==0) {
+      strcasecmp(tagName, "DTPRICEASOF")==0 ||
+      strcasecmp(tagName, "MEMO")==0) {
     free(xg->currentElement);
     xg->currentElement=strdup(tagName);
   }
@@ -164,7 +164,7 @@ int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data) {
 	v=AB_Value_fromString(s);
 	if (v==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for UNITPRICE: [%s]", s);
+		    "Invalid data for UNITS: [%s]", s);
 	  GWEN_Buffer_free(buf);
 	  return GWEN_ERROR_BAD_DATA;
 	}
@@ -192,7 +192,7 @@ int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data) {
 	ti=GWEN_Time_fromString(s, "YYYYMMDD");
 	if (ti==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for DTPOSTED: [%s]", s);
+		    "Invalid data for DTPRICEASOF: [%s]", s);
 	  GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
 	}
@@ -228,9 +228,9 @@ int AIO_OfxGroup_INVPOS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   s=AIO_OfxGroup_GetGroupName(sg);
   if (strcasecmp(s, "SECID")==0) {
     AB_Security_SetUniqueId(xg->security,
-			    AIO_OfxGroup_SECID_GetUniqueId(sg));
+                            AIO_OfxGroup_SECID_GetUniqueId(sg));
     AB_Security_SetNameSpace(xg->security,
-			     AIO_OfxGroup_SECID_GetNameSpace(sg));
+                             AIO_OfxGroup_SECID_GetNameSpace(sg));
   }
 
   return 0;

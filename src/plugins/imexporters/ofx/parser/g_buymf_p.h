@@ -12,18 +12,27 @@
  ***************************************************************************/
 
 
-#ifndef AIO_OFX_G_INVBUY_L_H
-#define AIO_OFX_G_INVBUY_L_H
+#ifndef AIO_OFX_G_BUYMF_P_H
+#define AIO_OFX_G_BUYMF_P_H
 
 
-#include "ofxgroup_l.h"
+#include "g_buymf_l.h"
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_INVBUY_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx);
+typedef struct AIO_OFX_GROUP_BUYMF AIO_OFX_GROUP_BUYMF;
+struct AIO_OFX_GROUP_BUYMF {
+  char *currentElement;
 
-AB_TRANSACTION *AIO_OfxGroup_INVBUY_TakeTransaction(const AIO_OFX_GROUP *g);
+  AB_TRANSACTION *transaction;
+};
 
+static void GWENHYWFAR_CB AIO_OfxGroup_BUYMF_FreeData(void *bp, void *p);
+
+
+static int AIO_OfxGroup_BUYMF_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_BUYMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+static int AIO_OfxGroup_BUYMF_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
+
+

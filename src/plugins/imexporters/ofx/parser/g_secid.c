@@ -4,6 +4,8 @@
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
+ copyright   : (C) 2013 by Paul Conrady
+ email       : c.p.conrady@gmail.com
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
@@ -16,7 +18,6 @@
 
 #include "g_secid_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
@@ -126,13 +127,10 @@ void AIO_OfxGroup_SECID_SetNameSpace(AIO_OFX_GROUP *g, const char *s) {
 int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g,
 				 const char *tagName) {
   AIO_OFX_GROUP_SECID *xg;
-  //GWEN_XML_CONTEXT *ctx;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_SECID, g);
   assert(xg);
-
-  //ctx=AIO_OfxGroup_GetXmlContext(g);
 
   free(xg->currentElement);
   xg->currentElement=NULL;
@@ -192,5 +190,17 @@ int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
+AB_TRANSACTION *AIO_OfxGroup_SECID_TakeData(const AIO_OFX_GROUP *g){
+  AIO_OFX_GROUP_SECID *xg;
+  AB_TRANSACTION *t;
 
+  assert(g);
+  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_SECID, g);
+  assert(xg);
 
+  t=xg->transaction;
+  xg->transaction=NULL;
+  free(xg->transaction);
+
+  return t;
+}

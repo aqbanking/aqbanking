@@ -12,18 +12,17 @@
  ***************************************************************************/
 
 
-#ifndef AIO_OFX_G_INVBUY_L_H
-#define AIO_OFX_G_INVBUY_L_H
+#ifndef AIO_OFX_G_MFINFO_L_H
+#define AIO_OFX_G_MFINFO_L_H
 
 
 #include "ofxgroup_l.h"
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_INVBUY_new(const char *groupName,
+
+AIO_OFX_GROUP *AIO_OfxGroup_MFINFO_new(const char *groupName,
 				       AIO_OFX_GROUP *parent,
 				       GWEN_XML_CONTEXT *ctx);
-
-AB_TRANSACTION *AIO_OfxGroup_INVBUY_TakeTransaction(const AIO_OFX_GROUP *g);
 
 
 #endif

@@ -12,27 +12,27 @@
  ***************************************************************************/
 
 
-#ifndef AIO_OFX_G_SECID_P_H
-#define AIO_OFX_G_SECID_P_H
+#ifndef AIO_OFX_G_REINVEST_P_H
+#define AIO_OFX_G_REINVEST_P_H
 
 
-#include "g_secid_l.h"
+#include "g_reinvest_l.h"
 
 
-typedef struct AIO_OFX_GROUP_SECID AIO_OFX_GROUP_SECID;
-struct AIO_OFX_GROUP_SECID {
-  char *uniqueId;
-  char *nameSpace;
-
+typedef struct AIO_OFX_GROUP_REINVEST AIO_OFX_GROUP_REINVEST;
+struct AIO_OFX_GROUP_REINVEST {
   char *currentElement;
+  char *currency;
+
   AB_TRANSACTION *transaction;
 };
 
-static void GWENHYWFAR_CB AIO_OfxGroup_SECID_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AIO_OfxGroup_REINVEST_FreeData(void *bp, void *p);
 
 
-static int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g, const char *tagName);
-static int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data);
+static int AIO_OfxGroup_REINVEST_StartTag(AIO_OFX_GROUP *g, const char *tagName);
+static int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg);
+static int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif
 

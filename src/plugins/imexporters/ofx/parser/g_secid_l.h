@@ -4,6 +4,8 @@
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
+ copyright   : (C) 2013 by Paul Conrady
+ email       : c.p.conrady@gmail.com
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
@@ -28,5 +30,6 @@ void AIO_OfxGroup_SECID_SetUniqueId(AIO_OFX_GROUP *g, const char *s);
 const char *AIO_OfxGroup_SECID_GetNameSpace(const AIO_OFX_GROUP *g);
 void AIO_OfxGroup_SECID_SetNameSpace(AIO_OFX_GROUP *g, const char *s);
 
+AB_TRANSACTION *AIO_OfxGroup_SECID_TakeData(const AIO_OFX_GROUP *g);
 
 #endif

@@ -1,9 +1,15 @@
 /***************************************************************************
  $RCSfile$
  -------------------
+ begin       : Mon Jan 07 2008
+ copyright   : (C) 2008 by Martin Preuss
+ email       : martin@libchipcard.de
  begin       : Fri Apr 17 2009
- copyright   : (C) 2009 by Stephen R. Besch (C) 2008 by Martin Preuss
- email       : sbesch@buffalo.edu martin@libchipcard.de
+ copyright   : (C) 2009 by Stephen R. Besch
+ email       : sbesch@buffalo.edu
+ begin       : Sat May 18 2013
+ copyright   : (C) 2013 by Paul Conrady
+ email       : c.p.conrady@gmail.com
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *

@@ -16,14 +16,13 @@
 # include <config.h>
 #endif
 
-#include "g_invposlist_p.h"
+#include "g_posmf_p.h"
 #include "ofxxmlctx_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
 
-#include "g_posstock_l.h"
-#include "g_posmf_l.h"
+#include "g_invpos_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -33,9 +32,9 @@
 
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_INVPOSLIST_new(const char *groupName,
-					   AIO_OFX_GROUP *parent,
-					   GWEN_XML_CONTEXT *ctx) {
+AIO_OFX_GROUP *AIO_OfxGroup_POSMF_new(const char *groupName,
+				      AIO_OFX_GROUP *parent,
+				      GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -43,15 +42,16 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVPOSLIST_new(const char *groupName,
   assert(g);
 
   /* set virtual functions */
-  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_INVPOSLIST_StartTag);
+  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_POSMF_StartTag);
+  AIO_OfxGroup_SetEndSubGroupFn(g, AIO_OfxGroup_POSMF_EndSubGroup);
 
   return g;
 }
 
 
 
-int AIO_OfxGroup_INVPOSLIST_StartTag(AIO_OFX_GROUP *g,
-				     const char *tagName) {
+int AIO_OfxGroup_POSMF_StartTag(AIO_OFX_GROUP *g,
+				const char *tagName) {
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -59,21 +59,43 @@ int AIO_OfxGroup_INVPOSLIST_StartTag(AIO_OFX_GROUP *g,
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
 
-  if (strcasecmp(tagName, "POSSTOCK")==0) {
-    gNew=AIO_OfxGroup_POSSTOCK_new(tagName, g, ctx);
-  }
-  else if (strcasecmp(tagName, "POSMF")==0) {
-    gNew=AIO_OfxGroup_POSMF_new(tagName, g, ctx);
+  if (strcasecmp(tagName, "INVPOS")==0) {
+    gNew=AIO_OfxGroup_INVPOS_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+	    "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 
   if (gNew) {
     AIO_OfxXmlCtx_SetCurrentGroup(ctx, gNew);
     GWEN_XmlCtx_IncDepth(ctx);
+  }
+
+  return 0;
+}
+
+
+
+int AIO_OfxGroup_POSMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+  const char *s;
+  GWEN_XML_CONTEXT *ctx;
+
+  ctx=AIO_OfxGroup_GetXmlContext(g);
+
+  s=AIO_OfxGroup_GetGroupName(sg);
+  if (strcasecmp(s, "INVPOS")==0) {
+    AB_SECURITY *sec;
+
+    sec=AIO_OfxGroup_INVPOS_TakeSecurity(sg);
+    if (sec) {
+      AB_IMEXPORTER_CONTEXT *ioCtx;
+
+      ioCtx=AIO_OfxXmlCtx_GetIoContext(ctx);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding security");
+      AB_ImExporterContext_AddSecurity(ioCtx, sec);
+    }
   }
 
   return 0;

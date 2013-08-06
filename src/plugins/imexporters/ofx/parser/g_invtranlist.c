@@ -1,9 +1,15 @@
 /***************************************************************************
  $RCSfile$
  -------------------
+ begin       : Mon Jan 07 2008
+ copyright   : (C) 2008 by Martin Preuss
+ email       : martin@libchipcard.de
  begin       : Fri Apr 17 2009
- copyright   : (C) 2009 by Stephen R. Besch (C) 2008 by Martin Preuss
- email       : sbesch@buffalo.edu martin@libchipcard.de
+ copyright   : (C) 2009 by Stephen R. Besch
+ email       : sbesch@buffalo.edu
+ begin       : Sat May 18 2013
+ copyright   : (C) 2013 by Paul Conrady
+ email       : c.p.conrady@gmail.com
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
@@ -16,13 +22,14 @@
 
 #include "g_invtranlist_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
 #include "g_buystock_l.h"
 #include "g_income_l.h"
 #include "g_stmtrn_l.h"
+#include "g_buymf_l.h"
+#include "g_reinvest_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -91,6 +98,12 @@ AB_TRANSACTION_LIST2* AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX
 enough to be handled using a single subgroup and some steering logic. The INVBANKTRAN is essentially
 identical to the Bank equivalent, so we use the STMTTRN group for it.*/
 
+/* The <BUYMF> and <SELLMF> aggregates are similar, therefore each is handled by the <BUYMF>
+ * method. The difference between a buy and a sell is indicated by a positive or negative value 
+ * in the total and units datum. The <REINVEST> aggregate represents an income event
+ * (e.g. dividends) and a buy transaction of the like commodity.
+ */
+
 int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
 				      const char *tagName) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
@@ -115,6 +128,11 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
     gNew=AIO_OfxGroup_INCOME_new(tagName, g, ctx);
   else if (strcasecmp(tagName, "INVBANKTRAN")==0)
     gNew=AIO_OfxGroup_STMTRN_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "BUYMF")==0 ||
+           strcasecmp(tagName, "SELLMF")==0)
+    gNew=AIO_OfxGroup_BUYMF_new(tagName, g, ctx);
+  else if (strcasecmp(tagName, "REINVEST")==0)
+    gNew=AIO_OfxGroup_REINVEST_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
@@ -171,7 +189,10 @@ int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-/*Come here when the </BUYSTOCK>, </SELLSTOCK>, </INCOME> or <INVBANKTRAN> tags are encountered.*/
+/* Come here when the </BUYSTOCK>, </SELLSTOCK>, </INCOME>, </INVBANKTRAN>,
+ * </BUYMF>, </SELLMF> or </REINVEST> tags are encountered.
+ */
+
 int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   AIO_OFX_GROUP_INVTRANLIST *xg;
   const char *s;
@@ -199,6 +220,11 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     t=AIO_OfxGroup_INCOME_TakeTransaction(sg);
   else if (strcasecmp(s, "INVBANKTRAN")==0)
     t=AIO_OfxGroup_STMTRN_TakeTransaction(sg);
+  else if (strcasecmp(s, "BUYMF")==0 ||
+      strcasecmp(s, "SELLMF")==0)
+    t=AIO_OfxGroup_BUYMF_TakeTransaction(sg);
+  else if (strcasecmp(s, "REINVEST")==0)
+    t=AIO_OfxGroup_REINVEST_TakeTransaction(sg);
   else
     return 0;
 
@@ -206,7 +232,7 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   if (t) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
     AB_Transaction_List2_PushBack(xg->transactionList, t);
-  }
+    }
   return 0;
 }
 

@@ -16,7 +16,7 @@
 # include <config.h>
 #endif
 
-#include "g_buystock_p.h"
+#include "g_buymf_p.h"
 #include "ofxxmlctx_l.h"
 
 #include "g_generic_l.h"
@@ -30,32 +30,32 @@
 
 
 
-GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK)
+GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF)
 
 
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
+AIO_OFX_GROUP *AIO_OfxGroup_BUYMF_new(const char *groupName,
 					     AIO_OFX_GROUP *parent,
 					     GWEN_XML_CONTEXT *ctx) {
   AIO_OFX_GROUP *g;
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+  AIO_OFX_GROUP_BUYMF *xg;
 
   /* create base group */
   g=AIO_OfxGroup_Generic_new(groupName, parent, ctx);
   assert(g);
 
-  GWEN_NEW_OBJECT(AIO_OFX_GROUP_BUYSTOCK, xg);
+  GWEN_NEW_OBJECT(AIO_OFX_GROUP_BUYMF, xg);
   assert(xg);
-  GWEN_INHERIT_SETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g, xg,
-                       AIO_OfxGroup_BUYSTOCK_FreeData);
+  GWEN_INHERIT_SETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF, g, xg,
+                       AIO_OfxGroup_BUYMF_FreeData);
 
   xg->transaction=AB_Transaction_new();
 
   /* set virtual functions */
-  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_BUYSTOCK_StartTag);
-  AIO_OfxGroup_SetAddDataFn(g, AIO_OfxGroup_BUYSTOCK_AddData);
-  AIO_OfxGroup_SetEndSubGroupFn(g, AIO_OfxGroup_BUYSTOCK_EndSubGroup);
+  AIO_OfxGroup_SetStartTagFn(g, AIO_OfxGroup_BUYMF_StartTag);
+  AIO_OfxGroup_SetAddDataFn(g, AIO_OfxGroup_BUYMF_AddData);
+  AIO_OfxGroup_SetEndSubGroupFn(g, AIO_OfxGroup_BUYMF_EndSubGroup);
 
   return g;
 }
@@ -63,10 +63,10 @@ AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+void AIO_OfxGroup_BUYMF_FreeData(void *bp, void *p) {
+  AIO_OFX_GROUP_BUYMF *xg;
 
-  xg=(AIO_OFX_GROUP_BUYSTOCK*)p;
+  xg=(AIO_OFX_GROUP_BUYMF*)p;
   assert(xg);
   AB_Transaction_free(xg->transaction);
 
@@ -76,14 +76,14 @@ void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
 
 
 
-int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g,
+int AIO_OfxGroup_BUYMF_StartTag(AIO_OFX_GROUP *g,
 				 const char *tagName) {
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+  AIO_OFX_GROUP_BUYMF *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
 
   assert(g);
-  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
+  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF, g);
   assert(xg);
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
@@ -114,11 +114,11 @@ int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+int AIO_OfxGroup_BUYMF_AddData(AIO_OFX_GROUP *g, const char *data) {
+  AIO_OFX_GROUP_BUYMF *xg;
 
   assert(g);
-  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
+  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF, g);
   assert(xg);
 
   if (xg->currentElement) {
@@ -155,13 +155,13 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+int AIO_OfxGroup_BUYMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+  AIO_OFX_GROUP_BUYMF *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
 
   assert(g);
-  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
+  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF, g);
   assert(xg);
 
   ctx=AIO_OfxGroup_GetXmlContext(g);
@@ -185,12 +185,12 @@ int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_BUYSTOCK_TakeTransaction(const AIO_OFX_GROUP *g){
-  AIO_OFX_GROUP_BUYSTOCK *xg;
+AB_TRANSACTION *AIO_OfxGroup_BUYMF_TakeTransaction(const AIO_OFX_GROUP *g){
+  AIO_OFX_GROUP_BUYMF *xg;
   AB_TRANSACTION *t;
 
   assert(g);
-  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK, g);
+  xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYMF, g);
   assert(xg);
 
   t=xg->transaction;
