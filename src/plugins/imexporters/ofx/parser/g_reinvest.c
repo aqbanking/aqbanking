@@ -23,7 +23,7 @@
 #include "g_ignore_l.h"
 #include "g_invtran_l.h"
 #include "g_secid_l.h"
-#include "types/transaction_p.h"
+#include "types/transaction.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -222,10 +222,10 @@ int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     t=AIO_OfxGroup_INVTRAN_TakeData(sg);
     if (t) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding data");
-      xg->transaction->fiId=t->fiId;
-      xg->transaction->valutaDate=t->valutaDate;
-      xg->transaction->date=t->date;
-      xg->transaction->purpose=t->purpose;
+      AB_Transaction_SetFiId(xg->transaction, AB_Transaction_GetFiId(t));
+      AB_Transaction_SetValutaDate(xg->transaction, AB_Transaction_GetValutaDate(t));
+      AB_Transaction_SetDate(xg->transaction, AB_Transaction_GetDate(t));
+      AB_Transaction_SetPurpose(xg->transaction, AB_Transaction_GetPurpose(t));
     }
   }
   else if (strcasecmp(s, "SECID")==0) {
@@ -234,8 +234,8 @@ int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     t=AIO_OfxGroup_SECID_TakeData(sg);
     if (t) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding data");
-      xg->transaction->unitId=t->unitId;
-      xg->transaction->unitIdNameSpace=t->unitIdNameSpace;
+      AB_Transaction_SetUnitId(xg->transaction, AB_Transaction_GetUnitId(t));
+      AB_Transaction_SetUnitIdNameSpace(xg->transaction, AB_Transaction_GetUnitIdNameSpace(t));
     }
   }
   else {
