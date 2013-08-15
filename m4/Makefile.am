@@ -10,4 +10,6 @@ EXTRA_DIST=\
  qt3.m4 \
  qt4.m4 \
  searchfiles.m4 \
- fox.pc
+ fox.pc \
+ gwenhywfar.m4
+
