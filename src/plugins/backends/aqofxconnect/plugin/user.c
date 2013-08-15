@@ -173,6 +173,9 @@ void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "httpVMinor", ue->httpVMinor);
 
+      if (ue->httpUserAgent)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			     "httpUserAgent", ue->httpUserAgent);
     }
   }
 }
@@ -286,6 +289,14 @@ void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
     ue->httpVMajor=1;
     ue->httpVMinor=0;
   }
+
+  free(ue->httpUserAgent);
+  s=GWEN_DB_GetCharValue(db, "httpUserAgent", 0, NULL);
+  if (s)
+    ue->httpUserAgent=strdup(s);
+  else
+    ue->httpUserAgent=NULL;
+
 }
 
 
@@ -643,6 +654,30 @@ void AO_User_SetHttpVMinor(AB_USER *u, int i) {
 }
 
 
+
+const char *AO_User_GetHttpUserAgent(const AB_USER *u) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  return ue->httpUserAgent;
+}
+
+
+
+void AO_User_SetHttpUserAgent(AB_USER *u, const char *s) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  free(ue->httpUserAgent);
+  if (s) ue->httpUserAgent=strdup(s);
+  else ue->httpUserAgent=NULL;
+}
 
 
 

@@ -137,6 +137,13 @@ AQOFXCONNECT_API
 void AO_User_SetHttpVMinor(AB_USER *u, int i);
 
 
+AQOFXCONNECT_API
+const char *AO_User_GetHttpUserAgent(const AB_USER *u);
+
+AQOFXCONNECT_API
+void AO_User_SetHttpUserAgent(AB_USER *u, const char *s);
+
+
 #ifdef __cplusplus
 }
 #endif

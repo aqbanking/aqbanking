@@ -22,6 +22,7 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
   GWEN_HTTP_SESSION *sess;
   uint32_t flags;
   const char *addr;
+  const char *s;
 
   /* take bank addr from user */
   addr=AO_User_GetServerAddr(u);
@@ -42,6 +43,9 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
   GWEN_HttpSession_SetHttpVMajor(sess, AO_User_GetHttpVMajor(u));
   GWEN_HttpSession_SetHttpVMinor(sess, AO_User_GetHttpVMinor(u));
+
+  s=AO_User_GetHttpUserAgent(u);
+  GWEN_HttpSession_SetHttpUserAgent(sess, (s && *s)?s:"AqBanking");
 
   /* init session */
   rv=GWEN_HttpSession_Init(sess);

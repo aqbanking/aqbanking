@@ -31,6 +31,7 @@ struct AO_USER {
 
   int httpVMajor;
   int httpVMinor;
+  char *httpUserAgent;
 };
 
 static void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p);
