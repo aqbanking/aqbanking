@@ -57,7 +57,6 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
   updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                             AB_Account_GetAccountNumber(account));
   if (updgroup) {
-    const char *code;
      GWEN_DB_NODE *n;
       n=GWEN_DB_GetFirstGroup(updgroup);
       while(n) {
@@ -432,7 +431,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Response: %x", dbResponses);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Response:");
   GWEN_DB_Dump(dbResponses, 2);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Response end");
 
@@ -477,12 +476,16 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
       GWEN_DB_NODE *dbV;
       GWEN_TIME *date;
       GWEN_TIME *valutaDate;
-      GWEN_BUFFER *buf;
       const char *p;
 
       dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                            "entries");
       while (dbT) {
+        AB_VALUE *v1;
+        AB_VALUE *v2;
+        GWEN_STRINGLIST* purpose;
+        AB_TRANSACTION *t;
+
         /* read date (Buchungsdatum) */
         p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
         assert(p);
@@ -494,8 +497,6 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         valutaDate=GWEN_Time_fromString(p, "YYYYMMDD");
 
         /* read value */
-        AB_VALUE *v1;
-        AB_VALUE *v2;
         dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                              "value");
         assert(dbV);
@@ -524,7 +525,6 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         }
 
         /* read purpose */
-        GWEN_STRINGLIST* purpose;
         p=GWEN_DB_GetCharValue(dbT, "purpose", 0, 0);
         assert(p);
         purpose=GWEN_StringList_fromTabString(p, 0);
@@ -534,7 +534,6 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         assert(p);
         GWEN_StringList_AppendString(purpose, p, 0, 0);
 
-        AB_TRANSACTION *t;
         t=AB_Transaction_new();
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
@@ -555,7 +554,11 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
     } //if (dbXA)
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
+
+  return 0;
 }
+
+
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
