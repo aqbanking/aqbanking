@@ -267,7 +267,6 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       AB_IMEXPORTER_CONTEXT *ioc;
       AB_TRANSACTION *cpy;
       GWEN_BUFFER *dbuf;
-      GWEN_TIME *ti;
 
       ioc=AB_ImExporterContext_new();
       cpy=AB_Transaction_dup(t);
