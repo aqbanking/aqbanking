@@ -103,6 +103,9 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
   else if (strcasecmp(s, "001_002_03")==0) {
     return AH_ImExporterSEPA_Export_001_002_03(ie, ctx, sio, params);
   }
+  else if (strcasecmp(s, "008_001_01")==0) {
+    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params);
+  }
   else if (strcasecmp(s, "008_003_02")==0) {
     return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params);
   }

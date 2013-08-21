@@ -1434,6 +1434,8 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/profiles/default.conf
   src/plugins/imexporters/sepa/profiles/ccm.conf
   src/plugins/imexporters/sepa/profiles/001_002_03.conf
+  src/plugins/imexporters/sepa/profiles/008_001_01.conf
+  src/plugins/imexporters/sepa/profiles/008_003_02.conf
   src/plugins/imexporters/ctxfile/Makefile
   src/plugins/imexporters/ctxfile/ctxfile.xml
   src/plugins/imexporters/ctxfile/ressource.rc
