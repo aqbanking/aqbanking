@@ -246,13 +246,20 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       t=AB_JobSepaDebitNote_GetTransaction(bj);
 
       /* choose from HISPAS */
-      /* first check for any descriptor for pain 001.002.03 */
+      /* first check for any descriptor for pain 008.003.02 */
       s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
       if (s) {
         profileName="008_003_02";
         descriptor=s;
       }
-
+      else {
+        /* look for pain 008.001.01 */
+        s=AH_User_FindSepaDescriptor(u, "*008.001.01*");
+        if (s) {
+          profileName="008_001_01";
+          descriptor=s;
+        }
+      }
       /* check for valid descriptor */
       if (!(descriptor && *descriptor)) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found, please update your SEPA account information");
