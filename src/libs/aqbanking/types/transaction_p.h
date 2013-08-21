@@ -72,6 +72,13 @@ struct AB_TRANSACTION {
   AB_VALUE *units;
   AB_VALUE *unitPrice;
   AB_VALUE *commission;
+  char *creditorSchemeId;
+  char *mandateId;
+  GWEN_DATE *mandateDate;
+  char *mandateDebitorName;
+  char *originalCreditorSchemeId;
+  char *originalMandateId;
+  char *originalCreditorName;
 };
 
 
@@ -79,8 +86,7 @@ struct AB_TRANSACTION {
 
 /** @name Local Account Info
  *
-This group contains information about the local account.
-*/
+This group contains information about the local account.*/
 /*@{*/
 
 
@@ -95,8 +101,7 @@ This group contains information about the local account.
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account.
-*/
+This group contains information about the remote account.*/
 /*@{*/
 
 
@@ -132,18 +137,8 @@ This group contains information about the remote account.
 
 /** @name Info Which Is Not Supported by All Backends
  *
-<p>
-  This group contains information which differ between backends.
-</p>
-
-<p>
-  Some of this information might not even be
-  <b>
-    supported
-  </b>
-  by every backends.
-</p>
-*/
+<p>This group contains information which differ between backends.</p>
+<p>Some of this information might not even be<b>supported</b>by every backends.</p>*/
 /*@{*/
 
 
@@ -165,10 +160,7 @@ This group contains information about the remote account.
 
 /** @name Additional Information for Standing Orders
  *
-<p>
-  This group contains information which is used with standing orders. It is not needed for other usage of this type.
-</p>
-*/
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
 /*@{*/
 
 
@@ -181,10 +173,7 @@ This group contains information about the remote account.
 
 /** @name Additional Information for Transfers
  *
-<p>
-  This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.
-</p>
-*/
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
 /*@{*/
 
 
@@ -195,10 +184,7 @@ This group contains information about the remote account.
 
 /** @name Additional Information for Foreign Transfers
  *
-<p>
-  This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.
-</p>
-*/
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p>*/
 /*@{*/
 
 
@@ -209,11 +195,22 @@ This group contains information about the remote account.
 
 /** @name Additional Information for Investment Transfers
  *
-<p>
-  This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.
-</p>
-*/
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p>*/
 /*@{*/
+
+
+
+
+
+
+/*@}*/
+
+/** @name Additional Information for SEPA Direct Debits
+ *
+<p>This group contains information which is used with SEPA transfers within the European Community. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
+
+
 
 
 

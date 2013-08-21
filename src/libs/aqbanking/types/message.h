@@ -9,8 +9,7 @@ This page describes the properties of AB_MESSAGE
 @anchor AB_MESSAGE_UserId
 <h3>UserId</h3>
 <p>
-ID of the user in whose context the message has been received (see @ref AB_User_GetUniqueId).
-</p>
+ID of the user in whose context the message has been received (see @ref AB_User_GetUniqueId).</p>
 <p>
 Set this property with @ref AB_Message_SetUserId, 
 get it with @ref AB_Message_GetUserId
@@ -19,8 +18,7 @@ get it with @ref AB_Message_GetUserId
 @anchor AB_MESSAGE_AccountId
 <h3>AccountId</h3>
 <p>
-ID of the account in whose context the message has been received (if any). This field is not set by AqHBCI but may be used by other backends in some cases.
-</p>
+ID of the account in whose context the message has been received (if any). This field is not set by AqHBCI but may be used by other backends in some cases.</p>
 <p>
 Set this property with @ref AB_Message_SetAccountId, 
 get it with @ref AB_Message_GetAccountId
@@ -29,8 +27,7 @@ get it with @ref AB_Message_GetAccountId
 @anchor AB_MESSAGE_Subject
 <h3>Subject</h3>
 <p>
-Subject of the message.
-</p>
+Subject of the message.</p>
 <p>
 Set this property with @ref AB_Message_SetSubject, 
 get it with @ref AB_Message_GetSubject
@@ -39,8 +36,7 @@ get it with @ref AB_Message_GetSubject
 @anchor AB_MESSAGE_Text
 <h3>Text</h3>
 <p>
-The message itself.
-</p>
+The message itself.</p>
 <p>
 Set this property with @ref AB_Message_SetText, 
 get it with @ref AB_Message_GetText
@@ -49,8 +45,7 @@ get it with @ref AB_Message_GetText
 @anchor AB_MESSAGE_DateReceived
 <h3>DateReceived</h3>
 <p>
-Receiption date and time.
-</p>
+Receiption date and time.</p>
 <p>
 Set this property with @ref AB_Message_SetDateReceived, 
 get it with @ref AB_Message_GetDateReceived

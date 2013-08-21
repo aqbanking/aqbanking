@@ -100,10 +100,11 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
   if (strcasecmp(s, "ccm")==0) {
     return AH_ImExporterSEPA_Export_Ccm(ie, ctx, sio, params);
   }
-  else if (strcasecmp(s, "cdm")==0) {
-  }
   else if (strcasecmp(s, "001_002_03")==0) {
     return AH_ImExporterSEPA_Export_001_002_03(ie, ctx, sio, params);
+  }
+  else if (strcasecmp(s, "008_003_02")==0) {
+    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params);
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"", s);
@@ -137,5 +138,6 @@ int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 #include "sepa_exp_ccm.c"
 #include "sepa_exp_123.c"
+#include "sepa_exp_008_003_02.c"
 
 

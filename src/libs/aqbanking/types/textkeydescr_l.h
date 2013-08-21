@@ -6,8 +6,7 @@
 
 /** @page P_AB_TEXTKEY_DESCR_LIB AB_TextKeyDescr (lib)
 This page describes the properties of AB_TEXTKEY_DESCR
-This type contains the description of a textkey. Please note that all text fields are in UTF-8.
-*/
+This type contains the description of a textkey. Please note that all text fields are in UTF-8.*/
 #include "textkeydescr.h"
 
 #ifdef __cplusplus

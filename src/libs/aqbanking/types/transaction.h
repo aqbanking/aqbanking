@@ -6,16 +6,13 @@
 
 /** @page P_AB_TRANSACTION_PUBLIC AB_Transaction (public)
 This page describes the properties of AB_TRANSACTION
-This type contains all important information about transactions. All text fields are in UTF-8.
-<h3>Local Account Info</h3>
+This type contains all important information about transactions. All text fields are in UTF-8.<h3>Local Account Info</h3>
 <p>
-This group contains information about the local account.
-</p>
+This group contains information about the local account.</p>
 @anchor AB_TRANSACTION_LocalCountry
 <h4>LocalCountry</h4>
 <p>
-This is the two-character country code according to ISO 3166-1 (Alpha-2). This is also used in DNS toplevel domain names. For Germany use "DE" (not case-sensitive).
-</p>
+This is the two-character country code according to ISO 3166-1 (Alpha-2). This is also used in DNS toplevel domain names. For Germany use "DE" (not case-sensitive).</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalCountry, 
 get it with @ref AB_Transaction_GetLocalCountry
@@ -25,13 +22,8 @@ get it with @ref AB_Transaction_GetLocalCountry
 <h4>LocalBankCode</h4>
 <p>
 This is the code of the local bank (i.e.
-
-<b>
-  your
-</b>
-
-bank).
-</p>
+<b>your</b>
+bank).</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBankCode, 
 get it with @ref AB_Transaction_GetLocalBankCode
@@ -40,8 +32,7 @@ get it with @ref AB_Transaction_GetLocalBankCode
 @anchor AB_TRANSACTION_LocalBranchId
 <h4>LocalBranchId</h4>
 <p>
-This is the branch id of the local bank (OFX only)
-</p>
+This is the branch id of the local bank (OFX only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBranchId, 
 get it with @ref AB_Transaction_GetLocalBranchId
@@ -59,8 +50,7 @@ get it with @ref AB_Transaction_GetLocalAccountNumber
 @anchor AB_TRANSACTION_LocalSuffix
 <h4>LocalSuffix</h4>
 <p>
-If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it's empty. (HBCI only)
-</p>
+If your account has subaccounts which are distinguished by different suffixes, then this is that suffix. Otherwise it's empty. (HBCI only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalSuffix, 
 get it with @ref AB_Transaction_GetLocalSuffix
@@ -70,53 +60,9 @@ get it with @ref AB_Transaction_GetLocalSuffix
 <h4>LocalIban</h4>
 <p>
 International Bank Account Number according to ECBS EBS 204.
-
-<table>
-  <tr>
-    <th>
-      Pos
-    </th>
-    <th>
-      Meaning
-    </th>
-  </tr>
-  <tr>
-    <td>
-      0-1
-    </td>
-    <td>
-      Country code according to ISO 3166
-    </td>
-  </tr>
-  <tr>
-    <td>
-      2-3
-    </td>
-    <td>
-      Checksum
-    </td>
-  </tr>
-  <tr>
-    <td>
-      4-33
-    </td>
-    <td>
-      Country specific account info
-    </td>
-  </tr>
-</table>
-
+<table><tr><th>Pos</th><th>Meaning</th></tr><tr><td>0-1</td><td>Country code according to ISO 3166</td></tr><tr><td>2-3</td><td>Checksum</td></tr><tr><td>4-33</td><td>Country specific account info</td></tr></table>
 Examples:
-
-<ul>
-  <li>
-    BE62510007547061
-  </li>
-  <li>
-    FR1420041010050500013M02606
-  </li>
-</ul>
-</p>
+<ul><li>BE62510007547061</li><li>FR1420041010050500013M02606</li></ul></p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalIban, 
 get it with @ref AB_Transaction_GetLocalIban
@@ -134,8 +80,7 @@ get it with @ref AB_Transaction_GetLocalName
 @anchor AB_TRANSACTION_LocalBic
 <h4>LocalBic</h4>
 <p>
-This is the SWIFT id of the local bank.
-</p>
+This is the SWIFT id of the local bank.</p>
 <p>
 Set this property with @ref AB_Transaction_SetLocalBic, 
 get it with @ref AB_Transaction_GetLocalBic
@@ -143,13 +88,11 @@ get it with @ref AB_Transaction_GetLocalBic
 
 <h3>Remote Account Info</h3>
 <p>
-This group contains information about the remote account.
-</p>
+This group contains information about the remote account.</p>
 @anchor AB_TRANSACTION_RemoteCountry
 <h4>RemoteCountry</h4>
 <p>
-This is the two-character ISO country code (as used in toplevel domains). For Germany use "DE".
-</p>
+This is the two-character ISO country code (as used in toplevel domains). For Germany use "DE".</p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteCountry, 
 get it with @ref AB_Transaction_GetRemoteCountry
@@ -185,8 +128,7 @@ get it with @ref AB_Transaction_GetRemoteBankCode
 @anchor AB_TRANSACTION_RemoteBranchId
 <h4>RemoteBranchId</h4>
 <p>
-This is the branch id of the remote bank (OFX only)
-</p>
+This is the branch id of the remote bank (OFX only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteBranchId, 
 get it with @ref AB_Transaction_GetRemoteBranchId
@@ -214,53 +156,9 @@ get it with @ref AB_Transaction_GetRemoteSuffix
 <h4>RemoteIban</h4>
 <p>
 International Bank Account Number according to ECBS EBS 204.
-
-<table>
-  <tr>
-    <th>
-      Pos
-    </th>
-    <th>
-      Meaning
-    </th>
-  </tr>
-  <tr>
-    <td>
-      0-1
-    </td>
-    <td>
-      Country code according to ISO 3166
-    </td>
-  </tr>
-  <tr>
-    <td>
-      2-3
-    </td>
-    <td>
-      Checksum
-    </td>
-  </tr>
-  <tr>
-    <td>
-      4-33
-    </td>
-    <td>
-      Country specific account info
-    </td>
-  </tr>
-</table>
-
+<table><tr><th>Pos</th><th>Meaning</th></tr><tr><td>0-1</td><td>Country code according to ISO 3166</td></tr><tr><td>2-3</td><td>Checksum</td></tr><tr><td>4-33</td><td>Country specific account info</td></tr></table>
 Examples:
-
-<ul>
-  <li>
-    BE62510007547061
-  </li>
-  <li>
-    FR1420041010050500013M02606
-  </li>
-</ul>
-</p>
+<ul><li>BE62510007547061</li><li>FR1420041010050500013M02606</li></ul></p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteIban, 
 get it with @ref AB_Transaction_GetRemoteIban
@@ -278,8 +176,7 @@ get it with @ref AB_Transaction_GetRemoteName
 @anchor AB_TRANSACTION_RemoteBic
 <h4>RemoteBic</h4>
 <p>
-This is the SWIFT id of the local bank.
-</p>
+This is the SWIFT id of the local bank.</p>
 <p>
 Set this property with @ref AB_Transaction_SetRemoteBic, 
 get it with @ref AB_Transaction_GetRemoteBic
@@ -288,8 +185,7 @@ get it with @ref AB_Transaction_GetRemoteBic
 @anchor AB_TRANSACTION_UniqueId
 <h3>UniqueId</h3>
 <p>
-This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.
-</p>
+This is a unique id assigned by the application. However, when adding a transaction to a job (like JobTransfer) this id is assigned by AqBanking to make sure that this id is unique across all applications.</p>
 <p>
 Set this property with @ref AB_Transaction_SetUniqueId, 
 get it with @ref AB_Transaction_GetUniqueId
@@ -298,8 +194,7 @@ get it with @ref AB_Transaction_GetUniqueId
 @anchor AB_TRANSACTION_IdForApplication
 <h3>IdForApplication</h3>
 <p>
-This is a unique id assigned by the application only. This id is never changed by AqBanking.
-</p>
+This is a unique id assigned by the application only. This id is never changed by AqBanking.</p>
 <p>
 Set this property with @ref AB_Transaction_SetIdForApplication, 
 get it with @ref AB_Transaction_GetIdForApplication
@@ -308,8 +203,7 @@ get it with @ref AB_Transaction_GetIdForApplication
 @anchor AB_TRANSACTION_GroupId
 <h3>GroupId</h3>
 <p>
-This id is assigned by a backend when sending mutliple transfer jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending multi-transfer requests; in this case every every transfer which goes into the same DTAUS file receives the same id).
-</p>
+This id is assigned by a backend when sending mutliple transfer jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending multi-transfer requests; in this case every every transfer which goes into the same DTAUS file receives the same id).</p>
 <p>
 Set this property with @ref AB_Transaction_SetGroupId, 
 get it with @ref AB_Transaction_GetGroupId
@@ -321,8 +215,7 @@ get it with @ref AB_Transaction_GetGroupId
 @anchor AB_TRANSACTION_ValutaDate
 <h4>ValutaDate</h4>
 <p>
-The date when the transaction was really executed (Datum Valuta/Wertstellung)
-</p>
+The date when the transaction was really executed (Datum Valuta/Wertstellung)</p>
 <p>
 Set this property with @ref AB_Transaction_SetValutaDate, 
 get it with @ref AB_Transaction_GetValutaDate
@@ -331,8 +224,7 @@ get it with @ref AB_Transaction_GetValutaDate
 @anchor AB_TRANSACTION_Date
 <h4>Date</h4>
 <p>
-The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)
-</p>
+The date when the transaction was booked (but sometimes it is unused). (Buchungsdatum)</p>
 <p>
 Set this property with @ref AB_Transaction_SetDate, 
 get it with @ref AB_Transaction_GetDate
@@ -361,29 +253,13 @@ get it with @ref AB_Transaction_GetFees
 
 <h3>Info Which Is Not Supported by All Backends</h3>
 <p>
-<p>
-  This group contains information which differ between backends.
-</p>
-
-<p>
-  Some of this information might not even be
-  <b>
-    supported
-  </b>
-  by every backends.
-</p>
-</p>
+<p>This group contains information which differ between backends.</p>
+<p>Some of this information might not even be<b>supported</b>by every backends.</p></p>
 @anchor AB_TRANSACTION_TextKey
 <h4>TextKey</h4>
 <p>
-<p>
-  A numerical transaction code, defined for all kinds of different actions. (Textschluessel)
-</p>
-
-<p>
-  For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
-</p>
-</p>
+<p>A numerical transaction code, defined for all kinds of different actions. (Textschluessel)</p>
+<p>For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKey, 
 get it with @ref AB_Transaction_GetTextKey
@@ -392,14 +268,8 @@ get it with @ref AB_Transaction_GetTextKey
 @anchor AB_TRANSACTION_TextKeyExt
 <h4>TextKeyExt</h4>
 <p>
-<p>
-  An extension to the text key (Textschluesselergaenzung, SWIFT Feld 34)
-</p>
-
-<p>
-  For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)
-</p>
-</p>
+<p>An extension to the text key (Textschluesselergaenzung, SWIFT Feld 34)</p>
+<p>For a normal transfer you should set it to 51. For debit notes the values 04 or 05 may be used. For other values please refer to your credit institute. (HBCI only)</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetTextKeyExt, 
 get it with @ref AB_Transaction_GetTextKeyExt
@@ -408,8 +278,7 @@ get it with @ref AB_Transaction_GetTextKeyExt
 @anchor AB_TRANSACTION_TransactionKey
 <h4>TransactionKey</h4>
 <p>
-this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)
-</p>
+this is the transaction id that tells you more about the type of transaction (3 character code) (Buchungsschluessel) (HBCI only)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionKey, 
 get it with @ref AB_Transaction_GetTransactionKey
@@ -418,8 +287,7 @@ get it with @ref AB_Transaction_GetTransactionKey
 @anchor AB_TRANSACTION_CustomerReference
 <h4>CustomerReference</h4>
 <p>
-Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise "NONREF" or empty (Kundenreferenz)
-</p>
+Reference string, if the customer (you) has specified one. (E.g. the cheque number.) Otherwise "NONREF" or empty (Kundenreferenz)</p>
 <p>
 Set this property with @ref AB_Transaction_SetCustomerReference, 
 get it with @ref AB_Transaction_GetCustomerReference
@@ -428,8 +296,7 @@ get it with @ref AB_Transaction_GetCustomerReference
 @anchor AB_TRANSACTION_BankReference
 <h4>BankReference</h4>
 <p>
-Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)
-</p>
+Reference string for this transaction given by the bank, if it has given one. Otherwise empty. (Bankreferenz)</p>
 <p>
 Set this property with @ref AB_Transaction_SetBankReference, 
 get it with @ref AB_Transaction_GetBankReference
@@ -438,8 +305,7 @@ get it with @ref AB_Transaction_GetBankReference
 @anchor AB_TRANSACTION_EndToEndReference
 <h4>EndToEndReference</h4>
 <p>
-This is a reference provided by the issuer of a SEPA transfer.
-</p>
+This is a reference provided by the issuer of a SEPA transfer.</p>
 <p>
 Set this property with @ref AB_Transaction_SetEndToEndReference, 
 get it with @ref AB_Transaction_GetEndToEndReference
@@ -448,8 +314,7 @@ get it with @ref AB_Transaction_GetEndToEndReference
 @anchor AB_TRANSACTION_MandateReference
 <h4>MandateReference</h4>
 <p>
-This is a reference provided by the issuer of a SEPA transfer.
-</p>
+This is a reference provided by the issuer of a SEPA transfer.</p>
 <p>
 Set this property with @ref AB_Transaction_SetMandateReference, 
 get it with @ref AB_Transaction_GetMandateReference
@@ -458,8 +323,7 @@ get it with @ref AB_Transaction_GetMandateReference
 @anchor AB_TRANSACTION_CreditorIdentifier
 <h4>CreditorIdentifier</h4>
 <p>
-Used for SEPA transfers.
-</p>
+Used for SEPA transfers.</p>
 <p>
 Set this property with @ref AB_Transaction_SetCreditorIdentifier, 
 get it with @ref AB_Transaction_GetCreditorIdentifier
@@ -468,8 +332,7 @@ get it with @ref AB_Transaction_GetCreditorIdentifier
 @anchor AB_TRANSACTION_OriginatorIdentifier
 <h4>OriginatorIdentifier</h4>
 <p>
-Used for SEPA transfers.
-</p>
+Used for SEPA transfers.</p>
 <p>
 Set this property with @ref AB_Transaction_SetOriginatorIdentifier, 
 get it with @ref AB_Transaction_GetOriginatorIdentifier
@@ -478,8 +341,7 @@ get it with @ref AB_Transaction_GetOriginatorIdentifier
 @anchor AB_TRANSACTION_TransactionCode
 <h4>TransactionCode</h4>
 <p>
-A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)
-</p>
+A 3 digit numerical transaction code, defined for all kinds of different actions. (Geschaeftsvorfallcode)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionCode, 
 get it with @ref AB_Transaction_GetTransactionCode
@@ -488,8 +350,7 @@ get it with @ref AB_Transaction_GetTransactionCode
 @anchor AB_TRANSACTION_TransactionText
 <h4>TransactionText</h4>
 <p>
-Transaction text (e.g. STANDING ORDER) (Buchungstext)
-</p>
+Transaction text (e.g. STANDING ORDER) (Buchungstext)</p>
 <p>
 Set this property with @ref AB_Transaction_SetTransactionText, 
 get it with @ref AB_Transaction_GetTransactionText
@@ -507,10 +368,7 @@ get it with @ref AB_Transaction_GetPrimanota
 @anchor AB_TRANSACTION_FiId
 <h4>FiId</h4>
 <p>
-<p>
-  This is an id optionally assigned by the Financial Institute. It is mostly used by OFX.
-</p>
-</p>
+<p>This is an id optionally assigned by the Financial Institute. It is mostly used by OFX.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetFiId, 
 get it with @ref AB_Transaction_GetFiId
@@ -519,10 +377,7 @@ get it with @ref AB_Transaction_GetFiId
 @anchor AB_TRANSACTION_Purpose
 <h4>Purpose</h4>
 <p>
-<p>
-  This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.
-</p>
-</p>
+<p>This string list contains the purpose of the transaction. Every entry of this list represents a single purpose line.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetPurpose, 
 get it with @ref AB_Transaction_GetPurpose
@@ -531,10 +386,7 @@ get it with @ref AB_Transaction_GetPurpose
 @anchor AB_TRANSACTION_Category
 <h4>Category</h4>
 <p>
-<p>
-  This string list contains the categories this transaction belongs to. This element is not used by AqBanking itself but some im/exporter plugins may choose to use these.
-</p>
-</p>
+<p>This string list contains the categories this transaction belongs to. This element is not used by AqBanking itself but some im/exporter plugins may choose to use these.</p></p>
 <p>
 Set this property with @ref AB_Transaction_SetCategory, 
 get it with @ref AB_Transaction_GetCategory
@@ -542,15 +394,11 @@ get it with @ref AB_Transaction_GetCategory
 
 <h3>Additional Information for Standing Orders</h3>
 <p>
-<p>
-  This group contains information which is used with standing orders. It is not needed for other usage of this type.
-</p>
-</p>
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p></p>
 @anchor AB_TRANSACTION_Period
 <h4>Period</h4>
 <p>
-This variable contains the execution period (e.g. whether a standing order is to be executed weekly or monthly etc).
-</p>
+This variable contains the execution period (e.g. whether a standing order is to be executed weekly or monthly etc).</p>
 <p>
 Set this property with @ref AB_Transaction_SetPeriod, 
 get it with @ref AB_Transaction_GetPeriod
@@ -560,43 +408,18 @@ get it with @ref AB_Transaction_GetPeriod
 <h4>Cycle</h4>
 <p>
 The standing order is executed every
-
-<i>
-  cycle
-</i>
-
+<i>cycle</i>
 x
-
-<i>
-  period
-</i>
-
+<i>period</i>
 . So if
-
-<i>
-  period
-</i>
-
+<i>period</i>
 is
-
-<i>
-  weekly
-</i>
-
+<i>weekly</i>
 and
-
-<i>
-  cycle
-</i>
-
+<i>cycle</i>
 is
-
-<i>
-  2
-</i>
-
-then the standing order is executed every 2 weeks.
-</p>
+<i>2</i>
+then the standing order is executed every 2 weeks.</p>
 <p>
 Set this property with @ref AB_Transaction_SetCycle, 
 get it with @ref AB_Transaction_GetCycle
@@ -606,30 +429,9 @@ get it with @ref AB_Transaction_GetCycle
 <h4>ExecutionDay</h4>
 <p>
 The execution day. The meaning of this variable depends on the content of
-
-<i>
-  period
-</i>
-
+<i>period</i>
 :
-
-<ul>
-  <li>
-    monthly: day of the month (starting with
-    <i>
-      1
-    </i>
-    )
-  </li>
-  <li>
-    weekly: day of the week (starting with
-    <i>
-      1
-    </i>
-    =Monday)
-  </li>
-</ul>
-</p>
+<ul><li>monthly: day of the month (starting with<i>1</i>)</li><li>weekly: day of the week (starting with<i>1</i>=Monday)</li></ul></p>
 <p>
 Set this property with @ref AB_Transaction_SetExecutionDay, 
 get it with @ref AB_Transaction_GetExecutionDay
@@ -638,8 +440,7 @@ get it with @ref AB_Transaction_GetExecutionDay
 @anchor AB_TRANSACTION_FirstExecutionDate
 <h4>FirstExecutionDate</h4>
 <p>
-The date when the standing order is to be executed for the first time.
-</p>
+The date when the standing order is to be executed for the first time.</p>
 <p>
 Set this property with @ref AB_Transaction_SetFirstExecutionDate, 
 get it with @ref AB_Transaction_GetFirstExecutionDate
@@ -648,8 +449,7 @@ get it with @ref AB_Transaction_GetFirstExecutionDate
 @anchor AB_TRANSACTION_LastExecutionDate
 <h4>LastExecutionDate</h4>
 <p>
-The date when the standing order is to be executed for the last time.
-</p>
+The date when the standing order is to be executed for the last time.</p>
 <p>
 Set this property with @ref AB_Transaction_SetLastExecutionDate, 
 get it with @ref AB_Transaction_GetLastExecutionDate
@@ -658,8 +458,7 @@ get it with @ref AB_Transaction_GetLastExecutionDate
 @anchor AB_TRANSACTION_NextExecutionDate
 <h4>NextExecutionDate</h4>
 <p>
-The date when the standing order is to be executed next (this field is only interesting when retrieving the list of currently active standing orders)
-</p>
+The date when the standing order is to be executed next (this field is only interesting when retrieving the list of currently active standing orders)</p>
 <p>
 Set this property with @ref AB_Transaction_SetNextExecutionDate, 
 get it with @ref AB_Transaction_GetNextExecutionDate
@@ -667,15 +466,11 @@ get it with @ref AB_Transaction_GetNextExecutionDate
 
 <h3>Additional Information for Transfers</h3>
 <p>
-<p>
-  This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.
-</p>
-</p>
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p></p>
 @anchor AB_TRANSACTION_Type
 <h4>Type</h4>
 <p>
-This variable contains the type of transfer (transfer, debit note etc).
-</p>
+This variable contains the type of transfer (transfer, debit note etc).</p>
 <p>
 Set this property with @ref AB_Transaction_SetType, 
 get it with @ref AB_Transaction_GetType
@@ -684,8 +479,7 @@ get it with @ref AB_Transaction_GetType
 @anchor AB_TRANSACTION_SubType
 <h4>SubType</h4>
 <p>
-This variable contains the sub-type of transfer.
-</p>
+This variable contains the sub-type of transfer.</p>
 <p>
 Set this property with @ref AB_Transaction_SetSubType, 
 get it with @ref AB_Transaction_GetSubType
@@ -694,8 +488,7 @@ get it with @ref AB_Transaction_GetSubType
 @anchor AB_TRANSACTION_Status
 <h4>Status</h4>
 <p>
-This variable contains the status of the transfer (accepted, rejected, pending). etc).
-</p>
+This variable contains the status of the transfer (accepted, rejected, pending). etc).</p>
 <p>
 Set this property with @ref AB_Transaction_SetStatus, 
 get it with @ref AB_Transaction_GetStatus
@@ -704,8 +497,7 @@ get it with @ref AB_Transaction_GetStatus
 @anchor AB_TRANSACTION_Charge
 <h4>Charge</h4>
 <p>
-Specify who is to be charged for the transaction.
-</p>
+Specify who is to be charged for the transaction.</p>
 <p>
 Set this property with @ref AB_Transaction_SetCharge, 
 get it with @ref AB_Transaction_GetCharge
@@ -713,10 +505,7 @@ get it with @ref AB_Transaction_GetCharge
 
 <h3>Additional Information for Foreign Transfers</h3>
 <p>
-<p>
-  This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.
-</p>
-</p>
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p></p>
 @anchor AB_TRANSACTION_RemoteAddrStreet
 <h4>RemoteAddrStreet</h4>
 <p>
@@ -755,10 +544,7 @@ get it with @ref AB_Transaction_GetRemotePhone
 
 <h3>Additional Information for Investment Transfers</h3>
 <p>
-<p>
-  This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.
-</p>
-</p>
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p></p>
 @anchor AB_TRANSACTION_UnitId
 <h4>UnitId</h4>
 <p>
@@ -804,6 +590,72 @@ Set this property with @ref AB_Transaction_SetCommission,
 get it with @ref AB_Transaction_GetCommission
 </p>
 
+<h3>Additional Information for SEPA Direct Debits</h3>
+<p>
+<p>This group contains information which is used with SEPA transfers within the European Community. It is used by backends and applications but not by AqBanking itself.</p></p>
+@anchor AB_TRANSACTION_CreditorSchemeId
+<h4>CreditorSchemeId</h4>
+<p>
+"Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank)</p>
+<p>
+Set this property with @ref AB_Transaction_SetCreditorSchemeId, 
+get it with @ref AB_Transaction_GetCreditorSchemeId
+</p>
+
+@anchor AB_TRANSACTION_MandateId
+<h4>MandateId</h4>
+<p>
+"SEPA Direct debit mandate id</p>
+<p>
+Set this property with @ref AB_Transaction_SetMandateId, 
+get it with @ref AB_Transaction_GetMandateId
+</p>
+
+@anchor AB_TRANSACTION_MandateDate
+<h4>MandateDate</h4>
+<p>
+"Issue date of the direct debit mandate</p>
+<p>
+Set this property with @ref AB_Transaction_SetMandateDate, 
+get it with @ref AB_Transaction_GetMandateDate
+</p>
+
+@anchor AB_TRANSACTION_MandateDebitorName
+<h4>MandateDebitorName</h4>
+<p>
+"Debitor name for direct debit mandate if given by the debtor</p>
+<p>
+Set this property with @ref AB_Transaction_SetMandateDebitorName, 
+get it with @ref AB_Transaction_GetMandateDebitorName
+</p>
+
+@anchor AB_TRANSACTION_OriginalCreditorSchemeId
+<h4>OriginalCreditorSchemeId</h4>
+<p>
+Original value for "Creditor Scheme Identification", in case that value changed over time</p>
+<p>
+Set this property with @ref AB_Transaction_SetOriginalCreditorSchemeId, 
+get it with @ref AB_Transaction_GetOriginalCreditorSchemeId
+</p>
+
+@anchor AB_TRANSACTION_OriginalMandateId
+<h4>OriginalMandateId</h4>
+<p>
+"Original SEPA Direct debit mandate id, in case that changed over time</p>
+<p>
+Set this property with @ref AB_Transaction_SetOriginalMandateId, 
+get it with @ref AB_Transaction_GetOriginalMandateId
+</p>
+
+@anchor AB_TRANSACTION_OriginalCreditorName
+<h4>OriginalCreditorName</h4>
+<p>
+"Original SEPA Direct debit creditor name, in case that changed over time</p>
+<p>
+Set this property with @ref AB_Transaction_SetOriginalCreditorName, 
+get it with @ref AB_Transaction_GetOriginalCreditorName
+</p>
+
 */
 #ifdef __cplusplus
 extern "C" {
@@ -821,6 +673,7 @@ typedef struct AB_TRANSACTION AB_TRANSACTION;
 /* headers */
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/gwendate.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/value.h>
 #include <aqbanking/transactionlimits.h>
@@ -832,14 +685,11 @@ extern "C" {
 
 typedef enum {
   AB_Transaction_PeriodUnknown=-1,
-  /** No period.
-  */
+  /** No period.  */
   AB_Transaction_PeriodNone=0,
-  /** The standing order is to be executed every month.
-  */
+  /** The standing order is to be executed every month.  */
   AB_Transaction_PeriodMonthly,
-  /** The standing order is to be executed every week.
-  */
+  /** The standing order is to be executed every week.  */
   AB_Transaction_PeriodWeekly
 } AB_TRANSACTION_PERIOD;
 
@@ -848,17 +698,13 @@ AQBANKING_API const char *AB_Transaction_Period_toString(AB_TRANSACTION_PERIOD v
 
 typedef enum {
   AB_Transaction_TypeUnknown=-1,
-  /** Simple transaction (as in transaction statements)
-  */
+  /** Simple transaction (as in transaction statements)  */
   AB_Transaction_TypeTransaction=0,
-  /** Transfer type of transaction (as used with transfer jobs)
-  */
+  /** Transfer type of transaction (as used with transfer jobs)  */
   AB_Transaction_TypeTransfer,
-  /** Debit note type of transaction (as used with debit note jobs)
-  */
+  /** Debit note type of transaction (as used with debit note jobs)  */
   AB_Transaction_TypeDebitNote,
-  /** EU-Transfer type of transaction (as used for with transfer jobs)
-  */
+  /** EU-Transfer type of transaction (as used for with transfer jobs)  */
   AB_Transaction_TypeEuTransfer
 } AB_TRANSACTION_TYPE;
 
@@ -867,44 +713,31 @@ AQBANKING_API const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v);
 
 typedef enum {
   AB_Transaction_SubTypeUnknown=-1,
-  /** No transfer sub-type
-  */
+  /** No transfer sub-type  */
   AB_Transaction_SubTypeNone=0,
-  /** Standard transfer.
-  */
+  /** Standard transfer.  */
   AB_Transaction_SubTypeStandard,
-  /** Check.
-  */
+  /** Check.  */
   AB_Transaction_SubTypeCheck,
-  /** Debit note (Abbuchungsverfahren)
-  */
+  /** Debit note (Abbuchungsverfahren)  */
   AB_Transaction_SubTypeBookedDebitNote,
-  /** Debit note (Einzugsermaechtigung)
-  */
+  /** Debit note (Einzugsermaechtigung)  */
   AB_Transaction_SubTypeDrawnDebitNote,
-  /** Standing order (Dauerauftrag)
-  */
+  /** Standing order (Dauerauftrag)  */
   AB_Transaction_SubTypeStandingOrder,
-  /** Loan transfer.
-  */
+  /** Loan transfer.  */
   AB_Transaction_SubTypeLoan,
-  /** EU standard transfer.
-  */
+  /** EU standard transfer.  */
   AB_Transaction_SubTypeEuStandard,
-  /** Eu transfer which is to be executed the same day.
-  */
+  /** Eu transfer which is to be executed the same day.  */
   AB_Transaction_SubTypeEuASAP,
-  /** Buy stocks and alike
-  */
+  /** Buy stocks and alike  */
   AB_Transaction_SubTypeBuy,
-  /** Sell stocks and alike
-  */
+  /** Sell stocks and alike  */
   AB_Transaction_SubTypeSell,
-  /** Reinvestment.
-  */
+  /** Reinvestment.  */
   AB_Transaction_SubTypeReinvest,
-  /** Dividend.
-  */
+  /** Dividend.  */
   AB_Transaction_SubTypeDividend
 } AB_TRANSACTION_SUBTYPE;
 
@@ -913,32 +746,23 @@ AQBANKING_API const char *AB_Transaction_SubType_toString(AB_TRANSACTION_SUBTYPE
 
 typedef enum {
   AB_Transaction_StatusUnknown=-1,
-  /** No status.
-  */
+  /** No status.  */
   AB_Transaction_StatusNone=0,
-  /** The transfer has been accepted by the bank.
-  */
+  /** The transfer has been accepted by the bank.  */
   AB_Transaction_StatusAccepted,
-  /** The transfer has been rejected by the bank (or was erroneous).
-  */
+  /** The transfer has been rejected by the bank (or was erroneous).  */
   AB_Transaction_StatusRejected,
-  /** The transfer is still pending.
-  */
+  /** The transfer is still pending.  */
   AB_Transaction_StatusPending,
-  /** The transfer is being sent.
-  */
+  /** The transfer is being sent.  */
   AB_Transaction_StatusSending,
-  /** The transfer has automatically been reconciled.
-  */
+  /** The transfer has automatically been reconciled.  */
   AB_Transaction_StatusAutoReconciled,
-  /** The transfer has automatically been reconciled.
-  */
+  /** The transfer has automatically been reconciled.  */
   AB_Transaction_StatusManuallyReconciled,
-  /** The transfer has been revoked.
-  */
+  /** The transfer has been revoked.  */
   AB_Transaction_StatusRevoked,
-  /** The transfer has been aborted.
-  */
+  /** The transfer has been aborted.  */
   AB_Transaction_StatusAborted
 } AB_TRANSACTION_STATUS;
 
@@ -947,17 +771,13 @@ AQBANKING_API const char *AB_Transaction_Status_toString(AB_TRANSACTION_STATUS v
 
 typedef enum {
   AB_Transaction_ChargeUnknown=-1,
-  /** Nobody is to be charged.
-  */
+  /** Nobody is to be charged.  */
   AB_Transaction_ChargeNobody=0,
-  /** Issuer is to be charged.
-  */
+  /** Issuer is to be charged.  */
   AB_Transaction_ChargeLocal,
-  /** Peer is to be charged.
-  */
+  /** Peer is to be charged.  */
   AB_Transaction_ChargeRemote,
-  /** Issuer and peer share the charges.
-  */
+  /** Issuer and peer share the charges.  */
   AB_Transaction_ChargeShare
 } AB_TRANSACTION_CHARGE;
 
@@ -1004,8 +824,7 @@ AQBANKING_API void AB_Transaction_SetModified(AB_TRANSACTION *st, int i);
 
 /** @name Local Account Info
  *
-This group contains information about the local account.
-*/
+This group contains information about the local account.*/
 /*@{*/
 
 /**
@@ -1084,8 +903,7 @@ AQBANKING_API void AB_Transaction_SetLocalBic(AB_TRANSACTION *el, const char *d)
 
 /** @name Remote Account Info
  *
-This group contains information about the remote account.
-*/
+This group contains information about the remote account.*/
 /*@{*/
 
 /**
@@ -1261,18 +1079,8 @@ AQBANKING_API void AB_Transaction_SetFees(AB_TRANSACTION *el, const AB_VALUE *d)
 
 /** @name Info Which Is Not Supported by All Backends
  *
-<p>
-  This group contains information which differ between backends.
-</p>
-
-<p>
-  Some of this information might not even be
-  <b>
-    supported
-  </b>
-  by every backends.
-</p>
-*/
+<p>This group contains information which differ between backends.</p>
+<p>Some of this information might not even be<b>supported</b>by every backends.</p>*/
 /*@{*/
 
 /**
@@ -1422,10 +1230,7 @@ AQBANKING_API int AB_Transaction_HasCategory(const AB_TRANSACTION *st, const cha
 
 /** @name Additional Information for Standing Orders
  *
-<p>
-  This group contains information which is used with standing orders. It is not needed for other usage of this type.
-</p>
-*/
+<p>This group contains information which is used with standing orders. It is not needed for other usage of this type.</p>*/
 /*@{*/
 
 /**
@@ -1486,10 +1291,7 @@ AQBANKING_API void AB_Transaction_SetNextExecutionDate(AB_TRANSACTION *el, const
 
 /** @name Additional Information for Transfers
  *
-<p>
-  This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.
-</p>
-*/
+<p>This group contains information which is used with all kinds of transfers. It is setup by the function @ref AB_Banking_GatherResponses for transfers but not used by AqBanking otherwise.</p>*/
 /*@{*/
 
 /**
@@ -1532,10 +1334,7 @@ AQBANKING_API void AB_Transaction_SetCharge(AB_TRANSACTION *el, AB_TRANSACTION_C
 
 /** @name Additional Information for Foreign Transfers
  *
-<p>
-  This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.
-</p>
-*/
+<p>This group contains information which is used with transfers to other countries in the world. It is used by backends and applications but not by AqBanking itself.</p>*/
 /*@{*/
 
 /**
@@ -1578,10 +1377,7 @@ AQBANKING_API void AB_Transaction_SetRemotePhone(AB_TRANSACTION *el, const char 
 
 /** @name Additional Information for Investment Transfers
  *
-<p>
-  This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.
-</p>
-*/
+<p>This group contains information which is used with investment/stock transfers. It is used by backends and applications but not by AqBanking itself.</p>*/
 /*@{*/
 
 /**
@@ -1628,6 +1424,76 @@ AQBANKING_API const AB_VALUE *AB_Transaction_GetCommission(const AB_TRANSACTION 
 * Set the property @ref AB_TRANSACTION_Commission
 */
 AQBANKING_API void AB_Transaction_SetCommission(AB_TRANSACTION *el, const AB_VALUE *d);
+
+/*@}*/
+
+/** @name Additional Information for SEPA Direct Debits
+ *
+<p>This group contains information which is used with SEPA transfers within the European Community. It is used by backends and applications but not by AqBanking itself.</p>*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_CreditorSchemeId
+*/
+AQBANKING_API const char *AB_Transaction_GetCreditorSchemeId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_CreditorSchemeId
+*/
+AQBANKING_API void AB_Transaction_SetCreditorSchemeId(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_MandateId
+*/
+AQBANKING_API const char *AB_Transaction_GetMandateId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_MandateId
+*/
+AQBANKING_API void AB_Transaction_SetMandateId(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_MandateDate
+*/
+AQBANKING_API const GWEN_DATE *AB_Transaction_GetMandateDate(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_MandateDate
+*/
+AQBANKING_API void AB_Transaction_SetMandateDate(AB_TRANSACTION *el, const GWEN_DATE *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_MandateDebitorName
+*/
+AQBANKING_API const char *AB_Transaction_GetMandateDebitorName(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_MandateDebitorName
+*/
+AQBANKING_API void AB_Transaction_SetMandateDebitorName(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_OriginalCreditorSchemeId
+*/
+AQBANKING_API const char *AB_Transaction_GetOriginalCreditorSchemeId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_OriginalCreditorSchemeId
+*/
+AQBANKING_API void AB_Transaction_SetOriginalCreditorSchemeId(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_OriginalMandateId
+*/
+AQBANKING_API const char *AB_Transaction_GetOriginalMandateId(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_OriginalMandateId
+*/
+AQBANKING_API void AB_Transaction_SetOriginalMandateId(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_OriginalCreditorName
+*/
+AQBANKING_API const char *AB_Transaction_GetOriginalCreditorName(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_OriginalCreditorName
+*/
+AQBANKING_API void AB_Transaction_SetOriginalCreditorName(AB_TRANSACTION *el, const char *d);
 
 /*@}*/
 

@@ -25,6 +25,15 @@
     </functions>
   </type>
 
+  <type id="GWEN_DATE" >
+    <functions>
+      <function type="todb" name="GWEN_Date_toDb" />
+      <function type="fromdb" name="GWEN_Date_fromDb" />
+      <function type="dup" name="GWEN_Date_dup" />
+      <function type="free" name="GWEN_Date_free" />
+    </functions>
+  </type>
+
   <type id="AB_TEXTKEY_DESCR_LIST" prefix="AB_TextKeyDescr_List" >
     <functions>
       <function type="new" name="AB_TextKeyDescr_List_new" />
@@ -537,6 +546,7 @@
     <headers>
       <header type="sys" >gwenhywfar/types.h</header>
       <header type="sys" >gwenhywfar/gwentime.h</header>
+      <header type="sys" >gwenhywfar/gwendate.h</header>
       <header type="sys" >gwenhywfar/stringlist.h</header>
       <header type="sys" >aqbanking/value.h</header>
       <header type="sys" >aqbanking/transactionlimits.h</header>
@@ -926,6 +936,44 @@
       <elem name="units" type="AB_VALUE" ptr="1" />
       <elem name="unitPrice" type="AB_VALUE" ptr="1" />
       <elem name="commission" type="AB_VALUE" ptr="1" />
+    </group>
+
+    <group name="Additional Information for SEPA Direct Debits" >
+      <descr>
+        <p>
+         This group contains information which is used with SEPA transfers within
+         the European Community.
+         It is used by backends and applications but not by AqBanking itself.
+        </p>
+      </descr>
+      <elem name="creditorSchemeId" type="char" ptr="1">
+        <descr>"Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank)</descr>
+      </elem>
+
+      <elem name="mandateId" type="char" ptr="1">
+        <descr>"SEPA Direct debit mandate id</descr>
+      </elem>
+
+      <elem name="mandateDate" type="GWEN_DATE" ptr="1" >
+        <descr>"Issue date of the direct debit mandate</descr>
+      </elem>
+
+      <elem name="mandateDebitorName" type="char" ptr="1">
+        <descr>"Debitor name for direct debit mandate if given by the debtor</descr>
+      </elem>
+
+      <elem name="originalCreditorSchemeId" type="char" ptr="1">
+        <descr>Original value for "Creditor Scheme Identification", in case that value changed over time</descr>
+      </elem>
+
+      <elem name="originalMandateId" type="char" ptr="1">
+        <descr>"Original SEPA Direct debit mandate id, in case that changed over time</descr>
+      </elem>
+
+      <elem name="originalCreditorName" type="char" ptr="1">
+        <descr>"Original SEPA Direct debit creditor name, in case that changed over time</descr>
+      </elem>
+
     </group>
 
     

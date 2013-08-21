@@ -15,6 +15,7 @@
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/gwendate.h>
 #include <gwenhywfar/stringlist.h>
 #include <aqbanking/value.h>
 #include <aqbanking/transactionlimits.h>
@@ -379,6 +380,20 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     AB_Value_free(st->unitPrice);
   if (st->commission)
     AB_Value_free(st->commission);
+  if (st->creditorSchemeId)
+    free(st->creditorSchemeId);
+  if (st->mandateId)
+    free(st->mandateId);
+  if (st->mandateDate)
+    GWEN_Date_free(st->mandateDate);
+  if (st->mandateDebitorName)
+    free(st->mandateDebitorName);
+  if (st->originalCreditorSchemeId)
+    free(st->originalCreditorSchemeId);
+  if (st->originalMandateId)
+    free(st->originalMandateId);
+  if (st->originalCreditorName)
+    free(st->originalCreditorName);
   GWEN_LIST_FINI(AB_TRANSACTION, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -497,6 +512,20 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->unitPrice=AB_Value_dup(d->unitPrice);
   if (d->commission)
     st->commission=AB_Value_dup(d->commission);
+  if (d->creditorSchemeId)
+    st->creditorSchemeId=strdup(d->creditorSchemeId);
+  if (d->mandateId)
+    st->mandateId=strdup(d->mandateId);
+  if (d->mandateDate)
+    st->mandateDate=GWEN_Date_dup(d->mandateDate);
+  if (d->mandateDebitorName)
+    st->mandateDebitorName=strdup(d->mandateDebitorName);
+  if (d->originalCreditorSchemeId)
+    st->originalCreditorSchemeId=strdup(d->originalCreditorSchemeId);
+  if (d->originalMandateId)
+    st->originalMandateId=strdup(d->originalMandateId);
+  if (d->originalCreditorName)
+    st->originalCreditorName=strdup(d->originalCreditorName);
   return st;
 }
 
@@ -707,6 +736,27 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->commission)
     if (AB_Value_toDb(st->commission, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "commission")))
       return -1;
+  if (st->creditorSchemeId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "creditorSchemeId", st->creditorSchemeId))
+      return -1;
+  if (st->mandateId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "mandateId", st->mandateId))
+      return -1;
+  if (st->mandateDate)
+    if (GWEN_Date_toDb(st->mandateDate, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "mandateDate")))
+      return -1;
+  if (st->mandateDebitorName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "mandateDebitorName", st->mandateDebitorName))
+      return -1;
+  if (st->originalCreditorSchemeId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originalCreditorSchemeId", st->originalCreditorSchemeId))
+      return -1;
+  if (st->originalMandateId)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originalMandateId", st->originalMandateId))
+      return -1;
+  if (st->originalCreditorName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originalCreditorName", st->originalCreditorName))
+      return -1;
   return 0;
 }
 
@@ -896,6 +946,22 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   st->commission=AB_Value_fromDb(dbT);
 }
   }
+  AB_Transaction_SetCreditorSchemeId(st, GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0));
+  AB_Transaction_SetMandateId(st, GWEN_DB_GetCharValue(db, "mandateId", 0, 0));
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "mandateDate");
+    if (dbT) {
+  if (st->mandateDate)
+    GWEN_Date_free(st->mandateDate);
+  st->mandateDate=GWEN_Date_fromDb(dbT);
+}
+  }
+  AB_Transaction_SetMandateDebitorName(st, GWEN_DB_GetCharValue(db, "mandateDebitorName", 0, 0));
+  AB_Transaction_SetOriginalCreditorSchemeId(st, GWEN_DB_GetCharValue(db, "originalCreditorSchemeId", 0, 0));
+  AB_Transaction_SetOriginalMandateId(st, GWEN_DB_GetCharValue(db, "originalMandateId", 0, 0));
+  AB_Transaction_SetOriginalCreditorName(st, GWEN_DB_GetCharValue(db, "originalCreditorName", 0, 0));
   return 0;
 }
 
@@ -2109,6 +2175,146 @@ void AB_Transaction_SetCommission(AB_TRANSACTION *st, const AB_VALUE *d) {
     st->commission=AB_Value_dup(d);
   else
     st->commission=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetCreditorSchemeId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->creditorSchemeId;
+}
+
+
+void AB_Transaction_SetCreditorSchemeId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->creditorSchemeId)
+    free(st->creditorSchemeId);
+  if (d && *d)
+    st->creditorSchemeId=strdup(d);
+  else
+    st->creditorSchemeId=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetMandateId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->mandateId;
+}
+
+
+void AB_Transaction_SetMandateId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->mandateId)
+    free(st->mandateId);
+  if (d && *d)
+    st->mandateId=strdup(d);
+  else
+    st->mandateId=0;
+  st->_modified=1;
+}
+
+
+
+
+const GWEN_DATE *AB_Transaction_GetMandateDate(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->mandateDate;
+}
+
+
+void AB_Transaction_SetMandateDate(AB_TRANSACTION *st, const GWEN_DATE *d) {
+  assert(st);
+  if (st->mandateDate)
+    GWEN_Date_free(st->mandateDate);
+  if (d)
+    st->mandateDate=GWEN_Date_dup(d);
+  else
+    st->mandateDate=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetMandateDebitorName(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->mandateDebitorName;
+}
+
+
+void AB_Transaction_SetMandateDebitorName(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->mandateDebitorName)
+    free(st->mandateDebitorName);
+  if (d && *d)
+    st->mandateDebitorName=strdup(d);
+  else
+    st->mandateDebitorName=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetOriginalCreditorSchemeId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->originalCreditorSchemeId;
+}
+
+
+void AB_Transaction_SetOriginalCreditorSchemeId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->originalCreditorSchemeId)
+    free(st->originalCreditorSchemeId);
+  if (d && *d)
+    st->originalCreditorSchemeId=strdup(d);
+  else
+    st->originalCreditorSchemeId=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetOriginalMandateId(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->originalMandateId;
+}
+
+
+void AB_Transaction_SetOriginalMandateId(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->originalMandateId)
+    free(st->originalMandateId);
+  if (d && *d)
+    st->originalMandateId=strdup(d);
+  else
+    st->originalMandateId=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *AB_Transaction_GetOriginalCreditorName(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->originalCreditorName;
+}
+
+
+void AB_Transaction_SetOriginalCreditorName(AB_TRANSACTION *st, const char *d) {
+  assert(st);
+  if (st->originalCreditorName)
+    free(st->originalCreditorName);
+  if (d && *d)
+    st->originalCreditorName=strdup(d);
+  else
+    st->originalCreditorName=0;
   st->_modified=1;
 }
 

@@ -9,8 +9,7 @@ This page describes the properties of AB_SECURITY
 @anchor AB_SECURITY_Name
 <h3>Name</h3>
 <p>
-Full name of the security.
-</p>
+Full name of the security.</p>
 <p>
 Set this property with @ref AB_Security_SetName, 
 get it with @ref AB_Security_GetName
@@ -19,8 +18,7 @@ get it with @ref AB_Security_GetName
 @anchor AB_SECURITY_UniqueId
 <h3>UniqueId</h3>
 <p>
-Unique id of the security within the namespace.
-</p>
+Unique id of the security within the namespace.</p>
 <p>
 Set this property with @ref AB_Security_SetUniqueId, 
 get it with @ref AB_Security_GetUniqueId
@@ -29,8 +27,7 @@ get it with @ref AB_Security_GetUniqueId
 @anchor AB_SECURITY_NameSpace
 <h3>NameSpace</h3>
 <p>
-Namespace for uniqueId (e.g. CUSIP for North America)
-</p>
+Namespace for uniqueId (e.g. CUSIP for North America)</p>
 <p>
 Set this property with @ref AB_Security_SetNameSpace, 
 get it with @ref AB_Security_GetNameSpace
@@ -39,8 +36,7 @@ get it with @ref AB_Security_GetNameSpace
 @anchor AB_SECURITY_TickerSymbol
 <h3>TickerSymbol</h3>
 <p>
-Ticker symbol of the security.
-</p>
+Ticker symbol of the security.</p>
 <p>
 Set this property with @ref AB_Security_SetTickerSymbol, 
 get it with @ref AB_Security_GetTickerSymbol
@@ -49,8 +45,7 @@ get it with @ref AB_Security_GetTickerSymbol
 @anchor AB_SECURITY_Units
 <h3>Units</h3>
 <p>
-Number of units held (e.g. number of stock units etc)
-</p>
+Number of units held (e.g. number of stock units etc)</p>
 <p>
 Set this property with @ref AB_Security_SetUnits, 
 get it with @ref AB_Security_GetUnits
@@ -59,8 +54,7 @@ get it with @ref AB_Security_GetUnits
 @anchor AB_SECURITY_UnitPriceValue
 <h3>UnitPriceValue</h3>
 <p>
-Price of a unit as of unitPriceDate.
-</p>
+Price of a unit as of unitPriceDate.</p>
 <p>
 Set this property with @ref AB_Security_SetUnitPriceValue, 
 get it with @ref AB_Security_GetUnitPriceValue
@@ -69,8 +63,7 @@ get it with @ref AB_Security_GetUnitPriceValue
 @anchor AB_SECURITY_UnitPriceDate
 <h3>UnitPriceDate</h3>
 <p>
-Date for the unitPriceValue
-</p>
+Date for the unitPriceValue</p>
 <p>
 Set this property with @ref AB_Security_SetUnitPriceDate, 
 get it with @ref AB_Security_GetUnitPriceDate

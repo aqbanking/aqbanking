@@ -240,12 +240,27 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
       break;
+
     case AB_Job_TypeSepaDebitNote:
       lim=AB_JobSepaDebitNote_GetFieldLimits(bj);
       t=AB_JobSepaDebitNote_GetTransaction(bj);
-      /* profileName="ccm"; insert correct name */
-      /* descriptor="pain.001.001.02"; insert correct name */
+
+      /* choose from HISPAS */
+      /* first check for any descriptor for pain 001.002.03 */
+      s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
+      if (s) {
+        profileName="008_003_02";
+        descriptor=s;
+      }
+
+      /* check for valid descriptor */
+      if (!(descriptor && *descriptor)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found, please update your SEPA account information");
+        return GWEN_ERROR_GENERIC;
+      }
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
       break;
+
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", aj->jobType);
       return GWEN_ERROR_INVALID;

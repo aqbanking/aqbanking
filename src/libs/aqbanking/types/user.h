@@ -6,8 +6,7 @@
 
 /** @page P_AB_USER_PUBLIC AB_User (public)
 This page describes the properties of AB_USER
-This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseAccount() before the modifications and @ref AB_Banking_EndExclUseAccount() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.
-@anchor AB_USER_UniqueId
+This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseAccount() before the modifications and @ref AB_Banking_EndExclUseAccount() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.@anchor AB_USER_UniqueId
 <h3>UniqueId</h3>
 <p>
 </p>

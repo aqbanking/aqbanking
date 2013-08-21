@@ -63,5 +63,11 @@ int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
                                         GWEN_SYNCIO *sio,
                                         GWEN_DB_NODE *params);
 
+static
+int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
+                                        AB_IMEXPORTER_CONTEXT *ctx,
+                                        GWEN_SYNCIO *sio,
+                                        GWEN_DB_NODE *params);
+
 
 #endif /* AQHBCI_IMEX_SEPA_P_H */
