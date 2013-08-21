@@ -9,6 +9,7 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#warning "Is this file really used??"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
