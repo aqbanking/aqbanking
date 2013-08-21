@@ -63,6 +63,7 @@ noinst_HEADERS=\
  g_document_l.h g_document_p.h \
  g_generic_l.h g_generic_p.h \
  g_ignore_l.h g_ignore_p.h \
+ g_income_l.h g_income_p.h \
  g_invacc_l.h g_invacc_p.h \
  g_invbuy_l.h g_invbuy_p.h \
  g_invpos_l.h g_invpos_p.h \
