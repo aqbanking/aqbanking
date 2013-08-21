@@ -29,7 +29,7 @@
 #include <assert.h>
 
 
-#define CENTURY_CUTOFF_YEAR 70
+#define CENTURY_CUTOFF_YEAR 79
 
 
 int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
@@ -574,7 +574,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     return -1;
   }
   d1a=((p[0]-'0')*10) + (p[1]-'0');
-  if (d1a>=CENTURY_CUTOFF_YEAR)
+  if (d1a>CENTURY_CUTOFF_YEAR)
     d1a+=1900;
   else
     d1a+=2000;
@@ -915,7 +915,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     return -1;
   }
   d1=((p[0]-'0')*10) + (p[1]-'0');
-  if (d1>=CENTURY_CUTOFF_YEAR)
+  if (d1>CENTURY_CUTOFF_YEAR)
     d1+=1900;
   else
     d1+=2000;
