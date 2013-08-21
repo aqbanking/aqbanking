@@ -5,6 +5,7 @@ INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(aqbanking_symlinkdir) $(all_in
 extra_sources=\
   sepa_exp_ccm.c \
   sepa_exp_123.c \
+  sepa_exp_008_001_01.c \
   sepa_exp_008_003_02.c
 
 

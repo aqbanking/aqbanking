@@ -138,6 +138,7 @@ int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 #include "sepa_exp_ccm.c"
 #include "sepa_exp_123.c"
+#include "sepa_exp_008_001_01.c"
 #include "sepa_exp_008_003_02.c"
 
 
