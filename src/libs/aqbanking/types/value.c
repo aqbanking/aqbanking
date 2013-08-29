@@ -122,6 +122,11 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   char decimalComma;
   int isNeg=0;
 
+  if( !s ) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Attempt to convert a NULL value");
+    return NULL;
+  }
+
   tmpString=strdup(s);
   p=tmpString;
 
