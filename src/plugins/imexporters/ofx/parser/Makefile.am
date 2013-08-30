@@ -19,6 +19,7 @@ libofxparser_la_SOURCES=\
  g_document.c \
  g_generic.c \
  g_ignore.c \
+ g_income.c \
  g_invacc.c \
  g_invbuy.c \
  g_invpos.c \
