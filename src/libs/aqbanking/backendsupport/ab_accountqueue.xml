@@ -12,6 +12,7 @@
         with_inherit
         with_list1
         with_refcount
+        nocopy
       </flags>
       
       <headers>
@@ -33,6 +34,7 @@
         <setflags>none</setflags>
         <getflags>none</getflags>
         <dupflags>assign</dupflags>
+        <copyflags>assign</copyflags>
       </member>
 
       <member name="jobQueueList" type="AB_JOBQUEUE_LIST">

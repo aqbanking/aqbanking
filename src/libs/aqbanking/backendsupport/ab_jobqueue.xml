@@ -12,6 +12,7 @@
         with_inherit
         with_list1
         with_refcount
+        nocopy
       </flags>
       
       <headers>
