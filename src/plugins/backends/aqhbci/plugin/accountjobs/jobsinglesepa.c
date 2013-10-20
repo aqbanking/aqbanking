@@ -246,8 +246,8 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       t=AB_JobSepaDebitNote_GetTransaction(bj);
 
       /* choose from HISPAS */
-      /* first check for any descriptor for pain 008.003.02 */
-      s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
+      /* first check for any descriptor for pain 008.002.02 */
+      s=AH_User_FindSepaDescriptor(u, "*008.002.02*");
       if (s) {
         profileName="008_003_02";
         descriptor=s;
