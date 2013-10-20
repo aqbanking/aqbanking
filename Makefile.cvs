@@ -83,7 +83,8 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="q4banking"
+	    --with-frontends="q4banking" \
+	    --prefix=/usr/local
 	make sources
 
 clang:
