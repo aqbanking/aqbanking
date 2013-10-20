@@ -24,9 +24,9 @@ AC_CONFIG_HEADERS([config.h])
 #
 
 AQBANKING_VERSION_MAJOR=5
-AQBANKING_VERSION_MINOR=0
-AQBANKING_VERSION_PATCHLEVEL=32
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_MINOR=1
+AQBANKING_VERSION_PATCHLEVEL=0
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
 
@@ -41,9 +41,9 @@ AQBANKING_VERSION_TAG="beta"
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=34
-AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=32
+AQBANKING_SO_CURRENT=35
+AQBANKING_SO_AGE=1
+AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -1435,6 +1435,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/profiles/ccm.conf
   src/plugins/imexporters/sepa/profiles/001_002_03.conf
   src/plugins/imexporters/sepa/profiles/008_001_01.conf
+  src/plugins/imexporters/sepa/profiles/008_002_02.conf
   src/plugins/imexporters/sepa/profiles/008_003_02.conf
   src/plugins/imexporters/ctxfile/Makefile
   src/plugins/imexporters/ctxfile/ctxfile.xml

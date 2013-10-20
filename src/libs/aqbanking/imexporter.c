@@ -1784,9 +1784,106 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  if (!iban)
+    iban="";
+
+  assert(iec);
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  while(iea) {
+    const char *sIban;
+
+    sIban=AB_ImExporterAccountInfo_GetIban(iea);
+    if (sIban==0)
+      sIban="";
+    if (strcasecmp(sIban, iban)==0) {
+      return iea;
+    }
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
+  }
+  return 0;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  if (!iban)
+    iban="";
+
+  assert(iec);
+  iea=AB_ImExporterContext_FindAccountInfoByIban(iec, iban);
+  if (!iea) {
+    /* not found, append it */
+    iea=AB_ImExporterAccountInfo_new();
+    AB_ImExporterAccountInfo_SetIban(iea, iban);
+    AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+  }
+  return iea;
+}
+
+
+
 int AB_ImExporterContext_GetAccountInfoCount(const AB_IMEXPORTER_CONTEXT *iec) {
   assert(iec);
   return AB_ImExporterAccountInfo_List_GetCount(iec->accountInfoList);
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterContext__GetAccountInfoForTransaction(AB_IMEXPORTER_CONTEXT *iec,
+									      const AB_TRANSACTION *t){
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  const char *tIban;
+  const char *tBankCode;
+  const char *tAccountNumber;
+
+  tBankCode=AB_Transaction_GetLocalBankCode(t);
+  if (!tBankCode) tBankCode="";
+  tAccountNumber=AB_Transaction_GetLocalAccountNumber(t);
+  if (!tAccountNumber) tAccountNumber="";
+  tIban=AB_Transaction_GetLocalIban(t);
+  if (!tIban) tIban="";
+
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  while(iea) {
+    const char *sBankCode;
+    const char *sAccountNumber;
+    const char *sIban;
+
+    sBankCode=AB_ImExporterAccountInfo_GetBankCode(iea);
+    if (!sBankCode) sBankCode="";
+    sAccountNumber=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+    if (!sAccountNumber) sAccountNumber="";
+    sIban=AB_ImExporterAccountInfo_GetIban(iea);
+    if (!sIban) sIban="";
+
+    if (strcasecmp(sIban, tIban)==0)
+      return iea;
+
+    if ((strcasecmp(sBankCode, tBankCode)==0) &&
+	(strcasecmp(sAccountNumber, tAccountNumber)==0))
+      return iea;
+
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
+  }
+
+  /* not found, append it */
+  iea=AB_ImExporterAccountInfo_new();
+  if (tIban && *tIban)
+    AB_ImExporterAccountInfo_SetIban(iea, tIban);
+  if (tBankCode && *tBankCode)
+    AB_ImExporterAccountInfo_SetBankCode(iea, tBankCode);
+  if (tAccountNumber && *tAccountNumber)
+    AB_ImExporterAccountInfo_SetAccountNumber(iea, tAccountNumber);
+  AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+
+  return iea;
 }
 
 
@@ -1795,11 +1892,7 @@ void AB_ImExporterContext_AddTransaction(AB_IMEXPORTER_CONTEXT *iec,
                                          AB_TRANSACTION *t){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
-  iea=AB_ImExporterContext_GetAccountInfo
-    (iec,
-     AB_Transaction_GetLocalBankCode(t),
-     AB_Transaction_GetLocalAccountNumber(t)
-    );
+  iea=AB_ImExporterContext__GetAccountInfoForTransaction(iec, t);
   assert(iea);
   AB_ImExporterAccountInfo_AddTransaction(iea, t);
 }
@@ -1810,11 +1903,7 @@ void AB_ImExporterContext_AddTransfer(AB_IMEXPORTER_CONTEXT *iec,
 				      AB_TRANSACTION *t){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
-  iea=AB_ImExporterContext_GetAccountInfo
-    (iec,
-     AB_Transaction_GetLocalBankCode(t),
-     AB_Transaction_GetLocalAccountNumber(t)
-    );
+  iea=AB_ImExporterContext__GetAccountInfoForTransaction(iec, t);
   assert(iea);
   AB_ImExporterAccountInfo_AddTransfer(iea, t);
 }
@@ -1825,11 +1914,7 @@ void AB_ImExporterContext_AddDatedTransfer(AB_IMEXPORTER_CONTEXT *iec,
 					   AB_TRANSACTION *t){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
-  iea=AB_ImExporterContext_GetAccountInfo
-    (iec,
-     AB_Transaction_GetLocalBankCode(t),
-     AB_Transaction_GetLocalAccountNumber(t)
-    );
+  iea=AB_ImExporterContext__GetAccountInfoForTransaction(iec, t);
   assert(iea);
   AB_ImExporterAccountInfo_AddDatedTransfer(iea, t);
 }
@@ -1840,11 +1925,7 @@ void AB_ImExporterContext_AddStandingOrder(AB_IMEXPORTER_CONTEXT *iec,
 					   AB_TRANSACTION *t){
   AB_IMEXPORTER_ACCOUNTINFO *iea;
 
-  iea=AB_ImExporterContext_GetAccountInfo
-    (iec,
-     AB_Transaction_GetLocalBankCode(t),
-     AB_Transaction_GetLocalAccountNumber(t)
-    );
+  iea=AB_ImExporterContext__GetAccountInfoForTransaction(iec, t);
   assert(iea);
   AB_ImExporterAccountInfo_AddStandingOrder(iea, t);
 }

@@ -323,6 +323,16 @@ AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 				     const char *accountNumber);
 
 /**
+ * Looks for account info for the given account. If it is not found 0 is
+ * returned.
+ * This is for SEPA.
+ * The context remains the owner of the returned object.
+ */
+AQBANKING_API 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban);
+
+/**
  * Looks for account info for the given account. If there is none it will
  * be created and added to the context.
  * The context remains the owner of the returned object.
@@ -332,6 +342,17 @@ AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
                                     const char *bankCode,
                                     const char *accountNumber);
+
+/**
+ * Looks for account info for the given account. If there is none it will
+ * be created and added to the context.
+ * This function is for SEPA.
+ * The context remains the owner of the returned object.
+ */
+AQBANKING_API
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban);
+
 
 AQBANKING_API
 int AB_ImExporterContext_GetAccountInfoCount(const AB_IMEXPORTER_CONTEXT *iec);

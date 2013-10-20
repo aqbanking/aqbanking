@@ -100,6 +100,8 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
 static int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level);
 static int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level);
 
+static AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterContext__GetAccountInfoForTransaction(AB_IMEXPORTER_CONTEXT *iec,
+                                                                                     const AB_TRANSACTION *t);
 
 
 
