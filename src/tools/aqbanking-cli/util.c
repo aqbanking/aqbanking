@@ -349,7 +349,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   else {
     DBG_ERROR(0, "No remote IBAN given");
     AB_Transaction_free(t);
-    return 0;
+    return NULL;
   }
 
   s=GWEN_DB_GetCharValue(db, "remoteBic", 0, 0);
@@ -358,7 +358,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   else {
     DBG_ERROR(0, "No remote BIC id given");
     AB_Transaction_free(t);
-    return 0;
+    return NULL;
   }
 
   for (i=0; i<10; i++) {
@@ -371,7 +371,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   if (i<1) {
     DBG_ERROR(0, "No remote name given");
     AB_Transaction_free(t);
-    return 0;
+    return NULL;
   }
 
   /* transfer data */
@@ -385,7 +385,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   if (i<1) {
     DBG_ERROR(0, "No purpose given");
     AB_Transaction_free(t);
-    return 0;
+    return NULL;
   }
 
   i=GWEN_DB_GetIntValue(db, "textkey", 0, -1);
@@ -401,7 +401,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     if (AB_Value_IsNegative(v) || AB_Value_IsZero(v)) {
       DBG_ERROR(0, "Only positive non-zero amount allowed");
       AB_Transaction_free(t);
-      return 0;
+      return NULL;
     }
     AB_Transaction_SetValue(t, v);
     AB_Value_free(v);
@@ -409,7 +409,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   else {
     DBG_ERROR(0, "No value given");
     AB_Transaction_free(t);
-    return 0;
+    return NULL;
   }
 
   // dated transfer
@@ -425,7 +425,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid execution date value \"%s\"", s);
-      return 0;
+      return NULL;
     }
     AB_Transaction_SetDate(t, d);
     *transferType = 1;
@@ -445,10 +445,11 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid first execution date value \"%s\"", s);
-      return 0;
+      return NULL;
     }
     AB_Transaction_SetFirstExecutionDate(t, d);
-  } else
+  }
+  else
     return t; // single transfer
 
   *transferType = 2;
@@ -464,7 +465,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid last execution date value \"%s\"", s);
-      return 0;
+      return NULL;
     }
     AB_Transaction_SetLastExecutionDate(t, d);
   }
@@ -472,22 +473,24 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
   if (i <= 0 || i > 2) {
     DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
-    return 0;
+    return NULL;
   }
-  if (i == 1) AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
-  else AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
+  if (i == 1)
+    AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
+  else
+    AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
 
   i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
   if (i <= 0) {
     DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
-    return 0;
+    return NULL;
   }
   AB_Transaction_SetCycle(t, i);
 
   i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
   if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
     DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
-    return 0;
+    return NULL;
   }
   AB_Transaction_SetExecutionDay(t, i);
 
