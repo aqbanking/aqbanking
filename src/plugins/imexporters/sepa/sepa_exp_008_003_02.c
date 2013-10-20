@@ -72,9 +72,9 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
   if (n) {
     GWEN_TIME *ti;
     GWEN_BUFFER *tbuf;
+    GWEN_XMLNODE *nn;
     uint32_t uid;
     char numbuf[32];
-    GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
     ti=GWEN_CurrentTime();
@@ -97,8 +97,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
 
-    GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
-
+    /* InitgPty */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
     if (nn) {
       s=AB_ImExporterAccountInfo_GetOwner(ai);
@@ -106,7 +105,6 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
         s=AB_Transaction_GetLocalName(t);
       if (!s) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
-        GWEN_XMLNode_free(root);
 	AB_Value_free(v);
 	return GWEN_ERROR_BAD_DATA;
       }
@@ -114,6 +112,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
 
       GWEN_XMLNode_AddChild(n, nn);
     }
+
 
     GWEN_Buffer_free(tbuf);
   }
@@ -147,8 +146,6 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
 
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "DD");
 
-    /*GWEN_XMLNode_SetCharValue(n, "BtchBookg", "true"); -> to be investigated, at least not part of the specs */
-
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
     /* CtrlSum */
@@ -162,6 +159,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
       GWEN_Buffer_free(tbuf);
     }
 
+    /* PmtTpInf */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
     if (nn) {
       GWEN_XMLNODE *nnn;
@@ -176,6 +174,22 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
       if (nnn) {
 	GWEN_XMLNode_SetCharValue(nnn, "Cd", "CORE");
 	GWEN_XMLNode_AddChild(nn, nnn);
+      }
+
+      switch(AB_Transaction_GetSequenceType(t)) {
+      case AB_Transaction_SequenceTypeUnknown:
+      case AB_Transaction_SequenceTypeOnce:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
+        break;
+      case AB_Transaction_SequenceTypeFirst:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
+        break;
+      case AB_Transaction_SequenceTypeFollowing:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
+        break;
+      case AB_Transaction_SequenceTypeFinal:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FNAL");
+        break;
       }
 
       GWEN_XMLNode_AddChild(n, nn);
@@ -222,7 +236,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
       GWEN_XMLNode_free(root);
       return GWEN_ERROR_BAD_DATA;
     }
-    GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAcct/Id/IBAN", s);
+    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAcct/Id/IBAN", s);
 
     /* create "CdtrAgt" */
     s=AB_ImExporterAccountInfo_GetBic(ai);
@@ -233,7 +247,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
       GWEN_XMLNode_free(root);
       return GWEN_ERROR_BAD_DATA;
     }
-    GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAgt/FinInstnId/BIC", s);
+    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAgt/FinInstnId/BIC", s);
 
     GWEN_XMLNode_SetCharValue(n, "ChrgBr", "SLEV");
 
@@ -255,6 +269,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
     }
 
 
+    /* DrctDbtTxInf */
     t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
     while(t) {
       GWEN_XMLNODE *nn;
@@ -301,6 +316,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
 	  GWEN_Buffer_free(tbuf);
 	}
 
+	/* DrctDbtTx */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DrctDbtTx");
 	if (nnn) {
           GWEN_XMLNODE *nnnn;
@@ -348,8 +364,10 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
 	    origMandateId=AB_Transaction_GetOriginalMandateId(t);
 	    origCreditorName=AB_Transaction_GetOriginalCreditorName(t);
 
+	    /* MndtId */
 	    GWEN_XMLNode_SetCharValue(nnnn, "MndtId", mandateId);
 
+	    /* DtOfSgntr */
 	    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
 	    rv=GWEN_Date_toStringWithTemplate(dt, "YYYY-MM-DD", tbuf);
 	    if (rv<0) {
