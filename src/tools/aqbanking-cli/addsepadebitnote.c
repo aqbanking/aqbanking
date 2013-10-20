@@ -196,6 +196,17 @@ static int addSepaDebitNote(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
+    "sequenceType",                /* name */
+    0,                             /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "sequenceType",                  /* long option */
+    "Specify the sequence type (once, first, following)",    /* short description */
+    "Specify the sequence type (once, first, following)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
     "purpose",                    /* name */
     1,                            /* minnum */
     6,                            /* maxnum */

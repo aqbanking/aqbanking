@@ -656,6 +656,15 @@ Set this property with @ref AB_Transaction_SetOriginalCreditorName,
 get it with @ref AB_Transaction_GetOriginalCreditorName
 </p>
 
+@anchor AB_TRANSACTION_SequenceType
+<h4>SequenceType</h4>
+<p>
+Sequence type of the debit (on-time, first, recurring).</p>
+<p>
+Set this property with @ref AB_Transaction_SetSequenceType, 
+get it with @ref AB_Transaction_GetSequenceType
+</p>
+
 */
 #ifdef __cplusplus
 extern "C" {
@@ -787,6 +796,19 @@ typedef enum {
 
 AQBANKING_API AB_TRANSACTION_CHARGE AB_Transaction_Charge_fromString(const char *s);
 AQBANKING_API const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v);
+
+typedef enum {
+  AB_Transaction_SequenceTypeUnknown=-1,
+  /** One-time operation.  */
+  AB_Transaction_SequenceTypeOnce=0,
+  /** First operation with more following.  */
+  AB_Transaction_SequenceTypeFirst,
+  /** Following operation (not the first).  */
+  AB_Transaction_SequenceTypeFollowing
+} AB_TRANSACTION_SEQUENCETYPE;
+
+AQBANKING_API AB_TRANSACTION_SEQUENCETYPE AB_Transaction_SequenceType_fromString(const char *s);
+AQBANKING_API const char *AB_Transaction_SequenceType_toString(AB_TRANSACTION_SEQUENCETYPE v);
 
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_TRANSACTION, AQBANKING_API)
@@ -1498,6 +1520,15 @@ AQBANKING_API const char *AB_Transaction_GetOriginalCreditorName(const AB_TRANSA
 * Set the property @ref AB_TRANSACTION_OriginalCreditorName
 */
 AQBANKING_API void AB_Transaction_SetOriginalCreditorName(AB_TRANSACTION *el, const char *d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_SequenceType
+*/
+AQBANKING_API AB_TRANSACTION_SEQUENCETYPE AB_Transaction_GetSequenceType(const AB_TRANSACTION *el);
+/**
+* Set the property @ref AB_TRANSACTION_SequenceType
+*/
+AQBANKING_API void AB_Transaction_SetSequenceType(AB_TRANSACTION *el, AB_TRANSACTION_SEQUENCETYPE d);
 
 /*@}*/
 

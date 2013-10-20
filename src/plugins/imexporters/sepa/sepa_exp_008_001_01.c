@@ -144,7 +144,19 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
     if (nn) {
       GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "SvcLvl/Cd", "SEPA");
-      GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
+
+      switch(AB_Transaction_GetSequenceType(t)) {
+      case AB_Transaction_SequenceTypeUnknown:
+      case AB_Transaction_SequenceTypeOnce:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
+        break;
+      case AB_Transaction_SequenceTypeFirst:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
+        break;
+      case AB_Transaction_SequenceTypeFollowing:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
+        break;
+      }
 
       GWEN_XMLNode_AddChild(n, nn);
     }

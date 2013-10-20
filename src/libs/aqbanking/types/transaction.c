@@ -277,6 +277,36 @@ const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v) {
 } 
 
 
+AB_TRANSACTION_SEQUENCETYPE AB_Transaction_SequenceType_fromString(const char *s) {
+  if (s) {
+    if (strcasecmp(s, "once")==0)
+      return AB_Transaction_SequenceTypeOnce;
+    else if (strcasecmp(s, "first")==0)
+      return AB_Transaction_SequenceTypeFirst;
+    else if (strcasecmp(s, "following")==0)
+      return AB_Transaction_SequenceTypeFollowing;
+  }
+  return AB_Transaction_SequenceTypeUnknown;
+}
+
+
+const char *AB_Transaction_SequenceType_toString(AB_TRANSACTION_SEQUENCETYPE v) {
+  switch(v) {
+    case AB_Transaction_SequenceTypeOnce:
+      return "once";
+
+    case AB_Transaction_SequenceTypeFirst:
+      return "first";
+
+    case AB_Transaction_SequenceTypeFollowing:
+      return "following";
+
+    default:
+      return "unknown";
+  } /* switch */
+} 
+
+
 
 
 AB_TRANSACTION *AB_Transaction_new(void) {
@@ -536,6 +566,7 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->originalMandateId=strdup(d->originalMandateId);
   if (d->originalCreditorName)
     st->originalCreditorName=strdup(d->originalCreditorName);
+  st->sequenceType=d->sequenceType;
   return st;
 }
 
@@ -767,6 +798,8 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   if (st->originalCreditorName)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originalCreditorName", st->originalCreditorName))
       return -1;
+  if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "sequenceType", AB_Transaction_SequenceType_toString(st->sequenceType))) 
+    return -1;
   return 0;
 }
 
@@ -972,6 +1005,7 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetOriginalCreditorSchemeId(st, GWEN_DB_GetCharValue(db, "originalCreditorSchemeId", 0, 0));
   AB_Transaction_SetOriginalMandateId(st, GWEN_DB_GetCharValue(db, "originalMandateId", 0, 0));
   AB_Transaction_SetOriginalCreditorName(st, GWEN_DB_GetCharValue(db, "originalCreditorName", 0, 0));
+  AB_Transaction_SetSequenceType(st, AB_Transaction_SequenceType_fromString(GWEN_DB_GetCharValue(db, "sequenceType", 0, 0)));
   return 0;
 }
 
@@ -2325,6 +2359,21 @@ void AB_Transaction_SetOriginalCreditorName(AB_TRANSACTION *st, const char *d) {
     st->originalCreditorName=strdup(d);
   else
     st->originalCreditorName=0;
+  st->_modified=1;
+}
+
+
+
+
+AB_TRANSACTION_SEQUENCETYPE AB_Transaction_GetSequenceType(const AB_TRANSACTION *st) {
+  assert(st);
+  return st->sequenceType;
+}
+
+
+void AB_Transaction_SetSequenceType(AB_TRANSACTION *st, AB_TRANSACTION_SEQUENCETYPE d) {
+  assert(st);
+  st->sequenceType=d;
   st->_modified=1;
 }
 

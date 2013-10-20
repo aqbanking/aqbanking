@@ -175,7 +175,19 @@ int AH_ImExporterSEPA_Export_008_002_02(AB_IMEXPORTER *ie,
 	GWEN_XMLNode_SetCharValue(nnn, "Cd", "CORE");
 	GWEN_XMLNode_AddChild(nn, nnn);
       }
-      GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
+
+      switch(AB_Transaction_GetSequenceType(t)) {
+      case AB_Transaction_SequenceTypeUnknown:
+      case AB_Transaction_SequenceTypeOnce:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
+        break;
+      case AB_Transaction_SequenceTypeFirst:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
+        break;
+      case AB_Transaction_SequenceTypeFollowing:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
+        break;
+      }
 
       GWEN_XMLNode_AddChild(n, nn);
     }

@@ -545,6 +545,22 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTy
     GWEN_Date_free(dt);
   }
 
+  s=GWEN_DB_GetCharValue(db, "sequenceType", 0, "once");
+  if (s && *s) {
+    AB_TRANSACTION_SEQUENCETYPE st;
+
+    st=AB_Transaction_SequenceType_fromString(s);
+    if (st!=AB_Transaction_SequenceTypeUnknown)
+      AB_Transaction_SetSequenceType(t, st);
+    else {
+      DBG_ERROR(0, "Unknown sequence type [%s]", s);
+      AB_Transaction_free(t);
+      return NULL;
+    }
+  }
+  else
+    AB_Transaction_SetSequenceType(t, AB_Transaction_SequenceTypeOnce);
+
 
   return t;
 }

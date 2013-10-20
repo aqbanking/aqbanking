@@ -79,6 +79,7 @@ struct AB_TRANSACTION {
   char *originalCreditorSchemeId;
   char *originalMandateId;
   char *originalCreditorName;
+  AB_TRANSACTION_SEQUENCETYPE sequenceType;
 };
 
 
@@ -209,6 +210,7 @@ This group contains information about the remote account.*/
  *
 <p>This group contains information which is used with SEPA transfers within the European Community. It is used by backends and applications but not by AqBanking itself.</p>*/
 /*@{*/
+
 
 
 
