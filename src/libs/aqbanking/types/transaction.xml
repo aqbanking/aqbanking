@@ -564,6 +564,11 @@
               Following operation (not the first).
             </descr>
           </value>
+          <value>final
+            <descr>
+              Final operation (last).
+            </descr>
+          </value>
         </values>
       </type>
 

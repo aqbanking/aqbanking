@@ -156,6 +156,9 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
       case AB_Transaction_SequenceTypeFollowing:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
         break;
+      case AB_Transaction_SequenceTypeFinal:
+        GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FNAL");
+        break;
       }
 
       GWEN_XMLNode_AddChild(n, nn);

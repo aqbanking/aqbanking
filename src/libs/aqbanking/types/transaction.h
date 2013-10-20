@@ -804,7 +804,9 @@ typedef enum {
   /** First operation with more following.  */
   AB_Transaction_SequenceTypeFirst,
   /** Following operation (not the first).  */
-  AB_Transaction_SequenceTypeFollowing
+  AB_Transaction_SequenceTypeFollowing,
+  /** Final operation (last).  */
+  AB_Transaction_SequenceTypeFinal
 } AB_TRANSACTION_SEQUENCETYPE;
 
 AQBANKING_API AB_TRANSACTION_SEQUENCETYPE AB_Transaction_SequenceType_fromString(const char *s);

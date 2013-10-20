@@ -285,6 +285,8 @@ AB_TRANSACTION_SEQUENCETYPE AB_Transaction_SequenceType_fromString(const char *s
       return AB_Transaction_SequenceTypeFirst;
     else if (strcasecmp(s, "following")==0)
       return AB_Transaction_SequenceTypeFollowing;
+    else if (strcasecmp(s, "final")==0)
+      return AB_Transaction_SequenceTypeFinal;
   }
   return AB_Transaction_SequenceTypeUnknown;
 }
@@ -300,6 +302,9 @@ const char *AB_Transaction_SequenceType_toString(AB_TRANSACTION_SEQUENCETYPE v) 
 
     case AB_Transaction_SequenceTypeFollowing:
       return "following";
+
+    case AB_Transaction_SequenceTypeFinal:
+      return "final";
 
     default:
       return "unknown";
