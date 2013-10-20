@@ -387,6 +387,16 @@
               EU-Transfer type of transaction (as used for with transfer jobs)
             </descr>
           </value>
+          <value>sepaTransfer
+            <descr>
+              SEPA-Transfer type of transaction (as used with SEPA transfer jobs)
+            </descr>
+          </value>
+          <value>sepaDebitNote
+            <descr>
+              SEPA debit note type of transaction (as used with SEPA debit note jobs)
+            </descr>
+          </value>
         </values>
       </type>
 

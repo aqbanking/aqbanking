@@ -30,11 +30,10 @@
 
 
 
-static
-int addSepaDebitNote(AB_BANKING *ab,
-                     GWEN_DB_NODE *dbArgs,
-                     int argc,
-                     char **argv) {
+static int addSepaDebitNote(AB_BANKING *ab,
+                            GWEN_DB_NODE *dbArgs,
+                            int argc,
+                            char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -46,9 +45,6 @@ int addSepaDebitNote(AB_BANKING *ab,
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
   AB_TRANSACTION *t;
-  AB_JOB_LIST2 *jobList;
-  AB_JOB *j;
-  int rvExec;
   const char *rIBAN;
   const char *rBIC;
   const char *lIBAN;
@@ -256,15 +252,8 @@ int addSepaDebitNote(AB_BANKING *ab,
   rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
+    AB_Banking_Fini(ab);
     return 2;
-  }
-
-  /* load ctx file */
-  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-  rv=readContext(ctxFile, &ctx, 1);
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading context (%d)", rv);
-    return 4;
   }
 
   /* get account */
@@ -275,19 +264,21 @@ int addSepaDebitNote(AB_BANKING *ab,
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
-
-  /* populate job list */
-  jobList=AB_Job_List2_new();
 
   /* create transaction from arguments */
   t=mkSepaDebitNote(a, db, &transferType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 2;
   }
+  AB_Transaction_SetType(t, AB_Transaction_TypeSepaDebitNote);
 
   rIBAN=AB_Transaction_GetRemoteIban(t);
   rBIC=AB_Transaction_GetRemoteBic(t);
@@ -296,36 +287,60 @@ int addSepaDebitNote(AB_BANKING *ab,
 
   if (!rBIC || !(*rBIC)) {
     DBG_ERROR(0, "Missing remote BIC");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 1;
   }
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 1;
   }
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 3;
   }
 
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 1;
   }
   if (!lIBAN || !(*lIBAN)) {
     DBG_ERROR(0, "Missing local IBAN");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 1;
   }
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 3;
   }
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
     return 1;
+  }
+
+  /* load ctx file */
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  rv=readContext(ctxFile, &ctx, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading context (%d)", rv);
+    AB_Banking_OnlineFini(ab);
+    AB_Banking_Fini(ab);
+    return 4;
   }
 
   /* add transfer to */
@@ -345,25 +360,16 @@ int addSepaDebitNote(AB_BANKING *ab,
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     AB_Banking_Fini(ab);
-    if (rvExec)
-      return rvExec;
-    else
-      return 5;
+    return 5;
   }
 
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    if (rvExec)
-      return rvExec;
-    else
-      return 5;
+    return 5;
   }
 
-  if (rvExec)
-    return rvExec;
-  else
-    return 0;
+  return 0;
 }
 
 

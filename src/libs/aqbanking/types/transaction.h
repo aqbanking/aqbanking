@@ -705,7 +705,11 @@ typedef enum {
   /** Debit note type of transaction (as used with debit note jobs)  */
   AB_Transaction_TypeDebitNote,
   /** EU-Transfer type of transaction (as used for with transfer jobs)  */
-  AB_Transaction_TypeEuTransfer
+  AB_Transaction_TypeEuTransfer,
+  /** SEPA-Transfer type of transaction (as used with SEPA transfer jobs)  */
+  AB_Transaction_TypeSepaTransfer,
+  /** SEPA debit note type of transaction (as used with SEPA debit note jobs)  */
+  AB_Transaction_TypeSepaDebitNote
 } AB_TRANSACTION_TYPE;
 
 AQBANKING_API AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);

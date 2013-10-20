@@ -67,6 +67,10 @@ AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s) {
       return AB_Transaction_TypeDebitNote;
     else if (strcasecmp(s, "euTransfer")==0)
       return AB_Transaction_TypeEuTransfer;
+    else if (strcasecmp(s, "sepaTransfer")==0)
+      return AB_Transaction_TypeSepaTransfer;
+    else if (strcasecmp(s, "sepaDebitNote")==0)
+      return AB_Transaction_TypeSepaDebitNote;
   }
   return AB_Transaction_TypeUnknown;
 }
@@ -85,6 +89,12 @@ const char *AB_Transaction_Type_toString(AB_TRANSACTION_TYPE v) {
 
     case AB_Transaction_TypeEuTransfer:
       return "euTransfer";
+
+    case AB_Transaction_TypeSepaTransfer:
+      return "sepaTransfer";
+
+    case AB_Transaction_TypeSepaDebitNote:
+      return "sepaDebitNote";
 
     default:
       return "unknown";

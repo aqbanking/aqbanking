@@ -46,6 +46,7 @@
 #include "fillgaps.c"
 #include "updateconf.c"
 #include "sepatransfer.c"
+#include "addsepadebitnote.c"
 
 
 static void cmdAddHelpStr(GWEN_BUFFER *ubuf,
@@ -345,6 +346,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "addtrans")==0) {
     rv=addTransaction(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "addsepadebitnote")==0) {
+    rv=addSepaDebitNote(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "fillgaps")==0) {
     rv=fillGaps(ab, db, argc, argv);

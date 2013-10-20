@@ -55,13 +55,13 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
   documentNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Document");
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xmlns",
-                           "urn:swift:xsd:$pain.001.002.02");
+			   "urn:sepade:xsd:pain.008.001.01");
   GWEN_XMLNode_SetProperty(documentNode,
 			   "xmlns:xsi",
-			   "http://www.w3.org/2001/XMLSchema-instance");
+                           "http://www.w3.org/2001/XMLSchema-instance");
   GWEN_XMLNode_SetProperty(documentNode,
-			   "xsi:schemaLocation",
-                           "urn:swift:xsd:$pain.001.001.02 pain.001.001.02.xsd");
+                           "xsi:schemaLocation",
+                           "urn:sepade:xsd:pain.008.001.01 pain.008.001.01.xsd");
   GWEN_XMLNode_AddChild(root, documentNode);
 
   painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "pain.008.001.01");
@@ -72,9 +72,9 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
   if (n) {
     GWEN_TIME *ti;
     GWEN_BUFFER *tbuf;
+    GWEN_XMLNODE *nn;
     uint32_t uid;
     char numbuf[32];
-    GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
     ti=GWEN_CurrentTime();
@@ -97,13 +97,20 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
 
-    /* store sum */
-    AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
-    GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
+    /* CtrlSum */
+    if (1) {
+      GWEN_BUFFER *tbuf;
+
+      /* store sum */
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+      GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+    }
 
     GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
-    //GWEN_XMLNode_SetCharValue(n, "Grpg", "MIXD");
 
+    /* InitgPty */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
     if (nn) {
       s=AB_ImExporterAccountInfo_GetOwner(ai);
@@ -119,22 +126,30 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
       GWEN_XMLNode_AddChild(n, nn);
     }
 
-    GWEN_Buffer_free(tbuf);
 
+    GWEN_Buffer_free(tbuf);
   }
 
   /* generate PmtInf */
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtInf");
   if (n) {
     const GWEN_TIME *tti;
+    GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
-    GWEN_XMLNode_SetCharValue(n, "PmtInfId", "");
-    GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
-    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "PmtTpInf/SvcLvl/Cd", "SEPA");
-    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "PmtTpInf/SeqTp", "FRST");
 
-    /* create "ReqdColltnDt" */
+    GWEN_XMLNode_SetCharValue(n, "PmtMtd", "DD");
+
+    /* PmtTpInf */
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
+    if (nn) {
+      GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "SvcLvl/Cd", "SEPA");
+      GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
+
+      GWEN_XMLNode_AddChild(n, nn);
+    }
+
+    /* create ReqdColltnDt" */
     tti=AB_Transaction_GetDate(t);
     if (tti) {
       GWEN_BUFFER *tbuf;
@@ -149,17 +164,22 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     }
 
     /* create "Cdtr" */
-    s=AB_ImExporterAccountInfo_GetOwner(ai);
-    if (!s)
-      s=AB_Transaction_GetLocalName(t);
-    if (!s) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
-      GWEN_XMLNode_free(root);
-      AB_Value_free(v);
-      return GWEN_ERROR_BAD_DATA;
-    }
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Cdtr");
+    if (nn) {
+      GWEN_XMLNode_AddChild(n, nn);
 
-    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Cdtr/Nm", s);
+      s=AB_ImExporterAccountInfo_GetOwner(ai);
+      if (!s)
+        s=AB_Transaction_GetLocalName(t);
+      if (!s) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
+        GWEN_XMLNode_free(root);
+	AB_Value_free(v);
+        return GWEN_ERROR_BAD_DATA;
+      }
+
+      GWEN_XMLNode_SetCharValue(nn, "Nm", s);
+    }
 
     /* create "CdtrAcct" */
     s=AB_ImExporterAccountInfo_GetIban(ai);
@@ -168,7 +188,6 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     if (!s) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No local IBAN");
       GWEN_XMLNode_free(root);
-      AB_Value_free(v);
       return GWEN_ERROR_BAD_DATA;
     }
     GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAcct/Id/IBAN", s);
@@ -180,7 +199,6 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     if (!s) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No BIC");
       GWEN_XMLNode_free(root);
-      AB_Value_free(v);
       return GWEN_ERROR_BAD_DATA;
     }
     GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAgt/FinInstnId/BIC", s);
@@ -188,6 +206,7 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
     GWEN_XMLNode_SetCharValue(n, "ChrgBr", "SLEV");
 
 
+    /* DrctDbtTxInf */
     t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
     while(t) {
       GWEN_XMLNODE *nn;
@@ -199,27 +218,26 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
 
 	GWEN_XMLNode_AddChild(n, nn);
 
-	/* create "PmtId" */
+	/* create "PmtId/EndToEndId" */
 	s=AB_Transaction_GetEndToEndReference(t);
 	if (!( s && *s))
 	  s=AB_Transaction_GetCustomerReference(t);
 	if (!s)
 	  s="NOTPROVIDED";
-	GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "PmtId/EndToEndId", s);
+        GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "PmtId/EndToEndId", s);
 
-
-	/* create "InstdAmt" */
 	tv=AB_Transaction_GetValue(t);
 	if (tv==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No value in transaction");
-	  GWEN_XMLNode_free(root);
-	  AB_Value_free(v);
+          GWEN_XMLNode_free(root);
+          AB_Value_free(v);
 	  return GWEN_ERROR_BAD_DATA;
 	}
+
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InstdAmt");
 	if (nnn) {
 	  GWEN_BUFFER *tbuf;
-	  GWEN_XMLNODE *n4;
+	  GWEN_XMLNODE *nnnn;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
 
@@ -230,113 +248,132 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
 	    s="EUR";
 	  GWEN_XMLNode_SetProperty(nnn, "Ccy", s);
 
-	  n4=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(tbuf));
-	  GWEN_XMLNode_AddChild(nnn, n4);
+	  nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(tbuf));
+	  GWEN_XMLNode_AddChild(nnn, nnnn);
 	  GWEN_Buffer_free(tbuf);
 	}
 
-
+	/* DrctDbtTx */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DrctDbtTx");
 	if (nnn) {
-	  GWEN_XMLNODE *n4;
+          GWEN_XMLNODE *nnnn;
 
-	  GWEN_XMLNode_AddChild(nn, nnn);
+          GWEN_XMLNode_AddChild(nn, nnn);
 
-	  n4=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "MndtRltdInf");
-	  if (n4) {
+	  /* add mandate info */
+	  nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "MndtRltdInf");
+	  if (nnnn) {
+	    const char *credSchemId;
 	    const char *mandateId;
 	    const char *origCredSchemId;
 	    const char *origMandateId;
 	    const char *origCreditorName;
 	    const GWEN_DATE *dt;
+	    GWEN_BUFFER *tbuf;
 
-	    GWEN_XMLNode_AddChild(nnn, n4);
+            GWEN_XMLNode_AddChild(nnn, nnnn);
 
-	    /* create "MndtId" */
-	    mandateId=AB_Transaction_GetMandateId(t);
-	    if (!(mandateId && *mandateId)) {
-	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing mandate id for direct debit");
-	      GWEN_XMLNode_free(root);
-	      AB_Value_free(v);
+	    credSchemId=AB_Transaction_GetCreditorSchemeId(t);
+	    if (!credSchemId) {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing Creditor Scheme Id");
+              GWEN_XMLNode_free(root);
+              AB_Value_free(v);
 	      return GWEN_ERROR_BAD_DATA;
 	    }
-	    GWEN_XMLNode_SetCharValue(n4, "MndtId", mandateId);
-
-	    /* create "DtOfSgntr" */
+  
 	    dt=AB_Transaction_GetMandateDate(t);
-	    if (dt) {
-	      GWEN_BUFFER *tbuf;
-
-	      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	      rv=GWEN_Date_toStringWithTemplate(dt, "YYYY-MM-DD", tbuf);
-	      if (rv<0) {
-		DBG_ERROR(AQBANKING_LOGDOMAIN, "Error converting date to string");
-		GWEN_Buffer_free(tbuf);
-		GWEN_XMLNode_free(root);
-		AB_Value_free(v);
-		return rv;
-	      }
-	      GWEN_XMLNode_SetCharValue(n4, "DtOfSgntr", GWEN_Buffer_GetStart(tbuf));
+	    if (!dt) {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing mandate date for direct debit");
+              GWEN_XMLNode_free(root);
+              AB_Value_free(v);
+	      return GWEN_ERROR_BAD_DATA;
+	    }
+  
+	    mandateId=AB_Transaction_GetMandateId(t);
+	    if (!mandateId) {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing mandate id for direct debit");
+              GWEN_XMLNode_free(root);
+              AB_Value_free(v);
+	      return GWEN_ERROR_BAD_DATA;
 	    }
 
-	    origCredSchemId=AB_Transaction_GetOriginalCreditorSchemeId(t);
+            origCredSchemId=AB_Transaction_GetOriginalCreditorSchemeId(t);
 	    origMandateId=AB_Transaction_GetOriginalMandateId(t);
 	    origCreditorName=AB_Transaction_GetOriginalCreditorName(t);
+
+	    /* MndtId */
+	    GWEN_XMLNode_SetCharValue(nnnn, "MndtId", mandateId);
+
+	    /* DtOfSgntr */
+	    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	    rv=GWEN_Date_toStringWithTemplate(dt, "YYYY-MM-DD", tbuf);
+	    if (rv<0) {
+	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error converting date to string");
+	      GWEN_Buffer_free(tbuf);
+              GWEN_XMLNode_free(root);
+              AB_Value_free(v);
+	      return rv;
+	    }
+	    GWEN_XMLNode_SetCharValue(nnnn, "DtOfSgntr", GWEN_Buffer_GetStart(tbuf));
 
 	    if ((origCredSchemId && *origCredSchemId) ||
 		(origMandateId && *origMandateId) ||
 		(origCreditorName && *origCreditorName)) {
 	      GWEN_XMLNODE *n5;
 
-	      GWEN_XMLNode_SetCharValue(n4, "AmdmntInd", "true");
+	      GWEN_XMLNode_SetCharValue(nnnn, "AmdmntInd", "true");
 
-	      n5=GWEN_XMLNode_GetNodeByXPath(n4, "AmdmntInfDtls/OrgnlCdtrSchmeId", 0);
+	      n5=GWEN_XMLNode_GetNodeByXPath(nnnn, "AmdmntInfDtls/OrgnlCdtrSchmeId", 0);
 	      if (n5) {
-		if (origMandateId && *origMandateId)
+
+                if (origMandateId && *origMandateId)
                   GWEN_XMLNode_SetCharValue(n5, "OrgnlMndtId", origMandateId);
 
                 if (origCreditorName && *origCreditorName)
                   GWEN_XMLNode_SetCharValue(n5, "Nm", origCreditorName);
 
                 if (origCredSchemId && *origCredSchemId) {
-                  GWEN_XMLNode_SetCharValueByPath(n5, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/Othr/Id", origCredSchemId);
-                  GWEN_XMLNode_SetCharValueByPath(n5, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/Othr/SchmeNm/Prtry", "SEPA");
+                  GWEN_XMLNode_SetCharValueByPath(n5, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/OthrId/Id", origCredSchemId);
+                  GWEN_XMLNode_SetCharValueByPath(n5, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/OthrId/IdTp", "SEPA");
 		}
 	      }
 	    }
 	    else {
-	      GWEN_XMLNode_SetCharValue(n4, "AmdmntInd", "false");
+	      GWEN_XMLNode_SetCharValue(nnnn, "AmdmntInd", "false");
 	    }
-	  }
+          }
 
-	  /* create "CdtrSchmeId" */
-	  n4=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CdtrSchmeId");
-	  if (n4) {
-	    const char *credSchemId;
-
-	    credSchemId=AB_Transaction_GetCreditorSchemeId(t);
-	    if (!credSchemId) {
-	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing Creditor Scheme Id");
-	      GWEN_XMLNode_free(root);
-	      AB_Value_free(v);
-	      return GWEN_ERROR_BAD_DATA;
-	    }
-
-	    GWEN_XMLNode_SetCharValueByPath(n4, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/Othr/Id", credSchemId);
-	    GWEN_XMLNode_SetCharValueByPath(n4, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/Othr/SchmeNm/Prtry", "SEPA");
-	  }
-	}
+          /* create "CdtrSchmeId" */
+          nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CdtrSchmeId");
+          if (nnnn) {
+            GWEN_XMLNode_AddChild(nnn, nnnn);
+      
+            s=AB_Transaction_GetCreditorSchemeId(t);
+      
+            if (!s) {
+              DBG_ERROR(AQBANKING_LOGDOMAIN, "No CreditorSchemeId");
+              GWEN_XMLNode_free(root);
+              AB_Value_free(v);
+              return GWEN_ERROR_BAD_DATA;
+            }
+            GWEN_XMLNode_SetCharValueByPath(nnnn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/OthrId/Id", s);
+            GWEN_XMLNode_SetCharValueByPath(nnnn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "Id/PrvtId/OthrId/IdTp", "SEPA");
+          }
+        }
 
 	/* create "DbtrAgt" */
-	s=AB_Transaction_GetRemoteBic(t);
-	if (!s) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote BIC");
-	  GWEN_XMLNode_free(root);
-	  AB_Value_free(v);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	GWEN_XMLNode_SetCharValueByPath(nnn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "DbtrAgt/FinInstnId/BIC", s);
-
+	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DbtrAgt");
+	if (nnn) {
+          GWEN_XMLNode_AddChild(nn, nnn);
+          s=AB_Transaction_GetRemoteBic(t);
+	  if (!s) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote BIC");
+            GWEN_XMLNode_free(root);
+            AB_Value_free(v);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+          GWEN_XMLNode_SetCharValueByPath(nnn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "FinInstnId/BIC", s);
+        }
 
 	/* create "Dbtr" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");
@@ -350,27 +387,38 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
 	    s=GWEN_StringList_FirstString(sl);
 	  if (!s) {
 	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote name");
-	    GWEN_XMLNode_free(root);
-	    AB_Value_free(v);
+            GWEN_XMLNode_free(root);
+            AB_Value_free(v);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
 	  GWEN_XMLNode_SetCharValue(nnn, "Nm", s);
 	}
 
 	/* create "DbtrAcct" */
-	s=AB_Transaction_GetRemoteIban(t);
-	if (!s) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote IBAN");
-	  GWEN_XMLNode_free(root);
-	  AB_Value_free(v);
-	  return GWEN_ERROR_BAD_DATA;
+	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DbtrAcct");
+	if (nnn) {
+	  GWEN_XMLNODE *nnnn;
+
+	  GWEN_XMLNode_AddChild(nn, nnn);
+	  s=AB_Transaction_GetRemoteIban(t);
+	  if (!s) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote IBAN");
+            GWEN_XMLNode_free(root);
+            AB_Value_free(v);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+
+	  nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Id");
+	  if (nnnn) {
+	    GWEN_XMLNode_AddChild(nnn, nnnn);
+	    GWEN_XMLNode_SetCharValue(nnnn, "IBAN", s);
+	  }
 	}
-	GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "DbtrAcct/Id/IBAN", s);
 
 	/* add "Ultimate Debitor Name", if given */
 	s=AB_Transaction_GetMandateDebitorName(t);
 	if (s && *s)
-	  GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "UltmtDbtr/Nm", s);
+          GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "UltmtDbtr/Nm", s);
 
 	/* create "RmtInf" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "RmtInf");
@@ -401,9 +449,9 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
 	  if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
 	    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing purpose in transaction");
 	    GWEN_Buffer_free(tbuf);
-	    GWEN_XMLNode_free(root);
-	    AB_Value_free(v);
-	    return GWEN_ERROR_BAD_DATA;
+            GWEN_XMLNode_free(root);
+            AB_Value_free(v);
+            return GWEN_ERROR_BAD_DATA;
 	  }
 
 	  GWEN_XMLNode_SetCharValue(nnn, "Ustrd", GWEN_Buffer_GetStart(tbuf));
@@ -417,7 +465,7 @@ int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
   }
 
   xmlctx=GWEN_XmlCtxStore_new(root,
-			      GWEN_XML_FLAGS_DEFAULT |
+                              GWEN_XML_FLAGS_INDENT |
                               GWEN_XML_FLAGS_SIMPLE |
 			      GWEN_XML_FLAGS_HANDLE_HEADERS);
 
