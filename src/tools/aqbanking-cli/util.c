@@ -494,3 +494,60 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
   return t;
 }
 
+
+
+AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
+  AB_TRANSACTION *t;
+  const char *s;
+
+  t=mkSepaTransfer(a, db, transferType);
+  if (t==NULL) {
+    DBG_INFO(0, "here");
+    return NULL;
+  }
+
+  /* read some additional fields */
+  s=GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0);
+  if (!(s && *s)) {
+    DBG_ERROR(0, "Missing creditor scheme id");
+    AB_Transaction_free(t);
+    return NULL;
+  }
+  AB_Transaction_SetCreditorSchemeId(t, s);
+
+  s=GWEN_DB_GetCharValue(db, "mandateId", 0, 0);
+  if (!(s && *s)) {
+    DBG_ERROR(0, "Missing mandate id");
+    AB_Transaction_free(t);
+    return NULL;
+  }
+  AB_Transaction_SetMandateId(t, s);
+
+  s=GWEN_DB_GetCharValue(db, "mandateDate", 0, 0);
+  if (!(s && *s)) {
+    DBG_ERROR(0, "Missing mandate date");
+    AB_Transaction_free(t);
+    return NULL;
+  }
+  else {
+    GWEN_DATE *dt;
+
+    dt=GWEN_Date_fromString(s);
+    if (dt==NULL) {
+      DBG_ERROR(0, "Bad date format for mandate date");
+      AB_Transaction_free(t);
+      return NULL;
+    }
+    AB_Transaction_SetMandateDate(t, dt);
+    GWEN_Date_free(dt);
+  }
+
+
+  return t;
+}
+
+
+
+
+
+
