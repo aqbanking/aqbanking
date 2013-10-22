@@ -20,6 +20,7 @@ DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING
 
 noinst_HEADERS=globals.h
 EXTRA_DIST=\
+  addsepadebitnote.c \
   addtransaction.c \
   chkacc.c \
   chkiban.c \
