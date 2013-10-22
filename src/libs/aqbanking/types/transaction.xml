@@ -397,6 +397,11 @@
               SEPA debit note type of transaction (as used with SEPA debit note jobs)
             </descr>
           </value>
+          <value>internalTransfer
+            <descr>
+              Internal transfer (transfer between accounts at the same bank)
+            </descr>
+          </value>
         </values>
       </type>
 

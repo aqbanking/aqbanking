@@ -718,7 +718,9 @@ typedef enum {
   /** SEPA-Transfer type of transaction (as used with SEPA transfer jobs)  */
   AB_Transaction_TypeSepaTransfer,
   /** SEPA debit note type of transaction (as used with SEPA debit note jobs)  */
-  AB_Transaction_TypeSepaDebitNote
+  AB_Transaction_TypeSepaDebitNote,
+  /** Internal transfer (transfer between accounts at the same bank)  */
+  AB_Transaction_TypeInternalTransfer
 } AB_TRANSACTION_TYPE;
 
 AQBANKING_API AB_TRANSACTION_TYPE AB_Transaction_Type_fromString(const char *s);
