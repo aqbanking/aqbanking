@@ -18,6 +18,7 @@
 #include "i18n_l.h"
 
 #include <aqhbci/account.h>
+#include <aqhbci/provider.h>
 #include <aqbanking/account.h>
 #include <aqbanking/banking_be.h>
 #include <aqbanking/dlg_selectbankinfo.h>
@@ -946,9 +947,67 @@ int AH_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 }
 
 
+
+int AH_EditAccountDialog_HandleActivatedSepa(GWEN_DIALOG *dlg) {
+  AH_EDIT_ACCOUNT_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+  AB_ACCOUNT_LIST2 *al;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  al=AB_Account_List2_new();
+  AB_Account_List2_PushBack(al, xdlg->account);
+  rv=AH_Provider_GetAccountSepaInfo(AB_Account_GetProvider(xdlg->account),
+				    al,
+				    ctx,
+				    1,   /* withProgress */
+				    0,   /* nounmount */
+				    xdlg->doLock);
+  AB_Account_List2_free(al);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+  else {
+    const char *s;
+
+    /* update dialog */
+    s=AB_Account_GetBankCode(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetBankName(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "bankNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetBIC(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "bicEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetAccountNumber(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "accountNumberEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetAccountName(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "accountNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetIBAN(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "ibanEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+    s=AB_Account_GetOwnerName(xdlg->account);
+    GWEN_Dialog_SetCharProperty(dlg, "ownerNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   if (strcasecmp(sender, "bankCodeButton")==0)
     return AH_EditAccountDialog_HandleActivatedBankCode(dlg);
+  else if (strcasecmp(sender, "getSepaButton")==0)
+    return AH_EditAccountDialog_HandleActivatedSepa(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AH_EditAccountDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)
