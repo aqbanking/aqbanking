@@ -3739,6 +3739,9 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
 				    0);
     if (ski==NULL) {
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Notice,
+			   I18N("Server has no sign key, using encipher key"));
       skeyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (skeyId==0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -3757,15 +3760,20 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 
       modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ski);
       modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski);
+
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Server key has a modulus size of %d bytes", modLen);
+      GWEN_Gui_ProgressLog2(0,
+			    GWEN_LoggerLevel_Notice,
+			    I18N("Server key has a modulus size of %d bytes"), modLen);
       if (modPtr && modLen) {
 	int nbits;
 
         nbits=modLen*8;
 	while(modLen && *modPtr==0) {
           nbits-=8;
-          modLen--,
-            modPtr++;
-        }
+          modLen--;
+	  modPtr++;
+	}
 	if (modLen) {
 	  int i;
 	  uint8_t mask=0x80;
@@ -3778,6 +3786,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
             mask>>=1;
 	  }
 	}
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d", nbits);
         if (nbits>1)
 	  maxServerKeySizeInBits=nbits-1;
 	else
