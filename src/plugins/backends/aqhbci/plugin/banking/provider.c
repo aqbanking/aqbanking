@@ -3762,8 +3762,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 
         nbits=modLen*8;
 	while(modLen && *modPtr==0) {
-	  nbits-=8;
-	}
+          nbits-=8;
+          modLen--,
+            modPtr++;
+        }
 	if (modLen) {
 	  int i;
 	  uint8_t mask=0x80;
@@ -3808,7 +3810,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	n++;
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
       GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
-      /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);*/
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);
     }
     else {
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 512);
@@ -3820,9 +3822,11 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     return GWEN_ERROR_INVALID;
   }
 
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Creating keys, please wait..."));
+  GWEN_Gui_ProgressLog2(0,
+                        GWEN_LoggerLevel_Notice,
+                        I18N("Creating keys with %d bits (%d bytes), please wait..."),
+                        GWEN_Crypt_CryptAlgo_GetKeySizeInBits(algo),
+                        GWEN_Crypt_CryptAlgo_GetChunkSize(algo));
 
   /* get cipher key id */
   keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
