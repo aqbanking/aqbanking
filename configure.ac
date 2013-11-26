@@ -61,6 +61,12 @@ AQOFXCONNECT_SO_REVISION=2
 AQOFXCONNECT_SO_EFFECTIVE="`echo \$(($AQOFXCONNECT_SO_CURRENT-$AQOFXCONNECT_SO_AGE))`"
 
 
+AQEBICS_SO_CURRENT=2
+AQEBICS_SO_AGE=1
+AQEBICS_SO_REVISION=9
+AQEBICS_SO_EFFECTIVE="`echo \$(($AQEBICS_SO_CURRENT-$AQEBICS_SO_AGE))`"
+
+
 
 ###-------------------------------------------------------------------------
 #
@@ -107,21 +113,15 @@ AQOFXCONNECT_VERSION_TAG=$AQBANKING_VERSION_TAG
 AQOFXCONNECT_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
 AQOFXCONNECT_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
-QBANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-QBANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-QBANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-QBANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-QBANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-QBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-QBANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
+AQEBICS_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
+AQEBICS_VERSION_MINOR=$AQBANKING_VERSION_MINOR
+AQEBICS_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
+AQEBICS_VERSION_BUILD=$AQBANKING_VERSION_BUILD
+AQEBICS_VERSION_TAG=$AQBANKING_VERSION_TAG
+AQEBICS_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
+AQEBICS_VERSION_STRING="$AQBANKING_VERSION_STRING"
 
-Q4BANKING_VERSION_MAJOR=$AQBANKING_VERSION_MAJOR
-Q4BANKING_VERSION_MINOR=$AQBANKING_VERSION_MINOR
-Q4BANKING_VERSION_PATCHLEVEL=$AQBANKING_VERSION_PATCHLEVEL
-Q4BANKING_VERSION_BUILD=$AQBANKING_VERSION_BUILD
-Q4BANKING_VERSION_TAG=$AQBANKING_VERSION_TAG
-Q4BANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_FULL_STRING"
-Q4BANKING_VERSION_STRING="$AQBANKING_VERSION_STRING"
+
 
 
 ###-------------------------------------------------------------------------
@@ -155,11 +155,8 @@ case "$AQBANKING_VERSION_TAG" in
 esac
 
 AQHBCI_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-AQDTAUS_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-AQGELDKARTE_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 AQOFXCONNECT_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-QBANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
-Q4BANKING_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
+AQEBICS_VERSION_RELEASE_STRING="$AQBANKING_RELEASE_STRING"
 
 
 
@@ -253,73 +250,36 @@ AC_DEFINE_UNQUOTED(AQOFXCONNECT_SO_EFFECTIVE_STR, "$AQOFXCONNECT_SO_EFFECTIVE",
                    [effective SO version])
 
 
-
 #
-# same for QBanking
+# same for AqEBICS
 #
+AC_SUBST(AQEBICS_VERSION_MAJOR)
+AC_SUBST(AQEBICS_VERSION_MINOR)
+AC_SUBST(AQEBICS_VERSION_PATCHLEVEL)
+AC_SUBST(AQEBICS_VERSION_BUILD)
+AC_SUBST(AQEBICS_VERSION_TAG)
+AC_SUBST(AQEBICS_VERSION_FULL_STRING)
+AC_SUBST(AQEBICS_VERSION_STRING)
+AC_SUBST(AQEBICS_VERSION_RELEASE_STRING)
 
-AC_SUBST(QBANKING_VERSION_MAJOR)
-AC_SUBST(QBANKING_VERSION_MINOR)
-AC_SUBST(QBANKING_VERSION_PATCHLEVEL)
-AC_SUBST(QBANKING_VERSION_BUILD)
-AC_SUBST(QBANKING_VERSION_TAG)
-AC_SUBST(QBANKING_VERSION_FULL_STRING)
-AC_SUBST(QBANKING_VERSION_STRING)
-AC_SUBST(QBANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_MAJOR,$QBANKING_VERSION_MAJOR, 
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_MAJOR,$AQEBICS_VERSION_MAJOR, 
                    [major version])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_MINOR,$QBANKING_VERSION_MINOR, 
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_MINOR,$AQEBICS_VERSION_MINOR, 
                    [minor version])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_PATCHLEVEL,$QBANKING_VERSION_PATCHLEVEL, 
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_PATCHLEVEL,$AQEBICS_VERSION_PATCHLEVEL, 
                    [patchlevel])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_BUILD,$QBANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_STRING,"$QBANKING_VERSION_STRING", 
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_BUILD,$AQEBICS_VERSION_BUILD, [build])
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_STRING,"$AQEBICS_VERSION_STRING", 
                    [version string])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_FULL_STRING,"$QBANKING_VERSION_FULL_STRING",
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_FULL_STRING,"$AQEBICS_VERSION_FULL_STRING",
                    [full version string])
-AC_DEFINE_UNQUOTED(QBANKING_VERSION_TAG,$QBANKING_VERSION_TAG, [tag])
+AC_DEFINE_UNQUOTED(AQEBICS_VERSION_TAG,$AQEBICS_VERSION_TAG, [tag])
 
-AC_SUBST(QBANKING_SO_CURRENT)
-AC_SUBST(QBANKING_SO_REVISION)
-AC_SUBST(QBANKING_SO_AGE)
-AC_SUBST(QBANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(QBANKING_SO_EFFECTIVE_STR, "$QBANKING_SO_EFFECTIVE",
-                   [effective SO version])
-
-
-
-#
-# same for Q4Banking
-#
-
-AC_SUBST(Q4BANKING_VERSION_MAJOR)
-AC_SUBST(Q4BANKING_VERSION_MINOR)
-AC_SUBST(Q4BANKING_VERSION_PATCHLEVEL)
-AC_SUBST(Q4BANKING_VERSION_BUILD)
-AC_SUBST(Q4BANKING_VERSION_TAG)
-AC_SUBST(Q4BANKING_VERSION_FULL_STRING)
-AC_SUBST(Q4BANKING_VERSION_STRING)
-AC_SUBST(Q4BANKING_VERSION_RELEASE_STRING)
-
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_MAJOR,$Q4BANKING_VERSION_MAJOR, 
-                   [major version])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_MINOR,$Q4BANKING_VERSION_MINOR, 
-                   [minor version])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_PATCHLEVEL,$Q4BANKING_VERSION_PATCHLEVEL, 
-                   [patchlevel])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_BUILD,$Q4BANKING_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_STRING,"$Q4BANKING_VERSION_STRING", 
-                   [version string])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_FULL_STRING,"$Q4BANKING_VERSION_FULL_STRING",
-                   [full version string])
-AC_DEFINE_UNQUOTED(Q4BANKING_VERSION_TAG,$Q4BANKING_VERSION_TAG, [tag])
-
-AC_SUBST(Q4BANKING_SO_CURRENT)
-AC_SUBST(Q4BANKING_SO_REVISION)
-AC_SUBST(Q4BANKING_SO_AGE)
-AC_SUBST(Q4BANKING_SO_EFFECTIVE)
-AC_DEFINE_UNQUOTED(Q4BANKING_SO_EFFECTIVE_STR, "$Q4BANKING_SO_EFFECTIVE",
+AC_SUBST(AQEBICS_SO_CURRENT)
+AC_SUBST(AQEBICS_SO_REVISION)
+AC_SUBST(AQEBICS_SO_AGE)
+AC_SUBST(AQEBICS_SO_EFFECTIVE)
+AC_DEFINE_UNQUOTED(AQEBICS_SO_EFFECTIVE_STR, "$AQEBICS_SO_EFFECTIVE",
                    [effective SO version])
 
 
@@ -435,7 +395,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqnone aqofxconnect"
+  aqbanking_backends="aqhbci aqnone aqofxconnect aqebics"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -443,6 +403,10 @@ for f in ${aqbanking_backends}; do
     aqhbci)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqhbci"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
+      ;;
+    aqebics)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqebics"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS, 1, [plugin availability])
       ;;
     aqnone)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
@@ -1213,6 +1177,63 @@ AC_SUBST(aqofxconnect_libs)
 
 ###-------------------------------------------------------------------------
 #
+# Configure stuff for backend AqEBICS
+#
+
+# Common settings; can be overridden per-OS below.
+aqebics_internal_libs="${abs_top_builddir}/src/plugins/backends/aqebics/plugin/libaqebics.la"
+aqebics_ldflags="-L\${libdir}"
+aqebics_includes="${aqbanking_includes}"
+aqebics_libs="-laqebics"
+with_aqebics="no"
+
+case "$aqbanking_backends" in *aqebics*)
+  with_aqebics="yes"
+  case "$OS_TYPE" in
+      posix)
+          ;;
+      windows)
+          AC_DEFINE_UNQUOTED(BUILDING_AQEBICS_DLL,1, [Define if DLL is built])
+          ;;
+  esac
+  ;;
+esac
+
+AS_SCRUB_INCLUDE(aqebics_includes)
+AC_SUBST(aqebics_includes)
+AC_SUBST(aqebics_internal_libs)
+AC_SUBST(aqebics_libs)
+AC_SUBST(aqebics_ldflags)
+AC_SUBST(with_aqebics)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check AqEBICS data dir
+#
+AC_MSG_CHECKING(aqebics data dir)
+AC_ARG_WITH(aqebics-datadir, [  --with-aqebics-datadir=DIR where to search for data files],
+  [aqebics_datadir="$withval"],
+  [aqebics_datadir="$aqebics_data"])
+AC_SUBST(aqebics_datadir)
+AC_MSG_RESULT($aqebics_datadir)
+
+
+
+
+###-------------------------------------------------------------------------
+#
+# Check for xmlsec
+#
+
+PKG_CHECK_MODULES(XMLSEC, xmlsec1-gnutls >= 1.0.0 libxml-2.0 libxslt,,exit)
+
+
+
+
+###-------------------------------------------------------------------------
+#
 # check for plugin init
 #
 AC_MSG_CHECKING(if plugin init is wanted)
@@ -1479,6 +1500,14 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqnone/ressource.rc
+  src/plugins/backends/aqebics/Makefile
+  src/plugins/backends/aqebics/plugin/Makefile
+  src/plugins/backends/aqebics/plugin/aqebics.xml
+  src/plugins/backends/aqebics/plugin/client/Makefile
+  src/plugins/backends/aqebics/plugin/dialogs/Makefile
+  src/plugins/backends/aqebics/plugin/msg/Makefile
+  src/plugins/backends/aqebics/tools/Makefile
+  src/plugins/backends/aqebics/tools/aqebics-tool/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

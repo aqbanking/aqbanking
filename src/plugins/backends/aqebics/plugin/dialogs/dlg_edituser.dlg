@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2010 by Martin Preuss
+ email       : martin@aqbanking.de
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
+<dialog type="dialog" name="ebc_edit_user" i18n="aqebics"
+        flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
+  <widget type="vlayout" flags="fillX fillY" >
+
+    <widget type="groupBox" text="General Settings" flags="fillX" >
+      <widget type="vlayout" flags="fillX fillY" >
+        <widget type="hlayout" flags="fillX" >
+    
+          <widget type="gridLayout" columns="2" flags="fillX" >
+    
+            <widget type="label" text="Country" />
+            <widget type="comboBox" name="countryCombo"  columns="20" flags="fillX readOnly" />
+    
+            <widget type="label" text="User Name" />
+            <widget type="lineEdit" name="userNameEdit" columns="20" flags="fillX" />
+    
+            <widget type="label" text="Bank Code" />
+            <widget type="hlayout" flags="fillX" >
+              <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
+              <widget type="pushButton" name="bankCodeButton" text="Select" />
+            </widget>
+    
+            <widget type="label" text="EBICS|User Id" />    <!-- Kundenkennung -->
+            <widget type="lineEdit" name="customerIdEdit" columns="20" flags="fillX" />
+
+            <widget type="label" text="EBICS|Partner Id" /> <!-- Teilnehmerkennung -->
+            <widget type="lineEdit" name="userIdEdit" columns="20" flags="fillX" />
+    
+          </widget>
+    
+        </widget> <!-- hlayout -->
+      </widget>   <!-- vlayout -->
+    </widget>     <!-- groupBox -->
+
+
+    <widget type="groupBox" text="EBICS Settings" flags="fillX" >
+      <widget type="vlayout" flags="fillX fillY" >
+    
+        <widget type="gridLayout" columns="2" flags="fillX" >
+
+          <widget type="label" text="Server Address" />
+          <widget type="lineEdit" name="urlEdit" columns="40" flags="fillX" />
+
+          <widget type="label" text="EBICS|Bank Server Name" />
+          <widget type="lineEdit" name="hostIdEdit" columns="40" flags="fillX" />
+
+          <widget type="label" text="Status" />
+          <widget type="comboBox" name="statusCombo"  columns="20" flags="fillX readOnly" />
+
+          <widget type="label" text="HTTP Version" />
+          <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX readOnly" />
+    
+          <widget type="label" text="EBICS Version" />
+          <widget type="comboBox" name="ebicsVersionCombo"  columns="20" flags="fillX readOnly" />
+
+          <widget type="label" text="Signature Version" />
+          <widget type="comboBox" name="signVersionCombo"  columns="20" flags="fillX readOnly" />
+    
+          <widget type="label" text="Encryption Version" />
+          <widget type="comboBox" name="cryptVersionCombo"  columns="20" flags="fillX readOnly" />
+    
+          <widget type="label" text="Authentication Version" />
+          <widget type="comboBox" name="authVersionCombo"  columns="20" flags="fillX readOnly" />
+
+        </widget>
+    
+        <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
+        <widget type="checkBox" name="useIzlCheck" text="Use IZL for debit notes" />
+        <widget type="checkBox" name="noEuCheck" text="Don't sign jobs" />
+
+      </widget>   <!-- vlayout -->
+    </widget>     <!-- groupBox -->
+
+
+    <widget type="groupBox" text="Special Actions" flags="fillX" >
+      <widget type="gridLayout" columns="4" flags="fillX equalWidth" >
+        <widget type="pushButton" text="Get Bank Keys" name="getBankKeysButton" />
+        <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
+        <widget type="pushButton" text="Ini Letter" name="iniLetterButton" />
+        <widget type="pushButton" text="Hia Letter" name="hiaLetterButton" />
+      </widget>
+    </widget>     <!-- groupBox -->
+
+
+    <!-- wizard controls -->
+    <widget type="vspacer" flags="fillY" />
+    <widget type="hLine" flags="fillX" />
+    <widget type="hlayout" flags="fillX equalWidth" >
+      <widget type="pushButton" text="Help"     name="helpButton" />
+      <widget type="hspacer" flags="fillX" />
+      <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+      <widget type="pushButton" text="Abort"  name="abortButton" />
+    </widget>
+
+  </widget>
+
+</dialog>

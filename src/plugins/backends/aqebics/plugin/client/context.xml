@@ -1,0 +1,38 @@
+
+
+<typedefs>
+  <type id="AB_JOB_LIST2" >
+    <functions>
+      <function type="dup" name="AB_Job_List2_dup" />
+      <function type="free" name="AB_Job_List2_free" />
+    </functions>
+  </type>
+
+  <type id="AB_JOB_TYPE" basetype="int" />
+
+</typedefs>
+
+
+<types>
+
+  <type id="EBC_CONTEXT" 
+        prefix="EBC_Context" 
+        class="Context"
+        access="lib"
+        filename="context"
+        list="lib"
+        list2="lib" >
+    <headers>
+      <header type="sys" >aqebics/aqebics.h</header>
+      <header type="sys" >aqbanking/job_be.h</header>
+    </headers>
+
+    <elem name="jobs" type="AB_JOB_LIST2" 
+          volatile="1" ptr="1" const="0" 
+          preset="AB_Job_List2_new()"/>
+    <elem name="jobType" type="AB_JOB_TYPE" />
+  </type>
+  
+</types>
+
+

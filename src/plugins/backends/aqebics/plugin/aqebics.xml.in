@@ -1,0 +1,20 @@
+<plugin name="aqebics" type="provider" >
+  <version>@AQEBICS_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>EBICS</short>
+  <descr>
+    This backend provides support for EBICS.
+  </descr>
+</plugin>
+
+
+<plugin name="aqebics" type="provider" lang="de" >
+  <version>@AQEBICS_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>EBICS Homebanking Erweiterung</short>
+  <descr>
+    Diese Erweiterung erlaubt Homebanking mittels EBICS.
+  </descr>
+</plugin>
+
+

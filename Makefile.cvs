@@ -82,8 +82,7 @@ mp:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="q4banking" \
+	    --with-backends="aqhbci aqofxconnect aqebics"  \
 	    --prefix=/usr/local
 	make sources
 
@@ -100,8 +99,7 @@ clang:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect"  \
-	    --with-frontends="q4banking"
+	    --with-backends="aqhbci aqofxconnect aqebics"
 	make sources
 
 mp-priv:

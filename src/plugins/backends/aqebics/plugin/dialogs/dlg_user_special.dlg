@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2010 by Martin Preuss
+ email       : martin@aqbanking.de
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
+<dialog type="dialog" name="ebc_setup_user_special" i18n="aqebics"
+        flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
+  <widget type="vlayout" flags="fillX fillY" >
+
+    <widget type="gridLayout" columns="2" flags="fillX" >
+
+      <widget type="label" text="HTTP Version" />
+      <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="EBICS Version" />
+      <widget type="comboBox" name="ebicsVersionCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Signature Version" />
+      <widget type="comboBox" name="signVersionCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Encryption Version" />
+      <widget type="comboBox" name="cryptVersionCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Authentication Version" />
+      <widget type="comboBox" name="authVersionCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Sign Key Size" />
+      <widget type="comboBox" name="signKeySizeCombo"  columns="20" flags="fillX" />
+
+      <widget type="label" text="Crypt/Auth Key Size" />
+      <widget type="comboBox" name="cryptAndAuthKeySizeCombo"  columns="20" flags="fillX" />
+
+    </widget>
+
+    <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
+    <widget type="checkBox" name="useIzlCheck" text="Use IZL for debit notes" />
+    <widget type="checkBox" name="noEuCheck" text="Don't sign jobs" />
+
+    <!-- wizard controls -->
+    <widget type="hLine" flags="fillX" />
+    <widget type="hlayout" flags="fillX equalWidth" >
+      <widget type="pushButton" text="Help"     name="helpButton" />
+      <widget type="hspacer" flags="fillX" />
+      <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+      <widget type="pushButton" text="Abort"  name="abortButton" />
+    </widget>
+
+  </widget>
+
+</dialog>
