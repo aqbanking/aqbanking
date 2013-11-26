@@ -70,7 +70,6 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
     xmlDocPtr doc;
     xmlNodePtr root_node = NULL;
     xmlNodePtr node = NULL;
-    xmlNodePtr nodeX = NULL;
     xmlNsPtr ns;
 
     /* create INIRequestOrderData */
@@ -104,10 +103,10 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
       xmlFreeDoc(doc);
       return GWEN_ERROR_INVALID;
     }
-    nodeX=xmlNewChild(node, NULL,
-		      BAD_CAST "SignatureVersion",
-		      BAD_CAST signVersion);
-  
+    xmlNewChild(node, NULL,
+                BAD_CAST "SignatureVersion",
+                BAD_CAST signVersion);
+
     /* store partner id and user id */
     node=xmlNewChild(root_node, NULL,
 		     BAD_CAST "PartnerID",

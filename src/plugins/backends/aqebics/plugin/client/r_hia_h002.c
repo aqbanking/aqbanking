@@ -30,7 +30,6 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   xmlDocPtr doc;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
-  xmlNodePtr nodeX = NULL;
   GWEN_BUFFER *mbuf;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -116,9 +115,9 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
     xmlFreeDoc(doc);
     return GWEN_ERROR_INVALID;
   }
-  nodeX=xmlNewChild(node, NULL,
-		    BAD_CAST "AuthenticationVersion",
-		    BAD_CAST "X001");
+  xmlNewChild(node, NULL,
+              BAD_CAST "AuthenticationVersion",
+              BAD_CAST "X001");
 
   /* create crypt key tree */
   node=xmlNewChild(root_node, NULL,
@@ -129,9 +128,9 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
     xmlFreeDoc(doc);
     return rv;
   }
-  nodeX=xmlNewChild(node, NULL,
-		    BAD_CAST "EncryptionVersion",
-		    BAD_CAST "E001");
+  xmlNewChild(node, NULL,
+              BAD_CAST "EncryptionVersion",
+              BAD_CAST "E001");
 
   /* store partner id and user id */
   node=xmlNewChild(root_node, NULL,
@@ -179,8 +178,8 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   /* header */
   node=xmlNewChild(root_node, NULL, BAD_CAST "header", NULL);
   xmlNewProp(node, BAD_CAST "authenticate", BAD_CAST "true");
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "static", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
 
   /* body */
   node=xmlNewChild(root_node, NULL, BAD_CAST "body", NULL);

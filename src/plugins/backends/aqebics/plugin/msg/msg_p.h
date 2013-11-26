@@ -32,7 +32,7 @@ static xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const
 
 static int EB_Msg__prepareSignature(xmlDocPtr doc);
 
-static xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr);
+/*static xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr);*/
 
 
 #endif

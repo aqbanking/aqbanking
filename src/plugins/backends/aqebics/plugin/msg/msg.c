@@ -176,6 +176,7 @@ void EB_Msg_free(EB_MSG *m) {
 
 
 
+#if 0
 xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr) {
   xmlNodeSetPtr nodes;
   xmlXPathObjectPtr xpathObj;
@@ -201,6 +202,7 @@ xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr) {
   xmlXPathFreeObject(xpathObj);
   return nodes;
 }
+#endif
 
 
 
@@ -479,7 +481,6 @@ xmlDocPtr EB_Msg__generateRequest(int willSign, const char *hVersion) {
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
   xmlNodePtr nodeXX = NULL;
-  xmlNodePtr nodeXXX = NULL;
 
   /*
    * Creates a new document, a node and set it as a root node
@@ -493,15 +494,15 @@ xmlDocPtr EB_Msg__generateRequest(int willSign, const char *hVersion) {
   xmlNewProp(node, BAD_CAST "authenticate", BAD_CAST "true");
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
-  nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "PartnerID", NULL);
-  nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "UserID", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "PartnerID", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "UserID", NULL);
   nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "OrderDetails", NULL);
-  nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "OrderType", NULL);
-  nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "OrderID", NULL);
-  nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "OrderAttribute", NULL);
+  xmlNewChild(nodeXX, NULL, BAD_CAST "OrderType", NULL);
+  xmlNewChild(nodeXX, NULL, BAD_CAST "OrderID", NULL);
+  xmlNewChild(nodeXX, NULL, BAD_CAST "OrderAttribute", NULL);
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
-  nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "TransactionPhase", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "TransactionPhase", NULL);
 
   if (willSign)
     EB_Msg__prepareSignature(doc);
@@ -518,7 +519,6 @@ xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const char *
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
-  xmlNodePtr nodeXX = NULL;
 
   /*
    * Creates a new document, a node and set it as a root node
@@ -535,9 +535,9 @@ xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const char *
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   //if (!isKeyMgt)
-    nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "TransactionPhase", NULL);
-  nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "ReturnCode", NULL);
-  nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "ReportText", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "TransactionPhase", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "ReturnCode", NULL);
+  xmlNewChild(nodeX, NULL, BAD_CAST "ReportText", NULL);
 
   if (willSign)
     EB_Msg__prepareSignature(doc);

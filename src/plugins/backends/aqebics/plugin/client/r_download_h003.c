@@ -233,7 +233,6 @@ static int EBC_Provider_MkDownloadTransferRequest_H003(AB_PROVIDER *pro,
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
-  xmlNodePtr nodeXX = NULL;
   xmlNodePtr sigNode = NULL;
   const char *s;
 
@@ -281,13 +280,13 @@ static int EBC_Provider_MkDownloadTransferRequest_H003(AB_PROVIDER *pro,
   s=EBC_User_GetPeerId(u);
   if (!s)
     s="EBICS";
-  nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "HostID",
-			 BAD_CAST s);
+  xmlNewTextChild(nodeX, NULL,
+                  BAD_CAST "HostID",
+                  BAD_CAST s);
 
-  nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "TransactionID",
-			 BAD_CAST transactionId);
+  xmlNewTextChild(nodeX, NULL,
+                  BAD_CAST "TransactionID",
+                  BAD_CAST transactionId);
 
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
@@ -332,7 +331,6 @@ static int EBC_Provider_MkDownloadReceiptRequest_H003(AB_PROVIDER *pro,
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
-  xmlNodePtr nodeXX = NULL;
   xmlNodePtr sigNode = NULL;
   const char *s;
 
@@ -380,13 +378,13 @@ static int EBC_Provider_MkDownloadReceiptRequest_H003(AB_PROVIDER *pro,
   s=EBC_User_GetPeerId(u);
   if (!s)
     s="EBICS";
-  nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "HostID",
-			 BAD_CAST s);
+  xmlNewTextChild(nodeX, NULL,
+                  BAD_CAST "HostID",
+                  BAD_CAST s);
 
-  nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "TransactionID",
-			 BAD_CAST transactionId);
+  xmlNewTextChild(nodeX, NULL,
+                  BAD_CAST "TransactionID",
+                  BAD_CAST transactionId);
 
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);

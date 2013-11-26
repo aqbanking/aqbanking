@@ -21,13 +21,11 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   xmlNsPtr ns;
   EB_MSG *msg;
   const char *userId;
-  const char *partnerId;
   EB_MSG *mRsp;
   EB_RC rc;
   xmlDocPtr doc;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
-  xmlNodePtr nodeX = NULL;
   GWEN_BUFFER *tbuf;
   const char *signVersion;
   const char *s;
@@ -40,7 +38,6 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   assert(dp);
 
   userId=AB_User_GetUserId(u);
-  partnerId=AB_User_GetCustomerId(u);
 
   /* get crypt token and context */
   rv=EBC_Provider_MountToken(pro, u, &ct, &ctx);
@@ -137,8 +134,8 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   /* header */
   node=xmlNewChild(root_node, NULL, BAD_CAST "header", NULL);
   xmlNewProp(node, BAD_CAST "authenticate", BAD_CAST "true");
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "static", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
 
   /* body */
   node=xmlNewChild(root_node, NULL, BAD_CAST "body", NULL);

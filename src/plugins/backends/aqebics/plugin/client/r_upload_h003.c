@@ -26,7 +26,7 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
   xmlNodePtr nodeXX = NULL;
-  xmlNodePtr nodeXXX = NULL;
+  /*xmlNodePtr nodeXXX = NULL;*/
   xmlNodePtr sigNode = NULL;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -140,7 +140,7 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
     xmlNewTextChild(nodeXX, NULL,
 		    BAD_CAST "OrderAttribute",
 		    BAD_CAST "OZHNN");
-  nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "StandardOrderParams", NULL);
+  xmlNewChild(nodeXX, NULL, BAD_CAST "StandardOrderParams", NULL);
 
   /* bank pubkey digests */
   nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "BankPubKeyDigests", NULL);

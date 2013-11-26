@@ -23,7 +23,7 @@ int test1(int argc, char **argv) {
   const char *fname;
   GWEN_BUFFER *rbuf;
   EB_MSG *m;
-  int rv;
+  /*int rv;*/
 
   if (argc<3) {
     fprintf(stderr, "File name missing.\n");
@@ -81,7 +81,7 @@ int test1(int argc, char **argv) {
     return 3;
   }
   rbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=EB_Msg_BuildHashSha1(m, rbuf);
+  EB_Msg_BuildHashSha1(m, rbuf);
 
   GWEN_Buffer_Dump(rbuf, 2);
 
@@ -259,18 +259,12 @@ int test3(int argc, char **argv) {
 
 
 int test5(int argc, char **argv) {
-  const char *fname;
+  /*const char *fname;*/
   xmlDocPtr doc;
   xmlNsPtr ns;
   xmlNodePtr root_node = NULL;
   xmlNodePtr nodeX = NULL;
-  xmlNodePtr nodeXX = NULL;
-
-  if (argc<3) {
-    fprintf(stderr, "File name missing.\n");
-    return 1;
-  }
-  fname=argv[2];
+  /*xmlNodePtr nodeXX = NULL;*/
 
   xmlInitParser();
   LIBXML_TEST_VERSION
@@ -300,7 +294,7 @@ int test5(int argc, char **argv) {
     fprintf(stderr, "Namespace not found.\n");
     return 2;
   }
-  nodeXX=xmlNewChild(nodeX, ns, BAD_CAST "withns", NULL);
+  xmlNewChild(nodeX, ns, BAD_CAST "withns", NULL);
   xmlDocDump(stderr, doc);
 
   xmlFreeDoc(doc);
@@ -458,7 +452,7 @@ int check2(int argc, char **argv) {
   xmlDocPtr doc=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
-  xmlNodePtr nodeX = NULL;
+  /*xmlNodePtr nodeX = NULL;*/
   const char *s;
   int rv;
 
@@ -472,9 +466,9 @@ int check2(int argc, char **argv) {
   xmlDocSetRootElement(doc, root_node);
 
   node=xmlNewChild(root_node, NULL, BAD_CAST "test1", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test2", BAD_CAST "valueOf2");
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test3", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test4", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "test2", BAD_CAST "valueOf2");
+  xmlNewChild(node, NULL, BAD_CAST "test3", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "test4", NULL);
   node=xmlNewChild(root_node, NULL, BAD_CAST "test5", NULL);
 
   s=EB_Xml_GetCharValue(root_node, "test1/test2", 0);
@@ -594,7 +588,6 @@ int check4(int argc, char **argv) {
   xmlDocPtr doc2=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
-  xmlNodePtr nodeX = NULL;
   int rv;
   xmlChar *xmlbuff;
   int buffersize;
@@ -614,9 +607,9 @@ int check4(int argc, char **argv) {
   xmlDocSetRootElement(doc, root_node);
 
   node=xmlNewChild(root_node, NULL, BAD_CAST "test1", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test2", BAD_CAST "valueOf2");
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test3", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "test4", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "test2", BAD_CAST "valueOf2");
+  xmlNewChild(node, NULL, BAD_CAST "test3", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "test4", NULL);
   node=xmlNewChild(root_node, NULL, BAD_CAST "test5", NULL);
 
   buf1=GWEN_Buffer_new(0, 1024, 0, 1);

@@ -800,10 +800,11 @@ int EBC_Provider_ExecContext(AB_PROVIDER *pro,
   case AB_Job_TypeEuTransfer:
   case AB_Job_TypeInternalTransfer:
   default:
+      rv=GWEN_ERROR_NOT_IMPLEMENTED;
     break;
   }
 
-  return 0;
+  return rv;
 }
 
 

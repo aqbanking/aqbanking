@@ -27,7 +27,6 @@ static int EBC_Provider_XchgIniRequest_H003(AB_PROVIDER *pro,
   xmlDocPtr doc;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
-  xmlNodePtr nodeX = NULL;
   GWEN_BUFFER *tbuf;
   const char *signVersion;
   const char *s;
@@ -101,9 +100,9 @@ static int EBC_Provider_XchgIniRequest_H003(AB_PROVIDER *pro,
       xmlFreeDoc(doc);
       return GWEN_ERROR_INVALID;
     }
-    nodeX=xmlNewChild(node, NULL,
-		      BAD_CAST "SignatureVersion",
-		      BAD_CAST signVersion);
+    xmlNewChild(node, NULL,
+                BAD_CAST "SignatureVersion",
+                BAD_CAST signVersion);
   
     /* store partner id and user id */
     node=xmlNewChild(root_node, NULL,
@@ -161,8 +160,8 @@ static int EBC_Provider_XchgIniRequest_H003(AB_PROVIDER *pro,
   /* header */
   node=xmlNewChild(root_node, NULL, BAD_CAST "header", NULL);
   xmlNewProp(node, BAD_CAST "authenticate", BAD_CAST "true");
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
-  nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "static", NULL);
+  xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
 
   /* body */
   node=xmlNewChild(root_node, NULL, BAD_CAST "body", NULL);
