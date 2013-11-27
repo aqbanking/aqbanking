@@ -92,6 +92,9 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
                          "omitSmsAccount");
+  if (flags & AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
+                         "tlsOnlySafeCiphers");
 }
 
 
@@ -123,6 +126,8 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS;
     else if (strcasecmp(s, "omitSmsAccount")==0)
       fl|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
+    else if (strcasecmp(s, "tlsOnlySafeCiphers")==0)
+      fl|=AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }

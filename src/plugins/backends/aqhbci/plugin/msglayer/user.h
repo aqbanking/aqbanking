@@ -71,6 +71,8 @@ extern "C" {
  */
 #define AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT      0x00000200
 
+#define AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS     0x00000400
+
     /*@}*/
 
 
