@@ -20,12 +20,6 @@
 
 
 
-#define LICENSE_CODE_1 ((uint32_t)0x739f8341)
-#define LICENSE_CODE_2 ((uint32_t)0x49781c53)
-#define LICENSE_CODE_3 ((uint32_t)0x3ae79f12)
-
-
-
 typedef struct EBC_PROVIDER EBC_PROVIDER;
 struct EBC_PROVIDER {
   AB_JOB_LIST2 *bankingJobs;
@@ -35,9 +29,6 @@ struct EBC_PROVIDER {
   uint32_t lastJobId;
   uint32_t lastMediumId;
   EBC_CONTEXT_LIST *contextList;
-
-  uint32_t xlicenseCode1;
-  uint32_t xlicenseCode2;
 
   int connectTimeout;
   int transferTimeout;
