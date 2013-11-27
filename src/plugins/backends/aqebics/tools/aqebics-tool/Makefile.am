@@ -40,7 +40,7 @@ aqebics_tool_SOURCES=main.c \
 
 aqebics_tool_LDADD = \
   $(aqebics_internal_libs) \
-  $(aqbanking_libs) \
+  $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) \
   $(aqebics_static_plugins) \
   $(aqebics_extra_libs)
