@@ -1,7 +1,7 @@
 EXTRA_DIST=README
 
 INCLUDES=-I.. -I$(top_builddir) -Iclient -I$(builddir)/client \
-  $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(XMLSEC_CFLAGS)
+  $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
 
 bin_PROGRAMS=aqebics-tool
 

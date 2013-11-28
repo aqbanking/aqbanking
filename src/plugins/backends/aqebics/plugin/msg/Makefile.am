@@ -1,7 +1,7 @@
 
 
 INCLUDES=-I.. -I$(top_builddir) \
-  $(XMLSEC_CFLAGS) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
+  $(AQEBICS_CFLAGS) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
 
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@
 
@@ -27,7 +27,7 @@ noinst_HEADERS=\
 
 
 testlib_SOURCES=testlib.c
-testlib_LDADD=libmsg.la $(XMLSEC_LIBS) $(gwenhywfar_libs) -lz
+testlib_LDADD=libmsg.la $(AQEBICS_LIBS) $(gwenhywfar_libs) -lz
 
 check-local: testlib$(EXEEXT)
 	./testlib check1
