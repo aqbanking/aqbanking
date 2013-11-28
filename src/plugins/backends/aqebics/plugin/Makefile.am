@@ -1,6 +1,6 @@
 SUBDIRS=msg client dialogs
 
-INCLUDES=-I.. -I$(top_builddir) -Iclient -I$(builddir)/client \
+INCLUDES=-I.. -I$(top_builddir) -I$(srcdir)/client -I$(builddir)/client \
   $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(XMLSEC_CFLAGS)
 
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@

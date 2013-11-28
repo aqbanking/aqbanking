@@ -35,6 +35,7 @@ aqbanking-config.in
 aqbanking.iss
 aqbanking.spec
 aqbanking.tag
+aqbanking.creator.user
 autom4te.cache
 build*
 config.guess
