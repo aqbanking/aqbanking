@@ -18,29 +18,29 @@
     <widget type="groupBox" text="General Settings" flags="fillX" >
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="hlayout" flags="fillX" >
-    
+
           <widget type="gridLayout" columns="2" flags="fillX" >
-    
+
             <widget type="label" text="Country" />
             <widget type="comboBox" name="countryCombo"  columns="20" flags="fillX readOnly" />
-    
+
             <widget type="label" text="User Name" />
             <widget type="lineEdit" name="userNameEdit" columns="20" flags="fillX" />
-    
+
             <widget type="label" text="Bank Code" />
             <widget type="hlayout" flags="fillX" >
               <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
               <widget type="pushButton" name="bankCodeButton" text="Select" />
             </widget>
-    
+
             <widget type="label" text="User Id" />
             <widget type="lineEdit" name="userIdEdit" columns="20" flags="fillX" />
-      
+
             <widget type="label" text="Customer Id" />
             <widget type="lineEdit" name="customerIdEdit" columns="20" flags="fillX" />
-    
+
           </widget>
-    
+
         </widget> <!-- hlayout -->
       </widget>   <!-- vlayout -->
     </widget>     <!-- groupBox -->
@@ -48,29 +48,37 @@
 
     <widget type="groupBox" text="HBCI Settings" flags="fillX" >
       <widget type="vlayout" flags="fillX fillY" >
-    
+
         <widget type="gridLayout" columns="2" flags="fillX" >
 
           <widget type="label" text="Server URL" />
           <widget type="lineEdit" name="urlEdit" columns="40" flags="fillX" />
-    
+
           <widget type="label" text="HBCI Version" />
           <widget type="comboBox" name="hbciVersionCombo"  columns="20" flags="fillX" />
-    
+
           <widget type="label" text="HTTP Version" />
           <widget type="comboBox" name="httpVersionCombo"  columns="20" flags="fillX" />
-    
+
           <widget type="label" text="Selected TAN Method" />
           <widget type="comboBox" name="tanMethodCombo"  columns="20" flags="fillX" />
 
           <widget type="label" text="TAN Medium ID" />
           <widget type="lineEdit" name="tanMediumIdEdit" columns="32" flags="fillX" />
-    
+
         </widget>
-    
-        <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
-        <widget type="checkBox" name="noBase64Check" text="Disable Base64 Encoding" />
-        <widget type="checkBox" name="omitSmsAccountCheck" text="Omit SMS Account" />
+        <widget type="hlayout" name="hlayout1" flags="fillX" >
+          <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
+          <widget type="hspacer" name="hspacer1" flags="fillX" />
+        </widget>
+        <widget type="hlayout" name="hlayout2" flags="fillX" >
+          <widget type="checkBox" name="noBase64Check" text="Disable Base64 Encoding" />
+          <widget type="hspacer" name="hspacer2" flags="fillX" />
+        </widget>
+        <widget type="hlayout" name="hlayout3" flags="fillX" >
+          <widget type="checkBox" name="omitSmsAccountCheck" text="Omit SMS Account" />
+          <widget type="hspacer" name="hspacer3" flags="fillX" />
+        </widget>
 
       </widget>   <!-- vlayout -->
     </widget>     <!-- groupBox -->
