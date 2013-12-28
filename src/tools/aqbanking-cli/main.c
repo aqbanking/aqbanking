@@ -47,6 +47,8 @@
 #include "updateconf.c"
 #include "sepatransfer.c"
 #include "addsepadebitnote.c"
+#include "sepadebitnote.c"
+
 
 
 static void cmdAddHelpStr(GWEN_BUFFER *ubuf,
@@ -235,6 +237,13 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "debitnotes",
                   I18N("Issue a number of debit notes (data from a file)"));
 
+    cmdAddHelpStr(ubuf, "sepatransfer",
+                  I18N("Issue a single SEPA transfer (data from command line)"));
+
+    cmdAddHelpStr(ubuf, "sepadebitnote",
+                  I18N("Issue a single SEPA debit note (data from command line)"));
+
+
     cmdAddHelpStr(ubuf, "addtrans",
                   I18N("Add a transfer to an existing import context file"));
 
@@ -349,6 +358,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "addsepadebitnote")==0) {
     rv=addSepaDebitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepadebitnote")==0) {
+    rv=sepaDebitNote(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "fillgaps")==0) {
     rv=fillGaps(ab, db, argc, argv);
