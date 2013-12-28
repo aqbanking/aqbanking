@@ -464,6 +464,16 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     }
     break;
 
+  case AB_Job_TypeSepaDebitNote:
+    GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "isMultiJob", 0);
+    mj=AH_Job_SingleSepaDebitNote_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
   default:
     return GWEN_ERROR_NOT_AVAILABLE;
   }
@@ -706,6 +716,14 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 
   case AB_Job_TypeSepaTransfer:
     mj=AH_Job_SingleSepaTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeSepaDebitNote:
+    mj=AH_Job_SingleSepaDebitNote_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
