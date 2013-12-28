@@ -182,6 +182,7 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 				  "backends to the credit institutes."),
 			     AB_Job_List2_GetSize(jl2),
 			     0);
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "AqBanking v"AQBANKING_VERSION_FULL_STRING);
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
 		       I18N("Sending jobs to the bank(s)"));
   rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
@@ -202,6 +203,9 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
       switch(AB_Job_GetStatus(j)) {
       case AB_Job_StatusEnqueued:
 	/* job still enqueued, so it has never been sent */
+	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			      I18N("Job %s: never been sent"),
+			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
 	AB_Job_SetStatus(j, AB_Job_StatusError);
 	AB_Job_SetResultText(j, "Job has never been sent");
 	AB_Job_Log(j, GWEN_LoggerLevel_Error, "aqbanking",
@@ -209,13 +213,37 @@ int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 	break;
   
       case AB_Job_StatusPending:
+	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Warning,
+			      I18N("Job %s: pending"),
+			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
 	AB_Job_Log(j, GWEN_LoggerLevel_Notice, "aqbanking",
 		   "Job is still pending");
 	break;
-  
+
       case AB_Job_StatusSent:
+	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Notice,
+			      I18N("Job %s: sent"),
+			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
+	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
+		   "Job finished");
+	break;
+
       case AB_Job_StatusFinished:
+	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Notice,
+			      I18N("Job %s: finished"),
+			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
+	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
+		   "Job finished");
+	break;
+
       case AB_Job_StatusError:
+	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			      I18N("Job %s: error"),
+			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
+	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
+		   "Job finished");
+	break;
+          
       default:
 	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
 		   "Job finished");
