@@ -178,10 +178,10 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
 
     /* set some default limits */
     lim=AB_TransactionLimits_new();
-    AB_TransactionLimits_SetMaxLenPurpose(lim, 27);
+    AB_TransactionLimits_SetMaxLenPurpose(lim, 140);
     AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
     AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
-    AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
+    AB_TransactionLimits_SetMaxLinesPurpose(lim, 1);
 
     switch(aj->jobType) {
     case AB_Job_TypeSepaTransfer:
