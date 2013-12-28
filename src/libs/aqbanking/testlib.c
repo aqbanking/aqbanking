@@ -182,9 +182,51 @@ int test3(int argc, char **argv) {
 
 
 
+int test4(int argc, char **argv) {
+  int rv;
+  AB_BANKING *ab;
+  GWEN_GUI *gui;
+  GWEN_BUFFER *tbuf;
+
+  rv=GWEN_Init();
+  if (rv) {
+    fprintf(stderr, "ERROR: Unable to init Gwen.\n");
+    exit(2);
+  }
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  ab=AB_Banking_new("testlib", NULL, 0);
+
+  if (argc<3) {
+    fprintf(stderr, "Missing bank code and account number\n");
+    return 1;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=AB_Banking_MakeGermanIban(argv[1], argv[2], tbuf);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: %d\n", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_CheckIban(GWEN_Buffer_GetStart(tbuf));
+  if (rv<0) {
+    fprintf(stderr, "Bad IBAN (%s)\n", GWEN_Buffer_GetStart(tbuf));
+    return 2;
+  }
+  fprintf(stderr, "Verified IBAN: %s\n", GWEN_Buffer_GetStart(tbuf));
+
+
+  return 0;
+}
+
+
+
 int main(int argc, char *argv[]){
 #if 1
-  return test3(argc, argv);
+  return test4(argc, argv);
 #else
   AB_BANKING *ab;
 

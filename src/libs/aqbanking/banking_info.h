@@ -102,6 +102,13 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 AQBANKING_API
 int AB_Banking_CheckIban(const char *iban);
 
+
+/**
+ * Create an IBAN from German bank code and account number.
+ */
+AQBANKING_API
+int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, GWEN_BUFFER *ibanBuf);
+
 /*@}*/
 
 

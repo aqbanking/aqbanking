@@ -719,6 +719,89 @@ int AB_Banking_CheckIban(const char *iban) {
 
 
 
+int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, GWEN_BUFFER *ibanBuf) {
+  GWEN_BUFFER *tbuf;
+  int i;
+  char numbuf[32];
+  char tmp[10];
+  int rv;
+  unsigned int j;
+  const char *p;
+
+  /* create BBAN */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* bank code */
+  i=strlen(bankCode);
+  if (i<8)
+    GWEN_Buffer_FillWithBytes(tbuf, '0', 8-i);
+  rv=AB_Banking__TransformIban(bankCode, strlen(bankCode), numbuf, sizeof(numbuf)-1);
+  if (rv<0) {
+    GWEN_Buffer_free(tbuf);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad bank code (bad char) (%d)", rv);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(tbuf, numbuf);
+
+  /* account number */
+  i=strlen(accountNumber);
+  if (i<10)
+    GWEN_Buffer_FillWithBytes(tbuf, '0', 10-i);
+  rv=AB_Banking__TransformIban(accountNumber, strlen(accountNumber), numbuf, sizeof(numbuf)-1);
+  if (rv<0) {
+    GWEN_Buffer_free(tbuf);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad account number (bad char) (%d)", rv);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(tbuf, numbuf);
+
+  /* add "DE00" */
+  GWEN_Buffer_AppendString(tbuf, "131400");
+
+  /* calculate checksum in 9er steps */
+  p=GWEN_Buffer_GetStart(tbuf);
+  tmp[0]=0;
+  j=0;
+  while(*p) {
+    i=strlen(tmp);
+    for (i=strlen(tmp); i<9;  i++) {
+      if (!*p)
+        break;
+      tmp[i]=*(p++);
+    }
+    tmp[i]=0;
+    if (1!=sscanf(tmp, "%u", &j)) {
+      GWEN_Buffer_free(tbuf);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (bad char)");
+      return -1;
+    }
+    j=j%97; /* modulo 97 */
+    snprintf(tmp, sizeof(tmp), "%u", j);
+  } /* while */
+
+  /* j contains the modulus */
+  snprintf(tmp, sizeof(tmp), "%02u", 98-j);
+
+  GWEN_Buffer_AppendString(ibanBuf, "DE"); /* DE */
+  GWEN_Buffer_AppendString(ibanBuf, tmp);  /* checksum */
+  i=strlen(bankCode);                      /* bank code */
+  if (i<8)
+    GWEN_Buffer_FillWithBytes(ibanBuf, '0', 8-i);
+  GWEN_Buffer_AppendString(ibanBuf, bankCode);
+
+  i=strlen(accountNumber);                  /* account number */
+  if (i<10)
+    GWEN_Buffer_FillWithBytes(ibanBuf, '0', 10-i);
+  GWEN_Buffer_AppendString(ibanBuf, accountNumber);
+
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "IBAN is %s", GWEN_Buffer_GetStart(ibanBuf));
+  GWEN_Buffer_free(tbuf);
+  return 0;
+}
+
+
+
 GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void) {
   GWEN_STRINGLIST *sl;
 
