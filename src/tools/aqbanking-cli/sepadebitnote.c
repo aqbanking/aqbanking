@@ -186,12 +186,12 @@ int sepaDebitNote(AB_BANKING *ab,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
     "mandateDate",                /* name */
-    1,                            /* minnum */
+    0,                            /* minnum */
     1,                            /* maxnum */
     0,                            /* short option */
     "mandateDate",                  /* long option */
-    "Specify the date of the mandate",    /* short description */
-    "Specify the date of the mandate"     /* long description */
+    "Specify the date when the mandate was issued",    /* short description */
+    "Specify the date when the mandate was issued"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
