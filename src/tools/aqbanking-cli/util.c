@@ -318,18 +318,22 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
 
 
 
-AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
+AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferType) {
+  AB_BANKING *ab;
   AB_TRANSACTION *t;
   const char *s;
-  int period, i;
+  int i;
   GWEN_TIME *d;
 
-  *transferType = 0; // single transfer
   assert(a);
   assert(db);
+
+  ab=AB_Account_GetBanking(a);
+  assert(ab);
+
   t=AB_Transaction_new();
 
-  AB_Transaction_FillLocalFromAccount(t, a);
+  AB_Banking_FillGapsInTransaction(ab, a, t);
 
   s=GWEN_DB_GetCharValue(db, "name", 0, 0);
   if (s && *s)
@@ -412,7 +416,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     return NULL;
   }
 
-  // dated transfer
+  /* dated transfer, SEPA debit notes */
   s=GWEN_DB_GetCharValue(db, "executionDate", 0, 0);
   if (s && *s) {
     GWEN_BUFFER *dbuf;
@@ -428,11 +432,9 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
       return NULL;
     }
     AB_Transaction_SetDate(t, d);
-    *transferType = 1;
-    return t;
   }
 
-  // standing orders
+  /* standing orders */
   s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
   if (s && *s) {
     GWEN_BUFFER *dbuf;
@@ -449,10 +451,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     }
     AB_Transaction_SetFirstExecutionDate(t, d);
   }
-  else
-    return t; // single transfer
 
-  *transferType = 2;
   s=GWEN_DB_GetCharValue(db, "lastExecutionDate", 0, 0);
   if (s && *s) {
     GWEN_BUFFER *dbuf;
@@ -470,40 +469,46 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferTyp
     AB_Transaction_SetLastExecutionDate(t, d);
   }
 
-  period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
-  if (i <= 0 || i > 2) {
-    DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
-    return NULL;
-  }
-  if (i == 1)
-    AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
-  else
-    AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
+  if (expTransferType==AB_Job_TypeSepaCreateStandingOrder ||
+      expTransferType==AB_Job_TypeSepaModifyStandingOrder) {
+    int period;
 
-  i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
-  if (i <= 0) {
-    DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
-    return NULL;
-  }
-  AB_Transaction_SetCycle(t, i);
+    /* only needed for standing orders */
+    period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
+    if (i <= 0 || i > 2) {
+      DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
+      return NULL;
+    }
+    if (i == 1)
+      AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
+    else
+      AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
 
-  i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
-  if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
-    DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
-    return NULL;
+    i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
+    if (i <= 0) {
+      DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
+      return NULL;
+    }
+    AB_Transaction_SetCycle(t, i);
+
+    i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
+    if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
+      DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
+      return NULL;
+    }
+    AB_Transaction_SetExecutionDay(t, i);
   }
-  AB_Transaction_SetExecutionDay(t, i);
 
   return t;
 }
 
 
 
-AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
+AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=mkSepaTransfer(a, db, transferType);
+  t=mkSepaTransfer(a, db, AB_Job_TypeSepaDebitNote);
   if (t==NULL) {
     DBG_INFO(0, "here");
     return NULL;

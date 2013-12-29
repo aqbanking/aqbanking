@@ -38,7 +38,6 @@ int sepaDebitNote(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
-  int transferType=0;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -217,6 +216,17 @@ int sepaDebitNote(AB_BANKING *ab,
     "Specify the purpose"         /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "executionDate",              /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "execdate",                   /* long option */
+    "Specify the execution date (YYYYMMDD)", /* short */
+    "Specify the execution date (YYYYMMDD)" /* long */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -285,7 +295,7 @@ int sepaDebitNote(AB_BANKING *ab,
   jobList=AB_Job_List2_new();
 
   /* create transaction from arguments */
-  t=mkSepaDebitNote(a, db, &transferType);
+  t=mkSepaDebitNote(a, db);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     AB_Banking_OnlineFini(ab);
@@ -334,13 +344,7 @@ int sepaDebitNote(AB_BANKING *ab,
   }
 
 
-  if (transferType == 0)
-    j=AB_JobSepaDebitNote_new(a);
-  else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
-    return 6;
-  }
-
+  j=AB_JobSepaDebitNote_new(a);
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
@@ -348,12 +352,7 @@ int sepaDebitNote(AB_BANKING *ab,
     return 3;
   }
 
-  if (transferType == 0)
-    rv=AB_JobSepaDebitNote_SetTransaction(j, t);
-  else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
-    return 6;
-  }
+  rv=AB_JobSepaDebitNote_SetTransaction(j, t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
     AB_ImExporterContext_free(ctx);

@@ -41,7 +41,6 @@ int sepaTransfer(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
-  int transferType=0;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -244,7 +243,7 @@ int sepaTransfer(AB_BANKING *ab,
   jobList=AB_Job_List2_new();
 
   /* create transaction from arguments */
-  t=mkSepaTransfer(a, db, &transferType);
+  t=mkSepaTransfer(a, db, AB_Job_TypeSepaTransfer);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     return 2;
@@ -290,13 +289,7 @@ int sepaTransfer(AB_BANKING *ab,
   }
 
 
-  if (transferType == 0)
-    j=AB_JobSepaTransfer_new(a);
-  else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
-    return 6;
-  }
-
+  j=AB_JobSepaTransfer_new(a);
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
@@ -304,12 +297,7 @@ int sepaTransfer(AB_BANKING *ab,
     return 3;
   }
 
-  if (transferType == 0)
-    rv=AB_JobSepaTransfer_SetTransaction(j, t);
-  else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
-    return 6;
-  }
+  rv=AB_JobSepaTransfer_SetTransaction(j, t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
     AB_ImExporterContext_free(ctx);

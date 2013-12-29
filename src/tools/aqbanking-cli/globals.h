@@ -33,8 +33,8 @@ int readContext(const char *ctxFile,
 		int mustExist);
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx);
 AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType);
-AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType);
-AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType);
+AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferType);
+AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 

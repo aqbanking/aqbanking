@@ -40,7 +40,6 @@ static int addSepaDebitNote(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
-  int transferType=0;
   AB_IMEXPORTER_CONTEXT *ctx=NULL;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -282,7 +281,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
   a=AB_Account_List2_GetFront(al);
 
   /* create transaction from arguments */
-  t=mkSepaDebitNote(a, db, &transferType);
+  t=mkSepaDebitNote(a, db);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     AB_Banking_OnlineFini(ab);
