@@ -185,7 +185,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
     "mandateDate",                /* name */
-    1,                            /* minnum */
+    0,                            /* minnum */
     1,                            /* maxnum */
     0,                            /* short option */
     "mandateDate",                  /* long option */
@@ -213,6 +213,17 @@ static int addSepaDebitNote(AB_BANKING *ab,
     "purpose",                    /* long option */
     "Specify the purpose",        /* short description */
     "Specify the purpose"         /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "executionDate",              /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "execdate",                   /* long option */
+    "Specify the execution date (YYYYMMDD)", /* short */
+    "Specify the execution date (YYYYMMDD)" /* long */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
