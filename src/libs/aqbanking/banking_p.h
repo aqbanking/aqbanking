@@ -140,8 +140,8 @@ static uint64_t AB_Banking__char2uint64(const char *accountId);
 
 static void AB_Banking_ActivateAllProviders(AB_BANKING *ab);
 
-static void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a);
 static void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t);
+static void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t);
 
 
 static int AB_Banking_LoadAllUsers(AB_BANKING *ab);

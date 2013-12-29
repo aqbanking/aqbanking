@@ -13,6 +13,8 @@
 #define AQBANKING_BANKING_IMEX_H
 
 #include <aqbanking/imexporter.h>
+#include <aqbanking/account.h>
+#include <aqbanking/transaction.h>
 
 
 #ifdef __cplusplus
@@ -168,6 +170,19 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
  */
 AQBANKING_API
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
+
+
+/**
+ * This function tries to fill missing fields in a given transaction.
+ * It tries to fill missing data from the given local account (IBAN, BIC, owner name etc).
+ * It also fills in remote IBAN and BIC if the remote account is located in Germany.
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param localAccount account from which local info is copied (may be NULL)
+ * @param t transaction to fill
+ */
+AQBANKING_API
+void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
 
 
 /**

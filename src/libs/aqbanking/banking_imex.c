@@ -12,28 +12,6 @@
 
 
 
-void AB_Banking__fillTransactionFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a) {
-  const char *s;
-
-  s=AB_Transaction_GetLocalName(t);
-  if (!s)
-    AB_Transaction_SetLocalName(t, AB_Account_GetOwnerName(a));
-  s=AB_Transaction_GetLocalBankCode(t);
-  if (!s)
-    AB_Transaction_SetLocalBankCode(t, AB_Account_GetBankCode(a));
-  s=AB_Transaction_GetLocalAccountNumber(t);
-  if (!s)
-    AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
-  s=AB_Transaction_GetLocalIban(t);
-  if (!s)
-    AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(a));
-  s=AB_Transaction_GetLocalBic(t);
-  if (!s)
-    AB_Transaction_SetLocalBic(t, AB_Account_GetBIC(a));
-}
-
-
-
 void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
   const GWEN_STRINGLIST *sl;
 
@@ -94,6 +72,70 @@ void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
 
 
 
+void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t) {
+  const char *sRemoteCountry;
+
+  sRemoteCountry=AB_Transaction_GetRemoteCountry(t);
+  if (!(sRemoteCountry && *sRemoteCountry)) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No remote country info, assuming \"de\"");
+    sRemoteCountry="de";
+  }
+
+  if (strcasecmp(sRemoteCountry, "de")==0) {
+    const char *sRemoteBankCode;
+    const char *sRemoteAccountNumber;
+    const char *sRemoteBic;
+    const char *sRemoteIban;
+
+    sRemoteBankCode=AB_Transaction_GetRemoteBankCode(t);
+    sRemoteAccountNumber=AB_Transaction_GetRemoteAccountNumber(t);
+    sRemoteBic=AB_Transaction_GetRemoteBic(t);
+    sRemoteIban=AB_Transaction_GetRemoteIban(t);
+
+    if (!(sRemoteBic && *sRemoteBic) && (sRemoteBankCode && *sRemoteBankCode)) {
+      AB_BANKINFO *bi;
+
+      bi=AB_Banking_GetBankInfo(ab, sRemoteCountry, "*", sRemoteBankCode);
+      if (bi) {
+	const char *s;
+
+	s=AB_BankInfo_GetBic(bi);
+	if (s && *s) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC for [%s] to [%s]", sRemoteBankCode, s);
+	  AB_Transaction_SetRemoteBic(t, s);
+        }
+	AB_BankInfo_free(bi);
+      }
+    }
+
+    if (!(sRemoteIban && *sRemoteIban) && (sRemoteBankCode && *sRemoteBankCode) && (sRemoteAccountNumber && *sRemoteAccountNumber)) {
+      GWEN_BUFFER *tbuf;
+      int rv;
+
+      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+      rv=AB_Banking_MakeGermanIban(sRemoteBankCode, sRemoteAccountNumber, tbuf);
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      }
+      else {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN for [%s/%s] to [%s]",
+		 sRemoteBankCode, sRemoteAccountNumber, GWEN_Buffer_GetStart(tbuf));
+	AB_Transaction_SetRemoteIban(t, GWEN_Buffer_GetStart(tbuf));
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+}
+
+
+
+void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACTION *t) {
+  if (a)
+    AB_Transaction_FillLocalFromAccount(t, a);
+  AB_Banking__fillTransactionRemoteSepaInfo(ab, t);
+}
+
+
 
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
   AB_IMEXPORTER_ACCOUNTINFO *iea;
@@ -117,7 +159,7 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
       /* fill transactions */
       t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
       while(t) {
-	AB_Banking__fillTransactionFromAccount(t, a);
+	AB_Transaction_FillLocalFromAccount(t, a);
 	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
 	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
 	  AB_Banking__fillTransactionRemoteInfo(t);
@@ -127,28 +169,31 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
       /* fill standing orders */
       t=AB_ImExporterAccountInfo_GetFirstStandingOrder(iea);
       while(t) {
-	AB_Banking__fillTransactionFromAccount(t, a);
+        AB_Banking_FillGapsInTransaction(ab, a, t);
 	t=AB_ImExporterAccountInfo_GetNextStandingOrder(iea);
       }
 
       /* fill transfers */
       t=AB_ImExporterAccountInfo_GetFirstTransfer(iea);
       while(t) {
-	AB_Banking__fillTransactionFromAccount(t, a);
+	AB_Banking_FillGapsInTransaction(ab, a, t);
 	t=AB_ImExporterAccountInfo_GetNextTransfer(iea);
       }
 
       /* fill dated transfers */
       t=AB_ImExporterAccountInfo_GetFirstDatedTransfer(iea);
       while(t) {
-	AB_Banking__fillTransactionFromAccount(t, a);
+	AB_Banking_FillGapsInTransaction(ab, a, t);
 	t=AB_ImExporterAccountInfo_GetNextDatedTransfer(iea);
       }
 
       /* fill noted transactions */
       t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(iea);
       while(t) {
-	AB_Banking__fillTransactionFromAccount(t, a);
+	AB_Transaction_FillLocalFromAccount(t, a);
+	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
+	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
+	  AB_Banking__fillTransactionRemoteInfo(t);
 	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(iea);
       }
     }
