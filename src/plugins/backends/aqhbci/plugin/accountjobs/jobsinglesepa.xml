@@ -39,20 +39,6 @@
 
 
 
- <!-- Beschreibungssegment -->
- <SEGdef code="HICCSS" version="1"
-         delimiter=":" terminator="'" isbpdjob="1" >
-   <GROUP type="BPDJob" version="2" />
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
- </SEGdef>
-
-
-
-
-
  <!-- Kundennachricht -->
  <SEGdef id="SepaSingleDebitNote"
          code="HKCDS"
